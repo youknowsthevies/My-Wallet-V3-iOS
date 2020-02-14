@@ -269,8 +269,6 @@
 - (void)getHistoryForAllAssets;
 
 - (id)getLegacyAddressBalance:(NSString *)address assetType:(LegacyAssetType)assetType;
-- (uint64_t)parseBitcoinValueFromTextField:(UITextField *)textField;
-- (uint64_t)parseBitcoinValueFromString:(NSString *)inputString;
 - (void)changeLocalCurrency:(NSString *)currencyCode;
 - (void)changeBtcCurrency:(NSString *)btcCode;
 - (uint64_t)conversionForBitcoinAssetType:(LegacyAssetType)assetType;

@@ -135,7 +135,7 @@
 
 + (NSString *)formatEthToFiat:(NSString *)ethAmount exchangeRate:(NSDecimalNumber *)exchangeRate localCurrencyFormatter:(NSNumberFormatter *)localCurrencyFormatter
 {
-    NSString *requestedAmountString = [NSNumberFormatter convertedDecimalString:ethAmount];
+    NSString *requestedAmountString = [NSNumberFormatter convertWithDecimalString:ethAmount];
     
     if (requestedAmountString != nil && [requestedAmountString doubleValue] > 0) {
         NSDecimalNumber *ethAmountDecimalNumber = [NSDecimalNumber decimalNumberWithString:requestedAmountString];
@@ -213,39 +213,6 @@
     return [formatter stringFromNumber:amount];
 }
 
-+ (NSString *)convertedDecimalString:(NSString *)entryString
-{
-    __block NSString *requestedAmountString;
-    if ([entryString containsString:@"٫"]) {
-        // Special case for Eastern Arabic numerals: NSDecimalNumber decimalNumberWithString: returns NaN for Eastern Arabic numerals, and NSNumberFormatter results have precision errors even with generatesDecimalNumbers set to YES.
-        NSError *error;
-        NSRange range = NSMakeRange(0, [entryString length]);
-        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:REGEX_EASTERN_ARABIC_NUMERALS options:NSRegularExpressionCaseInsensitive error:&error];
-        
-        NSDictionary *easternArabicNumeralDictionary = DICTIONARY_EASTERN_ARABIC_NUMERAL;
-        
-        NSMutableString *replaced = [entryString mutableCopy];
-        __block NSInteger offset = 0;
-        [regex enumerateMatchesInString:entryString options:0 range:range usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
-            NSRange range1 = [result rangeAtIndex:0]; // range of the matched subgroup
-            NSString *key = [entryString substringWithRange:range1];
-            NSString *value = easternArabicNumeralDictionary[key];
-            if (value != nil) {
-                NSRange range = [result range]; // range of the matched pattern
-                // Update location according to previous modifications:
-                range.location += offset;
-                [replaced replaceCharactersInRange:range withString:value];
-                offset += value.length - range.length; // Update offset
-            }
-            requestedAmountString = [NSString stringWithString:replaced];
-        }];
-    } else {
-        requestedAmountString = [entryString stringByReplacingOccurrencesOfString:@"," withString:@"."];
-    }
-    
-    return requestedAmountString;
-}
-
 + (NSString *)localFormattedString:(NSString *)amountString
 {
     NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
@@ -269,16 +236,6 @@
     numberFormatter.maximumFractionDigits = decimalPlaces;
     numberFormatter.usesGroupingSeparator = YES;
     return [numberFormatter stringFromNumber:[NSNumber numberWithDouble:fiatBalance]];
-}
-
-+ (uint64_t)parseBtcValueFromString:(NSString *)inputString
-{
-    // Always use BTC conversion rate
-    uint64_t currentConversion = WalletManager.sharedInstance.latestMultiAddressResponse.symbol_btc.conversion;
-    WalletManager.sharedInstance.latestMultiAddressResponse.symbol_btc.conversion = SATOSHI;
-    uint64_t result = [WalletManager.sharedInstance.wallet parseBitcoinValueFromString:inputString];
-    WalletManager.sharedInstance.latestMultiAddressResponse.symbol_btc.conversion = currentConversion;
-    return result;
 }
 
 #pragma mark - Bitcoin Cash

@@ -1839,7 +1839,7 @@ BOOL displayingLocalSymbolSend;
             amountInSatoshi = [WalletManager.sharedInstance.wallet conversionForBitcoinAssetType:self.assetType] * [amountString doubleValue];
         }
         else if (textField == btcAmountField) {
-            amountInSatoshi = [WalletManager.sharedInstance.wallet parseBitcoinValueFromString:newString];
+            amountInSatoshi = [NSNumberFormatter parseBitcoinValueFrom:newString];
         }
         
         if (amountInSatoshi > BTC_LIMIT_IN_SATOSHI) {

@@ -245,7 +245,7 @@ extension AssetType {
         
         switch self {
         case .bitcoin:
-            let value = NumberFormatter.parseBtcValue(from: input.stringValue)
+            let value = NumberFormatter.parseBitcoinValue(from: input.stringValue)
             return NumberFormatter.formatMoney(
                 value.magnitude,
                 localCurrency: true
@@ -257,7 +257,7 @@ extension AssetType {
             )
             return value
         case .bitcoinCash:
-            let value = NumberFormatter.parseBtcValue(from: input.stringValue)
+            let value = NumberFormatter.parseBitcoinValue(from: input.stringValue)
             return NumberFormatter.formatBch(
                 withSymbol: value.magnitude,
                 localCurrency: true
@@ -278,7 +278,7 @@ extension AssetType {
         let input = amount as NSDecimalNumber
         switch self {
         case .bitcoin:
-            let value = NumberFormatter.parseBtcValue(from: input.stringValue)
+            let value = NumberFormatter.parseBitcoinValue(from: input.stringValue)
             return NumberFormatter.formatMoney(value.magnitude)
         case .ethereum:
             guard let exchangeRate = wallet.latestEthExchangeRate else { return nil }
@@ -287,7 +287,7 @@ extension AssetType {
                 exchangeRate: exchangeRate
             )
         case .bitcoinCash:
-            let value = NumberFormatter.parseBtcValue(from: input.stringValue)
+            let value = NumberFormatter.parseBitcoinValue(from: input.stringValue)
             return NumberFormatter.formatBch(withSymbol: value.magnitude)
         case .stellar:
             // TODO: add formatting methods

@@ -1524,18 +1524,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 }
 
-- (uint64_t)parseBitcoinValueFromTextField:(UITextField *)textField
-{
-    return [self parseBitcoinValueFromString:textField.text];
-}
-
-- (uint64_t)parseBitcoinValueFromString:(NSString *)inputString
-{
-    NSString *requestedAmountString = [NSNumberFormatter convertedDecimalString:inputString];
-
-    return [[[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.precisionToSatoshiBN(\"%@\", %lld).toString()", [requestedAmountString escapedForJS], WalletManager.sharedInstance.latestMultiAddressResponse.symbol_btc.conversion]] toNumber] longLongValue];
-}
-
 - (void)parsePairingCode:(NSString *)code
                  success:(void (^ _Nonnull)(NSDictionary * _Nonnull))success
                    error:(void (^ _Nonnull)(NSString * _Nullable))error {
@@ -2500,8 +2488,10 @@ NSString * const kLockboxInvitation = @"lockbox";
     
     if (orderTransaction.legacyAssetType == LegacyAssetTypeBitcoin) {
         tradeExecutionType = @"bitcoin";
-        formattedAmount = [NSString stringWithFormat:@"%lld", [NSNumberFormatter parseBtcValueFromString:orderTransaction.amount]];
-        formattedFee = [NSString stringWithFormat:@"%lld", [NSNumberFormatter parseBtcValueFromString:orderTransaction.fees]];
+        uint64_t amount = [NSNumberFormatter parseBitcoinValueFrom:orderTransaction.amount];
+        uint64_t fees = [NSNumberFormatter parseBitcoinValueFrom:orderTransaction.fees];
+        formattedAmount = [NSString stringWithFormat:@"%lld", amount];
+        formattedFee = [NSString stringWithFormat:@"%lld", fees];
         [self.context invokeOnceWithValueFunctionBlock:^(JSValue *_Nonnull errorValue) {
             completion();
             /// TODO: We used to provide a more user friendly message noting that the user may not have
@@ -2513,8 +2503,10 @@ NSString * const kLockboxInvitation = @"lockbox";
         } forJsFunctionName:@"objc_on_create_order_payment_error"];
     } else if (orderTransaction.legacyAssetType == LegacyAssetTypeBitcoinCash) {
         tradeExecutionType = @"bitcoinCash";
-        formattedAmount = [NSString stringWithFormat:@"%lld", [NSNumberFormatter parseBtcValueFromString:orderTransaction.amount]];
-        formattedFee = [NSString stringWithFormat:@"%lld", [NSNumberFormatter parseBtcValueFromString:orderTransaction.fees]];
+        uint64_t amount = [NSNumberFormatter parseBitcoinValueFrom:orderTransaction.amount];
+        uint64_t fees = [NSNumberFormatter parseBitcoinValueFrom:orderTransaction.fees];
+        formattedAmount = [NSString stringWithFormat:@"%lld", amount];
+        formattedFee = [NSString stringWithFormat:@"%lld", fees];
         [self.context invokeOnceWithValueFunctionBlock:^(JSValue * _Nonnull errorValue) {
             NSString *errorMessage = [errorValue toString];
             completion();

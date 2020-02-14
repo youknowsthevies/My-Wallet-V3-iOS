@@ -432,7 +432,8 @@
 - (uint64_t)getInputAmountInSatoshi
 {
     if ([self shouldUseBtcField]) {
-        return [WalletManager.sharedInstance.wallet parseBitcoinValueFromTextField:self.amountInputView.btcField];
+        NSString *textValue = self.amountInputView.btcField.text;
+        return [NSNumberFormatter parseBitcoinValueFrom:textValue];
     } else {
         NSString *language = self.amountInputView.fiatField.textInputMode.primaryLanguage;
         NSLocale *locale = [language isEqualToString:LOCALE_IDENTIFIER_AR] ? [NSLocale localeWithLocaleIdentifier:language] : [NSLocale currentLocale];
@@ -661,7 +662,8 @@
 
 - (void)storeRequestedAmount
 {
-    self.lastRequestedAmount = [WalletManager.sharedInstance.wallet parseBitcoinValueFromTextField:self.amountInputView.btcField];
+    NSString *textValue = self.amountInputView.btcField.text;
+    self.lastRequestedAmount = [NSNumberFormatter parseBitcoinValueFrom:textValue];
 }
 
 - (void)updateUI
@@ -899,7 +901,7 @@
             amountInSatoshi = WalletManager.sharedInstance.latestMultiAddressResponse.symbol_local.conversion * [amountString doubleValue];
         }
         else {
-            amountInSatoshi = [WalletManager.sharedInstance.wallet parseBitcoinValueFromString:newString];
+            amountInSatoshi = [NSNumberFormatter parseBitcoinValueFrom:newString];
         }
         
         if (amountInSatoshi > BTC_LIMIT_IN_SATOSHI) {
