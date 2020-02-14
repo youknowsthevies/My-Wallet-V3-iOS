@@ -38,11 +38,11 @@ extension NumberFormatter {
 
         var string = string
         // If starts with delimiter '.', adds a 0 integral part
-        if string.hasPrefix(".") {
+        if string.hasPrefix(.fullStop) {
             string = "0" + string
         }
 
-        // Split into integral and fractional parts
+        // Split into integral and fractional parts separated by a full stop '.'
         let components = string.split(separator: ".")
 
         // Components should not be empty
@@ -88,7 +88,7 @@ extension NumberFormatter {
         "\u{0667}": "7",
         "\u{0668}": "8",
         "\u{0669}": "9",
-        "\u{066B}": "."
+        .arabicDecimalSeparator: .fullStop
     ]
 
     /// - Returns: String by replacing occurrences of Arabic-Indic Unicode Digits with regular Unicode Digits
