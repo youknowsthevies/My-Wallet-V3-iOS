@@ -76,22 +76,23 @@ extension NumberFormatter {
         return result
     }
 
+    /// A dictionary mapping a Unicode Arabic-Indic Digit key to a Unicode Digit value.
+    fileprivate static let arabicIndicDigitToDigitMap: [String: String] = [
+        "\u{0660}": "0",
+        "\u{0661}": "1",
+        "\u{0662}": "2",
+        "\u{0663}": "3",
+        "\u{0664}": "4",
+        "\u{0665}": "5",
+        "\u{0666}": "6",
+        "\u{0667}": "7",
+        "\u{0668}": "8",
+        "\u{0669}": "9",
+        "\u{066B}": "."
+    ]
+
     /// - Returns: String by replacing occurrences of Arabic-Indic Unicode Digits with regular Unicode Digits
     fileprivate class func replaceArabicIndicUnicodeIndicDigitsWithUnicodeDigits(from value: String) -> String {
-        /// A dictionary mapping a Unicode Arabic-Indic Digit key to a Unicode Digit value.
-        let arabicIndicDigitToDigitMap: [String: String] = [
-            "\u{0660}":"0",
-            "\u{0661}":"1",
-            "\u{0662}":"2",
-            "\u{0663}":"3",
-            "\u{0664}":"4",
-            "\u{0665}":"5",
-            "\u{0666}":"6",
-            "\u{0667}":"7",
-            "\u{0668}":"8",
-            "\u{0669}":"9",
-            "\u{066B}" :"."
-        ]
         return arabicIndicDigitToDigitMap
             .reduce(value) { (result, tuple) -> String in
                 return result.replacingOccurrences(of: tuple.key, with: tuple.value)
