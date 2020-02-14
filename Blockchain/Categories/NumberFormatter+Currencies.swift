@@ -60,7 +60,7 @@ extension NumberFormatter {
             fractionalPart = String(fractionalPart.dropFirst())
         }
         // Creates UInt64 from fractionalPart
-        let fractionalPartUInt: UInt64 = UInt64(fractionalPart)!
+        let fractionalPartUInt: UInt64 = UInt64(fractionalPart) ?? 0
 
         // IntegralPart
         let integralPart: String = String(components[0])
