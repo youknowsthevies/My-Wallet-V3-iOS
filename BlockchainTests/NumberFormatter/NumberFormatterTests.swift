@@ -17,7 +17,7 @@ extension Locale {
 
 class NumberFormatterTests: XCTestCase {
 
-    func testParseBitcoinValue() {
+    func testParseBitcoinValueFullStop() {
         let cases: [(String?, UInt64)] = [
             ("0", 0),
             (nil, 0),
@@ -34,7 +34,9 @@ class NumberFormatterTests: XCTestCase {
             ("12.01", 1_201_000_000),
             ("10.12345678", 1_012_345_678),
             ("123", 12_300_000_000),
-            ("123456789.12345678", 12_345_678_912_345_678)
+            ("123456789.12345678", 12_345_678_912_345_678),
+
+            ("123456789,12345678", 12_345_678_912_345_678)
         ]
         for (idx, test) in cases.enumerated() {
             let result = NumberFormatter.parseBitcoinValue(from: test.0)

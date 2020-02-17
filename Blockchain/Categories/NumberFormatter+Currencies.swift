@@ -28,7 +28,7 @@ extension NumberFormatter {
         let requestedAmountString = NumberFormatter.convert(decimalString: string)
         // Safe value should not be empty
         guard !requestedAmountString.isEmpty else { return 0 }
-        return parseValueBitcoin(string)
+        return parseValueBitcoin(requestedAmountString)
     }
 
     /// Parses a full stop '.' delimitered decimal string into a UInt64 satoshis value.
