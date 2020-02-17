@@ -20,12 +20,7 @@
 
     UIWindow *window = UIApplication.sharedApplication.keyWindow;
 
-    CGFloat safeAreaInsetTop;
-    if (@available(iOS 11.0, *)) {
-        safeAreaInsetTop = window.rootViewController.view.safeAreaInsets.top;
-    } else {
-        safeAreaInsetTop = 20;
-    }
+    CGFloat safeAreaInsetTop = window.rootViewController.view.safeAreaInsets.top;
 
     self.view.frame = CGRectMake(0, 0, window.frame.size.width, window.frame.size.height);
 

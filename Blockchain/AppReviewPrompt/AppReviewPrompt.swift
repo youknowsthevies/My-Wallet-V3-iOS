@@ -52,33 +52,6 @@ final class AppReviewPrompt: NSObject {
     }
 
     private func requestReview() {
-        if #available(iOS 10.3, *) {
-            SKStoreReviewController.requestReview()
-            return
-        }
-        let settings = BlockchainSettings.App.shared
-        if settings.dontAskUserToShowAppReviewPrompt {
-            Logger.shared.info("App review prompt will not show because the user does not want to be asked.")
-            return
-        }
-        let affirmativeAction = UIAlertAction(
-            title: LocalizationConstants.AppReviewFallbackPrompt.affirmativeActionTitle,
-            style: .default,
-            handler: { _ in
-                settings.dontAskUserToShowAppReviewPrompt = true
-                UIApplication.shared.openAppStore()
-        })
-        let secondaryAction = UIAlertAction(
-            title: LocalizationConstants.AppReviewFallbackPrompt.secondaryActionTitle,
-            style: .cancel,
-            handler: nil)
-        let tertiaryAction = UIAlertAction(title: LocalizationConstants.dontShowAgain, style: .cancel, handler: { _ in
-            settings.dontAskUserToShowAppReviewPrompt = true
-        })
-        AlertViewPresenter.shared.standardNotify(
-            message: LocalizationConstants.AppReviewFallbackPrompt.message,
-            title: LocalizationConstants.AppReviewFallbackPrompt.title,
-            actions: [affirmativeAction, secondaryAction, tertiaryAction]
-        )
+        SKStoreReviewController.requestReview()
     }
 }

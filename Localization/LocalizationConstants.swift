@@ -2618,25 +2618,6 @@ public struct LocalizationConstants {
         )
     }
 
-    public struct AppReviewFallbackPrompt {
-        public static let title = NSLocalizedString(
-            "Rate Blockchain Wallet",
-            comment: "The title of the fallback app review prompt."
-        )
-        public static let message = NSLocalizedString(
-            "Enjoying the Blockchain Wallet? Please take a moment to leave a review in the App Store and let others know about it.",
-            comment: "The message of the fallback app review prompt."
-        )
-        public static let affirmativeActionTitle = NSLocalizedString(
-            "Yes, rate Blockchain Wallet",
-            comment: "The title for the affirmative prompt action."
-        )
-        public static let secondaryActionTitle = NSLocalizedString(
-            "Ask Me Later",
-            comment: "The title for the secondary prompt action."
-        )
-    }
-
     public struct KYC {
         public static let welcome = NSLocalizedString("Welcome", comment: "Welcome")
         public static let welcomeMainText = NSLocalizedString(

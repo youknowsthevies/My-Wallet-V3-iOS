@@ -78,10 +78,7 @@
     [self setupBottomViews];
     [self selectDefaultDestination];
     
-    CGFloat imageWidth = IS_USING_SCREEN_SIZE_LARGER_THAN_5S ? 200 : IS_USING_SCREEN_SIZE_4S ? 120 : 150;
-    if (IS_USING_SCREEN_SIZE_4S && self.assetType == LegacyAssetTypeBitcoin) {
-        imageWidth = 100;
-    }
+    CGFloat imageWidth = IS_USING_SCREEN_SIZE_LARGER_THAN_5S ? 200 : 150;
     
     qrCodeMainImageView = [[UIImageView alloc] initWithFrame:CGRectMake((self.view.frame.size.width - imageWidth) / 2, 35, imageWidth, imageWidth)];
     qrCodeMainImageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -167,7 +164,7 @@
 
 - (void)setupBottomViews
 {
-    CGFloat containerHeightPlusButtonSpace = IS_USING_SCREEN_SIZE_4S ? BOTTOM_CONTAINER_HEIGHT_PLUS_BUTTON_SPACE_4S : BOTTOM_CONTAINER_HEIGHT_PLUS_BUTTON_SPACE_DEFAULT;
+    CGFloat containerHeightPlusButtonSpace = BOTTOM_CONTAINER_HEIGHT_PLUS_BUTTON_SPACE_DEFAULT;
     
     self.bottomContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.origin.y + self.view.frame.size.height - containerHeightPlusButtonSpace, self.view.frame.size.width, BOTTOM_CONTAINER_HEIGHT_PARTIAL)];
     self.bottomContainerView.clipsToBounds = YES;
@@ -358,7 +355,7 @@
     instructionsLabel.textColor = UIColor.gray5;
     instructionsLabel.numberOfLines = 0;
     instructionsLabel.font = [UIFont fontWithName:FONT_GILL_SANS_REGULAR size:FONT_SIZE_SMALL];
-    instructionsLabel.text = (IS_USING_SCREEN_SIZE_4S && self.assetType == LegacyAssetTypeBitcoin) ? nil : [LocalizationConstantsObjcBridge tapToCopyThisAddress];
+    instructionsLabel.text = [LocalizationConstantsObjcBridge tapToCopyThisAddress];
     [instructionsLabel sizeToFit];
     if (instructionsLabel.frame.size.height > 40) [instructionsLabel changeHeight:40];
     instructionsLabel.center = CGPointMake(self.view.frame.size.width/2, instructionsLabel.center.y);
@@ -367,8 +364,6 @@
     [self.view addSubview:self.headerView];
     
     if ([WalletManager.sharedInstance.wallet getActiveAccountsCount:self.assetType] > 0 || activeKeys.count > 0) {
-        
-        BOOL isUsing4SScreenSize = IS_USING_SCREEN_SIZE_4S;
         BOOL isUsing5SScreenSize = IS_USING_SCREEN_SIZE_5S;
         
         qrCodeMainImageView.image = [self.qrCodeGenerator qrImageFromAddress:self.mainAddress
@@ -377,20 +372,17 @@
                                                                includeScheme:NO];
 
         
-        if (!isUsing4SScreenSize) {
-            if (isUsing5SScreenSize) {
-                [qrCodeMainImageView changeYPosition:42];
-            } else {
-                [qrCodeMainImageView changeYPosition:57];
-            }
-            instructionsLabel.center = CGPointMake(self.headerView.center.x, qrCodeMainImageView.frame.origin.y/2);
+
+        if (isUsing5SScreenSize) {
+            [qrCodeMainImageView changeYPosition:42];
         } else {
-            [qrCodeMainImageView changeYPosition:instructionsLabel.frame.origin.y + instructionsLabel.frame.size.height + 5];
+            [qrCodeMainImageView changeYPosition:57];
         }
+        instructionsLabel.center = CGPointMake(self.headerView.center.x, qrCodeMainImageView.frame.origin.y/2);
         
         [self.headerView addSubview:qrCodeMainImageView];
         
-        CGFloat yOffset = isUsing4SScreenSize ? 4 : isUsing5SScreenSize ? 8 : 16;
+        CGFloat yOffset = isUsing5SScreenSize ? 8 : 16;
         self.mainAddressLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, qrCodeMainImageView.frame.origin.y + qrCodeMainImageView.frame.size.height + yOffset, self.view.frame.size.width - 40, 20)];
         
         self.mainAddressLabel.font = [UIFont fontWithName:FONT_MONTSERRAT_REGULAR size:FONT_SIZE_MEDIUM];

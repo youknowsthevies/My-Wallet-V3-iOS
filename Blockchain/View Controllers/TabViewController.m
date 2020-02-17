@@ -58,10 +58,7 @@
 {
     [super viewDidLayoutSubviews];
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
-    CGFloat safeAreaInsetBottom = 0;
-    if (@available(iOS 11.0, *)) {
-        safeAreaInsetBottom = window.rootViewController.view.safeAreaInsets.bottom;
-    }
+    CGFloat safeAreaInsetBottom = window.rootViewController.view.safeAreaInsets.bottom;
     _tabBarBottomConstraint.constant = safeAreaInsetBottom;
 }
 

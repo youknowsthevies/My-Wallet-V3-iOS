@@ -75,19 +75,7 @@ final class PinScreenViewController: BaseScreenViewController {
             self?.prepareForAppearance()
         }
     }
-    
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        
-        // PATCH: The reason for this is that on iOS 10 & iPhone 5 safe area in not supported,
-        // and using top margin layout guide doesn't work either. we have to make sure that
-        // The running iOS is below 11 and the device is iPhone 5.
-        if #available(*, iOS 11) {
-        } else if let topOffset = navigationController?.navigationBar.frame.maxY, Constants.Booleans.isUsingScreenSizeEqualIphone5S {
-            securePinViewTopConstraint.constant = topOffset + 5
-        }
-    }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         prepareForAppearance()

@@ -948,7 +948,6 @@
 		5138373B21025AD100767B2E /* alert-received.wav in Resources */ = {isa = PBXBuildFile; fileRef = 5138373921025AD100767B2E /* alert-received.wav */; };
 		5138375C21026BC900767B2E /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5138375B21026BC800767B2E /* Environment.swift */; };
 		513913F02081206C002578FD /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 513913EF2081206C002578FD /* UserDefaults.swift */; };
-		513C828620EBF30C00ECDE52 /* UIDevice+Biometrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 513C826B20EBF30C00ECDE52 /* UIDevice+Biometrics.swift */; };
 		515315F12056C0EE000161DF /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 23C543A21D0F4197007A5F58 /* libicucore.tbd */; };
 		515315F32056C1A0000161DF /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 515315F22056C1A0000161DF /* libcrypto.a */; };
 		51578AEA20B448BF00B0080A /* WalletKeyImportDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51578AE920B448BF00B0080A /* WalletKeyImportDelegate.swift */; };
@@ -3678,7 +3677,6 @@
 		5138375B21026BC800767B2E /* Environment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		513913EF2081206C002578FD /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		51392045205C60520025EE33 /* Cert */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Cert; sourceTree = "<group>"; };
-		513C826B20EBF30C00ECDE52 /* UIDevice+Biometrics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIDevice+Biometrics.swift"; sourceTree = "<group>"; };
 		51408D3134FF7E301E13A256 /* Pods-StellarKitTests.debug dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StellarKitTests.debug dev.xcconfig"; path = "Target Support Files/Pods-StellarKitTests/Pods-StellarKitTests.debug dev.xcconfig"; sourceTree = "<group>"; };
 		515315F22056C1A0000161DF /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "Submodules/OpenSSL-for-iPhone/lib/libcrypto.a"; sourceTree = "<group>"; };
 		51578AE920B448BF00B0080A /* WalletKeyImportDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletKeyImportDelegate.swift; sourceTree = "<group>"; };
@@ -10351,7 +10349,6 @@
 				51C2ADD520BDECE700D66108 /* String+EscapeJS.swift */,
 				AA3CA96721079B7500C2AD46 /* Strings.swift */,
 				511646E1208523E300C43522 /* UIDevice.swift */,
-				513C826B20EBF30C00ECDE52 /* UIDevice+Biometrics.swift */,
 				5114EA2220CD8B900098E26E /* UINavigationBar+TitleAttributes.swift */,
 				6055D371210F692D000B8E95 /* UIView.swift */,
 				51C9EBB520DBE4A700AB521D /* UIView+SafeAreaFrame.swift */,
@@ -19807,7 +19804,6 @@
 				C75CBD041F1FB12F00CACE0D /* BCTotalAmountView.m in Sources */,
 				606399F22110FC2D005B6DF5 /* SRLog.m in Sources */,
 				65B74F5E23E2FAFD008E08E3 /* SimpleBuyServiceProvider.swift in Sources */,
-				513C828620EBF30C00ECDE52 /* UIDevice+Biometrics.swift in Sources */,
 				3AA1A4AD23EDBA6B00143250 /* KYCUpdateMobileRequest.swift in Sources */,
 				C7F157C921795F6800A56376 /* SimpleListPresenter.swift in Sources */,
 				C732DF6B2201199000F3687A /* CameraPrompting.swift in Sources */,

@@ -45,12 +45,8 @@ public class BottomSheetView: UIView {
         let interitemPadding = ((buttonsHeight / actionHeight) - 1) * actionInterItemSpacing
         
         let titleHeight = NSAttributedString(string: model.title, attributes: [.font: titleFont()]).height
-        
-        if #available(iOS 11.0, *) {
-            return verticalPadding + interitemPadding + buttonsHeight + titleHeight + window.safeAreaInsets.bottom
-        } else {
-            return verticalPadding + interitemPadding + buttonsHeight + titleHeight
-        }
+
+        return verticalPadding + interitemPadding + buttonsHeight + titleHeight + window.safeAreaInsets.bottom
     }
     
     public override func layoutSubviews() {

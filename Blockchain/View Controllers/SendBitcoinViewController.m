@@ -130,17 +130,14 @@ BOOL displayingLocalSymbolSend;
 {
     [super viewDidLayoutSubviews];
 
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
-    CGFloat safeAreaInsetTop = 20;
-    CGFloat safeAreaInsetBottom = 0;
+    UIWindow *window = UIApplication.sharedApplication.keyWindow;
+    UIEdgeInsets safeAreaInsets = window.rootViewController.view.safeAreaInsets;
+    CGFloat availableHeight = window.bounds.size.height;
     CGFloat assetSelectorHeight = 36;
     CGFloat navBarHeight = [ConstantsObjcBridge defaultNavigationBarHeight];
     CGFloat tabBarHeight = 49;
-    if (@available(iOS 11.0, *)) {
-        safeAreaInsetTop = window.rootViewController.view.safeAreaInsets.top;
-        safeAreaInsetBottom = window.rootViewController.view.safeAreaInsets.bottom;
-    }
-    CGFloat topConstant = window.bounds.size.height - safeAreaInsetTop - navBarHeight - assetSelectorHeight - tabBarHeight - safeAreaInsetBottom;
+
+    CGFloat topConstant = availableHeight - safeAreaInsets.top - navBarHeight - assetSelectorHeight - tabBarHeight - safeAreaInsets.bottom;
     _continueButtonTopConstraint.constant = topConstant - BUTTON_HEIGHT - 20;
 }
 
@@ -1378,43 +1375,15 @@ BOOL displayingLocalSymbolSend;
 - (void)arrangeViewsToFeeMode
 {
     [UIView animateWithDuration:ANIMATION_DURATION animations:^{
-        
-        if (IS_USING_SCREEN_SIZE_4S) {
-            [self->lineBelowFromField changeYPosition:38];
-            
-            [self->toLabel changeYPosition:42];
-            [self->toField changeYPosition:38];
-            [self->addressBookButton changeYPosition:38];
-            [self->lineBelowToField changeYPosition:66];
-            
-            [self->bottomContainerView changeYPosition:83];
-            [self->btcLabel changeYPosition:-11];
-            [self->btcAmountField changeYPosition:-15];
-            [self->fiatLabel changeYPosition:-11];
-            [self->fiatAmountField changeYPosition:-15];
-            [self->lineBelowAmountFields changeYPosition:28];
-            
-            [self->feeTappableView changeYPosition:28];
-            [self->feeField changeYPosition:38];
-            [self->feeLabel changeYPosition:41];
-            [self.feeTypeLabel changeYPosition:37];
-            [self.feeDescriptionLabel changeYPosition:51];
-            [self.feeAmountLabel changeYPosition:51 - self.feeAmountLabel.frame.size.height/2];
-            [self->feeOptionsButton changeYPosition:37];
-            [self->lineBelowFeeField changeYPosition:76];
-            
-            [self->fundsAvailableButton changeYPosition:6];
-        }
-        
         self->feeLabel.hidden = NO;
         self->feeOptionsButton.hidden = self.assetType == LegacyAssetTypeBitcoinCash;
         self->lineBelowFeeField.hidden = NO;
-        
+
         self.feeAmountLabel.hidden = NO;
         self.feeDescriptionLabel.hidden = NO;
         self.feeTypeLabel.hidden = NO;
     }];
-    
+
     [self updateFeeLabels];
 }
 
@@ -1554,7 +1523,7 @@ BOOL displayingLocalSymbolSend;
 
 - (CGFloat)defaultYPositionForWarningLabel
 {
-    return IS_USING_SCREEN_SIZE_4S ? 76 : 112;
+    return 112;
 }
 
 - (void)disableToField
