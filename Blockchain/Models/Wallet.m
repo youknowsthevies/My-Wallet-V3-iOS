@@ -759,37 +759,12 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 #pragma mark Exchange
 
-    self.context[@"objc_on_get_exchange_trades_success"] = ^(NSArray *trades) {
-        [weakSelf on_get_exchange_trades_success:trades];
-    };
-    
-    self.context[@"objc_on_get_exchange_trades_error"] = ^(JSValue *result) {
-        [weakSelf on_get_exchange_trades_error:[result toString]];
-    };
-
-    self.context[@"objc_on_get_exchange_rate_success"] = ^(JSValue *rate) {
-        ExchangeRate *exchangeRate = [[ExchangeRate alloc] initWithJavaScriptValue:rate];
-        [weakSelf on_get_exchange_rate_success:exchangeRate];
-    };
-
-    self.context[@"objc_on_build_exchange_trade_success"] = ^(JSValue *from, JSValue *depositAmount, JSValue *fee, JSValue *rate, JSValue *minerFee, JSValue *withdrawalAmount, JSValue *expiration) {
-        [weakSelf on_build_exchange_trade_success_from:[from toString] depositAmount:[depositAmount toString] fee:[fee toNumber] rate:[rate toString] minerFee:[minerFee toString] withdrawalAmount:[withdrawalAmount toString] expiration:[expiration toDate]];
-    };
-
     self.context[@"objc_on_get_available_btc_balance_success"] = ^(JSValue *result) {
         [weakSelf on_get_available_btc_balance_success:[result toDictionary]];
     };
 
     self.context[@"objc_on_get_available_btc_balance_error"] = ^(JSValue *result) {
         [weakSelf on_get_available_balance_error:[result toString] symbol:CURRENCY_SYMBOL_BTC];
-    };
-
-    self.context[@"objc_on_shift_payment_success"] = ^(JSValue *result) {
-        [weakSelf on_shift_payment_success:[result toDictionary]];
-    };
-
-    self.context[@"objc_on_shift_payment_error"] = ^(JSValue *error) {
-        [weakSelf on_shift_payment_error:[error toDictionary]];
     };
 
     [self.context evaluateScript:[self getJSSource]];
@@ -1307,26 +1282,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
     
     [self.context evaluateScript:@"MyWalletPhone.getAccountInfoAndExchangeRates()"];
-}
-
-- (NSString *)countryCodeGuess
-{
-    if (![self isInitialized]) {
-        return nil;
-    }
-
-    return [[self.context evaluateScript:@"MyWalletPhone.countryCodeGuess()"] toString];
-}
-
-- (NSString *_Nullable)stateCodeGuess
-{
-    if (![self isInitialized]) {
-        return nil;
-    }
-
-    JSValue *stateCodeGuessValue = [self.context evaluateScript:@"MyWalletPhone.stateCodeGuess()"];
-    if ([stateCodeGuessValue isNull] || [stateCodeGuessValue isUndefined]) return nil;
-    return [stateCodeGuessValue toString];
 }
 
 - (NSString *)getEmail
@@ -2372,22 +2327,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 #pragma mark - Exchange
 
-- (NSArray *)availableUSStates
-{
-    if ([self isInitialized]) {
-        NSArray *states = [[self.context evaluateScript:@"MyWalletPhone.availableUSStates()"] toArray];
-        return states.count > 0 ? states : nil;
-    }
-
-    return nil;
-}
-
-- (void)getExchangeTrades
-{
-    self.isFetchingExchangeTrades = YES;
-     if ([self isInitialized]) [self.context evaluateScript:@"MyWalletPhone.getExchangeTrades()"];
-}
-
 - (BOOL)isDepositTransaction:(NSString *)txHash
 {
     if ([self isInitialized]) {
@@ -3373,7 +3312,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (void)on_get_account_info_success:(NSString *)accountInfo
 {
-    DLog(@"on_get_account_info");
+    DLog(@"on_get_account_info_success");
     self.accountInfo = [accountInfo getJSONObject];
     self.hasLoadedAccountInfo = YES;
     [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_KEY_GET_ACCOUNT_INFO_SUCCESS object:nil];
@@ -3844,55 +3783,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     self.bitcoinCashExchangeRates = rates;
 }
 
-- (void)on_get_exchange_trades_success:(NSArray *)trades
-{
-    NSMutableArray *exchangeTrades = [NSMutableArray new];
-    for (NSDictionary *trade in trades) {
-        ExchangeTrade *exchangeTrade = [ExchangeTrade fetchedTradeFromJSONDict:trade];
-        [exchangeTrades addObject:exchangeTrade];
-    }
-
-    self.isFetchingExchangeTrades = NO;
-    if ([self.delegate respondsToSelector:@selector(didGetExchangeTrades:)]) {
-        [self.delegate didGetExchangeTrades:exchangeTrades];
-    } else {
-        DLog(@"Error: delegate of class %@ does not respond to selector didGetExchangeTrades:!", [delegate class]);
-    }
-}
-
-- (void)on_get_exchange_trades_error:(NSString *)error
-{
-    self.isFetchingExchangeTrades = NO;
-    if ([self.delegate respondsToSelector:@selector(didFailToGetExchangeTrades:)]) {
-        [self.delegate didFailToGetExchangeTrades:error];
-    }
-}
-
-- (void)on_get_exchange_rate_success:(ExchangeRate *)exchangeRate
-{
-    NSDecimalNumber *hardLimitRate = exchangeRate.hardLimitRate;
-
-    NSDecimalNumber *fiatHardLimit = [NSDecimalNumber decimalNumberWithString:[[self.context evaluateScript:@"MyWalletPhone.fiatExchangeHardLimit()"] toString]];
-
-    NSNumberFormatter *numberFormatter = [NSNumberFormatter assetFormatterWithUSLocale];
-
-    NSString *hardLimit = [numberFormatter stringFromNumber:[fiatHardLimit decimalNumberByDividingBy:hardLimitRate]];
-
-    ExchangeRate *exchangeRateWithHardLimit = [[ExchangeRate alloc] initWithLimit: exchangeRate.limit
-                                                                    minimum: exchangeRate.minimum
-                                                                    minerFee: exchangeRate.minerFee
-                                                                    maxLimit: exchangeRate.maxLimit
-                                                                    rate: exchangeRate.rate
-                                                                    hardLimit: [NSDecimalNumber decimalNumberWithString:hardLimit]
-                                                                    hardLimitRate: nil];
-
-    if ([self.delegate respondsToSelector:@selector(didGetExchangeRate:)]) {
-        [self.delegate didGetExchangeRate:exchangeRateWithHardLimit];
-    } else {
-        DLog(@"Error: delegate of class %@ does not respond to selector didGetExchangeRate:!", [delegate class]);
-    }
-}
-
 - (void)on_get_available_btc_balance_success:(NSDictionary *)result
 {
     if ([self.delegate respondsToSelector:@selector(didGetAvailableBtcBalance:)]) {
@@ -3908,43 +3798,6 @@ NSString * const kLockboxInvitation = @"lockbox";
         [self.delegate didGetAvailableBtcBalance:nil];
     } else {
         [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:[NSString stringWithFormat:BC_STRING_ERROR_GETTING_BALANCE_ARGUMENT_ASSET_ARGUMENT_MESSAGE, currencySymbol, error] title:BC_STRING_ERROR in:nil handler:nil];
-    }
-}
-
-- (void)on_shift_payment_success:(NSDictionary *)result
-{
-    if ([self.delegate respondsToSelector:@selector(didShiftPayment)]) {
-        [self.delegate didShiftPayment];
-    } else {
-        DLog(@"Error: delegate of class %@ does not respond to selector didShiftPayment:!", [delegate class]);
-    }
-}
-
-- (void)on_shift_payment_error:(NSDictionary *)result
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[LoadingViewPresenter sharedInstance] hide];
-
-        NSString *errorMessage = [result objectForKey:DICTIONARY_KEY_MESSAGE];
-        [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:errorMessage title:BC_STRING_ERROR in:nil handler:nil];
-    });
-}
-
-- (void)on_build_exchange_trade_success_from:(NSString *)from depositAmount:(NSString *)depositAmount fee:(NSNumber *)fee rate:(NSString *)rate minerFee:(NSString *)minerFee withdrawalAmount:(NSString *)withdrawalAmount expiration:(NSDate *)expirationDate
-{
-    NSDictionary *tradeInfo = @{
-        DICTIONARY_KEY_DEPOSIT_AMOUNT : depositAmount,
-        DICTIONARY_KEY_FEE : [[from lowercaseString] isEqualToString:[CURRENCY_SYMBOL_ETH lowercaseString]] ? [fee stringValue] : [NSNumberFormatter satoshiToBTC:[fee longLongValue]],
-        DICTIONARY_KEY_RATE : rate,
-        DICTIONARY_KEY_MINER_FEE : minerFee,
-        DICTIONARY_KEY_WITHDRAWAL_AMOUNT : withdrawalAmount,
-        DICTIONARY_KEY_EXPIRATION_DATE : expirationDate
-    };
-
-    if ([self.delegate respondsToSelector:@selector(didBuildExchangeTrade:)]) {
-        [self.delegate didBuildExchangeTrade:tradeInfo];
-    } else {
-        DLog(@"Error: delegate of class %@ does not respond to selector didBuildExchangeTrade:!", [delegate class]);
     }
 }
 

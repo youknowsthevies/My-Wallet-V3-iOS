@@ -672,12 +672,6 @@ MyWalletPhone.getLegacyArchivedAddresses = function() {
     });
 };
 
-MyWalletPhone.getSessionToken = function() {
-    WalletNetwork.obtainSessionToken().then(function (sessionToken) {
-      objc_on_get_session_token(sessionToken);
-    });
-}
-
 MyWalletPhone.login = function(user_guid, shared_key, resend_code, inputedPassword, sessionToken, twoFACode, twoFAType, success, needs_two_factor_code, wrong_two_factor_code, other_error) {
 
     // Timing
@@ -1933,261 +1927,6 @@ MyWalletPhone.getECDSA = function() {
     return ECDSA;
 }
 
-// Contacts
-
-MyWalletPhone.loadContacts = function() {
-    console.log('Loading contacts');
-    MyWallet.wallet.loadContacts();
-}
-
-MyWalletPhone.loadContactsThenGetMessages = function() {
-    console.log('Loading contacts then getting messages');
-    MyWallet.wallet.loadContacts().then(function(discard) {
-        MyWalletPhone.getMessages(true);
-    });
-}
-
-MyWalletPhone.getContacts = function() {
-    console.log('Getting contacts');
-    console.log(JSON.stringify(MyWallet.wallet.contacts.list));
-    var list = MyWallet.wallet.contacts.list;
-
-    var listToReturn = Blockchain.R.map(function(contact) {
-      return {
-        company: contact.company,
-        email: contact.email,
-        id: contact.id,
-        invitationReceived: contact.invitationReceived,
-        invitationSent: contact.invitationSent,
-        mdid: contact.mdid,
-        name: contact.name,
-        senderName: contact.senderName,
-        note: contact.note,
-        pubKey: contact.pubKey,
-        surname: contact.surname,
-        trusted: contact.trusted,
-        xpub: contact.xpub,
-        facilitatedTxList: contact.facilitatedTxList
-      }
-    }, list);
-
-    return listToReturn;
-}
-
-MyWalletPhone.getSaveContactsFunction = function() {
-    var save = function(info) {
-        return MyWallet.wallet.contacts.save().then(function(discard) {
-            return info;
-        });
-    }
-
-    return save;
-}
-
-MyWalletPhone.createContact = function(name, id) {
-
-    var success = function(invitation) {
-        objc_on_create_invitation_success(invitation);
-    };
-
-    var error = function(e) {
-        objc_on_create_invitation_error(e);
-        onsole.log('Error creating contact');
-        console.log(e);
-    };
-
-    var save = MyWalletPhone.getSaveContactsFunction();
-
-    MyWallet.wallet.contacts.createInvitation({name: name}, {name: id, senderName: name}).then(save).then(success).catch(error);
-}
-
-MyWalletPhone.sendDeclination = function(userId, txIdentifier) {
-
-    var success = function() {
-        objc_on_send_declination_success();
-    };
-
-    var error = function(e) {
-        objc_on_send_declination_error();
-        console.log('Error sending declination');
-        console.log(e);
-    };
-
-    MyWallet.wallet.contacts.sendDeclination(userId, txIdentifier).then(success).catch(error);
-}
-
-MyWalletPhone.sendCancellation = function(userId, txIdentifier) {
-
-    var success = function() {
-        objc_on_send_cancellation_success();
-    };
-
-    var error = function(e) {
-        objc_on_send_cancellation_error();
-        console.log('Error sending cancellation');
-        console.log(e);
-    };
-
-    MyWallet.wallet.contacts.sendCancellation(userId, txIdentifier).then(success).catch(error);
-}
-
-MyWalletPhone.readInvitation = function(invitation, invitationString) {
-    objc_on_read_invitation_success(invitation, invitationString);
-}
-
-MyWalletPhone.completeRelation = function(invitation) {
-
-    var success = function() {
-        objc_on_complete_relation_success();
-    };
-
-    var error = function(e) {
-        objc_on_complete_relation_error();
-        console.log('Error completing relation');
-        console.log(e);
-    };
-
-    MyWallet.wallet.contacts.completeRelation(invitation).then(success).catch(error);
-}
-
-MyWalletPhone.acceptRelation = function(invitation, name, identifier) {
-
-    var success = function() {
-        objc_on_accept_relation_success(name, identifier);
-    };
-
-    var error = function(e) {
-        objc_on_accept_relation_error(name);
-        console.log('Error accepting relation');
-        console.log(e);
-    };
-
-    MyWallet.wallet.contacts.acceptRelation({name: name, invitationReceived:identifier}).then(success).catch(error);
-}
-
-MyWalletPhone.fetchExtendedPublicKey = function(contactIdentifier) {
-
-    var success = function(xpub) {
-        objc_on_fetch_xpub_success(xpub);
-    };
-
-    var save = MyWalletPhone.getSaveContactsFunction();
-
-    MyWallet.wallet.contacts.fetchXPUB(contactIdentifier).then(save).then(success).catch(function(e){console.log('Error fetching xpub');console.log(e)});
-}
-
-MyWalletPhone.getMessages = function(isFirstLoad) {
-
-    var success = function(messages) {
-        console.log('digested new messages');
-        objc_on_get_messages_success(messages, isFirstLoad);
-    };
-
-    var error = function(error) {
-        console.log('Error getting messages');
-        console.log(error);
-        objc_on_get_messages_error(error);
-    };
-
-    if (MyWallet.wallet.contacts) {
-        MyWallet.wallet.contacts.digestNewMessages().then(success).catch(error);
-    } else {
-        console.log('MyWalletPhone.getMessages error: contacts not loaded');
-    }
-}
-
-MyWalletPhone.changeName = function(newName, identifier) {
-
-    var save = MyWalletPhone.getSaveContactsFunction();
-    var success = function(info) {
-        objc_on_change_contact_name_success(info);
-    };
-
-    MyWallet.wallet.contacts.list[identifier].name = newName;
-
-    save().then(success);
-}
-
-MyWalletPhone.deleteContact = function(identifier) {
-
-    var save = MyWalletPhone.getSaveContactsFunction();
-    var success = function(info) {
-        objc_on_delete_contact_success(info);
-    };
-
-    MyWallet.wallet.contacts.delete(identifier);
-
-    save().then(success);
-}
-
-MyWalletPhone.deleteContactAfterStoringInfo = function(identifier) {
-
-    var save = MyWalletPhone.getSaveContactsFunction();
-    var success = function(info) {
-        console.log('Deleted contact because user did not complete create contact sequence');
-        objc_on_delete_contact_after_storing_info_success(info);
-    };
-
-    var contactInfo;
-
-    var filtered = Blockchain.R.filter(function(contact) {
-        if (contact.invitationSent == identifier) {
-             contactInfo = contact;
-             return true;
-           }
-           return false;
-        }, MyWallet.wallet.contacts.list);
-
-    MyWallet.wallet.contacts.delete(contactInfo.id);
-
-    save().then(success);
-}
-
-MyWalletPhone.sendPaymentRequest = function(userId, intendedAmount, requestIdentifier, note, initiatorSource) {
-
-    var success = function(info) {
-        objc_on_send_payment_request_success(info, intendedAmount, userId, requestIdentifier);
-    };
-
-    var error = function(error) {
-        console.log('Error sending payment request')
-        console.log(error);
-        objc_on_send_payment_request_error(error);
-    };
-
-    MyWallet.wallet.contacts.sendPR(userId, intendedAmount, requestIdentifier, note, initiatorSource).then(success).catch(error);
-}
-
-MyWalletPhone.requestPaymentRequest = function(userId, intendedAmount, requestIdentifier, note) {
-
-    var success = function(info) {
-        objc_on_request_payment_request_success(info, userId);
-    };
-
-    var error = function(error) {
-        console.log('Error requesting payment request')
-        console.log(error);
-        objc_on_request_payment_request_error(error);
-    };
-
-    MyWallet.wallet.contacts.sendRPR(userId, intendedAmount, requestIdentifier, note).then(success).catch(error);
-}
-
-MyWalletPhone.sendPaymentRequestResponse = function(userId, txHash, txIdentifier) {
-
-    var success = function(info) {
-        objc_on_send_payment_request_response_success(info);
-    };
-
-    var error = function(error) {
-        console.log('Error sending payment request response')
-        console.log(error);
-        objc_on_send_payment_request_response_error(error);
-    };
-
-    MyWallet.wallet.contacts.sendPRR(userId, txHash, txIdentifier).then(success).catch(function(e){error});
-}
-
 MyWalletPhone.changeNetwork = function(newNetwork) {
     console.log('Changing network to ');
     console.log(newNetwork);
@@ -2322,14 +2061,6 @@ MyWalletPhone.isBuyFeatureEnabled = function () {
   return userHasAccess && wallet.external && canBuy(wallet.accountInfo, options)
 }
 
-MyWalletPhone.getNetworks = function() {
-    return Networks;
-}
-
-MyWalletPhone.getECDSA = function() {
-    return ECDSA;
-}
-
 function WalletOptions (api) {
   var optionsCache = {};
 
@@ -2345,8 +2076,7 @@ function WalletOptions (api) {
   };
 
   this.getFileName = function () {
-    var base = 'wallet-options';
-    return base + '.json';
+    return 'wallet-options.json';
   };
 }
 
@@ -2376,12 +2106,12 @@ MyWalletPhone.getEthExchangeRate = function(currencyCode) {
 
 MyWalletPhone.createEthAccountIfNeeded = function(secondPassword) {
     var eth = MyWallet.wallet.eth;
-    if (eth && eth.defaultAccount) { 
+    if (eth && eth.defaultAccount) {
         return Promise.resolve();
     };
     if (!MyWallet.getIsInitialized()) {
         return Promise.reject('Failed to create account.');
-    };  
+    };
     if (MyWallet.wallet.isDoubleEncrypted) {
         if (secondPassword) {
             return eth.createAccount(void 0, secondPassword);
@@ -2684,268 +2414,8 @@ MyWalletPhone.getMobileMessage = function(languageCode) {
     return notice;
 }
 
-MyWalletPhone.getExchangeTrades = function() {
-
-    var success = function() {
-      var trades = MyWallet.wallet.shapeshift.trades.map(function(trade){
-        return {
-            hashIn : trade.hashIn,
-            hashOut : trade.hashOut,
-            quote : trade.quote.toJSON(),
-            status : trade.status,
-            time : trade.time
-        }
-      }).sort(function(a,b) {
-        return new Date(b.time) - new Date(a.time);
-      });
-
-      objc_on_get_exchange_trades_success(trades);
-    }
-
-    var error = function(e) {
-        console.log('Error getting trades');
-        objc_on_get_exchange_trades_error(JSON.stringify(e))
-    }
-
-    return MyWallet.wallet.shapeshift.fetchFullTrades().then(success).catch(error);
-}
-
-MyWalletPhone.getRate = function(coinPair) {
-
-    var success = function(result) {
-        const from = coinPair.split('_')[0];
-
-        const fetchRateSuccess = function(hardLimit) {
-            var currencyCode = MyWalletPhone.currencyCodeForHardLimit();
-            result.hardLimitRate = hardLimit[currencyCode].last;
-            objc_on_get_exchange_rate_success(result);
-        };
-
-        MyWalletPhone.getExchangeRateForHardLimit(from).then(fetchRateSuccess);
-    }
-
-    var error = function(e) {
-        console.log('Error getting rate');
-        console.log(e);
-    }
-
-    MyWallet.wallet.shapeshift.getRate(coinPair).then(success).catch(error);
-}
-
-MyWalletPhone.getShapeshiftApiKey = function() {
-    return walletOptions.getValue().shapeshift.apiKey;
-}
-
-MyWalletPhone.getAvailableBtcBalanceForAccount = function(accountIndex) {
-
-    var success = function(result) {
-        objc_on_get_available_btc_balance_success(result);
-    }
-
-    var error = function(e) {
-        console.log('Error getting btc balance');
-        console.log(e);
-        objc_on_get_available_btc_balance_error(e);
-    }
-
-    MyWallet.wallet.hdwallet.accounts[accountIndex].getAvailableBalance('priority').then(success).catch(error);
-}
-
 MyWalletPhone.getLabelForEthAccount = function() {
     return MyWallet.wallet.eth.defaultAccount.label;
-}
-
-MyWalletPhone.buildExchangeTrade = function(from, to, coinPair, amount, fee) {
-
-    var success = function(depositAmount, fee, rate, minerFee, withdrawalAmount, expiration) {
-        objc_on_build_exchange_trade_success(coins[0], depositAmount, fee, rate, minerFee, withdrawalAmount, expiration);
-    }
-
-    var error = function(e) {
-        console.log('Error building exchange trade');
-        console.log(e);
-    }
-
-    var buildPayment = function(quote) {
-        var expiration = quote.expires;
-        currentShiftPayment = MyWallet.wallet.shapeshift.buildPayment(quote, Number(fee), fromArg);
-
-        var depositAmount = currentShiftPayment.quote.depositAmount;
-        var rate = currentShiftPayment.quote.rate;
-        var minerFee = currentShiftPayment.quote.minerFee;
-        var withdrawalAmount = currentShiftPayment.quote.withdrawalAmount;
-
-        currentShiftPayment.getFee().then(function(finalFee) {
-          console.log('payment got fee');
-          console.log(finalFee);
-          success(depositAmount, finalFee, rate, minerFee, withdrawalAmount, expiration);
-        });
-    };
-
-    var coins = coinPair.split('_');
-
-    var fromArg;
-    var fromSymbol = coins[0];
-    if (fromSymbol == 'btc') {
-        fromArg = MyWallet.wallet.hdwallet.accounts[from];
-    } else if (fromSymbol == 'eth') {
-        fromArg = MyWallet.wallet.eth.defaultAccount;
-    } else if (fromSymbol == 'bch') {
-        fromArg = MyWallet.wallet.bch.accounts[from];
-    } else {
-        console.log('Error building trade: unsupported asset type');
-    }
-
-    var toArg;
-    var toSymbol = coins[1];
-    if (toSymbol == 'btc') {
-        toArg = MyWallet.wallet.hdwallet.accounts[to];
-    } else if (toSymbol == 'eth') {
-        toArg = MyWallet.wallet.eth.defaultAccount;
-    } else if (toSymbol == 'bch') {
-        toArg = MyWallet.wallet.bch.accounts[to];
-    } else {
-        console.log('Error building trade: unsupported asset type');
-    }
-
-    MyWallet.wallet.shapeshift.getQuote(fromArg, toArg, amount).then(buildPayment).catch(error);
-}
-
-MyWalletPhone.shiftPayment = function() {
-
-    var success = function(result) {
-        console.log('shift complete');
-        console.log(JSON.stringify(result));
-        if (result.fromCurrency == 'eth') {
-            MyWalletPhone.recordLastTransaction(result.depositHash);
-        }
-        objc_on_shift_payment_success();
-    }
-
-    var error = function(e) {
-        console.log('Error shifting payment');
-        console.log(JSON.stringify(e));
-        objc_on_shift_payment_error(e);
-    }
-
-    if (MyWallet.wallet.isDoubleEncrypted) {
-        MyWalletPhone.getSecondPassword(function (pw) {
-            MyWallet.wallet.shapeshift.shift(currentShiftPayment, pw).then(success).catch(error);
-        });
-    }
-    else {
-        MyWallet.wallet.shapeshift.shift(currentShiftPayment).then(success).catch(error);
-    }
-}
-
-MyWalletPhone.isExchangeEnabled = function() {
-    var showShapeshift = walletOptions.getValue().ios.showShapeshift;
-    return MyWalletPhone.isCountryGuessWhitelistedForShapeshift() && MyWalletPhone.isStateGuessWhitelistedForShapeshift() && showShapeshift;
-}
-
-MyWalletPhone.isStateGuessWhitelistedForShapeshift = function() {
-    var state = MyWallet.wallet.accountInfo.stateCodeGuess;
-    var statesWhitelist = walletOptions.getValue().shapeshift.statesWhitelist;
-    return !state ? true : statesWhitelist.indexOf(state) > -1;
-}
-
-MyWalletPhone.isCountryGuessWhitelistedForShapeshift = function() {
-    var country = MyWallet.wallet.accountInfo.countryCodeGuess;
-    var countriesBlacklist = walletOptions.getValue().shapeshift.countriesBlacklist;
-    var isBlacklisted = countriesBlacklist.indexOf(country) > -1;
-    return !isBlacklisted;
-}
-
-MyWalletPhone.countryCodeGuess = function() {
-    var accountInfo = MyWallet.wallet.accountInfo;
-    var codeGuess = accountInfo && accountInfo.countryCodeGuess;
-    return codeGuess;
-}
-
-MyWalletPhone.stateCodeGuess = function() {
-    var accountInfo = MyWallet.wallet.accountInfo;
-    return accountInfo && accountInfo.stateCodeGuess;
-}
-
-MyWalletPhone.availableUSStates = function() {
-    var codeGuess = MyWalletPhone.countryCodeGuess();
-    var storedState = MyWallet.wallet.shapeshift.USAState;
-
-    if (codeGuess === 'US' && !storedState) {
-        return [{'Name': 'Alabama', 'Code': 'AL'},
-                {'Name': 'Alaska', 'Code': 'AK'},
-                {'Name': 'American Samoa', 'Code': 'AS'},
-                {'Name': 'Arizona', 'Code': 'AZ'},
-                {'Name': 'Arkansas', 'Code': 'AR'},
-                {'Name': 'California', 'Code': 'CA'},
-                {'Name': 'Colorado', 'Code': 'CO'},
-                {'Name': 'Connecticut', 'Code': 'CT'},
-                {'Name': 'Delaware', 'Code': 'DE'},
-                {'Name': 'District Of Columbia', 'Code': 'DC'},
-                {'Name': 'Federated States Of Micronesia', 'Code': 'FM'},
-                {'Name': 'Florida', 'Code': 'FL'},
-                {'Name': 'Georgia', 'Code': 'GA'},
-                {'Name': 'Guam', 'Code': 'GU'},
-                {'Name': 'Hawaii', 'Code': 'HI'},
-                {'Name': 'Idaho', 'Code': 'ID'},
-                {'Name': 'Illinois', 'Code': 'IL'},
-                {'Name': 'Indiana', 'Code': 'IN'},
-                {'Name': 'Iowa', 'Code': 'IA'},
-                {'Name': 'Kansas', 'Code': 'KS'},
-                {'Name': 'Kentucky', 'Code': 'KY'},
-                {'Name': 'Louisiana', 'Code': 'LA'},
-                {'Name': 'Maine', 'Code': 'ME'},
-                {'Name': 'Marshall Islands', 'Code': 'MH'},
-                {'Name': 'Maryland', 'Code': 'MD'},
-                {'Name': 'Massachusetts', 'Code': 'MA'},
-                {'Name': 'Michigan', 'Code': 'MI'},
-                {'Name': 'Minnesota', 'Code': 'MN'},
-                {'Name': 'Mississippi', 'Code': 'MS'},
-                {'Name': 'Missouri', 'Code': 'MO'},
-                {'Name': 'Montana', 'Code': 'MT'},
-                {'Name': 'Nebraska', 'Code': 'NE'},
-                {'Name': 'Nevada', 'Code': 'NV'},
-                {'Name': 'New Hampshire', 'Code': 'NH'},
-                {'Name': 'New Jersey', 'Code': 'NJ'},
-                {'Name': 'New Mexico', 'Code': 'NM'},
-                {'Name': 'New York', 'Code': 'NY'},
-                {'Name': 'North Carolina', 'Code': 'NC'},
-                {'Name': 'North Dakota', 'Code': 'ND'},
-                {'Name': 'Northern Mariana Islands', 'Code': 'MP'},
-                {'Name': 'Ohio', 'Code': 'OH'},
-                {'Name': 'Oklahoma', 'Code': 'OK'},
-                {'Name': 'Oregon', 'Code': 'OR'},
-                {'Name': 'Palau', 'Code': 'PW'},
-                {'Name': 'Pennsylvania', 'Code': 'PA'},
-                {'Name': 'Puerto Rico', 'Code': 'PR'},
-                {'Name': 'Rhode Island', 'Code': 'RI'},
-                {'Name': 'South Carolina', 'Code': 'SC'},
-                {'Name': 'South Dakota', 'Code': 'SD'},
-                {'Name': 'Tennessee', 'Code': 'TN'},
-                {'Name': 'Texas', 'Code': 'TX'},
-                {'Name': 'Utah', 'Code': 'UT'},
-                {'Name': 'Vermont', 'Code': 'VT'},
-                {'Name': 'Virgin Islands', 'Code': 'VI'},
-                {'Name': 'Virginia', 'Code': 'VA'},
-                {'Name': 'Washington', 'Code': 'WA'},
-                {'Name': 'West Virginia', 'Code': 'WV'},
-                {'Name': 'Wisconsin', 'Code': 'WI'},
-                {'Name': 'Wyoming', 'Code': 'WY'}];
-    } else {
-        return [];
-    }
-}
-
-MyWalletPhone.isStateWhitelistedForShapeshift = function(stateCode) {
-    var states = walletOptions.getValue().shapeshift.statesWhitelist;
-    return states.indexOf(stateCode) > -1;
-}
-
-MyWalletPhone.setStateForShapeshift = function(name, code) {
-    MyWallet.wallet.shapeshift.setUSAState({
-       'Name': name,
-       'Code': code
-    });
 }
 
 MyWalletPhone.isDepositTransaction = function(txHash) {
@@ -2954,19 +2424,6 @@ MyWalletPhone.isDepositTransaction = function(txHash) {
 
 MyWalletPhone.isWithdrawalTransaction = function(txHash) {
     return MyWallet.wallet.shapeshift.isWithdrawalTx(txHash);
-}
-
-MyWalletPhone.getExchangeRateForHardLimit = function(assetType) {
-    var currencyCode = MyWalletPhone.currencyCodeForHardLimit();
-    return BlockchainAPI.getExchangeRate(currencyCode, assetType);
-}
-
-MyWalletPhone.currencyCodeForHardLimit = function() {
-    return MyWallet.wallet.accountInfo.countryCodeGuess == 'US' ? 'USD' : 'EUR';
-}
-
-MyWalletPhone.fiatExchangeHardLimit = function() {
-    return walletOptions.getValue().shapeshift.upperLimit;
 }
 
 MyWalletPhone.bch = {
@@ -3163,7 +2620,7 @@ MyWalletPhone.bch = {
         console.log('Changing bch payment from account');
         var bchAccount = MyWallet.wallet.bch.accounts[from];
         currentBitcoinCashPayment = bchAccount.createPayment();
-1
+
         bchAccount.getAvailableBalance(this.feePerByte()).then(function(balance) {
             var fee = balance.sweepFee;
             var maxAvailable = balance.amount;
@@ -3287,11 +2744,11 @@ MyWalletPhone.coinify = {
                objc_saveCoinifyMetadata_error(JSON.stringify(e))
         });
     },
-    
+
     getCoinifyID: function() {
         return MyWallet.wallet.external.coinify._user;
     },
-    
+
     getOfflineToken: function() {
         var coinify = MyWallet.wallet.external.coinify
         return coinify._offlineToken;

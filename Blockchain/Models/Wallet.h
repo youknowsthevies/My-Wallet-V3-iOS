@@ -134,12 +134,7 @@
 - (void)didSendEther;
 - (void)didErrorDuringEtherSend:(NSString *)error;
 - (void)didGetEtherAddressWithSecondPassword;
-- (void)didGetExchangeTrades:(NSArray *)trades;
-- (void)didFailToGetExchangeTrades:(NSString *)errorDescription;
-- (void)didGetExchangeRate:(ExchangeRate *)result;
 - (void)didGetAvailableBtcBalance:(NSDictionary *)result;
-- (void)didBuildExchangeTrade:(NSDictionary *)tradeInfo;
-- (void)didShiftPayment;
 - (void)didCreateEthAccountForExchange;
 - (void)didFetchBitcoinCashHistory;
 - (void)walletDidGetAccountInfo:(Wallet *)wallet;
@@ -181,7 +176,6 @@
 
 @property BOOL isFilteringTransactions;
 @property BOOL isFetchingTransactions;
-@property BOOL isFetchingExchangeTrades;
 @property BOOL isSyncing;
 @property BOOL isNew;
 @property NSString *twoFactorInput;
@@ -362,7 +356,6 @@
 - (BOOL)getEmailVerifiedStatus;
 
 - (void)getAccountInfoAndExchangeRates;
-- (NSString *_Nullable)countryCodeGuess;
 
 - (void)changeEmail:(NSString *)newEmail;
 - (void)resendVerificationEmail:(NSString *)email;
@@ -446,7 +439,6 @@
 
 // Exchange
 - (void)createEthAccountForExchange:(NSString *)secondPassword;
-- (void)getExchangeTrades;
 - (BOOL)isDepositTransaction:(NSString *)txHash;
 - (BOOL)isWithdrawalTransaction:(NSString *)txHash;
 
