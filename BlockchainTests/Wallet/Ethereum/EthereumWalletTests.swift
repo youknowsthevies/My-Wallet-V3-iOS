@@ -31,7 +31,7 @@ class EthereumWalletTests: XCTestCase {
         
         legacyWalletMock = MockLegacyEthereumWallet()
         // Hack to make things compile
-        subject = EthereumWallet(wallet: legacyWalletMock)
+        subject = EthereumWallet(schedulerType: scheduler!, wallet: legacyWalletMock)
         _ = subject.walletLoaded().subscribeOn(scheduler)
     }
 
@@ -61,7 +61,11 @@ class EthereumWalletTests: XCTestCase {
             .completed(200)
         )
         
-        XCTAssertEqual(result.events, expectedEvents)
+        let expectedElement = expectedEvents[0].value.element
+        XCTAssertEqual(expectedName, expectedElement)
+        
+        let resultElement = result.events[0].value.element
+        XCTAssertEqual(resultElement, expectedElement)
     }
 
     func test_wallet_address() {
@@ -83,8 +87,12 @@ class EthereumWalletTests: XCTestCase {
             ),
             .completed(200)
         )
+
+        let expectedElement = expectedEvents[0].value.element
+        XCTAssertEqual(expectedAddress, expectedElement)
         
-        XCTAssertEqual(result.events, expectedEvents)
+        let resultElement = result.events[0].value.element
+        XCTAssertEqual(resultElement, expectedElement)
     }
     
     func test_wallet_account() {

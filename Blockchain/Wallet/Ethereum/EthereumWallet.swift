@@ -45,6 +45,9 @@ public class EthereumWallet: NSObject {
     private weak var wallet: WalletAPI?
     private let walletOptionsService: WalletOptionsAPI
     
+    /// NOTE: This is to fix flaky tests - interaction with `Wallet` should be performed on the main scheduler
+    private let schedulerType: SchedulerType
+    
     /// This is lazy because we got a massive retain cycle, and injecting using `EthereumWallet` initializer
     /// overflows the function stack with initializers that call one another
     private lazy var dependencies: ETHDependencies = ETHServiceProvider.shared.services
@@ -62,13 +65,20 @@ public class EthereumWallet: NSObject {
         
     private let dispatcher: Dispatcher
     
-    @objc convenience public init(legacyWallet: Wallet) {
-        self.init(wallet: legacyWallet)
+    @objc
+    convenience public init(legacyWallet: Wallet) {
+        self.init(schedulerType: MainScheduler.instance, wallet: legacyWallet)
     }
     
-    init(walletOptionsService: WalletOptionsAPI = WalletService.shared,
+    convenience public init(schedulerType: SchedulerType, legacyWallet: Wallet) {
+        self.init(schedulerType: schedulerType, wallet: legacyWallet)
+    }
+    
+    init(schedulerType: SchedulerType = MainScheduler.instance,
+         walletOptionsService: WalletOptionsAPI = WalletService.shared,
          wallet: WalletAPI,
          dispatcher: Dispatcher = EthereumJSInteropDispatcher.shared) {
+        self.schedulerType = schedulerType
         self.walletOptionsService = walletOptionsService
         self.wallet = wallet
         self.dispatcher = dispatcher
@@ -466,7 +476,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
                 })
                 return Disposables.create()
             }
-            .subscribeOn(MainScheduler.instance)
+            .subscribeOn(schedulerType)
     }
     
     private func address(secondPassword: String? = nil) -> Single<String> {
@@ -483,7 +493,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
                 })
                 return Disposables.create()
             }
-            .subscribeOn(MainScheduler.instance)
+            .subscribeOn(schedulerType)
     }
                 
     private func fetchHistory(fromCache: Bool) -> Single<Void> {
