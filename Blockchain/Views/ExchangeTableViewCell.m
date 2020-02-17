@@ -48,12 +48,14 @@
     if (BlockchainSettings.sharedAppInstance.symbolLocal) {
         NSString *lowercaseWithdrawalCurrencySymbol = [[trade withdrawalCurrency] lowercaseString];
         if ([lowercaseWithdrawalCurrencySymbol isEqualToString:[CURRENCY_SYMBOL_BTC lowercaseString]]) {
-            amountString = [NSNumberFormatter formatMoney:ABS([NSNumberFormatter parseBtcValueFromString:[trade.withdrawalAmount stringValue]])];
+            uint64_t withdrawalAmount = [NSNumberFormatter parseBitcoinValueFrom:[trade.withdrawalAmount stringValue]];
+            amountString = [NSNumberFormatter formatMoney:ABS(withdrawalAmount)];
         } else if ([lowercaseWithdrawalCurrencySymbol isEqualToString:[CURRENCY_SYMBOL_ETH lowercaseString]]) {
             TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
             amountString = [NSNumberFormatter formatEthWithLocalSymbol:[trade.withdrawalAmount stringValue] exchangeRate:tabControllerManager.latestEthExchangeRate];
         } else if ([lowercaseWithdrawalCurrencySymbol isEqualToString:[CURRENCY_SYMBOL_BCH lowercaseString]]) {
-            amountString = [NSNumberFormatter formatBchWithSymbol:ABS([NSNumberFormatter parseBtcValueFromString:[trade.withdrawalAmount stringValue]])];
+            uint64_t withdrawalAmount = [NSNumberFormatter parseBitcoinValueFrom:[trade.withdrawalAmount stringValue]];
+            amountString = [NSNumberFormatter formatBchWithSymbol:ABS(withdrawalAmount)];
         } else {
             DLog(@"Warning: unsupported withdrawal currency for trade: %@", [trade withdrawalCurrency]);
         }

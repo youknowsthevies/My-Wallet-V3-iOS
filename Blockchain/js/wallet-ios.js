@@ -2194,28 +2194,6 @@ MyWalletPhone.changeNetwork = function(newNetwork) {
     Blockchain.constants.NETWORK = newNetwork;
 }
 
-MyWalletPhone.parseValueBitcoin = function(valueString) {
-    valueString = valueString.toString();
-    var valueComp = valueString.split('.');
-    var integralPart = valueComp[0];
-    var fractionalPart = valueComp[1] || '0';
-    while (fractionalPart.length < 8) fractionalPart += '0';
-    fractionalPart = fractionalPart.replace(/^0+/g, '');
-    var value = BigInteger.valueOf(parseInt(integralPart, 10));
-    value = value.multiply(BigInteger.valueOf(objc_get_satoshi()));
-    value = value.add(BigInteger.valueOf(parseInt(fractionalPart, 10)));
-    return value;
-}
-
-// The current 'shift' value - BTC = 1, mBTC = 3, uBTC = 6
-function sShift (conversion) {
-    return (objc_get_satoshi() / conversion).toString().length - 1;
-}
-
-MyWalletPhone.precisionToSatoshiBN = function (x, conversion) {
-    return MyWalletPhone.parseValueBitcoin(x).divide(BigInteger.valueOf(Math.pow(10, sShift(conversion).toString())));
-}
-
 MyWalletPhone.getExchangeAccount = function () {
     var sfox = MyWallet.wallet.external.sfox;
     var coinify = MyWallet.wallet.external.coinify;

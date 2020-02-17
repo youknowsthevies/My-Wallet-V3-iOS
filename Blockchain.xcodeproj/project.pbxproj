@@ -459,6 +459,7 @@
 		3A3F3BA721E41171003BFDFC /* ContainerLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3F3BA621E41171003BFDFC /* ContainerLayout.swift */; };
 		3A3F3BA921E4180F003BFDFC /* CellModel+Conveniences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3F3BA821E4180F003BFDFC /* CellModel+Conveniences.swift */; };
 		3A3F3BAB21E41C9D003BFDFC /* VerticalContainerCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A3F3BAA21E41C9D003BFDFC /* VerticalContainerCell.xib */; };
+		3A406A6623F6A7AB002970ED /* NumberFormatter+Currencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A406A6523F6A7AB002970ED /* NumberFormatter+Currencies.swift */; };
 		3A45608921F270B7006C2568 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A45608821F270B7006C2568 /* BaseViewController.swift */; };
 		3A45608B21F270C5006C2568 /* BaseViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3A45608A21F270C5006C2568 /* BaseViewController.storyboard */; };
 		3A47825F2297451600DE5039 /* TextFieldAccessoryButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A47825E2297451600DE5039 /* TextFieldAccessoryButtonView.swift */; };
@@ -1343,18 +1344,7 @@
 		65B3D1E9231EB20B0081B22B /* EthereumWallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E1C1E122244972006E70D3 /* EthereumWallet.swift */; };
 		65B40AC723B0E1B8001557FB /* LegacyWalletAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B69F722CBA761002C80E9 /* LegacyWalletAPI.swift */; };
 		65B40AC923B0E258001557FB /* LegacyEthereumWalletAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345DF35C234B724F00179996 /* LegacyEthereumWalletAPI.swift */; };
-		65B40ACA23B0E25A001557FB /* LegacyEthereumWalletAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345DF35C234B724F00179996 /* LegacyEthereumWalletAPI.swift */; };
-		65B40ACB23B0E43E001557FB /* EthereumWalletTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EFC7D02220815C00273640 /* EthereumWalletTests.swift */; };
 		65B52F1023D612CA0070929B /* TriageCryptoCurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B52F0F23D612CA0070929B /* TriageCryptoCurrencyTests.swift */; };
-		65B5417E230C687300D04A2E /* MockSendExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B5416B230C687300D04A2E /* MockSendExecutor.swift */; };
-		65B54180230C687300D04A2E /* MockSendFeeInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B5416D230C687300D04A2E /* MockSendFeeInteractor.swift */; };
-		65B54181230C687300D04A2E /* MockSendServiceContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B5416E230C687300D04A2E /* MockSendServiceContainer.swift */; };
-		65B54182230C687300D04A2E /* MockSendExchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B5416F230C687300D04A2E /* MockSendExchangeService.swift */; };
-		65B54183230C687300D04A2E /* MockSendFeeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B54170230C687300D04A2E /* MockSendFeeService.swift */; };
-		65B54184230C687300D04A2E /* SendInteractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B54171230C687300D04A2E /* SendInteractorTests.swift */; };
-		65B54185230C687300D04A2E /* SendSpendableBalanceInteractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B54172230C687300D04A2E /* SendSpendableBalanceInteractorTests.swift */; };
-		65B54186230C687300D04A2E /* SendDestinationInteractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B54173230C687300D04A2E /* SendDestinationInteractorTests.swift */; };
-		65B54187230C687300D04A2E /* SendFeeInteractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B54174230C687300D04A2E /* SendFeeInteractorTests.swift */; };
 		65B6AC14237C2DA1002561E8 /* EmailAuthorizationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B6AC13237C2DA1002561E8 /* EmailAuthorizationPresenter.swift */; };
 		65B6E1472371783000259CA2 /* Wallet+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B6E1462371782F00259CA2 /* Wallet+Rx.swift */; };
 		65B77D4622F99D69009AE141 /* SendDestinationAccountInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B77D4522F99D69009AE141 /* SendDestinationAccountInteractor.swift */; };
@@ -2896,6 +2886,7 @@
 		3A3F3BA621E41171003BFDFC /* ContainerLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerLayout.swift; sourceTree = "<group>"; };
 		3A3F3BA821E4180F003BFDFC /* CellModel+Conveniences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CellModel+Conveniences.swift"; sourceTree = "<group>"; };
 		3A3F3BAA21E41C9D003BFDFC /* VerticalContainerCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VerticalContainerCell.xib; sourceTree = "<group>"; };
+		3A406A6523F6A7AB002970ED /* NumberFormatter+Currencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NumberFormatter+Currencies.swift"; sourceTree = "<group>"; };
 		3A45608821F270B7006C2568 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		3A45608A21F270C5006C2568 /* BaseViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = BaseViewController.storyboard; sourceTree = "<group>"; };
 		3A47825E2297451600DE5039 /* TextFieldAccessoryButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldAccessoryButtonView.swift; sourceTree = "<group>"; };
@@ -13404,6 +13395,7 @@
 				C7EEB8441EA95505002F28B9 /* UIView+ChangeFrameAttribute.m */,
 				2326C6C01BBD7A8100AB7C4D /* UIViewController+AutoDismiss.h */,
 				2326C6C11BBD7A8100AB7C4D /* UIViewController+AutoDismiss.m */,
+				3A406A6523F6A7AB002970ED /* NumberFormatter+Currencies.swift */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -18689,6 +18681,7 @@
 				3A8B228A211E0B380091E706 /* KYCPersonalDetailsController.swift in Sources */,
 				3ADB1DE9237354BB00AA63D5 /* DashboardDetailsScreenInteracting.swift in Sources */,
 				65F4DDFA23D8C0D9009F753B /* TableHeaderView.swift in Sources */,
+				3A406A6623F6A7AB002970ED /* NumberFormatter+Currencies.swift in Sources */,
 				34BA9FD822B13C8100A5698F /* PaxEmptyStateViewModel.swift in Sources */,
 				65E11C352362F01400C0154C /* TotalBalanceTableViewCell.swift in Sources */,
 				65F4DDEE23D8C0D9009F753B /* BadgeAssetInteracting.swift in Sources */,

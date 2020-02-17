@@ -9,33 +9,87 @@
 import XCTest
 @testable import Blockchain
 
+extension Locale {
+    var safeDecimalSeparator: String {
+        return decimalSeparator ?? "."
+    }
+}
+
 class NumberFormatterTests: XCTestCase {
+
+    func testParseBitcoinValueFullStop() {
+        let cases: [(String?, UInt64)] = [
+            ("0", 0),
+            (nil, 0),
+            ("", 0),
+            (".0", 0),
+            ("0.0", 0),
+            ("0.", 0),
+
+            ("1", 100_000_000),
+            ("1.", 100_000_000),
+            (".1", 10_000_000),
+            ("0.1", 10_000_000),
+
+            ("12.01", 1_201_000_000),
+            ("10.12345678", 1_012_345_678),
+            ("123", 12_300_000_000),
+            ("123456789.12345678", 12_345_678_912_345_678),
+
+            ("123456789,12345678", 12_345_678_912_345_678)
+        ]
+        for (idx, test) in cases.enumerated() {
+            let result = NumberFormatter.parseBitcoinValue(from: test.0)
+            XCTAssertEqual(
+                test.1,
+                NumberFormatter.parseBitcoinValue(from: test.0),
+                "Failed #\(idx) - \(test.0 ?? "nil"): expected to be \(test.1) but got \(result) instead"
+            )
+        }
+    }
+
+    // Test conversion from arabic indic value for "10.123456789"
+    func testArabicIndicDigitsDecimalString() {
+        let arabicIndicValue = "\u{0661}\u{0660}\u{066B}\u{0661}\u{0662}\u{0663}\u{0664}\u{0665}\u{0666}\u{0667}\u{0668}\u{0669}"
+        let converted = NumberFormatter.convert(decimalString: arabicIndicValue)
+        XCTAssertEqual(converted, "10.123456789")
+    }
+
+    // Test conversion from "," delimiter
+    func testCommaDelimitedDecimalString() {
+        let arabicIndicValue = "10,123456789"
+        let converted = NumberFormatter.convert(decimalString: arabicIndicValue)
+        XCTAssertEqual(converted, "10.123456789")
+    }
 
     // TODO: IOS-1556 Add support for different locales.
     func testLocalCurrencyConversion() {
         // 2.532 ETH
-        guard let amount = Decimal(string: "2.532"),
-        let rate = Decimal(string: "212.23") else {
-            XCTFail("Could not initialize amount or rate")
-            return
+        guard
+            let amount = Decimal(string: "2.532"),
+            let rate = Decimal(string: "212.23")
+            else {
+                XCTFail("Could not initialize amount or rate")
+                return
         }
         let localCurrencyAmount = NumberFormatter.localCurrencyAmount(fromAmount: amount, fiatPerAmount: rate)
-        XCTAssert(localCurrencyAmount == "537" + (Locale.current.decimalSeparator ?? ".") + "36", "Formatted string should have two decimal places and round down when truncating")
+        XCTAssertEqual(localCurrencyAmount, "537\(Locale.current.safeDecimalSeparator)36",
+            "Formatted string should have two decimal places and round down when truncating")
     }
 
     func testAssetConversion() {
         // $400.34
-        guard let amount = Decimal(string: "400.34"),
-            let rate = Decimal(string: "212.23") else {
+        guard
+            let amount = Decimal(string: "400.34"),
+            let rate = Decimal(string: "212.23")
+            else {
                 XCTFail("Could not initialize amount or rate")
                 return
         }
-
-        // For some reason assetType needs to be declared here
-        // passing in .ethereum into line 34 causes compiler error:
-        // "Ambiguous use of 'assetTypeAmount(fromAmount:fiatPerAmount:assetType:)'"
-        let assetType: AssetType = .ethereum
-        let assetTypeAmount = NumberFormatter.assetTypeAmount(fromAmount: amount, fiatPerAmount: rate, assetType: assetType)
-        XCTAssert(assetTypeAmount == "1" + (Locale.current.decimalSeparator ?? ".") + "88634971", "Formatted string should have eight decimal places and round down when truncating")
+        let assetTypeAmount = NumberFormatter.assetTypeAmount(fromAmount: amount,
+                                                              fiatPerAmount: rate,
+                                                              assetType: AssetType.ethereum)
+        XCTAssertEqual(assetTypeAmount, "1\(Locale.current.safeDecimalSeparator)88634971",
+            "Formatted string should have eight decimal places and round down when truncating")
     }
 }
