@@ -77,7 +77,7 @@
     
     Wallet *wallet = WalletManager.sharedInstance.wallet;
     
-    transactionProgressListeners *listener = [[transactionProgressListeners alloc] init];
+    TransactionProgressListeners *listener = [[TransactionProgressListeners alloc] init];
     
     listener.on_start = self.on_start;
     
