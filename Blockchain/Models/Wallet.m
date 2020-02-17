@@ -49,27 +49,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 @property (nonatomic) uint64_t bitcoinCashConversion;
 @end
 
-@implementation transactionProgressListeners
-@end
-
-@implementation Key
-@synthesize addr;
-@synthesize priv;
-@synthesize tag;
-@synthesize label;
-
-- (NSString *)description
-{
-    return [NSString stringWithFormat:@"<Key : addr %@, tag, %d>", addr, tag];
-}
-
-- (NSComparisonResult)compare:(Key *)otherObject
-{
-    return [self.addr compare:otherObject.addr];
-}
-
-@end
-
 @implementation Wallet
 
 @synthesize delegate;
@@ -1449,7 +1428,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 }
 
-- (void)sendPaymentWithListener:(transactionProgressListeners*)listener secondPassword:(NSString *)secondPassword
+- (void)sendPaymentWithListener:(TransactionProgressListeners*)listener secondPassword:(NSString *)secondPassword
 {
     NSString * txProgressID = [[self.context evaluateScript:@"MyWalletPhone.createTxProgressId()"] toString];
 
@@ -1464,7 +1443,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 }
 
-- (void)transferFundsBackupWithListener:(transactionProgressListeners*)listener secondPassword:(NSString *)secondPassword
+- (void)transferFundsBackupWithListener:(TransactionProgressListeners*)listener secondPassword:(NSString *)secondPassword
 {
     NSString * txProgressID = [[self.context evaluateScript:@"MyWalletPhone.createTxProgressId()"] toString];
 
@@ -2668,7 +2647,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 }
 
-- (void)sendBitcoinCashPaymentWithListener:(transactionProgressListeners *)listener
+- (void)sendBitcoinCashPaymentWithListener:(TransactionProgressListeners *)listener
 {
     NSString * txProgressID = [[self.context evaluateScript:@"MyWalletPhone.createTxProgressId()"] toString];
 
@@ -2722,7 +2701,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (void)tx_on_start:(NSString*)txProgressID
 {
-    transactionProgressListeners *listener = [self.transactionProgressListeners objectForKey:txProgressID];
+    TransactionProgressListeners *listener = [self.transactionProgressListeners objectForKey:txProgressID];
 
     if (listener) {
         if (listener.on_start) {
@@ -2733,7 +2712,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (void)tx_on_begin_signing:(NSString*)txProgressID
 {
-    transactionProgressListeners *listener = [self.transactionProgressListeners objectForKey:txProgressID];
+    TransactionProgressListeners *listener = [self.transactionProgressListeners objectForKey:txProgressID];
 
     if (listener) {
         if (listener.on_begin_signing) {
@@ -2744,7 +2723,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (void)tx_on_sign_progress:(NSString*)txProgressID input:(NSString*)input
 {
-    transactionProgressListeners *listener = [self.transactionProgressListeners objectForKey:txProgressID];
+    TransactionProgressListeners *listener = [self.transactionProgressListeners objectForKey:txProgressID];
 
     if (listener) {
         if (listener.on_sign_progress) {
@@ -2755,7 +2734,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (void)tx_on_finish_signing:(NSString*)txProgressID
 {
-    transactionProgressListeners *listener = [self.transactionProgressListeners objectForKey:txProgressID];
+    TransactionProgressListeners *listener = [self.transactionProgressListeners objectForKey:txProgressID];
 
     if (listener) {
         if (listener.on_finish_signing) {
@@ -2766,7 +2745,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (void)tx_on_success:(NSString*)txProgressID secondPassword:(NSString *)secondPassword transactionHash:(NSString *)hash transactionHex:(NSString *)txHex
 {
-    transactionProgressListeners *listener = [self.transactionProgressListeners objectForKey:txProgressID];
+    TransactionProgressListeners *listener = [self.transactionProgressListeners objectForKey:txProgressID];
 
     if (listener) {
         if (listener.on_success) {
@@ -2783,7 +2762,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (void)tx_on_error:(NSString*)txProgressID error:(NSString*)error secondPassword:(NSString *)secondPassword
 {
-    transactionProgressListeners *listener = [self.transactionProgressListeners objectForKey:txProgressID];
+    TransactionProgressListeners *listener = [self.transactionProgressListeners objectForKey:txProgressID];
 
     if (listener) {
         if (listener.on_error) {

@@ -738,7 +738,7 @@ BOOL displayingLocalSymbolSend;
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
-        transactionProgressListeners *listener = [[transactionProgressListeners alloc] init];
+        TransactionProgressListeners *listener = [[TransactionProgressListeners alloc] init];
          
          listener.on_start = ^() {
          };
@@ -1704,7 +1704,7 @@ BOOL displayingLocalSymbolSend;
     }
 }
 
-- (void)sendPaymentWithListener:(transactionProgressListeners*)listener secondPassword:(NSString *)secondPassword
+- (void)sendPaymentWithListener:(TransactionProgressListeners*)listener secondPassword:(NSString *)secondPassword
 {
     if (self.assetType == LegacyAssetTypeBitcoin) {
         [WalletManager.sharedInstance.wallet sendPaymentWithListener:listener secondPassword:secondPassword];

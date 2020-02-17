@@ -350,6 +350,7 @@
 		3A01911D212DEF8000AED2BF /* AsyncBlockOperaiton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A01911C212DEF8000AED2BF /* AsyncBlockOperaiton.swift */; };
 		3A01989522E7939C00EBDB78 /* ExchangeDeepLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A01989422E7939C00EBDB78 /* ExchangeDeepLinkRouter.swift */; };
 		3A07814C21E54DB200760BF9 /* UICollectionViewCell+Conveniences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A07814B21E54DB200760BF9 /* UICollectionViewCell+Conveniences.swift */; };
+		3A0D50C623FABC9300DA789F /* TransactionProgressListeners.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A0D50C523FABC9300DA789F /* TransactionProgressListeners.m */; };
 		3A0E5603235F8C8B0015DAB5 /* HistoricalBalanceCellPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0E5602235F8C8B0015DAB5 /* HistoricalBalanceCellPresenter.swift */; };
 		3A0E5605235F8CE40015DAB5 /* HistoricalBalanceTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A0E5604235F8CE40015DAB5 /* HistoricalBalanceTableViewCell.xib */; };
 		3A0E5607235F8CF40015DAB5 /* HistoricalBalanceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0E5606235F8CF40015DAB5 /* HistoricalBalanceTableViewCell.swift */; };
@@ -2773,6 +2774,9 @@
 		3A019121212DF0EB00AED2BF /* AsyncBlockOperationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncBlockOperationTests.swift; sourceTree = "<group>"; };
 		3A01989422E7939C00EBDB78 /* ExchangeDeepLinkRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeDeepLinkRouter.swift; sourceTree = "<group>"; };
 		3A07814B21E54DB200760BF9 /* UICollectionViewCell+Conveniences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionViewCell+Conveniences.swift"; sourceTree = "<group>"; };
+		3A0D50A323FAAA3A00DA789F /* WalletDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WalletDelegate.h; sourceTree = "<group>"; };
+		3A0D50C423FABC9300DA789F /* TransactionProgressListeners.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TransactionProgressListeners.h; sourceTree = "<group>"; };
+		3A0D50C523FABC9300DA789F /* TransactionProgressListeners.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TransactionProgressListeners.m; sourceTree = "<group>"; };
 		3A0E301921C8276700E64BE0 /* KYCUserTierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KYCUserTierTests.swift; sourceTree = "<group>"; };
 		3A0E5602235F8C8B0015DAB5 /* HistoricalBalanceCellPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoricalBalanceCellPresenter.swift; sourceTree = "<group>"; };
 		3A0E5604235F8CE40015DAB5 /* HistoricalBalanceTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HistoricalBalanceTableViewCell.xib; sourceTree = "<group>"; };
@@ -13435,6 +13439,7 @@
 				9F765F3C14BC7C4F00048EFB /* Transaction.m */,
 				C723F3451F61D35300A858A9 /* TransactionDetailViewModel.m */,
 				23DEF96D1DB11C98004AAAB6 /* TransferAllFundsBuilder.m */,
+				3A0D50A323FAAA3A00DA789F /* WalletDelegate.h */,
 				9F0CBAA8151351F400CD945D /* Wallet.h */,
 				9F0CBAA9151351F400CD945D /* Wallet.m */,
 				65B6E1462371782F00259CA2 /* Wallet+Rx.swift */,
@@ -13444,6 +13449,8 @@
 				C774A1252102B87300DCCC17 /* ExchangeRate.swift */,
 				C78893E420A36572003C0A8F /* Trade.swift */,
 				3A7F7EC7210F6C20001E20AF /* ViewModels */,
+				3A0D50C423FABC9300DA789F /* TransactionProgressListeners.h */,
+				3A0D50C523FABC9300DA789F /* TransactionProgressListeners.m */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -18732,6 +18739,7 @@
 				AAD158DE2123740C0058B3C8 /* BlockchainDataRepository.swift in Sources */,
 				65639BE623B65AE100869483 /* AirdropCenterScreenPresenter.swift in Sources */,
 				65F5E70122C36D0D00D00F50 /* QRAddressView.swift in Sources */,
+				3A0D50C623FABC9300DA789F /* TransactionProgressListeners.m in Sources */,
 				3AEE969B221DDFD700F8B5D5 /* DashboardContainerViewController.swift in Sources */,
 				65F5E70A22C384E700D00F50 /* AddressInteractor.swift in Sources */,
 			);
