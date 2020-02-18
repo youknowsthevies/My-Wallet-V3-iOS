@@ -131,7 +131,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         changeBlurVisibility(true)
     }
 
-    func applicationDidEnterBackground(_ application: UIApplication) {
+    func delayedApplicationDidEnterBackground(_ application: UIApplication) {
         // Wallet-related background actions
 
         // TODO: This should be moved into a component that performs actions to the wallet
@@ -170,13 +170,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         AppCoordinator.shared.cleanupOnAppBackgrounded()
         AuthenticationCoordinator.shared.cleanupOnAppBackgrounded()
-        
+
         Network.Dependencies.default.session.reset {
             Logger.shared.debug("URLSession reset completed.")
         }
     }
 
+    var backgroundTaskTimer = BackgroundTaskTimer()
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        backgroundTaskTimer.begin(application) { [weak self] in
+            self?.delayedApplicationDidEnterBackground(application)
+        }
+    }
+
     func applicationWillEnterForeground(_ application: UIApplication) {
+        backgroundTaskTimer.stop()
         Logger.shared.debug("applicationWillEnterForeground")
 
         BlockchainSettings.App.shared.appBecameActiveCount += 1

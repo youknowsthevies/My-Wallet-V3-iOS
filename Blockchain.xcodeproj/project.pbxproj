@@ -717,6 +717,7 @@
 		3AB8A276235128720052A111 /* MnemonicTextView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3AB8A275235128720052A111 /* MnemonicTextView.xib */; };
 		3AB8A278235152BD0052A111 /* Rx+UITextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB8A277235152BD0052A111 /* Rx+UITextView.swift */; };
 		3ABB80BB213F0CD300AD57BE /* Limit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABB80BA213F0CD300AD57BE /* Limit.swift */; };
+		3ABEC07C23FC49AA00B87646 /* BackgroundTaskTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABEC07223FC49A900B87646 /* BackgroundTaskTimer.swift */; };
 		3AC25E5C2243F8140033FB9D /* ExchangeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC25E5B2243F8140033FB9D /* ExchangeError.swift */; };
 		3AC25E6822443DA40033FB9D /* ExchangeInteractorStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC25E6722443DA40033FB9D /* ExchangeInteractorStatus.swift */; };
 		3AC6D84C2391B3810006745B /* HistoricalFiatPriceResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC6D84B2391B3810006745B /* HistoricalFiatPriceResponse.swift */; };
@@ -3146,6 +3147,7 @@
 		3AB8A275235128720052A111 /* MnemonicTextView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MnemonicTextView.xib; sourceTree = "<group>"; };
 		3AB8A277235152BD0052A111 /* Rx+UITextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Rx+UITextView.swift"; sourceTree = "<group>"; };
 		3ABB80BA213F0CD300AD57BE /* Limit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Limit.swift; sourceTree = "<group>"; };
+		3ABEC07223FC49A900B87646 /* BackgroundTaskTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundTaskTimer.swift; sourceTree = "<group>"; };
 		3AC25E5B2243F8140033FB9D /* ExchangeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeError.swift; sourceTree = "<group>"; };
 		3AC25E6722443DA40033FB9D /* ExchangeInteractorStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeInteractorStatus.swift; sourceTree = "<group>"; };
 		3AC4F97721234040003AA207 /* Storyboardable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storyboardable.swift; sourceTree = "<group>"; };
@@ -13578,6 +13580,7 @@
 				9FB3638314B60128004BEA02 /* Blockchain-Prefix.pch */,
 				511713AD215545D7000C3AD1 /* Blockchain-Info.plist */,
 				AAA3333220880A2B0019AD55 /* AppDelegate.swift */,
+				3ABEC07223FC49A900B87646 /* BackgroundTaskTimer.swift */,
 				AA7133D821223AE000CB2AA9 /* Arrays.swift */,
 				511646C4208124E200C43522 /* AssetType.swift */,
 				AA24D4C620D9D1EC0096DD5D /* AssetTypeLegacyHelper.swift */,
@@ -18007,6 +18010,7 @@
 				3A49B2B92130B5610068F443 /* NewOrderTableViewCell.swift in Sources */,
 				C7CE25AA2135E3B500DCC43B /* ExchangeCreateContracts.swift in Sources */,
 				AA0A4157214B3A3700807163 /* AssetAccountRepository.swift in Sources */,
+				3ABEC07C23FC49AA00B87646 /* BackgroundTaskTimer.swift in Sources */,
 				AA68F42F2151A9CE0099BB83 /* TradeLimitsAPI.swift in Sources */,
 				C7EEB8451EA95505002F28B9 /* UIView+ChangeFrameAttribute.m in Sources */,
 				65D57219234B5B3300D14342 /* TransactionsViewController+Analytics.swift in Sources */,
