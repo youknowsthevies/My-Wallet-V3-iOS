@@ -29,10 +29,10 @@ public final class BackgroundTaskTimer {
 
     // MARK: Private Properties
 
-    private let timeInterval: TimeInterval
     private weak var timer: Timer!
-    private let invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier
     private var backgroundTaskID: BackgroundTaskIdentifier
+    private let timeInterval: TimeInterval
+    private let invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier
     private let name: String
 
     // MARK: Init
