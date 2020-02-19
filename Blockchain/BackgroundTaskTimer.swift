@@ -17,7 +17,7 @@ class BackgroundTaskTimer {
     weak var timer: Timer!
     private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
 
-    init(timeInterval: TimeInterval = 300) {
+    init(timeInterval: TimeInterval = 180) {
         self.timeInterval = timeInterval
     }
 
