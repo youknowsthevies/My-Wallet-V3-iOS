@@ -34,9 +34,6 @@ public final class BackgroundTaskTimer {
     private let invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier
     private var backgroundTaskID: BackgroundTaskIdentifier
     private let name: String
-    private var debugDescription: String {
-        "\(self), \(timer?.debugDescription ?? "timer nil"), \(backgroundTaskID.identifier)"
-    }
 
     // MARK: Init
 
@@ -55,7 +52,6 @@ public final class BackgroundTaskTimer {
 
     /// Stop timer
     public func stop() {
-        Logger.shared.debug("Stop")
         timer?.invalidate()
         timer = nil
     }
@@ -63,11 +59,9 @@ public final class BackgroundTaskTimer {
     /// Begin timer
     public func begin(_ application: ApplicationBackgroundTaskAPI, block: @escaping () -> Void) {
         stop()
-        Logger.shared.debug("\(debugDescription)")
         /// Tells `application: UIApplication` that we are beginning a background task, expiration handler
         /// stops timer, executes given block, and ends background task
         backgroundTaskID = application.beginToolKitBackgroundTask(withName: name) {
-            Logger.shared.debug("Task Expired")
             self.stop()
             block()
             application.endToolKitBackgroundTask(self.backgroundTaskID)
@@ -75,7 +69,6 @@ public final class BackgroundTaskTimer {
         }
         /// Creates timer that will execute block and end background task after a pre-defined amount of time
         let timer = Timer(timeInterval: timeInterval, repeats: false, block: { _ in
-            Logger.shared.debug("Timer Fired")
             block()
             application.endToolKitBackgroundTask(self.backgroundTaskID)
             self.backgroundTaskID = self.invalidBackgroundTaskIdentifier
@@ -83,6 +76,5 @@ public final class BackgroundTaskTimer {
         self.timer = timer
         /// Adds timer to current RunLoop
         RunLoop.current.add(timer, forMode: .default)
-        Logger.shared.debug("\(debugDescription)")
     }
 }
