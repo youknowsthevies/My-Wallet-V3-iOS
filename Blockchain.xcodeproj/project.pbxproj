@@ -757,6 +757,8 @@
 		3ADB1E27237379B400AA63D5 /* MultiActionViewInteracting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADB1E26237379B400AA63D5 /* MultiActionViewInteracting.swift */; };
 		3ADD8E4322DD17B500942ED0 /* BottomAlertSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3ADD8E4222DD17B500942ED0 /* BottomAlertSheet.xib */; };
 		3ADD8E4E22DD299A00942ED0 /* BottomAlertSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADD8E4D22DD299A00942ED0 /* BottomAlertSheet.swift */; };
+		3ADF158C23FD5D3000034AAE /* BackgroundTaskTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABEC07223FC49A900B87646 /* BackgroundTaskTimer.swift */; };
+		3ADF158E23FD664F00034AAE /* UIApplication+ApplicationBackgroundTaskAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADF158D23FD664F00034AAE /* UIApplication+ApplicationBackgroundTaskAPI.swift */; };
 		3ADFE6ED214862E000E7E2D5 /* ExchangeInputComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADFE6EC214862E000E7E2D5 /* ExchangeInputComponent.swift */; };
 		3ADFE6F9214AE0E300E7E2D5 /* InputComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADFE6F8214AE0E300E7E2D5 /* InputComponent.swift */; };
 		3ADFE6FC214AE17600E7E2D5 /* ExchangeInputsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADFE6FB214AE17600E7E2D5 /* ExchangeInputsService.swift */; };
@@ -3146,6 +3148,7 @@
 		3AB8A275235128720052A111 /* MnemonicTextView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MnemonicTextView.xib; sourceTree = "<group>"; };
 		3AB8A277235152BD0052A111 /* Rx+UITextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Rx+UITextView.swift"; sourceTree = "<group>"; };
 		3ABB80BA213F0CD300AD57BE /* Limit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Limit.swift; sourceTree = "<group>"; };
+		3ABEC07223FC49A900B87646 /* BackgroundTaskTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundTaskTimer.swift; sourceTree = "<group>"; };
 		3AC25E5B2243F8140033FB9D /* ExchangeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeError.swift; sourceTree = "<group>"; };
 		3AC25E6722443DA40033FB9D /* ExchangeInteractorStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeInteractorStatus.swift; sourceTree = "<group>"; };
 		3AC4F97721234040003AA207 /* Storyboardable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storyboardable.swift; sourceTree = "<group>"; };
@@ -3184,6 +3187,7 @@
 		3ADB1E26237379B400AA63D5 /* MultiActionViewInteracting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiActionViewInteracting.swift; sourceTree = "<group>"; };
 		3ADD8E4222DD17B500942ED0 /* BottomAlertSheet.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BottomAlertSheet.xib; sourceTree = "<group>"; };
 		3ADD8E4D22DD299A00942ED0 /* BottomAlertSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomAlertSheet.swift; sourceTree = "<group>"; };
+		3ADF158D23FD664F00034AAE /* UIApplication+ApplicationBackgroundTaskAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+ApplicationBackgroundTaskAPI.swift"; sourceTree = "<group>"; };
 		3ADFE6EC214862E000E7E2D5 /* ExchangeInputComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeInputComponent.swift; sourceTree = "<group>"; };
 		3ADFE6F8214AE0E300E7E2D5 /* InputComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputComponent.swift; sourceTree = "<group>"; };
 		3ADFE6FB214AE17600E7E2D5 /* ExchangeInputsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeInputsService.swift; sourceTree = "<group>"; };
@@ -7163,6 +7167,7 @@
 		34EE985023AA5A7D00074EC0 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				3ABEC07223FC49A900B87646 /* BackgroundTaskTimer.swift */,
 				344172232333C0CC008C32CA /* CachedValue.swift */,
 				342002402359ECD200D801A6 /* Atomic.swift */,
 			);
@@ -9437,6 +9442,7 @@
 				AACE31202091004900B7B806 /* UIApplication+Suspend.h */,
 				AACE31212091004A00B7B806 /* UIApplication+Suspend.m */,
 				AACE314B209152D800B7B806 /* Application+Helpers.swift */,
+				3ADF158D23FD664F00034AAE /* UIApplication+ApplicationBackgroundTaskAPI.swift */,
 				AACB48B721478472008FCCD0 /* Collection+Helpers.swift */,
 				516546F7208FCF800019EE63 /* Enum+Enumeratable.swift */,
 				65380E452398363900BE66E7 /* Reachability+API.swift */,
@@ -17075,6 +17081,7 @@
 				34EE98CC23AA838900074EC0 /* ObservableTypeExtensions.swift in Sources */,
 				34EE98BE23AA838900074EC0 /* Retry+Behavior.swift in Sources */,
 				34EE996823ABC40B00074EC0 /* AnalyticsUserPropertyValidator.swift in Sources */,
+				3ADF158C23FD5D3000034AAE /* BackgroundTaskTimer.swift in Sources */,
 				34EE996223ABC3E900074EC0 /* UnretainedContentBox.swift in Sources */,
 				34EE98C523AA838900074EC0 /* String+Conveniences.swift in Sources */,
 				34EE988D23AA778C00074EC0 /* LogDestination.swift in Sources */,
@@ -18592,6 +18599,7 @@
 				3A26AF99212B36F2003A8A08 /* ExchangeCreateViewController.swift in Sources */,
 				65F4DDC523D8C024009F753B /* DefaultLabelContentInteractor.swift in Sources */,
 				65C20CCC23576EAD009C72B7 /* PasswordRequiredScreenInteractor.swift in Sources */,
+				3ADF158E23FD664F00034AAE /* UIApplication+ApplicationBackgroundTaskAPI.swift in Sources */,
 				84FC02FE19815F1B00B97D5B /* sha256.c in Sources */,
 				3A2BBCD521C31BFC001E55BF /* KYCCTAHeaderView.swift in Sources */,
 				3A33896D2385C88600372B84 /* AssetLineChartInteraction.swift in Sources */,
