@@ -176,7 +176,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    var backgroundTaskTimer = BackgroundTaskTimer()
+    var backgroundTaskTimer = BackgroundTaskTimer(invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier(identifier: UIBackgroundTaskIdentifier.invalid))
     func applicationDidEnterBackground(_ application: UIApplication) {
         backgroundTaskTimer.begin(application) { [weak self] in
             self?.delayedApplicationDidEnterBackground(application)
