@@ -41,7 +41,7 @@ public final class BackgroundTaskTimer {
     /// - Parameter timeInterval: TimeInterval in seconds that the background thread is going to run for.
     /// - Parameter name: A name for the BackgroundTask.
     /// - Parameter invalidBackgroundTaskIdentifier: A BackgroundTaskIdentifier wrapping UIBackgroundTaskIdentifier.invalid.
-    public init(timeInterval: TimeInterval = 150, name: String = UUID().uuidString, invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier) {
+    public init(timeInterval: TimeInterval = 180, name: String = UUID().uuidString, invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier) {
         self.timeInterval = timeInterval
         self.name = name
         self.invalidBackgroundTaskIdentifier = invalidBackgroundTaskIdentifier
