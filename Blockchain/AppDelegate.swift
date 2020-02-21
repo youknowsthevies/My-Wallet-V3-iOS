@@ -184,7 +184,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
-        backgroundTaskTimer.stop()
+        backgroundTaskTimer.stop(application)
         Logger.shared.debug("applicationWillEnterForeground")
 
         BlockchainSettings.App.shared.appBecameActiveCount += 1
