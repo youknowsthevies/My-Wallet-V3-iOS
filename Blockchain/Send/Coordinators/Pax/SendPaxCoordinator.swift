@@ -332,14 +332,16 @@ extension SendPaxCoordinator: SendPaxViewControllerDelegate {
         guard let model = output?.model else { return }
         guard let proposal = model.proposal else { return }
         guard case .valid(let address) = model.addressStatus else { return }
-        interface.apply(updates: [.loadingIndicatorVisibility(.visible)])
         services.paxService.transfer(proposal: proposal, to: address.ethereumAddress)
             .subscribeOn(MainScheduler.instance)
             .observeOn(MainScheduler.asyncInstance)
+            .do(onSubscribe: { [weak self] in
+                self?.interface.apply(updates: [.loadingIndicatorVisibility(.visible)])
+            })
             .flatMap(weak: self) { (self, candidate) -> Single<EthereumTransactionPublished> in
                 return self.services.walletService.send(transaction: candidate)
             }
-            .subscribeOn(MainScheduler.instance)
+            .observeOn(MainScheduler.instance)
             .do(onDispose: { [weak self] in
                 guard let self = self else { return }
                 self.interface.apply(updates: [.loadingIndicatorVisibility(.hidden)])
