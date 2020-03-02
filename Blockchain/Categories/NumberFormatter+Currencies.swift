@@ -28,11 +28,11 @@ extension NumberFormatter {
         let requestedAmountString = NumberFormatter.convert(decimalString: string)
         // Safe value should not be empty
         guard !requestedAmountString.isEmpty else { return 0 }
-        return parseValueBitcoin(requestedAmountString)
+        return parseValueBitcoin(requestedAmountString) ?? 0
     }
 
     /// Parses a full stop '.' delimitered decimal string into a UInt64 satoshis value.
-    private class func parseValueBitcoin(_ string: String) -> UInt64 {
+    private class func parseValueBitcoin(_ string: String) -> UInt64? {
         // String should not be empty
         guard !string.isEmpty else { return 0 }
 
@@ -65,7 +65,11 @@ extension NumberFormatter {
         // IntegralPart
         let integralPart: String = String(components[0])
         // Creates UInt64 from integralPart
-        let integralPartUInt: UInt64 = UInt64(integralPart)!
+        guard let integralPartUInt: UInt64 = UInt64(integralPart) else {
+            let debugMessage = "Failed to parse bitcoin value, integralPart: \(integralPart), components: \(components), string: \(string)"
+            CrashlyticsRecorder().error(debugMessage)
+            fatalError(debugMessage)
+        }
 
         // IntegralPart in satoshis is IntegralPart multiplied by Satoshi base (1e8)
         let integralPartSatoshisUInt: UInt64 = integralPartUInt * UInt64(1e8)
