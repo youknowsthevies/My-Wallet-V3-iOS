@@ -24,7 +24,10 @@ extension SimpleBuyPaymentAccountResponse {
 extension CustodialBalanceResponse {
     static let fullMock = CustodialBalanceResponse(
         btc: Balance(available: "0", pending: "0"),
-        eth: Balance(available: "200000", pending: "20000")
+        bch: Balance(available: "0", pending: "0"),
+        eth: Balance(available: "200000", pending: "20000"),
+        pax: Balance(available: "0", pending: "0"),
+        xlm: Balance(available: "0", pending: "0")
     )
 }
 
