@@ -7,10 +7,11 @@
 //
 
 import Foundation
+import PlatformKit
 import PlatformUIKit
 
 protocol KYCTierCellDelegate: class {
-    func tierCell(_ cell: KYCTierCell, selectedTier: KYCTier)
+    func tierCell(_ cell: KYCTierCell, selectedTier: KYC.Tier)
 }
 
 class KYCTierCell: UICollectionViewCell {
@@ -54,7 +55,7 @@ class KYCTierCell: UICollectionViewCell {
     
     // MARK: Private Properties
     fileprivate var model: KYCTierCellModel!
-    fileprivate var tier: KYCTier {
+    fileprivate var tier: KYC.Tier {
         return model.tier
     }
     

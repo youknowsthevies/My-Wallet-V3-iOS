@@ -10,6 +10,10 @@ import RxSwift
 
 final class MnemonicVerificationService: MnemonicVerificationAPI {
     
+    enum ServiceError: Error {
+        case mnemonicVerificationError
+    }
+    
     private let wallet: Wallet
     private let jsScheduler = MainScheduler.instance
     
@@ -24,21 +28,14 @@ final class MnemonicVerificationService: MnemonicVerificationAPI {
     }
     
     func verifyMnemonicAndSync() -> Completable {
-        perform { [weak self] in
-            guard let self = self else { return }
-            self.wallet.markRecoveryPhraseVerified()
-        }
-    }
-    
-    // MARK: - Accessors
-    
-    private func perform(_ operation: @escaping () -> Void) -> Completable {
-        return Completable
-            .create { observer -> Disposable in
-                operation()
+        return Completable.create { [weak self] observer -> Disposable in
+            guard let self = self else { return Disposables.create() }
+            self.wallet.markRecoveryPhraseVerified(completion: {
                 observer(.completed)
-                return Disposables.create()
-            }
-            .subscribeOn(jsScheduler)
+            }, error: {
+                observer(.error(ServiceError.mnemonicVerificationError))
+            })
+            return Disposables.create()
+        }
     }
 }

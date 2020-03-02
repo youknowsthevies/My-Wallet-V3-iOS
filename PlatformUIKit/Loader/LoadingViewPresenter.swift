@@ -154,6 +154,18 @@ import PlatformKit
         show(in: nil, with: text)
     }
     
+    /// Shows thr loader
+    /// - Parameter style: The loader style
+    /// - Parameter text: an optional String to be displayed
+    public func show(with style: LoadingViewPresenter.LoadingViewStyle, text: String? = nil) {
+        switch style {
+        case .circle:
+            showCircular(with: text)
+        case .activityIndicator:
+            show(with: text)
+        }
+    }
+    
     // MARK: - Accessors
     
     private func setupViewIfNeeded(in superview: UIView? = nil, style: LoadingViewPresenter.LoadingViewStyle) {

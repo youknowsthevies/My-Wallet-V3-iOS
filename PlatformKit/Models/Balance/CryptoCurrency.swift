@@ -14,15 +14,19 @@ import Foundation
 /// models to a separate framework called `BalanceKit`.
 /// This should be used a replacement for `AssetType` which is currently defined
 /// in the app target.
-public enum CryptoCurrency: String {
+public enum CryptoCurrency: String, Codable, CaseIterable {
     case bitcoin = "BTC"
-    case bitcoinCash = "BCH"
     case ethereum = "ETH"
+    case bitcoinCash = "BCH"
     case stellar = "XLM"
     case pax = "PAX"
 }
 
+extension CryptoCurrency: CodingKey { }
+
 extension CryptoCurrency {
+    
+    @available(*, deprecated, message: "Superseded by `name`")
     public var description: String {
         switch self {
         case .bitcoin:
@@ -38,7 +42,26 @@ extension CryptoCurrency {
         }
     }
     
+    public var name: String {
+        switch self {
+        case .bitcoin:
+            return "Bitcoin"
+        case .bitcoinCash:
+            return "Bitcoin Cash"
+        case .ethereum:
+            return "Ether"
+        case .stellar:
+            return "Stellar"
+        case .pax:
+            return "USD PAX"
+        }
+    }
+    
     public var symbol: String {
+        return rawValue
+    }
+    
+    public var code: String {
         return rawValue
     }
     
@@ -70,18 +93,5 @@ extension CryptoCurrency {
         case .pax:
             return 8
         }
-    }
-    
-    public static let all: [CryptoCurrency] = {
-        return [.bitcoin, .ethereum, .bitcoinCash, .stellar, .pax]
-    }()
-}
-
-extension CryptoCurrency {
-    init?(symbol: String) {
-        guard let value = CryptoCurrency.all.first(where: { $0.symbol == symbol }) else {
-            return nil
-        }
-        self = value
     }
 }

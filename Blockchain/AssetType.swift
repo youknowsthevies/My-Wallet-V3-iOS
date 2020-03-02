@@ -10,6 +10,7 @@ import PlatformKit
 import PlatformUIKit
 
 /// The asset type is used to distinguish between different types of digital assets.
+@available(*, deprecated, message: "Please use PlatformKit.CryptoCurrency instead.")
 @objc public enum AssetType: Int {
     case bitcoin
     case bitcoinCash

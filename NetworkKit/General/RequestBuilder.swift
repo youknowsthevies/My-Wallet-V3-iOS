@@ -14,6 +14,7 @@ public class RequestBuilder {
         var urlComponents = URLComponents()
         urlComponents.scheme = networkConfig.apiScheme
         urlComponents.host = networkConfig.apiHost
+        urlComponents.path = RequestBuilder.path(from: networkConfig.pathComponents)
         return urlComponents
     }
     
@@ -136,6 +137,25 @@ public class RequestBuilder {
         )
     }
     
+    // MARK: - Delete
+    
+    public func delete(path components: [String] = [],
+                       parameters: [URLQueryItem] = [],
+                       headers: HTTPHeaders? = nil,
+                       contentType: NetworkRequest.ContentType = .json,
+                       decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
+                       recordErrors: Bool = false) -> NetworkRequest? {
+        return buildRequest(
+            method: .delete,
+            path: RequestBuilder.path(from: components),
+            parameters: parameters,
+            headers: headers,
+            contentType: contentType,
+            decoder: decoder,
+            recordErrors: recordErrors
+        )
+    }
+    
     public static func path(from components: [String] = []) -> String {
         return components.reduce(into: "") { path, component in
             path += "/\(component)"
@@ -168,7 +188,7 @@ public class RequestBuilder {
     
     private func buildURL(path: String, parameters: [URLQueryItem] = []) -> URL? {
         var components = defaultComponents
-        components.path = path
+        components.path += path
         components.queryItems = parameters
         return components.url
     }

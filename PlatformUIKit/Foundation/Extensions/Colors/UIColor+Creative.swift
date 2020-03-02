@@ -49,6 +49,7 @@ extension UIColor {
     // Grey
     
     static let grey000 = #colorLiteral(red: 0.94, green: 0.95, blue: 0.97, alpha: 1.0)
+    static let grey50 = #colorLiteral(red: 0.90, green: 0.93, blue: 0.95, alpha: 1.0)
     static let grey100 = #colorLiteral(red: 0.87, green: 0.89, blue: 0.92, alpha: 1.0)
     static let grey200 = #colorLiteral(red: 0.80, green: 0.82, blue: 0.87, alpha: 1.0)
     static let grey300 = #colorLiteral(red: 0.69, green: 0.72, blue: 0.78, alpha: 1.0)
@@ -58,7 +59,7 @@ extension UIColor {
     static let grey700 = #colorLiteral(red: 0.31, green: 0.35, blue: 0.42, alpha: 1.0)
     static let grey800 = #colorLiteral(red: 0.21, green: 0.25, blue: 0.32, alpha: 1.0)
     static let grey900 = #colorLiteral(red: 0.07, green: 0.11, blue: 0.20, alpha: 1.0)
-    
+
     // Blue
     
     static let blue000 = #colorLiteral(red: 0.93, green: 0.96, blue: 1.00, alpha: 1.0)

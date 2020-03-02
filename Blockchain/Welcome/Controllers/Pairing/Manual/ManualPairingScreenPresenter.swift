@@ -27,8 +27,7 @@ final class ManualPairingScreenPresenter {
     let walletIdTextFieldViewModel: TextFieldViewModel
     let passwordTextFieldViewModel: TextFieldViewModel
     let buttonViewModel = ButtonViewModel.primary(
-        with: LocalizedString.button,
-        cornerRadius: 8
+        with: LocalizedString.button
     )
     
     /// The total state of the presentation

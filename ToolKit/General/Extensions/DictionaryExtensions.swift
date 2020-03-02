@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import ToolKit
 
 extension Dictionary {
     public func compactMapValues<T>(_ transform: (Value) throws -> T?) rethrows -> Dictionary<Key, T> {

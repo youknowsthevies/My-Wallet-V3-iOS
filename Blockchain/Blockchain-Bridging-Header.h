@@ -51,7 +51,6 @@
 #import "KeychainItemWrapper+SwipeAddresses.h"
 #import "BCVerifyEmailViewController.h"
 #import "BCVerifyMobileNumberViewController.h"
-#import "SettingsSelectorTableViewController.h"
 #import "SettingsChangePasswordViewController.h"
 
 #import "FromToView.h"

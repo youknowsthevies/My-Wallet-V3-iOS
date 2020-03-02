@@ -12,8 +12,8 @@ public final class NoticeView: UIView {
 
     // MARK: - IBOutlet Properties
     
-    @IBOutlet private var imageView: UIImageView!
-    @IBOutlet private var label: UILabel!
+    private let imageView = UIImageView()
+    private let label = UILabel()
     
     // MARK: - Injected
     
@@ -38,6 +38,20 @@ public final class NoticeView: UIView {
     }
         
     private func setup() {
-        fromNib()
+        
+        imageView.contentMode = .scaleAspectFit
+        label.font = .mainMedium(12)
+        label.textColor = .descriptionText
+        label.numberOfLines = 0
+        
+        addSubview(imageView)
+        addSubview(label)
+        
+        imageView.layoutToSuperview(.leading)
+        imageView.layout(size: .init(edge: 20))
+        imageView.layout(to: .top, of: label)
+        
+        label.layout(edge: .leading, to: .trailing, of: imageView, offset: 18)
+        label.layoutToSuperview(.top, .bottom, .trailing)
     }
 }

@@ -12,15 +12,15 @@ public extension PrimitiveSequence where Trait == SingleTrait {
     
     /// Shows the loader
     func show(loader: LoadingViewPresenting,
+              style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
               text: String? = nil) -> Single<Element> {
         return self.do(onSuccess: { _ in
-            loader.show(with: text)
+            loader.show(with: style, text: text)
         })
     }
     
     /// Hides the loader
-    func hide(loader: LoadingViewPresenting,
-              text: String? = nil) -> Single<Element> {
+    func hide(loader: LoadingViewPresenting) -> Single<Element> {
         return self.do(onSuccess: { _ in
             loader.hide()
         })
@@ -28,6 +28,7 @@ public extension PrimitiveSequence where Trait == SingleTrait {
     
     /// Show the loader and returns `Element`
     func showOnSubscription(loader: LoadingViewPresenting,
+                            style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
                             text: String? = nil) -> Single<Element> {
         return self.do(onSubscribe: {
             loader.show(with: text)
@@ -43,9 +44,10 @@ public extension PrimitiveSequence where Trait == SingleTrait {
     
     /// Shows and hides the loader
     func handleLoaderForLifecycle(loader: LoadingViewPresenting,
+                                  style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
                                   text: String? = nil) -> Single<Element> {
         return self.do(onSubscribe: {
-            loader.show(with: text)
+            loader.show(with: style, text: text)
         }, onDispose: {
             loader.hide()
         })
@@ -60,12 +62,7 @@ public extension ObservableType {
               style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
               text: String? = nil) -> Observable<Element> {
         return self.do(onNext: { _ in
-            switch style {
-            case .circle:
-                loader.showCircular(with: text)
-            case .activityIndicator:
-                loader.show(with: text)
-            }
+            loader.show(with: style, text: text)
         })
     }
     
@@ -115,13 +112,7 @@ public extension Reactive where Base: ReactiveLoaderPresenting {
               style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
               text: String? = nil) -> Completable {
         return Completable.create { completable -> Disposable in
-            switch style {
-            case .circle:
-                loader.showCircular(with: text)
-            case .activityIndicator:
-                loader.show(with: text)
-            }
-            
+            loader.show(with: style, text: text)
             completable(.completed)
             return Disposables.create()
         }

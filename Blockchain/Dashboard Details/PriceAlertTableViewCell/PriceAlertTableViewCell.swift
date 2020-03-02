@@ -6,21 +6,19 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
+/// NOTE: There is currently a `UIButton` in `PriceAlertTableViewCell`.
+/// In a future release this will be for toggling price alerts. Currently
+/// the button is not visible.
 final class PriceAlertTableViewCell: UITableViewCell {
     
-    @IBOutlet private var currentPriceLabel: UILabel!
+    var currency: CryptoCurrency! {
+        didSet {
+            // swiftlint:disable line_length
+            currentPriceLabel.text = "\(LocalizationConstants.DashboardDetails.current) \(currency.symbol) \(LocalizationConstants.DashboardDetails.price)"
+        }
+    }
     
-    // MARK: - Lifecycle
-       
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        
-        currentPriceLabel.text = LocalizationConstants.DashboardDetails.currentPrice
-    }
-       
-    override func prepareForReuse() {
-        super.prepareForReuse()
-    }
+    @IBOutlet private var currentPriceLabel: UILabel!
 }

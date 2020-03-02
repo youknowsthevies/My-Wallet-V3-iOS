@@ -7,17 +7,18 @@
 //
 
 import RxSwift
+import PlatformKit
 
 class KYCPager: KYCPagerAPI {
 
     private let dataRepository: BlockchainDataRepository
-    private(set) var tier: KYCTier
-    private(set) var tiersResponse: KYCUserTiersResponse
+    private(set) var tier: KYC.Tier
+    private(set) var tiersResponse: KYC.UserTiers
 
     init(
         dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
-        tier: KYCTier,
-        tiersResponse: KYCUserTiersResponse
+        tier: KYC.Tier,
+        tiersResponse: KYC.UserTiers
     ) {
         self.dataRepository = dataRepository
         self.tier = tier
@@ -94,7 +95,7 @@ class KYCPager: KYCPagerAPI {
 
 extension KYCPageType {
 
-    static func startingPage(forUser user: NabuUser, tiersResponse: KYCUserTiersResponse) -> KYCPageType {
+    static func startingPage(forUser user: NabuUser, tiersResponse: KYC.UserTiers) -> KYCPageType {
         if !user.email.verified {
             return .enterEmail
         }
@@ -117,7 +118,7 @@ extension KYCPageType {
         return .enterPhone
     }
 
-    static func lastPage(forTier tier: KYCTier) -> KYCPageType {
+    static func lastPage(forTier tier: KYC.Tier) -> KYCPageType {
         switch tier {
         case .tier0,
              .tier1:
@@ -128,7 +129,7 @@ extension KYCPageType {
         }
     }
 
-    static func moreInfoPage(forTier tier: KYCTier) -> KYCPageType? {
+    static func moreInfoPage(forTier tier: KYC.Tier) -> KYCPageType? {
         switch tier {
         case .tier2:
             return .tier1ForcedTier2
@@ -139,10 +140,10 @@ extension KYCPageType {
     }
 
     func nextPage(
-        forTier tier: KYCTier,
+        forTier tier: KYC.Tier,
         user: NabuUser?,
         country: KYCCountry?,
-        tiersResponse: KYCUserTiersResponse
+        tiersResponse: KYC.UserTiers
         ) -> KYCPageType? {
         switch tier {
         case .tier0,
@@ -153,7 +154,7 @@ extension KYCPageType {
         }
     }
 
-    private func nextPageTier1(user: NabuUser?, country: KYCCountry?, tiersResponse: KYCUserTiersResponse) -> KYCPageType? {
+    private func nextPageTier1(user: NabuUser?, country: KYCCountry?, tiersResponse: KYC.UserTiers) -> KYCPageType? {
         switch self {
         case .welcome:
             if let user = user {
@@ -168,7 +169,7 @@ extension KYCPageType {
             if let country = country, country.states.count != 0 {
                 return .states
             }
-            if let user = user, user.personalDetails?.isComplete == true {
+            if let user = user, user.personalDetails.isComplete == true {
                 return .address
             }
             return .profile
@@ -191,7 +192,7 @@ extension KYCPageType {
         }
     }
 
-    private func nextPageTier2(user: NabuUser?, country: KYCCountry?, tiersResponse: KYCUserTiersResponse) -> KYCPageType? {
+    private func nextPageTier2(user: NabuUser?, country: KYCCountry?, tiersResponse: KYC.UserTiers) -> KYCPageType? {
         switch self {
         case .address,
              .tier1ForcedTier2:

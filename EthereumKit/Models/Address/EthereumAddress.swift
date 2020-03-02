@@ -81,7 +81,7 @@ public struct EthereumAccountAddress: EthereumAddressProtocols {
     }
     
     static func validate(address: String) throws {
-        let trimmed = address.stringByRemoving(prefix: "0x")
+        let trimmed = address.removing(prefix: "0x")
         
         // Check that the address only contains alphanumerics
         guard trimmed.isAlphanumeric else {

@@ -130,6 +130,8 @@ struct Constants {
         static let blockchainHome = "https://www.blockchain.com"
         static let privacyPolicy = blockchainHome + "/privacy"
         static let termsOfService = blockchainHome + "/terms"
+        static let simpleBuyGBPTerms = "https://exchange.blockchain.com/legal#modulr"
+
         static let cookiePolicy = blockchainHome + "/cookies"
         static let appStoreLinkPrefix = "itms-apps://itunes.apple.com/app/"
         static let blockchainSupport = "https://support.blockchain.com"

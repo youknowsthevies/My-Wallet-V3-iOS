@@ -8,8 +8,13 @@
 
 import UIKit
 
-final class LoadingAnimatingView: LoadingCircleView {
-    
+public final class LoadingAnimatingView: LoadingCircleView {
+
+    // MARK: - Static Properties
+
+    private static let strokeEndKeyPath: String = "strokeEnd"
+    private static let transformRotationKeyPath: String = "transform.rotation"
+
     // MARK: - Types
     
     private struct Descriptor {
@@ -37,7 +42,7 @@ final class LoadingAnimatingView: LoadingCircleView {
     }
     
     // MARK: - Properties
-        
+
     /// Represents the changes in times, start & end positions of stroke
     private let descriptors = [
         Descriptor(startTime: 0, startAngle: 0, length: 0),
@@ -54,8 +59,8 @@ final class LoadingAnimatingView: LoadingCircleView {
     
     // MARK: - Setup
     
-    override init(diameter: CGFloat, strokeColor: UIColor) {
-        super.init(diameter: diameter, strokeColor: strokeColor)
+    override public init(diameter: CGFloat, strokeColor: UIColor, strokeBackgroundColor: UIColor, fillColor: UIColor) {
+        super.init(diameter: diameter, strokeColor: strokeColor, strokeBackgroundColor: strokeBackgroundColor, fillColor: fillColor)
         accessibility = Accessibility(id: .value(Accessibility.Identifier.LoadingView.loadingView))
     }
     
@@ -64,7 +69,7 @@ final class LoadingAnimatingView: LoadingCircleView {
     }
     
     /// Starts the animation
-    func animate() {
+    public func animate() {
         
         // Calculate the total time of the animation
         let totalTime = descriptors
@@ -87,16 +92,21 @@ final class LoadingAnimatingView: LoadingCircleView {
         summary.lengths.append(summary.lengths[0])
         
         // Animate length
-        animateKeyPath(keyPath: "strokeEnd",
+        animateKeyPath(keyPath: LoadingAnimatingView.strokeEndKeyPath,
                        duration: totalTime,
                        times: summary.times,
                        values: summary.lengths)
         
         // Animate rotation
-        animateKeyPath(keyPath: "transform.rotation",
+        animateKeyPath(keyPath: LoadingAnimatingView.transformRotationKeyPath,
                        duration: totalTime,
                        times: summary.times,
                        values: summary.angles)
+    }
+
+    public func stop() {
+        layer.removeAnimation(forKey: LoadingAnimatingView.strokeEndKeyPath)
+        layer.removeAnimation(forKey: LoadingAnimatingView.transformRotationKeyPath)
     }
     
     private func animateKeyPath(keyPath: String,
@@ -109,6 +119,6 @@ final class LoadingAnimatingView: LoadingCircleView {
         animation.calculationMode = .cubic
         animation.duration = duration
         animation.repeatCount = .infinity
-        layer.add(animation, forKey: animation.keyPath)
+        layer.add(animation, forKey: keyPath)
     }
 }

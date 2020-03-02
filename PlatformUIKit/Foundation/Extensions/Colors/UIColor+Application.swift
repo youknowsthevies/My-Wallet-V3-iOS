@@ -10,6 +10,9 @@ import Foundation
 
 // MARK: - Color Palette - App Layer
 
+/// Typealias to use instead of `UIColor`, to avoid from being dependent on `UIKit`
+public typealias Color = UIColor
+
 public extension UIColor {
     
     // Primary
@@ -25,6 +28,9 @@ public extension UIColor {
     // Backgrounds & Borders
     
     static let background = grey000
+    static let mediumBackground = grey100
+    static let hightlightedBackground = grey50
+    
     static let lightBorder = grey000
     static let mediumBorder = grey100
     static let destructiveBackground = red100
@@ -73,6 +79,7 @@ public extension UIColor {
     
     static let iconDefault = grey400
     static let iconSelected = grey400
+    static let iconWarning = orange600
     
     // Crypto
     

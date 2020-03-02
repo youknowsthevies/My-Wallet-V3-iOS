@@ -17,7 +17,13 @@ enum DashboadDetailsAction {
     case send(CryptoCurrency)
     case request(CryptoCurrency)
     case buy(CryptoCurrency)
-    case swap(CryptoCurrency)
+    case custody(CryptoCurrency)
+    case nonCustodial(CryptoCurrency)
+}
+
+/// Handles updating the collection displayed
+enum DashboardDetailsCollectionAction {
+    case custodial(CustodialCellTypeAction)
 }
 
 final class DashboardDetailsScreenPresenter {
@@ -25,25 +31,25 @@ final class DashboardDetailsScreenPresenter {
     // MARK: - Navigation Properties
     
     var trailingButton: Screen.Style.TrailingButton {
-        return .none
+        .none
     }
     
     var leadingButton: Screen.Style.LeadingButton {
-        return .close
+        .close
     }
     
     var titleView: Screen.Style.TitleView {
-        return .text(value: currency.description)
+        .text(value: currency.name)
     }
     
     var barStyle: Screen.Style.Bar {
-        return .lightContent(ignoresStatusBar: false, background: .navigationBarBackground)
+        .lightContent(ignoresStatusBar: false, background: .navigationBarBackground)
     }
     
     // MARK: - Types
     
     enum CellType: Hashable {
-        case balance
+        case balance(BalanceType)
         case sendRequest
         case priceAlert
         case chart
@@ -52,29 +58,34 @@ final class DashboardDetailsScreenPresenter {
     // MARK: - Rx
     
     var isScrollEnabled: Driver<Bool> {
-        return scrollingEnabledRelay.asDriver()
+        scrollingEnabledRelay.asDriver()
     }
     
     private let scrollingEnabledRelay = BehaviorRelay(value: false)
     
     // MARK: - Exposed Properties
     
+    var shouldShowCustodialBalance: Bool {
+        custodyAssetBalanceViewPresenter != nil
+    }
+    
+    var collectionAction: Signal<DashboardDetailsCollectionAction> {
+        collectionActionRelay.asSignal()
+    }
+    
     /// The dashboard action
     var action: Signal<DashboadDetailsAction> {
-        return actionRelay.asSignal()
+        actionRelay.asSignal()
     }
     
     /// Returns the total count of cells
     var cellCount: Int {
-        return cellArrangement.count
+        cellArrangement.count
     }
     
     /// Returns the ordered cell types
     var cellArrangement: [CellType] {
-        return [.balance,
-                .sendRequest,
-                .priceAlert,
-                .chart]
+        shouldShowCustodialBalance ? .default + [.balance(.custodial)] : .default
     }
     
     var indexByCellType: [CellType: Int] {
@@ -87,37 +98,48 @@ final class DashboardDetailsScreenPresenter {
     
     // MARK: - Public Properties (Presenters)
     
-    var assetBalanceViewPresenter: AssetBalanceViewPresenter {
-        return AssetBalanceViewPresenter(
-            alignment: .trailing,
-            interactor: AssetBalanceViewInteractor(assetBalanceFetching: interactor.balanceFetching)
+    var balanceCellPresenter: CurrentBalanceCellPresenter {
+        CurrentBalanceCellPresenter(
+            balanceFetching: interactor.balanceFetching,
+            currency: currency,
+            balanceType: .nonCustodial,
+            alignment: .trailing
         )
     }
     
+    private(set) var custodyAssetBalanceViewPresenter: CurrentBalanceCellPresenter!
+    
     var sendRequestPresenter: MultiActionViewPresenting {
-        return PlainActionViewPresenter(
+        PlainActionViewPresenter(
             using: sendRequestItems
         )
     }
-    
-    let swapButtonViewModel: ButtonViewModel
     
     let lineChartCellPresenter: AssetLineChartTableViewCellPresenter
     
     let currency: CryptoCurrency
     
+    /// Selection relay for a single presenter
+    let presenterSelectionRelay = PublishRelay<CellType>()
+    
     // MARK: - Private Properties
     
+    private unowned let router: DashboardRouter
     private let interactor: DashboardDetailsScreenInteracting
+    private let collectionActionRelay = PublishRelay<DashboardDetailsCollectionAction>()
     private let actionRelay = PublishRelay<DashboadDetailsAction>()
+    private let custodialPresenter: DashboardDetailsCustodialTypePresenter
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
     
     init(using interactor: DashboardDetailsScreenInteracting,
          with currency: CryptoCurrency,
-         currencyProvider: FiatCurrencyTypeProviding = BlockchainSettings.App.shared,
-         currencyCode: String) {
+         currencyCode: String,
+         router: DashboardRouter) {
+        let custodialBalanceFetching = interactor.balanceFetching.custodialBalance
+        self.custodialPresenter = DashboardDetailsCustodialTypePresenter(balanceFetching: custodialBalanceFetching)
+        self.router = router
         self.currency = currency
         self.interactor = interactor
         
@@ -131,12 +153,41 @@ final class DashboardDetailsScreenPresenter {
             .drive(scrollingEnabledRelay)
             .disposed(by: disposeBag)
         
-        swapButtonViewModel = .primary(with: LocalizationConstants.Swap.swap)
-        swapButtonViewModel.tapRelay
-            .bind { [weak self] in
+        Observable.combineLatest(presenterSelectionRelay,
+                                 interactor.recoveryPhraseStatus.isRecoveryPhraseVerified)
+            .bind { [weak self] (cellType, verified) in
                 guard let self = self else { return }
-                self.actionRelay.accept(.swap(self.currency))
+                guard case let .balance(balanceType) = cellType else { return }
+                switch balanceType {
+                case .custodial:
+                    self.actionRelay.accept(.custody(currency))
+                case .nonCustodial:
+                    self.actionRelay.accept(.nonCustodial(currency))
             }
+        }
+        .disposed(by: disposeBag)
+    }
+    
+    /// Should be called on `viewDidLoad`
+    func setup() {
+        custodialPresenter.action
+            .do(onNext: { [weak self] action in
+                guard let self = self else { return }
+                switch action {
+                case .show:
+                    self.custodyAssetBalanceViewPresenter = CurrentBalanceCellPresenter(
+                        balanceFetching: self.interactor.balanceFetching,
+                        currency: self.currency,
+                        balanceType: .custodial,
+                        alignment: .trailing
+                    )
+                case .none:
+                    self.custodyAssetBalanceViewPresenter = nil
+                }
+            })
+            .asObservable()
+            .map { .custodial($0) }
+            .bind(to: collectionActionRelay)
             .disposed(by: disposeBag)
     }
     
@@ -157,4 +208,13 @@ final class DashboardDetailsScreenPresenter {
                     self.actionRelay.accept(.request(self.currency))
                 })]
     }()
+}
+
+extension Array where Element == DashboardDetailsScreenPresenter.CellType {
+    static var `default`: [Element] {
+        [.sendRequest,
+        .priceAlert,
+        .chart,
+        .balance(.nonCustodial)]
+    }
 }

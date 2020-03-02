@@ -9,7 +9,7 @@
 import RxSwift
 import StellarKit
 import XCTest
-
+import PlatformKit
 @testable import Blockchain
 
 class StellarAirdropRouterTests: XCTestCase {
@@ -51,11 +51,11 @@ class StellarAirdropRouterTests: XCTestCase {
             StellarWalletAccount(index: 0, publicKey: "public key", label: "label", archived: false)
         ]
         mockDataRepo.mockNabuUser = NabuUser(
-            personalDetails: nil,
+            personalDetails: PersonalDetails(id: nil, first: nil, last: nil, birthday: nil),
             address: nil,
             email: Email(address: "test", verified: false),
             mobile: nil,
-            status: KYCAccountStatus.none,
+            status: KYC.AccountStatus.none,
             state: NabuUser.UserState.none,
             tags: Tags(),
             tiers: nil,

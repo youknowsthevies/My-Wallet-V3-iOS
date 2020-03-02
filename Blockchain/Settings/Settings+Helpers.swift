@@ -12,21 +12,6 @@ import PlatformKit
 
 extension SettingsTableViewController {
 
-    func getAllCurrencySymbols() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.didGetCurrencySymbols),
-                                               name: NSNotification.Name(rawValue: "GetAllCurrencySymbols"), object: nil)
-        WalletManager.shared.wallet.getBtcExchangeRates()
-    }
-
-    @objc func didGetCurrencySymbols() {
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "GetAllCurrencySymbols"), object: nil)
-        updateCurrencySymbols()
-    }
-
-    func getLocalSymbolFromLatestResponse() -> CurrencySymbol? {
-        return WalletManager.shared.latestMultiAddressResponse?.symbol_local
-    }
     func alertUserOfErrorLoadingSettings() {
         let actions = [
            UIAlertAction(title: LocalizationConstants.okString, style: .cancel, handler: nil)

@@ -55,7 +55,7 @@ final class PinScreenViewController: BaseScreenViewController {
         securePinView.viewModel = presenter.securePinViewModel
 
         if Constants.Booleans.isUsingScreenSizeEqualIphone5S {
-            digitPadBottomConstraint.constant = 20
+            digitPadBottomConstraint.constant = 0
             securePinViewTopConstraint.constant = 5
         }
         

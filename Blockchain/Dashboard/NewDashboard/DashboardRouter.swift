@@ -14,20 +14,45 @@ import RxRelay
 
 final class DashboardRouter {
     
+    // MARK: - Private Properties
+    
     private let disposeBag = DisposeBag()
     private let currencyRouting: CurrencyRouting
     private let tabSwapping: TabSwapping
     private let rootViewController: TabViewController!
+    private let recoveryVerifyingAPI: RecoveryPhraseVerifyingServiceAPI
+    private let backupRouterAPI: BackupRouterAPI
+    private let custodyActionRouterAPI: CustodyActionRouterAPI
+    private let nonCustodialActionRouterAPI: NonCustodialActionRouterAPI
+    private weak var topMostViewControllerProvider: TopMostViewControllerProviding?
     private let dataProvider: DataProvider
+    private let userInformationServiceProvider: UserInformationServiceProviding
     
     init(rootViewController: TabViewController,
          currencyRouting: CurrencyRouting,
+         topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
+         userInformationServiceProvider: UserInformationServiceProviding = UserInformationServiceProvider.default,
          tabSwapping: TabSwapping,
-         dataProvider: DataProvider = DataProvider.default) {
+         wallet: Wallet = WalletManager.shared.wallet,
+         dataProvider: DataProvider = DataProvider.default,
+         backupRouterAPI: BackupRouterAPI = BackupFundsCustodialRouter()) {
+        self.topMostViewControllerProvider = topMostViewControllerProvider
+        self.recoveryVerifyingAPI = RecoveryPhraseVerifyingService(wallet: wallet)
+        self.userInformationServiceProvider = userInformationServiceProvider
         self.rootViewController = rootViewController
         self.dataProvider = dataProvider
         self.currencyRouting = currencyRouting
         self.tabSwapping = tabSwapping
+        self.backupRouterAPI = backupRouterAPI
+        self.custodyActionRouterAPI = CustodyActionRouter(backupRouterAPI: backupRouterAPI)
+        self.nonCustodialActionRouterAPI = NonCustodialActionRouter(tabSwapping: tabSwapping)
+        
+        self.custodyActionRouterAPI
+            .completionRelay
+            .bind(weak: self, onNext: { (self) in
+                self.dataProvider.balance.refresh()
+            })
+            .disposed(by: disposeBag)
     }
     
     func showDetailsScreen(for currency: CryptoCurrency) {
@@ -35,13 +60,14 @@ final class DashboardRouter {
         let detailsInteractor = DashboardDetailsScreenInteractor(
             currency: currency,
             service: balanceFetcher,
-            currencyProvider: BlockchainSettings.App.shared,
+            fiatCurrencyService: userInformationServiceProvider.settings,
             exchangeAPI: dataProvider.exchange[currency]
         )
         let detailsPresenter = DashboardDetailsScreenPresenter(
             using: detailsInteractor,
             with: currency,
-            currencyCode: BlockchainSettings.App.shared.fiatCurrencyCode
+            currencyCode: BlockchainSettings.App.shared.fiatCurrencyCode,
+            router: self
         )
         
         detailsPresenter.action
@@ -52,26 +78,24 @@ final class DashboardRouter {
             .disposed(by: disposeBag)
         
         let controller = DashboardDetailsViewController(using: detailsPresenter)
-        if #available(iOS 13.0, *) {
-            rootViewController.present(controller, animated: true, completion: nil)
-        } else {
-            let navController = BaseNavigationController(rootViewController: controller)
-            rootViewController.present(navController, animated: true, completion: nil)
-        }
+        let navController = NavigationController(rootViewController: controller)
+        rootViewController.present(navController, animated: true, completion: nil)
     }
     
     private func handle(action: DashboadDetailsAction) {
-        // TODO: Inject `Currency`
-        rootViewController.dismiss(animated: true, completion: nil)
         switch action {
-        case .buy(let currency):
+        case .buy:
             break
         case .request(let currency):
+            topMostViewControllerProvider?.topMostViewController?.dismiss(animated: true, completion: nil)
             currencyRouting.toReceive(currency)
         case .send(let currency):
+            topMostViewControllerProvider?.topMostViewController?.dismiss(animated: true, completion: nil)
             currencyRouting.toSend(currency)
-        case .swap(let currency):
-            tabSwapping.switchTabToSwap()
+        case .custody(let currency):
+            custodyActionRouterAPI.start(with: currency)
+        case .nonCustodial(let currency):
+            nonCustodialActionRouterAPI.start(with: currency)
         }
     }
 }

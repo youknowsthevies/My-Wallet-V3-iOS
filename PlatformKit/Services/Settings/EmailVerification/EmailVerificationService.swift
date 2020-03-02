@@ -84,12 +84,10 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
     private func waitForVerification() -> Single<Void> {
         return self.continue()
             .flatMap(weak: self) { (self, _) -> Single<Void> in
-                return self.settingsService.state
+                return self.settingsService
                     /// Get the first value and make sure the stream terminates
                     /// by converting it to a `Single`
-                    .compactMap { $0.value }
-                    .take(1)
-                    .asSingle()
+                    .valueSingle
                     /// Make sure the email is verified, if not throw an error
                     .map(weak: self) { (self, settings) -> Void in
                         guard settings.isEmailVerified else {

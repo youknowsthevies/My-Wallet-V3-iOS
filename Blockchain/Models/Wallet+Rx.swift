@@ -6,33 +6,24 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import RxSwift
 import RxRelay
+import PlatformKit
 
 /// An extension to `Wallet` which makes wallet fuctionality Rx friendly.
-class ReactiveWallet {
-    
-    enum StateError: Error {
-        case walletUnitinialized
-    }
-    
-    enum State {
-        case initialized
-        case uninitialized
-    }
-        
+final class ReactiveWallet: ReactiveWalletAPI {
+            
     var waitUntilInitialized: Observable<Void> {
         return initializationState
             .asObservable()
             .map { state -> Void in
                 if state == .uninitialized {
-                    throw StateError.walletUnitinialized
+                    throw WalletSetup.StateError.walletUnitinialized
                 }
                 return ()
             }
             .retry(
-                .delayed(maxCount: 200, time: 0.5),
+                .delayed(maxCount: .max, time: 0.5),
                 scheduler: MainScheduler.instance,
                 shouldRetry: { error -> Bool in
                     return true
@@ -40,9 +31,13 @@ class ReactiveWallet {
             )
     }
     
+    var waitUntilInitializedSingle: Single<Void> {
+        return waitUntilInitialized.take(1).asSingle()
+    }
+    
     /// A `Single` that streams a boolean element indicating
     /// whether the wallet is initialized
-    var initializationState: Single<State> {
+    var initializationState: Single<WalletSetup.State> {
         return Single
             .create(weak: self) { (self, observer) -> Disposable in
                 if self.wallet.isInitialized() {

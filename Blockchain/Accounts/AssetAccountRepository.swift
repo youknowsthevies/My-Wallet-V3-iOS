@@ -16,18 +16,11 @@ import EthereumKit
 import StellarKit
 import ERC20Kit
 
-protocol AssetAccountRepositoryAPI {
-    func accounts(for assetType: AssetType, fromCache: Bool) -> Single<[AssetAccount]>
-    func defaultStellarAccount() -> AssetAccount?
-    var accounts: Single<[AssetAccount]> { get }
-}
-
+// TICKET: [IOS-2087] - Integrate PlatformKit Account Repositories and Deprecate AssetAccountRepository
 /// A repository for `AssetAccount` objects
-// TICKET: [IOS-2087] - Integrate PlatformKit Account Repositories
-// and Deprecate AssetAccountRepository
 class AssetAccountRepository: AssetAccountRepositoryAPI {
 
-    static let shared = AssetAccountRepository()
+    static let shared: AssetAccountRepositoryAPI = AssetAccountRepository()
 
     private let wallet: Wallet
     private let stellarServiceProvider: StellarServiceProvider
@@ -56,124 +49,56 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         disposables.dispose()
     }
 
-    // MARK: Public Methods
-    
-    func accounts(for assetType: AssetType, fromCache: Bool = true) -> Single<[AssetAccount]> {
-        // A crash occurs in the for loop if wallet.getActiveAccountsCount returns 0
-        // "Fatal error: Can't form Range with upperBound < lowerBound"
-        if !wallet.isInitialized() {
-            return .just([])
-        }
-        
-        if assetType == .pax {
-            if fromCache {
-                return paxAccountRepository.assetAccountDetails
-                    .flatMap {
-                        let balance = $0.balance.majorValue
-                        Logger.shared.info("Balance for PAX: \(balance)")
-                        let account = AssetAccount(
-                            index: 0,
-                            address: AssetAddressFactory.create(
-                                fromAddressString: $0.account.accountAddress,
-                                assetType: .pax
-                            ),
-                            balance: $0.balance,
-                            name: $0.account.name
-                        )
-                        return .just([account])
-                    }
-            } else {
-                return paxAccountRepository.currentAssetAccountDetails(fromCache: false)
-                    .flatMap {
-                        let balance = $0.balance.majorValue
-                        Logger.shared.info("Balance for PAX: \(balance)")
-                        let account = AssetAccount(
-                            index: 0,
-                            address: AssetAddressFactory.create(
-                                fromAddressString: $0.account.accountAddress,
-                                assetType: .pax
-                            ),
-                            balance: $0.balance,
-                            name: $0.account.name
-                        )
-                        return .just([account])
-                    }
-            }
-        }
-        
-        if fromCache {
-            return accounts.flatMap { result -> Single<[AssetAccount]> in
-                let cached = result.filter({ $0.address.assetType == assetType })
-                return .just(cached)
-            }
-        }
-        
-        if assetType == .ethereum {
-            return defaultEthereumAccount()
-                .map { account in
-                    guard let account = account else { return [] }
-                    return [account]
-                }
-        }
-        
-        if assetType == .stellar {
-            if fromCache == false {
-                return stellarAccountService
-                    .currentStellarAccountAsSingle(fromCache: false)
-                    .map { account in
-                        guard let account = account else {
-                            return []
-                        }
-                        return [account.assetAccount]
-                    }
-                    .catchError { error -> Single<[AssetAccount]> in
-                        /// Should Horizon go down or should we have an error when
-                        /// retrieving the user's account details, we just want to return
-                        /// a `Maybe.empty()`. If we return an error, the user will not be able
-                        /// to see any of their available accounts in `Swap`. 
-                        guard error is StellarServiceError else {
-                            return .error(error)
-                        }
-                        return .just([])
-                    }
-            }
-            if let stellarAccount = defaultStellarAccount() {
-                return .just([stellarAccount])
-            }
-            
-            return .just([])
-        }
-        
-        // Handle BTC and BCH
-        // TODO pull in legacy addresses.
-        // TICKET: IOS-1290
-        var result: [AssetAccount] = []
-        for index in 0...wallet.getActiveAccountsCount(assetType.legacy)-1 {
-            let index = wallet.getIndexOfActiveAccount(index, assetType: assetType.legacy)
-            if let assetAccount = AssetAccount.create(assetType: assetType, index: index, wallet: wallet) {
-                result.append(assetAccount)
-            }
-        }
-        return .just(result)
-    }
-    
+    // MARK: Public Properties
+
     var accounts: Single<[AssetAccount]> {
         guard let value = cachedAccounts.value else {
             return fetchAccounts()
         }
         return .just(value)
     }
-    
+
     var fetchETHHistoryIfNeeded: Single<Void> {
         return ethereumWalletService.fetchHistoryIfNeeded
     }
-    
+
+    // MARK: Public Methods
+
+    func accounts(for assetType: AssetType) -> Single<[AssetAccount]> {
+        return accounts(for: assetType, fromCache: true)
+    }
+
+    func accounts(for assetType: AssetType, fromCache: Bool) -> Single<[AssetAccount]> {
+        guard wallet.isInitialized() else {
+            return .just([])
+        }
+
+        switch assetType {
+        case .pax:
+            return paxAccount(fromCache: fromCache)
+        case .ethereum:
+            return ethereumAccount(fromCache: fromCache)
+        case .stellar:
+            return stellarAccount(fromCache: fromCache)
+        case .bitcoin,
+             .bitcoinCash:
+            return legacyAddress(assetType: assetType, fromCache: fromCache)
+        }
+    }
+
+    func nameOfAccountContaining(address: String, currencyType: CryptoCurrency) -> Single<String> {
+        return accounts
+            .flatMap { output -> Single<String> in
+                guard let result = output.first(where: { $0.address.address == address && $0.balance.currencyType == currencyType }) else {
+                    return .error(NSError())
+                }
+                return .just(result.name)
+            }
+    }
+
     func fetchAccounts() -> Single<[AssetAccount]> {
-        var observables: [Observable<[AssetAccount]>] = []
-        AssetType.all.forEach {
-            let observable = accounts(for: $0, fromCache: false)
-                .asObservable()
-            observables.append(observable)
+        let observables: [Observable<[AssetAccount]>] = AssetType.all.map {
+            accounts(for: $0, fromCache: false).asObservable()
         }
         return Single.create { observer -> Disposable in
             let disposable = Observable.zip(observables)
@@ -189,31 +114,84 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         }
     }
 
-    func defaultAccount(for assetType: AssetType, fromCache: Bool = true) -> Single<AssetAccount?> {
-        if assetType == .ethereum {
-            return defaultEthereumAccount()
-        } else if assetType == .stellar {
-            if let account = defaultStellarAccount() {
-                return .just(account)
-            } else {
-                return .just(nil)
-            }
-        }
-        let index = wallet.getDefaultAccountIndex(for: assetType.legacy)
-        let account = AssetAccount.create(assetType: assetType, index: index, wallet: wallet)
-        if let result = account {
-            return .just(result)
-        } else {
-            return .just(nil)
+    func defaultAccount(for assetType: AssetType) -> Single<AssetAccount?> {
+        switch assetType {
+        case .ethereum:
+            return accounts(for: assetType, fromCache: false).map { $0.first }
+        case .stellar:
+            let account: AssetAccount? = stellarAccountService.currentAccount?.assetAccount
+            return .just(account)
+        case .pax:
+            return accounts(for: .pax, fromCache: false).map { $0.first }
+        case .bitcoin,
+             .bitcoinCash:
+            let index = wallet.getDefaultAccountIndex(for: assetType.legacy)
+            let account: AssetAccount? = AssetAccount.create(assetType: assetType, index: index, wallet: wallet)
+            return .just(account)
         }
     }
 
-    func defaultEthereumAccount() -> Single<AssetAccount?> {
+    // MARK: Private Methods
+
+    private func stellarAccount(fromCache: Bool) -> Single<[AssetAccount]> {
+        if fromCache {
+            return cachedAccount(assetType: .stellar)
+        } else {
+            return stellarAccountService
+                .currentStellarAccountAsSingle(fromCache: false)
+                .map { account in
+                    guard let account = account else {
+                        return []
+                    }
+                    return [account.assetAccount]
+                }
+                .catchError { error -> Single<[AssetAccount]> in
+                    /// Should Horizon go down or should we have an error when
+                    /// retrieving the user's account details, we just want to return
+                    /// a `Maybe.empty()`. If we return an error, the user will not be able
+                    /// to see any of their available accounts in `Swap`.
+                    guard error is StellarServiceError else {
+                        return .error(error)
+                    }
+                    return .just([])
+                }
+        }
+    }
+
+    private func paxAccount(fromCache: Bool) -> Single<[AssetAccount]> {
+        return paxAccountRepository
+            .currentAssetAccountDetails(fromCache: fromCache)
+            .flatMap {
+                let account = AssetAccount(
+                    index: 0,
+                    address: AssetAddressFactory.create(
+                        fromAddressString: $0.account.accountAddress,
+                        assetType: .pax
+                    ),
+                    balance: $0.balance,
+                    name: $0.account.name
+                )
+                return .just([account])
+        }
+    }
+
+    private func cachedAccount(assetType: AssetType) -> Single<[AssetAccount]> {
+        return accounts.flatMap { result -> Single<[AssetAccount]> in
+            let cached = result.filter { $0.address.assetType == assetType }
+            return .just(cached)
+        }
+    }
+
+    private func ethereumAccount(fromCache: Bool) -> Single<[AssetAccount]> {
+        guard !fromCache else {
+            return cachedAccount(assetType: .ethereum)
+        }
+
         guard let ethereumAddress = self.wallet.getEtherAddress(), self.wallet.hasEthAccount() else {
             Logger.shared.debug("This wallet has no ethereum address.")
-            return .just(nil)
+            return .just([])
         }
-        
+
         let fallback = EthereumAssetAccount(
             walletIndex: 0,
             accountAddress: ethereumAddress,
@@ -224,10 +202,10 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
             balance: .etherZero,
             nonce: 0
         )
-        
+
         return ethereumAccountRepository.assetAccountDetails
             .catchErrorJustReturn(details)
-            .flatMap({ details -> Single<AssetAccount?> in
+            .flatMap { details -> Single<[AssetAccount]> in
                 let account = AssetAccount(
                     index: 0,
                     address: AssetAddressFactory.create(
@@ -237,15 +215,27 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
                     balance: details.balance,
                     name: LocalizationConstants.myEtherWallet
                 )
-                return .just(account)
-        })
+                return .just([account].compactMap { $0 })
+            }
     }
 
-    func defaultStellarAccount() -> AssetAccount? {
-        guard let stellarAccount = stellarAccountService.currentAccount else {
-            return nil
+    // Handle BTC and BCH
+    // TODO pull in legacy addresses.
+    // TICKET: IOS-1290
+    private func legacyAddress(assetType: AssetType, fromCache: Bool) -> Single<[AssetAccount]> {
+        if fromCache {
+            return cachedAccount(assetType: assetType)
+        } else {
+            let activeAccountsCount: Int32 = wallet.getActiveAccountsCount(assetType.legacy)
+            /// Must have at least one address
+            guard activeAccountsCount > 0 else {
+                return .just([])
+            }
+            let result: [AssetAccount] = Array(0..<activeAccountsCount)
+                .map { wallet.getIndexOfActiveAccount($0, assetType: assetType.legacy) }
+                .compactMap { AssetAccount.create(assetType: assetType, index: $0, wallet: wallet) }
+            return .just(result)
         }
-        return stellarAccount.assetAccount
     }
 }
 
@@ -253,7 +243,7 @@ extension AssetAccount {
 
     /// Creates a new AssetAccount. This method only supports creating an AssetAccount for
     /// BTC or BCH. For ETH, use `defaultEthereumAccount`.
-    static func create(assetType: AssetType, index: Int32, wallet: Wallet) -> AssetAccount? {
+    fileprivate static func create(assetType: AssetType, index: Int32, wallet: Wallet) -> AssetAccount? {
         guard let address = wallet.getReceiveAddress(forAccount: index, assetType: assetType.legacy) else {
             return nil
         }
@@ -277,29 +267,5 @@ extension AssetAccount {
             balance: balance,
             name: name ?? ""
         )
-    }
-}
-
-extension AssetAccountRepository {
-    
-    fileprivate func fetchAccountsStartingWithCache(
-        cachedValue: BehaviorRelay<[AssetAccount]?>,
-        networkValue: Single<[AssetAccount]>
-        ) -> Observable<[AssetAccount]> {
-        let networkObservable = networkValue.asObservable()
-        guard let cached = cachedValue.value else {
-            return networkObservable
-        }
-        return networkObservable.startWith(cached)
-    }
-    
-    func nameOfAccountContaining(address: String, currencyType: CryptoCurrency) -> Single<String> {
-        return accounts
-            .flatMap { output -> Single<String> in
-                guard let result = output.first(where: { $0.address.address == address && $0.balance.currencyType == currencyType }) else {
-                    return .error(NSError())
-            }
-            return .just(result.name)
-        }
     }
 }

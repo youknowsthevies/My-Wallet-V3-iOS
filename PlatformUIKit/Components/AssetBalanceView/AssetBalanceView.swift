@@ -84,13 +84,11 @@ public final class AssetBalanceView: UIView {
     
     private func setup() {
         fromNib()
-        shimmer(
-            estimatedFiatLabelSize: CGSize(width: 90, height: 16),
-            estimatedCryptoLabelSize: CGSize(width: 100, height: 14)
-        )
     }
     
     private func stopShimmering() {
+        guard fiatLabelShimmeringView != nil else { return }
+        guard cryptoLabelShimmeringView != nil else { return }
         guard fiatLabelShimmeringView.isShimmering && cryptoLabelShimmeringView.isShimmering else { return }
         
         fiatBalanceLabel.alpha = 0

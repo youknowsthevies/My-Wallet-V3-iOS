@@ -166,7 +166,14 @@ public struct Screen {
                             id: .value(Accessibility.Identifier.NavigationBar.drawerButton)
                         )
                     )
-                case .back, .close:
+                case .close:
+                    return NavigationBarContent(
+                        image: UIImage(named: "navigation-close-icon"),
+                        accessibility: .init(
+                            id: .value(Accessibility.Identifier.NavigationBar.dismissButton)
+                        )
+                    )
+                case .back:
                     return NavigationBarContent(
                         image: UIImage(named: "back_icon"),
                         accessibility: .init(

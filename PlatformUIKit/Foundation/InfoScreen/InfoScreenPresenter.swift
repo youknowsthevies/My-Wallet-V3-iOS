@@ -39,7 +39,7 @@ public struct InfoScreenPresenter {
     
     public init(with content: InfoScreenContent, action: @escaping () -> Void) {
         imageViewContent = .init(
-            image: UIImage(named: content.image),
+            imageName: content.image,
             accessibility: .id(AccessibilityId.imageView)
         )
         titleLabelContent = .init(
@@ -62,8 +62,7 @@ public struct InfoScreenPresenter {
             alignment: .center
         )
         buttonViewModel = .primary(
-            with: content.buttonTitle,
-            cornerRadius: 8
+            with: content.buttonTitle
         )
         buttonViewModel.tapRelay
             .bind { action() }

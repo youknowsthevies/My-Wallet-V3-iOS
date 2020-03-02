@@ -38,8 +38,8 @@ public final class PairExchangeService: PairExchangeServiceAPI {
     /// The exchange service
     private let priceService: PriceServiceAPI
     
-    /// The currency provider
-    private let fiatCurrencyProvider: FiatCurrencyTypeProviding
+    /// The currency service
+    private let currencyService: FiatCurrencySettingsServiceAPI
     
     /// The associated asset
     private let cryptoCurrency: CryptoCurrency
@@ -48,15 +48,15 @@ public final class PairExchangeService: PairExchangeServiceAPI {
     
     public init(cryptoCurrency: CryptoCurrency,
                 priceService: PriceServiceAPI = PriceServiceClient(),
-                fiatCurrencyProvider: FiatCurrencyTypeProviding) {
+                currencyService: FiatCurrencySettingsServiceAPI) {
         self.cryptoCurrency = cryptoCurrency
         self.priceService = priceService
-        self.fiatCurrencyProvider = fiatCurrencyProvider
+        self.currencyService = currencyService
         
         let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
         
         fiatPrice = Observable
-            .combineLatest(fiatCurrencyProvider.fiatCurrency, fetchTriggerRelay)
+            .combineLatest(currencyService.fiatCurrencyObservable, fetchTriggerRelay)
             .throttle(.milliseconds(100), scheduler: scheduler)
             .map { $0.0.code }
             .subscribeOn(scheduler)

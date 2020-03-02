@@ -14,7 +14,11 @@ final class UserInformationServiceProvider: UserInformationServiceProviding {
     static let `default` = UserInformationServiceProvider()
     
     /// Persistent service that has access to the general wallet settings
-    let settings: SettingsServiceAPI & EmailSettingsServiceAPI & LastTransactionSettingsUpdateServiceAPI & EmailNotificationSettingsServiceAPI
+    let settings: SettingsServiceAPI &
+                  EmailSettingsServiceAPI &
+                  LastTransactionSettingsUpdateServiceAPI &
+                  EmailNotificationSettingsServiceAPI &
+                  FiatCurrencySettingsServiceAPI
     
     /// Computes and returns an email verification service API
     var emailVerification: EmailVerificationServiceAPI {

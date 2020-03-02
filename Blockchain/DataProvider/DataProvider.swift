@@ -7,6 +7,7 @@
 //
 
 import PlatformKit
+import RxSwift
 
 /// A container for common crypto services.
 /// Rule of thumb: If a service may be used by multiple clients,
@@ -29,54 +30,55 @@ final class DataProvider: DataProviding {
     /// Balance service for any asset
     let balance: BalanceProviding
     
-    init(fiatCurrencyProvider: FiatCurrencyTypeProviding = BlockchainSettings.App.shared) {
-        
+    init(fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
+         authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared) {
         self.exchange = ExchangeProvider(
             ether: PairExchangeService(
                 cryptoCurrency: .ethereum,
-                fiatCurrencyProvider: fiatCurrencyProvider
-        ),
+                fiatCurrencyService: fiatCurrencyService
+            ),
             pax: PairExchangeService(
-            cryptoCurrency: .pax,
-            fiatCurrencyProvider: fiatCurrencyProvider
-        ),
+                cryptoCurrency: .pax,
+                fiatCurrencyService: fiatCurrencyService
+            ),
             stellar: PairExchangeService(
                 cryptoCurrency: .stellar,
-                fiatCurrencyProvider: fiatCurrencyProvider
-        ),
+                fiatCurrencyService: fiatCurrencyService
+            ),
             bitcoin: PairExchangeService(
                 cryptoCurrency: .bitcoin,
-                fiatCurrencyProvider: fiatCurrencyProvider
-        ),
+                fiatCurrencyService: fiatCurrencyService
+            ),
             bitcoinCash: PairExchangeService(
                 cryptoCurrency: .bitcoinCash,
-                fiatCurrencyProvider: fiatCurrencyProvider)
+                fiatCurrencyService: fiatCurrencyService
+            )
         )
         
         let etherHistoricalFiatService = HistoricalFiatPriceService(
             cryptoCurrency: .ethereum,
             exchangeAPI: exchange[.ethereum],
-            fiatCurrencyProvider: fiatCurrencyProvider
+            fiatCurrencyService: fiatCurrencyService
         )
         let bitcoinHistoricalFiatService = HistoricalFiatPriceService(
             cryptoCurrency: .bitcoin,
             exchangeAPI: exchange[.bitcoin],
-            fiatCurrencyProvider: fiatCurrencyProvider
+            fiatCurrencyService: fiatCurrencyService
         )
         let bitcoinCashHistoricalFiatService = HistoricalFiatPriceService(
             cryptoCurrency: .bitcoinCash,
             exchangeAPI: exchange[.bitcoinCash],
-            fiatCurrencyProvider: fiatCurrencyProvider
+            fiatCurrencyService: fiatCurrencyService
         )
         let stellarHistoricalFiatService = HistoricalFiatPriceService(
             cryptoCurrency: .stellar,
             exchangeAPI: exchange[.stellar],
-            fiatCurrencyProvider: fiatCurrencyProvider
+            fiatCurrencyService: fiatCurrencyService
         )
         let paxHistoricalFiatService = HistoricalFiatPriceService(
             cryptoCurrency: .pax,
             exchangeAPI: exchange[.pax],
-            fiatCurrencyProvider: fiatCurrencyProvider
+            fiatCurrencyService: fiatCurrencyService
         )
         
         self.historicalPrices = HistoricalFiatPriceProvider(
@@ -87,23 +89,48 @@ final class DataProvider: DataProviding {
             bitcoinCash: bitcoinCashHistoricalFiatService
         )
         
+        let custodialBalanceService = CustodialBalanceService(
+            client: CustodialBalanceClient(),
+            authenticationService: authenticationService
+        )
+        
         let etherBalanceFetcher = AssetBalanceFetcher(
+            custodialBalance: CustodialCryptoBalanceFetcher(
+                currencyType: .ethereum,
+                service: custodialBalanceService
+            ),
             balance: WalletManager.shared.wallet.ethereum,
             exchange: exchange[.ethereum]
         )
         let paxBalanceFetcher = AssetBalanceFetcher(
+            custodialBalance: CustodialCryptoBalanceFetcher(
+                currencyType: .pax,
+                service: custodialBalanceService
+            ),
             balance: ERC20AssetBalanceFetcher(),
             exchange: exchange[.pax]
         )
         let stellarBalanceFetcher = AssetBalanceFetcher(
+            custodialBalance: CustodialCryptoBalanceFetcher(
+                currencyType: .stellar,
+                service: custodialBalanceService
+            ),
             balance: StellarServiceProvider.shared.services.accounts,
             exchange: exchange[.stellar]
         )
         let bitcoinBalanceFetcher = AssetBalanceFetcher(
+            custodialBalance: CustodialCryptoBalanceFetcher(
+                currencyType: .bitcoin,
+                service: custodialBalanceService
+            ),
             balance: BitcoinAssetBalanceFetcher(),
             exchange: exchange[.bitcoin]
         )
         let bitcoinCashBalanceFetcher = AssetBalanceFetcher(
+            custodialBalance: CustodialCryptoBalanceFetcher(
+                currencyType: .bitcoinCash,
+                service: custodialBalanceService
+            ),
             balance: BitcoinCashAssetBalanceFetcher(),
             exchange: exchange[.bitcoinCash]
         )

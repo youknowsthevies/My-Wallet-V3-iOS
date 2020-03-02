@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// Represents an state (geographical and/or political region)
 struct KYCState: Codable, SearchableItem {
     let code: String
     let countryCode: String

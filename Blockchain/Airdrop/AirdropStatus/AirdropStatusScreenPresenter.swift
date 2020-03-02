@@ -9,6 +9,7 @@
 import RxSwift
 import RxRelay
 import RxCocoa
+import ToolKit
 import PlatformKit
 import PlatformUIKit
 
@@ -188,17 +189,17 @@ final class AirdropStatusScreenPresenter {
         
         let title: String
         let description: String
-        let image: UIImage
+        let imageName: String
         
         switch campaignName {
         case .blockstack:
             title = LocalizedString.Blockstack.title
             description = LocalizedString.Blockstack.description
-            image = TriageCryptoCurrency.blockstack.logoImage
+            imageName = TriageCryptoCurrency.blockstack.logoImageName
         case .sunriver:
-            image = CryptoCurrency.stellar.logo
             title = LocalizedString.Stellar.title
             description = LocalizedString.Stellar.description
+            imageName = CryptoCurrency.stellar.logoImageName
         }
 
         titleRelay.accept(
@@ -221,7 +222,7 @@ final class AirdropStatusScreenPresenter {
         
         imageRelay.accept(
             ImageViewContent(
-                image: image,
+                imageName: imageName,
                 accessibility: .id(AccessibilityId.thumbImageView)
             )
         )

@@ -24,6 +24,8 @@
                 <outlet property="buttonsStackView" destination="cdS-N6-92a" id="YtR-RK-KYY"/>
                 <outlet property="descriptionLabel" destination="bNw-GW-unC" id="6jA-Jc-CGL"/>
                 <outlet property="dismissButton" destination="jZO-lz-tfH" id="eZX-0n-IUT"/>
+                <outlet property="imageViewCenterInSuperviewConstraint" destination="Pz5-UL-FPk" id="whr-22-ANg"/>
+                <outlet property="imageViewLeadingToSuperviewConstraint" destination="9t4-6X-5ES" id="T2u-w2-pIz"/>
                 <outlet property="stackViewToBottomConstraint" destination="5QN-Xa-RWU" id="e0I-Ht-s9G"/>
                 <outlet property="thumbImageView" destination="Bss-d6-2O7" id="r2C-zq-UfS"/>
                 <outlet property="titleLabel" destination="tMG-Cl-pfd" id="CCb-hY-ftD"/>
@@ -85,27 +87,28 @@
                     </constraints>
                 </view>
             </subviews>
-            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="cdS-N6-92a" secondAttribute="bottom" constant="24" id="5QN-Xa-RWU"/>
                 <constraint firstItem="fCk-NU-QfN" firstAttribute="trailing" secondItem="tMG-Cl-pfd" secondAttribute="trailing" constant="24" id="5RV-2y-gSk"/>
                 <constraint firstItem="jZO-lz-tfH" firstAttribute="firstBaseline" secondItem="iN0-l3-epB" secondAttribute="top" constant="24" id="6hL-eP-RZr"/>
                 <constraint firstItem="gqc-Aa-cm0" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="8tK-Kh-iYX"/>
                 <constraint firstItem="tMG-Cl-pfd" firstAttribute="top" secondItem="Bss-d6-2O7" secondAttribute="bottom" constant="16" id="90k-ri-36l"/>
-                <constraint firstItem="Bss-d6-2O7" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="24" id="9t4-6X-5ES"/>
+                <constraint firstItem="Bss-d6-2O7" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" priority="999" constant="24" id="9t4-6X-5ES"/>
                 <constraint firstItem="bNw-GW-unC" firstAttribute="trailing" secondItem="tMG-Cl-pfd" secondAttribute="trailing" id="9uq-vC-gZ1"/>
                 <constraint firstItem="iJa-kJ-aCt" firstAttribute="leading" secondItem="fCk-NU-QfN" secondAttribute="leading" id="EOl-IN-2rd"/>
                 <constraint firstItem="bNw-GW-unC" firstAttribute="leading" secondItem="tMG-Cl-pfd" secondAttribute="leading" id="FJd-Av-jWd"/>
                 <constraint firstItem="cdS-N6-92a" firstAttribute="leading" secondItem="bNw-GW-unC" secondAttribute="leading" id="FQy-15-P9x"/>
+                <constraint firstItem="Bss-d6-2O7" firstAttribute="centerX" secondItem="fCk-NU-QfN" secondAttribute="centerX" priority="250" id="Pz5-UL-FPk"/>
                 <constraint firstItem="Bss-d6-2O7" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="24" id="SsZ-cm-2Tc"/>
                 <constraint firstAttribute="trailing" secondItem="jZO-lz-tfH" secondAttribute="trailing" constant="6" id="TKZ-Y3-M9z"/>
                 <constraint firstItem="fCk-NU-QfN" firstAttribute="trailing" secondItem="iJa-kJ-aCt" secondAttribute="trailing" id="VaJ-BI-bt9"/>
                 <constraint firstItem="cdS-N6-92a" firstAttribute="top" secondItem="bNw-GW-unC" secondAttribute="bottom" priority="999" constant="24" id="VvL-qT-XD0"/>
                 <constraint firstItem="gqc-Aa-cm0" firstAttribute="trailing" secondItem="iN0-l3-epB" secondAttribute="trailing" id="YHy-5I-PrV"/>
                 <constraint firstItem="bNw-GW-unC" firstAttribute="top" secondItem="tMG-Cl-pfd" secondAttribute="bottom" constant="8" id="d3l-k2-QD6"/>
+                <constraint firstItem="tMG-Cl-pfd" firstAttribute="leading" secondItem="fCk-NU-QfN" secondAttribute="leading" constant="24" id="ixK-3m-3Aa"/>
                 <constraint firstItem="iJa-kJ-aCt" firstAttribute="bottom" secondItem="iN0-l3-epB" secondAttribute="bottom" id="jq2-Fj-4Zr"/>
                 <constraint firstItem="gqc-Aa-cm0" firstAttribute="bottom" secondItem="iN0-l3-epB" secondAttribute="bottom" id="m4D-Kh-Lzm"/>
-                <constraint firstItem="tMG-Cl-pfd" firstAttribute="leading" secondItem="Bss-d6-2O7" secondAttribute="leading" id="n3v-mk-n4v"/>
                 <constraint firstItem="cdS-N6-92a" firstAttribute="trailing" secondItem="bNw-GW-unC" secondAttribute="trailing" id="slk-s6-XFz"/>
                 <constraint firstItem="gqc-Aa-cm0" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="zRX-kl-Pxj"/>
             </constraints>

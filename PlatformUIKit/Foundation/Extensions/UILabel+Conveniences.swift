@@ -10,18 +10,26 @@ import RxSwift
 import RxCocoa
 
 public struct LabelContent: Equatable {
+    
+    public static var empty: LabelContent {
+        return LabelContent()
+    }
+    
     let text: String
     let font: UIFont
-    let color: UIColor
+    let color: Color
+    let alignment: NSTextAlignment
     let accessibility: Accessibility
     
     public init(text: String = "",
                 font: UIFont = .systemFont(ofSize: 12),
                 color: UIColor = .clear,
+                alignment: NSTextAlignment = .natural,
                 accessibility: Accessibility = .none) {
         self.text = text
         self.font = font
         self.color = color
+        self.alignment = alignment
         self.accessibility = accessibility
     }
     
@@ -30,7 +38,7 @@ public struct LabelContent: Equatable {
     }
     
     public func isEmpty() -> Bool {
-        return text == ""
+        text.isEmpty
     }
 }
 
@@ -40,6 +48,7 @@ extension UILabel {
             text = newValue.text
             font = newValue.font
             textColor = newValue.color
+            textAlignment = newValue.alignment
             accessibility = newValue.accessibility
         }
         get {
@@ -47,6 +56,7 @@ extension UILabel {
                 text: text ?? "",
                 font: font,
                 color: textColor,
+                alignment: textAlignment,
                 accessibility: accessibility
             )
         }

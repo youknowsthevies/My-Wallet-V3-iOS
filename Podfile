@@ -41,6 +41,9 @@ target 'ToolKit' do
   target 'ToolKitTests' do
     inherit! :search_paths
     # Pods for testing
+    # Pods for testing
+    pod 'RxBlocking', '~> 5.0'
+    pod 'RxTest', '~> 5.0'
   end
 end
 

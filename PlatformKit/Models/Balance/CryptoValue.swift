@@ -13,53 +13,6 @@ public struct CryptoComparisonError: Error {
     let currencyType2: CryptoCurrency
 }
 
-public protocol Crypto: Money {
-    var currencyType: CryptoCurrency { get }
-    
-    /// The amount is the smallest unit of the currency (i.e. satoshi for BTC, wei for ETH, etc.)
-    /// a.k.a. the minor value of the currency
-    var amount: BigInt { get }
-    var value: CryptoValue { get }
-}
-
-extension Crypto {
-    public var currencyCode: String {
-        return value.currencyCode
-    }
-    
-    public var isZero: Bool {
-        return value.isZero
-    }
-    
-    public var isPositive: Bool {
-        return value.isPositive
-    }
-    
-    public var symbol: String {
-        return value.symbol
-    }
-    
-    public var maxDecimalPlaces: Int {
-        return value.maxDecimalPlaces
-    }
-    
-    public var maxDisplayableDecimalPlaces: Int {
-        return value.maxDisplayableDecimalPlaces
-    }
-    
-    public var currencyType: CryptoCurrency {
-        return value.currencyType
-    }
-    
-    public var amount: BigInt {
-        return value.amount
-    }
-    
-    public func toDisplayString(includeSymbol: Bool, locale: Locale) -> String {
-        return value.toDisplayString(includeSymbol: includeSymbol, locale: locale)
-    }
-}
-
 public struct CryptoValue: Crypto {
     public let currencyType: CryptoCurrency
     
@@ -216,12 +169,21 @@ extension CryptoValue {
     public static func zero(assetType: CryptoCurrency) -> CryptoValue {
         return CryptoValue(currencyType: assetType, amount: 0)
     }
+
+    public static func createFromMinorValue(_ value: String, assetType: CryptoCurrency) -> CryptoValue? {
+        guard let valueInBigInt = BigInt(value) else {
+            return nil
+        }
+        return CryptoValue(currencyType: assetType, amount: valueInBigInt)
+    }
     
     public static func createFromMinorValue(_ value: BigInt, assetType: CryptoCurrency) -> CryptoValue {
         return CryptoValue(currencyType: assetType, amount: value)
     }
 
-    public static func createFromMajorValue(string value: String, assetType: CryptoCurrency, locale: Locale = Locale.current) -> CryptoValue? {
+    public static func createFromMajorValue(string value: String,
+                                            assetType: CryptoCurrency,
+                                            locale: Locale = Locale.current) -> CryptoValue? {
         guard let valueDecimal = Decimal(string: value, locale: locale) else {
             return nil
         }
@@ -252,32 +214,12 @@ extension CryptoValue {
         return zero(assetType: .bitcoin)
     }
     
-    public static func bitcoinFromSatoshis(string satoshis: String) -> CryptoValue? {
-        guard let satoshiInBigInt = BigInt(satoshis) else {
-            return nil
-        }
-        return CryptoValue(currencyType: .bitcoin, amount: satoshiInBigInt)
-    }
-    
     public static func bitcoinFromSatoshis(bigInt satoshis: BigInt) -> CryptoValue {
         return CryptoValue(currencyType: .bitcoin, amount: satoshis)
     }
 
     public static func bitcoinFromSatoshis(int satoshis: Int) -> CryptoValue {
         return CryptoValue(currencyType: .bitcoin, amount: BigInt(satoshis))
-    }
-    
-    public static func bitcoinFromMajor(int bitcoin: Int) -> CryptoValue {
-        return createFromMajorValue(string: "\(bitcoin)", assetType: .bitcoin)!
-    }
-    
-    @available(*, deprecated, message: "This method can create precision errors. Use `bitcoinFromMajor(string:)` instead.")
-    public static func bitcoinFromMajor(decimal bitcoin: Decimal) -> CryptoValue {
-        return createFromMajorValue(decimal: bitcoin, assetType: .bitcoin)
-    }
-
-    public static func bitcoinFromMajor(string bitcoin: String) -> CryptoValue? {
-        return createFromMajorValue(string: bitcoin, assetType: .bitcoin)
     }
 }
 
@@ -289,18 +231,14 @@ extension CryptoValue {
     }
     
     public static func etherFromWei(string wei: String) -> CryptoValue? {
-        guard let weiInBigInt = BigInt(wei) else {
-            return nil
-        }
-        return CryptoValue(currencyType: .ethereum, amount: weiInBigInt)
+        return createFromMinorValue(wei, assetType: .ethereum)
     }
     
     public static func etherFromGwei(string gwei: String) -> CryptoValue? {
         guard let gweiInBigInt = BigInt(gwei) else {
             return nil
         }
-        let weiInBigInt = gweiInBigInt * BigInt(integerLiteral: 1_000_000_000)
-        
+        let weiInBigInt = gweiInBigInt * BigInt(1_000_000_000)
         return CryptoValue(currencyType: .ethereum, amount: weiInBigInt)
     }
 
@@ -317,27 +255,11 @@ extension CryptoValue {
     }
     
     public static func bitcoinCashFromSatoshis(string satoshis: String) -> CryptoValue? {
-        guard let satoshiInBigInt = BigInt(satoshis) else {
-            return nil
-        }
-        return CryptoValue(currencyType: .bitcoinCash, amount: satoshiInBigInt)
+        return createFromMinorValue(satoshis, assetType: .bitcoinCash)
     }
 
     public static func bitcoinCashFromSatoshis(int satoshis: Int) -> CryptoValue {
         return CryptoValue(currencyType: .bitcoinCash, amount: BigInt(satoshis))
-    }
-    
-    public static func bitcoinCashFromMajor(int bitcoinCash: Int) -> CryptoValue {
-        return createFromMajorValue(string: "\(bitcoinCash)", assetType: .bitcoinCash)!
-    }
-    
-    @available(*, deprecated, message: "This method can create precision errors. Use `bitcoinCashFromMajor(string:)` instead.")
-    public static func bitcoinCashFromMajor(decimal bitcoinCash: Decimal) -> CryptoValue {
-        return createFromMajorValue(decimal: bitcoinCash, assetType: .bitcoinCash)
-    }
-
-    public static func bitcoinCashFromMajor(string bitcoinCash: String) -> CryptoValue? {
-        return createFromMajorValue(string: bitcoinCash, assetType: .bitcoinCash)
     }
 }
 

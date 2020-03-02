@@ -7,17 +7,18 @@
 //
 
 import Foundation
+import PlatformKit
 
 struct KYCUserTiersBadgeModel {
     let color: UIColor
     let text: String
 
-    init?(response: KYCUserTiersResponse) {
-        let tiers = response.userTiers
+    init?(response: KYC.UserTiers) {
+        let tiers = response.tiers
         
         /// Note that we are only accounting for `KYCTier1` and `KYCTier2`.
         /// Currently we aren't supporting other tiers outside of that.
-        /// If we add additional types to `KYCTier` we'll want to update this.
+        /// If we add additional types to `KYC.Tier` we'll want to update this.
         guard tiers.count > 0 else { return nil }
         guard let tier1 = tiers.filter({ $0.tier == .tier1 }).first else { return nil }
         guard let tier2 = tiers.filter({ $0.tier == .tier2 }).first else { return nil }
@@ -29,7 +30,7 @@ struct KYCUserTiersBadgeModel {
         text = KYCUserTiersBadgeModel.badgeText(for: currentTier)
     }
 
-    private static func badgeColor(for tier: KYCUserTier) -> UIColor {
+    private static func badgeColor(for tier: KYC.UserTier) -> UIColor {
         switch tier.state {
         case .none:
             return .unverified
@@ -42,7 +43,7 @@ struct KYCUserTiersBadgeModel {
         }
     }
 
-    private static func badgeText(for tier: KYCUserTier) -> String {
+    private static func badgeText(for tier: KYC.UserTier) -> String {
         switch tier.state {
         case .none:
             return badgeString(tier: tier, description: LocalizationConstants.KYC.accountUnverifiedBadge)
@@ -55,7 +56,19 @@ struct KYCUserTiersBadgeModel {
         }
     }
 
-    private static func badgeString(tier: KYCUserTier, description: String) -> String {
-        return tier.name + " - " + description
+    private static func badgeString(tier: KYC.UserTier, description: String) -> String {
+        return localisedName(for: tier) + " - " + description
+    }
+
+    private static func localisedName(for tier: KYC.UserTier) -> String {
+        switch tier.tier {
+        case .tier0:
+            return LocalizationConstants.KYC.tierZeroVerification
+        case .tier1:
+            return LocalizationConstants.KYC.tierOneVerification
+        case .tier2:
+            return LocalizationConstants.KYC.tierTwoVerification
+        }
+
     }
 }

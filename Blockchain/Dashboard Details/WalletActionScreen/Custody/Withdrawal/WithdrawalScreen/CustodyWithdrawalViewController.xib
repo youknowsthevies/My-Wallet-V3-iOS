@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CustodyWithdrawalViewController" customModule="Blockchain" customModuleProvider="target">
+            <connections>
+                <outlet property="activityIndicatorView" destination="Vd8-6N-CoT" id="7zz-7d-Vwc"/>
+                <outlet property="assetBalanceView" destination="18l-Ao-yr9" id="Kzb-mn-dQb"/>
+                <outlet property="descriptionLabel" destination="lx1-kP-pE0" id="j0Q-4e-JAa"/>
+                <outlet property="sendButtonView" destination="YOF-kg-mlm" id="Y6i-rB-GA0"/>
+                <outlet property="view" destination="iN0-l3-epB" id="lqL-dH-d2l"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="Vd8-6N-CoT">
+                    <rect key="frame" x="188.5" y="434.5" width="37" height="37"/>
+                    <color key="color" red="0.59999999999999998" green="0.63" blue="0.69999999999999996" alpha="1" colorSpace="calibratedRGB"/>
+                </activityIndicatorView>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" spacing="48" translatesAutoresizingMaskIntoConstraints="NO" id="Obb-7d-qNn">
+                    <rect key="frame" x="24" y="379" width="366" height="148"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="18l-Ao-yr9" customClass="AssetBalanceView" customModule="PlatformUIKit">
+                            <rect key="frame" x="0.0" y="0.0" width="366" height="100"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        </view>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lx1-kP-pE0">
+                            <rect key="frame" x="0.0" y="148" width="366" height="0.0"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                </stackView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YOF-kg-mlm" customClass="ButtonView" customModule="PlatformUIKit">
+                    <rect key="frame" x="24" y="798" width="366" height="48"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="48" id="z1L-sN-WhA"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="Obb-7d-qNn" secondAttribute="trailing" constant="24" id="0vZ-hG-RJe"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="YOF-kg-mlm" secondAttribute="trailing" constant="24" id="Brk-ab-9id"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="YOF-kg-mlm" secondAttribute="bottom" constant="16" id="JjP-gE-xj7"/>
+                <constraint firstItem="Obb-7d-qNn" firstAttribute="centerY" secondItem="vUN-kp-3ea" secondAttribute="centerY" id="PqJ-92-XYm"/>
+                <constraint firstItem="Obb-7d-qNn" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="24" id="Ubg-Vj-rYK"/>
+                <constraint firstItem="Vd8-6N-CoT" firstAttribute="centerY" secondItem="Obb-7d-qNn" secondAttribute="centerY" id="cv3-Vm-E4m"/>
+                <constraint firstItem="YOF-kg-mlm" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="24" id="hQY-er-Y4e"/>
+                <constraint firstItem="Obb-7d-qNn" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="j68-Ki-zm0"/>
+                <constraint firstItem="Vd8-6N-CoT" firstAttribute="centerX" secondItem="Obb-7d-qNn" secondAttribute="centerX" id="r0V-TQ-HbG"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <point key="canvasLocation" x="133" y="154"/>
+        </view>
+    </objects>
+</document>

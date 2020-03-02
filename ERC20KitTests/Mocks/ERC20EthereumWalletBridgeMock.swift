@@ -14,6 +14,10 @@ import EthereumKit
 @testable import ERC20Kit
 
 class ERC20EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
+    
+    public var balanceType: BalanceType {
+        return .nonCustodial
+    }
 
     var isWaitingOnTransactionValue = Single.just(true)
     var isWaitingOnTransaction: Single<Bool> {

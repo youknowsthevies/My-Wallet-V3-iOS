@@ -12,6 +12,7 @@ protocol TabSwapping: class {
     func switchToSend()
     func switchTabToSwap()
     func switchTabToReceive()
+    func switchToActivity(currency: CryptoCurrency)
 }
 
 protocol CurrencyRouting: class {

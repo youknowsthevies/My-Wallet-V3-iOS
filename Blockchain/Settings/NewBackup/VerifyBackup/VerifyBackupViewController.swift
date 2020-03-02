@@ -87,8 +87,15 @@ final class VerifyBackupViewController: BaseScreenViewController {
     }
     
     private func setupNavigationBar() {
-        titleViewStyle = .text(value: LocalizationConstants.VerifyBackupScreen.title)
-        set(barStyle: .darkContent(ignoresStatusBar: false, background: .white),
-            leadingButtonStyle: .back)
+        titleViewStyle = presenter.titleView
+        set(barStyle: presenter.barStyle,
+            leadingButtonStyle: presenter.leadingButton,
+            trailingButtonStyle: presenter.trailingButton)
+    }
+    
+    // MARK: - Navigation
+    
+    override func navigationBarLeadingButtonPressed() {
+        presenter.navigationBarLeadingButtonTapped()
     }
 }

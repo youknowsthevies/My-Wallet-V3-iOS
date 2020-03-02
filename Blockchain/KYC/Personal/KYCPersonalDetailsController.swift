@@ -61,16 +61,14 @@ final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormV
 
         self.user = user
 
-        guard let personalDetails = user.personalDetails else { return }
-
-        firstNameField.text = personalDetails.firstName
-        lastNameField.text = personalDetails.lastName
+        firstNameField.text = user.personalDetails.firstName
+        lastNameField.text = user.personalDetails.lastName
         
         firstNameField.contentType = .givenName
         lastNameField.contentType = .familyName
 
         birthdayField.maximumDate = NabuUser.minimumAge
-        if let birthday = personalDetails.birthday {
+        if let birthday = user.personalDetails.birthday {
             birthdayField.selectedDate = birthday
         }
     }

@@ -7,6 +7,7 @@
 //
 
 import XCTest
+@testable import PlatformKit
 
 class WalletOptionsVersionUpdateTests: XCTestCase {
     

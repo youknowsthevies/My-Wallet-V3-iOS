@@ -20,10 +20,12 @@ public struct HttpHeaderField {
     public static let walletEmail = "X-WALLET-EMAIL"
     public static let deviceId = "X-DEVICE-ID"
     public static let airdropCampaign = "X-CAMPAIGN"
+    public static let blockchainOrigin = "blockchain-origin"
 }
 
 public struct HttpHeaderValue {
     public static let json = "application/json"
     public static let formEncoded = "application/x-www-form-urlencoded"
     public static let clientTypeApp = "APP"
+    public static let simpleBuy = "simplebuy"
 }

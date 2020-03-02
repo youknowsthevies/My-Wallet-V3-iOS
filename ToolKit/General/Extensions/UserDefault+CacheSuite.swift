@@ -26,6 +26,9 @@ public protocol CacheSuite {
     
     /// Keeps `Any?` value for key
     func set(_ value: Any?, forKey defaultName: String)
+    
+    /// Removes an object
+    func removeObject(forKey defaultName: String)
 }
 
 extension UserDefaults: CacheSuite {}
@@ -50,7 +53,7 @@ public class MemoryCacheSuite: CacheSuite {
     }
     
     public func set(_ value: Bool, forKey key: String) {
-        return cache[key] = value
+        cache[key] = value
     }
     
     // MARK: - Data
@@ -60,6 +63,10 @@ public class MemoryCacheSuite: CacheSuite {
     }
     
     public func set(_ value: Any?, forKey defaultName: String) {
-        return cache[defaultName] = value
+        cache[defaultName] = value
+    }
+    
+    public func removeObject(forKey defaultName: String) {
+        cache[defaultName] = nil
     }
 }

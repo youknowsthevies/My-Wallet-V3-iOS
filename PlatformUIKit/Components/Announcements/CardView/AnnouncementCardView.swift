@@ -10,9 +10,9 @@ import RxSwift
 import RxRelay
 import RxCocoa
 
-public protocol AnnoucementCardViewConforming: UIView {}
+public protocol AnnouncementCardViewConforming: UIView {}
 
-public final class AnnouncementCardView: UIView, AnnoucementCardViewConforming {
+public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming {
     
     // MARK: - UI Properties
     
@@ -26,6 +26,8 @@ public final class AnnouncementCardView: UIView, AnnoucementCardViewConforming {
     
     @IBOutlet private var bottomSeparatorView: UIView!
     
+    @IBOutlet private var imageViewLeadingToSuperviewConstraint: NSLayoutConstraint!
+    @IBOutlet private var imageViewCenterInSuperviewConstraint: NSLayoutConstraint!
     @IBOutlet private var titleToImageConstraint: NSLayoutConstraint!
     @IBOutlet private var stackViewToBottomConstraint: NSLayoutConstraint!
     
@@ -49,19 +51,39 @@ public final class AnnouncementCardView: UIView, AnnoucementCardViewConforming {
     
     private func setup() {
         fromNib()
+        clipsToBounds = true
         backgroundColor = viewModel.background.color
         backgroundImageView.image = viewModel.background.image
+
         thumbImageView.image = UIImage(named: viewModel.image.name)
+            .map {
+                if viewModel.image.tintColor != nil {
+                    return $0.withRenderingMode(.alwaysTemplate)
+                }
+                return $0
+            }
+        thumbImageView.tintColor = viewModel.image.tintColor
         thumbImageView.layout(size: viewModel.image.size)
         titleLabel.text = viewModel.title
         titleLabel.textColor = .titleText
         descriptionLabel.text = viewModel.description
         descriptionLabel.textColor = .descriptionText
-        bottomSeparatorView.backgroundColor = .mediumBorder
+        
+        switch viewModel.border {
+        case .bottomSeparator(let color):
+            bottomSeparatorView.isHidden = false
+            bottomSeparatorView.backgroundColor = color
+        case .roundCorners(let radius):
+            bottomSeparatorView.isHidden = true
+            layer.cornerRadius = radius
+        case .none:
+            bottomSeparatorView.isHidden = true
+        }
+                
         setupButtons()
         fixPositions()
         setupAccessibility()
-        viewModel.didAppear()
+        viewModel.didAppear?()
     }
     
     private func setupAccessibility() {
@@ -101,6 +123,19 @@ public final class AnnouncementCardView: UIView, AnnoucementCardViewConforming {
             stackViewToBottomConstraint.constant = 0
         } else { // Remove placeholder view since there are actual buttons
             buttonPlaceholderSeparatorView.removeFromSuperview()
+        }
+        
+        switch viewModel.contentAlignment {
+        case .center:
+            titleLabel.textAlignment = .center
+            descriptionLabel.textAlignment = .center
+            imageViewLeadingToSuperviewConstraint.priority = .defaultLow
+            imageViewCenterInSuperviewConstraint.priority = .penultimate
+        case .natural:
+            titleLabel.textAlignment = .natural
+            descriptionLabel.textAlignment = .natural
+            imageViewLeadingToSuperviewConstraint.priority = .penultimate
+            imageViewCenterInSuperviewConstraint.priority = .defaultLow
         }
     }
 }

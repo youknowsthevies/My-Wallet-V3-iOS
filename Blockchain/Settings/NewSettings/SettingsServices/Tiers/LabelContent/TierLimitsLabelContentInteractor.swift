@@ -13,16 +13,22 @@ import RxRelay
 
 final class TierLimitsLabelContentInteractor: LabelContentInteracting {
     
+    // MARK: - Types
+    
     typealias InteractionState = LabelContentAsset.State.LabelItem.Interaction
     
+    // MARK: - Properties
+    
+    let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     var state: Observable<InteractionState> {
         return stateRelay.asObservable()
     }
     
     // MARK: - Private Accessors
     
-    private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
+    
+    // MARK: - Setup 
     
     init(limitsProviding: TierLimitsProviding) {
         // TODO: Localization

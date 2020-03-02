@@ -63,7 +63,7 @@ public class PriceServiceClient: PriceServiceAPI {
     /// - Parameter fiatSymbol: the fiat to convert to
     /// - Returns: a Single emitting an AssetTypesToPrices
     public func allPrices(fiatSymbol: String) -> Single<CryptoCurrencyToPrices> {
-        let fiatPrices: [Single<(CryptoCurrency, PriceInFiatValue)>] = CryptoCurrency.all.map { currency in
+        let fiatPrices: [Single<(CryptoCurrency, PriceInFiatValue)>] = CryptoCurrency.allCases.map { currency in
             return fiatPrice(
                 forCurrency: currency,
                 fiatSymbol: fiatSymbol

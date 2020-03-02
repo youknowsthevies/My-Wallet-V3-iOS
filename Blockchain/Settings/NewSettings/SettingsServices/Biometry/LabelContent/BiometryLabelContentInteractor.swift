@@ -15,13 +15,12 @@ final class BiometryLabelContentInteractor: LabelContentInteracting {
     
     typealias InteractionState = LabelContentAsset.State.LabelItem.Interaction
     
+    let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     var state: Observable<InteractionState> {
         return stateRelay.asObservable()
     }
     
     // MARK: - Private Accessors
-    
-    private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     
     init(biometryProviding: BiometryProviding) {
         // TODO: Localization

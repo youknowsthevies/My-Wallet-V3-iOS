@@ -8,6 +8,7 @@
 
 import Foundation
 import RxSwift
+import RxRelay
 
 public typealias Mnemonic = String
 
@@ -25,4 +26,23 @@ public protocol MnemonicAccessAPI {
     
     /// Returns a Maybe emitting a Mnemonic. This will prompt the user to enter the second password if needed.
     var mnemonicPromptingIfNeeded: Maybe<Mnemonic> { get }
+}
+
+public protocol MnemonicComponentsProviding {
+    var components: Observable<[String]> { get }
+}
+
+public final class MnemonicComponentsProvider: MnemonicComponentsProviding {
+    
+    public var components: Observable<[String]> {
+        return mnemonicAccessAPI.mnemonic.map {
+            $0.components(separatedBy: " ")
+        }.asObservable()
+    }
+    
+    private let mnemonicAccessAPI: MnemonicAccessAPI
+    
+    public init(mnemonicAccessAPI: MnemonicAccessAPI) {
+        self.mnemonicAccessAPI = mnemonicAccessAPI
+    }
 }

@@ -33,8 +33,30 @@ public struct LabelContentAsset {
                 
                 /// Descriptors that allows customized content and style
                 public struct Descriptors {
+                    
+                    public enum FontType {
+                        case regular
+                        case medium
+                        case semiBold
+                        case bold
+                    }
+                    
+                    let fontType: FontType
+                    let contentColor: UIColor
                     let titleFontSize: CGFloat
                     let accessibilityIdSuffix: String
+                    
+                    init(
+                        fontType: FontType = .medium,
+                        contentColor: UIColor = .titleText,
+                        titleFontSize: CGFloat,
+                        accessibilityIdSuffix: String
+                    ) {
+                        self.fontType = fontType
+                        self.contentColor = contentColor
+                        self.titleFontSize = titleFontSize
+                        self.accessibilityIdSuffix = accessibilityIdSuffix
+                    }
                 }
                 
                 let labelContent: LabelContent
@@ -42,8 +64,8 @@ public struct LabelContentAsset {
                 public init(with value: Interaction.LabelItem, descriptors: Descriptors) {
                     labelContent = LabelContent(
                         text: value.text,
-                        font: .mainMedium(descriptors.titleFontSize),
-                        color: .titleText,
+                        font: descriptors.font,
+                        color: descriptors.contentColor,
                         accessibility: .init(id: .value(descriptors.accessibilityIdSuffix))
                     )
                 }
@@ -54,11 +76,52 @@ public struct LabelContentAsset {
 
 extension LabelContentAsset.Value.Presentation.LabelItem.Descriptors {
     
+    public typealias Descriptors = LabelContentAsset.Value.Presentation.LabelItem.Descriptors
+    
+    var font: UIFont {
+        switch fontType {
+        case .regular:
+            return .mainRegular(titleFontSize)
+        case .medium:
+            return .mainMedium(titleFontSize)
+        case .bold:
+            return .mainBold(titleFontSize)
+        case .semiBold:
+            return .mainSemibold(titleFontSize)
+        }
+    }
+    
     /// Returns a descriptor for a settings cell
-    public static var settings: LabelContentAsset.Value.Presentation.LabelItem.Descriptors {
+    public static var settings: Descriptors {
         return .init(
             titleFontSize: 16,
             accessibilityIdSuffix: Accessibility.Identifier.Settings.SettingsCell.titleLabelFormat
+        )
+    }
+    
+    public static var lineItemTitle: Descriptors {
+        return .init(
+            fontType: .medium,
+            contentColor: .descriptionText,
+            titleFontSize: 14,
+            accessibilityIdSuffix: Accessibility.Identifier.Settings.SettingsCell.titleLabelFormat
+        )
+    }
+    
+    public static var lineItemDescription: Descriptors {
+        return .init(
+            fontType: .semiBold,
+            contentColor: .textFieldText,
+            titleFontSize: 16,
+            accessibilityIdSuffix: Accessibility.Identifier.Settings.SettingsCell.titleLabelFormat
+        )
+    }
+    
+    public static func success(fontSize: CGFloat, accessibilityIdSuffix: String) -> Descriptors {
+        return .init(
+            contentColor: .positivePrice,
+            titleFontSize: fontSize,
+            accessibilityIdSuffix: accessibilityIdSuffix
         )
     }
 }

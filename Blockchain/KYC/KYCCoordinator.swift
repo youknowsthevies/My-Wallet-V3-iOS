@@ -7,6 +7,7 @@
 //
 
 import RxSwift
+import RxRelay
 import ToolKit
 import NetworkKit
 import PlatformKit
@@ -30,11 +31,23 @@ protocol KYCCoordinatorDelegate: class {
     func apply(model: KYCPageModel)
 }
 
+protocol KYCRouterAPI: class {
+    var tier1Finished: Observable<Void> { get }
+    var tier2Finished: Observable<Void> { get }
+    var kycStopped: Observable<KYC.Tier> { get }
+    func start(from viewController: UIViewController, tier: KYC.Tier, parentFlow: KYCCoordinator.ParentFlow)
+}
+
 /// Coordinates the KYC flow. This component can be used to start a new KYC flow, or if
 /// the user drops off mid-KYC and decides to continue through it again, the coordinator
 /// will handle recovering where they left off.
-@objc class KYCCoordinator: NSObject, Coordinator {
+@objc class KYCCoordinator: NSObject, Coordinator, KYCRouterAPI {
 
+    enum ParentFlow {
+        case simpleBuy
+        case none
+    }
+    
     // MARK: - Public Properties
 
     weak var delegate: KYCCoordinatorDelegate?
@@ -67,17 +80,40 @@ protocol KYCCoordinatorDelegate: class {
     private let authenticationService: NabuAuthenticationService
     private let loadingViewPresenter: LoadingViewPresenting
     
-    private var userTiersResponse: KYCUserTiersResponse?
+    private var userTiersResponse: KYC.UserTiers?
     private var kycSettings: KYCSettingsAPI
     
-    private let blockchainRepository: BlockchainDataRepository
+    private let tiersService: KYCTiersServiceAPI
     private let communicator: NetworkCommunicatorAPI
 
     private let webViewServiceAPI: WebViewServiceAPI
     
+    private let kycStoppedRelay = PublishRelay<Void>()
+    private let kycFinishedRelay = PublishRelay<KYC.Tier>()
+    
+    private var parentFlow = ParentFlow.none
+    
+    /// KYC finsihed with `tier1` in-progress / approved
+    var tier1Finished: Observable<Void> {
+        kycFinishedRelay
+            .filter { $0 == .tier1 }
+            .mapToVoid()
+    }
+    
+    /// KYC finsihed with `tier2` in-progress / approved
+    var tier2Finished: Observable<Void> {
+        kycFinishedRelay
+            .filter { $0 == .tier2 }
+            .mapToVoid()
+    }
+    
+    var kycStopped: Observable<KYC.Tier> {
+        kycFinishedRelay.asObservable()
+    }
+
     init(
         webViewServiceAPI: WebViewServiceAPI = UIApplication.shared,
-        blockchainRepository: BlockchainDataRepository = .shared,
+        tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
         appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
         kycSettings: KYCSettingsAPI = KYCSettings.shared,
         authenticationService: NabuAuthenticationService = NabuAuthenticationService.shared,
@@ -85,12 +121,15 @@ protocol KYCCoordinatorDelegate: class {
         communicator: NetworkCommunicatorAPI = NetworkCommunicator.shared
     ) {
         self.webViewServiceAPI = webViewServiceAPI
-        self.blockchainRepository = blockchainRepository
+        self.tiersService = tiersService
         self.appSettings = appSettings
         self.kycSettings = kycSettings
         self.authenticationService = authenticationService
         self.loadingViewPresenter = loadingViewPresenter
         self.communicator = communicator
+        
+        super.init()
+        registerForKYCFinish()
     }
 
     deinit {
@@ -107,7 +146,7 @@ protocol KYCCoordinatorDelegate: class {
         start(from: rootViewController)
     }
 
-    func startFrom(_ tier: KYCTier = .tier1) {
+    func startFrom(_ tier: KYC.Tier = .tier1) {
         guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else {
             Logger.shared.warning("Cannot start KYC. rootViewController is nil.")
             return
@@ -116,7 +155,8 @@ protocol KYCCoordinatorDelegate: class {
         start(from: rootViewController, tier: tier)
     }
                 
-    func start(from viewController: UIViewController, tier: KYCTier = .tier1) {
+    func start(from viewController: UIViewController, tier: KYC.Tier = .tier1, parentFlow: ParentFlow = .none) {
+        self.parentFlow = parentFlow
         rootViewController = viewController
         AnalyticsService.shared.trackEvent(title: tier.startAnalyticsKey)
         
@@ -130,7 +170,7 @@ protocol KYCCoordinatorDelegate: class {
             .hideLoaderOnDisposal(loader: loadingViewPresenter)
             .subscribe(onNext: { [weak self] (user, tiersResponse) in
                 self?.pager = KYCPager(tier: tier, tiersResponse: tiersResponse)
-                Logger.shared.debug("Got user with ID: \(user.personalDetails?.identifier ?? "")")
+                Logger.shared.debug("Got user with ID: \(user.personalDetails.identifier ?? "")")
                 guard let strongSelf = self else {
                     return
                 }
@@ -155,6 +195,20 @@ protocol KYCCoordinatorDelegate: class {
         disposables.insertWithDiscardableResult(disposable)
     }
 
+    private func registerForKYCFinish() {
+        kycStoppedRelay
+            .flatMap(weak: self) { (self, _) -> Observable<KYC.UserTiers> in
+                self.tiersService.fetchTiers().asObservable()
+            }
+            .map { $0 }
+            .catchErrorJustReturn(nil)
+            .compactMap { (tiers: KYC.UserTiers?) in
+                tiers?.latestTier ?? nil
+            }
+            .bind(to: kycFinishedRelay)
+            .disposed(by: disposeBag)
+    }
+    
     // Called when the entire KYC process has been completed.
     @objc func finish() {
         stop()
@@ -163,7 +217,8 @@ protocol KYCCoordinatorDelegate: class {
     // Called when the KYC process is completed or stopped before completing.
     @objc func stop() {
         if navController == nil { return }
-        navController.dismiss(animated: true) {
+        navController.dismiss(animated: true) { [weak self] in
+            self?.kycStoppedRelay.accept(())
             NotificationCenter.default.post(
                 name: Constants.NotificationKeys.kycStopped,
                 object: nil
@@ -183,22 +238,29 @@ protocol KYCCoordinatorDelegate: class {
                 .subscribeOn(MainScheduler.asyncInstance)
                 .observeOn(MainScheduler.instance)
                 .subscribe(onSuccess: { [weak self] nextPage in
-                    guard let strongSelf = self else {
+                    guard let self = self else {
                         return
                     }
                     
-                    let controller = strongSelf.pageFactory.createFrom(
+                    switch (self.parentFlow, nextPage) {
+                    case (.simpleBuy, .accountStatus):
+                        self.finish()
+                        return
+                    default:
+                        break
+                    }
+                    
+                    let controller = self.pageFactory.createFrom(
                         pageType: nextPage,
-                        in: strongSelf,
+                        in: self,
                         payload: payload
                     )
                     
                     if let informationController = controller as? KYCInformationController, nextPage == .accountStatus {
-                        self?.presentInformationController(informationController)
-                        return
+                        self.presentInformationController(informationController)
+                    } else {
+                        self.navController.pushViewController(controller, animated: true)
                     }
-                    
-                    strongSelf.navController.pushViewController(controller, animated: true)
                 }, onError: { error in
                     Logger.shared.error("Error getting next page: \(error.localizedDescription)")
                 }, onCompleted: { [weak self] in
@@ -217,54 +279,45 @@ protocol KYCCoordinatorDelegate: class {
         /// Refresh the user's tiers to get their status.
         /// Sometimes we receive an `INTERNAL_SERVER_ERROR` if we refresh this
         /// immediately after submitting all KYC data. So, we apply a delay here.
-        loadingViewPresenter.show(with: LocalizationConstants.loading)
-        let disposable = BlockchainDataRepository.shared.tiers
-            .subscribeOn(MainScheduler.asyncInstance)
+        BlockchainDataRepository.shared.tiers
+            .handleLoaderForLifecycle(loader: loadingViewPresenter)
             .observeOn(MainScheduler.instance)
-            .delay(3.0, scheduler: MainScheduler.instance)
-            .hideLoaderOnDisposal(loader: loadingViewPresenter)
-            .subscribe(onNext: { [weak self] response in
-                guard let self = self else { return }
-                let status = response.tier2AccountStatus
-                
-                let isReceivingAirdrop = self.user?.isSunriverAirdropRegistered == true
-                controller.viewModel = KYCInformationViewModel.create(
-                    for: status,
-                    isReceivingAirdrop: isReceivingAirdrop
-                )
-                controller.viewConfig = KYCInformationViewConfig.create(
-                    for: status,
-                    isReceivingAirdrop: isReceivingAirdrop
-                )
-                controller.primaryButtonAction = { viewController in
-                    switch status {
-                    case .approved:
-                        self.finish()
-                    case .pending:
-                        // TODO: Temporary replacement for previous logic.
-                        // Once notification permission is redesigned - remove this entirely and
-                        // implement properly.
-                        RemoteNotificationServiceContainer.default.authorizer
-                            .requestAuthorizationIfNeeded()
-                            .subscribe()
-                            .disposed(by: self.disposeBag)
-                    case .failed, .expired:
-                        URL(string: Constants.Url.blockchainSupport)?.launch()
-                    case .none, .underReview: return
+            .subscribe(
+                onNext: { [weak self] response in
+                    guard let self = self else { return }
+                    let status = response.tierAccountStatus(for: .tier2)
+                    
+                    let isReceivingAirdrop = self.user?.isSunriverAirdropRegistered == true
+                    controller.viewModel = KYCInformationViewModel.create(
+                        for: status,
+                        isReceivingAirdrop: isReceivingAirdrop
+                    )
+                    controller.viewConfig = KYCInformationViewConfig.create(
+                        for: status,
+                        isReceivingAirdrop: isReceivingAirdrop
+                    )
+                    controller.primaryButtonAction = { viewController in
+                        switch status {
+                        case .approved:
+                            self.finish()
+                        case .pending:
+                            break
+                        case .failed, .expired:
+                            URL(string: Constants.Url.blockchainSupport)?.launch()
+                        case .none, .underReview: return
+                        }
                     }
+                    
+                    self.navController.pushViewController(controller, animated: true)
                 }
-                
-                self.navController.pushViewController(controller, animated: true)
-                }, onError: ({ error in
-                    Logger.shared.error("Error refreshing tiers status: \(error.localizedDescription)")
-                }))
-        disposables.insertWithDiscardableResult(disposable)
+            )
+            .disposed(by: disposeBag)
     }
 
     // MARK: View Restoration
 
     /// Restores the user to the most recent page if they dropped off mid-flow while KYC'ing
-    private func restoreToMostRecentPageIfNeeded(tier: KYCTier) {
+    private func restoreToMostRecentPageIfNeeded(tier: KYC.Tier) {
         guard let currentUser = user else {
             return
         }
@@ -321,7 +374,7 @@ protocol KYCCoordinatorDelegate: class {
         case .accountStatus:
             guard let response = userTiersResponse else { return nil }
             return .accountStatus(
-                status: response.tier2AccountStatus,
+                status: response.tierAccountStatus(for: .tier2),
                 isReceivingAirdrop: user.isSunriverAirdropRegistered == true
             )
         case .enterEmail,
@@ -339,7 +392,7 @@ protocol KYCCoordinatorDelegate: class {
         }
     }
 
-    private func initializeNavigationStack(_ viewController: UIViewController, user: NabuUser, tier: KYCTier) {
+    private func initializeNavigationStack(_ viewController: UIViewController, user: NabuUser, tier: KYC.Tier) {
         guard let response = userTiersResponse else { return }
         let startingPage = user.isSunriverAirdropRegistered == true ?
             KYCPageType.welcome :
@@ -350,7 +403,7 @@ protocol KYCCoordinatorDelegate: class {
                 pageType: startingPage,
                 in: self,
                 payload: .accountStatus(
-                    status: response.tier2AccountStatus,
+                    status: response.tierAccountStatus(for: .tier2),
                     isReceivingAirdrop: user.isSunriverAirdropRegistered == true
                 )
             )
@@ -454,7 +507,7 @@ protocol KYCCoordinatorDelegate: class {
         }
     }
     
-    private func post(tier: KYCTier) -> Single<KYCUserTiersResponse> {
+    private func post(tier: KYC.Tier) -> Single<KYC.UserTiers> {
         guard let baseURL = URL(
             string: BlockchainAPI.shared.retailCoreUrl) else {
                 return .error(TradeExecutionAPIError.generic)
@@ -466,7 +519,7 @@ protocol KYCCoordinatorDelegate: class {
                 return .error(TradeExecutionAPIError.generic)
         }
         let body = KYCTierPostBody(selectedTier:tier)
-        return authenticationService.getSessionToken().flatMap(weak: self) { (self, token) -> Single<KYCUserTiersResponse> in
+        return authenticationService.getSessionToken().flatMap(weak: self) { (self, token) -> Single<KYC.UserTiers> in
             return self.communicator.perform(
                 request: NetworkRequest(
                     endpoint: endpoint,
@@ -493,7 +546,7 @@ protocol KYCCoordinatorDelegate: class {
 fileprivate extension KYCPageType {
 
     /// The page type the user should be placed in given the information they have provided
-    static func pageType(for user: NabuUser, tiersResponse: KYCUserTiersResponse, latestPage: KYCPageType? = nil) -> KYCPageType? {
+    static func pageType(for user: NabuUser, tiersResponse: KYC.UserTiers, latestPage: KYCPageType? = nil) -> KYCPageType? {
         // Note: latestPage is only used by tier 2 flow, for tier 1, we need to infer the page,
         // because the user may need to select the country again.
         let tier = user.tiers?.selected ?? .tier1
@@ -512,7 +565,7 @@ fileprivate extension KYCPageType {
             return .enterEmail
         }
 
-        guard let personalDetails = user.personalDetails, personalDetails.firstName != nil else {
+        guard user.personalDetails.firstName != nil else {
             return .country
         }
 
@@ -521,7 +574,7 @@ fileprivate extension KYCPageType {
         return nil
     }
 
-    private static func tier2PageType(for user: NabuUser, tiersResponse: KYCUserTiersResponse, latestPage: KYCPageType? = nil) -> KYCPageType? {
+    private static func tier2PageType(for user: NabuUser, tiersResponse: KYC.UserTiers, latestPage: KYCPageType? = nil) -> KYCPageType? {
         if let latestPage = latestPage {
             return latestPage
         }

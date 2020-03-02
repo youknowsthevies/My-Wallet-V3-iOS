@@ -34,8 +34,7 @@ final class PasswordScreenPresenter {
         validator: TextValidationFactory.loginPassword
     )
     let buttonViewModel = ButtonViewModel.primary(
-        with: LocalizationConstants.continueString,
-        cornerRadius: 8
+        with: LocalizationConstants.continueString
     )
     
     // MARK: - Injected

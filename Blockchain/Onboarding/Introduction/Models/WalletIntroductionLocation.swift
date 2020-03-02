@@ -24,7 +24,6 @@ struct WalletIntroductionLocation: Codable, Comparable {
         case send
         case request
         case swap
-        case buySell
     }
     
     let screen: Screen

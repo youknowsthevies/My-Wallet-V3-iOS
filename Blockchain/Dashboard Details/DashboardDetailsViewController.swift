@@ -19,7 +19,6 @@ final class DashboardDetailsViewController: BaseScreenViewController {
     // MARK: - IBOutlets
     
     @IBOutlet private var tableView: SelfSizingTableView!
-    @IBOutlet private var swapButtonView: ButtonView!
     
     // MARK: - Injected
     
@@ -42,8 +41,20 @@ final class DashboardDetailsViewController: BaseScreenViewController {
         super.viewDidLoad()
         setupTableView()
         setupNavigationBar()
-        swapButtonView.viewModel = presenter.swapButtonViewModel
+        
+        if #available(iOS 13.0, *) {
+            navigationController?.setNavigationBarHidden(true, animated: false)
+        } else {
+            navigationController?.setNavigationBarHidden(false, animated: false)
+        }
+        
+        presenter.setup()
         presenter.refresh()
+        presenter.collectionAction
+            .emit(onNext: { [weak self] action in
+                self?.execute(action: action)
+            })
+            .disposed(by: disposeBag)
     }
     
     // MARK: - Setup
@@ -60,6 +71,10 @@ final class DashboardDetailsViewController: BaseScreenViewController {
         presenter.isScrollEnabled
             .drive(tableView.rx.isScrollEnabled)
             .disposed(by: disposeBag)
+        tableView.rx.itemSelected
+            .map { self.presenter.cellArrangement[$0.row] }
+            .bind(to: presenter.presenterSelectionRelay)
+            .disposed(by: disposeBag)
     }
     
     private func setupNavigationBar() {
@@ -68,6 +83,29 @@ final class DashboardDetailsViewController: BaseScreenViewController {
             trailingButtonStyle: presenter.trailingButton)
         titleViewStyle = presenter.titleView
     }
+    
+    // MARK: - Actions
+    
+    private func execute(action: DashboardDetailsCollectionAction) {
+        switch action {
+        case .custodial(let custodialAction):
+            execute(custodialAction: custodialAction)
+        }
+    }
+    
+    private func execute(custodialAction: CustodialCellTypeAction) {
+        switch custodialAction {
+        case .none:
+            break
+        case .show:
+            let row = presenter.indexByCellType[.balance(.custodial)]!
+            tableView.insertRows(at: [.init(row: row, section: 0)], with: .automatic)
+        }
+    }
+    
+    private lazy var sheetPresenter: BottomSheetPresenting = {
+        return BottomSheetPresenting()
+    }()
 }
 
 // MARK: - UITableViewDelegate, UITableViewDataSource
@@ -87,8 +125,8 @@ extension DashboardDetailsViewController: UITableViewDelegate, UITableViewDataSo
             cell = multiActionCell(for: indexPath, presenter: presenter.sendRequestPresenter)
         case .priceAlert:
             cell = priceAlertCell(for: indexPath)
-        case .balance:
-            cell = currentBalanceCell(for: indexPath)
+        case .balance(let balanceType):
+            cell = currentBalanceCell(for: indexPath, type: balanceType)
         case .chart:
             cell = assetLineChartCell(for: indexPath, presenter: presenter.lineChartCellPresenter)
         }
@@ -100,6 +138,7 @@ extension DashboardDetailsViewController: UITableViewDelegate, UITableViewDataSo
     
     private func priceAlertCell(for indexPath: IndexPath) -> PriceAlertTableViewCell {
         let cell = tableView.dequeue(PriceAlertTableViewCell.self, for: indexPath)
+        cell.currency = presenter.currency
         return cell
     }
     
@@ -109,9 +148,14 @@ extension DashboardDetailsViewController: UITableViewDelegate, UITableViewDataSo
         return cell
     }
     
-    private func currentBalanceCell(for indexPath: IndexPath) -> UITableViewCell {
+    private func currentBalanceCell(for indexPath: IndexPath, type: BalanceType) -> UITableViewCell {
         let cell = tableView.dequeue(CurrentBalanceTableViewCell.self, for: indexPath)
-        cell.presenter = presenter.assetBalanceViewPresenter
+        switch type {
+        case .custodial:
+            cell.presenter = presenter.custodyAssetBalanceViewPresenter
+        case .nonCustodial:
+            cell.presenter = presenter.balanceCellPresenter
+        }
         cell.currency = presenter.currency
         return cell
     }

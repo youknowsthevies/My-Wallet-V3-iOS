@@ -3849,13 +3849,21 @@ NSString * const kLockboxInvitation = @"lockbox";
     return [[self.context evaluateScript:@"MyWallet.wallet.hdwallet.isMnemonicVerified"] toBool];
 }
 
-- (void)markRecoveryPhraseVerified
+- (void)markRecoveryPhraseVerifiedWithCompletion:(void (^ _Nullable)(void))completion error: (void (^ _Nullable)(void))error
 {
-    if (![self isInitialized]) {
-        return;
-    }
-
-    [self.context evaluateScript:@"MyWallet.wallet.hdwallet.verifyMnemonic()"];
+    [self.context invokeOnceWithStringFunctionBlock:^(NSString * _Nonnull response) {
+        if (completion != nil) {
+            completion();
+        }
+    } forJsFunctionName:@"objc_wallet_mnemonic_verification_updated"];
+    
+    [self.context invokeOnceWithFunctionBlock:^{
+        if (error != nil) {
+            error();
+        }
+    } forJsFunctionName:@"objc_wallet_mnemonic_verification_error"];
+    
+    [self.context evaluateScript:@"MyWalletPhone.markMnemonicAsVerified()"];
 }
 
 - (int)getActiveAccountsCount:(LegacyAssetType)assetType

@@ -227,7 +227,7 @@ private extension ExchangeCreateView {
         fiatLabel?.center = CGPoint(x: fiatLabel!.center.x, y: bottomLeftField!.center.y)
         fiatLabel?.font = smallFont
         fiatLabel?.textColor = UIColor.gray5
-        fiatLabel?.text = WalletManager.shared.latestMultiAddressResponse!.symbol_local.code
+        fiatLabel?.text = UserInformationServiceProvider.default.settings.legacyCurrency?.code ?? ""
         fiatLabel?.center = CGPoint(x: fiatLabel!.center.x, y: FromToView.self.rowHeight() * 1.5)
         amountView.addSubview(fiatLabel!)
     }

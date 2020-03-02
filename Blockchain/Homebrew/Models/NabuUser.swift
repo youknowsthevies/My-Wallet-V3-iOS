@@ -10,69 +10,67 @@ import PlatformKit
 
 struct NabuUser: Decodable {
 
-    enum UserState: String {
+    // MARK: - Types
+
+    enum UserState: String, Codable {
         case none = "NONE"
         case created = "CREATED"
         case active = "ACTIVE"
         case blocked = "BLOCKED"
     }
-    
-    let personalDetails: PersonalDetails?
+
+    // MARK: - Properties
+
+    let personalDetails: PersonalDetails
     let address: UserAddress?
     let email: Email
     let mobile: Mobile?
-    let status: KYCAccountStatus
+    let status: KYC.AccountStatus
     let state: UserState
-    let tiers: NabuUserTiers?
+    let tiers: KYC.UserState?
     let tags: Tags?
     let needsDocumentResubmission: DocumentResubmission?
     let userName: String?
-    let depositAddresses: [DepositAddress]?
+    let depositAddresses: [DepositAddress]
     let settings: NabuUserSettings?
-    
+
     /// ISO-8601 Timestamp w/millis, eg 2018-08-15T17:00:45.129Z
     let kycCreationDate: String?
-       
+
     /// ISO-8601 Timestamp w/millis, eg 2018-08-15T17:00:45.129Z
     let kycUpdateDate: String?
-    
+
     // MARK: - Decodable
 
     enum CodingKeys: String, CodingKey {
-        case address = "address"
+        case address
         case status = "kycState"
-        case firstName = "firstName"
-        case lastName = "lastName"
-        case email = "email"
-        case dob
-        case emailVerified = "emailVerified"
-        case mobileVerified = "mobileVerified"
-        case mobile = "mobile"
-        case identifier = "id"
-        case state = "state"
-        case tags = "tags"
-        case tiers = "tiers"
+        case state
+        case tags
+        case tiers
         case needsDocumentResubmission = "resubmission"
         case userName
-        case walletAddresses
         case settings
         case kycCreationDate = "insertedAt"
         case kycUpdateDate = "updatedAt"
+        case depositAddresses = "walletAddresses"
     }
+
+    // MARK: - Init
 
     init(
         hasLinkedExchangeAccount: Bool = false,
-        personalDetails: PersonalDetails?,
+        personalDetails: PersonalDetails,
         address: UserAddress?,
         email: Email,
         mobile: Mobile?,
-        status: KYCAccountStatus,
+        status: KYC.AccountStatus,
         state: UserState,
         tags: Tags?,
-        tiers: NabuUserTiers?,
+        tiers: KYC.UserState?,
         needsDocumentResubmission: DocumentResubmission?,
         userName: String? = nil,
-        depositAddresses: [DepositAddress]? = nil,
+        depositAddresses: [DepositAddress] = [],
         settings: NabuUserSettings? = nil,
         kycCreationDate: String? = nil,
         kycUpdateDate: String? = nil
@@ -95,67 +93,30 @@ struct NabuUser: Decodable {
 
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        let userID = try values.decodeIfPresent(String.self, forKey: .identifier)
-        let firstName = try values.decodeIfPresent(String.self, forKey: .firstName)
-        let lastName = try values.decodeIfPresent(String.self, forKey: .lastName)
-        let emailAddress = try values.decode(String.self, forKey: .email)
-        let emailVerified = try values.decode(Bool.self, forKey: .emailVerified)
-        let phoneNumber = try values.decodeIfPresent(String.self, forKey: .mobile)
-        let phoneVerified = try values.decodeIfPresent(Bool.self, forKey: .mobileVerified)
-        let statusValue = try values.decode(String.self, forKey: .status)
-        let userState = try values.decode(String.self, forKey: .state)
         address = try values.decodeIfPresent(UserAddress.self, forKey: .address)
-        tiers = try values.decodeIfPresent(NabuUserTiers.self, forKey: .tiers)
-        let birthdayValue = try values.decodeIfPresent(String.self, forKey: .dob)
+        tiers = try values.decodeIfPresent(KYC.UserState.self, forKey: .tiers)
         userName = try values.decodeIfPresent(String.self, forKey: .userName)
         settings = try values.decodeIfPresent(NabuUserSettings.self, forKey: .settings)
-        let depositAddresses = try values.decodeIfPresent([String: String].self, forKey: .walletAddresses)
-        
-        if let addresses = depositAddresses {
-            self.depositAddresses = addresses.compactMap { (key, value) -> DepositAddress? in
-                return DepositAddress(stringValue: key, address: value)
-            }
-        } else {
-            self.depositAddresses = nil
-        }
-        
-        var birthday: Date?
-        if let value = birthdayValue {
-            birthday = DateFormatter.birthday.date(from: value)
-        }
-        personalDetails = PersonalDetails(
-            id: userID,
-            first: firstName,
-            last: lastName,
-            birthday: birthday
-        )
-
-        email = Email(address: emailAddress, verified: emailVerified)
-        
-        if let number = phoneNumber {
-            mobile = Mobile(
-                phone: number,
-                verified: phoneVerified ?? false
-            )
-        } else {
-            mobile = nil
-        }
-
-        status = KYCAccountStatus(rawValue: statusValue) ?? .none
-        state = UserState(rawValue: userState) ?? .none
+        personalDetails = try PersonalDetails(from: decoder)
+        email = try Email(from: decoder)
+        mobile = try? Mobile(from: decoder)
+        status = (try? values.decode(KYC.AccountStatus.self, forKey: .status)) ?? . none
+        state = (try? values.decode(UserState.self, forKey: .state)) ?? .none
         tags = try values.decodeIfPresent(Tags.self, forKey: .tags)
         needsDocumentResubmission = try values.decodeIfPresent(DocumentResubmission.self, forKey: .needsDocumentResubmission)
-        
         kycCreationDate = try values.decodeIfPresent(String.self, forKey: .kycCreationDate)
         kycUpdateDate = try values.decodeIfPresent(String.self, forKey: .kycUpdateDate)
-    }
-    
-    func swapApproved() -> Bool {
-        guard let tiers = tiers else { return false }
-        guard tiers.current != .tier0 else { return false }
-        return true
+
+        depositAddresses = (try values.decodeIfPresent([String: String].self, forKey: .depositAddresses))
+            .flatMap({ data -> [DepositAddress] in
+                return data.compactMap { (key, value) -> DepositAddress? in
+                    return DepositAddress(stringType: key, address: value)
+                }
+            }) ?? []
     }
 }
+
+extension NabuUser: User { }
 
 extension NabuUser {
     var hasLinkedExchangeAccount: Bool {
@@ -182,6 +143,12 @@ extension NabuUser: NabuUserBlockstackAirdropRegistering {
     }
 }
 
+extension NabuUser: NabuUserSimpleBuyEnabled {
+    var isSimpleBuyEnabled: Bool {
+        return tags?.simpleBuy != nil
+    }
+}
+
 struct Email: Decodable {
     let address: String
     let verified: Bool
@@ -189,6 +156,17 @@ struct Email: Decodable {
     enum CodingKeys: String, CodingKey {
         case address = "email"
         case verified = "emailVerified"
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        address = try values.decode(String.self, forKey: .address)
+        verified = try values.decode(Bool.self, forKey: .verified)
+    }
+
+    init(address: String, verified: Bool) {
+        self.address = address
+        self.verified = verified
     }
 }
 
@@ -200,6 +178,17 @@ struct Mobile: Decodable {
         case phone = "mobile"
         case verified = "mobileVerified"
     }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        phone = try values.decode(String.self, forKey: .phone)
+        verified = try values.decodeIfPresent(Bool.self, forKey: .verified) ?? false
+    }
+
+    init(phone: String, verified: Bool) {
+        self.phone = phone
+        self.verified = verified
+    }
 }
 
 struct Tags: Decodable {
@@ -207,51 +196,65 @@ struct Tags: Decodable {
     let blockstack: Blockstack?
     let coinify: Bool?
     let powerPax: PowerPax?
+    let simpleBuy: SimpleBuy?
     
     enum CodingKeys: String, CodingKey {
         case sunriver = "SUNRIVER"
         case blockstack = "BLOCKSTACK"
         case coinify = "COINIFY"
         case powerPax = "POWER_PAX"
+        case simpleBuy = "SIMPLE_BUY"
     }
-    
+
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         sunriver = try values.decodeIfPresent(Sunriver.self, forKey: .sunriver)
         blockstack = try values.decodeIfPresent(Blockstack.self, forKey: .blockstack)
         coinify = try values.decodeIfPresent(Bool.self, forKey: .coinify)
         powerPax = try values.decodeIfPresent(PowerPax.self, forKey: .powerPax)
+        simpleBuy = try values.decodeIfPresent(SimpleBuy.self, forKey: .simpleBuy)
     }
-    
-    init(sunriver: Sunriver? = nil, blockstack: Blockstack? = nil, coinify: Bool = false, powerPax: PowerPax? = nil) {
+
+    init(sunriver: Sunriver? = nil,
+         blockstack: Blockstack? = nil,
+         coinify: Bool = false,
+         powerPax: PowerPax? = nil,
+         simpleBuy: SimpleBuy? = nil) {
         self.sunriver = sunriver
         self.blockstack = blockstack
         self.coinify = coinify
         self.powerPax = powerPax
+        self.simpleBuy = simpleBuy
     }
-}
 
-struct Sunriver: Decodable {
-    let campaignAddress: String
+    struct Sunriver: Decodable {
+        let campaignAddress: String
 
-    enum CodingKeys: String, CodingKey {
-        case campaignAddress = "x-campaign-address"
+        enum CodingKeys: String, CodingKey {
+            case campaignAddress = "x-campaign-address"
+        }
     }
-}
-
-struct Blockstack: Decodable {
-    let campaignAddress: String
-
-    enum CodingKeys: String, CodingKey {
-        case campaignAddress = "x-campaign-address"
-    }
-}
-
-struct PowerPax: Decodable {
-    let campaignAddress: String
     
-    enum CodingKeys: String, CodingKey {
-        case campaignAddress = "x-campaign-address"
+    struct SimpleBuy: Decodable {}
+
+    struct Blockstack: Decodable {
+        let campaignAddress: String
+
+        enum CodingKeys: String, CodingKey {
+            case campaignAddress = "x-campaign-address"
+        }
+    }
+
+    struct PowerPax: Decodable {
+        let campaignAddress: String
+
+        enum CodingKeys: String, CodingKey {
+            case campaignAddress = "x-campaign-address"
+        }
+    }
+    
+    var containsSimpleBuy: Bool {
+        simpleBuy != nil
     }
 }
 
@@ -264,17 +267,19 @@ struct DocumentResubmission: Decodable {
 }
 
 struct DepositAddress {
-    
-    let type: AssetType
+    let type: CryptoCurrency
     let address: String
-    
-    init?(stringValue: String, address: String) {
-        guard let type = AssetType(stringValue: stringValue) else { return nil }
-        self.type = type
-        self.address = address
+
+    var dictionaryRepresentation: [String: String] {
+        return [type.symbol: address]
     }
-    
-    init(type: AssetType, address: String) {
+
+    init?(stringType: String, address: String) {
+        guard let type = CryptoCurrency(rawValue: stringType.uppercased()) else { return nil }
+        self.init(type: type, address: address)
+    }
+
+    init(type: CryptoCurrency, address: String) {
         self.type = type
         self.address = address
     }
@@ -282,14 +287,8 @@ struct DepositAddress {
 
 struct NabuUserSettings: Decodable {
     let mercuryEmailVerified: Bool
-    
+
     enum CodingKeys: String, CodingKey {
         case mercuryEmailVerified = "MERCURY_EMAIL_VERIFIED"
-    }
-}
-
-extension DepositAddress {
-    var dictionaryRepresentation: [String: String] {
-        return [type.symbol: address]
     }
 }

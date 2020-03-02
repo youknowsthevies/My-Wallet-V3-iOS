@@ -129,6 +129,18 @@ extension AppFeatureConfigurator: FeatureFetching {
         }
         return .just(number)
     }
+    
+    /// Returns an expected boolean for the provided feature key
+    ///
+    /// - Parameter feature: the feature key
+    /// - Returns: The `Bool` value wrapped in a `RxSwift.Single`
+    /// - Throws: An `ConfigurationError.missingKeyRawValue` in case the key raw value
+    func fetchBool(for key: AppFeature) -> Single<Bool> {
+        guard let keyRawValue = key.remoteEnabledKey else {
+            return .error(ConfigurationError.missingKeyRawValue)
+        }
+        return .just(remoteConfig.configValue(forKey: keyRawValue).boolValue)
+    }
 }
 
 // MARK: - FeatureVariantFetching

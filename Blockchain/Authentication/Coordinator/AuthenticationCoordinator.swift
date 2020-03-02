@@ -58,7 +58,8 @@ extension AuthenticationCoordinator: ManualPairingWalletFetching {
     private let dataRepository: BlockchainDataRepository
     private let stellarServiceProvider: StellarServiceProvider
     private let walletManager: WalletManager
-    
+    private let fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
+    private lazy var simpleBuyAvailabilityService: SimpleBuyAvailabilityServiceAPI = SimpleBuyServiceProvider.default.availability
     private lazy var walletPayloadService = WalletPayloadService(
         client: WalletPayloadClient(),
         repository: walletManager.repository
@@ -76,21 +77,25 @@ extension AuthenticationCoordinator: ManualPairingWalletFetching {
     var hasFinishedAuthentication = false
     var isShowingSecondPasswordScreen = false
     
+    var isCreatingWallet = false
+    
     private let bag = DisposeBag()
         
    // MARK: - Initializer
 
-   init(appSettings: BlockchainSettings.App = .shared,
-        onboardingSettings: BlockchainSettings.Onboarding = .shared,
-        wallet: Wallet = WalletManager.shared.wallet,
-        alertPresenter: AlertViewPresenter = AlertViewPresenter.shared,
-        walletManager: WalletManager = WalletManager.shared,
-        loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
-        dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
-        stellarServiceProvider: StellarServiceProvider = StellarServiceProvider.shared,
-        deepLinkRouter: DeepLinkRouter = DeepLinkRouter(),
-        remoteNotificationServiceContainer: RemoteNotificationServiceContainer = .default,
-        exchangeRepository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository()) {
+    init(fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
+         appSettings: BlockchainSettings.App = .shared,
+         onboardingSettings: BlockchainSettings.Onboarding = .shared,
+         wallet: Wallet = WalletManager.shared.wallet,
+         alertPresenter: AlertViewPresenter = AlertViewPresenter.shared,
+         walletManager: WalletManager = WalletManager.shared,
+         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
+         dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
+         stellarServiceProvider: StellarServiceProvider = StellarServiceProvider.shared,
+         deepLinkRouter: DeepLinkRouter = DeepLinkRouter(),
+         remoteNotificationServiceContainer: RemoteNotificationServiceContainer = .default,
+         exchangeRepository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository()) {
+       self.fiatCurrencySettingsService = fiatCurrencySettingsService
        self.appSettings = appSettings
        self.onboardingSettings = onboardingSettings
        self.wallet = wallet
@@ -173,8 +178,21 @@ extension AuthenticationCoordinator: ManualPairingWalletFetching {
         // Handle any necessary routing after authentication
         handlePostAuthenticationLogic()
     }
-
+    
     func handlePostAuthenticationLogic() {
+        if isCreatingWallet {
+            fiatCurrencySettingsService
+                .update(currency: .locale, context: .walletCreation)
+                .flatMapSingle(weak: self) { (self) -> Single<Bool> in
+                    self.simpleBuyAvailabilityService.valueSingle
+                }
+                .subscribe(onSuccess: { isAvailable in
+                    guard isAvailable else { return }
+                    AppCoordinator.shared.startSimpleBuyAtLogin()
+                })
+                .disposed(by: bag)
+        }
+        
         if let route = postAuthenticationRoute {
             switch route {
             case .sendCoins:
@@ -185,7 +203,7 @@ extension AuthenticationCoordinator: ManualPairingWalletFetching {
 
         // Handle airdrop routing
         deepLinkRouter.routeIfNeeded()
-        
+    
         hasFinishedAuthentication = true
     }
 
@@ -203,15 +221,20 @@ extension AuthenticationCoordinator: ManualPairingWalletFetching {
     
     /// Unauthenticates the user
     @objc func logout() {
+        
+        // In case the user has created the wallet during this session
+        // TODO: Refactor this once the wallet creation becomes native
+        isCreatingWallet = false
+        
         WalletManager.shared.close()
 
         dataRepository.clearCache()
-
+        
         SocketManager.shared.disconnectAll()
         StellarServiceProvider.shared.tearDown()
         appSettings.reset()
         onboardingSettings.reset()
-        
+                        
         showPasswordRequiredViewController()
         AppCoordinator.shared.clearOnLogout()
     }

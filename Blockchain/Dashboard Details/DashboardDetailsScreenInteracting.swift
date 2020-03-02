@@ -13,7 +13,9 @@ protocol DashboardDetailsScreenInteracting: class {
     
     var priceServiceAPI: HistoricalFiatPriceServiceAPI { get }
     
-    var currencyProvider: FiatCurrencyTypeProviding { get }
+    var recoveryPhraseStatus: RecoveryPhraseStatusProviding { get }
+    
+    var recoveryPhraseVerifying: RecoveryPhraseVerifyingServiceAPI { get }
     
     var balanceFetching: AssetBalanceFetching { get }
     

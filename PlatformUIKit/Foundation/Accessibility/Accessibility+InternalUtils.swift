@@ -23,6 +23,7 @@ public extension Accessibility.Identifier {
         public static let mainCTAButton = "mainCTAButton"
         public static let secondaryCTAButton = "secondaryCTAButton"
         public static let destructiveCTAButton = "desctructiveCTAButton"
+        public static let cancelCTAButton = "cancelCTAButton"
         
         public static let destructiveBadgeView = "desctructiveBadgeView"
         public static let affirmativeBadgeView = "affirmativeBadgeView"

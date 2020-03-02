@@ -12,7 +12,7 @@ import RxRelay
 import PlatformKit
 
 protocol TierLimitsProviding {
-    var tiers: Observable<KYCUserTiersResponse> { get }
+    var tiers: Observable<KYC.UserTiers> { get }
     var fetchTriggerRelay: PublishRelay<Void> { get }
 }
 
@@ -22,7 +22,7 @@ final class TierLimitsProvider: TierLimitsProviding {
     
     private let repository: BlockchainDataRepository
     
-    var tiers: Observable<KYCUserTiersResponse> {
+    var tiers: Observable<KYC.UserTiers> {
         return Observable.combineLatest(repository.tiers, fetchTriggerRelay).map { $0.0 }
     }
     

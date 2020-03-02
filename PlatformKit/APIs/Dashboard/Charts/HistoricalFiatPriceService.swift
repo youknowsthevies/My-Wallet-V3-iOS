@@ -9,6 +9,7 @@
 import Foundation
 import RxSwift
 import RxRelay
+import ToolKit
 
 /// This protocol defines a `Single<FiatValue>`. It's the
 /// latest Fiat price for a given asset type and is to be used
@@ -73,8 +74,8 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
     /// The exchange service
     private let exchangeAPI: PairExchangeServiceAPI
     
-    /// The currency provider
-    private let fiatCurrencyProvider: FiatCurrencyTypeProviding
+    /// The currency service
+    private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     
     /// The associated asset
     private let cryptoCurrency: CryptoCurrency
@@ -82,16 +83,16 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
     public init(cryptoCurrency: CryptoCurrency,
                 exchangeAPI: PairExchangeServiceAPI,
                 historicalPriceService: HistoricalPricesAPI = HistoricalPriceService(),
-                fiatCurrencyProvider: FiatCurrencyTypeProviding) {
+                fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
         self.exchangeAPI = exchangeAPI
         self.cryptoCurrency = cryptoCurrency
         self.historicalPriceService = historicalPriceService
-        self.fiatCurrencyProvider = fiatCurrencyProvider
+        self.fiatCurrencyService = fiatCurrencyService
         
         let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
         
         let currencyProvider = Observable
-            .combineLatest(fiatCurrencyProvider.fiatCurrency, fetchTriggerRelay)
+            .combineLatest(fiatCurrencyService.fiatCurrencyObservable, fetchTriggerRelay)
             .throttle(.milliseconds(100), scheduler: scheduler)
             .map { ($0.0, $0.1) }
             .flatMapLatest { tuple -> Observable<(HistoricalPrices, String, PriceWindow)> in

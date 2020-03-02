@@ -32,23 +32,23 @@ class CryptoFormatterTests: XCTestCase {
         )
         XCTAssertEqual(
             "0.1",
-            btcFormatter.format(value: CryptoValue.bitcoinFromMajor(decimal: 0.1))
+            btcFormatter.format(value: CryptoValue.createFromMajorValue(string: "0.1", assetType: .bitcoin)!)
         )
         XCTAssertEqual(
             "0.0",
-            btcFormatter.format(value: CryptoValue.bitcoinFromMajor(int: 0))
+            btcFormatter.format(value: CryptoValue.createFromMajorValue(string: "0", assetType: .bitcoin)!)
         )
         XCTAssertEqual(
             "1.0",
-            btcFormatter.format(value: CryptoValue.bitcoinFromMajor(int: 1))
+            btcFormatter.format(value: CryptoValue.createFromMajorValue(string: "1", assetType: .bitcoin)!)
         )
         XCTAssertEqual(
             "1,000.0",
-            btcFormatter.format(value: CryptoValue.bitcoinFromMajor(int: 1_000))
+            btcFormatter.format(value: CryptoValue.createFromMajorValue(string: "1000", assetType: .bitcoin)!)
         )
         XCTAssertEqual(
             "1,000,000.0",
-            btcFormatter.format(value: CryptoValue.bitcoinFromMajor(int: 1_000_000))
+            btcFormatter.format(value: CryptoValue.createFromMajorValue(string: "1000000", assetType: .bitcoin)!)
         )
     }
 
@@ -59,23 +59,23 @@ class CryptoFormatterTests: XCTestCase {
         )
         XCTAssertEqual(
             "0.1 BTC",
-            btcFormatter.format(value: CryptoValue.bitcoinFromMajor(decimal: 0.1), withPrecision: .short, includeSymbol: true)
+            btcFormatter.format(value: CryptoValue.createFromMajorValue(string: "0.1", assetType: .bitcoin)!, withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "0.0 BTC",
-            btcFormatter.format(value: CryptoValue.bitcoinFromMajor(int: 0), withPrecision: .short, includeSymbol: true)
+            btcFormatter.format(value: CryptoValue.createFromMajorValue(string: "0", assetType: .bitcoin)!, withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "1.0 BTC",
-            btcFormatter.format(value: CryptoValue.bitcoinFromMajor(int: 1), withPrecision: .short, includeSymbol: true)
+            btcFormatter.format(value: CryptoValue.createFromMajorValue(string: "1", assetType: .bitcoin)!, withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "1,000.0 BTC",
-            btcFormatter.format(value: CryptoValue.bitcoinFromMajor(int: 1_000), withPrecision: .short, includeSymbol: true)
+            btcFormatter.format(value: CryptoValue.createFromMajorValue(string: "1000", assetType: .bitcoin)!, withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "1,000,000.0 BTC",
-            btcFormatter.format(value: CryptoValue.bitcoinFromMajor(int: 1_000_000), withPrecision: .short, includeSymbol: true)
+            btcFormatter.format(value: CryptoValue.createFromMajorValue(string: "1000000", assetType: .bitcoin)!, withPrecision: .short, includeSymbol: true)
         )
     }
 
@@ -190,23 +190,23 @@ class CryptoFormatterTests: XCTestCase {
         )
         XCTAssertEqual(
             "0.1",
-            bchFormatter.format(value: CryptoValue.bitcoinFromMajor(decimal: 0.1))
+            bchFormatter.format(value: CryptoValue.createFromMajorValue(string: "0.1", assetType: .bitcoin)!)
         )
         XCTAssertEqual(
             "0.0",
-            bchFormatter.format(value: CryptoValue.bitcoinFromMajor(int: 0))
+            bchFormatter.format(value: CryptoValue.createFromMajorValue(string: "0", assetType: .bitcoin)!)
         )
         XCTAssertEqual(
             "1.0",
-            bchFormatter.format(value: CryptoValue.bitcoinFromMajor(int: 1))
+            bchFormatter.format(value: CryptoValue.createFromMajorValue(string: "1", assetType: .bitcoin)!)
         )
         XCTAssertEqual(
             "1,000.0",
-            bchFormatter.format(value: CryptoValue.bitcoinFromMajor(int: 1_000))
+            bchFormatter.format(value: CryptoValue.createFromMajorValue(string: "1000", assetType: .bitcoin)!)
         )
         XCTAssertEqual(
             "1,000,000.0",
-            bchFormatter.format(value: CryptoValue.bitcoinFromMajor(int: 1_000_000))
+            bchFormatter.format(value: CryptoValue.createFromMajorValue(string: "1000000", assetType: .bitcoin)!)
         )
     }
 
@@ -217,23 +217,23 @@ class CryptoFormatterTests: XCTestCase {
         )
         XCTAssertEqual(
             "0.1 BCH",
-            bchFormatter.format(value: CryptoValue.bitcoinCashFromMajor(decimal: 0.1), withPrecision: .short, includeSymbol: true)
+            bchFormatter.format(value: CryptoValue.createFromMajorValue(string: "0.1", assetType: .bitcoinCash)!, withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "0.0 BCH",
-            bchFormatter.format(value: CryptoValue.bitcoinCashFromMajor(int: 0), withPrecision: .short, includeSymbol: true)
+            bchFormatter.format(value: CryptoValue.createFromMajorValue(string: "0", assetType: .bitcoinCash)!, withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "1.0 BCH",
-            bchFormatter.format(value: CryptoValue.bitcoinCashFromMajor(int: 1), withPrecision: .short, includeSymbol: true)
+            bchFormatter.format(value: CryptoValue.createFromMajorValue(string: "1", assetType: .bitcoinCash)!, withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "1,000.0 BCH",
-            bchFormatter.format(value: CryptoValue.bitcoinCashFromMajor(int: 1_000), withPrecision: .short, includeSymbol: true)
+            bchFormatter.format(value: CryptoValue.createFromMajorValue(string: "1000", assetType: .bitcoinCash)!, withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "1,000,000.0 BCH",
-            bchFormatter.format(value: CryptoValue.bitcoinCashFromMajor(int: 1_000_000), withPrecision: .short, includeSymbol: true)
+            bchFormatter.format(value: CryptoValue.createFromMajorValue(string: "1000000", assetType: .bitcoinCash)!, withPrecision: .short, includeSymbol: true)
         )
     }
 
@@ -300,23 +300,23 @@ class CryptoFormatterTests: XCTestCase {
         )
         XCTAssertEqual(
             "0,1",
-            formatter.format(value: CryptoValue.bitcoinFromMajor(decimal: 0.1))
+            formatter.format(value: CryptoValue.createFromMajorValue(string: "0.1", assetType: .bitcoin)!)
         )
         XCTAssertEqual(
             "0,0",
-            formatter.format(value: CryptoValue.bitcoinFromMajor(int: 0))
+            formatter.format(value: CryptoValue.createFromMajorValue(string: "0", assetType: .bitcoin)!)
         )
         XCTAssertEqual(
             "1,0",
-            formatter.format(value: CryptoValue.bitcoinFromMajor(int: 1))
+            formatter.format(value: CryptoValue.createFromMajorValue(string: "1", assetType: .bitcoin)!)
         )
         XCTAssertEqual(
             "1.000,0",
-            formatter.format(value: CryptoValue.bitcoinFromMajor(int: 1_000))
+            formatter.format(value: CryptoValue.createFromMajorValue(string: "1000", assetType: .bitcoin)!)
         )
         XCTAssertEqual(
             "1.000.000,0",
-            formatter.format(value: CryptoValue.bitcoinFromMajor(int: 1_000_000))
+            formatter.format(value: CryptoValue.createFromMajorValue(string: "1000000", assetType: .bitcoin)!)
         )
     }
 }

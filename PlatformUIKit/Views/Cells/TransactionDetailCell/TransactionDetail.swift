@@ -54,7 +54,7 @@ extension TransactionDetail {
     public static let demo2: TransactionDetail = TransactionDetail(
         description: "This is a demo description",
         value: "$1234",
-        backgroundColor: .darkBlue,
+        backgroundColor: .blue800,
         statusVisibility: .visible,
         bold: true,
         statusTintColor: .green

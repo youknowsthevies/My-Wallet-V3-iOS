@@ -12,6 +12,9 @@ import RxCocoa
 
 public protocol AssetBalanceFetching {
     
+    /// The custodial balance service
+    var custodialBalance: CustodialAccountBalanceFetching { get }
+    
     /// The balance service
     var balance: AccountBalanceFetching { get }
     
@@ -19,7 +22,7 @@ public protocol AssetBalanceFetching {
     var exchange: PairExchangeServiceAPI { get }
     
     /// The calculation state of the asset balance
-    var calculationState: Observable<FiatCryptoPairCalculationState> { get }
+    var calculationState: Observable<AssetFiatCryptoBalanceCalculationState> { get }
     
     /// Trigger a refresh on the balance and exchange rate
     func refresh()
@@ -29,26 +32,38 @@ public final class AssetBalanceFetcher: AssetBalanceFetching {
     
     // MARK: - Properties
     
+    public let custodialBalance: CustodialAccountBalanceFetching
     public let balance: AccountBalanceFetching
     public let exchange: PairExchangeServiceAPI
     
     /// The balance
-    public var calculationState: Observable<FiatCryptoPairCalculationState> {
+    public var calculationState: Observable<AssetFiatCryptoBalanceCalculationState> {
         return calculationStateRelay.asObservable()
     }
     
-    private let calculationStateRelay = BehaviorRelay<FiatCryptoPairCalculationState>(value: .calculating)
+    private let calculationStateRelay = BehaviorRelay<AssetFiatCryptoBalanceCalculationState>(value: .calculating)
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
-    public init(balance: AccountBalanceFetching,
+    public init(custodialBalance: CustodialAccountBalanceFetching,
+                balance: AccountBalanceFetching,
                 exchange: PairExchangeServiceAPI) {
+        self.custodialBalance = custodialBalance
         self.balance = balance
         self.exchange = exchange
         Observable
-            .combineLatest(balance.balanceObservable, exchange.fiatPrice)
-            .map { FiatCryptoPair(crypto: $0.0, exchangeRate: $0.1) }
+            .combineLatest(
+                balance.balanceObservable,
+                custodialBalance.balanceObservable,
+                exchange.fiatPrice
+            )
+            .map {
+                return .init(
+                    noncustodial: FiatCryptoPair(crypto: $0.0, exchangeRate: $0.2),
+                    custodial: FiatCryptoPair(crypto: $0.1, exchangeRate: $0.2)
+                )
+            }
             .map { .value($0) }
             .startWith(.calculating)
             .catchErrorJustReturn(.calculating)
@@ -57,6 +72,7 @@ public final class AssetBalanceFetcher: AssetBalanceFetching {
     }
     
     public func refresh() {
+        custodialBalance.balanceFetchTriggerRelay.accept(())
         balance.balanceFetchTriggerRelay.accept(())
         exchange.fetchTriggerRelay.accept(())
     }

@@ -145,8 +145,14 @@ class BackupVerifyViewController: UIViewController, UITextFieldDelegate, SecondP
                 word1.resignFirstResponder()
                 word2.resignFirstResponder()
                 word3.resignFirstResponder()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    self.wallet!.markRecoveryPhraseVerified()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                    guard let self = self else { return }
+                    guard let wallet = self.wallet else { return }
+                    wallet.markRecoveryPhraseVerified(completion: {
+                        self.dismiss(animated: true, completion: nil)
+                    }, error: {
+                        self.pleaseTryAgain()
+                    })
                 }
             }
         }

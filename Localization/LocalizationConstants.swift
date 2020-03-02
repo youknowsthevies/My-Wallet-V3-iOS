@@ -546,6 +546,8 @@ public struct LocalizationConstants {
         public static let  BC_STRING_COPY_WARNING_TEXT = NSLocalizedString("Copy this receive address to the clipboard? If so, be advised that other applications may be able to look at this information.", comment: "")
     }
     
+    public static let wallet = NSLocalizedString("Wallet", comment: "Wallet")
+    public static let tradingWallet = NSLocalizedString("Trading Wallet", comment: "Trading Wallet")
     public static let verified = NSLocalizedString("Verified", comment: "")
     public static let unverified = NSLocalizedString("Unverified", comment: "")
     public static let verify = NSLocalizedString ("Verify", comment: "")
@@ -1277,7 +1279,8 @@ public struct LocalizationConstants {
     }
     
     public struct DashboardDetails {
-        public static let currentPrice = NSLocalizedString("Current Price", comment: "Current Price")
+        public static let current = NSLocalizedString("Current", comment: "Current")
+        public static let price = NSLocalizedString("Price", comment: "Price")
         
         public static let send = NSLocalizedString("Send", comment: "Send")
         public static let request = NSLocalizedString("Request", comment: "Request")
@@ -1287,6 +1290,9 @@ public struct LocalizationConstants {
         public static let month = NSLocalizedString("Month", comment: "Month")
         public static let year = NSLocalizedString("Year", comment: "Year")
         public static let all = NSLocalizedString("All", comment: "All")
+        public static let sendToWallet = NSLocalizedString("Send to My Wallet", comment: "Send to My Wallet")
+        public static let swap = NSLocalizedString("Swap", comment: "Swap")
+        public static let viewActivity = NSLocalizedString("View Activity", comment: "View Activity")
     }
 
     public struct VersionUpdate {
@@ -1341,6 +1347,397 @@ public struct LocalizationConstants {
         )
     }
     
+    public struct CustodyWalletInformation {
+        public static let title = NSLocalizedString(
+            "Crypto Trading Wallet",
+            comment: "Crypto Trading Wallet"
+        )
+        public struct Description {
+            public static let partOne = NSLocalizedString(
+                "When you buy crypto, we store your funds securely for you in a Crypto Trading Wallet. These funds are stored by us on your behalf. You can keep them safe with us or transfer them to your non-custodial Wallet to own and store yourself.",
+                comment: "When you buy crypto, we store your funds securely for you in a Crypto Trading Wallet. These funds are stored by us on your behalf. You can keep them safe with us or transfer them to your non-custodial Wallet to own and store yourself."
+            )
+            public static let partTwo = NSLocalizedString(
+                "If you want to swap or send these funds, you need to transfer them to your non-custodial crypto Wallet.",
+                comment: "If you want to swap or send these funds, you need to transfer them to your non-custodial crypto Wallet."
+            )
+        }
+    }
+    
+    public struct SimpleBuy {
+        public struct Withdrawal {
+            public static let title = NSLocalizedString("Send to", comment: "Send to")
+            public static let description = NSLocalizedString(
+                "At this time, Blockchain.com only allows sending your total amount from your %@ trading wallet",
+                comment: "At this time, Blockchain.com only allows sending your total amount from your %@ trading wallet"
+            )
+            public static let action = NSLocalizedString("Send", comment: "Send")
+            
+            public struct SummarySuccess {
+                public static let title = NSLocalizedString("Success!", comment: "Success!")
+                public static let sent = NSLocalizedString("Sent", comment: "Sent")
+                public static let description = NSLocalizedString(
+                    "It may take up to 1 hour for your transaction to be processed.",
+                    comment: "It may take up to 1 hour for your transaction to be processed."
+                )
+                public static let action = NSLocalizedString("Done", comment: "Done")
+            }
+            
+            public struct SummaryFailure {
+                public static let title = NSLocalizedString("Oops!", comment: "Oops!")
+                public static let description = NSLocalizedString(
+                    "Something went wrong. Please go back and try again.",
+                    comment: "Something went wrong. Please go back and try again."
+                )
+                public static let action = NSLocalizedString("OK", comment: "OK")
+            }
+        }
+        public struct ErrorAlert {
+            public static let title = NSLocalizedString(
+                "Oops!",
+                comment: "Generic error bottom sheet title"
+            )
+            public static let message = NSLocalizedString(
+                "Something went wrong. Please try again.",
+                comment: "Generic error bottom sheet message"
+            )
+            public static let button = NSLocalizedString(
+                "OK",
+                comment: "Generic error bottom sheet OK button"
+            )
+        }
+        public struct CryptoSelectionScreen {
+            public static let title = NSLocalizedString(
+                "Select Crypto",
+                comment: "Simple Buy: Crypto Selection screen title"
+            )
+        }
+        public struct BuyCryptoScreen {
+            public static let title = NSLocalizedString(
+                "Buy Crypto",
+                comment: "Simple Buy: Buy Crypto screen title"
+            )
+            public static let ctaButton = NSLocalizedString(
+                "Continue",
+                comment: "Simple Buy: Buy Crypto Screen - CTA button"
+            )
+            public struct LimitView {
+                public static let upperLimit = NSLocalizedString(
+                    "Up to %@",
+                    comment: "Simple Buy: Buy Crypto Screen - Amount upper limit"
+                )
+                public struct Min {
+                    public static let prefix = NSLocalizedString(
+                        "Too Low. ",
+                        comment: "Simple Buy: Buy Crypto Screen - Amount too low prefix"
+                    )
+                    public static let suffix = NSLocalizedString(
+                        "Use MIN",
+                        comment: "Simple Buy: Buy Crypto Screen - Amount too low suffix"
+                    )
+                }
+
+                public struct Max {
+                    public static let prefix = NSLocalizedString(
+                        "Too High. ",
+                        comment: "Simple Buy: Buy Crypto Screen - Amount too high prefix"
+                    )
+                    public static let suffix = NSLocalizedString(
+                        "Use MAX",
+                        comment: "Simple Buy: Buy Crypto Screen - Amount too high suffix"
+                    )
+                }
+            }
+        }
+        public struct IntroScreen {
+            public struct BuyCard {
+                public static let title = NSLocalizedString(
+                    "Buy Crypto",
+                    comment: "Simple Buy Intro Screen - buy crypto card: title label"
+                )
+                public static let description = NSLocalizedString(
+                    "We can help you buy in a just a few simple steps.",
+                    comment: "Simple Buy Intro Screen - buy crypto card: title label"
+                )
+                public static let button = NSLocalizedString(
+                    "Buy Crypto Now",
+                    comment: "Simple Buy Intro Screen - buy crypto card: Buy CTA button"
+                )
+            }
+            public struct SkipCard {
+                public static let title = NSLocalizedString(
+                    "Tour the Wallet",
+                    comment: "Simple Buy Intro Screen - buy crypto card: Buy title label"
+                )
+                public static let description = NSLocalizedString(
+                    "Explore your new Blockchain Wallet.",
+                    comment: "Simple Buy Intro Screen - buy crypto card: Buy description label"
+                )
+                public static let button = NSLocalizedString(
+                    "Get Started",
+                    comment: "Simple Buy Intro Screen - buy crypto card: Skip CTA button"
+                )
+            }
+            public struct DescriptionLabel {
+                public static let missingEmailFallback = NSLocalizedString(
+                    "We sent you an email with a verification link. Didn’t get it? Check your spam folder.",
+                    comment: "Simple Buy Intro Screen - description label for missing email"
+                )
+                public static let prefix = NSLocalizedString(
+                    "We sent an email to ",
+                    comment: "Simple Buy Intro Screen - description label prefix"
+                )
+                public static let suffix = NSLocalizedString(
+                    " with a verification link. Didn’t get it? Check your spam folder.",
+                    comment: "Simple Buy Intro Screen - description label suffix"
+                )
+            }
+            public static let title = NSLocalizedString(
+                "Welcome to Blockchain",
+                comment: "Simple Buy Intro Screen - title label"
+            )
+        }
+        
+        public struct TransferDetails {
+            
+            public struct Title {
+                public static let pendingOrder = NSLocalizedString(
+                    "Pending %@ Buy",
+                    comment: "Simple Buy pending order screen title"
+                )
+                public static let checkout = NSLocalizedString(
+                    "Transfer Details",
+                    comment: "Simple Buy checkout screen title"
+                )
+            }
+
+            public enum Button {
+                public static let ok = NSLocalizedString(
+                    "OK",
+                    comment: "Simple Buy: Transfer Details Screen - ok button"
+                )
+                public static let cancel = NSLocalizedString(
+                    "Cancel Order",
+                    comment: "Simple Buy: Transfer Details Screen - cancel button"
+                )
+            }
+            
+            public struct TermsLink {
+                public struct GBP {
+                    public static let prefix = NSLocalizedString(
+                        "By depositing funds to this account, you agree to ",
+                        comment: "Simple Buy - GBP terms and conditions link prefix"
+                    )
+                    public static let link = NSLocalizedString(
+                        "Terms & Conditions of Modulr",
+                        comment: "Simple Buy - GBP terms and conditions link content"
+                    )
+                    public static let suffix = NSLocalizedString(
+                        ", our banking partner. ",
+                        comment: "Simple Buy - GBP terms and conditions link suffix"
+                    )
+                }
+            }
+
+            public struct Summary {
+                public static let pendingOrder = NSLocalizedString(
+                    "Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order.",
+                    comment: "Simple Buy - pending order details summary label"
+                )
+                public struct AnyFiat {
+                    public static let prefix = NSLocalizedString(
+                        "Securely transfer",
+                        comment: "Simple Buy - buy summary prefix"
+                    )
+                    public static let suffix = NSLocalizedString(
+                        "from your bank account to Blockchain.com. Depending on the transfer method and availability of funds, this may take up to 1 business day.",
+                        comment: "Simple Buy - buy summary suffix"
+                    )
+                }
+                
+                public struct GbpAndUsd {
+                    public static let prefix = NSLocalizedString(
+                        "Securely transfer",
+                        comment: "Simple Buy - buy summary prefix"
+                    )
+                    public static let suffix = NSLocalizedString(
+                        "from your bank to Blockchain.com. Funds are generally available to trade in 1 business day.",
+                        comment: "Simple Buy - buy summary suffix"
+                    )
+                }
+            }
+                        
+            public static let disclaimer = NSLocalizedString(
+                "Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected.",
+                comment: "Simple Buy - disclaimer"
+            )
+            
+            public struct Cancellation {
+                public static let title = NSLocalizedString(
+                    "Are you sure?",
+                    comment: "Simple buy - cancellation title"
+                )
+                public struct Description {
+                    public static let thisWillRemove = NSLocalizedString(
+                        "This will remove your",
+                        comment: "This will remove your"
+                    )
+                    public static let buyOrder = NSLocalizedString("Buy order.", comment: "Buy order.")
+                }
+                public static let no = NSLocalizedString("No", comment: "No")
+                public static let yes = NSLocalizedString("Yes", comment: "Yes")
+            }
+        }
+        
+        public struct Checkout {
+            public static let title = NSLocalizedString(
+                "Checkout",
+                comment: "Checkout Screen Title"
+            )
+            public struct Summary {
+                public struct Title {
+                    public static let prefix = NSLocalizedString(
+                        "Please review and confirm your ",
+                        comment: "Simple buy checkout screen - title prefix"
+                    )
+                    public static let suffix = NSLocalizedString(
+                        " buy.",
+                        comment: "Simple buy checkout screen - title suffix"
+                    )
+                }
+                public static let buttonPrefix = NSLocalizedString(
+                    "Buy ",
+                    comment: "Simple buy checkout screen - buy button prefix"
+                )
+            }
+
+            public struct LineItem {
+                public static let bankName = NSLocalizedString(
+                    "Bank Name",
+                    comment: "Simple Buy - Bank Name Label"
+                )
+                public static let iban = NSLocalizedString(
+                    "IBAN",
+                    comment: "Simple Buy - IBAN Label"
+                )
+                public static let bankCountry = NSLocalizedString(
+                     "Bank Country",
+                     comment: "Simple Buy - Bank Country Label"
+                )
+                public static let accountNumber = NSLocalizedString(
+                     "Account Number",
+                     comment: "Simple Buy - Account Number Label"
+                )
+                public static let sortCode = NSLocalizedString(
+                     "Sort Code",
+                     comment: "Simple Buy - Sort Code Label"
+                )
+                public static let bankCode = NSLocalizedString(
+                     "Bank Code (SWIFT/BIC)",
+                     comment: "Simple Buy - Bank Code Label"
+                )
+                public static let recipient = NSLocalizedString(
+                     "Recipient",
+                     comment: "Simple Buy - Recipient Label"
+                )
+                public static let amountToSend = NSLocalizedString(
+                     "Amount to Send",
+                     comment: "Simple Buy - Amount to Send Label"
+                )
+                public static let date = NSLocalizedString(
+                    "Date",
+                    comment: "Date"
+                )
+                public static let totalCost = NSLocalizedString(
+                    "Total Cost",
+                    comment: "Total Cost"
+                )
+                public struct Copyable {
+                    public static let bankCode = NSLocalizedString(
+                        "Bank Code",
+                        comment: "Label for copy item - Bank Code"
+                    )
+                    public static let iban = NSLocalizedString(
+                        "IBAN",
+                        comment: "Label for copy item - IBAN"
+                    )
+                    public static let copied = NSLocalizedString(
+                        "Copied!",
+                        comment: "Copied!"
+                    )
+                    public static let copyMessageSuffix = NSLocalizedString(
+                        "is on your clipboard.",
+                        comment: "Copy label suffix"
+                    )
+                    public static let defaultCopyMessage = NSLocalizedString(
+                        "Detail is on your clipboard.",
+                        comment: "Copy label suffix"
+                    )
+                }
+            }
+
+            public static let notice = NSLocalizedString(
+                "Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply.",
+                comment: "Simple buy: checkout screen notice label"
+            )
+        }
+
+        public enum KYCScreen {
+            public enum Ineligible {
+                public static let title = NSLocalizedString(
+                    "Blockchain.com Buy Coming Soon to Your Region",
+                    comment: "Simple Buy KYC Screen - ineligible information: title label"
+                )
+                public static let subtitle = NSLocalizedString(
+                    "Buying and selling crypto is not available in your region due to local laws. You can still use your wallet to Send, Receive and Store crypto.",
+                    comment: "Simple Buy KYC Screen - ineligible information: subtitle label"
+                )
+                public static let button = NSLocalizedString(
+                    "OK",
+                    comment: "Simple Buy KYC Screen - ineligible information: button"
+                )
+            }
+            public enum Verifying {
+                public static let title = NSLocalizedString(
+                    "Verifying your information",
+                    comment: "Simple Buy KYC Screen - verifying information: title label"
+                )
+                public static let subtitle = NSLocalizedString(
+                    "Usually takes less than 15-30 seconds",
+                    comment: "Simple Buy KYC Screen - verifying information: subtitle label"
+                )
+            }
+            public enum ManualReview {
+                public static let title = NSLocalizedString(
+                    "Manual Review Required",
+                    comment: "Simple Buy KYC Screen - manual review: title label"
+                )
+                public static let subtitle = NSLocalizedString(
+                    "You’ve successfully submitted your application. A Blockchain Support Member will review your information.",
+                    comment: "Simple Buy KYC Screen - manual review: subtitle label"
+                )
+            }
+            public enum PendingReview {
+                public static let title = NSLocalizedString(
+                    "Pending Review",
+                    comment: "Simple Buy KYC Screen - pending review: title label"
+                )
+                public static let subtitle = NSLocalizedString(
+                    "You’ve successfully submitted your application. A Blockchain Support Member will review your information.",
+                    comment: "Simple Buy KYC Screen - pending review: subtitle label"
+                )
+            }
+            public static let title = NSLocalizedString(
+                "KYC Status",
+                comment: "Simple Buy KYC Screen - title label"
+            )
+            public static let button = NSLocalizedString(
+                "Continue",
+                comment: "Simple Buy KYC Screen - button label"
+            )
+        }
+    }
+    
     public struct AnnouncementCards {
         
         // MARK: - Persistent
@@ -1391,7 +1788,35 @@ public struct LocalizationConstants {
                 comment: "Backup funds announcement card CTA button title"
             )
         }
-        
+        public enum SimpleBuyPendingTransaction {
+            public static let title = NSLocalizedString(
+                "Pending %@ Buy",
+                comment: "Simple Buy Pending Transaction announcement card title"
+            )
+            public static let description = NSLocalizedString(
+                "Once we receive your bank transfer, your %@ buy order will complete.",
+                comment: "Simple Buy Pending Transaction announcement card description"
+            )
+            public static let ctaButton = NSLocalizedString(
+                "View Bank Transfer Details",
+                comment: "Simple Buy Pending Transaction announcement card CTA button title"
+            )
+        }
+        public enum SimpleBuyFinishSignup {
+            public static let title = NSLocalizedString(
+                "Finish Signing Up. Buy Crypto.",
+                comment: "Simple Buy KYC Incomplete announcement card title"
+            )
+            public static let description = NSLocalizedString(
+                "You’re almost done signing up for your Blockchain.com Wallet. Once you finish and get approved, start buying crypto.",
+                comment: "Simple Buy KYC Incomplete announcement card description"
+            )
+            public static let ctaButton = NSLocalizedString(
+                "Continue",
+                comment: "Simple Buy KYC Incomplete announcement card CTA button title"
+            )
+        }
+
         // MARK: - One time
         
         public struct BlockstackAirdropReceived {
@@ -1738,6 +2163,10 @@ public struct LocalizationConstants {
             "Buy & Sell Bitcoin",
             comment: "Item displayed on the side menu of the app for when the user wants to buy and sell Bitcoin."
         )
+        public static let buyCrypto = NSLocalizedString(
+            "Buy Crypto",
+            comment: "Item displayed on the side menu of the app for when the user wants to buy crypto."
+        )
         public static let addresses = NSLocalizedString(
             "Addresses",
             comment: "Item displayed on the side menu of the app for when the user wants to view their crypto addresses."
@@ -1923,18 +2352,37 @@ public struct LocalizationConstants {
     }
     
     public struct BackupFundsScreen {
-        public static let title = NSLocalizedString("Backup Funds", comment: "Backup Funds")
-        public static let subtitle = NSLocalizedString("Backup Needed", comment: "Backup Needed")
-        public static let startBackup = NSLocalizedString("Start Backup", comment: "Start Backup")
         
-        public struct Description {
-            public static let partA = NSLocalizedString(
-                "Your backup phrase contains all of the private keys within your wallet. Please write these 12 words down, in order, and keep them somewhere safe offline. This phrase gives you a way to restore your and access your funds.",
-                comment: "Your backup phrase contains all of the private keys within your wallet. Please write these 12 words down, in order, and keep them somewhere safe offline. This phrase gives you a way to restore your and access your funds."
+        public static let title = NSLocalizedString("Backup Funds", comment: "Backup Funds")
+        
+        public struct Settings {
+            public static let subtitle = NSLocalizedString("Backup Needed", comment: "Backup Needed")
+            public static let action = NSLocalizedString("Start Backup", comment: "Start Backup")
+            
+            public struct Description {
+                public static let partA = NSLocalizedString(
+                    "Your backup phrase contains all of the private keys within your wallet. Please write these 12 words down, in order, and keep them somewhere safe offline. This phrase gives you a way to restore your and access your funds.",
+                    comment: "Your backup phrase contains all of the private keys within your wallet. Please write these 12 words down, in order, and keep them somewhere safe offline. This phrase gives you a way to restore your and access your funds."
+                )
+                public static let partB = NSLocalizedString(
+                    "Before you get started, we created a printable template make it easier to store your phrase. Feel free to download and print it out.",
+                    comment: "Before you get started, we created a printable template make it easier to store your phrase. Feel free to download and print it out."
+                )
+            }
+        }
+        
+        public struct CustodySend {
+            public static let subtitle = NSLocalizedString(
+                "Backup Your Wallet",
+                comment: "Backup Needed"
             )
-            public static let partB = NSLocalizedString(
-                "Before you get started, we created a printable template make it easier to store your phrase. Feel free to download and print it out.",
-                comment: "Before you get started, we created a printable template make it easier to store your phrase. Feel free to download and print it out."
+            public static let action = NSLocalizedString(
+                "Backup Now",
+                comment: "Backup Now"
+            )
+            public static let description = NSLocalizedString(
+                "Your backup phrase will allow you to recover your crypto if you lose access to your wallet. Please write down these 12 words in order and keep them somewhere safe. Never share it with anyone. Your backup phrase is the key to recovering your crypto if you ever get locked out.",
+                comment: "Your backup phrase will allow you to recover your crypto if you lose access to your wallet. Please write down these 12 words in order and keep them somewhere safe. Never share it with anyone. Your backup phrase is the key to recovering your crypto if you ever get locked out."
             )
         }
     }
@@ -3339,4 +3787,8 @@ public struct LocalizationConstants {
     @objc public class func myBitcoinWallet() -> String { return LocalizationConstants.ObjCStrings.BC_STRING_MY_BITCOIN_WALLET }
 
     @objc public class func balancesErrorGeneric() -> String { return LocalizationConstants.Errors.balancesGeneric }
+}
+
+extension LocalizationConstants {
+    public struct Accessibility {}
 }

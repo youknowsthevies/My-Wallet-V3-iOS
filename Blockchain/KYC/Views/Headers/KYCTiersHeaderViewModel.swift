@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import PlatformKit
 
 /// This view model is used in `KYCTiersPageModel`. It dictates what
 /// type of header this screen has and what information should be displayed
@@ -190,11 +191,11 @@ extension KYCTiersHeaderViewModel {
 extension KYCTiersHeaderViewModel {
     
     static func make(
-        with tierResponse: KYCUserTiersResponse,
+        with tierResponse: KYC.UserTiers,
         availableFunds: String? = nil,
         suppressDismissCTA: Bool = false
     ) -> KYCTiersHeaderViewModel {
-        let tiers = tierResponse.userTiers.filter({ $0.tier != .tier0 })
+        let tiers = tierResponse.tiers.filter({ $0.tier != .tier0 })
         
         guard let tier1 = tiers.filter({ $0.tier == .tier1 }).first else {
             /// This should never occur

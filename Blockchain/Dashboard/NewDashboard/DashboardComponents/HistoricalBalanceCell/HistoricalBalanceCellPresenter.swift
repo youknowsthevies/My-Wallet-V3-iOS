@@ -19,7 +19,7 @@ final class HistoricalBalanceCellPresenter {
     var thumbnail: Driver<ImageViewContent> {
         return .just(
             .init(
-                image: interactor.cryptoCurrency.logo,
+                imageName: interactor.cryptoCurrency.logoImageName,
                 accessibility: .id("\(AccessibilityId.assetImageView)\(interactor.cryptoCurrency.symbol)")
             )
         )

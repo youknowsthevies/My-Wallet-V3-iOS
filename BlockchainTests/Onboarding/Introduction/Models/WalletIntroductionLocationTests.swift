@@ -12,13 +12,10 @@ import XCTest
 class WalletIntroductionLocationTests: XCTestCase {
     
     let dashboardHome = WalletIntroductionLocation(screen: .dashboard, position: .home)
-    let sideMenu = WalletIntroductionLocation(screen: .sideMenu, position: .buySell)
     let dashboardSend = WalletIntroductionLocation(screen: .dashboard, position: .send)
     let dashboardSwap = WalletIntroductionLocation(screen: .dashboard, position: .swap)
     
     func testComparableLocations() {
-        XCTAssertLessThan(dashboardHome, sideMenu)
         XCTAssertLessThan(dashboardSend, dashboardSwap)
-        XCTAssertGreaterThan(sideMenu, dashboardSwap)
     }
 }

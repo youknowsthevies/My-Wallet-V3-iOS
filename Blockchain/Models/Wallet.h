@@ -196,7 +196,7 @@
 - (NSString *_Nullable)getMnemonic:(NSString *_Nullable)secondPassword;
 
 - (BOOL)isRecoveryPhraseVerified;
-- (void)markRecoveryPhraseVerified;
+- (void)markRecoveryPhraseVerifiedWithCompletion:(void (^ _Nullable)(void))completion error: (void (^ _Nullable)(void))error;
 - (int)getDefaultAccountIndexForAssetType:(LegacyAssetType)assetType;
 - (void)setDefaultAccount:(int)index assetType:(LegacyAssetType)assetType;
 - (int)getActiveAccountsCount:(LegacyAssetType)assetType;

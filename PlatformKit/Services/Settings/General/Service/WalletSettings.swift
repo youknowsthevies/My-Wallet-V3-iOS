@@ -19,6 +19,10 @@ public struct WalletSettings {
     public let isEmailVerified: Bool
     public let authenticator: AuthenticatorType
     
+    public var currency: FiatCurrency? {
+        FiatCurrency(rawValue: fiatCurrency)
+    }
+    
     init(response: SettingsResponse) {
         countryCode = response.countryCode
         language = response.language

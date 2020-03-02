@@ -75,7 +75,7 @@ final class CoinifyKycAnnouncement: OneTimeAnnouncement & ActionableAnnouncement
     let action: CardAnnouncementAction
     
     private let configuration: AppFeatureConfiguration
-    private let tiers: KYCUserTiersResponse
+    private let tiers: KYC.UserTiers
     private let wallet: Wallet
 
     private let disposeBag = DisposeBag()
@@ -84,7 +84,7 @@ final class CoinifyKycAnnouncement: OneTimeAnnouncement & ActionableAnnouncement
     // MARK: - Setup
 
     init(configuration: AppFeatureConfiguration,
-         tiers: KYCUserTiersResponse,
+         tiers: KYC.UserTiers,
          wallet: Wallet,
          cacheSuite: CacheSuite = UserDefaults.standard,
          analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,

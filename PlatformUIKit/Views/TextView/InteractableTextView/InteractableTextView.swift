@@ -20,39 +20,47 @@ public final class InteractableTextView: UITextView {
     
     public var viewModel: InteractableTextViewModel! {
         didSet {
-            let string = viewModel.inputs
-                .map { input in
-                    switch input {
-                    case .text(string: let string):
-                        return NSAttributedString(
-                            string,
-                            font: viewModel.textStyle.font,
-                            color: viewModel.textStyle.color
-                        )
-                    case .url(string: let text, url: let url):
-                        let link = NSMutableAttributedString(
-                            text,
-                            font: viewModel.linkStyle.font,
-                            color: viewModel.linkStyle.color
-                        )
-                        link.makeHyperlink(to: url)
-                        return link
+            disposeBag = DisposeBag()
+            guard let viewModel = viewModel else { return }
+            linkTextAttributes = [.foregroundColor: viewModel.linkStyle.color]
+            viewModel.inputsRelay
+                .map { inputs -> [NSAttributedString] in
+                    inputs.map { input in
+                        switch input {
+                        case .text(string: let string):
+                            return NSAttributedString(
+                                string,
+                                font: viewModel.textStyle.font,
+                                color: viewModel.textStyle.color
+                            )
+                        case .url(string: let text, url: let url):
+                            let link = NSMutableAttributedString(
+                                text,
+                                font: viewModel.linkStyle.font,
+                                color: viewModel.linkStyle.color
+                            )
+                            link.makeHyperlink(to: url)
+                            return link
+                        }
                     }
                 }
-                .join()
-            let mutableString = NSMutableAttributedString(attributedString: string)
-            mutableString.add(lineSpacing: viewModel.lineSpacing)
-            mutableString.add(alignment: viewModel.alignment)
-            linkTextAttributes = [.foregroundColor: viewModel.linkStyle.color]
-            isEditable = false
-            attributedText = mutableString
-            dataDetectorTypes = .link
+                .map { $0.join() }
+                .map {
+                    let mutableString = NSMutableAttributedString(attributedString: $0)
+                    mutableString.add(lineSpacing: viewModel.lineSpacing)
+                    mutableString.add(alignment: viewModel.alignment)
+                    return mutableString
+                }
+                .bind(to: rx.attributedText)
+                .disposed(by: disposeBag)
         }
     }
     
     // MARK: - Accessors
     
     private var heightConstraint: NSLayoutConstraint!
+    
+    private var disposeBag = DisposeBag()
     
     // MARK: - Setup
     
@@ -73,8 +81,10 @@ public final class InteractableTextView: UITextView {
         isScrollEnabled = false
         textContainerInset = .zero
         textContainer.lineFragmentPadding = 0
+        isEditable = false
+        dataDetectorTypes = .link
     }
-
+    
     /// Setups the height according to the width
     public func setupHeight() {
         guard let attributedText = attributedText else {
@@ -127,7 +137,7 @@ extension InteractableTextView: UITextViewDelegate {
                          interaction: UITextItemInteraction) -> Bool {
         guard interaction == .invokeDefaultAction else { return false }
         let title = textView.attributedText.attributedSubstring(from: characterRange).string
-        viewModel.tapRelay.accept(TitledUrl(title: title, url: URL))
+        viewModel.tapRelay.accept(TitledLink(title: title, url: URL))
         return false
     }
 }

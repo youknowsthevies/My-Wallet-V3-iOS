@@ -35,7 +35,7 @@ public final class InfoScreenViewController: BaseScreenViewController {
         super.viewDidLoad()
         set(barStyle: .darkContent(ignoresStatusBar: false, background: .clear),
             leadingButtonStyle: .close)
-        thumbImageView.content = presenter.imageViewContent
+        thumbImageView.set(presenter.imageViewContent)
         titleLabel.content = presenter.titleLabelContent
         descriptionLabel.content = presenter.descriptionLabelContent
         disclaimerTextView.viewModel = presenter.disclaimerViewModel

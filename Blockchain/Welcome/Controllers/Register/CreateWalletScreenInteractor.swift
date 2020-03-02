@@ -36,7 +36,7 @@ final class CreateWalletScreenInteractor: NSObject {
     private let analyticsRecorder: AnalyticsEventRecording
     private let wallet: Wallet
     private let walletManager: WalletManager
-    
+    private let authenticationCoordinator: AuthenticationCoordinator
     private let errorRelay = PublishRelay<String>()
     
     // MARK: - Setup
@@ -50,6 +50,7 @@ final class CreateWalletScreenInteractor: NSObject {
         self.reachability = reachability
         self.walletManager = walletManager
         self.wallet = wallet
+        self.authenticationCoordinator = authenticationCoordinator
         authenticationCoordinator.temporaryAuthHandler = authenticationCoordinator.authenticationHandler
         super.init()
     }
@@ -90,6 +91,7 @@ extension CreateWalletScreenInteractor: WalletDelegate {
 
         /// Mark the wallet as new
         wallet.isNew = true
+        authenticationCoordinator.isCreatingWallet = true
         
         // TODO: Remove this?
         BuySellCoordinator.shared.buyBitcoinViewController?.isNew = true

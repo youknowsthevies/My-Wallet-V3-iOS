@@ -10,7 +10,7 @@ import PlatformKit
 
 extension PairExchangeService {
     convenience init(cryptoCurrency: CryptoCurrency,
-                     currencyProvider: FiatCurrencyTypeProviding = BlockchainSettings.App.shared) {
-        self.init(cryptoCurrency: cryptoCurrency, fiatCurrencyProvider: currencyProvider)
+                     fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings) {
+        self.init(cryptoCurrency: cryptoCurrency, currencyService: fiatCurrencyService)
     }
 }

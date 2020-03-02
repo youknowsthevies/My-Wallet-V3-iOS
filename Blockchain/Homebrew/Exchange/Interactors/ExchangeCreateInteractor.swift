@@ -46,7 +46,7 @@ class ExchangeCreateInteractor {
     private var disposables = CompositeDisposable()
     private var accountBalanceDiposableKey: CompositeDisposable.DisposeKey?
     private var tradingLimitDisposable: Disposable?
-    private var repository: AssetAccountRepository = {
+    private var repository: AssetAccountRepositoryAPI = {
        return AssetAccountRepository.shared
     }()
     private var feeServiceAPI: FeeServiceAPI = {

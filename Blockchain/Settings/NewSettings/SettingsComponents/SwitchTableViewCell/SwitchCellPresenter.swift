@@ -22,7 +22,7 @@ class EmailNotificationsSwitchCellPresenter: SwitchCellPresenting {
     
     init(service: EmailNotificationSettingsServiceAPI & SettingsServiceAPI) {
         labelContentPresenting = DefaultLabelContentPresenter(
-            title: LocalizationConstants.Settings.emailNotifications,
+            knownValue: LocalizationConstants.Settings.emailNotifications,
             descriptors: .settings
         )
         switchViewPresenting = EmailSwitchViewPresenter(service: service)
@@ -53,7 +53,7 @@ class SwipeReceiveSwitchCellPresenter: SwitchCellPresenting {
         
         switchViewPresenting = SwipeReceiveSwitchViewPresenter(appSettings: appSettings)
         labelContentPresenting = DefaultLabelContentPresenter(
-            title: LocalizationConstants.Settings.swipeToReceive,
+            knownValue: LocalizationConstants.Settings.swipeToReceive,
             descriptors: .settings
         )
     }

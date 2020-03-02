@@ -29,6 +29,9 @@ public protocol LoadingViewPresenting {
     /// Shows the loader with using circular style without text
     func showCircular()
     
+    /// Shows the loader with the given style and text
+    func show(with style: LoadingViewPresenter.LoadingViewStyle, text: String?)
+    
     /// Shows the legacy loader using a custom message
     func show(in superview: UIView?, with text: String?)
     

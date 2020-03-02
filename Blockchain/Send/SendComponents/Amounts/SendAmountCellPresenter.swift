@@ -66,19 +66,19 @@ final class SendAmountCellPresenter {
     let spendableBalancePresenter: SendSpendableBalanceViewPresenter
 
     private let interactor: SendAmountInteracting
-    private let fiatCodeProvider: FiatCurrencyTypeProviding
+    private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     
     // MARK: - Setup
     
     init(spendableBalancePresenter: SendSpendableBalanceViewPresenter,
          interactor: SendAmountInteracting,
-         fiatCodeProvider: FiatCurrencyTypeProviding = BlockchainSettings.App.shared) {
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings) {
         self.spendableBalancePresenter = spendableBalancePresenter
         self.interactor = interactor
-        self.fiatCodeProvider = fiatCodeProvider
+        self.fiatCurrencyService = fiatCurrencyService
         cryptoName = interactor.asset.symbol
         
-        fiatCodeProvider.fiatCurrency
+        fiatCurrencyService.fiatCurrencyObservable
             .map { $0.code }
             .bind(to: fiatNameRelay)
             .disposed(by: disposeBag)
@@ -99,7 +99,7 @@ final class SendAmountCellPresenter {
         
         let asset = interactor.asset
         
-        let fiatCurrencyChange = fiatCodeProvider.fiatCurrency
+        let fiatCurrencyChange = fiatCurrencyService.fiatCurrencyObservable
             .do(onNext: { [weak self] _ in
                 self?.clean()
             })

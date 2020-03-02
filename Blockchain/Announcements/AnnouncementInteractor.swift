@@ -27,6 +27,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     private let airdropCenterService: AirdropCenterServiceAPI
     private let paxTransactionService: AnyERC20HistoricalTransactionService<PaxToken>
     private let repository: AuthenticatorRepositoryAPI
+    private let simpleBuyServiceProvider: SimpleBuyServiceProviderAPI
     
     /// Returns announcement preliminary data, according to which the relevant
     /// announcement will be displayed
@@ -44,13 +45,19 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         let countries = dataRepository.countries
         let hasPaxTransactions = paxTransactionService.hasTransactions
         let hasTrades = exchangeService.hasExecutedTrades()
-            
+        let simpleBuyOrderDetails = simpleBuyServiceProvider
+            .pendingOrderDetails
+            .orderDetails
+        
+        let isSimpleBuyAvailable = simpleBuyServiceProvider.availability.valueSingle
+        let isSimpleBuyEligible = simpleBuyServiceProvider.eligibility.isEligible
+
         let airdropCampaigns = airdropCenterService
             .fetchCampaignsCalculationState(useCache: true)
             .compactMap { $0.value }
             .take(1)
             .asSingle()
-        
+
         return Single
             .zip(nabuUser,
                  tiers,
@@ -58,10 +65,12 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                  hasTrades,
                  hasPaxTransactions,
                  countries,
-                 repository.authenticatorType)
+                 repository.authenticatorType,
+                 Single.zip(isSimpleBuyEligible, isSimpleBuyAvailable, simpleBuyOrderDetails))
             .subscribeOn(SerialDispatchQueueScheduler(internalSerialQueueName: dispatchQueueName))
             .observeOn(MainScheduler.instance)
-            .map { (user, tiers, airdropCampaigns, hasTrades, hasPaxTransactions, countries, authenticatorType) -> AnnouncementPreliminaryData in
+            .map { (arg) -> AnnouncementPreliminaryData in
+                let (user, tiers, airdropCampaigns, hasTrades, hasPaxTransactions, countries, authenticatorType, (isSimpleBuyEligible, isSimpleBuyAvailable, simpleBuyCheckoutData)) = arg
                 return AnnouncementPreliminaryData(
                     user: user,
                     tiers: tiers,
@@ -69,7 +78,10 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                     hasTrades: hasTrades,
                     hasPaxTransactions: hasPaxTransactions,
                     countries: countries,
-                    authenticatorType: authenticatorType
+                    authenticatorType: authenticatorType,
+                    simpleBuyCheckoutData: simpleBuyCheckoutData,
+                    isSimpleBuyEligible: isSimpleBuyEligible,
+                    isSimpleBuyAvailable: isSimpleBuyAvailable
                 )
             }
     }
@@ -82,12 +94,14 @@ final class AnnouncementInteractor: AnnouncementInteracting {
          dataRepository: BlockchainDataRepository = .shared,
          exchangeService: ExchangeService = .shared,
          airdropCenterService: AirdropCenterServiceAPI = AirdropCenterService.shared,
-         paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = PAXServiceProvider.shared.services.assetAccountRepository) {
+         paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = PAXServiceProvider.shared.services.assetAccountRepository,
+         simpleBuyServiceProvider: SimpleBuyServiceProviderAPI = SimpleBuyServiceProvider.default) {
         self.repository = repository
         self.wallet = wallet
         self.dataRepository = dataRepository
         self.exchangeService = exchangeService
         self.airdropCenterService = airdropCenterService
+        self.simpleBuyServiceProvider = simpleBuyServiceProvider
         // TODO: Move this into a difference service that aggregates this logic
         // for all assets and utilize it in other flows (dashboard, send, swap, activity).
         self.paxTransactionService = AnyERC20HistoricalTransactionService<PaxToken>(bridge: ethereumWallet)

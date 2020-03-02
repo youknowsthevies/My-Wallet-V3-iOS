@@ -11,23 +11,31 @@ import RxSwift
 import NetworkKit
 import PlatformKit
 
+/// TODO: Refactor and decompose into smaller services
 /// Repository for fetching Blockchain data. Accessing properties in this repository
 /// will be fetched from the cache (if available), otherwise, data will be fetched over
 /// the network and subsequently cached for faster access.
-@objc class BlockchainDataRepository: NSObject {
+class BlockchainDataRepository: DataRepositoryAPI {
 
     static let shared = BlockchainDataRepository()
 
+    private let kycTiersService: KYCTiersServiceAPI
     private let authenticationService: NabuAuthenticationService
     private let communicator: NetworkCommunicatorAPI
 
-    init(authenticationService: NabuAuthenticationService = NabuAuthenticationService.shared,
+    init(kycTiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
+         authenticationService: NabuAuthenticationService = NabuAuthenticationService.shared,
          communicator: NetworkCommunicatorAPI = NetworkCommunicator.shared) {
+        self.kycTiersService = kycTiersService
         self.authenticationService = authenticationService
         self.communicator = communicator
     }
 
     // MARK: - Public Properties
+
+    var user: Observable<User> {
+        return nabuUser.map { $0 }
+    }
 
     /// An Observable emitting the authenticated NabuUser. This Observable will first emit a value
     /// from the cache, if available, followed by the value over the network.
@@ -36,6 +44,10 @@ import PlatformKit
             cachedValue: cachedUser,
             networkValue: fetchNabuUser()
         )
+    }
+    
+    var nabuUserSingle: Single<NabuUser> {
+        nabuUser.take(1).asSingle()
     }
 
     var countries: Single<Countries> {
@@ -52,35 +64,20 @@ import PlatformKit
         )
     }
 
-    var tiers: Observable<KYCUserTiersResponse> {
-        guard let baseURL = URL(string: BlockchainAPI.shared.retailCoreUrl) else {
-            return Observable.error(NetworkError.generic(message: "Could not get endpoint"))
-        }
-
-        guard let endpoint = URL.endpoint(
-            baseURL,
-            pathComponents: ["kyc", "tiers"],
-            queryParameters: nil
-        ) else {
-            return Observable.error(NetworkError.generic(message: "Could not get endpoint"))
-        }
-
-        let tiersFetchedOverNetwork: Single<KYCUserTiersResponse> = authenticationService
-            .getSessionToken()
-            .flatMap(weak: self) { (self, token) -> Single<KYCUserTiersResponse> in
-                self.communicator.perform(
-                    request: NetworkRequest(
-                        endpoint: endpoint,
-                        method: .get,
-                        headers: [HttpHeaderField.authorization: token.token]
-                    )
-                )
-            }
-
+    /// An Observable emitting the KYC Tiers for the current user. This Observable will
+    /// first emit a value from the cache, if available, followed by the value over the network.
+    var tiers: Observable<KYC.UserTiers> {
         return fetchDataStartingWithCache(
             cachedValue: cachedTiers,
-            networkValue: tiersFetchedOverNetwork
+            networkValue: fetchTiers()
         )
+    }
+
+    /// Fetches Tiers over the network.
+    ///
+    /// - Returns: the fetched KYC Tiers
+    func fetchTiers() -> Single<KYC.UserTiers> {
+        return kycTiersService.fetchTiers()
     }
 
     // MARK: - Private Properties
@@ -89,7 +86,7 @@ import PlatformKit
 
     private var cachedUser = BehaviorRelay<NabuUser?>(value: nil)
 
-    private var cachedTiers = BehaviorRelay<KYCUserTiersResponse?>(value: nil)
+    private var cachedTiers = BehaviorRelay<KYC.UserTiers?>(value: nil)
 
     // MARK: - Public Methods
 

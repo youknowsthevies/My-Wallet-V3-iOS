@@ -30,11 +30,6 @@ class AccessibilityIdentifiers: NSObject {
         static let pinSecureViewTitle = "\(prefix)titleLabel"
         static let pinIndicatorFormat = "\(prefix)pinIndicator-"
         
-        static let digitButtonFormat = "\(prefix)digit-"
-        static let faceIdButton = "\(prefix)faceIdButton"
-        static let touchIdButton = "\(prefix)touchIdButton"
-        static let backspaceButton = "\(prefix)backspaceButton"
-        
         static let errorLabel = "\(prefix)errorLabel"
         
         static let versionLabel = "\(prefix)versionLabel"

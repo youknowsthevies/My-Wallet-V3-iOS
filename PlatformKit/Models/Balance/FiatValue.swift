@@ -6,7 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import BigInt
+import ToolKit
 
 public struct FiatComparisonError: Error {
     let currencyCode1: String
@@ -14,30 +15,77 @@ public struct FiatComparisonError: Error {
 }
 
 public struct FiatValue {
-    /// The currency code (e.g. "USD")
-    public let currencyCode: String
+    /// The currency
+    public let currency: FiatCurrency
     public let amount: Decimal
+
+    // TODO: Reverse the logic. store the minor amount and compute the major amount
+    public var minorAmount: BigInt {
+        return BigInt(stringLiteral: string)
+    }
+    
+    /// Returns the minor
+    public var string: String {
+        let minorDecimal = amount * pow(10, currency.maxDecimalPlaces)
+        return "\(minorDecimal)"
+    }
+}
+
+// MARK: - Setup
+
+extension FiatValue {
+    init(currencyCode: String, amount: Decimal) {
+        self.currency = FiatCurrency(rawValue: currencyCode)!
+        self.amount = amount
+    }
+    
+    public init(minor: String, currency: FiatCurrency, locale: Locale = Locale.current) {
+        var amount = Decimal(string: minor, locale: locale) ?? 0
+        amount /= pow(10, currency.maxDecimalPlaces)
+        self.init(currency: currency, amount: amount)
+    }
 }
 
 extension FiatValue {
+
+    @available(*, deprecated, message: "Superseded by `create(amountString: String, currency: FiatCurrency, locale: Locale)`")
+    public static func create(amountString: String,
+                              currencyCode: String,
+                              locale: Locale = Locale.current) -> FiatValue {
+        let amount = Decimal(string: amountString, locale: locale) ?? 0
+        return FiatValue(currencyCode: currencyCode, amount: amount)
+    }
+
+    @available(*, deprecated, message: "Superseded by `create(amount: Decimal, currency: FiatCurrency)`")
+    public static func create(amount: Decimal, currencyCode: String) -> FiatValue {
+        return FiatValue(currencyCode: currencyCode, amount: amount)
+    }
+    
+    @available(*, deprecated, message: "Superseded by `zero(currency: FiatCurrency)`")
+    public static func zero(currencyCode: String) -> FiatValue {
+        return FiatValue(currencyCode: currencyCode, amount: 0.0)
+    }
+
     /// Creates a FiatValue from a provided amount in String and currency code.
     /// If the amountString is invalid, the resulting FiatValue amount will be 0.
     ///
     /// - Parameters:
     ///   - amountString: the amount as a String
-    ///   - currencyCode: the currency code
+    ///   - currency: the currency
     /// - Returns: the FiatValue
-    public static func create(amountString: String, currencyCode: String, locale: Locale = Locale.current) -> FiatValue {
+    public static func create(amountString: String,
+                              currency: FiatCurrency,
+                              locale: Locale = Locale.current) -> FiatValue {
         let amount = Decimal(string: amountString, locale: locale) ?? 0
-        return FiatValue(currencyCode: currencyCode, amount: amount)
-    }
-
-    public static func create(amount: Decimal, currencyCode: String) -> FiatValue {
-        return FiatValue(currencyCode: currencyCode, amount: amount)
+        return FiatValue(currency: currency, amount: amount)
     }
     
-    public static func zero(currencyCode: String) -> FiatValue {
-        return FiatValue(currencyCode: currencyCode, amount: 0.0)
+    public static func zero(currency: FiatCurrency) -> FiatValue {
+        return FiatValue(currency: currency, amount: 0.0)
+    }
+    
+    public static func create(amount: Decimal, currency: FiatCurrency) -> FiatValue {
+        return FiatValue(currency: currency, amount: amount)
     }
 
     /// Converts this value into a corresponding CryptoValue given an exchange rate for a given currency
@@ -55,6 +103,11 @@ extension FiatValue {
 }
 
 extension FiatValue: Money {
+    
+    public var currencyCode: String {
+        return currency.code
+    }
+
     public var isZero: Bool {
         return amount == 0
     }
@@ -68,8 +121,8 @@ extension FiatValue: Money {
     }
 
     public var symbol: String {
-        let locale = NSLocale(localeIdentifier: currencyCode)
-        return locale.displayName(forKey: NSLocale.Key.currencySymbol, value: currencyCode) ?? ""
+        let locale = NSLocale.current as NSLocale
+        return locale.displayName(forKey: NSLocale.Key.currencySymbol, value: currency.code) ?? ""
     }
 
     public var maxDecimalPlaces: Int {
@@ -85,21 +138,37 @@ extension FiatValue: Money {
         return maxDecimalPlaces
     }
 
-    public func toDisplayString(includeSymbol: Bool = true, locale: Locale = Locale.current) -> String {
-        let formatter = FiatFormatterProvider.shared.formatter(locale: locale, fiatValue: self)
-        let formattedString = formatter.string(from: NSDecimalNumber(decimal: amount)) ?? "\(amount)"
-        if let firstDigitIndex = formattedString.firstIndex(where: { $0.inSet(characterSet: CharacterSet.decimalDigits) }),
-           let lastDigitIndex = formattedString.lastIndex(where: { $0.inSet(characterSet: CharacterSet.decimalDigits) }),
-           !includeSymbol {
-            return String(formattedString[firstDigitIndex...lastDigitIndex])
-        }
-        return formattedString
+    public func toDisplayString(includeSymbol: Bool = true,
+                                locale: Locale = Locale.current) -> String {
+        return toDisplayString(
+            includeSymbol: includeSymbol,
+            format: .fullLength,
+            locale: locale
+        )
     }
-}
+    
+    public func toDisplayString(includeSymbol: Bool = true,
+                                format: NumberFormatter.CurrencyFormat = .fullLength,
+                                locale: Locale = Locale.current) -> String {
+        /// Determine how many fraction digits should be formatted from a `FiatValue`.
+        /// If the rhs of the decimal point is different than zero -> display two digits,
+        /// otherwise, display without the fractional part
+        let maxFractionDigits: Int
+        switch format {
+        case .fullLength:
+            maxFractionDigits = currency.maxDecimalPlaces
+        case .shortened where abs(amount - amount.roundTo(places: 0)) > 0:
+            maxFractionDigits = currency.maxDecimalPlaces
+        case .shortened:
+            maxFractionDigits = 0
+        }
 
-extension Character {
-    func inSet(characterSet: CharacterSet) -> Bool {
-        return CharacterSet(charactersIn: "\(self)").isSubset(of: characterSet)
+        let formatter = FiatFormatterProvider.shared.formatter(
+            locale: locale,
+            fiatValue: self,
+            maxFractionDigits: maxFractionDigits
+        )
+        return formatter.format(amount: amount, includeSymbol: includeSymbol)
     }
 }
 
@@ -107,8 +176,8 @@ extension Character {
 
 extension FiatValue: Hashable, Equatable {
     private static func ensureComparable(value: FiatValue, other: FiatValue) throws {
-        if value.currencyCode != other.currencyCode {
-            throw FiatComparisonError(currencyCode1: value.currencyCode, currencyCode2: other.currencyCode)
+        if value.currency != other.currency {
+            throw FiatComparisonError(currencyCode1: value.currency.code, currencyCode2: other.currency.code)
         }
     }
     
@@ -134,22 +203,22 @@ extension FiatValue: Hashable, Equatable {
 
     public static func +(lhs: FiatValue, rhs: FiatValue) throws -> FiatValue {
         try ensureComparable(value: lhs, other: rhs)
-        return FiatValue(currencyCode: lhs.currencyCode, amount: lhs.amount + rhs.amount)
+        return FiatValue(currency: lhs.currency, amount: lhs.amount + rhs.amount)
     }
 
     public static func -(lhs: FiatValue, rhs: FiatValue) throws -> FiatValue {
         try ensureComparable(value: lhs, other: rhs)
-        return FiatValue(currencyCode: lhs.currencyCode, amount: lhs.amount - rhs.amount)
+        return FiatValue(currency: lhs.currency, amount: lhs.amount - rhs.amount)
     }
 
     public static func *(lhs: FiatValue, rhs: FiatValue) throws -> FiatValue {
         try ensureComparable(value: lhs, other: rhs)
-        return FiatValue(currencyCode: lhs.currencyCode, amount: lhs.amount * rhs.amount)
+        return FiatValue(currency: lhs.currency, amount: lhs.amount * rhs.amount)
     }
     
     public static func /(lhs: FiatValue, rhs: FiatValue) throws -> FiatValue {
         try ensureComparable(value: lhs, other: rhs)
-        return FiatValue(currencyCode: lhs.currencyCode, amount: lhs.amount / rhs.amount)
+        return FiatValue(currency: lhs.currency, amount: lhs.amount / rhs.amount)
     }
 
     public static func +=(lhs: inout FiatValue, rhs: FiatValue) throws {
@@ -174,11 +243,11 @@ extension FiatValue: Hashable, Equatable {
     public func value(before percentageChange: Double) -> FiatValue {
         let percentageChange = percentageChange + 1
         guard percentageChange > 0 else {
-            return .zero(currencyCode: currencyCode)
+            return .zero(currency: currency)
         }
         return .create(
             amount: amount / Decimal(percentageChange),
-            currencyCode: currencyCode
+            currency: currency
         )
     }
 }
@@ -193,31 +262,27 @@ private class FiatFormatterProvider {
     private let queue = DispatchQueue(label: "FiatFormatterProvider.queue")
 
     /// Returns `NumberFormatter`. This method executes on a dedicated queue.
-    func formatter(locale: Locale, fiatValue: FiatValue) -> NumberFormatter {
+    func formatter(locale: Locale, fiatValue: FiatValue, maxFractionDigits: Int) -> NumberFormatter {
         var formatter: NumberFormatter!
         queue.sync { [unowned self] in
             let mapKey = key(locale: locale, fiatValue: fiatValue)
             if let matchingFormatter = formatterMap[mapKey] {
+                matchingFormatter.maximumFractionDigits = maxFractionDigits
                 formatter = matchingFormatter
             } else {
-                formatter = self.createNumberFormatter(locale: locale, fiatValue: fiatValue)
+                formatter = NumberFormatter(
+                    locale: locale,
+                    currencyCode: fiatValue.currency.code,
+                    maxFractionDigits: maxFractionDigits
+                )
                 self.formatterMap[mapKey] = formatter
             }
+            
         }
         return formatter
     }
 
     private func key(locale: Locale, fiatValue: FiatValue) -> String {
-        return "\(locale.identifier)_\(fiatValue.currencyCode)"
-    }
-
-    private func createNumberFormatter(locale: Locale, fiatValue: FiatValue) -> NumberFormatter {
-        let formatter = NumberFormatter()
-        formatter.usesGroupingSeparator = true
-        formatter.roundingMode = .down
-        formatter.locale = locale
-        formatter.currencyCode = fiatValue.currencyCode
-        formatter.numberStyle = .currency
-        return formatter
+        return "\(locale.identifier)_\(fiatValue.currency.code)"
     }
 }

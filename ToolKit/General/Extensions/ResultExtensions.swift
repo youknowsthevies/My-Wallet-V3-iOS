@@ -10,6 +10,26 @@ import Foundation
 import RxSwift
 
 extension Result {
+    public var isFailure: Bool {
+        switch self {
+        case .failure:
+            return true
+        case .success:
+            return false
+        }
+    }
+    
+    public var isSuccess: Bool {
+        switch self {
+        case .success:
+            return true
+        case .failure:
+            return false
+        }
+    }
+}
+
+extension Result {
     public var single: Single<Success> {
         switch self {
         case .success(let value):

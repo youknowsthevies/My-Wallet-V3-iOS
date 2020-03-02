@@ -263,14 +263,14 @@ import PlatformUIKit
     
     // MARK: Helpers
     
-    fileprivate func tierTwoTierState() -> Single<KYCTierState> {
+    fileprivate func tierTwoTierState() -> Single<KYC.Tier.State> {
         return BlockchainDataRepository.shared.tiers
             .take(1)
             .asSingle()
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
-            .flatMap({ (tiersResponse) -> Single<KYCTierState> in
-                guard let tier = tiersResponse.userTiers.first(where: { $0.tier == .tier2 }) else {
+            .flatMap({ (tiersResponse) -> Single<KYC.Tier.State> in
+                guard let tier = tiersResponse.tiers.first(where: { $0.tier == .tier2 }) else {
                     return Single.just(.none)
                 }
                 return Single.just(tier.state)

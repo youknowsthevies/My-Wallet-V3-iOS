@@ -39,7 +39,7 @@ class KYCTiersViewController: UIViewController {
     // MARK: Public Properties
     
     var pageModel: KYCTiersPageModel!
-    var selectedTier: ((KYCTier) -> Void)?
+    var selectedTier: ((KYC.Tier) -> Void)?
     
     static func make(
         with pageModel: KYCTiersPageModel
@@ -264,7 +264,7 @@ extension KYCTiersViewController: UICollectionViewDelegateFlowLayout {
 }
 
 extension KYCTiersViewController: KYCTierCellDelegate {
-    func tierCell(_ cell: KYCTierCell, selectedTier: KYCTier) {
+    func tierCell(_ cell: KYCTierCell, selectedTier: KYC.Tier) {
         /// When a user is selecting a tier from `Swap` (which only happens
         /// when the user isn't KYC approved) we want to present KYC from the applications
         /// rootViewController rather than from `self`.
@@ -314,7 +314,6 @@ extension KYCTiersViewController {
             .observeOn(MainScheduler.asyncInstance)
             .subscribeOn(MainScheduler.asyncInstance)
             .map { (response, limits) -> KYCTiersPageModel in
-                let userTiers = response.userTiers
                 let formatter: NumberFormatter = NumberFormatter.localCurrencyFormatterWithGroupingSeparator
                 let max = NSDecimalNumber(decimal: limits?.maxTradableToday ?? 0)
                 let header = KYCTiersHeaderViewModel.make(
@@ -322,7 +321,7 @@ extension KYCTiersViewController {
                     availableFunds: formatter.string(from: max),
                     suppressDismissCTA: true
                 )
-                let filtered = userTiers.filter({ $0.tier != .tier0 })
+                let filtered = response.tiers.filter({ $0.tier != .tier0 })
                 let cells = filtered.map({ return KYCTierCellModel.model(from: $0) }).compactMap({ return $0 })
                 
                 let page = KYCTiersPageModel(header: header, cells: cells)

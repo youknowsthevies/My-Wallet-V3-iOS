@@ -15,7 +15,7 @@ public protocol BalanceChangeProviding: class {
     var bitcoin: AssetBalanceChangeProviding { get }
     var bitcoinCash: AssetBalanceChangeProviding { get }
     
-    var change: Observable<FiatCryptoPairCalculationStates> { get }
+    var change: Observable<AssetFiatCryptoBalanceCalculationStates> { get }
 }
 
 /// A service that providers a balance change in crypto fiat and percentages
@@ -29,7 +29,7 @@ public final class BalanceChangeProvider: BalanceChangeProviding {
     public let bitcoin: AssetBalanceChangeProviding
     public let bitcoinCash: AssetBalanceChangeProviding
     
-    public var change: Observable<FiatCryptoPairCalculationStates> {
+    public var change: Observable<AssetFiatCryptoBalanceCalculationStates> {
         return Observable
             .combineLatest(
                 ether.calculationState,
@@ -39,7 +39,7 @@ public final class BalanceChangeProvider: BalanceChangeProviding {
                 bitcoinCash.calculationState
             )
             .map {
-                FiatCryptoPairCalculationStates(
+                AssetFiatCryptoBalanceCalculationStates(
                     statePerCurrency: [
                         .ethereum: $0.0,
                         .pax: $0.1,

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import PlatformKit
 
 struct KYCInformationViewModel {
     let image: UIImage?
@@ -44,7 +45,7 @@ extension KYCInformationViewModel {
     }
 
     static func create(
-        for accountStatus: KYCAccountStatus,
+        for accountStatus: KYC.AccountStatus,
         isReceivingAirdrop: Bool = false
     ) -> KYCInformationViewModel {
         switch accountStatus {
@@ -115,7 +116,7 @@ extension KYCInformationViewConfig {
         imageTintColor: nil
     )
 
-    static func create(for accountStatus: KYCAccountStatus, isReceivingAirdrop: Bool = false) -> KYCInformationViewConfig {
+    static func create(for accountStatus: KYC.AccountStatus, isReceivingAirdrop: Bool = false) -> KYCInformationViewConfig {
         let titleColor: UIColor
         let isPrimaryButtonEnabled: Bool
         var tintColor: UIColor?

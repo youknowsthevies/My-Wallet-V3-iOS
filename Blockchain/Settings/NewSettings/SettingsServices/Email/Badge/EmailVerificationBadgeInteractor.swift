@@ -19,7 +19,7 @@ final class EmailVerificationBadgeInteractor: BadgeAssetInteracting {
     var state: Observable<InteractionState> {
         return stateRelay.asObservable()
     }
-    
+        
     // MARK: - Private Accessors
     
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
@@ -28,20 +28,15 @@ final class EmailVerificationBadgeInteractor: BadgeAssetInteracting {
     // MARK: - Setup
     
     init(service: SettingsServiceAPI) {
-        service.state
-            .map { state -> InteractionState in
-                switch state {
-                case .value(let settings):
-                    if settings.isEmailVerified {
-                        return .loaded(next: .verified)
-                    } else {
-                        return .loaded(next: .unverified)
-                    }
-                case .calculating, .invalid:
-                    return .loading
-                }
-            }
-            .bind(to: stateRelay)
-            .disposed(by: disposeBag)
+        service
+            .valueObservable
+                .map { $0.isEmailVerified }
+                .map { $0 ? .verified : .unverified }
+                .map { .loaded(next: $0) }
+                // TODO: Error handing
+                .catchErrorJustReturn(.loading)
+                .startWith(.loading)
+                .bind(to: stateRelay)
+                .disposed(by: disposeBag)
     }
 }

@@ -9,8 +9,11 @@
 import PlatformUIKit
 import PlatformKit
 import RxSwift
+import RxRelay
 
 class RecoveryPhraseViewModel {
+    
+    private typealias AccessibilityId = Accessibility.Identifier.Backup.RecoveryPhrase.View
     
     // MARK: - Private Properties
     
@@ -20,14 +23,13 @@ class RecoveryPhraseViewModel {
     // MARK: - Public Properties
     
     var words: Observable<[LabelContent]> {
-        return mnemonicAPI.mnemonic.asObservable().map {
-            let mnemonic = $0.components(separatedBy: " ")
-            return mnemonic.map {
+        return wordsRelay.map {
+            return $0.enumerated().map {
                 LabelContent(
-                    text: $0,
+                    text: $0.element,
                     font: .mainSemibold(16.0),
                     color: .textFieldText,
-                    accessibility: .none
+                    accessibility: .id("\(AccessibilityId.word).\($0.offset)")
                 )
             }
         }
@@ -35,10 +37,21 @@ class RecoveryPhraseViewModel {
     
     let copyButtonViewModel: ButtonViewModel
     
+    // MARK: - Private Properties
+    
+    private let wordsRelay = BehaviorRelay<[String]>(value: [])
+    
     // MARK: - Init
     
     init(mnemonicAPI: MnemonicAccessAPI,
+         mnemonicComponentsProviding: MnemonicComponentsProviding,
          pasteboarding: Pasteboarding = UIPasteboard.general) {
+        
+        mnemonicComponentsProviding
+            .components
+            .bind(to: wordsRelay)
+            .disposed(by: disposeBag)
+        
         self.mnemonicAPI = mnemonicAPI
         self.copyButtonViewModel = .secondary(with: LocalizationConstants.RecoveryPhraseScreen.copyToClipboard)
         Observable.zip(self.copyButtonViewModel.tapRelay, mnemonicAPI.mnemonic.asObservable())

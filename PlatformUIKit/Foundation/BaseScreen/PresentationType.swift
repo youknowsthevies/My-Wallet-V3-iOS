@@ -24,11 +24,15 @@ public enum PresentationType {
     case navigationFromCurrent
     
     public var leadingButton: Screen.Style.LeadingButton {
+        return isModal ? .close : .back
+    }
+    
+    public var isModal: Bool {
         switch self {
         case .modal, .modalOverTopMost:
-            return .close
+            return true
         case .navigation, .navigationFromCurrent:
-            return .back
+            return false
         }
     }
 }

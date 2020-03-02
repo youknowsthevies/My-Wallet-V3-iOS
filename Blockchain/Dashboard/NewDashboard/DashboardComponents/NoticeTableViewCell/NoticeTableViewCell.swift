@@ -25,6 +25,7 @@ final class NoticeTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        selectionStyle = .none
         contentView.addSubview(noticeView)
         noticeView.layoutToSuperview(axis: .horizontal, offset: 24)
         noticeView.layoutToSuperview(axis: .vertical, offset: 16)

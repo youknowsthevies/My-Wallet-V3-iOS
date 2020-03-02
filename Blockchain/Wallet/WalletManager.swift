@@ -160,17 +160,6 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI {
     fileprivate func updateSymbols() {
         updateFiatSymbols()
         updateBtcSymbols()
-        
-        guard let response = latestMultiAddressResponse else {
-            appSettings.fiatCurrencyRelay.accept(.default)
-            return
-        }
-        guard let symbol = response.symbol_local?.symbol, let code = response.symbol_local?.code else {
-            appSettings.fiatCurrencyRelay.accept(.default)
-            return
-        }
-        let currency = Settings.FiatCurrency(symbol: symbol, code: code)
-        appSettings.fiatCurrencyRelay.accept(currency)
     }
 
     private func updateFiatSymbols() {

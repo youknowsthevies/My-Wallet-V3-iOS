@@ -26,21 +26,14 @@ class SideMenuPresenter {
     
     // MARK: Public Properties
     
-    var presentationEvent: Signal<[SideMenuItem]> {
-        return introductionRelay
-            .asSignal()
-            .map { [weak self] type in
-                guard let self = self else { return [] }
-                switch type {
-                case .pulse(let model):
-                    return self.menuItems(model.action)
-                case .sheet(let model):
-                    self.buySellPlaceholderController.presentIntroductionViewModel(model)
-                    return self.menuItems()
-                case .none:
-                    return self.menuItems()
-                }
+    var sideMenuItems: Observable<[SideMenuItem]> {
+        interactor.isSimpleBuyEnabled
+            .asObservable()
+            .map(weak: self) { (self, isSimpleBuyEnabled) -> [SideMenuItem] in
+                self.menuItems(showSimpleBuy: isSimpleBuyEnabled)
             }
+            .startWith(menuItems(showSimpleBuy: false))
+            .observeOn(MainScheduler.instance)
     }
     
     var itemSelection: Signal<SideMenuItem> {
@@ -49,7 +42,7 @@ class SideMenuPresenter {
 
     private weak var view: SideMenuView?
     private var introductionSequence = WalletIntroductionSequence()
-    private let interactor: WalletIntroductionInteractor
+    private let introInterator: WalletIntroductionInteractor
     private let variantFetcher: FeatureVariantFetching
     private let introductionRelay = PublishRelay<WalletIntroductionEventType>()
     private let itemSelectionRelay = PublishRelay<SideMenuItem>()
@@ -62,8 +55,10 @@ class SideMenuPresenter {
     private let analyticsRecorder: AnalyticsEventRecording
     private let disposeBag = DisposeBag()
     private var disposable: Disposable?
-
+    private let interactor: SideMenuInteractor
+    
     init(
+        interactor: SideMenuInteractor = SideMenuInteractor(),
         view: SideMenuView,
         wallet: Wallet = WalletManager.shared.wallet,
         walletService: WalletService = WalletService.shared,
@@ -72,11 +67,12 @@ class SideMenuPresenter {
         onboardingSettings: BlockchainSettings.Onboarding = .shared,
         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
     ) {
+        self.interactor = interactor
         self.view = view
         self.wallet = wallet
         self.walletService = walletService
         self.exchangeConfiguration = exchangeConfiguration
-        self.interactor = WalletIntroductionInteractor(onboardingSettings: onboardingSettings, screen: .sideMenu)
+        self.introInterator = WalletIntroductionInteractor(onboardingSettings: onboardingSettings, screen: .sideMenu)
         self.analyticsRecorder = analyticsRecorder
         self.variantFetcher = variantFetcher
     }
@@ -87,10 +83,11 @@ class SideMenuPresenter {
     }
 
     func loadSideMenu() {
-        let startingLocation = interactor.startingLocation
+        let startingLocation = introInterator.startingLocation
             .map { [weak self] location -> [WalletIntroductionEvent] in
                 return self?.startingWithLocation(location) ?? []
-        }.catchErrorJustReturn([])
+            }
+            .catchErrorJustReturn([])
         
         startingLocation
             .subscribe(onSuccess: { [weak self] events in
@@ -106,21 +103,13 @@ class SideMenuPresenter {
     /// The only reason this is here is for handling the pulse that
     /// is displayed on `buyBitcoin`.
     func onItemSelection(_ item: SideMenuItem) {
-        guard case let .buyBitcoin(action) = item else {
-            itemSelectionRelay.accept(item)
-            return
-        }
-        guard let block = action else {
-            itemSelectionRelay.accept(item)
-            return
-        }
-        block()
+        itemSelectionRelay.accept(item)
     }
     
     private func startingWithLocation(_ location: WalletIntroductionLocation) -> [WalletIntroductionEvent] {
         let screen = location.screen
         guard screen == .sideMenu else { return [] }
-        return buySellEvents()
+        return []
     }
     
     private func triggerNextStep() {
@@ -141,7 +130,7 @@ class SideMenuPresenter {
         triggerNextStep()
     }
 
-    private func menuItems(_ pulseAction: SideMenuItem.PulseAction? = nil) -> [SideMenuItem] {
+    private func menuItems(showSimpleBuy: Bool) -> [SideMenuItem] {
         var items: [SideMenuItem] = [.accountsAndAddresses]
         
         if wallet.isLockboxEnabled() {
@@ -154,10 +143,12 @@ class SideMenuPresenter {
             items.append(.upgrade)
         }
         
-        if wallet.isBuyEnabled() {
-            items.append(.buyBitcoin(pulseAction))
+        if showSimpleBuy {
+            items.append(.simpleBuy)
+        } else {
+            items.append(.buyBitcoin)
         }
-        
+
         items += [.support, .airdrops, .settings]
         
         if exchangeConfiguration.isEnabled {
@@ -165,47 +156,5 @@ class SideMenuPresenter {
         }
         
         return items
-    }
-    
-    // MARK: `[WalletIntroductionEvent]`
-    
-    private func buySellEvents() -> [WalletIntroductionEvent] {
-        return [buy, buyDescription]
-    }
-    
-    // MARK: Lazy Properties
-    
-    private lazy var buySellPlaceholderController: BuySellPlaceholderViewController = {
-        return BuySellPlaceholderViewController.makeFromStoryboard()
-    }()
-    
-    private lazy var buySellNavigationController: UINavigationController = {
-        let navController = BaseNavigationController(rootViewController: buySellPlaceholderController)
-        navController.modalPresentationStyle = .fullScreen
-        return navController
-    }()
-}
-
-extension SideMenuPresenter {
-    var buy: BuySellWalletIntroductionEvent {
-        return BuySellWalletIntroductionEvent { [weak self] in
-            guard let self = self else { return }
-            self.view?.presentBuySellNavigationPlaceholder(controller: self.buySellNavigationController)
-            AppCoordinator.shared.toggleSideMenu()
-            self.triggerNextStep()
-        }
-    }
-    
-    var buyDescription: BuySellDescriptionIntroductionEvent {
-        return BuySellDescriptionIntroductionEvent(selection: { [weak self] in
-            guard let self = self else { return }
-            /// Looks weird but actually both of these lines must
-            /// be here otherwise the view doesn't get dismissed.
-            self.buySellPlaceholderController.dismiss(animated: true, completion: nil)
-            self.buySellNavigationController.dismiss(animated: true, completion: nil)
-            /// Return to the dashboard once this step is completed.
-            AppCoordinator.shared.tabControllerManager.dashBoardClicked(nil)
-            self.triggerNextStep()
-        })
     }
 }

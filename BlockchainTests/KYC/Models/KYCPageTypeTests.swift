@@ -7,26 +7,26 @@
 //
 
 import XCTest
-
+import PlatformKit
 @testable import Blockchain
 
 class KYCPageTypeTests: XCTestCase {
     
-    /// A `KYCUserTiersResponse` where the user has been verified for tier1
+    /// A `KYC.UserTiers` where the user has been verified for tier1
     /// and their tier2 status is pending.
-    private let pendingTier2Response = KYCUserTiersResponse(
+    private let pendingTier2Response = KYC.UserTiers(
         tiers: [
-            KYCUserTier(tier: .tier1, state: .verified),
-            KYCUserTier(tier: .tier2, state: .pending)
+            KYC.UserTier(tier: .tier1, state: .verified),
+            KYC.UserTier(tier: .tier2, state: .pending)
         ]
     )
     
-    /// A `KYCUserTiersResponse` where the user has not been verified or
+    /// A `KYC.UserTiers` where the user has not been verified or
     /// applied to either tier1 or tier2.
-    private let noTiersResponse = KYCUserTiersResponse(
+    private let noTiersResponse = KYC.UserTiers(
         tiers: [
-            KYCUserTier(tier: .tier1, state: .none),
-            KYCUserTier(tier: .tier2, state: .none)
+            KYC.UserTier(tier: .tier1, state: .none),
+            KYC.UserTier(tier: .tier2, state: .none)
         ]
     )
 
@@ -131,7 +131,7 @@ class KYCPageTypeTests: XCTestCase {
 
     private func createNabuUser(isMobileVerified: Bool = false, isEmailVerified: Bool = false, hasAddress: Bool = false) -> NabuUser {
         let mobile = Mobile(phone: "1234567890", verified: isMobileVerified)
-        var address: UserAddress? = nil
+        var address: UserAddress?
         if hasAddress {
             address = UserAddress(
                 lineOne: "Address",
@@ -143,11 +143,11 @@ class KYCPageTypeTests: XCTestCase {
             )
         }
         return NabuUser(
-            personalDetails: nil,
+            personalDetails: PersonalDetails(id: nil, first: nil, last: nil, birthday: nil),
             address: address,
             email: Email(address: "test", verified: isEmailVerified),
             mobile: mobile,
-            status: KYCAccountStatus.none,
+            status: KYC.AccountStatus.none,
             state: NabuUser.UserState.none,
             tags: Tags(),
             tiers: nil,

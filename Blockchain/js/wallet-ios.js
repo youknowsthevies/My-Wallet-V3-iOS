@@ -1362,6 +1362,10 @@ MyWalletPhone.addKeyToLegacyAddress = function(privateKeyString, legacyAddress) 
     }
 };
 
+MyWalletPhone.markMnemonicAsVerified = function() {
+  return MyWallet.wallet.hdwallet.verifyMnemonic(objc_wallet_mnemonic_verification_updated, objc_wallet_mnemonic_verification_error)
+};
+
 MyWalletPhone.getRecoveryPhrase = function(secondPassword) {
     var recoveryPhrase = MyWallet.wallet.getMnemonic(secondPassword);
     objc_on_success_get_recovery_phrase(recoveryPhrase);

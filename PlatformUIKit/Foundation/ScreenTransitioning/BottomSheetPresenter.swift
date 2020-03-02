@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import RxSwift
+import RxRelay
 
 public class BottomSheetPresenter: UIPresentationController {
     
@@ -149,8 +151,13 @@ public class BottomSheetPresenter: UIPresentationController {
 }
 
 public class BottomSheetPresenting: NSObject, UIViewControllerTransitioningDelegate {
-    public func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        return BottomSheetPresenter(presentedViewController: presented, presenting: presenting)
+    public func presentationController(
+        forPresented presented: UIViewController,
+        presenting: UIViewController?,
+        source: UIViewController) -> UIPresentationController? {
+        return BottomSheetPresenter(
+            presentedViewController: presented,
+            presenting: presenting
+        )
     }
 }
-

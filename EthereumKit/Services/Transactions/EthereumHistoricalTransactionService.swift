@@ -19,10 +19,12 @@ public final class EthereumHistoricalTransactionService: HistoricalTransactionAP
     
     // MARK: - Properties
     
-    public var transactions: Single<[EthereumHistoricalTransaction]> { cachedTransactions.value }
+    public var transactions: Single<[EthereumHistoricalTransaction]> {
+        cachedTransactions.valueSingle
+    }
     
     public var latestTransaction: Single<EthereumHistoricalTransaction?> {
-        cachedTransactions.value.map { $0.first }
+        cachedTransactions.valueSingle.map { $0.first }
     }
     
     /// Streams a boolean indicating whether there are transactions in the account
@@ -33,10 +35,12 @@ public final class EthereumHistoricalTransactionService: HistoricalTransactionAP
     // MARK: - Private properties
     
     private var latestBlock: Single<Int> {
-        cachedLatestBlock.value
+        cachedLatestBlock.valueSingle
     }
     
-    private var account: Single<EthereumAssetAccount> { cachedAccount.value }
+    private var account: Single<EthereumAssetAccount> {
+        cachedAccount.valueSingle
+    }
     
     private let cachedAccount: CachedValue<EthereumAssetAccount>
     private let cachedTransactions: CachedValue<[EthereumHistoricalTransaction]>
@@ -50,27 +54,25 @@ public final class EthereumHistoricalTransactionService: HistoricalTransactionAP
     public init(with bridge: Bridge, client: APIClientProtocol) {
         self.bridge = bridge
         self.client = client
-        self.cachedAccount = CachedValue<EthereumAssetAccount>(
-            refreshInterval: TimeInterval.greatestFiniteMagnitude
-        )
+        self.cachedAccount = CachedValue<EthereumAssetAccount>(refreshType: .onSubscription)
         self.cachedTransactions = CachedValue<[EthereumHistoricalTransaction]>()
         self.cachedLatestBlock = CachedValue<Int>()
         
-        cachedAccount.setFetch { [weak self] in
+        cachedAccount.setFetch { [weak self] () -> Single<EthereumAssetAccount> in
             guard let self = self else {
                 return Single.error(ToolKitError.nullReference(Self.self))
             }
             return self.bridge.account
         }
         
-        cachedTransactions.setFetch { [weak self] in
+        cachedTransactions.setFetch { [weak self] () -> Single<[EthereumHistoricalTransaction]> in
             guard let self = self else {
                 return Single.error(ToolKitError.nullReference(Self.self))
             }
             return self.fetch()
         }
         
-        cachedLatestBlock.setFetch { [weak self] in
+        cachedLatestBlock.setFetch { [weak self] () -> Single<Int> in
             guard let self = self else {
                 return Single.error(ToolKitError.nullReference(Self.self))
             }

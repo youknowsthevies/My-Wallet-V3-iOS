@@ -27,11 +27,10 @@ final class PreferredCurrencyBadgeInteractor: BadgeAssetInteracting {
     // MARK: - Setup
     
     init(settingsService: SettingsServiceAPI,
-         fiatCurrencyProvider: FiatCurrencyTypeProviding) {
-        let settingsFiatCurrency = settingsService.state
-            .compactMap { $0.value }
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
+        let settingsFiatCurrency = settingsService.valueObservable
             .map { $0.fiatCurrency }
-        let fiatCurrency = fiatCurrencyProvider.fiatCurrency
+        let fiatCurrency = fiatCurrencyService.fiatCurrencyObservable
         let currencyNames = CurrencySymbol.currencyNames()!
         
         Observable

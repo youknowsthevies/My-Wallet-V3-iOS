@@ -31,12 +31,12 @@ protocol ExchangeAssetAccountListView: class {
 class ExchangeAssetAccountListPresenter {
 
     private weak var view: ExchangeAssetAccountListView?
-    private let assetAccountRepository: AssetAccountRepository
+    private let assetAccountRepository: AssetAccountRepositoryAPI
     private let disposables = CompositeDisposable()
 
     init(
         view: ExchangeAssetAccountListView,
-        assetAccountRepository: AssetAccountRepository = AssetAccountRepository.shared
+        assetAccountRepository: AssetAccountRepositoryAPI = AssetAccountRepository.shared
     ) {
         self.view = view
         self.assetAccountRepository = assetAccountRepository

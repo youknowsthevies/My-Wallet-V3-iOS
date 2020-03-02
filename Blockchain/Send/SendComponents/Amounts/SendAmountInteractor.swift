@@ -68,7 +68,7 @@ final class SendAmountInteractor: SendAmountInteracting {
 
     private let feeInteractor: SendFeeInteracting
     private let exchangeService: PairExchangeServiceAPI
-    private let fiatCurrencyProvider: FiatCurrencyTypeProviding
+    private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     
     // MARK: - Accessors
     
@@ -84,12 +84,12 @@ final class SendAmountInteractor: SendAmountInteracting {
          spendableBalanceInteractor: SendSpendableBalanceInteracting,
          feeInteractor: SendFeeInteracting,
          exchangeService: PairExchangeServiceAPI,
-         fiatCurrencyProvider: FiatCurrencyTypeProviding = BlockchainSettings.App.shared) {
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
         self.asset = asset
         self.spendableBalanceInteractor = spendableBalanceInteractor
         self.feeInteractor = feeInteractor
         self.exchangeService = exchangeService
-        self.fiatCurrencyProvider = fiatCurrencyProvider
+        self.fiatCurrencyService = fiatCurrencyService
         
         setupFiatUpdates()
         setupCryptoUpdates()
@@ -128,7 +128,7 @@ final class SendAmountInteractor: SendAmountInteracting {
         
         // Observe fiat price by combining the latest fiat amount, currency code, and exchange rate
         let currentFiat = Observable
-            .combineLatest(latestFiat, fiatCurrencyProvider.fiatCurrency)
+            .combineLatest(latestFiat, fiatCurrencyService.fiatCurrencyObservable)
             .map { FiatValue.create(amountString: $0.0, currencyCode: $0.1.code) }
         Observable
             .combineLatest(currentFiat, exchangeService.fiatPrice)

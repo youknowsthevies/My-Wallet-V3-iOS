@@ -70,7 +70,7 @@ class KYCVerifyPhoneNumberInteractor {
             }
             return strongSelf.walletSync.sync(token: token).do(onSuccess: { user in
                 Logger.shared.debug("""
-                    Successfully updated user: \(user.personalDetails?.identifier ?? "").
+                    Successfully updated user: \(user.personalDetails.identifier ?? "").
                     Mobile number: \(user.mobile?.phone ?? "")
                 """)
             })

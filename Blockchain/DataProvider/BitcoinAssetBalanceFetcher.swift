@@ -14,6 +14,10 @@ final class BitcoinAssetBalanceFetcher: AccountBalanceFetching {
         
     // MARK: - Exposed Properties
     
+    var balanceType: BalanceType {
+        return .nonCustodial
+    }
+    
     var balance: Single<CryptoValue> {
         let balance = wallet.getTotalActiveBalance() + wallet.getWatchOnlyBalance()
         return .just(.bitcoinFromSatoshis(int: Int(balance)))

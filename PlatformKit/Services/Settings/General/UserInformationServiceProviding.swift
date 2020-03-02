@@ -9,6 +9,12 @@
 import Foundation
 
 public protocol UserInformationServiceProviding: class {
-    var settings: SettingsServiceAPI & EmailSettingsServiceAPI & LastTransactionSettingsUpdateServiceAPI & EmailNotificationSettingsServiceAPI { get }
+    
+    var settings: SettingsServiceAPI &
+                  EmailSettingsServiceAPI &
+                  LastTransactionSettingsUpdateServiceAPI &
+                  EmailNotificationSettingsServiceAPI &
+                  FiatCurrencySettingsServiceAPI { get }
+    
     var emailVerification: EmailVerificationServiceAPI { get }
 }

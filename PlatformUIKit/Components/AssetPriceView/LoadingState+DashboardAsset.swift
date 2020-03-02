@@ -26,14 +26,16 @@ extension LoadingState where Content == DashboardAsset.Value.Presentation.AssetP
 }
 
 extension LoadingState where Content == DashboardAsset.Value.Presentation.AssetBalance {
-    init(with state: LoadingState<DashboardAsset.Value.Interaction.AssetBalance>) {
+    init(with state: LoadingState<DashboardAsset.Value.Interaction.AssetBalance>,
+         descriptors: DashboardAsset.Value.Presentation.AssetBalance.Descriptors) {
         switch state {
         case .loading:
             self = .loading
         case .loaded(next: let content):
             self = .loaded(
                 next: .init(
-                    with: content
+                    with: content,
+                    descriptors: descriptors
                 )
             )
         }

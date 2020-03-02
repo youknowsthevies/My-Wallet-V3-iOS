@@ -52,9 +52,6 @@ extension TabViewController {
             guard screen == .dashboard else { return }
             
             switch position {
-            case .buySell:
-                // Note: This should never happen as `buySell` should only be paired with the `.sideMenu` screen. 
-                break
             case .home:
                 PulseViewPresenter.shared.show(viewModel: .init(container: self.homePassthroughContainer, onSelection: pulseViewModel.action))
             case .send:

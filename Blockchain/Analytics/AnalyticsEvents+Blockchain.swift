@@ -90,6 +90,7 @@ extension AnalyticsEvents {
         case sideNavAccountsAndAddresses
         case sideNavBackup
         case sideNavBuyBitcoin
+        case sideNavSimpleBuy
         case sideNavLogout
         case sideNavSettings
         case sideNavSupport
@@ -110,6 +111,9 @@ extension AnalyticsEvents {
             // Menu - buy bitcoin clicked
             case .sideNavBuyBitcoin:
                 return "side_nav_buy_bitcoin"
+            // Menu - simple-buy clicked
+            case .sideNavSimpleBuy:
+                return "side_nav_simple_buy"
             // Menu - logout clicked
             case .sideNavLogout:
                 return "side_nav_logout"

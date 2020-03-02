@@ -796,8 +796,15 @@ extension TradeExecutionService {
 private extension TradeExecutionService {
     func getReceiveAddress(for account: Int32, assetType: AssetType) -> Maybe<String> {
         if assetType == .stellar {
-            guard let address = assetAccountRepository.defaultStellarAccount()?.address.address else { return Maybe.empty() }
-            return Maybe.just(address)
+            return  assetAccountRepository
+                .defaultAccount(for: .stellar)
+                .asMaybe()
+                .flatMap { (account) -> Maybe<String> in
+                    if let address = account?.address.address {
+                        return Maybe.just(address)
+                    }
+                    return Maybe.empty()
+                }
         }
         if assetType == .pax {
             return dependencies.erc20AccountRepository.assetAccountDetails

@@ -48,8 +48,8 @@ final class AnalyticsUserPropertyInteractor {
             .disposed(by: disposeBag)
     }
     
-    private func record(user: NabuUser?, tiers: KYCUserTiersResponse?) {
-        if let identifier = user?.personalDetails?.identifier {
+    private func record(user: NabuUser?, tiers: KYC.UserTiers?) {
+        if let identifier = user?.personalDetails.identifier {
             recorder.record(id: identifier)
         }
         

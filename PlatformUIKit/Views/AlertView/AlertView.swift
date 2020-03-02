@@ -225,7 +225,7 @@ public class AlertView: UIView {
                 let attributedTitle = NSAttributedString(
                     string: title,
                     attributes: [.font: font,
-                                 .foregroundColor: #colorLiteral(red: 0.06274509804, green: 0.6784313725, blue: 0.8941176471, alpha: 1)]
+                                 .foregroundColor: UIColor.brandSecondary]
                 )
                 defaultButton.setAttributedTitle(attributedTitle, for: .normal)
             case .dismiss:
@@ -234,9 +234,9 @@ public class AlertView: UIView {
         }
         [confirmButton, defaultButton].forEach({ $0?.layer.cornerRadius = 4.0 })
         
-        defaultButton.layer.borderColor = #colorLiteral(red: 0.06274509804, green: 0.6784313725, blue: 0.8941176471, alpha: 1)
+        defaultButton.layer.borderColor = UIColor.brandSecondary.cgColor
         defaultButton.layer.borderWidth = 1.0
-        confirmButton.backgroundColor = #colorLiteral(red: 0.06274509804, green: 0.6784313725, blue: 0.8941176471, alpha: 1)
+        confirmButton.backgroundColor = .brandSecondary
         
         if model.dismissable && model.style == .sheet {
             setupDynamicBehavior()

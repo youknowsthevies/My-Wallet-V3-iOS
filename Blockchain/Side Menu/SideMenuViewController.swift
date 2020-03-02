@@ -66,8 +66,8 @@ class SideMenuViewController: UIViewController {
         addShadow()
         footerView.delegate = self
         
-        presenter.presentationEvent
-            .emit(onNext: { [weak self] items in
+        presenter.sideMenuItems
+            .subscribe(onNext: { [weak self] items in
                 guard let self = self else { return }
                 self.sideMenuItems = items
                 self.tableView?.reloadData()
@@ -174,22 +174,13 @@ extension SideMenuViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return SideMenuCell.defaultHeight
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let sideMenuCell = tableView.dequeueReusableCell(withIdentifier: SideMenuCell.identifier) as? SideMenuCell else {
             Logger.shared.debug("Could not get SideMenuCell")
             return UITableViewCell()
         }
         sideMenuCell.item = sideMenuItems[indexPath.row]
-        if case let .buyBitcoin(block) = sideMenuItems[indexPath.row] {
-            if let action = block {
-                PulseViewPresenter.shared.show(viewModel: .init(container: sideMenuCell.passthroughView, onSelection: action))
-            } else {
-                /// If `.buyBitcoin` does not have a closure to execute when the pulse is selected
-                /// than the pulse should not be visible. 
-                PulseViewPresenter.shared.hide()
-            }
-        }
         return sideMenuCell
     }
 

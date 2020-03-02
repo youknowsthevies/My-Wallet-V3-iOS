@@ -19,6 +19,10 @@ class StellarAccountService: StellarAccountAPI {
 
     // MARK: AccountBalanceFetching
     
+    var balanceType: BalanceType {
+        return .nonCustodial
+    }
+    
     var balance: Single<CryptoValue> {
         return currentStellarAccount(fromCache: false)
             .flatMap(weak: self) { (self, account) -> Single<CryptoValue> in

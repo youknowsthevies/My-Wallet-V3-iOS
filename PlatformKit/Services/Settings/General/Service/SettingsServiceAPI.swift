@@ -10,8 +10,11 @@ import RxSwift
 import RxRelay
 
 public protocol SettingsServiceAPI: class {
-    var state: Observable<SettingsService.CalculationState> { get }
-    var fetchTriggerRelay: PublishRelay<Void> { get }
+    var valueSingle: Single<WalletSettings> { get }
+    var valueObservable: Observable<WalletSettings> { get }
+    func fetch() -> Single<WalletSettings>
+    
+    @available(*, deprecated, message: "Do not use this! Superseded by `fetch()`")
     func refresh()
 }
 

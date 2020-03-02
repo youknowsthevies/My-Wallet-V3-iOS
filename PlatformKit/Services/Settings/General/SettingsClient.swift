@@ -83,6 +83,19 @@ public final class SettingsClient: SettingsClientAPI {
             payload: currentTime
         )
     }
+    
+    public func update(currency: String,
+                       context: FlowContext,
+                       guid: String,
+                       sharedKey: String) -> Completable {
+        update(
+            guid: guid,
+            sharedKey: sharedKey,
+            method: .updateCurrency,
+            payload: currency,
+            context: context
+        )
+    }
 
     /// Updates the user's email.
     /// - Parameter email: The email value.

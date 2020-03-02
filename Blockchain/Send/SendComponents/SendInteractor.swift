@@ -105,7 +105,8 @@ final class SendInteractor: SendInteracting {
             asset: asset,
             spendableBalanceInteractor: spendableBalanceInteractor,
             feeInteractor: feeInteractor,
-            exchangeService: services.exchange
+            exchangeService: services.exchange,
+            fiatCurrencyService: services.fiatCurrency
         )
         sourceInteractor = SendSourceAccountInteractor(
             provider: services.sourceAccountProvider,

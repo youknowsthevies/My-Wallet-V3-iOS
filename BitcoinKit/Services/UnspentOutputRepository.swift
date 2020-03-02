@@ -23,7 +23,7 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
     // MARK: - Public properties
     
     public var unspentOutputs: Single<UnspentOutputs> {
-        cachedUnspentOutputs.value
+        cachedUnspentOutputs.valueSingle
     }
     
     public var fetchUnspentOutputs: Single<UnspentOutputs> {
@@ -42,11 +42,9 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
         self.bridge = bridge
         self.client = client
         
-        self.cachedUnspentOutputs = CachedValue<UnspentOutputs>(
-            refreshInterval: 10
-        )
+        self.cachedUnspentOutputs = CachedValue<UnspentOutputs>(refreshType: .periodic(10))
         
-        cachedUnspentOutputs.setFetch { [weak self] in
+        cachedUnspentOutputs.setFetch { [weak self] () -> Single<UnspentOutputs> in
             guard let self = self else {
                 return Single.error(ToolKitError.nullReference(Self.self))
             }

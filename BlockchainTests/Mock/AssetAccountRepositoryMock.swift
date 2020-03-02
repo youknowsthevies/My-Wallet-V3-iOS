@@ -6,21 +6,36 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import RxSwift
-
+import PlatformKit
 @testable import Blockchain
 
-class AssetAccountRepositoryMock: AssetAccountRepositoryAPI {
-    func accounts(for assetType: AssetType, fromCache: Bool) -> Single<[AssetAccount]> {
+class AssetAccountRepositoryMock: Blockchain.AssetAccountRepositoryAPI {
+    var accounts: Single<[Blockchain.AssetAccount]> {
         return .just([])
     }
-    
-    func defaultStellarAccount() -> AssetAccount? {
-        return nil
+
+    var fetchETHHistoryIfNeeded: Single<Void> {
+        .just(())
     }
-    
-    var accounts: Single<[AssetAccount]> {
+
+    func accounts(for assetType: AssetType) -> Single<[Blockchain.AssetAccount]> {
+        return .just([])
+    }
+
+    func accounts(for assetType: AssetType, fromCache: Bool) -> Single<[Blockchain.AssetAccount]> {
+        return .just([])
+    }
+
+    func nameOfAccountContaining(address: String, currencyType: CryptoCurrency) -> Single<String> {
+        return .just("")
+    }
+
+    func defaultAccount(for assetType: AssetType) -> Single<Blockchain.AssetAccount?> {
+        return .just(nil)
+    }
+
+    func fetchAccounts() -> Single<[Blockchain.AssetAccount]> {
         return .just([])
     }
 }

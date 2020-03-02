@@ -15,6 +15,7 @@ final class TierLimitsLabelContentPresenter: LabelContentPresenting {
     
     typealias PresentationState = LabelContentAsset.State.LabelItem.Presentation
     
+    let stateRelay = BehaviorRelay<PresentationState>(value: .loading)
     var state: Observable<PresentationState> {
         return stateRelay.asObservable()
     }
@@ -22,7 +23,6 @@ final class TierLimitsLabelContentPresenter: LabelContentPresenting {
     // MARK: - Private Accessors
     
     private let interactor: TierLimitsLabelContentInteractor
-    private let stateRelay = BehaviorRelay<PresentationState>(value: .loading)
     private let disposeBag = DisposeBag()
     
     init(provider: TierLimitsProviding,

@@ -21,14 +21,20 @@ final class NabuAuthenticationService: NabuAuthenticationServiceAPI {
     private let wallet: Wallet
     private let walletManager: WalletManager
     private let walletNabuSynchronizer: WalletNabuSynchronizerAPI
-
+    private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
+    private let supportedPairsService: SimpleBuySupportedPairsServiceAPI
+    
     // MARK: - Initialization
 
     init(
+        fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
+        supportedPairsService: SimpleBuySupportedPairsServiceAPI = SimpleBuySupportedPairsService(client: SimpleBuyClient()),
         walletManager: WalletManager = .shared,
         wallet: Wallet = WalletManager.shared.wallet,
         walletNabuSynchronizer: WalletNabuSynchronizerAPI = WalletNabuSynchronizerService()
     ) {
+        self.fiatCurrencyService = fiatCurrencyService
+        self.supportedPairsService = supportedPairsService
         self.walletManager = walletManager
         self.wallet = wallet
         self.walletNabuSynchronizer = walletNabuSynchronizer
@@ -64,9 +70,10 @@ final class NabuAuthenticationService: NabuAuthenticationServiceAPI {
             return Single.error(WalletError.notInitialized)
         }
 
-        return getOrCreateNabuUserResponse().flatMap {
-            self.getSessionTokenIfNeeded(from: $0, requestNewToken: requestNewToken)
-        }
+        return getOrCreateNabuUserResponse()
+            .flatMap(weak: self) { (self, response) -> Single<NabuSessionTokenResponse> in
+                self.getSessionTokenIfNeeded(from: response, requestNewToken: requestNewToken)
+            }
     }
 
     // Syncs the Nabu service with the wallet. Call this when something like Settings is updated on the client and Nabu needs to know about the new changes.
@@ -77,7 +84,7 @@ final class NabuAuthenticationService: NabuAuthenticationServiceAPI {
             }
             return strongSelf.walletNabuSynchronizer.sync(token: token).do(onSuccess: { user in
                 Logger.shared.debug("""
-                    Successfully updated user: \(user.personalDetails?.identifier ?? "").
+                    Successfully updated user: \(user.personalDetails.identifier ?? "").
                     Email address: \(user.email.address)
                     Email verified: \(user.email.verified)
                     """)
@@ -157,23 +164,41 @@ final class NabuAuthenticationService: NabuAuthenticationServiceAPI {
     /// Creates a KYC user ID and API token followed by updating the wallet metadata with
     /// the KYC user ID and API token.
     private func createAndSaveUserResponse() -> Single<NabuCreateUserResponse> {
-        return walletNabuSynchronizer.getSignedRetailToken().flatMap {
-            self.createNabuUser(tokenResponse: $0)
-        }.flatMap {
-            self.saveToWalletMetadata(createUserResponse: $0)
-        }
+        return walletNabuSynchronizer.getSignedRetailToken()
+            .flatMap(weak: self) { (self, tokenResponse) -> Single<NabuCreateUserResponse> in
+                self.createNabuUser(tokenResponse: tokenResponse)
+            }
+            .flatMap(weak: self) { (self, createUserResponse) -> Single<NabuCreateUserResponse> in
+                self.saveToWalletMetadata(createUserResponse: createUserResponse)
+            }
     }
-
+    
+    /// TODO: Fix this as part of IOS-2875 Part II
+    /// For now we are using the fact that the user's currency is supported to determine
+    /// if the `SIMPLE_BUY` tag should be added to the user or not.
     private func createNabuUser(tokenResponse: SignedRetailTokenResponse) -> Single<NabuCreateUserResponse> {
         guard let token = tokenResponse.token, tokenResponse.success else {
             return Single.error(NabuAuthenticationError.invalidSignedRetailToken)
         }
-        return KYCNetworkRequest.request(
-            post: .createUser,
-            parameters: ["jwt": token],
-            headers: nil,
-            type: NabuCreateUserResponse.self
-        )
+        
+        return fiatCurrencyService.fiatCurrency
+            .flatMap(weak: self) { (self, fiatCurrency) -> Single<KYCNetworkRequest.KYCEndpoints.POST.UserType> in
+                self.supportedPairsService.fetchPairs(for: .only(fiatCurrency: fiatCurrency))
+                    .map { pairsResponse in
+                        guard pairsResponse.pairs.count > 0 else {
+                            return .regular
+                        }
+                        return .simpleBuy(fiatCurrency: fiatCurrency.code)
+                    }
+            }
+            .flatMap { userType -> Single<NabuCreateUserResponse> in
+                KYCNetworkRequest.request(
+                    post: .createUser(userType),
+                    parameters: ["jwt": token],
+                    headers: nil,
+                    type: NabuCreateUserResponse.self
+                )
+            }
     }
 
     private func saveToWalletMetadata(createUserResponse: NabuCreateUserResponse) -> Single<NabuCreateUserResponse> {
@@ -182,7 +207,7 @@ final class NabuAuthenticationService: NabuAuthenticationServiceAPI {
                 withUserId: createUserResponse.userId,
                 lifetimeToken: createUserResponse.token,
                 success: { _ in
-                    observer(.success(createUserResponse))
+                observer(.success(createUserResponse))
             }, error: { errorText in
                 Logger.shared.error("Failed to update wallet metadata: \(errorText ?? "")")
                 observer(.error(NSError(domain: "FailedToUpdateWalletMetadata", code: 0, userInfo: nil)))

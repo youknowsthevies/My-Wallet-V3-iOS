@@ -28,17 +28,14 @@ final class PasswordRequiredScreenPresenter {
         validator: TextValidationFactory.loginPassword
     )
     let continueButtonViewModel = ButtonViewModel.primary(
-        with: LocalizedString.continueButton,
-        cornerRadius: 8
+        with: LocalizedString.continueButton
     )
     let forgotPasswordButtonViewModel = ButtonViewModel.secondary(
-        with: LocalizedString.forgotButton,
-        cornerRadius: 8
+        with: LocalizedString.forgotButton
     )
     
     let forgetWalletButtonViewModel = ButtonViewModel.destructive(
-        with: LocalizedString.forgetWalletButton,
-        cornerRadius: 8
+        with: LocalizedString.forgetWalletButton
     )
     
     /// The total state of the presentation

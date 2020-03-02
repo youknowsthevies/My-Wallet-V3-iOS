@@ -12,8 +12,20 @@ final class AnnouncementTableViewCell: UITableViewCell {
 
     // MARK: - Lifecycle
 
+    /// Set custom spacing
+    var bottomSpacing: CGFloat {
+        set {
+            bottomSpacingConstraint.constant = -newValue
+        }
+        get {
+            return -bottomSpacingConstraint.constant
+        }
+    }
+    
+    private var bottomSpacingConstraint: NSLayoutConstraint!
+    
     /// A view that represents the announcement
-    private var cardView: AnnoucementCardViewConforming!
+    private var cardView: AnnouncementCardViewConforming!
     
     var viewModel: AnnouncementCardViewModel! {
         didSet {
@@ -25,7 +37,8 @@ final class AnnouncementTableViewCell: UITableViewCell {
                 cardView = AnnouncementMiniCardView(using: viewModel)
             }
             contentView.addSubview(cardView)
-            cardView.fillSuperview()
+            cardView.layoutToSuperview(.top, .leading, .trailing)
+            bottomSpacingConstraint = cardView.layoutToSuperview(.bottom)
         }
     }
         

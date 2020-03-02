@@ -9,7 +9,7 @@
 import RxSwift
 import RxRelay
 
-public struct TitledUrl {
+public struct TitledLink {
     public let title: String
     public let url: URL
 }
@@ -19,10 +19,10 @@ public struct InteractableTextViewModel {
     
     /// A style for text or lonk
     public struct Style {
-        public let color: UIColor
+        public let color: Color
         public let font: UIFont
         
-        public init(color: UIColor, font: UIFont) {
+        public init(color: Color, font: UIFont) {
             self.color = color
             self.font = font
         }
@@ -39,25 +39,26 @@ public struct InteractableTextViewModel {
     }
     
     /// Steams the url upon each tap
-    public var tap: Observable<TitledUrl> {
+    public var tap: Observable<TitledLink> {
         return tapRelay.asObservable()
     }
         
-    /// An array of inputs
-    let inputs: [Input]
+    /// Relay that accepts and streams the array of inputs
+    public let inputsRelay = BehaviorRelay<[Input]>(value: [])
+    
     let textStyle: Style
     let linkStyle: Style
     let alignment: NSTextAlignment
     let lineSpacing: CGFloat
 
-    let tapRelay = PublishRelay<TitledUrl>()
+    let tapRelay = PublishRelay<TitledLink>()
     
     public init(inputs: [Input],
                 textStyle: Style,
                 linkStyle: Style,
                 lineSpacing: CGFloat = 0,
                 alignment: NSTextAlignment = .natural) {
-        self.inputs = inputs
+        self.inputsRelay.accept(inputs)
         self.textStyle = textStyle
         self.linkStyle = linkStyle
         self.lineSpacing = lineSpacing

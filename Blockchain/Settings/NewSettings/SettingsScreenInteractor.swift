@@ -41,7 +41,7 @@ final class SettingsScreenInteractor {
          settingsService: SettingsServiceAPI = UserInformationServiceProvider.default.settings,
          emailNotificationSerivce: EmailNotificationSettingsServiceAPI = UserInformationServiceProvider.default.settings,
          appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
-         fiatCurrencyProviding: FiatCurrencyTypeProviding = BlockchainSettings.App.shared,
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          pitConnectionAPI: PITConnectionStatusProviding = PITConnectionStatusProvider(),
          settingsAuthenticating: AppSettingsAuthenticating = BlockchainSettings.App.shared,
          featureConfiguring: FeatureConfiguring = AppFeatureConfigurator.shared,
@@ -60,7 +60,7 @@ final class SettingsScreenInteractor {
         )
         preferredCurrencyBadgeInteractor = PreferredCurrencyBadgeInteractor(
             settingsService: settingsService,
-            fiatCurrencyProvider: fiatCurrencyProviding
+            fiatCurrencyService: fiatCurrencyService
         )
         
         pitLinkingConfiguration = featureConfigurator.configuration(for: .exchangeLinking)

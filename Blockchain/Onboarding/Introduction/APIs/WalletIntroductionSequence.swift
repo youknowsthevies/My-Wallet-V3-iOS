@@ -71,8 +71,6 @@ class WalletIntroductionLocationSequencer: WalletIntroductionLocationSequenceAPI
             case .request:
                 return Single.just(WalletIntroductionLocation(screen: .dashboard, position: .swap))
             case .swap:
-                return Single.just(WalletIntroductionLocation(screen: .sideMenu, position: .buySell))
-            case .buySell:
                 return Single.error(WalletIntroductionError.noAdditionalSteps)
             }
         }

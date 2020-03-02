@@ -8,6 +8,7 @@
 
 import Foundation
 import RxSwift
+import PlatformKit
 
 struct KYCTiersPageModel {
     let header: KYCTiersHeaderViewModel
@@ -35,7 +36,7 @@ extension KYCTiersPageModel {
         
         switch (tierOneStatus, tierTwoStatus) {
         case (.none, .none):
-            AnalyticsService.shared.trackEvent(title: KYCTier.lockedAnalyticsKey)
+            AnalyticsService.shared.trackEvent(title: KYC.Tier.lockedAnalyticsKey)
         case (.approved, .none):
             AnalyticsService.shared.trackEvent(title: tier1.0.completionAnalyticsKey)
         case (_, .inReview),

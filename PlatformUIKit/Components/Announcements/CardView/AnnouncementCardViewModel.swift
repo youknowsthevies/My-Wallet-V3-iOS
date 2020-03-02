@@ -17,6 +17,8 @@ public final class AnnouncementCardViewModel {
 
     // MARK: - Types
 
+    public typealias DidAppear = () -> Void
+    
     /// The priority under which the announcement should show
     public enum Priority {
         case high
@@ -49,14 +51,40 @@ public final class AnnouncementCardViewModel {
         }
     }
     
+    /// The border style of the card
+    public enum Border {
+        
+        /// Round corners with radius value
+        case roundCorners(_ radius: CGFloat)
+        
+        /// Separator
+        case bottomSeparator(_ color: UIColor)
+        
+        /// No border
+        case none
+    }
+    
+    /// The alignment of the content
+    public enum Alignment {
+        
+        /// Natual alignment (leading -> trailing)
+        case natural
+        
+        /// Center alignment
+        case center
+        
+    }
+    
     /// The image descriptor
     public struct Image {
         let name: String
         let size: CGSize
+        let tintColor: UIColor?
         
-        public init(name: String, size: CGSize = CGSize(width: 40, height: 40)) {
+        public init(name: String, size: CGSize = CGSize(width: 40, height: 40), tintColor: UIColor? = nil) {
             self.name = name
             self.size = size
+            self.tintColor = tintColor
         }
     }
     
@@ -115,14 +143,16 @@ public final class AnnouncementCardViewModel {
     
     public let presentation: Presentation
     
-    let type: AnnouncementType
+    let type: AnnouncementType?
     let interaction: Interaction
+    let contentAlignment: Alignment
     let background: Background
+    let border: Border
     let image: Image
     let title: String?
     let description: String?
     let buttons: [ButtonViewModel]
-    let didAppear: () -> Void
+    let didAppear: DidAppear?
     
     /// Returns `true` if the dismiss button should be hidden
     var isDismissButtonHidden: Bool {
@@ -165,21 +195,25 @@ public final class AnnouncementCardViewModel {
     
     // MARK: - Setup
     
-    public init(type: AnnouncementType,
+    public init(type: AnnouncementType? = nil,
                 presentation: Presentation = .regular,
                 interaction: Interaction = .none,
+                contentAlignment: Alignment = .natural,
                 background: Background = .white,
+                border: Border = .bottomSeparator(.mediumBorder),
                 image: Image,
                 title: String? = nil,
                 description: String? = nil,
                 buttons: [ButtonViewModel] = [],
                 recorder: ErrorRecording,
                 dismissState: DismissState,
-                didAppear: @escaping () -> Void) {
+                didAppear: DidAppear? = nil) {
         self.type = type
         self.presentation = presentation
         self.interaction = interaction
+        self.contentAlignment = contentAlignment
         self.background = background
+        self.border = border
         self.image = image
         self.title = title
         self.description = description

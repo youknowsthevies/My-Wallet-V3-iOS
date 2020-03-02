@@ -1,0 +1,147 @@
+//
+//  DigitPadButtonViewModel.swift
+//  Blockchain
+//
+//  Created by Daniel Huri on 07/06/2019.
+//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+import RxSwift
+import RxCocoa
+import Localization
+
+public struct DigitPadButtonViewModel {
+    
+    // MARK: - Types
+    
+    private typealias AccessibilityId = Accessibility.Identifier.DigitPad
+    private typealias LocalizedString = LocalizationConstants.Accessibility.DigitPad
+
+    public enum Content {
+        public enum Image {
+            case touchId
+            case faceId
+            case backspace
+            
+            /// The computed image value corresponding to `self`.
+            var image: UIImage {
+                let name: String
+                switch self {
+                case .backspace:
+                    name = "backspace-icon"
+                case .faceId:
+                    name = "face_id_icon"
+                case .touchId:
+                    name = "touch_id_icon"
+                }
+                return UIImage(named: name)!.withRenderingMode(.alwaysTemplate)
+            }
+            
+            /// Accessibility id for image
+            var accessibility: Accessibility {
+                let accessibility: Accessibility
+                switch self {
+                case .backspace:
+                    accessibility = Accessibility(
+                        id: .value(AccessibilityId.backspaceButton),
+                        label: .value(LocalizedString.backspace)
+                    )
+                case .faceId:
+                    accessibility = Accessibility(
+                        id: .value(AccessibilityId.faceIdButton),
+                        label: .value(LocalizedString.faceId)
+                    )
+                case .touchId:
+                    accessibility = Accessibility(
+                        id: .value(AccessibilityId.touchIdButton),
+                        label: .value(LocalizedString.touchId)
+                    )
+                }
+                return accessibility
+            }
+        }
+        
+        /// Image based button
+        case image(type: Image, tint: UIColor)
+        
+        /// Text based button
+        case label(text: String, tint: UIColor)
+        
+        /// Just an empty content
+        case none
+        
+        /// Tint of the content
+        var tint: UIColor {
+            switch self {
+            case .image(type: _, tint: let color):
+                return color
+            case .label(text: _, tint: let color):
+                return color
+            case .none:
+                return .clear
+            }
+        }
+        
+        /// Accessibility for any nested value
+        var accessibility: Accessibility {
+            switch self {
+            case .image(type: let image, tint: _):
+                return image.accessibility
+            case .label(text: let value, tint: _):
+                return .id("\(AccessibilityId.digitButtonFormat)\(value)")
+            case .none:
+                return .none
+            }
+        }
+    }
+    
+    public struct Background {
+        let cornerRadius: CGFloat
+        let highlightColor: UIColor
+        
+        /// Just a clear background
+        public static var clear: Background {
+            return Background(cornerRadius: 0, highlightColor: .clear)
+        }
+        
+        public init(cornerRadius: CGFloat = 4, highlightColor: UIColor) {
+            self.cornerRadius = cornerRadius
+            self.highlightColor = highlightColor
+        }
+    }
+    
+    public static var empty: DigitPadButtonViewModel {
+        return DigitPadButtonViewModel(content: .none, background: .clear)
+    }
+    
+    // MARK: - Properties
+    
+    let content: Content
+    let background: Background
+    
+    private let tapRelay = PublishRelay<Content>()
+    var tapObservable: Observable<Content> {
+        return tapRelay.asObservable()
+    }
+    
+    private let disposeBag = DisposeBag()
+    
+    // MARK: - Setup
+    
+    public init(content: Content, background: Background) {
+        self.content = content
+        self.background = background
+        tapRelay
+            .bind { _ in
+                let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+                feedbackGenerator.prepare()
+                feedbackGenerator.impactOccurred()
+            }
+            .disposed(by: disposeBag)
+    }
+    
+    /// Invocation makes `tapRelay` to stream a new value
+    func tap() {
+        tapRelay.accept(content)
+    }
+}

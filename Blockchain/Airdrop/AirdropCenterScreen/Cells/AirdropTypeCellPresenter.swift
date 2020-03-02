@@ -36,7 +36,7 @@ struct AirdropTypeCellPresenter {
     init(interactor: AirdropTypeCellInteractor) {
         self.interactor = interactor
         image = ImageViewContent(
-            image: interactor.cryptoCurrency.logoImage,
+            imageName: interactor.cryptoCurrency.logoImageName,
             accessibility: .id(AccessibilityId.image)
         )
         let title: String

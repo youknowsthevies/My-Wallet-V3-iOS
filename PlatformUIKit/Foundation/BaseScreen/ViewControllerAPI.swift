@@ -11,6 +11,7 @@ import Foundation
 public protocol ViewControllerAPI: class {
     var navigationControllerAPI: NavigationControllerAPI? { get }
     func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)?)
+    func dismiss(animated flag: Bool, completion: (() -> Void)?)
 }
 
 extension UIViewController: ViewControllerAPI {

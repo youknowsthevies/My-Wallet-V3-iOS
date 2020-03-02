@@ -8,6 +8,10 @@
 
 import Foundation
 
+fileprivate extension UIColor {
+    static let pulseBlue = #colorLiteral(red: 0.05, green: 0.42, blue: 0.95, alpha: 1)
+}
+
 final class PulseAnimationView: PassthroughView {
     
     private static let strokeWidth: CGFloat = 3.0
@@ -37,9 +41,9 @@ final class PulseAnimationView: PassthroughView {
         expandingShapeLayer.frame = bounds
         expandingShapeLayer.cornerRadius = bounds.height / 2.0
         expandingShapeLayer.masksToBounds = true
-        expandingShapeLayer.fillColor = #colorLiteral(red: 0.05, green: 0.42, blue: 0.95, alpha: 1).withAlphaComponent(0.9).cgColor
+        expandingShapeLayer.fillColor = UIColor.pulseBlue.withAlphaComponent(0.9).cgColor
         expandingShapeLayer.borderWidth = PulseAnimationView.strokeWidth
-        expandingShapeLayer.borderColor = #colorLiteral(red: 0.05, green: 0.42, blue: 0.95, alpha: 1).withAlphaComponent(0.7).cgColor
+        expandingShapeLayer.borderColor = UIColor.pulseBlue.withAlphaComponent(0.7).cgColor
         
         animationGroup.animations = [
             transfromAnimation(scale: 1.0),
@@ -77,8 +81,8 @@ final class PulseAnimationView: PassthroughView {
     
     private func borderFillColorAnimation() -> CABasicAnimation {
         let borderAnimation = CABasicAnimation(keyPath: "borderColor")
-        borderAnimation.fromValue = #colorLiteral(red: 0.05, green: 0.42, blue: 0.95, alpha: 1).withAlphaComponent(0.7).cgColor
-        borderAnimation.toValue = #colorLiteral(red: 0.05, green: 0.42, blue: 0.95, alpha: 1).withAlphaComponent(0.0).cgColor
+        borderAnimation.fromValue = UIColor.pulseBlue.withAlphaComponent(0.7).cgColor
+        borderAnimation.toValue = UIColor.pulseBlue.withAlphaComponent(0.0).cgColor
         borderAnimation.timingFunction = CAMediaTimingFunction(name: .easeOut)
         borderAnimation.isAdditive = false
         return borderAnimation
@@ -86,8 +90,8 @@ final class PulseAnimationView: PassthroughView {
     
     private func opacityAnimation() -> CABasicAnimation {
         let opacity = CABasicAnimation(keyPath: "fillColor")
-        opacity.fromValue = #colorLiteral(red: 0.05, green: 0.42, blue: 0.95, alpha: 1).withAlphaComponent(0.7).cgColor
-        opacity.toValue = #colorLiteral(red: 0.05, green: 0.42, blue: 0.95, alpha: 1).withAlphaComponent(0.0).cgColor
+        opacity.fromValue = UIColor.pulseBlue.withAlphaComponent(0.7).cgColor
+        opacity.toValue = UIColor.pulseBlue.withAlphaComponent(0.0).cgColor
         opacity.timingFunction = CAMediaTimingFunction(name: .easeOut)
         opacity.isAdditive = false
         return opacity
@@ -95,7 +99,7 @@ final class PulseAnimationView: PassthroughView {
     
     private func setupSubviews() {
         layer.cornerRadius = self.bounds.height / 2
-        backgroundColor = #colorLiteral(red: 0.05, green: 0.42, blue: 0.95, alpha: 1).withAlphaComponent(0.2)
+        backgroundColor = UIColor.pulseBlue.withAlphaComponent(0.2)
     }
     
     func animate() {

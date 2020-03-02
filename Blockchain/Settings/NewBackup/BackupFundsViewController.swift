@@ -25,8 +25,8 @@ final class BackupFundsViewController: BaseScreenViewController {
     
     // MARK: - Setup
     
-    init(router: BackupFundsRouterAPI) {
-        self.presenter = BackupFundsScreenPresenter(router: router)
+    init(presenter: BackupFundsScreenPresenter) {
+        self.presenter = presenter
         super.init(nibName: BackupFundsViewController.objectName, bundle: nil)
     }
     
@@ -50,12 +50,19 @@ final class BackupFundsViewController: BaseScreenViewController {
     private func setupNavigationBar() {
         titleViewStyle = .text(value: LocalizationConstants.BackupFundsScreen.title)
         set(barStyle: .darkContent(ignoresStatusBar: false, background: .white),
-            leadingButtonStyle: .back)
+        leadingButtonStyle: presenter.leadingButton,
+        trailingButtonStyle: presenter.trailingButton)
     }
     
     private func applyAnimation() {
         UIView.animate(withDuration: 1.0, delay: 0, options: [.repeat, .autoreverse, .curveEaseInOut], animations: {
             self.lockIllustrationImageView.transform = .init(translationX: 0.0, y: 7.0)
         }, completion: nil)
+    }
+    
+    // MARK: - Navigation
+    
+    override func navigationBarLeadingButtonPressed() {
+        presenter.navigationBarLeadingButtonTapped()
     }
 }

@@ -44,13 +44,10 @@ public final class ShimmeringView: UIView {
         self.dark = dark
         super.init(frame: .zero)
         superview.addSubview(self)
-        translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            leadingAnchor.constraint(equalTo: anchorView.leadingAnchor),
-            topAnchor.constraint(equalTo: anchorView.topAnchor),
-            heightAnchor.constraint(equalTo: anchorView.heightAnchor),
-            widthAnchor.constraint(equalToConstant: size.width)
-        ])
+        layout(to: .leading, of: anchorView)
+        layout(to: .top, of: anchorView)
+        layout(to: .height, of: anchorView, priority: .defaultHigh)
+        layout(edge: .width, to: size.width)
         
         let height = heightAnchor.constraint(equalToConstant: size.height)
         height.isActive = true

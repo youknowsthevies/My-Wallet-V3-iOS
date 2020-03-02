@@ -267,6 +267,10 @@ extension EthereumWallet: ERC20BridgeAPI {
 
 extension EthereumWallet: EthereumWalletBridgeAPI {
     
+    public var balanceType: BalanceType {
+        return .nonCustodial
+    }
+    
     public var history: Single<Void> {
         return fetchHistory(fromCache: false)
     }
@@ -593,7 +597,6 @@ extension EthereumWallet: EthereumWalletAccountBridgeAPI {
             return Single.just(accounts)
         }
     }
-    
 
 }
 

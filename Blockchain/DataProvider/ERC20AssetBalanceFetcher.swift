@@ -16,6 +16,10 @@ final class ERC20AssetBalanceFetcher: AccountBalanceFetching {
 
     // MARK: - Exposed Properties
     
+    var balanceType: BalanceType {
+        return .nonCustodial
+    }
+    
     var balance: Single<CryptoValue> {
         return assetAccountRepository
             .currentAssetAccountDetails(fromCache: true)

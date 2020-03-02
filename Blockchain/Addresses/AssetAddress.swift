@@ -23,10 +23,13 @@ public protocol AssetAddress {
 
 extension AssetAddress {
     var depositAddress: DepositAddress {
-        var addy = address
-        if assetType == .bitcoinCash {
-            addy.remove(prefix: "\(Constants.Schemes.bitcoinCash):")
+        let address: String
+        switch assetType {
+        case .bitcoinCash:
+            address = self.address.removing(prefix: "\(Constants.Schemes.bitcoinCash):")
+        default:
+            address = self.address
         }
-        return DepositAddress(type: assetType, address: addy)
+        return DepositAddress(type: assetType.cryptoCurrency, address: address)
     }
 }

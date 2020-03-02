@@ -38,7 +38,7 @@ final class DashboardScreenInteractor {
         self.lockboxRepository = lockboxRepository
         self.reactiveWallet = reactiveWallet
         self.userPropertyInteractor = userPropertyInteractor
-        historicalBalanceInteractors = CryptoCurrency.all.map {
+        historicalBalanceInteractors = CryptoCurrency.allCases.map {
             return HistoricalBalanceCellInteractor(
                 cryptoCurrency: $0,
                 historicalFiatPriceService: historicalProvider[$0],

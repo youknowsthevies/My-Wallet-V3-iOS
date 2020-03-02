@@ -15,8 +15,7 @@ import PlatformKit
 
 /// Describes the announcement visual. Plays as a presenter / provide for announcements,
 /// By creating a list of pending announcements, on which subscribers can be informed.
-@objc
-final class AnnouncementPresenter: NSObject {
+final class AnnouncementPresenter {
     
     // MARK: Services
     
@@ -69,6 +68,15 @@ final class AnnouncementPresenter: NSObject {
         self.featureConfigurator = featureConfigurator
         self.featureFetcher = featureFetcher
         self.wallet = wallet
+        
+        announcement
+            .asObservable()
+            .filter { $0.isHide }
+            .mapToVoid()
+            .bind(weak: self) { (self) in
+                self.currentAnnouncement = nil
+            }
+            .disposed(by: disposeBag)
     }
     
     /// Refreshes announcements on demand
@@ -117,7 +125,10 @@ final class AnnouncementPresenter: NSObject {
             case .backupFunds:
                 announcement = backupFunds(reappearanceTimeInterval: metadata.interval)
             case .buyBitcoin:
-                announcement = buyBitcoin(reappearanceTimeInterval: metadata.interval)
+                announcement = buyBitcoin(
+                    reappearanceTimeInterval: metadata.interval,
+                    isSimpleBuyEligible: preliminaryData.isSimpleBuyEligible
+                )
             case .transferBitcoin:
                 announcement = transferBitcoin(
                     isKycSupported: preliminaryData.isKycSupported,
@@ -144,8 +155,16 @@ final class AnnouncementPresenter: NSObject {
                 announcement = pax(hasPaxTransactions: preliminaryData.hasPaxTransactions)
             case .resubmitDocuments:
                 announcement = resubmitDocuments(user: preliminaryData.user)
+            case .simpleBuyPendingTransaction:
+                announcement = simpleBuyPendingTransaction(
+                    hasPendingTransactionFor: preliminaryData.pendingSimpleBuyOrderAssetType
+                )
+            case .simpleBuyKYCIncomplete:
+                announcement = simpleBuyFinishSignup(
+                    tiers: preliminaryData.tiers,
+                    hasIncompleteBuyFlow: preliminaryData.hasIncompleteBuyFlow
+                )
             }
-
             // Return the first different announcement that should show
             if announcement.shouldShow {
                 if currentAnnouncement?.type != announcement.type {
@@ -171,7 +190,7 @@ final class AnnouncementPresenter: NSObject {
 // MARK: - Computes announcements
 
 extension AnnouncementPresenter {
-    
+
     /// Computes email verification announcement
     private func verifyEmail(user: NabuUser) -> Announcement {
         return VerifyEmailAnnouncement(
@@ -179,7 +198,33 @@ extension AnnouncementPresenter {
             action: UIApplication.shared.openMailApplication
           )
     }
+
+    /// Computes Simple Buy Pending Transaction Announcement
+    private func simpleBuyPendingTransaction(hasPendingTransactionFor assetType: CryptoCurrency?) -> Announcement {
+        return SimpleBuyPendingTransactionAnnouncement(
+            hasPendingTransactionFor: assetType,
+            action: { [weak self] in
+                guard let self = self else { return }
+                self.hideAnnouncement()
+                self.appCoordinator.startSimpleBuy()
+            }
+        )
+    }
     
+    /// Computes Simple Buy Finish Signup Announcement
+    private func simpleBuyFinishSignup(tiers: KYC.UserTiers,
+                                       hasIncompleteBuyFlow: Bool) -> Announcement {
+        return SimpleBuyFinishSignupAnnouncement(
+            canCompleteTier2: tiers.canCompleteTier2,
+            hasIncompleteBuyFlow: hasIncompleteBuyFlow,
+            action: { [weak self] in
+                guard let self = self else { return }
+                self.hideAnnouncement()
+                self.appCoordinator.startSimpleBuy()
+            }
+        )
+    }
+
     // Computes Wallet Intro card announcement
     private func walletIntro(reappearanceTimeInterval: TimeInterval) -> Announcement {
         return WalletIntroAnnouncement(
@@ -195,7 +240,7 @@ extension AnnouncementPresenter {
     
     // Computes kyc airdrop announcement
     private func kycAirdrop(user: NabuUser,
-                            tiers: KYCUserTiersResponse,
+                            tiers: KYC.UserTiers,
                             isKycSupported: Bool,
                             reappearanceTimeInterval: TimeInterval) -> Announcement {
         return KycAirdropAnnouncement(
@@ -286,8 +331,8 @@ extension AnnouncementPresenter {
     }
     
     /// Computes Buy BTC announcement
-    private func buyBitcoin(reappearanceTimeInterval: TimeInterval) -> Announcement {
-        let isBuyEnabled = wallet.isBuyEnabled() && !wallet.isBitcoinWalletFunded
+    private func buyBitcoin(reappearanceTimeInterval: TimeInterval, isSimpleBuyEligible: Bool) -> Announcement {
+        let isBuyEnabled = !isSimpleBuyEligible && wallet.isBuyEnabled() && !wallet.isBitcoinWalletFunded
         return BuyBitcoinAnnouncement(
             isBuyEnabled: isBuyEnabled,
             reappearanceTimeInterval: reappearanceTimeInterval,
@@ -336,7 +381,7 @@ extension AnnouncementPresenter {
     }
     
     /// Computes Coinify KYC alert announcement
-    private func coinifyKyc(tiers: KYCUserTiersResponse,
+    private func coinifyKyc(tiers: KYC.UserTiers,
                             reappearanceTimeInterval: TimeInterval) -> Announcement {
         let coinifyConfig = featureConfigurator.configuration(for: .notifyCoinifyUserToKyc)
         

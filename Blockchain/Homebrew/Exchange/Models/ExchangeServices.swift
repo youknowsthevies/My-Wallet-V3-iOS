@@ -17,7 +17,7 @@ protocol ExchangeDependencies {
     var conversions: ExchangeConversionAPI { get }
     var inputs: ExchangeInputsAPI { get }
     var tradeExecution: TradeExecutionAPI { get }
-    var assetAccountRepository: AssetAccountRepository { get }
+    var assetAccountRepository: AssetAccountRepositoryAPI { get }
     var tradeLimits: TradeLimitsAPI { get }
     var analyticsRecorder: AnalyticsEventRecording { get }
 }
@@ -28,7 +28,7 @@ struct ExchangeServices: ExchangeDependencies {
     var conversions: ExchangeConversionAPI
     let inputs: ExchangeInputsAPI
     let tradeExecution: TradeExecutionAPI
-    let assetAccountRepository: AssetAccountRepository
+    let assetAccountRepository: AssetAccountRepositoryAPI
     let tradeLimits: TradeLimitsAPI
     let analyticsRecorder: AnalyticsEventRecording
     

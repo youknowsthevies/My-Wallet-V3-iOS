@@ -162,7 +162,9 @@ extension ButtonViewModel {
     public static func primary(
         with text: String,
         background: UIColor = .primaryButton,
-        cornerRadius: CGFloat = 4,
+        contentColor: UIColor = .white,
+        borderColor: UIColor = .clear,
+        cornerRadius: CGFloat = 8,
         accessibilityId: String = Accessibility.Identifier.General.mainCTAButton
         ) -> ButtonViewModel {
         var viewModel = ButtonViewModel(
@@ -172,7 +174,8 @@ extension ButtonViewModel {
         )
         viewModel.theme = Theme(
             backgroundColor: background,
-            contentColor: .white,
+            borderColor: borderColor,
+            contentColor: contentColor,
             text: text
         )
         return viewModel
@@ -181,7 +184,10 @@ extension ButtonViewModel {
     /// Returns a secondary button with text only
     public static func secondary(
         with text: String,
-        cornerRadius: CGFloat = 4,
+        background: UIColor = .white,
+        contentColor: UIColor = .primaryButton,
+        borderColor: UIColor = .mediumBorder,
+        cornerRadius: CGFloat = 8,
         accessibilityId: String = Accessibility.Identifier.General.secondaryCTAButton
         ) -> ButtonViewModel {
         var viewModel = ButtonViewModel(
@@ -190,9 +196,9 @@ extension ButtonViewModel {
             accessibility: .init(id: .value(accessibilityId))
         )
         viewModel.theme = Theme(
-            backgroundColor: .white,
-            borderColor: .mediumBorder,
-            contentColor: .primaryButton,
+            backgroundColor: background,
+            borderColor: borderColor,
+            contentColor: contentColor,
             text: text
         )
         return viewModel
@@ -201,7 +207,7 @@ extension ButtonViewModel {
     /// Returns a destructive button with text only
     public static func destructive(
         with text: String,
-        cornerRadius: CGFloat = 4,
+        cornerRadius: CGFloat = 8,
         accessibilityId: String = Accessibility.Identifier.General.destructiveCTAButton
         ) -> ButtonViewModel {
         var viewModel = ButtonViewModel(
@@ -212,6 +218,26 @@ extension ButtonViewModel {
         viewModel.theme = Theme(
             backgroundColor: .destructiveButton,
             contentColor: .white,
+            text: text
+        )
+        return viewModel
+    }
+    
+    /// Returns a cancel button with text only
+    public static func cancel(
+        with text: String,
+        cornerRadius: CGFloat = 8,
+        accessibilityId: String = Accessibility.Identifier.General.cancelCTAButton
+        ) -> ButtonViewModel {
+        var viewModel = ButtonViewModel(
+            font: .mainSemibold(16),
+            cornerRadius: cornerRadius,
+            accessibility: .init(id: .value(accessibilityId))
+        )
+        viewModel.theme = Theme(
+            backgroundColor: .white,
+            borderColor: .mediumBackground,
+            contentColor: .destructive,
             text: text
         )
         return viewModel

@@ -13,7 +13,7 @@ import XCTest
 
 class CryptoValueTests: XCTestCase {
     func testMajorValue() {
-        XCTAssertEqual(Decimal(100), CryptoValue.bitcoinFromSatoshis(string: "10000000000")!.majorValue)
+        XCTAssertEqual(Decimal(100), CryptoValue.createFromMinorValue("10000000000", assetType: .bitcoin)!.majorValue)
         XCTAssertEqual(Decimal(10), CryptoValue.bitcoinFromSatoshis(int: 1_000_000_000).majorValue)
         XCTAssertEqual(Decimal(1), CryptoValue.bitcoinFromSatoshis(int: 100_000_000).majorValue)
         XCTAssertEqual(Decimal(0.1), CryptoValue.bitcoinFromSatoshis(int: 10_000_000).majorValue)

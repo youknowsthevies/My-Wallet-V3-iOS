@@ -102,6 +102,11 @@ public struct DashboardAsset {
                 let fiatValue: FiatValue
                 /// The wallet's balance in crypto
                 let cryptoValue: CryptoValue
+                
+                init(fiatValue: FiatValue, cryptoValue: CryptoValue) {
+                    self.fiatValue = fiatValue
+                    self.cryptoValue = cryptoValue
+                }
             }
             
         }
@@ -123,13 +128,31 @@ public struct DashboardAsset {
                 /// The balance in crypto
                 let cryptoBalance: LabelContent
                 
+                /// Descriptors that allows customized content and style
+                public struct Descriptors {
+                    let fiatFont: UIFont
+                    let fiatTextColor: UIColor
+                    let cryptoFont: UIFont
+                    let cryptoTextColor: UIColor
+                    
+                    public init(fiatFont: UIFont,
+                                fiatTextColor: UIColor,
+                                cryptoFont: UIFont,
+                                cryptoTextColor: UIColor) {
+                        self.fiatFont = fiatFont
+                        self.fiatTextColor = fiatTextColor
+                        self.cryptoFont = cryptoFont
+                        self.cryptoTextColor = cryptoTextColor
+                    }
+                }
+                
                 // MARK: - Setup
                 
-                public init(with value: Interaction.AssetBalance) {
+                public init(with value: Interaction.AssetBalance, descriptors: Descriptors = .default) {
                     fiatBalance = LabelContent(
                         text: value.fiatValue.toDisplayString(includeSymbol: true, locale: .current),
-                        font: .mainMedium(16.0),
-                        color: .dashboardFiatPriceTitle,
+                        font: descriptors.fiatFont,
+                        color: descriptors.fiatTextColor,
                         accessibility: .init(
                             id: .value("\(AccessibilityId.fiatBalanceLabelFormat)\(value.cryptoValue.currencyCode)")
                             )
@@ -137,8 +160,8 @@ public struct DashboardAsset {
                     
                     cryptoBalance = LabelContent(
                         text: value.cryptoValue.toDisplayString(includeSymbol: true, locale: .current),
-                        font: .mainMedium(14.0),
-                        color: .mutedText,
+                        font: descriptors.cryptoFont,
+                        color: descriptors.cryptoTextColor,
                         accessibility: .init(
                             id: .value("\(AccessibilityId.cryptoBalanceLabelFormat)\(value.cryptoValue.currencyCode)")
                             )
@@ -289,6 +312,16 @@ extension DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
             accessibilityIdSuffix: accessibilityIdSuffix
         )
     }
+}
+
+public extension DashboardAsset.Value.Presentation.AssetBalance.Descriptors {
+    typealias Descriptors = DashboardAsset.Value.Presentation.AssetBalance.Descriptors
+    static let `default` = Descriptors(
+        fiatFont: .mainMedium(16.0),
+        fiatTextColor: .dashboardFiatPriceTitle,
+        cryptoFont: .mainMedium(14.0),
+        cryptoTextColor: .mutedText
+    )
 }
 
 public extension PriceWindow {

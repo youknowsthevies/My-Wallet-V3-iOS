@@ -21,11 +21,13 @@ struct MockSendServiceContainer: SendServiceContaining {
     let fee: SendFeeServicing
     let balance: AccountBalanceFetching
     let bus: WalletActionEventBus
+    let fiatCurrency: FiatCurrencySettingsServiceAPI
     
     init(asset: AssetType,
          balance: CryptoValue,
          fee: CryptoValue,
          exchange: FiatValue,
+         fiatCurrency: FiatCurrencySettingsServiceAPI,
          sourceAccountStateValue: SendSourceAccountState,
          pitAddressFetchResult: Result<ExchangeAddressFetcher.AddressResponseBody.State, ExchangeAddressFetcher.FetchingError>,
          transferExecutionResult: Result<Void, Error>) {
@@ -36,6 +38,7 @@ struct MockSendServiceContainer: SendServiceContaining {
         self.fee = MockSendFeeService(expectedValue: fee)
         sourceAccountState = MockSendSourceAccountStateService(stateRawValue: sourceAccountStateValue)
         bus = WalletActionEventBus()
+        self.fiatCurrency = fiatCurrency
         switch asset {
         case .ethereum, .pax:
             sourceAccountProvider = EtherSendSourceAccountProvider()

@@ -73,7 +73,7 @@ final class DashboardViewController: BaseScreenViewController {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isTranslucent = false
     }
-        
+    
     // MARK: - Setup
     
     private func setupNavigationBar() {
@@ -139,20 +139,29 @@ final class DashboardViewController: BaseScreenViewController {
                 break
             }
             presenter.cardState = .hidden
-        case .show where !presenter.cardState.isVisible:
+        case .show:
             switch presenter.announcementCardArrangement {
             case .top:
-                tableView.insertRows(at: [.firstRowInFirstSection], with: .automatic)
-                presenter.cardState = .visible(index: 0)
+                if !presenter.cardState.isVisible {
+                    tableView.insertRows(at: [.firstRowInFirstSection], with: .automatic)
+                    presenter.cardState = .visible(index: 0)
+                } else {
+                    tableView.reloadRows(at: [.firstRowInFirstSection], with: .automatic)
+                }
             case .bottom:
                 /// Must not be `nil`. Otherwise there is a presentation error
                 let index = presenter.announcementCellIndex!
-                tableView.insertRows(at: [.init(row: index, section: 0)], with: .automatic)
-                presenter.cardState = .visible(index: index)
+                let indexPath = IndexPath(row: index, section: 0)
+                if !presenter.cardState.isVisible {
+                    tableView.insertRows(at: [indexPath], with: .automatic)
+                    presenter.cardState = .visible(index: index)
+                } else {
+                    tableView.reloadRows(at: [indexPath], with: .automatic)
+                }
             case .none:
                 break
             }
-        default:
+        case .none:
             break
         }
     }

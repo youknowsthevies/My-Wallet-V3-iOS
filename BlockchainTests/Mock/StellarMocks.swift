@@ -62,6 +62,10 @@ class StellarAccountMock: StellarAccountAPI {
     typealias AccountID = String
     typealias CompletionHandler = ((Result<Bool, Error>) -> Void)
     typealias AccountDetailsCompletion = ((Result<StellarAccount, Error>) -> Void)
+    
+    public var balanceType: BalanceType {
+        return .nonCustodial
+    }
 
     var currentAccount: StellarAccount?
 

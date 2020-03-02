@@ -32,7 +32,7 @@ final class BlockchainSettings: NSObject {
     // MARK: - App
 
     @objc
-    class App: NSObject, AppSettingsAPI, ReactiveAppSettingsAuthenticating, AppSettingsAuthenticating, SwipeToReceiveConfiguring, FiatCurrencyTypeProviding {
+    class App: NSObject, AppSettingsAPI, ReactiveAppSettingsAuthenticating, AppSettingsAuthenticating, SwipeToReceiveConfiguring {
         
         static let shared = App()
 
@@ -176,40 +176,18 @@ final class BlockchainSettings: NSObject {
             }
         }
         
-        /// Current fiat currency supported by the app
-        let fiatCurrencyRelay = BehaviorRelay<Settings.FiatCurrency>(value: .default)
-        
-        /// Streams the fiat currency once the value gets changed
-        var fiatCurrency: Observable<Settings.FiatCurrency> {
-            return fiatCurrencyRelay
-                .asObservable()
-                .distinctUntilChanged()
-        }
-
+        @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencySettingsServiceAPI`")
         @objc var fiatCurrencySymbol: String {
-            let defaultValue = Settings.FiatCurrency.default.symbol
-            guard let addressResponse = WalletManager.shared.latestMultiAddressResponse else { return defaultValue }
-            guard let symbol = addressResponse.symbol_local else { return defaultValue }
-            guard let value = symbol.symbol else { return defaultValue }
-            return value
+            UserInformationServiceProvider.default.settings.legacyCurrency?.symbol ?? "$"
         }
 
+        @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencySettingsServiceAPI`")
         @objc var fiatCurrencyCode: String {
-            let defaultValue = Settings.FiatCurrency.default.code
-            guard let addressResponse = WalletManager.shared.latestMultiAddressResponse else { return defaultValue }
-            guard let symbol = addressResponse.symbol_local else { return defaultValue }
-            guard let code = symbol.code else { return defaultValue }
-            return code
+            UserInformationServiceProvider.default.settings.legacyCurrency?.code ?? "USD"
         }
 
         @objc func fiatSymbolFromCode(currencyCode: String) -> String? {
-            guard let _ = WalletManager.shared.wallet.btcRates?.index(forKey: currencyCode) else {
-                return nil
-            }
-            guard let currencyCodeDict = WalletManager.shared.wallet.btcRates?[currencyCode] as? [String: Any] else {
-                return nil
-            }
-            return currencyCodeDict["symbol"] as? String
+            FiatCurrency(code: currencyCode)?.symbol ?? ""
         }
 
         /// The first 5 characters of SHA256 hash of the user's password
@@ -461,6 +439,15 @@ final class BlockchainSettings: NSObject {
                 defaults.set(newValue, forKey: UserDefaults.Keys.didTapOnExchangeDeepLink.rawValue)
             }
         }
+        
+        @objc var custodySendInterstitialViewed: Bool {
+            get {
+                return defaults.bool(forKey: UserDefaults.Keys.custodySendInterstitialViewed.rawValue)
+            }
+            set {
+                defaults.set(newValue, forKey: UserDefaults.Keys.custodySendInterstitialViewed.rawValue)
+            }
+        }
 
         override init() {
             // Private initializer so that `shared` and `sharedInstance` are the only ways to
@@ -488,6 +475,7 @@ final class BlockchainSettings: NSObject {
             // TODO: - reset all appropriate settings upon logging out
             clearPin()
             appBecameActiveCount = 0
+            custodySendInterstitialViewed = false
             didTapOnAirdropDeepLink = false
             didTapOnExchangeDeepLink = false
             didAttemptToRouteForAirdrop = false
@@ -497,6 +485,7 @@ final class BlockchainSettings: NSObject {
 
             KYCSettings.shared.reset()
             AnnouncementRecorder.reset()
+            SimpleBuyServiceProvider.default.cache.reset()
             
             Logger.shared.info("Application settings have been reset.")
         }

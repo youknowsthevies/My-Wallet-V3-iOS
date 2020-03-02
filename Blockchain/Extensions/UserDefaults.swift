@@ -67,6 +67,7 @@ extension UserDefaults {
         case exchangeLinkIdentifier = "pitLinkIdentifier"
         case didTapOnExchangeDeepLink = "didTapOnPitDeepLink"
         case walletIntroLatestLocation
+        case custodySendInterstitialViewed
     }
 
     func migrateLegacyKeysIfNeeded() {

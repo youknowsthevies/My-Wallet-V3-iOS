@@ -23,8 +23,8 @@ final class RecoveryPhraseViewController: BaseScreenViewController {
     
     // MARK: - Setup
     
-    init(router: RecoveryPhraseRouterAPI) {
-        self.presenter = RecoveryPhraseScreenPresenter(router: router, mnemonicAPI: WalletManager.shared.wallet)
+    init(presenter: RecoveryPhraseScreenPresenter) {
+        self.presenter = presenter
         super.init(nibName: RecoveryPhraseViewController.objectName, bundle: nil)
     }
     
@@ -45,9 +45,15 @@ final class RecoveryPhraseViewController: BaseScreenViewController {
     }
     
     private func setupNavigationBar() {
-        titleViewStyle = .text(value: presenter.title)
-        set(barStyle: .darkContent(ignoresStatusBar: false, background: .white),
-            leadingButtonStyle: .back)
+        titleViewStyle = presenter.titleView
+        set(barStyle: presenter.barStyle,
+            leadingButtonStyle: presenter.leadingButton,
+            trailingButtonStyle: presenter.trailingButton)
     }
     
+    // MARK: - Navigation
+    
+    override func navigationBarLeadingButtonPressed() {
+        presenter.navigationBarLeadingButtonTapped()
+    }
 }

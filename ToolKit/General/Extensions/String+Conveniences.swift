@@ -8,7 +8,36 @@
 
 import Foundation
 
+// MARK: - Range
+
 public extension String {
+    func range(startingAt index: Int, length: Int) -> Range<String.Index>? {
+        let range = NSRange(
+            location: index,
+            length: length
+        )
+        return Range(range, in: self)
+    }
+    
+    subscript(bounds: CountableClosedRange<Int>) -> String {
+        let start = index(startIndex, offsetBy: bounds.lowerBound)
+        let end = index(startIndex, offsetBy: bounds.upperBound)
+        return String(self[start...end])
+    }
+
+    subscript(bounds: CountableRange<Int>) -> String {
+        let start = index(startIndex, offsetBy: bounds.lowerBound)
+        let end = index(startIndex, offsetBy: bounds.upperBound)
+        return String(self[start..<end])
+    }
+}
+
+public extension String {
+    
+    func count(of substring: String) -> Int {
+        let components = self.components(separatedBy: substring)
+        return components.count - 1
+    }
     
     /// Returns query arguments from a string in URL format
     var queryArgs: [String: String] {
@@ -32,22 +61,14 @@ public extension String {
         guard !isEmpty else { return }
         removeLast()
     }
-    
-    /// Removes prefix
-    mutating func remove(prefix: String) {
-        guard hasPrefix(prefix) else { return }
-        self = String(suffix(count - prefix.count))
-    }
-    
-    func stringByRemoving(prefix: String) -> String {
+
+    func removing(prefix: String) -> String {
         guard hasPrefix(prefix) else { return self }
-        var this = self
-        this.remove(prefix: prefix)
-        return this
+        return String(suffix(count - prefix.count))
     }
     
     /// Returns the string with no whitespaces
-    public var trimmingWhitespaces: String {
+    var trimmingWhitespaces: String {
         return trimmingCharacters(in: .whitespaces)
     }
 }

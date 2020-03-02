@@ -7,7 +7,7 @@
 //
 
 import XCTest
-
+import PlatformKit
 @testable import Blockchain
 
 class KYCPagerTests: XCTestCase {
@@ -15,10 +15,10 @@ class KYCPagerTests: XCTestCase {
     private var pager: KYCPagerAPI!
     private var dataRepository: MockBlockchainDataRepository!
     
-    private let response = KYCUserTiersResponse(
+    private let response = KYC.UserTiers(
         tiers: [
-            KYCUserTier(tier: .tier1, state: .verified),
-            KYCUserTier(tier: .tier2, state: .pending)
+            KYC.UserTier(tier: .tier1, state: .verified),
+            KYC.UserTier(tier: .tier2, state: .pending)
         ]
     )
 
@@ -33,10 +33,10 @@ class KYCPagerTests: XCTestCase {
     func testHasNextPageOnNextTier() {
         let exp = expectation(description: "More information controller is presented if next tier is set")
         let lastPage = KYCPageType.lastPage(forTier: .tier1)
-        let tiers = NabuUserTiers(
-            current: KYCTier.tier0,
-            selected: KYCTier.tier1,
-            next: KYCTier.tier2
+        let tiers = KYC.UserState(
+            current: KYC.Tier.tier0,
+            selected: KYC.Tier.tier1,
+            next: KYC.Tier.tier2
         )
         dataRepository.mockNabuUser = createTestNabuUser(tiers: tiers)
         _ = pager.nextPage(from: lastPage, payload: nil)
@@ -60,7 +60,7 @@ class KYCPagerTests: XCTestCase {
         wait(for: [exp], timeout: 0.1)
     }
 
-    private func createTestNabuUser(tiers: NabuUserTiers? = nil) -> NabuUser {
+    private func createTestNabuUser(tiers: KYC.UserState? = nil) -> NabuUser {
         return NabuUser(
             personalDetails: PersonalDetails(id: "id", first: "John", last: "Smithy", birthday: nil),
             address: nil,

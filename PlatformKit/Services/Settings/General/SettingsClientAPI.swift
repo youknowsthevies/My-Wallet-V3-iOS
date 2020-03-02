@@ -39,4 +39,6 @@ public protocol SettingsClientAPI: class {
     func updateLastTransactionTime(guid: String, sharedKey: String) -> Completable
     
     func emailNotifications(enabled: Bool, guid: String, sharedKey: String) -> Completable
+    
+    func update(currency: String, context: FlowContext, guid: String, sharedKey: String) -> Completable
 }

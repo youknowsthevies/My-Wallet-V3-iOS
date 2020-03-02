@@ -37,7 +37,8 @@ import PlatformKit
     private let loadingViewPresenter: LoadingViewPresenting
 
     let airdropRouter: AirdropRouterAPI
-    
+    private var simpleBuyRouter: SimpleBuyRouterAPI!
+
     // MARK: - UIViewController Properties
 
     @objc private var settingsNavigationController: SettingsNavigationController?
@@ -265,6 +266,8 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
             handleLogout()
         case .buyBitcoin:
             handleBuyBitcoin()
+        case .simpleBuy:
+            startSimpleBuy()
         case .exchange:
             handleExchange()
         case .lockbox:
@@ -385,6 +388,22 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         //     UIAlertAction(title: LocalizationConstants.okString, style: .default)
         //   ]
         // )
+        
+    }
+    
+    func startSimpleBuy() {
+        let stateService = SimpleBuyStateService()
+        simpleBuyRouter = SimpleBuyRouter(stateService: stateService)
+        simpleBuyRouter.start()
+    }
+    
+    func startSimpleBuyAtLogin() {
+        let stateService = SimpleBuyStateService()
+        guard !stateService.cache[.hasShownIntroScreen] else {
+            return
+        }
+        simpleBuyRouter = SimpleBuyRouter(stateService: stateService)
+        simpleBuyRouter.start()
     }
 }
 
@@ -464,6 +483,21 @@ extension AppCoordinator: TabSwapping {
     
     func switchTabToReceive() {
         tabControllerManager.receiveCoinClicked(nil)
+    }
+    
+    func switchToActivity(currency: CryptoCurrency) {
+        switch currency {
+        case .bitcoin:
+            tabControllerManager.showTransactionsBitcoin()
+        case .bitcoinCash:
+            tabControllerManager.showTransactionsBitcoinCash()
+        case .ethereum:
+            tabControllerManager.showTransactionsEther()
+        case .pax:
+            tabControllerManager.showTransactionsPax()
+        case .stellar:
+            tabControllerManager.showTransactionsStellar()
+        }
     }
 }
 

@@ -38,7 +38,7 @@ class ExchangeDetailCoordinator: NSObject {
     fileprivate let tradeLimitsService: TradeLimitsAPI
     private let analyticsRecorder: AnalyticsEventRecording
     
-    fileprivate var accountRepository: AssetAccountRepository {
+    fileprivate var accountRepository: AssetAccountRepositoryAPI {
         get {
             return AssetAccountRepository.shared
         }
@@ -417,10 +417,8 @@ class ExchangeDetailCoordinator: NSObject {
         /// in the event of a failure, in case there was a discrepancy between
         /// the balance reflected in the `OrderTransaction` and the user's actual
         /// balance. 
-        let disposable = accountRepository.defaultAccount(
-            for: orderTransaction.from.address.assetType,
-            fromCache: false
-        )
+        let disposable = accountRepository
+            .defaultAccount(for: orderTransaction.from.address.assetType)
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: { account in

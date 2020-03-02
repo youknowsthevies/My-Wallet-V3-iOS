@@ -107,8 +107,6 @@ final class WalletIntroductionPresenter: NSObject {
             return requestEvents() + swapEvents()
         case .swap:
             return swapEvents()
-        case .buySell:
-            return []
         }
     }
     

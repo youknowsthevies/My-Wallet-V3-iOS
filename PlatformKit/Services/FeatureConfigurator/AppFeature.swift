@@ -32,6 +32,9 @@ public enum AppFeature: Int, CaseIterable {
     
     /// The announcments
     case announcements
+    
+    /// Is simple buy enabled
+    case simpleBuyEnabled
 }
 
 extension AppFeature {
@@ -52,6 +55,8 @@ extension AppFeature {
             return "pit_show_announcement"
         case .announcements:
             return "announcements"
+        case .simpleBuyEnabled:
+            return "simple_buy_enabled"
         default:
             return nil
         }

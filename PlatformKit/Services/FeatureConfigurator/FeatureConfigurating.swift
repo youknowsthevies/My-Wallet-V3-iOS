@@ -19,6 +19,7 @@ public protocol FeatureFetching: class {
     func fetch<Feature: Decodable>(for key: AppFeature) -> Single<Feature>
     func fetchInteger(for key: AppFeature) -> Single<Int>
     func fetchString(for key: AppFeature) -> Single<String>
+    func fetchBool(for key: AppFeature) -> Single<Bool>
 
 }
 

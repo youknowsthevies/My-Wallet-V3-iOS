@@ -10,7 +10,7 @@ import UIKit
 import RxSwift
 import PlatformKit
 
-public final class AnnouncementMiniCardView: UIView, AnnoucementCardViewConforming {
+public final class AnnouncementMiniCardView: UIView, AnnouncementCardViewConforming {
     
     // MARK: - Subviews
     
@@ -46,7 +46,7 @@ public final class AnnouncementMiniCardView: UIView, AnnoucementCardViewConformi
     
     override public func didMoveToSuperview() {
         super.didMoveToSuperview()
-        viewModel.didAppear()
+        viewModel.didAppear?()
     }
     
     // MARK: - Private methods

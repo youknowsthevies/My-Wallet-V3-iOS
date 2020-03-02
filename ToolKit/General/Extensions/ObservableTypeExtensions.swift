@@ -59,3 +59,55 @@ extension ObservableType {
         }
     }
 }
+
+// MARK: - Creation (weak: self)
+
+extension ObservableType {
+    public static func create<A: AnyObject>(weak object: A, subscribe: @escaping (A, (AnyObserver<Element>)) -> Disposable) -> Observable<Element> {
+        return Observable<Element>.create { [weak object] observer -> Disposable in
+            guard let object = object else {
+                observer.on(.error(ToolKitError.nullReference(A.self)))
+                return Disposables.create()
+            }
+            return subscribe(object, observer)
+        }
+    }
+}
+
+// MARK: - Catch Error Op
+
+extension ObservableType {
+    public func catchError<A: AnyObject>(weak object: A, _ selector: @escaping (A, Swift.Error) throws -> Observable<Element>) -> Observable<Element> {
+        return catchError { [weak object] error -> Observable<Element> in
+            guard let object = object else { throw ToolKitError.nullReference(A.self) }
+            return try selector(object, error)
+        }
+    }
+}
+
+// MARK: - Result<Element, Error> mapping
+
+extension ObservableType {
+    
+    /// Directly maps to `Result<Element, Error>` type.
+    public func mapToResult() -> Observable<Result<Element, Error>> {
+        self.map { .success($0) }
+            .catchError { .just(.failure($0)) }
+    }
+    
+    /// Map with success and failure mappers.
+    /// This is useful in case we would like to have a custom error type.
+    public func mapToResult<ResultElement, OutputError: Error>(
+        successMap: @escaping (Element) -> ResultElement,
+        errorMap: @escaping (Error) -> OutputError) -> Observable<Result<ResultElement, OutputError>> {
+        self.map { .success(successMap($0)) }
+            .catchError { .just(.failure(errorMap($0))) }
+    }
+    
+    /// Map with success mapper only.
+    public func mapToResult<ResultElement>(
+        successMap: @escaping (Element) -> ResultElement) -> Observable<Result<ResultElement, Error>> {
+        self.map { .success(successMap($0)) }
+            .catchError { .just(.failure($0)) }
+    }
+}

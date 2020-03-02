@@ -67,25 +67,10 @@ extension SettingsTableViewController {
     }
 
     func prepareCurrencyCell(_ cell: UITableViewCell) {
-        let selectedCurrencyCode = getLocalSymbolFromLatestResponse()?.code
-        let selectedCurrencySymbol = getLocalSymbolFromLatestResponse()?.symbol
         cell.textLabel?.text = LocalizationConstants.localCurrency
         cell.detailTextLabel?.textColor = .brandPrimary
-        if let selectedCode = selectedCurrencyCode {
-            if self.allCurrencySymbolsDictionary[selectedCode] == nil {
-                updateAccountInfo()
-            }
-        }
-
-        if selectedCurrencySymbol == nil {
-            cell.detailTextLabel?.text = ""
-        }
-
-        if let currencyCode = selectedCurrencyCode,
-            let fiatRepresentable = allCurrencySymbolsDictionary[currencyCode] as? [String: Any] {
-            let parsedFiat = FiatCurrency(dictionary: fiatRepresentable)
-            cell.detailTextLabel?.text = parsedFiat.description
-        }
+        let currency = UserInformationServiceProvider.default.settings.legacyCurrency
+        cell.detailTextLabel?.text = currency?.name
     }
 
     func prepareSwipeReceiveCell(_ cell: UITableViewCell) {
@@ -149,7 +134,7 @@ extension SettingsTableViewController {
             .disposed(by: bag)
     }
     
-    func getTiersStatus(handler: @escaping (KYCUserTiersResponse?) -> Void) {
+    func getTiersStatus(handler: @escaping (KYC.UserTiers?) -> Void) {
         BlockchainDataRepository.shared.tiers
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
@@ -329,7 +314,7 @@ extension SettingsTableViewController {
         case sections.preferences:
             switch indexPath.row {
             case preferencesLocalCurrency:
-                performSingleSegue(withIdentifier: "currency", sender: nil)
+                fiatCurrencyCellSelected()
             default:
                 return
             }

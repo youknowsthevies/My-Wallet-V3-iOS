@@ -52,6 +52,10 @@ final class HistoricalBalanceTableViewCell: UITableViewCell {
             estimatedPriceLabelSize: CGSize(width: 84, height: 16),
             estimatedChangeLabelSize: CGSize(width: 62, height: 14)
         )
+        assetBalanceView.shimmer(
+            estimatedFiatLabelSize: CGSize(width: 90, height: 16),
+            estimatedCryptoLabelSize: CGSize(width: 100, height: 14)
+        )
     }
     
     override func prepareForReuse() {

@@ -15,7 +15,7 @@ struct AnnouncementPreliminaryData {
     let user: NabuUser
     
     /// User tiers information
-    let tiers: KYCUserTiersResponse
+    let tiers: KYC.UserTiers
     
     /// Whether the wallet has trades or not
     let hasTrades: Bool
@@ -45,22 +45,42 @@ struct AnnouncementPreliminaryData {
         }
         return campaign.currentState == .received
     }
+
+    var pendingSimpleBuyOrderAssetType: CryptoCurrency? {
+        simpleBuyCheckoutData?.cryptoCurrency
+    }
+
+    var hasIncompleteBuyFlow: Bool {
+        simpleBuyEventCache[.hasShownBuyScreen] && isSimpleBuyAvailable
+    }
     
+    let isSimpleBuyEligible: Bool
+    let isSimpleBuyAvailable: Bool
     private let airdropCampaigns: AirdropCampaigns
-        
+    private let simpleBuyCheckoutData: SimpleBuyCheckoutData?
+    private let simpleBuyEventCache: SimpleBuyEventCache
+    
     init(user: NabuUser,
-         tiers: KYCUserTiersResponse,
+         tiers: KYC.UserTiers,
          airdropCampaigns: AirdropCampaigns,
          hasTrades: Bool,
          hasPaxTransactions: Bool,
          countries: Countries,
-         authenticatorType: AuthenticatorType) {
+         simpleBuyEventCache: SimpleBuyEventCache = SimpleBuyServiceProvider.default.cache,
+         authenticatorType: AuthenticatorType,
+         simpleBuyCheckoutData: SimpleBuyCheckoutData?,
+         isSimpleBuyEligible: Bool,
+         isSimpleBuyAvailable: Bool) {
         self.airdropCampaigns = airdropCampaigns
         self.user = user
         self.tiers = tiers
         self.hasTrades = hasTrades
         self.hasPaxTransactions = hasPaxTransactions
+        self.simpleBuyEventCache = simpleBuyEventCache
         self.authenticatorType = authenticatorType
+        self.simpleBuyCheckoutData = simpleBuyCheckoutData
+        self.isSimpleBuyEligible = isSimpleBuyEligible
+        self.isSimpleBuyAvailable = isSimpleBuyAvailable
         country = countries.first { $0.code == user.address?.countryCode }
     }
 }

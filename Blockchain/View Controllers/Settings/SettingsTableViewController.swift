@@ -63,8 +63,6 @@ AppSettingsController, UITextFieldDelegate, EmailDelegate, WalletAccountInfoDele
     let sections = Sections()
     
     var settingsController: SettingsTableViewController?
-    var availableCurrenciesDictionary: [AnyHashable: Any] = [:]
-    var allCurrencySymbolsDictionary: [AnyHashable: Any] = [:]
     private var enteredEmailString = ""
     private var emailString = ""
     private var mobileNumberString = ""
@@ -84,7 +82,7 @@ AppSettingsController, UITextFieldDelegate, EmailDelegate, WalletAccountInfoDele
     }()
     
     let bag: DisposeBag = DisposeBag()
-    var tiers: KYCUserTiersResponse?
+    var tiers: KYC.UserTiers?
     var didFetchTiers = false
     
     @IBOutlet var touchIDAsPin: SettingsToggleTableViewCell!
@@ -106,11 +104,19 @@ AppSettingsController, UITextFieldDelegate, EmailDelegate, WalletAccountInfoDele
         self.authenticationService = NabuAuthenticationService.shared
         super.init(coder: aDecoder)
     }
-
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         tableView.reloadData()
         self.walletManager.accountInfoDelegate = self
+        
+        UserInformationServiceProvider.default.settings
+            .fiatCurrencyObservable
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] currency in
+                self?.reloadTableView()
+            })
+            .disposed(by: bag)
     }
 
     func verifyEmailTapped() {
@@ -618,15 +624,60 @@ AppSettingsController, UITextFieldDelegate, EmailDelegate, WalletAccountInfoDele
         }
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "currency" {
-            let settingsSelectorTableViewController = segue.destination as? SettingsSelectorTableViewController
-            settingsSelectorTableViewController?.itemsDictionary = availableCurrenciesDictionary
-        } else if segue.identifier == "twoStep" {
+        if segue.identifier == "twoStep" {
             if let twoStepViewController = segue.destination as? SettingsTwoStepViewController {
                 twoStepViewController.settingsController = self
                 alertTargetViewController = twoStepViewController
             }
         }
+    }
+    
+    func fiatCurrencyCellSelected() {
+        let settingsService = UserInformationServiceProvider.default.settings
+        settingsService
+            .fiatCurrency
+            .subscribeOn(MainScheduler.instance)
+            .subscribe(onSuccess: { [weak self] currency in
+                self?.showFiatCurrencySelectionScreen(selectedCurrency: currency)
+            })
+            .disposed(by: bag)
+    }
+    
+    private func showFiatCurrencySelectionScreen(selectedCurrency: FiatCurrency) {
+        let selectionService = FiatCurrencySelectionService(defaultSelectedData: selectedCurrency)
+        let interactor = SelectionScreenInteractor(service: selectionService)
+        let presenter = SelectionScreenPresenter(
+            title: LocalizationConstants.localCurrency,
+            interactor: interactor
+        )
+        let viewController = SelectionScreenViewController(presenter: presenter)
+        let navigationController = UINavigationController(rootViewController: viewController)
+        self.present(navigationController, animated: true, completion: nil)
+        
+        interactor.selectedIdOnDismissal
+            .map { FiatCurrency(code: $0)! }
+            .flatMap { currency in
+                UserInformationServiceProvider.default.settings
+                    .update(
+                        currency: currency,
+                        context: .settings
+                    )
+                    .andThen(Single.just(currency))
+            }
+            .observeOn(MainScheduler.instance)
+            .subscribe(
+                onSuccess: { currency in
+                    AnalyticsEventRecorder.shared.record(
+                        event: AnalyticsEvents.Settings.settingsCurrencySelected(currency: currency.code)
+                    )
+                },
+                onError: { _ in
+                    AlertViewPresenter.shared.standardError(
+                        message: LocalizationConstants.GeneralError.loadingData
+                    )
+                }
+            )
+            .disposed(by: bag)
     }
 
     @objc func didGetAccountInfo() {
@@ -648,10 +699,7 @@ AppSettingsController, UITextFieldDelegate, EmailDelegate, WalletAccountInfoDele
                                                name: NSNotification.Name(rawValue: "GetAccountInfo"), object: nil)
         walletManager.wallet.getAccountInfo()
     }
-    func updateCurrencySymbols() {
-        allCurrencySymbolsDictionary = walletManager.wallet.btcRates ?? [String: Any]()
-        reloadTableView()
-    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         isEnablingTwoStepSMS = false
@@ -693,19 +741,15 @@ AppSettingsController, UITextFieldDelegate, EmailDelegate, WalletAccountInfoDele
     @objc func reload() {
         backupController?.reload()
         getAccountInfo()
-        getAllCurrencySymbols()
     }
     @objc func reloadAfterMultiAddressResponse() {
         backupController?.reload()
         updateAccountInfo()
-        updateCurrencySymbols()
+        reloadTableView()
     }
     func updateAccountInfo(completion: (() -> ())? = nil) {
         DispatchQueue.main.async {
             UserDefaults.standard.set(1, forKey: "loadedSettings")
-            if self.walletManager.wallet.getFiatCurrencies() != nil {
-                self.availableCurrenciesDictionary = self.walletManager.wallet.getFiatCurrencies()
-            }
             self.updateEmailAndMobileStrings()
             if type(of: self.alertTargetViewController) == SettingsTwoStepViewController.self {
                 let twoStepViewController = self.alertTargetViewController as? SettingsTwoStepViewController

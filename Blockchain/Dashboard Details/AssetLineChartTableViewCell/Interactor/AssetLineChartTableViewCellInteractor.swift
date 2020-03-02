@@ -35,8 +35,7 @@ final class AssetLineChartTableViewCellInteractor: AssetLineChartTableViewCellIn
     init(currency: CryptoCurrency,
          currencyCode: String,
          historicalFiatPriceService: HistoricalFiatPriceServiceAPI,
-         lineChartView: LineChartView,
-         fiatCurrencyProvider: FiatCurrencyTypeProviding = BlockchainSettings.App.shared) {
+         lineChartView: LineChartView) {
         self.historicalFiatPriceService = historicalFiatPriceService
         self.lineChartInteractor = AssetLineChartInteractor(currency: currency, code: currencyCode)
         self.lineChartUserInteractor = AssetLineChartUserInteractor(chartView: lineChartView)

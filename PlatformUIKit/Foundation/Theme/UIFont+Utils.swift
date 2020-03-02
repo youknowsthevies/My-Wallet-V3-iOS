@@ -15,8 +15,7 @@ extension UIFont {
         case regular = "Inter-Regular"
         case medium = "Inter-Medium"
         case semiBold = "Inter-SemiBold"
-        case bold = "Inter-Bold"
-        
+        case bold = "Inter-Bold"        
     }
     
     public static func mainMedium(_ size: CGFloat) -> UIFont {

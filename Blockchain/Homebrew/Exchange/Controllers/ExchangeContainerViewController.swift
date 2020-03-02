@@ -22,7 +22,7 @@ class ExchangeContainerViewController: BaseNavigationController {
     private let disposables = CompositeDisposable()
     private let coordinator: SwapCoordinator = SwapCoordinator.shared
     private let wallet: Wallet = WalletManager.shared.wallet
-    private let accountsRepository: AssetAccountRepository = AssetAccountRepository.shared
+    private let accountsRepository: AssetAccountRepositoryAPI = AssetAccountRepository.shared
     private var tiersViewController: KYCTiersViewController?
     private let loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared
     private let kycSettings: KYCSettingsAPI = KYCSettings.shared

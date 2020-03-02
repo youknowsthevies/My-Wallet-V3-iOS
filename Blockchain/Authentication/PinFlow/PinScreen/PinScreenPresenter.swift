@@ -169,9 +169,13 @@ final class PinScreenPresenter {
                 case .none:
                     biometricButtonImage = nil
                 }
-                let buttonBackground = DigitPadButtonViewModel.Background(highlightColor: buttonHighlightColor)
-                customButtonViewModel = DigitPadButtonViewModel(content: .image(type: biometricButtonImage, tint: contentColor),
-                                                                       background: buttonBackground)
+                let buttonBackground = DigitPadButtonViewModel.Background(
+                    highlightColor: buttonHighlightColor
+                )
+                customButtonViewModel = DigitPadButtonViewModel(
+                    content: .image(type: biometricButtonImage, tint: contentColor),
+                    background: buttonBackground
+                )
             } else {
                 customButtonViewModel = .empty
             }
@@ -190,12 +194,17 @@ final class PinScreenPresenter {
             securePinTitle = LocalizationConstants.Pin.confirmYourPinLabel
         }
 
-        digitPadViewModel = DigitPadViewModel(customButtonViewModel: customButtonViewModel,
-                                              contentTint: contentColor,
-                                              buttonHighlightColor: buttonHighlightColor)
-        securePinViewModel = SecurePinViewModel(title: securePinTitle,
-                                                tint: contentColor,
-                                                emptyPinColor: emptyPinColor)
+        digitPadViewModel = DigitPadViewModel(
+            padType: .pin(maxCount: 4),
+            customButtonViewModel: customButtonViewModel,
+            contentTint: contentColor,
+            buttonHighlightColor: buttonHighlightColor
+        )
+        securePinViewModel = SecurePinViewModel(
+            title: securePinTitle,
+            tint: contentColor,
+            emptyPinColor: emptyPinColor
+        )
         
         // Bind PIN length to fill count
         digitPadViewModel.valueLengthObservable

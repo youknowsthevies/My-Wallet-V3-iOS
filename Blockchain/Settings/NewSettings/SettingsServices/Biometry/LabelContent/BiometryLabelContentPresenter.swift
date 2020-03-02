@@ -13,8 +13,13 @@ import RxRelay
 
 class BiometryLabelContentPresenter: LabelContentPresenting {
     
+    // MARK: - Types
+    
     typealias PresentationState = LabelContentAsset.State.LabelItem.Presentation
     
+    // MARK: - Properties
+    
+    let stateRelay = BehaviorRelay<PresentationState>(value: .loading)
     var state: Observable<PresentationState> {
         return stateRelay.asObservable()
     }
@@ -22,13 +27,13 @@ class BiometryLabelContentPresenter: LabelContentPresenting {
     // MARK: - Private Accessors
     
     private let interactor: BiometryLabelContentInteractor
-    private let stateRelay = BehaviorRelay<PresentationState>(value: .loading)
     private let disposeBag = DisposeBag()
     
     init(provider: BiometryProviding,
          descriptors: LabelContentAsset.Value.Presentation.LabelItem.Descriptors) {
         interactor = BiometryLabelContentInteractor(biometryProviding: provider)
-        interactor.state.map { .init(with: $0, descriptors: descriptors) }
+        interactor.state
+            .map { .init(with: $0, descriptors: descriptors) }
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
     }

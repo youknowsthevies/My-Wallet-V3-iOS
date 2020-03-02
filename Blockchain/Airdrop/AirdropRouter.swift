@@ -47,8 +47,8 @@ final class AirdropRouter: AirdropRouterAPI {
         
         let interactor = AirdropStatusScreenInteractor(campaignName: campaignName)
         let presenter = AirdropStatusScreenPresenter(
-            presentationType:
-            presentationType, interactor: interactor
+            presentationType: presentationType,
+            interactor: interactor
         )
         let viewController = AirdropStatusScreenViewController(presenter: presenter)
         

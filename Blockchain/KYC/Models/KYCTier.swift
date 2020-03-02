@@ -1,5 +1,5 @@
 //
-//  KYCTier.swift
+//  KYC.Tier.swift
 //  Blockchain
 //
 //  Created by Chris Arriola on 12/9/18.
@@ -7,31 +7,9 @@
 //
 
 import Foundation
+import PlatformKit
 
-/// Enumerates the different tiers for KYC. A higher tier requires
-/// users to provide us with more information about them which
-/// qualifies them for higher limits of trading.
-///
-/// - tier1: the 1st tier requiring the user to only provide basic
-///          user information such as name and address.
-/// - tier2: the 2nd tier requiring the user to provide additional
-///          identity information such as a drivers licence, passport,
-//           etc.
-public enum KYCTier: Int, Codable {
-    case tier0 = 0
-    case tier1 = 1
-    case tier2 = 2
-}
-
-extension KYCTier: Comparable {
-    // It's best to use comparison to compare tiers instead of using `==` directly
-    // since additional values are likely to be added in future
-    public static func < (lhs: KYCTier, rhs: KYCTier) -> Bool {
-        return lhs.rawValue < rhs.rawValue
-    }
-}
-
-public extension KYCTier {
+extension KYC.Tier {
     static let lockedAnalyticsKey: String = "kyc_tiers_locked"
     
     var headline: String? {

@@ -33,7 +33,7 @@ final class MobileVerificationCellPresenter: BadgeCellPresenting {
     
     init(interactor: MobileVerificationBadgeInteractor) {
         labelContentPresenting = DefaultLabelContentPresenter(
-            title: LocalizationConstants.Settings.Badge.mobileNumber,
+            knownValue: LocalizationConstants.Settings.Badge.mobileNumber,
             descriptors: .settings
         )
         badgeAssetPresenting = MobileVerificationBadgePresenter(
@@ -54,7 +54,7 @@ final class TwoFactorVerificationCellPresenter: BadgeCellPresenting {
     
     init(interactor: TwoFactorVerificationBadgeInteractor) {
         labelContentPresenting = DefaultLabelContentPresenter(
-            title: LocalizationConstants.Settings.Badge.twoFactorAuthentication,
+            knownValue: LocalizationConstants.Settings.Badge.twoFactorAuthentication,
             descriptors: .settings
         )
         badgeAssetPresenting = TwoFactorVerificationBadgePresenter(
@@ -73,7 +73,7 @@ final class EmailVerificationCellPresenter: BadgeCellPresenting {
     
     init(interactor: EmailVerificationBadgeInteractor) {
         labelContentPresenting = DefaultLabelContentPresenter(
-            title: LocalizationConstants.Settings.Badge.email,
+            knownValue: LocalizationConstants.Settings.Badge.email,
             descriptors: .settings
         )
         badgeAssetPresenting = EmailVerificationBadgePresenter(
@@ -94,7 +94,7 @@ final class PreferredCurrencyCellPresenter: BadgeCellPresenting {
     
     init(interactor: PreferredCurrencyBadgeInteractor) {
         labelContentPresenting = DefaultLabelContentPresenter(
-            title: LocalizationConstants.Settings.Badge.localCurrency,
+            knownValue: LocalizationConstants.Settings.Badge.localCurrency,
             descriptors: .settings
         )
         badgeAssetPresenting = PreferredCurrencyBadgePresenter(
@@ -122,7 +122,10 @@ final class PITConnectionCellPresenter: BadgeCellPresenting {
     let badgeAssetPresenting: BadgeAssetPresenting
     
     init(pitConnectionProvider: PITConnectionStatusProviding) {
-        labelContentPresenting = DefaultLabelContentPresenter(title: LocalizationConstants.Settings.Badge.blockchainExchange, descriptors: .settings)
+        labelContentPresenting = DefaultLabelContentPresenter(
+            knownValue: LocalizationConstants.Settings.Badge.blockchainExchange,
+            descriptors: .settings
+        )
         badgeAssetPresenting = PITConnectionBadgePresenter(provider: pitConnectionProvider)
     }
 }
@@ -134,7 +137,10 @@ final class RecoveryStatusCellPresenter: BadgeCellPresenting {
     let badgeAssetPresenting: BadgeAssetPresenting
     
     init(recoveryStatusProviding: RecoveryPhraseStatusProviding) {
-        labelContentPresenting = DefaultLabelContentPresenter(title: LocalizationConstants.Settings.Badge.recoveryPhrase, descriptors: .settings)
+        labelContentPresenting = DefaultLabelContentPresenter(
+            knownValue: LocalizationConstants.Settings.Badge.recoveryPhrase,
+            descriptors: .settings    
+        )
         badgeAssetPresenting = RecoveryPhraseBadgePresenter(provider: recoveryStatusProviding)
     }
 }

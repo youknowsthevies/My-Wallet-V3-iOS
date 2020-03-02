@@ -8,6 +8,7 @@
 
 import RxSwift
 import RxRelay
+import ToolKit
 
 public final class SettingsService: SettingsServiceAPI {
     
@@ -18,13 +19,15 @@ public final class SettingsService: SettingsServiceAPI {
         case missingGuid
     }
     
-    public typealias CalculationState = ValueCalculationState<WalletSettings>
-
     // MARK: - Exposed Properties
     
-    /// The state of the calculation
-    public var state: Observable<CalculationState> {
-        return stateRelay.asObservable()
+    /// Streams the first available settings element
+    public var valueSingle: Single<WalletSettings> {
+        cachedValue.valueSingle
+    }
+    
+    public var valueObservable: Observable<WalletSettings> {
+        cachedValue.valueObservable
     }
     
     // MARK: - Private Properties
@@ -32,8 +35,8 @@ public final class SettingsService: SettingsServiceAPI {
     private let client: SettingsClientAPI
     private let credentialsRepository: GuidRepositoryAPI & SharedKeyRepositoryAPI
 
-    public let fetchTriggerRelay = PublishRelay<Void>()
-    private let stateRelay = BehaviorRelay<CalculationState>(value: .calculating)
+    private let cachedValue = CachedValue<WalletSettings>()
+    
     private let disposeBag = DisposeBag()
     
     /// GUID and Shared-Key credentials are necessary to settings operations.
@@ -54,36 +57,82 @@ public final class SettingsService: SettingsServiceAPI {
     
     // MARK: - Setup
     
-    public init(client: SettingsClientAPI = SettingsClient(),
+    public init(client: SettingsClientAPI,
                 credentialsRepository: GuidRepositoryAPI & SharedKeyRepositoryAPI) {
         self.client = client
         self.credentialsRepository = credentialsRepository
         
-        fetchTriggerRelay
-            .throttle(.milliseconds(500), scheduler: ConcurrentDispatchQueueScheduler(qos: .background))
-            .flatMapLatest(weak: self) { (self, _) -> Observable<SettingsResponse> in
+        cachedValue
+            .setFetch(weak: self) { (self) -> Single<WalletSettings> in
                 self.credentials
-                    .flatMap(weak: self) { (self, credentials) -> Single<SettingsResponse> in
+                    .flatMap(weak: self) { (self, credentials) in
                         self.client.settings(
                             by: credentials.guid,
                             sharedKey: credentials.sharedKey
                         )
                     }
-                    .asObservable()
+                    .map { WalletSettings(response: $0) }
             }
-            .map { WalletSettings(response: $0) }
-            .map { .value($0) }
-            .startWith(.calculating)
-            .catchErrorJustReturn(.calculating)
-            .bind(to: stateRelay)
-            .disposed(by: disposeBag)
     }
     
     // MARK: - Public Methods
     
-    /// Refreshes the wallet settings - triggers a recalculation of `CalculationState`.
+    public func fetch() -> Single<WalletSettings> {
+        cachedValue.fetchValue
+    }
+    
+    @available(*, deprecated, message: "Do not use this! Superseded by `fetch()`")
     public func refresh() {
-        fetchTriggerRelay.accept(())
+        fetch()
+            .subscribe()
+            .disposed(by: disposeBag)
+    }
+}
+
+// MARK: - FiatCurrencySettingsServiceAPI
+
+extension SettingsService: FiatCurrencySettingsServiceAPI {
+
+    public var fiatCurrencyObservable: Observable<FiatCurrency> {
+        valueObservable
+            .map { settings -> FiatCurrency in
+                guard let currency = FiatCurrency(rawValue: settings.fiatCurrency) else {
+                    throw PlatformKitError.default
+                }
+                return currency
+            }
+            .distinctUntilChanged()
+    }
+    
+    public var fiatCurrency: Single<FiatCurrency> {
+        valueSingle
+            .map { settings -> FiatCurrency in
+                guard let currency = settings.currency else {
+                    throw PlatformKitError.default
+                }
+                return currency
+            }
+    }
+    
+    public func update(currency: FiatCurrency, context: FlowContext) -> Completable {
+        credentials
+            .flatMapCompletable(weak: self) { (self, payload) -> Completable in
+                self.client.update(
+                    currency: currency.code,
+                    context: context,
+                    guid: payload.guid,
+                    sharedKey: payload.sharedKey
+                )
+            }
+            .flatMapSingle(weak: self) { (self) in
+                self.fetch()
+            }
+            .asCompletable()
+    }
+    
+    @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencySettingsServiceAPI`")
+    public var legacyCurrency: FiatCurrency? {
+        cachedValue.legacyValue?.currency
     }
 }
 
@@ -92,11 +141,7 @@ public final class SettingsService: SettingsServiceAPI {
 extension SettingsService: EmailSettingsServiceAPI {
 
     public var email: Single<String> {
-        return stateRelay
-            .compactMap { $0.value }
-            .map { $0.email }
-            .take(1)
-            .asSingle()
+        valueSingle.map { $0.email }
     }
     
     public func update(email: String, context: FlowContext?) -> Completable {
@@ -123,6 +168,10 @@ extension SettingsService: LastTransactionSettingsUpdateServiceAPI {
                     sharedKey: payload.sharedKey
                 )
             }
+            .flatMapSingle(weak: self) { (self) in
+                self.fetch()
+            }
+            .asCompletable()
     }
 }
 
@@ -138,5 +187,9 @@ extension SettingsService: EmailNotificationSettingsServiceAPI {
                     sharedKey: payload.sharedKey
                 )
             }
+            .flatMapSingle(weak: self) { (self) in
+                self.fetch()
+            }
+            .asCompletable()
     }
 }

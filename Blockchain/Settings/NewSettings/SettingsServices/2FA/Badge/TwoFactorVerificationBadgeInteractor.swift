@@ -26,19 +26,14 @@ final class TwoFactorVerificationBadgeInteractor: BadgeAssetInteracting {
     // MARK: - Setup
     
     init(service: SettingsServiceAPI) {
-        service.state
-            .map { state -> InteractionState in
-                switch state {
-                case .value(let settings):
-                    if settings.authenticator.isTwoFactor {
-                        return .loaded(next: .verified)
-                    } else {
-                        return .loaded(next: .unverified)
-                    }
-                case .calculating, .invalid:
-                    return .loading
-                }
-            }
+        service
+            .valueObservable
+            .map { $0.authenticator.isTwoFactor }
+            .map { $0 ? .verified : .unverified }
+            .map { .loaded(next: $0) }
+            // TODO: Error handing
+            .catchErrorJustReturn(.loading)
+            .startWith(.loading)
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
     }

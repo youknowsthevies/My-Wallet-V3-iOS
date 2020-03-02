@@ -13,18 +13,20 @@ import RxRelay
 
 final class DefaultLabelContentInteractor: LabelContentInteracting {
     
+    // MARK: - Types
+    
     typealias InteractionState = LabelContentAsset.State.LabelItem.Interaction
     
+    // MARK: - LabelContentInteracting
+    
+    let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     var state: Observable<InteractionState> {
         return stateRelay.asObservable()
     }
     
-    // MARK: - Private Accessors
-    
-    private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
-    private let disposeBag = DisposeBag()
-    
-    init(value: String) {
-        stateRelay.accept(.loaded(next: .init(text: value)))
+    init(knownValue: String) {
+        stateRelay.accept(.loaded(next: .init(text: knownValue)))
     }
+    
+    init() {}
 }

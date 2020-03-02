@@ -12,6 +12,23 @@ import XCTest
 
 class FiatValueTests: XCTestCase {
 
+    func testInitalization() {
+        XCTAssertEqual(
+            10,
+            FiatValue(minor: "1000", currency: .USD).amount
+        )
+        
+        XCTAssertEqual(
+            0.01,
+            FiatValue(minor: "1", currency: .USD).amount
+        )
+        
+        XCTAssertEqual(
+            80000,
+            FiatValue(minor: "8000000", currency: .USD).amount
+        )
+    }
+    
     func testUSDDecimalPlaces() {
         XCTAssertEqual(
             2,
@@ -79,7 +96,7 @@ class FiatValueTests: XCTestCase {
         let exchangeRate = FiatValue.create(amountString: "8,000.00", currencyCode: "USD")
         XCTAssertEqual(
             amount.convertToCryptoValue(exchangeRate: exchangeRate, cryptoCurrency: .bitcoin),
-            CryptoValue.bitcoinFromMajor(string: "0.5")
+            CryptoValue.createFromMajorValue(string: "0.5", assetType: .bitcoin)!
         )
     }
 

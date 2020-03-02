@@ -13,4 +13,12 @@ public protocol NabuAuthenticationServiceAPI: class {
     func getSessionToken(requestNewToken: Bool) -> Single<NabuSessionTokenResponse>
     func getSessionToken() -> Single<NabuSessionTokenResponse>
     func updateWalletInfo() -> Completable
+    
+    var tokenString: Single<String> { get }
+}
+
+extension NabuAuthenticationServiceAPI {
+    public var tokenString: Single<String> {
+        getSessionToken().map { $0.token }
+    }
 }

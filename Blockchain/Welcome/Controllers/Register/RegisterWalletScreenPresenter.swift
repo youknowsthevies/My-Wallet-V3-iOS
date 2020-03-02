@@ -35,8 +35,7 @@ final class RegisterWalletScreenPresenter {
     let passwordTextFieldViewModel: PasswordTextFieldViewModel
     let confirmPasswordTextFieldViewModel: PasswordTextFieldViewModel
     let buttonViewModel = ButtonViewModel.primary(
-        with: LocalizedString.button,
-        cornerRadius: 8
+        with: LocalizedString.button
     )
     let termsOfUseTextViewModel: InteractableTextViewModel = {
         let font = UIFont.mainMedium(12)

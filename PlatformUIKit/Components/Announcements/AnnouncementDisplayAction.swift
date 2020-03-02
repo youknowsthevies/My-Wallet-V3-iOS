@@ -28,6 +28,13 @@ public enum AnnouncementDisplayAction: Equatable {
             return false
         }
     }
+    
+    public var isHide: Bool {
+        if case .hide = self {
+            return true
+        }
+        return false
+    }
 }
 
 // MARK: - CustomDebugStringConvertible

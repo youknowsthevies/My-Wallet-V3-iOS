@@ -6,16 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import RxSwift
 import PlatformKit
 
-@testable import Blockchain
+final class NabuAuthenticationServiceMock: NabuAuthenticationServiceAPI {
 
-@testable import Blockchain
-
-class NabuAuthenticationServiceMock: NabuAuthenticationServiceAPI {
-    
     static let token = NabuSessionTokenResponse(
         identifier: "identifier",
         userId: "userId",
@@ -23,16 +18,18 @@ class NabuAuthenticationServiceMock: NabuAuthenticationServiceAPI {
         isActive: true,
         expiresAt: Date.distantFuture
     )
-    var getSessionTokenValue = Single.just(token)
+
+    var underlyingSessionToken: NabuSessionTokenResponse = NabuAuthenticationServiceMock.token
     func getSessionToken(requestNewToken: Bool) -> Single<NabuSessionTokenResponse> {
-        return getSessionTokenValue
+        return .just(underlyingSessionToken)
     }
-    
+
     func getSessionToken() -> Single<NabuSessionTokenResponse> {
-        return getSessionToken(requestNewToken: false)
+        return .just(underlyingSessionToken)
     }
-    
+
     func updateWalletInfo() -> Completable {
-        return Completable.empty()
+        return .empty()
     }
 }
+

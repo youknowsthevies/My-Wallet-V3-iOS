@@ -39,7 +39,8 @@ public final class AssetBalanceViewPresenter {
     // MARK: - Setup
     
     public init(alignment: UIStackView.Alignment = .fill,
-                interactor: AssetBalanceViewInteracting) {
+                interactor: AssetBalanceViewInteracting,
+                descriptors: DashboardAsset.Value.Presentation.AssetBalance.Descriptors = .default) {
         self.interactor = interactor
         self.alignmentRelay.accept(alignment)
         
@@ -47,8 +48,8 @@ public final class AssetBalanceViewPresenter {
         /// and bind it to `stateRelay`
         interactor.state
             .map {
-                .init(with: $0)
-        }
+                .init(with: $0, descriptors: descriptors)
+            }
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
     }

@@ -22,13 +22,13 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Current Price" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9N4-ji-eyT">
-                        <rect key="frame" x="16" y="32" width="89" height="33"/>
-                        <fontDescription key="fontDescription" name="Inter-Medium" family="Inter" pointSize="14"/>
+                        <rect key="frame" x="156.5" y="16" width="101.5" height="49"/>
+                        <fontDescription key="fontDescription" name="Inter-Medium" family="Inter" pointSize="16"/>
                         <color key="textColor" red="0.59599999999999997" green="0.63100000000000001" blue="0.69799999999999995" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="CDj-PX-gkl">
-                        <rect key="frame" x="277" y="34" width="121" height="29"/>
+                        <rect key="frame" x="277" y="26" width="121" height="29"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Igz-3F-nVc">
                                 <rect key="frame" x="0.0" y="0.0" width="97" height="29"/>
@@ -53,11 +53,11 @@
                     <constraint firstItem="9xd-uW-ESK" firstAttribute="leading" secondItem="Wkc-vG-xR3" secondAttribute="leading" constant="16" id="3t7-XT-wCO"/>
                     <constraint firstItem="CDj-PX-gkl" firstAttribute="centerY" secondItem="9N4-ji-eyT" secondAttribute="centerY" id="9nM-Tc-sUx"/>
                     <constraint firstAttribute="trailing" secondItem="9xd-uW-ESK" secondAttribute="trailing" constant="16" id="Oaf-G0-085"/>
+                    <constraint firstItem="9N4-ji-eyT" firstAttribute="centerX" secondItem="Wkc-vG-xR3" secondAttribute="centerX" id="WJX-OX-Jdu"/>
                     <constraint firstItem="CDj-PX-gkl" firstAttribute="trailing" secondItem="9xd-uW-ESK" secondAttribute="trailing" id="bvM-xd-NaT"/>
                     <constraint firstAttribute="bottom" secondItem="9xd-uW-ESK" secondAttribute="bottom" id="hO3-HA-TK3"/>
-                    <constraint firstItem="9N4-ji-eyT" firstAttribute="top" secondItem="Wkc-vG-xR3" secondAttribute="top" constant="32" id="n6y-Ee-4ve"/>
+                    <constraint firstItem="9N4-ji-eyT" firstAttribute="top" secondItem="Wkc-vG-xR3" secondAttribute="top" constant="16" id="n6y-Ee-4ve"/>
                     <constraint firstItem="9xd-uW-ESK" firstAttribute="top" secondItem="9N4-ji-eyT" secondAttribute="bottom" constant="8" id="wXQ-gn-Cvd"/>
-                    <constraint firstItem="9N4-ji-eyT" firstAttribute="leading" secondItem="9xd-uW-ESK" secondAttribute="leading" id="zVI-he-vqk"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>

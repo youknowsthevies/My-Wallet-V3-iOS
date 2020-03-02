@@ -86,6 +86,15 @@ extension UIView {
     
     // MARK: - Content Hugging Priority
     
+    public var horizontalContentHuggingPriority: Priority {
+        set {
+            setContentHuggingPriority(newValue, for: .horizontal)
+        }
+        get {
+            return contentHuggingPriority(for: .horizontal)
+        }
+    }
+    
     public var verticalContentHuggingPriority: Priority {
         set {
             setContentHuggingPriority(newValue, for: .vertical)
@@ -94,13 +103,14 @@ extension UIView {
             return contentHuggingPriority(for: .vertical)
         }
     }
-    
-    public var horizontalContentHuggingPriority: Priority {
+        
+    public var contentHuggingPriority: (horizontal: Priority, vertical: Priority) {
         set {
-            setContentHuggingPriority(newValue, for: .horizontal)
+            horizontalContentHuggingPriority = newValue.horizontal
+            verticalContentHuggingPriority = newValue.vertical
         }
         get {
-            return contentHuggingPriority(for: .horizontal)
+            return (horizontalContentHuggingPriority, verticalContentHuggingPriority)
         }
     }
     
@@ -122,6 +132,21 @@ extension UIView {
         get {
             return contentCompressionResistancePriority(for: .horizontal)
         }
+    }
+    
+    public var contentCompressionResistancePriority: (horizontal: Priority, vertical: Priority) {
+        set {
+            horizontalContentCompressionResistancePriority = newValue.horizontal
+            verticalContentCompressionResistancePriority = newValue.vertical
+        }
+        get {
+            return (horizontalContentCompressionResistancePriority, verticalContentCompressionResistancePriority)
+        }
+    }
+    
+    public func maximizeResistanceAndHuggingPriorities() {
+        contentCompressionResistancePriority = (horizontal: .required, vertical: .required)
+        contentHuggingPriority = (horizontal: .required, vertical: .required)
     }
     
     @discardableResult
@@ -189,6 +214,32 @@ extension UIView {
         )
         constraint.priority = priority
         addConstraint(constraint)
+        return constraint
+    }
+    
+    @discardableResult
+    public func layout(edge: Attribute? = nil,
+                       to otherEdge: Attribute,
+                       of view: UIView,
+                       relation: Relation = .equal,
+                       ratio: CGFloat = 1.0,
+                       offset: CGFloat = 0,
+                       priority: UILayoutPriority = .required) -> NSLayoutConstraint? {
+        guard prepareForAutoLayout() else {
+            Logger.shared.error("\(String(describing: self)) Error in func: \(#function)")
+            return nil
+        }
+        let constraint = NSLayoutConstraint(
+            item: self,
+            attribute: edge ?? otherEdge,
+            relatedBy: relation,
+            toItem: view,
+            attribute: otherEdge,
+            multiplier: ratio,
+            constant: offset
+        )
+        constraint.priority = priority
+        superview!.addConstraint(constraint)
         return constraint
     }
     

@@ -289,6 +289,7 @@ final class SendInteractorTests: XCTestCase {
             balance: balance,
             fee: fee,
             exchange: exchange,
+            fiatCurrency: FiatCurrencySettingsServiceMock(expectedCurrency: .USD),
             sourceAccountStateValue: sourceAccountStateValue,
             pitAddressFetchResult: pitAddressFetchResult,
             transferExecutionResult: transferExecutionResult

@@ -11,6 +11,7 @@ import XCTest
 import RxSwift
 
 @testable import Blockchain
+@testable import PlatformUIKit
 
 /// Testing `DigitPadViewModel`'s functionality
 class DigitPadViewModelTests: XCTestCase {
@@ -24,7 +25,7 @@ class DigitPadViewModelTests: XCTestCase {
     
     // Tests reseting the digit code value to a given digit sequence
     func testReset() {
-        let viewModel = DigitPadViewModel()
+        let viewModel = DigitPadViewModel(padType: .pin(maxCount: 4))
         let expectedValue = legalLengthTestInputs.randomElement()!
         viewModel.reset(to: expectedValue)
         XCTAssertEqual(viewModel.value, expectedValue)
@@ -33,7 +34,7 @@ class DigitPadViewModelTests: XCTestCase {
     // Testing of observing input length
     func testValueLengthObserving() throws {
         for input in legalLengthTestInputs {
-            let viewModel = DigitPadViewModel()
+            let viewModel = DigitPadViewModel(padType: .pin(maxCount: 4))
             viewModel.reset(to: input)
             let result = try viewModel.valueLengthObservable.toBlocking().first()
             let expected = input.count
@@ -44,7 +45,7 @@ class DigitPadViewModelTests: XCTestCase {
     /// Tests accumulation inputs
     func testAccumulatedInput() throws {
         for input in legalLengthTestInputs {
-            let viewModel = DigitPadViewModel()
+            let viewModel = DigitPadViewModel(padType: .pin(maxCount: 4))
             let digitViewModels = viewModel.digitButtonViewModelArray
             let blockingValueObservable = viewModel.valueObservable.toBlocking()
             for char in input {
@@ -62,7 +63,7 @@ class DigitPadViewModelTests: XCTestCase {
     /// Also tests that tapping backspace when the input is already empty does nothing
     func testBackspaceTap() {
         let input = "1234"
-        let viewModel = DigitPadViewModel()
+        let viewModel = DigitPadViewModel(padType: .pin(maxCount: 4))
         viewModel.reset(to: input)
         
         var expected = input
@@ -76,7 +77,7 @@ class DigitPadViewModelTests: XCTestCase {
     /// Tests tapping on custom button
     func testCustomButtonTap() throws {
         let customButtonViewModel = DigitPadButtonViewModel.empty
-        let viewModel = DigitPadViewModel(customButtonViewModel: customButtonViewModel)
+        let viewModel = DigitPadViewModel(padType: .pin(maxCount: 4), customButtonViewModel: customButtonViewModel)
         var isTapped = false
         
         viewModel.customButtonTapObservable.bind {

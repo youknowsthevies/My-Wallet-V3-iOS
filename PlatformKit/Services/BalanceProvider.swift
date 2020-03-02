@@ -19,7 +19,7 @@ public protocol BalanceProviding: class {
     var fiatBalance: Observable<FiatValueCalculationState> { get }
     
     /// Streams the fiat balances
-    var fiatBalances: Observable<FiatCryptoPairCalculationStates> { get }
+    var fiatBalances: Observable<AssetFiatCryptoBalanceCalculationStates> { get }
     
     /// Triggers a refresh on the balances
     func refresh()
@@ -38,7 +38,7 @@ public final class BalanceProvider: BalanceProviding {
     }
     
     /// Calculates all balances in `WalletBalance`
-    public var fiatBalances: Observable<FiatCryptoPairCalculationStates> {
+    public var fiatBalances: Observable<AssetFiatCryptoBalanceCalculationStates> {
         return Observable
             .combineLatest(
                 services[.ethereum]!.calculationState,
@@ -48,7 +48,7 @@ public final class BalanceProvider: BalanceProviding {
                 services[.bitcoinCash]!.calculationState
             )
             .map {
-                FiatCryptoPairCalculationStates(
+                AssetFiatCryptoBalanceCalculationStates(
                     statePerCurrency: [
                         .ethereum: $0.0,
                         .pax: $0.1,

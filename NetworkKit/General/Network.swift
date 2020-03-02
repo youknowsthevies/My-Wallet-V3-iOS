@@ -24,26 +24,31 @@ import ToolKit
 public struct Network {
     
     public struct Config {
+                
         public let apiScheme: String
         public let apiHost: String
         public let apiCode: String
-        
+        public let pathComponents: [String]
+
         public static let defaultConfig: Config = Config(
             apiScheme: "https",
             apiHost: BlockchainAPI.shared.apiHost,
-            apiCode: BlockchainAPI.Parameters.apiCode
+            apiCode: BlockchainAPI.Parameters.apiCode,
+            pathComponents: []
         )
         
         public static let retailConfig: Config = Config(
             apiScheme: "https",
-            apiHost: BlockchainAPI.shared.retailHost,
-            apiCode: BlockchainAPI.Parameters.apiCode
+            apiHost: BlockchainAPI.shared.apiHost,
+            apiCode: BlockchainAPI.Parameters.apiCode,
+            pathComponents: ["nabu-gateway"]
         )
         
         public static let walletConfig: Config = Config(
             apiScheme: "https",
             apiHost: BlockchainAPI.shared.walletHost,
-            apiCode: BlockchainAPI.Parameters.apiCode
+            apiCode: BlockchainAPI.Parameters.apiCode,
+            pathComponents: []
         )
     }
     

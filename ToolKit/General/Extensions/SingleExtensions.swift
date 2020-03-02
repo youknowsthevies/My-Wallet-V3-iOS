@@ -69,18 +69,6 @@ extension PrimitiveSequence where Trait == CompletableTrait {
     }
 }
 
-extension ObservableType {
-    public static func create<A: AnyObject>(weak object: A, subscribe: @escaping (A, (AnyObserver<Element>)) -> Disposable) -> Observable<Element> {
-        return Observable<Element>.create { [weak object] observer -> Disposable in
-            guard let object = object else {
-                observer.on(.error(ToolKitError.nullReference(A.self)))
-                return Disposables.create()
-            }
-            return subscribe(object, observer)
-        }
-    }
-}
-
 extension PrimitiveSequence where Trait == SingleTrait {
     public func flatMapCompletable<A: AnyObject>(weak object: A, _ selector: @escaping (A, Element) throws -> Completable)
         -> Completable {
@@ -108,5 +96,41 @@ extension PrimitiveSequence where Trait == SingleTrait {
         return self.do(onError: { error in
             recorder?.error(error)
         })
+    }
+}
+
+extension PrimitiveSequence where Trait == SingleTrait {
+    public func catchError<A: AnyObject>(weak object: A, _ selector: @escaping (A, Swift.Error) throws -> Single<Element>) -> Single<Element> {
+        return catchError { [weak object] error -> Single<Element> in
+            guard let object = object else { throw ToolKitError.nullReference(A.self) }
+            return try selector(object, error)
+        }
+    }
+}
+
+// MARK: - Result<Element, Error> mapping
+
+extension PrimitiveSequence where Trait == SingleTrait {
+    
+    /// Directly maps to `Result<Element, Error>` type.
+    public func mapToResult() -> PrimitiveSequence<SingleTrait, Result<Element, Error>> {
+        self.map { .success($0) }
+            .catchError { .just(.failure($0)) }
+    }
+    
+    /// Map with success and failure mappers.
+    /// This is useful in case we would like to have a custom error type.
+    public func mapToResult<ResultElement, OutputError: Error>(
+        successMap: @escaping (Element) -> ResultElement,
+        errorMap: @escaping (Error) -> OutputError) -> PrimitiveSequence<SingleTrait, Result<ResultElement, OutputError>> {
+        self.map { .success(successMap($0)) }
+            .catchError { .just(.failure(errorMap($0))) }
+    }
+
+    /// Map with success mapper only.
+    public func mapToResult<ResultElement>(
+        successMap: @escaping (Element) -> ResultElement) -> PrimitiveSequence<SingleTrait, Result<ResultElement, Error>> {
+        self.map { .success(successMap($0)) }
+            .catchError { .just(.failure($0)) }
     }
 }

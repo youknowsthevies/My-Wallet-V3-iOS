@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import PlatformKit
 import PlatformUIKit
 
 public struct KYCTierCellModel {
@@ -22,7 +23,7 @@ public struct KYCTierCellModel {
         case rejected
     }
     
-    let tier: KYCTier
+    let tier: KYC.Tier
     let status: ApprovalStatus
     let limit: Decimal
     let fiatCurrencySymbol: String
@@ -119,7 +120,7 @@ extension KYCTierCellModel.ApprovalStatus {
 extension KYCTierCellModel {
     
     static func model(
-        from userTier: KYCUserTier,
+        from userTier: KYC.UserTier,
         appSettings: BlockchainSettings.App = BlockchainSettings.App.shared
     ) -> KYCTierCellModel? {
         let value = approvalStatusFromTierState(userTier.state)
@@ -129,7 +130,7 @@ extension KYCTierCellModel {
         return KYCTierCellModel(tier: userTier.tier, status: value, limit: limit, fiatCurrencySymbol: symbol)
     }
     
-    fileprivate static func approvalStatusFromTierState(_ tierState: KYCTierState) -> ApprovalStatus {
+    fileprivate static func approvalStatusFromTierState(_ tierState: KYC.Tier.State) -> ApprovalStatus {
         switch tierState {
         case .none:
             return .none

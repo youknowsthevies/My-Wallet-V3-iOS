@@ -9,8 +9,8 @@
 import Foundation
 import PlatformKit
 
-public extension CryptoCurrency {
-    var brandColor: UIColor {
+extension CryptoCurrency {
+    public var brandColor: UIColor {
         switch self {
         case .bitcoin:
             return .bitcoin
@@ -25,11 +25,11 @@ public extension CryptoCurrency {
         }
     }
     
-    var logo: UIImage {
+    public var logo: UIImage {
         return UIImage(named: logoImageName)!
     }
     
-    var logoImageName: String {
+    public var logoImageName: String {
         switch self {
         case .bitcoin:
             return "filled_btc_small"

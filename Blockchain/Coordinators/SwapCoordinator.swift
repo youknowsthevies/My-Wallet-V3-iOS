@@ -86,7 +86,7 @@ protocol SwapCoordinatorAPI {
                 .observeOn(MainScheduler.instance)
                 .subscribe(onSuccess: { payload in
                     let tiersResponse = payload.1
-                    let approved = tiersResponse.userTiers.contains(where: {
+                    let approved = tiersResponse.tiers.contains(where: {
                         return $0.tier != .tier0 && $0.state == .verified
                     })
                     guard approved == true else {

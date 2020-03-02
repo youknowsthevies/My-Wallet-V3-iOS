@@ -12,7 +12,13 @@ import RxCocoa
 
 /// This protocol defines a single responsibility requirement for an account balance fetching
 public protocol AccountBalanceFetching: class {
+    var balanceType: BalanceType { get }
     var balance: Single<CryptoValue> { get }
     var balanceObservable: Observable<CryptoValue> { get }
     var balanceFetchTriggerRelay: PublishRelay<Void> { get }
+}
+
+public protocol CustodialAccountBalanceFetching: AccountBalanceFetching {
+    /// Indicates, based on the data provided by the API, if the user has funded this account in the past.
+    var isFunded: Single<Bool> { get }
 }

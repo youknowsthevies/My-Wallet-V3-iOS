@@ -34,12 +34,10 @@ struct PairingIntroScreenPresenter {
         }
     }()
     let primaryButtonViewModel = ButtonViewModel.primary(
-        with: LocalizedString.primaryButton,
-        cornerRadius: 8
+        with: LocalizedString.primaryButton
     )
     let secondaryButtonViewModel = ButtonViewModel.secondary(
-        with: LocalizedString.secondaryButton,
-        cornerRadius: 8
+        with: LocalizedString.secondaryButton
     )
     
     /// Should connect to manual pairing flow

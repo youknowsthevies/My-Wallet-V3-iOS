@@ -20,6 +20,7 @@ protocol SendServiceContaining {
     var fee: SendFeeServicing { get }
     var balance: AccountBalanceFetching { get }
     var bus: WalletActionEventBus { get }
+    var fiatCurrency: FiatCurrencySettingsServiceAPI { get }
     
     /// Performs any necessary cleaning to the service layer.
     /// In order to change asset in the future, we will only replace `asset: AssetType`
@@ -38,6 +39,7 @@ struct SendServiceContainer: SendServiceContaining {
     let fee: SendFeeServicing
     let balance: AccountBalanceFetching
     let bus: WalletActionEventBus
+    let fiatCurrency: FiatCurrencySettingsServiceAPI
     
     init(asset: AssetType) {
         self.asset = asset
@@ -46,6 +48,8 @@ struct SendServiceContainer: SendServiceContaining {
         fee = SendFeeService(asset: asset)
         sourceAccountState = SendSourceAccountStateService(asset: asset)
         bus = WalletActionEventBus()
+        fiatCurrency = UserInformationServiceProvider.default.settings
+        
         switch asset {
         case .ethereum:
             exchange = DataProvider.default.exchange[.ethereum]

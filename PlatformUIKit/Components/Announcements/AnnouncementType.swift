@@ -24,7 +24,9 @@ public enum AnnouncementType: String, Codable {
     case bitpay = "bitpay"
     case coinifyKyc = "kyc_more_info"
     case resubmitDocuments = "kyc_resubmit"
-    
+    case simpleBuyPendingTransaction = "sb_pending_buy"
+    case simpleBuyKYCIncomplete = "sb_finish_signup"
+
     /// The key indentifying the announcement in cache
     var key: AnnouncementRecord.Key {
         switch self {
@@ -60,6 +62,10 @@ public enum AnnouncementType: String, Codable {
             return .coinifyKyc
         case .resubmitDocuments:
             return .resubmitDocuments
+        case .simpleBuyPendingTransaction:
+            return .simpleBuyPendingTransaction
+        case .simpleBuyKYCIncomplete:
+            return .simpleBuyKYCIncomplete
         }
     }
 }

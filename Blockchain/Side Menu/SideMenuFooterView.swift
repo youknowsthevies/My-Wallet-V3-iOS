@@ -27,13 +27,19 @@ class SideMenuFooterView: NibBasedView {
     @IBOutlet fileprivate var pairButton: UIButton!
     @IBOutlet fileprivate var logoutButton: UIButton!
     
+    @IBOutlet private var buttonHeightConstraints: NSLayoutConstraint!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
+        buttonHeightConstraints.constant = SideMenuCell.defaultHeight
+        
+        let font = UIFont.mainMedium(UIDevice.current.type.isAbove(.iPhoneSE) ? 17 : 14)
+        
         pairButton.setTitle(LocalizationConstants.SideMenu.loginToWebWallet, for: .normal)
-        pairButton.titleLabel?.font = .mainMedium(17)
+        pairButton.titleLabel?.font = font
         logoutButton.setTitle(LocalizationConstants.SideMenu.logout, for: .normal)
-        logoutButton.titleLabel?.font = .mainMedium(17)
+        logoutButton.titleLabel?.font = font
     }
     
     @IBAction func pairTapped(_ sender: UIButton) {

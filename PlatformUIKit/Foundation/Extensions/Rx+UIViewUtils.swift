@@ -30,15 +30,6 @@ extension Reactive where Base: UIProgressView {
     }
 }
 
-/// Extension for rx that makes `UIView` properties reactive
-extension Reactive where Base: UIView {
-    public var backgroundColor: Binder<UIColor> {
-        return Binder(base) { view, color in
-            view.backgroundColor = color
-        }
-    }
-}
-
 extension Reactive where Base: UILabel {
     public var textColor: Binder<UIColor> {
         return Binder(base) { label, color in

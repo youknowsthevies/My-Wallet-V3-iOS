@@ -70,7 +70,13 @@ final class KYCNetworkRequest {
         }
 
         enum POST {
-            case createUser
+            
+            enum UserType {
+                case regular
+                case simpleBuy(fiatCurrency: String)
+            }
+            
+            case createUser(UserType)
             case country
             case sessionToken(userId: String)
             case verifications
@@ -90,11 +96,18 @@ final class KYCNetworkRequest {
                 switch self {
                 case .sessionToken(let userId):
                     return ["userId": userId]
-                case .createUser,
-                     .country,
+                case .createUser(let userType):
+                    guard case .simpleBuy(let fiatCurrency) = userType else {
+                        return nil
+                    }
+                    return [
+                        "fiatCurrency": fiatCurrency,
+                        "action": "simplebuy"
+                    ]
+                case .country,
                      .verifications,
                      .submitVerification:
-                        return nil
+                    return nil
                 }
             }
         }

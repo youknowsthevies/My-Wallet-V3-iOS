@@ -9,24 +9,29 @@
 import PlatformKit
 
 final class DashboardDetailsScreenInteractor: DashboardDetailsScreenInteracting {
+    let recoveryPhraseStatus: RecoveryPhraseStatusProviding
+    let recoveryPhraseVerifying: RecoveryPhraseVerifyingServiceAPI
     let currency: CryptoCurrency
     let priceServiceAPI: HistoricalFiatPriceServiceAPI
-    let currencyProvider: FiatCurrencyTypeProviding
+    let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     let balanceFetching: AssetBalanceFetching
     
     // MARK: - Init
     
     init(currency: CryptoCurrency,
          service: AssetBalanceFetching,
-         currencyProvider: FiatCurrencyTypeProviding,
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI,
          exchangeAPI: PairExchangeServiceAPI,
+         wallet: Wallet = WalletManager.shared.wallet,
          historicalPricesAPI: HistoricalPricesAPI = HistoricalPriceService()) {
         self.priceServiceAPI = HistoricalFiatPriceService(
             cryptoCurrency: currency,
             exchangeAPI: exchangeAPI,
-            fiatCurrencyProvider: currencyProvider
+            fiatCurrencyService: fiatCurrencyService
         )
-        self.currencyProvider = currencyProvider
+        self.recoveryPhraseStatus = RecoveryPhraseStatusProvider(wallet: wallet)
+        self.recoveryPhraseVerifying = RecoveryPhraseVerifyingService(wallet: wallet)
+        self.fiatCurrencyService = fiatCurrencyService
         self.currency = currency
         self.balanceFetching = service
         
@@ -34,6 +39,7 @@ final class DashboardDetailsScreenInteractor: DashboardDetailsScreenInteracting 
     }
     
     func refresh() {
+        recoveryPhraseStatus.fetchTriggerRelay.accept(())
         balanceFetching.refresh()
     }
 }

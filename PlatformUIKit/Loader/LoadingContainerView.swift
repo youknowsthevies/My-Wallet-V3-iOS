@@ -17,7 +17,9 @@ final class LoadingContainerView: UIView {
     private lazy var loadingBackgroundView: LoadingCircleView = {
         let circle = LoadingCircleView(
             diameter: self.frame.min(max).width,
-            strokeColor: .init(white: 0.24, alpha: 1.0)
+            strokeColor: .init(white: 0.24, alpha: 1.0),
+            strokeBackgroundColor: .clear,
+            fillColor: .clear
         )
         return circle
     }()
@@ -25,7 +27,9 @@ final class LoadingContainerView: UIView {
     private lazy var loadingView: LoadingAnimatingView = {
         let loading = LoadingAnimatingView(
             diameter: self.frame.min(max).width,
-            strokeColor: .white
+            strokeColor: .white,
+            strokeBackgroundColor: .clear,
+            fillColor: .clear
         )
         return loading
     }()

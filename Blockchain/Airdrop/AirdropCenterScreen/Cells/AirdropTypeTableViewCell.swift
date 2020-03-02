@@ -20,7 +20,7 @@ final class AirdropTypeTableViewCell: UITableViewCell {
     var presenter: AirdropTypeCellPresenter! {
         didSet {
             guard let presenter = presenter else { return }
-            iconImageView.content = presenter.image
+            iconImageView.set(presenter.image)
             titleLabel.content = presenter.title
             descriptionLabel.content = presenter.description
         }

@@ -19,6 +19,10 @@ enum EthereumWalletBridgeMockError: Error {
 
 class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBridgeAPI, MnemonicAccessAPI, PasswordAccessAPI {
     
+    public var balanceType: BalanceType {
+        return .nonCustodial
+    }
+    
     var isWaitingOnTransactionValue = Single.just(false)
     var isWaitingOnTransaction: Single<Bool> {
         return isWaitingOnTransactionValue

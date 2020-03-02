@@ -32,6 +32,14 @@ extension DateFormatter {
         formatter.dateFormat = "dd\(separator)MM\(separator)yyyy"
         return formatter
     }
+    
+    public static var elegantDateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM dd, yyyy @ h:mm a"
+        formatter.amSymbol = "AM"
+        formatter.pmSymbol = "PM"
+        return formatter
+    }
 
     /// The format that the server sends down the expiration date for session tokens
     public static let sessionDateFormat: DateFormatter = {

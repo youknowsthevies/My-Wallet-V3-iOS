@@ -55,8 +55,7 @@ final class RecoverFundsScreenPresenter {
     let description = LocalizationConstants.Onboarding.RecoverFunds.description
     let mnemonicTextViewModel = MnemonicTextViewViewModel(validator: TextValidationFactory.mnemonic(words: Set(WordList.default.words)))
     let continueButtonViewModel = ButtonViewModel.primary(
-                                with: LocalizationConstants.Onboarding.PasswordRequiredScreen.continueButton,
-                                cornerRadius: 8
+                                with: LocalizationConstants.Onboarding.PasswordRequiredScreen.continueButton
                             )
     
     /// The total state of the view model
