@@ -114,16 +114,26 @@ final class BitpayService: BitpayServiceProtocol {
         return self.network.perform(request: request)
     }
     
-    private func UTCToLocal(date:String) -> Date {
+    private func UTCToLocal(date: String) -> Date {
         let dateFormatter = DateFormatter.sessionDateFormat
         dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
         
-        let dt = dateFormatter.date(from: date)
+        guard let dt = dateFormatter.date(from: date) else {
+            let debugMessage = "Failed to format date. date: \(date)"
+            CrashlyticsRecorder().error(debugMessage)
+            fatalError(debugMessage)
+        }
         dateFormatter.timeZone = TimeZone.current
         
-        let dateLocalString = dateFormatter.string(from: dt!)
+        let dateLocalString = dateFormatter.string(from: dt)
         
-        return dateFormatter.date(from: dateLocalString)!
+        guard let date = dateFormatter.date(from: dateLocalString) else {
+            let debugMessage = "Failed to format date. dateLocalString: \(dateLocalString)"
+            CrashlyticsRecorder().error(debugMessage)
+            fatalError(debugMessage)
+        }
+        
+        return date
     }
     
     func getRawPaymentRequest(for invoiceId: String) -> Single<ObjcCompatibleBitpayObject> {
