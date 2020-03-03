@@ -19,6 +19,7 @@ final class SimpleBuyKYCPendingPresenter {
 
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.KYCScreen
     private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.KYCScreen
+    private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
 
     // MARK: - Properties
 
@@ -43,10 +44,13 @@ final class SimpleBuyKYCPendingPresenter {
     private let disposeBag = DisposeBag()
     private let interactor: SimpleBuyKYCPendingInteractor
     private unowned let stateService: RoutingStateEmitterAPI
+    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
     private var modelRelay: BehaviorRelay<SimpleBuyKYCPendingViewModel>!
 
     init(stateService: RoutingStateEmitterAPI,
-         interactor: SimpleBuyKYCPendingInteractor) {
+         interactor: SimpleBuyKYCPendingInteractor,
+         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
+        self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService
         self.interactor = interactor
         modelRelay = BehaviorRelay(value: model(verificationState: .loading))
@@ -58,6 +62,11 @@ final class SimpleBuyKYCPendingPresenter {
                 self.model(verificationState: state)
             }
             .bind(to: modelRelay)
+            .disposed(by: disposeBag)
+        
+        interactor.verificationState
+            .map { $0.analyticsEvent }
+            .bind(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
 
         interactor

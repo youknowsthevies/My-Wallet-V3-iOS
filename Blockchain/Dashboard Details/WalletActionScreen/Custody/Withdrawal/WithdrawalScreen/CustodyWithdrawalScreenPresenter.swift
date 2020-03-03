@@ -10,11 +10,13 @@ import PlatformUIKit
 import PlatformKit
 import RxSwift
 import RxCocoa
+import ToolKit
 
 final class CustodyWithdrawalScreenPresenter {
     
     // MARK: - Types
     
+    private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias LocalizationID = LocalizationConstants.SimpleBuy.Withdrawal
     
     // MARK: - Navigation Properties
@@ -61,6 +63,7 @@ final class CustodyWithdrawalScreenPresenter {
     
     // MARK: - Private Properties
     
+    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
     private let activityIndicatorVisibilityRelay = BehaviorRelay<Visibility>(value: .visible)
     private let balanceViewVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let interactor: CustodyWithdrawalScreenInteractor
@@ -74,7 +77,9 @@ final class CustodyWithdrawalScreenPresenter {
     init(interactor: CustodyWithdrawalScreenInteractor,
          currency: CryptoCurrency,
          stateService: CustodyWithdrawalStateServiceAPI,
-         loadingPresenter: LoadingViewPresenting = LoadingViewPresenter.shared) {
+         loadingPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
+         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
+        self.analyticsRecorder = analyticsRecorder
         self.loadingPresenter = loadingPresenter
         self.interactor = interactor
         self.currency = currency
@@ -130,6 +135,17 @@ final class CustodyWithdrawalScreenPresenter {
         
         stateObservable
             .filter { $0 == .submitted || $0 == .error }
+            .do(onNext: { [weak self] state in
+                guard let self = self else { return }
+                switch state {
+                case .submitted:
+                    self.analyticsRecorder.record(event: AnalyticsEvent.sbWithdrawalScreenSuccess)
+                case .error:
+                    self.analyticsRecorder.record(event: AnalyticsEvent.sbWithdrawalScreenFailure)
+                case .loaded, .settingUp, .submitting:
+                    break
+                }
+            })
             .map { value -> CustodyWithdrawalStatus in
                 switch value {
                 case .submitted:
@@ -145,8 +161,17 @@ final class CustodyWithdrawalScreenPresenter {
         
         self.sendButtonViewModel
             .tapRelay
-            .bind(to: interactor.withdrawalRelay)
+            .bind(weak: self) { (self) in
+                self.analyticsRecorder.record(
+                    event: AnalyticsEvent.sbWithdrawalScreenClicked(asset: self.currency)
+                )
+                interactor.withdrawalRelay.accept(())
+            }
             .disposed(by: disposeBag)
+    }
+    
+    func viewDidLoad() {
+        analyticsRecorder.record(event: AnalyticsEvent.sbWithdrawalScreenShown(asset: currency))
     }
     
     func navigationBarTrailingButtonTapped() {

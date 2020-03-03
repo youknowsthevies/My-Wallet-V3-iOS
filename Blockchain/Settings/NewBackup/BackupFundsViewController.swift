@@ -45,6 +45,8 @@ final class BackupFundsViewController: BaseScreenViewController {
         primaryDescriptionLabel.content = presenter.primaryDescription
         secondaryDescriptionLabel.content = presenter.secondaryDescription
         startBackupButtonView.viewModel = presenter.startBackupButton
+        
+        presenter.viewDidLoad()
     }
     
     private func setupNavigationBar() {

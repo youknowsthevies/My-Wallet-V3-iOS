@@ -8,9 +8,13 @@
 
 import PlatformUIKit
 import RxSwift
+import ToolKit
 
 final class CustodyInformationScreenPresenter {
     
+    // MARK: - Types
+    
+    private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias AccessibilityId = Accessibility.Identifier.CustodyInfo
     
     // MARK: - Navigation Properties
@@ -59,12 +63,24 @@ final class CustodyInformationScreenPresenter {
     
     // MARK: - Private Properties
     
+    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
     private let disposeBag = DisposeBag()
     private unowned let stateService: CustodyActionStateServiceAPI
     
-    init(stateService: CustodyActionStateServiceAPI) {
+    init(stateService: CustodyActionStateServiceAPI,
+         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
         self.stateService = stateService
+        self.analyticsRecorder = analyticsRecorder
+        
+        analyticsRecorder.record(event: AnalyticsEvent.sbCustodyWalletCardShown)
+        
         okButtonViewModel = .primary(with: LocalizationConstants.okString, accessibilityId: AccessibilityId.okButton)
+        
+        okButtonViewModel.tapRelay
+            .map { _ in AnalyticsEvent.sbCustodyWalletCardClicked }
+            .bind(to: analyticsRecorder.recordRelay)
+            .disposed(by: disposeBag)
+        
         okButtonViewModel.tapRelay
             .bind(to: stateService.nextRelay)
             .disposed(by: disposeBag)

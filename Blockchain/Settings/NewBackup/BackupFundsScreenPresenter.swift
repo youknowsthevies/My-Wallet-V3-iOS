@@ -8,9 +8,13 @@
 
 import PlatformUIKit
 import RxSwift
+import ToolKit
 
 final class BackupFundsScreenPresenter {
     
+    // MARK: - Types
+    
+    private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias AccessibilityId = Accessibility.Identifier.Backup.IntroScreen
     
     // MARK: - Navigation Properties
@@ -46,6 +50,7 @@ final class BackupFundsScreenPresenter {
     
     // MARK: - Private Properties
     
+    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
     private let disposeBag = DisposeBag()
     private let entry: BackupRouterEntry
     private unowned let stateService: BackupRouterStateServiceAPI
@@ -57,7 +62,10 @@ final class BackupFundsScreenPresenter {
     
     // MARK: - Init
     
-    init(stateService: BackupRouterStateServiceAPI, entry: BackupRouterEntry) {
+    init(stateService: BackupRouterStateServiceAPI,
+         entry: BackupRouterEntry,
+         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
+        self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService
         self.entry = entry
         switch entry {
@@ -104,10 +112,19 @@ final class BackupFundsScreenPresenter {
         }
         
         self.startBackupButton.tapRelay
-        .bind(weak: self, onNext: { _ in
-            self.stateService.nextRelay.accept(())
-        })
-        .disposed(by: self.disposeBag)
+            .bind(weak: self) { (self) in
+                if entry == .custody {
+                    self.analyticsRecorder.record(event: AnalyticsEvent.sbBackupWalletCardClicked)
+                }
+                
+                self.stateService.nextRelay.accept(())
+            }
+            .disposed(by: self.disposeBag)
+    }
+    
+    func viewDidLoad() {
+        guard entry == .custody else { return }
+        analyticsRecorder.record(event: AnalyticsEvent.sbBackupWalletCardShown)
     }
     
     func navigationBarLeadingButtonTapped() {

@@ -11,11 +11,13 @@ import RxCocoa
 import RxRelay
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 final class CheckoutScreenPresenter {
 
     // MARK: - Types
     
+    private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.Checkout
     private typealias AccessibilityId = Accessibility.Identifier.LineItem
         
@@ -52,6 +54,7 @@ final class CheckoutScreenPresenter {
     
     // MARK: - Injected
     
+    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
     private let alertPresenter: AlertViewPresenter
     private let loadingViewPresenter: LoadingViewPresenting
     
@@ -66,8 +69,10 @@ final class CheckoutScreenPresenter {
     
     init(stateService: SimpleBuyConfirmCheckoutServiceAPI,
          alertPresenter: AlertViewPresenter = .shared,
+         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared,
          loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
          interactor: CheckoutScreenInteractor) {
+        self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService
         self.loadingViewPresenter = loadingViewPresenter
         self.alertPresenter = alertPresenter
@@ -133,8 +138,18 @@ final class CheckoutScreenPresenter {
             }
             .disposed(by: disposeBag)
         
+        buyButtonViewModel.tapRelay
+            .map { _ in AnalyticsEvent.sbCheckoutConfirm }
+            .bind(to: analyticsRecorder.recordRelay)
+            .disposed(by: disposeBag)
+        
         cancelButtonViewModel.tapRelay
             .bind(to: stateService.previousRelay)
+            .disposed(by: disposeBag)
+        
+        cancelButtonViewModel.tapRelay
+            .map { _ in AnalyticsEvent.sbCheckoutCancel }
+            .bind(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
     }
     
@@ -151,11 +166,14 @@ final class CheckoutScreenPresenter {
                 }
             )
             .disposed(by: disposeBag)
+        
+        analyticsRecorder.record(event: AnalyticsEvent.sbCheckoutShown)
     }
     
     // MARK: - Navigation
     
     func navigationBarLeadingButtonTapped() {
+        analyticsRecorder.record(event: AnalyticsEvent.sbCheckoutCancelGoBack)
         stateService.previousRelay.accept(())
     }
     

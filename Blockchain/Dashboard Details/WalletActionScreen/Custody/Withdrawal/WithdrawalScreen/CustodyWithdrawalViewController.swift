@@ -54,6 +54,8 @@ final class CustodyWithdrawalViewController: BaseScreenViewController {
             .map { $0.defaultAlpha }
             .drive(assetBalanceView.rx.alpha)
             .disposed(by: disposeBag)
+        
+        presenter.viewDidLoad()
     }
     
     override func navigationBarTrailingButtonPressed() {

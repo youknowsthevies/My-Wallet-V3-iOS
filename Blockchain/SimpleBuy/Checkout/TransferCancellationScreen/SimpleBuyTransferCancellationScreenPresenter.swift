@@ -10,11 +10,13 @@ import RxSwift
 import PlatformUIKit
 import PlatformKit
 import RxRelay
+import ToolKit
 
 final class SimpleBuyTransferCancellationScreenPresenter {
     
     // MARK: - Localization
     
+    private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias AccessibilityIDs = Accessibility.Identifier.SimpleBuy.Cancellation
     private typealias LocalizationIDs = LocalizationConstants.SimpleBuy.TransferDetails.Cancellation
     
@@ -30,6 +32,7 @@ final class SimpleBuyTransferCancellationScreenPresenter {
     
     // MARK: - Private Properties
     
+    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
     private let loadingViewPresenter: LoadingViewPresenting
     private let alertPresenter: AlertViewPresenter
     private let stateService: SimpleBuyStateServiceAPI
@@ -40,7 +43,9 @@ final class SimpleBuyTransferCancellationScreenPresenter {
          currency: CryptoCurrency,
          alertPresenter: AlertViewPresenter = .shared,
          loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
+         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared,
          interactor: SimpleBuyTransferCancellationInteractor) {
+        self.analyticsRecorder = analyticsRecorder
         self.interactor = interactor
         self.stateService = stateService
         self.alertPresenter = alertPresenter
@@ -71,7 +76,10 @@ final class SimpleBuyTransferCancellationScreenPresenter {
         )
         
         noButtonViewModel.tapRelay
-            .bind(to: stateService.previousRelay)
+            .bind(weak: self) { (self) in
+                self.analyticsRecorder.record(event: AnalyticsEvent.sbCancelOrderGoBack)
+                self.stateService.previousRelay.accept(())
+            }
             .disposed(by: disposeBag)
         
         setupCancellationBinding()
@@ -91,7 +99,10 @@ final class SimpleBuyTransferCancellationScreenPresenter {
         cancellationResult
             .filter { $0.isSuccess }
             .mapToVoid()
-            .bind(to: stateService.nextRelay)
+            .bind(weak: self) { (self) in
+                self.analyticsRecorder.record(event: AnalyticsEvent.sbCancelOrderConfirmed)
+                self.stateService.nextRelay.accept(())
+            }
             .disposed(by: disposeBag)
 
         cancellationResult
@@ -115,5 +126,11 @@ final class SimpleBuyTransferCancellationScreenPresenter {
             title: AlertString.title,
             actions: [UIAlertAction(title: AlertString.button, style: .default)]
         )
+        
+        analyticsRecorder.record(event: AnalyticsEvent.sbCancelOrderError)
+    }
+    
+    func viewDidLoad() {
+        analyticsRecorder.record(event: AnalyticsEvent.sbCancelOrderPrompt)
     }
 }

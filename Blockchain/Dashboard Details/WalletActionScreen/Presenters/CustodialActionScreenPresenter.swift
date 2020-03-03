@@ -10,11 +10,13 @@ import RxSwift
 import RxCocoa
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
     
     // MARK: - Types
     
+    private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     typealias CellType = WalletActionCellType
     
     // MARK: - Public Properties
@@ -55,14 +57,23 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
     private let swapButtonVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let activityButtonVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let sendToWalletVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
+    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
     private let interactor: WalletActionScreenInteracting
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
     init(using interactor: WalletActionScreenInteracting,
-         stateService: RoutingNextStateEmitterAPI) {
+         stateService: RoutingNextStateEmitterAPI,
+         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
+        self.analyticsRecorder = analyticsRecorder
         self.interactor = interactor
+        
+        if interactor.balanceType == .custodial {
+            analyticsRecorder.record(
+                event: AnalyticsEvent.sbTradingWalletClicked(asset: interactor.currency)
+            )
+        }
         
         assetBalanceViewPresenter = CurrentBalanceCellPresenter(
             balanceFetching: interactor.balanceFetching,
@@ -82,7 +93,11 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
         sendToWalletViewModel.tapRelay
             .bind(to: stateService.nextRelay)
             .disposed(by: disposeBag)
+        
+        sendToWalletViewModel.tapRelay
+            .map { _ in AnalyticsEvent.sbTradingWalletClicked(asset: interactor.currency) }
+            .bind(to: analyticsRecorder.recordRelay)
+            .disposed(by: disposeBag)
     }
-    
 }
 

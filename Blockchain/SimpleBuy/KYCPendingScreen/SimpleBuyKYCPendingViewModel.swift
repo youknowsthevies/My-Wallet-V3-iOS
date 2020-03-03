@@ -8,6 +8,7 @@
 
 import Foundation
 import PlatformUIKit
+import ToolKit
 
 enum SimpleBuyKYCPendingVerificationState {
     case loading
@@ -15,6 +16,21 @@ enum SimpleBuyKYCPendingVerificationState {
     case manualReview
     case ineligible
     case completed
+}
+
+extension SimpleBuyKYCPendingVerificationState {
+    var analyticsEvent: AnalyticsEvents.SimpleBuy {
+        switch self {
+        case .loading, .completed:
+            return .sbKycVerifying
+        case .pending:
+            return .sbKycPending
+        case .manualReview:
+            return .sbKycManualReview
+        case .ineligible:
+            return .sbPostKycNotEligible
+        }
+    }
 }
 
 struct SimpleBuyKYCPendingViewModel {

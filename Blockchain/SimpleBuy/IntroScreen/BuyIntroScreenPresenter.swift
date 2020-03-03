@@ -17,6 +17,7 @@ final class BuyIntroScreenPresenter {
     
     // MARK: - Types
     
+    typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.IntroScreen
     private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.IntroScreen
 
@@ -37,16 +38,19 @@ final class BuyIntroScreenPresenter {
     
     // MARK: - Injected
     
+    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
     private unowned let stateService: SimpleBuyStateServiceAPI
     private let errorRecorder: ErrorRecording
 
     // MARK: - Setup
     
     init(stateService: SimpleBuyStateServiceAPI,
+         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared,
          errorRecorder: ErrorRecording = CrashlyticsRecorder()) {
         
         // Property setup
         
+        self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService
         self.errorRecorder = errorRecorder
         
@@ -96,9 +100,21 @@ final class BuyIntroScreenPresenter {
             .bind(to: stateService.nextRelay)
             .disposed(by: disposeBag)
         
+        buyButton.tapRelay
+            .map { AnalyticsEvent.sbWantToBuyButtonClicked }
+            .bind(to: analyticsRecorder.recordRelay)
+            .disposed(by: disposeBag)
+        
         skipButton.tapRelay
             .bind(to: stateService.previousRelay)
             .disposed(by: disposeBag)
+        
+        skipButton.tapRelay
+            .map { AnalyticsEvent.sbWantToBuyButtonSkip }
+            .bind(to: analyticsRecorder.recordRelay)
+            .disposed(by: disposeBag)
+        
+        analyticsRecorder.record(event: AnalyticsEvent.sbWantToBuyScreenShown)
     }
     
     /// MARK: - Exposed

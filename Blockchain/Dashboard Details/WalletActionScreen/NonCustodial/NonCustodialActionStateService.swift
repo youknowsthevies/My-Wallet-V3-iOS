@@ -57,23 +57,23 @@ final class NonCustodialActionStateService: NonCustodialActionStateServiceAPI {
     init() {
         nextRelay
             .observeOn(MainScheduler.instance)
-            .bind(weak: self, onNext: { (self) in
+            .bind(weak: self) { (self) in
                 self.apply(action: .next(.actions))
-            })
+            }
             .disposed(by: disposeBag)
         
         swapRelay
             .observeOn(MainScheduler.instance)
-            .bind(weak: self, onNext: { (self) in
+            .bind(weak: self) { (self) in
                 self.apply(action: .next(.swap))
-            })
+            }
             .disposed(by: disposeBag)
         
         activityRelay
             .observeOn(MainScheduler.instance)
-            .bind(weak: self, onNext: { (self) in
+            .bind(weak: self) { (self) in
                 self.apply(action: .next(.activity))
-            })
+            }
             .disposed(by: disposeBag)
     }
     

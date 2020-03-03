@@ -11,11 +11,13 @@ import RxRelay
 import RxCocoa
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 final class BuyCryptoScreenPresenter {
     
     // MARK: - Types
     
+    private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.BuyCryptoScreen
     
     // MARK: - Properties
@@ -39,6 +41,7 @@ final class BuyCryptoScreenPresenter {
     
     // MARK: - Injected
     
+    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
     private let alertPresenter: AlertViewPresenter
     private let loadingViewPresenter: LoadingViewPresenting
     private let interactor: BuyCryptoScreenInteractor
@@ -54,9 +57,11 @@ final class BuyCryptoScreenPresenter {
     /// TODO: Remove router dependency once the selection screen generics is simplified
     init(loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
          alertPresenter: AlertViewPresenter = .shared,
+         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared,
          router: SimpleBuyRouterAPI,
          stateService: SimpleBuyCheckoutServiceAPI,
          interactor: BuyCryptoScreenInteractor) {
+        self.analyticsRecorder = analyticsRecorder
         self.loadingViewPresenter = loadingViewPresenter
         self.alertPresenter = alertPresenter
         self.router = router
@@ -179,6 +184,21 @@ final class BuyCryptoScreenPresenter {
             .bind(to: interactor.inputScanner.inputRelay)
             .disposed(by: disposeBag)
         
+        correctionLinkViewModel.tap
+            .withLatestFrom(interactor.state)
+            .compactMap { state in
+                switch state {
+                case .tooHigh:
+                    return AnalyticsEvent.sbBuyFormMaxClicked
+                case .tooLow:
+                    return AnalyticsEvent.sbBuyFormMinClicked
+                default:
+                    return nil
+                }
+            }
+            .bind(to: analyticsRecorder.recordRelay)
+            .disposed(by: disposeBag)
+
         /// Additional binding
         
         struct CTAData {
@@ -186,7 +206,13 @@ final class BuyCryptoScreenPresenter {
             let checkoutData: SimpleBuyCheckoutData
         }
         
-        continueButtonViewModel.tapRelay
+        continueButtonViewModel
+            .tapRelay
+            .map { AnalyticsEvent.sbBuyFormConfirmClick }
+            .bind(to: analyticsRecorder.recordRelay)
+            .disposed(by: disposeBag)
+        
+        let ctaObservable = continueButtonViewModel.tapRelay
             .withLatestFrom(interactor.data)
             .compactMap { $0 }
             .flatMap(weak: interactor) { (interactor, data) in
@@ -200,8 +226,22 @@ final class BuyCryptoScreenPresenter {
                         case .failure(let error):
                             return .failure(error)
                         }
-                    }
+                }
+        }
+        
+        ctaObservable
+            .map { result -> AnalyticsEvent in
+                switch result {
+                case .success:
+                    return .sbBuyFormConfirmSuccess
+                case .failure:
+                    return .sbBuyFormConfirmFailure
+                }
             }
+            .bind(to: analyticsRecorder.recordRelay)
+            .disposed(by: disposeBag)
+        
+        ctaObservable
             .observeOn(MainScheduler.instance)
             .bind(weak: self) { (self, result) in
                 switch result {
@@ -222,6 +262,11 @@ final class BuyCryptoScreenPresenter {
             .bind(weak: self) { (self, cryptoCurrency) in
                 self.didSelect(cryptoCurrency: cryptoCurrency)
             }
+            .disposed(by: disposeBag)
+        
+        interactor.selectedCryptoCurrency
+            .map { _ in AnalyticsEvent.sbBuyFormCryptoChanged }
+            .bind(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
 
         interactor.pairsCalculationState
@@ -273,6 +318,7 @@ final class BuyCryptoScreenPresenter {
     
     func refresh() {
         interactor.refresh()
+        analyticsRecorder.record(event: AnalyticsEvent.sbBuyFormShown)
     }
     
     func navigationBarLeadingButtonTapped() {
@@ -290,6 +336,7 @@ final class BuyCryptoScreenPresenter {
     }
     
     private func handleError() {
+        analyticsRecorder.record(event: AnalyticsEvent.sbBuyFormConfirmFailure)
         alertPresenter.standardNotify(
             message: LocalizationConstants.SimpleBuy.ErrorAlert.message,
             title: LocalizationConstants.SimpleBuy.ErrorAlert.title

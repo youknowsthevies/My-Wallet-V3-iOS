@@ -7,6 +7,7 @@
 //
 
 import PlatformKit
+import ToolKit
 
 enum CheckoutCellType: Hashable {
     enum LineItemType: Hashable {
@@ -65,6 +66,15 @@ extension CheckoutCellType.LineItemType {
             return LocalizedString.date
         case .totalCost:
             return LocalizedString.totalCost
+        }
+    }
+    
+    var analyticsEvent: AnalyticsEvents.SimpleBuy? {
+        switch self {
+        case .paymentAccountField(.bankCode):
+            return .sbBankDetailsCopied
+        default:
+            return nil
         }
     }
     

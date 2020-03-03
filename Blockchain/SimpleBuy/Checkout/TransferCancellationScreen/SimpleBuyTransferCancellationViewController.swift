@@ -52,5 +52,7 @@ final class SimpleBuyTransferCancellationViewController: UIViewController {
                 self.dismiss(animated: true, completion: nil)
             }
         .disposed(by: disposeBag)
+        
+        presenter.viewDidLoad()
     }
 }

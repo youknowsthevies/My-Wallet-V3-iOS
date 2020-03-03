@@ -28,17 +28,20 @@ final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, Pasteboa
         let description: String
         let descriptionInteractionText: String
         let interactionDuration: Int
+        let analyticsEvent: AnalyticsEvent?
         
         init(title: String,
              titleInteractionText: String,
              description: String,
              descriptionInteractionText: String,
+             analyticsEvent: AnalyticsEvent? = nil,
              interactionDuration: Int = 4) {
             self.title = title
             self.titleInteractionText = titleInteractionText
             self.description = description
             self.descriptionInteractionText = descriptionInteractionText
             self.interactionDuration = interactionDuration
+            self.analyticsEvent = analyticsEvent
         }
     }
     
@@ -75,10 +78,14 @@ final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, Pasteboa
     // MARK: - Private Properties
     
     private let disposeBag = DisposeBag()
+    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
     
     // MARK: - Init
     
-    init(input: Input, pasteboard: Pasteboarding = UIPasteboard.general) {
+    init(input: Input,
+         pasteboard: Pasteboarding = UIPasteboard.general,
+         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
+        self.analyticsRecorder = analyticsRecorder
         pasteboardValue = input.description
         
         let titleInteractor = PasteboardLabelContentInteractor(
@@ -131,6 +138,11 @@ final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, Pasteboa
         
         tapRelay
             .bind { pasteboard.string = input.description }
+            .disposed(by: disposeBag)
+        
+        tapRelay
+            .compactMap { input.analyticsEvent }
+            .bind(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
         
         let delay = tapRelay

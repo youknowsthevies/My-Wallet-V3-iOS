@@ -147,16 +147,23 @@ final class VerifyBackupScreenPresenter {
         
         verifyButtonViewModel
             .tapRelay
-            .throttle(.milliseconds(500), scheduler: ConcurrentDispatchQueueScheduler(qos: .background))
-            .show(loader: loadingViewPresenting, style: .circle, text: LocalizationConstants.syncingWallet)
-            .bind(weak: self, onNext: { _ in
+            .throttle(
+                .milliseconds(500),
+                scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
+            )
+            .show(
+                loader: loadingViewPresenting,
+                style: .circle,
+                text: LocalizationConstants.syncingWallet
+            )
+            .bind(weak: self) { (self) in
                 service.markBackupVerified()
                     .andThen(Observable.just(()))
                     .mapToVoid()
                     .hideLoaderOnDisposal(loader: loadingViewPresenting)
                     .bind(to: stateService.nextRelay)
                     .disposed(by: self.disposeBag)
-            })
+            }
             .disposed(by: disposeBag)
     }
     

@@ -29,6 +29,7 @@ final class SimpleBuyTransferDetailScreenPresenter {
         case checkoutSummary
     }
     
+    private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.TransferDetails
     private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.TransferDetails
 
@@ -80,6 +81,8 @@ final class SimpleBuyTransferDetailScreenPresenter {
     
     // MARK: - Injected
     
+    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
+    private let presentationType: PresentationType
     private let webViewRouter: WebViewRouterAPI
     private let loadingViewPresenter: LoadingViewPresenting
     private let alertPresenter: AlertViewPresenter
@@ -92,8 +95,11 @@ final class SimpleBuyTransferDetailScreenPresenter {
          alertPresenter: AlertViewPresenter = .shared,
          webViewRouter: WebViewRouterAPI,
          loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
+         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared,
          interactor: SimpleBuyTransferDetailScreenInteractor,
          stateService: SimpleBuyStateServiceAPI) {
+        self.analyticsRecorder = analyticsRecorder
+        self.presentationType = presentationType
         self.webViewRouter = webViewRouter
         self.loadingViewPresenter = loadingViewPresenter
         self.alertPresenter = alertPresenter
@@ -138,7 +144,8 @@ final class SimpleBuyTransferDetailScreenPresenter {
                         title: item.title,
                         titleInteractionText: LocalizationConstants.SimpleBuy.Checkout.LineItem.Copyable.copied,
                         description: item.paymentAccountField?.content ?? "",
-                        descriptionInteractionText: contentReducer.copyMessage(for: item)
+                        descriptionInteractionText: contentReducer.copyMessage(for: item),
+                        analyticsEvent: item.analyticsEvent
                     )
                 )
                 return [item: presenter]
@@ -167,7 +174,12 @@ final class SimpleBuyTransferDetailScreenPresenter {
         presentersByCellType += [amountCellType: amountPresenter]
                   
         continueButtonViewModel.tapRelay
-            .bind(to: stateService.nextRelay)
+            .bind(weak: self) { (self) in
+                if presentationType == .checkoutSummary {
+                    analyticsRecorder.record(event: AnalyticsEvent.sbBankDetailsFinished)
+                }
+                stateService.nextRelay.accept(())
+            }
             .disposed(by: disposeBag)
         
         setupCancellationBindingIfNeeded()
@@ -186,9 +198,21 @@ final class SimpleBuyTransferDetailScreenPresenter {
         guard let cancelButtonViewModel = cancelButtonViewModel else { return }
         cancelButtonViewModel.tapRelay
             .bind(weak: self) { (self) in
+                self.analyticsRecorder.record(event: AnalyticsEvent.sbPendingModalCancelClick)
                 self.stateService.cancelTransfer(with: self.interactor.checkoutData)
             }
             .disposed(by: disposeBag)
+    }
+    
+    // MARK: - Analytics
+    
+    func viewDidLoad() {
+        switch presentationType {
+        case .checkoutSummary:
+            analyticsRecorder.record(event: AnalyticsEvent.sbBankDetailsShown)
+        case .pendingOrder:
+            analyticsRecorder.record(event: AnalyticsEvent.sbPendingModalShown)
+        }
     }
     
     // MARK: - Navigation
