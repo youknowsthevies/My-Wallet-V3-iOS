@@ -9,5 +9,6 @@
 import RxSwift
 
 public protocol SimpleBuyEligibilityServiceAPI: class {
-    var isEligible: Single<Bool> { get }
+    var isEligible: Observable<Bool> { get }
+    func fetch() -> Observable<Bool>
 }

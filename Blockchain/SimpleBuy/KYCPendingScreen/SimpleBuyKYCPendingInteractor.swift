@@ -43,7 +43,9 @@ final class SimpleBuyKYCPendingInteractor {
                 guard state == .completed else {
                     return .just(state)
                 }
-                return self.eligibilityService.isEligible
+                return self.eligibilityService.fetch()
+                    .take(1)
+                    .asSingle()
                     .map { $0 ? .completed : .ineligible }
             }
             .subscribe(

@@ -50,7 +50,10 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             .orderDetails
         
         let isSimpleBuyAvailable = simpleBuyServiceProvider.availability.valueSingle
-        let isSimpleBuyEligible = simpleBuyServiceProvider.eligibility.isEligible
+        let isSimpleBuyEligible = simpleBuyServiceProvider.eligibility
+            .isEligible
+            .take(1)
+            .asSingle()
 
         let airdropCampaigns = airdropCenterService
             .fetchCampaignsCalculationState(useCache: true)

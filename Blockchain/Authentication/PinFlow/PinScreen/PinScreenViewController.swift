@@ -54,9 +54,13 @@ final class PinScreenViewController: BaseScreenViewController {
         digitPadView.viewModel = presenter.digitPadViewModel
         securePinView.viewModel = presenter.securePinViewModel
 
-        if Constants.Booleans.isUsingScreenSizeEqualIphone5S {
+        let deviceType = UIDevice.current.type
+        if deviceType.isBelowOrEqual(.iPhoneSE) {
             digitPadBottomConstraint.constant = 0
-            securePinViewTopConstraint.constant = 5
+            securePinViewTopConstraint.constant = 10
+        } else if deviceType.isBelowOrEqual(.iPhone8) {
+            digitPadBottomConstraint.constant = 0
+            securePinViewTopConstraint.constant = 30
         }
         
         // Subscribe to pin changes

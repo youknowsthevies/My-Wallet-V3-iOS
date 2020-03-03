@@ -11,7 +11,7 @@ import PlatformKit
 
 final class SideMenuInteractor {
    
-    var isSimpleBuyEnabled: Single<Bool> {
+    var isSimpleBuyEnabled: Observable<Bool> {
         simpleBuyEligibilityService.isEligible
             .catchErrorJustReturn(false)
     }

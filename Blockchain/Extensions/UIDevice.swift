@@ -159,6 +159,13 @@ public enum DeviceType {
         return current < minimumRequired
     }
     
+    func isBelowOrEqual(_ this: DeviceType) -> Bool {
+        guard this.isPhone else { return false }
+        guard let current = supportedTypes.firstIndex(of: self) else { return false }
+        guard let minimumRequired = supportedTypes.firstIndex(of: this) else { return false }
+        return current <= minimumRequired
+    }
+    
     /// The `current` device type is newer than
     /// the provided version.
     func isAbove(_ this: DeviceType) -> Bool {

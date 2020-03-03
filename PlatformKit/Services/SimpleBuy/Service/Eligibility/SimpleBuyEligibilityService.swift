@@ -13,8 +13,8 @@ public final class SimpleBuyEligibilityService: SimpleBuyEligibilityServiceAPI {
     
     // MARK: - Properties
     
-    public var isEligible: Single<Bool> {
-        isEligibleCachedValue.valueSingle
+    public var isEligible: Observable<Bool> {
+        isEligibleCachedValue.valueObservable
     }
     
     private let isEligibleCachedValue = CachedValue<Bool>(refreshType: .onSubscription)
@@ -27,27 +27,29 @@ public final class SimpleBuyEligibilityService: SimpleBuyEligibilityServiceAPI {
                 fiatCurrencyService: FiatCurrencySettingsServiceAPI,
                 featureFetcher: FeatureFetching) {
         isEligibleCachedValue
-            .setFetch(weak: self) { (self) -> Single<Bool> in
+            .setFetch { () -> Observable<Bool> in
                 featureFetcher.fetchBool(for: .simpleBuyEnabled)
-                    .flatMap { isFeatureEnabled -> Single<Bool> in
+                    .asObservable()
+                    .flatMap { isFeatureEnabled -> Observable<Bool> in
                         guard isFeatureEnabled else {
                             return .just(false)
                         }
-                        // Get token
-                        let token = reactiveWallet.waitUntilInitializedSingle
-                            .flatMap { authenticationService.tokenString }
-                        
-                        // Get fiat currency
-                        let fiatCurrency = fiatCurrencyService.fiatCurrency
-                            
-                        // Invoke client with topen and fiat currency
-                        return Single
-                            .zip(fiatCurrency, token)
-                            .flatMap { (currency, token) in
-                                client.isEligible(for: currency.code, token: token)
+                        return fiatCurrencyService.fiatCurrencyObservable
+                            .flatMap { currency in
+                                reactiveWallet.waitUntilInitializedSingle
+                                    .asObservable()
+                                    .flatMap { authenticationService.tokenString }
+                                    .map { (token: $0, currency: currency) }
+                            }
+                            .flatMap { payload in
+                                client.isEligible(for: payload.currency.code, token: payload.token)
                             }
                             .map { $0.eligible }
                     }
         }
+    }
+    
+    public func fetch() -> Observable<Bool> {
+        isEligibleCachedValue.fetchValueObservable
     }
 }
