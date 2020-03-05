@@ -180,6 +180,8 @@ extension AuthenticationCoordinator: ManualPairingWalletFetching {
     }
     
     func handlePostAuthenticationLogic() {
+        NotificationCenter.default.post(name: .login, object: nil)
+        
         if isCreatingWallet {
             fiatCurrencySettingsService
                 .update(currency: .locale, context: .walletCreation)
@@ -229,6 +231,8 @@ extension AuthenticationCoordinator: ManualPairingWalletFetching {
         WalletManager.shared.close()
 
         dataRepository.clearCache()
+        
+        NotificationCenter.default.post(name: .logout, object: nil)
         
         SocketManager.shared.disconnectAll()
         StellarServiceProvider.shared.tearDown()

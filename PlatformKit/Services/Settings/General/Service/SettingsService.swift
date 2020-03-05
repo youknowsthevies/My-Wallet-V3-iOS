@@ -35,7 +35,7 @@ public final class SettingsService: SettingsServiceAPI {
     private let client: SettingsClientAPI
     private let credentialsRepository: GuidRepositoryAPI & SharedKeyRepositoryAPI
 
-    private let cachedValue = CachedValue<WalletSettings>()
+    private let cachedValue: CachedValue<WalletSettings>
     
     private let disposeBag = DisposeBag()
     
@@ -62,9 +62,22 @@ public final class SettingsService: SettingsServiceAPI {
         self.client = client
         self.credentialsRepository = credentialsRepository
         
+        cachedValue = .init(
+            configuration: .init(
+                identifier: "settings-service",
+                refreshType: .onSubscription,
+                fetchPriority: .throttle(
+                    milliseconds: 1000,
+                    scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
+                ),
+                flushNotificationName: .logout,
+                fetchNotificationName: .login
+            )
+        )
+        
         cachedValue
             .setFetch(weak: self) { (self) -> Single<WalletSettings> in
-                self.credentials
+                return self.credentials
                     .flatMap(weak: self) { (self, credentials) in
                         self.client.settings(
                             by: credentials.guid,

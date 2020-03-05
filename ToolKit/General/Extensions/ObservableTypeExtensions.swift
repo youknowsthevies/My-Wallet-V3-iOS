@@ -58,6 +58,15 @@ extension ObservableType {
             return try selector(object, value)
         }
     }
+    
+    public func flatMapFirst<A: AnyObject, R>(weak object: A, selector: @escaping (A, Self.Element) throws -> Observable<R>) -> Observable<R> {
+        return flatMapFirst { [weak object] (value) -> Observable<R> in
+            guard let object = object else {
+                return Observable.error(ToolKitError.nullReference(A.self))
+            }
+            return try selector(object, value)
+        }
+    }
 }
 
 // MARK: - Creation (weak: self)

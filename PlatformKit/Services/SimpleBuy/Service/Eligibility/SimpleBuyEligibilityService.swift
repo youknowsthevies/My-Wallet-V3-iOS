@@ -17,7 +17,7 @@ public final class SimpleBuyEligibilityService: SimpleBuyEligibilityServiceAPI {
         isEligibleCachedValue.valueObservable
     }
     
-    private let isEligibleCachedValue = CachedValue<Bool>(refreshType: .onSubscription)
+    private let isEligibleCachedValue = CachedValue<Bool>(configuration: .onSubscriptionAndLogin)
     
     // MARK: - Setup
     

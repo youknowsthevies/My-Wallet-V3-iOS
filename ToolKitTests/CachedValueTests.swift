@@ -17,14 +17,17 @@ import RxTest
 final class CachedValueTests: XCTestCase {
     
     private var disposeBag = DisposeBag()
-    
+    private var scheduler: TestScheduler!
+
     override func setUp() {
+        scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
     }
     
     func testInitialSubscriptionToValue() {
         let expectedValue = "expected_value"
-        let cachedValue = CachedValue<String>(refreshType: .onSubscription)
+        let configuration = CachedValueConfiguration(refreshType: .onSubscription)
+        let cachedValue = CachedValue<String>(configuration: configuration)
         cachedValue.setFetch { Single.just(expectedValue) }
         do {
             let value = try cachedValue.valueSingle.toBlocking().first()
@@ -33,10 +36,13 @@ final class CachedValueTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
-    
+
     func testInitialSubscriptionToValueObservable() {
         let expectedValue = "expected_value"
-        let cachedValue = CachedValue<String>(refreshType: .onSubscription)
+        let configuration = CachedValueConfiguration(
+            refreshType: .onSubscription
+        )
+        let cachedValue = CachedValue<String>(configuration: configuration)
         cachedValue.setFetch { Single.just(expectedValue) }
         do {
             let value = try cachedValue.valueObservable.toBlocking().first()
@@ -45,14 +51,17 @@ final class CachedValueTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
-    
+
     func testMultipleSubscriptionsToValueObservable() {
         let expectedResult = "expected_result1"
-        let cachedValue = CachedValue<String>(refreshType: .onSubscription)
+        let configuration = CachedValueConfiguration(
+            refreshType: .onSubscription
+        )
+        let cachedValue = CachedValue<String>(configuration: configuration)
         cachedValue.setFetch {
             return Single.just(expectedResult)
         }
-        
+
         for _ in (0...4) {
             XCTAssertEqual(
                 try? cachedValue.valueObservable.toBlocking().first(),
@@ -60,12 +69,15 @@ final class CachedValueTests: XCTestCase {
             )
         }
     }
-    
+
     func testMultipleConsecutiveFetches() {
         let expectedResults: [String] = ["expected_result1", "expected_result2", "expected_result3"]
         var index = 0
 
-        let cachedValue = CachedValue<String>(refreshType: .onSubscription)
+        let configuration = CachedValueConfiguration(
+            refreshType: .onSubscription
+        )
+        let cachedValue = CachedValue<String>(configuration: configuration)
         cachedValue.setFetch { () -> Single<String> in
             let current = expectedResults[index % expectedResults.count]
             index += 1
@@ -79,14 +91,19 @@ final class CachedValueTests: XCTestCase {
             )
         }
     }
-        
+
     func testsRefreshTypeOnce() {
         let expectedResult = "expected_result1"
-        let cachedValue = CachedValue<String>(refreshType: .onSubscription)
+
+        let configuration = CachedValueConfiguration(
+            refreshType: .onSubscription
+        )
+        let cachedValue = CachedValue<String>(configuration: configuration)
+
         cachedValue.setFetch {
             return Single.just(expectedResult)
         }
-        
+
         for _ in (0...7) {
             XCTAssertEqual(
                 try? cachedValue.valueSingle.toBlocking().first(),
@@ -94,20 +111,24 @@ final class CachedValueTests: XCTestCase {
             )
         }
     }
-    
+
     func testMixtureOfSubscriptions() {
         let expectedResults: [String] = ["expected_result1", "expected_result2", "expected_result3"]
         var index = 0
-        
-        let cachedValue = CachedValue<String>(refreshType: .onSubscription)
+
+        let configuration = CachedValueConfiguration(
+            refreshType: .onSubscription
+        )
+        let cachedValue = CachedValue<String>(configuration: configuration)
+
         cachedValue.setFetch { () -> Single<String> in
             let current = expectedResults[index % expectedResults.count]
             index += 1
             return Single.just(current)
         }
-        
+
         var result: [String] = []
-        
+
         // one time
         cachedValue.valueObservable
             .subscribe(
@@ -115,7 +136,7 @@ final class CachedValueTests: XCTestCase {
                     result.append(current)
                 })
                 .disposed(by: disposeBag)
-        
+
         // 4 times
         for index in 1..<expectedResults.count {
             XCTAssertEqual(
@@ -123,7 +144,8 @@ final class CachedValueTests: XCTestCase {
                 expectedResults[index]
             )
         }
-        
+
         XCTAssertEqual(result, expectedResults)
     }
 }
+

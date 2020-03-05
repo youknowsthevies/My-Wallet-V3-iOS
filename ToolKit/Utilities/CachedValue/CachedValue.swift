@@ -26,6 +26,34 @@ public class CachedValue<Value> {
         case single(() -> Single<Value>)
     }
     
+    private enum StreamState {
+                
+        /// The data has not been calculated yet
+        case empty
+        
+        /// The data should be flushed
+        case flush
+        
+        /// The stream erred at some point and is now invalid
+        case invalid
+        
+        /// The stream is in midst of claculating next element
+        case calculating
+        
+        /// The data should be streamed
+        case stream(StreamType)
+        
+        /// Returns the stream
+        var streamType: StreamType? {
+            switch self {
+            case .stream(let streamType):
+                return streamType
+            default:
+                return nil
+            }
+        }
+    }
+    
     /// The type of the stream - only public streams' values are exposed to external subscribers
     private enum StreamType {
         
@@ -34,7 +62,7 @@ public class CachedValue<Value> {
         
         /// Stream the value privately
         case `private`(Value)
-        
+                
         /// Stream nothing
         case none
         
@@ -53,16 +81,6 @@ public class CachedValue<Value> {
                 return nil
             }
         }
-    }
-    
-    /// A refresh type
-    public enum RefreshType {
-        
-        /// Refresh once upon subscription
-        case onSubscription
-        
-        /// Refresh periodically
-        case periodic(TimeInterval)
     }
     
     /// The caching error
@@ -93,7 +111,7 @@ public class CachedValue<Value> {
     
     @available(*, deprecated, message: "Do not use this! It is meant to support legacy code")
     public var legacyValue: Value? {
-        return calculationStateRelay.value.value?.value
+        return stateRelay.value.streamType?.value
     }
     
     /// Streams a single value and terminates
@@ -105,9 +123,8 @@ public class CachedValue<Value> {
     
     /// Streams a value upon each refresh.
     public var valueObservable: Observable<Value> {
-        calculationStateRelay
-            .flatMap(weak: self) { (self, state) -> Observable<StreamType> in
-                
+        stateRelay
+            .flatMap(weak: self, fetchPriority: configuration.fetchPriority) { (self, state) -> Observable<StreamType> in
                 let fetch = { () -> Observable<StreamType> in
                     guard let fetch = self.fetch else { return .just(.none) }
                     switch fetch {
@@ -122,19 +139,21 @@ public class CachedValue<Value> {
                 }
                 
                 switch state {
-                case .invalid(.empty):
+                case .empty:
                     return fetch()
                 case .calculating:
                     return .just(.none)
-                case .invalid(.valueCouldNotBeCalculated):
+                case .flush:
+                    return .just(.none)
+                case .invalid:
                     throw CacheError.fetchFailed
-                case .value(.private(let value)):
-                    if self.shouldRefresh {
+                case .stream(.private(let value)):
+                    if self.refreshControl.shouldRefresh {
                         return fetch()
                     } else {
                         return .just(.public(value))
                     }
-                case .value(.public), .value(.none):
+                case .stream(.public), .stream(.none):
                     return .just(.none)
                 }
             }
@@ -156,36 +175,39 @@ public class CachedValue<Value> {
     public var fetchValueObservable: Observable<Value> {
         fetchAsObservable()
     }
-            
+    
     // MARK: - Private properties
-
-    private let calculationStateRelay = BehaviorRelay<ValueCalculationState<StreamType>>(value: .invalid(.empty))
+    
+    private let stateRelay = BehaviorRelay<StreamState>(value: .empty)
     
     /// The calculation state streams `StreamType` elements to differentiate between publicly streamed elements
     /// which are ready to be distributed to subscribers, and privately streamed elements which are not intended to be distributed
-    private var calculationState: Observable<ValueCalculationState<StreamType>> {
-        calculationStateRelay.asObservable()
+    private var state: Observable<StreamState> {
+        stateRelay.asObservable()
     }
-        
-    private var shouldRefresh: Bool {
-        switch refreshType {
-        case .onSubscription:
-            return false
-        case .periodic(let refreshInterval):
-            let lastRefreshInterval = Date(timeIntervalSinceNow: -refreshInterval)
-            return lastRefreshRelay.value.compare(lastRefreshInterval) == .orderedAscending
-        }
-    }
-    
+            
     private var fetch: FetchMethod?
-    private let lastRefreshRelay: BehaviorRelay<Date>
-    private let refreshType: RefreshType
+    private let configuration: CachedValueConfiguration
+    private let refreshControl: CachedValueRefreshControl
+    
+    private let disposeBag = DisposeBag()
     
     // MARK: - Init
     
-    public init(refreshType: RefreshType = .periodic(60)) {
-        self.refreshType = refreshType
-        lastRefreshRelay = BehaviorRelay(value: .distantPast)
+    public init(configuration: CachedValueConfiguration) {
+        self.configuration = configuration
+        refreshControl = CachedValueRefreshControl(configuration: configuration)
+        refreshControl.action
+            .map { action in
+                switch action {
+                case .fetch:
+                    return .empty
+                case .flush:
+                    return .flush
+                }
+            }
+            .bind(to: stateRelay)
+            .disposed(by: disposeBag)
     }
     
     // MARK: - Public methods
@@ -199,11 +221,11 @@ public class CachedValue<Value> {
                 /// On successful fetch make the relay accept a privately distributed value
                 onNext: { [weak self] value in
                     guard let self = self else { return }
-                    self.lastRefreshRelay.accept(Date())
-                    self.calculationStateRelay.accept(.value(.private(value)))
+                    self.refreshControl.update(refreshDate: Date())
+                    self.stateRelay.accept(.stream(.private(value)))
                 },
-                onSubscribe: { [weak calculationStateRelay] in
-                    calculationStateRelay?.accept(.calculating)
+                onSubscribe: { [weak stateRelay] in
+                    stateRelay?.accept(.calculating)
                 }
             )
     }
@@ -218,11 +240,11 @@ public class CachedValue<Value> {
                 /// On successful fetch make the relay accept a privately distributed value
                 onSuccess: { [weak self] value in
                     guard let self = self else { return }
-                    self.lastRefreshRelay.accept(Date())
-                    self.calculationStateRelay.accept(.value(.private(value)))
+                    self.refreshControl.update(refreshDate: Date())
+                    self.stateRelay.accept(.stream(.private(value)))
                 },
-                onSubscribe: { [weak calculationStateRelay] in
-                    calculationStateRelay?.accept(.calculating)
+                onSubscribe: { [weak stateRelay] in
+                    stateRelay?.accept(.calculating)
                 }
             )
     }
@@ -277,5 +299,25 @@ public class CachedValue<Value> {
             return .error(CacheError.internalError)
         }
         return fetchSingleValue(method)
+    }
+}
+
+private extension ObservableType {
+    func flatMap<A: AnyObject, R>(weak object: A,
+                                  fetchPriority: CachedValueConfiguration.FetchPriority,
+                                  selector: @escaping (A, Self.Element) throws -> Observable<R>) -> Observable<R> {
+        switch fetchPriority {
+        case .fetchAll:
+            return flatMap(weak: object, selector: selector)
+        case .throttle(milliseconds: let time, scheduler: let scheduler):
+            return self.throttle(
+                    .milliseconds(time),
+                    scheduler: scheduler
+                )
+                .flatMap(
+                    weak: object,
+                    selector: selector
+                )
+        }
     }
 }

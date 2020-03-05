@@ -1592,6 +1592,10 @@
 		65B77DAF22FB1C8F009AE141 /* SendSpendableBalanceViewPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B77DAE22FB1C8F009AE141 /* SendSpendableBalanceViewPresenter.swift */; };
 		65B77DB222FB1CB1009AE141 /* SendSpendableBalanceInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B77DB122FB1CB1009AE141 /* SendSpendableBalanceInteractor.swift */; };
 		65B77DB522FB1CC7009AE141 /* SendSpendableBalanceInteracting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B77DB422FB1CC7009AE141 /* SendSpendableBalanceInteracting.swift */; };
+		65B95702240FC0C2007CDDC1 /* CachedValue+Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B95701240FC0C2007CDDC1 /* CachedValue+Configuration.swift */; };
+		65B9570A240FCBED007CDDC1 /* CachedValue+Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B95709240FCBED007CDDC1 /* CachedValue+Setup.swift */; };
+		65B95715240FDB91007CDDC1 /* Notification+Login.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B95714240FDB91007CDDC1 /* Notification+Login.swift */; };
+		65B957172411239D007CDDC1 /* CachedValueRefreshControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B957162411239D007CDDC1 /* CachedValueRefreshControl.swift */; };
 		65BB528223E454F200940613 /* SimpleBuyCryptoCurrencySelectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65BB528123E454F200940613 /* SimpleBuyCryptoCurrencySelectionService.swift */; };
 		65BD8C2023EACB12008E241B /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B74F5F23E30188008E08E3 /* Router.swift */; };
 		65BD8C7F23EB1F19008E241B /* SimpleBuyOrderCreationClientAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65BD8C7E23EB1F19008E241B /* SimpleBuyOrderCreationClientAPI.swift */; };
@@ -2231,13 +2235,6 @@
 			remoteGlobalIDString = 34EE981523AA595100074EC0;
 			remoteInfo = ToolKit;
 		};
-		34EE982223AA595100074EC0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9FB3637014B60128004BEA02;
-			remoteInfo = Blockchain;
-		};
 		34EE982923AA595100074EC0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
@@ -2566,6 +2563,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = F6BDA802145900D200FE3253;
 			remoteInfo = "SocketRocketTests-iOS";
+		};
+		65738C452411306A00173ACC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9FB3637014B60128004BEA02;
+			remoteInfo = Blockchain;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -5451,6 +5455,10 @@
 		65B77DAE22FB1C8F009AE141 /* SendSpendableBalanceViewPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendSpendableBalanceViewPresenter.swift; sourceTree = "<group>"; };
 		65B77DB122FB1CB1009AE141 /* SendSpendableBalanceInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendSpendableBalanceInteractor.swift; sourceTree = "<group>"; };
 		65B77DB422FB1CC7009AE141 /* SendSpendableBalanceInteracting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendSpendableBalanceInteracting.swift; sourceTree = "<group>"; };
+		65B95701240FC0C2007CDDC1 /* CachedValue+Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CachedValue+Configuration.swift"; sourceTree = "<group>"; };
+		65B95709240FCBED007CDDC1 /* CachedValue+Setup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CachedValue+Setup.swift"; sourceTree = "<group>"; };
+		65B95714240FDB91007CDDC1 /* Notification+Login.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Login.swift"; sourceTree = "<group>"; };
+		65B957162411239D007CDDC1 /* CachedValueRefreshControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedValueRefreshControl.swift; sourceTree = "<group>"; };
 		65BB526B23E4397D00940613 /* SelectionItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionItemTableViewCell.swift; sourceTree = "<group>"; };
 		65BB527923E44A7100940613 /* SelectionScreenInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionScreenInteractor.swift; sourceTree = "<group>"; };
 		65BB527B23E44AAE00940613 /* SelectionItemViewInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionItemViewInteractor.swift; sourceTree = "<group>"; };
@@ -7637,8 +7645,8 @@
 		34EE985023AA5A7D00074EC0 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				65B956F7240FC09E007CDDC1 /* CachedValue */,
 				3ABEC07223FC49A900B87646 /* BackgroundTaskTimer.swift */,
-				344172232333C0CC008C32CA /* CachedValue.swift */,
 				342002402359ECD200D801A6 /* Atomic.swift */,
 			);
 			path = Utilities;
@@ -8918,6 +8926,8 @@
 				3A686599219A0D170009FF29 /* PageResult.swift */,
 				3A68659B219A0D2E0009FF29 /* Tokenized.swift */,
 				341E5A6F2284A58E007BE6A6 /* PlatformKitError.swift */,
+				65B95709240FCBED007CDDC1 /* CachedValue+Setup.swift */,
+				65B95714240FDB91007CDDC1 /* Notification+Login.swift */,
 				65B72B4723F2CDB3006B6981 /* ValueCalculationState */,
 			);
 			path = General;
@@ -13642,6 +13652,16 @@
 			path = SpendableBalance;
 			sourceTree = "<group>";
 		};
+		65B956F7240FC09E007CDDC1 /* CachedValue */ = {
+			isa = PBXGroup;
+			children = (
+				344172232333C0CC008C32CA /* CachedValue.swift */,
+				65B95701240FC0C2007CDDC1 /* CachedValue+Configuration.swift */,
+				65B957162411239D007CDDC1 /* CachedValueRefreshControl.swift */,
+			);
+			path = CachedValue;
+			sourceTree = "<group>";
+		};
 		65BB527D23E44B1000940613 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -16393,7 +16413,7 @@
 			);
 			dependencies = (
 				34EE982123AA595100074EC0 /* PBXTargetDependency */,
-				34EE982323AA595100074EC0 /* PBXTargetDependency */,
+				65738C462411306A00173ACC /* PBXTargetDependency */,
 			);
 			name = ToolKitTests;
 			productName = ToolKitTests;
@@ -18317,6 +18337,7 @@
 				34EE996823ABC40B00074EC0 /* AnalyticsUserPropertyValidator.swift in Sources */,
 				3ADF158C23FD5D3000034AAE /* BackgroundTaskTimer.swift in Sources */,
 				34EE996223ABC3E900074EC0 /* UnretainedContentBox.swift in Sources */,
+				65B95702240FC0C2007CDDC1 /* CachedValue+Configuration.swift in Sources */,
 				65B3F77A23E0836C00305812 /* CharacterSet+Conveniences.swift in Sources */,
 				34EE98C523AA838900074EC0 /* String+Conveniences.swift in Sources */,
 				34EE988D23AA778C00074EC0 /* LogDestination.swift in Sources */,
@@ -18325,6 +18346,7 @@
 				34EE98D123AA838900074EC0 /* DictionaryExtensions.swift in Sources */,
 				34EE996623ABC40B00074EC0 /* StandardUserProperty.swift in Sources */,
 				34EE98D023AA838900074EC0 /* DateFormatter+Conveniences.swift in Sources */,
+				65B957172411239D007CDDC1 /* CachedValueRefreshControl.swift in Sources */,
 				34EE98C723AA838900074EC0 /* NotificationCenter+Conveniences.swift in Sources */,
 				34EE98C223AA838900074EC0 /* TimeInterval+Utils.swift in Sources */,
 				34EE98CD23AA838900074EC0 /* ResultExtensions.swift in Sources */,
@@ -18552,6 +18574,7 @@
 				3A7041A223EAE5C30033F17F /* SimpleBuyPaymentAccountPatcher.swift in Sources */,
 				65CB9EF12372DC320004BBC2 /* HistoricalFiatPriceProvider.swift in Sources */,
 				65D3861F23FC033700434CC2 /* SimpleBuyPendingOrderDetailsServiceAPI.swift in Sources */,
+				65B9570A240FCBED007CDDC1 /* CachedValue+Setup.swift in Sources */,
 				657FDA4F23015F1A0090C1D7 /* AccountBalanceFetching.swift in Sources */,
 				3A06ACEE23F2BD4900098183 /* CustodialBalanceServiceAPI.swift in Sources */,
 				6505E60B23F6C1F8005786BA /* SimpleBuyEligibilityServiceAPI.swift in Sources */,
@@ -18651,6 +18674,7 @@
 				65380E1E2398354100BE66E7 /* GuidClient.swift in Sources */,
 				346CC6A623DB301C00DDD127 /* FiatCurrency.swift in Sources */,
 				65F4DE1523D8C175009F753B /* SettingsResponse.swift in Sources */,
+				65B95715240FDB91007CDDC1 /* Notification+Login.swift in Sources */,
 				65380E322398354100BE66E7 /* SMSServiceAPI.swift in Sources */,
 				65BD8C8223EB267F008E241B /* SimpleBuyOrderCreationService.swift in Sources */,
 				65F4DE1323D8C175009F753B /* SettingsServiceAPI.swift in Sources */,
@@ -20264,11 +20288,6 @@
 			target = 34EE981523AA595100074EC0 /* ToolKit */;
 			targetProxy = 34EE982023AA595100074EC0 /* PBXContainerItemProxy */;
 		};
-		34EE982323AA595100074EC0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 9FB3637014B60128004BEA02 /* Blockchain */;
-			targetProxy = 34EE982223AA595100074EC0 /* PBXContainerItemProxy */;
-		};
 		34EE982A23AA595100074EC0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 34EE981523AA595100074EC0 /* ToolKit */;
@@ -20458,6 +20477,11 @@
 			isa = PBXTargetDependency;
 			target = 9FB3637014B60128004BEA02 /* Blockchain */;
 			targetProxy = 519435A3208E61F3001EF882 /* PBXContainerItemProxy */;
+		};
+		65738C462411306A00173ACC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9FB3637014B60128004BEA02 /* Blockchain */;
+			targetProxy = 65738C452411306A00173ACC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -23927,11 +23951,11 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -24015,11 +24039,11 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -24103,11 +24127,11 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -24160,9 +24184,9 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -24215,9 +24239,9 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -24277,7 +24301,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = ToolKitTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -24351,7 +24375,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = ToolKitTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -24425,7 +24449,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = ToolKitTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -24470,7 +24494,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = ToolKitTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -24511,7 +24535,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = ToolKitTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

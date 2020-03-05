@@ -18,7 +18,7 @@ public final class SimpleBuyOrdersService: SimpleBuyOrdersServiceAPI {
         ordersCachedValue.valueSingle
     }
     
-    private let ordersCachedValue = CachedValue<[SimpleBuyOrderDetails]>(refreshType: .onSubscription)
+    private let ordersCachedValue = CachedValue<[SimpleBuyOrderDetails]>(configuration: .onSubscriptionAndLogin)
 
     // MARK: - Injected
     

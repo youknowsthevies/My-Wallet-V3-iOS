@@ -42,7 +42,7 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
         self.bridge = bridge
         self.client = client
         
-        self.cachedUnspentOutputs = CachedValue<UnspentOutputs>(refreshType: .periodic(10))
+        self.cachedUnspentOutputs = CachedValue<UnspentOutputs>(configuration: .periodicAndLogin(10))
         
         cachedUnspentOutputs.setFetch { [weak self] () -> Single<UnspentOutputs> in
             guard let self = self else {

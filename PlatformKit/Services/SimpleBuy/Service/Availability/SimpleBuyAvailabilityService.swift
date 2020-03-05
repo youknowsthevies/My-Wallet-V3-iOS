@@ -30,7 +30,7 @@ public final class SimpleBuyAvailabilityService: SimpleBuyAvailabilityServiceAPI
     
     // MARK: - Private properties
     
-    private let cachedValue = CachedValue<Bool>()
+    private let cachedValue = CachedValue<Bool>(configuration: .onSubscriptionAndLogin)
     private let pairsService: SimpleBuySupportedPairsInteractorServiceAPI
     private let featureFetcher: FeatureFetching
     private let disposeBag = DisposeBag()

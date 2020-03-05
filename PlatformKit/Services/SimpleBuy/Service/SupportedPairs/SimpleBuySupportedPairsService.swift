@@ -24,7 +24,7 @@ public final class SimpleBuySupportedPairsInteractorService: SimpleBuySupportedP
     
     // MARK: - Private properties
     
-    private let cachedValue = CachedValue<SimpleBuySupportedPairs>()
+    private let cachedValue = CachedValue<SimpleBuySupportedPairs>(configuration: .onSubscriptionAndLogin)
     
     // MARK: - Setup
     

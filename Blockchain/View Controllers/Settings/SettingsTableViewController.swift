@@ -636,7 +636,7 @@ AppSettingsController, UITextFieldDelegate, EmailDelegate, WalletAccountInfoDele
         let settingsService = UserInformationServiceProvider.default.settings
         settingsService
             .fiatCurrency
-            .subscribeOn(MainScheduler.instance)
+            .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: { [weak self] currency in
                 self?.showFiatCurrencySelectionScreen(selectedCurrency: currency)
             })
