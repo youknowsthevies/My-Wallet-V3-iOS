@@ -147,5 +147,41 @@ final class CachedValueTests: XCTestCase {
 
         XCTAssertEqual(result, expectedResults)
     }
+    
+    func testRecoveryFromError() {
+        
+        let expectedValue = "result"
+        let expectedError = NSError(domain: "test-error", code: 0, userInfo: nil)
+        var result: Result<String, NSError>!
+        
+        let configuration = CachedValueConfiguration(refreshType: .onSubscription)
+        let cachedValue = CachedValue<String>(configuration: configuration)
+
+        result = .failure(expectedError)
+
+        cachedValue.setFetch { () -> Observable<String> in
+            switch result! {
+            case .failure(let error):
+                return Observable.error(error)
+            case .success(let element):
+                return Observable.just(element)
+            }
+        }
+        
+        do {
+            let element = try cachedValue.valueObservable.toBlocking().first()!
+            XCTFail("Expected an error to be thrown. Received an element: \(element) instead")
+        } catch {
+            // Okay - an error is expected here
+        }
+        
+        result = .success(expectedValue)
+        do {
+            let element = try cachedValue.valueObservable.toBlocking().first()!
+            XCTAssertEqual(element, expectedValue)
+        } catch {
+            XCTFail("Expected a value to be sent - received an error instead")
+        }
+    }
 }
 

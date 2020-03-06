@@ -19,7 +19,7 @@ public struct CachedValueConfiguration {
         case onSubscription
         
         /// Refresh periodically
-        case periodic(TimeInterval)
+        case periodic(seconds: TimeInterval)
     }
     
     public enum FetchPriority {

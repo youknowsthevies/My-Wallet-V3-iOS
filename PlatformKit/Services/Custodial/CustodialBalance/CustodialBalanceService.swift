@@ -27,19 +27,19 @@ public class CustodialBalanceService: CustodialBalanceServiceAPI {
 
     public func balance(for crypto: CryptoCurrency) -> Single<CustodialBalanceState> {
         return authenticationService
-            .getSessionToken()
-            .map { $0.token }
+            .tokenString
             .flatMap(weak: self) { (self, token: String) -> Single<CustodialBalanceState> in
                 self.balance(for: crypto, with: token)
-        }
+            }
+            .catchErrorJustReturn(.absent)
     }
-
+    
     private func balance(for crypto: CryptoCurrency, with token: String) -> Single<CustodialBalanceState> {
         return client
             .balance(with: token)
             .map { response -> CustodialBalanceState in
                 guard let response = response[crypto] else { return .absent }
                 return .present(CustodialBalance(currency: crypto, response: response))
-        }
+            }
     }
 }

@@ -19,7 +19,7 @@ extension CachedValueConfiguration {
     
     public static func periodicAndLogin(_ time: TimeInterval) -> CachedValueConfiguration {
         .init(
-            refreshType: .periodic(time),
+            refreshType: .periodic(seconds: time),
             flushNotificationName: .logout,
             fetchNotificationName: .login
         )

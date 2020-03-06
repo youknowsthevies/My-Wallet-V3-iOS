@@ -35,7 +35,7 @@ public class CachedValue<Value> {
         case flush
         
         /// The stream erred at some point and is now invalid
-        case invalid
+        case invalid(shouldFetch: Bool)
         
         /// The stream is in midst of claculating next element
         case calculating
@@ -51,6 +51,16 @@ public class CachedValue<Value> {
             default:
                 return nil
             }
+        }
+        
+        var isCalculating: Bool {
+            guard case .calculating = self else { return false }
+            return true
+        }
+        
+        var isInvalid: Bool {
+            guard case .invalid = self else { return false }
+            return true
         }
     }
     
@@ -96,13 +106,14 @@ public class CachedValue<Value> {
         case internalError
         
         public var debugDescription: String {
+            let type = String(describing: Value.self)
             switch self {
             case .fetchFailed:
-                return "⚠️ \(String(describing: self)): error - fetch failed"
+                return "⚠️ Cached Value error - fetch failed for \(type)"
             case .unsetFetchClosure:
-                return "⚠️ \(String(describing: self)): error - `fetch` is not set"
+                return "⚠️ Cached Value error - `fetch` is not set for \(type)"
             case .internalError:
-                return "⚠️ \(String(describing: self)): error - internal error"
+                return "⚠️ Cached Value error - internal error for \(type)"
             }
         }
     }
@@ -124,6 +135,15 @@ public class CachedValue<Value> {
     /// Streams a value upon each refresh.
     public var valueObservable: Observable<Value> {
         stateRelay
+            .do(onSubscribe: { [weak stateRelay] in
+                guard let stateRelay = stateRelay else { return }
+                switch stateRelay.value {
+                case .invalid(false):
+                    stateRelay.accept(.invalid(shouldFetch: true))
+                default:
+                    break
+                }
+            })
             .flatMap(weak: self, fetchPriority: configuration.fetchPriority) { (self, state) -> Observable<StreamType> in
                 let fetch = { () -> Observable<StreamType> in
                     guard let fetch = self.fetch else { return .just(.none) }
@@ -145,8 +165,12 @@ public class CachedValue<Value> {
                     return .just(.none)
                 case .flush:
                     return .just(.none)
-                case .invalid:
-                    throw CacheError.fetchFailed
+                case .invalid(shouldFetch: let shouldFetch):
+                    if shouldFetch {
+                        return fetch()
+                    } else {
+                        throw CacheError.fetchFailed
+                    }
                 case .stream(.private(let value)):
                     if self.refreshControl.shouldRefresh {
                         return fetch()
@@ -158,10 +182,21 @@ public class CachedValue<Value> {
                 }
             }
             .catchError { error in
-                if case ToolKitError.nullReference = error {
+                switch error {
+                case ToolKitError.nullReference:
+                    /// Do nothing on a null reference
+                    return .just(.none)
+                case CacheError.fetchFailed:
+                    /// The fetch has failed - we are in invalid state w/o a refetch option
+                    /// throw the error to be caught down the observable stream
+                    throw error
+                default:
+                    /// If any error other than `ToolKitError.nullReference`
+                    /// or `CacheError.fetchFailed` is thrown, make sure to
+                    /// stream an invalid element w/o a fetch
+                    self.stateRelay.accept(.invalid(shouldFetch: false))
                     return .just(.none)
                 }
-                throw error
             }
             .filter { $0.isPublic }
             .compactMap { $0.value }

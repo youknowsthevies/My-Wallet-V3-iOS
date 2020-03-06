@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import RxSwift
 import PlatformUIKit
 import PlatformKit
 
@@ -45,6 +46,8 @@ import PlatformKit
     @objc var slidingViewController: ECSlidingViewController!
     @objc var tabControllerManager = TabControllerManager.makeFromStoryboard()
     private(set) var sideMenuViewController: SideMenuViewController!
+    
+    private let disposeBag = DisposeBag()
     
     private lazy var accountsAndAddressesNavigationController: AccountsAndAddressesNavigationController = { [unowned self] in
         let storyboard = UIStoryboard(name: "AccountsAndAddresses", bundle: nil)
@@ -404,6 +407,28 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         }
         simpleBuyRouter = SimpleBuyRouter(stateService: stateService)
         simpleBuyRouter.start()
+    }
+    
+    @objc
+    func startBuyUsingCoinifyOrSimpleBuy() {
+        SimpleBuyServiceProvider.default.eligibility
+            .isEligible
+            .take(1)
+            .asSingle()
+            .handleLoaderForLifecycle(
+                loader: loadingViewPresenter,
+                style: .circle
+            )
+            .subscribe(
+                onSuccess: { [weak self] isEligible in
+                    guard let self = self else { return }
+                    if isEligible {
+                        self.startSimpleBuy()
+                    } else if self.walletManager.wallet.isBuyEnabled() {
+                        BuySellCoordinator.shared.showBuyBitcoinView()
+                    }
+                })
+                .disposed(by: disposeBag)
     }
 }
 

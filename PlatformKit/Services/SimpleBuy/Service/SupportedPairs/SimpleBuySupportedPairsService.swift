@@ -24,12 +24,22 @@ public final class SimpleBuySupportedPairsInteractorService: SimpleBuySupportedP
     
     // MARK: - Private properties
     
-    private let cachedValue = CachedValue<SimpleBuySupportedPairs>(configuration: .onSubscriptionAndLogin)
+    private let cachedValue: CachedValue<SimpleBuySupportedPairs>
     
     // MARK: - Setup
     
     public init(pairsService: SimpleBuySupportedPairsServiceAPI,
                 fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI) {
+        
+        cachedValue = .init(
+            configuration: .init(
+                identifier: "simple-buy-supported-pairs",
+                refreshType: .periodic(seconds: 2),
+                fetchPriority: .fetchAll,
+                flushNotificationName: .logout,
+                fetchNotificationName: .login)
+        )
+        
         cachedValue
             .setFetch { () -> Observable<SimpleBuySupportedPairs> in
                 fiatCurrencySettingsService.fiatCurrencyObservable

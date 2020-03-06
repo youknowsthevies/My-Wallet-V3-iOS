@@ -145,7 +145,7 @@ class SideMenuPresenter {
         
         if showSimpleBuy {
             items.append(.simpleBuy)
-        } else {
+        } else if wallet.isBuyEnabled() {
             items.append(.buyBitcoin)
         }
 

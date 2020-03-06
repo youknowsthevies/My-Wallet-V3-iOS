@@ -17,7 +17,7 @@ public final class SimpleBuyEligibilityService: SimpleBuyEligibilityServiceAPI {
         isEligibleCachedValue.valueObservable
     }
     
-    private let isEligibleCachedValue = CachedValue<Bool>(configuration: .onSubscriptionAndLogin)
+    private let isEligibleCachedValue: CachedValue<Bool>
     
     // MARK: - Setup
     
@@ -26,6 +26,16 @@ public final class SimpleBuyEligibilityService: SimpleBuyEligibilityServiceAPI {
                 authenticationService: NabuAuthenticationServiceAPI,
                 fiatCurrencyService: FiatCurrencySettingsServiceAPI,
                 featureFetcher: FeatureFetching) {
+        
+        isEligibleCachedValue = CachedValue(
+            configuration: .init(
+                identifier: "simple-buy-is-eligible",
+                refreshType: .periodic(seconds: 2),
+                fetchPriority: .fetchAll,
+                flushNotificationName: .logout,
+                fetchNotificationName: .login)
+        )
+        
         isEligibleCachedValue
             .setFetch { () -> Observable<Bool> in
                 featureFetcher.fetchBool(for: .simpleBuyEnabled)
