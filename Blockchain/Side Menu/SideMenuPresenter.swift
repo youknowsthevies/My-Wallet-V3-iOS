@@ -27,10 +27,12 @@ class SideMenuPresenter {
     // MARK: Public Properties
     
     var sideMenuItems: Observable<[SideMenuItem]> {
-        interactor.isSimpleBuyEnabled
-            .asObservable()
-            .map(weak: self) { (self, isSimpleBuyEnabled) -> [SideMenuItem] in
-                self.menuItems(showSimpleBuy: isSimpleBuyEnabled)
+        Observable.combineLatest(
+            reactiveWallet.waitUntilInitialized,
+            interactor.isSimpleBuyFlowAvailable
+            )
+            .map(weak: self) { (self, payload) -> [SideMenuItem] in
+                self.menuItems(showSimpleBuy: payload.1)
             }
             .startWith(menuItems(showSimpleBuy: false))
             .observeOn(MainScheduler.instance)
@@ -51,6 +53,7 @@ class SideMenuPresenter {
     
     private let wallet: Wallet
     private let walletService: WalletService
+    private let reactiveWallet: ReactiveWallet
     private let exchangeConfiguration: AppFeatureConfiguration
     private let analyticsRecorder: AnalyticsEventRecording
     private let disposeBag = DisposeBag()
@@ -60,6 +63,7 @@ class SideMenuPresenter {
     init(
         interactor: SideMenuInteractor = SideMenuInteractor(),
         view: SideMenuView,
+        reactiveWallet: ReactiveWallet = ReactiveWallet(),
         wallet: Wallet = WalletManager.shared.wallet,
         walletService: WalletService = WalletService.shared,
         variantFetcher: FeatureVariantFetching = AppFeatureConfigurator.shared,
@@ -70,6 +74,7 @@ class SideMenuPresenter {
         self.interactor = interactor
         self.view = view
         self.wallet = wallet
+        self.reactiveWallet = reactiveWallet
         self.walletService = walletService
         self.exchangeConfiguration = exchangeConfiguration
         self.introInterator = WalletIntroductionInteractor(onboardingSettings: onboardingSettings, screen: .sideMenu)

@@ -10,18 +10,23 @@ import RxSwift
 import PlatformKit
 
 final class SideMenuInteractor {
-   
-    var isSimpleBuyEnabled: Observable<Bool> {
-        simpleBuyEligibilityService.isEligible
-            .catchErrorJustReturn(false)
+
+    var isSimpleBuyFlowAvailable: Observable<Bool> {
+        return service.isSimpleBuyFlowAvailable
     }
-    
-    private let dataRepository: BlockchainDataRepository
-    private let simpleBuyEligibilityService: SimpleBuyEligibilityServiceAPI
-   
-    init(simpleBuyEligibilityService: SimpleBuyEligibilityServiceAPI = SimpleBuyServiceProvider.default.eligibility,
-         dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared) {
-        self.simpleBuyEligibilityService = simpleBuyEligibilityService
-        self.dataRepository = dataRepository
+
+    private let service: SimpleBuyFlowAvailabilityServiceAPI
+
+    convenience init(walletManager: WalletManager = WalletManager.shared,
+                     fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
+                     supportedPairsService: SimpleBuySupportedPairsServiceAPI = SimpleBuyServiceProvider.default.supportedPairs) {
+        let service = SimpleBuyFlowAvailabilityService(coinifyAccountRepository: CoinifyAccountRepository(bridge: walletManager.wallet),
+                                                       fiatCurrencyService: fiatCurrencyService,
+                                                       supportedPairsService: supportedPairsService)
+        self.init(service: service)
+    }
+
+    init(service: SimpleBuyFlowAvailabilityServiceAPI) {
+        self.service = service
     }
 }
