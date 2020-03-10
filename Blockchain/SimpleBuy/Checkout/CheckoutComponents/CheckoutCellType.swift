@@ -14,6 +14,15 @@ enum CheckoutCellType: Hashable {
         case date
         case totalCost
         case paymentAccountField(SimpleBuyPaymentAccountProperty.Field)
+        
+        var content: String? {
+            switch self {
+            case .date, .totalCost:
+                return nil
+            case .paymentAccountField(let field):
+                return field.content
+            }
+        }
     }
     
     case termsAndConditions
@@ -72,7 +81,7 @@ extension CheckoutCellType.LineItemType {
     var analyticsEvent: AnalyticsEvents.SimpleBuy? {
         switch self {
         case .paymentAccountField(.bankCode):
-            return .sbBankDetailsCopied
+            return .sbBankDetailsCopied(bankName: content ?? "")
         default:
             return nil
         }

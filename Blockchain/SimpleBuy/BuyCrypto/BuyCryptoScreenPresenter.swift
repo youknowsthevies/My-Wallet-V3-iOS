@@ -206,12 +206,6 @@ final class BuyCryptoScreenPresenter {
             let checkoutData: SimpleBuyCheckoutData
         }
         
-        continueButtonViewModel
-            .tapRelay
-            .map { AnalyticsEvent.sbBuyFormConfirmClick }
-            .bind(to: analyticsRecorder.recordRelay)
-            .disposed(by: disposeBag)
-        
         let ctaObservable = continueButtonViewModel.tapRelay
             .withLatestFrom(interactor.data)
             .compactMap { $0 }
@@ -229,6 +223,20 @@ final class BuyCryptoScreenPresenter {
                 }
         }
         
+        ctaObservable
+            .compactMap { result -> SimpleBuyCheckoutData? in
+                guard case let .success(state) = result else { return nil }
+                return state.checkoutData
+            }
+            .map {
+                AnalyticsEvent.sbBuyFormConfirmClick(
+                    currencyCode: $0.fiatValue.currencyCode,
+                    amount: $0.fiatValue.toDisplayString()
+                )
+            }
+            .bind(to: analyticsRecorder.recordRelay)
+            .disposed(by: disposeBag)
+            
         ctaObservable
             .map { result -> AnalyticsEvent in
                 switch result {
@@ -265,7 +273,7 @@ final class BuyCryptoScreenPresenter {
             .disposed(by: disposeBag)
         
         interactor.selectedCryptoCurrency
-            .map { _ in AnalyticsEvent.sbBuyFormCryptoChanged }
+            .map { AnalyticsEvent.sbBuyFormCryptoChanged(asset: $0) }
             .bind(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
 

@@ -687,13 +687,16 @@ extension AnalyticsEvents {
         case sbWantToBuyScreenShown
         case sbWantToBuyButtonClicked
         case sbWantToBuyButtonSkip
+        case sbWantToBuyScreenError
         case sbBuyFormShown
-        case sbBuyFormConfirmClick
+        case sbBuyFormConfirmClick(currencyCode: String, amount: String)
         case sbBuyFormConfirmSuccess
-        case sbBuyFormCryptoChanged
+        case sbBuyFormCryptoChanged(asset: CryptoCurrency)
+        case sbBuyFormMinFailure
         case sbBuyFormMinClicked
+        case sbBuyFormMaxFailure
         case sbBuyFormMaxClicked
-        case sbBuyFormFiatChanged
+        case sbBuyFormFiatChanged(currencyCode: String)
         case sbBuyFormConfirmFailure
         case sbKycStart
         case sbKycVerifying
@@ -703,12 +706,13 @@ extension AnalyticsEvents {
         case sbCheckoutShown
         case sbCheckoutConfirm
         case sbCheckoutCancel
+        case sbCheckoutCancelPrompt
         case sbCheckoutCancelConfirmed
         case sbCheckoutCancelGoBack
-        case sbBankDetailsShown
-        case sbBankDetailsCopied
+        case sbBankDetailsShown(currencyCode: String)
+        case sbBankDetailsCopied(bankName: String)
         case sbBankDetailsFinished
-        case sbPendingModalShown
+        case sbPendingModalShown(currencyCode: String)
         case sbPendingModalCancelClick
         case sbPendingBannerShown
         case sbPendingViewBankDetails
@@ -738,6 +742,9 @@ extension AnalyticsEvents {
             // Simple buy - Skip I already have crypto button clicked
             case .sbWantToBuyButtonSkip:
                 return "sb_want_to_buy_button_skip"
+            // Simple buy - I want to buy crypto error (4.1)
+            case .sbWantToBuyScreenError:
+                return "sb_want_to_buy_screen_error"
             // Simple buy - buy form shown (5.0)
             case .sbBuyFormShown:
                 return "sb_buy_form_shown"
@@ -751,9 +758,14 @@ extension AnalyticsEvents {
             case .sbBuyFormCryptoChanged:
                 return "sb_buy_form_crypto_changed"
             // Simple buy - confirm amount min error (5.2)*
+            case .sbBuyFormMinFailure:
+                return "sb_buy_form_min_failure"
             // Simple buy - buy mininum clicked (5.2)
             case .sbBuyFormMinClicked:
                 return "sb_buy_form_min_clicked"
+            // Simple buy - confirm amount max error (5.3)*
+            case .sbBuyFormMaxFailure:
+                return "sb_buy_form_max_failure"
             // Simple buy - buy maximum clicked (5.3)
             case .sbBuyFormMaxClicked:
                 return "sb_buy_form_max_clicked"
@@ -787,6 +799,9 @@ extension AnalyticsEvents {
             // Simple buy - checkout summary press cancel (7.0)
             case .sbCheckoutCancel:
                 return "sb_checkout_cancel"
+            // Simple buy - checkout cancellation prompt shown (7.1)
+            case .sbCheckoutCancelPrompt:
+                return "sb_checkout_cancel_prompt"
             // Simple buy - checkout cancellation confirmed (7.1)
             case .sbCheckoutCancelConfirmed:
                 return "sb_checkout_cancel_confirmed"
@@ -856,6 +871,27 @@ extension AnalyticsEvents {
             // Simple buy - withdraw screen faillure (11.2)
             case .sbWithdrawalScreenFailure:
                 return "sb_withdrawal_screen_failure"
+            }
+        }
+        
+        var params: [String : String]? {
+            switch self {
+            case .sbBankDetailsShown(currencyCode: let currencyCode),
+                 .sbPendingModalShown(currencyCode: let currencyCode),
+                 .sbBuyFormFiatChanged(currencyCode: let currencyCode):
+                return ["currency": currencyCode]
+            case .sbTradingWalletSend(asset: let currency),
+                 .sbTradingWalletClicked(asset: let currency),
+                 .sbWithdrawalScreenShown(asset: let currency),
+                 .sbWithdrawalScreenClicked(asset: let currency):
+                return ["asset": currency.rawValue]
+            case .sbBuyFormConfirmClick(currencyCode: let currencyCode, amount: let amount):
+                return ["currency": currencyCode,
+                        "amount": amount]
+            case .sbBankDetailsCopied(bankName: let bankName):
+                return ["bank field name": bankName]
+            default:
+                return nil
             }
         }
     }

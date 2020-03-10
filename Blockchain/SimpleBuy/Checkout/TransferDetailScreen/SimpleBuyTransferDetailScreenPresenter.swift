@@ -207,11 +207,12 @@ final class SimpleBuyTransferDetailScreenPresenter {
     // MARK: - Analytics
     
     func viewDidLoad() {
+        let currencyCode = interactor.checkoutData.fiatValue.currencyCode
         switch presentationType {
         case .checkoutSummary:
-            analyticsRecorder.record(event: AnalyticsEvent.sbBankDetailsShown)
+            analyticsRecorder.record(event: AnalyticsEvent.sbBankDetailsShown(currencyCode: currencyCode))
         case .pendingOrder:
-            analyticsRecorder.record(event: AnalyticsEvent.sbPendingModalShown)
+            analyticsRecorder.record(event: AnalyticsEvent.sbPendingModalShown(currencyCode: currencyCode))
         }
     }
     
