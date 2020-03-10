@@ -16,7 +16,6 @@ import Foundation
 struct AuthenticationError: Error {
     enum ErrorCode: Int {
         case noInternet = 300
-        case noPassword
         case errorDecryptingWallet
         case invalidSharedKey
         case failedToLoadWallet

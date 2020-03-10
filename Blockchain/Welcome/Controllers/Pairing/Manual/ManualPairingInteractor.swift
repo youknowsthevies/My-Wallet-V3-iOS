@@ -175,7 +175,7 @@ extension ManualPairingInteractor {
         fileprivate let sessionTokenService: SessionTokenServiceAPI
         fileprivate let smsService: SMSServiceAPI
         fileprivate let loginService: LoginServiceAPI
-        fileprivate let walletFetcher: ManualPairingWalletFetching
+        fileprivate let walletFetcher: PairingWalletFetching
         
         /// TODO: Remove from dependencies
         fileprivate let wallet: Wallet
@@ -194,7 +194,7 @@ extension ManualPairingInteractor {
              sessionTokenClient: SessionTokenClientAPI = SessionTokenClient(),
              walletRepository: WalletRepositoryAPI = WalletManager.shared.repository,
              wallet: Wallet = WalletManager.shared.wallet,
-             walletFetcher: ManualPairingWalletFetching = AuthenticationCoordinator.shared) {
+             walletFetcher: PairingWalletFetching = AuthenticationCoordinator.shared) {
             self.wallet = wallet
             self.walletFetcher = walletFetcher
             self.analyticsRecorder = analyticsRecorder

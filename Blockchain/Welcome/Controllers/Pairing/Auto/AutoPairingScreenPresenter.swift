@@ -37,7 +37,7 @@ final class AutoPairingScreenPresenter {
     let navBarStyle = Screen.Style.Bar.lightContent(ignoresStatusBar: false, background: .primary)
     let titleStyle = Screen.Style.TitleView.text(value: LocalizedString.title)
     
-    let scannerBuilder: QRCodeScannerViewControllerBuilder<PairingCodeQRCodeParser>
+    let scannerBuilder: QRCodeScannerViewControllerBuilder<PairingDataQRCodeParser>
     
     /// Streams a fallback action that should take place in case of failure
     var fallbackAction: Signal<FallbackAction> {

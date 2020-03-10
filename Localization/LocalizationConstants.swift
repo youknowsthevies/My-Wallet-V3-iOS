@@ -1114,6 +1114,10 @@ public struct LocalizationConstants {
                 "Forget Wallet",
                 comment: "Forget wallet CTA"
             )
+            public static let loadingLabel = NSLocalizedString(
+                "Loading Your Wallet",
+                comment: "Password required: Loading label after the user inserts password"
+            )
             public static let description = NSLocalizedString(
                 "You have logged out or there was an error decrypting your wallet file. Enter your password below to login.",
                 comment: "Description of Password Required form"

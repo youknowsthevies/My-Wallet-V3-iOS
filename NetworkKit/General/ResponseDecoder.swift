@@ -51,7 +51,7 @@ public protocol NetworkResponseDecoderAPI {
 }
 
 public class NetworkResponseDecoder: NetworkResponseDecoderAPI {
-    
+        
     // FIXME: Fetch decoder from Container (in the future)
     public static let `default` = NetworkResponseDecoder()
     
@@ -182,6 +182,13 @@ public class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         guard let payload = response.payload else {
             throw NetworkCommunicatorError.payloadError(.emptyData)
         }
+        
+        guard ResponseType.self != RawServerResponse.self else {
+            let message = String(data: payload, encoding: .utf8) ?? ""
+            let rawResponse = RawServerResponse(data: message) as! ResponseType
+            return .success(rawResponse)
+        }
+        
         let decodedResponse: ResponseType
         do {
             decodedResponse = try self.jsonDecoder.decode(ResponseType.self, from: payload)
@@ -190,6 +197,7 @@ public class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             let message = String(data: payload, encoding: .utf8) ?? ""
             Logger.shared.debug("Message: \(message)")
             throw NetworkCommunicatorError.payloadError(.badData(rawPayload: message))
+
         }
         return .success(decodedResponse)
     }

@@ -13,11 +13,11 @@ import NetworkKit
 import PlatformKit
 import PlatformUIKit
 
-protocol ManualPairingWalletFetching: class {
+protocol PairingWalletFetching: class {
     func authenticate(using password: String)
 }
 
-extension AuthenticationCoordinator: ManualPairingWalletFetching {
+extension AuthenticationCoordinator: PairingWalletFetching {
     /// A new method for fetching wallet - is being used after manual pairing
     /// TODO: Remove once done migrating JS to native
     func authenticate(using password: String) {
@@ -60,11 +60,7 @@ extension AuthenticationCoordinator: ManualPairingWalletFetching {
     private let walletManager: WalletManager
     private let fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
     private lazy var simpleBuyAvailabilityService: SimpleBuyAvailabilityServiceAPI = SimpleBuyServiceProvider.default.availability
-    private lazy var walletPayloadService = WalletPayloadService(
-        client: WalletPayloadClient(),
-        repository: walletManager.repository
-    )
-    
+
     private let deepLinkRouter: DeepLinkRouter
     private let exchangeRepository: ExchangeAccountRepositoryAPI
         
@@ -392,41 +388,6 @@ extension AuthenticationCoordinator: WalletAuthDelegate {
 
     private func failAuth(withError error: AuthenticationError? = nil) {
         temporaryAuthHandler(false, nil, error)
-    }
-    
-    // MARK: - Authentication with Passcode
-
-    func authenticate(using payload: PasscodePayload) {
-        hasFinishedAuthentication = false
-        authenticate(using: payload, authHandler: authenticationHandler)
-    }
-    
-    /**
-     The function used to authenticate the user using a provided passcode.
-     - Parameters:
-        - payload: The passcode payload used for authenticating the user.
-        - authHandler: The completion handler for the authentication
-     */
-    func authenticate(using payload: PasscodePayload,
-                      authHandler: @escaping WalletAuthHandler) {
-        guard Reachability.hasInternetConnection() else {
-            authHandler(false, nil, AuthenticationError(code: AuthenticationError.ErrorCode.noInternet.rawValue))
-            return
-        }
-
-        guard payload.password.isEmpty == false else {
-            authHandler(false, nil, AuthenticationError(
-                code: AuthenticationError.ErrorCode.noPassword.rawValue,
-                description: LocalizationConstants.Authentication.noPasswordEntered
-            ))
-            return
-        }
-
-        temporaryAuthHandler = authHandler
-        
-        loadingViewPresenter.showCircular(with: LocalizationConstants.Authentication.loadingWallet)
-
-        walletManager.wallet.load(withGuid: payload.guid, sharedKey: payload.sharedKey, password: payload.password)
     }
 }
 

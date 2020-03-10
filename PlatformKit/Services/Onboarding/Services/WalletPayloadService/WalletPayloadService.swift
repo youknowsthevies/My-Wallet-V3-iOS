@@ -60,8 +60,8 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
             }
     }
     
-    /// Performs the request using cached GUID and shared key
-    private func request(guid: String, sharedKey: String) -> Completable {
+    /// Performs the request using given parameters: guid and shared-key
+    public func request(guid: String, sharedKey: String) -> Completable {
         return client
             .payload(guid: guid, identifier: .sharedKey(sharedKey))
             .flatMap(weak: self) { (self, response) -> Single<WalletPayloadClient.ClientResponse> in

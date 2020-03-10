@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxRelay
 import RxSwift
+import RxRelay
 import ToolKit
 import PlatformKit
 
@@ -20,28 +20,52 @@ final class AutoPairingScreenInteractor {
         return errorRelay.asObservable()
     }
     
-    let parser = PairingCodeQRCodeParser()
-    private let authenticationCoordinator: AuthenticationCoordinator
+    let parser = PairingDataQRCodeParser()
+    
+    /// The service responsible for taking the parser code and the login using it
+    private let service: AutoWalletPairingServiceAPI
+    
+    private let walletFetcher: PairingWalletFetching
+    
     private let analyticsRecorder: AnalyticsEventRecording
     private let errorRelay = PublishRelay<Error>()
 
+    private let disposeBag = DisposeBag()
+    
     // MARK: - Setup
     
-    init(authenticationCoordinator: AuthenticationCoordinator = .shared,
+    init(service: AutoWalletPairingServiceAPI = AutoWalletPairingService(
+            repository: WalletManager.shared.repository,
+            jsContextProvider: WalletManager.shared
+        ),
+         walletFetcher: PairingWalletFetching = AuthenticationCoordinator.shared,
          analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared) {
+        self.service = service
         self.analyticsRecorder = analyticsRecorder
-        self.authenticationCoordinator = authenticationCoordinator
+        self.walletFetcher = walletFetcher
     }
     
-    func handlePairingCodeResult(result: Result<PairingCodeQRCodeParser.PairingCode,
-                                                PairingCodeQRCodeParser.PairingCodeParsingError>) {
+    /// Receives the result of the paiting code and passes it on to the login service
+    func handlePairingCodeResult(result: Result<PairingData, PairingDataQRCodeParser.PairingCodeParsingError>) {
         switch result {
         case .success(let pairingCode):
             analyticsRecorder.record(event: AnalyticsEvents.Onboarding.walletAutoPairing)
-            authenticationCoordinator.authenticate(using: pairingCode.passcodePayload)
+            login(with: pairingCode)
         case .failure(let error):
             analyticsRecorder.record(event: AnalyticsEvents.Onboarding.walletAutoPairingError)
             errorRelay.accept(error)
         }
+    }
+    
+    // MARK: - Private methods
+    
+    /// Login using pairing data retrieved from parsing the QR code
+    private func login(with pairingData: PairingData) {
+        service.pair(using: pairingData)
+            .subscribe(
+                onSuccess: walletFetcher.authenticate,
+                onError: errorRelay.accept
+            )
+            .disposed(by: disposeBag)
     }
 }

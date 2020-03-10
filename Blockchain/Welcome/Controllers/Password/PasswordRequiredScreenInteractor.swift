@@ -12,45 +12,52 @@ import PlatformKit
 
 final class PasswordRequiredScreenInteractor {
     
-    // MARK: - Types
-    
-    enum ErrorType: Error {
-        case keychain
-    }
-    
     // MARK: - Properties
     
     /// Streams potential parsing errors
-    var error: Observable<ErrorType> {
+    var error: Observable<Error> {
         return errorRelay.asObservable()
     }
     
     /// Relay that accepts and streams the payload content
     let passwordRelay = BehaviorRelay<String>(value: "")
 
-    private let authenticationService: AuthenticationCoordinator
+    private let walletPayloadService: WalletPayloadServiceAPI
+    private let walletFetcher: PairingWalletFetching
     private let appSettings: BlockchainSettings.App
     private let walletManager: WalletManager
-    private let errorRelay = PublishRelay<ErrorType>()
+    
+    /// TODO: Consider the various of error types from the service layer,
+    /// translate them into a interaction layer errors
+    private let errorRelay = PublishRelay<Error>()
+    
+    private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
-    init(walletManager: WalletManager = .shared,
-         authenticationService: AuthenticationCoordinator = .shared,
+    init(walletPayloadService: WalletPayloadServiceAPI = WalletPayloadService(
+        repository: WalletManager.shared.repository
+        ),
+         walletManager: WalletManager = .shared,
+         walletFetcher: PairingWalletFetching = AuthenticationCoordinator.shared,
          appSettings: BlockchainSettings.App = .shared) {
+        self.walletPayloadService = walletPayloadService
         self.walletManager = walletManager
-        self.authenticationService = authenticationService
+        self.walletFetcher = walletFetcher
         self.appSettings = appSettings
     }
     
     /// Authenticates the wallet
     func authenticate() {
-        guard let guid = appSettings.guid, let sharedKey = appSettings.sharedKey else {
-            errorRelay.accept(ErrorType.keychain)
-            return
-        }
-        let payload = PasscodePayload(guid: guid, password: passwordRelay.value, sharedKey: sharedKey)
-        authenticationService.authenticate(using: payload)
+        walletPayloadService.requestUsingSharedKey()
+            .subscribe(
+                onCompleted: { [weak self] in
+                    guard let self = self else { return }
+                    self.walletFetcher.authenticate(using: self.passwordRelay.value)
+                },
+                onError: errorRelay.accept
+            )
+            .disposed(by: disposeBag)
     }
     
     /// Forgets the wallet

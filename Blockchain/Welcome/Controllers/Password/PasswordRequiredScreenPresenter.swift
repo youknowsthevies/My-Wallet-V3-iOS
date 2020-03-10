@@ -45,6 +45,7 @@ final class PasswordRequiredScreenPresenter {
     
     // MARK: - Injected
     
+    private let loadingViewPresenter: LoadingViewPresenting
     private let launchAnnouncementPresenter: LaunchAnnouncementPresenter
     private let interactor: PasswordRequiredScreenInteractor
     private let alertPresenter: AlertViewPresenter
@@ -59,10 +60,12 @@ final class PasswordRequiredScreenPresenter {
     
     // MARK: - Setup
     
-    init(onboardingRouter: OnboardingRouter = AppCoordinator.shared.onboardingRouter,
+    init(loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
+         onboardingRouter: OnboardingRouter = AppCoordinator.shared.onboardingRouter,
          launchAnnouncementPresenter: LaunchAnnouncementPresenter = LaunchAnnouncementPresenter(),
          interactor: PasswordRequiredScreenInteractor = PasswordRequiredScreenInteractor(),
          alertPresenter: AlertViewPresenter = .shared) {
+        self.loadingViewPresenter = loadingViewPresenter
         self.onboardingRouter = onboardingRouter
         self.launchAnnouncementPresenter = launchAnnouncementPresenter
         self.alertPresenter = alertPresenter
@@ -119,14 +122,11 @@ final class PasswordRequiredScreenPresenter {
     func viewWillAppear() {
         launchAnnouncementPresenter.execute()
     }
-    
+
+    /// TODO: Refactor when the interaction layer and `AuthenticationCoordinator` are refactored.
     /// Handles any interaction error
-    private func handle(error: PasswordRequiredScreenInteractor.ErrorType) {
-        /// TODO: Refactor when the interaction layer and `AuthenticationCoordinator` are refactored.
-        switch error {
-        case .keychain:
-            alertPresenter.showKeychainReadError()
-        }
+    private func handle(error: Error) {
+        alertPresenter.showKeychainReadError()
     }
     
     private func showForgetWalletAlert() {
@@ -166,6 +166,7 @@ final class PasswordRequiredScreenPresenter {
     
     /// Authenticate
     private func authenticate() {
+        loadingViewPresenter.showCircular(with: LocalizedString.loadingLabel)
         interactor.authenticate()
     }
 }
