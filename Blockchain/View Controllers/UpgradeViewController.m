@@ -166,18 +166,14 @@
 {
     [super viewDidLayoutSubviews];
     
-    if([[UIDevice currentDevice]userInterfaceIdiom]==UIUserInterfaceIdiomPhone)
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        if (!(IS_USING_SCREEN_SIZE_4S))
-        {
-            // Not iphone 4s
-            self.upgradeButtonToPageControlConstraint.constant = 35;
-            self.askLaterButtonToBottomConstraint.constant = 15;
-            self.scrollViewToPageControlConstraint.constant = 8;
-            self.captionLabelToTopConstraint.constant = 12;
-            self.scrollViewToCaptionLabelConstraint.constant = 16;
-            [self.view layoutIfNeeded];
-        }
+        self.upgradeButtonToPageControlConstraint.constant = 35;
+        self.askLaterButtonToBottomConstraint.constant = 15;
+        self.scrollViewToPageControlConstraint.constant = 8;
+        self.captionLabelToTopConstraint.constant = 12;
+        self.scrollViewToCaptionLabelConstraint.constant = 16;
+        [self.view layoutIfNeeded];
     }
     
     CGSize pagesScrollViewSize = self.scrollView.frame.size;

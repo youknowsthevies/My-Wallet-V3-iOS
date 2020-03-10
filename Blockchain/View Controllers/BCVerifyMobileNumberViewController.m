@@ -34,14 +34,9 @@
         [super loadView];
     }
     
-    CGFloat promptFrameAdjustY = 0;
-    CGFloat textFieldFrameAdjustY = 0;
-    
-    if (!(IS_USING_SCREEN_SIZE_4S)) {
-        promptFrameAdjustY = 8;
-        textFieldFrameAdjustY = 20;
-    }
-    
+    CGFloat promptFrameAdjustY = 8;
+    CGFloat textFieldFrameAdjustY = 20;
+
     UILabel *promptLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, DEFAULT_HEADER_HEIGHT + 16 + promptFrameAdjustY, self.view.frame.size.width - 80, 140)];
     promptLabel.numberOfLines = 7;
     promptLabel.textAlignment = NSTextAlignmentCenter;

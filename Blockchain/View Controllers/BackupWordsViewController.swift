@@ -76,11 +76,8 @@ class BackupWordsViewController: UIViewController, SecondPasswordDelegate, UIScr
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        var bottomPadding: CGFloat = 0
-        if #available(iOS 11.0, *) {
-            let window = UIApplication.shared.keyWindow
-            bottomPadding = window?.safeAreaInsets.bottom ?? 0
-        }
+        let window = UIApplication.shared.keyWindow
+        let bottomPadding: CGFloat = window?.safeAreaInsets.bottom ?? 0
 
         UIView .animate(withDuration: 0.3, animations: {
             var posX: CGFloat = 0

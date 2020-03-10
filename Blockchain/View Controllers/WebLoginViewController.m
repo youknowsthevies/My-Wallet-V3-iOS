@@ -95,13 +95,11 @@ const float qrSize = 230;
 
 - (void)setupQRCodeViews
 {
-    CGFloat verticalOffset = IS_USING_SCREEN_SIZE_4S ? 25 : 0;
-
     self.QRCodeButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 240, BUTTON_HEIGHT)];
     [self.QRCodeButton setTitle:[BC_STRING_SHOW_QR_CODE uppercaseString] forState:UIControlStateNormal];
     self.QRCodeButton.titleLabel.font = [UIFont fontWithName:FONT_MONTSERRAT_REGULAR size:FONT_SIZE_MEDIUM];
     self.QRCodeButton.backgroundColor = UIColor.brandSecondary;
-    self.QRCodeButton.center = CGPointMake(self.view.center.x, self.view.center.y + verticalOffset);
+    self.QRCodeButton.center = CGPointMake(self.view.center.x, self.view.center.y);
     self.QRCodeButton.layer.cornerRadius = CORNER_RADIUS_BUTTON;
     [self.QRCodeButton addTarget:self action:@selector(toggleQRCode) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.QRCodeButton];
@@ -113,11 +111,11 @@ const float qrSize = 230;
     self.QRInstructionLabel.frame = CGRectMake(0, 0, self.view.frame.size.width - 20, 50);
     self.QRInstructionLabel.textAlignment = NSTextAlignmentCenter;
     self.QRInstructionLabel.numberOfLines = 2;
-    self.QRInstructionLabel.center = CGPointMake(self.view.center.x, self.view.center.y - 50 + verticalOffset);
+    self.QRInstructionLabel.center = CGPointMake(self.view.center.x, self.view.center.y - 50);
     [self.view addSubview:self.QRInstructionLabel];
     
     qrCodeMainImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, qrSize, qrSize)];
-    qrCodeMainImageView.center = CGPointMake(self.view.center.x, self.view.center.y - DEFAULT_HEADER_HEIGHT + verticalOffset);
+    qrCodeMainImageView.center = CGPointMake(self.view.center.x, self.view.center.y - DEFAULT_HEADER_HEIGHT);
     qrCodeMainImageView.contentMode = UIViewContentModeScaleAspectFit;
     qrCodeMainImageView.hidden = YES;
     [self.view addSubview:qrCodeMainImageView];
@@ -134,12 +132,10 @@ const float qrSize = 230;
             self->qrCodeMainImageView.alpha = 0.0;
             
             self.QRInstructionLabel.text = BC_STRING_WEB_LOGIN_QR_INSTRUCTION_LABEL_HIDDEN;
-            
-            CGFloat verticalOffset = IS_USING_SCREEN_SIZE_4S ? 25 : 0;
 
-            self.QRInstructionLabel.center = CGPointMake(self.view.center.x, self.originalCenter.y - 50 + verticalOffset);
+            self.QRInstructionLabel.center = CGPointMake(self.view.center.x, self.originalCenter.y - 50);
             
-            self.QRCodeButton.center = CGPointMake(self.view.center.x, self.originalCenter.y + verticalOffset);
+            self.QRCodeButton.center = CGPointMake(self.view.center.x, self.originalCenter.y);
             [self.QRCodeButton setTitle:BC_STRING_SHOW_QR_CODE forState:UIControlStateNormal];
         } completion:^(BOOL finished) {
             self->qrCodeMainImageView.hidden = YES;

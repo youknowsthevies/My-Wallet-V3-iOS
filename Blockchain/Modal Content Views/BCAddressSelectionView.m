@@ -15,6 +15,8 @@
 
 #define DICTIONARY_KEY_ACCOUNTS @"accounts"
 #define DICTIONARY_KEY_ACCOUNT_LABELS @"accountLabels"
+#define ROW_HEIGHT 68
+#define ROW_HEIGHT_ACCOUNT 44
 
 @implementation BCAddressSelectionView
 

@@ -34,16 +34,12 @@
 {
     [super viewDidLoad];
 
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
-    CGFloat safeAreaInsetTop = 20;
+    UIViewController *rootViewController = UIApplication.sharedApplication.keyWindow.rootViewController;
     CGFloat assetSelectorHeight = [ConstantsObjcBridge assetSelectorHeight];
-    if (@available(iOS 11.0, *)) {
-        safeAreaInsetTop = window.rootViewController.view.safeAreaInsets.top;
-        CGRect frame = [UIApplication sharedApplication].keyWindow.rootViewController.view.safeAreaLayoutGuide.layoutFrame;
-        self.view.frame = CGRectMake(0, assetSelectorHeight, frame.size.width, frame.size.height);
-    } else {
-        self.view.frame = CGRectMake(0, assetSelectorHeight, window.frame.size.width, window.frame.size.height - safeAreaInsetTop);
-    }
+    CGFloat safeAreaInsetTop = rootViewController.view.safeAreaInsets.top;
+    CGRect layoutFrame = rootViewController.view.safeAreaLayoutGuide.layoutFrame;
+    self.view.frame = CGRectMake(0, assetSelectorHeight, layoutFrame.size.width, layoutFrame.size.height);
+
 
     self.view.backgroundColor = UIColor.lightGray;
     self.accountsAndAddressesNavigationController = (AccountsAndAddressesNavigationController *)self.navigationController;
@@ -86,10 +82,6 @@
 {
     [super viewWillAppear:animated];
     [self.accountsAndAddressesNavigationController.assetSelectorView show];
-    
-    if (IS_USING_SCREEN_SIZE_4S) {
-        self.edgesForExtendedLayout = UIRectEdgeNone;
-    }
 
     [self displayTransferFundsWarningIfAppropriate];
 }
@@ -312,9 +304,6 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
-    if (IS_USING_SCREEN_SIZE_4S && section == [tableView numberOfSections] - 1) {
-        return DEFAULT_HEADER_HEIGHT;
-    }
     return 0;
 }
 

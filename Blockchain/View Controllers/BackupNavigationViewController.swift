@@ -51,11 +51,8 @@ import PlatformUIKit
     override func viewDidLoad() {
         super.viewDidLoad()
         let viewWidth = self.view.frame.size.width
-        var topPadding: CGFloat = 0
-        if #available(iOS 11.0, *) {
-            let window = UIApplication.shared.keyWindow
-            topPadding = window?.safeAreaInsets.top ?? 0
-        }
+        let window = UIApplication.shared.keyWindow
+        let topPadding: CGFloat = window?.safeAreaInsets.top ?? 0
         let hasTopPadding = topPadding > 0
         topBar = UIView(frame: CGRect(x: 0, y: topPadding, width: viewWidth, height: hasTopPadding ? 44 : Constants.Measurements.DefaultHeaderHeight))
         topBar.backgroundColor = .brandPrimary

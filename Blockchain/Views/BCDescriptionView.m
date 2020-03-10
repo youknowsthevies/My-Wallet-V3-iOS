@@ -33,7 +33,6 @@
     
     if (self.tableView) {
         [self.tableView changeHeight:self.originalTableViewHeight];
-        [self moveViewsDownForSmallScreens];
         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
     }
 }
@@ -45,39 +44,9 @@
     if (self.tableView) {
         self.originalTableViewHeight = self.tableView.frame.size.height;
         [self.tableView changeHeight:self.descriptionCellHeight];
-        [self moveViewsUpForSmallScreens];
         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
     } else {
         [self.descriptionTextView becomeFirstResponder];
-    }
-}
-
-- (void)moveViewsUpForSmallScreens
-{
-    if (IS_USING_SCREEN_SIZE_4S) {
-        
-        self.topView.hidden = YES;
-        
-        [UIView animateWithDuration:ANIMATION_DURATION_LONG animations:^{
-            [self.tableView changeYPosition:0];
-        }];
-    }
-}
-
-- (void)moveViewsDownForSmallScreens
-{
-    if (IS_USING_SCREEN_SIZE_4S) {
-        
-        self.topView.alpha = 0;
-        self.topView.hidden = NO;
-        
-        [UIView animateWithDuration:ANIMATION_DURATION_LONG animations:^{
-            [self.tableView changeYPosition:self.topView.frame.origin.y + self.topView.frame.size.height];
-        } completion:^(BOOL finished) {
-            [UIView animateWithDuration:ANIMATION_DURATION animations:^{
-                self.topView.alpha = 1;
-            }];
-        }];
     }
 }
 

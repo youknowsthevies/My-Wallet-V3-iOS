@@ -13,7 +13,6 @@
 #import "BCConfirmPaymentViewModel.h"
 
 #define CELL_HEIGHT_DEFAULT 60
-#define CELL_HEIGHT_SMALL 44
 
 @interface BCConfirmPaymentView () <UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate>
 @property (nonatomic) BCSecureTextField *descriptionField;
@@ -134,7 +133,7 @@
 
 - (CGFloat)getCellHeight
 {
-    return IS_USING_SCREEN_SIZE_4S && (self.viewModel.warningText || self.rows.count > 4) ? CELL_HEIGHT_SMALL : CELL_HEIGHT_DEFAULT;
+    return CELL_HEIGHT_DEFAULT;
 }
 
 #pragma mark - Text Field Delegate

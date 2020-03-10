@@ -84,12 +84,7 @@ class LoginContainerViewController: UIViewController {
         pageControl.numberOfPages = inputs.count - 1
         pageControl.alpha = 0
         pageControl.accessibilityIdentifier = AccessibilityIdentifiers.Address.pageControl
-        
-        // TODO: Remove availability check when upgrading to iOS 11
-        if #available(iOS 11, *) {
-            translationAnimator.pausesOnCompletion = true
-        }
-        
+        translationAnimator.pausesOnCompletion = true
         view.layoutIfNeeded()
     }
     
@@ -202,15 +197,6 @@ extension LoginContainerViewController {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let maxOffset = scrollView.bounds.width
-        let normalizedOffset = max(min(scrollView.contentOffset.x, maxOffset), 0)
-        
-        // TODO: This is a trick, meant to prevent the animator to complete, thus reaching `inactive` state.
-        // Once we upgrade to iOS 11, we will be able to remove this `min` check
-        // as the animator's `pausesOnCompletion` equals `true`.
-        let fraction = min(normalizedOffset / maxOffset, 0.99)
-        translationAnimator.fractionComplete = fraction
-        
         if !isPageControlCurrentlyInteracted && scrollView.contentSize.width > 0 {
             let offset = scrollView.contentOffset.x - scrollView.bounds.width * 0.5
             let page = Int(offset / scrollView.contentSize.width * CGFloat(inputs.count))

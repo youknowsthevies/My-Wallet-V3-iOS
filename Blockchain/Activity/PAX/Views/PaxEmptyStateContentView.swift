@@ -63,19 +63,8 @@ class PaxEmptyStateContentView: UIStackView {
             iconImageView.widthAnchor.constraint(equalToConstant: 49.0),
             iconImageView.heightAnchor.constraint(equalToConstant: 49.0)
             ])
-        
-        if #available(iOS 11.0, *) {
-            setCustomSpacing(24.0, after: iconImageView)
-        } else {
-            let spacerView = UIView()
-            spacerView.backgroundColor = UIColor.clear
-            spacerView.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                spacerView.widthAnchor.constraint(equalToConstant: 1.0),
-                spacerView.heightAnchor.constraint(equalToConstant: 1.0)
-                ])
-            addArrangedSubview(spacerView)
-        }
+
+        setCustomSpacing(24.0, after: iconImageView)
         
         titleLabel = UILabel()
         titleLabel.numberOfLines = 0

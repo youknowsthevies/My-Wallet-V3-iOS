@@ -251,19 +251,17 @@ AppSettingsController, UITextFieldDelegate, EmailDelegate, WalletAccountInfoDele
      */
     func biometryTypeDescription() -> String? {
         let context = LAContext()
-        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil) {
-            if #available(iOS 11.0, *) {
-                if context.biometryType == .faceID {
-                    return LocalizationConstants.faceId
-                }
-            } else {
-                return LocalizationConstants.touchId
-                // Fallback on earlier versions
-            }
+        guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil) else {
+            return nil
+        }
+        switch context.biometryType {
+        case .faceID:
+            return LocalizationConstants.faceId
+        default:
             return LocalizationConstants.touchId
         }
-        return nil
     }
+
     @objc func biometrySwitchTapped(_ sender: UISwitch) {
         analyticsRecorder.record(event: AnalyticsEvents.Settings.settingsBiometryAuthSwitch(value: sender.isOn))
         switch biometryProvider.canAuthenticate {

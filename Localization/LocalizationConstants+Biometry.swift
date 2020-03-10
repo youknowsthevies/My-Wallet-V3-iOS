@@ -12,7 +12,6 @@ public extension LocalizationConstants {
             "Touch ID is not enabled on this device. To enable Touch ID, go to Settings -> Touch ID & Passcode and add a fingerprint.",
             comment: "The error description for when the user is not enrolled in biometric authentication."
         )
-        //: Biometry Authentication Errors (only available on iOS 11, possibly including newer versions)
         public static let biometricsLockout = NSLocalizedString(
             "Unable to authenticate due to failing authentication too many times.",
             comment: "The error description for when the user has made too many failed authentication attempts using biometrics."
