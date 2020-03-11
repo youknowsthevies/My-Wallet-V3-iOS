@@ -50,7 +50,6 @@ class SideMenuPresenter {
     
     private let wallet: Wallet
     private let walletService: WalletService
-    private let reactiveWallet: ReactiveWallet
     private let exchangeConfiguration: AppFeatureConfiguration
     private let analyticsRecorder: AnalyticsEventRecording
     private let disposeBag = DisposeBag()
@@ -60,7 +59,6 @@ class SideMenuPresenter {
     init(
         interactor: SideMenuInteractor = SideMenuInteractor(),
         view: SideMenuView,
-        reactiveWallet: ReactiveWallet = ReactiveWallet(),
         wallet: Wallet = WalletManager.shared.wallet,
         walletService: WalletService = WalletService.shared,
         variantFetcher: FeatureVariantFetching = AppFeatureConfigurator.shared,
@@ -71,7 +69,6 @@ class SideMenuPresenter {
         self.interactor = interactor
         self.view = view
         self.wallet = wallet
-        self.reactiveWallet = reactiveWallet
         self.walletService = walletService
         self.exchangeConfiguration = exchangeConfiguration
         self.introInterator = WalletIntroductionInteractor(onboardingSettings: onboardingSettings, screen: .sideMenu)
