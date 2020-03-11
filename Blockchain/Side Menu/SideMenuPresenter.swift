@@ -27,10 +27,9 @@ class SideMenuPresenter {
     // MARK: Public Properties
     
     var sideMenuItems: Observable<[SideMenuItem]> {
-        interactor.isSimpleBuyEnabled
-            .asObservable()
-            .map(weak: self) { (self, isSimpleBuyEnabled) -> [SideMenuItem] in
-                self.menuItems(showSimpleBuy: isSimpleBuyEnabled)
+        interactor.isSimpleBuyFlowAvailable
+            .map(weak: self) { (self, isSimpleBuyFlowAvailable) -> [SideMenuItem] in
+                self.menuItems(showSimpleBuy: isSimpleBuyFlowAvailable)
             }
             .startWith(menuItems(showSimpleBuy: false))
             .observeOn(MainScheduler.instance)

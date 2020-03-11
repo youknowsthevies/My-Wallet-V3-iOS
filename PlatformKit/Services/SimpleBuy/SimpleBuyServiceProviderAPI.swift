@@ -14,6 +14,7 @@ public protocol SimpleBuyServiceProviderAPI: class {
     var suggestedAmounts: SimpleBuySuggestedAmountsServiceAPI { get }
     var ordersDetails: SimpleBuyOrdersServiceAPI { get }
     var pendingOrderDetails: SimpleBuyPendingOrderDetailsServiceAPI { get }
+    var flowAvailability: SimpleBuyFlowAvailabilityServiceAPI { get }
     var availability: SimpleBuyAvailabilityServiceAPI { get }
     var eligibility: SimpleBuyEligibilityServiceAPI { get }
     var orderCreation: SimpleBuyOrderCreationServiceAPI { get }

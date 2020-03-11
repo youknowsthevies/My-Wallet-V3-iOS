@@ -536,7 +536,6 @@
 		3A53B94F213466580020ECAD /* ExchangeListHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A53B94E213466580020ECAD /* ExchangeListHeaderView.swift */; };
 		3A53B95B213466670020ECAD /* ExchangeListHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A53B95A213466670020ECAD /* ExchangeListHeaderView.xib */; };
 		3A53DAFA2266180800CBCB6E /* CoinifyAccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A53DAF92266180800CBCB6E /* CoinifyAccountRepository.swift */; };
-		3A53DB21226E20AD00CBCB6E /* CoinifyMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A53DB20226E20AD00CBCB6E /* CoinifyMetadata.swift */; };
 		3A53DB63226FA6F500CBCB6E /* SendPaxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A53DB62226FA6F500CBCB6E /* SendPaxViewController.swift */; };
 		3A53DB66226FA70600CBCB6E /* SendPaxViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3A53DB65226FA70600CBCB6E /* SendPaxViewController.storyboard */; };
 		3A55854922A04FD40046168C /* SendMoniesInternalError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A55854822A04FD40046168C /* SendMoniesInternalError.swift */; };
@@ -619,6 +618,9 @@
 		3A6A1A2921B9A64D00D97C74 /* EthereumKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A6A1A1921B9A64D00D97C74 /* EthereumKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3A6A1A2C21B9A64D00D97C74 /* EthereumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A6A1A1721B9A64D00D97C74 /* EthereumKit.framework */; };
 		3A6A1A2D21B9A64D00D97C74 /* EthereumKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3A6A1A1721B9A64D00D97C74 /* EthereumKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A6BCAB82417EC1300111D08 /* SimpleBuyFlowAvailabilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6BCAB72417EC1300111D08 /* SimpleBuyFlowAvailabilityService.swift */; };
+		3A6BCABB2417F9F200111D08 /* CoinifyAccountRepositoryAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6BCABA2417F9F200111D08 /* CoinifyAccountRepositoryAPI.swift */; };
+		3A6BCABD2417FA5700111D08 /* SimpleBuyFlowAvailabilityServiceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6BCABC2417FA5700111D08 /* SimpleBuyFlowAvailabilityServiceAPI.swift */; };
 		3A6EE96723ED927D00E614B5 /* KYCTierUpdatePollingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6EE96623ED927D00E614B5 /* KYCTierUpdatePollingService.swift */; };
 		3A6EE96923ED933900E614B5 /* KYCAccountStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6EE96823ED933900E614B5 /* KYCAccountStatus.swift */; };
 		3A6EE96B23ED93BF00E614B5 /* KYCTier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6EE96A23ED93BF00E614B5 /* KYCTier.swift */; };
@@ -3207,7 +3209,6 @@
 		3A53B94E213466580020ECAD /* ExchangeListHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeListHeaderView.swift; sourceTree = "<group>"; };
 		3A53B95A213466670020ECAD /* ExchangeListHeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ExchangeListHeaderView.xib; sourceTree = "<group>"; };
 		3A53DAF92266180800CBCB6E /* CoinifyAccountRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinifyAccountRepository.swift; sourceTree = "<group>"; };
-		3A53DB20226E20AD00CBCB6E /* CoinifyMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinifyMetadata.swift; sourceTree = "<group>"; };
 		3A53DB62226FA6F500CBCB6E /* SendPaxViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendPaxViewController.swift; sourceTree = "<group>"; };
 		3A53DB65226FA70600CBCB6E /* SendPaxViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SendPaxViewController.storyboard; sourceTree = "<group>"; };
 		3A55854822A04FD40046168C /* SendMoniesInternalError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMoniesInternalError.swift; sourceTree = "<group>"; };
@@ -3289,6 +3290,9 @@
 		3A6A1A1F21B9A64D00D97C74 /* EthereumKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EthereumKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A6A1A2621B9A64D00D97C74 /* EthereumKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumKitTests.swift; sourceTree = "<group>"; };
 		3A6A1A2821B9A64D00D97C74 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3A6BCAB72417EC1300111D08 /* SimpleBuyFlowAvailabilityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleBuyFlowAvailabilityService.swift; sourceTree = "<group>"; };
+		3A6BCABA2417F9F200111D08 /* CoinifyAccountRepositoryAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinifyAccountRepositoryAPI.swift; sourceTree = "<group>"; };
+		3A6BCABC2417FA5700111D08 /* SimpleBuyFlowAvailabilityServiceAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleBuyFlowAvailabilityServiceAPI.swift; sourceTree = "<group>"; };
 		3A6EE96623ED927D00E614B5 /* KYCTierUpdatePollingService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KYCTierUpdatePollingService.swift; sourceTree = "<group>"; };
 		3A6EE96823ED933900E614B5 /* KYCAccountStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KYCAccountStatus.swift; sourceTree = "<group>"; };
 		3A6EE96A23ED93BF00E614B5 /* KYCTier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KYCTier.swift; sourceTree = "<group>"; };
@@ -9273,6 +9277,23 @@
 			path = EthereumKitTests;
 			sourceTree = "<group>";
 		};
+		3A6BCAB62417EBF400111D08 /* FlowAvailability */ = {
+			isa = PBXGroup;
+			children = (
+				3A6BCAB72417EC1300111D08 /* SimpleBuyFlowAvailabilityService.swift */,
+				3A6BCABC2417FA5700111D08 /* SimpleBuyFlowAvailabilityServiceAPI.swift */,
+			);
+			path = FlowAvailability;
+			sourceTree = "<group>";
+		};
+		3A6BCAB92417F9E500111D08 /* Coinify */ = {
+			isa = PBXGroup;
+			children = (
+				3A6BCABA2417F9F200111D08 /* CoinifyAccountRepositoryAPI.swift */,
+			);
+			path = Coinify;
+			sourceTree = "<group>";
+		};
 		3A6EE96423ED926700E614B5 /* KYC */ = {
 			isa = PBXGroup;
 			children = (
@@ -9468,6 +9489,7 @@
 		3A8473A4219A434F00F22FA6 /* Accounts */ = {
 			isa = PBXGroup;
 			children = (
+				3A6BCAB92417F9E500111D08 /* Coinify */,
 				3AADB30921B0882B00FD2974 /* WalletAccountAPIs */,
 				3AADB30621B0846900FD2974 /* AssetAccountAPIs */,
 				3A9B285221A4CD0300DB46C7 /* KeyPair */,
@@ -10647,7 +10669,6 @@
 				3A8B2291211E228C0091E706 /* KYCPageType.swift */,
 				AA54E484216D20C8005061F9 /* KYCState.swift */,
 				AADF6B0621BDE34800F8CA43 /* KYCTier.swift */,
-				3A53DB20226E20AD00CBCB6E /* CoinifyMetadata.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -13553,6 +13574,7 @@
 		65B3F78023E099EC00305812 /* Service */ = {
 			isa = PBXGroup;
 			children = (
+				3A6BCAB62417EBF400111D08 /* FlowAvailability */,
 				65DC8DA223FC382C005785C1 /* OrderCancellation */,
 				65D3862023FC034700434CC2 /* PendingOrderDetails */,
 				6505E60423F6BF53005786BA /* Eligibility */,
@@ -18684,6 +18706,7 @@
 				3A6EE97923EDB6C300E614B5 /* KYC.swift in Sources */,
 				65380E2D2398354100BE66E7 /* SessionTokenServiceAPI.swift in Sources */,
 				65B72B4023F2C276006B6981 /* SimpleBuyAvailabilityServiceAPI.swift in Sources */,
+				3A6BCAB82417EC1300111D08 /* SimpleBuyFlowAvailabilityService.swift in Sources */,
 				65FCB4ED23843EC6001262A4 /* NabuUserAirdropRegistering.swift in Sources */,
 				3A68659A219A0D170009FF29 /* PageResult.swift in Sources */,
 				65D6FC0D2368B45700A44A1D /* PairExchangeService.swift in Sources */,
@@ -18691,6 +18714,7 @@
 				65F4DE1023D8C175009F753B /* UserInformationServiceProviding.swift in Sources */,
 				3A6EE96B23ED93BF00E614B5 /* KYCTier.swift in Sources */,
 				65CB9EF72372DD4B0004BBC2 /* AssetBalanceChangeProvider.swift in Sources */,
+				3A6BCABD2417FA5700111D08 /* SimpleBuyFlowAvailabilityServiceAPI.swift in Sources */,
 				65E59116236B2AAA00D0E182 /* AssetFiatCryptoBalanceCalculationStates.swift in Sources */,
 				657A653623FFF1F200C4E322 /* ValueCalculationState+Platform.swift in Sources */,
 				65B0F40423EC22BD00DC3563 /* SimpleBuyOrderCreationServiceAPI.swift in Sources */,
@@ -18739,6 +18763,7 @@
 				65F4DE1323D8C175009F753B /* SettingsServiceAPI.swift in Sources */,
 				65DC8DA423FC3843005785C1 /* SimpleBuyOrderCancellationService.swift in Sources */,
 				65B46CB723F1923200765E72 /* KYCTiersService.swift in Sources */,
+				3A6BCABB2417F9F200111D08 /* CoinifyAccountRepositoryAPI.swift in Sources */,
 				65B3F78923E099EC00305812 /* SimpleBuySupportedPairsService.swift in Sources */,
 				3A5C889023E35E7E002833B4 /* BalanceType.swift in Sources */,
 				65B0F41223EC308F00DC3563 /* SimpleBuyOrderQuoteService.swift in Sources */,
@@ -19584,7 +19609,6 @@
 				65E4B4FD22CDF9AA00EAC3CD /* DevSupporting.swift in Sources */,
 				3A74283E237BA36700A96CF6 /* AssetLineChartPresenter.swift in Sources */,
 				3A258C0D210A486F00C023F5 /* ReusableView.swift in Sources */,
-				3A53DB21226E20AD00CBCB6E /* CoinifyMetadata.swift in Sources */,
 				3A26D526214055E600D79BDD /* TradingPairCell.swift in Sources */,
 				511BF4ED20E67B3B00A14072 /* AppReviewPrompt.swift in Sources */,
 				C854E3FE22FA6DCC007EC1D2 /* BitpayPaymentRequest.swift in Sources */,

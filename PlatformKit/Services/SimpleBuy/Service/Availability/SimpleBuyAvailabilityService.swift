@@ -10,14 +10,12 @@ import RxSwift
 import RxRelay
 import ToolKit
 
+enum SimpleBuyLocallySupportedCurrencies {
+    static let fiatCurrencies: [FiatCurrency] = [.GBP, .EUR]
+}
+
 public final class SimpleBuyAvailabilityService: SimpleBuyAvailabilityServiceAPI {
 
-    // MARK: - Types
-        
-    private enum Constant {
-        static let supportedFiatCurrencies: [FiatCurrency] = [.GBP, .EUR]
-    }
-    
     // MARK: - Public properties
     
     public var valueObservable: Observable<Bool> {
@@ -51,7 +49,7 @@ public final class SimpleBuyAvailabilityService: SimpleBuyAvailabilityServiceAPI
                             return .just(false)
                         }
                         return pairsService.valueObservable
-                            .map { $0.contains(oneOf: Constant.supportedFiatCurrencies) }
+                            .map { $0.contains(oneOf: SimpleBuyLocallySupportedCurrencies.fiatCurrencies) }
                     }
             }
     }

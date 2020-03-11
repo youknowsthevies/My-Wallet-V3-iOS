@@ -10,18 +10,14 @@ import RxSwift
 import PlatformKit
 
 final class SideMenuInteractor {
-   
-    var isSimpleBuyEnabled: Observable<Bool> {
-        simpleBuyEligibilityService.isEligible
-            .catchErrorJustReturn(false)
+
+    var isSimpleBuyFlowAvailable: Observable<Bool> {
+        return simpleBuyFlowAvailabilityService.isSimpleBuyFlowAvailable
     }
-    
-    private let dataRepository: BlockchainDataRepository
-    private let simpleBuyEligibilityService: SimpleBuyEligibilityServiceAPI
-   
-    init(simpleBuyEligibilityService: SimpleBuyEligibilityServiceAPI = SimpleBuyServiceProvider.default.eligibility,
-         dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared) {
-        self.simpleBuyEligibilityService = simpleBuyEligibilityService
-        self.dataRepository = dataRepository
+
+    private let simpleBuyFlowAvailabilityService: SimpleBuyFlowAvailabilityServiceAPI
+
+    init(serviceProvider: SimpleBuyServiceProviderAPI = SimpleBuyServiceProvider.default) {
+        self.simpleBuyFlowAvailabilityService = serviceProvider.flowAvailability
     }
 }

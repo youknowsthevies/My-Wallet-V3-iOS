@@ -8,6 +8,7 @@
 
 import Foundation
 import RxSwift
+import PlatformKit
 
 protocol CoinifyWalletBridgeAPI {
     typealias ErrorMessage = String
@@ -16,12 +17,6 @@ protocol CoinifyWalletBridgeAPI {
     func save(coinifyID: Int, token: String, completion: @escaping CoinifyAccountIDCompletion)
     func coinifyAccountID() -> Int?
     func offlineToken() -> String?
-}
-
-protocol CoinifyAccountRepositoryAPI {
-    func save(accountID: Int, token: String) -> Completable
-    func coinifyMetadata() -> Maybe<CoinifyMetadata>
-    func hasCoinifyAccount() -> Bool
 }
 
 class CoinifyAccountRepository: CoinifyAccountRepositoryAPI {
