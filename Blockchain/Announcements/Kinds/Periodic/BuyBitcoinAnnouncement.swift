@@ -14,9 +14,9 @@ import PlatformUIKit
 
 /// Buy bitcoin announcement
 final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {
-    
-    // MARK: - Properties
-    
+
+    // MARK: - Internal Properties
+
     var viewModel: AnnouncementCardViewModel {
         let button = ButtonViewModel.primary(
             with: LocalizationConstants.AnnouncementCards.BuyBitcoin.ctaButton
@@ -30,7 +30,7 @@ final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
                 self.dismiss()
             }
             .disposed(by: disposeBag)
-        
+
         return AnnouncementCardViewModel(
             type: type,
             image: AnnouncementCardViewModel.Image(name: "card-icon-cart"),
@@ -57,19 +57,17 @@ final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
         }
         return !isDismissed
     }
-    
+
     let type = AnnouncementType.buyBitcoin
     let analyticsRecorder: AnalyticsEventRecording
-    
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
-
     let action: CardAnnouncementAction
-
     let appearanceRules: PeriodicAnnouncementAppearanceRules
-    
+
+    // MARK: - Private Properties
+
     private let isBuyEnabled: Bool
-    
     private let disposeBag = DisposeBag()
     private let errorRecorder: ErrorRecording
 

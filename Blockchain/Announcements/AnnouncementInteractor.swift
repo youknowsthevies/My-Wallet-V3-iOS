@@ -48,7 +48,11 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         let simpleBuyOrderDetails = simpleBuyServiceProvider
             .pendingOrderDetails
             .orderDetails
-        
+
+        let isSimpleBuyFlowAvailable = simpleBuyServiceProvider.flowAvailability
+            .isSimpleBuyFlowAvailable
+            .take(1)
+            .asSingle()
         let isSimpleBuyAvailable = simpleBuyServiceProvider.availability.valueSingle
         let isSimpleBuyEligible = simpleBuyServiceProvider.eligibility
             .isEligible
@@ -69,11 +73,11 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                  hasPaxTransactions,
                  countries,
                  repository.authenticatorType,
-                 Single.zip(isSimpleBuyEligible, isSimpleBuyAvailable, simpleBuyOrderDetails))
+                 Single.zip(isSimpleBuyEligible, isSimpleBuyAvailable, simpleBuyOrderDetails, isSimpleBuyFlowAvailable))
             .subscribeOn(SerialDispatchQueueScheduler(internalSerialQueueName: dispatchQueueName))
             .observeOn(MainScheduler.instance)
             .map { (arg) -> AnnouncementPreliminaryData in
-                let (user, tiers, airdropCampaigns, hasTrades, hasPaxTransactions, countries, authenticatorType, (isSimpleBuyEligible, isSimpleBuyAvailable, simpleBuyCheckoutData)) = arg
+                let (user, tiers, airdropCampaigns, hasTrades, hasPaxTransactions, countries, authenticatorType, (isSimpleBuyEligible, isSimpleBuyAvailable, simpleBuyCheckoutData, isSimpleBuyFlowAvailable)) = arg
                 return AnnouncementPreliminaryData(
                     user: user,
                     tiers: tiers,
@@ -84,7 +88,8 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                     authenticatorType: authenticatorType,
                     simpleBuyCheckoutData: simpleBuyCheckoutData,
                     isSimpleBuyEligible: isSimpleBuyEligible,
-                    isSimpleBuyAvailable: isSimpleBuyAvailable
+                    isSimpleBuyAvailable: isSimpleBuyAvailable,
+                    isSimpleBuyFlowAvailable: isSimpleBuyFlowAvailable
                 )
             }
     }

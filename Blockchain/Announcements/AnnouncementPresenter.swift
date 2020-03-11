@@ -127,7 +127,7 @@ final class AnnouncementPresenter {
             case .buyBitcoin:
                 announcement = buyBitcoin(
                     reappearanceTimeInterval: metadata.interval,
-                    isSimpleBuyEligible: preliminaryData.isSimpleBuyEligible
+                    isSimpleBuyFlow: preliminaryData.isSimpleBuyFlow
                 )
             case .transferBitcoin:
                 announcement = transferBitcoin(
@@ -206,7 +206,7 @@ extension AnnouncementPresenter {
             action: { [weak self] in
                 guard let self = self else { return }
                 self.hideAnnouncement()
-                self.appCoordinator.startSimpleBuy()
+                self.appCoordinator.handleBuyCrypto(simpleBuy: true)
             }
         )
     }
@@ -220,7 +220,7 @@ extension AnnouncementPresenter {
             action: { [weak self] in
                 guard let self = self else { return }
                 self.hideAnnouncement()
-                self.appCoordinator.startSimpleBuy()
+                self.appCoordinator.handleBuyCrypto(simpleBuy: true)
             }
         )
     }
@@ -331,13 +331,15 @@ extension AnnouncementPresenter {
     }
     
     /// Computes Buy BTC announcement
-    private func buyBitcoin(reappearanceTimeInterval: TimeInterval, isSimpleBuyEligible: Bool) -> Announcement {
-        let isBuyEnabled = !isSimpleBuyEligible && wallet.isBuyEnabled() && !wallet.isBitcoinWalletFunded
+    private func buyBitcoin(reappearanceTimeInterval: TimeInterval, isSimpleBuyFlow: Bool) -> Announcement {
+        let isBuyEnabled = (wallet.isBuyEnabled() || isSimpleBuyFlow) && !wallet.isBitcoinWalletFunded
         return BuyBitcoinAnnouncement(
             isBuyEnabled: isBuyEnabled,
             reappearanceTimeInterval: reappearanceTimeInterval,
             dismiss: hideAnnouncement,
-            action: appCoordinator.handleBuyBitcoin
+            action: { [weak appCoordinator] in
+                appCoordinator?.handleBuyCrypto(simpleBuy: isSimpleBuyFlow)
+            }
         )
     }
     

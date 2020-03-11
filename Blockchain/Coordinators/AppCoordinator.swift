@@ -121,7 +121,8 @@ import PlatformKit
             animated: true
         )
     }
-    
+
+    @discardableResult
     func setupMainFlow(forced: Bool) -> UIViewController {
         let setupAndReturnSideMenuController = { [unowned self] () -> UIViewController in
             self.setupTabControllerManager()
@@ -268,9 +269,9 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         case .logout:
             handleLogout()
         case .buyBitcoin:
-            handleBuyBitcoin()
+            handleBuyCrypto(simpleBuy: false)
         case .simpleBuy:
-            startSimpleBuy()
+            handleBuyCrypto(simpleBuy: true)
         case .exchange:
             handleExchange()
         case .lockbox:
@@ -381,23 +382,31 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         sideMenuViewController = nil
     }
 
-    func handleBuyBitcoin() {
-        BuySellCoordinator.shared.showBuyBitcoinView()
-        // TODO: IOS-2833 - Remove previous line and uncomment following code to disable Coinify once Simple Buy is ready for release.
-        // AlertViewPresenter.shared.standardNotify(
-        //   message: LocalizationConstants.BuySell.DeprecationError.message,
-        //   title: LocalizationConstants.Errors.error,
-        //   actions: [
-        //     UIAlertAction(title: LocalizationConstants.okString, style: .default)
-        //   ]
-        // )
-        
-    }
-    
-    func startSimpleBuy() {
-        let stateService = SimpleBuyStateService()
-        simpleBuyRouter = SimpleBuyRouter(stateService: stateService)
-        simpleBuyRouter.start()
+    /// Starts Coinify/SFOX or Simple Buy flow.
+    func handleBuyCrypto(simpleBuy: Bool) {
+        /// Starts Coinify/SFOX flow
+        func startBuyCrypto() {
+            BuySellCoordinator.shared.showBuyBitcoinView()
+        }
+        /// Starts Simple Buy Flow
+        func startSimpleBuy() {
+            let stateService = SimpleBuyStateService()
+            simpleBuyRouter = SimpleBuyRouter(stateService: stateService)
+            simpleBuyRouter.start()
+        }
+        if simpleBuy {
+            startSimpleBuy()
+        } else {
+            startBuyCrypto()
+            // TODO: IOS-2833 - Remove previous line and uncomment following code to disable Coinify once Simple Buy is ready for release.
+            // AlertViewPresenter.shared.standardNotify(
+            //   message: LocalizationConstants.BuySell.DeprecationError.message,
+            //   title: LocalizationConstants.Errors.error,
+            //   actions: [
+            //     UIAlertAction(title: LocalizationConstants.okString, style: .default)
+            //   ]
+            // )
+        }
     }
     
     func startSimpleBuyAtLogin() {
@@ -408,7 +417,8 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         simpleBuyRouter = SimpleBuyRouter(stateService: stateService)
         simpleBuyRouter.start()
     }
-    
+
+    /// Checks SimpleBuy Eligibility and then starts Crypto Buy Flow.
     @objc
     func startBuyUsingCoinifyOrSimpleBuy() {
         SimpleBuyServiceProvider.default.eligibility
@@ -420,13 +430,8 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
                 style: .circle
             )
             .subscribe(
-                onSuccess: { [weak self] isEligible in
-                    guard let self = self else { return }
-                    if isEligible {
-                        self.startSimpleBuy()
-                    } else if self.walletManager.wallet.isBuyEnabled() {
-                        BuySellCoordinator.shared.showBuyBitcoinView()
-                    }
+                onSuccess: { [unowned self] isEligible in
+                    self.handleBuyCrypto(simpleBuy: isEligible)
                 })
                 .disposed(by: disposeBag)
     }
@@ -451,8 +456,6 @@ extension AppCoordinator: DrawerRouting {
         } else {
             slidingViewController.resetTopView(animated: true)
         }
-        
-        // TODO remove app reference and use wallet singleton.isFe
         walletManager.wallet.isFetchingTransactions = false
     }
 }
