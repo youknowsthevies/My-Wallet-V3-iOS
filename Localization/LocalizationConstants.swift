@@ -1988,7 +1988,7 @@ public struct LocalizationConstants {
                 comment: "Coinify kyc announcement card title"
             )
             public static let description = NSLocalizedString(
-                "To keep using Buy & Sell, you’ll need to update your profile. Once completed, you’ll also unlock higher trading limits in Swap.",
+                "To keep using Buy, you’ll need to update your profile. Once completed, you’ll also unlock higher trading limits in Swap.",
                 comment: "Coinify kyc announcement card description"
             )
             public static let ctaButton = NSLocalizedString(
