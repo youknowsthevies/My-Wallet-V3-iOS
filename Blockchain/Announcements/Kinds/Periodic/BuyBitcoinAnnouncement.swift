@@ -55,10 +55,6 @@ final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
         guard isBuyEnabled else {
             return false
         }
-        /// If BTC wallet was already funded, we do not show the announcement card.
-        guard !isBitcoinWalletFunded else {
-            return false
-        }
         return !isDismissed
     }
 
@@ -72,14 +68,12 @@ final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
     // MARK: - Private Properties
 
     private let isBuyEnabled: Bool
-    private let isBitcoinWalletFunded: Bool
     private let disposeBag = DisposeBag()
     private let errorRecorder: ErrorRecording
 
     // MARK: - Setup
     
     init(isBuyEnabled: Bool,
-         isBitcoinWalletFunded: Bool,
          cacheSuite: CacheSuite = UserDefaults.standard,
          reappearanceTimeInterval: TimeInterval,
          analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
@@ -87,7 +81,6 @@ final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {
         self.isBuyEnabled = isBuyEnabled
-        self.isBitcoinWalletFunded = isBitcoinWalletFunded
         self.errorRecorder = errorRecorder
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)
