@@ -8,7 +8,7 @@
 
 import RxSwift
 
-public protocol SimpleBuyFlowAvailabilityServiceAPI {
+public protocol SimpleBuyFlowAvailabilityServiceAPI: AnyObject {
     /// Indicates that Simple Buy Flow is enabled for the current user.
     /// It may be because the User is elegible for Simple Buy or
     /// because another condtions is satisfied.
