@@ -12,23 +12,12 @@ import PlatformKit
 final class SideMenuInteractor {
 
     var isSimpleBuyFlowAvailable: Observable<Bool> {
-        return service.isSimpleBuyFlowAvailable
+        return simpleBuyFlowAvailabilityService.isSimpleBuyFlowAvailable
     }
 
-    private let service: SimpleBuyFlowAvailabilityServiceAPI
+    private let simpleBuyFlowAvailabilityService: SimpleBuyFlowAvailabilityServiceAPI
 
-    convenience init(walletManager: WalletManager = WalletManager.shared,
-                     reactiveWallet: ReactiveWalletAPI = ReactiveWallet(),
-                     fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-                     supportedPairsService: SimpleBuySupportedPairsServiceAPI = SimpleBuyServiceProvider.default.supportedPairs) {
-        let service = SimpleBuyFlowAvailabilityService(coinifyAccountRepository: CoinifyAccountRepository(bridge: walletManager.wallet),
-                                                       fiatCurrencyService: fiatCurrencyService,
-                                                       reactiveWallet: reactiveWallet,
-                                                       supportedPairsService: supportedPairsService)
-        self.init(service: service)
-    }
-
-    init(service: SimpleBuyFlowAvailabilityServiceAPI) {
-        self.service = service
+    init(serviceProvider: SimpleBuyServiceProviderAPI = SimpleBuyServiceProvider.default) {
+        self.simpleBuyFlowAvailabilityService = serviceProvider.flowAvailability
     }
 }

@@ -21,6 +21,7 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
     let ordersDetails: SimpleBuyOrdersServiceAPI
     let pendingOrderDetails: SimpleBuyPendingOrderDetailsServiceAPI
     let availability: SimpleBuyAvailabilityServiceAPI
+    let flowAvailability: SimpleBuyFlowAvailabilityServiceAPI
     let eligibility: SimpleBuyEligibilityServiceAPI
     let orderCreation: SimpleBuyOrderCreationServiceAPI
     let orderCancellation: SimpleBuyOrderCancellationServiceAPI
@@ -30,10 +31,11 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
     
     let settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI
     let dataRepository: DataRepositoryAPI
-        
+
     // MARK: - Setup
     
-    init(wallet: ReactiveWalletAPI = ReactiveWallet(),
+    init(walletManager: WalletManager = WalletManager.shared,
+         wallet: ReactiveWalletAPI = ReactiveWallet(),
          authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
          client: SimpleBuyClientAPI = SimpleBuyClient(),
          cacheSuite: CacheSuite = UserDefaults.standard,
@@ -95,6 +97,13 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
             orderDetailsService: ordersDetails,
             authenticationService: authenticationService
         )
+        flowAvailability = SimpleBuyFlowAvailabilityService(
+            coinifyAccountRepository: CoinifyAccountRepository(bridge: walletManager.wallet),
+            fiatCurrencyService: settings,
+            reactiveWallet: wallet,
+            supportedPairsService: supportedPairs
+        )
+
         self.dataRepository = dataRepository
         self.settings = settings
     }
