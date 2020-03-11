@@ -35,7 +35,7 @@ struct SimpleBuyPaymentAccountEUR: SimpleBuyPaymentAccount, Equatable {
         }
         guard
             let bankName: String = response.agent.name,
-            let iban: String = response.agent.account,
+            let iban: String = response.address,
             let bankCode: String = response.agent.code
             else { return nil }
         self.bankName = bankName

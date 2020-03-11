@@ -39,7 +39,7 @@ class SimpleBuyPaymentAccountEURTests: XCTestCase {
         
         XCTAssertEqual(account!.bankName, mock.agent.name, "its bankName comes from response.agent")
         XCTAssertEqual(account!.bankCountry, "", "its bankCountry is empty")
-        XCTAssertEqual(account!.iban, mock.agent.account, "its iban comes from response.agent")
+        XCTAssertEqual(account!.iban, mock.address, "its iban comes from response.address")
         XCTAssertEqual(account!.bankCode, mock.agent.code, "its bankCode comes from response.agent")
         XCTAssertEqual(account!.recipientName, "", "its recipientName is empty")
     }
@@ -55,7 +55,7 @@ class SimpleBuyPaymentAccountEURTests: XCTestCase {
         
         XCTAssertEqual(account!.bankName, mock.agent.name, "its bankName comes from response.agent")
         XCTAssertEqual(account!.bankCountry, mock.agent.country, "its bankCountry comes from response.agent")
-        XCTAssertEqual(account!.iban, mock.agent.account, "its iban comes from response.agent")
+        XCTAssertEqual(account!.iban, mock.address, "its iban comes from response.address")
         XCTAssertEqual(account!.bankCode, mock.agent.code, "its bankCode comes from response.agent")
         XCTAssertEqual(account!.recipientName, mock.agent.recipient, "its recipientName comes from response.agent")
     }

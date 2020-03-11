@@ -13,7 +13,7 @@ extension SimpleBuyPaymentAccountResponse {
     static func mock(with currency: FiatCurrency, agent: SimpleBuyPaymentAccountResponse.Agent) -> SimpleBuyPaymentAccountResponse {
         return SimpleBuyPaymentAccountResponse(
             id: "response id",
-            address: "response address",
+            address: "response bank account",
             agent: agent,
             currency: currency,
             state: .active
