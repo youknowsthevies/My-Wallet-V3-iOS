@@ -14,9 +14,9 @@ import PlatformUIKit
 
 /// Buy bitcoin announcement
 final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {
-    
-    // MARK: - Properties
-    
+
+    // MARK: - Internal Properties
+
     var viewModel: AnnouncementCardViewModel {
         let button = ButtonViewModel.primary(
             with: LocalizationConstants.AnnouncementCards.BuyBitcoin.ctaButton
@@ -30,7 +30,7 @@ final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
                 self.dismiss()
             }
             .disposed(by: disposeBag)
-        
+
         return AnnouncementCardViewModel(
             type: type,
             image: AnnouncementCardViewModel.Image(name: "card-icon-cart"),
@@ -55,27 +55,31 @@ final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
         guard isBuyEnabled else {
             return false
         }
+        /// If BTC wallet was already funded, we do not show the announcement card.
+        guard !isBitcoinWalletFunded else {
+            return false
+        }
         return !isDismissed
     }
-    
+
     let type = AnnouncementType.buyBitcoin
     let analyticsRecorder: AnalyticsEventRecording
-    
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
-
     let action: CardAnnouncementAction
-
     let appearanceRules: PeriodicAnnouncementAppearanceRules
-    
+
+    // MARK: - Private Properties
+
     private let isBuyEnabled: Bool
-    
+    private let isBitcoinWalletFunded: Bool
     private let disposeBag = DisposeBag()
     private let errorRecorder: ErrorRecording
 
     // MARK: - Setup
     
     init(isBuyEnabled: Bool,
+         isBitcoinWalletFunded: Bool,
          cacheSuite: CacheSuite = UserDefaults.standard,
          reappearanceTimeInterval: TimeInterval,
          analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
@@ -83,6 +87,7 @@ final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {
         self.isBuyEnabled = isBuyEnabled
+        self.isBitcoinWalletFunded = isBitcoinWalletFunded
         self.errorRecorder = errorRecorder
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)

@@ -1460,7 +1460,7 @@ public struct LocalizationConstants {
                     comment: "Simple Buy Intro Screen - buy crypto card: title label"
                 )
                 public static let description = NSLocalizedString(
-                    "We can help you buy in a just a few simple steps.",
+                    "We can help you buy in just a few simple steps.",
                     comment: "Simple Buy Intro Screen - buy crypto card: title label"
                 )
                 public static let button = NSLocalizedString(
@@ -1897,18 +1897,18 @@ public struct LocalizationConstants {
         }
         
         // MARK: - Periodic
-        
+
         public struct BuyBitcoin {
             public static let title = NSLocalizedString(
-                "Buy Bitcoin",
+                "Buy Crypto",
                 comment: "Buy BTC announcement card title"
             )
             public static let description = NSLocalizedString(
-                "Buy Bitcoin with your credit card or bank account to kickstart your crypto portfolio.",
+                "We can help you buy in just a few simple steps.",
                 comment: "Buy BTC announcement card description"
             )
             public static let ctaButton = NSLocalizedString(
-                "Buy Bitcoin",
+                "Buy Crypto Now",
                 comment: "Buy BTC announcement card CTA button title"
             )
         }
