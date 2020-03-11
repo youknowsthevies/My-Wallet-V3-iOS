@@ -20,13 +20,21 @@ public final class SimpleBuyFlowAvailabilityService: SimpleBuyFlowAvailabilitySe
                 isFiatCurrencySupported,
                 userHasCoinify.asObservable()
             )
-            .map { $0 && $1 }
+            .map { isFiatCurrencySupported, userHasCoinify in
+                isFiatCurrencySupported && !userHasCoinify
+            }
             .catchErrorJustReturn(false)
     }
 
-    /// Indicates that the user never traded with Coinify before
+    /// Indicates that the user traded with Coinify before
     private var userHasCoinify: Single<Bool> {
-        Single.just(!coinifyAccountRepository.hasCoinifyAccount())
+        Single
+            .deferred { [weak self] () -> Single<Bool> in
+                let hasCoinifyAccount = self?.coinifyAccountRepository.hasCoinifyAccount() ?? true
+                return .just(hasCoinifyAccount)
+            }
+            .subscribeOn(MainScheduler.instance)
+            .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
     }
 
     /// Indicates that the current Fiat Currency is supported by Simple Buy remotely.
@@ -48,9 +56,10 @@ public final class SimpleBuyFlowAvailabilityService: SimpleBuyFlowAvailabilitySe
         fiatCurrencyService
             .fiatCurrencyObservable
             .flatMap(weak: self) { (self, currency) in
-                Single.zip(
-                    self.isFiatCurrencySupportedRemote(currency: currency),
-                    self.isFiatCurrencySupportedLocal(currency: currency)
+                Single
+                    .zip(
+                        self.isFiatCurrencySupportedRemote(currency: currency),
+                        self.isFiatCurrencySupportedLocal(currency: currency)
                     )
                     .map { $0 && $1 }
                     .asObservable()
