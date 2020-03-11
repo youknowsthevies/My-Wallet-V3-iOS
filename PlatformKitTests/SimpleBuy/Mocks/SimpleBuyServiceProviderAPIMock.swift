@@ -42,10 +42,15 @@ final class SimpleBuyServiceProviderAPIMock: SimpleBuyServiceProviderAPI {
     var settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI {
         return underlyingSettings
     }
-    
-    var underlyingavailability: SimpleBuyAvailabilityServiceAPI!
+
+    var underlyingFlowAvailability: SimpleBuyFlowAvailabilityServiceAPI!
+    var flowAvailability: SimpleBuyFlowAvailabilityServiceAPI {
+        return underlyingFlowAvailability
+    }
+
+    var underlyingAvailability: SimpleBuyAvailabilityServiceAPI!
     var availability: SimpleBuyAvailabilityServiceAPI {
-        underlyingavailability
+        underlyingAvailability
     }
     
     var underlyingEligibility: SimpleBuyEligibilityServiceAPI!
