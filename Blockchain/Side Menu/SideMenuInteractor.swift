@@ -18,10 +18,12 @@ final class SideMenuInteractor {
     private let service: SimpleBuyFlowAvailabilityServiceAPI
 
     convenience init(walletManager: WalletManager = WalletManager.shared,
+                     reactiveWallet: ReactiveWalletAPI = ReactiveWallet(),
                      fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
                      supportedPairsService: SimpleBuySupportedPairsServiceAPI = SimpleBuyServiceProvider.default.supportedPairs) {
         let service = SimpleBuyFlowAvailabilityService(coinifyAccountRepository: CoinifyAccountRepository(bridge: walletManager.wallet),
                                                        fiatCurrencyService: fiatCurrencyService,
+                                                       reactiveWallet: reactiveWallet,
                                                        supportedPairsService: supportedPairsService)
         self.init(service: service)
     }

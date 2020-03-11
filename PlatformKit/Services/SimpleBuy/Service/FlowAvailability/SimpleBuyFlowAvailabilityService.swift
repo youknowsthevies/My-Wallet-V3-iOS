@@ -15,15 +15,18 @@ public final class SimpleBuyFlowAvailabilityService: SimpleBuyFlowAvailabilitySe
     /// b) They are using a supported currency by the backend.
     /// c) They are using a supported currency by the frontend.
     public var isSimpleBuyFlowAvailable: Observable<Bool> {
-        Observable
-            .combineLatest(
-                isFiatCurrencySupported,
-                userHasCoinify.asObservable()
-            )
-            .map { isFiatCurrencySupported, userHasCoinify in
-                isFiatCurrencySupported && !userHasCoinify
-            }
-            .catchErrorJustReturn(false)
+        reactiveWallet.waitUntilInitialized
+            .flatMap(weak: self) { (self, _: ()) in
+                Observable
+                    .combineLatest(
+                        self.isFiatCurrencySupported,
+                        self.userHasCoinify.asObservable()
+                    )
+                    .map { isFiatCurrencySupported, userHasCoinify in
+                        isFiatCurrencySupported && !userHasCoinify
+                    }
+                    .catchErrorJustReturn(false)
+        }
     }
 
     /// Indicates that the user traded with Coinify before
@@ -68,13 +71,16 @@ public final class SimpleBuyFlowAvailabilityService: SimpleBuyFlowAvailabilitySe
 
     private let coinifyAccountRepository: CoinifyAccountRepositoryAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
+    private let reactiveWallet: ReactiveWalletAPI
     private let supportedPairsService: SimpleBuySupportedPairsServiceAPI
 
     public init(coinifyAccountRepository: CoinifyAccountRepositoryAPI,
                 fiatCurrencyService: FiatCurrencySettingsServiceAPI,
+                reactiveWallet: ReactiveWalletAPI,
                 supportedPairsService: SimpleBuySupportedPairsServiceAPI) {
         self.coinifyAccountRepository = coinifyAccountRepository
         self.fiatCurrencyService = fiatCurrencyService
+        self.reactiveWallet = reactiveWallet
         self.supportedPairsService = supportedPairsService
     }
 }

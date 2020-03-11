@@ -27,12 +27,9 @@ class SideMenuPresenter {
     // MARK: Public Properties
     
     var sideMenuItems: Observable<[SideMenuItem]> {
-        Observable.combineLatest(
-            reactiveWallet.waitUntilInitialized,
-            interactor.isSimpleBuyFlowAvailable
-            )
-            .map(weak: self) { (self, payload) -> [SideMenuItem] in
-                self.menuItems(showSimpleBuy: payload.1)
+        interactor.isSimpleBuyFlowAvailable
+            .map(weak: self) { (self, isSimpleBuyFlowAvailable) -> [SideMenuItem] in
+                self.menuItems(showSimpleBuy: isSimpleBuyFlowAvailable)
             }
             .startWith(menuItems(showSimpleBuy: false))
             .observeOn(MainScheduler.instance)
