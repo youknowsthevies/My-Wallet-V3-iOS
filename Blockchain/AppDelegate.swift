@@ -16,12 +16,20 @@ import PlatformKit
 import PlatformUIKit
 import BitcoinKit
 
-fileprivate var DISABLE_CERT_PINNING: Bool = false
+private var DISABLE_CERT_PINNING: Bool = false
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow!
+
+    private var isDebug: Bool {
+        var isDebug = false
+        #if DEBUG
+        isDebug = true
+        #endif
+        return isDebug
+    }
     
     private lazy var visualEffectView: UIVisualEffectView = {
         let view = UIVisualEffectView(effect: UIBlurEffect(style: .light))
@@ -57,9 +65,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                      didFinishLaunchingWithOptions
                      launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        #if DEBUG
-        DISABLE_CERT_PINNING = true
-        #endif
+        if isDebug {
+            DISABLE_CERT_PINNING = true
+        }
 
         FirebaseApp.configure()
         
@@ -90,33 +98,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         navigationBarAppearance.titleTextAttributes = UINavigationBar.standardTitleTextAttributes
         navigationBarAppearance.barTintColor = .brandPrimary
         navigationBarAppearance.tintColor = .white
-    
-        #if DEBUG
-        let envKey = UserDefaults.Keys.environment.rawValue
-        let environment = Environment.production.rawValue
-        UserDefaults.standard.set(environment, forKey: envKey)
 
-        BlockchainSettings.App.shared.enableCertificatePinning = true
+        if isDebug {
+            let envKey = UserDefaults.Keys.environment.rawValue
+            let environment = Environment.production.rawValue
+            UserDefaults.standard.set(environment, forKey: envKey)
 
-        let securityReminderKey = UserDefaults.DebugKeys.securityReminderTimer.rawValue
-        UserDefaults.standard.removeObject(forKey: securityReminderKey)
+            BlockchainSettings.App.shared.enableCertificatePinning = true
 
-        let appReviewPromptKey = UserDefaults.DebugKeys.appReviewPromptCount.rawValue
-        UserDefaults.standard.removeObject(forKey: appReviewPromptKey)
+            let securityReminderKey = UserDefaults.DebugKeys.securityReminderTimer.rawValue
+            UserDefaults.standard.removeObject(forKey: securityReminderKey)
 
-        let zeroTickerKey = UserDefaults.DebugKeys.simulateZeroTicker.rawValue
-        UserDefaults.standard.set(false, forKey: zeroTickerKey)
+            let appReviewPromptKey = UserDefaults.DebugKeys.appReviewPromptCount.rawValue
+            UserDefaults.standard.removeObject(forKey: appReviewPromptKey)
 
-        let simulateSurgeKey = UserDefaults.DebugKeys.simulateSurge.rawValue
-        UserDefaults.standard.set(false, forKey: simulateSurgeKey)
-        
-        #endif
+            let zeroTickerKey = UserDefaults.DebugKeys.simulateZeroTicker.rawValue
+            UserDefaults.standard.set(false, forKey: zeroTickerKey)
+
+            let simulateSurgeKey = UserDefaults.DebugKeys.simulateSurge.rawValue
+            UserDefaults.standard.set(false, forKey: simulateSurgeKey)
+        }
 
         if !DISABLE_CERT_PINNING {
             // TODO: prevent any other data tasks from executing until cert is pinned
             CertificatePinner.shared.pinCertificate()
         }
-        
+
+        // If isDebug build, and ProcessInfo environment contains "erase_wallet": true, erase wallet and settings.
+        if isDebug, ProcessInfo.processInfo.environmentBoolean(for: "erase_wallet") == true {
+            WalletManager.shared.forgetWallet()
+            BlockchainSettings.App.shared.clear()
+        }
+
         Network.Dependencies.default.communicator.use(eventRecorder: AnalyticsEventRecorder.shared)
         
         checkForNewInstall()
