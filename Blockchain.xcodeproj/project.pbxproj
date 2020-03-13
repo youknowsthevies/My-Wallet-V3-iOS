@@ -16798,9 +16798,10 @@
 				C71B62D821B0794D00FC2839 /* CopyFiles */,
 				5149BD072057192900DC88A0 /* Embed Frameworks */,
 				6567FDAE22C6C5F90035CB16 /* Firebase Crashlytics */,
-				34838CB22399AEFE003F945A /* ShellScript */,
-				341E47562399A74B008BAFFC /* ShellScript */,
+				34838CB22399AEFE003F945A /* Carthage Copy Frameworks Run Script */,
+				341E47562399A74B008BAFFC /* Carthage Outdated Run Script */,
 				19D1761CC6D6E0AD29B5E1D1 /* [CP] Embed Pods Frameworks */,
+				3A2B6445241BB4A600D94B71 /* Envman BUILT_PRODUCTS_DIR Run Script */,
 			);
 			buildRules = (
 			);
@@ -17670,7 +17671,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		341E47562399A74B008BAFFC /* ShellScript */ = {
+		341E47562399A74B008BAFFC /* Carthage Outdated Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -17679,15 +17680,16 @@
 			);
 			inputPaths = (
 			);
+			name = "Carthage Outdated Run Script";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n/usr/local/bin/carthage outdated --xcode-warnings 2>/dev/null\n";
+			shellScript = "/usr/local/bin/carthage outdated --xcode-warnings 2>/dev/null\n";
 		};
-		34838CB22399AEFE003F945A /* ShellScript */ = {
+		34838CB22399AEFE003F945A /* Carthage Copy Frameworks Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -17697,6 +17699,7 @@
 			);
 			inputPaths = (
 			);
+			name = "Carthage Copy Frameworks Run Script";
 			outputFileListPaths = (
 				"$(SRCROOT)/output.xcfilelist",
 			);
@@ -17704,7 +17707,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n/usr/local/bin/carthage copy-frameworks\n";
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
 		};
 		3A27818C1E914E33878C1141 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -17727,6 +17730,24 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		3A2B6445241BB4A600D94B71 /* Envman BUILT_PRODUCTS_DIR Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Envman BUILT_PRODUCTS_DIR Run Script";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if command -v envman 2>/dev/null; then\nBC_BUILT_PRODUCTS_DIR=\"${BUILT_PRODUCTS_DIR}\"\necho \"(i) BC_BUILT_PRODUCTS_DIR: $BC_BUILT_PRODUCTS_DIR\"\nenvman add --key BC_BUILT_PRODUCTS_DIR --value \"${BC_BUILT_PRODUCTS_DIR}\"\nelse\necho \"(i) envman missing\"\nfi\n";
 		};
 		46A311EA8D584830B02418DC /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
