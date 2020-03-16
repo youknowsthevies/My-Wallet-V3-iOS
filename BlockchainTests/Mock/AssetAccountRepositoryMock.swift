@@ -19,11 +19,11 @@ class AssetAccountRepositoryMock: Blockchain.AssetAccountRepositoryAPI {
         .just(())
     }
 
-    func accounts(for assetType: AssetType) -> Single<[Blockchain.AssetAccount]> {
+    func accounts(for assetType: CryptoCurrency) -> Single<[Blockchain.AssetAccount]> {
         return .just([])
     }
 
-    func accounts(for assetType: AssetType, fromCache: Bool) -> Single<[Blockchain.AssetAccount]> {
+    func accounts(for assetType: CryptoCurrency, fromCache: Bool) -> Single<[Blockchain.AssetAccount]> {
         return .just([])
     }
 
@@ -31,7 +31,7 @@ class AssetAccountRepositoryMock: Blockchain.AssetAccountRepositoryAPI {
         return .just("")
     }
 
-    func defaultAccount(for assetType: AssetType) -> Single<Blockchain.AssetAccount?> {
+    func defaultAccount(for assetType: CryptoCurrency) -> Single<Blockchain.AssetAccount?> {
         return .just(nil)
     }
 

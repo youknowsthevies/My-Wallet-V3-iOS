@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 protocol AssetAddressSubscribing {
     
     /// Subscribes to payments to an asset address
-    func subscribe(to address: String, asset: AssetType, addressType: AssetAddressType)
+    func subscribe(to address: String, asset: CryptoCurrency, addressType: AssetAddressType)
 }

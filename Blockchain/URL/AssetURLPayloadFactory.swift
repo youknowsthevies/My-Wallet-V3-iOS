@@ -14,8 +14,8 @@ import EthereumKit
 
 @objc class AssetURLPayloadFactory: NSObject {
 
-    @objc static func scheme(forAssetType type: AssetType) -> String? {
-        switch type {
+    @objc static func scheme(forAsset asset: LegacyCryptoCurrency) -> String? {
+        switch asset.value {
         case .bitcoin:
             return BitcoinURLPayload.scheme
         case .bitcoinCash:
@@ -29,7 +29,12 @@ import EthereumKit
         }
     }
 
-    @objc static func create(fromString string: String, assetType: AssetType) -> AssetURLPayload? {
+    @objc
+    static func create(fromString string: String, asset: LegacyCryptoCurrency) -> AssetURLPayload? {
+        return AssetURLPayloadFactory.create(fromString: string, asset: asset.value)
+    }
+    
+    static func create(fromString string: String, asset: CryptoCurrency) -> AssetURLPayload? {
         if string.contains(":") {
             guard let url = URL(string: string) else {
                 Logger.shared.warning("Could not create payload from URL \(string)")
@@ -37,7 +42,7 @@ import EthereumKit
             }
             return create(from: url)
         } else {
-            switch assetType {
+            switch asset {
             case .bitcoin:
                 return BitcoinURLPayload(address: string, amount: nil, paymentRequestUrl: nil)
             case .bitcoinCash:

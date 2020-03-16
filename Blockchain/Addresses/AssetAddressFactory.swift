@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 class AssetAddressFactory {
     /// Creates the appropriate concrete instance of an `AssetAddress` provided an
@@ -16,7 +16,7 @@ class AssetAddressFactory {
     ///   - address: the address of the asset
     ///   - assetType: the type of the asset
     /// - Returns: the concrete AssetAddress
-    static func create(fromAddressString address: String, assetType: AssetType) -> AssetAddress {
+    static func create(fromAddressString address: String, assetType: CryptoCurrency) -> AssetAddress {
         switch assetType {
         case .bitcoin:
             return BitcoinAddress(string: address)
@@ -40,7 +40,7 @@ class AssetAddressFactory {
     /// - Returns: an array of the concrete AssetAddress instances
     static func create(
         fromAddressStringArray addressArray: [String],
-        assetType: AssetType
+        assetType: CryptoCurrency
     ) -> [AssetAddress] {
         var createdAddresses = [AssetAddress]()
         addressArray.forEach {

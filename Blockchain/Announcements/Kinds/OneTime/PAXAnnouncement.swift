@@ -20,7 +20,7 @@ final class PAXAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
     var viewModel: AnnouncementCardViewModel {
         let button = ButtonViewModel.primary(
             with: LocalizationConstants.AnnouncementCards.Pax.ctaButton,
-            background: .paxos
+            background: .usdd
         )
         button.tapRelay
             .bind { [weak self] in

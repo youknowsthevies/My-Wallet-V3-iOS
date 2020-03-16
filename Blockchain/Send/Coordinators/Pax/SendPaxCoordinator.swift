@@ -287,8 +287,10 @@ extension SendPaxCoordinator: SendPaxViewControllerDelegate {
         let displayAddress: String
         switch addressSource {
         case .exchange:
-            displayAddress = String(format: LocalizationConstants.Exchange.Send.destination,
-                                    AssetType.pax.symbol)
+            displayAddress = String(
+                format: LocalizationConstants.Exchange.Send.destination,
+                CryptoCurrency.pax.displayCode
+            )
         case .standard:
             displayAddress = address.rawValue
         }
@@ -355,7 +357,7 @@ extension SendPaxCoordinator: SendPaxViewControllerDelegate {
                                                .showAlertSheetForSuccess])
                 self.bus.publish(
                     action: .sendCrypto,
-                    extras: [WalletAction.ExtraKeys.assetType: AssetType.pax]
+                    extras: [WalletAction.ExtraKeys.assetType: CryptoCurrency.pax]
                 )
                 Logger.shared.debug("Published PAX transaction: \(published)")
             }, onError: { [weak self] error in

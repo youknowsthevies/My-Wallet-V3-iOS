@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 enum ExchangeRateDescriptionType {
     case fromAssetToFiat
@@ -29,14 +29,14 @@ extension ExchangeRateDescriptionType {
 
 struct ExchangeRateMetadata {
     let currencyCode: String
-    let fromAsset: AssetType
-    let toAsset: AssetType
+    let fromAsset: CryptoCurrency
+    let toAsset: CryptoCurrency
     private let rates: [CurrencyPairRate]
     
     init(
         currencyCode: String,
-        fromAsset: AssetType,
-        toAsset: AssetType,
+        fromAsset: CryptoCurrency,
+        toAsset: CryptoCurrency,
         rates: [CurrencyPairRate]
         ) {
         self.currencyCode = currencyCode
@@ -110,25 +110,25 @@ extension ExchangeRateMetadata {
     }
     
     var fromAssetRateDescriptor: String {
-        return "1 \(fromAsset.symbol) ="
+        return "1 \(fromAsset.displayCode) ="
     }
     
     var toAssetRateDescriptor: String {
-        return "1 \(toAsset.symbol) ="
+        return "1 \(toAsset.displayCode) ="
     }
     
     var fromAssetToFiatDescriptor: String? {
-        guard let rate = rates.last(where: { $0.pair == "\(fromAsset.symbol)-\(currencyCode)"}) else { return nil }
+        guard let rate = rates.last(where: { $0.presentationPair == "\(fromAsset.displayCode)-\(currencyCode)"}) else { return nil }
         return "\(rate.price) \(currencyCode)"
     }
     
     var toAssetToFiatDescriptor: String? {
-        guard let rate = rates.last(where: { $0.pair == "\(toAsset.symbol)-\(currencyCode)"}) else { return nil }
+        guard let rate = rates.last(where: { $0.presentationPair == "\(toAsset.displayCode)-\(currencyCode)"}) else { return nil }
         return "\(rate.price) \(currencyCode)"
     }
     
     var fromAssetToAssetDescriptor: String? {
-        guard let rate = rates.last(where: { $0.pair == "\(fromAsset.symbol)-\(toAsset.symbol)"}) else { return nil }
-        return "\(rate.price) \(toAsset.symbol)"
+        guard let rate = rates.last(where: { $0.presentationPair == "\(fromAsset.displayCode)-\(toAsset.displayCode)"}) else { return nil }
+        return "\(rate.price) \(toAsset.displayCode)"
     }
 }

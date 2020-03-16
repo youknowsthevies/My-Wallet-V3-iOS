@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import RxSwift
 import RxRelay
 import RxCocoa
+import PlatformKit
 
 // TODO: - Ether: Write logic that checks if the destination address is a contract address
 // [WalletManager.sharedInstance.wallet isEtherContractAddress:address completion:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -43,7 +43,7 @@ final class SendDestinationAccountInteractor: SendDestinationAccountInteracting 
     let exchangeSelectedRelay = PublishRelay<Bool>()
     
     /// The associated asset
-    let asset: AssetType
+    let asset: CryptoCurrency
     
     // MARK: - Private Properties
     
@@ -59,7 +59,7 @@ final class SendDestinationAccountInteractor: SendDestinationAccountInteracting 
     
     // MARK: - Setup
     
-    init(asset: AssetType,
+    init(asset: CryptoCurrency,
          exchangeAddressFetcher: ExchangeAddressFetching) {
         self.asset = asset
         self.exchangeAddressFetcher = exchangeAddressFetcher

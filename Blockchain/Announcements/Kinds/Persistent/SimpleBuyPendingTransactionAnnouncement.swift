@@ -32,14 +32,16 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
             }
             .disposed(by: disposeBag)
 
-        let assetSymbol = assetType?.symbol ?? ""
+        let assetCode = assetType?.displayCode ?? ""
         return AnnouncementCardViewModel(
             type: type,
-            image: AnnouncementCardViewModel.Image(name: "icon_clock_inverted",
-                                                   size: CGSize(width: 27, height: 27),
-                                                   tintColor: .iconWarning),
-            title: String(format: LocalizedString.title, assetSymbol),
-            description: String(format: LocalizedString.description, assetSymbol),
+            image: AnnouncementCardViewModel.Image(
+                name: "icon_clock_inverted",
+                size: CGSize(width: 27, height: 27),
+                tintColor: .iconWarning
+            ),
+            title: String(format: LocalizedString.title, assetCode),
+            description: String(format: LocalizedString.description, assetCode),
             buttons: [button],
             recorder: errorRecorder,
             dismissState: .undismissible,

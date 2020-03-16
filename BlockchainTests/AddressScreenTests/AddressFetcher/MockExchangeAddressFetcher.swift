@@ -9,11 +9,12 @@
 import Foundation
 import RxSwift
 
+@testable import PlatformKit
 @testable import Blockchain
 
 /// Fake address provider by type
 class FakeAddress {
-    static func address(for type: AssetType) -> String {
+    static func address(for type: CryptoCurrency) -> String {
         switch type {
         case .ethereum:
             return "0x17836d05892AF892d3CC68C70563B10CFDed19DD"
@@ -43,7 +44,7 @@ final class MockExchangeAddressFetcher: ExchangeAddressFetching {
     
     // MARK: - ExchangeAddressFetching
     
-    func fetchAddress(for asset: AssetType) -> Single<String> {
+    func fetchAddress(for asset: CryptoCurrency) -> Single<String> {
         let expectedState: ExchangeAddressFetcher.AddressResponseBody.State
         switch expectedResult {
         case .success(let state):
@@ -55,7 +56,7 @@ final class MockExchangeAddressFetcher: ExchangeAddressFetching {
             """
                 {
                 "address": "\(FakeAddress.address(for: asset))",
-                "currency": "\(asset.symbol)",
+                "currency": "\(asset.code)",
                 "state": "\(expectedState.rawValue)"
                 }
                 """.utf8

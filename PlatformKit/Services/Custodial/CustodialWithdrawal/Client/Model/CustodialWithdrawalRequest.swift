@@ -24,7 +24,7 @@ public struct CustodialWithdrawalRequest: Encodable {
     
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        let currency = cryptoValue.currencyCode
+        let currency = cryptoValue.code
         try container.encode(address, forKey: .address)
         try container.encode(currency, forKey: .currency)
         try container.encode(cryptoValue.value.amount.description, forKey: .amount)

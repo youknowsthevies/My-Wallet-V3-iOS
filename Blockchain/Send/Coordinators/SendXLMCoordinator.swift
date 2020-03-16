@@ -340,7 +340,7 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
                 self.analyticsRecorder.record(event: AnalyticsEvents.Send.sendSummaryConfirmSuccess(asset: .stellar))
                 self.services.walletActionEventBus.publish(
                     action: .sendCrypto,
-                    extras: [WalletAction.ExtraKeys.assetType: AssetType.stellar]
+                    extras: [WalletAction.ExtraKeys.assetType: CryptoCurrency.stellar]
                 )
                 self.computeMaxSpendableAmount(for: paymentOperation.sourceAccount.publicKey)
                 self.interface.apply(updates: [
@@ -410,8 +410,10 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
             let displayAddress: String
             switch self.addressSource {
             case .exchange:
-                displayAddress = String(format: LocalizationConstants.Exchange.Send.destination,
-                                        AssetType.stellar.symbol)
+                displayAddress = String(
+                    format: LocalizationConstants.Exchange.Send.destination,
+                    CryptoCurrency.stellar.displayCode
+                )
             case .standard:
                 displayAddress = toAddress
             }
@@ -532,7 +534,7 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
         interface.apply(updates: [
             .actionableLabelTrigger(ActionableTrigger(
                 text: LocalizationConstants.Stellar.useSpendableBalanceX,
-                CTA: "... \(AssetType.stellar.symbol)",
+                CTA: "... \(CryptoCurrency.stellar.displayCode)",
                 executionBlock: {}
             ))
         ])
@@ -552,7 +554,7 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
                     .toDisplayString(includeSymbol: false)
                 let trigger = ActionableTrigger(
                     text: LocalizationConstants.Stellar.useSpendableBalanceX,
-                    CTA: "\(stellarMaxString) \(AssetType.stellar.symbol)",
+                    CTA: "\(stellarMaxString) \(CryptoCurrency.stellar.displayCode)",
                     executionBlock: {
                         self?.interface.apply(updates: [
                             .stellarAmountText(stellarMaxString),
@@ -612,7 +614,7 @@ extension InformationViewModel {
         balance: Decimal,
         baseReserve: Decimal
     ) -> NSAttributedString? {
-        let assetType: AssetType = .stellar
+        let assetType: CryptoCurrency = .stellar
         let explanation = LocalizationConstants.Stellar.minimumBalanceInfoExplanation
 
         let minimum = baseReserve * 2

@@ -8,6 +8,7 @@
 
 import RxSwift
 
+@testable import PlatformKit
 @testable import Blockchain
 
 class AssetAddressRepositoryMock: AssetAddressFetching {
@@ -23,7 +24,7 @@ class AssetAddressRepositoryMock: AssetAddressFetching {
     }
     
     /// Checks usability of an asset address
-    func checkUsability(of address: String, asset: AssetType) -> Single<AddressUsageStatus> {
+    func checkUsability(of address: String, asset: CryptoCurrency) -> Single<AddressUsageStatus> {
         if isReusable {
             return .just(.unused(address: address))
         } else if address == alreadyUsedAddress {
@@ -34,8 +35,8 @@ class AssetAddressRepositoryMock: AssetAddressFetching {
     }
     
     /// Return the candidate addresses by type and asset
-    func addresses(by type: AssetAddressType, asset: AssetType) -> [AssetAddress] {
-        var result: [AssetAddress] = []
+    func addresses(by type: AssetAddressType, asset: CryptoCurrency) -> [Blockchain.AssetAddress] {
+        var result: [Blockchain.AssetAddress] = []
         for address in addresses {
             switch asset {
             case .bitcoin:
@@ -54,7 +55,7 @@ class AssetAddressRepositoryMock: AssetAddressFetching {
     }
     
     /// Removes a given asset address according to type
-    func remove(address: String, for assetType: AssetType, addressType: AssetAddressType) {
+    func remove(address: String, for assetType: CryptoCurrency, addressType: AssetAddressType) {
         guard let index = (addresses.index { $0 == address }) else {
             return
         }

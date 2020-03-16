@@ -103,10 +103,10 @@ extension NumberFormatter {
     @objc static func assetTypeAmount(
         fromAmount: Decimal,
         fiatPerAmount: Decimal,
-        assetType: AssetType
+        assetType: LegacyCryptoCurrency
     ) -> String {
         let conversionResult = fromAmount / fiatPerAmount
-        let formatter = assetType == .stellar ? NumberFormatter.stellarFormatter : NumberFormatter.assetFormatter
+        let formatter = assetType.value == .stellar ? NumberFormatter.stellarFormatter : NumberFormatter.assetFormatter
         return formatter.string(from: NSDecimalNumber(decimal: conversionResult)) ?? "\(conversionResult)"
     }
 
@@ -115,7 +115,7 @@ extension NumberFormatter {
     static func formattedAssetAndFiatAmountWithSymbols(
         fromAmount: Decimal,
         fiatPerAmount: Decimal,
-        assetType: AssetType
+        assetType: CryptoCurrency
     ) -> String {
         let formatter = assetType == .stellar ? NumberFormatter.stellarFormatter : NumberFormatter.assetFormatter
         let crypto = (formatter.string(from: NSDecimalNumber(decimal: fromAmount)) ?? "\(fromAmount)").appendAssetSymbol(for: assetType)
@@ -132,7 +132,7 @@ extension NumberFormatter {
     /// - Returns: the concrete AssetAddress
     static func integerToWholeUnit(
         amount: Int,
-        assetType: AssetType
+        assetType: CryptoCurrency
     ) -> Decimal? {
         let decimalAmount = Decimal(amount)
         let integerPerUnit: Int

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import PlatformKit
 
 final class TransactionsContainerViewController: UIViewController {
     
@@ -21,7 +22,7 @@ final class TransactionsContainerViewController: UIViewController {
     
     private weak var currentVC: UIViewController!
     
-    func set(asset: AssetType) {
+    func set(asset: CryptoCurrency) {
         currentVC?.remove()
         switch asset {
         case .bitcoin:

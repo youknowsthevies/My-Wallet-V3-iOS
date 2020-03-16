@@ -43,7 +43,7 @@ final class SendSpendableBalanceViewPresenter {
     
     // MARK: - Setup
     
-    init(asset: AssetType,
+    init(asset: CryptoCurrency,
          interactor: SendSpendableBalanceInteracting,
          analyticsRecorder: AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
         self.interactor = interactor

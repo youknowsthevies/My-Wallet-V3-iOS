@@ -92,8 +92,8 @@
 
 - (void)didSetDefaultAccount
 {
-    [AssetAddressRepository.sharedInstance removeAllSwipeAddressesFor:AssetTypeBitcoin];
-    [AssetAddressRepository.sharedInstance removeAllSwipeAddressesFor:AssetTypeBitcoinCash];
+    [AssetAddressRepository.sharedInstance removeAllSwipeAddressesForAsset:LegacyAssetTypeBitcoin];
+    [AssetAddressRepository.sharedInstance removeAllSwipeAddressesForAsset:LegacyAssetTypeBitcoinCash];
     [AppCoordinator.sharedInstance.tabControllerManager didSetDefaultAccount];
 }
 

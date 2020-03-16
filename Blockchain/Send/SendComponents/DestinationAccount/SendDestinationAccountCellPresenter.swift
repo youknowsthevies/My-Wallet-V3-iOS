@@ -141,7 +141,7 @@ final class SendDestinationAccountCellPresenter {
 
     // MARK: - Injected
     
-    private let asset: AssetType
+    private let asset: CryptoCurrency
     private let interactor: SendDestinationAccountInteracting
     private let analyticsRecorder: AnalyticsEventRelayRecording
     
@@ -156,7 +156,7 @@ final class SendDestinationAccountCellPresenter {
         // Setup text field placeholder
         textFieldPlaceholder = String(
             format: LocalizationConstants.Send.Destination.placeholder,
-            asset.symbol
+            asset.displayCode
         )
         
         exchangeButtonTapRelay
@@ -215,7 +215,7 @@ final class SendDestinationAccountCellPresenter {
             .disposed(by: disposeBag)
         
         // Bind cover text value
-        let symbol = asset.symbol
+        let symbol = asset.displayCode
         isExchange
             .map { $0 ? String(format: LocalizationConstants.Send.Destination.exchangeCover, symbol) : "" }
             .bind(to: coverTextRelay)

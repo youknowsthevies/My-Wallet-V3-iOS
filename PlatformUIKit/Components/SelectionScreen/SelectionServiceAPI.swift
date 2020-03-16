@@ -10,7 +10,6 @@ import RxSwift
 import RxRelay
 
 public protocol SelectionServiceAPI: class {
-    
     var dataSource: Observable<[SelectionItemViewModel]> { get }
     var selectedDataRelay: BehaviorRelay<SelectionItemViewModel> { get }
     var selectedData: Observable<SelectionItemViewModel> { get }

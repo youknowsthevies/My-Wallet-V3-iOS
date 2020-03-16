@@ -40,7 +40,7 @@ class WalletActionSubscriber {
 
     /// Invoke this method to start listening to `WalletAction` objects emitted by `WalletActionPublisher`
     func subscribe() {
-        disposable = bus.events.debug().subscribe(onNext: {
+        disposable = bus.events.subscribe(onNext: {
             self.onEventReceived($0)
         })
     }

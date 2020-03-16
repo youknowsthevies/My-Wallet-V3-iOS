@@ -96,7 +96,7 @@
     TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
     [self reportShareWithAsset:tabControllerManager.assetType];
     
-    AssetType assetType = [AssetTypeLegacyHelper convertFromLegacy:tabControllerManager.assetType];
+    LegacyCryptoCurrency *assetType = [AssetTypeLegacyHelper convertFromLegacy:tabControllerManager.assetType];
 
     NSString *txDetailString = [BlockchainAPI.sharedInstance transactionDetailURLFor:self.transactionHash assetType:assetType];
     NSURL *url = [NSURL URLWithString:txDetailString];

@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 /// Model for buy-sell trades.
 // TODO: integrate with Exchange trades.
@@ -26,7 +26,7 @@ struct Trade: Decodable {
     let pair: TradingPair
     let side: Side
     let quantity: Decimal
-    let currency: AssetType
+    let currency: CryptoCurrency
     let refundAddress: String
     let price: Decimal
     let depositAddress: String
@@ -109,11 +109,11 @@ struct Trade: Decodable {
                 .init(codingPath: [CodingKeys.side], debugDescription: "")
             )
         }
-        if let value = AssetType(stringValue: assetValue) {
+        if let value = CryptoCurrency(code: assetValue) {
             currency = value
         } else {
             throw DecodingError.valueNotFound(
-                AssetType.self,
+                CryptoCurrency.self,
                 .init(codingPath: [CodingKeys.currency], debugDescription: "")
             )
         }

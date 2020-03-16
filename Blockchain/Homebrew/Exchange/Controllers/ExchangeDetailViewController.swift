@@ -223,7 +223,7 @@ extension ExchangeDetailViewController: UICollectionViewDelegateFlowLayout {
                 footer.actionBlock = { [weak self] in
                     guard let this = self else { return }
                     this.dismiss(animated: true, completion: nil)
-                    if transaction.to.assetType == .pax {
+                    if transaction.to.cryptoCurrency == .pax {
                         NotificationCenter.default.post(Notification(name: Constants.NotificationKeys.swapToPaxFlowCompleted))
                     } else {
                         NotificationCenter.default.post(Notification(name: Constants.NotificationKeys.swapFlowCompleted))

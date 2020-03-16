@@ -53,7 +53,7 @@ public class ERC20AssetAccountDetailsService<Token: ERC20Token>: AssetAccountDet
                         account: ERC20AssetAccountDetails.Account(
                             walletIndex: 0,
                             accountAddress: address,
-                            name: "My \(Token.assetType.description) Wallet"
+                            name: "My \(Token.assetType.name) Wallet"
                         ),
                         balance: balance
                     )

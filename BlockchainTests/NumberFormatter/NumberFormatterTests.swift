@@ -7,6 +7,8 @@
 //
 
 import XCTest
+
+@testable import PlatformKit
 @testable import Blockchain
 
 extension Locale {
@@ -86,9 +88,11 @@ class NumberFormatterTests: XCTestCase {
                 XCTFail("Could not initialize amount or rate")
                 return
         }
-        let assetTypeAmount = NumberFormatter.assetTypeAmount(fromAmount: amount,
-                                                              fiatPerAmount: rate,
-                                                              assetType: AssetType.ethereum)
+        let assetTypeAmount = NumberFormatter.assetTypeAmount(
+            fromAmount: amount,
+            fiatPerAmount: rate,
+            assetType: .ethereum
+        )
         XCTAssertEqual(assetTypeAmount, "1\(Locale.current.safeDecimalSeparator)88634971",
             "Formatted string should have eight decimal places and round down when truncating")
     }

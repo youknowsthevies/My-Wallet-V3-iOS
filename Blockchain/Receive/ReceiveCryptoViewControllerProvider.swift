@@ -20,15 +20,15 @@ final class ReceiveCryptoTextViewModel: ReceiveCryptoTextViewModelProtocol {
     let tapToCopyThisAddress = LocalizationConstants.Receive.tapToCopyThisAddress
 
     var requestPaymentMessagePrefix: String {
-        return String(format: LocalizationConstants.Receive.pleaseSendXto, cryptoCurrency.symbol)
+        return String(format: LocalizationConstants.Receive.pleaseSendXto, cryptoCurrency.displayCode)
     }
 
     var requestPaymentSubject: String {
-        return String(format: LocalizationConstants.Receive.xPaymentRequest, cryptoCurrency.symbol)
+        return String(format: LocalizationConstants.Receive.xPaymentRequest, cryptoCurrency.displayCode)
     }
 
     var secondPasswordPrompt: String {
-        return String(format: LocalizationConstants.Receive.secondPasswordPromptX, cryptoCurrency.symbol)
+        return String(format: LocalizationConstants.Receive.secondPasswordPromptX, cryptoCurrency.displayCode)
     }
 
     private let cryptoCurrency: CryptoCurrency
@@ -114,7 +114,7 @@ extension ReceiveCryptoViewController {
 
     @objc func legacyAssetType() -> LegacyAssetType {
         // Can't return an optional LegacyAssetType in Objective-C
-        return viewModel?.cryptoCurrency.assetType.legacy ?? LegacyAssetType.bitcoin
+        return viewModel?.cryptoCurrency.legacy ?? LegacyAssetType.bitcoin
     }
 }
 

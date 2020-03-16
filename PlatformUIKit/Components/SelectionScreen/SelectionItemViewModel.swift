@@ -15,16 +15,17 @@ public struct SelectionItemViewModel: Identifiable {
         case none
     }
     
-    public var accessibilityId: String { name }
-    public var description: String { id }
-    
+    public var accessibilityId: String { id }
     public let id: String
-    public let name: String
+    
+    public let title: String
+    public var subtitle: String
     public let thumbImage: ThumbImage
     
-    public init(id: String, name: String, thumbImage: ThumbImage) {
+    public init(id: String, title: String, subtitle: String, thumbImage: ThumbImage) {
         self.id = id
-        self.name = name
+        self.title = title
+        self.subtitle = subtitle
         self.thumbImage = thumbImage
     }
 }
@@ -37,6 +38,6 @@ extension SelectionItemViewModel: Equatable {
 
 extension SelectionItemViewModel: Comparable {
     public static func < (lhs: Self, rhs: Self) -> Bool {
-        return lhs.name < rhs.name
+        return lhs.title < rhs.title
     }
 }

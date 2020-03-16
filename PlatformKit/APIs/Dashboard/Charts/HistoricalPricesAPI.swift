@@ -54,7 +54,7 @@ public class HistoricalPriceService: HistoricalPricesAPI {
         }
         return client
             .prices(
-                base: currency.symbol,
+                base: currency.code,
                 quote: code,
                 start: String(Int(start)),
                 scale: String(window.scale)

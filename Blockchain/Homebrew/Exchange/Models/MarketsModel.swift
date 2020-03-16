@@ -20,8 +20,8 @@ struct MarketPair {
 
 extension MarketPair {
     var pair: TradingPair {
-        let from = fromAccount.address.assetType
-        let to = toAccount.address.assetType
+        let from = fromAccount.address.cryptoCurrency
+        let to = toAccount.address.cryptoCurrency
         return TradingPair(from: from, to: to)!
     }
 }
@@ -54,7 +54,7 @@ extension MarketsModel {
     }
     
     var cryptoValue: CryptoValue? {
-        return CryptoValue.createFromMajorValue(string: volume, assetType: pair.from.cryptoCurrency)
+        return CryptoValue.createFromMajorValue(string: volume, assetType: pair.from)
     }
 }
 

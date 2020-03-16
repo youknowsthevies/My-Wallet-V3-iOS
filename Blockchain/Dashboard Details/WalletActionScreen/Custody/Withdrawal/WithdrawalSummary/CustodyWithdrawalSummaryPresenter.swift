@@ -120,7 +120,7 @@ final class CustodyWithdrawalSummaryPresenter {
             imageRelay.accept(#imageLiteral(resourceName: "Icon-Close-Circle-Red"))
         case .successful:
             let title: LabelContent = .init(
-                text: "\(LocalizationSuccessIDs.title) \(currency.code) \(LocalizationSuccessIDs.sent).",
+                text: "\(LocalizationSuccessIDs.title) \(currency.displayCode) \(LocalizationSuccessIDs.sent).",
                 font: .mainSemibold(20.0),
                 color: .textFieldText,
                 alignment: .center,

@@ -197,6 +197,11 @@ extension LoginContainerViewController {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let maxOffset = scrollView.bounds.width
+        let normalizedOffset = max(min(scrollView.contentOffset.x, maxOffset), 0)
+        let fraction = min(normalizedOffset / maxOffset, 0.99)
+        translationAnimator.fractionComplete = fraction
+        
         if !isPageControlCurrentlyInteracted && scrollView.contentSize.width > 0 {
             let offset = scrollView.contentOffset.x - scrollView.bounds.width * 0.5
             let page = Int(offset / scrollView.contentSize.width * CGFloat(inputs.count))

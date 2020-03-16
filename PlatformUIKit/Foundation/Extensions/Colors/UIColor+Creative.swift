@@ -24,7 +24,7 @@ extension UIColor {
     static let eth = #colorLiteral(red: 0.28, green: 0.23, blue: 0.80, alpha: 1.0)
     static let bch = #colorLiteral(red: 0.55, green: 0.76, blue: 0.32, alpha: 1.0)
     static let xlm = #colorLiteral(red: 0.00, green: 0.00, blue: 0.00, alpha: 1.0)
-    static let pax = #colorLiteral(red: 0.00, green: 0.32, blue: 0.17, alpha: 1.0)
+    static let pax = blue600
     
     // Tiers
     

@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 import ERC20Kit
 
 enum SendMoniesInternalError: Error {
@@ -49,7 +49,7 @@ extension SendMoniesInternalError {
         case .insufficientFeeCoverage:
             return LocalizationConstants.SendAsset.notEnoughEth
         case .insufficientTokenBalance:
-            return String(format: "\(LocalizationConstants.SendAsset.notEnough) %@", AssetType.pax.description)
+            return String(format: "\(LocalizationConstants.SendAsset.notEnough) %@", CryptoCurrency.pax.name)
         case .invalidDestinationAddress:
             return LocalizationConstants.SendAsset.invalidDestinationAddress
         case .pendingTransaction:
@@ -62,9 +62,9 @@ extension SendMoniesInternalError {
     var description: String? {
         switch self {
         case .insufficientFeeCoverage:
-            return String(format: "\(LocalizationConstants.SendAsset.notEnoughEthDescription), %@.", AssetType.pax.description)
+            return String(format: "\(LocalizationConstants.SendAsset.notEnoughEthDescription), %@.", CryptoCurrency.pax.name)
         case .insufficientTokenBalance:
-            return String(format: "\(LocalizationConstants.SendAsset.notEnough) %@", AssetType.pax.description)
+            return String(format: "\(LocalizationConstants.SendAsset.notEnough) %@", CryptoCurrency.pax.name)
         case .invalidDestinationAddress:
             return LocalizationConstants.SendAsset.invalidDestinationDescription
         case .pendingTransaction:

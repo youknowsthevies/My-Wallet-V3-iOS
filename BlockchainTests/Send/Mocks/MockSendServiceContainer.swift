@@ -12,7 +12,7 @@ import PlatformKit
 @testable import Blockchain
 
 struct MockSendServiceContainer: SendServiceContaining {
-    let asset: AssetType
+    let asset: CryptoCurrency
     let sourceAccountProvider: SendSourceAccountProviding
     var sourceAccountState: SendSourceAccountStateServicing
     let exchangeAddressFetcher: ExchangeAddressFetching
@@ -23,7 +23,7 @@ struct MockSendServiceContainer: SendServiceContaining {
     let bus: WalletActionEventBus
     let fiatCurrency: FiatCurrencySettingsServiceAPI
     
-    init(asset: AssetType,
+    init(asset: CryptoCurrency,
          balance: CryptoValue,
          fee: CryptoValue,
          exchange: FiatValue,

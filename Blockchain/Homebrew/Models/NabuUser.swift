@@ -270,10 +270,6 @@ struct DepositAddress {
     let type: CryptoCurrency
     let address: String
 
-    var dictionaryRepresentation: [String: String] {
-        return [type.symbol: address]
-    }
-
     init?(stringType: String, address: String) {
         guard let type = CryptoCurrency(rawValue: stringType.uppercased()) else { return nil }
         self.init(type: type, address: address)

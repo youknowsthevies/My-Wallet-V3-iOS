@@ -44,7 +44,7 @@ final class CustodyWithdrawalSetupInteractor {
          balanceFetching: AssetBalanceFetching,
          accountRepository: AssetAccountRepositoryAPI) {
         let accountAddress: Single<String> = accountRepository
-            .defaultAccount(for: currency.assetType)
+            .defaultAccount(for: currency)
             .map { $0?.address.address ?? "" }
         
         Observable

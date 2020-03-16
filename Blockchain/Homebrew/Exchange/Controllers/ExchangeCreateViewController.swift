@@ -50,9 +50,9 @@ extension BalanceMetadata {
             }
         }
         
-        var description = LocalizationConstants.Swap.your + " \(cryptoValue.currencyType.symbol) " + LocalizationConstants.Swap.balance
+        var description = LocalizationConstants.Swap.your + " \(cryptoValue.currencyType.displayCode) " + LocalizationConstants.Swap.balance
         if includingFees {
-            description = LocalizationConstants.Swap.available + " \(cryptoValue.currencyType.symbol)"
+            description = LocalizationConstants.Swap.available + " \(cryptoValue.currencyType.displayCode)"
         }
         
         let crypto = NSAttributedString(
@@ -588,19 +588,19 @@ extension ExchangeCreateViewController: ExchangeAssetAccountListView {
         // Insert actions
         assetAccounts.forEach { account in
             let alertAction = UIAlertAction(title: account.name, style: .default, handler: { [unowned self] _ in
-                Logger.shared.debug("Selected account titled: '\(account.name)' of type: '\(account.address.assetType.symbol)'")
+                Logger.shared.debug("Selected account titled: '\(account.name)' of type: '\(account.address.cryptoCurrency.displayCode)'")
                 
                 /// Note: Users should not be able to exchange between
                 /// accounts with the same assetType.
                 switch action {
                 case .exchanging:
-                    if account.address.assetType == self.toAccount.address.assetType {
+                    if account.address.cryptoCurrency == self.toAccount.address.cryptoCurrency {
                         self.toAccount = self.fromAccount
                     }
                     
                     self.fromAccount = account
                 case .receiving:
-                    if account.address.assetType == self.fromAccount.address.assetType {
+                    if account.address.cryptoCurrency == self.fromAccount.address.cryptoCurrency {
                         self.fromAccount = self.toAccount
                     }
                     self.toAccount = account

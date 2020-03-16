@@ -74,7 +74,7 @@ final class AssetLineChartTableViewCellPresenter: AssetLineChartTableViewCellPre
                 interactor: interactor.assetPriceViewInteractor,
                 alignment: .center,
                 descriptors: .assetPrice(
-                    accessibilityIdSuffix: currency.symbol,
+                    accessibilityIdSuffix: currency.displayCode,
                     priceFontSize: 32.0,
                     changeFontSize: 14.0
                 )

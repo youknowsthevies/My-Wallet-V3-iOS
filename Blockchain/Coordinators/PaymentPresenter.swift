@@ -29,7 +29,7 @@ class PaymentPresenter {
     
     private func displayAlert(with payment: ReceivedPaymentDetails) {
         let button = AlertAction(style: .confirm(LocalizationConstants.close))
-        let title = String(format: LocalizationConstants.PaymentReceivedAlert.titleFormat, payment.asset.description)
+        let title = String(format: LocalizationConstants.PaymentReceivedAlert.titleFormat, payment.asset.name)
         let alert = AlertModel(headline: title,
                                body: payment.amount,
                                actions: [button],

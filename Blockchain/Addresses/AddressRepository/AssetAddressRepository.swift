@@ -111,7 +111,7 @@ enum AssetAddressType {
         }).disposed(by: disposeBag)
         
         // Retrieve swipe addresses for bitcoin and bitcoin cash
-        let assetTypesWithHDAddresses = [AssetType.bitcoin, AssetType.bitcoinCash]
+        let assetTypesWithHDAddresses = [CryptoCurrency.bitcoin, CryptoCurrency.bitcoinCash]
         assetTypesWithHDAddresses.forEach {
             let swipeAddresses = self.swipeAddresses(for: $0)
             let numberOfAddressesToDerive = Constants.Wallet.swipeToReceiveAddressCount - swipeAddresses.count
@@ -125,7 +125,7 @@ enum AssetAddressType {
     /// - Parameter type: the type of the address
     /// - Parameter asset: the asset type
     /// - Returns: a candidate asset addresses
-    func addresses(by type: AssetAddressType, asset: AssetType) -> [AssetAddress] {
+    func addresses(by type: AssetAddressType, asset: CryptoCurrency) -> [AssetAddress] {
         switch type {
         case .swipeToReceive:
             return swipeAddresses(for: asset)
@@ -137,7 +137,7 @@ enum AssetAddressType {
     /// Gets the swipe addresses for the provided asset type
     /// - Parameter asset: the asset type
     /// - Returns: the asset address
-    func swipeAddresses(for asset: AssetType) -> [AssetAddress] {
+    func swipeAddresses(for asset: CryptoCurrency) -> [AssetAddress] {
         let appSettings = BlockchainSettings.App.shared
         
         // TODO: In `BlockchainSettings.App`, create a method that receives an enum and returns a swipe address
@@ -165,17 +165,17 @@ enum AssetAddressType {
 
     /// Removes the first swipe address for assetType.
     ///
-    /// - Parameter assetType: the AssetType
-    func removeFirstSwipeAddress(for assetType: AssetType) {
+    /// - Parameter assetType: the CryptoCurrency
+    func removeFirstSwipeAddress(for assetType: CryptoCurrency) {
         KeychainItemWrapper.removeFirstSwipeAddress(for: assetType.legacy)
     }
     
     /// Removes a specific address for assetType.
     ///
     /// - Parameter address: the address
-    /// - Parameter assetType: the AssetType
+    /// - Parameter assetType: the CryptoCurrency
     /// - Parameter addressType: the type of the address
-    func remove(address: String, for assetType: AssetType, addressType: AssetAddressType) {
+    func remove(address: String, for assetType: CryptoCurrency, addressType: AssetAddressType) {
         switch addressType {
         case .swipeToReceive:
             KeychainItemWrapper.removeSwipeAddress(address, assetType: assetType.legacy)
@@ -189,16 +189,23 @@ enum AssetAddressType {
         KeychainItemWrapper.removeAllSwipeAddresses()
     }
 
-    /// removes all swipe addresses for the provided AssetType
+    /// removes all swipe addresses for the provided CryptoCurrency
     ///
-    /// - Parameter assetType: the AssetType
-    @objc func removeAllSwipeAddresses(for assetType: AssetType) {
+    /// - Parameter assetType: the CryptoCurrency
+    @objc func removeAllSwipeAddresses(for assetType: LegacyCryptoCurrency) {
         KeychainItemWrapper.removeAllSwipeAddresses(for: assetType.legacy)
+    }
+    
+    /// removes all swipe addresses for the provided CryptoCurrency
+    ///
+    /// - Parameter type: the LegacyAssetType
+    @objc func removeAllSwipeAddresses(forAsset type: LegacyAssetType) {
+        KeychainItemWrapper.removeAllSwipeAddresses(for: type)
     }
 }
 
 extension AssetAddressRepository: WalletSwipeAddressDelegate {
-    func onRetrievedSwipeToReceive(addresses: [String], assetType: AssetType) {
+    func onRetrievedSwipeToReceive(addresses: [String], assetType: CryptoCurrency) {
         addresses.forEach {
             KeychainItemWrapper.addSwipeAddress($0, assetType: assetType.legacy)
         }
@@ -214,13 +221,13 @@ extension AssetAddressRepository {
     /// (usually the same as address unless checking for corresponding BTC address for BCH
     ///   - asset: asset type for the address. Currently only supports BTC and BCH.
     /// - Returns: A single with the address usage status
-    func checkUsability(of address: String, asset: AssetType) -> Single<AddressUsageStatus> {
+    func checkUsability(of address: String, asset: CryptoCurrency) -> Single<AddressUsageStatus> {
         return Single.create { [weak self] single in
             guard let self = self else { return Disposables.create() }
             
             // Continue only if address reusability is not supported for the given asset type
             guard !asset.shouldAddressesBeReused else {
-                Logger.shared.info("\(asset.description) addresses not supported for checking if it is unused.")
+                Logger.shared.info("\(asset.name) addresses not supported for checking if it is unused.")
                 single(.success(.unused(address: address)))
                 return Disposables.create()
             }

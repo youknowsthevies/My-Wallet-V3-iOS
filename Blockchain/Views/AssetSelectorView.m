@@ -114,7 +114,7 @@
 {
     LegacyAssetType legacyAsset = self.isOpen ? [self.assets[indexPath.row] integerValue] : self.selectedAsset;
     BOOL showChevron = indexPath.row == 0;
-    AssetType asset = [AssetTypeLegacyHelper convertFromLegacy:legacyAsset];
+    LegacyCryptoCurrency *asset = [AssetTypeLegacyHelper convertFromLegacy:legacyAsset];
 
     AssetTypeCell *cell = [tableView dequeueReusableCellWithIdentifier:[AssetTypeCell identifier] forIndexPath:indexPath];
     cell.separatorInset = UIEdgeInsetsMake(0.0, cell.bounds.size.width, 0.0, 0.0);

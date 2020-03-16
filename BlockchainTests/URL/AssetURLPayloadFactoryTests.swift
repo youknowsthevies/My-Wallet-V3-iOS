@@ -38,21 +38,21 @@ class AssetURLPayloadFactoryTests: XCTestCase {
 
     func testBitcoinNoFormat() {
         let address = "1Amu4uPJnYbUXX2HhDFMNq7tSneDwWYDyv"
-        let payload = AssetURLPayloadFactory.create(fromString: address, assetType: .bitcoin)
+        let payload = AssetURLPayloadFactory.create(fromString: address, asset: CryptoCurrency.bitcoin)
         XCTAssertNotNil(payload)
         XCTAssertEqual(address, payload?.address)
     }
 
     func testBitcoinCashNoFormat() {
         let address = "qzufk542ghfu38582kz5y9kmlsrqfke5esgmzsd3lx"
-        let payload = AssetURLPayloadFactory.create(fromString: address, assetType: .bitcoinCash)
+        let payload = AssetURLPayloadFactory.create(fromString: address, asset: CryptoCurrency.bitcoinCash)
         XCTAssertNotNil(payload)
         XCTAssertEqual(address, payload?.address)
     }
 
     func testStellarNoFormat() {
         let address = "GBNKAL4I5FCITL7BP532VFTFEK3QHPLYHPLFDXGIRYO4GHBDF6QSK243"
-        let payload = AssetURLPayloadFactory.create(fromString: address, assetType: .stellar)
+        let payload = AssetURLPayloadFactory.create(fromString: address, asset: CryptoCurrency.stellar)
         XCTAssertNotNil(payload)
         XCTAssertEqual(address, payload?.address)
     }

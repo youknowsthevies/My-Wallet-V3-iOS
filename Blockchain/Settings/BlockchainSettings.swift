@@ -456,7 +456,7 @@ final class BlockchainSettings: NSObject {
 
             defaults.register(defaults: [
                 UserDefaults.Keys.swipeToReceiveEnabled.rawValue: true,
-                UserDefaults.Keys.assetType.rawValue: AssetType.bitcoin.rawValue,
+                UserDefaults.Keys.assetType.rawValue: CryptoCurrency.bitcoin.code,
                 UserDefaults.DebugKeys.enableCertificatePinning.rawValue: true
             ])
             migratePasswordAndPinIfNeeded()

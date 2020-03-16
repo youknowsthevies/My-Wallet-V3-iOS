@@ -43,7 +43,7 @@ public struct AssetPieChart {
             let percentage: Double
             
             public init(value: Interaction) {
-                debugDescription = value.asset.symbol
+                debugDescription = value.asset.displayCode
                 color = value.asset.brandColor
                 percentage = Double(truncating: value.percentage.amount as NSNumber)
             }

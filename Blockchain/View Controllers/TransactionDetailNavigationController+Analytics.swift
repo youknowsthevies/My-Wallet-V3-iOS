@@ -12,7 +12,7 @@ import PlatformKit
 
 extension TransactionDetailNavigationController {
     @objc func reportShare(asset: LegacyAssetType) {
-        let asset = AssetType(from: asset)
+        let asset = CryptoCurrency(legacyAssetType: asset)
         AnalyticsEventRecorder.shared.record(
             event: AnalyticsEvents.Transactions.transactionsItemShareClick(asset: asset)
         )

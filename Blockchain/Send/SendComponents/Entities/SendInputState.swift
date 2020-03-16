@@ -112,40 +112,40 @@ extension SendInputState.StateError {
     private typealias LocalizedString = LocalizationConstants.Send.Error
     
     /// Returns title for the error
-    func title(for asset: AssetType) -> String {
+    func title(for asset: CryptoCurrency) -> String {
         switch asset {
         case .ethereum:
             switch self {
             case .feeCoverage:
-                return String(format: LocalizedString.Balance.title, asset.symbol)
+                return String(format: LocalizedString.Balance.title, asset.displayCode)
             case .destinationAddress:
-                return String(format: LocalizedString.DestinationAddress.title, asset.symbol)
+                return String(format: LocalizedString.DestinationAddress.title, asset.displayCode)
             case .pendingTransaction:
                 return LocalizedString.PendingTransaction.title
             case .default: // Should not reach here
                 return LocalizationConstants.Errors.error
             }
         case .bitcoin, .bitcoinCash, .pax, .stellar:
-            fatalError("\(#function) does not support \(asset.description) yet")
+            fatalError("\(#function) does not support \(asset.name) yet")
         }
     }
     
     /// Returns description for the error
-    func description(for asset: AssetType) -> String? {
+    func description(for asset: CryptoCurrency) -> String? {
         switch asset {
         case .ethereum:
             switch self {
             case .feeCoverage:
-                return String(format: LocalizedString.Balance.description, asset.symbol)
+                return String(format: LocalizedString.Balance.description, asset.displayCode)
             case .destinationAddress:
-                return String(format: LocalizedString.DestinationAddress.description, asset.symbol)
+                return String(format: LocalizedString.DestinationAddress.description, asset.displayCode)
             case .pendingTransaction:
-                return String(format: LocalizedString.PendingTransaction.title, asset.symbol)
+                return String(format: LocalizedString.PendingTransaction.title, asset.displayCode)
             case .default: // Should not reach here
                 return nil
             }
         case .bitcoin, .bitcoinCash, .pax, .stellar:
-            fatalError("\(#function) does not support \(asset.description) yet")
+            fatalError("\(#function) does not support \(asset.name) yet")
         }
     }
 }

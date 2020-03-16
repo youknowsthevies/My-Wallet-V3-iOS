@@ -12,19 +12,18 @@ import PlatformKit
 // MARK: - Deprecate these once we SendBitcoinViewController is written in Swift
 
 @objc class BitpayUrlScanned: NSObject, ObjcAnalyticsEvent {
-    private let legacyAssetType: LegacyAssetType
+    private let asset: CryptoCurrency
 
     private var event: AnalyticsEvent {
-        let assetType = AssetTypeLegacyHelper.convert(fromLegacy: legacyAssetType)
-        return AnalyticsEvents.Bitpay.bitpayUrlScanned(asset: assetType)
+        return AnalyticsEvents.Bitpay.bitpayUrlScanned(asset: asset)
     }
 
     @objc class func create(legacyAssetType: LegacyAssetType) -> BitpayUrlScanned {
-        return BitpayUrlScanned(legacyAssetType: legacyAssetType)
+        return BitpayUrlScanned(asset: legacyAssetType)
     }
 
-    init(legacyAssetType: LegacyAssetType) {
-        self.legacyAssetType = legacyAssetType
+    init(asset: LegacyAssetType) {
+        self.asset = CryptoCurrency(legacyAssetType: asset)
     }
 
     var name: String {
@@ -37,19 +36,18 @@ import PlatformKit
 }
 
 @objc class BitpayUrlPasted: NSObject, ObjcAnalyticsEvent {
-    private let legacyAssetType: LegacyAssetType
+    private let asset: CryptoCurrency
 
     private var event: AnalyticsEvent {
-        let assetType = AssetTypeLegacyHelper.convert(fromLegacy: legacyAssetType)
-        return AnalyticsEvents.Bitpay.bitpayUrlPasted(asset: assetType)
+        return AnalyticsEvents.Bitpay.bitpayUrlPasted(asset: asset)
     }
 
     @objc class func create(legacyAssetType: LegacyAssetType) -> BitpayUrlPasted {
-        return BitpayUrlPasted(legacyAssetType: legacyAssetType)
+        return BitpayUrlPasted(asset: legacyAssetType)
     }
 
-    init(legacyAssetType: LegacyAssetType) {
-        self.legacyAssetType = legacyAssetType
+    init(asset: LegacyAssetType) {
+        self.asset = CryptoCurrency(legacyAssetType: asset)
     }
 
     var name: String {

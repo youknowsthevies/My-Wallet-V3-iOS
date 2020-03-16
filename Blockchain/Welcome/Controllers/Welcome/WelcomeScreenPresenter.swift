@@ -28,7 +28,8 @@ final class WelcomeScreenPresenter {
     let title = LabelContent(
         text: LocalizedString.title,
         font: .mainSemibold(Constants.Booleans.isUsingScreenSizeEqualIphone5S ? 20 : 24),
-        color: .titleText
+        color: .titleText,
+        alignment: .center
     )
     let description: NSAttributedString = {
         let font = UIFont.mainMedium(Constants.Booleans.isUsingScreenSizeEqualIphone5S ? 14 : 16)

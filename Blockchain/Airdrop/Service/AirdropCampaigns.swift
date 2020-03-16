@@ -115,7 +115,7 @@ struct AirdropCampaigns {
             }
             
             var cryptoCurrency: TriageCryptoCurrency! {
-                return try? TriageCryptoCurrency(symbol: withdrawalCurrency)
+                return try? TriageCryptoCurrency(code: withdrawalCurrency)
             }
             
             var isValid: Bool {

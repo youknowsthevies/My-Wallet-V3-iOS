@@ -503,7 +503,7 @@ extension WalletManager: WalletDelegate {
                          assetType: LegacyAssetType,
                          address: String!) {
         let details = ReceivedPaymentDetails(amount: amount,
-                                             asset: .from(legacyAssetType: assetType),
+                                             asset: .init(legacyAssetType: assetType),
                                              address: address)
         paymentReceivedRelay.accept(details)
     }
@@ -549,7 +549,7 @@ extension WalletManager: WalletDelegate {
             self.fiatAtTimeDelegate?.didGetFiatAtTime(
                 fiatAmount: fiatAmount,
                 currencyCode: currencyCode,
-                assetType: AssetType.from(legacyAssetType: assetType)
+                assetType: assetType
             )
         }
     }
@@ -566,7 +566,7 @@ extension WalletManager: WalletDelegate {
         DispatchQueue.main.async { [unowned self] in
             self.swipeAddressDelegate?.onRetrievedSwipeToReceive(
                 addresses: newSwipeAddresses as! [String],
-                assetType: AssetType.from(legacyAssetType: assetType)
+                assetType: CryptoCurrency(legacyAssetType: assetType)
             )
         }
     }

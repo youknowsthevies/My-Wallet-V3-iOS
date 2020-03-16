@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 extension String {
     
@@ -68,8 +68,8 @@ extension NSString {
 
 // MARK: - Symbol formatting
 extension String {
-    func appendAssetSymbol(for assetType: AssetType) -> String {
-        return self + " " + assetType.symbol
+    func appendAssetSymbol(for assetType: CryptoCurrency) -> String {
+        return self + " " + assetType.displayCode
     }
 
     func appendCurrencySymbol() -> String {

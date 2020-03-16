@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 /// Details about a received payment
 struct ReceivedPaymentDetails {
@@ -15,7 +15,7 @@ struct ReceivedPaymentDetails {
     let amount: String
     
     /// The type of the asset
-    let asset: AssetType
+    let asset: CryptoCurrency
     
     /// The address
     let address: String

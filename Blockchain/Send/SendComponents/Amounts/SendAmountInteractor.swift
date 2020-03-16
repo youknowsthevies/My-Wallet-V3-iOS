@@ -30,7 +30,7 @@ final class SendAmountInteractor: SendAmountInteracting {
         let amount = calculationState
             .map { [weak self] state -> CryptoValue? in
                 guard let self = self else { return nil }
-                return state.value?.crypto ?? CryptoValue.zero(assetType: self.asset.cryptoCurrency)
+                return state.value?.crypto ?? CryptoValue.zero(assetType: self.asset)
             }
             .compactMap { $0 }
         let spendableBalance = spendableBalanceInteractor.balance
@@ -63,7 +63,7 @@ final class SendAmountInteractor: SendAmountInteracting {
     
     // MARK: - Injected
     
-    let asset: AssetType
+    let asset: CryptoCurrency
     let spendableBalanceInteractor: SendSpendableBalanceInteracting
 
     private let feeInteractor: SendFeeInteracting
@@ -80,7 +80,7 @@ final class SendAmountInteractor: SendAmountInteracting {
 
     // MARK: - Setup
     
-    init(asset: AssetType,
+    init(asset: CryptoCurrency,
          spendableBalanceInteractor: SendSpendableBalanceInteracting,
          feeInteractor: SendFeeInteracting,
          exchangeService: PairExchangeServiceAPI,
@@ -99,7 +99,7 @@ final class SendAmountInteractor: SendAmountInteracting {
         let asset = self.asset
         let currentCrypto = latestCryptoRelay
             .map { $0.isEmpty ? "0" : $0 }
-            .map { CryptoValue.createFromMajorValue(string: $0, assetType: asset.cryptoCurrency) }
+            .map { CryptoValue.createFromMajorValue(string: $0, assetType: asset) }
         
         currentCrypto
             .filter { $0 == nil }
@@ -132,7 +132,7 @@ final class SendAmountInteractor: SendAmountInteracting {
             .map { FiatValue.create(amountString: $0.0, currencyCode: $0.1.code) }
         Observable
             .combineLatest(currentFiat, exchangeService.fiatPrice)
-            .map { FiatCryptoPair(fiat: $0, priceInFiat: $1, cryptoCurrency: asset.cryptoCurrency) }
+            .map { FiatCryptoPair(fiat: $0, priceInFiat: $1, cryptoCurrency: asset) }
             .map { $0.isZero ? .invalid(.empty) : .value($0) }
             .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
             .bind(to: calculationStateRelay)

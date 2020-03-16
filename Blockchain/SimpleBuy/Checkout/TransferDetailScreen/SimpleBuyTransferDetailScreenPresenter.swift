@@ -272,12 +272,12 @@ extension SimpleBuyTransferDetailScreenPresenter {
             case .pendingOrder:
                 title = String(
                     format: TitleString.pendingOrder,
-                    data.cryptoCurrency.code
+                    data.cryptoCurrency.displayCode
                 )
                 summary = String(
                     format: SummaryString.pendingOrder,
                     currencyString,
-                    data.cryptoCurrency.code
+                    data.cryptoCurrency.displayCode
                 )
             }
 

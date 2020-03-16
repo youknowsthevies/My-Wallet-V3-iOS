@@ -10,12 +10,13 @@ import Foundation
 import XCTest
 import RxSwift
 
+@testable import PlatformKit
 @testable import Blockchain
 
 class AddressPresenterTests: XCTestCase {
     
     func testAddressPresenterStatus() {
-        let asset = AssetType.ethereum
+        let asset = CryptoCurrency.ethereum
         let addressString = "eth-address"
         let address = WalletAddressContent(string: addressString, image: UIImage())
         let payment = ReceivedPaymentDetails(amount: "1 ETH", asset: asset, address: addressString)

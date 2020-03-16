@@ -34,7 +34,8 @@ fileprivate extension FiatCurrency {
     var selectionItem: SelectionItemViewModel {
         SelectionItemViewModel(
             id: code,
-            name: name,
+            title: name,
+            subtitle: code,
             thumbImage: .none
         )
     }

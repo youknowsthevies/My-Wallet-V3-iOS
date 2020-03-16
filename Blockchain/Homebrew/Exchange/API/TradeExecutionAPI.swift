@@ -62,7 +62,7 @@ protocol TradeExecutionAPI {
 
     /// Currently the wallet is unable to support sending another ether
     /// transaction until the last one is confirmed.
-    func canTradeAssetType(_ assetType: AssetType) -> Single<Bool>
+    func canTradeAssetType(_ assetType: CryptoCurrency) -> Single<Bool>
     
     /// This differs from `canTradeAssetType` in that it takes a `volume` parameter.
     /// Initially a volume parameter was added to `canTradeAssetType` but not we
@@ -73,5 +73,5 @@ protocol TradeExecutionAPI {
     /// return `nil` for this function.
     /// For more information on minimum balances, please refer to this:
     /// https://www.stellar.org/developers/guides/concepts/fees.html#minimum-account-balance
-    func validateVolume(_ volume: CryptoValue, for assetType: AssetType) -> Single<TransactionValidationResult>
+    func validateVolume(_ volume: CryptoValue, for assetType: CryptoCurrency) -> Single<TransactionValidationResult>
 }

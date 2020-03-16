@@ -11,7 +11,7 @@ import PlatformKit
 import EthereumKit
 
 protocol SendServiceContaining {
-    var asset: AssetType { get }
+    var asset: CryptoCurrency { get }
     var sourceAccountProvider: SendSourceAccountProviding { get }
     var sourceAccountState: SendSourceAccountStateServicing { get }
     var exchangeAddressFetcher: ExchangeAddressFetching { get }
@@ -23,14 +23,14 @@ protocol SendServiceContaining {
     var fiatCurrency: FiatCurrencySettingsServiceAPI { get }
     
     /// Performs any necessary cleaning to the service layer.
-    /// In order to change asset in the future, we will only replace `asset: AssetType`
+    /// In order to change asset in the future, we will only replace `asset: CryptoCurrency`
     /// which will force the interaction & presentation to change accordingly.
     /// Adopting this approach, only 1 VIPER will be needed.
     func clean()
 }
 
 struct SendServiceContainer: SendServiceContaining {
-    let asset: AssetType
+    let asset: CryptoCurrency
     let sourceAccountProvider: SendSourceAccountProviding
     let sourceAccountState: SendSourceAccountStateServicing
     let exchangeAddressFetcher: ExchangeAddressFetching
@@ -41,7 +41,7 @@ struct SendServiceContainer: SendServiceContaining {
     let bus: WalletActionEventBus
     let fiatCurrency: FiatCurrencySettingsServiceAPI
     
-    init(asset: AssetType) {
+    init(asset: CryptoCurrency) {
         self.asset = asset
         exchangeAddressFetcher = ExchangeAddressFetcher()
         executor = SendExecutor(asset: asset)

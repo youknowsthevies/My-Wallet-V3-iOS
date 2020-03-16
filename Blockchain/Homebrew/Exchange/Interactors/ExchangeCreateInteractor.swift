@@ -227,7 +227,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
         /// One execption is the case of crypto pair change, where balance update is required.
         let volume = inputs.activeInputValue
         let fromAssetType = model.marketPair.pair.from
-        guard let cryptoValue = CryptoValue.createFromMajorValue(string: volume, assetType: fromAssetType.cryptoCurrency) else { return }
+        guard let cryptoValue = CryptoValue.createFromMajorValue(string: volume, assetType: fromAssetType) else { return }
         guard let modelCryptoValue = model.cryptoValue else { return }
         guard forcesUpdate || modelCryptoValue != cryptoValue else {
             return
@@ -248,7 +248,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
         guard let output = output else { return }
         guard let model = model else { return }
         let symbol = model.fiatCurrencySymbol
-        let suffix = model.pair.from.symbol
+        let suffix = model.pair.from.displayCode
         
         let secondaryAmount = conversions.output == "0" ? "0.00": conversions.output
         let secondaryResult = model.isUsingFiat ? (secondaryAmount + " " + suffix) : (symbol + secondaryAmount)
@@ -265,7 +265,11 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
         }
         
         /// Get the balance and fees in both crypto and fiat
-        let disposable = Observable.zip(repository.accounts(for: type, fromCache: false).asObservable(), estimatedFeeForCurrency(type.cryptoCurrency))
+        let disposable = Observable
+            .zip(
+                repository.accounts(for: type, fromCache: false).asObservable(),
+                estimatedFeeForCurrency(type)
+            )
             .subscribeOn(MainScheduler.asyncInstance)
             .flatMapLatest { [weak self] accountsAndFees -> Observable<(FiatValue, FiatValue, CryptoValue, CryptoValue)> in
                 guard let self = self else { return Observable.empty() }
@@ -436,7 +440,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
                 self.status = .inflight
                 guard let model = self.model else { return Observable.empty() }
                 let validateVolumeObservable = self.tradeExecution
-                    .validateVolume(distinctVolume, for: model.marketPair.fromAccount.address.assetType)
+                    .validateVolume(distinctVolume, for: model.marketPair.fromAccount.address.cryptoCurrency)
                     .asObservable()
                 return Observable.zip(
                     Observable.just(model),
@@ -466,7 +470,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
                 /// validate that the user has the necessary funds to make a swap.
                 /// So, we have to do a fresh fetch of the account details for the asset.
                 let accounts = self.repository
-                    .accounts(for: volume.currencyType.assetType)
+                    .accounts(for: volume.currencyType)
                     .asObservable()
                 return Observable.zip(
                     Observable.just(model),
@@ -611,7 +615,12 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
 
         let volume = conversion.quote.currencyRatio.base.crypto.value
         let fromAssetType = model.marketPair.pair.from
-        guard let cryptoVolume = CryptoValue.createFromMajorValue(string: volume, assetType: fromAssetType.cryptoCurrency, locale: Locale(identifier: "en_US")) else {
+        guard let cryptoVolume = CryptoValue
+            .createFromMajorValue(
+                string: volume,
+                assetType: fromAssetType,
+                locale: Locale(identifier: "en_US")
+            ) else {
             return
         }
 
@@ -742,7 +751,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
         }
 
         let symbol = model.fiatCurrencySymbol
-        let suffix = model.pair.from.symbol
+        let suffix = model.pair.from.displayCode
         
         let secondaryAmount = "0.00"
         let secondaryResult = model.isUsingFiat ? (secondaryAmount + " " + suffix) : (symbol + secondaryAmount)
@@ -758,7 +767,8 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
 
         let min = self.minTradingLimit().asObservable()
         let max = self.maxTradingLimit().asObservable()
-        let disposable = Observable.zip(min, max)
+        let disposable = Observable
+            .zip(min, max)
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { (minimum, maximum) in
@@ -859,14 +869,14 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
     private func clearInputs() {
         guard let model = model else { return }
         let fromAssetType = model.marketPair.pair.from
-        volumeSubject.accept(CryptoValue.zero(assetType: fromAssetType.cryptoCurrency))
+        volumeSubject.accept(CryptoValue.zero(assetType: fromAssetType))
         inputs.clear()
         conversions.clear()
         output?.updateTradingPairValues(left: "", right: "")
     }
 
     // Error message to show if the user is not allowed to trade a certain asset type
-    private func errorMessage(for assetType: AssetType) -> String? {
+    private func errorMessage(for assetType: CryptoCurrency) -> String? {
         switch assetType {
         case .ethereum, .pax:
             return LocalizationConstants.SendEther.waitingForPaymentToFinishMessage

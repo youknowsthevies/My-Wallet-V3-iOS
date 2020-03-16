@@ -8,11 +8,12 @@
 
 import Foundation
 import RxSwift
+import PlatformKit
 
 protocol AddressInteracting {
     
     /// The associated asset
-    var asset: AssetType { get }
+    var asset: CryptoCurrency { get }
     
     /// The current address
     var address: Single<WalletAddressContent> { get }

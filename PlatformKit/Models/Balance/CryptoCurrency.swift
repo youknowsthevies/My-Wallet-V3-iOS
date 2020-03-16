@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import Localization
 
 /// This is used to distinguish between different types of digital assets.
 /// `PlatformKit` should be almost entirely `CryptoCurrency` agnostic however.
@@ -20,27 +20,18 @@ public enum CryptoCurrency: String, Codable, CaseIterable {
     case bitcoinCash = "BCH"
     case stellar = "XLM"
     case pax = "PAX"
+    
+    /// Initialize with currency code: `BTC`, `ETH`, `BCH`, `XLM`, `PAX`
+    public init?(code: String) {
+        let code = code.uppercased()
+        guard let currency = (CryptoCurrency.allCases.first { $0.code == code }) else {
+            return nil
+        }
+        self = currency
+    }
 }
 
-extension CryptoCurrency: CodingKey { }
-
 extension CryptoCurrency {
-    
-    @available(*, deprecated, message: "Superseded by `name`")
-    public var description: String {
-        switch self {
-        case .bitcoin:
-            return "Bitcoin"
-        case .bitcoinCash:
-            return "Bitcoin Cash"
-        case .ethereum:
-            return "Ether"
-        case .stellar:
-            return "Stellar"
-        case .pax:
-            return "USD PAX"
-        }
-    }
     
     public var name: String {
         switch self {
@@ -53,16 +44,21 @@ extension CryptoCurrency {
         case .stellar:
             return "Stellar"
         case .pax:
-            return "USD PAX"
+            return "USD \(LocalizationConstants.digital)"
         }
-    }
-    
-    public var symbol: String {
-        return rawValue
     }
     
     public var code: String {
         return rawValue
+    }
+        
+    public var displayCode: String {
+        switch self {
+        case .bitcoin, .ethereum, .bitcoinCash, .stellar:
+            return code
+        case .pax:
+            return "USD-D"
+        }
     }
     
     public var maxDecimalPlaces: Int {

@@ -46,7 +46,7 @@ struct AssetLineChart {
             let points: [CGPoint]
             
             init(value: Interaction) {
-                debugDescription = value.currency.symbol
+                debugDescription = value.currency.displayCode
                 color = value.delta >= 0 ? .positivePrice : .negativePrice
                 points = value.prices.enumerated().map {
                     return CGPoint(x: Double($0.offset), y: $0.element.price.doubleValue)

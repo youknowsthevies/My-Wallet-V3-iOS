@@ -59,7 +59,7 @@ class ExchangeInputViewModel {
                 value += "0"
             }
             guard includingSymbol == true else { return value }
-            let symbol = assetType.symbol
+            let symbol = assetType.displayCode
             return value + " " + symbol
         }
     }

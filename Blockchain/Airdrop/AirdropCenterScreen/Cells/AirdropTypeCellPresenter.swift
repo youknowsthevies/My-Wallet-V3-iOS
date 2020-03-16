@@ -44,12 +44,12 @@ struct AirdropTypeCellPresenter {
             title = String(
                 format: LocalizedString.fiatTitle,
                 value.toDisplayString(includeSymbol: true),
-                interactor.cryptoCurrency.symbol
+                interactor.cryptoCurrency.displayCode
             )
         } else {
             /// If the fiat value is missing, then it was not returned by the backend.
             /// make sure to display something.
-            title = interactor.cryptoCurrency.symbol
+            title = interactor.cryptoCurrency.displayCode
         }
 
         self.title = .init(

@@ -8,15 +8,16 @@
 
 import RxSwift
 
+@testable import PlatformKit
 @testable import Blockchain
 
 class AddressInteractorMock: AddressInteracting {
     
-    let asset: AssetType
+    let asset: CryptoCurrency
     let address: Single<WalletAddressContent>
     let receivedPayment: Observable<ReceivedPaymentDetails>
     
-    init(asset: AssetType,
+    init(asset: CryptoCurrency,
          address: WalletAddressContent,
          receivedPayment: ReceivedPaymentDetails) {
         self.asset = asset

@@ -20,7 +20,7 @@ final class HistoricalBalanceCellPresenter {
         return .just(
             .init(
                 imageName: interactor.cryptoCurrency.logoImageName,
-                accessibility: .id("\(AccessibilityId.assetImageView)\(interactor.cryptoCurrency.symbol)")
+                accessibility: .id("\(AccessibilityId.assetImageView)\(interactor.cryptoCurrency.displayCode)")
             )
         )
     }
@@ -28,10 +28,10 @@ final class HistoricalBalanceCellPresenter {
     var name: Driver<LabelContent> {
         return .just(
             .init(
-                text: interactor.cryptoCurrency.description,
+                text: interactor.cryptoCurrency.name,
                 font: .mainSemibold(20),
                 color: .dashboardAssetTitle,
-                accessibility: .id("\(AccessibilityId.titleLabelFormat)\(interactor.cryptoCurrency.symbol)")
+                accessibility: .id("\(AccessibilityId.titleLabelFormat)\(interactor.cryptoCurrency.displayCode)")
             )
         )
     }
@@ -53,7 +53,7 @@ final class HistoricalBalanceCellPresenter {
         )
         pricePresenter = AssetPriceViewPresenter(
             interactor: interactor.priceInteractor,
-            descriptors: .assetPrice(accessibilityIdSuffix: interactor.cryptoCurrency.symbol)
+            descriptors: .assetPrice(accessibilityIdSuffix: interactor.cryptoCurrency.displayCode)
         )
         balancePresenter = AssetBalanceViewPresenter(
             interactor: interactor.balanceInteractor

@@ -531,13 +531,11 @@ extension AppCoordinator: TabSwapping {
 
 extension AppCoordinator: CurrencyRouting {
     func toSend(_ currency: CryptoCurrency) {
-        let assetType = currency.assetType.legacy
-        tabControllerManager.showSend(assetType)
+        tabControllerManager.showSend(currency.legacy)
     }
     
     func toReceive(_ currency: CryptoCurrency) {
-        let assetType = currency.assetType.legacy
-        tabControllerManager.showReceive(assetType)
+        tabControllerManager.showReceive(currency.legacy)
     }
 }
 

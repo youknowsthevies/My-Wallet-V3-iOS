@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 // TODO: Temporary workaround - refactor
 final class SendContainerViewController: UIViewController {
@@ -24,7 +24,7 @@ final class SendContainerViewController: UIViewController {
     
     private weak var currentVC: UIViewController!
     
-    func set(asset: AssetType) {
+    func set(asset: CryptoCurrency) {
         currentVC?.remove()
         switch asset {
         case .bitcoin:

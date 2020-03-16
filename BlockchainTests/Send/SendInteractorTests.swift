@@ -21,7 +21,7 @@ final class SendInteractorTests: XCTestCase {
     
     // MARK: - Properties
     
-    private let assets: [AssetType] = [.ethereum]
+    private let assets: [CryptoCurrency] = [.ethereum]
     
     // MARK: - Success Test Cases
     
@@ -230,7 +230,7 @@ final class SendInteractorTests: XCTestCase {
         }
     }
     
-    private func testInsufficientFeeCoverage() throws {
+    func testInsufficientFeeCoverage() throws {
         try testInsufficientFeeCoverage(transferredAmountType: .crypto(major: "1"))
         try testInsufficientFeeCoverage(transferredAmountType: .fiat(raw: "1"))
     }
@@ -273,7 +273,7 @@ final class SendInteractorTests: XCTestCase {
     // MARK: - Accessors
     
     private func interactor(
-        for asset: AssetType,
+        for asset: CryptoCurrency,
         balanceMajor: String,
         feeMajor: String,
         fiatExchangeRate: String,
@@ -281,8 +281,8 @@ final class SendInteractorTests: XCTestCase {
         pitAddressFetchResult: Result<ExchangeAddressFetcher.AddressResponseBody.State, ExchangeAddressFetcher.FetchingError>,
         transferExecutionResult: Result<Void, Error>
         ) -> SendInteracting {
-        let balance = CryptoValue.createFromMajorValue(string: balanceMajor, assetType: asset.cryptoCurrency)!
-        let fee = CryptoValue.createFromMajorValue(string: feeMajor, assetType: asset.cryptoCurrency)!
+        let balance = CryptoValue.createFromMajorValue(string: balanceMajor, assetType: asset)!
+        let fee = CryptoValue.createFromMajorValue(string: feeMajor, assetType: asset)!
         let exchange = FiatValue.create(amountString: fiatExchangeRate, currencyCode: "USD")
         let services = MockSendServiceContainer(
             asset: asset,

@@ -28,7 +28,7 @@ class SocketMessageTests: XCTestCase {
         let exchangeRates = try? JSONDecoder().decode(ExchangeRates.self, from: json)
         XCTAssertNotNil(exchangeRates, "ExchangeRates could not be decoded")
 
-        let usdBtcPair = exchangeRates!.rates.first(where: { $0.pair == "USD-BTC" })
+        let usdBtcPair = exchangeRates!.rates.first(where: { $0.interactionPair == "USD-BTC" })
         XCTAssertNotNil(usdBtcPair, "USD-BTC pair not found")
         XCTAssertEqual("0.00015351", usdBtcPair!.price)
     }

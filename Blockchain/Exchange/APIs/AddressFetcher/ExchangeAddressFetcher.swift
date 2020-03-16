@@ -61,7 +61,7 @@ final class ExchangeAddressFetcher: ExchangeAddressFetching {
         }
 
         /// The asset type
-        let assetType: AssetType
+        let assetType: CryptoCurrency
         
         /// The address associated with the asset type
         let address: String
@@ -79,7 +79,7 @@ final class ExchangeAddressFetcher: ExchangeAddressFetching {
             }
             
             let currency = try values.decode(String.self, forKey: .currency)
-            if let assetType = AssetType(stringValue: currency) {
+            if let assetType = CryptoCurrency(code: currency) {
                 self.assetType = assetType
             } else {
                 throw ResponseError.assetType
@@ -127,14 +127,14 @@ final class ExchangeAddressFetcher: ExchangeAddressFetching {
     // MARK: - Endpoint
     
     /// Fetches the Exchange address for a given asset type
-    func fetchAddress(for asset: AssetType) -> Single<String> {
+    func fetchAddress(for asset: CryptoCurrency) -> Single<String> {
         
         /// Make sure that the config for Exchange is enabled before moving on to fetch the address
         guard featureConfigurator.configuration(for: .exchangeLinking).isEnabled else {
             return Single.error(AppFeatureConfiguration.ConfigError.disabled)
         }
         let url = "\(urlPrefix)/payments/accounts/linked"
-        let data = AddressRequestBody(currency: asset.symbol)
+        let data = AddressRequestBody(currency: asset.code)
         
         // TODO: Move `NabuAuthenticationService` inside PlatformKit and `getSessionToken` to network layer
         return repository.hasLinkedExchangeAccount

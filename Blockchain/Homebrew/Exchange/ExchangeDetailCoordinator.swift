@@ -103,19 +103,19 @@ class ExchangeDetailCoordinator: NSObject {
                             description: LocalizationConstants.Swap.value,
                             value: self.valueString(
                                 for: conversion.quote.currencyRatio.counter.fiat.value,
-                                currencyCode: conversion.quote.currencyRatio.counter.fiat.symbol
+                                currencyCode: conversion.quote.currencyRatio.counter.fiat.displayCode
                             ),
                             backgroundColor: #colorLiteral(red: 0.96, green: 0.97, blue: 0.98, alpha: 1),
                             descriptionAccessibilityId: AccessibilityIdentifier.fiatDescriptionLabel,
                             valueAccessibilityId: AccessibilityIdentifier.fiatValueLabel
                         )
                         
-                        let from = orderTransaction.from.address.assetType
+                        let from = orderTransaction.from.address.cryptoCurrency
                         let feeAssetType = from.isERC20 ? .ethereum : from
                         
                         let fees = ExchangeCellModel.Plain(
                             description: LocalizationConstants.Swap.fees,
-                            value: orderTransaction.fees + " " + feeAssetType.symbol,
+                            value: orderTransaction.fees + " " + feeAssetType.displayCode,
                             backgroundColor: #colorLiteral(red: 0.96, green: 0.97, blue: 0.98, alpha: 1),
                             descriptionAccessibilityId: AccessibilityIdentifier.feesDescriptionLabel,
                             valueAccessibilityId: AccessibilityIdentifier.feesValueLabel
@@ -123,7 +123,7 @@ class ExchangeDetailCoordinator: NSObject {
                         
                         let receive = ExchangeCellModel.Plain(
                             description: LocalizationConstants.Swap.receive,
-                            value: orderTransaction.amountToReceive + " " + TradingPair(string: conversion.quote.pair)!.to.symbol,
+                            value: orderTransaction.amountToReceive + " " + TradingPair(string: conversion.quote.pair)!.to.displayCode,
                             backgroundColor: #colorLiteral(red: 0.96, green: 0.97, blue: 0.98, alpha: 1),
                             bold: true,
                             descriptionAccessibilityId: AccessibilityIdentifier.receiveDescriptionLabel,
@@ -196,14 +196,14 @@ class ExchangeDetailCoordinator: NSObject {
                         
                         let fees = ExchangeCellModel.Plain(
                             description: LocalizationConstants.Swap.fees,
-                            value: orderTransaction.fees + " " + orderTransaction.from.address.assetType.symbol,
+                            value: orderTransaction.fees + " " + orderTransaction.from.address.cryptoCurrency.displayCode,
                             descriptionAccessibilityId: AccessibilityIdentifier.feesDescriptionLabel,
                             valueAccessibilityId: AccessibilityIdentifier.feesValueLabel
                         )
                         
                         let receive = ExchangeCellModel.Plain(
                             description: LocalizationConstants.Swap.receive,
-                            value: orderTransaction.amountToReceive + " " + TradingPair(string: conversion.quote.pair)!.to.symbol,
+                            value: orderTransaction.amountToReceive + " " + TradingPair(string: conversion.quote.pair)!.to.displayCode,
                             bold: true,
                             descriptionAccessibilityId: AccessibilityIdentifier.receiveDescriptionLabel,
                             valueAccessibilityId: AccessibilityIdentifier.receiveValueLabel
@@ -370,7 +370,7 @@ class ExchangeDetailCoordinator: NSObject {
                     
                     self.bus.publish(
                         action: .sendCrypto,
-                        extras: [WalletAction.ExtraKeys.assetType: transaction.from.address.assetType]
+                        extras: [WalletAction.ExtraKeys.assetType: transaction.from.address.cryptoCurrency]
                     )
                     self.interface?.loadingVisibility(.hidden)
                     SwapCoordinator.shared.handle(
@@ -390,7 +390,7 @@ class ExchangeDetailCoordinator: NSObject {
                     } else {
                         self.interface?.loadingVisibility(.hidden)
                         var description = errorDescription
-                        if transaction.from.address.assetType == .stellar {
+                        if transaction.from.address.cryptoCurrency == .stellar {
                             description = LocalizationConstants.Stellar.cannotSendXLMAtThisTime
                         }
                         AlertViewPresenter.shared.standardError(message: description)
@@ -418,7 +418,7 @@ class ExchangeDetailCoordinator: NSObject {
         /// the balance reflected in the `OrderTransaction` and the user's actual
         /// balance. 
         let disposable = accountRepository
-            .defaultAccount(for: orderTransaction.from.address.assetType)
+            .defaultAccount(for: orderTransaction.from.address.cryptoCurrency)
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: { account in
@@ -429,7 +429,7 @@ class ExchangeDetailCoordinator: NSObject {
                     title: "swap_failure",
                     parameters: [
                         "balance": balance.toDisplayString(includeSymbol: true),
-                        "assetType": orderTransaction.from.address.assetType.description,
+                        "assetType": orderTransaction.from.address.cryptoCurrency.name,
                         "amount_to_send": orderTransaction.amountToSend,
                         "amount_to_receive": orderTransaction.amountToReceive,
                         "fees": orderTransaction.fees,
@@ -446,7 +446,7 @@ class ExchangeDetailCoordinator: NSObject {
             title: "swap_locked",
             parameters: [
                 "balance": balance.toDisplayString(includeSymbol: true),
-                "assetType": orderTransaction.from.address.assetType.description,
+                "assetType": orderTransaction.from.address.cryptoCurrency.name,
                 "amount_to_send": orderTransaction.amountToSend,
                 "amount_to_receive": orderTransaction.amountToReceive,
                 "fees": orderTransaction.fees,

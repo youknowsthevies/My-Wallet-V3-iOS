@@ -87,7 +87,7 @@ public extension UIColor {
     static let ethereum = eth
     static let bitcoinCash = bch
     static let stellar = xlm
-    static let paxos = pax
+    static let usdd = pax
     
     // Tiers
     

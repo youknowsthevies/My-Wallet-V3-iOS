@@ -433,18 +433,18 @@
 
 #pragma mark - Fiat at Time
 
-- (void)didGetFiatAtTimeWithFiatAmount:(NSNumber * _Nonnull)fiatAmount currencyCode:(NSString * _Nonnull)currencyCode assetType:(AssetType)assetType
+- (void)didGetFiatAtTimeWithFiatAmount:(NSNumber * _Nonnull)fiatAmount currencyCode:(NSString * _Nonnull)currencyCode assetType:(LegacyAssetType)assetType
 {
     NSArray *transactions;
     NSString *targetHash;
 
-    if (assetType == AssetTypeBitcoin) {
+    if (assetType == LegacyAssetTypeBitcoin) {
         transactions = WalletManager.sharedInstance.latestMultiAddressResponse.transactions;
         targetHash = self.transactionsBitcoinViewController.detailViewController.transactionModel.myHash;
-    } else if (assetType == AssetTypeEthereum) {
+    } else if (assetType == LegacyAssetTypeEther) {
         transactions = WalletManager.sharedInstance.wallet.ethereum.etherTransactions;
         targetHash = self.transactionsEtherViewController.detailViewController.transactionModel.myHash;
-    } else if (assetType == AssetTypeBitcoinCash) {
+    } else if (assetType == LegacyAssetTypeBitcoinCash) {
         transactions = WalletManager.sharedInstance.wallet.bitcoinCashTransactions;
         targetHash = self.transactionsBitcoinCashViewController.detailViewController.transactionModel.myHash;
     }

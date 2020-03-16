@@ -189,11 +189,11 @@
 + (NSString *)stringFromSymbol:(NSString *)symbol
 {
     if ([symbol isEqualToString:CURRENCY_SYMBOL_BTC]) {
-        return [AssetTypeLegacyHelper descriptionFor:AssetTypeBitcoin];
+        return [AssetTypeLegacyHelper nameFrom:LegacyAssetTypeBitcoin];
     } else if ([symbol isEqualToString:CURRENCY_SYMBOL_ETH]) {
-        return [AssetTypeLegacyHelper descriptionFor:AssetTypeEthereum];
+        return [AssetTypeLegacyHelper nameFrom:LegacyAssetTypeEther];
     } else if ([symbol isEqualToString:CURRENCY_SYMBOL_BCH]) {
-        return [AssetTypeLegacyHelper descriptionFor:AssetTypeBitcoinCash];
+        return [AssetTypeLegacyHelper nameFrom:LegacyAssetTypeBitcoinCash];
     }
     DLog(@"ExchangeDetailView: unsupported symbol!");
     return nil;

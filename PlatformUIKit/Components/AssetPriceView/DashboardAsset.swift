@@ -154,7 +154,7 @@ public struct DashboardAsset {
                         font: descriptors.fiatFont,
                         color: descriptors.fiatTextColor,
                         accessibility: .init(
-                            id: .value("\(AccessibilityId.fiatBalanceLabelFormat)\(value.cryptoValue.currencyCode)")
+                            id: .value("\(AccessibilityId.fiatBalanceLabelFormat)\(value.cryptoValue.code)")
                             )
                         )
                     
@@ -163,7 +163,7 @@ public struct DashboardAsset {
                         font: descriptors.cryptoFont,
                         color: descriptors.cryptoTextColor,
                         accessibility: .init(
-                            id: .value("\(AccessibilityId.cryptoBalanceLabelFormat)\(value.cryptoValue.currencyCode)")
+                            id: .value("\(AccessibilityId.cryptoBalanceLabelFormat)\(value.cryptoValue.displayCode)")
                             )
                         )
                 }

@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 /// Protocol definition for the delegate related to swipe to receive addresses
 protocol WalletSwipeAddressDelegate: class {
@@ -16,5 +16,5 @@ protocol WalletSwipeAddressDelegate: class {
     /// - Parameters:
     ///   - addresses: the addresses
     ///   - assetType: the type of the asset for the retrieved addresses
-    func onRetrievedSwipeToReceive(addresses: [String], assetType: AssetType)
+    func onRetrievedSwipeToReceive(addresses: [String], assetType: CryptoCurrency)
 }

@@ -64,11 +64,11 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
 
     // MARK: Public Methods
 
-    func accounts(for assetType: AssetType) -> Single<[AssetAccount]> {
+    func accounts(for assetType: CryptoCurrency) -> Single<[AssetAccount]> {
         return accounts(for: assetType, fromCache: true)
     }
 
-    func accounts(for assetType: AssetType, fromCache: Bool) -> Single<[AssetAccount]> {
+    func accounts(for assetType: CryptoCurrency, fromCache: Bool) -> Single<[AssetAccount]> {
         guard wallet.isInitialized() else {
             return .just([])
         }
@@ -97,7 +97,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     }
 
     func fetchAccounts() -> Single<[AssetAccount]> {
-        let observables: [Observable<[AssetAccount]>] = AssetType.all.map {
+        let observables: [Observable<[AssetAccount]>] = CryptoCurrency.all.map {
             accounts(for: $0, fromCache: false).asObservable()
         }
         return Single.create { observer -> Disposable in
@@ -114,7 +114,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         }
     }
 
-    func defaultAccount(for assetType: AssetType) -> Single<AssetAccount?> {
+    func defaultAccount(for assetType: CryptoCurrency) -> Single<AssetAccount?> {
         switch assetType {
         case .ethereum:
             return accounts(for: assetType, fromCache: false).map { $0.first }
@@ -175,9 +175,9 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         }
     }
 
-    private func cachedAccount(assetType: AssetType) -> Single<[AssetAccount]> {
+    private func cachedAccount(assetType: CryptoCurrency) -> Single<[AssetAccount]> {
         return accounts.flatMap { result -> Single<[AssetAccount]> in
-            let cached = result.filter { $0.address.assetType == assetType }
+            let cached = result.filter { $0.address.cryptoCurrency == assetType }
             return .just(cached)
         }
     }
@@ -222,7 +222,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     // Handle BTC and BCH
     // TODO pull in legacy addresses.
     // TICKET: IOS-1290
-    private func legacyAddress(assetType: AssetType, fromCache: Bool) -> Single<[AssetAccount]> {
+    private func legacyAddress(assetType: CryptoCurrency, fromCache: Bool) -> Single<[AssetAccount]> {
         if fromCache {
             return cachedAccount(assetType: assetType)
         } else {
@@ -243,7 +243,7 @@ extension AssetAccount {
 
     /// Creates a new AssetAccount. This method only supports creating an AssetAccount for
     /// BTC or BCH. For ETH, use `defaultEthereumAccount`.
-    fileprivate static func create(assetType: AssetType, index: Int32, wallet: Wallet) -> AssetAccount? {
+    fileprivate static func create(assetType: CryptoCurrency, index: Int32, wallet: Wallet) -> AssetAccount? {
         guard let address = wallet.getReceiveAddress(forAccount: index, assetType: assetType.legacy) else {
             return nil
         }
@@ -254,12 +254,12 @@ extension AssetAccount {
             let balanceLong = balanceFromWalletObject as? CUnsignedLongLong ?? 0
             let balanceDecimal = Decimal(balanceLong) / Decimal(Constants.Conversions.satoshi)
             let balanceString = (balanceDecimal as NSDecimalNumber).description(withLocale: Locale.current)
-            let balanceBigUInt = BigUInt(balanceString, decimals: assetType.cryptoCurrency.maxDecimalPlaces) ?? 0
+            let balanceBigUInt = BigUInt(balanceString, decimals: assetType.maxDecimalPlaces) ?? 0
             let balanceBigInt = BigInt(balanceBigUInt)
-            balance = CryptoValue.createFromMinorValue(balanceBigInt, assetType: assetType.cryptoCurrency)
+            balance = CryptoValue.createFromMinorValue(balanceBigInt, assetType: assetType)
         } else {
             let balanceString = balanceFromWalletObject as? String ?? "0"
-            balance = CryptoValue.createFromMajorValue(string: balanceString, assetType: assetType.cryptoCurrency) ?? CryptoValue.zero(assetType: assetType.cryptoCurrency)
+            balance = CryptoValue.createFromMajorValue(string: balanceString, assetType: assetType) ?? CryptoValue.zero(assetType: assetType)
         }
         return AssetAccount(
             index: index,

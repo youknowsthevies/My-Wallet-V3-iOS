@@ -36,11 +36,11 @@ final class SimpleBuyCryptoCurrencySelectionService: SelectionServiceAPI {
 }
 
 fileprivate extension CryptoCurrency {
-    
     var selectionItem: SelectionItemViewModel {
         SelectionItemViewModel(
             id: code,
-            name: name,
+            title: name,
+            subtitle: displayCode,
             thumbImage: .name(logoImageName)
         )
     }

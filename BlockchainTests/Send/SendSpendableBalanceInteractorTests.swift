@@ -8,8 +8,8 @@
 
 import XCTest
 import RxSwift
-import PlatformKit
 
+@testable import PlatformKit
 @testable import Blockchain
 
 // Asset agnostic tests for spendable balance interaction layer
@@ -17,9 +17,9 @@ final class SendSpendableBalanceInteractorTests: XCTestCase {
     
     // MARK: - Properties
     
-    private let asset = AssetType.ethereum
+    private let asset = CryptoCurrency.ethereum
     private let currencyCode = "USD"
-    private lazy var balance = CryptoValue.createFromMajorValue(string: "100", assetType: asset.cryptoCurrency)!
+    private lazy var balance = CryptoValue.createFromMajorValue(string: "100", assetType: asset)!
     
     func testSpendableBalanceWhenFeeIsCalculating() throws {
         let interactor = self.interactor(for: asset, balance: balance, feeState: .calculating)
@@ -45,19 +45,19 @@ final class SendSpendableBalanceInteractorTests: XCTestCase {
         let fee = feeValue(by: "101")
         let interactor = self.interactor(for: asset, balance: balance, feeState: .value(fee))
         let state = try interactor.calculationState.toBlocking().first()!
-        XCTAssertEqual(state.value?.crypto, .zero(assetType: asset.cryptoCurrency))
+        XCTAssertEqual(state.value?.crypto, .zero(assetType: asset))
     }
     
     // MARK: - Accessors
     
     private func feeValue(by amount: String) -> FiatCryptoPair {
         let fiatFee = FiatValue.create(amountString: amount, currencyCode: currencyCode)
-        let cryptoFee = CryptoValue.createFromMajorValue(string: amount, assetType: asset.cryptoCurrency)!
+        let cryptoFee = CryptoValue.createFromMajorValue(string: amount, assetType: asset)!
         let fee = FiatCryptoPair(crypto: cryptoFee, fiat: fiatFee)
         return fee
     }
     
-    private func interactor(for asset: AssetType,
+    private func interactor(for asset: CryptoCurrency,
                             balance: CryptoValue,
                             feeState: FiatCryptoPairCalculationState) -> SendSpendableBalanceInteracting {
         let exchangeRate = FiatValue.create(amountString: "1", currencyCode: "USD")

@@ -11,8 +11,8 @@ import PlatformKit
 
 extension SendBitcoinViewController {
     
-    private var asset: AssetType {
-        return AssetType(from: assetType)
+    private var asset: CryptoCurrency {
+        return CryptoCurrency(legacyAssetType: assetType)
     }
     
     @objc

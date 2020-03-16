@@ -25,7 +25,7 @@ public protocol HasPathComponent {
 
 extension CryptoCurrency: HasPathComponent {
     public var pathComponent: String {
-        return symbol.lowercased()
+        return code.lowercased()
     }
 }
 

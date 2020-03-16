@@ -186,9 +186,9 @@ extension AnalyticsEvents {
         case bitpayPaymentSuccess
         case bitpayPaymentFailure(error: Error?)
         case bitpayPaymentExpired
-        case bitpayUrlScanned(asset: AssetType)
-        case bitpayUrlPasted(asset: AssetType)
-        case bitpayUrlDeeplink(asset: AssetType)
+        case bitpayUrlScanned(asset: CryptoCurrency)
+        case bitpayUrlPasted(asset: CryptoCurrency)
+        case bitpayUrlDeeplink(asset: CryptoCurrency)
 
         var name: String {
             switch self {
@@ -218,7 +218,7 @@ extension AnalyticsEvents {
             case .bitpayUrlDeeplink(asset: let asset),
                  .bitpayUrlScanned(asset: let asset),
                  .bitpayUrlPasted(asset: let asset):
-                return ["currency": asset.cryptoCurrency.rawValue]
+                return ["currency": asset.code]
             case .bitpayPaymentExpired,
                  .bitpayPaymentSuccess:
                 return nil
@@ -233,20 +233,20 @@ extension AnalyticsEvents {
     
     enum Send: AnalyticsEvent {
         case sendTabItemClick
-        case sendFormConfirmClick(asset: AssetType)
-        case sendFormConfirmSuccess(asset: AssetType)
-        case sendFormConfirmFailure(asset: AssetType)
-        case sendFormShowErrorAlert(asset: AssetType)
-        case sendFormErrorAppear(asset: AssetType)
-        case sendFormErrorClick(asset: AssetType)
-        case sendFormUseBalanceClick(asset: AssetType)
-        case sendFormExchangeButtonClick(asset: AssetType)
-        case sendFormQrButtonClick(asset: AssetType)
-        case sendSummaryConfirmClick(asset: AssetType)
-        case sendSummaryConfirmSuccess(asset: AssetType)
-        case sendSummaryConfirmFailure(asset: AssetType)
-        case sendBitpayPaymentFailure(asset: AssetType)
-        case sendBitpayPaymentSuccess(asset: AssetType)
+        case sendFormConfirmClick(asset: CryptoCurrency)
+        case sendFormConfirmSuccess(asset: CryptoCurrency)
+        case sendFormConfirmFailure(asset: CryptoCurrency)
+        case sendFormShowErrorAlert(asset: CryptoCurrency)
+        case sendFormErrorAppear(asset: CryptoCurrency)
+        case sendFormErrorClick(asset: CryptoCurrency)
+        case sendFormUseBalanceClick(asset: CryptoCurrency)
+        case sendFormExchangeButtonClick(asset: CryptoCurrency)
+        case sendFormQrButtonClick(asset: CryptoCurrency)
+        case sendSummaryConfirmClick(asset: CryptoCurrency)
+        case sendSummaryConfirmSuccess(asset: CryptoCurrency)
+        case sendSummaryConfirmFailure(asset: CryptoCurrency)
+        case sendBitpayPaymentFailure(asset: CryptoCurrency)
+        case sendBitpayPaymentSuccess(asset: CryptoCurrency)
         
         var name: String {
             switch self {
@@ -304,33 +304,33 @@ extension AnalyticsEvents {
             case .sendTabItemClick:
                 return nil
             case .sendFormConfirmClick(asset: let asset):
-                return [assetParamName: asset.symbol]
+                return [assetParamName: asset.code]
             case .sendFormConfirmSuccess(asset: let asset):
-                return [assetParamName: asset.symbol]
+                return [assetParamName: asset.code]
             case .sendFormConfirmFailure(asset: let asset):
-                return [assetParamName: asset.symbol]
+                return [assetParamName: asset.code]
             case .sendFormErrorAppear(asset: let asset):
-                return [assetParamName: asset.symbol]
+                return [assetParamName: asset.code]
             case .sendFormErrorClick(asset: let asset):
-                return [assetParamName: asset.symbol]
+                return [assetParamName: asset.code]
             case .sendFormUseBalanceClick(asset: let asset):
-                return [assetParamName: asset.symbol]
+                return [assetParamName: asset.code]
             case .sendFormShowErrorAlert(asset: let asset):
-                return [assetParamName: asset.symbol]
+                return [assetParamName: asset.code]
             case .sendFormExchangeButtonClick(asset: let asset):
-                return [assetParamName: asset.symbol]
+                return [assetParamName: asset.code]
             case .sendFormQrButtonClick(asset: let asset):
-                return [assetParamName: asset.symbol]
+                return [assetParamName: asset.code]
             case .sendSummaryConfirmClick(asset: let asset):
-                return [assetParamName: asset.symbol]
+                return [assetParamName: asset.code]
             case .sendSummaryConfirmSuccess(asset: let asset):
-                return [assetParamName: asset.symbol]
+                return [assetParamName: asset.code]
             case .sendSummaryConfirmFailure(asset: let asset):
-                return [assetParamName: asset.symbol]
+                return [assetParamName: asset.code]
             case .sendBitpayPaymentFailure(asset: let asset):
-                return [assetParamName: asset.symbol]
+                return [assetParamName: asset.code]
             case .sendBitpayPaymentSuccess(asset: let asset):
-                return [assetParamName: asset.symbol]
+                return [assetParamName: asset.code]
             }
         }
     }
@@ -430,9 +430,9 @@ extension AnalyticsEvents {
     
     enum Transactions: AnalyticsEvent {
         case transactionsTabItemClick
-        case transactionsListItemClick(asset: AssetType)
-        case transactionsItemShareClick(asset: AssetType)
-        case transactionsItemWebViewClick(asset: AssetType)
+        case transactionsListItemClick(asset: CryptoCurrency)
+        case transactionsItemShareClick(asset: CryptoCurrency)
+        case transactionsItemWebViewClick(asset: CryptoCurrency)
         
         var name: String {
             switch self {
@@ -455,13 +455,13 @@ extension AnalyticsEvents {
             switch self {
             // Transactions - transaction item clicked
             case .transactionsListItemClick(asset: let asset):
-                return [Parameter.asset: asset.symbol]
+                return [Parameter.asset: asset.code]
             // Transaction - share button clicked
             case .transactionsItemShareClick(asset: let asset):
-                return [Parameter.asset: asset.symbol]
+                return [Parameter.asset: asset.code]
             // Transaction - view on web clicked
             case .transactionsItemWebViewClick(asset: let asset):
-                return [Parameter.asset: asset.symbol]
+                return [Parameter.asset: asset.code]
             default:
                 return nil
             }
@@ -659,8 +659,8 @@ extension AnalyticsEvents {
     // MARK: - Asset Selector
     
     enum AssetSelection: AnalyticsEvent {
-        case assetSelectorOpen(asset: AssetType)
-        case assetSelectorClose(asset: AssetType)
+        case assetSelectorOpen(asset: CryptoCurrency)
+        case assetSelectorClose(asset: CryptoCurrency)
         
         var name: String {
             switch self {
@@ -676,9 +676,9 @@ extension AnalyticsEvents {
         var params: [String : String]? {
             switch self {
             case .assetSelectorOpen(asset: let asset):
-                return [Parameter.asset: asset.symbol]
+                return [Parameter.asset: asset.code]
             case .assetSelectorClose(asset: let asset):
-                return [Parameter.asset: asset.symbol]
+                return [Parameter.asset: asset.code]
             }
         }
     }

@@ -6,18 +6,18 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 // TODO: convert class to struct once there are no more objc dependents
 
 @objc
-public class StellarAddress: NSObject & AssetAddress {
+class StellarAddress: NSObject & AssetAddress {
 
     // MARK: - Properties
 
-    public private(set) var address: String
+    private(set) var address: String
 
-    public let assetType: AssetType = .stellar
+    let assetType = LegacyCryptoCurrency.stellar
 
     override public var description: String {
         return address
@@ -25,7 +25,7 @@ public class StellarAddress: NSObject & AssetAddress {
 
     // MARK: - Initialization
 
-    public required init(string: String) {
+    required init(string: String) {
         self.address = string
     }
 }

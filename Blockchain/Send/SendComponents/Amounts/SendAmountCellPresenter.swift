@@ -76,7 +76,7 @@ final class SendAmountCellPresenter {
         self.spendableBalancePresenter = spendableBalancePresenter
         self.interactor = interactor
         self.fiatCurrencyService = fiatCurrencyService
-        cryptoName = interactor.asset.symbol
+        cryptoName = interactor.asset.displayCode
         
         fiatCurrencyService.fiatCurrencyObservable
             .map { $0.code }
@@ -111,7 +111,7 @@ final class SendAmountCellPresenter {
                     return value
                 } else {
                     return .zero(
-                        of: asset.cryptoCurrency,
+                        of: asset,
                         fiatCurrencyCode: fiatCurrency.code
                     )
                 }

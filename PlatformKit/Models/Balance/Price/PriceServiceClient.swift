@@ -41,7 +41,7 @@ public class PriceServiceClient: PriceServiceAPI {
         guard let baseUrl = URL(string: BlockchainAPI.shared.servicePriceUrl) else {
             return Single.error(NetworkError.generic(message: "URL is invalid."))
         }
-        var parameters = ["base": cryptoCurrency.symbol, "quote": fiatSymbol]
+        var parameters = ["base": cryptoCurrency.code, "quote": fiatSymbol]
         if let time = timestamp {
             parameters["time"] = "\(time.timeIntervalSince1970)"
         }
@@ -58,7 +58,7 @@ public class PriceServiceClient: PriceServiceAPI {
             }
     }
 
-    /// Returns a Single that emits a mapping between an AssetType and it's price in fiat
+    /// Returns a Single that emits a mapping between an CryptoCurrency and it's price in fiat
     ///
     /// - Parameter fiatSymbol: the fiat to convert to
     /// - Returns: a Single emitting an AssetTypesToPrices
@@ -69,7 +69,7 @@ public class PriceServiceClient: PriceServiceAPI {
                 fiatSymbol: fiatSymbol
             ).catchError { error -> Single<PriceInFiatValue> in
                 // If there's an error with the network call, just return "0" for the price
-                Logger.shared.error("Failed to fetch fiat price for asset type \(currency.symbol). Error: \(error)")
+                Logger.shared.error("Failed to fetch fiat price for asset type \(currency.code). Error: \(error)")
                 return Single.just(
                     PriceInFiat.empty.toPriceInFiatValue(currencyCode: fiatSymbol)
                 )

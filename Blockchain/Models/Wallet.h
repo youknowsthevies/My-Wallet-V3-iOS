@@ -352,7 +352,7 @@
 - (void)saveCoinifyID:(NSInteger)coinifyID token:(NSString *_Nonnull)token success:(void (^ _Nonnull)(void))success error:(void (^)(NSString *_Nonnull))error;
 
 /// Call this method to build an Exchange order.
-/// It constructs and stores a payment object with a given AssetType, to, from, and amount (properties of OrderTransactionLegacy).
+/// It constructs and stores a payment object with a given CryptoCurrency, to, from, and amount (properties of OrderTransactionLegacy).
 /// To send the order, call sendOrderTransaction:completion:success:error:cancel.
 ///
 /// - Parameters:

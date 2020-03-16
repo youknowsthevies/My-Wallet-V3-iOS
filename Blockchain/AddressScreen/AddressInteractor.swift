@@ -15,7 +15,7 @@ import PlatformKit
 final class AddressInteractor: AddressInteracting {
     
     /// The type of the asset coupled to the interactor
-    let asset: AssetType
+    let asset: CryptoCurrency
     
     /// The type of the subscribed address
     private let addressType: AssetAddressType
@@ -53,7 +53,7 @@ final class AddressInteractor: AddressInteracting {
                                 
                 // Create a url
                 let qrUrl: String
-                if let url = AssetURLPayloadFactory.create(fromString: address, assetType: self.asset) {
+                if let url = AssetURLPayloadFactory.create(fromString: address, asset: self.asset) {
                     qrUrl = url.address
                 } else {
                     qrUrl = address
@@ -123,7 +123,7 @@ final class AddressInteractor: AddressInteracting {
     
     // MARK: - Setup
     
-    init(asset: AssetType,
+    init(asset: CryptoCurrency,
          addressType: AssetAddressType,
          addressFetcher: AssetAddressFetching = AssetAddressRepository.shared,
          transactionObserver: TransactionObserving = WalletManager.shared,

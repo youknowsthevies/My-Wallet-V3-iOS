@@ -140,7 +140,7 @@ struct ExchangeRates: SocketMessageCodable {
 
 extension ExchangeRates {
     func convert(balance: CryptoValue, toCurrency: String) -> FiatValue {
-        let fromCurrency = balance.currencyType.symbol
+        let fromCurrency = balance.currencyType.code
         if let matchingPair = pairRate(fromCurrency: fromCurrency, toCurrency: toCurrency) {
             let price: BigInt = BigInt(string: matchingPair.price, unitDecimals: 2) ?? 1
             let conversion = price * balance.amount
@@ -151,7 +151,7 @@ extension ExchangeRates {
     }
 
     func pairRate(fromCurrency: String, toCurrency: String) -> CurrencyPairRate? {
-        return rates.first(where: { $0.pair == "\(fromCurrency)-\(toCurrency)" })
+        return rates.first(where: { $0.interactionPair == "\(fromCurrency)-\(toCurrency)" })
     }
 }
 
@@ -185,30 +185,22 @@ struct Conversion: SocketMessageCodable {
     }
 }
 
+extension Conversion {
+        
+    var baseFiatValue: String {
+        return quote.currencyRatio.base.fiat.value
+    }
+        
+    var baseCryptoValue: String {
+        return quote.currencyRatio.base.crypto.value
+    }
+}
+
 extension Conversion: Equatable {
     static func == (lhs: Conversion, rhs: Conversion) -> Bool {
         return lhs.channel == rhs.channel &&
         lhs.event == rhs.event &&
         lhs.quote == rhs.quote
-    }
-}
-
-extension Conversion {
-    
-    var baseFiatSymbol: String {
-        return quote.currencyRatio.base.fiat.symbol
-    }
-    
-    var baseFiatValue: String {
-        return quote.currencyRatio.base.fiat.value
-    }
-    
-    var baseCryptoSymbol: String {
-        return quote.currencyRatio.base.crypto.symbol
-    }
-    
-    var baseCryptoValue: String {
-        return quote.currencyRatio.base.crypto.value
     }
 }
 
@@ -296,7 +288,49 @@ extension SocketError.SocketErrorType {
 // MARK: - Associated Models
 
 struct CurrencyPairRate: Codable {
-    let pair: String
+    
+    enum ParsingError: Error {
+        case componentNumber
+    }
+    
+    private enum Currency {
+        case crypto(CryptoCurrency)
+        case fiat(FiatCurrency)
+        case raw(value: String)
+        
+        var displayCode: String {
+            switch self {
+            case .crypto(let currency):
+                return currency.displayCode
+            case .fiat(let currency):
+                return currency.code
+            case .raw(value: let value):
+                return value
+            }
+        }
+        
+        var code: String {
+            switch self {
+            case .crypto(let currency):
+                return currency.code
+            case .fiat(let currency):
+                return currency.code
+            case .raw(value: let value):
+                return value
+            }
+        }
+    }
+    
+    var presentationPair: String {
+        return "\(left.displayCode)-\(right.displayCode)"
+    }
+    
+    var interactionPair: String {
+        return "\(left.code)-\(right.code)"
+    }
+
+    private let left: Currency
+    private let right: Currency
     let price: String
 
     enum CodingKeys: String, CodingKey {
@@ -306,8 +340,31 @@ struct CurrencyPairRate: Codable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        pair = try container.decode(String.self, forKey: .pair)
         price = try container.decode(String.self, forKey: .price)
+        
+        let pair = try container.decode(String.self, forKey: .pair)
+        let components = pair.components(separatedBy: "-")
+        guard components.count == 2 else {
+            throw ParsingError.componentNumber
+        }
+        left = Self.currency(from: components[0])
+        right = Self.currency(from: components[1])
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(interactionPair, forKey: .pair)
+        try container.encode(price, forKey: .price)
+    }
+    
+    private static func currency(from component: String) -> Currency {
+        if let currency = CryptoCurrency(code: component) {
+            return .crypto(currency)
+        } else if let currency = FiatCurrency(code: component) {
+            return .fiat(currency)
+        } else {
+            return .raw(value: component)
+        }
     }
 }
 
@@ -364,6 +421,16 @@ extension FiatCrypto: Equatable {
 }
 
 struct SymbolValue: Codable {
+    var displayCode: String {
+        if let currency = CryptoCurrency(code: symbol) {
+            return currency.displayCode
+        }
+        if let currency = FiatCurrency(code: symbol) {
+            return currency.code
+        }
+        return symbol
+    }
+    
     let symbol: String
     let value: String
 }

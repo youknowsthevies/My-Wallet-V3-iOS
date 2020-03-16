@@ -18,39 +18,40 @@ public protocol Crypto: Money {
 }
 
 extension Crypto {
-    public var currencyCode: String {
-        return value.currencyCode
+    
+    public var code: String {
+        currencyType.code
+    }
+    
+    public var displayCode: String {
+        currencyType.displayCode
+    }
+    
+    public var currencyType: CryptoCurrency {
+        value.currencyType
     }
 
     public var isZero: Bool {
-        return value.isZero
+        value.isZero
     }
 
     public var isPositive: Bool {
-        return value.isPositive
-    }
-
-    public var symbol: String {
-        return value.symbol
+        value.isPositive
     }
 
     public var maxDecimalPlaces: Int {
-        return value.maxDecimalPlaces
+        value.maxDecimalPlaces
     }
 
     public var maxDisplayableDecimalPlaces: Int {
-        return value.maxDisplayableDecimalPlaces
-    }
-
-    public var currencyType: CryptoCurrency {
-        return value.currencyType
+        value.maxDisplayableDecimalPlaces
     }
 
     public var amount: BigInt {
-        return value.amount
+        value.amount
     }
 
     public func toDisplayString(includeSymbol: Bool, locale: Locale) -> String {
-        return value.toDisplayString(includeSymbol: includeSymbol, locale: locale)
+        value.toDisplayString(includeSymbol: includeSymbol, locale: locale)
     }
 }

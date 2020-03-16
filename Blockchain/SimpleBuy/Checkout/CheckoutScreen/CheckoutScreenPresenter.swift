@@ -79,7 +79,10 @@ final class CheckoutScreenPresenter {
         self.interactor = interactor
         let data = interactor.checkoutData
         
-        let notice = String(format: LocalizedString.notice, data.cryptoCurrency.code)
+        let notice = String(
+            format: LocalizedString.notice,
+            data.cryptoCurrency.displayCode
+        )
         noticeViewModel = NoticeViewModel(
             image: "disclaimer-icon",
             labelContent: .init(
@@ -91,7 +94,7 @@ final class CheckoutScreenPresenter {
         )
         
         typealias TitleString = LocalizedString.Summary.Title
-        let summary = "\(TitleString.prefix)\(data.cryptoCurrency.code)\(TitleString.suffix)"
+        let summary = "\(TitleString.prefix)\(data.cryptoCurrency.displayCode)\(TitleString.suffix)"
         summaryLabelContent = .init(
             text: summary,
             font: .mainMedium(14.0),
@@ -100,7 +103,7 @@ final class CheckoutScreenPresenter {
         )
         
         buyButtonViewModel = .primary(
-            with: "\(LocalizedString.Summary.buttonPrefix)\(data.cryptoCurrency.code)"
+            with: "\(LocalizedString.Summary.buttonPrefix)\(data.cryptoCurrency.displayCode)"
         )
         cancelButtonViewModel = .cancel(with: LocalizationConstants.cancel)
         

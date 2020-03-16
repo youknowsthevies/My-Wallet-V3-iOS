@@ -25,7 +25,7 @@ import PlatformKit
         }
         return asset.legacy
     }
-    private var assetType: AssetType?
+    private var assetType: CryptoCurrency?
     
     @objc weak var delegate: AssetTypeCellDelegate?
     
@@ -40,12 +40,12 @@ import PlatformKit
         chevronButton.accessibilityIdentifier = AccessibilityIdentifiers.AssetSelection.toggleButton
     }
     
-    @objc func configure(with assetType: AssetType, showChevronButton: Bool) {
-        self.assetType = assetType
-        assetImageView.image = assetType.whiteImageSmall
-        label.text = assetType.description
+    @objc func configure(with assetType: LegacyCryptoCurrency, showChevronButton: Bool) {
+        self.assetType = assetType.value
+        assetImageView.image = self.assetType?.whiteImageSmall
+        label.text = assetType.name
         chevronButton.isHidden = !showChevronButton
-        accessibilityIdentifier = "\(AccessibilityIdentifiers.AssetSelection.assetPrefix)\(assetType.symbol)"
+        accessibilityIdentifier = "\(AccessibilityIdentifiers.AssetSelection.assetPrefix)\(assetType.displayCode)"
     }
 
     @IBAction private func chevronButtonTapped(_ sender: UIButton) {

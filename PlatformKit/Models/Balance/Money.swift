@@ -10,14 +10,8 @@ import Foundation
 
 public protocol Money {
     
-    /// The currency code for the money (e.g. "USD", "BTC", etc.)
-    var currencyCode: String { get }
-    
     var isZero: Bool { get }
     var isPositive: Bool { get }
-    
-    /// The symbol for the money (e.g. "$", "BTC", etc.)
-    var symbol: String { get }
     
     /// The maximum number of decimal places supported by the money
     var maxDecimalPlaces: Int { get }

@@ -6,16 +6,16 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import XCTest
 import RxSwift
 
+@testable import PlatformKit
 @testable import Blockchain
 
 class ExchangeAddressFetchingTests: XCTestCase {
     
     func testFetchingAddressForAllAssetsForActiveState() {
-        for asset in AssetType.all {
+        for asset in CryptoCurrency.all {
             let fetcher = MockExchangeAddressFetcher(expectedResult: .success(.active))
             do {
                 _ = try fetcher.fetchAddress(for: asset).toBlocking().first()
@@ -26,7 +26,7 @@ class ExchangeAddressFetchingTests: XCTestCase {
     }
     
     func testFetchingAddressForAllAssetsForInactiveState() {
-        for asset in AssetType.all {
+        for asset in CryptoCurrency.all {
             for state in [ExchangeAddressFetcher.AddressResponseBody.State.pending,
                           ExchangeAddressFetcher.AddressResponseBody.State.blocked] {
                             let fetcher = MockExchangeAddressFetcher(expectedResult: .success(state))

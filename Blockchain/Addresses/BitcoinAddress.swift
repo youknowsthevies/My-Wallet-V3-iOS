@@ -6,26 +6,26 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 // TODO: convert class to struct once there are no more objc dependents
 
 @objc
-public class BitcoinAddress: NSObject & AssetAddress {
+class BitcoinAddress: NSObject & AssetAddress {
 
     // MARK: - Properties
 
-    private(set) public var address: String
+    private(set) var address: String
 
-    public let assetType: AssetType = .bitcoin
+    let assetType = LegacyCryptoCurrency.bitcoin
 
-    override public var description: String {
+    override var description: String {
         return address
     }
 
     // MARK: - Initialization
 
-    public required init(string: String) {
+    required init(string: String) {
         self.address = string
     }
 }

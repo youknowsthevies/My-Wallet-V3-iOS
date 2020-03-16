@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 import PlatformUIKit
 
 enum TradeStatus {
@@ -146,7 +146,7 @@ extension ExchangeTradeCellModel {
     }
     
     var feeDisplayValue: String {
-        return withdrawalFee.value + " " + withdrawalFee.symbol
+        return withdrawalFee.value + " " + withdrawalFee.displayCode
     }
 
     var amountFiatValue: String {
@@ -154,15 +154,15 @@ extension ExchangeTradeCellModel {
     }
     
     var amountFiatSymbol: String {
-        return fiatValue.symbol
+        return fiatValue.displayCode
     }
     
     var amountDepositedCrypto: String {
-        if let value = deposit?.value, let symbol = deposit?.symbol {
+        if let value = deposit?.value, let symbol = deposit?.displayCode {
             return value + " " + symbol
         } else {
             let zero = "0"
-            guard let symbol = pair?.from.symbol else {
+            guard let symbol = pair?.from.displayCode else {
                 return zero
             }
             return zero + " " + symbol
@@ -170,11 +170,11 @@ extension ExchangeTradeCellModel {
     }
     
     var amountReceivedCrypto: String {
-        if let value = withdrawal?.value, let symbol = withdrawal?.symbol {
-            return value + " " + symbol
+        if let value = withdrawal?.value, let code = withdrawal?.displayCode {
+            return value + " " + code
         } else {
             let zero = "0"
-            guard let symbol = pair?.to.symbol else {
+            guard let symbol = pair?.to.displayCode else {
                 return zero
             }
             return zero + " " + symbol
@@ -299,31 +299,31 @@ extension ExchangeTradeCellModel: Hashable {
 extension ExchangeTrade {
     
     fileprivate func minerFeeCryptoAmount() -> String? {
-        guard let assetType = AssetType(stringValue: minerCurrency()) else { return nil }
+        guard let assetType = CryptoCurrency(code: minerCurrency()) else { return nil }
         return assetType.toCrypto(amount: minerFee as Decimal)
     }
     
     fileprivate func inboundFiatAmount() -> String? {
         guard let toAsset = pair.components(separatedBy: "_").last else { return nil }
-        guard let assetType = AssetType(stringValue: toAsset) else { return nil }
+        guard let assetType = CryptoCurrency(code: toAsset) else { return nil }
         return assetType.toFiat(amount: withdrawalAmount as Decimal)
     }
     
     fileprivate func inboundCryptoAmount() -> String? {
         guard let currencySymbol = withdrawalCurrency() else { return nil }
-        guard let assetType = AssetType(stringValue: currencySymbol) else { return nil }
+        guard let assetType = CryptoCurrency(code: currencySymbol) else { return nil }
         return assetType.toCrypto(amount: withdrawalAmount as Decimal)
     }
     
     fileprivate func outboundFiatAmount() -> String? {
         guard let fromAsset = pair.components(separatedBy: "_").first else { return nil }
-        guard let assetType = AssetType(stringValue: fromAsset) else { return nil }
+        guard let assetType = CryptoCurrency(code: fromAsset) else { return nil }
         return assetType.toFiat(amount: depositAmount as Decimal)
     }
     
     fileprivate func outboundCryptoAmount() -> String? {
         guard let currencySymbol = depositCurrency() else { return nil }
-        guard let assetType = AssetType(stringValue: currencySymbol) else { return nil }
+        guard let assetType = CryptoCurrency(code: currencySymbol) else { return nil }
         return assetType.toCrypto(amount: depositAmount as Decimal)
     }
 }

@@ -14,11 +14,11 @@ extension TransactionsViewController {
     
     @objc
     func reportTransactionClick(asset: LegacyAssetType) {
-        let asset = AssetType(from: asset)
+        let asset = CryptoCurrency(from: asset)
         reportTransactionClick(asset: asset)
     }
     
-    func reportTransactionClick(asset: AssetType) {
+    func reportTransactionClick(asset: CryptoCurrency) {
         AnalyticsEventRecorder.shared.record(
             event: AnalyticsEvents.Transactions.transactionsListItemClick(asset: asset)
         )

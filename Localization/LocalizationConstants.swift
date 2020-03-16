@@ -1187,8 +1187,8 @@ public struct LocalizationConstants {
             public struct Home {
                 public static let title = NSLocalizedString("View Your Portfolio", comment: "View Your Portfolio")
                 public static let description = NSLocalizedString(
-                    "Keep track of your crypto balances from your Wallet's dashboard. Your Wallet currently supports Bitcoin, Ether, Bitcoin Cash, Stellar XLM and USD PAX.",
-                    comment: "Keep track of your crypto balances from your Wallet's dashboard. Your Wallet currently supports Bitcoin, Ether, Bitcoin Cash, Stellar XLM and USD PAX."
+                    "Keep track of your crypto balances from your Wallet's dashboard. Your Wallet currently supports Bitcoin, Ether, Bitcoin Cash, Stellar XLM and USD Digital.",
+                    comment: "Keep track of your crypto balances from your Wallet's dashboard. Your Wallet currently supports Bitcoin, Ether, Bitcoin Cash, Stellar XLM and USD Digital."
                 )
             }
             public struct Send {
@@ -1864,15 +1864,15 @@ public struct LocalizationConstants {
         public struct Pax {
             public static let title = NSLocalizedString(
                 "Digital US Dollar",
-                comment: "Pax announcement card title"
+                comment: "USD-D announcement card title"
             )
             public static let description = NSLocalizedString(
-                "Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX = 1 USD.",
-                comment: "Pax announcement card description"
+                "Introducing USD Digital, a safe and stable crypto asset you can use to store value. 1 USD-D = 1 USD.",
+                comment: "USD-D announcement card description"
             )
             public static let ctaButton = NSLocalizedString(
-                "Get USD PAX",
-                comment: "Pax announcement card CTA button title"
+                "Get USD Digital",
+                comment: "USD-D announcement card CTA button title"
             )
         }
         public struct Exchange {
@@ -2283,15 +2283,15 @@ public struct LocalizationConstants {
             comment: "Title shown to use when transferring funds from legacy addresses to their new wallet"
         )
         
-        public static let paxComingSoonTitle = NSLocalizedString("USD PAX Coming Soon!", comment: "")
-        public static let paxComingSoonMessage = NSLocalizedString("We’re bringing USD PAX to iOS. While you wait, Send, Receive & Exchange USD PAX on the web.", comment: "")
-        public static let paxComingSoonLinkText = NSLocalizedString("What is USD PAX?", comment: "")
+        public static let paxComingSoonTitle = NSLocalizedString("USD Digital Coming Soon!", comment: "")
+        public static let paxComingSoonMessage = NSLocalizedString("We’re bringing USD Digital to iOS. While you wait, Send, Receive & Exchange USD Digital on the web.", comment: "")
+        public static let paxComingSoonLinkText = NSLocalizedString("What is USD Digital?", comment: "")
         public static let notEnoughEth = NSLocalizedString("Not Enough ETH", comment: "")
         public static let notEnoughEthDescription = NSLocalizedString("You'll need ETH to send your ERC20 Token", comment: "")
         public static let invalidDestinationAddress = NSLocalizedString("Invalid ETH Address", comment: "")
         public static let invalidDestinationDescription = NSLocalizedString("You must enter a valid ETH address to send your ERC20 Token", comment: "")
         public static let notEnough = NSLocalizedString("Not Enough", comment: "")
-        public static let myPaxWallet = NSLocalizedString("My USD PAX Wallet", comment: "")
+        public static let myPaxWallet = NSLocalizedString("My USD Digital Wallet", comment: "")
     }
 
     public struct SendEther {
@@ -2301,10 +2301,10 @@ public struct LocalizationConstants {
     
     public struct Activity {
         public struct Pax {
-            public static let emptyStateTitle = NSLocalizedString("USD PAX", comment: "")
-            public static let emptyStateMessage = NSLocalizedString("Your USD PAX transactions will show up here once you make your first transaction.", comment: "")
-            public static let emptyStateLinkText = NSLocalizedString("Learn more about USD PAX", comment: "")
-            public static let emptyStateCTATitle = NSLocalizedString("Swap for USD PAX Now", comment: "")
+            public static let emptyStateTitle = NSLocalizedString("USD Digital", comment: "")
+            public static let emptyStateMessage = NSLocalizedString("Your USD Digital transactions will show up here once you make your first transaction.", comment: "")
+            public static let emptyStateLinkText = NSLocalizedString("Learn more about USD Digital", comment: "")
+            public static let emptyStateCTATitle = NSLocalizedString("Swap for USD Digital Now", comment: "")
         }
     }
 
@@ -2509,7 +2509,7 @@ public struct LocalizationConstants {
     }
 
     public struct Transactions {
-        public static let paxfee = NSLocalizedString("PAX Fee", comment: "String displayed to indicate that a transaction is due to a fee associated to sending PAX.")
+        public static let paxfee = NSLocalizedString("USD-D Fee", comment: "String displayed to indicate that a transaction is due to a fee associated to sending USD-D.")
         public static let allWallets = NSLocalizedString("All Wallets", comment: "Label of selectable item that allows user to show all transactions of a certain asset")
         public static let noTransactions = NSLocalizedString("No Transactions", comment: "Text displayed when no recent transactions are being shown")
         public static let noTransactionsAssetArgument = NSLocalizedString("Transactions occur when you send and receive %@.", comment: "Helper text displayed when no recent transactions are being shown")
@@ -3002,7 +3002,7 @@ public struct LocalizationConstants {
         public static let successfulExchangeDescription = NSLocalizedString("Success! Your Exchange has been started!", comment: "A successful swap alert")
         public static let viewOrderDetails = NSLocalizedString("View Order Details", comment: "View Order Details")
         public static let exchangeStarted = NSLocalizedString("Your Exchange has been started!", comment: "Your exchange has been started")
-        public static let exchangeAirdropDescription = NSLocalizedString("Even better, since you need ETH to make USD PAX trades, we just airdropped enough ETH into your Wallet to cover your first 3 transactions 🙌🏻", comment: "ETH Airdrop description")
+        public static let exchangeAirdropDescription = NSLocalizedString("Even better, since you need ETH to make USD Digital trades, we just airdropped enough ETH into your Wallet to cover your first 3 transactions 🙌🏻", comment: "ETH Airdrop description")
         public static let viewMySwapLimit = NSLocalizedString(
             "View My Swap Limit",
             comment: "Text displayed on the CTA when the user wishes to view their swap limits."
@@ -3066,7 +3066,7 @@ public struct LocalizationConstants {
             }
             public struct PageFive {
                 public static let title = NSLocalizedString("Manage Risk Better", comment: "")
-                public static let subtitle = NSLocalizedString("Introducing Digital US Dollars (USD PAX) to de-risk your crypto investment or lock-in gains.", comment: "")
+                public static let subtitle = NSLocalizedString("Introducing Digital US Dollars (USD Digital) to de-risk your crypto investment or lock-in gains.", comment: "")
             }
         }
         

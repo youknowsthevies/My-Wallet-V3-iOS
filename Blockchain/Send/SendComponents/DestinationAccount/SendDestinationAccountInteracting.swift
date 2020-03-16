@@ -6,15 +6,15 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import RxSwift
 import RxRelay
+import PlatformKit
 
 /// The interaction protocol for the destination accounto on the send screen
 protocol SendDestinationAccountInteracting {
     
     /// The interacted asset
-    var asset: AssetType { get }
+    var asset: CryptoCurrency { get }
     
     /// Streams boolean value on whether the source account is connected to the Exchange and has a valid Exchange address
     var hasExchangeAccount: Observable<Bool> { get }

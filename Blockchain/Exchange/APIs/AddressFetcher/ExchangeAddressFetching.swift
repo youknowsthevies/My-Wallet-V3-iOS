@@ -8,9 +8,10 @@
 
 import Foundation
 import RxSwift
+import PlatformKit
 
 protocol ExchangeAddressFetching {
     
     /// Fetches the Exchange address for a given asset type
-    func fetchAddress(for asset: AssetType) -> Single<String>
+    func fetchAddress(for asset: CryptoCurrency) -> Single<String>
 }

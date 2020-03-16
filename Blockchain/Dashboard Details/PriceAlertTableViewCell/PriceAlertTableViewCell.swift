@@ -16,7 +16,7 @@ final class PriceAlertTableViewCell: UITableViewCell {
     var currency: CryptoCurrency! {
         didSet {
             // swiftlint:disable line_length
-            currentPriceLabel.text = "\(LocalizationConstants.DashboardDetails.current) \(currency.symbol) \(LocalizationConstants.DashboardDetails.price)"
+            currentPriceLabel.text = "\(LocalizationConstants.DashboardDetails.current) \(currency.displayCode) \(LocalizationConstants.DashboardDetails.price)"
         }
     }
     

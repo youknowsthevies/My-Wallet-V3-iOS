@@ -95,7 +95,7 @@ class TradingPairView: NibBasedView {
         let transitionUpdate = TradingTransitionUpdate(
             transitions: [
                 .images(left: pair.from.whiteImageSmall, right: pair.to.whiteImageSmall),
-                .titles(left: pair.from.description, right: pair.to.description),
+                .titles(left: pair.from.name, right: pair.to.name),
                 .swapImage(#imageLiteral(resourceName: "trading-pair-arrow").withRenderingMode(.alwaysTemplate))
             ],
             transition: transition
@@ -240,11 +240,11 @@ extension TradingPairView {
         let currencyRatio = conversion.quote.currencyRatio
 
         let fromAmount = currencyRatio.base.crypto.value
-        let fromSymbol = currencyRatio.base.crypto.symbol
+        let fromSymbol = currencyRatio.base.crypto.displayCode
         let fromAmountAndSymbol = fromAmount + " " + fromSymbol
 
         let toAmount = currencyRatio.counter.crypto.value
-        let toSymbol = currencyRatio.counter.crypto.symbol
+        let toSymbol = currencyRatio.counter.crypto.displayCode
         let toAmountAndSymbol = toAmount + " " + toSymbol
 
         let transitionUpdate = TradingTransitionUpdate(

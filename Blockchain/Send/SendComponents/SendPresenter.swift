@@ -88,7 +88,7 @@ final class SendPresenter {
     // MARK: - Exposed Properties
     
     /// Returns the asset
-    var asset: AssetType {
+    var asset: CryptoCurrency {
         return interactor.asset
     }
     

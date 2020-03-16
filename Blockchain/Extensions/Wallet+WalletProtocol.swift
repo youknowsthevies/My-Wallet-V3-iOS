@@ -11,7 +11,7 @@ import PlatformKit
 // MARK: - AssetAddressSubscribing
 
 extension Wallet: AssetAddressSubscribing {
-    func subscribe(to address: String, asset: AssetType, addressType: AssetAddressType) {
+    func subscribe(to address: String, asset: CryptoCurrency, addressType: AssetAddressType) {
         switch addressType {
         case .swipeToReceive:
             subscribe(toSwipeAddress: address, assetType: asset.legacy)

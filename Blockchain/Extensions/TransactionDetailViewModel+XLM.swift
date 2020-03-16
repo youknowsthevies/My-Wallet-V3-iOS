@@ -29,17 +29,20 @@ extension TransactionDetailViewModel {
         
         time = UInt64(xlmTransaction.createdAt.timeIntervalSince1970)
 
+        let cryptoCurrency = CryptoCurrency(legacyAssetType: assetType)
+
         if let fee = xlmTransaction.fee,
             let amount = Decimal(string: xlmTransaction.amount),
-            let feeInWholeUnit = NumberFormatter.integerToWholeUnit(amount: fee, assetType: AssetType.from(legacyAssetType: assetType)) {
-            feeString = String(describing: feeInWholeUnit).appendAssetSymbol(for: AssetTypeLegacyHelper.convert(fromLegacy: assetType))
+            let feeInWholeUnit = NumberFormatter.integerToWholeUnit(amount: fee, assetType: cryptoCurrency) {
+            
+            feeString = String(describing: feeInWholeUnit).appendAssetSymbol(for: cryptoCurrency)
 
             // Fee is not fetched until tapping on a transaction cell because the SDK only provides a method
             // for fetching the fee for a single transaction. In the meantime we are hardcoding it for outgoing transactions.
             let displayAmount = xlmTransaction.direction == .credit ? amount : amount + feeInWholeUnit
-            amountString = "\(displayAmount)".appendAssetSymbol(for: AssetTypeLegacyHelper.convert(fromLegacy: assetType))
+            amountString = "\(displayAmount)".appendAssetSymbol(for: cryptoCurrency)
         } else {
-            amountString = "\(xlmTransaction.amount)".appendAssetSymbol(for: AssetTypeLegacyHelper.convert(fromLegacy: assetType))
+            amountString = "\(xlmTransaction.amount)".appendAssetSymbol(for: cryptoCurrency)
         }
 
         decimalAmount = NSDecimalNumber(string: amountString)
@@ -81,16 +84,18 @@ extension TransactionDetailViewModel {
         amountString = String(describing: xlmTransaction.balance)
         decimalAmount = xlmTransaction.balance as NSDecimalNumber
         
+        let cryptoCurrency = CryptoCurrency(legacyAssetType: assetType)
+        
         if let fee = xlmTransaction.fee,
-            let feeInWholeUnit = NumberFormatter.integerToWholeUnit(amount: fee, assetType: AssetType.from(legacyAssetType: assetType)) {
-            feeString = String(describing: feeInWholeUnit).appendAssetSymbol(for: AssetTypeLegacyHelper.convert(fromLegacy: assetType))
+            let feeInWholeUnit = NumberFormatter.integerToWholeUnit(amount: fee, assetType: cryptoCurrency) {
+            feeString = String(describing: feeInWholeUnit).appendAssetSymbol(for: cryptoCurrency)
 
             // Fee is not fetched until tapping on a transaction cell because the SDK only provides a method
             // for fetching the fee for a single transaction. In the meantime we are hardcoding it for outgoing transactions.
             let displayAmount = xlmTransaction.direction == .credit ? xlmTransaction.balance : xlmTransaction.balance + feeInWholeUnit
-            amountString = "\(displayAmount)".appendAssetSymbol(for: AssetTypeLegacyHelper.convert(fromLegacy: assetType))
+            amountString = "\(displayAmount)".appendAssetSymbol(for: cryptoCurrency)
         } else {
-            amountString = "\(xlmTransaction.balance)".appendAssetSymbol(for: AssetTypeLegacyHelper.convert(fromLegacy: assetType))
+            amountString = "\(xlmTransaction.balance)".appendAssetSymbol(for: cryptoCurrency)
         }
 
         decimalAmount = NSDecimalNumber(string: amountString)

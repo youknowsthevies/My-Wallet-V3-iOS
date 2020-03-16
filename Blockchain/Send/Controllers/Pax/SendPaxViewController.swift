@@ -240,8 +240,10 @@ class SendPaxViewController: UIViewController {
             } else {
                 exchangeAddressButton.setImage(UIImage(named: "cancel_icon"), for: .normal)
                 destinationAddressTextField.isHidden = true
-                destinationAddressIndicatorLabel.text = String(format: LocalizationConstants.Exchange.Send.destination,
-                                                               AssetType.pax.symbol)
+                destinationAddressIndicatorLabel.text = String(
+                    format: LocalizationConstants.Exchange.Send.destination,
+                    CryptoCurrency.pax.displayCode
+                )
             }
         case .showAlertForEnabling2FA:
             alertViewPresenter.standardNotify(

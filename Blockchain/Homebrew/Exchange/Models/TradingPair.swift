@@ -11,10 +11,10 @@ import ToolKit
 import PlatformKit
 
 struct TradingPair {
-    private var internalFrom: AssetType
-    private var internalTo: AssetType
+    private var internalFrom: CryptoCurrency
+    private var internalTo: CryptoCurrency
 
-    init?(from: AssetType, to: AssetType) {
+    init?(from: CryptoCurrency, to: CryptoCurrency) {
         guard from != to else {
             Logger.shared.error("From and to must be different")
             return nil
@@ -34,13 +34,13 @@ struct TradingPair {
         
         guard let from = components.first else { return nil }
         guard let to = components.last else { return nil }
-        guard let toAsset = AssetType(stringValue: to) else { return nil }
-        guard let fromAsset = AssetType(stringValue: from) else { return nil }
+        guard let toAsset = CryptoCurrency(code: to) else { return nil }
+        guard let fromAsset = CryptoCurrency(code: from) else { return nil }
         
         self.init(from: fromAsset, to: toAsset)
     }
 
-    var from: AssetType {
+    var from: CryptoCurrency {
         get {
             return internalFrom
         }
@@ -53,7 +53,7 @@ struct TradingPair {
         }
     }
 
-    var to: AssetType {
+    var to: CryptoCurrency {
         get {
             return internalTo
         }
@@ -67,7 +67,7 @@ struct TradingPair {
     }
     
     var stringRepresentation: String {
-        return internalFrom.symbol + "-" + internalTo.symbol
+        return internalFrom.code + "-" + internalTo.code
     }
 }
 

@@ -172,7 +172,7 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
         guard let baseUrl = URL(string: BlockchainAPI.shared.servicePriceUrl) else {
             return Single.error(NetworkError.generic(message: "URL is invalid."))
         }
-        let parameters = ["base": Token.assetType.symbol,
+        let parameters = ["base": Token.assetType.code,
                           "quote": currencyCode,
                           "start": "\(createdAt.timeIntervalSince1970)"]
         

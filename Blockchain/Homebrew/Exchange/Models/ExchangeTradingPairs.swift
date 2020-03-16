@@ -11,7 +11,7 @@ import Foundation
 struct ExchangeTradingPairs: Decodable {
     // TICKET: IOS-1663
     // This cannot be [TradingPair] until TradingPair supports all fiat currencies
-    // This would require AssetType to support all fiat currencies as well.
+    // This would require CryptoCurrency to support all fiat currencies as well.
     let pairs: [String]
     
     enum CodingKeys: String, CodingKey {

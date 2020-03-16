@@ -57,7 +57,7 @@ import PlatformUIKit
     
     func start(with delegate: PrivateKeyReaderDelegate,
                in viewController: UIViewController,
-               assetType: AssetType = .bitcoin,
+               assetType: CryptoCurrency = .bitcoin,
                acceptPublicKeys: Bool = false,
                loadingText: String = LocalizationConstants.AddressAndKeyImport.loadingImportKey,
                assetAddress: AssetAddress? = nil) {

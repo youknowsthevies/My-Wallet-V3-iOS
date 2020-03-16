@@ -17,10 +17,10 @@ import PlatformKit
 final class SendFeeInteractorTests: XCTestCase {
 
     private let currencyCode = "USD"
-    private let asset = AssetType.ethereum
+    private let asset = CryptoCurrency.ethereum
     
     private var interactor: SendFeeInteracting {
-        let fee = CryptoValue.createFromMajorValue(string: "1", assetType: asset.cryptoCurrency)!
+        let fee = CryptoValue.createFromMajorValue(string: "1", assetType: asset)!
         let feeService = MockSendFeeService(expectedValue: fee)
         
         let fiatExchangeRate = FiatValue.create(amountString: "1", currencyCode: currencyCode)

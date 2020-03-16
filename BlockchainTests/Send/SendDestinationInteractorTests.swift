@@ -8,6 +8,8 @@
 
 import XCTest
 import RxSwift
+
+@testable import PlatformKit
 @testable import Blockchain
 
 final class SendDestinationInteractorTests: XCTestCase {
@@ -15,7 +17,7 @@ final class SendDestinationInteractorTests: XCTestCase {
     // MARK: - Properties
     
     // TODO: Add any supported asset to this test case
-    private let assets = [AssetType.ethereum]
+    private let assets = [CryptoCurrency.ethereum]
     
     // MARK: - Exchange Account Test Cases
     
@@ -68,7 +70,7 @@ final class SendDestinationInteractorTests: XCTestCase {
         }
     }
     
-    private func test(destination: String, for asset: AssetType, expectedState: SendDestinationAccountState) throws {
+    private func test(destination: String, for asset: CryptoCurrency, expectedState: SendDestinationAccountState) throws {
         let interactor = self.interactor(for: asset, hasExchangeAccount: true)
         interactor.set(address: destination)
         
@@ -80,7 +82,7 @@ final class SendDestinationInteractorTests: XCTestCase {
     
     // MARK: - Accessors
     
-    private func interactor(for asset: AssetType, hasExchangeAccount: Bool) -> SendDestinationAccountInteracting {
+    private func interactor(for asset: CryptoCurrency, hasExchangeAccount: Bool) -> SendDestinationAccountInteracting {
         let exchangeAddressFetcher: ExchangeAddressFetching
         if hasExchangeAccount {
             exchangeAddressFetcher = MockExchangeAddressFetcher(expectedResult: .success(.active))

@@ -123,7 +123,7 @@ private extension ExchangeCreateView {
         let topLeftLabel = UILabel(frame: topLeftLabelFrame)
         topLeftLabel.font = smallFont
         topLeftLabel.textColor = UIColor.gray5
-        topLeftLabel.text = AssetType.bitcoin.symbol
+        topLeftLabel.text = CryptoCurrency.bitcoin.displayCode
         topLeftLabel.center = CGPoint(x: topLeftLabel.center.x, y: FromToView.self.rowHeight() / 2)
 
         leftLabel = topLeftLabel
@@ -159,7 +159,7 @@ private extension ExchangeCreateView {
         let topRightLabel = UILabel(frame: topRightLabelFrame)
         topRightLabel.font = smallFont
         topRightLabel.textColor = UIColor.gray5
-        topRightLabel.text = AssetType.ethereum.symbol
+        topRightLabel.text = CryptoCurrency.ethereum.displayCode
         topRightLabel.center = CGPoint(x: topRightLabel.center.x, y: FromToView.self.rowHeight() / 2)
         rightLabel = topRightLabel
         amountView.addSubview(topRightLabel)

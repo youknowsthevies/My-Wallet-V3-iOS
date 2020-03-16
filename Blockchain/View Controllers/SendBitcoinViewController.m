@@ -207,7 +207,7 @@ BOOL displayingLocalSymbolSend;
     destinationAddressIndicatorLabel = [[UILabel alloc] initWithFrame:toField.frame];
     destinationAddressIndicatorLabel.font = selectAddressTextField.font;
     destinationAddressIndicatorLabel.textColor = selectAddressTextField.textColor;
-    NSString *symbol = [AssetTypeLegacyHelper symbolFor:self.assetType];
+    NSString *symbol = [AssetTypeLegacyHelper displayCodeFor:self.assetType];
     destinationAddressIndicatorLabel.text = [NSString stringWithFormat:[LocalizationConstantsObjcBridge sendAssetExchangeDestination], symbol];
     destinationAddressIndicatorLabel.hidden = true;
     [self.view addSubview:destinationAddressIndicatorLabel];
@@ -1024,7 +1024,7 @@ BOOL displayingLocalSymbolSend;
         NSString *symbol;
         switch (self.addressSource) {
             case DestinationAddressSourceExchange:
-                symbol = [AssetTypeLegacyHelper symbolFor: self.assetType];
+                symbol = [AssetTypeLegacyHelper displayCodeFor: self.assetType];
                 displayDestinationAddress = [NSString stringWithFormat:[LocalizationConstantsObjcBridge sendAssetExchangeDestination], symbol];
                 break;
             case DestinationAddressSourceBitPay:
@@ -2360,11 +2360,11 @@ BOOL displayingLocalSymbolSend;
                     return;
                 }
 
-                AssetType type = [AssetTypeLegacyHelper convertFromLegacy:self.assetType];
-                id<AssetURLPayload> payload = [AssetURLPayloadFactory createFromString:[metadataObj stringValue] assetType:type];
+                LegacyCryptoCurrency *type = [AssetTypeLegacyHelper convertFromLegacy:self.assetType];
+                id<AssetURLPayload> payload = [AssetURLPayloadFactory createFromString:[metadataObj stringValue] asset:type];
 
                 NSString *address = payload.address;
-                NSString *scheme = [AssetURLPayloadFactory schemeForAssetType:type];
+                NSString *scheme = [AssetURLPayloadFactory schemeForAsset:type];
                 NSString *paymentRequestUrl = payload.paymentRequestUrl;
 
                 if (paymentRequestUrl != nil) {
@@ -2378,7 +2378,7 @@ BOOL displayingLocalSymbolSend;
                     }
                 } else {
                     if (address == nil || ![payload.schemeCompat isEqualToString:scheme] || ![WalletManager.sharedInstance.wallet isValidAddress:address assetType:self.assetType]) {
-                        NSString *assetName = (type == AssetTypeBitcoin) ? @"Bitcoin" : @"Bitcoin Cash";
+                        NSString *assetName = ([type legacy] == LegacyAssetTypeBitcoin) ? @"Bitcoin" : @"Bitcoin Cash";
                         NSString *errorMessage = [NSString stringWithFormat:LocalizationConstantsObjcBridge.invalidXAddressY, assetName, address];
                         [AlertViewPresenter.sharedInstance standardErrorWithMessage:errorMessage title:LocalizationConstantsObjcBridge.error in:self handler:nil];
                         return;

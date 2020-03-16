@@ -10,20 +10,20 @@ import Foundation
 import PlatformKit
 
 enum ExchangeError: Error, Equatable {
-    case belowTradingLimit(FiatValue?, AssetType)
-    case aboveTradingLimit(FiatValue?, AssetType)
-    case aboveTierLimit(FiatValue, AssetType)
+    case belowTradingLimit(FiatValue?, CryptoCurrency)
+    case aboveTradingLimit(FiatValue?, CryptoCurrency)
+    case aboveTierLimit(FiatValue, CryptoCurrency)
     case aboveMaxVolume(CryptoValue)
     case insufficientFunds(CryptoValue)
     case noVolumeProvided
     
     /// Should only happen when `"NO_UNSPENT_OUTPUTS"` is returned
     /// from the JS layer.
-    case insufficientFundsForFees(AssetType)
+    case insufficientFundsForFees(CryptoCurrency)
     case waitingOnEthereumPayment
 
     /// Error when there is not enough gas (ETH) to spend to complete an ERC20 transaction.
-    case insufficientGasForERC20Tx(AssetType)
+    case insufficientGasForERC20Tx(CryptoCurrency)
 
     case `default`(String?)
 }
@@ -77,14 +77,13 @@ extension ExchangeError {
             }
             return LocalizationConstants.Stellar.notEnoughXLM
         case .insufficientFunds(let cryptoValue):
-            let symbol = cryptoValue.symbol
-            let notEnouch = LocalizationConstants.Swap.notEnough + " " + symbol + "."
+            let notEnouch = LocalizationConstants.Swap.notEnough + " " + cryptoValue.displayCode + "."
             return notEnouch
         case .insufficientFundsForFees(let cryptoValue):
-            return String(format: LocalizationConstants.Errors.notEnoughXForFees, cryptoValue.symbol)
+            return String(format: LocalizationConstants.Errors.notEnoughXForFees, cryptoValue.displayCode)
         case .waitingOnEthereumPayment:
             return LocalizationConstants.SendEther.waitingForPaymentToFinishMessage
-        case .insufficientGasForERC20Tx(_):
+        case .insufficientGasForERC20Tx:
             return LocalizationConstants.SendAsset.notEnoughEth
         case .default:
             return LocalizationConstants.Errors.genericError
@@ -112,13 +111,13 @@ extension ExchangeError {
             let yourBalance = LocalizationConstants.Swap.yourBalance + " " + cryptoValue.toDisplayString(includeSymbol: true, locale: .current)
             return yourBalance + "."
         case .insufficientFundsForFees(let assetType):
-            return String(format: LocalizationConstants.Errors.notEnoughXForFees, assetType.symbol)
+            return String(format: LocalizationConstants.Errors.notEnoughXForFees, assetType.displayCode)
         case .waitingOnEthereumPayment:
             return nil
         case .noVolumeProvided:
             return nil
         case .insufficientGasForERC20Tx(let assetType):
-            return String(format: "\(LocalizationConstants.SendAsset.notEnoughEthDescription), %@.", assetType.description)
+            return String(format: "\(LocalizationConstants.SendAsset.notEnoughEthDescription), %@.", assetType.name)
         case .default(let value):
             return value
         }
@@ -137,9 +136,9 @@ extension ExchangeError {
         case .waitingOnEthereumPayment:
             return #imageLiteral(resourceName: "eth_bad.pdf")
         case .aboveMaxVolume(let cryptoValue):
-            return cryptoValue.currencyType.assetType.errorImage
+            return cryptoValue.currencyType.errorImage
         case .insufficientFunds(let cryptoValue):
-            return cryptoValue.currencyType.assetType.errorImage
+            return cryptoValue.currencyType.errorImage
         case .insufficientGasForERC20Tx(_):
             return #imageLiteral(resourceName: "eth_bad.pdf")
         case .default,
@@ -160,7 +159,7 @@ extension ExchangeError {
                 pathComponents: ["hc", "en-us", "articles", "360018353031-What-are-the-minimum-and-maximum-amounts-I-can-Swap-"],
                 queryParameters: nil
             )
-        case .insufficientGasForERC20Tx(let assetType) where assetType == AssetType.pax:
+        case .insufficientGasForERC20Tx(let assetType) where assetType == CryptoCurrency.pax:
             return URL(string: Constants.Url.ethGasExplanationForPax)
         default:
             return nil

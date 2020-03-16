@@ -13,7 +13,7 @@ extension AssetSelectorView {
     
     @objc
     func reportOpen() {
-        let asset = AssetType(from: selectedAsset)
+        let asset = CryptoCurrency(legacyAssetType: selectedAsset)
         AnalyticsEventRecorder.shared.record(
             event: AnalyticsEvents.AssetSelection.assetSelectorOpen(asset: asset)
         )
@@ -21,7 +21,7 @@ extension AssetSelectorView {
     
     @objc
     func reportClose() {
-        let asset = AssetType(from: selectedAsset)
+        let asset = CryptoCurrency(legacyAssetType: selectedAsset)
         AnalyticsEventRecorder.shared.record(
             event: AnalyticsEvents.AssetSelection.assetSelectorClose(asset: asset)
         )

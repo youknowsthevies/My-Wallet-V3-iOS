@@ -6,24 +6,24 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 @objc
-public class PaxAddress: NSObject & AssetAddress {
+class PaxAddress: NSObject & AssetAddress {
     
     // MARK: - Properties
     
-    public private(set) var address: String
+    private(set) var address: String
     
-    public let assetType: AssetType = .pax
+    let assetType = LegacyCryptoCurrency.pax
     
-    override public var description: String {
+    override var description: String {
         return address
     }
     
     // MARK: - Initialization
     
-    public required init(string: String) {
+    required init(string: String) {
         self.address = string
     }
 }

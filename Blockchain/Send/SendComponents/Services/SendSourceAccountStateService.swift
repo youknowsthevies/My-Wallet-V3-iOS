@@ -39,12 +39,12 @@ final class SendSourceAccountStateService: SendSourceAccountStateServicing {
     
     // MARK: Injected
     
-    private let asset: AssetType
+    private let asset: CryptoCurrency
     private let ethereumService: EthereumWalletServiceAPI
     
     // MARK: - Setup
     
-    init(asset: AssetType, ethereumService: EthereumWalletServiceAPI = EthereumWalletService.shared) {
+    init(asset: CryptoCurrency, ethereumService: EthereumWalletServiceAPI = EthereumWalletService.shared) {
         self.asset = asset
         self.ethereumService = ethereumService
     }

@@ -19,12 +19,21 @@ public enum TriageCryptoCurrency: Equatable {
     case blockstack
     case supported(CryptoCurrency)
     
-    public var symbol: String {
+    public var code: String {
         switch self {
         case .blockstack:
             return "STX"
         case .supported(let currency):
-            return currency.symbol
+            return currency.code
+        }
+    }
+    
+    public var displayCode: String {
+        switch self {
+        case .blockstack:
+            return "STX"
+        case .supported(let currency):
+            return currency.displayCode
         }
     }
     
@@ -74,12 +83,12 @@ extension TriageCryptoCurrency {
         self = .supported(cryptoCurrency)
     }
     
-    public init(symbol: String) throws {
-        if let supportedCurrency = CryptoCurrency(rawValue: symbol) {
+    public init(code: String) throws {
+        if let supportedCurrency = CryptoCurrency(code: code) {
             self = .supported(supportedCurrency)
         } else {
-            switch symbol {
-            case TriageCryptoCurrency.blockstack.symbol:
+            switch code {
+            case TriageCryptoCurrency.blockstack.code:
                 self = .blockstack
             default:
                 throw CryptoError.cryptoCurrencyAdditionRequired

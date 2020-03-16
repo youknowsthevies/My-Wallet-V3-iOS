@@ -6,15 +6,16 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 /// Blueprint for creating asset addresses.
 @objc
-public protocol AssetAddress {
+protocol AssetAddress {
 
     var address: String { get }
 
-    var assetType: AssetType { get }
+    @available(*, deprecated, message: "This is deprecated. Use `cryptoCurrency` property instead")
+    var assetType: LegacyCryptoCurrency { get }
 
     var description: String { get }
 
@@ -22,14 +23,20 @@ public protocol AssetAddress {
 }
 
 extension AssetAddress {
+    var cryptoCurrency: CryptoCurrency {
+        assetType.value
+    }
+}
+
+extension AssetAddress {
     var depositAddress: DepositAddress {
         let address: String
-        switch assetType {
+        switch cryptoCurrency {
         case .bitcoinCash:
             address = self.address.removing(prefix: "\(Constants.Schemes.bitcoinCash):")
         default:
             address = self.address
         }
-        return DepositAddress(type: assetType.cryptoCurrency, address: address)
+        return DepositAddress(type: cryptoCurrency, address: address)
     }
 }

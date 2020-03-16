@@ -351,8 +351,8 @@ protocol SendXLMViewControllerDelegate: class {
         case .feeAmountLabelText:
             // TODO: move formatting outside of this file
             guard let price = latestPrice, let fee = xlmFee else { return }
-            let assetType: AssetType = .stellar
-            let xlmSymbol = assetType.symbol
+            let assetType: CryptoCurrency = .stellar
+            let xlmSymbol = assetType.displayCode
             let feeFormatted = NumberFormatter.stellarFormatter.string(from: NSDecimalNumber(decimal: fee)) ?? "\(fee)"
             let fiatCurrencySymbol = BlockchainSettings.sharedAppInstance().fiatCurrencySymbol
             let fiatAmount = price * fee
@@ -415,8 +415,10 @@ protocol SendXLMViewControllerDelegate: class {
             } else {
                 exchangeAddressButton.setImage(UIImage(named: "cancel_icon"), for: .normal)
                 stellarAddressField.isHidden = true
-                destinationAddressIndicatorLabel.text = String(format: LocalizationConstants.Exchange.Send.destination,
-                                                               AssetType.stellar.symbol)
+                destinationAddressIndicatorLabel.text = String(
+                    format: LocalizationConstants.Exchange.Send.destination,
+                    CryptoCurrency.stellar.displayCode
+                )
             }
         case .showAlertForEnabling2FA:
             alertViewPresenter.standardNotify(
@@ -532,7 +534,7 @@ extension BCConfirmPaymentViewModel {
         price: Decimal?
     ) -> BCConfirmPaymentViewModel {
         // TODO: Refactor, move formatting out
-        let assetType: AssetType = .stellar
+        let assetType: CryptoCurrency = .stellar
         let amountXlm = paymentOperation.amountInXlm
         let feeXlm = paymentOperation.feeInXlm
 

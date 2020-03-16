@@ -21,14 +21,14 @@ final class SendExecutor: SendExecuting {
     
     // MARK: - Properties
     
-    private let asset: AssetType
+    private let asset: CryptoCurrency
     private let ethereumService: EthereumWalletServiceAPI
     
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
-    init(asset: AssetType, ethereumService: EthereumWalletServiceAPI = EthereumWalletService.shared) {
+    init(asset: CryptoCurrency, ethereumService: EthereumWalletServiceAPI = EthereumWalletService.shared) {
         self.asset = asset
         self.ethereumService = ethereumService
     }

@@ -34,8 +34,13 @@ public struct CryptoValue: Crypto {
 
 extension CryptoValue: Money {
     
-    public var currencyCode: String {
-        return self.currencyType.symbol
+    /// The currency code for the money (e.g. "USD", "BTC", etc.)
+    public var code: String {
+        return currencyType.code
+    }
+    
+    public var displayCode: String {
+        return currencyType.displayCode
     }
     
     public var isZero: Bool {
@@ -44,11 +49,6 @@ extension CryptoValue: Money {
     
     public var isPositive: Bool {
         return amount.sign == .plus
-    }
-    
-    /// The symbol for the money (e.g. "BTC", "ETH", etc.)
-    public var symbol: String {
-        return self.currencyType.symbol
     }
     
     /// The maximum number of decimal places supported by the money

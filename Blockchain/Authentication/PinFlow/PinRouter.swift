@@ -122,7 +122,7 @@ extension PinRouter {
         let pinInput = LoginContainerViewController.Input.viewController(pinViewController)
         let addressInputs: [LoginContainerViewController.Input]
         if swipeToReceiveConfig.swipeToReceiveEnabled {
-            addressInputs = AssetType.all.map { asset -> LoginContainerViewController.Input in
+            addressInputs = CryptoCurrency.all.map { asset -> LoginContainerViewController.Input in
                 let interactor = AddressInteractor(asset: asset, addressType: .swipeToReceive)
                 let presenter = AddressPresenter(interactor: interactor)
                 let viewController = AddressViewController(using: presenter)

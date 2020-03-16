@@ -127,7 +127,7 @@ class TradeExecutionService: TradeExecutionAPI {
     
     // MARK: TradeExecutionAPI
     
-    func canTradeAssetType(_ assetType: AssetType) -> Single<Bool> {
+    func canTradeAssetType(_ assetType: CryptoCurrency) -> Single<Bool> {
         switch assetType {
         case .ethereum, .pax:
             return ethereumWallet.isWaitingOnTransaction
@@ -138,7 +138,7 @@ class TradeExecutionService: TradeExecutionAPI {
         }
     }
     
-    func validateVolume(_ volume: CryptoValue, for assetType: AssetType) -> Single<TransactionValidationResult> {
+    func validateVolume(_ volume: CryptoValue, for assetType: CryptoCurrency) -> Single<TransactionValidationResult> {
         switch assetType {
         case .stellar:
             return validateXLM(volume: volume)
@@ -170,8 +170,8 @@ class TradeExecutionService: TradeExecutionAPI {
             Logger.shared.error("Invalid pair returned from server: \(conversion.quote.pair)")
             return
         }
-        guard pair.from == from.address.assetType,
-            pair.to == to.address.assetType else {
+        guard pair.from == from.address.cryptoCurrency,
+            pair.to == to.address.cryptoCurrency else {
                 error(LocalizationConstants.Swap.tradeExecutionError)
                 Logger.shared.error("Asset types don't match.")
                 return
@@ -192,7 +192,7 @@ class TradeExecutionService: TradeExecutionAPI {
         let createOrderCompletion: ((OrderTransactionLegacy) -> Void) = { orderTransactionLegacy in
             let orderTransactionTo = AssetAddressFactory.create(
                 fromAddressString: orderTransactionLegacy.to,
-                assetType: AssetType.from(legacyAssetType: orderTransactionLegacy.legacyAssetType)
+                assetType: CryptoCurrency(legacyAssetType: orderTransactionLegacy.legacyAssetType)
             )
             let orderTransaction = OrderTransaction(
                 orderIdentifier: "",
@@ -262,7 +262,7 @@ class TradeExecutionService: TradeExecutionAPI {
         error: @escaping ((ErrorMessage, TransactionID?, NabuNetworkError?) -> Void),
         memo: String? = nil // TODO: IOS-1291 Remove and separate
     ) {
-        let assetType = AssetType.from(legacyAssetType: orderTransactionLegacy.legacyAssetType)
+        let assetType = CryptoCurrency(legacyAssetType: orderTransactionLegacy.legacyAssetType)
         let createOrderPaymentSuccess: ((String) -> Void) = { fees in
             if assetType == .bitcoin || assetType == .bitcoinCash {
                 // TICKET: IOS-1395 - Use a helper method for this
@@ -429,7 +429,7 @@ class TradeExecutionService: TradeExecutionAPI {
 
     // Sign and send the payment object created by either of the buildOrder methods.
     fileprivate func sendTransaction(
-        assetType: AssetType,
+        assetType: CryptoCurrency,
         transactionID: String?,
         secondPassword: String?,
         keyPair: StellarKeyPair?,
@@ -578,7 +578,7 @@ fileprivate extension TradeExecutionService {
                 conversionQuote.fix == .baseInFiat ?
                     conversionQuote.currencyRatio.base.crypto.value :
                 conversionQuote.currencyRatio.counter.crypto.value
-            settings.mockExchangeDepositAssetTypeString = TradingPair(string: conversionQuote.pair)!.from.symbol
+            settings.mockExchangeDepositAssetTypeString = TradingPair(string: conversionQuote.pair)!.from.code
         }
         #endif
         let dateFormatter = DateFormatter()
@@ -592,8 +592,8 @@ fileprivate extension TradeExecutionService {
             volume: conversionQuote.volume,
             currencyRatio: conversionQuote.currencyRatio
         )
-        let refund = getReceiveAddress(for: fromAccount.index, assetType: fromAccount.address.assetType)
-        let destination = getReceiveAddress(for: toAccount.index, assetType: toAccount.address.assetType)
+        let refund = getReceiveAddress(for: fromAccount.index, assetType: fromAccount.address.cryptoCurrency)
+        let destination = getReceiveAddress(for: toAccount.index, assetType: toAccount.address.cryptoCurrency)
         
         Maybe.zip(refund, destination)
             .subscribeOn(MainScheduler.asyncInstance)
@@ -615,7 +615,7 @@ fileprivate extension TradeExecutionService {
                 // Here we should have an OrderResult object, with a deposit address.
                 // Fees must be fetched from wallet payment APIs
                 let createOrderCompletion: ((OrderTransactionLegacy) -> Void) = { orderTransactionLegacy in
-                    let assetType = AssetType.from(legacyAssetType: orderTransactionLegacy.legacyAssetType)
+                    let assetType = CryptoCurrency(legacyAssetType: orderTransactionLegacy.legacyAssetType)
                     let to = AssetAddressFactory.create(fromAddressString: orderTransactionLegacy.to, assetType: assetType)
                     let orderTransaction = OrderTransaction(
                         orderIdentifier: payload.id,
@@ -660,7 +660,7 @@ fileprivate extension TradeExecutionService {
         let depositAddress = settings.mockExchangeOrderDepositAddress ?? orderResult.depositAddress
         let depositQuantity = settings.mockExchangeDeposit ? settings.mockExchangeDepositQuantity! : orderResult.deposit.value
         let assetType = settings.mockExchangeDeposit ?
-            AssetType(stringValue: settings.mockExchangeDepositAssetTypeString!)!
+            CryptoCurrency(code: settings.mockExchangeDepositAssetTypeString!)!
             : TradingPair(string: orderResult.pair)!.from
         #else
         let depositAddress = orderResult.depositAddress
@@ -668,13 +668,13 @@ fileprivate extension TradeExecutionService {
         let pair = TradingPair(string: orderResult.pair)
         let assetType = pair!.from
         #endif
-        guard assetType == fromAccount.address.assetType else {
-            error("AssetType from fromAccount and AssetType from OrderResult do not match", orderResult.id, nil)
+        guard assetType == fromAccount.address.cryptoCurrency else {
+            error("AssetType from fromAccount and CryptoCurrency from OrderResult do not match", orderResult.id, nil)
             return
         }
         
         let orderTransactionLegacy = OrderTransactionLegacy(
-            legacyAssetType: fromAccount.address.assetType.legacy,
+            legacyAssetType: fromAccount.address.cryptoCurrency.legacy,
             from: fromAccount.index,
             to: depositAddress,
             amount: depositQuantity,
@@ -742,7 +742,7 @@ extension TradeExecutionService {
                 success: { [weak self] orderTransaction, _ in
                     guard let this = self else { return }
                     this.sendTransaction(
-                        assetType: orderTransaction.to.assetType,
+                        assetType: orderTransaction.to.cryptoCurrency,
                         transactionID: orderTransaction.orderIdentifier,
                         secondPassword: secondPassword,
                         keyPair: pair,
@@ -775,7 +775,7 @@ extension TradeExecutionService {
         // Second password must be prompted before an order is processed since it is
         // a cancellable action - otherwise an order will be created even if cancelling
         // second password
-        if from.address.assetType == .stellar {
+        if from.address.cryptoCurrency == .stellar {
             loadXLMKeyPair()
         } else if secondaryPasswordRequired {
             AuthenticationCoordinator.shared.showPasswordScreen(
@@ -794,7 +794,7 @@ extension TradeExecutionService {
 }
 
 private extension TradeExecutionService {
-    func getReceiveAddress(for account: Int32, assetType: AssetType) -> Maybe<String> {
+    func getReceiveAddress(for account: Int32, assetType: CryptoCurrency) -> Maybe<String> {
         if assetType == .stellar {
             return  assetAccountRepository
                 .defaultAccount(for: .stellar)

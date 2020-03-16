@@ -91,7 +91,7 @@ final class AddressPresenter {
         self.pasteboard = pasteboard
         let asset = interactor.asset
         assetImageName = asset.filledImageLargeName
-        assetName = String(format: LocalizationConstants.Address.titleFormat, asset.description)
+        assetName = String(format: LocalizationConstants.Address.titleFormat, asset.name)
         
         setupCopyViewModel()
         setupShareViewModel()

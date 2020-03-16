@@ -208,6 +208,6 @@ final class BuyCryptoScreenInteractor {
 fileprivate extension SelectionItemViewModel {
     
     var cryptoCurrency: CryptoCurrency {
-        CryptoCurrency(rawValue: id)!
+        CryptoCurrency(code: id)!
     }
 }

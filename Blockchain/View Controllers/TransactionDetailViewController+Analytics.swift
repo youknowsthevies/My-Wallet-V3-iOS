@@ -12,7 +12,7 @@ import PlatformKit
 
 extension TransactionDetailViewController {
     @objc func reportWebViewClick(asset: LegacyAssetType) {
-        let asset = AssetType(from: asset)
+        let asset = CryptoCurrency(legacyAssetType: asset)
         AnalyticsEventRecorder.shared.record(
             event: AnalyticsEvents.Transactions.transactionsItemWebViewClick(asset: asset)
         )

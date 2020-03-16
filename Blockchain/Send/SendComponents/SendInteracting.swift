@@ -9,12 +9,13 @@
 import Foundation
 import RxSwift
 import RxRelay
+import PlatformKit
 
 /// This protocol provides the inner components of a send
 protocol SendInteracting {
     
     /// The asset type to derive outputs from
-    var asset: AssetType { get }
+    var asset: CryptoCurrency { get }
     
     /// The interactor for the source acccount
     var sourceInteractor: SendSourceAccountInteracting { get }

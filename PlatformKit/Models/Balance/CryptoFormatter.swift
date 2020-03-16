@@ -41,9 +41,9 @@ class CryptoFormatterProvider {
 
     private func key(locale: Locale, cryptoCurrency: CryptoCurrency) -> String {
         guard let languageCode = locale.languageCode else {
-            return cryptoCurrency.symbol
+            return cryptoCurrency.displayCode
         }
-        return "\(languageCode)_\(cryptoCurrency.symbol)"
+        return "\(languageCode)_\(cryptoCurrency.displayCode)"
     }
 }
 
@@ -70,7 +70,7 @@ class CryptoFormatter {
         let formatter = (precision == .short) ? shortFormatter : longFormatter
         var formattedString = formatter.string(from: NSDecimalNumber(decimal: value.majorValue)) ?? "\(value.majorValue)"
         if includeSymbol {
-            formattedString += " " + value.currencyType.symbol
+            formattedString += " " + value.currencyType.displayCode
         }
         return formattedString
     }

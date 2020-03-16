@@ -6,12 +6,12 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 @objc protocol WalletFiatAtTimeDelegate: class {
 
     /// Method invoked after getting fiat at time
-    func didGetFiatAtTime(fiatAmount: NSNumber, currencyCode: String, assetType: AssetType)
+    func didGetFiatAtTime(fiatAmount: NSNumber, currencyCode: String, assetType: LegacyAssetType)
 
     /// Method invoked when an error occurs while getting fiat at time
     func didErrorWhenGettingFiatAtTime(error: String?)

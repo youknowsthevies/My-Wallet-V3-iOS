@@ -34,7 +34,7 @@ final class SendFeeService: SendFeeServicing {
         case .ethereum:
             fee = etherFee
         case .bitcoin, .bitcoinCash, .pax, .stellar:
-            fatalError("\(#function) does not support \(asset.description)")
+            fatalError("\(#function) does not support \(asset.name)")
         }
         return Observable
             .combineLatest(fee, triggerRelay)
@@ -64,12 +64,12 @@ final class SendFeeService: SendFeeServicing {
     
     // MARK: - Injected
     
-    private let asset: AssetType
+    private let asset: CryptoCurrency
     private let ethereumService: EthereumFeeServiceAPI
     
     // MARK: - Setup
     
-    init(asset: AssetType,
+    init(asset: CryptoCurrency,
          ethereumService: EthereumFeeServiceAPI = EthereumFeeService.shared) {
         self.asset = asset
         self.ethereumService = ethereumService

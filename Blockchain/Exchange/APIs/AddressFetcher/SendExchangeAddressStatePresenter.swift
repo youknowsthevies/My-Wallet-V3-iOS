@@ -75,10 +75,10 @@ final class SendExchangeAddressStatePresenter: NSObject {
     
     private let exchangeAddressFetcher: ExchangeAddressFetching
     private let disposeBag = DisposeBag()
-    private let assetType: AssetType
+    private let assetType: CryptoCurrency
     private let blockchainRepository: BlockchainDataRepository
     
-    init(assetType: AssetType,
+    init(assetType: CryptoCurrency,
          exchangeAddressFetcher: ExchangeAddressFetching = ExchangeAddressFetcher(),
          blockchainRepository: BlockchainDataRepository = BlockchainDataRepository.shared) {
         self.assetType = assetType
@@ -90,7 +90,7 @@ final class SendExchangeAddressStatePresenter: NSObject {
     
     @objc
     init(assetType: LegacyAssetType) {
-        self.assetType = AssetType(from: assetType)
+        self.assetType = CryptoCurrency(legacyAssetType: assetType)
         self.exchangeAddressFetcher = ExchangeAddressFetcher()
         self.blockchainRepository = BlockchainDataRepository.shared
     }

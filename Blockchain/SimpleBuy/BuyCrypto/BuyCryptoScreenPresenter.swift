@@ -339,7 +339,7 @@ final class BuyCryptoScreenPresenter {
         selectionButtonViewModel.set(
             imageName: cryptoCurrency.logoImageName,
             title: cryptoCurrency.name,
-            accessibilityLabel: cryptoCurrency.code
+            accessibilityLabel: cryptoCurrency.displayCode
         )
     }
     

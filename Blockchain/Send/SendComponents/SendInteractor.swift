@@ -49,7 +49,7 @@ final class SendInteractor: SendInteracting {
     // MARK: - Properties
     
     /// The asset type
-    let asset: AssetType
+    let asset: CryptoCurrency
     
     /// Streams the input state
     var inputState: Observable<SendInputState> {
@@ -214,7 +214,7 @@ final class SendInteractor: SendInteracting {
             )
             .do(onSuccess: { [weak self] _ in
                 guard let self = self else { return }
-                let asset = self.transactionCandidate.amount.currencyType.assetType
+                let asset = self.transactionCandidate.amount.currencyType
                 self.services.bus.publish(
                     action: .sendCrypto,
                     extras: [WalletAction.ExtraKeys.assetType: asset]

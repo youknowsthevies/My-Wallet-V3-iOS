@@ -90,7 +90,7 @@ class ExchangeClient: ExchangeClientAPI {
     }
     
     func syncDepositAddress(authenticationToken: String, _ accounts: [AssetAddress]) -> Completable {
-        let depositAddresses = Dictionary(accounts.map { ($0.depositAddress.type.symbol, $0.depositAddress.address) }) { _, last in last }
+        let depositAddresses = Dictionary(accounts.map { ($0.depositAddress.type.code, $0.depositAddress.address) }) { _, last in last }
         let payload = ["addresses" : depositAddresses ]
         guard let apiURL = URL(string: BlockchainAPI.shared.retailCoreUrl) else {
             return Completable.error(NetworkError.default)

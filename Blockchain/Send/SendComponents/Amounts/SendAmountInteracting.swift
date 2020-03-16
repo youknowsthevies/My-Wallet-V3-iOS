@@ -14,7 +14,7 @@ import RxSwift
 protocol SendAmountInteracting {
     
     /// The interacted asset
-    var asset: AssetType { get }
+    var asset: CryptoCurrency { get }
     
     /// Indicates whether the sent amount is within / above the account spendable balance
     var amountBalanceRatio: Observable<AmountBalanceRatio> { get }

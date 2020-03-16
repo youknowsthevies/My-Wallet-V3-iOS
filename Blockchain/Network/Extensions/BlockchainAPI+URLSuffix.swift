@@ -17,7 +17,7 @@ import PlatformKit
     /// - Parameter assetAddress: the `AssetAddress`
     /// - Returns: the URL for the `AssetAddress`
     func assetInfoURL(for assetAddress: AssetAddress) -> String? {
-        switch assetAddress.assetType {
+        switch assetAddress.cryptoCurrency {
         case .bitcoin:
             return "\(walletUrl)/address/\(assetAddress.address)?format=json"
         case .bitcoinCash:
@@ -44,8 +44,8 @@ import PlatformKit
     /// - Parameter transactionHash: the hash of the transaction
     /// - Parameter assetType: the `AssetType`
     /// - Returns: the URL for the transaction detail
-    func transactionDetailURL(for transactionHash: String, assetType: AssetType) -> String? {
-        switch assetType {
+    func transactionDetailURL(for transactionHash: String, assetType: LegacyCryptoCurrency) -> String? {
+        switch assetType.value {
         case .bitcoin:
             return "\(bitcoinExplorerUrl)/tx/\(transactionHash)"
         case .ethereum:

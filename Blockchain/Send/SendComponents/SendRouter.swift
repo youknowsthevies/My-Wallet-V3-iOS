@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 // TODO: Move all send flows here, the VIPER stack should remain the same
-// The only replaceable layer is the `asset: AssetType`.
+// The only replaceable layer is the `asset: CryptoCurrency`.
 // Move navigation logic here
 // Move asset selection logic here
 // Move entire tab item related logic here
@@ -34,7 +34,7 @@ final class SendRouter: NSObject {
     private unowned let appCoordinator: AppCoordinator
     
     /// The presenters as per asset. This is the only resource that should be kept.
-    private var presenters: [AssetType: SendPresenter] = [:]
+    private var presenters: [CryptoCurrency: SendPresenter] = [:]
     
     @objc
     init(using initialViewController: UIViewController, appCoordinator: AppCoordinator = .shared) {
@@ -46,7 +46,7 @@ final class SendRouter: NSObject {
     // TODO: Change legacy asset to asset once the tab controller is being refactored
     @objc
     func sendViewController(by legacyAsset: LegacyAssetType) -> SendViewController {
-        let asset = AssetType.from(legacyAssetType: legacyAsset)
+        let asset = CryptoCurrency(legacyAssetType: legacyAsset)
         if let presenter = presenters[asset] {
             return SendViewController(presenter: presenter)
         }
@@ -69,7 +69,7 @@ final class SendRouter: NSObject {
     
     // TODO: Remove this legacy function once tab controller
     @objc func presentQRCodeScan(using legacyAsset: LegacyAssetType) {
-        let asset = AssetType.from(legacyAssetType: legacyAsset)
+        let asset = CryptoCurrency(legacyAssetType: legacyAsset)
         presenters[asset]!.scanQRCode()
     }
 }

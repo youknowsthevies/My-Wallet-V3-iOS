@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="2ci-FG-PKl">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="2ci-FG-PKl">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -37,13 +37,13 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="From" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0VH-r5-a5K">
-                                                                <rect key="frame" x="16" y="18.5" width="70.5" height="19"/>
+                                                                <rect key="frame" x="16" y="18" width="70.5" height="20"/>
                                                                 <fontDescription key="fontDescription" name="Montserrat-Regular" family="Montserrat" pointSize="16"/>
                                                                 <color key="textColor" red="0.23100000000000001" green="0.23137254900000001" blue="0.23137254900000001" alpha="1" colorSpace="calibratedRGB"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My USD Pax Wallet" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i7r-Uu-5Bo">
-                                                                <rect key="frame" x="94.5" y="18" width="148.5" height="20"/>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My USD Digital Wallet" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i7r-Uu-5Bo">
+                                                                <rect key="frame" x="94.5" y="18" width="171" height="20"/>
                                                                 <fontDescription key="fontDescription" name="Montserrat-Light" family="Montserrat" pointSize="16"/>
                                                                 <color key="textColor" red="0.23100000000000001" green="0.23100000000000001" blue="0.23100000000000001" alpha="1" colorSpace="calibratedRGB"/>
                                                                 <nil key="highlightedColor"/>
@@ -63,7 +63,7 @@
                                                         <rect key="frame" x="0.0" y="57" width="414" height="56"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="To" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ImH-Fj-RtI">
-                                                                <rect key="frame" x="16" y="18.5" width="70.5" height="19"/>
+                                                                <rect key="frame" x="16" y="18" width="70.5" height="20"/>
                                                                 <fontDescription key="fontDescription" name="Montserrat-Regular" family="Montserrat" pointSize="16"/>
                                                                 <color key="textColor" red="0.23100000000000001" green="0.23137254900000001" blue="0.23137254900000001" alpha="1" colorSpace="calibratedRGB"/>
                                                                 <nil key="highlightedColor"/>
@@ -74,7 +74,7 @@
                                                                 <color key="textColor" red="0.23100000000000001" green="0.23100000000000001" blue="0.23100000000000001" alpha="1" colorSpace="calibratedRGB"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter a PAX Address" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="XTk-Wu-bK5">
+                                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter a USD-D Address" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="XTk-Wu-bK5">
                                                                 <rect key="frame" x="94.5" y="18.5" width="259.5" height="19"/>
                                                                 <color key="textColor" red="0.23100000000000001" green="0.23100000000000001" blue="0.23100000000000001" alpha="1" colorSpace="calibratedRGB"/>
                                                                 <fontDescription key="fontDescription" name="Montserrat-Regular" family="Montserrat" pointSize="13"/>
@@ -110,8 +110,8 @@
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oTG-zO-KGv">
                                                                 <rect key="frame" x="0.0" y="0.0" width="414" height="55"/>
                                                                 <subviews>
-                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PAX" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6pg-Pn-3aR">
-                                                                        <rect key="frame" x="16" y="18" width="70.5" height="19"/>
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="USD-D" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6pg-Pn-3aR">
+                                                                        <rect key="frame" x="16" y="17.5" width="70.5" height="20"/>
                                                                         <fontDescription key="fontDescription" name="Montserrat-Regular" family="Montserrat" pointSize="16"/>
                                                                         <color key="textColor" red="0.23100000000000001" green="0.23137254900000001" blue="0.23137254900000001" alpha="1" colorSpace="calibratedRGB"/>
                                                                         <nil key="highlightedColor"/>
@@ -123,7 +123,7 @@
                                                                         <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="decimalPad"/>
                                                                     </textField>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="USD" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uPD-20-AEg">
-                                                                        <rect key="frame" x="207" y="18" width="70.5" height="19"/>
+                                                                        <rect key="frame" x="207" y="17.5" width="70.5" height="20"/>
                                                                         <fontDescription key="fontDescription" name="Montserrat-Regular" family="Montserrat" pointSize="16"/>
                                                                         <color key="textColor" red="0.20999999999999999" green="0.25" blue="0.32000000000000001" alpha="1" colorSpace="calibratedRGB"/>
                                                                         <nil key="highlightedColor"/>
@@ -146,7 +146,7 @@
                                                                 </constraints>
                                                             </view>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use total available minus fee: $1.23" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V33-nL-iXX" customClass="ActionableLabel" customModule="Blockchain" customModuleProvider="target">
-                                                                <rect key="frame" x="16" y="37" width="398" height="46"/>
+                                                                <rect key="frame" x="16" y="37.5" width="398" height="45.5"/>
                                                                 <fontDescription key="fontDescription" name="Montserrat-Regular" family="Montserrat" pointSize="13"/>
                                                                 <color key="textColor" red="0.106" green="0.54117647059999996" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
@@ -171,7 +171,7 @@
                                                         <rect key="frame" x="0.0" y="198" width="414" height="56"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Fees" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rwt-Ev-TVX">
-                                                                <rect key="frame" x="16" y="18.5" width="70.5" height="19"/>
+                                                                <rect key="frame" x="16" y="18" width="70.5" height="20"/>
                                                                 <fontDescription key="fontDescription" name="Montserrat-Regular" family="Montserrat" pointSize="16"/>
                                                                 <color key="textColor" red="0.23100000000000001" green="0.23137254900000001" blue="0.23137254900000001" alpha="1" colorSpace="calibratedRGB"/>
                                                                 <nil key="highlightedColor"/>

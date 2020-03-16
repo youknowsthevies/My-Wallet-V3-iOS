@@ -116,7 +116,7 @@
     model.assetType = LegacyAssetTypeBitcoinCash;
     model.hideNote = YES;
     model.detailButtonTitle = [[BC_STRING_VIEW_ON_URL_ARGUMENT stringByAppendingFormat:@" %@", [[BlockchainAPI sharedInstance] blockchainDotCom]] uppercaseString];
-    model.detailButtonLink = [BlockchainAPI.sharedInstance transactionDetailURLFor:model.myHash assetType:AssetTypeBitcoinCash];
+    model.detailButtonLink = [BlockchainAPI.sharedInstance transactionDetailURLFor:model.myHash assetType:[LegacyCryptoCurrency bitcoinCash]];
     return model;
 }
 
