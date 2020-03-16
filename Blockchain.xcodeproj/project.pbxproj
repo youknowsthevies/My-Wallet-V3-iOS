@@ -440,6 +440,7 @@
 		3A29976D237F43AF0009E7F1 /* AssetLineChartTableViewCellInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A29976C237F43AF0009E7F1 /* AssetLineChartTableViewCellInteractor.swift */; };
 		3A299779237F700C0009E7F1 /* PriceAlertTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A299778237F700C0009E7F1 /* PriceAlertTableViewCell.swift */; };
 		3A29977B237F701B0009E7F1 /* PriceAlertTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A29977A237F701B0009E7F1 /* PriceAlertTableViewCell.xib */; };
+		3A2B6447241BC67800D94B71 /* ProcessInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2B6446241BC67800D94B71 /* ProcessInfo.swift */; };
 		3A2BBCC921C31B01001E55BF /* KYCAvailableFundsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2BBCC821C31B01001E55BF /* KYCAvailableFundsHeaderView.swift */; };
 		3A2BBCD521C31BFC001E55BF /* KYCCTAHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2BBCD421C31BFC001E55BF /* KYCCTAHeaderView.swift */; };
 		3A2BBCD821C31DD6001E55BF /* KYCAvailableFundsHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A2BBCD721C31DD6001E55BF /* KYCAvailableFundsHeaderView.xib */; };
@@ -3109,6 +3110,7 @@
 		3A29976C237F43AF0009E7F1 /* AssetLineChartTableViewCellInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetLineChartTableViewCellInteractor.swift; sourceTree = "<group>"; };
 		3A299778237F700C0009E7F1 /* PriceAlertTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceAlertTableViewCell.swift; sourceTree = "<group>"; };
 		3A29977A237F701B0009E7F1 /* PriceAlertTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PriceAlertTableViewCell.xib; sourceTree = "<group>"; };
+		3A2B6446241BC67800D94B71 /* ProcessInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessInfo.swift; sourceTree = "<group>"; };
 		3A2BBCC821C31B01001E55BF /* KYCAvailableFundsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KYCAvailableFundsHeaderView.swift; sourceTree = "<group>"; };
 		3A2BBCD421C31BFC001E55BF /* KYCCTAHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KYCCTAHeaderView.swift; sourceTree = "<group>"; };
 		3A2BBCD721C31DD6001E55BF /* KYCAvailableFundsHeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = KYCAvailableFundsHeaderView.xib; sourceTree = "<group>"; };
@@ -7628,6 +7630,7 @@
 				657A0C1A232C1E2F009BE083 /* BridgedDisposeBag.swift */,
 				65B33047239A6E2F00B5331E /* JSContextProviderAPI.swift */,
 				34EE98D823AA90F300074EC0 /* ToolKitError.swift */,
+				3A2B6446241BC67800D94B71 /* ProcessInfo.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -18430,6 +18433,7 @@
 				34EE98CC23AA838900074EC0 /* ObservableTypeExtensions.swift in Sources */,
 				34EE98BE23AA838900074EC0 /* Retry+Behavior.swift in Sources */,
 				34EE996823ABC40B00074EC0 /* AnalyticsUserPropertyValidator.swift in Sources */,
+				3A2B6447241BC67800D94B71 /* ProcessInfo.swift in Sources */,
 				3ADF158C23FD5D3000034AAE /* BackgroundTaskTimer.swift in Sources */,
 				34EE996223ABC3E900074EC0 /* UnretainedContentBox.swift in Sources */,
 				65B95702240FC0C2007CDDC1 /* CachedValue+Configuration.swift in Sources */,
