@@ -382,9 +382,9 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         sideMenuViewController = nil
     }
 
-    /// Starts Coinify/SFOX or Simple Buy flow.
+    /// Starts Coinify or Simple Buy flow.
     func handleBuyCrypto(simpleBuy: Bool) {
-        /// Starts Coinify/SFOX flow
+        /// Starts Coinify flow
         func startBuyCrypto() {
             BuySellCoordinator.shared.showBuyBitcoinView()
         }

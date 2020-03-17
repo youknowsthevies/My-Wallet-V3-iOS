@@ -20,7 +20,6 @@ public protocol FeatureFetching: class {
     func fetchInteger(for key: AppFeature) -> Single<Int>
     func fetchString(for key: AppFeature) -> Single<String>
     func fetchBool(for key: AppFeature) -> Single<Bool>
-
 }
 
 /// This protocol is responsible for variant fetching

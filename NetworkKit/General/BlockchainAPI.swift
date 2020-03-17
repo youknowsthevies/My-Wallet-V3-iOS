@@ -37,23 +37,20 @@ final public class BlockchainAPI: NSObject {
      extension of this class.
      */
     public enum Hosts: String {
-        case blockchainAPI  = "api.blockchain.info"
+        case blockchainAPI = "api.blockchain.info"
         case blockchainDotInfo = "blockchain.info"
         case blockchainDotCom = "blockchain.com"
     }
     
     /// Public hosts used for partner API calls.
     public enum PartnerHosts: String, CaseIterable {
-        case bitpay = "bitpay.com",
-        coinify = "app-api.coinify.com",
-        stellarchain = "stellarchain.io",
-        googleAnalytics = "www.google-analytics.com",
-        iSignThis = "coinify-verify.isignthis.com",
-        sfox = "api.sfox.com",
-        sfoxKYC = "sfox-kyc.s3.amazonaws.com",
-        sfoxQuotes = "quotes.sfox.com",
-        shapeshift = "shapeshift.io",
-        firebaseAnalytics = "app-measurement.com"
+        case bitpay = "bitpay.com"
+        case coinify = "app-api.coinify.com"
+        case stellarchain = "stellarchain.io"
+        case googleAnalytics = "www.google-analytics.com"
+        case iSignThis = "coinify-verify.isignthis.com"
+        case shapeshift = "shapeshift.io"
+        case firebaseAnalytics = "app-measurement.com"
     }
 
     public struct Parameters {

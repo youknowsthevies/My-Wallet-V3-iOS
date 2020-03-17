@@ -25,15 +25,14 @@ import PlatformUIKit
     private let coinifyAuthenticator = KYCCoinifyAuthenticator()
     private let coinifyAccountRepository: CoinifyAccountRepositoryAPI
     private var kycObserver: NSObjectProtocol?
-    
+
     private let disposables = CompositeDisposable()
     private var disposable: Disposable?
-    
+
     private enum BuySellError: Error {
         case unsupportedCountry(code: String)
         case noKYCMetadata
         case emptyCoinifyMetadata
-        case sfoxSupported
         case `default`
     }
 
@@ -73,7 +72,7 @@ import PlatformUIKit
     private func initializeWebView(rootURL: String?) {
         buyBitcoinViewController = BuyBitcoinViewController(rootURL: rootURL)
     }
-    
+
     // MARK: Public
 
     @objc func showBuyBitcoinView() {
@@ -81,65 +80,53 @@ import PlatformUIKit
         // If they're verified but we haven't created a coinify user,
         // we have to create that and update Nabu and metadata.
         loadingViewPresenter.show(with: LocalizationConstants.loading)
-        let disposable = Single.zip(tierTwoTierState(), sfoxSupported())
+        let disposable = tierTwoTierState()
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .do(onDispose: { [weak self] in
                 self?.loadingViewPresenter.hide()
             })
-            .subscribe(onSuccess: { [weak self] state, sfox in
-                guard let self = self else { return }
-                
-                /// If the user is in a location that supports SFOX but
-                /// they have a coinify account, they should be using their Coinify account.
-                /// If they do not have a coinify account and SFOX isn't supported, one should
-                /// be created. If SFOX is supported and they do not have a coinify account,
-                /// we should fall back to SFOX. 
-                if sfox && self.coinifyAccountRepository.hasCoinifyAccount() == false {
-                    self.routeToBuyBitcoinViewController()
-                    return
-                }
-                switch state {
-                case .none:
-                    self.showVerificationAlert()
-                case .pending,
-                     .rejected:
-                    KYCCoordinator.shared.start()
-                case .verified:
-                    self.startCoinifyAndSyncIfSupported()
-                }
-                }, onError: { error in
-                    // TICKET: [IOS-1997] Handle failure state for `canSwap`
+            .subscribe(
+                onSuccess: { [weak self] state in
+                    guard let self = self else { return }
+                    switch state {
+                    case .none:
+                        self.showVerificationAlert()
+                    case .pending,
+                         .rejected:
+                        KYCCoordinator.shared.start()
+                    case .verified:
+                        self.startCoinifyAndSyncIfSupported()
+                    }
+                },
+                onError: { error in
                     Logger.shared.error("Failed to get user: \(error.localizedDescription)")
-            })
+                })
         disposables.insertWithDiscardableResult(disposable)
     }
-    
+
     // MARK: Coinify & Nabu
-    
-    fileprivate func startCoinifyAndSyncIfSupported() {
+
+    private func startCoinifyAndSyncIfSupported() {
         let disposable = userCountrySupportsCoinify()
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
-            .subscribe(onCompleted: {
-                self.createAndSyncCoinifyMetadataIfNeeded()
-            }) { error in
-                if let value = error as? BuySellError {
-                    switch value {
+            .subscribe(
+                onCompleted: {
+                    self.createAndSyncCoinifyMetadataIfNeeded()
+                },
+                onError: { error in
+                    switch error as? BuySellError {
                     case .unsupportedCountry(code: let code):
                         self.showCountryNotSupportedAlert(code)
-                    case .default,
-                         .emptyCoinifyMetadata,
-                         .noKYCMetadata,
-                         .sfoxSupported:
+                    default:
                         break
                     }
-                }
-        }
+                })
         disposables.insertWithDiscardableResult(disposable)
     }
-    
-    fileprivate func createAndSyncCoinifyMetadataIfNeeded() {
+
+    private func createAndSyncCoinifyMetadataIfNeeded() {
         let disposable = self.createAndSyncCoinifyMetadata()
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
@@ -156,8 +143,8 @@ import PlatformUIKit
             })
         self.disposables.insertWithDiscardableResult(disposable)
     }
-    
-    fileprivate func createAndSyncCoinifyMetadata() -> Single<CoinifyMetadata> {
+
+    private func createAndSyncCoinifyMetadata() -> Single<CoinifyMetadata> {
         return coinifyAccountRepository.coinifyMetadata().ifEmpty(
             switchTo: coinifyAuthenticator.createCoinifyTrader()
             ).flatMap {
@@ -167,11 +154,11 @@ import PlatformUIKit
                 ).andThen(Single.just($0))
         }
     }
-    
-    fileprivate func syncCoinifyMetadataWithNabuIfNeeded(_ metadata: CoinifyMetadata) -> Completable {
+
+    private func syncCoinifyMetadataWithNabuIfNeeded(_ metadata: CoinifyMetadata) -> Completable {
         let user = BlockchainDataRepository.shared.nabuUser
-        .take(1)
-        .asSingle()
+            .take(1)
+            .asSingle()
         return user.flatMapCompletable {
             if let tags = $0.tags, tags.coinify == true {
                 return Completable.empty()
@@ -182,15 +169,15 @@ import PlatformUIKit
             }
         }
     }
-    
-    fileprivate func userCountrySupportsCoinify() -> Completable {
+
+    private func userCountrySupportsCoinify() -> Completable {
         return BlockchainDataRepository.shared.nabuUser.take(1).asSingle().flatMapCompletable { user -> Completable in
             guard let address = user.address else { return Completable.error(BuySellError.noKYCMetadata) }
             return self.countrySupportedByCoinify(address.countryCode)
         }
     }
-    
-    fileprivate func countrySupportedByCoinify(_ countryCode: String) -> Completable {
+
+    private func countrySupportedByCoinify(_ countryCode: String) -> Completable {
         return walletService.walletOptions.flatMapCompletable { value -> Completable in
             guard let coinify = value.coinifyMetadata else { return Completable.error(BuySellError.emptyCoinifyMetadata) }
             let countrySupported = coinify.countries.contains(where: { $0.lowercased() == countryCode.lowercased() })
@@ -202,17 +189,10 @@ import PlatformUIKit
             }
         }
     }
-    
-    // MARK: SFOX
-    
-    fileprivate func sfoxSupported() -> Single<Bool> {
-        guard walletManager.wallet.isInitialized() else { return Single.error(BuySellError.default) }
-        return Single.just(walletManager.wallet.canUseSfox())
-    }
-    
+
     // MARK: Alert
-    
-    fileprivate func showVerificationAlert() {
+
+    private func showVerificationAlert() {
         guard let tosURL = URL(string: "https://coinify.com/legal/") else { return }
         guard BlockchainSettings.sharedAppInstance().didAcceptCoinifyTOS == false else {
             KYCCoordinator.shared.startFrom(.tier2)
@@ -248,8 +228,8 @@ import PlatformUIKit
         }
         alertView.show()
     }
-    
-    fileprivate func showCountryNotSupportedAlert(_ countryCode: String) {
+
+    private func showCountryNotSupportedAlert(_ countryCode: String) {
         let ok = AlertAction(style: .default(LocalizationConstants.okString))
         let alert = AlertModel(
             headline: String(format: LocalizationConstants.KYC.comingSoonToX, countryCode.uppercased()),
@@ -260,10 +240,10 @@ import PlatformUIKit
         let alertView = AlertView.make(with: alert, completion: nil)
         alertView.show()
     }
-    
+
     // MARK: Helpers
-    
-    fileprivate func tierTwoTierState() -> Single<KYC.Tier.State> {
+
+    private func tierTwoTierState() -> Single<KYC.Tier.State> {
         return BlockchainDataRepository.shared.tiers
             .take(1)
             .asSingle()
@@ -276,41 +256,40 @@ import PlatformUIKit
                 return Single.just(tier.state)
             })
     }
-    
-    fileprivate func routeToBuyBitcoinViewController() {
+
+    private func routeToBuyBitcoinViewController() {
         loadingViewPresenter.show(with: LocalizationConstants.loading)
         guard let buyBitcoinViewController = buyBitcoinViewController else {
             Logger.shared.warning("buyBitcoinViewController not yet initialized")
             return
         }
-        
-        // TODO convert this dictionary into a model
-        guard let loginDataDict = walletManager.wallet.executeJSSynchronous(
-            "MyWalletPhone.getWebViewLoginData()"
-            ).toDictionary() else {
+
+        guard
+            let loginDataDict = walletManager.wallet.executeJSSynchronous("MyWalletPhone.getWebViewLoginData()").toDictionary()
+            else {
                 Logger.shared.warning("loginData from wallet is empty")
                 return
         }
-        
+
         guard let walletJson = loginDataDict["walletJson"] as? String else {
             Logger.shared.warning("walletJson is nil")
             return
         }
-        
+
         guard let externalJson = loginDataDict["externalJson"] is NSNull ? "" : loginDataDict["externalJson"] as? String else {
             Logger.shared.warning("externalJson is nil")
             return
         }
-        
+
         guard let magicHash = loginDataDict["magicHash"] is NSNull ? "" : loginDataDict["magicHash"] as? String else {
             Logger.shared.warning("magicHash is nil")
             return
         }
-        
+
         /// This isn't great but, `frontendInitialized` actually takes a few seconds to
         /// occur. When you present this screen, dismiss it, and the re-present it, `frontendInitialized`
         /// may not have happened just yet and `teardown` may still be in flight.
-        /// This is to mitigate an issue where an `unauthorized` error occurs. 
+        /// This is to mitigate an issue where an `unauthorized` error occurs.
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
             guard let self = self else { return }
             self.loadingViewPresenter.hide()
@@ -320,8 +299,8 @@ import PlatformUIKit
                 magicHash: magicHash,
                 password: self.walletManager.legacyRepository.legacyPassword
             )
-            buyBitcoinViewController.delegate = self.walletManager.wallet // TODO fix this
-            
+            buyBitcoinViewController.delegate = self.walletManager.wallet
+
             let navigationController = BuyBitcoinNavigationController(
                 rootViewController: buyBitcoinViewController,
                 title: LocalizationConstants.SideMenu.buySellBitcoin
@@ -336,7 +315,7 @@ import PlatformUIKit
 }
 
 extension BuySellCoordinator: WalletBuySellDelegate {
-    
+
     func didCompleteTrade(with hash: String, date: String) {
         let actions = [UIAlertAction(title: LocalizationConstants.okString, style: .cancel, handler: nil),
                        UIAlertAction(title: LocalizationConstants.BuySell.viewDetails, style: .default, handler: { _ in

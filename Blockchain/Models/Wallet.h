@@ -237,7 +237,6 @@
 
 - (BOOL)isBuyEnabled;
 - (BOOL)isCoinifyTrader;
-- (BOOL)canUseSfox;
 - (BOOL)isLockboxEnabled;
 
 // Settings

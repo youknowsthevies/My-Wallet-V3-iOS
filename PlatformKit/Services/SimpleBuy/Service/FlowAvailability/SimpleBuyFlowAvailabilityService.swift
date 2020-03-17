@@ -11,7 +11,7 @@ import RxSwift
 public final class SimpleBuyFlowAvailabilityService: SimpleBuyFlowAvailabilityServiceAPI {
 
     /// Indicates that Simple Buy Flow is available for the current user because:
-    /// a) They never traded with Coinify before.
+    /// a) They never traded with Coinify before OR Coinify is not enabled.
     /// b) They are using a supported currency by the backend.
     /// c) They are using a supported currency by the frontend.
     public var isSimpleBuyFlowAvailable: Observable<Bool> {
@@ -20,10 +20,11 @@ public final class SimpleBuyFlowAvailabilityService: SimpleBuyFlowAvailabilitySe
                 Observable
                     .combineLatest(
                         self.isFiatCurrencySupported,
+                        self.isCoinifyEnabled.asObservable(),
                         self.userHasCoinify.asObservable()
                     )
-                    .map { isFiatCurrencySupported, userHasCoinify in
-                        isFiatCurrencySupported && !userHasCoinify
+                    .map { isFiatCurrencySupported, isCoinifyEnabled, userHasCoinify in
+                        isFiatCurrencySupported && (!isCoinifyEnabled || !userHasCoinify)
                     }
                     .catchErrorJustReturn(false)
         }
@@ -38,6 +39,11 @@ public final class SimpleBuyFlowAvailabilityService: SimpleBuyFlowAvailabilitySe
             }
             .subscribeOn(MainScheduler.instance)
             .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
+    }
+
+    /// Indicates that Coinify Feature Flag is enabled.
+    private var isCoinifyEnabled: Single<Bool> {
+        featureFetcher.fetchBool(for: .coinifyEnabled)
     }
 
     /// Indicates that the current Fiat Currency is supported by Simple Buy remotely.
@@ -70,15 +76,18 @@ public final class SimpleBuyFlowAvailabilityService: SimpleBuyFlowAvailabilitySe
     }
 
     private let coinifyAccountRepository: CoinifyAccountRepositoryAPI
+    private let featureFetcher: FeatureFetching
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     private let reactiveWallet: ReactiveWalletAPI
     private let supportedPairsService: SimpleBuySupportedPairsServiceAPI
 
     public init(coinifyAccountRepository: CoinifyAccountRepositoryAPI,
+                featureFetcher: FeatureFetching,
                 fiatCurrencyService: FiatCurrencySettingsServiceAPI,
                 reactiveWallet: ReactiveWalletAPI,
                 supportedPairsService: SimpleBuySupportedPairsServiceAPI) {
         self.coinifyAccountRepository = coinifyAccountRepository
+        self.featureFetcher = featureFetcher
         self.fiatCurrencyService = fiatCurrencyService
         self.reactiveWallet = reactiveWallet
         self.supportedPairsService = supportedPairsService
