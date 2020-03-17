@@ -145,7 +145,9 @@
 - (void)getAssetButtonClicked
 {
     [AppCoordinator.sharedInstance startBuyUsingCoinifyOrSimpleBuyOnError:^{
-        [AppCoordinator.sharedInstance.tabControllerManager receiveCoinClicked:nil];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [AppCoordinator.sharedInstance.tabControllerManager receiveCoinClicked:nil];
+        });
     }];
 }
 
