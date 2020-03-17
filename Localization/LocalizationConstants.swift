@@ -27,7 +27,7 @@ public struct LocalizationConstants {
         public static let  BC_STRING_INVALID_TO_BITCOIN_ADDRESS = NSLocalizedString("Invalid to bitcoin address", comment: "")
         public static let  BC_STRING_FROM_TO_DIFFERENT = NSLocalizedString("From and destination have to be different", comment: "")
         public static let  BC_STRING_FROM_TO_ADDRESS_DIFFERENT = NSLocalizedString("From and destination address have to be different", comment: "")
-        public static let  BC_STRING_INVALID_SEND_VALUE = NSLocalizedString("Invalid Send Value", comment: "")
+        public static let  BC_STRING_INVALID_SEND_VALUE = NSLocalizedString("Invalid amount", comment: "")
         public static let  BC_STRING_SIGNING_INPUTS = NSLocalizedString("Signing Inputs", comment: "")
         public static let  BC_STRING_SIGNING_INPUT = NSLocalizedString("Signing Input %d", comment: "")
         public static let  BC_STRING_FINISHED_SIGNING_INPUTS = NSLocalizedString("Finished Signing Inputs", comment: "")
@@ -108,9 +108,9 @@ public struct LocalizationConstants {
         public static let  BC_STRING_INSUFFICIENT_FUNDS = NSLocalizedString("Insufficient Funds", comment: "")
         public static let  BC_STRING_PLEASE_SELECT_DIFFERENT_ADDRESS = NSLocalizedString("Please select a different address to send from.", comment: "")
         public static let  BC_STRING_OK = NSLocalizedString("OK", comment: "")
-        public static let  BC_STRING_OPEN_MAIL_APP = NSLocalizedString("Open Mail App", comment: "")
+        public static let  BC_STRING_OPEN_MAIL_APP = NSLocalizedString("Open Email App", comment: "")
         public static let  BC_STRING_CANNOT_OPEN_MAIL_APP = NSLocalizedString("Cannot open Mail App", comment: "")
-        //static let  BC_STRING_REQUEST_FAILED_PLEASE_CHECK_INTERNET_CONNECTION = NSLocalizedString("Request failed. Please check your internet connection.", comment: "")
+        //static let  BC_STRING_REQUEST_FAILED_PLEASE_CHECK_INTERNET_CONNECTION = NSLocalizedString("Blockchain Wallet cannot obtain an Internet connection. Please check the connectivity on your device and try again.", comment: "")
         public static let  BC_STRING_SOMETHING_WENT_WRONG_CHECK_INTERNET_CONNECTION = NSLocalizedString("An error occurred while updating your spendable balance. Please check your internet connection and try again.", comment: "")
         public static let  BC_STRING_EMPTY_RESPONSE = NSLocalizedString("Empty response from server.", comment: "")
         public static let  BC_STRING_FORGET_WALLET = NSLocalizedString("Forget Wallet", comment: "")
@@ -132,7 +132,7 @@ public struct LocalizationConstants {
         public static let  BC_STRING_BACKUP_NEEDED = NSLocalizedString("Backup Needed", comment: "")
         public static let  BC_STRING_ADD_EMAIL = NSLocalizedString("Add Email", comment: "")
         public static let  BC_STRING_BUY_AND_SELL_BITCOIN = NSLocalizedString("Buy & Sell Bitcoin", comment: "")
-        public static let  BC_STRING_WARNING = NSLocalizedString("Warning!!!", comment: "")
+        public static let  BC_STRING_WARNING = NSLocalizedString("Warning", comment: "")
         public static let  BC_STRING_NEXT = NSLocalizedString("Next", comment: "")
         public static let  BC_STRING_CANCEL = NSLocalizedString("Cancel", comment: "")
         public static let  BC_STRING_DISMISS = NSLocalizedString("Dismiss", comment: "")
@@ -143,7 +143,7 @@ public struct LocalizationConstants {
         public static let  BC_STRING_MANUALLY = NSLocalizedString("Manually", comment: "")
         public static let  BC_STRING_AUTOMATICALLY = NSLocalizedString("Automatically", comment: "")
         public static let  BC_STRING_ENTER_PIN = NSLocalizedString("Enter PIN", comment: "")
-        public static let  BC_STRING_PLEASE_ENTER_PIN = NSLocalizedString("Please enter your PIN", comment: "")
+        public static let  BC_STRING_PLEASE_ENTER_PIN = NSLocalizedString("", comment: "")
         public static let  BC_STRING_PLEASE_ENTER_NEW_PIN = NSLocalizedString("Please enter a new PIN", comment: "")
         public static let  BC_STRING_CONFIRM_PIN = NSLocalizedString("Confirm your PIN", comment: "")
         public static let  BC_STRING_WARNING_TITLE = NSLocalizedString("Warning", comment: "")
@@ -203,7 +203,7 @@ public struct LocalizationConstants {
         public static let  BC_STRING_REMINDER_CHECK_EMAIL_TITLE = NSLocalizedString("Check Your Inbox", comment: "")
         public static let  BC_STRING_CONTINUE_TO_MAIL = NSLocalizedString("Continue To Mail", comment: "")
         public static let  BC_STRING_REMINDER_CHECK_EMAIL_MESSAGE = NSLocalizedString("Look for an email from Blockchain and click the verification link to complete your wallet setup.", comment: "")
-        public static let  BC_STRING_REMINDER_BACKUP_TITLE = NSLocalizedString("Backup Your Funds", comment: "")
+        public static let  BC_STRING_REMINDER_BACKUP_TITLE = NSLocalizedString("Backup funds", comment: "")
         public static let  BC_STRING_REMINDER_BACKUP_NOW = NSLocalizedString("Backup Now", comment: "")
         public static let  BC_STRING_REMINDER_TWO_FACTOR_TITLE = NSLocalizedString("2-Step Verification", comment: "")
         public static let  BC_STRING_REMINDER_TWO_FACTOR_MESSAGE = NSLocalizedString("Prevent unauthorized access to your wallet. Enable 2-step verification to increase wallet security.", comment: "")
@@ -220,7 +220,7 @@ public struct LocalizationConstants {
         public static let  BC_STRING_SETTINGS_PLEASE_ADD_EMAIL = NSLocalizedString("Please add an email address", comment: "")
         public static let  BC_STRING_SETTINGS_NEW_EMAIL_MUST_BE_DIFFERENT = NSLocalizedString("New email must be different", comment: "")
         public static let  BC_STRING_SETTINGS_MOBILE_NUMBER = NSLocalizedString("Mobile Number", comment: "")
-        public static let  BC_STRING_SETTINGS_UPDATE_MOBILE = NSLocalizedString("Update Mobile", comment: "")
+        public static let  BC_STRING_SETTINGS_UPDATE_MOBILE = NSLocalizedString("Mobile", comment: "")
         public static let  BC_STRING_SETTINGS_ENTER_MOBILE_NUMBER = NSLocalizedString("Enter Mobile Number", comment: "")
         public static let  BC_STRING_SETTINGS_PREFERENCES = NSLocalizedString("Preferences", comment: "")
         public static let  BC_STRING_SETTINGS_DISPLAY_PREFERENCES = NSLocalizedString("Display", comment: "")
@@ -251,7 +251,7 @@ public struct LocalizationConstants {
         public static let  BC_STRING_SETTINGS_PUSH_NOTIFICATIONS = NSLocalizedString("Push Notifications", comment: "")
         public static let  BC_STRING_SETTINGS_NOTIFICATIONS_SMS = NSLocalizedString("SMS", comment: "")
         public static let  BC_STRING_SETTINGS_EMAIL_PROMPT = NSLocalizedString("Your verified email address is used to send payment alerts, ID reminders, and login codes.", comment: "")
-        public static let  BC_STRING_SETTINGS_SMS_PROMPT = NSLocalizedString("Your mobile phone can be used to enable two-factor authentication or to receive alerts.", comment: "")
+        public static let  BC_STRING_SETTINGS_SMS_PROMPT = NSLocalizedString("Your mobile phone can be used to enable two-factor authentication, helping to secure your wallet from unauthorized access.", comment: "")
         public static let  BC_STRING_SETTINGS_NOTIFICATIONS_FOOTER = NSLocalizedString("Enable notifications to receive an email or SMS message whenever you receive bitcoin.", comment: "")
         public static let  BC_STRING_SETTINGS_SWIPE_TO_RECEIVE_IN_FIVES_FOOTER = NSLocalizedString("Enable this option to reveal a receive address when you swipe left on the PIN screen, making receiving bitcoin even faster. Five addresses will be loaded consecutively, after which logging in is required to show new addresses.", comment: "")
         public static let  BC_STRING_SETTINGS_SWIPE_TO_RECEVE_IN_SINGLES_FOOTER = NSLocalizedString("Enable this option to reveal a receive address when you swipe left on the PIN screen, making receiving bitcoin even faster. Only one address will be loaded, logging in is required to show a new address.", comment: "")
@@ -294,7 +294,7 @@ public struct LocalizationConstants {
         public static let  BC_STRING_VERIFY_EMAIL = NSLocalizedString("Verify Email", comment: "")
         public static let  BC_STRING_EMAIL_VERIFIED = NSLocalizedString("Email Verified", comment: "")
         public static let  BC_STRING_BACKUP_PHRASE = NSLocalizedString("Backup Phrase", comment: "")
-        public static let  BC_STRING_WALLET_RECOVERY_PHRASE = NSLocalizedString("Recovery Phrase", comment: "")
+        public static let  BC_STRING_WALLET_RECOVERY_PHRASE = NSLocalizedString("Backup phrase", comment: "")
         public static let  BC_STRING_PHRASE_BACKED = NSLocalizedString("Phrase Backed", comment: "")
         public static let  BC_STRING_LINK_MOBILE = NSLocalizedString("Link Mobile", comment: "")
         public static let  BC_STRING_MOBILE_LINKED = NSLocalizedString("Mobile Linked", comment: "")
@@ -318,7 +318,7 @@ public struct LocalizationConstants {
         public static let  BC_STRING_SEND_ERROR_NO_INTERNET_CONNECTION = NSLocalizedString("No internet connection available. Please check your network settings.", comment: "")
         public static let  BC_STRING_SEND_ERROR_FEE_TOO_LOW = NSLocalizedString("The fee you have specified is too low.", comment: "")
         public static let  BC_STRING_HIGH_FEE_WARNING_TITLE = NSLocalizedString("Large Transaction", comment: "")
-        public static let  BC_STRING_HIGH_FEE_WARNING_MESSAGE = NSLocalizedString("This is an oversized bitcoin transaction. Your wallet needs to consolidate many smaller payments you've received in the past. This requires a relatively high fee in order to be confirmed quickly. If it’s fine for the transaction to take longer to confirm, you can reduce the fee manually by tapping \"Customize Fee.\"", comment: "")
+        public static let  BC_STRING_HIGH_FEE_WARNING_MESSAGE = NSLocalizedString("This is an oversized bitcoin transaction. Your wallet needs to consolidate many smaller payments you've received in the past. This requires a relatively high fee in order to be confirmed quickly.", comment: "")
         public static let  BC_STRING_NO_EMAIL_CONFIGURED = NSLocalizedString("You do not have an account set up for Mail. Please contact %@", comment: "")
         public static let  BC_STRING_PIN = NSLocalizedString("PIN", comment: "")
         public static let  BC_STRING_MAKE_DEFAULT = NSLocalizedString("Make Default", comment: "")
@@ -329,7 +329,7 @@ public struct LocalizationConstants {
         public static let  BC_STRING_TRANSFER_FUNDS_DESCRIPTION_ONE = NSLocalizedString("For your safety, we recommend you to transfer any balances in your imported addresses into your Blockchain wallet.", comment: "")
         public static let  BC_STRING_TRANSFER_FUNDS_DESCRIPTION_TWO = NSLocalizedString("Your transferred funds will be safe and secure, and you'll benefit from increased privacy and convenient backup and recovery features.", comment: "")
         public static let  BC_STRING_ARCHIVE_FOOTER_TITLE = NSLocalizedString("Archive this if you do NOT want to use it anymore. Your funds will remain safe, and you can unarchive it at any time.", comment: "")
-        public static let  BC_STRING_ARCHIVED_FOOTER_TITLE = NSLocalizedString("This is archived. Though you cannot send funds from here, any and all funds will remain safe. Simply unarchive to start using it again.", comment: "")
+        public static let  BC_STRING_ARCHIVED_FOOTER_TITLE = NSLocalizedString("This item is not archived. Archive this item if you doNOT want to use it anymore. Your funds will remain safe, and you can unarchive it at anytime.", comment: "")
         public static let  BC_STRING_TRANSFER_FOOTER_TITLE = NSLocalizedString("For your safety, we recommend you to transfer any balances in your imported addresses into your Blockchain wallet.", comment: "")
         public static let  BC_STRING_EXTENDED_PUBLIC_KEY_FOOTER_TITLE = NSLocalizedString("Keep your xPub private. Someone with access to your xPub will be able to see all of your funds and transactions.", comment: "")
         public static let  BC_STRING_EXTENDED_PUBLIC_KEY_WARNING = NSLocalizedString("Sharing your xPub authorizes others to track your transaction history. As authorized persons may be able to disrupt you from accessing your wallet, only share your xPub with people you trust.", comment: "")
@@ -343,7 +343,7 @@ public struct LocalizationConstants {
         public static let  BC_STRING_PLEASE_CHECK_AND_CLICK_EMAIL_VERIFICATION_LINK = NSLocalizedString("Please check your email and click on the verification link.", comment: "")
         public static let  BC_STRING_ERROR_PLEASE_REFRESH_PAIRING_CODE = NSLocalizedString("Please refresh the pairing code and try again.", comment: "")
         
-        public static let  BC_STRING_NOT_NOW = NSLocalizedString("Not Now", comment: "")
+        public static let  BC_STRING_NOT_NOW = NSLocalizedString("Not now", comment: "")
         public static let  BC_STRING_ILL_DO_THIS_LATER = NSLocalizedString("I'll do this later", comment: "")
         public static let  BC_STRING_PRIVATE_KEY_NEEDED_MESSAGE_ARGUMENT = NSLocalizedString("This action requires the private key for the Bitcoin address %@. Please scan the QR code.", comment: "")
         public static let  BC_STRING_ENTER_ARGUMENT_AMOUNT = NSLocalizedString("Enter %@ amount", comment: "")
@@ -414,20 +414,20 @@ public struct LocalizationConstants {
         public static let  BC_STRING_RUSSIAN_RUBLE = NSLocalizedString("Russian Ruble", comment: "")
         public static let  BC_STRING_NO_TRANSACTIONS_TITLE = NSLocalizedString("No Transactions", comment: "")
         public static let  BC_STRING_NO_TRANSACTIONS_TEXT_BITCOIN = NSLocalizedString("Transactions occur when you send and request bitcoin.", comment: "")
-        public static let  BC_STRING_NO_TRANSACTIONS_TEXT_ETHER = NSLocalizedString("Transactions occur when you send and request ether.", comment: "")
-        public static let  BC_STRING_NO_TRANSACTIONS_TEXT_BITCOIN_CASH = NSLocalizedString("Transactions occur when you send and request bitcoin cash.", comment: "")
+        public static let  BC_STRING_NO_TRANSACTIONS_TEXT_ETHER = NSLocalizedString("Transactions occur when you receive and send ether.", comment: "")
+        public static let  BC_STRING_NO_TRANSACTIONS_TEXT_BITCOIN_CASH = NSLocalizedString("Transactions occur when you receive and send bitcoin cash.", comment: "")
         public static let  BC_STRING_YOUR_TRANSACTIONS = NSLocalizedString("Your Transactions", comment: "")
         public static let  BC_STRING_VIEW_ON_URL_ARGUMENT = NSLocalizedString("View on", comment: "")
         public static let  BC_STRING_BACKUP_COMPLETE = NSLocalizedString("Backup Complete", comment: "")
-        public static let  BC_STRING_BACKUP_COMPLETED_EXPLANATION = NSLocalizedString("Use your Recovery Phrase to restore your funds in case of a lost password.  Anyone with access to your Recovery Phrase can access your funds, so keep it offline somewhere safe and secure.", comment: "")
+        public static let  BC_STRING_BACKUP_COMPLETED_EXPLANATION = NSLocalizedString("You can use your Backup Phrase to restore your funds if you lose your password. Anyone with access to your Backup Phrase can access your funds so remember to keep it offline somewhere safe and secure.", comment: "")
         public static let  BC_STRING_BACKUP_NEEDED_BODY_TEXT_ONE = NSLocalizedString("The following 12 word Recovery Phrase will give you access to your funds in case you lose your password.", comment: "")
         public static let  BC_STRING_BACKUP_NEEDED_BODY_TEXT_TWO = NSLocalizedString("Be sure to write down your phrase on a piece of paper and keep it somewhere safe and secure.", comment: "")
-        public static let  BC_STRING_BACKUP_WORDS_INSTRUCTIONS = NSLocalizedString("Write down the following 12 word Recovery Phrase exactly as they appear and in this order:", comment: "")
+        public static let  BC_STRING_BACKUP_WORDS_INSTRUCTIONS = NSLocalizedString("It is important to make sure you write down your words exactly as they appear here and in this order.", comment: "")
         public static let  BC_STRING_BACKUP_PREVIOUS = NSLocalizedString("PREVIOUS", comment: "")
         public static let  BC_STRING_BACKUP_NEXT = NSLocalizedString("NEXT", comment: "")
-        public static let  BC_STRING_BACKUP_AGAIN = NSLocalizedString("BACKUP AGAIN", comment: "")
+        public static let  BC_STRING_BACKUP_AGAIN = NSLocalizedString("Backup again", comment: "")
         public static let  BC_STRING_TRANSFER_ALL = NSLocalizedString("Transfer all", comment: "")
-        public static let  BC_STRING_TRANSFER_IMPORTED_ADDRESSES = NSLocalizedString("Transfer imported addresses?", comment: "")
+        public static let  BC_STRING_TRANSFER_IMPORTED_ADDRESSES = NSLocalizedString("Transfer Imported Addresses?", comment: "")
         public static let  BC_STRING_TRANSFER_ALL_BACKUP = NSLocalizedString("Imported addresses are not backed up by your Recovery Phrase. To secure these funds, we recommend transferring these balances to include in your backup.", comment: "")
         public static let  BC_STRING_BE_YOUR_OWN_BANK = NSLocalizedString("Be your own bank", comment: "")
         public static let  BC_STRING_WELCOME_MESSAGE_ONE = NSLocalizedString ("Welcome to Blockchain", comment: "")
@@ -457,13 +457,13 @@ public struct LocalizationConstants {
         public static let  BC_STRING_ADVANCED_USERS_ONLY = NSLocalizedString("Advanced users only", comment: "")
         public static let  BC_STRING_GREATER_THAN_ONE_HOUR = NSLocalizedString("1+ hour", comment: "")
         public static let  BC_STRING_PRIORITY = NSLocalizedString("Priority", comment: "")
-        public static let  BC_STRING_LESS_THAN_ONE_HOUR = NSLocalizedString("~0-60 min", comment: "")
+        public static let  BC_STRING_LESS_THAN_ONE_HOUR = NSLocalizedString("~0–60 min", comment: "")
         public static let  BC_STRING_SATOSHI_PER_BYTE = NSLocalizedString("Satoshi per byte", comment: "")
         public static let  BC_STRING_SATOSHI_PER_BYTE_ABBREVIATED = NSLocalizedString("sat/b", comment: "")
-        public static let  BC_STRING_HIGH_FEE_NOT_NECESSARY = NSLocalizedString("High fee not necessary", comment: "")
+        public static let  BC_STRING_HIGH_FEE_NOT_NECESSARY = NSLocalizedString("Unnecessarily high fee", comment: "")
         public static let  BC_STRING_LOW_FEE_NOT_RECOMMENDED = NSLocalizedString("Low fee not recommended", comment: "")
         public static let  BC_STRING_NOT_ENOUGH_FUNDS_TO_USE_FEE = NSLocalizedString("You do not have enough funds to use this fee.", comment: "")
-        public static let  BC_STRING_CUSTOM_FEE_WARNING = NSLocalizedString("This feature is recommended for advanced users only. By choosing a custom fee, you risk overpaying or your transaction may get stuck.", comment: "")
+        public static let  BC_STRING_CUSTOM_FEE_WARNING = NSLocalizedString("This feature is recommended for advanced users only. By choosing a custom fee, you risk overpaying or your transaction never being confirmed.", comment: "")
         public static let  BC_STRING_AVAILABLE_NOW_TITLE = NSLocalizedString("Available now", comment: "")
         public static let  BC_STRING_BUY_SELL_NOT_SUPPORTED_IOS_8_WEB_LOGIN = NSLocalizedString("Mobile Buy & Sell is supported for iOS 9 and up. Please run a software update or login at login.blockchain.com on your computer.", comment: "")
         public static let  BC_STRING_LOG_IN_TO_WEB_WALLET = NSLocalizedString("Log in to Web Wallet", comment: "")
@@ -473,8 +473,8 @@ public struct LocalizationConstants {
         public static let  BC_STRING_WEB_LOGIN_QR_INSTRUCTION_LABEL_HIDDEN = NSLocalizedString("Keep this QR code hidden until you're ready.", comment: "")
         public static let  BC_STRING_WEB_LOGIN_QR_INSTRUCTION_LABEL_SHOWN_ONE = NSLocalizedString("Keep this QR code safe!", comment: "")
         public static let  BC_STRING_WEB_LOGIN_QR_INSTRUCTION_LABEL_SHOWN_TWO = NSLocalizedString("Do not share it with others.", comment: "")
-        public static let  BC_STRING_SHOW_QR_CODE = NSLocalizedString("Show QR Code", comment: "")
-        public static let  BC_STRING_HIDE_QR_CODE = NSLocalizedString("Hide QR Code", comment: "")
+        public static let  BC_STRING_SHOW_QR_CODE = NSLocalizedString("Show QR code", comment: "")
+        public static let  BC_STRING_HIDE_QR_CODE = NSLocalizedString("Hide QR code", comment: "")
         public static let  BC_STRING_DAY = NSLocalizedString("Day", comment: "")
         public static let  BC_STRING_WEEK = NSLocalizedString("Week", comment: "")
         public static let  BC_STRING_MONTH = NSLocalizedString("Month", comment: "")
@@ -486,21 +486,20 @@ public struct LocalizationConstants {
         
         public static let  BC_STRING_NOW_SUPPORTING_ETHER_TITLE = NSLocalizedString("Now supporting Ether", comment: "")
         public static let  BC_STRING_NOW_SUPPORTING_ETHER_DESCRIPTION = NSLocalizedString("You asked, we listened. We’re excited to announce that your Blockchain wallet will now allow you to seamlessly send and receive ether!", comment: "")
-        public static let  BC_STRING_GET_STARTED_WITH_ETHER = NSLocalizedString("Get Started with Ether", comment: "")
+        public static let  BC_STRING_GET_STARTED_WITH_ETHER = NSLocalizedString("Get Ether", comment: "")
         public static let  BC_STRING_EXCHANGE = NSLocalizedString("Exchange", comment: "")
         public static let  BC_STRING_NEW_EXCHANGE = NSLocalizedString("New Exchange", comment: "")
         public static let  BC_STRING_USE_MINIMUM = NSLocalizedString("Use minimum", comment: "")
         public static let  BC_STRING_USE_MAXIMUM = NSLocalizedString("Use maximum", comment: "")
         public static let  BC_STRING_EXCHANGE_TITLE_SENDING_FUNDS = NSLocalizedString("Sending Funds", comment: "")
-        public static let  BC_STRING_EXCHANGE_DESCRIPTION_SENDING_FUNDS = NSLocalizedString("Thanks for placing your trade!  Exchange trades can take up to two hours, and you can keep track of your trade’s progress in the Order History section.", comment: "")
+        public static let  BC_STRING_EXCHANGE_DESCRIPTION_SENDING_FUNDS = NSLocalizedString("Thanks for placing your trade! Funds will usually reach your wallet within 2 hours and we’ll send you a notification when that happens. Keep track of your trade’s progress in the Order History area.", comment: "")
         public static let  BC_STRING_IN_PROGRESS = NSLocalizedString("In Progress", comment: "")
         public static let  BC_STRING_EXCHANGE_DESCRIPTION_IN_PROGRESS = NSLocalizedString("Exchanges can take up to two hours, you can keep track of your exchange progress in the Order History. Once the trade is complete, your ether will arrive in your wallet.", comment: "")
         public static let  BC_STRING_EXCHANGE_DESCRIPTION_CANCELED = NSLocalizedString("Your trade has been canceled. Please return to the exchange tab to start your trade again.", comment: "")
         public static let  BC_STRING_FAILED = NSLocalizedString("Failed", comment: "")
         public static let  BC_STRING_EXCHANGE_TITLE_REFUNDED = NSLocalizedString("Trade Refunded", comment: "")
         public static let  BC_STRING_EXCHANGE_DESCRIPTION_FAILED = NSLocalizedString("This trade has failed. Any funds sent from your wallet will be returned minus the transaction fee. Please return to the exchange tab to start a new trade.", comment: "")
-        public static let  BC_STRING_EXCHANGE_DESCRIPTION_EXPIRED = NSLocalizedString("Your trade has expired. Please return to the exchange tab to start a new trade.", comment: "")
-        public static let  BC_STRING_EXCHANGE_CARD_DESCRIPTION = NSLocalizedString("You can now exchange your bitcoin for ether and vice versa directly from your Blockchain wallet!", comment: "")
+        public static let  BC_STRING_EXCHANGE_DESCRIPTION_EXPIRED = NSLocalizedString("This trade has failed. Please return to the Swap tab to start a new trade", comment: "")
         public static let  BC_STRING_ARGUMENT_TO_DEPOSIT = NSLocalizedString("%@ to Deposit", comment: "")
         public static let  BC_STRING_ARGUMENT_TO_BE_RECEIVED = NSLocalizedString("%@ to be Received", comment: "")
         public static let  BC_STRING_EXCHANGE_RATE = NSLocalizedString("Exchange Rate", comment: "")
@@ -522,7 +521,7 @@ public struct LocalizationConstants {
         public static let  BC_STRING_QUOTE_EXIRES_IN_ARGUMENT = NSLocalizedString("Quote expires in %@", comment: "")
         public static let  BC_STRING_STEP_ARGUMENT_OF_ARGUMENT = NSLocalizedString("Step %d of %d", comment: "")
         public static let  BC_STRING_SELECT_YOUR_STATE = NSLocalizedString("Select your State:", comment: "")
-        public static let  BC_STRING_SELECT_STATE = NSLocalizedString("Select State", comment: "")
+        public static let  BC_STRING_SELECT_STATE = NSLocalizedString("State", comment: "")
         public static let  BC_STRING_EXCHANGE_NOT_AVAILABLE_TITLE = NSLocalizedString("Not Available", comment: "")
         public static let  BC_STRING_EXCHANGE_NOT_AVAILABLE_MESSAGE = NSLocalizedString("Exchanging coins is not yet available in your state. We’ll be rolling out more states soon.", comment: "")
         public static let  BC_STRING_ERROR_GETTING_BALANCE_ARGUMENT_ASSET_ARGUMENT_MESSAGE = NSLocalizedString("An error occurred when getting your %@ balance. Please try again later. Details: %@", comment: "")
@@ -531,7 +530,7 @@ public struct LocalizationConstants {
         public static let  BC_STRING_RECEIVED_FROM_SHAPESHIFT = NSLocalizedString("Received from ShapeShift", comment: "")
         public static let  BC_STRING_ORDER_HISTORY = NSLocalizedString("Order History", comment: "")
         public static let  BC_STRING_INCOMING = NSLocalizedString("Incoming", comment: "")
-        public static let  BC_STRING_TRADE_EXPIRED_TITLE = NSLocalizedString("Trade Expired", comment: "")
+        public static let  BC_STRING_TRADE_EXPIRED_TITLE = NSLocalizedString("Expired", comment: "")
         public static let  BC_STRING_TRADE_EXPIRED_MESSAGE = NSLocalizedString("Your trade has expired. Please return to the Exchange page to start your trade again.", comment: "")
         public static let  BC_STRING_NO_FUNDS_TO_EXCHANGE_TITLE = NSLocalizedString("No Funds to Exchange", comment: "")
         public static let  BC_STRING_NO_FUNDS_TO_EXCHANGE_MESSAGE = NSLocalizedString("You have no funds to exchange. Why not get started by receiving some funds?", comment: "")
@@ -541,7 +540,7 @@ public struct LocalizationConstants {
         public static let  BC_STRING_PRICE = NSLocalizedString("Price", comment: "")
         public static let  BC_STRING_SEE_CHARTS = NSLocalizedString("See charts", comment: "")
         public static let  BC_STRING_ENTER_BITCOIN_CASH_ADDRESS_OR_SELECT = NSLocalizedString("Enter bch address or select", comment: "")
-        public static let  BC_STRING_BITCOIN_CASH_WARNING_CONFIRM_VALID_ADDRESS_ONE = NSLocalizedString("Are you sure this is a bitcoin cash address?", comment: "")
+        public static let  BC_STRING_BITCOIN_CASH_WARNING_CONFIRM_VALID_ADDRESS_ONE = NSLocalizedString("Are you sure this is a Bitcoin Cash address?", comment: "")
         public static let  BC_STRING_BITCOIN_CASH_WARNING_CONFIRM_VALID_ADDRESS_TWO = NSLocalizedString("Sending funds to a bitcoin address by accident will result in loss of funds.", comment: "")
         public static let  BC_STRING_COPY_WARNING_TEXT = NSLocalizedString("Copy this receive address to the clipboard? If so, be advised that other applications may be able to look at this information.", comment: "")
     }
@@ -583,7 +582,7 @@ public struct LocalizationConstants {
     public static let verifying = NSLocalizedString ("Verifying", comment: "")
     public static let openArg = NSLocalizedString("Open %@", comment: "")
     public static let youWillBeLeavingTheApp = NSLocalizedString("You will be leaving the app.", comment: "")
-    public static let openMailApp = NSLocalizedString("Open Mail App", comment: "")
+    public static let openMailApp = NSLocalizedString("Open Email App", comment: "")
     public static let goToSettings = NSLocalizedString("Go to Settings", comment: "")
     public static let swipeReceive = NSLocalizedString("Swipe to Receive", comment: "")
     public static let twostep = NSLocalizedString("Enable 2-Step", comment: "")
@@ -634,7 +633,7 @@ public struct LocalizationConstants {
         public static let siteMaintenanceError = NSLocalizedString("Blockchain’s servers are currently under maintenance. Please try again later", comment: "")
         public static let invalidServerResponse = NSLocalizedString("Invalid server response. Please try again later.", comment: "")
         public static let invalidStatusCodeReturned = NSLocalizedString("Invalid Status Code Returned %@", comment: "")
-        public static let requestFailedCheckConnection = NSLocalizedString("Request failed. Please check your internet connection.", comment: "")
+        public static let requestFailedCheckConnection = NSLocalizedString("Blockchain Wallet cannot obtain an Internet connection. Please check the connectivity on your device and try again.", comment: "")
         public static let errorLoadingWalletIdentifierFromKeychain = NSLocalizedString("An error was encountered retrieving your wallet identifier from the keychain. Please close the application and try again.", comment: "")
         public static let cameraAccessDenied = NSLocalizedString("Camera Access Denied", comment: "")
         public static let cameraAccessDeniedMessage = NSLocalizedString("Blockchain does not have access to the camera. To enable access, go to your device Settings.", comment: "")
@@ -660,7 +659,7 @@ public struct LocalizationConstants {
                 comment: "Password screen: title for general action"
             )
             public static let description = NSLocalizedString(
-                "This action requires the second password for your wallet. Please enter it below and press continue.",
+                "To use this service, we require you to enter your second password.",
                 comment: "Password screen: description"
             )
             public static let button = NSLocalizedString(
@@ -699,7 +698,7 @@ public struct LocalizationConstants {
 
         public static let password = NSLocalizedString("Password", comment: "")
         public static let secondPasswordIncorrect = NSLocalizedString("Second Password Incorrect", comment: "")
-        public static let recoveryPhrase = NSLocalizedString("Recovery Phrase", comment: "")
+        public static let recoveryPhrase = NSLocalizedString("Backup phrase", comment: "")
         public static let twoStepSMS = NSLocalizedString("2-Step has been enabled for SMS", comment: "")
         public static let twoStepOff = NSLocalizedString("2-Step has been disabled.", comment: "")
         public static let checkLink = NSLocalizedString("Please check your email and click on the verification link.", comment: "")
@@ -767,7 +766,7 @@ public struct LocalizationConstants {
         }
         
         public static let swipeToReceiveLabel = NSLocalizedString(
-            "Swipe to Receive",
+            "Swipe to receive",
             comment: "Title label indicating the can swipe the screen to see his wallet addresses on login"
         )
         
@@ -787,7 +786,7 @@ public struct LocalizationConstants {
         )
         
         public static let enableBiometricsNotNowButton = NSLocalizedString(
-            "Not Now",
+            "Not now",
             comment: "Cancel button for alert letting the user to enable biometrics authenticators"
         )
         
@@ -1000,7 +999,7 @@ public struct LocalizationConstants {
         public struct ManualPairingScreen {
             public struct TwoFAAlert {
                 public static let wrongCodeTitle = NSLocalizedString(
-                    "Wrong Verification Code",
+                    "Verification code incorrect. Please double check the code we sent you and try again.",
                     comment: "2FA alert: title"
                 )
                 public static let title = NSLocalizedString(
@@ -1026,7 +1025,7 @@ public struct LocalizationConstants {
             }
             public struct AccountLockedAlert {
                 public static let title = NSLocalizedString(
-                    "Locked Account",
+                    "Account locked",
                     comment: "Locked account alert: title"
                 )
                 public static let message = NSLocalizedString(
@@ -1048,7 +1047,7 @@ public struct LocalizationConstants {
                     comment: "Title for email authorization alert"
                 )
                 public static let message = NSLocalizedString(
-                    "Please check your email and authorize this log-in attempt. After doing so, please return here.",
+                    "Please check your email to approve this login attempt.",
                     comment: "Message for email authorization alert"
                 )
             }
@@ -1078,7 +1077,7 @@ public struct LocalizationConstants {
                     comment: "Create new wallet screen TOS prefix"
                 )
                 public static let termsOfServiceLink = NSLocalizedString(
-                    "Terms of Services",
+                    "Terms of Service",
                     comment: "Create new wallet screen TOS terms part"
                 )
                 public static let linkDelimiter = NSLocalizedString(
@@ -1123,7 +1122,7 @@ public struct LocalizationConstants {
                 comment: "Description of Password Required form"
             )
             public static let forgetWalletDescription = NSLocalizedString(
-                "If you would like to forget this wallet and start over, press ‘Forget Wallet’.",
+                "If you would like to forget this wallet and start over, press 'Forget Wallet'.",
                 comment: "Description of forget wallet functionality."
             )
             public struct ForgotPasswordAlert {
@@ -1146,7 +1145,7 @@ public struct LocalizationConstants {
                     comment: "forget wallet alert body"
                 )
                 public static let forgetButton = NSLocalizedString(
-                    "Forget",
+                    "Forget wallet",
                     comment: "forget wallet alert button"
                 )
             }
@@ -1353,8 +1352,8 @@ public struct LocalizationConstants {
     
     public struct CustodyWalletInformation {
         public static let title = NSLocalizedString(
-            "Crypto Trading Wallet",
-            comment: "Crypto Trading Wallet"
+            "Trading Wallet",
+            comment: "Trading Wallet"
         )
         public struct Description {
             public static let partOne = NSLocalizedString(
@@ -1362,8 +1361,8 @@ public struct LocalizationConstants {
                 comment: "When you buy crypto, we store your funds securely for you in a Crypto Trading Wallet. These funds are stored by us on your behalf. You can keep them safe with us or transfer them to your non-custodial Wallet to own and store yourself."
             )
             public static let partTwo = NSLocalizedString(
-                "If you want to swap or send these funds, you need to transfer them to your non-custodial crypto Wallet.",
-                comment: "If you want to swap or send these funds, you need to transfer them to your non-custodial crypto Wallet."
+                "If you want to swap or send these funds, you need to transfer them to your non-custodial crypto wallet.",
+                comment: "If you want to swap or send these funds, you need to transfer them to your non-custodial crypto wallet."
             )
         }
     }
@@ -1412,7 +1411,7 @@ public struct LocalizationConstants {
         }
         public struct CryptoSelectionScreen {
             public static let title = NSLocalizedString(
-                "Select Crypto",
+                "Select Currency",
                 comment: "Simple Buy: Crypto Selection screen title"
             )
         }
@@ -1432,7 +1431,7 @@ public struct LocalizationConstants {
                 )
                 public struct Min {
                     public static let prefix = NSLocalizedString(
-                        "Too Low. ",
+                        "Too low",
                         comment: "Simple Buy: Buy Crypto Screen - Amount too low prefix"
                     )
                     public static let suffix = NSLocalizedString(
@@ -1443,7 +1442,7 @@ public struct LocalizationConstants {
 
                 public struct Max {
                     public static let prefix = NSLocalizedString(
-                        "Too High. ",
+                        "Too high",
                         comment: "Simple Buy: Buy Crypto Screen - Amount too high prefix"
                     )
                     public static let suffix = NSLocalizedString(
@@ -1645,7 +1644,7 @@ public struct LocalizationConstants {
                      comment: "Simple Buy - Recipient Label"
                 )
                 public static let amountToSend = NSLocalizedString(
-                     "Amount to Send",
+                     "Amount to send",
                      comment: "Simple Buy - Amount to Send Label"
                 )
                 public static let date = NSLocalizedString(
@@ -1658,7 +1657,7 @@ public struct LocalizationConstants {
                 )
                 public struct Copyable {
                     public static let bankCode = NSLocalizedString(
-                        "Bank Code",
+                        "Bank Code (SWIFT/BIC)",
                         comment: "Label for copy item - Bank Code"
                     )
                     public static let iban = NSLocalizedString(
@@ -1707,7 +1706,7 @@ public struct LocalizationConstants {
                     comment: "Simple Buy KYC Screen - verifying information: title label"
                 )
                 public static let subtitle = NSLocalizedString(
-                    "Usually takes less than 15-30 seconds",
+                    "Usually takes less than a minute.",
                     comment: "Simple Buy KYC Screen - verifying information: subtitle label"
                 )
             }
@@ -1825,7 +1824,7 @@ public struct LocalizationConstants {
         
         public struct BlockstackAirdropReceived {
             public static let title = NSLocalizedString(
-                "Your Airdrop Has Landed",
+                "Your Airdrop has landed",
                 comment: "STX airdrop received announcement card title"
             )
             public static let description = NSLocalizedString(
@@ -2004,12 +2003,12 @@ public struct LocalizationConstants {
         public static let connected = NSLocalizedString("Connected", comment: "Connected")
         public static let twoFactorNotEnabled = NSLocalizedString("Please enable 2FA on your Exchange account to complete deposit.", comment: "User must have 2FA enabled to deposit from send.")
         public struct Alerts {
-            public static let connectingYou = NSLocalizedString("Connecting You To The Exchange", comment: "Connecting You To The Exchange")
+            public static let connectingYou = NSLocalizedString("Taking You To the Exchange", comment: "Taking You To the Exchange")
             public static let newWindow = NSLocalizedString("A new window should open within 10 seconds.", comment: "A new window should open within 10 seconds.")
             public static let success = NSLocalizedString("Success!", comment: "Success!")
             public static let successDescription = NSLocalizedString("Please return to the Exchange to complete account setup.", comment: "Please return to the Exchange to complete account setup.")
             public static let error = NSLocalizedString("Connection Error", comment: "Connection Error")
-            public static let errorDescription = NSLocalizedString("We could not connect your Wallet to The Exchange. Please try again", comment: "We could not connect your Wallet to The Exchange. Please try again")
+            public static let errorDescription = NSLocalizedString("We could not connect your Wallet to the Exchange. Please go back to the Exchange and try again.", comment: "We could not connect your Wallet to the Exchange. Please go back to the Exchange and try again.")
         }
         public struct EmailVerification {
             public static let title = NSLocalizedString("Verify Your Email", comment: "")
@@ -2023,12 +2022,12 @@ public struct LocalizationConstants {
             public static let justAMoment = NSLocalizedString("Just a moment.", comment: "")
             public static let verified = NSLocalizedString("Email Verified", comment: "")
             public static let verifiedDescription = NSLocalizedString(
-                "You’re all set to connect your Blockchain Wallet to the Exchange.",
+                "You're all set to connect your Blockchain Wallet to the Exchange.",
                 comment: ""
             )
         }
         public struct Launch {
-            public static let launchExchange = NSLocalizedString("Launch The Exchange", comment: "")
+            public static let launchExchange = NSLocalizedString("Launch the Exchange", comment: "")
             public static let contactSupport = NSLocalizedString("Contact Support", comment: "")
         }
         public struct ConnectionPage {
@@ -2253,7 +2252,7 @@ public struct LocalizationConstants {
         public static let keyBelongsToOtherAddressNotWatchOnly = NSLocalizedString("This private key belongs to another address that is not watch only", comment: "")
         public static let unknownKeyFormat = NSLocalizedString("Unknown key format", comment: "")
         public static let unsupportedPrivateKey = NSLocalizedString("Unsupported Private Key Format", comment: "")
-        public static let addWatchOnlyAddressWarning = NSLocalizedString("You are about to import a watch-only address, an address (or public key script) stored in the wallet without the corresponding private key. This means that the funds can be spent ONLY if you have the private key stored elsewhere. If you do not have the private key stored, do NOT instruct anyone to send you bitcoin to the watch-only address.", comment: "")
+        public static let addWatchOnlyAddressWarning = NSLocalizedString("You are about to import a non-spendable address, an address (or public key script) stored in the wallet without the corresponding private key. This means that the funds can be spent ONLY if you have the private key stored elsewhere. If you do not have the private key stored, do NOT instruct anyone to send you bitcoin to the non-spendable address. These options are recommended for advanced users only. Continue?", comment: "")
         public static let addWatchOnlyAddressWarningPrompt = NSLocalizedString("These options are recommended for advanced users only. Continue?", comment: "")
     }
 
@@ -2279,7 +2278,7 @@ public struct LocalizationConstants {
             comment: "Alert message shown when crypto is successfully sent to a recipient."
         )
         public static let transferAllFunds = NSLocalizedString(
-            "Transfer All Funds",
+            "Confirm Transfer",
             comment: "Title shown to use when transferring funds from legacy addresses to their new wallet"
         )
         
@@ -2296,7 +2295,7 @@ public struct LocalizationConstants {
 
     public struct SendEther {
         public static let waitingForPaymentToFinishTitle = NSLocalizedString("Waiting for payment", comment: "")
-        public static let waitingForPaymentToFinishMessage = NSLocalizedString("Please wait until your last ether transaction confirms.", comment: "")
+        public static let waitingForPaymentToFinishMessage = NSLocalizedString("Please wait until your previous transaction confirms", comment: "")
     }
     
     public struct Activity {
@@ -2328,7 +2327,7 @@ public struct LocalizationConstants {
             public static let twoFactorAuthentication = NSLocalizedString("2-Step Verification", comment: "2-Step Verification")
             public static let email = NSLocalizedString("Email", comment: "Email")
             public static let blockchainExchange = NSLocalizedString("Blockchain Exchange", comment: "Blockchain Exchange")
-            public static let recoveryPhrase = NSLocalizedString("Recovery Phrase", comment: "Recovery Phrase")
+            public static let recoveryPhrase = NSLocalizedString("Backup phrase", comment: "Backup phrase")
             public static let confirmed = NSLocalizedString("Confirmed", comment: "Confirmed")
             public static let unconfirmed = NSLocalizedString("Unconfirmed", comment: "Unconfirmed")
             public static let localCurrency = NSLocalizedString("Local Currency", comment: "Local Currency")
@@ -2361,12 +2360,12 @@ public struct LocalizationConstants {
         
         public struct Settings {
             public static let subtitle = NSLocalizedString("Backup Needed", comment: "Backup Needed")
-            public static let action = NSLocalizedString("Start Backup", comment: "Start Backup")
+            public static let action = NSLocalizedString("Start backup", comment: "Start backup")
             
             public struct Description {
                 public static let partA = NSLocalizedString(
-                    "Your backup phrase contains all of the private keys within your wallet. Please write these 12 words down, in order, and keep them somewhere safe offline. This phrase gives you a way to restore your and access your funds.",
-                    comment: "Your backup phrase contains all of the private keys within your wallet. Please write these 12 words down, in order, and keep them somewhere safe offline. This phrase gives you a way to restore your and access your funds."
+                    "Your backup phrase will allow you to recover your crypto if you lose access to your wallet. Please write down these 12 words in order and keep them somewhere safe. Never share it with anyone. Your backup phrase is the key to recovering your crypto if you ever get locked out.",
+                    comment: "Your backup phrase will allow you to recover your crypto if you lose access to your wallet. Please write down these 12 words in order and keep them somewhere safe. Never share it with anyone. Your backup phrase is the key to recovering your crypto if you ever get locked out."
                 )
                 public static let partB = NSLocalizedString(
                     "Before you get started, we created a printable template make it easier to store your phrase. Feel free to download and print it out.",
@@ -2395,8 +2394,8 @@ public struct LocalizationConstants {
         public static let title = NSLocalizedString("Recovery Phrase", comment: "Recovery Phrase")
         public static let subtitle = NSLocalizedString("Write Down Recovery Phrase", comment: "Write Down Recovery Phrase")
         public static let description = NSLocalizedString(
-            "Carefully write down these 12 words in order, do not email or screenshot your recovery phrase.",
-            comment: "Carefully write down these 12 words in order, do not email or screenshot your recovery phrase."
+            "For your security, Blockchain does not keep any passwords on file. The following 12 word Backup Phrase will give you access to your funds in case you lose your password. Be sure to write it on a piece of paper and to keep it somewhere safe and secure.",
+            comment: "For your security, Blockchain does not keep any passwords on file. The following 12 word Backup Phrase will give you access to your funds in case you lose your password. Be sure to write it on a piece of paper and to keep it somewhere safe and secure."
         )
         public static let copyToClipboard = NSLocalizedString("Copy to Clipboard", comment: "Copy to Clipboard")
         public static let next = NSLocalizedString("Next", comment: "Next")
@@ -2405,8 +2404,8 @@ public struct LocalizationConstants {
     public struct VerifyBackupScreen {
         public static let title = NSLocalizedString("Verify Your Backup", comment: "Verify Your Backup")
         public static let description = NSLocalizedString(
-            "Enter the following words from your Recovery Phrase to complete the backup process.",
-            comment: "Enter the following words from your Recovery Phrase to complete the backup process."
+            "Enter the following words from your Backup Phrase to complete the backup process.",
+            comment: "Enter the following words from your Backup Phrase to complete the backup process."
         )
         public static let action = NSLocalizedString("Verify", comment: "Verify")
         public static let errorDescription = NSLocalizedString(
@@ -2416,18 +2415,18 @@ public struct LocalizationConstants {
         
         public struct Index {
             
-            public static let first = NSLocalizedString("first", comment: "first")
-            public static let second = NSLocalizedString("second", comment: "second")
-            public static let third = NSLocalizedString("third", comment: "third")
-            public static let fourth = NSLocalizedString("fourth", comment: "fourth")
-            public static let fifth = NSLocalizedString("fifth", comment: "fifth")
-            public static let sixth = NSLocalizedString("sixth", comment: "sixth")
-            public static let seventh = NSLocalizedString("seventh", comment: "seventh")
-            public static let eigth = NSLocalizedString("eigth", comment: "eigth")
-            public static let ninth = NSLocalizedString("ninth", comment: "ninth")
-            public static let tenth = NSLocalizedString("tenth", comment: "tenth")
-            public static let eleventh = NSLocalizedString("eleventh", comment: "eleventh")
-            public static let twelfth = NSLocalizedString("twelfth", comment: "twelfth")
+            public static let first = NSLocalizedString("first word", comment: "first word")
+            public static let second = NSLocalizedString("second word", comment: "second word")
+            public static let third = NSLocalizedString("third word", comment: "third word")
+            public static let fourth = NSLocalizedString("fourth word", comment: "fourth word")
+            public static let fifth = NSLocalizedString("fifth word", comment: "fifth word")
+            public static let sixth = NSLocalizedString("sixth word", comment: "sixth word")
+            public static let seventh = NSLocalizedString("seventh word", comment: "seventh word")
+            public static let eigth = NSLocalizedString("eigth word", comment: "eigth word")
+            public static let ninth = NSLocalizedString("ninth word", comment: "ninth word")
+            public static let tenth = NSLocalizedString("tenth word", comment: "tenth word")
+            public static let eleventh = NSLocalizedString("eleventh", comment: "eleventh word")
+            public static let twelfth = NSLocalizedString("twelfth word", comment: "twelfth word")
         }
     }
     
@@ -2911,7 +2910,7 @@ public struct LocalizationConstants {
             comment: "A descriptions of the requirements to complete Tier 2 verification"
         )
         public static let notNow = NSLocalizedString(
-            "Not Now",
+            "Not now",
             comment: "Text displayed when the user does not want to continue with tier 2 KYC."
         )
         public static let moreInfoNeededHeaderText = NSLocalizedString(
@@ -3633,7 +3632,6 @@ public struct LocalizationConstants {
     @objc public class func etherSecondPasswordPrompt() -> String { return LocalizationConstants.Authentication.EtherPasswordScreen.description }
 
     @objc public class func privateKeyNeeded() -> String { return LocalizationConstants.Authentication.ImportKeyPasswordScreen.title }
-
     
     @objc public class func paxFee() -> String { return LocalizationConstants.Transactions.paxfee }
 

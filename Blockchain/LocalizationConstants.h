@@ -122,7 +122,7 @@
 #define BC_STRING_PLEASE_SELECT_DIFFERENT_ADDRESS NSLocalizedString(@"Please select a different address to send from.", nil)
 
 #define BC_STRING_OK NSLocalizedString(@"OK", nil)
-#define BC_STRING_OPEN_MAIL_APP NSLocalizedString(@"Open Mail App", nil)
+#define BC_STRING_OPEN_MAIL_APP NSLocalizedString(@"Open Email App", nil)
 #define BC_STRING_CANNOT_OPEN_MAIL_APP NSLocalizedString(@"Cannot open Mail App", nil)
 
 //#define BC_STRING_REQUEST_FAILED_PLEASE_CHECK_INTERNET_CONNECTION NSLocalizedString(@"Request failed. Please check your internet connection.", nil)
@@ -164,7 +164,7 @@
 #define BC_STRING_MANUALLY NSLocalizedString(@"Manually", nil)
 #define BC_STRING_AUTOMATICALLY NSLocalizedString(@"Automatically", nil)
 #define BC_STRING_ENTER_PIN NSLocalizedString(@"Enter PIN", nil)
-#define BC_STRING_PLEASE_ENTER_PIN NSLocalizedString(@"Please enter your PIN", nil)
+#define BC_STRING_PLEASE_ENTER_PIN NSLocalizedString(@"Enter PIN", nil)
 #define BC_STRING_PLEASE_ENTER_NEW_PIN NSLocalizedString(@"Please enter a new PIN", nil)
 #define BC_STRING_CONFIRM_PIN NSLocalizedString(@"Confirm your PIN", nil)
 #define BC_STRING_WARNING_TITLE NSLocalizedString(@"Warning", nil)
@@ -379,7 +379,7 @@
 #define BC_STRING_PLEASE_CHECK_AND_CLICK_EMAIL_VERIFICATION_LINK NSLocalizedString(@"Please check your email and click on the verification link.", nil)
 #define BC_STRING_ERROR_PLEASE_REFRESH_PAIRING_CODE NSLocalizedString(@"Please refresh the pairing code and try again.", nil)
 
-#define BC_STRING_NOT_NOW NSLocalizedString(@"Not Now", nil)
+#define BC_STRING_NOT_NOW NSLocalizedString(@"Not now", nil)
 #define BC_STRING_ILL_DO_THIS_LATER NSLocalizedString(@"I'll do this later", nil)
 #define BC_STRING_PRIVATE_KEY_NEEDED_MESSAGE_ARGUMENT NSLocalizedString(@"This action requires the private key for the Bitcoin address %@. Please scan the QR code.", nil)
 #define BC_STRING_ENTER_ARGUMENT_AMOUNT NSLocalizedString(@"Enter %@ amount", nil)
@@ -516,7 +516,7 @@
 #define BC_STRING_REGULAR BC_STRING_PASSWORD_STRENGTH_REGULAR
 #define BC_STRING_GREATER_THAN_ONE_HOUR NSLocalizedString(@"1+ hour", nil)
 #define BC_STRING_PRIORITY NSLocalizedString(@"Priority", nil)
-#define BC_STRING_LESS_THAN_ONE_HOUR NSLocalizedString(@"~0-60 min", nil)
+#define BC_STRING_LESS_THAN_ONE_HOUR NSLocalizedString(@"~0–60 min", nil)
 #define BC_STRING_SATOSHI_PER_BYTE NSLocalizedString(@"Satoshi per byte", nil)
 #define BC_STRING_SATOSHI_PER_BYTE_ABBREVIATED NSLocalizedString(@"sat/b", nil)
 #define BC_STRING_HIGH_FEE_NOT_NECESSARY NSLocalizedString(@"High fee not necessary", nil)
@@ -563,7 +563,6 @@
 #define BC_STRING_EXCHANGE_TITLE_REFUNDED NSLocalizedString(@"Trade Refunded", nil)
 #define BC_STRING_EXCHANGE_DESCRIPTION_FAILED NSLocalizedString(@"This trade has failed. Any funds sent from your wallet will be returned minus the transaction fee. Please return to the exchange tab to start a new trade.", nil)
 #define BC_STRING_EXCHANGE_DESCRIPTION_EXPIRED NSLocalizedString(@"Your trade has expired. Please return to the exchange tab to start a new trade.", nil)
-#define BC_STRING_EXCHANGE_CARD_DESCRIPTION NSLocalizedString(@"You can now exchange your bitcoin for ether and vice versa directly from your Blockchain wallet!", nil)
 #define BC_STRING_ARGUMENT_TO_DEPOSIT NSLocalizedString(@"%@ to Deposit", nil)
 #define BC_STRING_ARGUMENT_TO_BE_RECEIVED NSLocalizedString(@"%@ to be Received", nil)
 #define BC_STRING_EXCHANGE_RATE NSLocalizedString(@"Exchange Rate", nil)

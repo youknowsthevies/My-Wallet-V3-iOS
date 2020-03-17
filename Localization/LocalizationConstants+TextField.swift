@@ -12,7 +12,7 @@ public extension LocalizationConstants {
     struct TextField {
         public struct Placeholder {
             public static let email = NSLocalizedString(
-                "Your email",
+                "Your Email",
                 comment: "Placeholder for email text field"
             )
             public static let password = NSLocalizedString(
@@ -20,7 +20,7 @@ public extension LocalizationConstants {
                 comment: "Placeholder for password text field"
             )
             public static let confirmPassword = NSLocalizedString(
-                "Confirm password",
+                "Confirm Password",
                 comment: "Placeholder for confirm password text field"
             )
             public static let recoveryPhrase = NSLocalizedString(
@@ -40,7 +40,7 @@ public extension LocalizationConstants {
                 comment: "Label for a Weak password score in password text field"
             )
             public static let normal = NSLocalizedString(
-                "Medium",
+                "Regular",
                 comment: "Label for a Normal password score in password text field"
             )
             public static let strong = NSLocalizedString(
