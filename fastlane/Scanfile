@@ -18,8 +18,8 @@
 
 clean(true)
 code_coverage(true)
-configuration("Debug Dev")
-scheme("Blockchain (Dev)")
+configuration("Debug Staging")
+scheme("Blockchain (Staging)")
 slack_channel("#ios-ci")
 slack_url(ENV["SLACK_WEBHOOK_URL"])
 skip_build(true)
