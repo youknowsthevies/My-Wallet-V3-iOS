@@ -106,6 +106,4 @@
 - (void)showTransactionsAnimated:(BOOL)animated;
 
 - (void)updateBadgeNumber:(NSInteger)number forSelectedIndex:(int)index;
-
-- (void)showGetAssetsAlert;
 @end

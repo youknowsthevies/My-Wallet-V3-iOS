@@ -36,6 +36,8 @@ import PlatformKit
     private let walletManager: WalletManager
     private let paymentPresenter: PaymentPresenter
     private let loadingViewPresenter: LoadingViewPresenting
+    private lazy var appFeatureConfigurator: AppFeatureConfigurator = { appFeatureConfiguratorProvider() }()
+    private let appFeatureConfiguratorProvider: () -> AppFeatureConfigurator
 
     let airdropRouter: AirdropRouterAPI
     private var simpleBuyRouter: SimpleBuyRouterAPI!
@@ -46,7 +48,6 @@ import PlatformKit
     @objc var slidingViewController: ECSlidingViewController!
     @objc var tabControllerManager = TabControllerManager.makeFromStoryboard()
     private(set) var sideMenuViewController: SideMenuViewController!
-    
     private let disposeBag = DisposeBag()
     
     private lazy var accountsAndAddressesNavigationController: AccountsAndAddressesNavigationController = { [unowned self] in
@@ -67,7 +68,8 @@ import PlatformKit
                  walletManager: WalletManager = WalletManager.shared,
                  paymentPresenter: PaymentPresenter = PaymentPresenter(),
                  airdropRouter: AirdropRouterAPI = AirdropRouter(topMostViewControllerProvider: UIApplication.shared),
-                 loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared) {
+                 loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
+                 appFeatureConfiguratorProvider: @escaping () -> AppFeatureConfigurator = { AppFeatureConfigurator.shared }) {
         self.airdropRouter = airdropRouter
         self.authenticationCoordinator = authenticationCoordinator
         self.blockchainSettings = blockchainSettings
@@ -75,6 +77,7 @@ import PlatformKit
         self.walletManager = walletManager
         self.paymentPresenter = paymentPresenter
         self.loadingViewPresenter = loadingViewPresenter
+        self.appFeatureConfiguratorProvider = appFeatureConfiguratorProvider
         super.init()
         self.walletManager.accountInfoAndExchangeRatesDelegate = self
         self.walletManager.backupDelegate = self
@@ -92,7 +95,7 @@ import PlatformKit
     }
     
     @objc func start() {
-        AppFeatureConfigurator.shared.initialize()
+        appFeatureConfigurator.initialize()
         BuySellCoordinator.shared.start()
 
         // Display welcome screen if no wallet is authenticated
@@ -418,22 +421,30 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         simpleBuyRouter.start()
     }
 
-    /// Checks SimpleBuy Eligibility and then starts Crypto Buy Flow.
+    /// Checks for simple buy flow availability, and for coinify feature flag and isBuyEnabled flag, then
+    /// starts the correct Crypto Buy Flow.
+    /// If no flow is available, executes onError..
     @objc
-    func startBuyUsingCoinifyOrSimpleBuy() {
-        SimpleBuyServiceProvider.default.eligibility
-            .isEligible
+    func startBuyUsingCoinifyOrSimpleBuy(onError: @escaping () -> Void) {
+        let flowAvailability = SimpleBuyServiceProvider.default.flowAvailability
+        flowAvailability
+            .isSimpleBuyFlowAvailable
             .take(1)
             .asSingle()
             .handleLoaderForLifecycle(
                 loader: loadingViewPresenter,
                 style: .circle
             )
-            .subscribe(
-                onSuccess: { [unowned self] isEligible in
-                    self.handleBuyCrypto(simpleBuy: isEligible)
-                })
-                .disposed(by: disposeBag)
+            .subscribe(onSuccess: { [unowned self] isEligible in
+                if isEligible {
+                    self.handleBuyCrypto(simpleBuy: true)
+                } else if self.appFeatureConfigurator.configuration(for: .coinifyEnabled).isEnabled, self.walletManager.wallet.isBuyEnabled() {
+                    self.handleBuyCrypto(simpleBuy: false)
+                } else {
+                    onError()
+                }
+            })
+            .disposed(by: disposeBag)
     }
 }
 

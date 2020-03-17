@@ -235,7 +235,10 @@
 
 - (int)getDefaultAccountLabelledAddressesCount;
 
+/// Java Script core evaluates if user is inside Buy Rollout and they can buy using Coinify
+/// This is Coinify related only.
 - (BOOL)isBuyEnabled;
+
 - (BOOL)isCoinifyTrader;
 - (BOOL)isLockboxEnabled;
 

@@ -2024,26 +2024,30 @@ MyWalletPhone.getWebViewLoginData = function () {
   }
 }
 
-MyWalletPhone.isBuyFeatureEnabled = function () {
-  var wallet = MyWallet.wallet
-  var options = walletOptions.getValue()
-  var guidHash = WalletCrypto.sha256(new Buffer(wallet.guid.replace(/-/g, ''), 'hex'));
-  var userHasAccess = ((guidHash[0] + 1) / 256) <= (options.iosBuyPercent || 0);
-  var whiteListedGuids = objc_get_whitelisted_guids();
-
-  if (whiteListedGuids.indexOf(wallet.guid) > -1) {
-      userHasAccess = true;
-  }
-
-  var canBuy = function(accountInfo, options) {
-     var external = MyWallet.wallet && MyWallet.wallet.external;
-     var userHasCoinifyAccount = external && external.coinify && external.coinify.hasAccount;
-     var isCoinifyCountry = accountInfo && options.partners.coinify.countries.indexOf(accountInfo.countryCodeGuess) > -1;
-     return (userHasCoinifyAccount || isCoinifyCountry);
-  }
-
-  return userHasAccess && wallet.external && canBuy(wallet.accountInfo, options)
-}
+MyWalletPhone.isBuyFeatureEnabled = function() {
+  var userHasAccessToBuy = function(wallet) {
+    var guidHash = WalletCrypto.sha256(
+      new Buffer(wallet.guid.replace(/-/g, ""), "hex")
+    );
+    var iosBuyPercent = options.iosBuyPercent || 0;
+    var hasAccess = (guidHash[0] + 1) / 256 <= iosBuyPercent;
+    return hasAccess;
+  };
+  var canBuyWithCoinify = function(wallet, options) {
+    var external = wallet && wallet.external;
+    var userHasCoinifyAccount = external && external.coinify && external.coinify.hasAccount;
+    var accountInfo = wallet.accountInfo;
+    var isCoinifyCountry = accountInfo && options.partners.coinify.countries.indexOf(accountInfo.countryCodeGuess) > -1;
+    return userHasCoinifyAccount || isCoinifyCountry;
+  };
+  var wallet = MyWallet.wallet;
+  var options = walletOptions.getValue();
+  return (
+    wallet.external &&
+    userHasAccessToBuy(wallet) &&
+    canBuyWithCoinify(wallet, options)
+  );
+};
 
 function WalletOptions (api) {
   var optionsCache = {};

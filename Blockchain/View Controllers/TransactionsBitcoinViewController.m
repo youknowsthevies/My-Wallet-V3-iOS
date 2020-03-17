@@ -144,12 +144,9 @@
 
 - (void)getAssetButtonClicked
 {
-    if ([WalletManager.sharedInstance.wallet isBuyEnabled]) {
-        [[AppCoordinator sharedInstance] startBuyUsingCoinifyOrSimpleBuy];
-    } else {
-        TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
-        [tabControllerManager receiveCoinClicked:nil];
-    }
+    [AppCoordinator.sharedInstance startBuyUsingCoinifyOrSimpleBuyOnError:^{
+        [AppCoordinator.sharedInstance.tabControllerManager receiveCoinClicked:nil];
+    }];
 }
 
 - (NSInteger)tableView:(UITableView *)_tableView numberOfRowsInSection:(NSInteger)section

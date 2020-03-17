@@ -14,7 +14,7 @@ import PlatformKit
 import PlatformUIKit
 
 @objc class BuySellCoordinator: NSObject, Coordinator {
-    static let shared = BuySellCoordinator()
+    @objc static let shared = BuySellCoordinator()
 
     @objc private(set) var buyBitcoinViewController: BuyBitcoinViewController?
 
@@ -34,11 +34,6 @@ import PlatformUIKit
         case noKYCMetadata
         case emptyCoinifyMetadata
         case `default`
-    }
-
-    // class function declared so that the BuySellCoordinator singleton can be accessed from obj-C
-    @objc class func sharedInstance() -> BuySellCoordinator {
-        return BuySellCoordinator.shared
     }
 
     private init(

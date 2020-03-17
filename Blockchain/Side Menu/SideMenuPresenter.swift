@@ -42,7 +42,7 @@ class SideMenuPresenter {
     private weak var view: SideMenuView?
     private var introductionSequence = WalletIntroductionSequence()
     private let introInterator: WalletIntroductionInteractor
-    private let variantFetcher: FeatureVariantFetching
+    private let featureFetcher: FeatureConfiguring
     private let introductionRelay = PublishRelay<WalletIntroductionEventType>()
     private let itemSelectionRelay = PublishRelay<SideMenuItem>()
     
@@ -61,7 +61,7 @@ class SideMenuPresenter {
         view: SideMenuView,
         wallet: Wallet = WalletManager.shared.wallet,
         walletService: WalletService = WalletService.shared,
-        variantFetcher: FeatureVariantFetching = AppFeatureConfigurator.shared,
+        featureFetcher: FeatureConfiguring = AppFeatureConfigurator.shared,
         exchangeConfiguration: AppFeatureConfiguration = AppFeatureConfigurator.shared.configuration(for: .exchangeLinking),
         onboardingSettings: BlockchainSettings.Onboarding = .shared,
         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
@@ -73,7 +73,7 @@ class SideMenuPresenter {
         self.exchangeConfiguration = exchangeConfiguration
         self.introInterator = WalletIntroductionInteractor(onboardingSettings: onboardingSettings, screen: .sideMenu)
         self.analyticsRecorder = analyticsRecorder
-        self.variantFetcher = variantFetcher
+        self.featureFetcher = featureFetcher
     }
 
     deinit {
@@ -129,6 +129,10 @@ class SideMenuPresenter {
         triggerNextStep()
     }
 
+    private var mayUseCoinify: Bool {
+        return featureFetcher.configuration(for: .coinifyEnabled).isEnabled && wallet.isBuyEnabled()
+    }
+
     private func menuItems(showSimpleBuy: Bool) -> [SideMenuItem] {
         var items: [SideMenuItem] = [.accountsAndAddresses]
         
@@ -144,7 +148,7 @@ class SideMenuPresenter {
         
         if showSimpleBuy {
             items.append(.simpleBuy)
-        } else if wallet.isBuyEnabled() {
+        } else if mayUseCoinify {
             items.append(.buyBitcoin)
         }
 
