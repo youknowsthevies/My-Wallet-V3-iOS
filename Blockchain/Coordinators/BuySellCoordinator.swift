@@ -107,10 +107,10 @@ import PlatformUIKit
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .subscribe(
-                onCompleted: {
+                onCompleted: { [unowned self] in
                     self.createAndSyncCoinifyMetadataIfNeeded()
                 },
-                onError: { error in
+                onError: { [unowned self] error in
                     switch error as? BuySellError {
                     case .unsupportedCountry(code: let code):
                         self.showCountryNotSupportedAlert(code)
