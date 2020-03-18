@@ -22,7 +22,6 @@
 #import "NSURLRequest+SRWebSocket.h"
 #import <CommonCrypto/CommonKeyDerivation.h>
 #import "HDNode.h"
-#import "PrivateHeaders.h"
 #import "Assets.h"
 #import "ExchangeTrade.h"
 #import "Blockchain-Swift.h"
@@ -614,10 +613,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     };
 
 #pragma mark Buy/Sell
-
-    self.context[@"objc_get_whitelisted_guids"] = ^(JSValue *trade) {
-        return WHITELISTED_GUIDS;
-    };
 
     self.context[@"objc_show_completed_trade"] = ^(JSValue *trade) {
         [weakSelf show_completed_trade:trade];
@@ -2246,17 +2241,13 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (BOOL)isBuyEnabled
 {
+
     return [[self.context evaluateScript:@"MyWalletPhone.isBuyFeatureEnabled()"] toBool];
 }
 
 - (BOOL)isCoinifyTrader
 {
     return [[self.context evaluateScript:@"MyWalletPhone.isCoinifyTrader()"] toBool];
-}
-
-- (BOOL)canUseSfox
-{
-    return [[self.context evaluateScript:@"MyWalletPhone.canUseSfox()"] toBool];
 }
 
 - (BOOL)isLockboxEnabled

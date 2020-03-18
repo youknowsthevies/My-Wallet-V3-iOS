@@ -332,9 +332,11 @@ extension AnnouncementPresenter {
     
     /// Computes Buy BTC announcement
     private func buyBitcoin(reappearanceTimeInterval: TimeInterval, isSimpleBuyFlow: Bool) -> Announcement {
-        let isBuyEnabled = (wallet.isBuyEnabled() || isSimpleBuyFlow) && !wallet.isBitcoinWalletFunded
+        let isCoinifyEnabled = featureConfigurator.configuration(for: .coinifyEnabled).isEnabled
+        let isEnabled = (isSimpleBuyFlow && !wallet.isBitcoinWalletFunded)
+            || (isCoinifyEnabled && wallet.isBuyEnabled() && !wallet.isBitcoinWalletFunded)
         return BuyBitcoinAnnouncement(
-            isBuyEnabled: isBuyEnabled,
+            isEnabled: isEnabled,
             reappearanceTimeInterval: reappearanceTimeInterval,
             dismiss: hideAnnouncement,
             action: { [weak appCoordinator] in
@@ -342,7 +344,7 @@ extension AnnouncementPresenter {
             }
         )
     }
-    
+
     /// Computes Swap card announcement
     private func swap(using data: AnnouncementPreliminaryData,
                       reappearanceTimeInterval: TimeInterval) -> Announcement {
@@ -385,6 +387,7 @@ extension AnnouncementPresenter {
     /// Computes Coinify KYC alert announcement
     private func coinifyKyc(tiers: KYC.UserTiers,
                             reappearanceTimeInterval: TimeInterval) -> Announcement {
+        let coinifyFeatureFlag = featureConfigurator.configuration(for: .coinifyEnabled)
         let coinifyConfig = featureConfigurator.configuration(for: .notifyCoinifyUserToKyc)
         
         let approve = { [weak self] in
@@ -394,6 +397,7 @@ extension AnnouncementPresenter {
 
         return CoinifyKycAnnouncement(
             configuration: coinifyConfig,
+            isCoinifyEnabled: coinifyFeatureFlag.isEnabled,
             tiers: tiers,
             wallet: wallet,
             reappearanceTimeInterval: reappearanceTimeInterval,

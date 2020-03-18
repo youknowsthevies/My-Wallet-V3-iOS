@@ -22,17 +22,18 @@ public enum AppFeature: Int, CaseIterable {
     case stellarLargeBacklog
 
     /// Coinify
+    case coinifyEnabled
     case notifyCoinifyUserToKyc
-    
+
     /// Exchange linking enabled
     case exchangeLinking
-    
+
     /// Exchange announcement visibility
     case exchangeAnnouncement
-    
+
     /// The announcments
     case announcements
-    
+
     /// Is simple buy enabled
     case simpleBuyEnabled
 }
@@ -57,7 +58,12 @@ extension AppFeature {
             return "announcements"
         case .simpleBuyEnabled:
             return "simple_buy_enabled"
-        default:
+        case .coinifyEnabled:
+            return "coinify_enabled"
+        case .biometry,
+             .stellar,
+             .swipeToReceive,
+             .transferFundsFromImportedAddress:
             return nil
         }
     }

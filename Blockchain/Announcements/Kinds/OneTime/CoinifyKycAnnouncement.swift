@@ -51,15 +51,17 @@ final class CoinifyKycAnnouncement: OneTimeAnnouncement & ActionableAnnouncement
             }
         )
     }
-    
+
     var shouldShow: Bool {
+        guard isCoinifyEnabled else {
+            return false
+        }
         guard configuration.isEnabled else {
             return false
         }
         guard tiers.canCompleteTier2 else {
             return false
         }
-        // TODO: This calls JS. convert to native
         guard wallet.isCoinifyTrader() else {
             return false
         }
@@ -73,7 +75,8 @@ final class CoinifyKycAnnouncement: OneTimeAnnouncement & ActionableAnnouncement
     let recorder: AnnouncementRecorder
     
     let action: CardAnnouncementAction
-    
+
+    private let isCoinifyEnabled: Bool
     private let configuration: AppFeatureConfiguration
     private let tiers: KYC.UserTiers
     private let wallet: Wallet
@@ -84,6 +87,7 @@ final class CoinifyKycAnnouncement: OneTimeAnnouncement & ActionableAnnouncement
     // MARK: - Setup
 
     init(configuration: AppFeatureConfiguration,
+         isCoinifyEnabled: Bool,
          tiers: KYC.UserTiers,
          wallet: Wallet,
          cacheSuite: CacheSuite = UserDefaults.standard,
@@ -93,6 +97,7 @@ final class CoinifyKycAnnouncement: OneTimeAnnouncement & ActionableAnnouncement
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {
         self.configuration = configuration
+        self.isCoinifyEnabled = isCoinifyEnabled
         self.tiers = tiers
         self.wallet = wallet
         self.errorRecorder = errorRecorder

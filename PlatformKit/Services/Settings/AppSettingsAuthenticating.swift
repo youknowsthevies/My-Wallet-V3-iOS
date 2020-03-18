@@ -14,8 +14,8 @@ enum AppSettingsCacheError: Error {
 
 @objc
 public protocol AppSettingsAPI: class {
-    @objc var sharedKey: String? { set get }
-    @objc var guid: String? { set get }
+    @objc var sharedKey: String? { get set }
+    @objc var guid: String? { get set }
 }
 
 // TICKET: https://blockchain.atlassian.net/browse/IOS-2738

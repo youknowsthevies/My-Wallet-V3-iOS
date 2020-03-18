@@ -44,7 +44,6 @@ final class SettingsScreenInteractor {
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          pitConnectionAPI: PITConnectionStatusProviding = PITConnectionStatusProvider(),
          settingsAuthenticating: AppSettingsAuthenticating = BlockchainSettings.App.shared,
-         featureConfiguring: FeatureConfiguring = AppFeatureConfigurator.shared,
          wallet: Wallet = WalletManager.shared.wallet) {
         self.appSettings = appSettings
         self.settingsService = settingsService
@@ -65,7 +64,7 @@ final class SettingsScreenInteractor {
         
         pitLinkingConfiguration = featureConfigurator.configuration(for: .exchangeLinking)
         tiersProviding = TierLimitsProvider(repository: repository)
-        self.biometryProviding = BiometryProvider(settings: settingsAuthenticating, featureConfigurator: featureConfiguring)
+        self.biometryProviding = BiometryProvider(settings: settingsAuthenticating, featureConfigurator: featureConfigurator)
         self.settingsAuthenticating = settingsAuthenticating
         self.pitConnnectionProviding = pitConnectionAPI
         self.recoveryPhraseStatusProviding = RecoveryPhraseStatusProvider(wallet: wallet)

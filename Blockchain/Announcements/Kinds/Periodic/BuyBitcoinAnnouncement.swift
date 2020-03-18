@@ -52,7 +52,7 @@ final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
     }
 
     var shouldShow: Bool {
-        guard isBuyEnabled else {
+        guard isEnabled else {
             return false
         }
         return !isDismissed
@@ -67,20 +67,20 @@ final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
 
     // MARK: - Private Properties
 
-    private let isBuyEnabled: Bool
+    private let isEnabled: Bool
     private let disposeBag = DisposeBag()
     private let errorRecorder: ErrorRecording
 
     // MARK: - Setup
     
-    init(isBuyEnabled: Bool,
+    init(isEnabled: Bool,
          cacheSuite: CacheSuite = UserDefaults.standard,
          reappearanceTimeInterval: TimeInterval,
          analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {
-        self.isBuyEnabled = isBuyEnabled
+        self.isEnabled = isEnabled
         self.errorRecorder = errorRecorder
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)

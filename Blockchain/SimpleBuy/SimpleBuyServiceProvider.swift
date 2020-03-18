@@ -99,6 +99,7 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
         )
         flowAvailability = SimpleBuyFlowAvailabilityService(
             coinifyAccountRepository: CoinifyAccountRepository(bridge: walletManager.wallet),
+            featureFetcher: featureFetcher,
             fiatCurrencyService: settings,
             reactiveWallet: wallet,
             supportedPairsService: supportedPairs

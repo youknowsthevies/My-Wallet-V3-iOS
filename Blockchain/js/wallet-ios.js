@@ -1938,21 +1938,14 @@ MyWalletPhone.changeNetwork = function(newNetwork) {
 }
 
 MyWalletPhone.getExchangeAccount = function () {
-    var sfox = MyWallet.wallet.external.sfox;
     var coinify = MyWallet.wallet.external.coinify;
     var partners = walletOptions.getValue().partners;
-
-    if (sfox.user) {
-        console.log('Found sfox user');
-        sfox.api.production = true;
-        sfox.api.apiKey = partners.sfox.apiKey;
-        return sfox;
-    } else if (coinify.user) {
+    if (coinify.user) {
         console.log('Found coinify user');
         coinify.partnerId = partners.coinify.partnerId;
         return coinify;
     } else {
-        console.log('Found no sfox or coinify user');
+        console.log('Found no coinify user');
     }
 }
 
@@ -2031,39 +2024,30 @@ MyWalletPhone.getWebViewLoginData = function () {
   }
 }
 
-MyWalletPhone.canUseSfox = function() {
-    var wallet = MyWallet.wallet
-    var options = walletOptions.getValue()
+MyWalletPhone.isBuyFeatureEnabled = function() {
+  var userHasAccessToBuy = function(wallet) {
+    var guidHash = WalletCrypto.sha256(
+      new Buffer(wallet.guid.replace(/-/g, ""), "hex")
+    );
+    var iosBuyPercent = options.iosBuyPercent || 0;
+    var hasAccess = (guidHash[0] + 1) / 256 <= iosBuyPercent;
+    return hasAccess;
+  };
+  var canBuyWithCoinify = function(wallet, options) {
+    var external = wallet && wallet.external;
+    var userHasCoinifyAccount = external && external.coinify && external.coinify.hasAccount;
     var accountInfo = wallet.accountInfo;
-    var isSfoxCountryState = accountInfo && options.partners.sfox.countries.indexOf(accountInfo.countryCodeGuess) > -1 && (options.partners.sfox.states.indexOf(accountInfo.stateCodeGuess) > -1 || accountInfo.stateCodeGuess === undefined);
-    var isSfoxInvited = accountInfo && accountInfo.invited && accountInfo.invited.sfox;
-
-    var external = MyWallet.wallet && MyWallet.wallet.external;
-    var userHasSfoxAccount = external && external.sfox && external.sfox.hasAccount;
-
-    return (userHasSfoxAccount || isSfoxInvited && isSfoxCountryState) && options.ios.showSfox;
-}
-
-MyWalletPhone.isBuyFeatureEnabled = function () {
-  var wallet = MyWallet.wallet
-  var options = walletOptions.getValue()
-  var guidHash = WalletCrypto.sha256(new Buffer(wallet.guid.replace(/-/g, ''), 'hex'));
-  var userHasAccess = ((guidHash[0] + 1) / 256) <= (options.iosBuyPercent || 0);
-  var whiteListedGuids = objc_get_whitelisted_guids();
-
-  if (whiteListedGuids.indexOf(wallet.guid) > -1) {
-      userHasAccess = true;
-  }
-
-  var canBuy = function(accountInfo, options) {
-     var external = MyWallet.wallet && MyWallet.wallet.external;
-     var userHasCoinifyAccount = external && external.coinify && external.coinify.hasAccount;
-     var isCoinifyCountry = accountInfo && options.partners.coinify.countries.indexOf(accountInfo.countryCodeGuess) > -1;
-     return (userHasCoinifyAccount || isCoinifyCountry) || MyWalletPhone.canUseSfox();
-  }
-
-  return userHasAccess && wallet.external && canBuy(wallet.accountInfo, options)
-}
+    var isCoinifyCountry = accountInfo && options.partners.coinify.countries.indexOf(accountInfo.countryCodeGuess) > -1;
+    return userHasCoinifyAccount || isCoinifyCountry;
+  };
+  var wallet = MyWallet.wallet;
+  var options = walletOptions.getValue();
+  return (
+    wallet.external &&
+    userHasAccessToBuy(wallet) &&
+    canBuyWithCoinify(wallet, options)
+  );
+};
 
 function WalletOptions (api) {
   var optionsCache = {};

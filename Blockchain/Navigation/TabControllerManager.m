@@ -949,44 +949,6 @@
     [self.exchangeContainerViewController showExchange];
 }
 
-- (void)showGetAssetsAlert
-{
-    UIAlertController *showGetAssetsAlert = [UIAlertController alertControllerWithTitle:BC_STRING_NO_FUNDS_TO_EXCHANGE_TITLE message:BC_STRING_NO_FUNDS_TO_EXCHANGE_MESSAGE preferredStyle:UIAlertControllerStyleAlert];
-
-    [showGetAssetsAlert addAction:[UIAlertAction actionWithTitle:BC_STRING_GET_BITCOIN style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self.tabViewController dismissViewControllerAnimated:YES completion:^{
-            if ([WalletManager.sharedInstance.wallet isBuyEnabled]) {
-                [BuySellCoordinator.sharedInstance showBuyBitcoinView];
-            } else {
-                [[AppCoordinator sharedInstance] closeSideMenu];
-                [self changeAssetSelectorAsset:LegacyAssetTypeBitcoin];
-                [self receiveCoinClicked:nil];
-            }
-        }];
-    }]];
-    [showGetAssetsAlert addAction:[UIAlertAction actionWithTitle:BC_STRING_GET_ETHER style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self.tabViewController dismissViewControllerAnimated:YES completion:^{
-            [[AppCoordinator sharedInstance] closeSideMenu];
-            [self changeAssetSelectorAsset:LegacyAssetTypeEther];
-            [self receiveCoinClicked:nil];
-        }];
-    }]];
-    [showGetAssetsAlert addAction:[UIAlertAction actionWithTitle:BC_STRING_GET_BITCOIN_CASH style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self.tabViewController dismissViewControllerAnimated:YES completion:^{
-            [[AppCoordinator sharedInstance] closeSideMenu];
-            [self changeAssetSelectorAsset:LegacyAssetTypeBitcoinCash];
-            [self receiveCoinClicked:nil];
-        }];
-    }]];
-    [showGetAssetsAlert addAction:[UIAlertAction actionWithTitle:BC_STRING_CANCEL style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-        [[AppCoordinator sharedInstance] closeSideMenu];
-        [self.tabViewController dismissViewControllerAnimated:YES completion:nil];
-        [self showDashboard];
-    }]];
-
-    [self.tabViewController.presentedViewController presentViewController:showGetAssetsAlert animated:YES completion:nil];
-}
-
 - (ExchangeContainerViewController *)exchangeContainerViewController {
     if (_exchangeContainerViewController == nil) {
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"ExchangeContainerViewController" bundle:[NSBundle mainBundle]];

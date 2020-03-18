@@ -8,24 +8,24 @@
 
 /// The announcement types as defined remotely
 public enum AnnouncementType: String, Codable {
+    case simpleBuyKYCIncomplete = "sb_finish_signup"
+    case simpleBuyPendingTransaction = "sb_pending_buy"
     case walletIntro = "wallet_intro"
-    case verifyEmail = "verify_email"
     case buyBitcoin = "buy_btc"
+    case verifyEmail = "verify_email"
     case transferBitcoin = "transfer_btc"
-    case kycAirdrop = "kyc_airdrop"
     case exchangeLinking = "pit_linking"
     case twoFA = "two_fa"
     case backupFunds = "backup_funds"
     case verifyIdentity = "kyc_incomplete"
+    case coinifyKyc = "kyc_more_info"
+    case resubmitDocuments = "kyc_resubmit"
     case blockstackAirdropReceived = "stx_airdrop_complete"
     case blockstackAirdropRegisteredMini = "stx_registered_airdrop_mini"
     case swap = "swap"
     case pax = "pax"
     case bitpay = "bitpay"
-    case coinifyKyc = "kyc_more_info"
-    case resubmitDocuments = "kyc_resubmit"
-    case simpleBuyPendingTransaction = "sb_pending_buy"
-    case simpleBuyKYCIncomplete = "sb_finish_signup"
+    case kycAirdrop = "kyc_airdrop"
 
     /// The key indentifying the announcement in cache
     var key: AnnouncementRecord.Key {
