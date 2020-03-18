@@ -108,21 +108,25 @@ open class BaseScreenViewController: UIViewController {
     // MARK: - Private
     
     /// The ancestor navigation controller
-    private lazy var baseNavigationController: UINavigationController? = {
-        var result: UIViewController? = self
-        while result != nil && !(result is UINavigationController) {
-            result = result?.parent
+    private weak var _baseNavigationController: UINavigationController?
+    private var baseNavigationController: UINavigationController? {
+        if _baseNavigationController == nil {
+            var result: UIViewController? = self
+            while result != nil && !(result is UINavigationController) {
+                result = result?.parent
+            }
+            _baseNavigationController = result as? UINavigationController
         }
-        return result as? UINavigationController
-    }()
+        return _baseNavigationController
+    }
     
-    private lazy var currentViewController: UIViewController? = {
+    private var currentViewController: UIViewController? {
         return baseNavigationController?.topViewController
-    }()
+    }
     
-    private lazy var currentNavigationItem: UINavigationItem? = {
+    private var currentNavigationItem: UINavigationItem? {
         return currentViewController?.navigationItem
-    }()
+    }
     
     override open var preferredStatusBarStyle: UIStatusBarStyle {
         loadViewIfNeeded()
