@@ -1455,49 +1455,25 @@ public struct LocalizationConstants {
         public struct IntroScreen {
             public struct BuyCard {
                 public static let title = NSLocalizedString(
-                    "Buy Crypto",
+                    "Own Crypto in a Few Minutes",
                     comment: "Simple Buy Intro Screen - buy crypto card: title label"
                 )
                 public static let description = NSLocalizedString(
-                    "We can help you buy in just a few simple steps.",
-                    comment: "Simple Buy Intro Screen - buy crypto card: title label"
-                )
-                public static let button = NSLocalizedString(
-                    "Buy Crypto Now",
-                    comment: "Simple Buy Intro Screen - buy crypto card: Buy CTA button"
-                )
-            }
-            public struct SkipCard {
-                public static let title = NSLocalizedString(
-                    "Tour the Wallet",
-                    comment: "Simple Buy Intro Screen - buy crypto card: Buy title label"
-                )
-                public static let description = NSLocalizedString(
-                    "Explore your new Blockchain Wallet.",
-                    comment: "Simple Buy Intro Screen - buy crypto card: Buy description label"
-                )
-                public static let button = NSLocalizedString(
-                    "Get Started",
-                    comment: "Simple Buy Intro Screen - buy crypto card: Skip CTA button"
-                )
-            }
-            public struct DescriptionLabel {
-                public static let missingEmailFallback = NSLocalizedString(
-                    "We sent you an email with a verification link. Didn’t get it? Check your spam folder.",
-                    comment: "Simple Buy Intro Screen - description label for missing email"
-                )
-                public static let prefix = NSLocalizedString(
-                    "We sent an email to ",
-                    comment: "Simple Buy Intro Screen - description label prefix"
-                )
-                public static let suffix = NSLocalizedString(
-                    " with a verification link. Didn’t get it? Check your spam folder.",
-                    comment: "Simple Buy Intro Screen - description label suffix"
+                    "Verify your idenity and buy crypto with your bank or card.",
+                    comment: "Simple Buy Intro Screen - buy crypto card: description label"
                 )
             }
             public static let title = NSLocalizedString(
                 "Welcome to Blockchain",
                 comment: "Simple Buy Intro Screen - title label"
+            )
+            public static let continueButton = NSLocalizedString(
+                "Buy Crypto Now",
+                comment: "Simple Buy Intro Screen: Buy CTA button"
+            )
+            public static let skipButton = NSLocalizedString(
+                "Skip",
+                comment: "Simple Buy Intro Screen: Skip button"
             )
         }
         

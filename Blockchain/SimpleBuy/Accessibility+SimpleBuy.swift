@@ -12,7 +12,8 @@ extension Accessibility.Identifier {
     
     enum SimpleBuy {
         enum IntroScreen {
-            static let descriptionLabel = "descriptionLabel"
+            private static let prefix = "Intro."
+            static let themeBackgroundImageView = "\(prefix)themeBackgroundImageView"
         }
         
         enum Checkout {

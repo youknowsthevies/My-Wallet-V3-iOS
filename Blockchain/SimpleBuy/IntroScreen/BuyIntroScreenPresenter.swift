@@ -25,14 +25,11 @@ final class BuyIntroScreenPresenter {
 
     /// The screen title
     let title = LocalizedString.title
-        
-    /// The view models of the cards
-    let viewModels: [AnnouncementCardViewModel]
-    
-    /// The count of the cells (synchronized with the count of the view models)
-    var cellCount: Int {
-        viewModels.count
-    }
+            
+    let cardViewModel: AnnouncementCardViewModel
+    let themeBackgroundImageViewContent: ImageViewContent
+    let continueButtonViewModel: ButtonViewModel
+    let skipButtonViewModel: ButtonViewModel
     
     private let disposeBag = DisposeBag()
     
@@ -54,62 +51,45 @@ final class BuyIntroScreenPresenter {
         self.stateService = stateService
         self.errorRecorder = errorRecorder
         
+        themeBackgroundImageViewContent = .init(
+            imageName: "sb-intro-bg-theme",
+            accessibility: .id(AccessibilityId.themeBackgroundImageView)
+        )
+        
         // Card setup
         
-        let imageSize = CGSize(width: 48, height: 48)
-        let background = AnnouncementCardViewModel.Background(color: .background)
-        let border = AnnouncementCardViewModel.Border.roundCorners(10)
-        
-        let buyButton = ButtonViewModel.primary(
-            with: LocalizedString.BuyCard.button
+        continueButtonViewModel = ButtonViewModel.primary(
+            with: LocalizedString.continueButton
         )
         
-        let buyCardViewModel = AnnouncementCardViewModel(
+        skipButtonViewModel = ButtonViewModel.secondary(
+            with: LocalizedString.skipButton
+        )
+        
+        cardViewModel = AnnouncementCardViewModel(
             contentAlignment: .center,
-            background: background,
-            border: border,
-            image: .init(name: "card-icon-simple-buy", size: imageSize),
+            border: .none,
+            image: .init(name: "card-icon-cart", size: .init(edge: 48)),
             title: LocalizedString.BuyCard.title,
             description: LocalizedString.BuyCard.description,
-            buttons: [buyButton],
             recorder: errorRecorder,
             dismissState: .undismissible
         )
-        
-        let skipButton = ButtonViewModel.secondary(
-            with: LocalizedString.SkipCard.button,
-            background: .secondaryButton,
-            contentColor: .white,
-            borderColor: .clear
-        )
-        
-        let skipCardViewModel = AnnouncementCardViewModel(
-            contentAlignment: .center,
-            background: background,
-            border: border,
-            image: .init(name: "card-icon-qr", size: imageSize),
-            title: LocalizedString.SkipCard.title,
-            description: LocalizedString.SkipCard.description,
-            buttons: [skipButton],
-            recorder: errorRecorder,
-            dismissState: .undismissible
-        )
-        viewModels = [buyCardViewModel, skipCardViewModel]
-                        
-        buyButton.tapRelay
+         
+        continueButtonViewModel.tapRelay
             .bind(to: stateService.nextRelay)
             .disposed(by: disposeBag)
         
-        buyButton.tapRelay
+        continueButtonViewModel.tapRelay
             .map { AnalyticsEvent.sbWantToBuyButtonClicked }
             .bind(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
         
-        skipButton.tapRelay
+        skipButtonViewModel.tapRelay
             .bind(to: stateService.previousRelay)
             .disposed(by: disposeBag)
         
-        skipButton.tapRelay
+        skipButtonViewModel.tapRelay
             .map { AnalyticsEvent.sbWantToBuyButtonSkip }
             .bind(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)

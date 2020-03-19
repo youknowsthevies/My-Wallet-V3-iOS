@@ -13,10 +13,13 @@ import PlatformUIKit
 
 /// A introductory screen for simple buy flow
 final class BuyIntroScreenViewController: BaseScreenViewController {
-
-    // MARK: - Properties
     
-    @IBOutlet private var tableView: UITableView!
+    // MARK: - UI Properties
+    
+    @IBOutlet private var announcementCardContainerView: UIView!
+    @IBOutlet private var themeBackgroundImageView: UIImageView!
+    @IBOutlet private var continueButtonView: ButtonView!
+    @IBOutlet private var skipButtonView: ButtonView!
     
     // MARK: - Injected
     
@@ -40,7 +43,15 @@ final class BuyIntroScreenViewController: BaseScreenViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
-        setupTableView()
+        
+        let announcementCardView = AnnouncementCardView(using: presenter.cardViewModel)
+        announcementCardContainerView.addSubview(announcementCardView)
+        announcementCardView.fillSuperview()
+        
+        themeBackgroundImageView.set(presenter.themeBackgroundImageViewContent)
+        
+        continueButtonView.viewModel = presenter.continueButtonViewModel
+        skipButtonView.viewModel = presenter.skipButtonViewModel
     }
     
     // MARK: - Setup
@@ -50,37 +61,10 @@ final class BuyIntroScreenViewController: BaseScreenViewController {
         set(barStyle: .lightContent(ignoresStatusBar: false, background: .navigationBarBackground),
             leadingButtonStyle: .back)
     }
-    
-    private func setupTableView() {
-        tableView.tableFooterView = UIView()
-        tableView.estimatedRowHeight = 250
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.allowsSelection = false
-        tableView.separatorStyle = .none
-        tableView.register(AnnouncementTableViewCell.self)
-    }
-    
+
     // MARK: - Navigation
     
     override func navigationBarLeadingButtonPressed() {
         presenter.navigationBarLeadingButtonTapped()
-    }
-}
-
-// MARK: - UITableViewDelegate, UITableViewDataSource
-
-extension BuyIntroScreenViewController: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView,
-                   numberOfRowsInSection section: Int) -> Int {
-        return presenter.cellCount
-    }
-    
-    func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeue(AnnouncementTableViewCell.self, for: indexPath)
-        let row = indexPath.row
-        cell.viewModel = presenter.viewModels[row]
-        cell.bottomSpacing = row == 0 ? 16 : 0
-        return cell
     }
 }
