@@ -147,7 +147,7 @@ extension SettingsTableViewController {
     }
 
     func prepareIdentityCell(_ cell: UITableViewCell) {
-        cell.textLabel?.text = LocalizationConstants.Swap.swapLimit
+        cell.textLabel?.text = LocalizationConstants.KYC.accountLimits
 
         guard didFetchTiers else {
             cell.detailTextLabel?.isHidden = true

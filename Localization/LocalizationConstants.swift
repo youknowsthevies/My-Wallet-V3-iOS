@@ -2815,8 +2815,8 @@ public struct LocalizationConstants {
             comment: "Annual Swap Limit"
         )
         public static let dailySwapLimit = NSLocalizedString(
-            "Daily Swap Limit",
-            comment: "Daily Swap Limit"
+            "Daily Swap and Buy Limit",
+            comment: "Daily Swap and Buy Limit"
         )
         public static let takesThreeMinutes = NSLocalizedString(
             "Takes 3 min",
@@ -2827,7 +2827,10 @@ public struct LocalizationConstants {
             comment: "Duration for Tier 2 application"
         )
         public static let swapNow = NSLocalizedString("Swap Now", comment: "Swap Now")
-        public static let swapLimits = NSLocalizedString("Swap Limits", comment: "Swap Limits")
+        public static let accountLimits = NSLocalizedString(
+            "Account Limits",
+            comment: "Text shown to represent the level of access a user has to Swap/Buy features."
+        )
         public static let swapTagline = NSLocalizedString(
             "Trading your crypto doesn't mean trading away control.",
             comment: "The tagline describing what Swap is"
@@ -2991,9 +2994,6 @@ public struct LocalizationConstants {
         )
         public static let locked = NSLocalizedString(
             "Locked", comment: "Text shown to indicate that Swap features have not been unlocked yet."
-        )
-        public static let swapLimit = NSLocalizedString(
-            "Swap Limit", comment: "Text shown to represent the level of access a user has to Swap features."
         )
         public static let swap = NSLocalizedString(
             "Swap", comment: "Text shown for the crypto exchange service."

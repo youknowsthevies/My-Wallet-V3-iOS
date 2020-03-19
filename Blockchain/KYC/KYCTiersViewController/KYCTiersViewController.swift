@@ -59,7 +59,7 @@ class KYCTiersViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = LocalizationConstants.KYC.swapLimits
+        title = LocalizationConstants.KYC.accountLimits
         coordinator = KYCTiersCoordinator(interface: self)
         setupLayout()
         registerCells()
@@ -69,10 +69,10 @@ class KYCTiersViewController: UIViewController {
         pageModel.trackPresentation()
         
         if let navController = navigationController as? BCNavigationController {
-            navController.headerLabel.text = LocalizationConstants.KYC.swapLimits
+            navController.headerLabel.text = LocalizationConstants.KYC.accountLimits
         }
         if let navController = navigationController as? SettingsNavigationController {
-            navController.headerLabel.text = LocalizationConstants.KYC.swapLimits
+            navController.headerLabel.text = LocalizationConstants.KYC.accountLimits
         }
         view.backgroundColor = #colorLiteral(red: 0.9607843137, green: 0.968627451, blue: 0.9764705882, alpha: 1)
     }
