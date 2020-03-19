@@ -16,30 +16,50 @@ final class AnalyticsUserPropertyInteractor {
     // MARK: - Properties
     
     private let recorder: UserPropertyRecording
-    private let walletManager: WalletManager
-    private let exchangeService: ExchangeHistoryAPI
     private let dataRepository: BlockchainDataRepository
-    
+    private let walletRepository: WalletRepositoryAPI
+    private let balanceProvider: BalanceProviding
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
     init(recorder: UserPropertyRecording = AnalyticsUserPropertyRecorder(),
-         dataRepository: BlockchainDataRepository = .shared,
-         exchangeService: ExchangeHistoryAPI = ExchangeService.shared,
-         walletManager: WalletManager = WalletManager.shared) {
+         balanceProvider: BalanceProviding = DataProvider.default.balance,
+         walletRepository: WalletRepositoryAPI = WalletManager.shared.repository,
+         dataRepository: BlockchainDataRepository = .shared) {
         self.recorder = recorder
         self.dataRepository = dataRepository
-        self.walletManager = walletManager
-        self.exchangeService = exchangeService
+        self.balanceProvider = balanceProvider
+        self.walletRepository = walletRepository
     }
     
     /// Records all the user properties
     func record() {
-        Single.zip(dataRepository.nabuUser.first(), dataRepository.tiers.first())
+        
+        let balances = balanceProvider.fiatBalances
+            .filter { $0.isValue }
+            .map { totalState in
+                totalState.all.compactMap { $0.value }
+            }
+            .take(1)
+            .asSingle()
+        
+        Single
+            .zip(
+                dataRepository.nabuUser.first(),
+                dataRepository.tiers.first(),
+                walletRepository.authenticatorType,
+                walletRepository.guid,
+                balances)
             .subscribe(
-                onSuccess: { [weak self] (user, tiers) in
-                    self?.record(user: user, tiers: tiers)
+                onSuccess: { [weak self] (user, tiers, authenticatorType, guid, balances) in
+                    self?.record(
+                        user: user,
+                        tiers: tiers,
+                        authenticatorType: authenticatorType,
+                        guid: guid,
+                        balances: balances
+                    )
                 },
                 onError: { error in
                     Logger.shared.error(error)
@@ -48,13 +68,17 @@ final class AnalyticsUserPropertyInteractor {
             .disposed(by: disposeBag)
     }
     
-    private func record(user: NabuUser?, tiers: KYC.UserTiers?) {
+    private func record(user: NabuUser?,
+                        tiers: KYC.UserTiers?,
+                        authenticatorType: AuthenticatorType,
+                        guid: String?,
+                        balances: [AssetFiatCryptoBalancePairs]) {
         if let identifier = user?.personalDetails.identifier {
             recorder.record(id: identifier)
         }
         
-        if let identifier = walletManager.legacyRepository.legacyGuid {
-            let property = HashedUserProperty(key: .walletID, value: identifier)
+        if let guid = guid {
+            let property = HashedUserProperty(key: .walletID, value: guid)
             recorder.record(property)
         }
         
@@ -70,5 +94,48 @@ final class AnalyticsUserPropertyInteractor {
         if let date = user?.kycUpdateDate {
             recorder.record(StandardUserProperty(key: .kycUpdateDate, value: date))
         }
+        
+        if let isEmailVerified = user?.email.verified {
+            recorder.record(StandardUserProperty(key: .emailVerified, value: String(isEmailVerified)))
+        }
+        
+        recorder.record(StandardUserProperty(key: .twoFAEnabled, value: String(authenticatorType.isTwoFactor)))
+        
+        let firstBalance = balances[0]
+        var totalFiatBalance = firstBalance.fiat
+        
+        var positives: [String] = []
+        if firstBalance.crypto.isPositive {
+            positives += [firstBalance.crypto.code]
+        }
+                
+        for balance in balances.dropFirst() {
+            do {
+                if balance.crypto.isPositive {
+                    positives += [balance.crypto.code]
+                }
+                totalFiatBalance = try totalFiatBalance + balance.fiat
+            } catch {
+                Logger.shared.error(error)
+            }
+        }
+        
+        recorder.record(StandardUserProperty(key: .fundedCoins, value: positives.joined(separator: ",")))
+        
+        var reportedBalance: String
+        switch totalFiatBalance.amount {
+        case 0:
+            reportedBalance = "0"
+        case (1...10):
+            reportedBalance = "1-10"
+        case (11...100):
+            reportedBalance = "11-100"
+        case (101...1000):
+            reportedBalance = "101-1000"
+        default: // > 1000
+            reportedBalance = "1001"
+        }
+        reportedBalance += " \(totalFiatBalance.currency.code)"
+        recorder.record(StandardUserProperty(key: .totalBalance, value: reportedBalance))
     }
 }

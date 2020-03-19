@@ -170,7 +170,7 @@ class CryptoValueTests: XCTestCase {
     }
     
     func testIsPositive() {
-        XCTAssertTrue(CryptoValue.createFromMajorValue(string: "0", assetType: .bitcoin)!.isPositive)
+        XCTAssertFalse(CryptoValue.createFromMajorValue(string: "0", assetType: .bitcoin)!.isPositive)
         XCTAssertTrue(CryptoValue.createFromMajorValue(string: "0.1", assetType: .bitcoin)!.isPositive)
         XCTAssertFalse(CryptoValue.createFromMajorValue(string: "-0.1", assetType: .bitcoin)!.isPositive)
     }

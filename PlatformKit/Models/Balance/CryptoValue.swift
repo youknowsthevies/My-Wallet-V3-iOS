@@ -48,7 +48,7 @@ extension CryptoValue: Money {
     }
     
     public var isPositive: Bool {
-        return amount.sign == .plus
+        return amount > 0
     }
     
     /// The maximum number of decimal places supported by the money

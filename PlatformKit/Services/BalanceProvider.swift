@@ -36,7 +36,7 @@ public final class BalanceProvider: BalanceProviding {
             .map { $0.totalFiat }
             .share()
     }
-    
+        
     /// Calculates all balances in `WalletBalance`
     public var fiatBalances: Observable<AssetFiatCryptoBalanceCalculationStates> {
         return Observable

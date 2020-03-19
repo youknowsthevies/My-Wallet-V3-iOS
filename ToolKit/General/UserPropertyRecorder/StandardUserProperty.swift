@@ -39,5 +39,9 @@ extension StandardUserProperty {
         case kycCreationDate = "kyc_creation_date"
         case kycUpdateDate = "kyc_updated_date"
         case kycLevel = "kyc_level"
+        case emailVerified = "email_verified"
+        case twoFAEnabled = "two_fa_enabled"
+        case totalBalance = "total_balance"
+        case fundedCoins = "funded_coins"
     }
 }
