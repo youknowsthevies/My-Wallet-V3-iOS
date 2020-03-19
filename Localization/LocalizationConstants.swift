@@ -1631,6 +1631,14 @@ public struct LocalizationConstants {
                     "Total Cost",
                     comment: "Total Cost"
                 )
+                public static let estimatedAmount = NSLocalizedString(
+                    "Est. Amount",
+                    comment: "Estimated Amount"
+                )
+                public static let buyingFee = NSLocalizedString(
+                    "Buying Fee",
+                    comment: "Buying Fee"
+                )
                 public struct Copyable {
                     public static let bankCode = NSLocalizedString(
                         "Bank Code (SWIFT/BIC)",

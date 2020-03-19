@@ -112,6 +112,10 @@ extension CheckoutScreenViewController: UITableViewDelegate, UITableViewDataSour
             cell.presenter = presenter.dateLineItemCellPresenter
         case .totalCost:
             cell.presenter = presenter.totalCostLineItemCellPresenter
+        case .estimatedAmount:
+            cell.presenter = presenter.estimatedLineItemCellPresenter
+        case .buyingFee:
+            cell.presenter = presenter.buyingFeeLineItemCellPresenter
         case .paymentAccountField:
             break
         }

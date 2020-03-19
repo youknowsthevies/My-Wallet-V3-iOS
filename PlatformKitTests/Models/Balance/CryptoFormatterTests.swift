@@ -244,15 +244,15 @@ class CryptoFormatterTests: XCTestCase {
         )
         XCTAssertEqual(
             "0.1",
-            xlmFormatter.format(value: CryptoValue.lumensFromMajor(decimal: 0.1))
+            xlmFormatter.format(value: CryptoValue.lumensFromMajor(string: "\(Decimal(0.1))")!)
         )
         XCTAssertEqual(
             "0.0",
-            xlmFormatter.format(value: CryptoValue.lumensFromMajor(decimal: 0))
+            xlmFormatter.format(value: CryptoValue.lumensFromMajor(string: "\(Decimal(0))")!)
         )
         XCTAssertEqual(
             "1.0",
-            xlmFormatter.format(value: CryptoValue.lumensFromMajor(decimal: 1))
+            xlmFormatter.format(value: CryptoValue.lumensFromMajor(string: "\(Decimal(1))")!)
         )
         XCTAssertEqual(
             "1,000.0",
@@ -271,15 +271,21 @@ class CryptoFormatterTests: XCTestCase {
         )
         XCTAssertEqual(
             "0.1 XLM",
-            xlmFormatter.format(value: CryptoValue.lumensFromMajor(decimal: 0.1), withPrecision: .short, includeSymbol: true)
+            xlmFormatter.format(value: CryptoValue.lumensFromMajor(string: "\(Decimal(0.1))")!,
+                                withPrecision: .short,
+                                includeSymbol: true)
         )
         XCTAssertEqual(
             "0.0 XLM",
-            xlmFormatter.format(value: CryptoValue.lumensFromMajor(decimal: 0), withPrecision: .short, includeSymbol: true)
+            xlmFormatter.format(value: CryptoValue.lumensFromMajor(string: "\(Decimal(0))")!,
+                                withPrecision: .short,
+                                includeSymbol: true)
         )
         XCTAssertEqual(
             "1.0 XLM",
-            xlmFormatter.format(value: CryptoValue.lumensFromMajor(decimal: 1), withPrecision: .short, includeSymbol: true)
+            xlmFormatter.format(value: CryptoValue.lumensFromMajor(string: "\(Decimal(1))")!,
+                                withPrecision: .short,
+                                includeSymbol: true)
         )
         XCTAssertEqual(
             "1,000.0 XLM",

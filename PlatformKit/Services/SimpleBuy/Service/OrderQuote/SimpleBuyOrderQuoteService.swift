@@ -37,7 +37,11 @@ public final class SimpleBuyOrderQuoteService: SimpleBuyOrderQuoteServiceAPI {
                     token: token)
             }
             .map {
-                try SimpleBuyQuote(response: $0)
+                try SimpleBuyQuote(
+                    to: checkoutData.cryptoCurrency,
+                    amount: checkoutData.fiatValue,
+                    response: $0
+                )
             }
     }
 }

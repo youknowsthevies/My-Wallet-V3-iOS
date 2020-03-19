@@ -36,6 +36,8 @@ final class CheckoutScreenPresenter {
                 .separator,
                 .lineItem(.date),
                 .lineItem(.totalCost),
+                .lineItem(.estimatedAmount),
+                .lineItem(.buyingFee),
                 .separator,
                 .disclaimer]
     }()
@@ -48,10 +50,12 @@ final class CheckoutScreenPresenter {
     let cancelButtonViewModel: ButtonViewModel
     
     // MARK: - Cell Presenters
-    
+
     let dateLineItemCellPresenter: DefaultLineItemCellPresenter
     let totalCostLineItemCellPresenter: DefaultLineItemCellPresenter
-    
+    let estimatedLineItemCellPresenter: DefaultLineItemCellPresenter
+    let buyingFeeLineItemCellPresenter: DefaultLineItemCellPresenter
+
     // MARK: - Injected
     
     private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
@@ -122,6 +126,18 @@ final class CheckoutScreenPresenter {
         )
         totalCostLineItemCellPresenter = .init(interactor: totalCostLineItemInteractor)
 
+        let estimatedLineItemInteractor = DefaultLineItemCellInteractor()
+        estimatedLineItemInteractor.title.stateRelay.accept(
+            .loaded(next: .init(text: LocalizedString.LineItem.estimatedAmount))
+        )
+        estimatedLineItemCellPresenter = .init(interactor: estimatedLineItemInteractor)
+
+        let feeLineItemInteractor = DefaultLineItemCellInteractor()
+        feeLineItemInteractor.title.stateRelay.accept(
+            .loaded(next: .init(text: LocalizedString.LineItem.buyingFee))
+        )
+        buyingFeeLineItemCellPresenter = .init(interactor: feeLineItemInteractor)
+
         buyButtonViewModel.tapRelay
             .show(loader: loadingViewPresenter, style: .circle)
             .flatMap(weak: self) { (self, _) in
@@ -186,6 +202,13 @@ final class CheckoutScreenPresenter {
         let time = DateFormatter.elegantDateFormatter.string(from: quote.time)
         dateLineItemCellPresenter.interactor.description.stateRelay.accept(
             .loaded(next: .init(text: time))
+        )
+        buyingFeeLineItemCellPresenter.interactor.description.stateRelay.accept(
+            .loaded(next: .init(text: quote.fee.toDisplayString()))
+        )
+        let estimatedAmount = "~ \(quote.estimatedAmount.toDisplayString(includeSymbol: true))"
+        estimatedLineItemCellPresenter.interactor.description.stateRelay.accept(
+            .loaded(next: .init(text: estimatedAmount))
         )
     }
     
