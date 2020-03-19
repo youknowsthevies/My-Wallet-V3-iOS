@@ -191,19 +191,9 @@ extension CryptoValue {
         return CryptoValue(currencyType: assetType, amount: BigInt(stringLiteral: "\(minorDecimal.roundTo(places: 0))"))
     }
 
-    @available(*, deprecated, message: "This method can create precision errors. Use `createFromMajorValue(string:assetType:)` instead.")
-    public static func createFromMajorValue(decimal value: Decimal, assetType: CryptoCurrency) -> CryptoValue {
-        let decimalNumberValue = NSDecimalNumber(decimal: value)
-        let doubleValue = Double(truncating: decimalNumberValue)
-        let decimalValue = doubleValue.truncatingRemainder(dividingBy: 1) * pow(10.0, Double(assetType.maxDecimalPlaces))
-        let mantissaValue = BigInt(Int(floor(doubleValue))) * BigInt(10).power(assetType.maxDecimalPlaces)
-        let amount = mantissaValue + BigInt(decimalValue)
-        return CryptoValue(currencyType: assetType, amount: amount)
-    }
-
     public func convertToFiatValue(exchangeRate: FiatValue) -> FiatValue {
         let conversionAmount = majorValue * exchangeRate.amount
-        return FiatValue.create(amount: conversionAmount, currencyCode: exchangeRate.currencyCode)
+        return FiatValue.create(amount: conversionAmount, currency: exchangeRate.currency)
     }
 }
 
@@ -284,11 +274,6 @@ extension CryptoValue {
     public static func lumensFromMajor(int lumens: Int) -> CryptoValue {
         return createFromMajorValue(string: "\(lumens)", assetType: .stellar)!
     }
-    
-    @available(*, deprecated, message: "This method can create precision errors. Use `lumensFromMajor(string:)` instead.")
-    public static func lumensFromMajor(decimal lumens: Decimal) -> CryptoValue {
-        return createFromMajorValue(decimal: lumens, assetType: .stellar)
-    }
 
     public static func lumensFromMajor(string lumens: String) -> CryptoValue? {
         return createFromMajorValue(string: lumens, assetType: .stellar)
@@ -311,8 +296,8 @@ extension CryptoValue {
 
 extension BigInt {
     func decimalDivision(divisor: BigInt) -> Decimal {
-        let (quotient, remainder) =  self.quotientAndRemainder(dividingBy: divisor)
-        return Decimal(string: String(quotient))! + Decimal(string: String(remainder))! / Decimal(string: String(divisor))!
+        let (quotient, remainder) =  quotientAndRemainder(dividingBy: divisor)
+        return Decimal(string: String(quotient))! + (Decimal(string: String(remainder))! / Decimal(string: String(divisor))!)
     }
 }
 

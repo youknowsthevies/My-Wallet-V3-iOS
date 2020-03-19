@@ -29,6 +29,11 @@ public struct FiatValue {
         let minorDecimal = amount * pow(10, currency.maxDecimalPlaces)
         return "\(minorDecimal)"
     }
+
+    fileprivate init(currency: FiatCurrency, amount: Decimal) {
+        self.amount = amount
+        self.currency = currency
+    }
 }
 
 // MARK: - Setup

@@ -13,11 +13,13 @@ enum CheckoutCellType: Hashable {
     enum LineItemType: Hashable {
         case date
         case totalCost
+        case estimatedAmount
+        case buyingFee
         case paymentAccountField(SimpleBuyPaymentAccountProperty.Field)
         
         var content: String? {
             switch self {
-            case .date, .totalCost:
+            case .date, .totalCost, .estimatedAmount, .buyingFee:
                 return nil
             case .paymentAccountField(let field):
                 return field.content
@@ -49,7 +51,7 @@ extension CheckoutCellType.LineItemType {
         switch self {
         case .paymentAccountField(let field):
             return field
-        case .date, .totalCost:
+        case .date, .totalCost, .estimatedAmount, .buyingFee:
             return nil
         }
     }
@@ -75,6 +77,10 @@ extension CheckoutCellType.LineItemType {
             return LocalizedString.date
         case .totalCost:
             return LocalizedString.totalCost
+        case .estimatedAmount:
+            return LocalizedString.estimatedAmount
+        case .buyingFee:
+            return LocalizedString.buyingFee
         }
     }
     

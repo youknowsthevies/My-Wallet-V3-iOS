@@ -164,7 +164,7 @@ class StellarTransactionService: StellarTransactionAPI {
                     }
                     
                     // Use dynamic base fee
-                    let feeCryptoValue = CryptoValue.lumensFromMajor(decimal: paymentOperation.feeInXlm)
+                    let feeCryptoValue = CryptoValue.lumensFromMajor(string: "\(paymentOperation.feeInXlm)") ?? CryptoValue.zero(assetType: .stellar)
                     let baseFeeInStroops = (try? StellarValue(value: feeCryptoValue).stroops()) ?? StellarTransactionFee.defaultLimits.min
                     
                     var timebounds: TimeBounds?

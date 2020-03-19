@@ -34,7 +34,12 @@ extension SimpleBuyClient {
     static func mockQuote(for action: SimpleBuyOrder.Action,
                           to cryptoCurrency: CryptoCurrency,
                           amount: FiatValue) -> SimpleBuyQuoteResponse {
-        return SimpleBuyQuoteResponse(time: "2020-01-15T22:09:45.600Z")
+        return SimpleBuyQuoteResponse(
+            time: "2020-01-15T22:09:45.600Z",
+            rate: "1000000",
+            rateWithoutFee: "995000",
+            fee: "5000"
+        )
     }
 
     static func mockOrderCreation(order: SimpleBuyOrderCreationData.Request) -> SimpleBuyOrderCreationData.Response {
