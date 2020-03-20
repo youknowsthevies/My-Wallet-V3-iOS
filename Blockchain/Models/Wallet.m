@@ -433,14 +433,6 @@ NSString * const kLockboxInvitation = @"lockbox";
         [weakSelf on_create_new_account:_guid sharedKey:_sharedKey password:_password];
     };
 
-    self.context[@"objc_didMakePairingCode"] = ^(NSString *pairingCode) {
-        [weakSelf didMakePairingCode:pairingCode];
-    };
-
-    self.context[@"objc_errorMakingPairingCode"] = ^(NSString *error) {
-        [weakSelf errorMakingPairingCode:error];
-    };
-
     self.context[@"objc_error_restoring_wallet"] = ^(){
         [weakSelf error_restoring_wallet];
     };
@@ -1128,16 +1120,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     return NO;
 }
 
-- (NSString*)encrypt:(NSString*)data password:(NSString*)_password pbkdf2_iterations:(int)pbkdf2_iterations
-{
-    return [[self.context evaluateScript:[NSString stringWithFormat:@"WalletCrypto.encrypt(\"%@\", \"%@\", %d)", [data escapedForJS], [_password escapedForJS], pbkdf2_iterations]] toString];
-}
-
-- (NSString*)decrypt:(NSString*)data password:(NSString*)_password pbkdf2_iterations:(int)pbkdf2_iterations
-{
-    return [[self.context evaluateScript:[NSString stringWithFormat:@"WalletCrypto.decryptPasswordWithProcessedPin(\"%@\", \"%@\", %d)", [data escapedForJS], [_password escapedForJS], pbkdf2_iterations]] toString];
-}
-
 - (float)getStrengthForPassword:(NSString *)passwordString
 {
     return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getPasswordStrength(\"%@\")", [passwordString escapedForJS]]] toDouble];
@@ -1450,51 +1432,6 @@ NSString * const kLockboxInvitation = @"lockbox";
         [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.quickSendBtc(\"%@\", false, \"%@\")", [txProgressID escapedForJS], [secondPassword escapedForJS]]];
     } else {
         [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.quickSendBtc(\"%@\", false)", [txProgressID escapedForJS]]];
-    }
-}
-
-- (void)parsePairingCode:(NSString *)code
-                 success:(void (^ _Nonnull)(NSDictionary * _Nonnull))success
-                   error:(void (^ _Nonnull)(NSString * _Nullable))error {
-    
-    [self loadJSIfNeeded];
-    
-    [self useDebugSettingsIfSet];
-        
-    [self.context invokeOnceWithValueFunctionBlock:^(JSValue * _Nonnull value) {
-        NSDictionary *pairingCodeDict = [value toDictionary];
-        success(pairingCodeDict);
-    } forJsFunctionName:@"objc_on_didParsePairingCodeAsync"];
-    [self.context invokeOnceWithStringFunctionBlock:error forJsFunctionName:@"objc_on_errorParsingPairingCodeAsync"];
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.parsePairingCodeAsync(\"%@\");", [code escapedForJS]]];
-}
-
-// Pairing code JS callbacks
-
-- (void)makePairingCode
-{
-    [self.context evaluateScript:@"MyWalletPhone.makePairingCode();"];
-}
-
-- (void)didMakePairingCode:(NSString *)pairingCode
-{
-    DLog(@"didMakePairingCode");
-
-    if ([delegate respondsToSelector:@selector(didMakePairingCode:)]) {
-        [delegate didMakePairingCode:pairingCode];
-    } else {
-        DLog(@"Error: delegate of class %@ does not respond to selector didMakePairingCode:!", [delegate class]);
-    }
-}
-
-- (void)errorMakingPairingCode:(NSString *)message
-{
-    DLog(@"errorMakingPairingCode:");
-
-    if ([delegate respondsToSelector:@selector(errorMakingPairingCode:)]) {
-        [delegate errorMakingPairingCode:message];
-    } else {
-        DLog(@"Error: delegate of class %@ does not respond to selector errorMakingPairingCode:!", [delegate class]);
     }
 }
 

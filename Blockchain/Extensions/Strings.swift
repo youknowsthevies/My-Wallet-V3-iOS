@@ -7,6 +7,7 @@
 //
 
 import PlatformKit
+import CommonCryptoKit
 
 extension String {
     
@@ -20,7 +21,7 @@ extension String {
     
     /// Returns the first 5 characters of the SHA256 hash of this string
     var passwordPartHash: String? {
-        guard let hashedString = NSString(string: self).sha256() else { return nil }
+        let hashedString = sha256
         let endIndex = hashedString.index(hashedString.startIndex, offsetBy: min(self.count, 5))
         return String(hashedString[..<endIndex])
     }

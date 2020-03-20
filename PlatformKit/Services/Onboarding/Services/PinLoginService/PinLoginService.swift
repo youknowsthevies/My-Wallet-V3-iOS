@@ -9,11 +9,6 @@
 import RxSwift
 import ToolKit
 
-public struct Security {
-    /// This does not need to be large because the key is already 256 bits
-    public static let pinPBKDF2Iterations = 1
-}
-
 public final class PinLoginService: PinLoginServiceAPI {
     
     // MARK: - Types
@@ -28,30 +23,24 @@ public final class PinLoginService: PinLoginServiceAPI {
         case missingGuid
         case missingSharedKey
     }
-    
-    private struct JSMethod {
-        
-        /// This method is used to decrypt the password using the pin decryption key
-        static let decrypt = "WalletCrypto.decryptPasswordWithProcessedPin(\"%@\", \"%@\", %d)"
-    }
-    
+
     // MARK: - Properties
-    
-    private let jsContextProvider: JSContextProviderAPI
+
     private let settings: ReactiveAppSettingsAuthenticating
     private let service: WalletPayloadServiceAPI
     private let walletRepository: PasscodeRepositoryAPI
+    private let walletCrypto: WalletCryptoServiceAPI
     
     // MARK: - Setup
     
     public init(jsContextProvider: JSContextProviderAPI,
-         settings: ReactiveAppSettingsAuthenticating,
-         service: WalletPayloadServiceAPI,
-         walletRepository: PasscodeRepositoryAPI) {
-        self.jsContextProvider = jsContextProvider
+                settings: ReactiveAppSettingsAuthenticating,
+                service: WalletPayloadServiceAPI,
+                walletRepository: PasscodeRepositoryAPI) {
         self.service = service
         self.settings = settings
         self.walletRepository = walletRepository
+        self.walletCrypto = WalletCryptoService(jsContextProvider: jsContextProvider)
     }
     
     public func password(from pinDecryptionKey: String) -> Single<String> {
@@ -88,44 +77,24 @@ public final class PinLoginService: PinLoginServiceAPI {
                 walletRepository.set(guid: passcodePayload.guid)
             )
     }
-    
-    /// TODO: Decrypt password natively
-    /// Decrypt the password using the PIN decryption key
-    private func decrypt(pinDecryptionKey: String) -> Single<String> {
+
+    private var encryptedPinPassword: Single<String> {
         return Single.create(weak: self) { (self, observer) -> Disposable in
-            guard let encryptedPassword = self.settings.encryptedPinPassword else {
+            if let encryptedPassword = self.settings.encryptedPinPassword {
+                observer(.success(encryptedPassword))
+            } else {
                 observer(.error(ServiceError.missingEncryptedPassword))
-                return Disposables.create()
-            }
-            do {
-                let password = try self.decrypt(
-                    encryptedPassword: encryptedPassword,
-                    using: pinDecryptionKey,
-                    iterations: Security.pinPBKDF2Iterations
-                )
-                observer(.success(password))
-            } catch {
-                observer(.error(error))
             }
             return Disposables.create()
         }
-        /// TODO: Remove subscription on `MainScheduler.instance`
-        /// when the decryption becomes native
-        .subscribeOn(MainScheduler.instance)
     }
-    
-    /// TICKET: https://blockchain.atlassian.net/browse/IOS-2735
-    /// TODO: Decrypt password natively
-    private func decrypt(encryptedPassword: String, using pinDecryptionKey: String, iterations: Int) throws -> String {
-        let encryptedPassword = encryptedPassword.escapedForJS()
-        let pinDecryptionKey = pinDecryptionKey.escapedForJS()
-        let script = String(format: JSMethod.decrypt, encryptedPassword, pinDecryptionKey, Int32(iterations))
-        guard let decryptedPassword = jsContextProvider.jsContext.evaluateScript(script)?.toString() else {
-            throw ServiceError.walletDecryption
-        }
-        guard !decryptedPassword.isEmpty else {
-            throw ServiceError.emptyDecryptedPassword
-        }
-        return decryptedPassword
+
+    /// Decrypt the password using the PIN decryption key
+    private func decrypt(pinDecryptionKey: String) -> Single<String> {
+        return encryptedPinPassword
+            .map { KeyDataPair<String, String>(key: pinDecryptionKey, data: $0) }
+            .flatMap(weak: self) { (self, keyDataPair) -> Single<String> in
+                self.walletCrypto.decrypt(pair: keyDataPair, pbkdf2Iterations: WalletCryptoPBKDF2Iterations.pinLogin)
+            }
     }
 }

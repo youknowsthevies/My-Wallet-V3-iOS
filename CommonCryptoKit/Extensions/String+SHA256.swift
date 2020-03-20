@@ -9,14 +9,13 @@
 import Foundation
 import CommonCrypto
 
-public extension String {
-    var sha256: String {
-        guard let string = data(using: .utf8) else {
+extension String {
+    public var sha256: String {
+        guard let data = data(using: .utf8) else {
             return ""
         }
-        let hashedData = digest(input: string as NSData)
-        let hashedString = hexStringFromData(input: hashedData)
-        return hashedString
+        let sha256Data = digest(input: data as NSData)
+        return sha256Data.hexValue
     }
 
     private func digest(input: NSData) -> NSData {
@@ -24,16 +23,5 @@ public extension String {
         var hash = [UInt8](repeating: 0, count: digestLength)
         CC_SHA256(input.bytes, UInt32(input.length), &hash)
         return NSData(bytes: hash, length: digestLength)
-    }
-
-    func hexStringFromData(input: NSData) -> String {
-        var bytes = [UInt8](repeating: 0, count: input.length)
-        input.getBytes(&bytes, length: input.length)
-
-        var hexString = ""
-        for byte in bytes {
-            hexString += String(format:"%02x", UInt8(byte))
-        }
-        return hexString
     }
 }

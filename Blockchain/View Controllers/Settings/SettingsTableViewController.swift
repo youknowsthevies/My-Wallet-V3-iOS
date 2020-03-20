@@ -207,12 +207,15 @@ AppSettingsController, UITextFieldDelegate, EmailDelegate, WalletAccountInfoDele
             return displayString
         }
     }
+
     // MARK: - Web login
     func webLoginClicked() {
         analyticsRecorder.record(event: AnalyticsEvents.Settings.settingsWebWalletLoginClick)
-        let webLoginViewController = WebLoginViewController()
-        navigationController?.pushViewController(webLoginViewController, animated: true)
+        let presenter = WebLoginScreenPresenter()
+        let viewController = WebLoginScreenViewController(presenter: presenter)
+        navigationController?.pushViewController(viewController, animated: true)
     }
+
     // MARK: - Change Swipe to Receive
     @objc func switchSwipeToReceiveTapped(_ sender: UISwitch) {
         let swipeToReceiveEnabled = BlockchainSettings.sharedAppInstance().swipeToReceiveEnabled

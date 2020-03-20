@@ -10,7 +10,6 @@
 
 @interface KeychainItemWrapper (Credentials)
 + (nullable NSString *)guid;
-+ (NSString *)hashedGuid;
 + (void)setGuidInKeychain:(NSString *)guid;
 + (void)removeGuidFromKeychain;
 

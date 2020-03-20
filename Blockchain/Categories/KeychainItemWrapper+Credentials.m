@@ -7,7 +7,6 @@
 //
 
 #import "KeychainItemWrapper+Credentials.h"
-#import "NSString+SHA256.h"
 
 @implementation KeychainItemWrapper (Credentials)
 
@@ -57,11 +56,6 @@
     KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:KEYCHAIN_KEY_GUID accessGroup:nil];
     
     [keychain resetKeychainItem];
-}
-
-+ (NSString *)hashedGuid
-{
-    return [[self guid] SHA256];
 }
 
 #pragma mark - SharedKey
