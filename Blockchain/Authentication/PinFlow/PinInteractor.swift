@@ -24,7 +24,7 @@ final class PinInteractor: PinInteracting {
     private let appSettings: AppSettingsAuthenticating
     private let recorder: ErrorRecording
     private let loginService: PinLoginServiceAPI
-    private let walletCrypto: WalletCryptoServiceAPI
+    private let walletCryptoService: WalletCryptoServiceAPI
 
     private let disposeBag = DisposeBag()
     
@@ -58,7 +58,7 @@ final class PinInteractor: PinInteracting {
         self.wallet = wallet
         self.appSettings = appSettings
         self.recorder = recorder
-        self.walletCrypto = WalletCryptoService(jsContextProvider: jsContextProvider)
+        self.walletCryptoService = WalletCryptoService(jsContextProvider: jsContextProvider)
     }
     
     // MARK: - API
@@ -160,7 +160,7 @@ final class PinInteractor: PinInteracting {
                 return Disposables.create()
             }
             .flatMap(weak: self) { (self, data) -> Single<(encryptedPinPassword: String, password: String)> in
-                return self.walletCrypto
+                return self.walletCryptoService
                     .encrypt(pair: KeyDataPair(key: data.pin, data: data.password),
                              pbkdf2Iterations: WalletCryptoPBKDF2Iterations.pinLogin)
                     .map { (encryptedPinPassword: $0, password: data.password) }

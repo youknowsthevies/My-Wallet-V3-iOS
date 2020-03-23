@@ -34,18 +34,18 @@ final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
     // MARK: - Private Properties
 
     private let autoPairing: AutoWalletPairingClientAPI
-    private let walletCrypto: WalletCryptoServiceAPI
+    private let walletCryptoService: WalletCryptoServiceAPI
     private let walletRepository: WalletRepositoryAPI
 
     // MARK: - Setup
 
     public init(
         autoPairing: AutoWalletPairingClientAPI = AutoWalletPairingClient(),
-        walletCrypto: WalletCryptoServiceAPI = WalletCryptoService(jsContextProvider: WalletManager.shared),
+        walletCryptoService: WalletCryptoServiceAPI = WalletCryptoService(jsContextProvider: WalletManager.shared),
         walletRepository: WalletRepositoryAPI = WalletManager.shared.repository
     ) {
         self.autoPairing = autoPairing
-        self.walletCrypto = walletCrypto
+        self.walletCryptoService = walletCryptoService
         self.walletRepository = walletRepository
     }
 
@@ -98,7 +98,7 @@ final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
                 return "\(sharedKey)|\(hexPassword)"
             }
             .flatMap(weak: self) { (self, data) in
-                self.walletCrypto.encrypt(pair: KeyDataPair(key: encryptionPhrase, data: data),
+                self.walletCryptoService.encrypt(pair: KeyDataPair(key: encryptionPhrase, data: data),
                                                  pbkdf2Iterations: WalletCryptoPBKDF2Iterations.autoPair)
             }
     }
