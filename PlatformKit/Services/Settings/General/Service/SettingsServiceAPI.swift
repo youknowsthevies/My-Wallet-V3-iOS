@@ -25,3 +25,17 @@ public protocol LastTransactionSettingsUpdateServiceAPI: class {
 public protocol EmailNotificationSettingsServiceAPI: SettingsServiceAPI {
     func emailNotifications(enabled: Bool) -> Completable
 }
+
+public protocol UpdateMobileSettingsServiceAPI {
+    func update(mobileNumber: String) -> Completable
+}
+
+public protocol VerifyMobileSettingsServiceAPI {
+    func verify(with code: String) -> Completable
+}
+
+public protocol SMSTwoFactorSettingsServiceAPI: SettingsServiceAPI {
+    func smsTwoFactorAuthentication(enabled: Bool) -> Completable
+}
+
+public protocol MobileSettingsServiceAPI: UpdateMobileSettingsServiceAPI, VerifyMobileSettingsServiceAPI, SettingsServiceAPI { }

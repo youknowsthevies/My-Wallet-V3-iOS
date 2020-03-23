@@ -14,7 +14,9 @@ public protocol UserInformationServiceProviding: class {
                   EmailSettingsServiceAPI &
                   LastTransactionSettingsUpdateServiceAPI &
                   EmailNotificationSettingsServiceAPI &
-                  FiatCurrencySettingsServiceAPI { get }
+                  MobileSettingsServiceAPI &
+                  FiatCurrencySettingsServiceAPI &
+                  SMSTwoFactorSettingsServiceAPI{ get }
     
     var emailVerification: EmailVerificationServiceAPI { get }
 }

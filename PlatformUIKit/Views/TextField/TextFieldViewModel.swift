@@ -63,11 +63,27 @@ public class TextFieldViewModel {
             }
             .distinctUntilChanged()
     }
+    
+    public let isEnabledRelay = BehaviorRelay<Bool>(value: true)
+    var isEnabled: Observable<Bool> {
+        isEnabledRelay.asObservable()
+    }
+    
+    var autocapitalizationType: Observable<UITextAutocapitalizationType> {
+        autocapitalizationTypeRelay.asObservable()
+    }
+    
+    var keyboardType: Observable<UIKeyboardType> {
+        keyboardTypeRelay.asObservable()
+    }
         
     /// The content of the text field
-    let textRelay = BehaviorRelay<String>(value: "")
+    public let textRelay = BehaviorRelay<String>(value: "")
     var text: Observable<String> {
         return textRelay
+            .flatMap(weak: self) { (self, value) -> Observable<String> in
+                self.formatting.format(text: value)
+            }
             .distinctUntilChanged()
     }
     
@@ -75,6 +91,8 @@ public class TextFieldViewModel {
     
     let font = UIFont.mainMedium(16)
     
+    private let autocapitalizationTypeRelay: BehaviorRelay<UITextAutocapitalizationType>
+    private let keyboardTypeRelay: BehaviorRelay<UIKeyboardType>
     private let contentTypeRelay: BehaviorRelay<UITextContentType?>
     private let isSecureRelay = BehaviorRelay(value: false)
     private let placeholderRelay: BehaviorRelay<NSAttributedString>
@@ -85,6 +103,7 @@ public class TextFieldViewModel {
     
     // MARK: - Injected
     
+    let formatting: TextFormatting
     let validator: TextValidating
     let textMatcher: CollectionTextMatchValidator?
     let type: TextFieldType
@@ -94,7 +113,9 @@ public class TextFieldViewModel {
     
     public init(with type: TextFieldType,
                 validator: TextValidating,
+                formatting: TextFormatting = TextFormatterFactory.empty,
                 textMatcher: CollectionTextMatchValidator? = nil) {
+        self.formatting = formatting
         self.validator = validator
         self.textMatcher = textMatcher
         self.type = type
@@ -106,6 +127,8 @@ public class TextFieldViewModel {
                 .font: font
             ]
         )
+        autocapitalizationTypeRelay = BehaviorRelay(value: type.autocapitalizationType)
+        keyboardTypeRelay = BehaviorRelay(value: type.keyboardType)
         placeholderRelay = BehaviorRelay(value: placeholder)
         contentTypeRelay = BehaviorRelay(value: type.contentType)
         isSecureRelay.accept(type.isSecure)
@@ -141,10 +164,13 @@ public class TextFieldViewModel {
                         return LocalizationConstants.TextField.Gesture.invalidEmail
                     case .recoveryPhrase:
                         return LocalizationConstants.TextField.Gesture.invalidRecoveryPhrase
+                    case .oneTimeCode:
+                        return LocalizationConstants.TextField.Gesture.invalidCode
                     case .newPassword,
                          .confirmNewPassword,
                          .password,
-                         .backupVerfication:
+                         .backupVerfication,
+                         .mobile:
                         return ""
                     case .walletIdentifier:
                         return LocalizationConstants.TextField.Gesture.walletId
@@ -155,7 +181,12 @@ public class TextFieldViewModel {
                         return LocalizationConstants.TextField.Gesture.passwordMismatch
                     case .backupVerfication:
                         return LocalizationConstants.TextField.Gesture.recoveryMismatch
-                    case .email, .password, .walletIdentifier, .recoveryPhrase:
+                    case .email,
+                         .password,
+                         .walletIdentifier,
+                         .recoveryPhrase,
+                         .mobile,
+                         .oneTimeCode:
                         return ""
                     }
                 }
@@ -170,7 +201,9 @@ public class TextFieldViewModel {
     
     /// Should be called upon editing the text field
     func textFieldEdited(with value: String) {
-        textRelay.accept(value)
+        formatting.format(text: value)
+            .bind(to: textRelay)
+            .disposed(by: disposeBag)
         isHintVisibleRelay.accept(type.showsHintWhileTyping)
     }
 }

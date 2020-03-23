@@ -8,6 +8,11 @@
 
 import RxSwift
 
+public enum PasswordRepositoryError: Error {
+    case unavailable
+    case syncFailed
+}
+
 public protocol PasswordRepositoryAPI: class {
     
     /// Streams `Bool` indicating whether a password is currently cached in the repo
@@ -18,6 +23,10 @@ public protocol PasswordRepositoryAPI: class {
     
     /// Sets the password
     func set(password: String) -> Completable
+    
+    /// Syncs the current `password` with the users wallet.
+    /// This changes the users password.
+    func sync() -> Completable
 }
 
 public extension PasswordRepositoryAPI {

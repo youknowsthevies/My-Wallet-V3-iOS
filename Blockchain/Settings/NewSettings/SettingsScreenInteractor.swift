@@ -25,6 +25,7 @@ final class SettingsScreenInteractor {
     /// The presenter should not contain any interaction logic
     
     let settingsService: SettingsServiceAPI
+    let smsTwoFactorService: SMSTwoFactorSettingsServiceAPI
     let emailNotificationsService: SettingsServiceAPI & EmailNotificationSettingsServiceAPI
     
     let pitConnnectionProviding: PITConnectionStatusProviding
@@ -39,12 +40,14 @@ final class SettingsScreenInteractor {
     init(repository: BlockchainDataRepository = BlockchainDataRepository.shared,
          featureConfigurator: FeatureConfiguring = AppFeatureConfigurator.shared,
          settingsService: SettingsServiceAPI = UserInformationServiceProvider.default.settings,
+         smsTwoFactorService: SMSTwoFactorSettingsServiceAPI = UserInformationServiceProvider.default.settings,
          emailNotificationSerivce: EmailNotificationSettingsServiceAPI = UserInformationServiceProvider.default.settings,
          appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          pitConnectionAPI: PITConnectionStatusProviding = PITConnectionStatusProvider(),
          settingsAuthenticating: AppSettingsAuthenticating = BlockchainSettings.App.shared,
          wallet: Wallet = WalletManager.shared.wallet) {
+        self.smsTwoFactorService = smsTwoFactorService
         self.appSettings = appSettings
         self.settingsService = settingsService
         self.emailNotificationsService = emailNotificationSerivce

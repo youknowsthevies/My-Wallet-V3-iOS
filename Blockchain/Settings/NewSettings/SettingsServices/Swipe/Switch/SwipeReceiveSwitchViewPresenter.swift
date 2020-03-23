@@ -11,21 +11,35 @@ import RxRelay
 import RxCocoa
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
-class SwipeReceiveSwitchViewPresenter: SwitchViewPresenting {
+final class SwipeReceiveSwitchViewPresenter: SwitchViewPresenting {
     
-    var viewModel: SwitchViewModel = .primary()
+    // MARK: - Types
+    
+    private typealias AnalyticsEvent = AnalyticsEvents.Settings
+    
+    // MARK: - Public
+    
+    let viewModel: SwitchViewModel = .primary()
+    
+    // MARK: - Private
     
     private let interactor: SwitchViewInteracting
     private let disposeBag = DisposeBag()
     
-    init(appSettings: BlockchainSettings.App) {
+    init(appSettings: BlockchainSettings.App,
+         analyticsRecording: AnalyticsEventRecording = AnalyticsEventRecorder.shared) {
         interactor = SwipeReceiveSwitchViewInteractor(
             appSettings: appSettings
         )
         
         viewModel.isSwitchedOnRelay
             .bind(to: interactor.switchTriggerRelay)
+            .disposed(by: disposeBag)
+        
+        viewModel.isSwitchedOnRelay
+            .bind { analyticsRecording.record(event: AnalyticsEvent.settingsSwipeToReceiveSwitch(value: $0)) }
             .disposed(by: disposeBag)
         
         interactor.state

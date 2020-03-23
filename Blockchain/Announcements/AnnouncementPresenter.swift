@@ -379,7 +379,7 @@ extension AnnouncementPresenter {
             reappearanceTimeInterval: reappearanceTimeInterval,
             dismiss: hideAnnouncement,
             action: { [weak self] in
-                self?.appCoordinator.showSettingsView { $0.showTwoStep() }
+                self?.appCoordinator.showSettingsView()
             }
         )
     }

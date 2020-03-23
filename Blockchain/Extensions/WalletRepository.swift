@@ -20,6 +20,12 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     
     private struct JSSetter {
         
+        struct Password {
+            static let change = "MyWalletPhone.changePassword(\"%@\")"
+            static let success = "objc_on_change_password_success"
+            static let error = "objc_on_change_password_error"
+        }
+        
         /// Accepts "true" / "false" as parameter
         static let syncPubKeys = "MyWalletPhone.setSyncPubKeys(%@)"
         
@@ -124,6 +130,32 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     func set(password: String) -> Completable {
         return perform { [weak passwordRelay] in
             passwordRelay?.accept(password)
+        }
+    }
+    
+    func sync() -> Completable {
+        return Completable
+            .create { [weak self] observer -> Disposable in
+                guard let self = self else {
+                    observer(.error(PasswordRepositoryError.syncFailed))
+                    return Disposables.create()
+                }
+                guard let password = self.passwordRelay.value else {
+                    observer(.error(PasswordRepositoryError.unavailable))
+                    return Disposables.create()
+                }
+                let script = String(format: JSSetter.Password.change, password)
+                
+                self.jsContextProvider.jsContext.invokeOnce(functionBlock: {
+                    observer(.completed)
+                }, forJsFunctionName: JSSetter.Password.success as NSString)
+                
+                self.jsContextProvider.jsContext.invokeOnce(functionBlock: {
+                    observer(.error(PasswordRepositoryError.syncFailed))
+                }, forJsFunctionName: JSSetter.Password.error as NSString)
+                
+                self.jsContextProvider.jsContext.evaluateScript(script)
+            return Disposables.create()
         }
     }
     

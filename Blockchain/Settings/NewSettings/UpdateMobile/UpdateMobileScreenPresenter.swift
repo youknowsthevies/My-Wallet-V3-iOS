@@ -1,0 +1,177 @@
+//
+//  UpdateMobileScreenPresenter.swift
+//  Blockchain
+//
+//  Created by AlexM on 2/10/20.
+//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+import PlatformUIKit
+import PlatformKit
+import RxRelay
+import RxSwift
+import RxCocoa
+
+final class UpdateMobileScreenPresenter {
+    
+    // MARK: - Types
+    
+    typealias BadgeItem = BadgeAsset.Value.Presentation.BadgeItem
+    
+    private typealias LocalizationIDs = LocalizationConstants.Settings.UpdateMobile
+    
+    // MARK: - Public Properties
+    
+    let leadingButton: Screen.Style.LeadingButton = .back
+    
+    var titleView: Screen.Style.TitleView {
+        .text(value: LocalizationIDs.title)
+    }
+    
+    var barStyle: Screen.Style.Bar {
+        .darkContent(ignoresStatusBar: false, background: .white)
+    }
+    
+    var badgeState: Observable<LoadingState<BadgeItem>> {
+        badgeRelay.asObservable()
+    }
+    
+    var continueVisibility: Driver<Visibility> {
+        continueVisibilityRelay.asDriver()
+    }
+    
+    var updateVisibility: Driver<Visibility> {
+        updateVisibilityRelay.asDriver()
+    }
+    
+    let textField: TextFieldViewModel
+    let descriptionLabel: LabelContent
+    let continueButtonViewModel: ButtonViewModel
+    let updateButtonViewModel: ButtonViewModel
+    
+    private let continueVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
+    private let updateVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
+    private let badgeRelay = BehaviorRelay<LoadingState<BadgeItem>>(value: .loading)
+    private let setupInteractor: UpdateMobileScreenSetupInteractor
+    private let submissionInteractor: UpdateMobileScreenInteractor
+    private unowned let stateService: UpdateMobileStateServiceAPI
+    private let disposeBag = DisposeBag()
+    
+    init(stateService: UpdateMobileStateServiceAPI,
+         settingsAPI: MobileSettingsServiceAPI & SettingsServiceAPI = UserInformationServiceProvider.default.settings,
+         loadingViewPresenting: LoadingViewPresenting = LoadingViewPresenter.shared) {
+        self.stateService = stateService
+        textField = .init(
+            with: .mobile,
+            validator: TextValidationFactory.mobile,
+            formatting: TextFormatterFactory.mobile
+        )
+        
+        descriptionLabel = .init(
+            text: LocalizationIDs.description,
+            font: .mainMedium(14.0),
+            color: .textFieldText,
+            accessibility: .none
+        )
+        
+        continueButtonViewModel = .primary(with: "Continue")
+        updateButtonViewModel = .primary(with: "Update")
+        
+        submissionInteractor = UpdateMobileScreenInteractor(service: settingsAPI)
+        setupInteractor = UpdateMobileScreenSetupInteractor(service: settingsAPI)
+        
+        textField.state
+            .compactMap { $0.value }
+            .bind(to: submissionInteractor.contentRelay)
+            .disposed(by: disposeBag)
+        
+        setupInteractor.state
+            .compactMap { $0.value }
+            .map { $0.isSMSVerified ? .visible : .hidden }
+            .bind(to: updateVisibilityRelay)
+            .disposed(by: disposeBag)
+        
+        setupInteractor.state
+            .compactMap { $0.value }
+            .map { !$0.isSMSVerified ? .visible : .hidden }
+            .bind(to: continueVisibilityRelay)
+            .disposed(by: disposeBag)
+            
+        setupInteractor.state
+            .map { !$0.isLoading }
+            .bind(to: textField.isEnabledRelay)
+            .disposed(by: disposeBag)
+        
+        setupInteractor.state
+            .map { !$0.isLoading }
+            .bind(to:
+                continueButtonViewModel.isEnabledRelay,
+                updateButtonViewModel.isEnabledRelay
+            )
+            .disposed(by: disposeBag)
+        
+        setupInteractor.state
+            .compactMap { $0.value?.mobileNumber }
+            .bind(to: textField.textRelay)
+            .disposed(by: disposeBag)
+        
+        setupInteractor.state
+            .map { .init(with: $0) }
+            .bind(to: badgeRelay)
+            .disposed(by: disposeBag)
+        
+        textField.state
+            .map { $0.isValid }
+            .bind(to:
+                continueButtonViewModel.isEnabledRelay,
+                updateButtonViewModel.isEnabledRelay
+            )
+            .disposed(by: disposeBag)
+        
+        continueButtonViewModel.tapRelay
+            .bind(to: submissionInteractor.triggerRelay)
+            .disposed(by: disposeBag)
+        
+        updateButtonViewModel.tapRelay
+            .bind(to: submissionInteractor.triggerRelay)
+            .disposed(by: disposeBag)
+        
+        submissionInteractor.interactionState
+            .map { $0 != .updating }
+            .bind(to: continueButtonViewModel.isEnabledRelay)
+            .disposed(by: disposeBag)
+        
+        submissionInteractor.interactionState
+            .bind(weak: self, onNext: { (self, state) in
+                switch state {
+                case .ready:
+                    loadingViewPresenting.hide()
+                case .updating:
+                    loadingViewPresenting.show(with: .circle, text: nil)
+                case .complete:
+                    loadingViewPresenting.hide()
+                    stateService.nextRelay.accept(())
+                case .failed:
+                    self.setupInteractor.setupTrigger.accept(())
+                    loadingViewPresenting.hide()
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+}
+
+extension LoadingState where Content == BadgeAsset.Value.Presentation.BadgeItem {
+    init(with state: LoadingState<UpdateMobileScreenSetupInteractor.InteractionModel>) {
+        switch state {
+        case .loading:
+            self = .loading
+        case .loaded(next: let content):
+            self = .loaded(
+                next: .init(
+                    with: content.badgeItem
+                )
+            )
+        }
+    }
+}
+

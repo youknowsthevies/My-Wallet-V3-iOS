@@ -18,7 +18,9 @@ final class UserInformationServiceProvider: UserInformationServiceProviding {
                   EmailSettingsServiceAPI &
                   LastTransactionSettingsUpdateServiceAPI &
                   EmailNotificationSettingsServiceAPI &
-                  FiatCurrencySettingsServiceAPI
+                  FiatCurrencySettingsServiceAPI &
+                  MobileSettingsServiceAPI &
+                  SMSTwoFactorSettingsServiceAPI
     
     /// Computes and returns an email verification service API
     var emailVerification: EmailVerificationServiceAPI {

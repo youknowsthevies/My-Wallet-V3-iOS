@@ -7,8 +7,11 @@
 //
 
 import PlatformKit
+import PlatformUIKit
 import RxRelay
 import RxCocoa
+import RxSwift
+import ToolKit
 
 /// This enum aggregates possible action types that can be done in the dashboard
 enum SettingsScreenAction {
@@ -17,8 +20,12 @@ enum SettingsScreenAction {
     case promptGuidCopy
     case launchKYC
     case launchPIT
-    case showAboutScreen
+    case showAppStore
     case showBackupScreen
+    case showChangePinScreen
+    case showCurrencySelectionScreen
+    case showUpdateEmailScreen
+    case showUpdateMobileScreen
     case showURL(URL)
     case none
 }
@@ -29,6 +36,22 @@ final class SettingsScreenPresenter {
     
     private static let termsOfServiceURL = URL(string: Constants.Url.termsOfService)!
     private static let privacyURL = URL(string: Constants.Url.privacyPolicy)!
+    
+    // MARK: - Navigation Properties
+    
+    let trailingButton: Screen.Style.TrailingButton = .none
+    
+    var leadingButton: Screen.Style.LeadingButton {
+        if #available(iOS 13.0, *) {
+            return .none
+        } else {
+            return .close
+        }
+    }
+    
+    var barStyle: Screen.Style.Bar {
+        return .lightContent(ignoresStatusBar: false, background: .navigationBarBackground)
+    }
     
     // MARK: - Types
     
@@ -51,11 +74,11 @@ final class SettingsScreenPresenter {
                 case mobileVerification
                 case currencyPreference
                 case pitConnection
-                case twoStepVerification
                 case recoveryPhrase
             }
             
             enum SwitchCellType {
+                case sms2FA
                 case emailNotifications
                 case bioAuthentication
                 case swipeToReceive
@@ -69,7 +92,7 @@ final class SettingsScreenPresenter {
                 case loginToWebWallet
                 case changePassword
                 case changePIN
-                case about
+                case rateUs
                 case termsOfService
                 case privacyPolicy
                 case cookiesPolicy
@@ -98,9 +121,9 @@ final class SettingsScreenPresenter {
     // MARK: - Cell Presenters
     
     let mobileCellPresenter: MobileVerificationCellPresenter
-    let twoFactorCellPresenter: TwoFactorVerificationCellPresenter
     let emailCellPresenter: EmailVerificationCellPresenter
     let preferredCurrencyCellPresenter: PreferredCurrencyCellPresenter
+    let smsTwoFactorSwitchCellPresenter: SMSTwoFactorSwitchCellPresenter
     let emailNotificationsCellPresenter: EmailNotificationsSwitchCellPresenter
     let bioAuthenticationCellPresenter: BioAuthenticationSwitchCellPresenter
     let swipeReceiveCellPresenter: SwipeReceiveSwitchCellPresenter
@@ -108,13 +131,20 @@ final class SettingsScreenPresenter {
     let pitCellPresenter: PITConnectionCellPresenter
     let recoveryCellPresenter: RecoveryStatusCellPresenter
     let limitsCellPresenter: TierLimitsCellPresenter
+    
+    // MARK: - Public
+    
+    let selectionRelay = PublishRelay<Section.CellType>()
 
     // MARK: Private Properties
     
+    private unowned let router: SettingsRouterAPI
     private let interactor: SettingsScreenInteractor
-    private let actionRelay = PublishRelay<SettingsScreenAction>()
+    private let disposeBag = DisposeBag()
     
-    init(interactor: SettingsScreenInteractor = SettingsScreenInteractor()) {
+    init(interactor: SettingsScreenInteractor = SettingsScreenInteractor(),
+         router: SettingsRouterAPI) {
+        self.router = router
         self.interactor = interactor
         
         emailNotificationsCellPresenter = EmailNotificationsSwitchCellPresenter(service: interactor.emailNotificationsService)
@@ -123,9 +153,6 @@ final class SettingsScreenPresenter {
         )
         mobileCellPresenter = MobileVerificationCellPresenter(
             interactor: interactor.mobileVerificationBadgeInteractor
-        )
-        twoFactorCellPresenter = TwoFactorVerificationCellPresenter(
-            interactor: interactor.twoFactorVerificationBadgeInteractor
         )
         preferredCurrencyCellPresenter = PreferredCurrencyCellPresenter(
             interactor: interactor.preferredCurrencyBadgeInteractor
@@ -150,6 +177,12 @@ final class SettingsScreenPresenter {
         swipeReceiveCellPresenter = SwipeReceiveSwitchCellPresenter(
             appSettings: interactor.appSettings
         )
+        smsTwoFactorSwitchCellPresenter = SMSTwoFactorSwitchCellPresenter(service: interactor.smsTwoFactorService)
+        
+        selectionRelay
+            .map { $0.action }
+            .bind(to: router.actionRelay)
+            .disposed(by: disposeBag)
     }
     
     /// Should be called each time the `Settings` screen comes into view
@@ -157,35 +190,73 @@ final class SettingsScreenPresenter {
         interactor.refresh()
     }
     
-    // MARK: Private Functions
+    /// MARK: - Exposed
     
-    func action(from cellType: Section.CellType) -> SettingsScreenAction {
-        return cellType.action
+    func navigationBarLeadingButtonTapped() {
+        router.previousRelay.accept(())
     }
 }
 
 extension SettingsScreenPresenter.Section.CellType {
+    
+    var analyticsEvent: AnalyticsEvents.Settings? {
+        switch self {
+        case .badge(let type):
+            switch type {
+            case .currencyPreference,
+                 .limits,
+                 .pitConnection:
+                return nil
+            case .emailVerification:
+                return .settingsEmailClicked
+            case .mobileVerification:
+                return .settingsPhoneClicked
+            case .recoveryPhrase:
+                return .settingsRecoveryPhraseClick
+            }
+        case .switch:
+            return nil
+        case .clipboard(let type):
+            switch type {
+            case .walletID:
+                return .settingsWalletIdCopyClick
+            }
+        case .plain(let type):
+            switch type {
+            case .loginToWebWallet:
+                return .settingsWebWalletLoginClick
+            case .changePassword:
+                return .settingsPasswordClick
+            case .changePIN:
+                return .settingsChangePinClick
+            case .termsOfService,
+                 .privacyPolicy,
+                 .cookiesPolicy,
+                 .rateUs:
+                return nil
+            }
+        }
+    }
+    
     var action: SettingsScreenAction {
         switch self {
         case .badge(let type):
             switch type {
             case .currencyPreference:
-                break
+                return .showCurrencySelectionScreen
             case .limits:
                 return .launchKYC
             case .emailVerification:
-                break
+                return .showUpdateEmailScreen
             case .mobileVerification:
-                break
+                return .showUpdateMobileScreen
             case .pitConnection:
                 return .launchPIT
-            case .twoStepVerification:
-                break
             case .recoveryPhrase:
                 return .showBackupScreen
             }
         case .switch:
-            break
+            return .none
         case .clipboard(let type):
             switch type {
             case .walletID:
@@ -193,14 +264,14 @@ extension SettingsScreenPresenter.Section.CellType {
             }
         case .plain(let type):
             switch type {
-            case .about:
-                return .showAboutScreen
+            case .rateUs:
+                return .showAppStore
             case .loginToWebWallet:
                 return .launchWebLogin
             case .changePassword:
                 return .launchChangePassword
             case .changePIN:
-                break
+                return .showChangePinScreen
             case .termsOfService:
                 return .showURL(SettingsScreenPresenter.termsOfServiceURL)
             case .privacyPolicy,
@@ -208,7 +279,6 @@ extension SettingsScreenPresenter.Section.CellType {
                 return .showURL(SettingsScreenPresenter.privacyURL)
             }
         }
-        return .none
     }
 }
 
@@ -227,7 +297,7 @@ extension SettingsScreenPresenter.Section {
         case .connect:
             return [.badge(.pitConnection)]
         case .security:
-            var arrangement: [CellType] = [.badge(.twoStepVerification),
+            var arrangement: [CellType] = [.switch(.sms2FA),
                                            .plain(.changePassword),
                                            .badge(.recoveryPhrase),
                                            .plain(.changePIN),
@@ -239,7 +309,7 @@ extension SettingsScreenPresenter.Section {
             
             return arrangement
         case .about:
-            return [.plain(.about),
+            return [.plain(.rateUs),
                     .plain(.termsOfService),
                     .plain(.privacyPolicy),
                     .plain(.cookiesPolicy)]
@@ -278,8 +348,8 @@ extension SettingsScreenPresenter.Section.CellType.ClipboardCellType {
 extension SettingsScreenPresenter.Section.CellType.PlainCellType {
     var title: String {
         switch self {
-        case .about:
-            return LocalizationConstants.Settings.aboutUs
+        case .rateUs:
+            return LocalizationConstants.Settings.rateUs
         case .loginToWebWallet:
             return LocalizationConstants.Settings.loginToWebWallet
         case .changePassword:

@@ -206,3 +206,57 @@ extension SettingsService: EmailNotificationSettingsServiceAPI {
             .asCompletable()
     }
 }
+
+// MARK: - MobileSettingsServiceAPI
+
+extension SettingsService: MobileSettingsServiceAPI {
+    public func update(mobileNumber: String) -> Completable {
+        credentials
+            .flatMapCompletable(weak: self) { (self, payload) -> Completable in
+                self.client.update(
+                    smsNumber: mobileNumber,
+                    context: .settings,
+                    guid: payload.guid,
+                    sharedKey: payload.sharedKey
+                )
+        }
+        .flatMapSingle(weak: self) { (self) in
+            self.fetch()
+        }
+        .asCompletable()
+    }
+    
+    public func verify(with code: String) -> Completable {
+        credentials
+            .flatMapCompletable(weak: self) { (self, payload) -> Completable in
+                self.client.verifySMS(
+                    code: code,
+                    guid: payload.guid,
+                    sharedKey: payload.sharedKey
+                )
+        }
+        .flatMapSingle(weak: self) { (self) in
+            self.fetch()
+        }
+        .asCompletable()
+    }
+}
+
+// MARK: - SMSTwoFactorSettingsServiceAPI
+
+extension SettingsService: SMSTwoFactorSettingsServiceAPI {
+    public func smsTwoFactorAuthentication(enabled: Bool) -> Completable {
+        credentials
+            .flatMapCompletable(weak: self) { (self, payload) -> Completable in
+                self.client.smsTwoFactorAuthentication(
+                    enabled: enabled,
+                    guid: payload.guid,
+                    sharedKey: payload.sharedKey
+                )
+        }
+        .flatMapSingle(weak: self) { (self) in
+            self.fetch()
+        }
+        .asCompletable()
+    }
+}

@@ -119,8 +119,10 @@ class ExchangeEmailVerificationViewController: UIViewController, BottomButtonCon
         waitingLabel.attributedText = loadingAttributedText
         
         presenter.email
-            .subscribe(onSuccess: { [weak emailTextField] email in
-                emailTextField?.text = email
+            .subscribe(onSuccess: { [weak self] email in
+                guard let self = self else { return }
+                self.emailTextField.text = email
+                self.presenter.sendVerificationEmail(to: email, contextParameter: .exchangeSignup)
             })
             .disposed(by: bag)
         
@@ -132,7 +134,6 @@ class ExchangeEmailVerificationViewController: UIViewController, BottomButtonCon
             self.presenter.sendVerificationEmail(to: self.email, contextParameter: .exchangeSignup)
         }
         
-        presenter.sendVerificationEmail(to: email, contextParameter: .exchangeSignup)
         openMailButtonContainer.actionBlock = {
             UIApplication.shared.openMailApplication()
         }

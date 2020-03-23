@@ -61,6 +61,7 @@ target 'PlatformUIKit' do
   pod 'RxCocoa', '5.0'
   pod 'zxcvbn-ios', '1.0.4'
   pod 'Charts', '~> 3.4.0'
+  pod 'PhoneNumberKit', '~> 2.1'
 
   target 'PlatformUIKitTests' do
     inherit! :search_paths

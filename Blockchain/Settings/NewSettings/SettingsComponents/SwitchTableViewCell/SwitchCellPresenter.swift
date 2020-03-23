@@ -29,6 +29,19 @@ class EmailNotificationsSwitchCellPresenter: SwitchCellPresenting {
     }
 }
 
+class SMSTwoFactorSwitchCellPresenter: SwitchCellPresenting {
+    let labelContentPresenting: LabelContentPresenting
+    let switchViewPresenting: SwitchViewPresenting
+    
+    init(service: SMSTwoFactorSettingsServiceAPI & SettingsServiceAPI) {
+        labelContentPresenting = DefaultLabelContentPresenter(
+            knownValue: LocalizationConstants.Settings.twoFactorAuthentication,
+            descriptors: .settings
+        )
+        switchViewPresenting = SMSSwitchViewPresenter(service: service)
+    }
+}
+
 class BioAuthenticationSwitchCellPresenter: SwitchCellPresenting {
     
     let labelContentPresenting: LabelContentPresenting

@@ -86,6 +86,8 @@ extension Accessibility.Identifier {
         static let walletIdentifier = "\(prefix)walletIdentifier"
         static let recoveryPhrase = "\(prefix)recoveryPhrase"
         static let backupVerfication = "\(prefix)backupVerfication"
+        static let mobileVerification = "\(prefix)mobileVerification"
+        static let oneTimeCode = "\(prefix)oneTimeCode"
     }
 }
 

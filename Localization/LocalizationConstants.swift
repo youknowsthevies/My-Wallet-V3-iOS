@@ -2308,7 +2308,6 @@ public struct LocalizationConstants {
                 public static let failed = NSLocalizedString("Failed", comment: "Verification Failed")
             }
             public static let mobileNumber = NSLocalizedString("Mobile Number", comment: "Mobile Number")
-            public static let twoFactorAuthentication = NSLocalizedString("2-Step Verification", comment: "2-Step Verification")
             public static let email = NSLocalizedString("Email", comment: "Email")
             public static let blockchainExchange = NSLocalizedString("Blockchain Exchange", comment: "Blockchain Exchange")
             public static let recoveryPhrase = NSLocalizedString("Backup phrase", comment: "Backup phrase")
@@ -2317,16 +2316,22 @@ public struct LocalizationConstants {
             public static let localCurrency = NSLocalizedString("Local Currency", comment: "Local Currency")
         }
         
+        public struct About {
+            public static let version = NSLocalizedString("Wallet Version", comment: "Wallet Version")
+            public static let copyright = NSLocalizedString("© 2020 Blockchain Luxembourg S.A. All rights reserved.", comment: "© 2020 Blockchain Luxembourg S.A. All rights reserved.")
+        }
+        
         public static let emailNotifications = NSLocalizedString("Email Notifications", comment: "Email Notifications")
         public static let notificationsDisabled = NSLocalizedString(
             """
         You currently have email notifications enabled. Changing your email will disable email notifications.
         """, comment: "")
+        public static let twoFactorAuthentication = NSLocalizedString("2-Step Verification", comment: "2-Step Verification")
         public static let cookiePolicy = NSLocalizedString("Cookie Policy", comment: "Cookie Policy")
         public static let allRightsReserved = NSLocalizedString("All rights reserved.", comment: "All rights reserved")
         public static let useBiometricsAsPin = NSLocalizedString("Use %@ as PIN", comment: "")
         public static let walletID = NSLocalizedString("Wallet ID", comment: "Wallet ID")
-        public static let aboutUs = NSLocalizedString("About Us", comment: "About Us")
+        public static let rateUs = NSLocalizedString("Rate Us", comment: "Rate Us")
         public static let termsOfService = NSLocalizedString("Terms of Service", comment: "Terms of Service")
         public static let privacyPolicy = NSLocalizedString("Privacy Policy", comment: "Privacy Policy")
         public static let cookiesPolicy = NSLocalizedString("Cookies Policy", comment: "Cookies Policy")
@@ -2336,6 +2341,45 @@ public struct LocalizationConstants {
         public static let enableTouchID = NSLocalizedString("Enable Touch ID", comment: "Enable Touch ID")
         public static let enableFaceID = NSLocalizedString("Enable Face ID", comment: "Enable Face ID")
         public static let swipeToReceive = NSLocalizedString("Swipe to Receive", comment: "Swipe to Receive")
+        
+        public struct UpdateMobile {
+            public static let title = NSLocalizedString("Mobile Number", comment: "Mobile Number")
+            public static let description = NSLocalizedString(
+                "Your mobile phone can be used to enable two-factor authentication or to receive alerts.",
+                comment: "Your mobile phone can be used to enable two-factor authentication or to receive alerts."
+            )
+            public static let action = NSLocalizedString("Update", comment: "Update")
+        }
+        
+        public struct MobileCodeEntry {
+            public static let title = NSLocalizedString(
+                "Enter 5-character code",
+                comment: "Enter 5-character code"
+            )
+            public static let description = NSLocalizedString(
+                "Please enter the 5-character code sent to your number",
+                comment: "Please enter the 5-character code sent to your number"
+            )
+            public static let changeNumber = NSLocalizedString("Change my number", comment: "change my number")
+            public static let resendCode = NSLocalizedString("Resend Code", comment: "resend code")
+            public static let confirm = NSLocalizedString("Confirm", comment: "confirm")
+        }
+        
+        public struct UpdateEmail {
+            public static let title = NSLocalizedString("Email", comment: "Email")
+            public static let description = NSLocalizedString(
+                "Your verified email address is used to send payment alerts, ID reminders, and login codes.",
+                comment: "Your verified email address is used to send payment alerts, ID reminders, and login codes."
+            )
+            public static let update = NSLocalizedString("Update", comment: "Update")
+            public static let resend = NSLocalizedString("Resend", comment: "Resend")
+        }
+        
+        public struct ChangePassword {
+            public static let title = NSLocalizedString("Change my password", comment: "change password")
+            public static let description = NSLocalizedString("Enter your current password. Then enter and confirm your new password.", comment: "Enter your current password. Then enter and confirm your new password.")
+            public static let action = NSLocalizedString("Update Password", comment: "Update Password")
+        }
     }
     
     public struct BackupFundsScreen {

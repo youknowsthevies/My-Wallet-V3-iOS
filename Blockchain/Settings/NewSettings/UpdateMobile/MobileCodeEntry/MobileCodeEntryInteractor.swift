@@ -1,0 +1,159 @@
+//
+//  MobileCodeEntryInteractor.swift
+//  Blockchain
+//
+//  Created by AlexM on 3/3/20.
+//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+import RxSwift
+import RxRelay
+import PlatformKit
+import ToolKit
+
+final class MobileCodeEntryInteractor {
+    
+    // MARK: - Public
+    
+    enum InteractionState {
+        
+        enum ErrorType {
+            /// An error occured resending the code
+            case resending
+            
+            /// An error occured verifying the code
+            case verifying
+        }
+        
+        /// Code entry is ready
+        case ready
+        
+        /// The code is being resent
+        case resending
+        
+        /// The user is submitting a code entry
+        case submitting
+        
+        /// The code was successfully submitted and verified
+        case verified
+        
+        /// There was an error verifying or resending the code
+        case error(ErrorType)
+        
+        /// An unknown state
+        case unknown
+        
+        var isComplete: Bool {
+           switch self {
+           case .verified:
+                return true
+           default:
+                return false
+            }
+        }
+        
+        var isReady: Bool {
+            switch self {
+            case .ready,
+                 .verified,
+                 .error,
+                 .unknown:
+                return true
+            default:
+                return false
+            }
+        }
+        
+        var isLoading: Bool {
+            switch self {
+            case .resending,
+                 .submitting:
+                return true
+            default:
+                return false
+            }
+        }
+    }
+    
+    enum Action {
+        /// Resend the 4-Digit code
+        case resend
+        
+        /// Verify the 4-Digit code
+        case verify
+    }
+    
+    var actionRelay = PublishRelay<Action>()
+    var contentRelay = BehaviorRelay<String>(value: "")
+    var state: Observable<InteractionState> {
+        stateRelay.asObservable()
+    }
+    
+    // MARK: - Private Accessors
+    
+    private let verificationInteractor: VerifyCodeEntryInteractor
+    private let updateMobileInteractor: UpdateMobileScreenInteractor
+    private let stateRelay = BehaviorRelay<InteractionState>(value: .ready)
+    private let disposeBag = DisposeBag()
+    
+    init(service: MobileSettingsServiceAPI & SettingsServiceAPI) {
+        verificationInteractor = VerifyCodeEntryInteractor(service: service)
+        updateMobileInteractor = UpdateMobileScreenInteractor(service: service)
+        
+        Observable.combineLatest(verificationInteractor.interactionState,
+                                 updateMobileInteractor.interactionState)
+            .map { payload -> InteractionState in
+                let verification = payload.0
+                let update = payload.1
+                switch (verification, update) {
+                case (.complete, .complete),
+                     (.complete, .ready):
+                    return .verified
+                case (.ready, .ready):
+                    return .ready
+                case (.verifying, .ready):
+                    return .submitting
+                case (.failed, .ready):
+                    return .error(.verifying)
+                case (.ready, .updating):
+                    return .resending
+                case (.ready, .complete):
+                    return .ready
+                case (.ready, .failed):
+                    return .error(.resending)
+                default:
+                    return .unknown
+                }
+            }
+            .bind(to: stateRelay)
+            .disposed(by: disposeBag)
+        
+        actionRelay
+            .bind(weak: self) { (self, action) in
+                switch action {
+                case .resend:
+                    self.resend()
+                case .verify:
+                    self.verify()
+                }
+            }
+            .disposed(by: disposeBag)
+        
+        contentRelay
+            .bind(to: verificationInteractor.contentRelay)
+            .disposed(by: disposeBag)
+        
+        service.valueObservable
+            .compactMap { $0.smsNumber }
+            .bind(to: updateMobileInteractor.contentRelay)
+            .disposed(by: disposeBag)
+    }
+    
+    private func resend() {
+        updateMobileInteractor.triggerRelay.accept(())
+    }
+    
+    private func verify() {
+        verificationInteractor.triggerRelay.accept(())
+    }
+}

@@ -24,6 +24,20 @@ extension Reactive where Base: UITextField {
         }
     }
     
+    /// Bindable for `keyboardType` property
+    public var keyboardType: Binder<UIKeyboardType> {
+        return Binder(self.base) { textField, keyboardType in
+            textField.keyboardType = keyboardType
+        }
+    }
+    
+    /// Bindable for `autocapitalizationType` property
+    public var autocapitalizationType: Binder<UITextAutocapitalizationType> {
+        return Binder(self.base) { textField, autocapitalizationType in
+            textField.autocapitalizationType = autocapitalizationType
+        }
+    }
+    
     /// Bindable for `placeholderAttributedText` property
     public var placeholderAttributedText: Binder<NSAttributedString?> {
         return Binder(self.base) { textField, placeholder in

@@ -16,6 +16,7 @@ public struct SettingsResponse {
     let email: String
     let guid: String
     let emailNotificationsEnabled: Bool
+    let smsNumber: String?
     let smsVerified: Bool
     let emailVerified: Bool
     let authenticator: Int
@@ -29,6 +30,7 @@ extension SettingsResponse: Decodable {
         case currency
         case email
         case guid
+        case smsNumber = "sms_number"
         case smsVerified = "sms_verified"
         case emailVerified = "email_verified"
         case authenticator = "auth_type"
@@ -43,6 +45,7 @@ extension SettingsResponse: Decodable {
         currency = try values.decode(String.self, forKey: .currency)
         email = try values.decode(String.self, forKey: .email)
         guid = try values.decode(String.self, forKey: .guid)
+        smsNumber = try? values.decodeIfPresent(String.self, forKey: .smsNumber)
         smsVerified = try values.decode(Int.self, forKey: .smsVerified) == 1
         emailVerified = try values.decode(Int.self, forKey: .emailVerified) == 1
         authenticator = try values.decode(Int.self, forKey: .authenticator)

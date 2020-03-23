@@ -14,6 +14,7 @@ public struct WalletSettings {
     public let language: String
     public let fiatCurrency: String
     public let email: String
+    public let smsNumber: String?
     public let isSMSVerified: Bool
     public let isEmailNotificationsEnabled: Bool
     public let isEmailVerified: Bool
@@ -28,6 +29,7 @@ public struct WalletSettings {
         language = response.language
         fiatCurrency = response.currency
         email = response.email
+        smsNumber = response.smsNumber
         isSMSVerified = response.smsVerified
         isEmailVerified = response.emailVerified
         isEmailNotificationsEnabled = response.emailNotificationsEnabled

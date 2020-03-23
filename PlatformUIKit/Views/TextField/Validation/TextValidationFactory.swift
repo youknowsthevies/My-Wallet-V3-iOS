@@ -38,4 +38,8 @@ public final class TextValidationFactory {
     public static func word(value: String) -> TextValidating {
         return WordValidator(word: value)
     }
+    
+    public static var mobile: TextValidating {
+        return MobileNumberValidator()
+    }
 }

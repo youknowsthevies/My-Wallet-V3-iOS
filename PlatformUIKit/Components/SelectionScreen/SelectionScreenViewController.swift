@@ -15,7 +15,7 @@ public final class SelectionScreenViewController: BaseScreenViewController {
 
     // MARK: - IBOutlets
     
-    @IBOutlet private weak var tableView: UITableView!
+    @IBOutlet private var tableView: UITableView!
     
     // MARK: - Injected
     
@@ -47,8 +47,14 @@ public final class SelectionScreenViewController: BaseScreenViewController {
     
     private func setupNavigationBar() {
         titleViewStyle = .text(value: presenter.title)
+        
+        var leading: Screen.Style.LeadingButton = .close
+        if let navController = navigationController {
+            leading = navController.viewControllers.count > 1 ? .back : .close
+        }
         set(barStyle: .lightContent(ignoresStatusBar: false, background: .navigationBarBackground),
-            leadingButtonStyle: .close, trailingButtonStyle: .none)
+            leadingButtonStyle: leading,
+            trailingButtonStyle: .none)
     }
     
     private func setupTableView() {

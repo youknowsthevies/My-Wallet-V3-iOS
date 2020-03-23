@@ -40,11 +40,11 @@ import PlatformKit
     private let appFeatureConfiguratorProvider: () -> AppFeatureConfigurator
 
     let airdropRouter: AirdropRouterAPI
+    private var settingsRouterAPI: SettingsRouterAPI?
     private var simpleBuyRouter: SimpleBuyRouterAPI!
 
     // MARK: - UIViewController Properties
-
-    @objc private var settingsNavigationController: SettingsNavigationController?
+    
     @objc var slidingViewController: ECSlidingViewController!
     @objc var tabControllerManager = TabControllerManager.makeFromStoryboard()
     private(set) var sideMenuViewController: SideMenuViewController!
@@ -168,23 +168,9 @@ import PlatformKit
         UIApplication.shared.keyWindow?.rootViewController?.topMostViewController?.present(backupController, animated: true)
     }
 
-    @objc func showSettingsView(completion: ((_ settingViewController: SettingsNavigationController) -> Void)? = nil) {
-        
-        let storyboard = UIStoryboard(name: "Settings", bundle: nil)
-        let viewController = storyboard.instantiateViewController(
-            withIdentifier: "SettingsNavigationController"
-        ) as! SettingsNavigationController
-        viewController.showSettings()
-        viewController.modalPresentationStyle = .fullScreen
-        viewController.modalTransitionStyle = .coverVertical
-        UIApplication.shared.keyWindow?.rootViewController?.topMostViewController?.present(
-            viewController,
-            animated: true
-        ) {
-            completion?(viewController)
-        }
-
-        settingsNavigationController = viewController
+    func showSettingsView() {
+        settingsRouterAPI = SettingsRouter(currencyRouting: self, tabSwapping: self)
+        settingsRouterAPI?.presentSettings()
     }
 
     @objc func closeSideMenu() {
@@ -201,7 +187,6 @@ import PlatformKit
     @objc func reload() {
         tabControllerManager.reload()
         accountsAndAddressesNavigationController.reload()
-        settingsNavigationController?.reload()
         sideMenuViewController?.reload()
         
         NotificationCenter.default.post(name: Constants.NotificationKeys.reloadToDismissViews, object: nil)
@@ -240,8 +225,7 @@ import PlatformKit
                 tabControllerManager.receiveBitcoinViewController?.paymentReceived(UInt64(abs(transaction.amount)))
             }
         }
-
-        settingsNavigationController?.reloadAfterMultiAddressResponse()
+        
         tabControllerManager.reloadAfterMultiAddressResponse()
         accountsAndAddressesNavigationController.reload()
         sideMenuViewController?.reload()

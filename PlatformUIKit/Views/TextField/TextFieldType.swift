@@ -34,6 +34,12 @@ public enum TextFieldType {
     /// A single word from the mnemonic used for backup verification.
     /// The index is the index of the word in the mnemonic.
     case backupVerfication(index: Int)
+    
+    /// Mobile phone number entry
+    case mobile
+    
+    /// One time code entry
+    case oneTimeCode
 }
 
 // MARK: - Information Sensitivity
@@ -48,9 +54,11 @@ extension TextFieldType {
              .newPassword,
              .confirmNewPassword,
              .recoveryPhrase,
-             .backupVerfication:
+             .backupVerfication,
+             .oneTimeCode:
             return true
-        case .email:
+        case .email,
+             .mobile:
             return false
         }
     }
@@ -76,6 +84,10 @@ extension TextFieldType {
             return Accessibility(id: .value(Accessibility.Identifier.TextFieldView.recoveryPhrase))
         case .backupVerfication:
             return Accessibility(id: .value(Accessibility.Identifier.TextFieldView.backupVerfication))
+        case .mobile:
+            return Accessibility(id: .value(Accessibility.Identifier.TextFieldView.mobileVerification))
+        case .oneTimeCode:
+            return Accessibility(id: .value(Accessibility.Identifier.TextFieldView.oneTimeCode))
         }
     }
 }
@@ -88,13 +100,15 @@ extension TextFieldType {
     var showsHintWhileTyping: Bool {
         switch self {
         case .email,
-             .backupVerfication:
+             .backupVerfication,
+             .mobile:
             return false
         case .password,
              .newPassword,
              .confirmNewPassword,
              .walletIdentifier,
-             .recoveryPhrase:
+             .recoveryPhrase,
+             .oneTimeCode:
             return true
         }
     }
@@ -116,8 +130,46 @@ extension TextFieldType {
             return LocalizationConstants.TextField.Placeholder.recoveryPhrase
         case .walletIdentifier:
             return LocalizationConstants.TextField.Placeholder.walletIdentifier
+        case .mobile:
+            return LocalizationConstants.TextField.Placeholder.mobile
+        case .oneTimeCode:
+            return LocalizationConstants.TextField.Placeholder.oneTimeCode
         case .backupVerfication(index: let index):
             return index.placeholder
+        }
+    }
+    
+    // `UIKeyboardType` of the textField
+    var keyboardType: UIKeyboardType {
+        switch self {
+        case .email:
+            return .emailAddress
+        case .walletIdentifier,
+             .newPassword,
+             .confirmNewPassword,
+             .password,
+             .recoveryPhrase,
+             .backupVerfication,
+             .oneTimeCode:
+            return .default
+        case .mobile:
+            return .phonePad
+        }
+    }
+    
+    var autocapitalizationType: UITextAutocapitalizationType {
+        switch self {
+        case .oneTimeCode:
+            return .allCharacters
+        case .backupVerfication,
+             .recoveryPhrase,
+             .password,
+             .newPassword,
+             .confirmNewPassword,
+             .walletIdentifier,
+             .email,
+             .mobile:
+            return .none
         }
     }
 }
@@ -158,7 +210,6 @@ fileprivate extension Int {
     
 }
 
-
 // MARK: - Secure
 
 extension TextFieldType {
@@ -166,7 +217,12 @@ extension TextFieldType {
     /// Returns `true` if the text-field's input has to be secure
     var isSecure: Bool {
         switch self {
-        case .email, .walletIdentifier, .recoveryPhrase, .backupVerfication:
+        case .email,
+             .walletIdentifier,
+             .recoveryPhrase,
+             .backupVerfication,
+             .mobile,
+             .oneTimeCode:
             return false
         case .newPassword, .confirmNewPassword, .password:
             return true
@@ -193,6 +249,8 @@ extension TextFieldType {
     /// drive auto-fill behavior.
     var contentType: UITextContentType? {
         switch self {
+        case .mobile:
+            return .telephoneNumber
         case .recoveryPhrase,
              .backupVerfication:
             return nil
@@ -200,6 +258,12 @@ extension TextFieldType {
             return .username
         case .email:
             return .emailAddress
+        case .oneTimeCode:
+            if #available(iOS 12.0, *) {
+                return .oneTimeCode
+            } else {
+                return UITextContentType(rawValue: "")
+            }
         case .newPassword, .confirmNewPassword, .password:
             /// Disable password suggestions (avoid setting `.password` as value)
             return UITextContentType(rawValue: "")

@@ -116,6 +116,25 @@ public final class SettingsClient: SettingsClientAPI {
         )
     }
     
+    /// Updates the sms number
+    /// - Parameter smsNumber: The mobile number value.
+    /// - Parameter context: The context in which the update is happening.
+    /// - Parameter guid: The wallet identifier that must be valid.
+    /// - Parameter sharedKey: A shared key that must be valid.
+    /// - Returns: a `Completable`.
+    public func update(smsNumber: String,
+                       context: FlowContext?,
+                       guid: String,
+                       sharedKey: String) -> Completable {
+        return update(
+            guid: guid,
+            sharedKey: sharedKey,
+            method: .updateSms,
+            payload: smsNumber,
+            context: context
+        )
+    }
+    
     public func emailNotifications(enabled: Bool, guid: String, sharedKey: String) -> Completable {
         return update(
             guid: guid,
@@ -129,6 +148,24 @@ public final class SettingsClient: SettingsClientAPI {
                 method: .updateNotificationOn,
                 payload: enabled ? "1" : "0"
             )
+        )
+    }
+    
+    public func verifySMS(code: String, guid: String, sharedKey: String) -> Completable {
+        return update(
+            guid: guid,
+            sharedKey: sharedKey,
+            method: .verifySms,
+            payload: code
+        )
+    }
+    
+    public func smsTwoFactorAuthentication(enabled: Bool, guid: String, sharedKey: String) -> Completable {
+        return update(
+            guid: guid,
+            sharedKey: sharedKey,
+            method: .updateAuthType,
+            payload: enabled ? "5" : "0"
         )
     }
     

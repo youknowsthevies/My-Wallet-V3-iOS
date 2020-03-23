@@ -9,22 +9,35 @@
 import RxSwift
 import RxRelay
 import RxCocoa
-import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
-class EmailSwitchViewPresenter: SwitchViewPresenting {
+final class EmailSwitchViewPresenter: SwitchViewPresenting {
+    
+    // MARK: - Types
+    
+    private typealias AnalyticsEvent = AnalyticsEvents.Settings
+    
+    // MARK: - Public
     
     let viewModel = SwitchViewModel.primary()
+    
+    // MARK: - Private
     
     private let interactor: SwitchViewInteracting
     private let disposeBag = DisposeBag()
     
-    init(service: EmailNotificationSettingsServiceAPI & SettingsServiceAPI) {
+    init(service: EmailNotificationSettingsServiceAPI & SettingsServiceAPI,
+         analyticsRecording: AnalyticsEventRecording = AnalyticsEventRecorder.shared) {
         interactor = EmailSwitchViewInteractor(service: service)
         
         viewModel.isSwitchedOnRelay
             .bind(to: interactor.switchTriggerRelay)
+            .disposed(by: disposeBag)
+        
+        viewModel.isSwitchedOnRelay
+            .bind { analyticsRecording.record(event: AnalyticsEvent.settingsEmailNotifSwitch(value: $0)) }
             .disposed(by: disposeBag)
         
         interactor.state

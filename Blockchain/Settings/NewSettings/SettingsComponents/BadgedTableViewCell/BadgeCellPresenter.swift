@@ -43,27 +43,6 @@ final class MobileVerificationCellPresenter: BadgeCellPresenting {
 }
 
 /// A `BadgeCellPresenting` class for showing the user's 2FA verification status
-final class TwoFactorVerificationCellPresenter: BadgeCellPresenting {
-    
-    // MARK: - Properties
-    
-    let labelContentPresenting: LabelContentPresenting
-    let badgeAssetPresenting: BadgeAssetPresenting
-    
-    // MARK: - Setup
-    
-    init(interactor: TwoFactorVerificationBadgeInteractor) {
-        labelContentPresenting = DefaultLabelContentPresenter(
-            knownValue: LocalizationConstants.Settings.Badge.twoFactorAuthentication,
-            descriptors: .settings
-        )
-        badgeAssetPresenting = TwoFactorVerificationBadgePresenter(
-            interactor: interactor
-        )
-    }
-}
-
-/// A `BadgeCellPresenting` class for showing the user's 2FA verification status
 final class EmailVerificationCellPresenter: BadgeCellPresenting {
     
     // MARK: - Properties

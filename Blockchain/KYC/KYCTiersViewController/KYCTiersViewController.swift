@@ -338,6 +338,11 @@ extension KYCTiersViewController {
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { model in
                 let controller = KYCTiersViewController.make(with: model)
+                if let from = fromViewController as? UINavigationController {
+                    from.pushViewController(controller, animated: true)
+                    return
+                }
+                
                 if let from = fromViewController as? UIViewControllerTransitioningDelegate {
                     controller.transitioningDelegate = from
                 }

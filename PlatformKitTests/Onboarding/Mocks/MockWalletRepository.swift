@@ -11,7 +11,6 @@ import RxSwift
 @testable import PlatformKit
 
 final class MockWalletRepository: WalletRepositoryAPI {
-
     private var expectedSessionToken: String?
     private var expectedAuthenticatorType: AuthenticatorType = .standard
     private var expectedGuid: String?
@@ -78,7 +77,11 @@ final class MockWalletRepository: WalletRepositoryAPI {
             self?.expectedSessionToken = nil
         }
     }
-    
+
+    func sync() -> Completable {
+        return perform { }
+    }
+
     private func perform(_ operation: @escaping () -> Void) -> Completable {
         return Completable
             .create { observer -> Disposable in

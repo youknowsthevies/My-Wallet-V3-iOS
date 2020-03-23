@@ -126,6 +126,14 @@ public class TextFieldView: UIView {
             .drive(rx.gestureMessage)
             .disposed(by: disposeBag)
         
+        viewModel.keyboardType
+            .bind(to: textField.rx.keyboardType)
+            .disposed(by: disposeBag)
+        
+        viewModel.isEnabled
+            .bind(to: textField.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
         viewModel.focusRelay
             .bind { [weak self] shouldGainFocus in
                 guard let self = self else { return }
@@ -159,7 +167,17 @@ extension TextFieldView: UITextFieldDelegate {
         let text = textField.text ?? ""
         let input = (text as NSString).replacingCharacters(in: range, with: string)
         viewModel.textFieldEdited(with: input)
-        return true
+        // TICKET: IOS-3097
+        /// If the formatter has not altered the textInput
+        /// then we return `true`, otherwise we want to
+        /// replace the value in the `UITextField` with the
+        /// correctly formatted value.
+        if textField.text == viewModel.textRelay.value {
+            return true
+        } else {
+            textField.text = viewModel.textRelay.value
+            return false
+        }
     }
     
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {

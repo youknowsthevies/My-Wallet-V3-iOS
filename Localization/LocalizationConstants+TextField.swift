@@ -31,7 +31,9 @@ public extension LocalizationConstants {
                 "Wallet Identifier",
                 comment: "Placeholder for wallet identifier text field"
             )
+            public static let mobile = NSLocalizedString("Mobile Number", comment: "Placeholder for mobile number entry")
             public static let word = NSLocalizedString("word", comment: "Partial placeholder for mnemonic word entry. e.g. \"1st word\" ")
+            public static let oneTimeCode = NSLocalizedString("XXXX", comment: "Placeholder for a one time code.")
         }
         
         public struct PasswordScore {
@@ -58,6 +60,7 @@ public extension LocalizationConstants {
                 "Email address is not valid",
                 comment: "Error label when email address is not valid"
             )
+            public static let invalidMobile = NSLocalizedString("Invalid mobile number", comment: "Error label when the mobile number is incorrect")
             public static let invalidRecoveryPhrase = NSLocalizedString(
                 "Invalid recovery phrase. Please try again,",
                 comment: "Error label when the recovery phrase is incorrect"
@@ -66,6 +69,7 @@ public extension LocalizationConstants {
                 "Wallet id is not valid",
                 comment: "Error label when wallet id is not valid"
             )
+            public static let invalidCode = NSLocalizedString("Invalid Code", comment: "The four digit code is invalid")
             public static let recoveryMismatch = NSLocalizedString(
                 "The word does not match your Recovery Phrase",
                 comment: "Error label when the word does not match the word in the mnemonic."

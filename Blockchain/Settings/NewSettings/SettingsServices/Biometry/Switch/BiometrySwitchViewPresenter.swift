@@ -11,19 +11,33 @@ import RxRelay
 import RxCocoa
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
-class BiometrySwitchViewPresenter: SwitchViewPresenting {
+final class BiometrySwitchViewPresenter: SwitchViewPresenting {
     
-    var viewModel: SwitchViewModel = .primary()
+    // MARK: - Types
+    
+    private typealias AnalyticsEvent = AnalyticsEvents.Settings
+    
+    // MARK: - Public
+    
+    let viewModel: SwitchViewModel = .primary()
+    
+    // MARK: - Proviate
     
     private let interactor: SwitchViewInteracting
     private let disposeBag = DisposeBag()
     
-    init(settingsAuthenticating: AppSettingsAuthenticating) {
+    init(settingsAuthenticating: AppSettingsAuthenticating,
+         analyticsRecording: AnalyticsEventRecording = AnalyticsEventRecorder.shared) {
         interactor = BiometrySwitchViewInteractor(settingsAuthenticating: settingsAuthenticating)
         
         viewModel.isSwitchedOnRelay
             .bind(to: interactor.switchTriggerRelay)
+            .disposed(by: disposeBag)
+        
+        viewModel.isSwitchedOnRelay
+            .bind { analyticsRecording.record(event: AnalyticsEvent.settingsBiometryAuthSwitch(value: $0)) }
             .disposed(by: disposeBag)
         
         interactor.state

@@ -9,6 +9,7 @@
 import PlatformUIKit
 import RxSwift
 import RxCocoa
+import ToolKit
 
 final class SettingsViewController: BaseScreenViewController {
     
@@ -18,19 +19,15 @@ final class SettingsViewController: BaseScreenViewController {
     
     // MARK: - Private Properties
     
+    private let analyticsRecording: AnalyticsEventRecording
     private let presenter: SettingsScreenPresenter
     private let disposeBag = DisposeBag()
     
-    // TODO: Move to presenter
-    private lazy var router: SettingsRouter = {
-        return SettingsRouter(rootViewController: self,
-                              currencyRouting: AppCoordinator.shared,
-                              tabSwapping: AppCoordinator.shared)
-    }()
-    
     // MARK: - Setup
     
-    init(presenter: SettingsScreenPresenter = SettingsScreenPresenter()) {
+    init(presenter: SettingsScreenPresenter,
+         analyticsRecording: AnalyticsEventRecording = AnalyticsEventRecorder.shared) {
+        self.analyticsRecording = analyticsRecording
         self.presenter = presenter
         super.init(nibName: SettingsViewController.objectName, bundle: nil)
     }
@@ -45,21 +42,32 @@ final class SettingsViewController: BaseScreenViewController {
         super.viewDidLoad()
         title = LocalizationConstants.settings
         setupTableView()
-        setupNavigationBar()
         presenter.refresh()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavigationBar()
     }
     
     // MARK: - Private Functions
     
     private func setupNavigationBar() {
         titleViewStyle = .text(value: LocalizationConstants.settings)
-        set(barStyle: .darkContent(ignoresStatusBar: false, background: .background),
-            leadingButtonStyle: .none)
+        set(barStyle: presenter.barStyle,
+            leadingButtonStyle: presenter.leadingButton,
+            trailingButtonStyle: presenter.trailingButton
+        )
     }
     
     private func setupTableView() {
         tableView.backgroundColor = .background
-        tableView.tableFooterView = UIView()
+        tableView.tableFooterView = AboutView()
+        tableView.tableFooterView?.frame = .init(
+            origin: .zero,
+            size: .init(width: tableView.bounds.width,
+                        height: AboutView.estimatedHeight(for: tableView.bounds.width))
+        )
         tableView.estimatedRowHeight = 80
         tableView.estimatedSectionHeaderHeight = 70
         tableView.sectionHeaderHeight = UITableView.automaticDimension
@@ -69,6 +77,10 @@ final class SettingsViewController: BaseScreenViewController {
         tableView.registerNibCell(BadgeTableViewCell.objectName)
         tableView.registerNibCell(PlainTableViewCell.objectName)
         tableView.registerHeaderView(TableHeaderView.objectName)
+    }
+    
+    override func navigationBarLeadingButtonPressed() {
+        presenter.navigationBarLeadingButtonTapped()
     }
 }
 
@@ -109,18 +121,24 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
         case .switch(let type):
             cell = switchCell(for: indexPath, type: type)
         }
+        cell.selectionStyle = .none
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let section = presenter.sectionArrangement[indexPath.section]
         let cellType = section.cellArrangement[indexPath.row]
-        router.handle(selection: cellType)
+        if let event = cellType.analyticsEvent {
+            analyticsRecording.record(event: event)
+        }
+        presenter.selectionRelay.accept(cellType)
     }
     
     private func switchCell(for indexPath: IndexPath, type: SettingsScreenPresenter.Section.CellType.SwitchCellType) -> SwitchTableViewCell {
         let cell = tableView.dequeue(SwitchTableViewCell.self, for: indexPath)
         switch type {
+        case .sms2FA:
+            cell.presenter = presenter.smsTwoFactorSwitchCellPresenter
         case .emailNotifications:
             cell.presenter = presenter.emailNotificationsCellPresenter
         case .bioAuthentication:
@@ -150,8 +168,6 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
             cell.presenter = presenter.limitsCellPresenter
         case .mobileVerification:
             cell.presenter = presenter.mobileCellPresenter
-        case .twoStepVerification:
-            cell.presenter = presenter.twoFactorCellPresenter
         case .emailVerification:
             cell.presenter = presenter.emailCellPresenter
         case .pitConnection:

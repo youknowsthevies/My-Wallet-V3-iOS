@@ -56,8 +56,10 @@ const float qrSize = 230;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    SettingsNavigationController *navigationController = (SettingsNavigationController *)self.navigationController;
-    navigationController.headerLabel.text = BC_STRING_LOG_IN_TO_WEB_WALLET;
+    if ([self.navigationController isKindOfClass:[SettingsNavigationController class]]) {
+        SettingsNavigationController *navigationController = (SettingsNavigationController *)self.navigationController;
+        navigationController.headerLabel.text = BC_STRING_LOG_IN_TO_WEB_WALLET;
+    }
 }
 
 - (void)setupInstructions

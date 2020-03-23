@@ -30,8 +30,9 @@ public final class ValidationTextFieldViewModel: TextFieldViewModel {
     
     public override init(with type: TextFieldType,
                 validator: TextValidating,
+                formatting: TextFormatting = TextFormatterFactory.empty,
                 textMatcher: CollectionTextMatchValidator? = nil) {
-        super.init(with: type, validator: validator, textMatcher: textMatcher)
+        super.init(with: type, validator: validator, formatting: formatting, textMatcher: textMatcher)
         
     Observable.combineLatest(self.validator.isValid, self.validator.valueRelay)
             .map {
