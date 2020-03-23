@@ -29,7 +29,7 @@ public final class PinLoginService: PinLoginServiceAPI {
     private let settings: ReactiveAppSettingsAuthenticating
     private let service: WalletPayloadServiceAPI
     private let walletRepository: PasscodeRepositoryAPI
-    private let walletCrypto: WalletCryptoServiceAPI
+    private let walletCryptoService: WalletCryptoServiceAPI
     
     // MARK: - Setup
     
@@ -40,7 +40,7 @@ public final class PinLoginService: PinLoginServiceAPI {
         self.service = service
         self.settings = settings
         self.walletRepository = walletRepository
-        self.walletCrypto = WalletCryptoService(jsContextProvider: jsContextProvider)
+        self.walletCryptoService = WalletCryptoService(jsContextProvider: jsContextProvider)
     }
     
     public func password(from pinDecryptionKey: String) -> Single<String> {
@@ -94,7 +94,7 @@ public final class PinLoginService: PinLoginServiceAPI {
         return encryptedPinPassword
             .map { KeyDataPair<String, String>(key: pinDecryptionKey, data: $0) }
             .flatMap(weak: self) { (self, keyDataPair) -> Single<String> in
-                self.walletCrypto.decrypt(pair: keyDataPair, pbkdf2Iterations: WalletCryptoPBKDF2Iterations.pinLogin)
+                self.walletCryptoService.decrypt(pair: keyDataPair, pbkdf2Iterations: WalletCryptoPBKDF2Iterations.pinLogin)
             }
     }
 }
