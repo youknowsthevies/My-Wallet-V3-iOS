@@ -14,7 +14,7 @@ import PlatformKit
 import CommonCryptoKit
 
 protocol WebLoginQRCodeServiceAPI: class {
-    var qrCodeString: Single<String> { get }
+    var qrCode: Single<String> { get }
 }
 
 final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
@@ -27,8 +27,11 @@ final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
 
     // MARK: - Public Properties
 
-    var qrCodeString: Single<String> {
-        return fetchQRCode()
+    var qrCode: Single<String> {
+        guid
+            .flatMap(weak: self) { (self, guid) -> Single<String> in
+                self.qrCode(guid: guid)
+            }
     }
 
     // MARK: - Private Properties
@@ -49,13 +52,6 @@ final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
         self.walletRepository = walletRepository
     }
 
-    private func fetchQRCode() -> Single<String> {
-        guid
-            .flatMap(weak: self) { (self, guid) -> Single<String> in
-                self.qrCodeString(guid: guid)
-            }
-    }
-
     private var guid: Single<String> {
         walletRepository
             .guid
@@ -67,7 +63,7 @@ final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
             }
     }
 
-    private func qrCodeString(guid: String) -> Single<String> {
+    private func qrCode(guid: String) -> Single<String> {
         autoPairing
             .request(guid: guid)
             .flatMap(weak: self) { (self, encryptionPhrase) -> Single<String> in

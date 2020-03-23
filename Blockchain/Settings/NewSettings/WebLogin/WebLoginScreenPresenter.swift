@@ -32,7 +32,7 @@ final class WebLoginScreenPresenter {
 
     var qrCodeImage: Single<UIImage?> {
         service
-            .qrCodeString
+            .qrCode
             .map { QRCode(string: $0) }
             .map { $0?.image }
             .catchErrorJustReturn(nil)
