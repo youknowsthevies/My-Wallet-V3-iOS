@@ -39,11 +39,11 @@ final class ChangePasswordViewController: BaseScreenViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupNavigationBar()
-        setupTextFieldViews()
         keyboardInteractionController = KeyboardInteractionController(in: self)
         descriptionLabel.content = presenter.descriptionContent
         updatePasswordButtonView.viewModel = presenter.buttonViewModel
+        setupNavigationBar()
+        setupTextFieldViews()
     }
     
     private func setupNavigationBar() {
