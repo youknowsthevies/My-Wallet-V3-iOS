@@ -16,14 +16,14 @@ final class WebLoginScreenPresenter {
 
     // MARK: - Types
 
-    private typealias Strings = LocalizationConstants.Settings.WebLogin
+    private typealias LocalizedString = LocalizationConstants.Settings.WebLogin
 
     // MARK: - Public Properties
 
     let leadingButton: Screen.Style.LeadingButton = .back
 
     var titleView: Screen.Style.TitleView {
-        .text(value: Strings.title)
+        .text(value: LocalizedString.title)
     }
 
     var barStyle: Screen.Style.Bar {
@@ -44,9 +44,9 @@ final class WebLoginScreenPresenter {
 
     let instructionViewModels: [InstructionCellViewModel] = {
         let inputs: [[InteractableTextViewModel.Input]] = [
-            [.text(string: Strings.Instruction.one)],
-            [.text(string: Strings.Instruction.two)],
-            [.text(string: Strings.Instruction.three)]
+            [.text(string: LocalizedString.Instruction.one)],
+            [.text(string: LocalizedString.Instruction.two)],
+            [.text(string: LocalizedString.Instruction.three)]
         ]
         return inputs.enumerated().map {
             InstructionCellViewModel(number: $0.offset + 1, inputs: $0.element)
@@ -69,32 +69,32 @@ final class WebLoginScreenPresenter {
     init(service: WebLoginQRCodeServiceAPI = WebLoginQRCodeService()) {
         self.service = service
         securityAlert = .init(
-            text: Strings.securityMessageHidden,
+            text: LocalizedString.securityMessageHidden,
             font: .mainMedium(14),
             color: .descriptionText,
             alignment: .center,
             accessibility: .none
         )
         qrCodeScurityAlertTop = .init(
-            text: Strings.securityMessageVisible1,
+            text: LocalizedString.securityMessageVisible1,
             font: .mainMedium(14),
             color: .descriptionText,
             alignment: .center,
             accessibility: .none
         )
         qrCodeScurityAlertBottom = .init(
-            text: Strings.securityMessageVisible2,
+            text: LocalizedString.securityMessageVisible2,
             font: .mainMedium(14),
             color: .descriptionText,
             alignment: .center,
             accessibility: .none
         )
 
-        actionButtonModel = .primary(with: Strings.hideQRCode)
+        actionButtonModel = .primary(with: LocalizedString.hideQRCode)
 
         qrCodeVisibilityRelay
             .asDriver()
-            .map { $0 == .visible ? Strings.hideQRCode : Strings.showQRCode }
+            .map { $0 == .visible ? LocalizedString.hideQRCode : LocalizedString.showQRCode }
             .drive(actionButtonModel.textRelay)
             .disposed(by: disposeBag)
 
