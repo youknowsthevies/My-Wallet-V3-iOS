@@ -2366,6 +2366,16 @@ public struct LocalizationConstants {
                     comment: "Using your computer's camera, scan the QR code below."
                 )
             }
+            public struct ErrorAlert {
+                public static let title = NSLocalizedString(
+                    "Oops!",
+                    comment: "Generic error bottom sheet title"
+                )
+                public static let message = NSLocalizedString(
+                    "Something went wrong. Please try again.",
+                    comment: "Generic error bottom sheet message"
+                )
+            }
             public static let title = NSLocalizedString(
                 "Login to Web Wallet",
                 comment: "Login to Web Wallet"

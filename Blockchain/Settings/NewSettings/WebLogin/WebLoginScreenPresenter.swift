@@ -35,7 +35,16 @@ final class WebLoginScreenPresenter {
             .qrCode
             .map { QRCode(string: $0) }
             .map { $0?.image }
-            .catchErrorJustReturn(nil)
+            .catchError { [weak self] error in
+                guard let alertPresenter = self?.alertPresenter else { return .just(nil) }
+                alertPresenter.notify(
+                    content: .init(
+                        title: LocalizedString.ErrorAlert.title,
+                        message: LocalizedString.ErrorAlert.message
+                    )
+                )
+                return .just(nil)
+            }
     }
 
     var qrCodeVisibility: Driver<Visibility> {
@@ -61,12 +70,15 @@ final class WebLoginScreenPresenter {
     // MARK: - Private Properties
 
     private let qrCodeVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
+    private let alertPresenter: AlertViewPresenter
     private let service: WebLoginQRCodeServiceAPI
     private let disposeBag = DisposeBag()
 
     // MARK: - Init
 
-    init(service: WebLoginQRCodeServiceAPI = WebLoginQRCodeService()) {
+    init(alertPresenter: AlertViewPresenter = .shared,
+         service: WebLoginQRCodeServiceAPI = WebLoginQRCodeService()) {
+        self.alertPresenter = alertPresenter
         self.service = service
         securityAlert = .init(
             text: LocalizedString.securityMessageHidden,
