@@ -27,4 +27,8 @@ enum Visibility: Int {
     var isHidden: Bool {
         return self == .hidden ? true : false
     }
+
+    var inverted: Visibility {
+        return self == .hidden ? .visible : .hidden
+    }
 }

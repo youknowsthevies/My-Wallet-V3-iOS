@@ -312,9 +312,10 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     }
 
     private func handleWebLogin() {
-        let webLoginViewController = WebLoginViewController()
+        let presenter = WebLoginScreenPresenter()
+        let viewController = WebLoginScreenViewController(presenter: presenter)
         let navigationViewController = BCNavigationController(
-            rootViewController: webLoginViewController,
+            rootViewController: viewController,
             title: LocalizationConstants.SideMenu.loginToWebWallet
         )
         navigationViewController.modalPresentationStyle = .fullScreen

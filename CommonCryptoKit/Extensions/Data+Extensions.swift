@@ -15,11 +15,10 @@ extension NSData {
 }
 
 extension Data {
-    
     public var hexValue: String {
         return map { String(format: "%02x", $0) }.reduce("", +)
     }
-    
+
     public init(hex: String) {
         let len = hex.count / 2
         var data = Data(capacity: len)
@@ -36,5 +35,4 @@ extension Data {
         }
         self = data
     }
-    
 }

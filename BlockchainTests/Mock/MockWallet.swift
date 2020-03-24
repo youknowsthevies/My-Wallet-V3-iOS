@@ -19,13 +19,9 @@ class MockWallet: Wallet {
     }
 
     /// When called, invokes the delegate's walletDidDecrypt and walletDidFinishLoad methods
-    override func load(withGuid guid: String!, sharedKey: String!, password: String!) {
-        self.delegate?.walletDidDecrypt!()
-        self.delegate?.walletDidFinishLoad!()
-    }
-    
-    override func encrypt(_ data: String, password: String) -> String {
-        return password
+    override func load(withGuid guid: String, sharedKey: String?, password: String?) {
+        self.delegate?.walletDidDecrypt?()
+        self.delegate?.walletDidFinishLoad?()
     }
 }
 

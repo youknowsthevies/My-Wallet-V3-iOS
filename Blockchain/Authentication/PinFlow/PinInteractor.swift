@@ -24,6 +24,9 @@ final class PinInteractor: PinInteracting {
     private let appSettings: AppSettingsAuthenticating
     private let recorder: ErrorRecording
     private let loginService: PinLoginServiceAPI
+    private let walletCryptoService: WalletCryptoServiceAPI
+
+    private let disposeBag = DisposeBag()
     
     /// In case the user attempted to logout while the pin was being sent to the server
     /// the app needs to disragard any future response
@@ -55,6 +58,7 @@ final class PinInteractor: PinInteracting {
         self.wallet = wallet
         self.appSettings = appSettings
         self.recorder = recorder
+        self.walletCryptoService = WalletCryptoService(jsContextProvider: jsContextProvider)
     }
     
     // MARK: - API
@@ -68,13 +72,12 @@ final class PinInteractor: PinInteracting {
                 if let message = message { throw PinError.serverMaintenance(message: message) }
                 return self.pinClient.create(pinPayload: payload)
             }
-            .do(onSuccess: { [weak self] response in
-                try self?.handleCreatePinResponse(response: response, payload: payload)
+            .flatMapCompletable(weak: self, { (self, response) in
+                self.handleCreatePinResponse(response: response, payload: payload)
             })
-            .catchError { error in
-                throw PinError.map(from: error)
+                .catchError { error in
+                    throw PinError.map(from: error)
             }
-            .asCompletable()
             .observeOn(MainScheduler.instance)
     }
     
@@ -117,51 +120,61 @@ final class PinInteractor: PinInteracting {
     
     // MARK: - Accessors
 
-    private func handleCreatePinResponse(response: PinStoreResponse,
-                                         payload: PinPayload) throws {
-        
-        // Wallet must have password at the stage
-        guard let password = credentialsProvider.legacyPassword else {
-            let error = PinError.serverError(LocalizationConstants.Pin.cannotSaveInvalidWalletState)
-            recorder.error(error)
-            throw error
-        }
-        
-        guard response.error == nil else {
-            recorder.error(PinError.serverError(""))
-            throw PinError.serverError(response.error!)
-        }
+    private func handleCreatePinResponse(response: PinStoreResponse, payload: PinPayload) -> Completable {
+        Single<(pin: String, password: String)>
+            .create(weak: self) { (self, observer) -> Disposable in
+                // Wallet must have password at the stage
+                guard let password = self.credentialsProvider.legacyPassword else {
+                    let error = PinError.serverError(LocalizationConstants.Pin.cannotSaveInvalidWalletState)
+                    self.recorder.error(error)
+                    observer(.error(error))
+                    return Disposables.create()
+                }
 
-        guard response.isSuccessful else {
-            let message = String(
-                format: LocalizationConstants.Errors.invalidStatusCodeReturned,
-                response.statusCode?.rawValue ?? -1
-            )
-            let error = PinError.serverError(message)
-            recorder.error(error)
-            throw error
-        }
+                guard response.error == nil else {
+                    self.recorder.error(PinError.serverError(""))
+                    observer(.error(PinError.serverError(response.error!)))
+                    return Disposables.create()
+                }
 
-        guard let pinValue = payload.pinValue,
-            !payload.pinKey.isEmpty,
-            !pinValue.isEmpty else {
-                let error = PinError.serverError(LocalizationConstants.Pin.responseKeyOrValueLengthZero)
-                recorder.error(error)
-                throw error
-        }
-        
-        // Once the pin has been created successfully, the wallet is not longer marked as new.
-        wallet.isNew = false
+                guard response.isSuccessful else {
+                    let message = String(
+                        format: LocalizationConstants.Errors.invalidStatusCodeReturned,
+                        response.statusCode?.rawValue ?? -1
+                    )
+                    let error = PinError.serverError(message)
+                    self.recorder.error(error)
+                    observer(.error(error))
+                    return Disposables.create()
+                }
 
-        // Encrypt the wallet password with the random value
-        let encryptedPinPassword = wallet.encrypt(password, password: pinValue)
-
-        // Update the cache
-        appSettings.encryptedPinPassword = encryptedPinPassword
-        appSettings.pinKey = payload.pinKey
-        appSettings.passwordPartHash = password.passwordPartHash
-        
-        try updateCacheIfNeeded(response: response, pinPayload: payload)
+                guard let pinValue = payload.pinValue,
+                    !payload.pinKey.isEmpty,
+                    !pinValue.isEmpty else {
+                        let error = PinError.serverError(LocalizationConstants.Pin.responseKeyOrValueLengthZero)
+                        self.recorder.error(error)
+                        observer(.error(error))
+                        return Disposables.create()
+                }
+                observer(.success((pin: pinValue, password: password)))
+                return Disposables.create()
+            }
+            .flatMap(weak: self) { (self, data) -> Single<(encryptedPinPassword: String, password: String)> in
+                return self.walletCryptoService
+                    .encrypt(pair: KeyDataPair(key: data.pin, data: data.password),
+                             pbkdf2Iterations: WalletCryptoPBKDF2Iterations.pinLogin)
+                    .map { (encryptedPinPassword: $0, password: data.password) }
+            }
+            .flatMapCompletable(weak: self) { (self, data) -> Completable in
+                // Once the pin has been created successfully, the wallet is not longer marked as new.
+                self.wallet.isNew = false
+                // Update the cache
+                self.appSettings.encryptedPinPassword = data.encryptedPinPassword
+                self.appSettings.pinKey = payload.pinKey
+                self.appSettings.passwordPartHash = data.password.passwordPartHash
+                try self.updateCacheIfNeeded(response: response, pinPayload: payload)
+                return Completable.empty()
+            }
     }
 
     /// Persists the pin if needed or deletes it according to the response code received from the backend

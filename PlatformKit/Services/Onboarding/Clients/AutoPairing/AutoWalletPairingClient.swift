@@ -44,7 +44,6 @@ extension AutoWalletPairingClient {
         private struct Payload: Encodable {
             let guid: String
             let method = "pairing-encryption-password"
-            let apiCode = "api_code"
         }
         
         // MARK: - Builder

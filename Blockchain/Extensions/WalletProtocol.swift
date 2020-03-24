@@ -15,7 +15,6 @@ protocol WalletProtocol: class {
     
     @objc var isNew: Bool { get set }
     @objc var delegate: WalletDelegate! { get set }
-    
-    @objc func encrypt(_ data: String, password: String) -> String
+
     @objc func isInitialized() -> Bool
 }

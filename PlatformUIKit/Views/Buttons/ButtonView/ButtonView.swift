@@ -27,11 +27,14 @@ final public class ButtonView: UIView {
     
     // MARK: - Rx
     
-    private let disposeBag = DisposeBag()
+    private var disposeBag = DisposeBag()
     
     // MARK: - Dependencies
     
     public var viewModel: ButtonViewModel! {
+        willSet {
+            disposeBag = DisposeBag()
+        }
         didSet {
             
             // Set non-reactive properties

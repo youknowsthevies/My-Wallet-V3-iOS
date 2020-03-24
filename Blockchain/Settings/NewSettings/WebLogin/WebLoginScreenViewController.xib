@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="WebLoginScreenViewController" customModule="Blockchain" customModuleProvider="target">
+            <connections>
+                <outlet property="actionButon" destination="UrD-42-5Bo" id="PvK-6T-mcO"/>
+                <outlet property="imageView" destination="swc-15-3Wm" id="1UM-r0-phC"/>
+                <outlet property="qrCodeSecurityAlertBottom" destination="mE0-yA-9kW" id="rbn-8Z-AFS"/>
+                <outlet property="qrCodeSecurityAlertTop" destination="WbI-DA-S4o" id="hyQ-zR-wa8"/>
+                <outlet property="qrCodeView" destination="9Co-xn-njy" id="iXL-oE-tdS"/>
+                <outlet property="securityAlert" destination="OAm-7t-4lU" id="lNJ-GL-KGZ"/>
+                <outlet property="tableView" destination="qFN-We-tt7" id="h2K-7E-BDv"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="qFN-We-tt7" customClass="InstructionTableView" customModule="PlatformUIKit">
+                    <rect key="frame" x="0.0" y="44" width="414" height="701.5"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                </tableView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UrD-42-5Bo" customClass="ButtonView" customModule="PlatformUIKit">
+                    <rect key="frame" x="16" y="798" width="382" height="48"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="48" id="4oL-uZ-HMj"/>
+                    </constraints>
+                </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Keep this QR code hidden until you’re ready." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OAm-7t-4lU">
+                    <rect key="frame" x="16" y="753.5" width="382" height="20.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9Co-xn-njy">
+                    <rect key="frame" x="0.0" y="44" width="414" height="754"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="swc-15-3Wm">
+                            <rect key="frame" x="87" y="257" width="240" height="240"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="240" id="PIY-9X-M4l"/>
+                                <constraint firstAttribute="width" constant="240" id="e1f-AG-emf"/>
+                            </constraints>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Keep this QR code safe!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WbI-DA-S4o">
+                            <rect key="frame" x="115.5" y="175" width="183" height="21"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Do not share it with others." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mE0-yA-9kW">
+                            <rect key="frame" x="103.5" y="204" width="207" height="21"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    <constraints>
+                        <constraint firstItem="mE0-yA-9kW" firstAttribute="top" secondItem="WbI-DA-S4o" secondAttribute="bottom" constant="8" id="FtB-d3-rZQ"/>
+                        <constraint firstItem="swc-15-3Wm" firstAttribute="top" secondItem="mE0-yA-9kW" secondAttribute="bottom" constant="32" id="Q6o-zv-Yui"/>
+                        <constraint firstItem="swc-15-3Wm" firstAttribute="centerX" secondItem="9Co-xn-njy" secondAttribute="centerX" id="gfB-gm-P4P"/>
+                        <constraint firstItem="mE0-yA-9kW" firstAttribute="centerX" secondItem="9Co-xn-njy" secondAttribute="centerX" id="iDC-HO-S1C"/>
+                        <constraint firstItem="swc-15-3Wm" firstAttribute="centerY" secondItem="9Co-xn-njy" secondAttribute="centerY" id="q9e-Xq-9Rj"/>
+                        <constraint firstItem="WbI-DA-S4o" firstAttribute="centerX" secondItem="9Co-xn-njy" secondAttribute="centerX" id="zNH-Yk-f1R"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="9Co-xn-njy" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="0WQ-sq-Mat"/>
+                <constraint firstItem="UrD-42-5Bo" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="0kO-Xo-5wu"/>
+                <constraint firstItem="9Co-xn-njy" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="52O-3A-waq"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="9Co-xn-njy" secondAttribute="trailing" id="5iY-ST-Hyc"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="UrD-42-5Bo" secondAttribute="trailing" constant="16" id="7NR-j3-iRc"/>
+                <constraint firstItem="UrD-42-5Bo" firstAttribute="top" secondItem="9Co-xn-njy" secondAttribute="bottom" id="FW0-GE-ab2"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="OAm-7t-4lU" secondAttribute="trailing" constant="16" id="I8b-3G-tnj"/>
+                <constraint firstItem="UrD-42-5Bo" firstAttribute="top" secondItem="OAm-7t-4lU" secondAttribute="bottom" constant="24" id="OOr-jo-8xz"/>
+                <constraint firstItem="OAm-7t-4lU" firstAttribute="top" secondItem="qFN-We-tt7" secondAttribute="bottom" constant="8" symbolic="YES" id="UUz-Ri-Q6p"/>
+                <constraint firstItem="qFN-We-tt7" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="axD-fo-yCs"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="UrD-42-5Bo" secondAttribute="bottom" constant="16" id="f0p-Mi-FKb"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="qFN-We-tt7" secondAttribute="trailing" id="gmG-2O-Yvf"/>
+                <constraint firstItem="OAm-7t-4lU" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="kDx-gb-WcU"/>
+                <constraint firstItem="qFN-We-tt7" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="rv3-Pb-SXe"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <point key="canvasLocation" x="137.68115942028987" y="152.67857142857142"/>
+        </view>
+    </objects>
+</document>

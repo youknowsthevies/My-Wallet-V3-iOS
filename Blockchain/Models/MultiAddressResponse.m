@@ -9,7 +9,6 @@
 #import "MultiAddressResponse.h"
 #import "Transaction.h"
 #import "Wallet.h"
-#import "NSString+SHA256.h"
 #import "NSString+URLEncode.h"
 #import "Blockchain-Swift.h"
 

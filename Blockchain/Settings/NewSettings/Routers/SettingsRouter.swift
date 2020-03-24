@@ -120,9 +120,10 @@ final class SettingsRouter: SettingsRouterAPI {
                 })
                 .disposed(by: disposeBag)
         case .launchWebLogin:
-            let webLoginController = WebLoginViewController()
-            webLoginController.modalPresentationStyle = .overFullScreen
-            present(viewController: webLoginController)
+            let presenter = WebLoginScreenPresenter(service: WebLoginQRCodeService())
+            let viewController = WebLoginScreenViewController(presenter: presenter)
+            viewController.modalPresentationStyle = .overFullScreen
+            present(viewController: viewController)
         case .promptGuidCopy:
             guidRepositoryAPI.guid
                 .map(weak: self) { (self, value) -> String in

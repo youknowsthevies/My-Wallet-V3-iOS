@@ -31,10 +31,8 @@ final class TierLimitsLabelContentInteractor: LabelContentInteracting {
     // MARK: - Setup 
     
     init(limitsProviding: TierLimitsProviding) {
-        // TODO: Localization
-        // Waiting on copy for all tier states
         limitsProviding.tiers
-            .map { _ in .loaded(next: .init(text: "Swap Limits")) }
+            .map { _ in .loaded(next: .init(text: LocalizationConstants.KYC.accountLimits)) }
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
     }

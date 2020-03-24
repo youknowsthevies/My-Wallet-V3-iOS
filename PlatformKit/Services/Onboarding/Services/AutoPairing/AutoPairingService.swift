@@ -14,7 +14,7 @@ public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
 
     // MARK: - Properties
     
-    private let decryptionService: SharedKeyDecryptionService
+    private let walletCryptoService: WalletCryptoServiceAPI
     private let parsingService = SharedKeyParsingService()
     
     private let walletPairingClient: AutoWalletPairingClientAPI
@@ -31,7 +31,7 @@ public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
             client: walletPayloadClient,
             repository: repository
         )
-        decryptionService = SharedKeyDecryptionService(jsContextProvider: jsContextProvider)
+        walletCryptoService = WalletCryptoService(jsContextProvider: jsContextProvider)
     }
     
     /// Maps a QR pairing code of a wallet into its password, retrieve and cache the wallet data.
@@ -46,8 +46,10 @@ public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
     /// - Returns: The wallet password - decrypted and ready for usage.
     public func pair(using pairingData: PairingData) -> Single<String> {
         return walletPairingClient.request(guid: pairingData.guid)
-            .map { KeyDataPair(key: $0, data: pairingData.encryptedSharedKey) }
-            .flatMap(decryptionService.decrypt)
+            .map { KeyDataPair<String, String>(key: $0, data: pairingData.encryptedSharedKey) }
+            .flatMap(weak: self) { (self, keyDataPair) -> Single<String> in
+                self.walletCryptoService.decrypt(pair: keyDataPair, pbkdf2Iterations: WalletCryptoPBKDF2Iterations.autoPair)
+            }
             .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
             .map(parsingService.parse)
             .flatMap(weak: self) { (self, pair) in

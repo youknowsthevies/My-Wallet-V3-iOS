@@ -160,17 +160,9 @@
 - (void)changeBtcCurrency:(NSString *)btcCode;
 - (uint64_t)conversionForBitcoinAssetType:(LegacyAssetType)assetType;
 
-- (void)parsePairingCode:(NSString *)code
-                 success:(void (^ _Nonnull)(NSDictionary * _Nonnull))success
-                   error:(void (^ _Nonnull)(NSString * _Nullable))error;
-- (void)makePairingCode;
-
 - (NSString *)detectPrivateKeyFormat:(NSString *)privateKeyString;
 
 - (void)newAccount:(NSString *)password email:(NSString *)email;
-
-- (NSString *)encrypt:(NSString *)data password:(NSString *)password pbkdf2_iterations:(int)pbkdf2_iterations;
-- (NSString *)decrypt:(NSString *)data password:(NSString *)password pbkdf2_iterations:(int)pbkdf2_iterations;
 
 - (BOOL)isAddressAvailable:(NSString *)address;
 - (BOOL)isAccountAvailable:(int)account;
