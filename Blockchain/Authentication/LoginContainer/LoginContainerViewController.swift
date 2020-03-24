@@ -95,6 +95,11 @@ class LoginContainerViewController: UIViewController {
         prepareCollectionViewLayout()
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        translationAnimator.stopAnimation(true)
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         prepareCollectionViewLayout()
