@@ -31,7 +31,6 @@ struct TableHeaderViewModel {
     let font: UIFont
     
     /// - parameter cornerRadius: corner radius of the component
-    /// - parameter accessibility: accessibility for the view
     public init(font: UIFont = .mainMedium(12), title: String, textColor: UIColor) {
         self.font = font
         self.textRelay.accept(title)

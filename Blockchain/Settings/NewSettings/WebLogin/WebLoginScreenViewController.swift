@@ -40,8 +40,8 @@ final class WebLoginScreenViewController: BaseScreenViewController {
         titleViewStyle = presenter.titleView
         
         securityAlert.content = presenter.securityAlert
-        qrCodeSecurityAlertTop.content = presenter.qrCodeScurityAlertTop
-        qrCodeSecurityAlertBottom.content = presenter.qrCodeScurityAlertBottom
+        qrCodeSecurityAlertTop.content = presenter.qrCodeSecurityAlertTop
+        qrCodeSecurityAlertBottom.content = presenter.qrCodeSecurityAlertBottom
         actionButon.viewModel = presenter.actionButtonModel
         tableView.viewModels = presenter.instructionViewModels
         presenter

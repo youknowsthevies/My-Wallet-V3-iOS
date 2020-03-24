@@ -16,6 +16,7 @@ final class WebLoginScreenPresenter {
 
     // MARK: - Types
 
+    private typealias AccessibilityIDs = Accessibility.Identifier.Settings.WebLogin
     private typealias LocalizedString = LocalizationConstants.Settings.WebLogin
 
     // MARK: - Public Properties
@@ -63,8 +64,8 @@ final class WebLoginScreenPresenter {
     }()
 
     let securityAlert: LabelContent
-    let qrCodeScurityAlertTop: LabelContent
-    let qrCodeScurityAlertBottom: LabelContent
+    let qrCodeSecurityAlertTop: LabelContent
+    let qrCodeSecurityAlertBottom: LabelContent
     let actionButtonModel: ButtonViewModel
 
     // MARK: - Private Properties
@@ -85,24 +86,24 @@ final class WebLoginScreenPresenter {
             font: .mainMedium(14),
             color: .descriptionText,
             alignment: .center,
-            accessibility: .none
+            accessibility: .id(AccessibilityIDs.securityAlertLabel)
         )
-        qrCodeScurityAlertTop = .init(
+        qrCodeSecurityAlertTop = .init(
             text: LocalizedString.securityMessageVisible1,
             font: .mainMedium(14),
             color: .descriptionText,
             alignment: .center,
-            accessibility: .none
+            accessibility: .id(AccessibilityIDs.securityAlertTopLabel)
         )
-        qrCodeScurityAlertBottom = .init(
+        qrCodeSecurityAlertBottom = .init(
             text: LocalizedString.securityMessageVisible2,
             font: .mainMedium(14),
             color: .descriptionText,
             alignment: .center,
-            accessibility: .none
+            accessibility: .id(AccessibilityIDs.securityAlertBottomLabel)
         )
 
-        actionButtonModel = .primary(with: LocalizedString.hideQRCode)
+        actionButtonModel = .primary(with: LocalizedString.hideQRCode, accessibilityId: AccessibilityIDs.showQRCodeButton)
 
         qrCodeVisibilityRelay
             .asDriver()

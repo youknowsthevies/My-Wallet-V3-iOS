@@ -16,6 +16,7 @@ final class ChangePasswordScreenPresenter {
     // MARK: - Types
     
     private typealias InteractionInput = ChangePasswordScreenInteractor.InteractorInput
+    private typealias AccessibilityIDs = Accessibility.Identifier.Settings.ChangePassword
     private typealias LocalizationIDs = LocalizationConstants.Settings.ChangePassword
     
     // MARK: - Exposed Properties
@@ -32,7 +33,8 @@ final class ChangePasswordScreenPresenter {
     let passwordTextFieldViewModel: PasswordTextFieldViewModel
     let confirmPasswordTextFieldViewModel: PasswordTextFieldViewModel
     let buttonViewModel = ButtonViewModel.primary(
-        with: LocalizationIDs.action
+        with: LocalizationIDs.action,
+        accessibilityId: AccessibilityIDs.changePasswordButton
     )
     
     /// The total state of the presentation
@@ -68,7 +70,7 @@ final class ChangePasswordScreenPresenter {
             text: LocalizationIDs.description,
             font: .mainMedium(14.0),
             color: .textFieldText,
-            accessibility: .none
+            accessibility: .id(AccessibilityIDs.descriptionLabel)
         )
         
         let newPasswordValidator = TextValidationFactory.newPassword

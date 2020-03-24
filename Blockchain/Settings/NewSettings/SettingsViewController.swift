@@ -13,6 +13,10 @@ import ToolKit
 
 final class SettingsViewController: BaseScreenViewController {
     
+    // MARK: - Accessibility
+    
+    private typealias AccessibilityIDs = Accessibility.Identifier.Settings.SettingsCell
+    
     // MARK: - Private IBOutlets
     
     @IBOutlet private var tableView: UITableView!
@@ -151,13 +155,19 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
     
     private func clipboardCell(for indexPath: IndexPath, type: SettingsScreenPresenter.Section.CellType.ClipboardCellType) -> ClipboardTableViewCell {
         let cell = tableView.dequeue(ClipboardTableViewCell.self, for: indexPath)
-        cell.titleLabel.text = type.title
+        cell.viewModel = .init(
+            title: type.title,
+            accessibilityID: "\(AccessibilityIDs.titleLabelFormat)\(type.accessibilityID)"
+        )
         return cell
     }
     
     private func plainCell(for indexPath: IndexPath, type: SettingsScreenPresenter.Section.CellType.PlainCellType) -> PlainTableViewCell {
         let cell = tableView.dequeue(PlainTableViewCell.self, for: indexPath)
-        cell.titleLabel.text = type.title
+        cell.viewModel = .init(
+            title: type.title,
+            accessibilityID: "\(AccessibilityIDs.titleLabelFormat)\(type.accessibilityID)"
+        )
         return cell
     }
     

@@ -17,11 +17,12 @@ final class EmailSwitchViewPresenter: SwitchViewPresenting {
     
     // MARK: - Types
     
+    private typealias AccessibilityID = Accessibility.Identifier.Settings.SwitchView
     private typealias AnalyticsEvent = AnalyticsEvents.Settings
     
     // MARK: - Public
     
-    let viewModel = SwitchViewModel.primary()
+    let viewModel = SwitchViewModel.primary(accessibilityId: AccessibilityID.twoFactorSwitchView)
     
     // MARK: - Private
     

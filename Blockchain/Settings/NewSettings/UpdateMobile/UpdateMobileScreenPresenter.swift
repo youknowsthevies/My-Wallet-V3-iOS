@@ -17,7 +17,7 @@ final class UpdateMobileScreenPresenter {
     // MARK: - Types
     
     typealias BadgeItem = BadgeAsset.Value.Presentation.BadgeItem
-    
+    private typealias AccessibilityIDs = Accessibility.Identifier.Settings.UpdateMobile
     private typealias LocalizationIDs = LocalizationConstants.Settings.UpdateMobile
     
     // MARK: - Public Properties
@@ -71,11 +71,11 @@ final class UpdateMobileScreenPresenter {
             text: LocalizationIDs.description,
             font: .mainMedium(14.0),
             color: .textFieldText,
-            accessibility: .none
+            accessibility: .id(AccessibilityIDs.descriptionLabel)
         )
         
-        continueButtonViewModel = .primary(with: "Continue")
-        updateButtonViewModel = .primary(with: "Update")
+        continueButtonViewModel = .primary(with: "Continue", accessibilityId: AccessibilityIDs.continueButton)
+        updateButtonViewModel = .primary(with: "Update", accessibilityId: AccessibilityIDs.updateButton)
         
         submissionInteractor = UpdateMobileScreenInteractor(service: settingsAPI)
         setupInteractor = UpdateMobileScreenSetupInteractor(service: settingsAPI)

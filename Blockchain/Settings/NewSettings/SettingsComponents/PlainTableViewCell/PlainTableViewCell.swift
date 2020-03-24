@@ -6,11 +6,32 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformUIKit
+
 final class PlainTableViewCell: UITableViewCell {
     
-    // MARK: Public IBOutlets
+    // MARK: - Model
     
-    @IBOutlet var titleLabel: UILabel!
+    struct ViewModel {
+        let title: String
+        let accessibilityID: String?
+        
+        init(title: String, accessibilityID: String? = nil) {
+            self.title = title
+            self.accessibilityID = accessibilityID
+        }
+    }
+    
+    var viewModel: ViewModel! {
+        didSet {
+            titleLabel.text = viewModel.title
+            titleLabel.accessibilityIdentifier = viewModel.accessibilityID
+        }
+    }
+    
+    // MARK: - Private IBOutlets
+    
+    @IBOutlet private var titleLabel: UILabel!
     
     // MARK: - Lifecycle
     

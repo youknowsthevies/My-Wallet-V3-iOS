@@ -84,11 +84,11 @@ final class SettingsScreenPresenter {
                 case swipeToReceive
             }
             
-            enum ClipboardCellType {
+            enum ClipboardCellType: String {
                 case walletID
             }
             
-            enum PlainCellType {
+            enum PlainCellType: String {
                 case loginToWebWallet
                 case changePassword
                 case changePIN
@@ -343,6 +343,10 @@ extension SettingsScreenPresenter.Section.CellType.ClipboardCellType {
             return LocalizationConstants.Settings.walletID
         }
     }
+    
+    var accessibilityID: String {
+        return self.rawValue
+    }
 }
 
 extension SettingsScreenPresenter.Section.CellType.PlainCellType {
@@ -363,6 +367,10 @@ extension SettingsScreenPresenter.Section.CellType.PlainCellType {
         case .cookiesPolicy:
             return LocalizationConstants.Settings.cookiesPolicy
         }
+    }
+    
+    var accessibilityID: String {
+        return self.rawValue
     }
 }
 

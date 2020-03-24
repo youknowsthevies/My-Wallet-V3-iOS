@@ -12,6 +12,7 @@ final class AboutView: UIView {
     
     // MARK: - Types
     
+    private typealias AccessibilityIDs = Accessibility.Identifier.Settings.About
     private typealias LocalizationIDs = LocalizationConstants.Settings.About
     
     // MARK: - Constants
@@ -47,20 +48,26 @@ final class AboutView: UIView {
             font: .mainMedium(12.0),
             color: .textFieldPlaceholder,
             alignment: .center,
-            accessibility: .none
+            accessibility: .id(AccessibilityIDs.versionLabel)
         )
         copyrightLabel.content = .init(
             text: LocalizationIDs.copyright,
             font: .mainMedium(12.0),
             color: .textFieldPlaceholder,
             alignment: .center,
-            accessibility: .none
+            accessibility: .id(AccessibilityIDs.copyrightLabel)
         )
     }
     
     static func estimatedHeight(for width: CGFloat) -> CGFloat {
-        let version = NSAttributedString(string: LocalizationIDs.version, attributes: [.font: UIFont.mainMedium(12.0)]).heightForWidth(width: width - horizontalPadding)
-        let copyright = NSAttributedString(string: LocalizationIDs.copyright, attributes: [.font: UIFont.mainMedium(12.0)]).heightForWidth(width: width - horizontalPadding)
+        let version = NSAttributedString(string: LocalizationIDs.version,
+                                         attributes: [.font: UIFont.mainMedium(12.0)])
+            .heightForWidth(width: width - horizontalPadding)
+        
+        let copyright = NSAttributedString(string: LocalizationIDs.copyright,
+                                           attributes: [.font: UIFont.mainMedium(12.0)])
+            .heightForWidth(width: width - horizontalPadding)
+        
         return verticalPadding + version + copyright + logoHeight
     }
 }

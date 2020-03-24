@@ -17,6 +17,7 @@ final class UpdateEmailScreenPresenter {
     // MARK: - Types
     
     typealias BadgeItem = BadgeAsset.Value.Presentation.BadgeItem
+    private typealias AccessibilityIDs = Accessibility.Identifier.Settings.UpdateEmail
     private typealias LocalizationIDs = LocalizationConstants.Settings.UpdateEmail
     
     // MARK: - Public Properties
@@ -65,11 +66,11 @@ final class UpdateEmailScreenPresenter {
             font: .mainMedium(14.0),
             color: .textFieldText,
             alignment: .left,
-            accessibility: .none
+            accessibility: .id(AccessibilityIDs.descriptionLabel)
         )
         
-        updateButtonViewModel = .primary(with: LocalizationIDs.update)
-        resendButtonViewModel = .secondary(with: LocalizationIDs.resend)
+        updateButtonViewModel = .primary(with: LocalizationIDs.update, accessibilityId: AccessibilityIDs.updateEmailButton)
+        resendButtonViewModel = .secondary(with: LocalizationIDs.resend, accessibilityId: AccessibilityIDs.resendEmailButton)
         
         resendButtonViewModel.tapRelay
             .bind(to: interactor.resendRelay)

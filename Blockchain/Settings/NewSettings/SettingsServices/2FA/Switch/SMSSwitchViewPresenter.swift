@@ -15,7 +15,9 @@ import PlatformUIKit
 
 class SMSSwitchViewPresenter: SwitchViewPresenting {
     
-    let viewModel = SwitchViewModel.primary()
+    private typealias AccessibilityID = Accessibility.Identifier.Settings.SwitchView
+    
+    let viewModel = SwitchViewModel.primary(accessibilityId: AccessibilityID.SMSSwitchView)
     
     private let interactor: SwitchViewInteracting
     private let disposeBag = DisposeBag()

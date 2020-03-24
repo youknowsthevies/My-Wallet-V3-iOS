@@ -13,8 +13,9 @@ import PlatformUIKit
 
 final class MobileCodeEntryScreenPresenter {
     
-    // MARK: - Localization
+    // MARK: - Private Types
     
+    private typealias AccessibilityIDs = Accessibility.Identifier.Settings.MobileCodeEntry
     private typealias LocalizationIDs = LocalizationConstants.Settings.MobileCodeEntry
     
     // MARK: - Public Properties
@@ -58,12 +59,12 @@ final class MobileCodeEntryScreenPresenter {
             font: .mainMedium(14.0),
             color: .textFieldText,
             alignment: .left,
-            accessibility: .none
+            accessibility: .id(AccessibilityIDs.descriptionLabel)
         )
         
-        changeNumberViewModel = .secondary(with: LocalizationIDs.changeNumber)
-        resendCodeViewModel = .secondary(with: LocalizationIDs.resendCode)
-        confirmViewModel = .primary(with: LocalizationIDs.confirm)
+        changeNumberViewModel = .secondary(with: LocalizationIDs.changeNumber, accessibilityId: AccessibilityIDs.changeNumberButton)
+        resendCodeViewModel = .secondary(with: LocalizationIDs.resendCode, accessibilityId: AccessibilityIDs.resendCodeButton)
+        confirmViewModel = .primary(with: LocalizationIDs.confirm, accessibilityId: AccessibilityIDs.confirmButton)
         
         codeEntryTextFieldModel.state
             .compactMap { $0.value }
