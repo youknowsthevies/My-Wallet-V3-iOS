@@ -40,6 +40,7 @@ public final class InstructionTableView: UITableView {
             InstructionTableViewCell.objectName,
             bundle: InstructionTableViewCell.bundle
         )
+        tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 32))
     }
 }
 

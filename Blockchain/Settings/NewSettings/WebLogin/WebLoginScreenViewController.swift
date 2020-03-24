@@ -15,18 +15,13 @@ import RxCocoa
 
 final class WebLoginScreenViewController: BaseScreenViewController {
 
-    @IBOutlet var firstBullet: UILabel!
-    @IBOutlet var firstText: UILabel!
-    @IBOutlet var secondBullet: UILabel!
-    @IBOutlet var secondText: UILabel!
-    @IBOutlet var thirdBullet: UILabel!
-    @IBOutlet var thirdText: UILabel!
-    @IBOutlet var actionButon: ButtonView!
-    @IBOutlet var securityAlert: UILabel!
-    @IBOutlet var imageView: UIImageView!
-    @IBOutlet var qrCodeView: UIView!
-    @IBOutlet var qrCodeSecurityAlertTop: UILabel!
-    @IBOutlet var qrCodeSecurityAlertBottom: UILabel!
+    @IBOutlet private var tableView: InstructionTableView!
+    @IBOutlet private var actionButon: ButtonView!
+    @IBOutlet private var securityAlert: UILabel!
+    @IBOutlet private var imageView: UIImageView!
+    @IBOutlet private var qrCodeView: UIView!
+    @IBOutlet private var qrCodeSecurityAlertTop: UILabel!
+    @IBOutlet private var qrCodeSecurityAlertBottom: UILabel!
 
     private let disposeBag = DisposeBag()
     private let presenter: WebLoginScreenPresenter
@@ -43,16 +38,12 @@ final class WebLoginScreenViewController: BaseScreenViewController {
             leadingButtonStyle: presenter.leadingButton,
             trailingButtonStyle: .none)
         titleViewStyle = presenter.titleView
-        firstBullet.content = presenter.bullet1Label
-        firstText.content = presenter.step1Label
-        secondBullet.content = presenter.bullet2Label
-        secondText.content = presenter.step2Label
-        thirdBullet.content = presenter.bullet3Label
-        thirdText.content = presenter.step3Label
+        
         securityAlert.content = presenter.securityAlert
         qrCodeSecurityAlertTop.content = presenter.qrCodeScurityAlertTop
         qrCodeSecurityAlertBottom.content = presenter.qrCodeScurityAlertBottom
         actionButon.viewModel = presenter.actionButtonModel
+        tableView.viewModels = presenter.instructionViewModels
         presenter
             .qrCodeImage
             .asObservable()
@@ -61,6 +52,10 @@ final class WebLoginScreenViewController: BaseScreenViewController {
         presenter.qrCodeVisibility
             .map { $0.isHidden }
             .drive(qrCodeView.rx.isHidden)
+            .disposed(by: disposeBag)
+        presenter.qrCodeVisibility
+            .map { !$0.isHidden }
+            .drive(tableView.rx.isHidden)
             .disposed(by: disposeBag)
     }
 }

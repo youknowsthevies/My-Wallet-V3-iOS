@@ -11,17 +11,12 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="WebLoginScreenViewController" customModule="Blockchain" customModuleProvider="target">
             <connections>
                 <outlet property="actionButon" destination="UrD-42-5Bo" id="PvK-6T-mcO"/>
-                <outlet property="firstBullet" destination="cm8-lD-SBn" id="5Xe-AH-u0h"/>
-                <outlet property="firstText" destination="nuI-Hl-stI" id="zLK-Tk-6e6"/>
                 <outlet property="imageView" destination="swc-15-3Wm" id="1UM-r0-phC"/>
                 <outlet property="qrCodeSecurityAlertBottom" destination="mE0-yA-9kW" id="rbn-8Z-AFS"/>
                 <outlet property="qrCodeSecurityAlertTop" destination="WbI-DA-S4o" id="hyQ-zR-wa8"/>
                 <outlet property="qrCodeView" destination="9Co-xn-njy" id="iXL-oE-tdS"/>
-                <outlet property="secondBullet" destination="tIs-vZ-cUZ" id="0Gd-Jg-mkS"/>
-                <outlet property="secondText" destination="gzr-dy-wXf" id="PMh-Ai-Tno"/>
                 <outlet property="securityAlert" destination="OAm-7t-4lU" id="lNJ-GL-KGZ"/>
-                <outlet property="thirdBullet" destination="wEp-3A-fZw" id="EsI-qz-7XR"/>
-                <outlet property="thirdText" destination="4AW-9G-90o" id="qdp-3j-Y4F"/>
+                <outlet property="tableView" destination="qFN-We-tt7" id="h2K-7E-BDv"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -30,51 +25,10 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cm8-lD-SBn">
-                    <rect key="frame" x="16" y="80" width="32" height="21"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="32" id="ecR-jN-Oqe"/>
-                    </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <nil key="textColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Go to login.blockchain.com on your computer." lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nuI-Hl-stI">
-                    <rect key="frame" x="64" y="80" width="334" height="41"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <nil key="textColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tIs-vZ-cUZ">
-                    <rect key="frame" x="16" y="161" width="32" height="21"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="32" id="sES-gl-kSa"/>
-                    </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <nil key="textColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Select Log in via mobile." lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gzr-dy-wXf">
-                    <rect key="frame" x="64" y="161" width="334" height="20.5"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <nil key="textColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wEp-3A-fZw">
-                    <rect key="frame" x="16" y="221.5" width="32" height="21"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="32" id="aee-Jq-dn4"/>
-                    </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <nil key="textColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Using your computer’s camera, scan the QR code below" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4AW-9G-90o">
-                    <rect key="frame" x="64" y="221.5" width="334" height="41"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <nil key="textColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="qFN-We-tt7" customClass="InstructionTableView" customModule="PlatformUIKit">
+                    <rect key="frame" x="0.0" y="44" width="414" height="701.5"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                </tableView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UrD-42-5Bo" customClass="ButtonView" customModule="PlatformUIKit">
                     <rect key="frame" x="16" y="798" width="382" height="48"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
@@ -126,29 +80,18 @@
             <constraints>
                 <constraint firstItem="9Co-xn-njy" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="0WQ-sq-Mat"/>
                 <constraint firstItem="UrD-42-5Bo" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="0kO-Xo-5wu"/>
-                <constraint firstItem="nuI-Hl-stI" firstAttribute="top" secondItem="cm8-lD-SBn" secondAttribute="top" id="1PQ-gl-pZL"/>
-                <constraint firstItem="wEp-3A-fZw" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="4JM-SU-Njs"/>
                 <constraint firstItem="9Co-xn-njy" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="52O-3A-waq"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="9Co-xn-njy" secondAttribute="trailing" id="5iY-ST-Hyc"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="UrD-42-5Bo" secondAttribute="trailing" constant="16" id="7NR-j3-iRc"/>
-                <constraint firstItem="gzr-dy-wXf" firstAttribute="top" secondItem="tIs-vZ-cUZ" secondAttribute="top" id="9Dw-fq-wA4"/>
-                <constraint firstItem="cm8-lD-SBn" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="9dx-nj-uch"/>
                 <constraint firstItem="UrD-42-5Bo" firstAttribute="top" secondItem="9Co-xn-njy" secondAttribute="bottom" id="FW0-GE-ab2"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="OAm-7t-4lU" secondAttribute="trailing" constant="16" id="I8b-3G-tnj"/>
-                <constraint firstItem="nuI-Hl-stI" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="36" id="KaU-V6-eVs"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="gzr-dy-wXf" secondAttribute="trailing" constant="16" id="NF2-MK-Awa"/>
                 <constraint firstItem="UrD-42-5Bo" firstAttribute="top" secondItem="OAm-7t-4lU" secondAttribute="bottom" constant="24" id="OOr-jo-8xz"/>
-                <constraint firstItem="4AW-9G-90o" firstAttribute="top" secondItem="wEp-3A-fZw" secondAttribute="top" id="WVR-MJ-ExX"/>
+                <constraint firstItem="OAm-7t-4lU" firstAttribute="top" secondItem="qFN-We-tt7" secondAttribute="bottom" constant="8" symbolic="YES" id="UUz-Ri-Q6p"/>
+                <constraint firstItem="qFN-We-tt7" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="axD-fo-yCs"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="UrD-42-5Bo" secondAttribute="bottom" constant="16" id="f0p-Mi-FKb"/>
-                <constraint firstItem="tIs-vZ-cUZ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="gpN-zv-OH3"/>
-                <constraint firstAttribute="trailing" secondItem="nuI-Hl-stI" secondAttribute="trailing" constant="16" id="jgR-Hd-oRz"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="qFN-We-tt7" secondAttribute="trailing" id="gmG-2O-Yvf"/>
                 <constraint firstItem="OAm-7t-4lU" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="kDx-gb-WcU"/>
-                <constraint firstItem="gzr-dy-wXf" firstAttribute="leading" secondItem="tIs-vZ-cUZ" secondAttribute="trailing" constant="16" id="n5g-nJ-g1d"/>
-                <constraint firstItem="4AW-9G-90o" firstAttribute="top" secondItem="gzr-dy-wXf" secondAttribute="bottom" constant="40" id="nBY-hx-7VK"/>
-                <constraint firstItem="4AW-9G-90o" firstAttribute="leading" secondItem="wEp-3A-fZw" secondAttribute="trailing" constant="16" id="r6p-iA-Dfl"/>
-                <constraint firstItem="gzr-dy-wXf" firstAttribute="top" secondItem="nuI-Hl-stI" secondAttribute="bottom" constant="40" id="szA-E1-alS"/>
-                <constraint firstItem="nuI-Hl-stI" firstAttribute="leading" secondItem="cm8-lD-SBn" secondAttribute="trailing" constant="16" id="tRh-W4-mRQ"/>
-                <constraint firstAttribute="trailing" secondItem="4AW-9G-90o" secondAttribute="trailing" constant="16" id="y7i-Js-5f7"/>
+                <constraint firstItem="qFN-We-tt7" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="rv3-Pb-SXe"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <point key="canvasLocation" x="137.68115942028987" y="152.67857142857142"/>

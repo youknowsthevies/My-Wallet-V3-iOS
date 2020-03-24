@@ -2351,22 +2351,24 @@ public struct LocalizationConstants {
             public static let action = NSLocalizedString("Update", comment: "Update")
         }
 
-        public struct WebLogin {
+        public enum WebLogin {
+            public enum Instruction {
+                public static let one = NSLocalizedString(
+                    "Go to login.blockchain.com on your computer.",
+                    comment: "Go to login.blockchain.com on your computer."
+                )
+                public static let two = NSLocalizedString(
+                    "Select Login via mobile.",
+                    comment: "Select Login via mobile."
+                )
+                public static let three = NSLocalizedString(
+                    "Using your computer's camera, scan the QR code below.",
+                    comment: "Using your computer's camera, scan the QR code below."
+                )
+            }
             public static let title = NSLocalizedString(
                 "Login to Web Wallet",
                 comment: "Login to Web Wallet"
-            )
-            public static let step1 = NSLocalizedString(
-                "Go to login.blockchain.com on your computer.",
-                comment: "Go to login.blockchain.com on your computer."
-            )
-            public static let step2 = NSLocalizedString(
-                "Select Login via mobile.",
-                comment: "Select Login via mobile."
-            )
-            public static let step3 = NSLocalizedString(
-                "Using your computer's camera, scan the QR code below.",
-                comment: "Using your computer's camera, scan the QR code below."
             )
             public static let securityMessageHidden = NSLocalizedString(
                 "Keep this QR code hidden until you’re ready.",
@@ -2380,11 +2382,10 @@ public struct LocalizationConstants {
                 "Do not share it with others.",
                 comment: "Do not share it with others."
             )
-
             public static let showQRCode = NSLocalizedString("Show QR Code", comment: "Show QR Code")
             public static let hideQRCode = NSLocalizedString("Hide QR Code", comment: "Hide QR Code")
         }
-        
+
         public struct MobileCodeEntry {
             public static let title = NSLocalizedString(
                 "Enter 5-character code",

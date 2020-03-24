@@ -42,12 +42,17 @@ final class WebLoginScreenPresenter {
         return qrCodeVisibilityRelay.asDriver()
     }
 
-    let step1Label: LabelContent
-    let bullet1Label: LabelContent
-    let step2Label: LabelContent
-    let bullet2Label: LabelContent
-    let step3Label: LabelContent
-    let bullet3Label: LabelContent
+    let instructionViewModels: [InstructionCellViewModel] = {
+        let inputs: [[InteractableTextViewModel.Input]] = [
+            [.text(string: Strings.Instruction.one)],
+            [.text(string: Strings.Instruction.two)],
+            [.text(string: Strings.Instruction.three)]
+        ]
+        return inputs.enumerated().map {
+            InstructionCellViewModel(number: $0.offset + 1, inputs: $0.element)
+        }
+    }()
+
     let securityAlert: LabelContent
     let qrCodeScurityAlertTop: LabelContent
     let qrCodeScurityAlertBottom: LabelContent
@@ -63,45 +68,6 @@ final class WebLoginScreenPresenter {
 
     init(service: WebLoginQRCodeServiceAPI = WebLoginQRCodeService()) {
         self.service = service
-        step1Label = .init(
-            text: Strings.step1,
-            font: .mainMedium(14),
-            color: .descriptionText,
-            accessibility: .none
-        )
-        bullet1Label = .init(
-            text: "1",
-            font: .mainBold(20),
-            color: .titleText,
-            alignment: .center,
-            accessibility: .none
-        )
-        step2Label = .init(
-            text: Strings.step2,
-            font: .mainMedium(14),
-            color: .descriptionText,
-            accessibility: .none
-        )
-        bullet2Label = .init(
-            text: "2",
-            font: .mainBold(20),
-            color: .titleText,
-            alignment: .center,
-            accessibility: .none
-        )
-        step3Label = .init(
-            text: Strings.step3,
-            font: .mainMedium(14),
-            color: .descriptionText,
-            accessibility: .none
-        )
-        bullet3Label = .init(
-            text: "3",
-            font: .mainBold(20),
-            color: .titleText,
-            alignment: .center,
-            accessibility: .none
-        )
         securityAlert = .init(
             text: Strings.securityMessageHidden,
             font: .mainMedium(14),
@@ -132,18 +98,11 @@ final class WebLoginScreenPresenter {
             .drive(actionButtonModel.textRelay)
             .disposed(by: disposeBag)
 
-        qrCodeVisibilityRelay
-            .asDriver()
-            .map { $0 == .visible ? Strings.hideQRCode : Strings.showQRCode }
-            .drive(actionButtonModel.textRelay)
-            .disposed(by: disposeBag)
-
         actionButtonModel
             .tapRelay
-            .bind { [unowned self] in
-                self.qrCodeVisibilityRelay.accept(self.qrCodeVisibilityRelay.value.inverted)
-            }
+            .withLatestFrom(qrCodeVisibilityRelay)
+            .map { $0.inverted }
+            .bind(to: qrCodeVisibilityRelay)
             .disposed(by: disposeBag)
     }
-
 }

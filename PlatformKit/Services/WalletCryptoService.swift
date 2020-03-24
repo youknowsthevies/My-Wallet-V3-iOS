@@ -91,8 +91,7 @@ public final class WalletCryptoService: WalletCryptoServiceAPI {
 
     // MARK: - Private methods
 
-    /// TICKET: https://blockchain.atlassian.net/browse/IOS-2735
-    /// TODO: Decrypt/Encrypt natively
+    /// TICKET: IOS-2735: Decrypt/Encrypt natively
     private func crypto(_ method: JSMethod,
                         data: String,
                         key: String,
