@@ -224,6 +224,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
             kycTiersService: kycServiceProvider.tiers,
             fiatCurrencyService: serviceProvider.settings,
             pairsService: serviceProvider.supportedPairsInteractor,
+            eligibilityService: serviceProvider.eligibility,
             cryptoCurrencySelectionService: cryptoSelectionService,
             suggestedAmountsService: serviceProvider.suggestedAmounts
         )

@@ -267,9 +267,14 @@ extension SimpleBuyStateService: SimpleBuyCheckoutServiceAPI {
         let states = statesRelay.value.states(byAppending: .checkout(checkoutData))
         apply(action: .next(to: states.current), states: states)
     }
-    
+
     func kyc(with checkoutData: SimpleBuyCheckoutData) {
         let states = statesRelay.value.states(byAppending: .kyc(checkoutData))
+        apply(action: .next(to: states.current), states: states)
+    }
+
+    func ineligible(with checkoutData: SimpleBuyCheckoutData) {
+        let states = statesRelay.value.states(byAppending: .pendingKycApproval(checkoutData))
         apply(action: .next(to: states.current), states: states)
     }
 }

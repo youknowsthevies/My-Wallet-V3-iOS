@@ -203,6 +203,7 @@ final class BuyCryptoScreenPresenter {
         
         struct CTAData {
             let kycState: BuyCryptoScreenInteractor.KYCState
+            let isSimpleBuyEligible: Bool
             let checkoutData: SimpleBuyCheckoutData
         }
         
@@ -210,14 +211,20 @@ final class BuyCryptoScreenPresenter {
             .withLatestFrom(interactor.data)
             .compactMap { $0 }
             .flatMap(weak: interactor) { (interactor, data) in
-                interactor.currentKycState
-                    .asObservable()
-                    .map { result -> Result<CTAData, Error> in
-                        switch result {
-                        case .success(let state):
-                            let ctaData = CTAData(kycState: state, checkoutData: data)
+                Observable.zip(
+                    interactor.currentKycState.asObservable(),
+                    interactor.currentEligibiltyState
+                    )
+                    .map { (currentKycState, currentEligibiltyState) -> Result<CTAData, Error> in
+                        switch (currentKycState, currentEligibiltyState) {
+                        case (.success(let kycState), .success(let isSimpleBuyEligible)):
+                            let ctaData = CTAData(kycState: kycState, isSimpleBuyEligible: isSimpleBuyEligible, checkoutData: data)
                             return .success(ctaData)
-                        case .failure(let error):
+                        case (.failure(let error), .success):
+                            return .failure(error)
+                        case (.success, .failure(let error)):
+                            return .failure(error)
+                        case (.failure(let error), .failure):
                             return .failure(error)
                         }
                 }
@@ -254,10 +261,12 @@ final class BuyCryptoScreenPresenter {
             .bind(weak: self) { (self, result) in
                 switch result {
                 case .success(let data):
-                    switch data.kycState {
-                    case .completed:
+                    switch (data.kycState, data.isSimpleBuyEligible) {
+                    case (.completed, true):
                         self.stateService.checkout(with: data.checkoutData)
-                    case .shouldComplete:
+                    case (.completed, false):
+                        self.stateService.ineligible(with: data.checkoutData)
+                    case (.shouldComplete, _):
                         self.stateService.kyc(with: data.checkoutData)
                     }
                 case .failure:

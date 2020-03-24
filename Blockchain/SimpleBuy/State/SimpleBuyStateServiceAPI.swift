@@ -37,6 +37,7 @@ protocol SimpleBuyStateReceiverServiceAPI: class {
 protocol SimpleBuyCheckoutServiceAPI: RoutingPreviousStateEmitterAPI {
     var previousRelay: PublishRelay<Void> { get }
     func checkout(with checkoutData: SimpleBuyCheckoutData)
+    func ineligible(with checkoutData: SimpleBuyCheckoutData)
     func kyc(with checkoutData: SimpleBuyCheckoutData)
 }
 

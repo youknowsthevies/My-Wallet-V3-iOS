@@ -87,12 +87,19 @@ final class BuyCryptoScreenInteractor {
     var suggestedAmounts: Observable<[FiatValue]> {
         suggestedAmountsRelay.asObservable()
     }
-    
-    /// Streams a boolean indicating shether yhe user should complete KYC
+
+    /// Streams a `KYCState` indicating whether the user should complete KYC
     var currentKycState: Single<Result<KYCState, Error>> {
         kycTiersService.fetchTiers()
             .map { $0.isTier2Approved }
             .mapToResult(successMap: { $0 ? .completed : .shouldComplete })
+    }
+
+    /// Streams a boolean indicating whether the user is eligible to Simple Buy
+    var currentEligibiltyState: Observable<Result<Bool, Error>> {
+        eligibilityService
+            .fetch()
+            .mapToResult()
     }
         
     // MARK: - Injected
@@ -102,7 +109,8 @@ final class BuyCryptoScreenInteractor {
     private let suggestedAmountsService: SimpleBuySuggestedAmountsServiceAPI
     private let pairsService: SimpleBuySupportedPairsInteractorServiceAPI
     private let cryptoCurrencySelectionService: SelectionServiceAPI
-    
+    private let eligibilityService: SimpleBuyEligibilityServiceAPI
+
     // MARK: - Accessors
     
     private let suggestedAmountsRelay = BehaviorRelay<[FiatValue]>(value: [])
@@ -127,6 +135,7 @@ final class BuyCryptoScreenInteractor {
     init(kycTiersService: KYCTiersServiceAPI,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI,
          pairsService: SimpleBuySupportedPairsInteractorServiceAPI,
+         eligibilityService: SimpleBuyEligibilityServiceAPI,
          cryptoCurrencySelectionService: SelectionServiceAPI,
          suggestedAmountsService: SimpleBuySuggestedAmountsServiceAPI) {
         self.kycTiersService = kycTiersService
@@ -134,7 +143,8 @@ final class BuyCryptoScreenInteractor {
         self.pairsService = pairsService
         self.suggestedAmountsService = suggestedAmountsService
         self.cryptoCurrencySelectionService = cryptoCurrencySelectionService
-        
+        self.eligibilityService = eligibilityService
+
         suggestedAmountsService.calculationState
             .compactMap { $0.value }
             .bind(to: suggestedAmountsRelay)
