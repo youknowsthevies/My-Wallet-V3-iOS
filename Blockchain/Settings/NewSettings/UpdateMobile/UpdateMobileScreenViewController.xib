@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -13,6 +13,7 @@
                 <outlet property="badgeView" destination="fCk-bE-l47" id="s3U-TB-rMF"/>
                 <outlet property="continueButtonView" destination="ddZ-3D-HXp" id="Eub-DE-tCS"/>
                 <outlet property="descriptionLabel" destination="6Dn-Ve-kDj" id="oZw-nt-coF"/>
+                <outlet property="disable2FALabel" destination="UPo-KK-mo4" id="kcS-23-JMe"/>
                 <outlet property="mobileNumberTextFieldView" destination="4Yz-cP-0QL" id="Usk-f1-wtW"/>
                 <outlet property="updateButtonView" destination="sVU-f0-MI5" id="ACq-p6-M6Y"/>
                 <outlet property="view" destination="iN0-l3-epB" id="9u8-Wc-hrf"/>
@@ -23,14 +24,25 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6Dn-Ve-kDj">
-                    <rect key="frame" x="24" y="68" width="366" height="20.5"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <nil key="textColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="4ae-PX-Tpe">
+                    <rect key="frame" x="24" y="68" width="366" height="49"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6Dn-Ve-kDj">
+                            <rect key="frame" x="0.0" y="0.0" width="366" height="20.5"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UPo-KK-mo4">
+                            <rect key="frame" x="0.0" y="28.5" width="366" height="20.5"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                </stackView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fCk-bE-l47" customClass="BadgeView" customModule="PlatformUIKit">
-                    <rect key="frame" x="24" y="104.5" width="80" height="24"/>
+                    <rect key="frame" x="24" y="133" width="80" height="24"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="24" id="87g-oV-oMB"/>
@@ -38,7 +50,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4Yz-cP-0QL" customClass="TextFieldView" customModule="PlatformUIKit">
-                    <rect key="frame" x="24" y="144.5" width="366" height="48"/>
+                    <rect key="frame" x="24" y="173" width="366" height="48"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="48" id="yiv-0r-wxd"/>
@@ -67,14 +79,14 @@
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="4Yz-cP-0QL" firstAttribute="top" secondItem="fCk-bE-l47" secondAttribute="bottom" constant="16" id="7T9-GJ-g63"/>
-                <constraint firstItem="6Dn-Ve-kDj" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="24" id="Jg6-pb-jpT"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="4ae-PX-Tpe" secondAttribute="trailing" constant="24" id="97z-c9-GUF"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="Shw-Id-jiQ" secondAttribute="trailing" constant="24" id="KgJ-3T-fD4"/>
-                <constraint firstItem="6Dn-Ve-kDj" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="24" id="LUZ-op-1Sk"/>
-                <constraint firstItem="fCk-bE-l47" firstAttribute="top" secondItem="6Dn-Ve-kDj" secondAttribute="bottom" constant="16" id="Saq-PN-ACQ"/>
+                <constraint firstItem="fCk-bE-l47" firstAttribute="top" secondItem="4ae-PX-Tpe" secondAttribute="bottom" constant="16" id="SEf-Vh-oWU"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="4Yz-cP-0QL" secondAttribute="trailing" constant="24" id="UwL-nb-Jjp"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="Shw-Id-jiQ" secondAttribute="bottom" constant="16" id="XNq-rz-aAd"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="6Dn-Ve-kDj" secondAttribute="trailing" constant="24" id="ZFa-wa-HF9"/>
+                <constraint firstItem="4ae-PX-Tpe" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="24" id="eFz-ce-5WP"/>
                 <constraint firstItem="4Yz-cP-0QL" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="24" id="ign-4e-PEW"/>
+                <constraint firstItem="4ae-PX-Tpe" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="24" id="r3h-vK-jpG"/>
                 <constraint firstItem="fCk-bE-l47" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="24" id="roN-KF-lLS"/>
                 <constraint firstItem="Shw-Id-jiQ" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="24" id="tYP-Mi-b0v"/>
             </constraints>

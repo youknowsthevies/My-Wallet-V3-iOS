@@ -40,15 +40,21 @@ final class UpdateMobileScreenPresenter {
         continueVisibilityRelay.asDriver()
     }
     
+    var disable2FASMSVisibility: Driver<Visibility> {
+        disable2FASMSVisibilityRelay.asDriver()
+    }
+    
     var updateVisibility: Driver<Visibility> {
         updateVisibilityRelay.asDriver()
     }
     
     let textField: TextFieldViewModel
     let descriptionLabel: LabelContent
+    let disable2FALabel: LabelContent
     let continueButtonViewModel: ButtonViewModel
     let updateButtonViewModel: ButtonViewModel
     
+    private let disable2FASMSVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let continueVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let updateVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let badgeRelay = BehaviorRelay<LoadingState<BadgeItem>>(value: .loading)
@@ -74,6 +80,13 @@ final class UpdateMobileScreenPresenter {
             accessibility: .id(AccessibilityIDs.descriptionLabel)
         )
         
+        disable2FALabel = .init(
+            text: LocalizationIDs.disableSMS2FA,
+            font: .mainMedium(14.0),
+            color: .textFieldText,
+            accessibility: .id(AccessibilityIDs.disable2FALabel)
+        )
+        
         continueButtonViewModel = .primary(with: "Continue", accessibilityId: AccessibilityIDs.continueButton)
         updateButtonViewModel = .primary(with: "Update", accessibilityId: AccessibilityIDs.updateButton)
         
@@ -89,6 +102,18 @@ final class UpdateMobileScreenPresenter {
             .compactMap { $0.value }
             .map { $0.isSMSVerified ? .visible : .hidden }
             .bind(to: updateVisibilityRelay)
+            .disposed(by: disposeBag)
+        
+        setupInteractor.state
+            .compactMap { $0.value }
+            .map { $0.is2FAEnabled ? .visible : .hidden }
+            .bind(to: disable2FASMSVisibilityRelay)
+            .disposed(by: disposeBag)
+        
+        setupInteractor.state
+            .compactMap { $0.value }
+            .map { !$0.is2FAEnabled }
+            .bind(to: textField.isEnabledRelay)
             .disposed(by: disposeBag)
         
         setupInteractor.state
@@ -120,8 +145,9 @@ final class UpdateMobileScreenPresenter {
             .bind(to: badgeRelay)
             .disposed(by: disposeBag)
         
-        textField.state
-            .map { $0.isValid }
+    Observable.combineLatest(textField.state, setupInteractor.state)
+            .compactMap { ($0.0, $0.1.value) }
+            .map { $0.0.isValid && $0.1?.is2FAEnabled == false }
             .bind(to:
                 continueButtonViewModel.isEnabledRelay,
                 updateButtonViewModel.isEnabledRelay

@@ -16,6 +16,7 @@ final class UpdateMobileScreenViewController: BaseScreenViewController {
     
     @IBOutlet private var updateButtonView: ButtonView!
     @IBOutlet private var continueButtonView: ButtonView!
+    @IBOutlet private var disable2FALabel: UILabel!
     @IBOutlet private var descriptionLabel: UILabel!
     @IBOutlet fileprivate var badgeView: BadgeView!
     @IBOutlet private var mobileNumberTextFieldView: TextFieldView!
@@ -50,6 +51,12 @@ final class UpdateMobileScreenViewController: BaseScreenViewController {
         mobileNumberTextFieldView.setup(viewModel: presenter.textField, keyboardInteractionController: keyboardInteractionController)
         continueButtonView.viewModel = presenter.continueButtonViewModel
         updateButtonView.viewModel = presenter.updateButtonViewModel
+        disable2FALabel.content = presenter.disable2FALabel
+        
+        presenter.disable2FASMSVisibility
+            .map { $0.isHidden }
+            .drive(disable2FALabel.rx.isHidden)
+            .disposed(by: disposeBag)
         
         presenter.continueVisibility
             .map { $0.isHidden }

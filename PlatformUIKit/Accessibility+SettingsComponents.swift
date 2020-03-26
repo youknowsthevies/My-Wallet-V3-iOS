@@ -46,6 +46,7 @@ extension Accessibility.Identifier {
         public enum UpdateMobile {
             private static let prefix = "UpdateMobileScreen."
             public static let descriptionLabel = "\(prefix)descriptionLabel"
+            public static let disable2FALabel = "\(prefix)disable2FALabel"
             public static let textField = "\(prefix)textField"
             public static let continueButton = "\(prefix)continueButton"
             public static let updateButton = "\(prefix)updateButton"

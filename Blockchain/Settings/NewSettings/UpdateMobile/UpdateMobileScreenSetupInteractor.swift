@@ -17,10 +17,12 @@ final class UpdateMobileScreenSetupInteractor {
     struct InteractionModel {
         let badgeItem: BadgeItem
         let isSMSVerified: Bool
+        let is2FAEnabled: Bool
         let mobileNumber: String?
         
-        init(badgeItem: BadgeItem, isSMSVerified: Bool, mobileNumber: String? = nil) {
+        init(badgeItem: BadgeItem, is2FAEnabled: Bool, isSMSVerified: Bool, mobileNumber: String? = nil) {
             self.badgeItem = badgeItem
+            self.is2FAEnabled = is2FAEnabled
             self.isSMSVerified = isSMSVerified
             self.mobileNumber = mobileNumber
         }
@@ -56,6 +58,7 @@ final class UpdateMobileScreenSetupInteractor {
             .map {
                 .init(
                     badgeItem: $0.isSMSVerified ? .verified : .unverified,
+                    is2FAEnabled: $0.authenticator == .sms,
                     isSMSVerified: $0.isSMSVerified,
                     mobileNumber: $0.smsNumber ?? ""
                 )
