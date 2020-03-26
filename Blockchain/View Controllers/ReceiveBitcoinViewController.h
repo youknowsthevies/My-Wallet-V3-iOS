@@ -21,6 +21,8 @@
 #import "Wallet.h"
 #import "BCDescriptionView.h"
 
+extern NSString *const BCFiatCurrencySelected;
+
 @class BCTotalAmountView;
 @interface ReceiveBitcoinViewController : UIViewController <UITextFieldDelegate> {
     IBOutlet UIImageView *qrCodeMainImageView;

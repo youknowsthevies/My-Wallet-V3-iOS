@@ -278,6 +278,8 @@ BOOL displayingLocalSymbolSend;
         self.onViewDidLoad();
         self.onViewDidLoad = nil;
     }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadLocalAndBtcSymbolsFromLatestResponse) name:BCFiatCurrencySelected object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -533,7 +535,7 @@ BOOL displayingLocalSymbolSend;
 - (void)reloadLocalAndBtcSymbolsFromLatestResponse
 {
     if (WalletManager.sharedInstance.latestMultiAddressResponse.symbol_local && WalletManager.sharedInstance.latestMultiAddressResponse.symbol_btc) {
-        fiatLabel.text = WalletManager.sharedInstance.latestMultiAddressResponse.symbol_local.code;
+        fiatLabel.text = [BlockchainSettings.sharedAppInstance fiatCurrencySymbol];
         btcLabel.text = self.assetType == LegacyAssetTypeBitcoin ? WalletManager.sharedInstance.latestMultiAddressResponse.symbol_btc.symbol : CURRENCY_SYMBOL_BCH;
     }
     

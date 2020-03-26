@@ -10,6 +10,10 @@ import RxSwift
 import RxRelay
 import PlatformKit
 
+extension Notification.Name {
+    public static let fiatCurrencySelected = Notification.Name("fiat_currency_selected")
+}
+
 public final class FiatCurrencySelectionService: SelectionServiceAPI {
     
     public var dataSource: Observable<[SelectionItemViewModel]> {

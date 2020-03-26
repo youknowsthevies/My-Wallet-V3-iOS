@@ -216,6 +216,9 @@ final class SettingsRouter: SettingsRouterAPI {
             interactor: interactor
         )
         let viewController = SelectionScreenViewController(presenter: presenter)
+        if #available(iOS 13.0, *) {
+            viewController.isModalInPresentation = true
+        }
         present(viewController: viewController)
         
         interactor.selectedIdOnDismissal
@@ -232,6 +235,9 @@ final class SettingsRouter: SettingsRouterAPI {
             .subscribe(
                 onSuccess: { [weak self] currency in
                     guard let self = self else { return }
+                    /// TODO: Remove this and `fiatCurrencySelected` once `ReceiveBTC` and
+                    /// `SendBTC` are replaced with Swift implementations.
+                    NotificationCenter.default.post(name: .fiatCurrencySelected, object: nil)
                     self.analyticsRecording.record(
                         event: AnalyticsEvents.Settings.settingsCurrencySelected(currency: currency.code)
                     )
