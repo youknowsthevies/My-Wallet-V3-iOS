@@ -66,9 +66,7 @@ extension NumberFormatter {
         let integralPart: String = String(components[0])
         // Creates UInt64 from integralPart
         guard let integralPartUInt: UInt64 = UInt64(integralPart) else {
-            let debugMessage = "Failed to parse bitcoin value, integralPart: \(integralPart), components: \(components), string: \(string)"
-            CrashlyticsRecorder().error(debugMessage)
-            fatalError(debugMessage)
+            return nil
         }
 
         // IntegralPart in satoshis is IntegralPart multiplied by Satoshi base (1e8)
