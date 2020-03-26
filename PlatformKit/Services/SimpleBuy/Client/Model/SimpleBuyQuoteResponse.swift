@@ -47,15 +47,17 @@ public struct SimpleBuyQuote {
         guard let rate = BigInt(response.rate) else {
             throw SetupError.rateParsing
         }
-        guard let feeRate = Decimal(string: response.fee) else {
+        guard let feeRateMinor = Decimal(string: response.fee) else {
             throw SetupError.feeParsing
         }
-        let majorAmount = amount.minorAmount.decimalDivision(divisor: rate)
-        guard let estimatedAmount = CryptoValue.createFromMajorValue(string: "\(majorAmount)", assetType: cryptoCurrency)
+        let majorEstimatedAmount: Decimal = amount.minorAmount.decimalDivision(divisor: rate)
+        /// Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
+        guard let estimatedAmount = CryptoValue.createFromMajorValue(string: "\(majorEstimatedAmount)", assetType: cryptoCurrency, locale: .US)
             else { throw SetupError.createFromMajorValue }
         self.estimatedAmount = estimatedAmount
-        let feeAmount = feeRate * estimatedAmount.majorValue
-        self.fee = FiatValue(minor: "\(feeAmount)", currency: amount.currency)
+        let feeAmountMinor = feeRateMinor * estimatedAmount.majorValue
+        /// Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
+        self.fee = FiatValue(minor: "\(feeAmountMinor)", currency: amount.currency, locale: .US)
         self.time = time
     }
 }

@@ -297,7 +297,8 @@ extension CryptoValue {
 extension BigInt {
     func decimalDivision(divisor: BigInt) -> Decimal {
         let (quotient, remainder) =  quotientAndRemainder(dividingBy: divisor)
-        return Decimal(string: String(quotient))! + (Decimal(string: String(remainder))! / Decimal(string: String(divisor))!)
+        return Decimal(string: String(quotient))!
+            + (Decimal(string: String(remainder))! / Decimal(string: String(divisor))!)
     }
 }
 
