@@ -55,8 +55,8 @@ public struct SimpleBuyQuote {
         guard let estimatedAmount = CryptoValue.createFromMajorValue(string: "\(majorEstimatedAmount)", assetType: cryptoCurrency, locale: .US)
             else { throw SetupError.createFromMajorValue }
         self.estimatedAmount = estimatedAmount
-        let feeAmount = feeRate * estimatedAmount.majorValue
-        self.fee = FiatValue(minor: "\(feeAmount)", currency: amount.currency)
+        let feeAmountMinor = feeRate * estimatedAmount.majorValue
+        self.fee = FiatValue(minor: "\(feeAmountMinor)", currency: amount.currency)
         self.time = time
     }
 }
