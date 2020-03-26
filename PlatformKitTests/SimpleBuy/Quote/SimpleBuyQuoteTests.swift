@@ -23,9 +23,8 @@ class SimpleBuyQuoteTests: XCTestCase {
     func createTestCase(locale: Locale) -> QuoteTestCase {
         let response = SimpleBuyQuoteResponse(time: "2020-03-26T11:04:35.144Z", rate: "577864", rateWithoutFee: "576864", fee: "1000")
         let quote: SimpleBuyQuote? = try? SimpleBuyQuote(to: .bitcoin,
-                                                         amount: FiatValue(minor: "500", currency: .GBP, locale: locale),
-                                                         response: response,
-                                                         locale: locale)
+                                                         amount: FiatValue(minor: "500", currency: .GBP),
+                                                         response: response)
         return QuoteTestCase(locale: locale, response: response, quote: quote)
     }
     func testAllRegions() {

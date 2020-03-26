@@ -40,23 +40,24 @@ public struct SimpleBuyQuote {
 
     // MARK: - Setup
 
-    init(to cryptoCurrency: CryptoCurrency, amount: FiatValue, response: SimpleBuyQuoteResponse, locale: Locale = .current) throws {
+    init(to cryptoCurrency: CryptoCurrency, amount: FiatValue, response: SimpleBuyQuoteResponse) throws {
         guard let time = dateFormatter.date(from: response.time) else {
             throw SetupError.dateFormatting
         }
         guard let rate = BigInt(response.rate) else {
             throw SetupError.rateParsing
         }
-        guard let feeRate = Decimal(string: response.fee, locale: locale) else {
+        guard let feeRateMinor = Decimal(string: response.fee) else {
             throw SetupError.feeParsing
         }
-        let majorEstimatedAmount: Decimal = amount.minorAmount.decimalDivision(divisor: rate, locale: locale)
+        let majorEstimatedAmount: Decimal = amount.minorAmount.decimalDivision(divisor: rate)
         /// Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
         guard let estimatedAmount = CryptoValue.createFromMajorValue(string: "\(majorEstimatedAmount)", assetType: cryptoCurrency, locale: .US)
             else { throw SetupError.createFromMajorValue }
         self.estimatedAmount = estimatedAmount
-        let feeAmountMinor = feeRate * estimatedAmount.majorValue
-        self.fee = FiatValue(minor: "\(feeAmountMinor)", currency: amount.currency)
+        let feeAmountMinor = feeRateMinor * estimatedAmount.majorValue
+        /// Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
+        self.fee = FiatValue(minor: "\(feeAmountMinor)", currency: amount.currency, locale: .US)
         self.time = time
     }
 }

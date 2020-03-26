@@ -295,10 +295,10 @@ extension CryptoValue {
 // MARK: - Number Extensions
 
 extension BigInt {
-    func decimalDivision(divisor: BigInt, locale: Locale = .current) -> Decimal {
+    func decimalDivision(divisor: BigInt) -> Decimal {
         let (quotient, remainder) =  quotientAndRemainder(dividingBy: divisor)
-        return Decimal(string: String(quotient), locale: locale)!
-            + (Decimal(string: String(remainder), locale: locale)! / Decimal(string: String(divisor), locale: locale)!)
+        return Decimal(string: String(quotient))!
+            + (Decimal(string: String(remainder))! / Decimal(string: String(divisor))!)
     }
 }
 
