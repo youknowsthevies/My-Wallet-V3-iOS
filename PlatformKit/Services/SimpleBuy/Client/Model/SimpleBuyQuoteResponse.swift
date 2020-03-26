@@ -40,18 +40,19 @@ public struct SimpleBuyQuote {
 
     // MARK: - Setup
 
-    init(to cryptoCurrency: CryptoCurrency, amount: FiatValue, response: SimpleBuyQuoteResponse) throws {
+    init(to cryptoCurrency: CryptoCurrency, amount: FiatValue, response: SimpleBuyQuoteResponse, locale: Locale = .current) throws {
         guard let time = dateFormatter.date(from: response.time) else {
             throw SetupError.dateFormatting
         }
         guard let rate = BigInt(response.rate) else {
             throw SetupError.rateParsing
         }
-        guard let feeRate = Decimal(string: response.fee) else {
+        guard let feeRate = Decimal(string: response.fee, locale: locale) else {
             throw SetupError.feeParsing
         }
-        let majorAmount = amount.minorAmount.decimalDivision(divisor: rate)
-        guard let estimatedAmount = CryptoValue.createFromMajorValue(string: "\(majorAmount)", assetType: cryptoCurrency)
+        let majorEstimatedAmount: Decimal = amount.minorAmount.decimalDivision(divisor: rate, locale: locale)
+        /// Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
+        guard let estimatedAmount = CryptoValue.createFromMajorValue(string: "\(majorEstimatedAmount)", assetType: cryptoCurrency, locale: .US)
             else { throw SetupError.createFromMajorValue }
         self.estimatedAmount = estimatedAmount
         let feeAmount = feeRate * estimatedAmount.majorValue
