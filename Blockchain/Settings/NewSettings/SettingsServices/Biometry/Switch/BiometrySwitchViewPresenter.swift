@@ -38,8 +38,8 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
         
         viewModel
             .isOn
-            .drive(onNext: { (isOn) in
-                self.didTap(isOn)
+            .drive(onNext: { [weak self] isOn in
+                self?.didTap(isOn)
             })
             .disposed(by: disposeBag)
         
