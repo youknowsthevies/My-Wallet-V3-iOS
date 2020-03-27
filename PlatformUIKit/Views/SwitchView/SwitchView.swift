@@ -50,7 +50,7 @@ public class SwitchView: UIView {
             
             switchView.rx.isOn
                 .changed
-                .distinctUntilChanged()
+                .withLatestFrom(switchView.rx.value)
                 .debounce(.milliseconds(500), scheduler: MainScheduler.instance)
                 .bind(to: viewModel.isSwitchedOnRelay)
                 .disposed(by: disposeBag)

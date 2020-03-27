@@ -36,11 +36,13 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
                                                   authenticationCoordinator: .shared,
                                                   settingsAuthenticating: settingsAuthenticating)
         
-        viewModel
-            .isOn
-            .drive(onNext: { [weak self] isOn in
-                self?.didTap(isOn)
-            })
+        Observable.combineLatest(viewModel.isSwitchedOnRelay,
+                                 Observable.just(interactor.configurationStatus),
+                                 Observable.just(interactor.supportedBiometryType))
+            .flatMap(weak: self) { (self, values) -> Observable<Bool> in
+                self.toggleBiometry(values.2, biometryStatus: values.1, isOn: values.0)
+            }
+            .bind(to: interactor.switchTriggerRelay)
             .disposed(by: disposeBag)
         
         viewModel
@@ -68,58 +70,50 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
             .disposed(by: disposeBag)
     }
     
-    func didTap(_ isOn: Bool) {
-        guard isOn else {
-            interactor.enableBiometricsRelay.accept(false)
-            return
+    func toggleBiometry(_ biometryType: Biometry.BiometryType, biometryStatus: Biometry.Status, isOn: Bool) -> Observable<Bool> {
+        return Observable.create { observable -> Disposable in
+            guard isOn else {
+                observable.onNext(false)
+                return Disposables.create()
+            }
+            
+            if case let .unconfigurable(error) = biometryStatus {
+                let accept = UIAlertAction(
+                    title: LocalizationConstants.okString,
+                    style: .cancel,
+                    handler: { _ in
+                        observable.onNext(false)
+                    })
+                AlertViewPresenter.shared
+                    .standardNotify(
+                        message: error.localizedDescription,
+                        title: LocalizationConstants.Errors.error,
+                        actions: [accept]
+                )
+                return Disposables.create()
+            }
+            
+            let name = biometryType.localizedName ?? ""
+            let biometryWarning = String(format: LocalizationConstants.Biometry.biometryWarning, name)
+            let cancel = UIAlertAction(
+                title: LocalizationConstants.cancel,
+                style: .cancel,
+                handler: { _ in
+                    observable.onNext(false)
+                })
+            let accept = UIAlertAction(
+                title: LocalizationConstants.continueString,
+                style: .default,
+                handler: { _ in
+                    observable.onNext(true)
+                })
+            AlertViewPresenter.shared
+                .standardNotify(
+                    message: biometryWarning,
+                    title: name,
+                    actions: [cancel, accept]
+            )
+            return Disposables.create()
         }
-        
-        switch interactor.configurationStatus {
-        case .configurable(let biometryType):
-            enableBiometry(biometryType)
-        case .configured:
-            /// Already enabled
-            return
-        case .unconfigurable(let error):
-            showError(error)
-        }
-    }
-    
-    func showError(_ error: Error) {
-        let accept = UIAlertAction(
-            title: LocalizationConstants.okString,
-            style: .cancel,
-            handler: { [weak self] _ in
-                self?.viewModel.isOnRelay.accept(false)
-            })
-        AlertViewPresenter.shared
-            .standardNotify(
-                message: error.localizedDescription,
-                title: LocalizationConstants.Errors.error,
-                actions: [accept]
-        )
-    }
-    
-    func enableBiometry(_ biometryType: Biometry.BiometryType) {
-        let name = biometryType.localizedName ?? ""
-        let biometryWarning = String(format: LocalizationConstants.Biometry.biometryWarning, name)
-        let cancel = UIAlertAction(
-            title: LocalizationConstants.cancel,
-            style: .cancel,
-            handler: { [weak self] _ in
-                self?.viewModel.isOnRelay.accept(false)
-            })
-        let accept = UIAlertAction(
-            title: LocalizationConstants.continueString,
-            style: .default,
-            handler: { [weak self] _ in
-                self?.interactor.enableBiometricsRelay.accept(true)
-            })
-        AlertViewPresenter.shared
-            .standardNotify(
-                message: biometryWarning,
-                title: name,
-                actions: [cancel, accept]
-        )
     }
 }

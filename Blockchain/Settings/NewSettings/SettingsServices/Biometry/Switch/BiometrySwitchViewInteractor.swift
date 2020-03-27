@@ -17,42 +17,57 @@ class BiometrySwitchViewInteractor: SwitchViewInteracting {
     typealias InteractionState = LoadingState<SwitchInteractionAsset>
 
     var state: Observable<InteractionState> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
     }
 
     var switchTriggerRelay = PublishRelay<Bool>()
-    var enableBiometricsRelay = PublishRelay<Bool>()
 
     var configurationStatus: Biometry.Status {
-        return provider.configurationStatus
+        provider.configurationStatus
+    }
+
+    var supportedBiometryType: Biometry.BiometryType {
+        provider.supportedBiometricsType
     }
 
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
+    private unowned let settingsAuthenticating: AppSettingsAuthenticating
     private let disposeBag = DisposeBag()
     private let provider: BiometryProviding
 
     init(provider: BiometryProviding, authenticationCoordinator: AuthenticationCoordinator, settingsAuthenticating: AppSettingsAuthenticating) {
         self.provider = provider
-
-        enableBiometricsRelay
-            .do(onNext: {
-                if $0 {
-                    authenticationCoordinator.enableBiometrics()
-                } else {
-                    settingsAuthenticating.pin = nil
-                    settingsAuthenticating.biometryEnabled = false
-                }
-            })
-            .subscribe()
-            .disposed(by: disposeBag)
+        self.settingsAuthenticating = settingsAuthenticating
 
         Observable
             .just(settingsAuthenticating.biometryEnabled)
             .map { .loaded(next: .init(isOn: $0, isEnabled: true)) }
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
-
+        
+        NotificationCenter.when(.login) { [weak self] _ in
+            guard let self = self else { return }
+            self.refresh()
+        }
+        
         switchTriggerRelay
+            .do(onNext: { [weak self] in
+                guard let self = self else { return }
+                if $0 {
+                    authenticationCoordinator.enableBiometrics()
+                } else {
+                    settingsAuthenticating.pin = nil
+                    settingsAuthenticating.biometryEnabled = false
+                    self.refresh()
+                }
+            })
+            .subscribe()
+            .disposed(by: disposeBag)
+    }
+    
+    private func refresh() {
+        Observable
+            .just(settingsAuthenticating.biometryEnabled)
             .map { .loaded(next: .init(isOn: $0, isEnabled: true)) }
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
