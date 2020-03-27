@@ -27,10 +27,6 @@ class BiometrySwitchViewInteractor: SwitchViewInteracting {
         return provider.configurationStatus
     }
 
-    var supportedBiometryType: Biometry.BiometryType {
-        return provider.supportedBiometricsType
-    }
-
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
     private let provider: BiometryProviding
