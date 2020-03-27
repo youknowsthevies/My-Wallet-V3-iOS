@@ -274,7 +274,7 @@ AppSettingsController, UITextFieldDelegate, EmailDelegate, WalletAccountInfoDele
             BlockchainSettings.sharedAppInstance().biometryEnabled = false
             let alertBiometryError = UIAlertController(
                 title: LocalizationConstants.Errors.error,
-                message: error.message,
+                message: error.localizedDescription,
                 preferredStyle: .alert
             )
             alertBiometryError.addAction(UIAlertAction(title: LocalizationConstants.okString, style: .cancel, handler: { _ in
