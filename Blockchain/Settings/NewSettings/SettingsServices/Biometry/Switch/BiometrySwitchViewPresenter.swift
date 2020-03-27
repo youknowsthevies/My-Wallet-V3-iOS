@@ -86,40 +86,40 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
     }
     
     func showError(_ error: Error) {
-        let act1 = UIAlertAction(
+        let accept = UIAlertAction(
             title: LocalizationConstants.okString,
             style: .cancel,
             handler: { [weak self] _ in
                 self?.viewModel.isOnRelay.accept(false)
-        })
+            })
         AlertViewPresenter.shared
             .standardNotify(
                 message: error.localizedDescription,
                 title: LocalizationConstants.Errors.error,
-                actions: [act1]
+                actions: [accept]
         )
     }
     
     func enableBiometry(_ biometryType: Biometry.BiometryType) {
         let name = biometryType.localizedName ?? ""
         let biometryWarning = String(format: LocalizationConstants.Biometry.biometryWarning, name)
-        let act1 = UIAlertAction(
+        let cancel = UIAlertAction(
             title: LocalizationConstants.cancel,
             style: .cancel,
             handler: { [weak self] _ in
                 self?.viewModel.isOnRelay.accept(false)
-        })
-        let act2 = UIAlertAction(
+            })
+        let accept = UIAlertAction(
             title: LocalizationConstants.continueString,
             style: .default,
             handler: { [weak self] _ in
                 self?.interactor.enableBiometricsRelay.accept(true)
-        })
+            })
         AlertViewPresenter.shared
             .standardNotify(
                 message: biometryWarning,
                 title: name,
-                actions: [act1, act2]
+                actions: [cancel, accept]
         )
     }
 }
