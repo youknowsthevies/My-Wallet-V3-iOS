@@ -23,12 +23,11 @@ final class BiometryLabelContentInteractor: LabelContentInteracting {
     // MARK: - Private Accessors
     
     init(biometryProviding: BiometryProviding) {
-        // TODO: Localization
         var title = LocalizationConstants.Settings.enableTouchID
         switch biometryProviding.supportedBiometricsType {
-        case .faceId:
+        case .faceID:
             title = LocalizationConstants.Settings.enableFaceID
-        case .touchId:
+        case .touchID:
             title = LocalizationConstants.Settings.enableTouchID
         case .none:
             break
