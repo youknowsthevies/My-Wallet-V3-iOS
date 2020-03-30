@@ -10,6 +10,7 @@ import RxSwift
 import RxRelay
 import RxCocoa
 import Localization
+import ToolKit
 
 /// A view model that represents a password text field
 public final class PasswordTextFieldViewModel: TextFieldViewModel {
@@ -106,9 +107,10 @@ public final class PasswordTextFieldViewModel: TextFieldViewModel {
     
     public init(with type: TextFieldType,
                 passwordValidator: NewPasswordValidating,
-                textMatchValidator: CollectionTextMatchValidator) {
+                textMatchValidator: CollectionTextMatchValidator,
+                messageRecorder: MessageRecording) {
         self.passwordValidator = passwordValidator
-        super.init(with: type, validator: passwordValidator, textMatcher: textMatchValidator)
+        super.init(with: type, validator: passwordValidator, textMatcher: textMatchValidator, messageRecorder: messageRecorder)
         passwordValidator.score
             .map { Score(score: $0) }
             .bind(to: scoreRelay)

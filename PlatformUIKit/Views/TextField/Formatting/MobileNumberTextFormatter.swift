@@ -14,7 +14,8 @@ final class MobileNumberTextFormatter: TextFormatting {
     
     private let formatter = PartialFormatter()
     
-    func format(text: String) -> Observable<String> {
-        return Observable.just(formatter.formatPartial(text))
+    func format(text: String) -> TextFormatType {
+        let formatted = formatter.formatPartial(text)
+        return formatted == text ? .keepExisting(text) : .changed(new: formatted)
     }
 }

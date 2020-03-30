@@ -10,6 +10,7 @@ import RxSwift
 import RxRelay
 import RxCocoa
 import Localization
+import ToolKit
 
 /// A view model that represents a password text field
 public final class ValidationTextFieldViewModel: TextFieldViewModel {
@@ -31,10 +32,17 @@ public final class ValidationTextFieldViewModel: TextFieldViewModel {
     public override init(with type: TextFieldType,
                 validator: TextValidating,
                 formatting: TextFormatting = TextFormatterFactory.empty,
-                textMatcher: CollectionTextMatchValidator? = nil) {
-        super.init(with: type, validator: validator, formatting: formatting, textMatcher: textMatcher)
+                textMatcher: CollectionTextMatchValidator? = nil,
+                messageRecorder: MessageRecording) {
+        super.init(
+            with: type,
+            validator: validator,
+            formatting: formatting,
+            textMatcher: textMatcher,
+            messageRecorder: messageRecorder
+        )
         
-    Observable.combineLatest(self.validator.isValid, self.validator.valueRelay)
+        Observable.combineLatest(self.validator.isValid, self.validator.valueRelay)
             .map {
                 guard $0.1.isEmpty == false else { return .hidden }
                 return $0.0 ? .hidden : .visible

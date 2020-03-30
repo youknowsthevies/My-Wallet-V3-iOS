@@ -83,19 +83,22 @@ final class ChangePasswordScreenPresenter {
         
         currentPasswordTextFieldViewModel = TextFieldViewModel(
             with: .password,
-            validator: TextValidationFactory.loginPassword
+            validator: TextValidationFactory.loginPassword,
+            messageRecorder: CrashlyticsRecorder()
         )
         
         passwordTextFieldViewModel = PasswordTextFieldViewModel(
             with: .newPassword,
             passwordValidator: newPasswordValidator,
-            textMatchValidator: textMatchValidator
+            textMatchValidator: textMatchValidator,
+            messageRecorder: CrashlyticsRecorder()
         )
         
         confirmPasswordTextFieldViewModel = PasswordTextFieldViewModel(
             with: .confirmNewPassword,
             passwordValidator: confirmNewPasswordValidator,
-            textMatchValidator: textMatchValidator
+            textMatchValidator: textMatchValidator,
+            messageRecorder: CrashlyticsRecorder()
         )
         
         let latestStatesObservable = Observable

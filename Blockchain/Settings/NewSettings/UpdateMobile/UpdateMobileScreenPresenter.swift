@@ -70,7 +70,8 @@ final class UpdateMobileScreenPresenter {
         textField = .init(
             with: .mobile,
             validator: TextValidationFactory.mobile,
-            formatting: TextFormatterFactory.mobile
+            formatting: TextFormatterFactory.mobile,
+            messageRecorder: CrashlyticsRecorder()
         )
         
         descriptionLabel = .init(

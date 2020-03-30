@@ -67,11 +67,13 @@ final class ManualPairingScreenPresenter {
         )
         walletIdTextFieldViewModel = TextFieldViewModel(
             with: .walletIdentifier,
-            validator: TextValidationFactory.walletIdentifier
+            validator: TextValidationFactory.walletIdentifier,
+            messageRecorder: CrashlyticsRecorder()
         )
         passwordTextFieldViewModel = TextFieldViewModel(
             with: .password,
-            validator: TextValidationFactory.loginPassword
+            validator: TextValidationFactory.loginPassword,
+            messageRecorder: CrashlyticsRecorder()
         )
         
         let latestStatesObservable = Observable

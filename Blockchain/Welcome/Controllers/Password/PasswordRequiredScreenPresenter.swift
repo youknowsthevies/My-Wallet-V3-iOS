@@ -25,7 +25,8 @@ final class PasswordRequiredScreenPresenter {
     let forgetDescription = LocalizedString.forgetWalletDescription
     let passwordTextFieldViewModel = TextFieldViewModel(
         with: .password,
-        validator: TextValidationFactory.loginPassword
+        validator: TextValidationFactory.loginPassword,
+        messageRecorder: CrashlyticsRecorder()
     )
     let continueButtonViewModel = ButtonViewModel.primary(
         with: LocalizedString.continueButton

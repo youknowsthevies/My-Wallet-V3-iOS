@@ -42,6 +42,33 @@ public enum TextFieldType {
     case oneTimeCode
 }
 
+// MARK: - Debug
+
+extension TextFieldType: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        switch self {
+        case .walletIdentifier:
+            return "wallet-identifier"
+        case .email:
+            return "email"
+        case .newPassword:
+            return "new-password"
+        case .confirmNewPassword:
+            return "confirm-new-password"
+        case .password:
+            return "password"
+        case .recoveryPhrase:
+            return "recovery-phrase"
+        case .backupVerfication(let index):
+            return "backup-verification-\(index)"
+        case .mobile:
+            return "mobile-number"
+        case .oneTimeCode:
+            return "one-time-code"
+        }
+    }
+}
+
 // MARK: - Information Sensitivity
 
 extension TextFieldType {

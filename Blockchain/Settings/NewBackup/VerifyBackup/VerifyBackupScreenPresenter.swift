@@ -110,17 +110,20 @@ final class VerifyBackupScreenPresenter {
         
         firstTextFieldViewModel = ValidationTextFieldViewModel(
             with: .backupVerfication(index: firstIndex),
-            validator: TextValidationFactory.word(value: subset[0])
+            validator: TextValidationFactory.word(value: subset[0]),
+            messageRecorder: CrashlyticsRecorder()
         )
         
         secondTextFieldViewModel = ValidationTextFieldViewModel(
             with: .backupVerfication(index: secondIndex),
-            validator: TextValidationFactory.word(value: subset[1])
+            validator: TextValidationFactory.word(value: subset[1]),
+            messageRecorder: CrashlyticsRecorder()
         )
         
         thirdTextFieldViewModel = ValidationTextFieldViewModel(
             with: .backupVerfication(index: thirdIndex),
-            validator: TextValidationFactory.word(value: subset[2])
+            validator: TextValidationFactory.word(value: subset[2]),
+            messageRecorder: CrashlyticsRecorder()
         )
         
         verifyButtonViewModel = .primary(

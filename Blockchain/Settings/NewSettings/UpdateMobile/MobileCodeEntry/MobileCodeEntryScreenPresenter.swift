@@ -51,7 +51,8 @@ final class MobileCodeEntryScreenPresenter {
         self.stateService = stateService
         codeEntryTextFieldModel = .init(
             with: .oneTimeCode,
-            validator: TextValidationFactory.alwaysValid
+            validator: TextValidationFactory.alwaysValid,
+            messageRecorder: CrashlyticsRecorder()
         )
         
         descriptionContent = .init(

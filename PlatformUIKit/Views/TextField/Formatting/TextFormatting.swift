@@ -8,12 +8,26 @@
 
 import RxSwift
 
+public enum TextFormatType {
+    case changed(new: String)
+    case keepExisting(String)
+    
+    var text: String {
+        switch self {
+        case .changed(new: let new):
+            return new
+        case .keepExisting(let text):
+            return text
+        }
+    }
+}
+
 public protocol TextFormatting: class {
-    func format(text: String) -> Observable<String>
+    func format(text: String) -> TextFormatType
 }
 
 public final class EmptyFormatter: TextFormatting {
-    public func format(text: String) -> Observable<String> {
-        return Observable.just(text)
+    public func format(text: String) -> TextFormatType {
+        return .keepExisting(text)
     }
 }

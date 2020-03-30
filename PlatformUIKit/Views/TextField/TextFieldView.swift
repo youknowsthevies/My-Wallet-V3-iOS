@@ -166,17 +166,14 @@ extension TextFieldView: UITextFieldDelegate {
                           replacementString string: String) -> Bool {
         let text = textField.text ?? ""
         let input = (text as NSString).replacingCharacters(in: range, with: string)
-        viewModel.textFieldEdited(with: input)
-        // TICKET: IOS-3097
-        /// If the formatter has not altered the textInput
-        /// then we return `true`, otherwise we want to
-        /// replace the value in the `UITextField` with the
-        /// correctly formatted value.
-        if textField.text == viewModel.textRelay.value {
-            return true
-        } else {
-            textField.text = viewModel.textRelay.value
+        
+        let formatType = viewModel.editIfNecessary(input)
+        switch formatType {
+        case .changed(new: let text):
+            textField.text = text
             return false
+        case .keepExisting:
+            return true
         }
     }
     

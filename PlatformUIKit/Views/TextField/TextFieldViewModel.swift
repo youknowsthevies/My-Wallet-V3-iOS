@@ -9,7 +9,9 @@
 import RxSwift
 import RxRelay
 import RxCocoa
+import ToolKit
 import Localization
+
 
 /// A view model for text field
 public class TextFieldViewModel {
@@ -81,8 +83,8 @@ public class TextFieldViewModel {
     public let textRelay = BehaviorRelay<String>(value: "")
     var text: Observable<String> {
         return textRelay
-            .flatMap(weak: self) { (self, value) -> Observable<String> in
-                self.formatting.format(text: value)
+            .map(weak: self) { (self, value) -> String in
+                self.formatting.format(text: value).text
             }
             .distinctUntilChanged()
     }
@@ -108,13 +110,16 @@ public class TextFieldViewModel {
     let textMatcher: CollectionTextMatchValidator?
     let type: TextFieldType
     let accessibility: Accessibility
-
+    let messageRecorder: MessageRecording
+    
     // MARK: - Setup
     
     public init(with type: TextFieldType,
                 validator: TextValidating,
                 formatting: TextFormatting = TextFormatterFactory.empty,
-                textMatcher: CollectionTextMatchValidator? = nil) {
+                textMatcher: CollectionTextMatchValidator? = nil,
+                messageRecorder: MessageRecording) {
+        self.messageRecorder = messageRecorder
         self.formatting = formatting
         self.validator = validator
         self.textMatcher = textMatcher
@@ -198,13 +203,23 @@ public class TextFieldViewModel {
     func textFieldDidEndEditing() {
         isHintVisibleRelay.accept(true)
     }
-    
+        
     /// Should be called upon editing the text field
     func textFieldEdited(with value: String) {
-        formatting.format(text: value)
-            .bind(to: textRelay)
-            .disposed(by: disposeBag)
+        messageRecorder.record("Text field \(type.debugDescription) edited")
+        textRelay.accept(value)
         isHintVisibleRelay.accept(type.showsHintWhileTyping)
+    }
+
+    func editIfNecessary(_ text: String) -> TextFormatType {
+        let type = formatting.format(text: text)
+        switch type {
+        case .changed(new: let formattedText):
+            textFieldEdited(with: formattedText)
+        case .keepExisting:
+            textFieldEdited(with: text)
+        }
+        return type
     }
 }
 
