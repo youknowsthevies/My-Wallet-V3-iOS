@@ -162,9 +162,9 @@ final class PinScreenPresenter {
             if currentBiometricsType.isValid {
                 let biometricButtonImage: DigitPadButtonViewModel.Content.Image!
                 switch currentBiometricsType {
-                case .faceId:
+                case .faceID:
                     biometricButtonImage = .faceId
-                case .touchId:
+                case .touchID:
                     biometricButtonImage = .touchId
                 case .none:
                     biometricButtonImage = nil
@@ -496,7 +496,7 @@ extension PinScreenPresenter {
         let title: String
         let image: UIImage
         switch biometricsStatus.biometricsType {
-        case .faceId:
+        case .faceID:
             title = LocalizationConstants.Pin.enableFaceIdTitle
             image = UIImage(named: "face_id_icon")!
         default: // touch-id

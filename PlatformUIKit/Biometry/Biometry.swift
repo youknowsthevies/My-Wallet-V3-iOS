@@ -12,7 +12,7 @@ import Localization
 
 public struct Biometry {
     
-    public enum BiometryError {
+    public enum BiometryError: Error {
         private typealias LocalizedString = LocalizationConstants.Biometry
         
         case authenticationFailed
@@ -26,9 +26,9 @@ public struct Biometry {
         case userCancel
         case userFallback
         case general
-        
+
         /// A user message corresponding to the error
-        var message: String? {
+        public var localizedDescription: String {
             switch self {
             case .authenticationFailed:
                 return LocalizedString.authenticationFailed
@@ -46,7 +46,7 @@ public struct Biometry {
                  .systemCancel,
                  .userCancel,
                  .userFallback:
-                return nil
+                return ""
             }
         }
         
@@ -81,13 +81,14 @@ public struct Biometry {
                 self = .userCancel
             case .userFallback:
                 self = .userFallback
-            case .biometryLockout:
+            case .touchIDLockout:
                 self = .biometryLockout
-            case .biometryNotAvailable:
+            case .touchIDNotAvailable:
                 self = .biometryNotAvailable
-            case .biometryNotEnrolled:
+            case .touchIDNotEnrolled:
                 self = .biometryNotEnrolled
-            case .invalidContext, .notInteractive:
+            case .invalidContext,
+                 .notInteractive:
                 self = .general
             @unknown default:
                 self = .general
@@ -119,7 +120,7 @@ public struct Biometry {
         
         /// Cannot be configured because the device do not support it,
         /// or because the user hasn't enabled it, or because that feature is not remotely
-        case unconfigurable
+        case unconfigurable(Error)
         
         /// Returns `true` if biometrics is configurable
         public var isConfigurable: Bool {
@@ -156,26 +157,37 @@ public struct Biometry {
     
     /// A type of biomety authenticator
     public enum BiometryType {
-        
-        /// Touch ID
-        case touchId
-        
-        /// Face ID
-        case faceId
-        
-        /// No authenticator
+
+        /// The device supports Touch ID.
+        case touchID
+
+        /// The device supports Face ID.
+        case faceID
+
+        /// The device does not support biometry.
         case none
 
-        static func create(from systemType: LABiometryType) -> BiometryType {
+        init(with systemType: LABiometryType) {
             switch systemType {
             case .faceID:
-                return .faceId
+                self = .faceID
             case .touchID:
-                return .touchId
+                self = .touchID
             case .none:
-                return .none
+                self = .none
             @unknown default:
-                return .none
+                self = .none
+            }
+        }
+
+        public var localizedName: String? {
+            switch self {
+            case .faceID:
+                return LocalizationConstants.faceId
+            case .touchID:
+                return LocalizationConstants.touchId
+            case .none:
+                return nil
             }
         }
         
@@ -191,10 +203,10 @@ public struct Biometry {
         case system(BiometryError)
         case notAllowed
         
-        public var message: String {
+        public var localizedDescription: String {
             switch self {
             case .system(let error):
-                return error.message ?? ""
+                return error.localizedDescription
             case .notAllowed:
                 return LocalizationConstants.Biometry.notConfigured
             }

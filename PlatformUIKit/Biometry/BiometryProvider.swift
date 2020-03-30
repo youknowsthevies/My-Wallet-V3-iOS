@@ -19,20 +19,20 @@ public final class BiometryProvider: BiometryProviding {
     /// Returns the status of biometrics configuration on the app and device
     public var configurationStatus: Biometry.Status {
         switch canAuthenticate {
-        case .success:
+        case .success(let biometryType):
             // Verify configuration in remote
             guard self.featureConfigurator.configuration(for: .biometry).isEnabled else {
-                return .unconfigurable
+                return .unconfigurable(Biometry.EvaluationError.notAllowed)
             }
             
             // Biometrics id is already configured - therefore, return it
             if self.settings.biometryEnabled {
-                return .configured(self.supportedBiometricsType)
+                return .configured(biometryType)
             } else { // Biometrics has not yet been configured within the app
-                return .configurable(self.supportedBiometricsType)
+                return .configurable(biometryType)
             }
-        case .failure:
-            return .unconfigurable
+        case .failure(let error):
+            return .unconfigurable(error)
         }
     }
     
@@ -48,23 +48,14 @@ public final class BiometryProvider: BiometryProviding {
     /// Returns the supported device biometrics, regardless if currently configured in app
     public var supportedBiometricsType: Biometry.BiometryType {
         let context = LAContext()
-        let canEvaluate = context.canEvaluatePolicy(
-            .deviceOwnerAuthenticationWithBiometrics,
-            error: nil
-        )
-        if context.responds(to: #selector(getter: LAContext.biometryType)) {
-            return .create(from: context.biometryType)
-        } else if canEvaluate {
-            return .touchId
-        } else {
-            return .none
-        }
+        _ = context.canEvaluatePolicy( .deviceOwnerAuthenticationWithBiometrics, error: nil)
+        return .init(with: context.biometryType)
     }
     
     /// Evaluates whether the device owner can authenticate using biometrics.
-    public var canAuthenticate: Result<Void, Biometry.EvaluationError> {
+    public var canAuthenticate: Result<Biometry.BiometryType, Biometry.EvaluationError> {
         let context = LAContext()
-        var error: NSError!
+        var error: NSError?
         let canEvaluate = context.canEvaluatePolicy(
             .deviceOwnerAuthenticationWithBiometrics,
             error: &error
@@ -75,7 +66,7 @@ public final class BiometryProvider: BiometryProviding {
         } else if !canEvaluate {
             return .failure(.notAllowed)
         } else { // Success
-            return .success(())
+            return .success(.init(with: context.biometryType))
         }
     }
     

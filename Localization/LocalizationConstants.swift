@@ -2348,6 +2348,7 @@ public struct LocalizationConstants {
                 "Your mobile phone can be used to enable two-factor authentication or to receive alerts.",
                 comment: "Your mobile phone can be used to enable two-factor authentication or to receive alerts."
             )
+            public static let disableSMS2FA = NSLocalizedString("You must disable SMS 2-Step Verification before changing your mobile number.", comment: "You must disable SMS 2-Step Verification before changing your mobile number.")
             public static let action = NSLocalizedString("Update", comment: "Update")
         }
 

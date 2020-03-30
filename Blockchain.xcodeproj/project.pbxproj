@@ -597,6 +597,8 @@
 		3A5C889D23E3751E002833B4 /* AssetFiatCryptoBalancePairs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5C889C23E3751E002833B4 /* AssetFiatCryptoBalancePairs.swift */; };
 		3A5CEE262315805A000E212A /* PassthroughView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5CEE252315805A000E212A /* PassthroughView.swift */; };
 		3A5E190323F1C871003005B7 /* CustodialBalanceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5E190223F1C871003005B7 /* CustodialBalanceClient.swift */; };
+		3A5ECAFE242CB52E005AF1E7 /* CryptoValueDisplayStringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5ECAFD242CB52E005AF1E7 /* CryptoValueDisplayStringTests.swift */; };
+		3A5ECB0A242CBB9D005AF1E7 /* SimpleBuyQuoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5ECB09242CBB9D005AF1E7 /* SimpleBuyQuoteTests.swift */; };
 		3A5F502323EB2EF500DA9AAC /* NabuAuthenticationServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5F502223EB2EF500DA9AAC /* NabuAuthenticationServiceMock.swift */; };
 		3A64A51E21B9C150002D6851 /* PlatformKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A68655D219A0BBA0009FF29 /* PlatformKit.framework */; };
 		3A65061323E8394B003A837D /* SimpleBuyOrderDetailsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A65061223E8394B003A837D /* SimpleBuyOrderDetailsResponse.swift */; };
@@ -3305,6 +3307,8 @@
 		3A5C889C23E3751E002833B4 /* AssetFiatCryptoBalancePairs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetFiatCryptoBalancePairs.swift; sourceTree = "<group>"; };
 		3A5CEE252315805A000E212A /* PassthroughView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassthroughView.swift; sourceTree = "<group>"; };
 		3A5E190223F1C871003005B7 /* CustodialBalanceClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustodialBalanceClient.swift; sourceTree = "<group>"; };
+		3A5ECAFD242CB52E005AF1E7 /* CryptoValueDisplayStringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoValueDisplayStringTests.swift; sourceTree = "<group>"; };
+		3A5ECB09242CBB9D005AF1E7 /* SimpleBuyQuoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleBuyQuoteTests.swift; sourceTree = "<group>"; };
 		3A5F502223EB2EF500DA9AAC /* NabuAuthenticationServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NabuAuthenticationServiceMock.swift; sourceTree = "<group>"; };
 		3A65061223E8394B003A837D /* SimpleBuyOrderDetailsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleBuyOrderDetailsResponse.swift; sourceTree = "<group>"; };
 		3A65064823E88EFA003A837D /* SimpleBuyPaymentAccountServiceAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleBuyPaymentAccountServiceAPI.swift; sourceTree = "<group>"; };
@@ -9031,6 +9035,14 @@
 			path = PassthroughView;
 			sourceTree = "<group>";
 		};
+		3A5ECB08242CBB8D005AF1E7 /* Quote */ = {
+			isa = PBXGroup;
+			children = (
+				3A5ECB09242CBB9D005AF1E7 /* SimpleBuyQuoteTests.swift */,
+			);
+			path = Quote;
+			sourceTree = "<group>";
+		};
 		3A65063E23E88E4F003A837D /* PaymentAccount */ = {
 			isa = PBXGroup;
 			children = (
@@ -9403,6 +9415,7 @@
 				3A7FFFD823E454C800460588 /* CryptoCurrencyTests.swift */,
 				AACD861A21B8B5FC00C860D1 /* CryptoFormatterTests.swift */,
 				3A6A19EF21B8963400D97C74 /* CryptoValueTests.swift */,
+				3A5ECAFD242CB52E005AF1E7 /* CryptoValueDisplayStringTests.swift */,
 				AA75F8B021F15E690003B19E /* FiatValueTests.swift */,
 			);
 			path = Balance;
@@ -9860,6 +9873,7 @@
 		3AA059F523ED6BFC008A3F50 /* SimpleBuy */ = {
 			isa = PBXGroup;
 			children = (
+				3A5ECB08242CBB8D005AF1E7 /* Quote */,
 				3A4B634423F2F7DF00AE1BAD /* Mocks */,
 				6565036623EDB6F30045CAEE /* PaymentAccount */,
 			);
@@ -19038,7 +19052,9 @@
 				3A5F502323EB2EF500DA9AAC /* NabuAuthenticationServiceMock.swift in Sources */,
 				65B24C88239FDBDF00004F15 /* WalletPayloadService+FakeClientResponse.swift in Sources */,
 				65A2A97E23FD501600B6EA06 /* FiatCurrencySettingsServiceMock.swift in Sources */,
+				3A5ECAFE242CB52E005AF1E7 /* CryptoValueDisplayStringTests.swift in Sources */,
 				653C41F32344DB6F00AAD154 /* AnalyticsUserPropertyValidationTests.swift in Sources */,
+				3A5ECB0A242CBB9D005AF1E7 /* SimpleBuyQuoteTests.swift in Sources */,
 				6565036D23EDB6F30045CAEE /* SimpleBuyPaymentAccountGBPTests.swift in Sources */,
 				65B24C86239FD68B00004F15 /* MockWalletPayloadService.swift in Sources */,
 			);

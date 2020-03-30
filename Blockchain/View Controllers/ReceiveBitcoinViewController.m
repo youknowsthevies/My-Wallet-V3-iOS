@@ -25,6 +25,9 @@
 #define BOTTOM_CONTAINER_HEIGHT_PLUS_BUTTON_SPACE_4S 224
 #define ESTIMATED_KEYBOARD_PLUS_ACCESSORY_VIEW_HEIGHT 205.5
 
+
+NSString *const BCFiatCurrencySelected = @"fiat_currency_selected";
+
 @interface ReceiveBitcoinViewController() <UIActivityItemSource, AddressSelectionDelegate>
 @property (nonatomic) UITextField *lastSelectedField;
 @property (nonatomic) QRCodeGenerator *qrCodeGenerator;
@@ -91,7 +94,9 @@
     
     self.firstLoading = NO;
     
-    [self updateUI];    
+    [self updateUI];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadLocalAndBtcSymbolsFromLatestResponse) name:BCFiatCurrencySelected object:nil];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -321,7 +326,7 @@
 - (void)reloadLocalAndBtcSymbolsFromLatestResponse
 {
     if (WalletManager.sharedInstance.latestMultiAddressResponse.symbol_local && WalletManager.sharedInstance.latestMultiAddressResponse.symbol_btc) {
-        self.amountInputView.fiatLabel.text = WalletManager.sharedInstance.latestMultiAddressResponse.symbol_local.code;
+        self.amountInputView.fiatLabel.text = [BlockchainSettings.sharedAppInstance fiatCurrencySymbol];
         self.amountInputView.btcLabel.text = WalletManager.sharedInstance.latestMultiAddressResponse.symbol_btc.symbol;
     }
 }
