@@ -67,6 +67,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         if isDebug {
             DISABLE_CERT_PINNING = true
+            
+            guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else {
+                return true
+            }
         }
 
         FirebaseApp.configure()
