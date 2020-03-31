@@ -45,7 +45,7 @@ Install a node version manager such as [nvm](https://github.com/creationix/nvm) 
 ## Prepare OpenSSL
 
     $ cd ./Submodules/OpenSSL-for-iPhone
-    $ ./build-libssl.sh --cleanup --archs="x86_64 i386 arm64"
+    $ ./build-libssl.sh --cleanup --archs="x86_64 arm64"
 
 ## Install LibWallySwift build dependencies
 
