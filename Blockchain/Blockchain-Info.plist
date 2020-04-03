@@ -43,6 +43,8 @@
 	<string>0</string>
 	<key>COINIFY_URL</key>
 	<string>$(COINIFY_URL)</string>
+	<key>EXCHANGE_URL</key>
+	<string>$(EXCHANGE_URL)</string>
 	<key>EXPLORER_SERVER</key>
 	<string>$(EXPLORER_SERVER)</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
@@ -61,8 +63,6 @@
 	<string>Required for video capture.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Your permission is needed in order to upload documents from your photo library.</string>
-	<key>EXCHANGE_URL</key>
-	<string>$(EXCHANGE_URL)</string>
 	<key>RETAIL_CORE_SOCKET_URL</key>
 	<string>$(RETAIL_CORE_SOCKET_URL)</string>
 	<key>RETAIL_CORE_URL</key>
@@ -84,6 +84,8 @@
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleDefault</string>
 	<key>UISupportedInterfaceOrientations</key>
