@@ -29,7 +29,6 @@
 #import "NSData+Hex.h"
 #import "NSNumberFormatter+Currencies.h"
 #import "Reachability.h"
-#import "SettingsNavigationController.h"
 #import "TabControllerManager.h"
 #import "Transaction.h"
 #import "TransferAllFundsViewController.h"
@@ -47,9 +46,6 @@
 // Settings
 #import "SettingsWebViewController.h"
 #import "KeychainItemWrapper+SwipeAddresses.h"
-#import "BCVerifyEmailViewController.h"
-#import "BCVerifyMobileNumberViewController.h"
-#import "SettingsChangePasswordViewController.h"
 
 #import "FromToView.h"
 #import "ContinueButtonInputAccessoryView.h"

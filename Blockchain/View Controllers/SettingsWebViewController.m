@@ -7,7 +7,6 @@
 //
 
 #import "SettingsWebViewController.h"
-#import "SettingsNavigationController.h"
 #import "DebugTableViewController.h"
 
 @interface SettingsWebViewController ()

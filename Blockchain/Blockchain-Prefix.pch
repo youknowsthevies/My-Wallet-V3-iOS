@@ -384,7 +384,6 @@
 #define TRANSACTION_ROLE_RPR_INITIATOR @"rpr_initiator"
 #define TRANSACTION_ROLE_RPR_RECEIVER @"rpr_receiver"
 
-#define NAVIGATION_CONTROLLER_NAME_SETTINGS @"SettingsNavigationController"
 #define NAVIGATION_CONTROLLER_NAME_BACKUP @"BackupNavigation"
 
 #define NIB_NAME_TRANSACTIONS @"Transactions"

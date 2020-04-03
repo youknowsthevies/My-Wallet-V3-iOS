@@ -21,8 +21,6 @@ protocol WalletNabuSyncable {
     ) -> Disposable
 }
 
-extension SettingsTableViewController: WalletNabuSyncable { }
-
 extension WalletNabuSyncable {
     typealias WalletNabuSyncCompletion = (() -> ())
     typealias WalletNabuSyncError = ((Error) -> Void)

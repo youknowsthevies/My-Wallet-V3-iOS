@@ -164,8 +164,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
             .subscribe()
             .disposed(by: bag)
         
-        if let topViewController = topViewController,
-            self.appSettings.isPinSet, !(topViewController is SettingsNavigationController) {
+        if let topViewController = topViewController, self.appSettings.isPinSet {
             self.alertPresenter.showMobileNoticeIfNeeded()
         }
         
