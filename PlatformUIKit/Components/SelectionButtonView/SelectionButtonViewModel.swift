@@ -12,81 +12,137 @@ import RxCocoa
 
 /// A view model for selection-view to use throughout the app
 public final class SelectionButtonViewModel {
-    
+
     // MARK: - Types
-    
+
+    public enum LeadingContentType {
+        case image(String)
+        case text(String)
+    }
+
     private typealias AccessibilityId = Accessibility.Identifier.SelectionButtonView
-    
-    // MARK: - Exposed Properties
-    
+
+    // MARK: - Public Properties
+
+    /// Title Relay: title describing the selection
+    public let titleRelay = BehaviorRelay<String>(value: "")
+
+    /// Subtitle Relay:  The subtitle describing the selection
+    ///
+    /// A  nil value represents the inexistence of a subtitle, in which case a view may react to this by changing its layout.
+    public let subtitleRelay = BehaviorRelay<String?>(value: "")
+
+    /// Image Name Relay:  A `String` for image asset name.
+    public let leadingContentRelay = BehaviorRelay<LeadingContentType?>(value: nil)
+
+    /// Accessibility Label Relay : A `String` that stands for the button accessibility
+    public let accessibilityLabelRelay = BehaviorRelay<String>(value: "")
+
     /// Allows any component to observe taps
     public var tap: Signal<Void> {
         tapRelay.asSignal()
     }
-    
+
+    /// Title Relay: title describing the selection
+    public let shouldShowSeparatorRelay = BehaviorRelay<Bool>(value: false)
+
+    // MARK: - Internal Properties
+
     /// A tap relay that accepts taps on the button
     let tapRelay = PublishRelay<Void>()
-    
+
     /// Streams the leading image
-    var leadingImage: Driver<ImageViewContent> {
-        leadingImageRelay.asDriver()
+    var shouldShowSeparator: Driver<Bool> {
+        shouldShowSeparatorRelay.asDriver()
     }
-    
+
+    /// Streams the leading image
+    var leadingContent: Driver<ViewContent> {
+        leadingContentRelay
+            .map {
+                switch $0 {
+                case .image(let name):
+                    return .image(
+                        ImageViewContent(
+                            imageName: name,
+                            accessibility: .id(AccessibilityId.image)
+                        )
+                    )
+                case .text(let text):
+                    return .label(
+                        LabelContent(
+                            text: text,
+                            font: .mainMedium(30),
+                            color: .black,
+                            accessibility: .id(AccessibilityId.image)
+                        )
+                    )
+                case .none:
+                    return .none
+                }
+            }
+            .asDriver(onErrorJustReturn: .none)
+    }
+
     /// Streams the title
     var title: Driver<LabelContent> {
-        titleRelay.asDriver()
+        titleRelay
+            .map {
+                LabelContent(
+                    text: $0,
+                    font: .mainMedium(16),
+                    color: .titleText,
+                    accessibility: .id(AccessibilityId.label)
+                )
+            }
+            .asDriver(onErrorJustReturn: .empty)
     }
-    
+
+    /// Streams the title
+    var subtitle: Driver<LabelContent?> {
+        subtitleRelay
+            .map {
+                guard let subtitle = $0
+                    else { return nil }
+                return LabelContent(
+                    text: subtitle,
+                    font: .mainMedium(14),
+                    color: .descriptionText,
+                    accessibility: .id(AccessibilityId.label)
+                )
+            }
+            .asDriver(onErrorJustReturn: LabelContent.empty)
+    }
+
     /// Streams the disclosure image
     var disclosureImageViewContent: Driver<ImageViewContent> {
         disclosureImageViewContentRelay.asDriver()
     }
-    
+
     /// Streams the accessibility
     var accessibility: Driver<Accessibility> {
-        accessibilityRelay.asDriver()
+        accessibilityLabelRelay
+            .map {
+                Accessibility(
+                    id: .value(AccessibilityId.button),
+                    label: .value($0),
+                    traits: .value(.button)
+                )
+            }
+            .asDriver(onErrorJustReturn: Accessibility())
     }
-        
+
     // MARK: - Private Properties
-    
-    private let accessibilityRelay = BehaviorRelay<Accessibility>(value: .none)
-    private let leadingImageRelay = BehaviorRelay<ImageViewContent>(value: .empty)
-    private let titleRelay = BehaviorRelay<LabelContent>(value: .empty)
-    private let disclosureImageViewContentRelay = BehaviorRelay(
+
+    private let disclosureImageViewContentRelay = BehaviorRelay<ImageViewContent>(
         value: ImageViewContent(
-            imageName: "icon-disclosure-small",
+            imageName: "icon-disclosure-down-small",
             accessibility: .id(AccessibilityId.disclosureImage)
         )
     )
-    
-    /// Sets new selection properties
-    ///
-    /// - Parameter imageName: The name of the image
-    /// - Parameter title: The title describing the selection
-    /// - Parameter accessibilityLabel: A `String` that stands for the button accessibility.
-    public func set(imageName: String, title: String, accessibilityLabel: String) {
-        let imageContent = ImageViewContent(
-            imageName: imageName,
-            accessibility: .id(AccessibilityId.image)
-        )
-        let labelContent = LabelContent(
-            text: title,
-            font: .mainMedium(16),
-            color: .titleText,
-            accessibility: .id(AccessibilityId.label)
-        )
 
-        accessibilityRelay.accept(
-            .init(
-                id: .value(AccessibilityId.button),
-                label: .value(accessibilityLabel),
-                traits: .value(.button)
-            )
-        )
-        leadingImageRelay.accept(imageContent)
-        titleRelay.accept(labelContent)
-    }
-    
     /// An empty initializer
-    public init() {}
+    public init(showSeparator: Bool = false) {
+        shouldShowSeparatorRelay.accept(showSeparator)
+    }
 }

@@ -23,10 +23,6 @@
 #import <SafariServices/SafariServices.h>
 #import "Blockchain-Swift.h"
 
-#ifdef DEBUG
-#import "UITextView+AssertionFailureFix.h"
-#endif
-
 const CGFloat rowHeightDefault = 60;
 const CGFloat rowHeightWarning = 44;
 const CGFloat rowHeightValue = 100;

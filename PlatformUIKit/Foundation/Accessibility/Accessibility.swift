@@ -12,7 +12,7 @@ import UIKit
 public struct Accessibility {
     
     /// A generic value
-    public enum Value<T> {
+    public enum Value<T: Equatable>: Equatable {
         
         /// Contains a value of type `T`
         case value(T)
@@ -69,5 +69,11 @@ public struct Accessibility {
 extension Accessibility {
     public static func id(_ rawValue: String) -> Accessibility {
         return .init(id: .value(rawValue))
+    }
+}
+
+extension Accessibility: Equatable {
+    public static func == (lhs: Accessibility, rhs: Accessibility) -> Bool {
+        return lhs.id == rhs.id
     }
 }

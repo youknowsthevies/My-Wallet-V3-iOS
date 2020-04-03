@@ -11,7 +11,34 @@ import Localization
 import ToolKit
 
 /// The type of the text field
-public enum TextFieldType {
+public enum TextFieldType: Hashable {
+    
+    /// Address line
+    case addressLine(Int)
+    
+    /// City
+    case city
+    
+    /// State (country)
+    case state
+    
+    /// Post code
+    case postcode
+    
+    /// Person full name
+    case personFullName
+    
+    /// Cardholder name
+    case cardholderName
+    
+    /// Expiry date formatted as MMyy
+    case expirationDate
+    
+    /// CVV
+    case cardCVV
+
+    /// Credit card number
+    case cardNumber
     
     /// Wallet identifier field
     case walletIdentifier
@@ -28,12 +55,9 @@ public enum TextFieldType {
     /// Password for auth
     case password
     
-    /// Mnemonic for recovering funds
-    case recoveryPhrase
-    
     /// A single word from the mnemonic used for backup verification.
     /// The index is the index of the word in the mnemonic.
-    case backupVerfication(index: Int)
+    case backupVerification(index: Int)
     
     /// Mobile phone number entry
     case mobile
@@ -57,14 +81,30 @@ extension TextFieldType: CustomDebugStringConvertible {
             return "confirm-new-password"
         case .password:
             return "password"
-        case .recoveryPhrase:
-            return "recovery-phrase"
-        case .backupVerfication(let index):
+        case .backupVerification(let index):
             return "backup-verification-\(index)"
         case .mobile:
             return "mobile-number"
         case .oneTimeCode:
             return "one-time-code"
+        case .cardholderName:
+            return "cardholder-name"
+        case .expirationDate:
+            return "expiry-date"
+        case .cardCVV:
+            return "card-cvv"
+        case .cardNumber:
+            return "card-number"
+        case .addressLine:
+            return "address-line"
+        case .city:
+            return "city"
+        case .state:
+            return "state"
+        case .postcode:
+            return "post-code"
+        case .personFullName:
+            return "person-full-name"
         }
     }
 }
@@ -80,12 +120,20 @@ extension TextFieldType {
              .password,
              .newPassword,
              .confirmNewPassword,
-             .recoveryPhrase,
-             .backupVerfication,
-             .oneTimeCode:
+             .backupVerification,
+             .oneTimeCode,
+             .cardNumber,
+             .cardCVV:
             return true
         case .email,
-             .mobile:
+             .mobile,
+             .personFullName,
+             .city,
+             .state,
+             .addressLine,
+             .postcode,
+             .cardholderName,
+             .expirationDate:
             return false
         }
     }
@@ -96,25 +144,42 @@ extension TextFieldType {
 extension TextFieldType {
     /// Provides accessibility attributes for the `TextFieldView`
     var accessibility: Accessibility {
+        typealias AccessibilityId = Accessibility.Identifier.TextFieldView
         switch self {
+        case .cardNumber:
+            return .id(AccessibilityId.Card.number)
+        case .cardCVV:
+            return .id(AccessibilityId.Card.cvv)
+        case .expirationDate:
+            return .id(AccessibilityId.Card.expirationDate)
+        case .cardholderName:
+            return .id(AccessibilityId.Card.name)
         case .email:
-            return Accessibility(id: .value(Accessibility.Identifier.TextFieldView.email))
+            return .id(AccessibilityId.email)
         case .newPassword:
-            return Accessibility(id: .value(Accessibility.Identifier.TextFieldView.newPassword))
+            return .id(AccessibilityId.newPassword)
         case .confirmNewPassword:
-            return Accessibility(id: .value(Accessibility.Identifier.TextFieldView.confirmNewPassword))
+            return .id(AccessibilityId.confirmNewPassword)
         case .password:
-            return Accessibility(id: .value(Accessibility.Identifier.TextFieldView.password))
+            return .id(AccessibilityId.password)
         case .walletIdentifier:
-            return Accessibility(id: .value(Accessibility.Identifier.TextFieldView.walletIdentifier))
-        case .recoveryPhrase:
-            return Accessibility(id: .value(Accessibility.Identifier.TextFieldView.recoveryPhrase))
-        case .backupVerfication:
-            return Accessibility(id: .value(Accessibility.Identifier.TextFieldView.backupVerfication))
+            return .id(AccessibilityId.walletIdentifier)
         case .mobile:
-            return Accessibility(id: .value(Accessibility.Identifier.TextFieldView.mobileVerification))
+            return .id(AccessibilityId.mobileVerification)
         case .oneTimeCode:
-            return Accessibility(id: .value(Accessibility.Identifier.TextFieldView.oneTimeCode))
+            return .id(AccessibilityId.oneTimeCode)
+        case .backupVerification:
+            return .id(AccessibilityId.backupVerification)
+        case .addressLine(let number):
+            return .id("\(AccessibilityId.addressLine)-\(number)")
+        case .personFullName:
+            return .id(AccessibilityId.personFullName)
+        case .city:
+            return .id(AccessibilityId.city)
+        case .state:
+            return .id(AccessibilityId.state)
+        case .postcode:
+            return .id(AccessibilityId.postCode)
         }
     }
 }
@@ -127,15 +192,23 @@ extension TextFieldType {
     var showsHintWhileTyping: Bool {
         switch self {
         case .email,
-             .backupVerfication,
+             .backupVerification,
+             .addressLine,
+             .city,
+             .postcode,
+             .personFullName,
+             .state,
              .mobile:
             return false
         case .password,
              .newPassword,
              .confirmNewPassword,
              .walletIdentifier,
-             .recoveryPhrase,
-             .oneTimeCode:
+             .oneTimeCode,
+             .cardCVV,
+             .expirationDate,
+             .cardholderName,
+             .cardNumber:
             return true
         }
     }
@@ -146,23 +219,40 @@ extension TextFieldType {
 extension TextFieldType {
     /// The placeholder of the text field
     var placeholder: String {
+        typealias LocalizedString = LocalizationConstants.TextField.Placeholder
         switch self {
+        case .cardholderName:
+            return LocalizedString.Card.name
+        case .expirationDate:
+            return LocalizedString.Card.expirationDate
+        case .cardNumber:
+            return LocalizedString.Card.number
+        case .cardCVV:
+            return LocalizedString.Card.cvv
         case .email:
-            return LocalizationConstants.TextField.Placeholder.email
+            return LocalizedString.email
         case .newPassword, .password:
-            return LocalizationConstants.TextField.Placeholder.password
+            return LocalizedString.password
         case .confirmNewPassword:
-            return LocalizationConstants.TextField.Placeholder.confirmPassword
-        case .recoveryPhrase:
-            return LocalizationConstants.TextField.Placeholder.recoveryPhrase
-        case .walletIdentifier:
-            return LocalizationConstants.TextField.Placeholder.walletIdentifier
+            return LocalizedString.confirmPassword
         case .mobile:
-            return LocalizationConstants.TextField.Placeholder.mobile
+            return LocalizedString.mobile
         case .oneTimeCode:
-            return LocalizationConstants.TextField.Placeholder.oneTimeCode
-        case .backupVerfication(index: let index):
+            return LocalizedString.oneTimeCode
+        case .walletIdentifier:
+            return LocalizedString.walletIdentifier
+        case .backupVerification(index: let index):
             return index.placeholder
+        case .addressLine(let number):
+            return "\(LocalizedString.addressLine) \(number)"
+        case .city:
+            return LocalizedString.city
+        case .state:
+            return LocalizedString.state
+        case .postcode:
+            return LocalizedString.postCode
+        case .personFullName:
+            return LocalizedString.fullName
         }
     }
     
@@ -175,12 +265,21 @@ extension TextFieldType {
              .newPassword,
              .confirmNewPassword,
              .password,
-             .recoveryPhrase,
-             .backupVerfication,
+             .backupVerification,
              .oneTimeCode:
             return .default
         case .mobile:
             return .phonePad
+        case .expirationDate, .cardCVV, .cardNumber:
+            return .decimalPad
+        case .cardholderName,
+             .personFullName:
+            return .namePhonePad
+        case .addressLine,
+             .city,
+             .state,
+             .postcode:
+            return .asciiCapable
         }
     }
     
@@ -188,20 +287,118 @@ extension TextFieldType {
         switch self {
         case .oneTimeCode:
             return .allCharacters
-        case .backupVerfication,
-             .recoveryPhrase,
+        case .cardholderName,
+             .city,
+             .state,
+             .personFullName,
+             .addressLine:
+            return .words
+        case .backupVerification,
              .password,
              .newPassword,
              .confirmNewPassword,
              .walletIdentifier,
              .email,
-             .mobile:
+             .mobile,
+             .cardCVV,
+             .expirationDate,
+             .cardNumber,
+             .postcode:
             return .none
         }
     }
 }
 
-fileprivate extension Int {
+// MARK: - Secure
+
+extension TextFieldType {
+
+    /// Returns `true` if the text-field's input has to be secure
+    var isSecure: Bool {
+        switch self {
+        case .email,
+             .walletIdentifier,
+             .backupVerification,
+             .cardCVV,
+             .cardholderName,
+             .expirationDate,
+             .cardNumber,
+             .mobile,
+             .oneTimeCode,
+             .addressLine,
+             .city,
+             .state,
+             .postcode,
+             .personFullName:
+            return false
+        case .newPassword, .confirmNewPassword, .password:
+            return true
+        }
+    }
+}
+
+extension TextFieldType {
+    /// Returns `UITextAutocorrectionType`
+    var autocorrectionType: UITextAutocorrectionType {
+        return .no
+    }
+}
+
+extension TextFieldType {
+    var returnKeyType: UIReturnKeyType {
+        return .done
+    }
+}
+
+extension TextFieldType {
+    
+    /// The `UITextContentType` of the textField which can
+    /// drive auto-fill behavior.
+    var contentType: UITextContentType? {
+        switch self {
+        case .mobile:
+            return .telephoneNumber
+        case .cardNumber:
+            return .creditCardNumber
+        case .cardholderName:
+            return .name
+        case .expirationDate,
+             .cardCVV,
+             .backupVerification:
+            return nil
+        case .walletIdentifier:
+            return .username
+        case .email:
+            return .emailAddress
+        case .oneTimeCode:
+            if #available(iOS 12.0, *) {
+                return .oneTimeCode
+            } else {
+                return UITextContentType(rawValue: "")
+            }
+        case .newPassword, .confirmNewPassword, .password:
+            /// Disable password suggestions (avoid setting `.password` as value)
+            return UITextContentType(rawValue: "")
+        case .addressLine(let line):
+            switch line {
+            case 1: // Line 1
+                return .streetAddressLine1
+            default: // 2
+                return .streetAddressLine2
+            }
+        case .city:
+            return .addressCity
+        case .state:
+            return .addressState
+        case .postcode:
+            return .postalCode
+        case .personFullName:
+            return .name
+        }
+    }
+}
+
+private extension Int {
     typealias Index = LocalizationConstants.VerifyBackupScreen.Index
     var placeholder: String {
         let word = LocalizationConstants.TextField.Placeholder.word
@@ -235,65 +432,4 @@ fileprivate extension Int {
         }
     }
     
-}
-
-// MARK: - Secure
-
-extension TextFieldType {
-
-    /// Returns `true` if the text-field's input has to be secure
-    var isSecure: Bool {
-        switch self {
-        case .email,
-             .walletIdentifier,
-             .recoveryPhrase,
-             .backupVerfication,
-             .mobile,
-             .oneTimeCode:
-            return false
-        case .newPassword, .confirmNewPassword, .password:
-            return true
-        }
-    }
-}
-
-extension TextFieldType {
-    /// Returns `UITextAutocorrectionType`
-    var autocorrectionType: UITextAutocorrectionType {
-        return .no
-    }
-}
-
-extension TextFieldType {
-    var returnKeyType: UIReturnKeyType {
-        return .done
-    }
-}
-
-extension TextFieldType {
-    
-    /// The `UITextContentType` of the textField which can
-    /// drive auto-fill behavior.
-    var contentType: UITextContentType? {
-        switch self {
-        case .mobile:
-            return .telephoneNumber
-        case .recoveryPhrase,
-             .backupVerfication:
-            return nil
-        case .walletIdentifier:
-            return .username
-        case .email:
-            return .emailAddress
-        case .oneTimeCode:
-            if #available(iOS 12.0, *) {
-                return .oneTimeCode
-            } else {
-                return UITextContentType(rawValue: "")
-            }
-        case .newPassword, .confirmNewPassword, .password:
-            /// Disable password suggestions (avoid setting `.password` as value)
-            return UITextContentType(rawValue: "")
-        }
-    }
 }

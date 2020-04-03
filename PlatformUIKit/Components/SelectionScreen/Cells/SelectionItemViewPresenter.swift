@@ -19,30 +19,29 @@ final class SelectionItemViewPresenter {
     
     // MARK: - Exposed Properties
     
-    let image: ImageViewContent
+    let thumb: ViewContent
     let title: LabelContent
     let description: LabelContent
 
     let accessibility: Accessibility
     
     var selectionImage: Observable<ImageViewContent> {
-        isSelectedRelay
-            .map(weak: self) { (self, isSelected) -> ImageViewContent in
-                guard isSelected else { return .empty }
-                let item = self.interactor.item
-                return ImageViewContent(
-                    imageName: "v-selection-icon",
-                    accessibility: .id("\(AccessibilityId.selectionImageViewPrefix)\(item.accessibilityId)")
-                )
-            }
+        selectionImageRelay.asObservable()
     }
-    
+        
     var data: SelectionItemViewModel {
         interactor.item
     }
     
+    let tapRelay = PublishRelay<Void>()
+    
+    var isSelected: Observable<Bool> {
+        interactor.isSelectedRelay.distinctUntilChanged()
+    }
+    
     // MARK: - Private Properties
     
+    private let selectionImageRelay = BehaviorRelay(value: ImageViewContent.empty)
     private let isSelectedRelay = BehaviorRelay(value: false)
     private let interactor: SelectionItemViewInteractor
     private let disposeBag = DisposeBag()
@@ -51,14 +50,25 @@ final class SelectionItemViewPresenter {
         self.interactor = interactor
         let item = interactor.item
         accessibility = .id("\(AccessibilityId.selectionCellPrefix)\(item.id)")
-        switch item.thumbImage {
+        switch item.thumb {
         case .name(let name):
-            image = ImageViewContent(
-                imageName: name,
-                accessibility: .id("\(AccessibilityId.imageViewPrefix)\(item.accessibilityId)")
+            thumb = .image(
+                ImageViewContent(
+                    imageName: name,
+                    accessibility: .id("\(AccessibilityId.imageViewPrefix)\(item.accessibilityId)")
+                )
+            )
+        case .emoji(let value):
+            thumb = .label(
+                LabelContent(
+                    text: value,
+                    font: .mainMedium(30),
+                    color: .black,
+                    accessibility: .id("\(AccessibilityId.imageViewPrefix)\(item.accessibilityId)")
+                )
             )
         case .none:
-            image = .empty
+            thumb = .none
         }
 
         title = LabelContent(
@@ -77,13 +87,56 @@ final class SelectionItemViewPresenter {
         isSelectedRelay
             .bind(to: interactor.isSelectedRelay)
             .disposed(by: disposeBag)
+        
+        isSelected
+            .map(weak: self) { (self, isSelected) -> ImageViewContent in
+                guard isSelected else { return .empty }
+                let item = self.interactor.item
+                return ImageViewContent(
+                    imageName: "v-selection-icon",
+                    accessibility: .id("\(AccessibilityId.selectionImageViewPrefix)\(item.accessibilityId)")
+                )
+            }
+            .bind(to: selectionImageRelay)
+            .disposed(by: disposeBag)
+        
+        tapRelay
+            .withLatestFrom(isSelectedRelay)
+            .map { !$0 }
+            .bind(to: isSelectedRelay)
+            .disposed(by: disposeBag)
+    }
+    
+    func setup(selectionEvent: @escaping () -> Void) {
+        isSelected
+            .filter { $0 }
+            .mapToVoid()
+            .bind(onNext: selectionEvent)
+            .disposed(by: disposeBag)
+    }
+
+    /// An accessor for text pattern search
+    func contains(text: String) -> Bool {
+        return title.text.lowercased().contains(text) || description.text.lowercased().contains(text)
+    }
+    
+    func deselect() {
+        isSelectedRelay.accept(false)
     }
     
     func select() {
         isSelectedRelay.accept(true)
     }
+}
+
+// MARK: - Equatable
+
+extension SelectionItemViewPresenter: Equatable, Hashable {
+    public static func == (lhs: SelectionItemViewPresenter, rhs: SelectionItemViewPresenter) -> Bool {
+        return lhs.interactor == rhs.interactor
+    }
     
-    func deselect() {
-        isSelectedRelay.accept(false)
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(interactor)
     }
 }

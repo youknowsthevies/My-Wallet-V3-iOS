@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -23,9 +23,9 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8sU-et-TX3">
-                    <rect key="frame" x="0.0" y="0.0" width="311.5" height="58"/>
+                    <rect key="frame" x="0.0" y="0.0" width="311.5" height="52"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="58" id="p83-aP-SS1"/>
+                        <constraint firstAttribute="height" constant="52" id="p83-aP-SS1"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <textInputTraits key="textInputTraits"/>
@@ -34,7 +34,7 @@
                     </connections>
                 </textField>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pUE-Y3-XqY">
-                    <rect key="frame" x="311.5" y="14" width="0.5" height="30"/>
+                    <rect key="frame" x="311.5" y="11" width="0.5" height="30"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="height" priority="250" constant="30" id="J42-3Y-7Lo"/>
@@ -42,7 +42,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MO2-ms-w8X">
-                    <rect key="frame" x="0.0" y="58" width="312" height="1"/>
+                    <rect key="frame" x="0.0" y="52" width="312" height="1"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="1" id="V2W-PG-Tf1"/>
@@ -57,6 +57,7 @@
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
+                <constraint firstItem="pUE-Y3-XqY" firstAttribute="centerY" secondItem="8sU-et-TX3" secondAttribute="centerY" id="4KZ-hO-32W"/>
                 <constraint firstAttribute="top" secondItem="8sU-et-TX3" secondAttribute="top" id="6sS-in-K1L"/>
                 <constraint firstItem="iYZ-Ep-Nfw" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="9Fa-RJ-tah"/>
                 <constraint firstItem="MO2-ms-w8X" firstAttribute="top" secondItem="8sU-et-TX3" secondAttribute="bottom" id="GR4-85-6Tm"/>
@@ -67,7 +68,6 @@
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="iYZ-Ep-Nfw" secondAttribute="trailing" id="cUh-Xx-fuV"/>
                 <constraint firstItem="iYZ-Ep-Nfw" firstAttribute="top" secondItem="MO2-ms-w8X" secondAttribute="bottom" priority="999" constant="8" id="pRR-BR-yAE"/>
                 <constraint firstItem="8sU-et-TX3" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="q4k-4O-USs"/>
-                <constraint firstItem="pUE-Y3-XqY" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="slC-tt-moL"/>
                 <constraint firstItem="8sU-et-TX3" firstAttribute="trailing" secondItem="pUE-Y3-XqY" secondAttribute="leading" id="xhJ-U4-tF8"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>

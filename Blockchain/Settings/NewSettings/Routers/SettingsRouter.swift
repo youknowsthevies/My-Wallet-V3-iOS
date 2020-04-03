@@ -212,7 +212,8 @@ final class SettingsRouter: SettingsRouterAPI {
         let selectionService = FiatCurrencySelectionService(defaultSelectedData: selectedCurrency)
         let interactor = SelectionScreenInteractor(service: selectionService)
         let presenter = SelectionScreenPresenter(
-            title: LocalizationConstants.localCurrency,
+            title: LocalizationConstants.Settings.SelectCurrency.title,
+            searchBarPlaceholder: LocalizationConstants.Settings.SelectCurrency.searchBarPlaceholder,
             interactor: interactor
         )
         let viewController = SelectionScreenViewController(presenter: presenter)

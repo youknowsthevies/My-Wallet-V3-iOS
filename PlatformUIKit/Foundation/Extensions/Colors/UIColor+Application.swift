@@ -26,16 +26,19 @@ public extension UIColor {
     static let navigationBarBackground = blue900
     
     // Backgrounds & Borders
-    
+
     static let background = grey000
     static let mediumBackground = grey100
     static let hightlightedBackground = grey50
+    static let lightBlueBackground = blue000
+    static let lightRedBackground = red000
     
     static let lightBorder = grey000
     static let mediumBorder = grey100
     static let destructiveBackground = red100
     static let affirmativeBackground = green100
     static let defaultBadgeBackground = blue100
+    static let lightBadgeBackground = blue000
 
     static let lightShimmering = grey000
     static let darkShimmering = grey200

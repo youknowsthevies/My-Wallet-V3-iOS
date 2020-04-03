@@ -9,10 +9,10 @@
 extension Accessibility.Identifier {
     public struct Dashboard {
         private static let prefix = "Dashboard."
-        struct Notice {
+        public struct Notice {
             private static let prefix = "\(Dashboard.prefix)Notice."
-            static let label = "\(prefix)label"
-            static let imageView = "\(prefix)imageView"
+            public static let label = "\(prefix)label"
+            public static let imageView = "\(prefix)imageView"
         }
         public struct TotalBalanceCell {
             private static let prefix = "\(Dashboard.prefix)TotalBalanceCell."

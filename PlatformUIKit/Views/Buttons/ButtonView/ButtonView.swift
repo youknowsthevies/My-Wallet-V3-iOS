@@ -24,7 +24,10 @@ final public class ButtonView: UIView {
     // Constraints for scenario with title only, and no image
     @IBOutlet private var labelToImageViewLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private var labelToSuperviewLeadingConstraint: NSLayoutConstraint!
-    
+    @IBOutlet private var labelToSuperviewBottomConstraint: NSLayoutConstraint!
+    @IBOutlet private var labelToSuperviewTopConstraint: NSLayoutConstraint!
+    @IBOutlet private var labelToSuperviewTrailingConstraint: NSLayoutConstraint!
+
     // MARK: - Rx
     
     private var disposeBag = DisposeBag()
@@ -90,12 +93,12 @@ final public class ButtonView: UIView {
                     guard let self = self else { return }
                     if containsImage {
                         self.label.textAlignment = .natural
-                        self.labelToImageViewLeadingConstraint.priority = .penultimate
-                        self.labelToSuperviewLeadingConstraint.priority = .defaultLow
+                        self.labelToImageViewLeadingConstraint.priority = .penultimateHigh
+                        self.labelToSuperviewLeadingConstraint.priority = .penultimateLow
                     } else {
                         self.label.textAlignment = .center
-                        self.labelToImageViewLeadingConstraint.priority = .defaultLow
-                        self.labelToSuperviewLeadingConstraint.priority = .penultimate
+                        self.labelToImageViewLeadingConstraint.priority = .penultimateLow
+                        self.labelToSuperviewLeadingConstraint.priority = .penultimateHigh
                     }
                     self.layoutIfNeeded()
                 }
@@ -105,7 +108,21 @@ final public class ButtonView: UIView {
             button.rx.tap
                 .bind(to: viewModel.tapRelay)
                 .disposed(by: disposeBag)
+
+            viewModel.contentInset
+                .drive(onNext: { [weak self] (contentInset) in
+                    self?.updateContentInset(to: contentInset)
+                })
+                .disposed(by: disposeBag)
         }
+    }
+
+    private func updateContentInset(to contentInset: UIEdgeInsets) {
+        labelToSuperviewLeadingConstraint.constant = contentInset.left
+        labelToSuperviewBottomConstraint.constant = contentInset.bottom
+        labelToSuperviewTopConstraint.constant = contentInset.top
+        labelToSuperviewTrailingConstraint.constant = contentInset.right
+        layoutIfNeeded()
     }
     
     // MARK: - Setup

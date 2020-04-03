@@ -9,13 +9,7 @@
 import PlatformUIKit
 import RxSwift
 
-final class SimpleBuyTransferDetailScreenViewController: BaseScreenViewController {
-    
-    // MARK: - Private IBOutlets
-    
-    @IBOutlet private var buttonStackView: UIStackView!
-    @IBOutlet private var tableView: SelfSizingTableView!
-    @IBOutlet private var continueButtonView: ButtonView!
+final class SimpleBuyTransferDetailScreenViewController: BaseTableViewController {
     
     // MARK: - Injected
     
@@ -29,7 +23,7 @@ final class SimpleBuyTransferDetailScreenViewController: BaseScreenViewControlle
     
     init(using presenter: SimpleBuyTransferDetailScreenPresenter) {
         self.presenter = presenter
-        super.init(nibName: SimpleBuyTransferDetailScreenViewController.objectName, bundle: nil)
+        super.init()
     }
     
     required init?(coder: NSCoder) {
@@ -49,7 +43,7 @@ final class SimpleBuyTransferDetailScreenViewController: BaseScreenViewControlle
             let cancelButton = ButtonView()
             cancelButton.viewModel = viewModel
             buttonStackView.addArrangedSubview(cancelButton)
-            cancelButton.layout(edge: .height, to: 48)
+            cancelButton.layout(dimension: .height, to: 48)
         }
     }
     

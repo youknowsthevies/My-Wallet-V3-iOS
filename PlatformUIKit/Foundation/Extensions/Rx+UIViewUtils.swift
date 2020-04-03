@@ -39,9 +39,12 @@ extension Reactive where Base: UILabel {
 }
 
 extension Reactive where Base: UIImageView {
-    public var tintColor: Binder<UIColor> {
+    /// If this value is `nil`, the image derives its `tintColor`
+    /// from its superview.
+    public var tintColor: Binder<UIColor?> {
         return Binder(base) { imageView, color in
-            imageView.tintColor = color
+            guard let tintColor = color else { return }
+            imageView.tintColor = tintColor
         }
     }
 }

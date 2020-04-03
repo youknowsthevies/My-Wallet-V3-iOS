@@ -10,7 +10,8 @@ import ToolKit
 
 public extension UILayoutPriority {
     /// Owns `999` as value, one prior to the highest (`1000`) that can still be changed w/o crashing
-    static let penultimate = UILayoutPriority(rawValue: 999)
+    static let penultimateHigh = UILayoutPriority(rawValue: 999)
+    static let penultimateLow = UILayoutPriority(rawValue: 1)
 }
 
 extension UIView {
@@ -83,7 +84,21 @@ extension UIView {
             return (leading: leading, trailing: trailing)
         }
     }
-    
+
+    public enum Dimension {
+        case width
+        case height
+
+        fileprivate var attribute: Attribute {
+            switch self {
+            case .width:
+                return .width
+            case .height:
+                return .height
+            }
+        }
+    }
+
     // MARK: - Content Hugging Priority
     
     public var horizontalContentHuggingPriority: Priority {
@@ -103,7 +118,7 @@ extension UIView {
             return contentHuggingPriority(for: .vertical)
         }
     }
-        
+
     public var contentHuggingPriority: (horizontal: Priority, vertical: Priority) {
         set {
             horizontalContentHuggingPriority = newValue.horizontal
@@ -148,56 +163,21 @@ extension UIView {
         contentCompressionResistancePriority = (horizontal: .required, vertical: .required)
         contentHuggingPriority = (horizontal: .required, vertical: .required)
     }
-    
-    @discardableResult
-    public func layout(edges: Attribute...,
-                       to value: CGFloat,
-                       relation: NSLayoutConstraint.Relation = .equal,
-                       ratio: CGFloat = 1.0,
-                       priority: Priority = .required) -> Constraints {
-        return layout(
-            edges: edges,
-            to: value,
-            relation: relation,
-            ratio: ratio,
-            priority: priority
-        )
-    }
-    
-    /** **PRIVATELY USED** AS A REPLACEMENT for the variadic version for the method*/
-    @discardableResult
-    public func layout(edges: [Attribute],
-                       to value: CGFloat,
-                       relation: Relation = .equal,
-                       ratio: CGFloat = 1.0,
-                       priority: Priority = .required) -> Constraints {
-        var constraints: Constraints = [:]
-        let uniqueEdges = Set(edges)
-        for edge in uniqueEdges {
-            let constraint = layout(
-                edge: edge,
-                to: value,
-                relation: relation,
-                ratio: ratio,
-                priority: priority
-            )
-            constraints[edge] = constraint
-        }
-        return constraints
-    }
-    
+
+    /// Layout width and height to a specific value
     @discardableResult
     public func layout(size: CGSize,
                        relation: Relation = .equal,
                        ratio: CGFloat = 1.0,
                        priority: Priority = .required) -> LayoutForm.Constraints {
-        let width = layout(edge: .width, to: size.width, relation: relation, ratio: ratio, priority: priority)
-        let height = layout(edge: .height, to: size.height, relation: relation, ratio: ratio, priority: priority)
+        let width = layout(dimension: .width, to: size.width, relation: relation, ratio: ratio, priority: priority)
+        let height = layout(dimension: .height, to: size.height, relation: relation, ratio: ratio, priority: priority)
         return .init(horizontal: width, vertical: height)
     }
-    
+
+    /// Layout width or height to a specific value
     @discardableResult
-    public func layout(edge: Attribute,
+    public func layout(dimension: Dimension,
                        to value: CGFloat,
                        relation: Relation = .equal,
                        ratio: CGFloat = 1.0,
@@ -205,7 +185,7 @@ extension UIView {
         translatesAutoresizingMaskIntoConstraints = false
         let constraint = NSLayoutConstraint(
             item: self,
-            attribute: edge,
+            attribute: dimension.attribute,
             relatedBy: relation,
             toItem: nil,
             attribute: .notAnAttribute,
@@ -213,7 +193,7 @@ extension UIView {
             constant: value
         )
         constraint.priority = priority
-        addConstraint(constraint)
+        constraint.isActive = true
         return constraint
     }
     
@@ -224,9 +204,10 @@ extension UIView {
                        relation: Relation = .equal,
                        ratio: CGFloat = 1.0,
                        offset: CGFloat = 0,
-                       priority: UILayoutPriority = .required) -> NSLayoutConstraint? {
+                       priority: UILayoutPriority = .required,
+                       activate: Bool = true) -> NSLayoutConstraint? {
         guard prepareForAutoLayout() else {
-            Logger.shared.error("\(String(describing: self)) Error in func: \(#function)")
+            assertionFailure("\(String(describing: self)) Error in func: \(#function)")
             return nil
         }
         let constraint = NSLayoutConstraint(
@@ -239,7 +220,7 @@ extension UIView {
             constant: offset
         )
         constraint.priority = priority
-        superview!.addConstraint(constraint)
+        constraint.isActive = activate
         return constraint
     }
     
@@ -252,7 +233,7 @@ extension UIView {
                        priority: UILayoutPriority = .required) -> Constraints {
         var constraints: Constraints = [:]
         guard prepareForAutoLayout() else {
-            Logger.shared.error("\(String(describing: self)) Error in func: \(#function)")
+            assertionFailure("\(String(describing: self)) Error in func: \(#function)")
             return constraints
         }
         let uniqueEdges = Set(edges)
@@ -267,7 +248,7 @@ extension UIView {
                 constant: offset
             )
             constraint.priority = priority
-            superview!.addConstraint(constraint)
+            constraint.isActive = true
             constraints[edge] = constraint
         }
         return constraints
@@ -280,7 +261,7 @@ extension UIView {
                                   offset: CGFloat = 0,
                                   priority: Priority = .required) -> NSLayoutConstraint? {
         guard prepareForAutoLayout() else {
-            print("\(String(describing: self)) Error in func: \(#function)")
+            assertionFailure("\(String(describing: self)) Error in func: \(#function)")
             return nil
         }
         let constraint = NSLayoutConstraint(
@@ -293,7 +274,7 @@ extension UIView {
             constant: offset
         )
         constraint.priority = priority
-        superview!.addConstraint(constraint)
+        constraint.isActive = true
         return constraint
     }
     
@@ -319,7 +300,7 @@ extension UIView {
                 constant: offset
             )
             constraint.priority = priority
-            superview!.addConstraint(constraint)
+            constraint.isActive = true
             constraints[edge] = constraint
         }
         return constraints
@@ -374,7 +355,7 @@ extension UIView {
     
     private func prepareForAutoLayout() -> Bool {
         guard superview != nil else {
-            print("\(String(describing: self)):\(#function) - superview is unexpectedly nullified")
+            assertionFailure("\(String(describing: self)):\(#function) - superview is unexpectedly nullified")
             return false
         }
         translatesAutoresizingMaskIntoConstraints = false

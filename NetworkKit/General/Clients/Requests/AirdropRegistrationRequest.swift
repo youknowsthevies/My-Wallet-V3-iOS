@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 /// Used for registering a `publicKey` for an asset that will be Airdropped.
 public struct AirdropRegistrationRequest: Codable {
     

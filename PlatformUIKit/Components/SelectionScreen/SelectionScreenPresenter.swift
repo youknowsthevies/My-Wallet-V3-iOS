@@ -16,24 +16,45 @@ public final class SelectionScreenPresenter {
     // MARK: - Properties
     
     let title: String
+    let searchBarPlaceholder: String
     var presenters: Observable<[SelectionItemViewPresenter]> {
-        return presentersRelay.asObservable()
+        presentersRelay.asObservable()
     }
     
+    var displayPresenters: Observable<[SelectionItemViewPresenter]> {
+        displayPresentersRelay.asObservable()
+    }
+    
+    var selection: Observable<Int> {
+        selectionRelay
+            .compactMap { $0 }
+            .observeOn(MainScheduler.instance)
+    }
+    
+    let searchTextRelay = BehaviorRelay<String>(value: "")
+    var searchText: Observable<String> {
+        searchTextRelay.map { $0.lowercased() } 
+    }
+    
+    private let selectionRelay = BehaviorRelay<Int?>(value: nil)
+    private let displayPresentersRelay = BehaviorRelay<[SelectionItemViewPresenter]>(value: [])
     private let presentersRelay = BehaviorRelay<[SelectionItemViewPresenter]>(value: [])
-    
-    let selectionRelay = PublishRelay<Int>()
-    let deselectionRelay = PublishRelay<Int>()
-    
     private let interactor: SelectionScreenInteractor
-    
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
-    public init(title: String, interactor: SelectionScreenInteractor) {
+    public init(title: String, searchBarPlaceholder: String, interactor: SelectionScreenInteractor) {
+        self.searchBarPlaceholder = searchBarPlaceholder
         self.title = title
         self.interactor = interactor
+        
+        setupPresenters()
+        setupSearch()
+        setupDefaultSelection()
+    }
+    
+    private func setupPresenters() {
         interactor.interactors
             .map { interactors in
                 interactors.map { SelectionItemViewPresenter(interactor: $0) }
@@ -41,27 +62,48 @@ public final class SelectionScreenPresenter {
             .bind(to: presentersRelay)
             .disposed(by: disposeBag)
         
-        selectionRelay
-            .flatMap(weak: self) { (self, index) -> Observable<SelectionItemViewPresenter> in
-                self.presenters.map { $0[index] }
-            }
-            .bind { presenter in
-                presenter.select()
-            }
-            .disposed(by: disposeBag)
-        
-        deselectionRelay
-            .flatMap(weak: self) { (self, index) -> Observable<SelectionItemViewPresenter> in
-                self.presenters.map { $0[index] }
-            }
-            .bind { presenter in
-                presenter.deselect()
+        presentersRelay
+            .filter { !$0.isEmpty }
+            .take(1)
+            .bind(weak: self) { (self, presenters) in
+                presenters
+                    .enumerated()
+                    .forEach { (index, presenter) in
+                        presenter.setup {
+                            guard self.selectionRelay.value != index else { return }
+                            if let previousIndex = self.selectionRelay.value {
+                                presenters[previousIndex].deselect()
+                            }
+                            
+                            presenters[index].select()
+                            self.selectionRelay.accept(index)
+                        }
+                    }
             }
             .disposed(by: disposeBag)
     }
     
-    func viewDidLoad() {
-        Observable
+    private func setupSearch() {
+        searchText
+            .flatMapLatest(weak: self) { (self, text) in
+                self.presenters
+                    .map { presenters in
+                        guard !text.isEmpty else {
+                            return presenters
+                        }
+                        return presenters.filter { $0.contains(text: text) }
+                    }
+            }
+            .bind(to: displayPresentersRelay)
+            .disposed(by: disposeBag)
+    }
+    
+    private func setupDefaultSelection() {
+        
+        let presenters = self.presenters
+            .filter { !$0.isEmpty }
+        
+        let selectedIndex = Observable
             .zip(
                 presenters.take(1),
                 interactor.service.selectedDataRelay.take(1)
@@ -69,10 +111,24 @@ public final class SelectionScreenPresenter {
             .compactMap { (presenters, selectedData) in
                 presenters.firstIndex { $0.data == selectedData }
             }
+            .share(replay: 1)
+        
+        Observable
+            .zip(
+                presenters,
+                selectedIndex
+            )
+            .take(1)
+            .bind { (presenters, selectedIndex) in
+                presenters[selectedIndex].select()
+            }
+            .disposed(by: disposeBag)
+        
+        selectedIndex
             .bind(to: selectionRelay)
             .disposed(by: disposeBag)
     }
-    
+
     func navigationBarLeadingButtonTapped() {
         interactor.recordSelection()
     }

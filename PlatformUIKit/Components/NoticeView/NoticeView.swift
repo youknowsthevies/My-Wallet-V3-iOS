@@ -15,13 +15,25 @@ public final class NoticeView: UIView {
     private let imageView = UIImageView()
     private let label = UILabel()
     
+    private var topAlignmentConstraint: NSLayoutConstraint!
+    private var centerAlignmentConstraint: NSLayoutConstraint!
+    
     // MARK: - Injected
     
     public var viewModel: NoticeViewModel! {
         didSet {
             guard let viewModel = viewModel else { return }
-            imageView.image = UIImage(named: viewModel.image)
+            imageView.set(viewModel.imageViewContent)
             label.content = viewModel.labelContent
+            switch viewModel.verticalAlignment {
+            case .center:
+                topAlignmentConstraint.priority = .defaultLow
+                centerAlignmentConstraint.priority = .penultimateHigh
+            case .top:
+                topAlignmentConstraint.priority = .penultimateHigh
+                centerAlignmentConstraint.priority = .defaultLow
+            }
+            layoutIfNeeded()
         }
     }
     
@@ -49,8 +61,10 @@ public final class NoticeView: UIView {
         
         imageView.layoutToSuperview(.leading)
         imageView.layout(size: .init(edge: 20))
-        imageView.layout(to: .top, of: label)
         
+        topAlignmentConstraint = imageView.layout(to: .top, of: label)
+        centerAlignmentConstraint = imageView.layout(to: .centerY, of: label)
+
         label.layout(edge: .leading, to: .trailing, of: imageView, offset: 18)
         label.layoutToSuperview(.top, .bottom, .trailing)
     }

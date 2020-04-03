@@ -31,7 +31,7 @@ final class PasswordScreenPresenter {
     let description: String
     let textFieldViewModel = TextFieldViewModel(
         with: .password,
-        validator: TextValidationFactory.loginPassword,
+        validator: TextValidationFactory.Password.login,
         messageRecorder: CrashlyticsRecorder()
     )
     let buttonViewModel = ButtonViewModel.primary(

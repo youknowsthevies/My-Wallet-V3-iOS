@@ -16,24 +16,30 @@ import PlatformUIKit
 final class BuyCryptoScreenViewController: BaseScreenViewController {
 
     // MARK: - Types
-    
+
     private enum Constant {
-        static let digitPadHeight: CGFloat = 216
-        static let amountLabelViewTopOffsetiPhone5: CGFloat = 16
-        static let amountLabelViewTopOffsetiPhone8: CGFloat = 32
-        static let continueButtonViewBottomOffset: CGFloat = 16
+        enum SuperCompact {
+            static let digitPadHeight: CGFloat = 216
+            static let amountLabelViewTopOffset: CGFloat = 16
+            static let continueButtonViewBottomOffset: CGFloat = 16
+            static let assetSelectionButtonHeight: CGFloat = 48
+        }
+        enum Compact {
+            static let amountLabelViewTopOffset: CGFloat = 32
+        }
     }
     
     // MARK: - Properties
     
     @IBOutlet private var assetSelectionButtonView: SelectionButtonView!
     private var labeledButtonCollectionView: LabeledButtonCollectionView<CurrencyLabeledButtonViewModel>!
+    @IBOutlet private var trailingButtonView: ButtonView!
     @IBOutlet private var amountLabelView: AmountLabelView!
-    @IBOutlet private var correctionLinkView: LinkView!
     @IBOutlet private var continueButtonView: ButtonView!
     @IBOutlet private var separatorView: UIView!
     @IBOutlet private var digitPadView: DigitPadView!
 
+    @IBOutlet private var assetSelectionViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet private var digitPadHeightConstraint: NSLayoutConstraint!
     @IBOutlet private var amountLabelViewTopConstraint: NSLayoutConstraint!
     @IBOutlet private var continueButtonViewBottomConstraint: NSLayoutConstraint!
@@ -61,20 +67,22 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
         digitPadView.viewModel = presenter.digitPadViewModel
         separatorView.backgroundColor = presenter.separatorColor
         continueButtonView.viewModel = presenter.continueButtonViewModel
-        correctionLinkView.viewModel = presenter.correctionLinkViewModel
         amountLabelView.viewModel = presenter.amountLabelViewModel
         assetSelectionButtonView.viewModel = presenter.selectionButtonViewModel
         presenter.labeledButtonViewModels
             .drive(labeledButtonCollectionView.viewModelsRelay)
             .disposed(by: disposeBag)
+        trailingButtonView.viewModel = presenter.trailingButtonViewModel
+
         presenter.refresh()
         
-        if presenter.deviceType.isBelow(.iPhone8) {
-            digitPadHeightConstraint.constant = Constant.digitPadHeight
-            amountLabelViewTopConstraint.constant = Constant.amountLabelViewTopOffsetiPhone5
-            continueButtonViewBottomConstraint.constant = Constant.continueButtonViewBottomOffset
-        } else if presenter.deviceType.isBelow(.iPhoneXS) {
-            amountLabelViewTopConstraint.constant = Constant.amountLabelViewTopOffsetiPhone8
+        if presenter.deviceType == .superCompact {
+            digitPadHeightConstraint.constant = Constant.SuperCompact.digitPadHeight
+            amountLabelViewTopConstraint.constant = Constant.SuperCompact.amountLabelViewTopOffset
+            continueButtonViewBottomConstraint.constant = Constant.SuperCompact.continueButtonViewBottomOffset
+            assetSelectionViewHeightConstraint.constant = Constant.SuperCompact.assetSelectionButtonHeight
+        } else if presenter.deviceType == .compact {
+            amountLabelViewTopConstraint.constant = Constant.Compact.amountLabelViewTopOffset
         }
     }
     
@@ -88,9 +96,10 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
     
     private func setupLabeledButtonCollectionView() {
         labeledButtonCollectionView = LabeledButtonCollectionView<CurrencyLabeledButtonViewModel>()
-        view.addSubview(labeledButtonCollectionView)
+        view.insertSubview(labeledButtonCollectionView, belowSubview: trailingButtonView)
+        labeledButtonCollectionView.layout(to: .centerY, of: trailingButtonView)
         labeledButtonCollectionView.layoutToSuperview(axis: .horizontal)
-        labeledButtonCollectionView.layout(edge: .height, to: 50)
+        labeledButtonCollectionView.layout(dimension: .height, to: 32)
         labeledButtonCollectionView.layout(edge: .bottom, to: .top, of: continueButtonView, offset: -16)
     }
     

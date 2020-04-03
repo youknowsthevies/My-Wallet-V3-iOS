@@ -73,17 +73,18 @@ final class ChangePasswordScreenPresenter {
             accessibility: .id(AccessibilityIDs.descriptionLabel)
         )
         
-        let newPasswordValidator = TextValidationFactory.newPassword
-        let confirmNewPasswordValidator = TextValidationFactory.newPassword
+        let newPasswordValidator = TextValidationFactory.Password.new
+        let confirmNewPasswordValidator = TextValidationFactory.Password.new
         
         let textMatchValidator = CollectionTextMatchValidator(
             newPasswordValidator,
-            confirmNewPasswordValidator
+            confirmNewPasswordValidator,
+            invalidReason: LocalizationConstants.TextField.Gesture.passwordMismatch
         )
         
         currentPasswordTextFieldViewModel = TextFieldViewModel(
             with: .password,
-            validator: TextValidationFactory.loginPassword,
+            validator: TextValidationFactory.Password.login,
             messageRecorder: CrashlyticsRecorder()
         )
         

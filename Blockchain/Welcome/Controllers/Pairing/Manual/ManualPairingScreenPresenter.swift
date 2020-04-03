@@ -67,12 +67,12 @@ final class ManualPairingScreenPresenter {
         )
         walletIdTextFieldViewModel = TextFieldViewModel(
             with: .walletIdentifier,
-            validator: TextValidationFactory.walletIdentifier,
+            validator: TextValidationFactory.Info.walletIdentifier,
             messageRecorder: CrashlyticsRecorder()
         )
         passwordTextFieldViewModel = TextFieldViewModel(
             with: .password,
-            validator: TextValidationFactory.loginPassword,
+            validator: TextValidationFactory.Password.login,
             messageRecorder: CrashlyticsRecorder()
         )
         

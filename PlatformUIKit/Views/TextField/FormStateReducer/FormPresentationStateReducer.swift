@@ -33,11 +33,11 @@ public final class FormPresentationStateReducer {
         if states.contains(.empty) {
             return .invalid(.emptyTextField)
         }
-        if states.contains(.invalid) {
+        if (states.contains { $0.isInvalid }) {
             return .invalid(.invalidTextField)
         }
-        if states.contains(.mismatchError) {
-            return .invalid(.mismatch)
+        if (states.contains { $0.isMismatch }) {
+            return .invalid(.invalidTextField)
         }
         return .valid
     }

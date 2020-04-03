@@ -88,13 +88,17 @@ final class CheckoutScreenPresenter {
             data.cryptoCurrency.displayCode
         )
         noticeViewModel = NoticeViewModel(
-            image: "disclaimer-icon",
+            imageViewContent: .init(
+                imageName: "disclaimer-icon",
+                accessibility: .id(AccessibilityId.disclaimerImage)
+            ),
             labelContent: .init(
                 text: notice,
                 font: .mainMedium(12),
                 color: .descriptionText,
                 accessibility: .id(AccessibilityId.disclaimerLabel)
-            )
+            ),
+            verticalAlignment: .top
         )
         
         typealias TitleString = LocalizedString.Summary.Title

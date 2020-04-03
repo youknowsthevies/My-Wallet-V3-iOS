@@ -169,10 +169,9 @@ class TradingPairView: NibBasedView {
 
         let swapImage = #imageLiteral(resourceName: "trading-pair-arrow").withRenderingMode(.alwaysTemplate)
         swapButton.setImage(swapImage, for: .normal)
-        
-        let isAboveSE = UIDevice.current.type.isAbove(.iPhoneSE)
+
         var font: Font
-        switch isAboveSE {
+        switch DevicePresenter.type != .superCompact {
         case true:
             font = Font(.branded(.montserratRegular), size: .custom(16.0))
         case false:

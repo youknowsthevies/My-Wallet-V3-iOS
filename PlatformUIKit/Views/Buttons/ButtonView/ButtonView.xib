@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -21,7 +19,10 @@
                 <outlet property="imageView" destination="BPA-bS-mLQ" id="75w-Tv-UJJ"/>
                 <outlet property="label" destination="NJG-bk-rzH" id="Xp0-uh-WUq"/>
                 <outlet property="labelToImageViewLeadingConstraint" destination="B7n-MN-cqd" id="j1h-Ha-NHk"/>
+                <outlet property="labelToSuperviewBottomConstraint" destination="u3r-9v-4b8" id="yWC-3F-Mgo"/>
                 <outlet property="labelToSuperviewLeadingConstraint" destination="NhO-74-J4e" id="1hU-s2-uXi"/>
+                <outlet property="labelToSuperviewTopConstraint" destination="ynw-8V-dxK" id="AAb-t4-6ij"/>
+                <outlet property="labelToSuperviewTrailingConstraint" destination="lAG-jp-ttd" id="qKP-71-uJs"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -32,7 +33,7 @@
                 <imageView userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="BPA-bS-mLQ">
                     <rect key="frame" x="16" y="0.0" width="80" height="53"/>
                 </imageView>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DeG-4A-TdX">
+                <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" verticalHuggingPriority="248" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DeG-4A-TdX">
                     <rect key="frame" x="0.0" y="0.0" width="212" height="53"/>
                     <connections>
                         <action selector="touchDown" destination="-1" eventType="touchDown" id="owo-bg-fBF"/>

@@ -80,6 +80,8 @@ final class SettingsViewController: BaseScreenViewController {
         tableView.registerNibCell(ClipboardTableViewCell.objectName)
         tableView.registerNibCell(BadgeTableViewCell.objectName)
         tableView.registerNibCell(PlainTableViewCell.objectName)
+        tableView.registerNibCell(AddCardTableViewCell.objectName)
+        tableView.registerNibCell(LinkedCardTableViewCell.objectName)
         tableView.registerHeaderView(TableHeaderView.objectName)
     }
     
@@ -122,6 +124,13 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
             cell = clipboardCell(for: indexPath, type: type)
         case .plain(let type):
             cell = plainCell(for: indexPath, type: type)
+        case .cards(let type):
+            switch type {
+            case .addCard:
+                cell = addCardCell(for: indexPath)
+            case .linkedCard:
+                cell = linkedCardCell(for: indexPath)
+            }
         case .switch(let type):
             cell = switchCell(for: indexPath, type: type)
         }
@@ -168,6 +177,18 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
             title: type.title,
             accessibilityID: "\(AccessibilityIDs.titleLabelFormat)\(type.accessibilityID)"
         )
+        return cell
+    }
+    
+    private func addCardCell(for indexPath: IndexPath) -> AddCardTableViewCell {
+        let cell = tableView.dequeue(AddCardTableViewCell.self, for: indexPath)
+        cell.presenter = presenter.addCardCellPresenter
+        return cell
+    }
+    
+    private func linkedCardCell(for indexPath: IndexPath) -> LinkedCardTableViewCell {
+        let cell = tableView.dequeue(LinkedCardTableViewCell.self, for: indexPath)
+        cell.presenter = presenter.linkedCardPresenter
         return cell
     }
     

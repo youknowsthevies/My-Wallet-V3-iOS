@@ -130,11 +130,11 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
             titleLabel.textAlignment = .center
             descriptionLabel.textAlignment = .center
             imageViewLeadingToSuperviewConstraint.priority = .defaultLow
-            imageViewCenterInSuperviewConstraint.priority = .penultimate
+            imageViewCenterInSuperviewConstraint.priority = .penultimateHigh
         case .natural:
             titleLabel.textAlignment = .natural
             descriptionLabel.textAlignment = .natural
-            imageViewLeadingToSuperviewConstraint.priority = .penultimate
+            imageViewLeadingToSuperviewConstraint.priority = .penultimateHigh
             imageViewCenterInSuperviewConstraint.priority = .defaultLow
         }
     }

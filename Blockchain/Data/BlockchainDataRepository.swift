@@ -36,6 +36,10 @@ class BlockchainDataRepository: DataRepositoryAPI {
     var user: Observable<User> {
         return nabuUser.map { $0 }
     }
+    
+    var userSingle: Single<User> {
+        nabuUserSingle.map { $0 }
+    }
 
     /// An Observable emitting the authenticated NabuUser. This Observable will first emit a value
     /// from the cache, if available, followed by the value over the network.

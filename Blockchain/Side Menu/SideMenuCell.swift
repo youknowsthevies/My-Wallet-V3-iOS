@@ -19,7 +19,7 @@ final class SideMenuCell: UITableViewCell {
         return controller?.anchorRightPeekAmount ?? 0
     }()
 
-    static let defaultHeight: CGFloat = UIDevice.current.type.isAbove(.iPhoneSE) ? 54 : 45
+    static let defaultHeight: CGFloat = DevicePresenter.type != .superCompact ? 54 : 45
 
     @IBOutlet var passthroughView: PassthroughView!
     @IBOutlet fileprivate var title: UILabel!
@@ -45,12 +45,12 @@ final class SideMenuCell: UITableViewCell {
         super.awakeFromNib()
         title.textColor = #colorLiteral(red: 0.51, green: 0.55, blue: 0.62, alpha: 1)
         title.highlightedTextColor = #colorLiteral(red: 0.51, green: 0.55, blue: 0.62, alpha: 1)
-        title.font = .mainMedium(UIDevice.current.type.isAbove(.iPhoneSE) ? 17 : 14)
+        title.font = .mainMedium(DevicePresenter.type != .superCompact ? 17 : 14)
         icon.tintColor = #colorLiteral(red: 0.51, green: 0.55, blue: 0.62, alpha: 1)
         newContainerView.layer.cornerRadius = 4.0
         newContainerView.backgroundColor = .primaryButton
         newLabel.text = LocalizationConstants.SideMenu.new
-        newLabel.font = .mainMedium(UIDevice.current.type.isAbove(.iPhoneSE) ? 15 : 12)
+        newLabel.font = .mainMedium(DevicePresenter.type != .superCompact ? 15 : 12)
         let padding = SideMenuCell.newContainerViewTrailingPadding
         guard newContainerTrailingConstraint.constant != padding + peekPadding else { return }
         newContainerTrailingConstraint.constant = padding + peekPadding

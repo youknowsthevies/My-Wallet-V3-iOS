@@ -36,6 +36,14 @@ public struct ImageViewContent {
     }
 }
 
+extension ImageViewContent: Equatable {
+    public static func == (lhs: ImageViewContent, rhs: ImageViewContent) -> Bool {
+        return lhs.imageName == rhs.imageName &&
+               lhs.accessibility == rhs.accessibility &&
+               lhs.bundle.bundleIdentifier == rhs.bundle.bundleIdentifier
+    }
+}
+
 extension UIImageView {
     public func set(_ content: ImageViewContent) {
         image = content.image

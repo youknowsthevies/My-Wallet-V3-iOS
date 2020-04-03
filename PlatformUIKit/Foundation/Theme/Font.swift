@@ -81,8 +81,7 @@ public struct Font {
 
 extension Font.StandardSize {
     var value: Double {
-        let device = UIDevice.current.type
-        let isAboveSE = device.isAbove(.iPhoneSE)
+        let isAboveSE = DevicePresenter.type > .superCompact
         switch self {
         case .small(let level):
             switch level {

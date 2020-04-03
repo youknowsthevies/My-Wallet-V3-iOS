@@ -62,9 +62,10 @@ final class UpdateEmailScreenPresenter {
         self.interactor = emailScreenInteractor
         textField = .init(
             with: .email,
-            validator: TextValidationFactory.email,
+            validator: TextValidationFactory.Info.email,
             messageRecorder: CrashlyticsRecorder()
         )
+
         descriptionContent = .init(
             text: LocalizationIDs.description,
             font: .mainMedium(14.0),

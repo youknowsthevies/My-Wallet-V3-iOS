@@ -78,16 +78,28 @@ extension Accessibility.Identifier {
 
 extension Accessibility.Identifier {
     struct TextFieldView {
-        static let prefix = "TextFieldView."
+        private static let prefix = "TextFieldView."
+        struct Card {
+            private static let prefix = "\(TextFieldView.prefix)Card."
+            static let name = "\(prefix)cardholderName"
+            static let expirationDate = "\(prefix)expirationDate"
+            static let number = "\(prefix)number"
+            static let cvv = "\(prefix)cvv"
+        }
         static let email = "\(prefix)statusLabel"
         static let newPassword = "\(prefix)newPassword"
         static let confirmNewPassword = "\(prefix)confirmNewPassword"
         static let password = "\(prefix)password"
         static let walletIdentifier = "\(prefix)walletIdentifier"
         static let recoveryPhrase = "\(prefix)recoveryPhrase"
-        static let backupVerfication = "\(prefix)backupVerfication"
+        static let backupVerification = "\(prefix)backupVerification"
         static let mobileVerification = "\(prefix)mobileVerification"
         static let oneTimeCode = "\(prefix)oneTimeCode"
+        static let addressLine = "\(prefix)addressLine"
+        static let personFullName = "\(prefix)personFullName"
+        static let city = "\(prefix)city"
+        static let state = "\(prefix)state"
+        static let postCode = "\(prefix)postCode"
     }
 }
 

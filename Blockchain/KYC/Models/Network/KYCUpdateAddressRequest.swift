@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 /// Model for updating the user's address during KYC
 struct KYCUpdateAddressRequest: Codable {

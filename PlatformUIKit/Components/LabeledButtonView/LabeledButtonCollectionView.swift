@@ -17,18 +17,18 @@ public final class LabeledButtonCollectionView<ViewModel: LabeledButtonViewModel
     
     /// The flow layout of the collection view
     private class CollectionViewFlowLayout: UICollectionViewFlowLayout {
+        var spread: Bool = false
         override init() {
             super.init()
-            estimatedItemSize = CGSize(width: 200, height: 40)
+            estimatedItemSize = CGSize(width: 100, height: 32)
             minimumInteritemSpacing = 0
             minimumLineSpacing = 8
             scrollDirection = .horizontal
             sectionInset = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
         }
-    
-        required init?(coder aDecoder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
+
+        @available(*, unavailable)
+        required init?(coder aDecoder: NSCoder) { return nil }
     }
     
     // MARK: - Injected

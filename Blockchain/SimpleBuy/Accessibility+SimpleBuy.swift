@@ -15,12 +15,20 @@ extension Accessibility.Identifier {
             private static let prefix = "Intro."
             static let themeBackgroundImageView = "\(prefix)themeBackgroundImageView"
         }
-        
+
+        enum BuyScreen {
+            private static let prefix = "Buy."
+            static let minimumBuy = "\(prefix)MinimumBuy"
+            static let maximumBuy = "\(prefix)MaximumBuy"
+            static let traillingActionButton = "\(prefix)TraillingActionButton"
+        }
+
         enum Checkout {
             private static let prefix = "Checkout."
             static let titleLabel = "\(prefix)titleLabel"
             static let descriptionLabel = "\(prefix)descriptionLabel"
             static let disclaimerLabel = "\(prefix)disclaimerLabel"
+            static let disclaimerImage = "\(prefix)disclaimerImage"
         }
         
         enum TransferDetails {
@@ -28,6 +36,7 @@ extension Accessibility.Identifier {
             static let titleLabel = "\(prefix)titleLabel"
             static let descriptionLabel = "\(prefix)descriptionLabel"
             static let disclaimerLabel = "\(prefix)disclaimerLabel"
+            static let disclaimerImage = "\(prefix)disclaimerImage"
         }
         
         enum Cancellation {
@@ -47,6 +56,7 @@ extension Accessibility.Identifier {
         static let titleLabel = "\(prefix)titleLabel"
         static let descriptionLabel = "\(prefix)descriptionLabel"
         static let disclaimerLabel = "\(prefix)disclaimerLabel"
+        static let disclaimerImage = "\(prefix)disclaimerImage"
     }
 }
 

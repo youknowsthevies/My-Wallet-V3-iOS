@@ -128,3 +128,49 @@ public extension Reactive where Base: ReactiveLoaderPresenting {
         }
     }
 }
+
+public extension PrimitiveSequence where Trait == CompletableTrait, Element == Never {
+    
+    /// Shows the loader
+    func show(loader: LoadingViewPresenting,
+              style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
+              text: String? = nil) -> Completable {
+        return self.do(onCompleted: {
+            loader.show(with: style, text: text)
+        })
+    }
+    
+    /// Hides the loader
+    func hide(loader: LoadingViewPresenting) -> Completable {
+        return self.do(onCompleted: {
+            loader.hide()
+        })
+    }
+    
+    /// Show the loader and returns `Element`
+    func showOnSubscription(loader: LoadingViewPresenting,
+                            style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
+                            text: String? = nil) -> Completable {
+        return self.do(onSubscribe: {
+            loader.show(with: text)
+        })
+    }
+    
+    /// Hides the loader and returns `Element`
+    func hideOnDisposal(loader: LoadingViewPresenting) -> Completable {
+        return self.do(onDispose: {
+            loader.hide()
+        })
+    }
+    
+    /// Shows and hides the loader
+    func handleLoaderForLifecycle(loader: LoadingViewPresenting,
+                                  style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
+                                  text: String? = nil) -> Completable {
+        return self.do(onSubscribe: {
+            loader.show(with: style, text: text)
+        }, onDispose: {
+            loader.hide()
+        })
+    }
+}
