@@ -91,7 +91,7 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
             .mapRawServerError()
             .decode(with: request.decoder)
     }
-    
+        
     // swiftlint:disable:next function_body_length
     private func execute(request: NetworkRequest) -> Single<
         Result<ServerResponse, NetworkCommunicatorError>
@@ -99,6 +99,7 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
         return Single<Result<ServerResponse, NetworkCommunicatorError>>.create(weak: self) { (self, observer) -> Disposable in
             let urlRequest = request.URLRequest
             Logger.shared.debug("urlRequest.url: \(urlRequest.url)")
+                        
             let task = self.session.dataTask(with: urlRequest) { payload, response, error in
                 if let error = error {
                     observer(.success(.failure(NetworkCommunicatorError.clientError(.failedRequest(description: error.localizedDescription)))))

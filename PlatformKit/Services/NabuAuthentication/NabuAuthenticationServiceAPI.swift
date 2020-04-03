@@ -10,15 +10,14 @@ import RxSwift
 
 // TODO: Create a service and client out of this - separate wallet update from the
 public protocol NabuAuthenticationServiceAPI: class {
-    func getSessionToken(requestNewToken: Bool) -> Single<NabuSessionTokenResponse>
-    func getSessionToken() -> Single<NabuSessionTokenResponse>
-    func updateWalletInfo() -> Completable
-    
+    var fetchValue: Single<NabuSessionTokenResponse> { get }
+    var value: Single<NabuSessionTokenResponse> { get }
     var tokenString: Single<String> { get }
+    func updateWalletInfo() -> Completable
 }
 
 extension NabuAuthenticationServiceAPI {
     public var tokenString: Single<String> {
-        getSessionToken().map { $0.token }
+        value.map { $0.token }
     }
 }

@@ -34,8 +34,8 @@ public final class SimpleBuyOrderCreationService: SimpleBuyOrderCreationServiceA
             fiatValue: checkoutData.fiatValue,
             for: checkoutData.cryptoCurrency
         )
-        return authenticationService.getSessionToken()
-            .map { $0.token }
+        return authenticationService
+            .tokenString
             .flatMap(weak: self) { (self, token) -> Single<SimpleBuyOrderCreationData.Response> in
                 self.client.create(order: data, token: token)
             }

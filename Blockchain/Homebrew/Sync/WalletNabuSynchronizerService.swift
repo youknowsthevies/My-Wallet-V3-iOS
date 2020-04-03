@@ -21,7 +21,7 @@ class WalletNabuSynchronizerService: WalletNabuSynchronizerAPI {
         self.communictator = communictator
     }
 
-    func sync(token: NabuSessionTokenResponse) -> Single<NabuUser> {
+    func sync(token: String) -> Single<NabuUser> {
         return getSignedRetailToken().flatMap { signedRetailToken -> Single<NabuUser> in
 
             // Error checking
@@ -34,7 +34,7 @@ class WalletNabuSynchronizerService: WalletNabuSynchronizerAPI {
             }
 
             // If all passes, send JWT to Nabu
-            let headers = [HttpHeaderField.authorization: token.token]
+            let headers = [HttpHeaderField.authorization: token]
             let payload = ["jwt": jwtToken]
             return KYCNetworkRequest.request(
                 put: .updateWalletInformation,

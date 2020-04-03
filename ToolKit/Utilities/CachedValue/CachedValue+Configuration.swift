@@ -13,13 +13,16 @@ import RxRelay
 public struct CachedValueConfiguration {
     
     /// A refresh type
-    public enum RefreshType: Hashable {
+    public enum RefreshType {
         
         /// Refresh once upon subscription
         case onSubscription
         
         /// Refresh periodically
         case periodic(seconds: TimeInterval)
+        
+        /// Custom configuration for refresh
+        case custom(() -> Single<Bool>)
     }
     
     public enum FetchPriority {

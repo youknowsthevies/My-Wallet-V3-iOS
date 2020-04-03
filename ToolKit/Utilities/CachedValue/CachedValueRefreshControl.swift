@@ -26,13 +26,16 @@ final class CachedValueRefreshControl {
     }
     
     /// Should refresh (explicitly asks `CachedValue` for updates)
-    var shouldRefresh: Bool {
+    var shouldRefresh: Single<Bool> {
         switch configuration.refreshType {
         case .onSubscription:
-            return false
+            return .just(false)
         case .periodic(let refreshInterval):
             let lastRefreshInterval = Date(timeIntervalSinceNow: -refreshInterval)
-            return lastRefreshRelay.value.compare(lastRefreshInterval) == .orderedAscending
+            let shouldRefresh = lastRefreshRelay.value.compare(lastRefreshInterval) == .orderedAscending
+            return .just(shouldRefresh)
+        case .custom(let shouldRefresh):
+            return shouldRefresh()
         }
     }
     

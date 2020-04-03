@@ -231,14 +231,14 @@ class TradeExecutionService: TradeExecutionAPI {
         
         let payload = TransactionFailure(message: reason)
         
-        authentication.getSessionToken()
+        authentication.tokenString
             .flatMapCompletable(weak: self) { (self, token) -> Completable in
                 return self.communicator.perform(
                     request: NetworkRequest(
                         endpoint: endpoint,
                         method: .put,
                         body: try? JSONEncoder().encode(payload),
-                        headers: [HttpHeaderField.authorization: token.token]
+                        headers: [HttpHeaderField.authorization: token]
                     )
                 )
             }
@@ -414,14 +414,14 @@ class TradeExecutionService: TradeExecutionAPI {
                 return .error(TradeExecutionAPIError.generic)
         }
 
-        return authentication.getSessionToken()
+        return authentication.tokenString
             .flatMap(weak: self) { (self, token) -> Single<OrderResult> in
                 self.communicator.perform(
                     request: NetworkRequest(
                         endpoint: endpoint,
                         method: .post,
                         body: try? JSONEncoder().encode(order),
-                        headers: [HttpHeaderField.authorization: token.token]
+                        headers: [HttpHeaderField.authorization: token]
                     )
                 )
             }

@@ -103,10 +103,10 @@ final class AirdropCenterService: AirdropCenterServiceAPI {
     // MARK: - Accessors
     
     private func fetchCampaigns() -> Single<AirdropCampaigns> {
-        return authenticationService
-            .getSessionToken()
+        authenticationService
+            .tokenString
             .flatMap(weak: self) { (self, token) -> Single<AirdropCampaigns> in
-                self.client.campaigns(using: token.token)
+                self.client.campaigns(using: token)
             }
     }
 }

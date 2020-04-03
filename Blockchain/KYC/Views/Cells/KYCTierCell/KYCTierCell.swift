@@ -9,7 +9,7 @@
 import Foundation
 import PlatformKit
 import PlatformUIKit
-
+ 
 protocol KYCTierCellDelegate: class {
     func tierCell(_ cell: KYCTierCell, selectedTier: KYC.Tier)
 }

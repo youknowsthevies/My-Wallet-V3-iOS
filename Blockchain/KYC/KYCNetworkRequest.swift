@@ -338,6 +338,7 @@ extension KYCNetworkRequest {
             })
             return Disposables.create()
         })
+        .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
     }
 
     static func request<ResponseType: Decodable>(

@@ -38,10 +38,11 @@ class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
     }
     
     var exchangeLinkID: Single<LinkID> {
-        return authenticationService.getSessionToken()
-            .flatMap(weak: self, { (self, sessionToken) -> Single<LinkID> in
-                return self.client.linkID(sessionToken.token)
-            })
+        authenticationService
+            .tokenString
+            .flatMap(weak: self) { (self, token) -> Single<LinkID> in
+                self.client.linkID(token)
+            }
     }
     
     var exchangeURL: Single<URL> {
@@ -81,9 +82,9 @@ class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
     }
         
     func linkToExistingExchangeUser(linkID: LinkID) -> Completable {
-        return authenticationService.getSessionToken().flatMapCompletable(weak: self, { (self, sessionToken) -> Completable in
-            return self.client.linkToExistingExchangeUser(authenticationToken: sessionToken.token, linkID)
-        })
+        authenticationService.tokenString.flatMapCompletable(weak: self) { (self, sessionToken) -> Completable in
+            self.client.linkToExistingExchangeUser(authenticationToken: sessionToken, linkID)
+        }
     }
     
     private func percentEscapeString(_ stringToEscape: String) -> String {

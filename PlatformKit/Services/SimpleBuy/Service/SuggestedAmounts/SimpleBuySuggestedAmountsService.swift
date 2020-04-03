@@ -63,8 +63,7 @@ public final class SimpleBuySuggestedAmountsService: SimpleBuySuggestedAmountsSe
     
     private func fetchSuggestedAmounts(for currency: FiatCurrency) -> Single<[FiatValue]> {
         return authenticationService
-            .getSessionToken()
-            .map { $0.token }
+            .tokenString
             .flatMap(weak: self) { (self, token) -> Single<SimpleBuySuggestedAmountsResponse> in
                 self.client.suggestedAmounts(for: currency, using: token)
             }

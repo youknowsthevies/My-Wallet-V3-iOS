@@ -157,7 +157,8 @@ extension MarketsService: ExchangeMarketsAPI {
     }
 
     func exchangeRateAvailablePairs() -> Single<ExchangeTradingPairs> {
-        return authentication.getSessionToken()
+        authentication
+            .tokenString
             .flatMap(weak: self) { (self, token) -> Single<ExchangeTradingPairs> in
                 guard let baseURL = URL(
                     string: BlockchainAPI.shared.retailCoreUrl) else {
@@ -175,7 +176,7 @@ extension MarketsService: ExchangeMarketsAPI {
                     request: NetworkRequest(
                         endpoint: endpoint,
                         method: .get,
-                        headers: [HttpHeaderField.authorization: token.token]
+                        headers: [HttpHeaderField.authorization: token]
                     )
                 )
             }
@@ -282,7 +283,7 @@ private extension MarketsService {
     }
 
     func authenticateSocket() {
-        let authenticationDisposable = authentication.getSessionToken(requestNewToken: true)
+        let authenticationDisposable = authentication.fetchValue
             .map { tokenResponse -> Subscription<AuthSubscribeParams> in
                 let params = AuthSubscribeParams(type: "auth", token: tokenResponse.token)
                 return Subscription(channel: "auth", params: params)

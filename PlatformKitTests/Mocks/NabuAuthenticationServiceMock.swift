@@ -10,7 +10,15 @@ import RxSwift
 import PlatformKit
 
 final class NabuAuthenticationServiceMock: NabuAuthenticationServiceAPI {
-
+    
+    var fetchValue: Single<NabuSessionTokenResponse> {
+        .just(underlyingSessionToken)
+    }
+    
+    var value: Single<NabuSessionTokenResponse> {
+        .just(underlyingSessionToken)
+    }
+    
     static let token = NabuSessionTokenResponse(
         identifier: "identifier",
         userId: "userId",
@@ -20,13 +28,6 @@ final class NabuAuthenticationServiceMock: NabuAuthenticationServiceAPI {
     )
 
     var underlyingSessionToken: NabuSessionTokenResponse = NabuAuthenticationServiceMock.token
-    func getSessionToken(requestNewToken: Bool) -> Single<NabuSessionTokenResponse> {
-        return .just(underlyingSessionToken)
-    }
-
-    func getSessionToken() -> Single<NabuSessionTokenResponse> {
-        return .just(underlyingSessionToken)
-    }
 
     func updateWalletInfo() -> Completable {
         return .empty()

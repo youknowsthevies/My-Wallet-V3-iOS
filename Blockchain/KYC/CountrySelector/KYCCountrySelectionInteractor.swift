@@ -41,7 +41,7 @@ class KYCCountrySelectionInteractor {
         state: String? = nil,
         shouldBeNotifiedWhenAvailable: Bool? = nil
     ) -> Disposable {
-        let sessionTokenSingle = authenticationService.getSessionToken()
+        let sessionTokenSingle = authenticationService.tokenString
         let signedRetailToken = walletNabuSynchronizer.getSignedRetailToken()
         return Single.zip(sessionTokenSingle, signedRetailToken, resultSelector: {
             return ($0, $1)
@@ -56,7 +56,7 @@ class KYCCountrySelectionInteractor {
             if let state = state {
                 payload["state"] = state
             }
-            let headers = [HttpHeaderField.authorization: sessionToken.token]
+            let headers = [HttpHeaderField.authorization: sessionToken]
             return KYCNetworkRequest.request(post: .country, parameters: payload, headers: headers)
         }.subscribe(onCompleted: {
             Logger.shared.debug("Successfully notified the server of the selected country.")

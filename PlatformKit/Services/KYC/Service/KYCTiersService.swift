@@ -26,8 +26,8 @@ public final class KYCTiersService: KYCTiersServiceAPI {
     public init(client: KYCClientAPI = KYCClient(),
                 authenticationService: NabuAuthenticationServiceAPI) {
         cachedTiers.setFetch {
-            authenticationService.getSessionToken()
-                .map { $0.token }
+            authenticationService
+                .tokenString
                 .flatMap { token -> Single<KYC.UserTiers> in
                     client.tiers(with: token)
                 }

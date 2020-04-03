@@ -519,14 +519,15 @@ protocol KYCRouterAPI: class {
                 return .error(TradeExecutionAPIError.generic)
         }
         let body = KYCTierPostBody(selectedTier:tier)
-        return authenticationService.getSessionToken().flatMap(weak: self) { (self, token) -> Single<KYC.UserTiers> in
-            return self.communicator.perform(
-                request: NetworkRequest(
-                    endpoint: endpoint,
-                    method: .post,
-                    body: try? JSONEncoder().encode(body),
-                    headers: [HttpHeaderField.authorization: token.token]
-                )
+        return authenticationService.tokenString
+            .flatMap(weak: self) { (self, token) -> Single<KYC.UserTiers> in
+                self.communicator.perform(
+                    request: NetworkRequest(
+                        endpoint: endpoint,
+                        method: .post,
+                        body: try? JSONEncoder().encode(body),
+                        headers: [HttpHeaderField.authorization: token]
+                    )
             )
         }
     }

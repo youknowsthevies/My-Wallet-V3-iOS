@@ -68,14 +68,14 @@ class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
     }
     
     func syncDepositAddresses() -> Completable {
-        return Single.zip(
-            authenticationService.getSessionToken(),
+        Single.zip(
+            authenticationService.tokenString,
             accountRepository.accounts
-            ).flatMapCompletable(weak: self, { (self, payload) -> Completable in
-                let addresses = payload.1.map { return $0.address }
-                return self.clientAPI.syncDepositAddress(authenticationToken: payload.0.token, addresses)
-            }
         )
+        .flatMapCompletable(weak: self) { (self, payload) -> Completable in
+                let addresses = payload.1.map { return $0.address }
+                return self.clientAPI.syncDepositAddress(authenticationToken: payload.0, addresses)
+            }
     }
 }
 

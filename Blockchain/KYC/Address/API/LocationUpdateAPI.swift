@@ -32,18 +32,22 @@ class LocationUpdateService: NSObject, LocationUpdateAPI {
     }
 
     func updateAddress(address: UserAddress, with completion: @escaping LocationUpdateCompletion) {
-        disposable = NabuAuthenticationService.shared.getSessionToken().flatMapCompletable { token in
-            let headers = [HttpHeaderField.authorization: token.token]
-            let payload = KYCUpdateAddressRequest(address: address)
-            return KYCNetworkRequest.request(
-                put: .updateAddress,
-                parameters: payload,
-                headers: headers
-            )
-        }.subscribeOn(MainScheduler.asyncInstance).observeOn(MainScheduler.instance).subscribe(onCompleted: {
-            completion(nil)
-        }, onError: { error in
-            completion(error)
-        })
+        disposable = NabuAuthenticationService.shared
+            .tokenString
+            .flatMapCompletable { token in
+                let headers = [HttpHeaderField.authorization: token]
+                let payload = KYCUpdateAddressRequest(address: address)
+                return KYCNetworkRequest.request(
+                    put: .updateAddress,
+                    parameters: payload,
+                    headers: headers
+                )
+            }
+            .observeOn(MainScheduler.instance)
+            .subscribe(onCompleted: {
+                completion(nil)
+            }, onError: { error in
+                completion(error)
+            })
     }
 }

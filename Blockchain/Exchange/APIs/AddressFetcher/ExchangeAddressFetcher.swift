@@ -138,22 +138,20 @@ final class ExchangeAddressFetcher: ExchangeAddressFetching {
         
         // TODO: Move `NabuAuthenticationService` inside PlatformKit and `getSessionToken` to network layer
         return repository.hasLinkedExchangeAccount
-            .do(onSuccess: { hasLinkedAccount in
+            .map { hasLinkedAccount -> Void in
                 guard hasLinkedAccount else { throw FetchingError.missingAccount }
-            })
-            .flatMap(weak: self) { (self, _) -> Single<NabuSessionTokenResponse> in
-                return self.authentication.getSessionToken()
+                return ()
             }
-            .map { token -> [String: String] in
-                return [HttpHeaderField.authorization: token.token]
+            .flatMap(weak: self) { (self, _) -> Single<String> in
+                self.authentication.tokenString
             }
-            .flatMap(weak: self) { (self, headers) -> Single<AddressResponseBody> in
+            .flatMap(weak: self) { (self, token) -> Single<AddressResponseBody> in
                 return self.communicator.perform(
                     request: NetworkRequest(
                         endpoint: URL(string: url)!,
                         method: .put,
                         body: try? JSONEncoder().encode(data),
-                        headers: headers
+                        headers: [HttpHeaderField.authorization: token]
                     )
                 )
             }

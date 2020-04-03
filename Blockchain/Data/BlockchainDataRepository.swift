@@ -109,8 +109,8 @@ class BlockchainDataRepository: DataRepositoryAPI {
     ///
     /// - Returns: the fetched NabuUser
     func fetchNabuUser() -> Single<NabuUser> {
-        return authenticationService.getSessionToken().flatMap { token in
-            let headers = [HttpHeaderField.authorization: token.token]
+        return authenticationService.tokenString.flatMap { token in
+            let headers = [HttpHeaderField.authorization: token]
             return KYCNetworkRequest.request(get: .currentUser, headers: headers, type: NabuUser.self)
         }.do(onSuccess: { [weak self] response in
             self?.cachedUser.accept(response)

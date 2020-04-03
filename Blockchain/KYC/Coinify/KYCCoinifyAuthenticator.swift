@@ -104,14 +104,14 @@ class KYCCoinifyAuthenticator {
         
         let payload = CoinifyTraderPayload(coinifyTraderId: coinifyID)
         
-        return authenticationService.getSessionToken()
-            .flatMapCompletable(weak: self) { (self, sessionToken) -> Completable in
+        return authenticationService.tokenString
+            .flatMapCompletable(weak: self) { (self, token) -> Completable in
                 self.communicator.perform(
                     request: NetworkRequest(
                         endpoint: endpoint,
                         method: .put,
                         body: try? JSONEncoder().encode(payload),
-                        headers: [HttpHeaderField.authorization: sessionToken.token]
+                        headers: [HttpHeaderField.authorization: token]
                     )
                 )
             }

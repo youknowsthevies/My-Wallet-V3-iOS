@@ -104,14 +104,16 @@ class TradeLimitsService: TradeLimitsAPI {
             return .error(TradeLimitsAPIError.generic)
         }
 
-        return authenticationService.getSessionToken().flatMap(weak: self) { (self, token) in
-            return self.communicator.perform(
-                request: NetworkRequest(
-                    endpoint: endpoint,
-                    method: .get,
-                    headers: [HttpHeaderField.authorization: token.token]
+        return authenticationService
+            .tokenString
+            .flatMap(weak: self) { (self, token) in
+                self.communicator.perform(
+                    request: NetworkRequest(
+                        endpoint: endpoint,
+                        method: .get,
+                        headers: [HttpHeaderField.authorization: token]
+                    )
                 )
-            )
         }
     }
 

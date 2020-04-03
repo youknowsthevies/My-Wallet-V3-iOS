@@ -22,8 +22,8 @@ class VeriffService {
     
     /// Creates VeriffCredentials
     func createCredentials() -> Single<(VeriffCredentials)> {
-        return authService.getSessionToken().flatMap { token in
-            let headers = [HttpHeaderField.authorization: token.token]
+        return authService.tokenString.flatMap { token in
+            let headers = [HttpHeaderField.authorization: token]
             return KYCNetworkRequest.request(
                 get: .credentiasForVeriff,
                 headers: headers,
@@ -38,8 +38,8 @@ class VeriffService {
     /// - Parameter applicantId: applicantId derived from `VeriffCredentials`
     /// - Returns: a Completable
     func submitVerification(applicantId: String) -> Completable {
-        return authService.getSessionToken().flatMapCompletable { token in
-            let headers = [HttpHeaderField.authorization: token.token]
+        return authService.tokenString.flatMapCompletable { token in
+            let headers = [HttpHeaderField.authorization: token]
             let payload = [
                 "applicantId": applicantId,
                 HttpHeaderField.clientType: HttpHeaderValue.clientTypeApp

@@ -172,11 +172,15 @@ public class CachedValue<Value> {
                         throw CacheError.fetchFailed
                     }
                 case .stream(.private(let value)):
-                    if self.refreshControl.shouldRefresh {
-                        return fetch()
-                    } else {
-                        return .just(.public(value))
-                    }
+                    return self.refreshControl.shouldRefresh
+                        .asObservable()
+                        .flatMap { shouldRefresh -> Observable<StreamType> in
+                            if shouldRefresh {
+                                return fetch()
+                            } else {
+                                return .just(.public(value))
+                            }
+                        }
                 case .stream(.public), .stream(.none):
                     return .just(.none)
                 }

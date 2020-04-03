@@ -64,7 +64,7 @@ class KYCVerifyPhoneNumberInteractor {
     }
 
     private func updateWalletInfo() -> Completable {
-        return authenticationService.getSessionToken().flatMap { [weak self] token -> Single<NabuUser> in
+        authenticationService.tokenString.flatMap { [weak self] token -> Single<NabuUser> in
             guard let strongSelf = self else {
                 return Single.never()
             }

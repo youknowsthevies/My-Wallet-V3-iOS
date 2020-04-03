@@ -148,9 +148,9 @@ class StellarAirdropRouter: DeepLinkRouting {
 
     private func registerForCampaign(xlmAccount: StellarWalletAccount, nabuUser: NabuUser) -> Observable<NabuUser> {
         let isNewUser = (nabuUser.status == .none) && !kycSettings.isCompletingKyc
-        return nabuAuthenticationService.getSessionToken().flatMap(weak: self) { (self, tokenResponse) -> Single<AirdropRegistrationResponse> in
+        return nabuAuthenticationService.tokenString.flatMap(weak: self) { (self, token) -> Single<AirdropRegistrationResponse> in
             let request = AirdropRegistrationRequest(
-                authToken: tokenResponse.token,
+                authToken: token,
                 publicKey: xlmAccount.publicKey,
                 campaignIdentifier: .sunriver,
                 isNewUser: isNewUser

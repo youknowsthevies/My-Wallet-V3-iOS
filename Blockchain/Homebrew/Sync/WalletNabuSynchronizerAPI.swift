@@ -24,5 +24,5 @@ protocol WalletNabuSynchronizerAPI {
     /// retail token from the wallet (via getSignedRetailToken()) followed by sending
     /// that token to nabu. Syncing is typically performed when nabu should be updated
     /// when there is a state change in the wallet (e.g. email/phone verification).
-    func sync(token: NabuSessionTokenResponse) -> Single<NabuUser>
+    func sync(token: String) -> Single<NabuUser>
 }

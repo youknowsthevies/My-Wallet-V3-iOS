@@ -19,8 +19,8 @@ class PersonalDetailsService: NSObject, PersonalDetailsAPI {
     }
 
     func update(personalDetails: KYCUpdatePersonalDetailsRequest, with completion: @escaping PersonalDetailsUpdateCompletion) {
-        disposable = NabuAuthenticationService.shared.getSessionToken().flatMapCompletable { token in
-            let headers = [HttpHeaderField.authorization: token.token]
+        disposable = NabuAuthenticationService.shared.tokenString.flatMapCompletable { token in
+            let headers = [HttpHeaderField.authorization: token]
             return KYCNetworkRequest.request(
                 put: .updateUserDetails,
                 parameters: personalDetails,

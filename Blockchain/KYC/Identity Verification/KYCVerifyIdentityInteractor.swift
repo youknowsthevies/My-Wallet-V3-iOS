@@ -57,8 +57,8 @@ class KYCVerifyIdentityInteractor {
         }
 
         // If not available, request supported document types
-        return authentication.getSessionToken().flatMap { tokenResponse -> Single<KYCSupportedDocumentsResponse> in
-            let headers = [HttpHeaderField.authorization: tokenResponse.token]
+        return authentication.tokenString.flatMap { token -> Single<KYCSupportedDocumentsResponse> in
+            let headers = [HttpHeaderField.authorization: token]
             return KYCNetworkRequest.request(
                 get: .supportedDocuments,
                 pathComponents: ["kyc", "supported-documents", countryCode],

@@ -64,14 +64,16 @@ class HomebrewExchangeService: HomebrewExchangeAPI {
             return .error(HomebrewExchangeServiceError.generic)
         }
         
-        return authentication.getSessionToken().flatMap(weak: self) { (self, token) -> Single<[ExchangeTradeCellModel]> in
-            return self.communicator.perform(
-                request: NetworkRequest(
-                    endpoint: endpoint,
-                    method: .get,
-                    headers: [HttpHeaderField.authorization: token.token]
+        return authentication
+            .tokenString
+            .flatMap(weak: self) { (self, token) -> Single<[ExchangeTradeCellModel]> in
+                self.communicator.perform(
+                    request: NetworkRequest(
+                        endpoint: endpoint,
+                        method: .get,
+                        headers: [HttpHeaderField.authorization: token]
+                    )
                 )
-            )
-        }
+            }
     }
 }
