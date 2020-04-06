@@ -11,16 +11,8 @@ target 'Blockchain' do
   pod 'Firebase/RemoteConfig'
   pod 'Firebase/Messaging'
   pod 'SwiftLint', '0.30.1'
-  pod 'stellar-ios-mac-sdk', git: 'git@github.com:thisisalexmcgregor/stellar-ios-mac-sdk.git', commit: '897f8acd327bb900aa97a6b92e602c6076e978bc'
 
   target 'BlockchainTests' do
-    inherit! :search_paths
-  end
-end
-
-target 'StellarKit' do
-  pod 'stellar-ios-mac-sdk', git: 'git@github.com:thisisalexmcgregor/stellar-ios-mac-sdk.git', commit: '897f8acd327bb900aa97a6b92e602c6076e978bc'
-  target 'StellarKitTests' do
     inherit! :search_paths
   end
 end
