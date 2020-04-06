@@ -464,6 +464,16 @@
 		3A307B9023465ED200555807 /* PairingIntroViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A307B8F23465ED200555807 /* PairingIntroViewController.xib */; };
 		3A307B9323465F2F00555807 /* PasswordRequiredViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A307B9223465F2F00555807 /* PasswordRequiredViewController.xib */; };
 		3A31647B243B512C008413E2 /* BigInt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ABCAC24243B3C61007DBC92 /* BigInt.framework */; };
+		3A31647E243B51A0008413E2 /* BigInt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ABCAC24243B3C61007DBC92 /* BigInt.framework */; };
+		3A31647F243B51A0008413E2 /* RxRelay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ABCAC28243B3C6F007DBC92 /* RxRelay.framework */; };
+		3A316480243B51A0008413E2 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ABCAC20243B3C2E007DBC92 /* RxSwift.framework */; };
+		3A316483243B51A1008413E2 /* RxTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A316481243B51A1008413E2 /* RxTest.framework */; };
+		3A316484243B51A1008413E2 /* RxBlocking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A316482243B51A1008413E2 /* RxBlocking.framework */; };
+		3A31648B243B51FC008413E2 /* BigInt.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316486243B51FB008413E2 /* BigInt.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A31648C243B51FC008413E2 /* RxTest.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316487243B51FB008413E2 /* RxTest.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A31648D243B51FC008413E2 /* RxBlocking.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316488243B51FB008413E2 /* RxBlocking.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A31648E243B51FC008413E2 /* RxRelay.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316489243B51FB008413E2 /* RxRelay.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A31648F243B51FC008413E2 /* RxSwift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A31648A243B51FB008413E2 /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3A331E5C22147C8500ECA937 /* ExchangeDetailPageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A331E5B22147C8500ECA937 /* ExchangeDetailPageModel.swift */; };
 		3A331E5F22148D5E00ECA937 /* ExchangeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A331E5E22148D5E00ECA937 /* ExchangeHeaderView.swift */; };
 		3A3389612385C30A00372B84 /* InstantAssetPriceViewInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3389602385C30A00372B84 /* InstantAssetPriceViewInteractor.swift */; };
@@ -2585,6 +2595,20 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		3A316485243B51EA008413E2 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				3A31648B243B51FC008413E2 /* BigInt.framework in CopyFiles */,
+				3A31648C243B51FC008413E2 /* RxTest.framework in CopyFiles */,
+				3A31648D243B51FC008413E2 /* RxBlocking.framework in CopyFiles */,
+				3A31648E243B51FC008413E2 /* RxRelay.framework in CopyFiles */,
+				3A31648F243B51FC008413E2 /* RxSwift.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5149BD072057192900DC88A0 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
@@ -3117,6 +3141,13 @@
 		3A307B8D23465EC400555807 /* ManualPairingViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ManualPairingViewController.xib; sourceTree = "<group>"; };
 		3A307B8F23465ED200555807 /* PairingIntroViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PairingIntroViewController.xib; sourceTree = "<group>"; };
 		3A307B9223465F2F00555807 /* PasswordRequiredViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PasswordRequiredViewController.xib; sourceTree = "<group>"; };
+		3A316481243B51A1008413E2 /* RxTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxTest.framework; path = Carthage/Build/iOS/RxTest.framework; sourceTree = "<group>"; };
+		3A316482243B51A1008413E2 /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/iOS/RxBlocking.framework; sourceTree = "<group>"; };
+		3A316486243B51FB008413E2 /* BigInt.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BigInt.framework; path = Carthage/Build/iOS/BigInt.framework; sourceTree = "<group>"; };
+		3A316487243B51FB008413E2 /* RxTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxTest.framework; path = Carthage/Build/iOS/RxTest.framework; sourceTree = "<group>"; };
+		3A316488243B51FB008413E2 /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/iOS/RxBlocking.framework; sourceTree = "<group>"; };
+		3A316489243B51FB008413E2 /* RxRelay.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxRelay.framework; path = Carthage/Build/iOS/RxRelay.framework; sourceTree = "<group>"; };
+		3A31648A243B51FB008413E2 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
 		3A331E5B22147C8500ECA937 /* ExchangeDetailPageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeDetailPageModel.swift; sourceTree = "<group>"; };
 		3A331E5E22148D5E00ECA937 /* ExchangeHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeHeaderView.swift; sourceTree = "<group>"; };
 		3A3389602385C30A00372B84 /* InstantAssetPriceViewInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstantAssetPriceViewInteractor.swift; sourceTree = "<group>"; };
@@ -6344,6 +6375,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				34EE981F23AA595100074EC0 /* ToolKit.framework in Frameworks */,
+				3A316483243B51A1008413E2 /* RxTest.framework in Frameworks */,
+				3A316484243B51A1008413E2 /* RxBlocking.framework in Frameworks */,
+				3A31647E243B51A0008413E2 /* BigInt.framework in Frameworks */,
+				3A31647F243B51A0008413E2 /* RxRelay.framework in Frameworks */,
+				3A316480243B51A0008413E2 /* RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -14758,6 +14794,11 @@
 		9FB3636614B60128004BEA02 = {
 			isa = PBXGroup;
 			children = (
+				3A316486243B51FB008413E2 /* BigInt.framework */,
+				3A316488243B51FB008413E2 /* RxBlocking.framework */,
+				3A316489243B51FB008413E2 /* RxRelay.framework */,
+				3A31648A243B51FB008413E2 /* RxSwift.framework */,
+				3A316487243B51FB008413E2 /* RxTest.framework */,
 				51392045205C60520025EE33 /* Cert */,
 				9FB3637B14B60128004BEA02 /* Blockchain */,
 				5194359F208E61F3001EF882 /* BlockchainTests */,
@@ -14828,6 +14869,8 @@
 		9FB3637414B60128004BEA02 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3A316482243B51A1008413E2 /* RxBlocking.framework */,
+				3A316481243B51A1008413E2 /* RxTest.framework */,
 				3ABCAC28243B3C6F007DBC92 /* RxRelay.framework */,
 				3ABCAC24243B3C61007DBC92 /* BigInt.framework */,
 				3ABCAC20243B3C2E007DBC92 /* RxSwift.framework */,
@@ -16406,6 +16449,7 @@
 				34EE981A23AA595100074EC0 /* Sources */,
 				34EE981B23AA595100074EC0 /* Frameworks */,
 				34EE981C23AA595100074EC0 /* Resources */,
+				3A316485243B51EA008413E2 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -23774,6 +23818,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -23843,6 +23891,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -23912,6 +23964,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -23962,6 +24018,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -23999,6 +24059,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
