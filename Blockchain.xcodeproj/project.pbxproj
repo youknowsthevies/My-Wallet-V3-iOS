@@ -324,7 +324,6 @@
 		34EE992C23AB921500074EC0 /* NetworkKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34EE985C23AA5B3100074EC0 /* NetworkKit.framework */; };
 		34EE993123AB921F00074EC0 /* NetworkKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34EE985C23AA5B3100074EC0 /* NetworkKit.framework */; };
 		34EE993623AB922500074EC0 /* NetworkKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34EE985C23AA5B3100074EC0 /* NetworkKit.framework */; };
-		34EE993B23AB923500074EC0 /* NetworkKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34EE985C23AA5B3100074EC0 /* NetworkKit.framework */; };
 		34EE994023AB923C00074EC0 /* NetworkKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34EE985C23AA5B3100074EC0 /* NetworkKit.framework */; };
 		34EE996023ABC3E900074EC0 /* BridgedDisposeBag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657A0C1A232C1E2F009BE083 /* BridgedDisposeBag.swift */; };
 		34EE996123ABC3E900074EC0 /* JSContextProviderAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B33047239A6E2F00B5331E /* JSContextProviderAPI.swift */; };
@@ -500,6 +499,32 @@
 		3A3164D2243B60D0008413E2 /* RxRelay.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316489243B51FB008413E2 /* RxRelay.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3A3164D3243B60DE008413E2 /* BigInt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A316486243B51FB008413E2 /* BigInt.framework */; };
 		3A3164D4243B60E3008413E2 /* BigInt.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316486243B51FB008413E2 /* BigInt.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A3164E5243B654B008413E2 /* PlatformUIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A6865AB219A11650009FF29 /* PlatformUIKit.framework */; };
+		3A3164E6243B6589008413E2 /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3164B9243B5DFD008413E2 /* RxCocoa.framework */; };
+		3A3164E7243B6589008413E2 /* RxRelay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A316489243B51FB008413E2 /* RxRelay.framework */; };
+		3A3164E8243B6589008413E2 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A31648A243B51FB008413E2 /* RxSwift.framework */; };
+		3A3164E9243B658C008413E2 /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3164B9243B5DFD008413E2 /* RxCocoa.framework */; };
+		3A3164EA243B658D008413E2 /* RxRelay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A316489243B51FB008413E2 /* RxRelay.framework */; };
+		3A3164EB243B658D008413E2 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A31648A243B51FB008413E2 /* RxSwift.framework */; };
+		3A3164ED243B65A9008413E2 /* RxCocoa.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A3164B9243B5DFD008413E2 /* RxCocoa.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A3164EE243B65A9008413E2 /* RxRelay.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316489243B51FB008413E2 /* RxRelay.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A3164EF243B65A9008413E2 /* RxSwift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A31648A243B51FB008413E2 /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A3164F0243B65AE008413E2 /* RxBlocking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A316488243B51FB008413E2 /* RxBlocking.framework */; };
+		3A3164F1243B65AE008413E2 /* RxTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A316487243B51FB008413E2 /* RxTest.framework */; };
+		3A3164F2243B65B4008413E2 /* RxBlocking.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316488243B51FB008413E2 /* RxBlocking.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A3164F3243B65B4008413E2 /* RxTest.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316487243B51FB008413E2 /* RxTest.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A3164F7243B67B9008413E2 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3164F4243B6778008413E2 /* Charts.framework */; };
+		3A3164F8243B67B9008413E2 /* PhoneNumberKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3164F5243B6798008413E2 /* PhoneNumberKit.framework */; };
+		3A3164F9243B67B9008413E2 /* Zxcvbn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3164F6243B67AC008413E2 /* Zxcvbn.framework */; };
+		3A3164FA243B67BA008413E2 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3164F4243B6778008413E2 /* Charts.framework */; };
+		3A3164FB243B67BA008413E2 /* PhoneNumberKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3164F5243B6798008413E2 /* PhoneNumberKit.framework */; };
+		3A3164FC243B67BA008413E2 /* Zxcvbn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3164F6243B67AC008413E2 /* Zxcvbn.framework */; };
+		3A3164FD243B67C3008413E2 /* Charts.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A3164F4243B6778008413E2 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A3164FE243B67C3008413E2 /* PhoneNumberKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A3164F5243B6798008413E2 /* PhoneNumberKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A3164FF243B67C3008413E2 /* Zxcvbn.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A3164F6243B67AC008413E2 /* Zxcvbn.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A316500243B67D3008413E2 /* BigInt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A316486243B51FB008413E2 /* BigInt.framework */; };
+		3A316501243B67D3008413E2 /* BigInt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A316486243B51FB008413E2 /* BigInt.framework */; };
+		3A316502243B67D7008413E2 /* BigInt.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316486243B51FB008413E2 /* BigInt.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3A331E5C22147C8500ECA937 /* ExchangeDetailPageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A331E5B22147C8500ECA937 /* ExchangeDetailPageModel.swift */; };
 		3A331E5F22148D5E00ECA937 /* ExchangeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A331E5E22148D5E00ECA937 /* ExchangeHeaderView.swift */; };
 		3A3389612385C30A00372B84 /* InstantAssetPriceViewInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3389602385C30A00372B84 /* InstantAssetPriceViewInteractor.swift */; };
@@ -612,12 +637,9 @@
 		3A56EAD723EA204600E1B755 /* BackupFundsServiceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A56EAD623EA204600E1B755 /* BackupFundsServiceProvider.swift */; };
 		3A58B624236A06C4000C0833 /* HistoricalFiatPriceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A58B623236A06C4000C0833 /* HistoricalFiatPriceService.swift */; };
 		3A5AD313235779F1009DDF8B /* RegistrationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5AD312235779F1009DDF8B /* RegistrationType.swift */; };
-		3A5AD3C0235A4E63009DDF8B /* PlatformUIKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5AD3BF235A4E63009DDF8B /* PlatformUIKitTests.swift */; };
-		3A5AD3C2235A4E63009DDF8B /* PlatformUIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A6865AB219A11650009FF29 /* PlatformUIKit.framework */; };
 		3A5AD3DE235A4F42009DDF8B /* Accessibility+InternalUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 652AA8F622D892D500B22360 /* Accessibility+InternalUtils.swift */; };
 		3A5AD3DF235A4F73009DDF8B /* Accessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65E4B54222CF406B00EAC3CD /* Accessibility.swift */; };
 		3A5AD3FD235A5C9E009DDF8B /* UIFont+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 652937F6231582BD0004D81D /* UIFont+Utils.swift */; };
-		3A5AD3FF235A5E7D009DDF8B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A5AD3FE235A5E7D009DDF8B /* UIKit.framework */; };
 		3A5AF01122D52865007C5717 /* EmailVerifierAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5AF01022D52865007C5717 /* EmailVerifierAPI.swift */; };
 		3A5AF01422D5354F007C5717 /* ExchangeCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5AF01322D5354E007C5717 /* ExchangeCoordinator.swift */; };
 		3A5BF4E22424DFC500F71AE5 /* WebLoginScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5BF4E02424DFC500F71AE5 /* WebLoginScreenViewController.swift */; };
@@ -2354,13 +2376,6 @@
 			remoteGlobalIDString = 34EE985B23AA5B3100074EC0;
 			remoteInfo = NetworkKit;
 		};
-		34EE993D23AB923500074EC0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 34EE985B23AA5B3100074EC0;
-			remoteInfo = NetworkKit;
-		};
 		34EE994223AB923C00074EC0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
@@ -2382,6 +2397,13 @@
 			remoteGlobalIDString = 340ABD5E230AAF580032278D;
 			remoteInfo = CommonCryptoKit;
 		};
+		3A3164E3243B6546008413E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3A6865AA219A11650009FF29;
+			remoteInfo = PlatformUIKit;
+		};
 		3A4E488B21BF3070001A799D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
@@ -2402,27 +2424,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 3A4E488021BF3070001A799D;
 			remoteInfo = BitcoinKit;
-		};
-		3A5AD3C3235A4E63009DDF8B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 3A6865AA219A11650009FF29;
-			remoteInfo = PlatformUIKit;
-		};
-		3A5AD3D9235A4EF5009DDF8B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 34C3C9742305A592008F2154;
-			remoteInfo = HDWalletKit;
-		};
-		3A5AD3F2235A5895009DDF8B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9FB3637014B60128004BEA02;
-			remoteInfo = Blockchain;
 		};
 		3A686567219A0BBB0009FF29 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2635,6 +2636,24 @@
 				3A3164CA243B5FA0008413E2 /* RxBlocking.framework in CopyFiles */,
 				3A3164C8243B5F80008413E2 /* BigInt.framework in CopyFiles */,
 				3A3164C3243B5F20008413E2 /* RxTest.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3A3164EC243B6595008413E2 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				3A316502243B67D7008413E2 /* BigInt.framework in CopyFiles */,
+				3A3164FD243B67C3008413E2 /* Charts.framework in CopyFiles */,
+				3A3164FE243B67C3008413E2 /* PhoneNumberKit.framework in CopyFiles */,
+				3A3164FF243B67C3008413E2 /* Zxcvbn.framework in CopyFiles */,
+				3A3164F2243B65B4008413E2 /* RxBlocking.framework in CopyFiles */,
+				3A3164F3243B65B4008413E2 /* RxTest.framework in CopyFiles */,
+				3A3164ED243B65A9008413E2 /* RxCocoa.framework in CopyFiles */,
+				3A3164EE243B65A9008413E2 /* RxRelay.framework in CopyFiles */,
+				3A3164EF243B65A9008413E2 /* RxSwift.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3173,6 +3192,9 @@
 		3A31648A243B51FB008413E2 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
 		3A3164B4243B5DD9008413E2 /* RxCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxCocoa.framework; path = Carthage/Build/iOS/RxCocoa.framework; sourceTree = "<group>"; };
 		3A3164B9243B5DFD008413E2 /* RxCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxCocoa.framework; path = Carthage/Build/iOS/RxCocoa.framework; sourceTree = "<group>"; };
+		3A3164F4243B6778008413E2 /* Charts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Charts.framework; path = Carthage/Build/iOS/Charts.framework; sourceTree = "<group>"; };
+		3A3164F5243B6798008413E2 /* PhoneNumberKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PhoneNumberKit.framework; path = Carthage/Build/iOS/PhoneNumberKit.framework; sourceTree = "<group>"; };
+		3A3164F6243B67AC008413E2 /* Zxcvbn.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Zxcvbn.framework; path = Carthage/Build/iOS/Zxcvbn.framework; sourceTree = "<group>"; };
 		3A331E5B22147C8500ECA937 /* ExchangeDetailPageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeDetailPageModel.swift; sourceTree = "<group>"; };
 		3A331E5E22148D5E00ECA937 /* ExchangeHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeHeaderView.swift; sourceTree = "<group>"; };
 		3A3389602385C30A00372B84 /* InstantAssetPriceViewInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstantAssetPriceViewInteractor.swift; sourceTree = "<group>"; };
@@ -3291,7 +3313,6 @@
 		3A58B62E236A2DDB000C0833 /* ValueCalculationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueCalculationState.swift; sourceTree = "<group>"; };
 		3A5AD312235779F1009DDF8B /* RegistrationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationType.swift; sourceTree = "<group>"; };
 		3A5AD3BD235A4E63009DDF8B /* PlatformUIKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PlatformUIKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		3A5AD3BF235A4E63009DDF8B /* PlatformUIKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformUIKitTests.swift; sourceTree = "<group>"; };
 		3A5AD3C1235A4E63009DDF8B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3A5AD3FE235A5E7D009DDF8B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		3A5AF01022D52865007C5717 /* EmailVerifierAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailVerifierAPI.swift; sourceTree = "<group>"; };
@@ -6424,8 +6445,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3A5AD3FF235A5E7D009DDF8B /* UIKit.framework in Frameworks */,
-				3A5AD3C2235A4E63009DDF8B /* PlatformUIKit.framework in Frameworks */,
+				3A3164EB243B658D008413E2 /* RxSwift.framework in Frameworks */,
+				3A3164F0243B65AE008413E2 /* RxBlocking.framework in Frameworks */,
+				3A3164FC243B67BA008413E2 /* Zxcvbn.framework in Frameworks */,
+				3A316501243B67D3008413E2 /* BigInt.framework in Frameworks */,
+				3A3164F1243B65AE008413E2 /* RxTest.framework in Frameworks */,
+				3A3164FA243B67BA008413E2 /* Charts.framework in Frameworks */,
+				3A3164E9243B658C008413E2 /* RxCocoa.framework in Frameworks */,
+				3A3164E5243B654B008413E2 /* PlatformUIKit.framework in Frameworks */,
+				3A3164EA243B658D008413E2 /* RxRelay.framework in Frameworks */,
+				3A3164FB243B67BA008413E2 /* PhoneNumberKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6462,10 +6491,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A3164E7243B6589008413E2 /* RxRelay.framework in Frameworks */,
+				3A3164E8243B6589008413E2 /* RxSwift.framework in Frameworks */,
+				3A3164F9243B67B9008413E2 /* Zxcvbn.framework in Frameworks */,
+				3A316500243B67D3008413E2 /* BigInt.framework in Frameworks */,
+				3A3164E6243B6589008413E2 /* RxCocoa.framework in Frameworks */,
+				3A3164F7243B67B9008413E2 /* Charts.framework in Frameworks */,
 				3A6865BA219A11700009FF29 /* PlatformKit.framework in Frameworks */,
-				34EE993B23AB923500074EC0 /* NetworkKit.framework in Frameworks */,
 				34EE98B923AA81E800074EC0 /* ToolKit.framework in Frameworks */,
 				6585855D23C7ADA40067E01E /* Localization.framework in Frameworks */,
+				3A3164F8243B67B9008413E2 /* PhoneNumberKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8784,7 +8819,6 @@
 			children = (
 				3A5AD3D5235A4EAD009DDF8B /* TextView */,
 				652ABFA722EB3FCE00D5F846 /* Cards */,
-				3A5AD3BF235A4E63009DDF8B /* PlatformUIKitTests.swift */,
 				3A5AD3C1235A4E63009DDF8B /* Info.plist */,
 			);
 			path = PlatformUIKitTests;
@@ -14771,12 +14805,15 @@
 		9FB3636614B60128004BEA02 = {
 			isa = PBXGroup;
 			children = (
-				3A3164B9243B5DFD008413E2 /* RxCocoa.framework */,
 				3A316486243B51FB008413E2 /* BigInt.framework */,
+				3A3164F4243B6778008413E2 /* Charts.framework */,
+				3A3164F5243B6798008413E2 /* PhoneNumberKit.framework */,
 				3A316488243B51FB008413E2 /* RxBlocking.framework */,
+				3A3164B9243B5DFD008413E2 /* RxCocoa.framework */,
 				3A316489243B51FB008413E2 /* RxRelay.framework */,
 				3A31648A243B51FB008413E2 /* RxSwift.framework */,
 				3A316487243B51FB008413E2 /* RxTest.framework */,
+				3A3164F6243B67AC008413E2 /* Zxcvbn.framework */,
 				51392045205C60520025EE33 /* Cert */,
 				9FB3637B14B60128004BEA02 /* Blockchain */,
 				5194359F208E61F3001EF882 /* BlockchainTests */,
@@ -16438,7 +16475,6 @@
 				34EE986023AA5B3100074EC0 /* Sources */,
 				34EE986123AA5B3100074EC0 /* Frameworks */,
 				34EE986223AA5B3100074EC0 /* Resources */,
-				3A31649B243B5432008413E2 /* ShellScript */,
 				3A31649C243B543A008413E2 /* CopyFiles */,
 			);
 			buildRules = (
@@ -16500,13 +16536,12 @@
 				3A5AD3B9235A4E63009DDF8B /* Sources */,
 				3A5AD3BA235A4E63009DDF8B /* Frameworks */,
 				3A5AD3BB235A4E63009DDF8B /* Resources */,
+				3A3164EC243B6595008413E2 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				3A5AD3F3235A5895009DDF8B /* PBXTargetDependency */,
-				3A5AD3DA235A4EF5009DDF8B /* PBXTargetDependency */,
-				3A5AD3C4235A4E63009DDF8B /* PBXTargetDependency */,
+				3A3164E4243B6546008413E2 /* PBXTargetDependency */,
 			);
 			name = PlatformUIKitTests;
 			productName = PlatformUIKitTests;
@@ -16567,7 +16602,6 @@
 			);
 			dependencies = (
 				34EE98BC23AA81E800074EC0 /* PBXTargetDependency */,
-				34EE993E23AB923500074EC0 /* PBXTargetDependency */,
 				3AD00A7923C3C96F004BF792 /* PBXTargetDependency */,
 			);
 			name = PlatformUIKit;
@@ -17535,23 +17569,6 @@
 			shellPath = /bin/sh;
 			shellScript = "if command -v envman 2>/dev/null; then\nBC_BUILT_PRODUCTS_DIR=\"${BUILT_PRODUCTS_DIR}\"\necho \"(i) BC_BUILT_PRODUCTS_DIR: $BC_BUILT_PRODUCTS_DIR\"\nenvman add --key BC_BUILT_PRODUCTS_DIR --value \"${BC_BUILT_PRODUCTS_DIR}\"\nelse\necho \"(i) envman missing\"\nfi\n";
 		};
-		3A31649B243B5432008413E2 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n";
-		};
 		51E355EB2192063400753FEB /* Get SSL Certificate */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -17989,7 +18006,6 @@
 			files = (
 				3A5AD3DF235A4F73009DDF8B /* Accessibility.swift in Sources */,
 				65CB9F9B237317B30004BBC2 /* MockAnnouncement.swift in Sources */,
-				3A5AD3C0235A4E63009DDF8B /* PlatformUIKitTests.swift in Sources */,
 				65CB9F9C237317B30004BBC2 /* MockNabuUserSunriverAirdropRegistered.swift in Sources */,
 				3A5AD3FD235A5C9E009DDF8B /* UIFont+Utils.swift in Sources */,
 				3AF4A9E1235DFE1600A425ED /* MnemonicTextViewTests.swift in Sources */,
@@ -19870,11 +19886,6 @@
 			target = 34EE985B23AA5B3100074EC0 /* NetworkKit */;
 			targetProxy = 34EE993823AB922500074EC0 /* PBXContainerItemProxy */;
 		};
-		34EE993E23AB923500074EC0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 34EE985B23AA5B3100074EC0 /* NetworkKit */;
-			targetProxy = 34EE993D23AB923500074EC0 /* PBXContainerItemProxy */;
-		};
 		34EE994323AB923C00074EC0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 34EE985B23AA5B3100074EC0 /* NetworkKit */;
@@ -19890,6 +19901,11 @@
 			target = 340ABD5E230AAF580032278D /* CommonCryptoKit */;
 			targetProxy = 3A3164C0243B5EC4008413E2 /* PBXContainerItemProxy */;
 		};
+		3A3164E4243B6546008413E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3A6865AA219A11650009FF29 /* PlatformUIKit */;
+			targetProxy = 3A3164E3243B6546008413E2 /* PBXContainerItemProxy */;
+		};
 		3A4E488C21BF3070001A799D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3A4E488021BF3070001A799D /* BitcoinKit */;
@@ -19904,21 +19920,6 @@
 			isa = PBXTargetDependency;
 			target = 3A4E488021BF3070001A799D /* BitcoinKit */;
 			targetProxy = 3A4E489421BF3070001A799D /* PBXContainerItemProxy */;
-		};
-		3A5AD3C4235A4E63009DDF8B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 3A6865AA219A11650009FF29 /* PlatformUIKit */;
-			targetProxy = 3A5AD3C3235A4E63009DDF8B /* PBXContainerItemProxy */;
-		};
-		3A5AD3DA235A4EF5009DDF8B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 34C3C9742305A592008F2154 /* HDWalletKit */;
-			targetProxy = 3A5AD3D9235A4EF5009DDF8B /* PBXContainerItemProxy */;
-		};
-		3A5AD3F3235A5895009DDF8B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 9FB3637014B60128004BEA02 /* Blockchain */;
-			targetProxy = 3A5AD3F2235A5895009DDF8B /* PBXContainerItemProxy */;
 		};
 		3A686568219A0BBB0009FF29 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -24862,6 +24863,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -24931,6 +24936,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -25000,6 +25009,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -25050,6 +25063,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -25087,6 +25104,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -25898,6 +25919,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -25981,6 +26006,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -26064,6 +26093,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -26147,6 +26180,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -26214,6 +26251,10 @@
 				DYLIB_CURRENT_VERSION = 0;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -28290,7 +28331,10 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
-				"WARNING_CFLAGS[arch=*]" = "-fdiagnostics-show-option -Wno-nullability-completeness";
+				"WARNING_CFLAGS[arch=*]" = (
+					"-fdiagnostics-show-option",
+					"-Wno-nullability-completeness",
+				);
 			};
 			name = "Debug Production";
 		};
@@ -28369,7 +28413,10 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
-				"WARNING_CFLAGS[arch=*]" = "-fdiagnostics-show-option -Wno-nullability-completeness";
+				"WARNING_CFLAGS[arch=*]" = (
+					"-fdiagnostics-show-option",
+					"-Wno-nullability-completeness",
+				);
 			};
 			name = "Debug Staging";
 		};
@@ -28448,7 +28495,12 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
-				"WARNING_CFLAGS[arch=*]" = "-fdiagnostics-show-option -Wno-nullability-completeness -Wno-incompatible-property-type -Wno-objc-property-synthesis";
+				"WARNING_CFLAGS[arch=*]" = (
+					"-fdiagnostics-show-option",
+					"-Wno-nullability-completeness",
+					"-Wno-incompatible-property-type",
+					"-Wno-objc-property-synthesis",
+				);
 			};
 			name = "Debug Dev";
 		};
@@ -28897,6 +28949,10 @@
 				DYLIB_CURRENT_VERSION = 0;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;

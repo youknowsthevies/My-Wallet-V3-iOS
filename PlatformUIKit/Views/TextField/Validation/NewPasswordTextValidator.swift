@@ -9,7 +9,7 @@
 import PlatformKit
 import RxSwift
 import RxRelay
-import zxcvbn_ios
+import Zxcvbn
 
 /// Password text validator
 final class NewPasswordTextValidator: NewPasswordValidating {

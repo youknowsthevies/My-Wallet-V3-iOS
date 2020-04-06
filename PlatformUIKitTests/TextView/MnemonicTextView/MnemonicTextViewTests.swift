@@ -7,17 +7,24 @@
 //
 
 import XCTest
-import HDWalletKit
 import RxSwift
 import RxBlocking
-
 @testable import PlatformUIKit
 
 final class MnemonicTextViewTests: XCTestCase {
-    
-    private let validator = MnemonicValidator(words: Set(WordList.default.words))
-    private let mnemonicTextViewModel = MnemonicTextViewViewModel(validator: MnemonicValidator(words: Set(WordList.default.words)))
-    
+
+    private var validator: MnemonicValidator!
+
+    override func setUp() {
+        super.setUp()
+        validator = MnemonicValidator(words: Set(WordList.words))
+    }
+
+    override func tearDown() {
+        super.tearDown()
+        validator = nil
+    }
+
     func testValidMnemonic() {
         validator.valueRelay.accept("client cruel tiny sniff girl crawl snap spice forum talk evidence tourist")
         do {
@@ -30,7 +37,7 @@ final class MnemonicTextViewTests: XCTestCase {
             XCTFail("Expected a MnemonicValidationScore")
         }
     }
-    
+
     func testDuplicateWords() {
         validator.valueRelay.accept("client client tiny possible possible possible snap spice spice spice spice tourist")
         do {
@@ -43,7 +50,7 @@ final class MnemonicTextViewTests: XCTestCase {
             XCTFail("Expected a MnemonicValidationScore")
         }
     }
-    
+
     func testIncompleteMnemonic() {
         validator.valueRelay.accept("client cruel tiny sniff girl crawl snap spice forum talk evidence")
         do {
@@ -56,7 +63,7 @@ final class MnemonicTextViewTests: XCTestCase {
             XCTFail("Expected a MnemonicValidationScore")
         }
     }
-    
+
     func testInvalidMnemonic() {
         validator.valueRelay.accept("meow cruel tiny meow girl crawl snap spice forum talk evidence")
         do {
@@ -72,3 +79,11 @@ final class MnemonicTextViewTests: XCTestCase {
         }
     }
 }
+
+private enum WordList {
+    public static var words: [String] {
+        return  "client cruel tiny sniff girl crawl snap spice forum talk evidence tourist possible"
+        .components(separatedBy: " ")
+    }
+}
+
