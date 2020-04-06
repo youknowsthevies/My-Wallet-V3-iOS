@@ -2583,13 +2583,6 @@
 			remoteGlobalIDString = F6BDA802145900D200FE3253;
 			remoteInfo = "SocketRocketTests-iOS";
 		};
-		65738C452411306A00173ACC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9FB3637014B60128004BEA02;
-			remoteInfo = Blockchain;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -16464,7 +16457,6 @@
 			);
 			dependencies = (
 				34EE982123AA595100074EC0 /* PBXTargetDependency */,
-				65738C462411306A00173ACC /* PBXTargetDependency */,
 			);
 			name = ToolKitTests;
 			productName = ToolKitTests;
@@ -16852,7 +16844,6 @@
 					};
 					34EE981D23AA595100074EC0 = {
 						CreatedOnToolsVersion = 11.2.1;
-						TestTargetID = 9FB3637014B60128004BEA02;
 					};
 					34EE985B23AA5B3100074EC0 = {
 						CreatedOnToolsVersion = 11.2.1;
@@ -20291,11 +20282,6 @@
 			isa = PBXTargetDependency;
 			target = 9FB3637014B60128004BEA02 /* Blockchain */;
 			targetProxy = 519435A3208E61F3001EF882 /* PBXContainerItemProxy */;
-		};
-		65738C462411306A00173ACC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 9FB3637014B60128004BEA02 /* Blockchain */;
-			targetProxy = 65738C452411306A00173ACC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -23961,7 +23947,6 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Production";
 		};
@@ -24031,7 +24016,6 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Staging";
 		};
@@ -24101,7 +24085,6 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Dev";
 		};
@@ -24139,7 +24122,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = Release;
 		};
@@ -24177,7 +24159,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Release Staging";
 		};
