@@ -6,8 +6,6 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-
 public struct ERC20AccountResponse<Token: ERC20Token>: Decodable {
     let accountHash: String
     let tokenHash: String

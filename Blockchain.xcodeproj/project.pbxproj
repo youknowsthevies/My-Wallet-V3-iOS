@@ -266,7 +266,6 @@
 		34EE989323AA807B00074EC0 /* ToolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34EE981623AA595100074EC0 /* ToolKit.framework */; };
 		34EE989823AA809E00074EC0 /* CachedValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344172232333C0CC008C32CA /* CachedValue.swift */; };
 		34EE989C23AA81B000074EC0 /* ToolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34EE981623AA595100074EC0 /* ToolKit.framework */; };
-		34EE98AF23AA81C300074EC0 /* ToolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34EE981623AA595100074EC0 /* ToolKit.framework */; };
 		34EE98B923AA81E800074EC0 /* ToolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34EE981623AA595100074EC0 /* ToolKit.framework */; };
 		34EE98BE23AA838900074EC0 /* Retry+Behavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B6E15223717D8700259CA2 /* Retry+Behavior.swift */; };
 		34EE98BF23AA838900074EC0 /* Rx+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAB43A882162C19C0015C863 /* Rx+Helpers.swift */; };
@@ -851,6 +850,26 @@
 		3AA7701E243B7B2D005CC949 /* PhoneNumberKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A3164F5243B6798008413E2 /* PhoneNumberKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3AA7701F243B7B2D005CC949 /* scrypt.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3AA77017243B7ACF005CC949 /* scrypt.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3AA77020243B7B2D005CC949 /* secp256k1.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3AA77018243B7ACF005CC949 /* secp256k1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3AA77027243B7CBC005CC949 /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3164B9243B5DFD008413E2 /* RxCocoa.framework */; };
+		3AA77028243B7CBC005CC949 /* RxRelay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A316489243B51FB008413E2 /* RxRelay.framework */; };
+		3AA77029243B7CBC005CC949 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A31648A243B51FB008413E2 /* RxSwift.framework */; };
+		3AA7702A243B7CBD005CC949 /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3164B9243B5DFD008413E2 /* RxCocoa.framework */; };
+		3AA7702B243B7CBD005CC949 /* RxRelay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A316489243B51FB008413E2 /* RxRelay.framework */; };
+		3AA7702C243B7CBD005CC949 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A31648A243B51FB008413E2 /* RxSwift.framework */; };
+		3AA7702D243B7CC3005CC949 /* BigInt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A316486243B51FB008413E2 /* BigInt.framework */; };
+		3AA7702E243B7CC3005CC949 /* BigInt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A316486243B51FB008413E2 /* BigInt.framework */; };
+		3AA7702F243B7CDE005CC949 /* web3swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA77003243B7910005CC949 /* web3swift.framework */; };
+		3AA77030243B7CDE005CC949 /* web3swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA77003243B7910005CC949 /* web3swift.framework */; };
+		3AA77037243B7D44005CC949 /* BigInt.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316486243B51FB008413E2 /* BigInt.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3AA77038243B7D44005CC949 /* RxCocoa.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A3164B9243B5DFD008413E2 /* RxCocoa.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3AA77039243B7D44005CC949 /* RxRelay.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316489243B51FB008413E2 /* RxRelay.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3AA7703A243B7D44005CC949 /* RxSwift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A31648A243B51FB008413E2 /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3AA7703B243B7D44005CC949 /* web3swift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3AA77003243B7910005CC949 /* web3swift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3AA7703C243B7D53005CC949 /* RxTest.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316487243B51FB008413E2 /* RxTest.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3AA7703D243B7D5F005CC949 /* scrypt.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3AA77017243B7ACF005CC949 /* scrypt.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3AA7703E243B7D68005CC949 /* secp256k1.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3AA77018243B7ACF005CC949 /* secp256k1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3AA7703F243B7D72005CC949 /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3AA77012243B7A09005CC949 /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3AA77040243B7D7C005CC949 /* keccak.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3AA77016243B7ABC005CC949 /* keccak.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3AA827E52360DF79007BFFBC /* AirdropRegistrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AA827E42360DF79007BFFBC /* AirdropRegistrationService.swift */; };
 		3AA827ED2360F4FD007BFFBC /* SparklineInteracting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AA827EC2360F4FD007BFFBC /* SparklineInteracting.swift */; };
 		3AA827F82360F529007BFFBC /* SparklineCalculationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AA827F72360F529007BFFBC /* SparklineCalculationState.swift */; };
@@ -2290,13 +2309,6 @@
 			remoteGlobalIDString = 34EDB8262261065D009521D9;
 			remoteInfo = ERC20Kit;
 		};
-		34EDB8332261065D009521D9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9FB3637014B60128004BEA02;
-			remoteInfo = Blockchain;
-		};
 		34EDB83A2261065E009521D9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
@@ -2353,26 +2365,12 @@
 			remoteGlobalIDString = 34EE981523AA595100074EC0;
 			remoteInfo = ToolKit;
 		};
-		34EE98B123AA81C300074EC0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 34EE981523AA595100074EC0;
-			remoteInfo = ToolKit;
-		};
 		34EE98BB23AA81E800074EC0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 34EE981523AA595100074EC0;
 			remoteInfo = ToolKit;
-		};
-		34EE992E23AB921500074EC0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 34EE985B23AA5B3100074EC0;
-			remoteInfo = NetworkKit;
 		};
 		34EE993323AB921F00074EC0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2499,6 +2497,27 @@
 			proxyType = 1;
 			remoteGlobalIDString = 34C3C94023059284008F2154;
 			remoteInfo = TestKit;
+		};
+		3AA77021243B7C3E005CC949 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 34EE985B23AA5B3100074EC0;
+			remoteInfo = NetworkKit;
+		};
+		3AA77023243B7C43005CC949 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3A6A1A1621B9A64D00D97C74;
+			remoteInfo = EthereumKit;
+		};
+		3AA77025243B7C4A005CC949 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3A68655C219A0BBA0009FF29;
+			remoteInfo = PlatformKit;
 		};
 		3ABC3AED2332BEF600D1BDF5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2701,6 +2720,25 @@
 				3AA77010243B79DC005CC949 /* RxSwift.framework in CopyFiles */,
 				3AA7700D243B79D0005CC949 /* BigInt.framework in CopyFiles */,
 				3AA7700E243B79D0005CC949 /* web3swift.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3AA77036243B7D35005CC949 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				3AA77040243B7D7C005CC949 /* keccak.framework in CopyFiles */,
+				3AA7703F243B7D72005CC949 /* PromiseKit.framework in CopyFiles */,
+				3AA7703E243B7D68005CC949 /* secp256k1.framework in CopyFiles */,
+				3AA7703D243B7D5F005CC949 /* scrypt.framework in CopyFiles */,
+				3AA7703C243B7D53005CC949 /* RxTest.framework in CopyFiles */,
+				3AA77037243B7D44005CC949 /* BigInt.framework in CopyFiles */,
+				3AA77038243B7D44005CC949 /* RxCocoa.framework in CopyFiles */,
+				3AA77039243B7D44005CC949 /* RxRelay.framework in CopyFiles */,
+				3AA7703A243B7D44005CC949 /* RxSwift.framework in CopyFiles */,
+				3AA7703B243B7D44005CC949 /* web3swift.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3070,7 +3108,6 @@
 		34DED986232A8A8C000BA63B /* BitcoinJSInteropDispatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinJSInteropDispatcher.swift; sourceTree = "<group>"; };
 		34E1C1E122244972006E70D3 /* EthereumWallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumWallet.swift; sourceTree = "<group>"; };
 		34E1C1E322244A17006E70D3 /* SingleExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleExtensions.swift; sourceTree = "<group>"; };
-		34E2D97F230BFE2C0043AE53 /* HDWalletKitPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = HDWalletKitPlayground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		34E66633224A6154007667FA /* EthereumTransactionFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTransactionFee.swift; sourceTree = "<group>"; };
 		34E66647224A68DE007667FA /* StellarTransactionFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarTransactionFee.swift; sourceTree = "<group>"; };
 		34E7F9492225904400A987CD /* ETHServiceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ETHServiceProvider.swift; sourceTree = "<group>"; };
@@ -6398,10 +6435,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3AA77027243B7CBC005CC949 /* RxCocoa.framework in Frameworks */,
 				34EE992C23AB921500074EC0 /* NetworkKit.framework in Frameworks */,
+				3AA77029243B7CBC005CC949 /* RxSwift.framework in Frameworks */,
+				3AA7702D243B7CC3005CC949 /* BigInt.framework in Frameworks */,
 				34EDB84B226106BE009521D9 /* EthereumKit.framework in Frameworks */,
+				3AA7702F243B7CDE005CC949 /* web3swift.framework in Frameworks */,
 				34EDB84A226106B6009521D9 /* PlatformKit.framework in Frameworks */,
-				34EE98AF23AA81C300074EC0 /* ToolKit.framework in Frameworks */,
+				3AA77028243B7CBC005CC949 /* RxRelay.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6409,7 +6450,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3AA7702C243B7CBD005CC949 /* RxSwift.framework in Frameworks */,
+				3AA7702A243B7CBD005CC949 /* RxCocoa.framework in Frameworks */,
 				34EDB8302261065D009521D9 /* ERC20Kit.framework in Frameworks */,
+				3AA77030243B7CDE005CC949 /* web3swift.framework in Frameworks */,
+				3AA7702E243B7CC3005CC949 /* BigInt.framework in Frameworks */,
+				3AA7702B243B7CBD005CC949 /* RxRelay.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7386,7 +7432,6 @@
 		34C3C9762305A593008F2154 /* HDWalletKit */ = {
 			isa = PBXGroup;
 			children = (
-				34E2D97F230BFE2C0043AE53 /* HDWalletKitPlayground.playground */,
 				34C3C9982305A5A2008F2154 /* Models */,
 				34C3C9772305A593008F2154 /* HDWalletKit.h */,
 				34C3C9782305A593008F2154 /* Info.plist */,
@@ -16424,8 +16469,9 @@
 			buildRules = (
 			);
 			dependencies = (
-				34EE98B223AA81C300074EC0 /* PBXTargetDependency */,
-				34EE992F23AB921500074EC0 /* PBXTargetDependency */,
+				3AA77026243B7C4A005CC949 /* PBXTargetDependency */,
+				3AA77024243B7C43005CC949 /* PBXTargetDependency */,
+				3AA77022243B7C3E005CC949 /* PBXTargetDependency */,
 			);
 			name = ERC20Kit;
 			productName = ERC20Kit;
@@ -16439,13 +16485,13 @@
 				34EDB82B2261065D009521D9 /* Sources */,
 				34EDB82C2261065D009521D9 /* Frameworks */,
 				34EDB82D2261065D009521D9 /* Resources */,
+				3AA77036243B7D35005CC949 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				3ABC3AF92332BF0700D1BDF5 /* PBXTargetDependency */,
 				34EDB8322261065D009521D9 /* PBXTargetDependency */,
-				34EDB8342261065D009521D9 /* PBXTargetDependency */,
 			);
 			name = ERC20KitTests;
 			productName = ERC20KitTests;
@@ -16848,7 +16894,6 @@
 						CreatedOnToolsVersion = 10.1;
 						DevelopmentTeam = NZ6PH75U7K;
 						ProvisioningStyle = Automatic;
-						TestTargetID = 9FB3637014B60128004BEA02;
 					};
 					34EE981523AA595100074EC0 = {
 						CreatedOnToolsVersion = 11.2.1;
@@ -19798,11 +19843,6 @@
 			target = 34EDB8262261065D009521D9 /* ERC20Kit */;
 			targetProxy = 34EDB8312261065D009521D9 /* PBXContainerItemProxy */;
 		};
-		34EDB8342261065D009521D9 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 9FB3637014B60128004BEA02 /* Blockchain */;
-			targetProxy = 34EDB8332261065D009521D9 /* PBXContainerItemProxy */;
-		};
 		34EDB83B2261065E009521D9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 34EDB8262261065D009521D9 /* ERC20Kit */;
@@ -19843,20 +19883,10 @@
 			target = 34EE981523AA595100074EC0 /* ToolKit */;
 			targetProxy = 34EE989E23AA81B000074EC0 /* PBXContainerItemProxy */;
 		};
-		34EE98B223AA81C300074EC0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 34EE981523AA595100074EC0 /* ToolKit */;
-			targetProxy = 34EE98B123AA81C300074EC0 /* PBXContainerItemProxy */;
-		};
 		34EE98BC23AA81E800074EC0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 34EE981523AA595100074EC0 /* ToolKit */;
 			targetProxy = 34EE98BB23AA81E800074EC0 /* PBXContainerItemProxy */;
-		};
-		34EE992F23AB921500074EC0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 34EE985B23AA5B3100074EC0 /* NetworkKit */;
-			targetProxy = 34EE992E23AB921500074EC0 /* PBXContainerItemProxy */;
 		};
 		34EE993423AB921F00074EC0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -19947,6 +19977,21 @@
 			isa = PBXTargetDependency;
 			target = 34C3C94023059284008F2154 /* TestKit */;
 			targetProxy = 3AA7700A243B79AB005CC949 /* PBXContainerItemProxy */;
+		};
+		3AA77022243B7C3E005CC949 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 34EE985B23AA5B3100074EC0 /* NetworkKit */;
+			targetProxy = 3AA77021243B7C3E005CC949 /* PBXContainerItemProxy */;
+		};
+		3AA77024243B7C43005CC949 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3A6A1A1621B9A64D00D97C74 /* EthereumKit */;
+			targetProxy = 3AA77023243B7C43005CC949 /* PBXContainerItemProxy */;
+		};
+		3AA77026243B7C4A005CC949 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3A68655C219A0BBA0009FF29 /* PlatformKit */;
+			targetProxy = 3AA77025243B7C4A005CC949 /* PBXContainerItemProxy */;
 		};
 		3ABC3AEE2332BEF600D1BDF5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -22325,6 +22370,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -22407,6 +22456,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -22489,6 +22542,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -22551,6 +22608,10 @@
 				DYLIB_CURRENT_VERSION = 0;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -22600,6 +22661,10 @@
 				DYLIB_CURRENT_VERSION = 0;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -22662,6 +22727,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -22691,7 +22760,6 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Production";
 		};
@@ -22733,6 +22801,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -22762,7 +22834,6 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Staging";
 		};
@@ -22804,6 +22875,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -22833,7 +22908,6 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Dev";
 		};
@@ -22854,6 +22928,10 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_STYLE = Automatic;
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -22870,7 +22948,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = Release;
 		};
@@ -22891,6 +22968,10 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_STYLE = Automatic;
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -22907,7 +22988,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Release Staging";
 		};

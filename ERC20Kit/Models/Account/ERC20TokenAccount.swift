@@ -6,8 +6,6 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-
 // TODO:
 // * This should probably conform to either WalletAccount or AssetAccount
 public struct ERC20TokenAccount: Codable {
