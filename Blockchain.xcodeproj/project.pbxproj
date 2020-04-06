@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 53;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -1907,7 +1907,6 @@
 		67FA1A4D1ABA092D000C9196 /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = 67FA1A4C1ABA092D000C9196 /* RegExCategories.m */; };
 		7A4E882E218B595C00CB798C /* AnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4E882D218B595C00CB798C /* AnalyticsService.swift */; };
 		7ADD19D721874C220013A525 /* Firebase in Resources */ = {isa = PBXBuildFile; fileRef = 7ADD19D621874C220013A525 /* Firebase */; };
-		7C3C083D23CDDA1DBB1CD9C9 /* Pods_CommonCryptoKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B52D47876F68EE67CF00FDED /* Pods_CommonCryptoKitTests.framework */; };
 		7EE2158560323125870FA25B /* Pods_StellarKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0134615C8D3229DEDAF41369 /* Pods_StellarKitTests.framework */; };
 		84B601C7197ACD6300DA1829 /* UITextField+Blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 84B601C6197ACD6300DA1829 /* UITextField+Blocks.m */; };
 		84B601CA197AD03800DA1829 /* BCModalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 84B601C9197AD03800DA1829 /* BCModalView.m */; };
@@ -2175,7 +2174,6 @@
 		C8B25F5622F29AB00031D1B2 /* BitpayServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8B25F5522F29AB00031D1B2 /* BitpayServiceProtocol.swift */; };
 		C9BE918C1945F5FC00FD516D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9BE918B1945F5FC00FD516D /* Images.xcassets */; };
 		CFD602B11E64AC2D006F6208 /* wallet-ios.js in Resources */ = {isa = PBXBuildFile; fileRef = CFD602B01E64AC2D006F6208 /* wallet-ios.js */; };
-		D206CFAD76997E4B60B2AF48 /* Pods_CommonCryptoKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDF5257B9994B01C6A77EB37 /* Pods_CommonCryptoKit.framework */; };
 		D6E548DF2C8D88DC9E75FEBA /* Pods_BitcoinKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2383F7A1907F69BC70E925C /* Pods_BitcoinKitTests.framework */; };
 		ECD244F719A8B444004B1F40 /* UIImage+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = ECD244F619A8B444004B1F40 /* UIImage+Utils.m */; };
 		F7B8C83821A5E607005CAA0D /* DeepLinkPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B8C83721A5E607005CAA0D /* DeepLinkPayload.swift */; };
@@ -2194,13 +2192,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 340ABD5E230AAF580032278D;
 			remoteInfo = CommonCryptoKit;
-		};
-		340ABD6B230AAF5C0032278D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9FB3637014B60128004BEA02;
-			remoteInfo = Blockchain;
 		};
 		340ABD72230AAF5C0032278D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2661,7 +2652,6 @@
 /* Begin PBXFileReference section */
 		001F2BBF751913B8D17F2CCB /* Pods-BitcoinKitTests.debug production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitcoinKitTests.debug production.xcconfig"; path = "Target Support Files/Pods-BitcoinKitTests/Pods-BitcoinKitTests.debug production.xcconfig"; sourceTree = "<group>"; };
 		0134615C8D3229DEDAF41369 /* Pods_StellarKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_StellarKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		0EC36F239D3F22F1C4654908 /* Pods-CommonCryptoKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CommonCryptoKitTests.release.xcconfig"; path = "Target Support Files/Pods-CommonCryptoKitTests/Pods-CommonCryptoKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		0FADDAB6E5BC38721D22DB41 /* Pods-StellarKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StellarKitTests.release.xcconfig"; path = "Target Support Files/Pods-StellarKitTests/Pods-StellarKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		162B9FAED8DBDB566A1F8BB0 /* Pods-BlockchainTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainTests.release.xcconfig"; path = "Target Support Files/Pods-BlockchainTests/Pods-BlockchainTests.release.xcconfig"; sourceTree = "<group>"; };
 		1C370E5A25EA25D9CE5D59BF /* Pods-PlatformUIKit.release staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PlatformUIKit.release staging.xcconfig"; path = "Target Support Files/Pods-PlatformUIKit/Pods-PlatformUIKit.release staging.xcconfig"; sourceTree = "<group>"; };
@@ -2776,7 +2766,6 @@
 		2467C2BF451E89CE6B3AC115 /* Pods_HDWalletKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HDWalletKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2560E68792CA798CC35B3413 /* Pods-StellarKit.debug dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StellarKit.debug dev.xcconfig"; path = "Target Support Files/Pods-StellarKit/Pods-StellarKit.debug dev.xcconfig"; sourceTree = "<group>"; };
 		29EC835CAA8CF73127FBC961 /* Pods-StellarKit.debug testnet.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StellarKit.debug testnet.xcconfig"; path = "Target Support Files/Pods-StellarKit/Pods-StellarKit.debug testnet.xcconfig"; sourceTree = "<group>"; };
-		2B2D874A0459052055590534 /* Pods-CommonCryptoKitTests.debug production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CommonCryptoKitTests.debug production.xcconfig"; path = "Target Support Files/Pods-CommonCryptoKitTests/Pods-CommonCryptoKitTests.debug production.xcconfig"; sourceTree = "<group>"; };
 		2B70FB6BA6C525428ABEDD49 /* Pods-BitcoinKitTests.debug staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitcoinKitTests.debug staging.xcconfig"; path = "Target Support Files/Pods-BitcoinKitTests/Pods-BitcoinKitTests.debug staging.xcconfig"; sourceTree = "<group>"; };
 		2D41B9C25ADC17BD9549B1DC /* Pods-StellarKitTests.release staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StellarKitTests.release staging.xcconfig"; path = "Target Support Files/Pods-StellarKitTests/Pods-StellarKitTests.release staging.xcconfig"; sourceTree = "<group>"; };
 		32796D933FDC95E304ED9C8F /* Pods-BlockchainTests.release staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainTests.release staging.xcconfig"; path = "Target Support Files/Pods-BlockchainTests/Pods-BlockchainTests.release staging.xcconfig"; sourceTree = "<group>"; };
@@ -3692,7 +3681,6 @@
 		401B72A3B88F70EED4CEC898 /* Pods-Blockchain.release staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Blockchain.release staging.xcconfig"; path = "Target Support Files/Pods-Blockchain/Pods-Blockchain.release staging.xcconfig"; sourceTree = "<group>"; };
 		417B727CDC9D4AF2A29657D8 /* Pods-StellarKitTests.debug testnet.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StellarKitTests.debug testnet.xcconfig"; path = "Target Support Files/Pods-StellarKitTests/Pods-StellarKitTests.debug testnet.xcconfig"; sourceTree = "<group>"; };
 		448B17B7F1C6D2BD6118E7F9 /* Pods_PlatformUIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PlatformUIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4A34C14246D5FF868B19E60F /* Pods-CommonCryptoKitTests.debug dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CommonCryptoKitTests.debug dev.xcconfig"; path = "Target Support Files/Pods-CommonCryptoKitTests/Pods-CommonCryptoKitTests.debug dev.xcconfig"; sourceTree = "<group>"; };
 		4ACBB73B64CDB0A8A014D142 /* Pods-BitcoinKit.release staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitcoinKit.release staging.xcconfig"; path = "Target Support Files/Pods-BitcoinKit/Pods-BitcoinKit.release staging.xcconfig"; sourceTree = "<group>"; };
 		51058EFD212F327E00AD8719 /* KYCApplicationCompleteController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KYCApplicationCompleteController.swift; sourceTree = "<group>"; };
 		51058F0C212F50C400AD8719 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/KYCApplicationCompleteController.storyboard; sourceTree = "<group>"; };
@@ -5048,7 +5036,6 @@
 		60FBE0802112572B00AD514A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
 		6101105CEE8398AE1542326C /* Pods-HDWalletKitTests.debug production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HDWalletKitTests.debug production.xcconfig"; path = "Target Support Files/Pods-HDWalletKitTests/Pods-HDWalletKitTests.debug production.xcconfig"; sourceTree = "<group>"; };
 		61DB1E5BDD0EAF7BAEAC00F4 /* Pods-HDWalletKitTests.debug staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HDWalletKitTests.debug staging.xcconfig"; path = "Target Support Files/Pods-HDWalletKitTests/Pods-HDWalletKitTests.debug staging.xcconfig"; sourceTree = "<group>"; };
-		622BCDE6EF55B6EDE36E391D /* Pods-CommonCryptoKitTests.release staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CommonCryptoKitTests.release staging.xcconfig"; path = "Target Support Files/Pods-CommonCryptoKitTests/Pods-CommonCryptoKitTests.release staging.xcconfig"; sourceTree = "<group>"; };
 		627F9C167CDD4D77C47B780C /* Pods-PlatformUIKitTests.debug staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PlatformUIKitTests.debug staging.xcconfig"; path = "Target Support Files/Pods-PlatformUIKitTests/Pods-PlatformUIKitTests.debug staging.xcconfig"; sourceTree = "<group>"; };
 		6388D861E37EF0A5D546C14A /* Pods-StellarKitTests.debug production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StellarKitTests.debug production.xcconfig"; path = "Target Support Files/Pods-StellarKitTests/Pods-StellarKitTests.debug production.xcconfig"; sourceTree = "<group>"; };
 		6505605E2326B841000CEA46 /* WalletCredentialsProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCredentialsProviding.swift; sourceTree = "<group>"; };
@@ -5795,7 +5782,6 @@
 		67EE1DC919E3325900DBBFC9 /* UIViewController+ECSlidingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+ECSlidingViewController.m"; sourceTree = "<group>"; };
 		67FA1A4B1ABA092D000C9196 /* RegExCategories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegExCategories.h; sourceTree = "<group>"; };
 		67FA1A4C1ABA092D000C9196 /* RegExCategories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegExCategories.m; sourceTree = "<group>"; };
-		79B819E569C035FF616FF986 /* Pods-CommonCryptoKit.release staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CommonCryptoKit.release staging.xcconfig"; path = "Target Support Files/Pods-CommonCryptoKit/Pods-CommonCryptoKit.release staging.xcconfig"; sourceTree = "<group>"; };
 		7A4E882D218B595C00CB798C /* AnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsService.swift; sourceTree = "<group>"; };
 		7ADD19D621874C220013A525 /* Firebase */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Firebase; sourceTree = "<group>"; };
 		7C0DF483795162DCC603AF1B /* Pods-BitcoinKit.debug production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitcoinKit.debug production.xcconfig"; path = "Target Support Files/Pods-BitcoinKit/Pods-BitcoinKit.debug production.xcconfig"; sourceTree = "<group>"; };
@@ -5821,7 +5807,6 @@
 		96EA8EFB89D38B29C050F292 /* Pods-StellarKit.debug staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StellarKit.debug staging.xcconfig"; path = "Target Support Files/Pods-StellarKit/Pods-StellarKit.debug staging.xcconfig"; sourceTree = "<group>"; };
 		9AA91D11D73A6E721D884996 /* Pods-PlatformUIKitTests.debug dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PlatformUIKitTests.debug dev.xcconfig"; path = "Target Support Files/Pods-PlatformUIKitTests/Pods-PlatformUIKitTests.debug dev.xcconfig"; sourceTree = "<group>"; };
 		9BACCCDD795A2463652CE28F /* Pods-HDWalletKit.release staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HDWalletKit.release staging.xcconfig"; path = "Target Support Files/Pods-HDWalletKit/Pods-HDWalletKit.release staging.xcconfig"; sourceTree = "<group>"; };
-		9BF9EFE2A83C5D63EB4691CC /* Pods-CommonCryptoKit.debug dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CommonCryptoKit.debug dev.xcconfig"; path = "Target Support Files/Pods-CommonCryptoKit/Pods-CommonCryptoKit.debug dev.xcconfig"; sourceTree = "<group>"; };
 		9CE728BD5537746CD7B3B83E /* Pods-PlatformUIKitTests.release staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PlatformUIKitTests.release staging.xcconfig"; path = "Target Support Files/Pods-PlatformUIKitTests/Pods-PlatformUIKitTests.release staging.xcconfig"; sourceTree = "<group>"; };
 		9F0CBAA8151351F400CD945D /* Wallet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Wallet.h; sourceTree = "<group>"; };
 		9F0CBAA9151351F400CD945D /* Wallet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Wallet.m; sourceTree = "<group>"; };
@@ -6042,12 +6027,10 @@
 		AAECF735217E6B54008B8832 /* AssetType.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = AssetType.xcassets; sourceTree = "<group>"; };
 		AAECF765217E8853008B8832 /* PriceServiceClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceServiceClient.swift; sourceTree = "<group>"; };
 		AAECF769217E89B8008B8832 /* PriceInFiat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceInFiat.swift; sourceTree = "<group>"; };
-		AAF0731A10791082B1244B28 /* Pods-CommonCryptoKitTests.debug staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CommonCryptoKitTests.debug staging.xcconfig"; path = "Target Support Files/Pods-CommonCryptoKitTests/Pods-CommonCryptoKitTests.debug staging.xcconfig"; sourceTree = "<group>"; };
 		AAF2AF052123952500687E30 /* KYCInformationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KYCInformationViewModel.swift; sourceTree = "<group>"; };
 		AAF3E7D821BC5F2F00912B13 /* KYCEnterEmailController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = KYCEnterEmailController.storyboard; sourceTree = "<group>"; };
 		AF0CE31A52082A9513D01289 /* Pods-StellarKitTests.debug staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StellarKitTests.debug staging.xcconfig"; path = "Target Support Files/Pods-StellarKitTests/Pods-StellarKitTests.debug staging.xcconfig"; sourceTree = "<group>"; };
 		B401048A5E014827E494F163 /* Pods-BitcoinKit.debug staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitcoinKit.debug staging.xcconfig"; path = "Target Support Files/Pods-BitcoinKit/Pods-BitcoinKit.debug staging.xcconfig"; sourceTree = "<group>"; };
-		B52D47876F68EE67CF00FDED /* Pods_CommonCryptoKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CommonCryptoKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5B2D7155E9F64BD88046BEA /* Pods-BitcoinKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitcoinKitTests.release.xcconfig"; path = "Target Support Files/Pods-BitcoinKitTests/Pods-BitcoinKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		B7787FFE21A1B4C28AAF20A4 /* Pods-BitcoinKitTests.release staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitcoinKitTests.release staging.xcconfig"; path = "Target Support Files/Pods-BitcoinKitTests/Pods-BitcoinKitTests.release staging.xcconfig"; sourceTree = "<group>"; };
 		B85C48A60EA15AD8157F275E /* Pods-StellarKit.release staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StellarKit.release staging.xcconfig"; path = "Target Support Files/Pods-StellarKit/Pods-StellarKit.release staging.xcconfig"; sourceTree = "<group>"; };
@@ -6277,7 +6260,6 @@
 		CFD602B01E64AC2D006F6208 /* wallet-ios.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; lineEnding = 0; path = "wallet-ios.js"; sourceTree = "<group>"; usesTabs = 0; };
 		D21410D76BC51F0710A39C74 /* Pods_Blockchain.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Blockchain.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5D80207EE8C385283371FE9 /* Pods-PlatformUIKit.debug staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PlatformUIKit.debug staging.xcconfig"; path = "Target Support Files/Pods-PlatformUIKit/Pods-PlatformUIKit.debug staging.xcconfig"; sourceTree = "<group>"; };
-		D6EF82E90E11F68EBC21279F /* Pods-CommonCryptoKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CommonCryptoKit.release.xcconfig"; path = "Target Support Files/Pods-CommonCryptoKit/Pods-CommonCryptoKit.release.xcconfig"; sourceTree = "<group>"; };
 		DC342EB84BF27A1E32582F01 /* Pods-PlatformUIKitTests.debug production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PlatformUIKitTests.debug production.xcconfig"; path = "Target Support Files/Pods-PlatformUIKitTests/Pods-PlatformUIKitTests.debug production.xcconfig"; sourceTree = "<group>"; };
 		DDD9803BE8E071FDC9A0E73E /* Pods-Blockchain.debug staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Blockchain.debug staging.xcconfig"; path = "Target Support Files/Pods-Blockchain/Pods-Blockchain.debug staging.xcconfig"; sourceTree = "<group>"; };
 		DEBE8877809367B2B4DCF372 /* Pods-HDWalletKitTests.debug dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HDWalletKitTests.debug dev.xcconfig"; path = "Target Support Files/Pods-HDWalletKitTests/Pods-HDWalletKitTests.debug dev.xcconfig"; sourceTree = "<group>"; };
@@ -6289,8 +6271,6 @@
 		EB3504556AD42AAAF2686B88 /* Pods-Blockchain.debug dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Blockchain.debug dev.xcconfig"; path = "Target Support Files/Pods-Blockchain/Pods-Blockchain.debug dev.xcconfig"; sourceTree = "<group>"; };
 		ECD244F519A8B444004B1F40 /* UIImage+Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Utils.h"; sourceTree = "<group>"; };
 		ECD244F619A8B444004B1F40 /* UIImage+Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Utils.m"; sourceTree = "<group>"; };
-		EDF5257B9994B01C6A77EB37 /* Pods_CommonCryptoKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CommonCryptoKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F1555F5536B2ABC801C67892 /* Pods-CommonCryptoKit.debug production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CommonCryptoKit.debug production.xcconfig"; path = "Target Support Files/Pods-CommonCryptoKit/Pods-CommonCryptoKit.debug production.xcconfig"; sourceTree = "<group>"; };
 		F4F3B9699A9C9341A1180049 /* Pods-HDWalletKit.debug dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HDWalletKit.debug dev.xcconfig"; path = "Target Support Files/Pods-HDWalletKit/Pods-HDWalletKit.debug dev.xcconfig"; sourceTree = "<group>"; };
 		F7B8C83721A5E607005CAA0D /* DeepLinkPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkPayload.swift; sourceTree = "<group>"; };
 		F7B8C84221A5EB81005CAA0D /* DeepLinkPayloadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkPayloadTests.swift; sourceTree = "<group>"; };
@@ -6303,7 +6283,6 @@
 		FCB33B6E1FC369D700317E6B /* ExchangeDetailView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExchangeDetailView.m; sourceTree = "<group>"; };
 		FCB33B701FC36EA200317E6B /* ExchangeProgressViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExchangeProgressViewController.h; sourceTree = "<group>"; };
 		FCB33B711FC36EA200317E6B /* ExchangeProgressViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExchangeProgressViewController.m; sourceTree = "<group>"; };
-		FF879676D2AF463CD3451DEB /* Pods-CommonCryptoKit.debug staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CommonCryptoKit.debug staging.xcconfig"; path = "Target Support Files/Pods-CommonCryptoKit/Pods-CommonCryptoKit.debug staging.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -6311,7 +6290,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D206CFAD76997E4B60B2AF48 /* Pods_CommonCryptoKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6320,7 +6298,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				340ABD68230AAF5C0032278D /* CommonCryptoKit.framework in Frameworks */,
-				7C3C083D23CDDA1DBB1CD9C9 /* Pods_CommonCryptoKitTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6588,16 +6565,6 @@
 				1CD4F112B59D9EC0C745D20B /* Pods-BlockchainTests.debug dev.xcconfig */,
 				162B9FAED8DBDB566A1F8BB0 /* Pods-BlockchainTests.release.xcconfig */,
 				32796D933FDC95E304ED9C8F /* Pods-BlockchainTests.release staging.xcconfig */,
-				F1555F5536B2ABC801C67892 /* Pods-CommonCryptoKit.debug production.xcconfig */,
-				FF879676D2AF463CD3451DEB /* Pods-CommonCryptoKit.debug staging.xcconfig */,
-				9BF9EFE2A83C5D63EB4691CC /* Pods-CommonCryptoKit.debug dev.xcconfig */,
-				D6EF82E90E11F68EBC21279F /* Pods-CommonCryptoKit.release.xcconfig */,
-				79B819E569C035FF616FF986 /* Pods-CommonCryptoKit.release staging.xcconfig */,
-				2B2D874A0459052055590534 /* Pods-CommonCryptoKitTests.debug production.xcconfig */,
-				AAF0731A10791082B1244B28 /* Pods-CommonCryptoKitTests.debug staging.xcconfig */,
-				4A34C14246D5FF868B19E60F /* Pods-CommonCryptoKitTests.debug dev.xcconfig */,
-				0EC36F239D3F22F1C4654908 /* Pods-CommonCryptoKitTests.release.xcconfig */,
-				622BCDE6EF55B6EDE36E391D /* Pods-CommonCryptoKitTests.release staging.xcconfig */,
 				5694A26D4598A1B22CD37BA5 /* Pods-HDWalletKit.debug production.xcconfig */,
 				E87497A7EC99BB00389310CB /* Pods-HDWalletKit.debug staging.xcconfig */,
 				F4F3B9699A9C9341A1180049 /* Pods-HDWalletKit.debug dev.xcconfig */,
@@ -14909,8 +14876,6 @@
 				E2383F7A1907F69BC70E925C /* Pods_BitcoinKitTests.framework */,
 				D21410D76BC51F0710A39C74 /* Pods_Blockchain.framework */,
 				60A61F6E0CA77F5FBD744806 /* Pods_BlockchainTests.framework */,
-				EDF5257B9994B01C6A77EB37 /* Pods_CommonCryptoKit.framework */,
-				B52D47876F68EE67CF00FDED /* Pods_CommonCryptoKitTests.framework */,
 				1FB67D53D216F62EEF27606E /* Pods_HDWalletKit.framework */,
 				2467C2BF451E89CE6B3AC115 /* Pods_HDWalletKitTests.framework */,
 				448B17B7F1C6D2BD6118E7F9 /* Pods_PlatformUIKit.framework */,
@@ -16293,7 +16258,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 340ABD76230AAF5C0032278D /* Build configuration list for PBXNativeTarget "CommonCryptoKit" */;
 			buildPhases = (
-				C5F2034EC4646905C97F8270 /* [CP] Check Pods Manifest.lock */,
 				340ABD5A230AAF580032278D /* Headers */,
 				340ABD5B230AAF580032278D /* Sources */,
 				340ABD5C230AAF580032278D /* Frameworks */,
@@ -16312,7 +16276,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 340ABD7C230AAF5C0032278D /* Build configuration list for PBXNativeTarget "CommonCryptoKitTests" */;
 			buildPhases = (
-				2AD1FF901EC27446508D39D2 /* [CP] Check Pods Manifest.lock */,
 				340ABD63230AAF5A0032278D /* Sources */,
 				340ABD64230AAF5A0032278D /* Frameworks */,
 				340ABD65230AAF5A0032278D /* Resources */,
@@ -16321,7 +16284,6 @@
 			);
 			dependencies = (
 				340ABD6A230AAF5C0032278D /* PBXTargetDependency */,
-				340ABD6C230AAF5C0032278D /* PBXTargetDependency */,
 			);
 			name = CommonCryptoKitTests;
 			productName = CommonCryptoKitTests;
@@ -16821,7 +16783,6 @@
 						CreatedOnToolsVersion = 10.2.1;
 						DevelopmentTeam = NZ6PH75U7K;
 						ProvisioningStyle = Automatic;
-						TestTargetID = 9FB3637014B60128004BEA02;
 					};
 					34C3C94023059284008F2154 = {
 						CreatedOnToolsVersion = 10.2.1;
@@ -16952,7 +16913,7 @@
 				};
 			};
 			buildConfigurationList = 9FB3636B14B60128004BEA02 /* Build configuration list for PBXProject "Blockchain" */;
-			compatibilityVersion = "Xcode 11.4";
+			compatibilityVersion = "Xcode 11.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -17544,28 +17505,6 @@
 			shellPath = /bin/sh;
 			shellScript = "if which ${PODS_ROOT}/SwiftLint/swiftlint >/dev/null; then\n    ${PODS_ROOT}/SwiftLint/swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
-		2AD1FF901EC27446508D39D2 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-CommonCryptoKitTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
 		2BDD4E283B380F817189E883 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -17828,28 +17767,6 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-StellarKitTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C5F2034EC4646905C97F8270 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-CommonCryptoKit-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -19965,11 +19882,6 @@
 			target = 340ABD5E230AAF580032278D /* CommonCryptoKit */;
 			targetProxy = 340ABD69230AAF5C0032278D /* PBXContainerItemProxy */;
 		};
-		340ABD6C230AAF5C0032278D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 9FB3637014B60128004BEA02 /* Blockchain */;
-			targetProxy = 340ABD6B230AAF5C0032278D /* PBXContainerItemProxy */;
-		};
 		340ABD73230AAF5C0032278D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 340ABD5E230AAF580032278D /* CommonCryptoKit */;
@@ -20888,7 +20800,6 @@
 /* Begin XCBuildConfiguration section */
 		340ABD77230AAF5C0032278D /* Debug Production */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F1555F5536B2ABC801C67892 /* Pods-CommonCryptoKit.debug production.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -20971,7 +20882,6 @@
 		};
 		340ABD78230AAF5C0032278D /* Debug Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FF879676D2AF463CD3451DEB /* Pods-CommonCryptoKit.debug staging.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -21054,7 +20964,6 @@
 		};
 		340ABD79230AAF5C0032278D /* Debug Dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9BF9EFE2A83C5D63EB4691CC /* Pods-CommonCryptoKit.debug dev.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -21137,7 +21046,6 @@
 		};
 		340ABD7A230AAF5C0032278D /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D6EF82E90E11F68EBC21279F /* Pods-CommonCryptoKit.release.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -21188,7 +21096,6 @@
 		};
 		340ABD7B230AAF5C0032278D /* Release Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 79B819E569C035FF616FF986 /* Pods-CommonCryptoKit.release staging.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -21239,7 +21146,6 @@
 		};
 		340ABD7D230AAF5C0032278D /* Debug Production */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2B2D874A0459052055590534 /* Pods-CommonCryptoKitTests.debug production.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -21305,13 +21211,11 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Production";
 		};
 		340ABD7E230AAF5C0032278D /* Debug Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AAF0731A10791082B1244B28 /* Pods-CommonCryptoKitTests.debug staging.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -21377,13 +21281,11 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Staging";
 		};
 		340ABD7F230AAF5C0032278D /* Debug Dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4A34C14246D5FF868B19E60F /* Pods-CommonCryptoKitTests.debug dev.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -21449,13 +21351,11 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Dev";
 		};
 		340ABD80230AAF5C0032278D /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0EC36F239D3F22F1C4654908 /* Pods-CommonCryptoKitTests.release.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -21488,13 +21388,11 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = Release;
 		};
 		340ABD81230AAF5C0032278D /* Release Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 622BCDE6EF55B6EDE36E391D /* Pods-CommonCryptoKitTests.release staging.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -21527,7 +21425,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Release Staging";
 		};

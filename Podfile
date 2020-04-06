@@ -55,14 +55,6 @@ target 'HDWalletKit' do
   end
 end
 
-target 'CommonCryptoKit' do
-  pod 'LibWally', git: 'git@github.com:blockchain/libwally-swift.git', commit: 'fc38082243575a7b5c626272790cb764062a836b', submodules: true
-
-  target 'CommonCryptoKitTests' do
-    inherit! :search_paths
-  end
-end
-
 # Post Installation:
 # - Disable code signing for pods.
 post_install do |installer|
