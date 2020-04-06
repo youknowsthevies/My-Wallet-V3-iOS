@@ -17,19 +17,26 @@ target 'Blockchain' do
   end
 end
 
-target 'BitcoinKit' do
+def lib_wally
   pod 'LibWally', git: 'git@github.com:blockchain/libwally-swift.git', commit: 'fc38082243575a7b5c626272790cb764062a836b', submodules: true
+end
+
+target 'BitcoinKit' do
+  lib_wally
   target 'BitcoinKitTests' do
     inherit! :search_paths
+    lib_wally
   end
 end
 
 target 'HDWalletKit' do
-  pod 'LibWally', git: 'git@github.com:blockchain/libwally-swift.git', commit: 'fc38082243575a7b5c626272790cb764062a836b', submodules: true
+  lib_wally
   target 'HDWalletKitTests' do
     inherit! :search_paths
+    lib_wally
   end
 end
+
 
 # Post Installation:
 # - Disable code signing for pods.

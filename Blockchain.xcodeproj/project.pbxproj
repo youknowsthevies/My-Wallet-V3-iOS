@@ -158,7 +158,6 @@
 		34838CE22399D02B003F945A /* Starscream.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 341E474B2399A5FF008BAFFC /* Starscream.framework */; };
 		34838CE42399D02B003F945A /* Veriff.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 341E474A2399A5FF008BAFFC /* Veriff.framework */; };
 		34838CE62399D02B003F945A /* WebRTC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 341E47402399A5FF008BAFFC /* WebRTC.framework */; };
-		3491E07D230C47520096AA68 /* CommonCryptoKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 340ABD5F230AAF580032278D /* CommonCryptoKit.framework */; };
 		3491E07E230C477C0096AA68 /* HDWalletKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34C3C9752305A592008F2154 /* HDWalletKit.framework */; };
 		3491E07F230C48120096AA68 /* CommonCryptoKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 340ABD5F230AAF580032278D /* CommonCryptoKit.framework */; };
 		349442CF22649DAB00593DEA /* ERC20AssetAccountDetailsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349442C822649AAC00593DEA /* ERC20AssetAccountDetailsService.swift */; };
@@ -870,6 +869,7 @@
 		3AA7703E243B7D68005CC949 /* secp256k1.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3AA77018243B7ACF005CC949 /* secp256k1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3AA7703F243B7D72005CC949 /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3AA77012243B7A09005CC949 /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3AA77040243B7D7C005CC949 /* keccak.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3AA77016243B7ABC005CC949 /* keccak.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3AA77043243B7E8F005CC949 /* CommonCryptoKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 340ABD5F230AAF580032278D /* CommonCryptoKit.framework */; };
 		3AA827E52360DF79007BFFBC /* AirdropRegistrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AA827E42360DF79007BFFBC /* AirdropRegistrationService.swift */; };
 		3AA827ED2360F4FD007BFFBC /* SparklineInteracting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AA827EC2360F4FD007BFFBC /* SparklineInteracting.swift */; };
 		3AA827F82360F529007BFFBC /* SparklineCalculationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AA827F72360F529007BFFBC /* SparklineCalculationState.swift */; };
@@ -2288,13 +2288,6 @@
 			remoteGlobalIDString = 34C3C9742305A592008F2154;
 			remoteInfo = HDWalletKit;
 		};
-		34C3C9812305A593008F2154 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9FB3637014B60128004BEA02;
-			remoteInfo = Blockchain;
-		};
 		34C3C9882305A593008F2154 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
@@ -2518,6 +2511,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 3A68655C219A0BBA0009FF29;
 			remoteInfo = PlatformKit;
+		};
+		3AA77041243B7E8A005CC949 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 340ABD5E230AAF580032278D;
+			remoteInfo = CommonCryptoKit;
 		};
 		3ABC3AED2332BEF600D1BDF5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -6417,7 +6417,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3491E07D230C47520096AA68 /* CommonCryptoKit.framework in Frameworks */,
+				3AA77043243B7E8F005CC949 /* CommonCryptoKit.framework in Frameworks */,
 				49E87661120BBE5AECA8A21E /* Pods_HDWalletKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -16431,6 +16431,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				3AA77042243B7E8A005CC949 /* PBXTargetDependency */,
 			);
 			name = HDWalletKit;
 			productName = HDWalletKit;
@@ -16445,12 +16446,12 @@
 				34C3C9792305A593008F2154 /* Sources */,
 				34C3C97A2305A593008F2154 /* Frameworks */,
 				34C3C97B2305A593008F2154 /* Resources */,
+				35F81368EE38C355DDBF26DD /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				34C3C9802305A593008F2154 /* PBXTargetDependency */,
-				34C3C9822305A593008F2154 /* PBXTargetDependency */,
 			);
 			name = HDWalletKitTests;
 			productName = HDWalletKitTests;
@@ -16602,6 +16603,7 @@
 				3A4E488521BF3070001A799D /* Sources */,
 				3A4E488621BF3070001A799D /* Frameworks */,
 				3A4E488721BF3070001A799D /* Resources */,
+				8AD5EFF4485E681C5A6B7D30 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -16884,7 +16886,6 @@
 						CreatedOnToolsVersion = 10.2.1;
 						DevelopmentTeam = NZ6PH75U7K;
 						ProvisioningStyle = Automatic;
-						TestTargetID = 9FB3637014B60128004BEA02;
 					};
 					34EDB8262261065D009521D9 = {
 						CreatedOnToolsVersion = 10.1;
@@ -17588,6 +17589,23 @@
 			shellPath = /bin/sh;
 			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
 		};
+		35F81368EE38C355DDBF26DD /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-HDWalletKitTests/Pods-HDWalletKitTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-HDWalletKitTests/Pods-HDWalletKitTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-HDWalletKitTests/Pods-HDWalletKitTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		3A27818C1E914E33878C1141 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -17695,6 +17713,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\n# Name of the resource we're selectively copying\nGOOGLESERVICE_INFO_PLIST=GoogleService-Info.plist\n\n# Get references to dev and prod versions of the GoogleService-Info.plist\n# NOTE: These should only live on the file system and should NOT be part of the target (since we'll be adding them to the target manually)\nGOOGLESERVICE_INFO_DEV=${PROJECT_DIR}/${TARGET_NAME}/Firebase/Dev/${GOOGLESERVICE_INFO_PLIST}\nGOOGLESERVICE_INFO_PROD=${PROJECT_DIR}/${TARGET_NAME}/Firebase/Prod/${GOOGLESERVICE_INFO_PLIST}\nGOOGLESERVICE_INFO_STAG=${PROJECT_DIR}/${TARGET_NAME}/Firebase/Staging/${GOOGLESERVICE_INFO_PLIST}\n\n# Make sure the dev version of GoogleService-Info.plist exists\necho \"Looking for ${GOOGLESERVICE_INFO_PLIST} in ${GOOGLESERVICE_INFO_DEV}\"\nif [ ! -f $GOOGLESERVICE_INFO_DEV ]\nthen\necho \"No Development GoogleService-Info.plist found. Please ensure it's in the proper directory.\"\nexit 1\nfi\n\n# Make sure the staging version of GoogleService-Info.plist exists\necho \"Looking for ${GOOGLESERVICE_INFO_PLIST} in ${GOOGLESERVICE_INFO_STAG}\"\nif [ ! -f $GOOGLESERVICE_INFO_STAG ]\nthen\necho \"No Production GoogleService-Info.plist found. Please ensure it's in the proper directory.\"\nexit 1\nfi\n\n# Make sure the prod version of GoogleService-Info.plist exists\necho \"Looking for ${GOOGLESERVICE_INFO_PLIST} in ${GOOGLESERVICE_INFO_PROD}\"\nif [ ! -f $GOOGLESERVICE_INFO_PROD ]\nthen\necho \"No Production GoogleService-Info.plist found. Please ensure it's in the proper directory.\"\nexit 1\nfi\n\n# Get a reference to the destination location for the GoogleService-Info.plist\nPLIST_DESTINATION=${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app\necho \"Will copy ${GOOGLESERVICE_INFO_PLIST} to final destination: ${PLIST_DESTINATION}\"\n\n# Copy over the prod GoogleService-Info.plist for Release builds\necho \"The current configuration is ${CONFIGURATION}\"\nif [ \"${CONFIGURATION}\" == \"Debug Dev\" ]\nthen\necho \"Using ${GOOGLESERVICE_INFO_DEV}\"\ncp \"${GOOGLESERVICE_INFO_DEV}\" \"${PLIST_DESTINATION}\"\nelif [ \"${CONFIGURATION}\" == \"Debug Staging\" ] || [ \"${CONFIGURATION}\" == \"Release Staging\" ] \nthen\necho \"Using ${GOOGLESERVICE_INFO_STAG}\"\ncp \"${GOOGLESERVICE_INFO_STAG}\" \"${PLIST_DESTINATION}\"\nelse\necho \"Using ${GOOGLESERVICE_INFO_PROD}\"\ncp \"${GOOGLESERVICE_INFO_PROD}\" \"${PLIST_DESTINATION}\"\nfi\n";
+		};
+		8AD5EFF4485E681C5A6B7D30 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BitcoinKitTests/Pods-BitcoinKitTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BitcoinKitTests/Pods-BitcoinKitTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BitcoinKitTests/Pods-BitcoinKitTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		8CE833EEFD351CEB8A000995 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -19828,11 +19863,6 @@
 			target = 34C3C9742305A592008F2154 /* HDWalletKit */;
 			targetProxy = 34C3C97F2305A593008F2154 /* PBXContainerItemProxy */;
 		};
-		34C3C9822305A593008F2154 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 9FB3637014B60128004BEA02 /* Blockchain */;
-			targetProxy = 34C3C9812305A593008F2154 /* PBXContainerItemProxy */;
-		};
 		34C3C9892305A593008F2154 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 34C3C9742305A592008F2154 /* HDWalletKit */;
@@ -19992,6 +20022,11 @@
 			isa = PBXTargetDependency;
 			target = 3A68655C219A0BBA0009FF29 /* PlatformKit */;
 			targetProxy = 3AA77025243B7C4A005CC949 /* PBXContainerItemProxy */;
+		};
+		3AA77042243B7E8A005CC949 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 340ABD5E230AAF580032278D /* CommonCryptoKit */;
+			targetProxy = 3AA77041243B7E8A005CC949 /* PBXContainerItemProxy */;
 		};
 		3ABC3AEE2332BEF600D1BDF5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -22099,7 +22134,6 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Production";
 		};
@@ -22171,7 +22205,6 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Staging";
 		};
@@ -22243,7 +22276,6 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Dev";
 		};
@@ -22282,7 +22314,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = Release;
 		};
@@ -22321,7 +22352,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Release Staging";
 		};
@@ -28446,10 +28476,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
-				"WARNING_CFLAGS[arch=*]" = (
-					"-fdiagnostics-show-option",
-					"-Wno-nullability-completeness",
-				);
+				"WARNING_CFLAGS[arch=*]" = "-fdiagnostics-show-option -Wno-nullability-completeness";
 			};
 			name = "Debug Production";
 		};
@@ -28528,10 +28555,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
-				"WARNING_CFLAGS[arch=*]" = (
-					"-fdiagnostics-show-option",
-					"-Wno-nullability-completeness",
-				);
+				"WARNING_CFLAGS[arch=*]" = "-fdiagnostics-show-option -Wno-nullability-completeness";
 			};
 			name = "Debug Staging";
 		};
@@ -28610,12 +28634,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
-				"WARNING_CFLAGS[arch=*]" = (
-					"-fdiagnostics-show-option",
-					"-Wno-nullability-completeness",
-					"-Wno-incompatible-property-type",
-					"-Wno-objc-property-synthesis",
-				);
+				"WARNING_CFLAGS[arch=*]" = "-fdiagnostics-show-option -Wno-nullability-completeness -Wno-incompatible-property-type -Wno-objc-property-synthesis";
 			};
 			name = "Debug Dev";
 		};
