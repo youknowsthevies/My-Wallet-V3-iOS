@@ -463,7 +463,6 @@
 		3A307B8E23465EC400555807 /* ManualPairingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A307B8D23465EC400555807 /* ManualPairingViewController.xib */; };
 		3A307B9023465ED200555807 /* PairingIntroViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A307B8F23465ED200555807 /* PairingIntroViewController.xib */; };
 		3A307B9323465F2F00555807 /* PasswordRequiredViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A307B9223465F2F00555807 /* PasswordRequiredViewController.xib */; };
-		3A31647B243B512C008413E2 /* BigInt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ABCAC24243B3C61007DBC92 /* BigInt.framework */; };
 		3A31647E243B51A0008413E2 /* BigInt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ABCAC24243B3C61007DBC92 /* BigInt.framework */; };
 		3A31647F243B51A0008413E2 /* RxRelay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ABCAC28243B3C6F007DBC92 /* RxRelay.framework */; };
 		3A316480243B51A0008413E2 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ABCAC20243B3C2E007DBC92 /* RxSwift.framework */; };
@@ -474,6 +473,18 @@
 		3A31648D243B51FC008413E2 /* RxBlocking.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316488243B51FB008413E2 /* RxBlocking.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3A31648E243B51FC008413E2 /* RxRelay.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316489243B51FB008413E2 /* RxRelay.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3A31648F243B51FC008413E2 /* RxSwift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A31648A243B51FB008413E2 /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A316493243B531B008413E2 /* BigInt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A316486243B51FB008413E2 /* BigInt.framework */; };
+		3A316494243B531B008413E2 /* RxRelay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A316489243B51FB008413E2 /* RxRelay.framework */; };
+		3A316495243B531B008413E2 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A31648A243B51FB008413E2 /* RxSwift.framework */; };
+		3A316496243B5335008413E2 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A31648A243B51FB008413E2 /* RxSwift.framework */; };
+		3A316497243B540D008413E2 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A31648A243B51FB008413E2 /* RxSwift.framework */; };
+		3A316498243B540D008413E2 /* RxTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A316487243B51FB008413E2 /* RxTest.framework */; };
+		3A316499243B5412008413E2 /* RxBlocking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A316488243B51FB008413E2 /* RxBlocking.framework */; };
+		3A31649D243B5444008413E2 /* RxSwift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A31648A243B51FB008413E2 /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A31649E243B545F008413E2 /* RxBlocking.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316488243B51FB008413E2 /* RxBlocking.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A3164A0243B545F008413E2 /* RxTest.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316487243B51FB008413E2 /* RxTest.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A3164A1243B547B008413E2 /* RxRelay.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316489243B51FB008413E2 /* RxRelay.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A3164A2243B5484008413E2 /* BigInt.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A316486243B51FB008413E2 /* BigInt.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3A331E5C22147C8500ECA937 /* ExchangeDetailPageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A331E5B22147C8500ECA937 /* ExchangeDetailPageModel.swift */; };
 		3A331E5F22148D5E00ECA937 /* ExchangeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A331E5E22148D5E00ECA937 /* ExchangeHeaderView.swift */; };
 		3A3389612385C30A00372B84 /* InstantAssetPriceViewInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3389602385C30A00372B84 /* InstantAssetPriceViewInteractor.swift */; };
@@ -851,8 +862,6 @@
 		3ABB4E0B23E23041005701EB /* DefaultLineItemCellPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABB4E0A23E23041005701EB /* DefaultLineItemCellPresenter.swift */; };
 		3ABB4E1623E2306C005701EB /* PasteboardingLineItemCellPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABB4E1523E2306C005701EB /* PasteboardingLineItemCellPresenter.swift */; };
 		3ABB80BB213F0CD300AD57BE /* Limit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABB80BA213F0CD300AD57BE /* Limit.swift */; };
-		3ABCAC21243B3C2E007DBC92 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ABCAC20243B3C2E007DBC92 /* RxSwift.framework */; };
-		3ABCAC29243B3C6F007DBC92 /* RxRelay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ABCAC28243B3C6F007DBC92 /* RxRelay.framework */; };
 		3ABDA05623FEA717009FFFEE /* AssetAccountRepositoryAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABDA05523FEA717009FFFEE /* AssetAccountRepositoryAPI.swift */; };
 		3ABDC3DF23E33ABD0021BCA2 /* SimpleBuyFinishSignupAnnouncement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABDC3DE23E33ABD0021BCA2 /* SimpleBuyFinishSignupAnnouncement.swift */; };
 		3ABEEBA223EB6B5200F3B1C8 /* CustodyActionRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABEEBA123EB6B5200F3B1C8 /* CustodyActionRouter.swift */; };
@@ -2284,13 +2293,6 @@
 			remoteGlobalIDString = 34EE985B23AA5B3100074EC0;
 			remoteInfo = NetworkKit;
 		};
-		34EE986823AA5B3100074EC0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9FB3637014B60128004BEA02;
-			remoteInfo = Blockchain;
-		};
 		34EE986F23AA5B3100074EC0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
@@ -2606,6 +2608,20 @@
 				3A31648D243B51FC008413E2 /* RxBlocking.framework in CopyFiles */,
 				3A31648E243B51FC008413E2 /* RxRelay.framework in CopyFiles */,
 				3A31648F243B51FC008413E2 /* RxSwift.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3A31649C243B543A008413E2 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				3A3164A2243B5484008413E2 /* BigInt.framework in CopyFiles */,
+				3A3164A1243B547B008413E2 /* RxRelay.framework in CopyFiles */,
+				3A31649E243B545F008413E2 /* RxBlocking.framework in CopyFiles */,
+				3A3164A0243B545F008413E2 /* RxTest.framework in CopyFiles */,
+				3A31649D243B5444008413E2 /* RxSwift.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6364,9 +6380,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3ABCAC21243B3C2E007DBC92 /* RxSwift.framework in Frameworks */,
-				3A31647B243B512C008413E2 /* BigInt.framework in Frameworks */,
-				3ABCAC29243B3C6F007DBC92 /* RxRelay.framework in Frameworks */,
+				3A316494243B531B008413E2 /* RxRelay.framework in Frameworks */,
+				3A316493243B531B008413E2 /* BigInt.framework in Frameworks */,
+				3A316495243B531B008413E2 /* RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6387,6 +6403,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A316496243B5335008413E2 /* RxSwift.framework in Frameworks */,
 				34EE989323AA807B00074EC0 /* ToolKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -6395,7 +6412,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A316497243B540D008413E2 /* RxSwift.framework in Frameworks */,
 				34EE986523AA5B3100074EC0 /* NetworkKit.framework in Frameworks */,
+				3A316498243B540D008413E2 /* RxTest.framework in Frameworks */,
+				3A316499243B5412008413E2 /* RxBlocking.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16487,12 +16507,13 @@
 				34EE986023AA5B3100074EC0 /* Sources */,
 				34EE986123AA5B3100074EC0 /* Frameworks */,
 				34EE986223AA5B3100074EC0 /* Resources */,
+				3A31649B243B5432008413E2 /* ShellScript */,
+				3A31649C243B543A008413E2 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				34EE986723AA5B3100074EC0 /* PBXTargetDependency */,
-				34EE986923AA5B3100074EC0 /* PBXTargetDependency */,
 			);
 			name = NetworkKitTests;
 			productName = NetworkKitTests;
@@ -16845,7 +16866,6 @@
 					};
 					34EE986323AA5B3100074EC0 = {
 						CreatedOnToolsVersion = 11.2.1;
-						TestTargetID = 9FB3637014B60128004BEA02;
 					};
 					3A4E488021BF3070001A799D = {
 						CreatedOnToolsVersion = 10.0;
@@ -17645,6 +17665,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if command -v envman 2>/dev/null; then\nBC_BUILT_PRODUCTS_DIR=\"${BUILT_PRODUCTS_DIR}\"\necho \"(i) BC_BUILT_PRODUCTS_DIR: $BC_BUILT_PRODUCTS_DIR\"\nenvman add --key BC_BUILT_PRODUCTS_DIR --value \"${BC_BUILT_PRODUCTS_DIR}\"\nelse\necho \"(i) envman missing\"\nfi\n";
+		};
+		3A31649B243B5432008413E2 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n";
 		};
 		51E355EB2192063400753FEB /* Get SSL Certificate */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -19997,11 +20034,6 @@
 			isa = PBXTargetDependency;
 			target = 34EE985B23AA5B3100074EC0 /* NetworkKit */;
 			targetProxy = 34EE986623AA5B3100074EC0 /* PBXContainerItemProxy */;
-		};
-		34EE986923AA5B3100074EC0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 9FB3637014B60128004BEA02 /* Blockchain */;
-			targetProxy = 34EE986823AA5B3100074EC0 /* PBXContainerItemProxy */;
 		};
 		34EE987023AA5B3100074EC0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -24128,6 +24160,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -24211,6 +24247,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -24294,6 +24334,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -24358,6 +24402,10 @@
 				DYLIB_CURRENT_VERSION = 0;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -24409,6 +24457,10 @@
 				DYLIB_CURRENT_VERSION = 0;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -24470,6 +24522,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -24499,7 +24555,6 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Production";
 		};
@@ -24540,6 +24595,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -24569,7 +24628,6 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Staging";
 		};
@@ -24610,6 +24668,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -24639,7 +24701,6 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Dev";
 		};
@@ -24661,6 +24722,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -24677,7 +24742,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = Release;
 		};
@@ -24699,6 +24763,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -24715,7 +24783,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Release Staging";
 		};
