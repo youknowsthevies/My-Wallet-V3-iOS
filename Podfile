@@ -5,13 +5,7 @@ use_frameworks!
 inhibit_all_warnings!
 
 target 'Blockchain' do
-  pod 'Firebase/Crashlytics'
-  pod 'Firebase/Core'
-  pod 'Firebase/DynamicLinks'
-  pod 'Firebase/RemoteConfig'
-  pod 'Firebase/Messaging'
   pod 'SwiftLint', '0.30.1'
-
   target 'BlockchainTests' do
     inherit! :search_paths
   end

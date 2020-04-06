@@ -171,16 +171,6 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "34C3C94823059284008F2154"
-               BuildableName = "TestKitTests.xctest"
-               BlueprintName = "TestKitTests"
-               ReferencedContainer = "container:Blockchain.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "34C3C97C2305A593008F2154"
                BuildableName = "HDWalletKitTests.xctest"
                BlueprintName = "HDWalletKitTests"
