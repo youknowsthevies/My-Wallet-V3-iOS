@@ -5,28 +5,15 @@ use_frameworks!
 inhibit_all_warnings!
 
 target 'Blockchain' do
-  pod 'Charts', '~> 3.4.0'
   pod 'Firebase/Crashlytics'
   pod 'Firebase/Core'
   pod 'Firebase/DynamicLinks'
   pod 'Firebase/RemoteConfig'
   pod 'Firebase/Messaging'
-  pod 'PhoneNumberKit', '~> 2.1'
   pod 'SwiftLint', '0.30.1'
   pod 'stellar-ios-mac-sdk', git: 'git@github.com:thisisalexmcgregor/stellar-ios-mac-sdk.git', commit: '897f8acd327bb900aa97a6b92e602c6076e978bc'
-  pod 'zxcvbn-ios', '1.0.4'
 
   target 'BlockchainTests' do
-    inherit! :search_paths
-  end
-end
-
-target 'PlatformUIKit' do
-  pod 'zxcvbn-ios', '1.0.4'
-  pod 'Charts', '~> 3.4.0'
-  pod 'PhoneNumberKit', '~> 2.1'
-
-  target 'PlatformUIKitTests' do
     inherit! :search_paths
   end
 end

@@ -7,3 +7,7 @@ github "ReactiveX/RxSwift" ~> 5.0
 github "attaswift/BigInt" ~> 4.0
 
 github "thisisalexmcgregor/web3swift" "blockchain"
+
+github "dropbox/zxcvbn-ios" == 1.0.4
+github "danielgindi/Charts" == 3.4.0
+github "marmelroy/PhoneNumberKit" == 3.1.0

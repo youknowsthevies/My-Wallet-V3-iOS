@@ -1,7 +1,4 @@
 PODS:
-  - Charts (3.4.0):
-    - Charts/Core (= 3.4.0)
-  - Charts/Core (3.4.0)
   - Firebase/Core (6.21.0):
     - Firebase/CoreOnly
     - FirebaseAnalytics (= 6.4.0)
@@ -116,34 +113,23 @@ PODS:
     - nanopb/encode (= 0.3.9011)
   - nanopb/decode (0.3.9011)
   - nanopb/encode (0.3.9011)
-  - PhoneNumberKit (2.6.0):
-    - PhoneNumberKit/PhoneNumberKitCore (= 2.6.0)
-    - PhoneNumberKit/UIKit (= 2.6.0)
-  - PhoneNumberKit/PhoneNumberKitCore (2.6.0)
-  - PhoneNumberKit/UIKit (2.6.0):
-    - PhoneNumberKit/PhoneNumberKitCore
   - PromisesObjC (1.2.8)
   - Protobuf (3.11.4)
   - stellar-ios-mac-sdk (1.7.0)
   - SwiftLint (0.30.1)
-  - zxcvbn-ios (1.0.4)
 
 DEPENDENCIES:
-  - Charts (~> 3.4.0)
   - Firebase/Core
   - Firebase/Crashlytics
   - Firebase/DynamicLinks
   - Firebase/Messaging
   - Firebase/RemoteConfig
   - "LibWally (from `git@github.com:blockchain/libwally-swift.git`, commit `fc38082243575a7b5c626272790cb764062a836b`)"
-  - PhoneNumberKit (~> 2.1)
   - "stellar-ios-mac-sdk (from `git@github.com:thisisalexmcgregor/stellar-ios-mac-sdk.git`, commit `897f8acd327bb900aa97a6b92e602c6076e978bc`)"
   - SwiftLint (= 0.30.1)
-  - zxcvbn-ios (= 1.0.4)
 
 SPEC REPOS:
   trunk:
-    - Charts
     - Firebase
     - FirebaseABTesting
     - FirebaseAnalytics
@@ -162,11 +148,9 @@ SPEC REPOS:
     - GoogleDataTransportCCTSupport
     - GoogleUtilities
     - nanopb
-    - PhoneNumberKit
     - PromisesObjC
     - Protobuf
     - SwiftLint
-    - zxcvbn-ios
 
 EXTERNAL SOURCES:
   LibWally:
@@ -187,7 +171,6 @@ CHECKOUT OPTIONS:
     :git: "git@github.com:thisisalexmcgregor/stellar-ios-mac-sdk.git"
 
 SPEC CHECKSUMS:
-  Charts: 74c9f256eaf0460c0c416522d1cf8c634ea6b286
   Firebase: f378c80340dd41c0ad0914af740c021eb282a04b
   FirebaseABTesting: 821a3a3e4a145987e80fee3657c4de1cb9adf693
   FirebaseAnalytics: a1a0b3327ceb5cd5b4bacffdb293f6c909aa087d
@@ -207,13 +190,11 @@ SPEC CHECKSUMS:
   GoogleUtilities: ad0f3b691c67909d03a3327cc205222ab8f42e0e
   LibWally: 37b7c926e9aa02cc7d4c5a2a2a3a4f8925ea5038
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
-  PhoneNumberKit: 167ee1f0bbb6efce7c62559e620eae745595532f
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
   Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
   stellar-ios-mac-sdk: d4e826707d24d4c7d16089fe184e0b3a472790d3
   SwiftLint: a54bf1fe12b55c68560eb2a7689dfc81458508f7
-  zxcvbn-ios: fef98b7c80f1512ff0eec47ac1fa399fc00f7e3c
 
-PODFILE CHECKSUM: c93c5abc03b3f3c8e19ce71d2861f7af64484005
+PODFILE CHECKSUM: 3952d935a5f292cf968a88afea57c19f2ae8f216
 
 COCOAPODS: 1.9.1
