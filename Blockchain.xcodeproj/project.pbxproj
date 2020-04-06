@@ -252,7 +252,6 @@
 		34EDB84A226106B6009521D9 /* PlatformKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A68655D219A0BBA0009FF29 /* PlatformKit.framework */; };
 		34EDB84B226106BE009521D9 /* EthereumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A6A1A1721B9A64D00D97C74 /* EthereumKit.framework */; };
 		34EE981F23AA595100074EC0 /* ToolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34EE981623AA595100074EC0 /* ToolKit.framework */; };
-		34EE982623AA595100074EC0 /* ToolKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EE982523AA595100074EC0 /* ToolKitTests.swift */; };
 		34EE982823AA595100074EC0 /* ToolKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 34EE981823AA595100074EC0 /* ToolKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34EE982B23AA595100074EC0 /* ToolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34EE981623AA595100074EC0 /* ToolKit.framework */; };
 		34EE982C23AA595100074EC0 /* ToolKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 34EE981623AA595100074EC0 /* ToolKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -2994,7 +2993,6 @@
 		34EE981823AA595100074EC0 /* ToolKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ToolKit.h; sourceTree = "<group>"; };
 		34EE981923AA595100074EC0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		34EE981E23AA595100074EC0 /* ToolKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ToolKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		34EE982523AA595100074EC0 /* ToolKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolKitTests.swift; sourceTree = "<group>"; };
 		34EE982723AA595100074EC0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		34EE985C23AA5B3100074EC0 /* NetworkKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NetworkKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		34EE985E23AA5B3100074EC0 /* NetworkKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetworkKit.h; sourceTree = "<group>"; };
@@ -7519,7 +7517,6 @@
 		34EE982423AA595100074EC0 /* ToolKitTests */ = {
 			isa = PBXGroup;
 			children = (
-				34EE982523AA595100074EC0 /* ToolKitTests.swift */,
 				657A6537240011A200C4E322 /* CachedValueTests.swift */,
 				34EE982723AA595100074EC0 /* Info.plist */,
 			);
@@ -18180,7 +18177,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				34EE982623AA595100074EC0 /* ToolKitTests.swift in Sources */,
 				657A6538240011A200C4E322 /* CachedValueTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -28828,7 +28824,10 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
-				"WARNING_CFLAGS[arch=*]" = "-fdiagnostics-show-option -Wno-nullability-completeness";
+				"WARNING_CFLAGS[arch=*]" = (
+					"-fdiagnostics-show-option",
+					"-Wno-nullability-completeness",
+				);
 			};
 			name = "Debug Production";
 		};
@@ -28907,7 +28906,10 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
-				"WARNING_CFLAGS[arch=*]" = "-fdiagnostics-show-option -Wno-nullability-completeness";
+				"WARNING_CFLAGS[arch=*]" = (
+					"-fdiagnostics-show-option",
+					"-Wno-nullability-completeness",
+				);
 			};
 			name = "Debug Staging";
 		};
@@ -28986,7 +28988,12 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
-				"WARNING_CFLAGS[arch=*]" = "-fdiagnostics-show-option -Wno-nullability-completeness -Wno-incompatible-property-type -Wno-objc-property-synthesis";
+				"WARNING_CFLAGS[arch=*]" = (
+					"-fdiagnostics-show-option",
+					"-Wno-nullability-completeness",
+					"-Wno-incompatible-property-type",
+					"-Wno-objc-property-synthesis",
+				);
 			};
 			name = "Debug Dev";
 		};
