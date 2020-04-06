@@ -1,5 +1,4 @@
 PODS:
-  - BigInt (4.0.0)
   - Charts (3.4.0):
     - Charts/Core (= 3.4.0)
   - Charts/Core (3.4.0)
@@ -111,7 +110,6 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (6.5.2):
     - GoogleUtilities/Logger
-  - keccak.c (0.1.3)
   - LibWally (0.0.1)
   - nanopb (0.3.9011):
     - nanopb/decode (= 0.3.9011)
@@ -124,27 +122,10 @@ PODS:
   - PhoneNumberKit/PhoneNumberKitCore (2.6.0)
   - PhoneNumberKit/UIKit (2.6.0):
     - PhoneNumberKit/PhoneNumberKitCore
-  - PromiseKit (6.13.1):
-    - PromiseKit/CorePromise (= 6.13.1)
-    - PromiseKit/Foundation (= 6.13.1)
-    - PromiseKit/UIKit (= 6.13.1)
-  - PromiseKit/CorePromise (6.13.1)
-  - PromiseKit/Foundation (6.13.1):
-    - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.13.1):
-    - PromiseKit/CorePromise
   - PromisesObjC (1.2.8)
   - Protobuf (3.11.4)
-  - scrypt.c (0.1.1)
-  - secp256k1.c (0.1.2)
   - stellar-ios-mac-sdk (1.7.0)
   - SwiftLint (0.30.1)
-  - web3swift.pod (2.1.10):
-    - BigInt (~> 4.0)
-    - keccak.c (~> 0.1)
-    - PromiseKit (~> 6.4)
-    - scrypt.c (~> 0.1)
-    - secp256k1.c (~> 0.1)
   - zxcvbn-ios (1.0.4)
 
 DEPENDENCIES:
@@ -158,12 +139,10 @@ DEPENDENCIES:
   - PhoneNumberKit (~> 2.1)
   - "stellar-ios-mac-sdk (from `git@github.com:thisisalexmcgregor/stellar-ios-mac-sdk.git`, commit `897f8acd327bb900aa97a6b92e602c6076e978bc`)"
   - SwiftLint (= 0.30.1)
-  - "web3swift.pod (from `git@github.com:thisisalexmcgregor/web3swift.git`, commit `39abb613bef9f63f7bff5633172b3b474e54c165`)"
   - zxcvbn-ios (= 1.0.4)
 
 SPEC REPOS:
   trunk:
-    - BigInt
     - Charts
     - Firebase
     - FirebaseABTesting
@@ -182,14 +161,10 @@ SPEC REPOS:
     - GoogleDataTransport
     - GoogleDataTransportCCTSupport
     - GoogleUtilities
-    - keccak.c
     - nanopb
     - PhoneNumberKit
-    - PromiseKit
     - PromisesObjC
     - Protobuf
-    - scrypt.c
-    - secp256k1.c
     - SwiftLint
     - zxcvbn-ios
 
@@ -201,9 +176,6 @@ EXTERNAL SOURCES:
   stellar-ios-mac-sdk:
     :commit: 897f8acd327bb900aa97a6b92e602c6076e978bc
     :git: "git@github.com:thisisalexmcgregor/stellar-ios-mac-sdk.git"
-  web3swift.pod:
-    :commit: 39abb613bef9f63f7bff5633172b3b474e54c165
-    :git: "git@github.com:thisisalexmcgregor/web3swift.git"
 
 CHECKOUT OPTIONS:
   LibWally:
@@ -213,12 +185,8 @@ CHECKOUT OPTIONS:
   stellar-ios-mac-sdk:
     :commit: 897f8acd327bb900aa97a6b92e602c6076e978bc
     :git: "git@github.com:thisisalexmcgregor/stellar-ios-mac-sdk.git"
-  web3swift.pod:
-    :commit: 39abb613bef9f63f7bff5633172b3b474e54c165
-    :git: "git@github.com:thisisalexmcgregor/web3swift.git"
 
 SPEC CHECKSUMS:
-  BigInt: 2aad1a9942dc932ec8b84290d2c564a3d76f97ab
   Charts: 74c9f256eaf0460c0c416522d1cf8c634ea6b286
   Firebase: f378c80340dd41c0ad0914af740c021eb282a04b
   FirebaseABTesting: 821a3a3e4a145987e80fee3657c4de1cb9adf693
@@ -237,20 +205,15 @@ SPEC CHECKSUMS:
   GoogleDataTransport: b29a21d813e906014ca16c00897827e40e4a24ab
   GoogleDataTransportCCTSupport: 6f15a89b0ca35d6fa523e1f752ef818588885988
   GoogleUtilities: ad0f3b691c67909d03a3327cc205222ab8f42e0e
-  keccak.c: 859583afdaccb4e4fcc0f0096064d101580313f4
   LibWally: 37b7c926e9aa02cc7d4c5a2a2a3a4f8925ea5038
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   PhoneNumberKit: 167ee1f0bbb6efce7c62559e620eae745595532f
-  PromiseKit: 28fda91c973cc377875d8c0ea4f973013c05b6db
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
   Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
-  scrypt.c: b42ae06183251329d2b2c620c226fb541a4a3592
-  secp256k1.c: db47b726585d80f027423682eb369729e61b3b20
   stellar-ios-mac-sdk: d4e826707d24d4c7d16089fe184e0b3a472790d3
   SwiftLint: a54bf1fe12b55c68560eb2a7689dfc81458508f7
-  web3swift.pod: 98e8653f39e1bcd7b45f46dd982ec49cdfc6c46a
   zxcvbn-ios: fef98b7c80f1512ff0eec47ac1fa399fc00f7e3c
 
-PODFILE CHECKSUM: e3ad72591c53a5b3de0cec03fdf46682dd97d959
+PODFILE CHECKSUM: daced54299b1ae55ef7b2c6311cdc9bd793e54fb
 
 COCOAPODS: 1.9.1

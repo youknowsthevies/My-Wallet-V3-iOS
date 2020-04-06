@@ -18,7 +18,6 @@ target 'Blockchain' do
 
   target 'BlockchainTests' do
     inherit! :search_paths
-    pod 'web3swift.pod', git: 'git@github.com:thisisalexmcgregor/web3swift.git', commit: '39abb613bef9f63f7bff5633172b3b474e54c165'
   end
 end
 
@@ -36,22 +35,6 @@ target 'StellarKit' do
   pod 'stellar-ios-mac-sdk', git: 'git@github.com:thisisalexmcgregor/stellar-ios-mac-sdk.git', commit: '897f8acd327bb900aa97a6b92e602c6076e978bc'
 
   target 'StellarKitTests' do
-    inherit! :search_paths
-  end
-end
-
-target 'EthereumKit' do
-  pod 'web3swift.pod', git: 'git@github.com:thisisalexmcgregor/web3swift.git', commit: '39abb613bef9f63f7bff5633172b3b474e54c165'
-
-  target 'EthereumKitTests' do
-    inherit! :search_paths
-  end
-end
-
-target 'ERC20Kit' do
-  pod 'web3swift.pod', git: 'git@github.com:thisisalexmcgregor/web3swift.git', commit: '39abb613bef9f63f7bff5633172b3b474e54c165'
-
-  target 'ERC20KitTests' do
     inherit! :search_paths
   end
 end
