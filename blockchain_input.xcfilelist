@@ -1,0 +1,17 @@
+$(SRCROOT)/Carthage/Build/iOS/BigInt.framework
+$(SRCROOT)/Carthage/Build/iOS/Charts.framework
+$(SRCROOT)/Carthage/Build/iOS/keccak.framework
+$(SRCROOT)/Carthage/Build/iOS/PhoneNumberKit.framework
+$(SRCROOT)/Carthage/Build/iOS/PromiseKit.framework
+$(SRCROOT)/Carthage/Build/iOS/RxCocoa.framework
+$(SRCROOT)/Carthage/Build/iOS/RxRelay.framework
+$(SRCROOT)/Carthage/Build/iOS/RxSwift.framework
+$(SRCROOT)/Carthage/Build/iOS/scrypt.framework
+$(SRCROOT)/Carthage/Build/iOS/secp256k1.framework
+$(SRCROOT)/Carthage/Build/iOS/SocketIO.framework
+$(SRCROOT)/Carthage/Build/iOS/Starscream.framework
+$(SRCROOT)/Carthage/Build/iOS/stellarsdk.framework
+$(SRCROOT)/Carthage/Build/iOS/Veriff.framework
+$(SRCROOT)/Carthage/Build/iOS/web3swift.framework
+$(SRCROOT)/Carthage/Build/iOS/WebRTC.framework
+$(SRCROOT)/Carthage/Build/iOS/Zxcvbn.framework
