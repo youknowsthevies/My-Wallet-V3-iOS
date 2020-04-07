@@ -1,14 +1,8 @@
 PODS:
   - LibWally (0.0.1)
-  - SwiftLint (0.30.1)
 
 DEPENDENCIES:
   - "LibWally (from `git@github.com:blockchain/libwally-swift.git`, commit `fc38082243575a7b5c626272790cb764062a836b`)"
-  - SwiftLint (= 0.30.1)
-
-SPEC REPOS:
-  trunk:
-    - SwiftLint
 
 EXTERNAL SOURCES:
   LibWally:
@@ -24,8 +18,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   LibWally: 37b7c926e9aa02cc7d4c5a2a2a3a4f8925ea5038
-  SwiftLint: a54bf1fe12b55c68560eb2a7689dfc81458508f7
 
-PODFILE CHECKSUM: 0d73a524d6920495a8613a74977e43e0bdb79db9
+PODFILE CHECKSUM: 393014ec53b36725b2dd86f97d93f1e6c8085c51
 
 COCOAPODS: 1.9.1

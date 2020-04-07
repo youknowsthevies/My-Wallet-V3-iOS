@@ -5,7 +5,6 @@ use_frameworks!
 inhibit_all_warnings!
 
 target 'Blockchain' do
-  pod 'SwiftLint', '0.30.1'
   target 'BlockchainTests' do
     inherit! :search_paths
   end
