@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxRelay
 import RxSwift
+import RxRelay
 import PlatformKit
 import PlatformUIKit
 
@@ -51,7 +51,7 @@ final class MobileCodeEntryScreenPresenter {
         self.stateService = stateService
         codeEntryTextFieldModel = .init(
             with: .oneTimeCode,
-            validator: TextValidationFactory.alwaysValid,
+            validator: TextValidationFactory.General.notEmpty,
             messageRecorder: CrashlyticsRecorder()
         )
         

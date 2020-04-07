@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -13,12 +13,13 @@
                 <outlet property="amountLabelView" destination="ELa-1q-8kp" id="zpP-JE-ogn"/>
                 <outlet property="amountLabelViewTopConstraint" destination="7Qs-HH-bCI" id="ghH-Kh-Qhi"/>
                 <outlet property="assetSelectionButtonView" destination="HJn-pf-CnC" id="PKF-bd-58K"/>
+                <outlet property="assetSelectionViewHeightConstraint" destination="hiZ-nM-ula" id="ikg-Yh-Szh"/>
                 <outlet property="continueButtonView" destination="HZj-9M-8pa" id="duI-bO-ACd"/>
                 <outlet property="continueButtonViewBottomConstraint" destination="4GS-b2-D6G" id="WRY-VZ-aP8"/>
-                <outlet property="correctionLinkView" destination="c8N-mx-wmv" id="xxc-MQ-bYg"/>
                 <outlet property="digitPadHeightConstraint" destination="zE9-KJ-zuz" id="tzE-h1-aqC"/>
                 <outlet property="digitPadView" destination="2wS-rG-Li2" id="itW-xo-cbD"/>
                 <outlet property="separatorView" destination="jQa-en-e1e" id="GqO-F4-bV1"/>
+                <outlet property="trailingButtonView" destination="r3s-Q8-51x" id="Gwc-xJ-XBN"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -28,14 +29,14 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HJn-pf-CnC" customClass="SelectionButtonView" customModule="PlatformUIKit">
-                    <rect key="frame" x="24" y="66" width="366" height="48"/>
+                    <rect key="frame" x="0.0" y="44" width="414" height="78"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="48" id="hiZ-nM-ula"/>
+                        <constraint firstAttribute="height" constant="78" id="hiZ-nM-ula"/>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ELa-1q-8kp" customClass="AmountLabelView" customModule="PlatformUIKit">
-                    <rect key="frame" x="24" y="178" width="366" height="40"/>
+                    <rect key="frame" x="24" y="186" width="366" height="40"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="40" id="syp-kN-xYl"/>
@@ -62,33 +63,33 @@
                         <constraint firstAttribute="height" constant="260" id="zE9-KJ-zuz"/>
                     </constraints>
                 </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="c8N-mx-wmv" customClass="LinkView" customModule="PlatformUIKit">
-                    <rect key="frame" x="24" y="226" width="366" height="40"/>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="r3s-Q8-51x" customClass="ButtonView" customModule="PlatformUIKit">
+                    <rect key="frame" x="388" y="504" width="10" height="10"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                     <constraints>
-                        <constraint firstAttribute="height" priority="250" constant="40" id="GEa-qR-FdB"/>
+                        <constraint firstAttribute="width" constant="10" placeholder="YES" id="Aoi-CD-3aK"/>
+                        <constraint firstAttribute="height" constant="10" placeholder="YES" id="jpj-IX-Dln"/>
                     </constraints>
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="c8N-mx-wmv" firstAttribute="top" secondItem="ELa-1q-8kp" secondAttribute="bottom" constant="8" id="2by-EL-5yn"/>
                 <constraint firstItem="2wS-rG-Li2" firstAttribute="top" secondItem="HZj-9M-8pa" secondAttribute="bottom" constant="24" id="4GS-b2-D6G"/>
                 <constraint firstItem="ELa-1q-8kp" firstAttribute="top" secondItem="HJn-pf-CnC" secondAttribute="bottom" constant="64" id="7Qs-HH-bCI"/>
-                <constraint firstItem="HJn-pf-CnC" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="24" id="7fl-l2-5wf"/>
+                <constraint firstItem="HJn-pf-CnC" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="7fl-l2-5wf"/>
                 <constraint firstItem="jQa-en-e1e" firstAttribute="bottom" secondItem="2wS-rG-Li2" secondAttribute="top" id="9ux-8T-qBP"/>
-                <constraint firstItem="c8N-mx-wmv" firstAttribute="leading" secondItem="ELa-1q-8kp" secondAttribute="leading" id="BAG-Ga-rGC"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="HJn-pf-CnC" secondAttribute="trailing" constant="24" id="F4c-DP-1aq"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="HJn-pf-CnC" secondAttribute="trailing" id="F4c-DP-1aq"/>
                 <constraint firstItem="ELa-1q-8kp" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="24" id="F5E-83-O8a"/>
                 <constraint firstItem="2wS-rG-Li2" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="FiR-xs-eYh"/>
+                <constraint firstItem="HZj-9M-8pa" firstAttribute="top" secondItem="r3s-Q8-51x" secondAttribute="bottom" constant="16" placeholder="YES" id="Fyw-uu-qbW"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="2wS-rG-Li2" secondAttribute="trailing" id="Phc-PT-oml"/>
-                <constraint firstItem="HJn-pf-CnC" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="22" id="To9-C6-HeR"/>
+                <constraint firstItem="HJn-pf-CnC" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="To9-C6-HeR"/>
                 <constraint firstItem="jQa-en-e1e" firstAttribute="leading" secondItem="2wS-rG-Li2" secondAttribute="leading" id="UN9-Ae-wqb"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="2wS-rG-Li2" secondAttribute="bottom" id="ZTI-B5-lEx"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="ELa-1q-8kp" secondAttribute="trailing" constant="24" id="cCh-BP-Wzz"/>
                 <constraint firstItem="jQa-en-e1e" firstAttribute="trailing" secondItem="2wS-rG-Li2" secondAttribute="trailing" id="dda-EW-Hnv"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="HZj-9M-8pa" secondAttribute="trailing" constant="24" id="gF0-5I-A9T"/>
-                <constraint firstItem="c8N-mx-wmv" firstAttribute="trailing" secondItem="ELa-1q-8kp" secondAttribute="trailing" id="sFn-Na-Xan"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="r3s-Q8-51x" secondAttribute="trailing" constant="16" id="hUy-kd-ZwE"/>
                 <constraint firstItem="HZj-9M-8pa" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="24" id="xb9-2z-xv4"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>

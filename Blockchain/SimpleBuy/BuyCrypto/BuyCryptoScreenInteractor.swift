@@ -101,6 +101,10 @@ final class BuyCryptoScreenInteractor {
             .fetch()
             .mapToResult()
     }
+
+    var exchangeProviding: ExchangeProviding {
+        return dataProviding.exchange
+    }
         
     // MARK: - Injected
     
@@ -110,6 +114,7 @@ final class BuyCryptoScreenInteractor {
     private let pairsService: SimpleBuySupportedPairsInteractorServiceAPI
     private let cryptoCurrencySelectionService: SelectionServiceAPI
     private let eligibilityService: SimpleBuyEligibilityServiceAPI
+    private let dataProviding: DataProviding
 
     // MARK: - Accessors
     
@@ -133,6 +138,7 @@ final class BuyCryptoScreenInteractor {
     // MARK: - Setup
     
     init(kycTiersService: KYCTiersServiceAPI,
+         dataProviding: DataProviding,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI,
          pairsService: SimpleBuySupportedPairsInteractorServiceAPI,
          eligibilityService: SimpleBuyEligibilityServiceAPI,
@@ -144,6 +150,7 @@ final class BuyCryptoScreenInteractor {
         self.suggestedAmountsService = suggestedAmountsService
         self.cryptoCurrencySelectionService = cryptoCurrencySelectionService
         self.eligibilityService = eligibilityService
+        self.dataProviding = dataProviding
 
         suggestedAmountsService.calculationState
             .compactMap { $0.value }
@@ -156,7 +163,7 @@ final class BuyCryptoScreenInteractor {
             .startWith(.invalid(.empty))
             .bind(to: pairsCalculationStateRelay)
             .disposed(by: disposeBag)
-        
+
         Observable
             .combineLatest(
                 fiatCurrencyService.fiatCurrencyObservable,

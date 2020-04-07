@@ -1412,7 +1412,17 @@ public struct LocalizationConstants {
         public struct CryptoSelectionScreen {
             public static let title = NSLocalizedString(
                 "Select Currency",
-                comment: "Simple Buy: Crypto Selection screen title"
+                comment: "Simple Buy: Crypto selection screen title"
+            )
+            public static let searchBarPlaceholder = NSLocalizedString(
+                "Search Currency",
+                comment: "Simple Buy: Crypto selection screen search bar placeholder"
+            )
+        }
+        public struct CountrySelectionScreen {
+            public static let title = NSLocalizedString(
+                "Select Country",
+                comment: "Simple Buy: Country selection screen title"
             )
         }
         public struct BuyCryptoScreen {
@@ -1430,23 +1440,23 @@ public struct LocalizationConstants {
                     comment: "Simple Buy: Buy Crypto Screen - Amount upper limit"
                 )
                 public struct Min {
-                    public static let prefix = NSLocalizedString(
-                        "Too low",
+                    public static let suffix = NSLocalizedString(
+                        "Minimum Buy",
                         comment: "Simple Buy: Buy Crypto Screen - Amount too low prefix"
                     )
-                    public static let suffix = NSLocalizedString(
-                        "Use MIN",
+                    public static let useMin = NSLocalizedString(
+                        "Use Min",
                         comment: "Simple Buy: Buy Crypto Screen - Amount too low suffix"
                     )
                 }
 
                 public struct Max {
-                    public static let prefix = NSLocalizedString(
-                        "Too high",
+                    public static let suffix = NSLocalizedString(
+                        "Maximum Buy",
                         comment: "Simple Buy: Buy Crypto Screen - Amount too high prefix"
                     )
-                    public static let suffix = NSLocalizedString(
-                        "Use MAX",
+                    public static let useMax = NSLocalizedString(
+                        "Use Max",
                         comment: "Simple Buy: Buy Crypto Screen - Amount too high suffix"
                     )
                 }
@@ -2297,6 +2307,7 @@ public struct LocalizationConstants {
             public static let preferences = NSLocalizedString("Preferences", comment: "Preferences")
             public static let walletConnect = NSLocalizedString("Wallet Connect", comment: "Wallet Connect")
             public static let security = NSLocalizedString("Security", comment: "Security")
+            public static let linkedCards = NSLocalizedString("Linked Cards", comment: "Linked Cards")
             public static let about = NSLocalizedString("About", comment: "About")
         }
         
@@ -2314,6 +2325,7 @@ public struct LocalizationConstants {
             public static let confirmed = NSLocalizedString("Confirmed", comment: "Confirmed")
             public static let unconfirmed = NSLocalizedString("Unconfirmed", comment: "Unconfirmed")
             public static let localCurrency = NSLocalizedString("Local Currency", comment: "Local Currency")
+            public static let expired = NSLocalizedString("Expired", comment: "Expired")
         }
         
         public struct About {
@@ -2341,6 +2353,12 @@ public struct LocalizationConstants {
         public static let enableTouchID = NSLocalizedString("Enable Touch ID", comment: "Enable Touch ID")
         public static let enableFaceID = NSLocalizedString("Enable Face ID", comment: "Enable Face ID")
         public static let swipeToReceive = NSLocalizedString("Swipe to Receive", comment: "Swipe to Receive")
+        public static let expires = NSLocalizedString("Exp:", comment: "Abbreviation for Expiration")
+        public static let addACard = NSLocalizedString("Add a Card", comment: "Add a Card")
+    
+    public struct RemoveCardScreen {
+            public static let action = NSLocalizedString("Remove Card", comment: "Remove Card")
+        }
         
         public struct UpdateMobile {
             public static let title = NSLocalizedString("Mobile Number", comment: "Mobile Number")
@@ -2425,6 +2443,17 @@ public struct LocalizationConstants {
             public static let title = NSLocalizedString("Change my password", comment: "change password")
             public static let description = NSLocalizedString("Enter your current password. Then enter and confirm your new password.", comment: "Enter your current password. Then enter and confirm your new password.")
             public static let action = NSLocalizedString("Update Password", comment: "Update Password")
+        }
+        
+        public struct SelectCurrency {
+            public static let title = NSLocalizedString(
+                "Local Currency",
+                comment: "App Currency Selection Screen: title"
+            )
+            public static let searchBarPlaceholder = NSLocalizedString(
+                "Search Currency",
+                comment: "App Currency Selection Screen: search bar placeholder"
+            )
         }
     }
     

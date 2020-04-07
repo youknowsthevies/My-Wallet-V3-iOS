@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import PlatformUIKit
 
 protocol SideMenuFooterDelegate: class {
     func footerView(_ footerView: SideMenuFooterView, selectedAction: SideMenuFooterView.Action)
@@ -34,7 +35,7 @@ class SideMenuFooterView: NibBasedView {
         
         buttonHeightConstraints.constant = SideMenuCell.defaultHeight
         
-        let font = UIFont.mainMedium(UIDevice.current.type.isAbove(.iPhoneSE) ? 17 : 14)
+        let font = UIFont.mainMedium(DevicePresenter.type == .superCompact ? 14 : 17)
         
         pairButton.setTitle(LocalizationConstants.SideMenu.loginToWebWallet, for: .normal)
         pairButton.titleLabel?.font = font

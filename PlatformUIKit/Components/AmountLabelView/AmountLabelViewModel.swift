@@ -27,15 +27,16 @@ public final class AmountLabelViewModel {
 
     // Streams the image as per state
     var stateImageContent: Observable<ImageViewContent> {
+        let shouldDisplayStateImage = self.shouldDisplayStateImage
         return state
             .map { state in
-                switch state {
-                case .invalid:
+                switch (shouldDisplayStateImage, state) {
+                case (true, .invalid) :
                     return ImageViewContent(
                         imageName: "red-error-triangle-icon",
                         accessibility: .id(AccessibilityId.errorImageView)
                     )
-                case .valid:
+                default:
                     return .empty
                 }
             }
@@ -82,11 +83,13 @@ public final class AmountLabelViewModel {
     public let inputRelay = BehaviorRelay<MoneyValueInputScanner.Input>(value: .empty)
     
     // MARK: - Injected
-    
+
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
+    private let shouldDisplayStateImage: Bool
         
-    public init(fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
+    public init(fiatCurrencyService: FiatCurrencySettingsServiceAPI, shouldDisplayStateImage: Bool = true) {
         self.fiatCurrencyService = fiatCurrencyService
+        self.shouldDisplayStateImage = shouldDisplayStateImage
     }
 }
 

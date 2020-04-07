@@ -9,6 +9,7 @@
 import Foundation
 
 extension Array {
+    
     public subscript(safeIndex index: Int) -> Element? {
         guard index >= 0, index < endIndex else {
             return nil
@@ -32,7 +33,6 @@ extension Array where Element: Hashable {
         return duplicates.count > 0 ? duplicates : nil
     }
 }
-
 
 // MARK: - Equatable
 

@@ -15,6 +15,10 @@ class DataRepositoryMock: DataRepositoryAPI {
         return Single.just(underlyingTiers)
     }
 
+    var userSingle: Single<User> {
+        user.take(1).asSingle()
+    }
+    
     var underlyingUser = UserMock()
     var user: Observable<User> {
         return Observable.just(underlyingUser)

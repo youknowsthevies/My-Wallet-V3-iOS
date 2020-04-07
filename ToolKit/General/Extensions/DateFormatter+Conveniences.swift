@@ -55,6 +55,13 @@ extension DateFormatter {
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter
     }()
+
+    /// Card expiry date. e.g: 06/2022
+    public static let cardExpirationDate: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/yyyy"
+        return formatter
+    }()
     
     static let HTTPRequestDateFormat: DateFormatter = {
         let formatter = DateFormatter()

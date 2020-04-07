@@ -12,14 +12,25 @@ import RxCocoa
 
 public struct NoticeViewModel: Equatable {
     
-    /// The image name
-    let image: String
+    public enum Alignement {
+        case top
+        case center
+    }
+    
+    /// The image content
+    let imageViewContent: ImageViewContent
     
     /// The label content
     let labelContent: LabelContent
     
-    public init(image: String, labelContent: LabelContent) {
-        self.image = image
+    /// The vertical alignment of the element
+    let verticalAlignment: Alignement
+    
+    public init(imageViewContent: ImageViewContent,
+                labelContent: LabelContent,
+                verticalAlignment: Alignement) {
+        self.imageViewContent = imageViewContent
         self.labelContent = labelContent
+        self.verticalAlignment = verticalAlignment
     }
 }

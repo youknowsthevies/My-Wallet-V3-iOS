@@ -29,3 +29,15 @@ final class SelectionItemViewInteractor {
             .disposed(by: disposeBag)
     }
 }
+
+// MARK: - Equatable
+
+extension SelectionItemViewInteractor: Equatable, Hashable {
+    public static func == (lhs: SelectionItemViewInteractor, rhs: SelectionItemViewInteractor) -> Bool {
+        return lhs.item == rhs.item
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(item)
+    }
+}

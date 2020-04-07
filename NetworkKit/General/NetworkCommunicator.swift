@@ -98,8 +98,9 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
     > {
         return Single<Result<ServerResponse, NetworkCommunicatorError>>.create(weak: self) { (self, observer) -> Disposable in
             let urlRequest = request.URLRequest
-            Logger.shared.debug("urlRequest.url: \(urlRequest.url)")
-                        
+
+            Logger.shared.debug("URLRequest.URL: \(String(describing: urlRequest.url))")
+
             let task = self.session.dataTask(with: urlRequest) { payload, response, error in
                 if let error = error {
                     observer(.success(.failure(NetworkCommunicatorError.clientError(.failedRequest(description: error.localizedDescription)))))
@@ -110,7 +111,7 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
                     return
                 }
                 if let payload = payload, let responseValue = String(data: payload, encoding: .utf8) {
-                    Logger.shared.debug(responseValue)
+                    Logger.shared.debug("\(responseValue) <- \(response?.url?.path ?? "")")
                 }
                 guard (200...299).contains(httpResponse.statusCode) else {
                     observer(.success(.failure(NetworkCommunicatorError.rawServerError(ServerErrorResponse(response: httpResponse, payload: payload)))))

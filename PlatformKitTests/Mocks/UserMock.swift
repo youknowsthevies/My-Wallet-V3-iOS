@@ -10,5 +10,6 @@ import Foundation
 import PlatformKit
 
 class UserMock: User {
-    var personalDetails: PersonalDetails = PersonalDetails(id: nil, first: nil, last: nil, birthday: nil)
+    var personalDetails = PersonalDetails(id: nil, first: nil, last: nil, birthday: nil)
+    var address: UserAddress?
 }

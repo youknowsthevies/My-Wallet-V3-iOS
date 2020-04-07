@@ -32,7 +32,8 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     private let kycServiceProvider: KYCServiceProviderAPI
     private let serviceProvider: SimpleBuyServiceProviderAPI
     private let cryptoSelectionService: SelectionServiceAPI
-    
+    private let dataProviding: DataProviding
+
     /// A kyc subscription dispose bag
     private var kycDisposeBag = DisposeBag()
         
@@ -45,24 +46,29 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
          stateService: SimpleBuyStateServiceAPI = SimpleBuyStateService(),
          kycServiceProvider: KYCServiceProviderAPI = KYCServiceProvider.default,
          topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
-         kycRouter: KYCRouterAPI = KYCCoordinator.shared) {
+         kycRouter: KYCRouterAPI = KYCCoordinator.shared,
+         dataProviding: DataProviding = DataProvider.default) {
         self.serviceProvider = serviceProvider
         self.stateService = stateService
         self.kycServiceProvider = kycServiceProvider
         self.topMostViewControllerProvider = topMostViewControllerProvider
+        self.dataProviding = dataProviding
         self.kycRouter = kycRouter
         
         let cryptoSelectionService = SimpleBuyCryptoCurrencySelectionService(
             service: serviceProvider.supportedPairsInteractor,
             defaultSelectedData: CryptoCurrency.bitcoin
         )
+        
         self.cryptoSelectionService = cryptoSelectionService
     }
     
     func showCryptoSelectionScreen() {
+        typealias LocalizedString = LocalizationConstants.SimpleBuy.CryptoSelectionScreen
         let interactor = SelectionScreenInteractor(service: cryptoSelectionService)
         let presenter = SelectionScreenPresenter(
-            title: LocalizationConstants.SimpleBuy.CryptoSelectionScreen.title,
+            title: LocalizedString.title,
+            searchBarPlaceholder: LocalizedString.searchBarPlaceholder,
             interactor: interactor
         )
         let viewController = SelectionScreenViewController(presenter: presenter)
@@ -222,6 +228,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     private func showBuyCryptoScreen() {
         let interactor = BuyCryptoScreenInteractor(
             kycTiersService: kycServiceProvider.tiers,
+            dataProviding: dataProviding,
             fiatCurrencyService: serviceProvider.settings,
             pairsService: serviceProvider.supportedPairsInteractor,
             eligibilityService: serviceProvider.eligibility,

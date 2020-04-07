@@ -35,8 +35,8 @@ protocol SendXLMViewControllerDelegate: class {
     fileprivate static let maximumMemoTextLength: Int = 28
     
     fileprivate var keyboardHeight: CGFloat {
-        let type = UIDevice.current.type
-        if type.isBelow(.iPhone8Plus) {
+        if DevicePresenter.type <= .compact {
+            // SE, iPhone 8
             return 216
         } else {
             return 226
@@ -623,7 +623,8 @@ extension SendLumensViewController: UITextFieldDelegate {
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        guard UIDevice.current.type.isBelow(.iPhone8Plus) else { return }
+        guard DevicePresenter.type <= .compact else { return }
+        // SE, iPhone 8
         guard [memoTextField, memoIDTextField].contains(textField) else { return }
         let toolbarHeight = toolbar?.frame.height ?? 0.0
         let primaryButtonOffset = originalBottomButtonConstraint +

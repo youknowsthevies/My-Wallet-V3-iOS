@@ -246,7 +246,7 @@ final class KYCNetworkRequest {
                 let message = String(data: responseData, encoding: .utf8)
                 
                 if let message = message {
-                    Logger.shared.info(message)
+                    Logger.shared.info("\(message) <- \(response?.url?.path ?? "")")
                 }
                 
                 guard (200...299).contains(httpResponse.statusCode) else {

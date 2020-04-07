@@ -47,7 +47,7 @@ public final class ShimmeringView: UIView {
         layout(to: .leading, of: anchorView)
         layout(to: .top, of: anchorView)
         layout(to: .height, of: anchorView, priority: .defaultHigh)
-        layout(edge: .width, to: size.width)
+        layout(dimension: .width, to: size.width)
         
         let height = heightAnchor.constraint(equalToConstant: size.height)
         height.isActive = true

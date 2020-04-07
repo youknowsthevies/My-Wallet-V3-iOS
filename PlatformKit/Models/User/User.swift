@@ -6,8 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-
 public protocol User {
     var personalDetails: PersonalDetails { get }
+    var address: UserAddress? { get }
 }

@@ -54,13 +54,17 @@ final class PinScreenViewController: BaseScreenViewController {
         digitPadView.viewModel = presenter.digitPadViewModel
         securePinView.viewModel = presenter.securePinViewModel
 
-        let deviceType = UIDevice.current.type
-        if deviceType.isBelowOrEqual(.iPhoneSE) {
+        switch DevicePresenter.type {
+        case .superCompact:
+            // SE
             digitPadBottomConstraint.constant = 0
             securePinViewTopConstraint.constant = 10
-        } else if deviceType.isBelowOrEqual(.iPhone8) {
+        case .compact:
+            // iPhone 8
             digitPadBottomConstraint.constant = 0
             securePinViewTopConstraint.constant = 30
+        case .regular, .max:
+            break
         }
         
         // Subscribe to pin changes

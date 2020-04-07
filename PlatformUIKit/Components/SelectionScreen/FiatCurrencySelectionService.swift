@@ -33,14 +33,13 @@ public final class FiatCurrencySelectionService: SelectionServiceAPI {
     }
 }
 
-fileprivate extension FiatCurrency {
-    
+private extension FiatCurrency {
     var selectionItem: SelectionItemViewModel {
         SelectionItemViewModel(
             id: code,
             title: name,
             subtitle: code,
-            thumbImage: .none
+            thumb: .none
         )
     }
 }

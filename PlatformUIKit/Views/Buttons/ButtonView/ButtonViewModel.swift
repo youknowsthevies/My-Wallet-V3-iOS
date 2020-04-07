@@ -26,17 +26,20 @@ public struct ButtonViewModel {
         public let contentColor: UIColor
         public let imageName: String?
         public let text: String
+        public let contentInset: UIEdgeInsets
         
         public init(backgroundColor: UIColor,
                     borderColor: UIColor = .clear,
                     contentColor: UIColor,
                     imageName: String? = nil,
-                    text: String) {
+                    text: String,
+                    contentInset: UIEdgeInsets = .zero) {
             self.backgroundColor = backgroundColor
             self.borderColor = borderColor
             self.contentColor = contentColor
             self.imageName = imageName
             self.text = text
+            self.contentInset = contentInset
         }
     }
     
@@ -50,12 +53,14 @@ public struct ButtonViewModel {
             contentColorRelay.accept(newValue.contentColor)
             textRelay.accept(newValue.text)
             imageName.accept(newValue.imageName)
+            contentInsetRelay.accept(newValue.contentInset)
         }
         get {
             return Theme(backgroundColor: backgroundColorRelay.value,
                          contentColor: contentColorRelay.value,
                          imageName: imageName.value,
-                         text: textRelay.value)
+                         text: textRelay.value,
+                         contentInset: contentInsetRelay.value)
         }
     }
     
@@ -67,7 +72,15 @@ public struct ButtonViewModel {
     
     /// The font of the label
     public let font: UIFont
-    
+
+    /// Observe the button hidden state
+    public let isHiddenRelay = BehaviorRelay<Bool>(value: false)
+
+    /// Is the button enabled
+    public var isHidden: Driver<Bool> {
+        return isHiddenRelay.asDriver()
+    }
+
     /// Observe the button enabled state
     public let isEnabledRelay = BehaviorRelay<Bool>(value: true)
     
@@ -75,10 +88,30 @@ public struct ButtonViewModel {
     public var isEnabled: Driver<Bool> {
         return isEnabledRelay.asDriver()
     }
-    
+
+    /// Observe the button Content Inset
+    public var contentInsetRelay = BehaviorRelay<UIEdgeInsets>(value: .zero)
+    public var contentInset: Driver<UIEdgeInsets> {
+        return contentInsetRelay.asDriver()
+    }
+
     /// Retruns the opacity of the view
     public var alpha: Driver<CGFloat> {
-        return isEnabled.asDriver().map { CGFloat($0 ? 1 : 0.65) }
+        return Driver
+            .zip(
+                isEnabled.asDriver(),
+                isHidden.asDriver()
+            )
+            .map { (isEnabled, isHidden) in
+                switch (isEnabled, isHidden) {
+                case (_, true):
+                    return 0
+                case (true, false):
+                    return 1
+                case (false, false):
+                    return 0.65
+                }
+            }
     }
     
     /// The background color relay

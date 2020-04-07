@@ -84,7 +84,6 @@ final class SimpleBuyTransferDetailScreenPresenter {
     private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
     private let presentationType: PresentationType
     private let webViewRouter: WebViewRouterAPI
-    private let loadingViewPresenter: LoadingViewPresenting
     private let alertPresenter: AlertViewPresenter
     private let stateService: SimpleBuyStateServiceAPI
     private let interactor: SimpleBuyTransferDetailScreenInteractor
@@ -94,14 +93,12 @@ final class SimpleBuyTransferDetailScreenPresenter {
     init(presentationType: PresentationType,
          alertPresenter: AlertViewPresenter = .shared,
          webViewRouter: WebViewRouterAPI,
-         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
          analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared,
          interactor: SimpleBuyTransferDetailScreenInteractor,
          stateService: SimpleBuyStateServiceAPI) {
         self.analyticsRecorder = analyticsRecorder
         self.presentationType = presentationType
         self.webViewRouter = webViewRouter
-        self.loadingViewPresenter = loadingViewPresenter
         self.alertPresenter = alertPresenter
         self.interactor = interactor
         self.stateService = stateService
@@ -118,13 +115,17 @@ final class SimpleBuyTransferDetailScreenPresenter {
         )
         
         noticeViewModel = NoticeViewModel(
-            image: "disclaimer-icon",
+            imageViewContent: .init(
+                imageName: "disclaimer-icon",
+                accessibility: .id(AccessibilityId.disclaimerImage)
+            ),
             labelContent: .init(
                 text: LocalizedString.disclaimer,
                 font: .mainMedium(12),
                 color: .descriptionText,
                 accessibility: .id(AccessibilityId.disclaimerLabel)
-            )
+            ),
+            verticalAlignment: .top
         )
         
         switch presentationType {

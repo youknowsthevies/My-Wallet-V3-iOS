@@ -14,22 +14,36 @@ final class SelectionItemTableViewCell: UITableViewCell {
     // MARK: - Injected
     
     var presenter: SelectionItemViewPresenter! {
-        didSet {
+        willSet {
             disposeBag = DisposeBag()
+        }
+        didSet {
             guard let presenter = presenter else { return }
-            thumbImageView.set(presenter.image)
-            titleLabel.content = presenter.title
-            descriptionLabel.content = presenter.description
             
-            if presenter.image.isEmpty {
-                thumbImageViewWidthConstraint.constant = 0.5
-            } else {
+            switch presenter.thumb {
+            case .image(let content):
+                thumbImageView.set(content)
+                thumbLabel.content = .empty
                 thumbImageViewWidthConstraint.constant = 40
+            case .label(let content):
+                thumbLabel.content = content
+                thumbImageView.set(.empty)
+                thumbImageViewWidthConstraint.constant = 40
+            case .none:
+                thumbImageViewWidthConstraint.constant = 0.5
             }
             
+            titleLabel.content = presenter.title
+            descriptionLabel.content = presenter.description
+                        
             presenter.selectionImage
                 .bind(to: selectionImageView.rx.content)
                 .disposed(by: disposeBag)
+            
+            button.rx.tap
+                .bind(to: presenter.tapRelay)
+                .disposed(by: disposeBag)
+            
             accessibility = presenter.accessibility
         }
     }
@@ -37,10 +51,12 @@ final class SelectionItemTableViewCell: UITableViewCell {
     // MARK: - UI Properties
     
     private let thumbImageView = UIImageView()
+    private let thumbLabel = UILabel()
     private let stackView = UIStackView()
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
     private let selectionImageView = UIImageView()
+    private let button = UIButton()
 
     private var thumbImageViewWidthConstraint: NSLayoutConstraint!
     
@@ -69,14 +85,25 @@ final class SelectionItemTableViewCell: UITableViewCell {
     
     private func setup() {
         contentView.addSubview(thumbImageView)
+        contentView.addSubview(thumbLabel)
         contentView.addSubview(stackView)
         contentView.addSubview(selectionImageView)
+        contentView.addSubview(button)
+
+        button.addTargetForTouchDown(self, selector: #selector(touchDown))
+        button.addTargetForTouchUp(self, selector: #selector(touchUp))
+        button.fillSuperview()
         
-        thumbImageView.layout(edge: .height, to: 40)
-        thumbImageViewWidthConstraint = thumbImageView.layout(edge: .width, to: 40)
+        thumbImageView.layout(dimension: .height, to: 40)
+        thumbImageViewWidthConstraint = thumbImageView.layout(dimension: .width, to: 40)
         thumbImageView.layoutToSuperview(.leading, offset: 24)
         thumbImageView.layoutToSuperview(.centerY)
         thumbImageView.layoutToSuperview(axis: .vertical, offset: 16, priority: .defaultHigh)
+        
+        thumbLabel.layout(to: .leading, of: thumbImageView)
+        thumbLabel.layout(to: .trailing, of: thumbImageView)
+        thumbLabel.layout(to: .top, of: thumbImageView)
+        thumbLabel.layout(to: .bottom, of: thumbImageView)
         
         stackView.layoutToSuperview(axis: .vertical, offset: 16)
         stackView.layout(edge: .leading, to: .trailing, of: thumbImageView, offset: 16)
@@ -97,12 +124,28 @@ final class SelectionItemTableViewCell: UITableViewCell {
         selectionImageView.layoutToSuperview(.centerY)
     }
     
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        guard selected else { return }
-        contentView.backgroundColor = .background
-        UIView.animate(withDuration: 0.2, animations: {
-            self.contentView.backgroundColor = .white
-        }, completion: nil)
+    @objc
+    private func touchDown() {
+        UIView.animate(
+            withDuration: 0.2,
+            delay: 0,
+            options: .beginFromCurrentState,
+            animations: {
+                self.contentView.backgroundColor = .hightlightedBackground
+            },
+            completion: nil)
+    }
+    
+    @objc
+    private func touchUp() {
+        UIView.animate(
+            withDuration: 0.2,
+            delay: 0,
+            options: .beginFromCurrentState,
+            animations: {
+                self.contentView.backgroundColor = .clear
+            },
+            completion: nil)
     }
 }
 

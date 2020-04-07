@@ -46,13 +46,21 @@ final class DashboardNoticePresenter {
     }
     
     private func displayLockboxNotice() {
+        typealias LocalizedString = LocalizationConstants.Dashboard.Balance
+        typealias AccessibilityId = Accessibility.Identifier.Dashboard.Notice
         let viewModel = NoticeViewModel(
-            image: "lockbox_icon",
+            imageViewContent: .init(
+                imageName: "lockbox-icon",
+                accessibility: .id(AccessibilityId.imageView),
+                bundle: .platformUIKit
+            ),
             labelContent: .init(
-                text: LocalizationConstants.Dashboard.Balance.lockboxNotice,
+                text: LocalizedString.lockboxNotice,
                 font: .mainMedium(12),
-                color: .descriptionText
-            )
+                color: .descriptionText,
+                accessibility: .id(AccessibilityId.label)
+            ),
+            verticalAlignment: .top
         )
         actionRelay.accept(.show(viewModel))
     }

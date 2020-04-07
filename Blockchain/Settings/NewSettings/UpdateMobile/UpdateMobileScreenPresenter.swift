@@ -69,8 +69,8 @@ final class UpdateMobileScreenPresenter {
         self.stateService = stateService
         textField = .init(
             with: .mobile,
-            validator: TextValidationFactory.mobile,
-            formatting: TextFormatterFactory.mobile,
+            validator: TextValidationFactory.Info.mobile,
+            formatter: TextFormatterFactory.mobile,
             messageRecorder: CrashlyticsRecorder()
         )
         

@@ -53,10 +53,14 @@ final class RecoverFundsScreenPresenter {
     let navBarStyle = Screen.Style.Bar.lightContent(ignoresStatusBar: false, background: .primary)
     let titleStyle = Screen.Style.TitleView.text(value: LocalizationConstants.Onboarding.RecoverFunds.title)
     let description = LocalizationConstants.Onboarding.RecoverFunds.description
-    let mnemonicTextViewModel = MnemonicTextViewViewModel(validator: TextValidationFactory.mnemonic(words: Set(WordList.default.words)))
+    let mnemonicTextViewModel = MnemonicTextViewViewModel(
+        validator: TextValidationFactory.Backup.mnemonic(
+            words: Set(WordList.default.words)
+        )
+    )
     let continueButtonViewModel = ButtonViewModel.primary(
-                                with: LocalizationConstants.Onboarding.PasswordRequiredScreen.continueButton
-                            )
+        with: LocalizationConstants.Onboarding.PasswordRequiredScreen.continueButton
+    )
     
     /// The total state of the view model
     var state: Driver<State> {

@@ -41,7 +41,7 @@ fileprivate extension CryptoCurrency {
             id: code,
             title: name,
             subtitle: displayCode,
-            thumbImage: .name(logoImageName)
+            thumb: .name(logoImageName)
         )
     }
 }

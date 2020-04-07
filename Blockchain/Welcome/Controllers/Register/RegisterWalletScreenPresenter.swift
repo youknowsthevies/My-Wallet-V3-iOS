@@ -83,16 +83,17 @@ final class RegisterWalletScreenPresenter {
         self.loadingViewPresenter = loadingViewPresenter
         self.interactor = interactor
         self.type = type
-        let newPasswordValidator = TextValidationFactory.newPassword
-        let confirmNewPasswordValidator = TextValidationFactory.newPassword
+        let newPasswordValidator = TextValidationFactory.Password.new
+        let confirmNewPasswordValidator = TextValidationFactory.Password.new
         let textMatchValidator = CollectionTextMatchValidator(
             newPasswordValidator,
-            confirmNewPasswordValidator
+            confirmNewPasswordValidator,
+            invalidReason: LocalizationConstants.TextField.Gesture.passwordMismatch
         )
         
         emailTextFieldViewModel = TextFieldViewModel(
             with: .email,
-            validator: TextValidationFactory.email,
+            validator: TextValidationFactory.Info.email,
             messageRecorder: CrashlyticsRecorder()
         )
         

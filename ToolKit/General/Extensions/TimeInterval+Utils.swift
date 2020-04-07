@@ -15,4 +15,7 @@ extension TimeInterval {
     
     /// Represents a week in second units
     public static let week: TimeInterval = day * 7
+    
+    /// Represents a year in second units
+    public static let year: TimeInterval = 365.0 * day
 }

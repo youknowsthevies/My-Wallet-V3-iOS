@@ -12,13 +12,36 @@ import RxCocoa
 import ToolKit
 import Localization
 
-
 /// A view model for text field
 public class TextFieldViewModel {
     
+    // MARK: - Type
+    
+    private typealias LocalizedString = LocalizationConstants.TextField
+        
     struct GestureMessage: Equatable {
         let message: String
         let isVisible: Bool
+    }
+    
+    public enum HintDisplayType {
+        
+        /// Varies in height
+        case dynamic
+        
+        /// Has constant height
+        case constant
+    }
+    
+    /// The trailing accessory view.
+    /// Can potentially support, images, labels and even custom views
+    public enum AccessoryContentType: Equatable {
+        
+        /// Image accessory view
+        case image(ImageViewContent)
+        
+        /// Empty accessory view
+        case empty
     }
     
     // MARK: Properties
@@ -31,16 +54,35 @@ public class TextFieldViewModel {
     /// Should text field gain focus or remove
     public let focusRelay = PublishRelay<Bool>()
     
-    /// The contentType of the `UITextField`
+    public var isHintVisible: Observable<Bool> {
+        isHintVisibleRelay.asObservable()
+    }
+    
+    var becameFirstResponder: Observable<Void> {
+        becameFirstResponderRelay.asObservable()
+    }
+    
+    let becameFirstResponderRelay = PublishRelay<Void>()
+    
+    /// The content type of the `UITextField`
     var contentType: Driver<UITextContentType?> {
         return contentTypeRelay
             .asDriver()
             .distinctUntilChanged()
     }
     
+    /// The keyboard type of the `UITextField`
+    var keyboardType: Driver<UIKeyboardType> {
+        return keyboardTypeRelay
+            .asDriver()
+            .distinctUntilChanged()
+    }
+    
     /// The isSecureTextEntry of the `UITextField`
     var isSecure: Driver<Bool> {
-        return isSecureRelay.asDriver()
+        return isSecureRelay
+            .asDriver()
+            .distinctUntilChanged()
     }
     
     /// The placeholder of the text-field
@@ -56,7 +98,10 @@ public class TextFieldViewModel {
     /// A text to display below the text field in case of an error
     var gestureMessage: Driver<GestureMessage> {
         return Driver
-            .combineLatest(hintRelay.asDriver(), isHintVisibleRelay.asDriver())
+            .combineLatest(
+                hintRelay.asDriver(),
+                isHintVisibleRelay.asDriver()
+            )
             .map {
                 GestureMessage(
                     message: $0.0,
@@ -74,21 +119,21 @@ public class TextFieldViewModel {
     var autocapitalizationType: Observable<UITextAutocapitalizationType> {
         autocapitalizationTypeRelay.asObservable()
     }
-    
-    var keyboardType: Observable<UIKeyboardType> {
-        keyboardTypeRelay.asObservable()
+                
+    /// A relay for accessory content type
+    let accessoryContentTypeRelay = BehaviorRelay<AccessoryContentType>(value: .empty)
+    var accessoryContentType: Observable<AccessoryContentType> {
+        accessoryContentTypeRelay
+            .distinctUntilChanged()
     }
-        
+    
     /// The content of the text field
     public let textRelay = BehaviorRelay<String>(value: "")
     var text: Observable<String> {
         return textRelay
-            .map(weak: self) { (self, value) -> String in
-                self.formatting.format(text: value).text
-            }
             .distinctUntilChanged()
     }
-    
+        
     let isHintVisibleRelay = BehaviorRelay(value: false)
     
     let font = UIFont.mainMedium(16)
@@ -105,9 +150,10 @@ public class TextFieldViewModel {
     
     // MARK: - Injected
     
-    let formatting: TextFormatting
     let validator: TextValidating
-    let textMatcher: CollectionTextMatchValidator?
+    let formatter: TextFormatting
+    let textMatcher: TextMatchValidatorAPI?
+    let hintDisplayType: HintDisplayType
     let type: TextFieldType
     let accessibility: Accessibility
     let messageRecorder: MessageRecording
@@ -115,15 +161,17 @@ public class TextFieldViewModel {
     // MARK: - Setup
     
     public init(with type: TextFieldType,
+                hintDisplayType: HintDisplayType = .dynamic,
                 validator: TextValidating,
-                formatting: TextFormatting = TextFormatterFactory.empty,
-                textMatcher: CollectionTextMatchValidator? = nil,
+                formatter: TextFormatting = TextFormatterFactory.alwaysCorrect,
+                textMatcher: TextMatchValidatorAPI? = nil,
                 messageRecorder: MessageRecording) {
         self.messageRecorder = messageRecorder
-        self.formatting = formatting
+        self.formatter = formatter
         self.validator = validator
         self.textMatcher = textMatcher
         self.type = type
+        self.hintDisplayType = hintDisplayType
         
         let placeholder = NSAttributedString(
             string: type.placeholder,
@@ -133,8 +181,8 @@ public class TextFieldViewModel {
             ]
         )
         autocapitalizationTypeRelay = BehaviorRelay(value: type.autocapitalizationType)
-        keyboardTypeRelay = BehaviorRelay(value: type.keyboardType)
         placeholderRelay = BehaviorRelay(value: placeholder)
+        keyboardTypeRelay = BehaviorRelay(value: type.keyboardType)
         contentTypeRelay = BehaviorRelay(value: type.contentType)
         isSecureRelay.accept(type.isSecure)
         accessibility = type.accessibility
@@ -143,59 +191,23 @@ public class TextFieldViewModel {
             .bind(to: validator.valueRelay)
             .disposed(by: disposeBag)
         
-        let hasMatch: Observable<Bool>
+        let matchState: Observable<TextValidationState>
         if let textMatcher = textMatcher {
-            hasMatch = textMatcher.isValid
+            matchState = textMatcher.validationState
         } else {
-            hasMatch = .just(true)
+            matchState = .just(.valid)
         }
-        
+                
         Observable
-            .combineLatest(hasMatch, validator.isValid, text.asObservable())
-            .map { (hasMatch, isValid, text) in
-                return State(hasMatch: hasMatch, validationPasses: isValid, text: text)
+            .combineLatest(matchState, validator.validationState, text.asObservable())
+            .map { (matchState, validationState, text) in
+                State(matchState: matchState, validationState: validationState, text: text)
             }
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
         
-        state
-            .map { state -> String in
-                switch state {
-                case .empty, .valid:
-                    return "" // No text representation
-                case .invalid:
-                    switch type {
-                    case .email:
-                        return LocalizationConstants.TextField.Gesture.invalidEmail
-                    case .recoveryPhrase:
-                        return LocalizationConstants.TextField.Gesture.invalidRecoveryPhrase
-                    case .oneTimeCode:
-                        return LocalizationConstants.TextField.Gesture.invalidCode
-                    case .newPassword,
-                         .confirmNewPassword,
-                         .password,
-                         .backupVerfication,
-                         .mobile:
-                        return ""
-                    case .walletIdentifier:
-                        return LocalizationConstants.TextField.Gesture.walletId
-                    }
-                case .mismatchError:
-                    switch type {
-                    case .confirmNewPassword, .newPassword:
-                        return LocalizationConstants.TextField.Gesture.passwordMismatch
-                    case .backupVerfication:
-                        return LocalizationConstants.TextField.Gesture.recoveryMismatch
-                    case .email,
-                         .password,
-                         .walletIdentifier,
-                         .recoveryPhrase,
-                         .mobile,
-                         .oneTimeCode:
-                        return ""
-                    }
-                }
-            }
+        self.state
+            .map { $0.hint ?? "" }
             .bind(to: hintRelay)
             .disposed(by: disposeBag)
     }
@@ -210,16 +222,14 @@ public class TextFieldViewModel {
         textRelay.accept(value)
         isHintVisibleRelay.accept(type.showsHintWhileTyping)
     }
-
-    func editIfNecessary(_ text: String) -> TextFormatType {
-        let type = formatting.format(text: text)
-        switch type {
-        case .changed(new: let formattedText):
-            textFieldEdited(with: formattedText)
-        case .keepExisting:
-            textFieldEdited(with: text)
+    
+    func editIfNecessary(_ text: String, operation: TextInputOperation) -> TextFormattingSource {
+        let processResult = formatter.format(text, operation: operation)
+        switch processResult {
+        case .formatted(to: let processedText), .original(text: let processedText):
+            textFieldEdited(with: processedText)
         }
-        return type
+        return processResult
     }
 }
 
@@ -237,11 +247,38 @@ extension TextFieldViewModel {
         case empty
         
         /// Mismatch error
-        case mismatchError
+        case mismatch(reason: String?)
         
         /// Invalid state - validation is not passing.
-        case invalid
+        case invalid(reason: String?)
     
+        var hint: String? {
+            switch self {
+            case .invalid(reason: let reason), .mismatch(reason: let reason):
+                return reason
+            default:
+                return nil
+            }
+        }
+
+        var isInvalid: Bool {
+            switch self {
+            case .invalid:
+                return true
+            default:
+                return false
+            }
+        }
+        
+        var isMismatch: Bool {
+            switch self {
+            case .mismatch:
+                return true
+            default:
+                return false
+            }
+        }
+        
         /// Returns the text value if there is a valid value
         public var value: String? {
             switch self {
@@ -251,7 +288,7 @@ extension TextFieldViewModel {
                 return nil
             }
         }
-        
+                
         /// Returns whether or not the currenty entry is valid
         public var isValid: Bool {
             switch self {
@@ -263,20 +300,20 @@ extension TextFieldViewModel {
         }
         
         /// Reducer for possible validation states
-        init(hasMatch: Bool, validationPasses: Bool, text: String) {
+        init(matchState: TextValidationState, validationState: TextValidationState, text: String) {
             guard !text.isEmpty else {
                 self = .empty
                 return
             }
-            switch (hasMatch, validationPasses, text) {
-            case (true, true, let text):
+            switch (matchState, validationState, text) {
+            case (.valid, .valid, let text):
                 self = .valid(value: text)
-            case (false, _, text):
-                self = .mismatchError
-            case (_, false, _):
-                self = .invalid
+            case (.invalid(reason: let reason), _, text):
+                self = .mismatch(reason: reason)
+            case (_, .invalid(reason: let reason), _):
+                self = .invalid(reason: reason)
             default:
-                self = .invalid
+                self = .invalid(reason: nil)
             }
         }
     }
@@ -289,7 +326,7 @@ extension TextFieldViewModel.State: Equatable {
                            rhs: TextFieldViewModel.State) -> Bool {
         switch (lhs, rhs) {
         case (.valid, .valid),
-             (.mismatchError, .mismatchError),
+             (.mismatch, .mismatch),
              (.invalid, .invalid),
              (.empty, .empty):
             return true

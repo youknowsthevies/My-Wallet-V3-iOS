@@ -60,12 +60,14 @@ final class SettingsScreenPresenter {
         case preferences
         case connect
         case security
+        case cards
         case about
         
         enum CellType: Hashable {
             case badge(BadgeCellType)
             case `switch`(SwitchCellType)
             case clipboard(ClipboardCellType)
+            case cards(CardsCellType)
             case plain(PlainCellType)
             
             enum BadgeCellType {
@@ -86,6 +88,11 @@ final class SettingsScreenPresenter {
             
             enum ClipboardCellType: String {
                 case walletID
+            }
+            
+            enum CardsCellType {
+                case linkedCard
+                case addCard
             }
             
             enum PlainCellType: String {
@@ -120,6 +127,8 @@ final class SettingsScreenPresenter {
     
     // MARK: - Cell Presenters
     
+    let linkedCardPresenter: LinkedCardCellPresenter
+    let addCardCellPresenter: AddCardCellPresenter
     let mobileCellPresenter: MobileVerificationCellPresenter
     let emailCellPresenter: EmailVerificationCellPresenter
     let preferredCurrencyCellPresenter: PreferredCurrencyCellPresenter
@@ -146,7 +155,8 @@ final class SettingsScreenPresenter {
          router: SettingsRouterAPI) {
         self.router = router
         self.interactor = interactor
-        
+        linkedCardPresenter = LinkedCardCellPresenter()
+        addCardCellPresenter = AddCardCellPresenter()
         emailNotificationsCellPresenter = EmailNotificationsSwitchCellPresenter(service: interactor.emailNotificationsService)
         emailCellPresenter = EmailVerificationCellPresenter(
             interactor: interactor.emailVerificationBadgeInteractor
@@ -221,6 +231,10 @@ extension SettingsScreenPresenter.Section.CellType {
             case .walletID:
                 return .settingsWalletIdCopyClick
             }
+        case .cards(let type):
+        // TODO: IOS-3100 - Analytics
+            // TODO: Analytics
+            return nil
         case .plain(let type):
             switch type {
             case .loginToWebWallet:
@@ -255,6 +269,8 @@ extension SettingsScreenPresenter.Section.CellType {
             case .recoveryPhrase:
                 return .showBackupScreen
             }
+        case .cards(let type):
+            return .none
         case .switch:
             return .none
         case .clipboard(let type):
@@ -283,6 +299,8 @@ extension SettingsScreenPresenter.Section.CellType {
 }
 
 extension SettingsScreenPresenter.Section {
+    // TODO: Async Arrangement - Fetch Linked Cards
+    // TICKET: IOS-3120
     var cellArrangement: [CellType] {
         switch self {
         case .profile:
@@ -296,6 +314,9 @@ extension SettingsScreenPresenter.Section {
                     .badge(.currencyPreference)]
         case .connect:
             return [.badge(.pitConnection)]
+        case .cards:
+            return [.cards(.linkedCard),
+                    .cards(.addCard)]
         case .security:
             var arrangement: [CellType] = [.switch(.sms2FA),
                                            .plain(.changePassword),
@@ -330,6 +351,8 @@ extension SettingsScreenPresenter.Section {
             return LocalizationConstants.Settings.Section.walletConnect
         case .security:
             return LocalizationConstants.Settings.Section.security
+        case .cards:
+            return LocalizationConstants.Settings.Section.linkedCards
         case .about:
             return LocalizationConstants.Settings.Section.about
         }
@@ -373,4 +396,3 @@ extension SettingsScreenPresenter.Section.CellType.PlainCellType {
         return self.rawValue
     }
 }
-

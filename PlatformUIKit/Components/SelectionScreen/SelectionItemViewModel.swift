@@ -6,12 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-
 public struct SelectionItemViewModel: Identifiable {
     
-    public enum ThumbImage {
+    public enum Thumb {
         case name(String)
+        case emoji(String)
         case none
     }
     
@@ -20,13 +19,13 @@ public struct SelectionItemViewModel: Identifiable {
     
     public let title: String
     public var subtitle: String
-    public let thumbImage: ThumbImage
+    public let thumb: Thumb
     
-    public init(id: String, title: String, subtitle: String, thumbImage: ThumbImage) {
+    public init(id: String, title: String, subtitle: String, thumb: Thumb) {
         self.id = id
         self.title = title
         self.subtitle = subtitle
-        self.thumbImage = thumbImage
+        self.thumb = thumb
     }
 }
 
@@ -39,5 +38,11 @@ extension SelectionItemViewModel: Equatable {
 extension SelectionItemViewModel: Comparable {
     public static func < (lhs: Self, rhs: Self) -> Bool {
         return lhs.title < rhs.title
+    }
+}
+
+extension SelectionItemViewModel: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }

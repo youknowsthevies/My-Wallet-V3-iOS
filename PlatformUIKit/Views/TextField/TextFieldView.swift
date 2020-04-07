@@ -32,6 +32,7 @@ public class TextFieldView: UIView {
     @IBOutlet private(set) var accessoryView: UIView!
     @IBOutlet private(set) var accessoryViewWidthConstraint: NSLayoutConstraint!
     
+    private weak var hintHeightConstraint: NSLayoutConstraint!
     private var keyboardInteractionController: KeyboardInteractionController!
     
     // Mutable since we would like to make the text field
@@ -86,22 +87,41 @@ public class TextFieldView: UIView {
         self.viewModel = viewModel
         disposeBag = DisposeBag()
         
+        if let hintHeightConstraint = hintHeightConstraint {
+            removeConstraint(hintHeightConstraint)
+        }
+        
+        if viewModel.hintDisplayType == .constant {
+            hintHeightConstraint = gestureMessageLabel.layout(dimension: .height, to: 16)
+        }
+        
         /// Set the accessibility property
         textField.accessibility = viewModel.accessibility
         
         textField.inputAccessoryView = keyboardInteractionController.toolbar
         textField.autocorrectionType = viewModel.type.autocorrectionType
         textField.returnKeyType = viewModel.type.returnKeyType
+        textField.autocapitalizationType = viewModel.type.autocapitalizationType
         textField.font = viewModel.font
         
+        /// Bind `accessoryContentType`
+        viewModel.accessoryContentType
+            .bind(to: rx.accessoryContentType)
+            .disposed(by: disposeBag)
+
         /// Bind `isSecure`
         viewModel.isSecure
             .drive(textField.rx.isSecureTextEntry)
             .disposed(by: disposeBag)
         
-        /// Bind contentType
+        /// Bind `contentType`
         viewModel.contentType
             .drive(textField.rx.contentType)
+            .disposed(by: disposeBag)
+        
+        /// Bind `keyboardType`
+        viewModel.keyboardType
+            .drive(textField.rx.keyboardType)
             .disposed(by: disposeBag)
         
         /// Bind `placeholder`
@@ -127,7 +147,7 @@ public class TextFieldView: UIView {
             .disposed(by: disposeBag)
         
         viewModel.keyboardType
-            .bind(to: textField.rx.keyboardType)
+            .drive(textField.rx.keyboardType)
             .disposed(by: disposeBag)
         
         viewModel.isEnabled
@@ -156,23 +176,54 @@ public class TextFieldView: UIView {
             },
             completion: nil)
     }
+    
+    fileprivate func set(accessoryContentType: TextFieldViewModel.AccessoryContentType) {
+        let resetAccessoryView = { [weak self] in
+            self?.accessoryView.subviews.forEach { $0.removeFromSuperview() }
+        }
+        
+        switch accessoryContentType {
+        case .empty:
+            resetAccessoryView()
+        case .image(let imageViewContent):
+            if let imageView = accessoryView.subviews.first as? UIImageView {
+                imageView.set(imageViewContent)
+            } else {
+                resetAccessoryView()
+                let imageView = UIImageView()
+                imageView.contentMode = .scaleAspectFit
+                imageView.set(imageViewContent)
+                imageView.layout(dimension: .width, to: 32)
+                accessoryView.addSubview(imageView)
+                imageView.layoutToSuperview(.leading)
+                imageView.layoutToSuperview(.trailing, offset: -16)
+                imageView.layoutToSuperview(axis: .vertical)
+            }
+        }
+    }
 }
 
 // MARK: UITextFieldDelegate
 
 extension TextFieldView: UITextFieldDelegate {
+    
+    public func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        viewModel.becameFirstResponderRelay.accept(())
+        return true
+    }
+    
     public func textField(_ textField: UITextField,
                           shouldChangeCharactersIn range: NSRange,
                           replacementString string: String) -> Bool {
         let text = textField.text ?? ""
         let input = (text as NSString).replacingCharacters(in: range, with: string)
-        
-        let formatType = viewModel.editIfNecessary(input)
-        switch formatType {
-        case .changed(new: let text):
+        let operation: TextInputOperation = string.isEmpty ? .deletion : .addition
+        let result = viewModel.editIfNecessary(input, operation: operation)
+        switch result {
+        case .formatted(to: let text):
             textField.text = text
             return false
-        case .keepExisting:
+        case .original:
             return true
         }
     }
@@ -190,6 +241,12 @@ extension TextFieldView: UITextFieldDelegate {
 // MARK: - Rx
 
 extension Reactive where Base: TextFieldView {
+    
+    fileprivate var accessoryContentType: Binder<TextFieldViewModel.AccessoryContentType> {
+        return Binder(base) { view, contentType in
+            view.set(accessoryContentType: contentType)
+        }
+    }
     
     /// Binder for the error handling
     fileprivate var gestureMessage: Binder<String> {

@@ -16,7 +16,7 @@ public final class SelectionScreenViewController: BaseScreenViewController {
     // MARK: - IBOutlets
     
     @IBOutlet private var tableView: UITableView!
-    
+
     // MARK: - Injected
     
     private let presenter: SelectionScreenPresenter
@@ -39,8 +39,8 @@ public final class SelectionScreenViewController: BaseScreenViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
+        setupSearchController()
         setupTableView()
-        presenter.viewDidLoad()
     }
     
     // MARK: - Setup
@@ -52,9 +52,22 @@ public final class SelectionScreenViewController: BaseScreenViewController {
         if let navController = navigationController {
             leading = navController.viewControllers.count > 1 ? .back : .close
         }
-        set(barStyle: .lightContent(ignoresStatusBar: false, background: .navigationBarBackground),
+        set(barStyle: .darkContent(ignoresStatusBar: false, background: .white),
             leadingButtonStyle: leading,
             trailingButtonStyle: .none)
+    }
+    
+    private func setupSearchController() {
+        let searchController = SearchController(placeholderText: presenter.searchBarPlaceholder)
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.hidesNavigationBarDuringPresentation = false
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+        definesPresentationContext = true
+        
+        searchController.text
+            .bind(to: presenter.searchTextRelay)
+            .disposed(by: disposeBag)
     }
     
     private func setupTableView() {
@@ -69,7 +82,7 @@ public final class SelectionScreenViewController: BaseScreenViewController {
         
         // Table view binding
         
-        presenter.presenters
+        presenter.displayPresenters
             .bind(
                 to: tableView.rx.items(
                     cellIdentifier: SelectionItemTableViewCell.objectName,
@@ -81,22 +94,13 @@ public final class SelectionScreenViewController: BaseScreenViewController {
             )
             .disposed(by: disposeBag)
 
-        tableView.rx.itemDeselected
-            .map { $0.row }
-            .bind(to: presenter.deselectionRelay)
-            .disposed(by: disposeBag)
-
-        tableView.rx.itemSelected
-            .map { $0.row }
-            .bind(to: presenter.selectionRelay)
-            .disposed(by: disposeBag)
-
-        presenter.selectionRelay
+        presenter.selection
             .take(1)
             .bind(weak: tableView) { (tableView, index) in
-                tableView?.selectRow(
+                tableView.scrollToRow(
                     at: IndexPath(row: index, section: 0),
-                    animated: true, scrollPosition: .top
+                    at: .middle,
+                    animated: true
                 )
             }
             .disposed(by: disposeBag)

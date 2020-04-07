@@ -214,7 +214,7 @@ class ExchangeCreateViewController: UIViewController {
 
         exchangeButton.setTitle(LocalizationConstants.Swap.exchange, for: .normal)
         
-        let isAboveSE = UIDevice.current.type.isAbove(.iPhoneSE)
+        let isAboveSE = DevicePresenter.type != .superCompact
         exchangeButtonBottomConstraint.constant = isAboveSE ? 16.0 : 0.0
         view.setNeedsLayout()
         view.layoutIfNeeded()
