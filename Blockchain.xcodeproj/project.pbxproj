@@ -534,6 +534,28 @@
 		3A373C452188CBCE00DDFAFD /* StellarTransactionCaching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A373C442188CBCE00DDFAFD /* StellarTransactionCaching.swift */; };
 		3A390750217E7D5A00D2DA01 /* StellarServiceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A39074F217E7D5A00D2DA01 /* StellarServiceProvider.swift */; };
 		3A390754217E7F6E00D2DA01 /* SendXLMInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A390753217E7F6E00D2DA01 /* SendXLMInterface.swift */; };
+		3A3BE014243CA8B900D7354A /* LibWally.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3BE006243CA8A100D7354A /* LibWally.framework */; };
+		3A3BE017243CA8FA00D7354A /* LibWally.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3BE006243CA8A100D7354A /* LibWally.framework */; };
+		3A3BE01B243CA93200D7354A /* LibWally.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3BE006243CA8A100D7354A /* LibWally.framework */; };
+		3A3BE01C243CA93200D7354A /* LibWally.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3BE006243CA8A100D7354A /* LibWally.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A3BE024243CB34E00D7354A /* FirebaseABTesting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF3A243B9232000FEFFB /* FirebaseABTesting.framework */; };
+		3A3BE025243CB34E00D7354A /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF2C243B922F000FEFFB /* FirebaseAnalytics.framework */; };
+		3A3BE026243CB34E00D7354A /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF32243B9230000FEFFB /* FirebaseCore.framework */; };
+		3A3BE027243CB34E00D7354A /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF2D243B922F000FEFFB /* FirebaseCoreDiagnostics.framework */; };
+		3A3BE028243CB34E00D7354A /* FirebaseCrashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF36243B9231000FEFFB /* FirebaseCrashlytics.framework */; };
+		3A3BE029243CB34E00D7354A /* FirebaseDynamicLinks.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF2A243B922F000FEFFB /* FirebaseDynamicLinks.framework */; };
+		3A3BE02A243CB34E00D7354A /* FirebaseInstallations.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF2B243B922F000FEFFB /* FirebaseInstallations.framework */; };
+		3A3BE02B243CB34E00D7354A /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF33243B9230000FEFFB /* FirebaseInstanceID.framework */; };
+		3A3BE02C243CB34E00D7354A /* FirebaseMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF39243B9232000FEFFB /* FirebaseMessaging.framework */; };
+		3A3BE02D243CB34E00D7354A /* FirebaseRemoteConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF20243B922E000FEFFB /* FirebaseRemoteConfig.framework */; };
+		3A3BE02E243CB34E00D7354A /* GoogleAppMeasurement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF31243B9230000FEFFB /* GoogleAppMeasurement.framework */; };
+		3A3BE02F243CB34E00D7354A /* GoogleDataTransport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF30243B9230000FEFFB /* GoogleDataTransport.framework */; };
+		3A3BE030243CB34E00D7354A /* GoogleDataTransportCCTSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF34243B9231000FEFFB /* GoogleDataTransportCCTSupport.framework */; };
+		3A3BE031243CB34E00D7354A /* GoogleUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF38243B9231000FEFFB /* GoogleUtilities.framework */; };
+		3A3BE032243CB34E00D7354A /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF37243B9231000FEFFB /* nanopb.framework */; };
+		3A3BE033243CB36900D7354A /* PromisesObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF2E243B922F000FEFFB /* PromisesObjC.framework */; };
+		3A3BE034243CB44A00D7354A /* FIRAnalyticsConnector.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF35243B9231000FEFFB /* FIRAnalyticsConnector.framework */; };
+		3A3BE035243CB46C00D7354A /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF2F243B9230000FEFFB /* Protobuf.framework */; };
 		3A3C7D532180E5D50067F442 /* SendXLMCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3C7D522180E5D50067F442 /* SendXLMCoordinator.swift */; };
 		3A3C7D75218126F40067F442 /* ActionableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3C7D74218126F40067F442 /* ActionableLabel.swift */; };
 		3A3C7D7821812A6B0067F442 /* ActionableTrigger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3C7D7721812A6B0067F442 /* ActionableTrigger.swift */; };
@@ -675,24 +697,6 @@
 		3A65064923E88EFA003A837D /* SimpleBuyPaymentAccountServiceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A65064823E88EFA003A837D /* SimpleBuyPaymentAccountServiceAPI.swift */; };
 		3A65064D23E890CA003A837D /* SimpleBuyPaymentAccountClientAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A65064C23E890CA003A837D /* SimpleBuyPaymentAccountClientAPI.swift */; };
 		3A655F2B23301283005C8C35 /* SparklineImageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A655F2A23301283005C8C35 /* SparklineImageProvider.swift */; };
-		3A67CF3B243B9232000FEFFB /* FirebaseRemoteConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF20243B922E000FEFFB /* FirebaseRemoteConfig.framework */; };
-		3A67CF3C243B9232000FEFFB /* FirebaseDynamicLinks.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF2A243B922F000FEFFB /* FirebaseDynamicLinks.framework */; };
-		3A67CF3D243B9232000FEFFB /* FirebaseInstallations.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF2B243B922F000FEFFB /* FirebaseInstallations.framework */; };
-		3A67CF3E243B9232000FEFFB /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF2C243B922F000FEFFB /* FirebaseAnalytics.framework */; };
-		3A67CF3F243B9232000FEFFB /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF2D243B922F000FEFFB /* FirebaseCoreDiagnostics.framework */; };
-		3A67CF40243B9232000FEFFB /* PromisesObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF2E243B922F000FEFFB /* PromisesObjC.framework */; };
-		3A67CF41243B9232000FEFFB /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF2F243B9230000FEFFB /* Protobuf.framework */; };
-		3A67CF42243B9232000FEFFB /* GoogleDataTransport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF30243B9230000FEFFB /* GoogleDataTransport.framework */; };
-		3A67CF43243B9232000FEFFB /* GoogleAppMeasurement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF31243B9230000FEFFB /* GoogleAppMeasurement.framework */; };
-		3A67CF44243B9232000FEFFB /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF32243B9230000FEFFB /* FirebaseCore.framework */; };
-		3A67CF45243B9232000FEFFB /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF33243B9230000FEFFB /* FirebaseInstanceID.framework */; };
-		3A67CF46243B9232000FEFFB /* GoogleDataTransportCCTSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF34243B9231000FEFFB /* GoogleDataTransportCCTSupport.framework */; };
-		3A67CF47243B9232000FEFFB /* FIRAnalyticsConnector.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF35243B9231000FEFFB /* FIRAnalyticsConnector.framework */; };
-		3A67CF48243B9232000FEFFB /* FirebaseCrashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF36243B9231000FEFFB /* FirebaseCrashlytics.framework */; };
-		3A67CF49243B9232000FEFFB /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF37243B9231000FEFFB /* nanopb.framework */; };
-		3A67CF4A243B9232000FEFFB /* GoogleUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF38243B9231000FEFFB /* GoogleUtilities.framework */; };
-		3A67CF4B243B9232000FEFFB /* FirebaseMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF39243B9232000FEFFB /* FirebaseMessaging.framework */; };
-		3A67CF4C243B9232000FEFFB /* FirebaseABTesting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF3A243B9232000FEFFB /* FirebaseABTesting.framework */; };
 		3A686566219A0BBB0009FF29 /* PlatformKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A68655D219A0BBA0009FF29 /* PlatformKit.framework */; };
 		3A68656F219A0BBB0009FF29 /* PlatformKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A68655F219A0BBB0009FF29 /* PlatformKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3A686572219A0BBB0009FF29 /* PlatformKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A68655D219A0BBA0009FF29 /* PlatformKit.framework */; };
@@ -2462,6 +2466,41 @@
 			remoteGlobalIDString = 3A6865AA219A11650009FF29;
 			remoteInfo = PlatformUIKit;
 		};
+		3A3BE005243CA8A100D7354A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A3BE000243CA8A100D7354A /* LibWally.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FE9CD3B1229C397900345DFA;
+			remoteInfo = LibWally;
+		};
+		3A3BE007243CA8A100D7354A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A3BE000243CA8A100D7354A /* LibWally.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FE9CD3BA229C397900345DFA;
+			remoteInfo = LibWallyTests;
+		};
+		3A3BE012243CA8B500D7354A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A3BE000243CA8A100D7354A /* LibWally.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = FE9CD3B0229C397900345DFA;
+			remoteInfo = LibWally;
+		};
+		3A3BE015243CA8F300D7354A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A3BE000243CA8A100D7354A /* LibWally.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = FE9CD3B0229C397900345DFA;
+			remoteInfo = LibWally;
+		};
+		3A3BE018243CA91A00D7354A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A3BE000243CA8A100D7354A /* LibWally.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = FE9CD3B0229C397900345DFA;
+			remoteInfo = LibWally;
+		};
 		3A4E488B21BF3070001A799D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
@@ -2617,13 +2656,6 @@
 			remoteInfo = Localization;
 		};
 		3AD00A7823C3C96F004BF792 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 3AD00A5823C3AAF2004BF792;
-			remoteInfo = Localization;
-		};
-		3AD00A8123C3DF28004BF792 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
 			proxyType = 1;
@@ -2872,6 +2904,7 @@
 				3A6865F3219A26A30009FF29 /* StellarKit.framework in Embed Frameworks */,
 				34C3C98B2305A593008F2154 /* HDWalletKit.framework in Embed Frameworks */,
 				3A686573219A0BBB0009FF29 /* PlatformKit.framework in Embed Frameworks */,
+				3A3BE01C243CA93200D7354A /* LibWally.framework in Embed Frameworks */,
 				340ABD75230AAF5C0032278D /* CommonCryptoKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -3401,6 +3434,7 @@
 		3A390747217E52AB00D2DA01 /* StellarLedgerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarLedgerService.swift; sourceTree = "<group>"; };
 		3A39074F217E7D5A00D2DA01 /* StellarServiceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarServiceProvider.swift; sourceTree = "<group>"; };
 		3A390753217E7F6E00D2DA01 /* SendXLMInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendXLMInterface.swift; sourceTree = "<group>"; };
+		3A3BE000243CA8A100D7354A /* LibWally.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LibWally.xcodeproj; path = "Submodules/libwally-swift/LibWally.xcodeproj"; sourceTree = "<group>"; };
 		3A3C7D3A217F9ED50067F442 /* StellarLedger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarLedger.swift; sourceTree = "<group>"; };
 		3A3C7D522180E5D50067F442 /* SendXLMCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendXLMCoordinator.swift; sourceTree = "<group>"; };
 		3A3C7D74218126F40067F442 /* ActionableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionableLabel.swift; sourceTree = "<group>"; };
@@ -6521,6 +6555,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A3BE014243CA8B900D7354A /* LibWally.framework in Frameworks */,
 				3AA77043243B7E8F005CC949 /* CommonCryptoKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -6610,6 +6645,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A3BE017243CA8FA00D7354A /* LibWally.framework in Frameworks */,
 				3491E07E230C477C0096AA68 /* HDWalletKit.framework in Frameworks */,
 				34EE993123AB921F00074EC0 /* NetworkKit.framework in Frameworks */,
 				3A82A611243B804B0021B4C2 /* BigInt.framework in Frameworks */,
@@ -6773,30 +6809,31 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3A67CF3B243B9232000FEFFB /* FirebaseRemoteConfig.framework in Frameworks */,
+				3A3BE035243CB46C00D7354A /* Protobuf.framework in Frameworks */,
+				3A3BE034243CB44A00D7354A /* FIRAnalyticsConnector.framework in Frameworks */,
+				3A3BE033243CB36900D7354A /* PromisesObjC.framework in Frameworks */,
+				3A3BE024243CB34E00D7354A /* FirebaseABTesting.framework in Frameworks */,
+				3A3BE025243CB34E00D7354A /* FirebaseAnalytics.framework in Frameworks */,
+				3A3BE026243CB34E00D7354A /* FirebaseCore.framework in Frameworks */,
+				3A3BE027243CB34E00D7354A /* FirebaseCoreDiagnostics.framework in Frameworks */,
+				3A3BE028243CB34E00D7354A /* FirebaseCrashlytics.framework in Frameworks */,
+				3A3BE029243CB34E00D7354A /* FirebaseDynamicLinks.framework in Frameworks */,
+				3A3BE02A243CB34E00D7354A /* FirebaseInstallations.framework in Frameworks */,
+				3A3BE02B243CB34E00D7354A /* FirebaseInstanceID.framework in Frameworks */,
+				3A3BE02C243CB34E00D7354A /* FirebaseMessaging.framework in Frameworks */,
+				3A3BE02D243CB34E00D7354A /* FirebaseRemoteConfig.framework in Frameworks */,
+				3A3BE02E243CB34E00D7354A /* GoogleAppMeasurement.framework in Frameworks */,
+				3A3BE02F243CB34E00D7354A /* GoogleDataTransport.framework in Frameworks */,
+				3A3BE030243CB34E00D7354A /* GoogleDataTransportCCTSupport.framework in Frameworks */,
+				3A3BE031243CB34E00D7354A /* GoogleUtilities.framework in Frameworks */,
+				3A3BE032243CB34E00D7354A /* nanopb.framework in Frameworks */,
 				3A4810CC243B95BD00992842 /* scrypt.framework in Frameworks */,
-				3A67CF3C243B9232000FEFFB /* FirebaseDynamicLinks.framework in Frameworks */,
 				3A4810CD243B95BD00992842 /* secp256k1.framework in Frameworks */,
-				3A67CF3D243B9232000FEFFB /* FirebaseInstallations.framework in Frameworks */,
-				3A67CF3E243B9232000FEFFB /* FirebaseAnalytics.framework in Frameworks */,
-				3A67CF3F243B9232000FEFFB /* FirebaseCoreDiagnostics.framework in Frameworks */,
-				3A67CF40243B9232000FEFFB /* PromisesObjC.framework in Frameworks */,
-				3A67CF41243B9232000FEFFB /* Protobuf.framework in Frameworks */,
-				3A67CF42243B9232000FEFFB /* GoogleDataTransport.framework in Frameworks */,
-				3A67CF43243B9232000FEFFB /* GoogleAppMeasurement.framework in Frameworks */,
-				3A67CF44243B9232000FEFFB /* FirebaseCore.framework in Frameworks */,
-				3A67CF45243B9232000FEFFB /* FirebaseInstanceID.framework in Frameworks */,
-				3A67CF46243B9232000FEFFB /* GoogleDataTransportCCTSupport.framework in Frameworks */,
-				3A67CF47243B9232000FEFFB /* FIRAnalyticsConnector.framework in Frameworks */,
 				3A4810CF243B95BD00992842 /* web3swift.framework in Frameworks */,
-				3A67CF48243B9232000FEFFB /* FirebaseCrashlytics.framework in Frameworks */,
 				3A4810C4243B95BD00992842 /* keccak.framework in Frameworks */,
-				3A67CF49243B9232000FEFFB /* nanopb.framework in Frameworks */,
+				3A3BE01B243CA93200D7354A /* LibWally.framework in Frameworks */,
 				3A4810C2243B95BD00992842 /* BigInt.framework in Frameworks */,
-				3A67CF4A243B9232000FEFFB /* GoogleUtilities.framework in Frameworks */,
-				3A67CF4B243B9232000FEFFB /* FirebaseMessaging.framework in Frameworks */,
 				3A4810C8243B95BD00992842 /* RxCocoa.framework in Frameworks */,
-				3A67CF4C243B9232000FEFFB /* FirebaseABTesting.framework in Frameworks */,
 				340ABD74230AAF5C0032278D /* CommonCryptoKit.framework in Frameworks */,
 				3A4810C6243B95BD00992842 /* PromiseKit.framework in Frameworks */,
 				3A4810CA243B95BD00992842 /* RxSwift.framework in Frameworks */,
@@ -8594,6 +8631,15 @@
 				3A53DB60226FA6A600CBCB6E /* Stellar */,
 			);
 			path = Interfaces;
+			sourceTree = "<group>";
+		};
+		3A3BE001243CA8A100D7354A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3A3BE006243CA8A100D7354A /* LibWally.framework */,
+				3A3BE008243CA8A100D7354A /* LibWallyTests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		3A3C7D73218126E00067F442 /* ActionableLabel */ = {
@@ -15084,6 +15130,8 @@
 		9FB3637414B60128004BEA02 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3A3BE022243CB32400D7354A /* Info.plist */,
+				3A3BE000243CA8A100D7354A /* LibWally.xcodeproj */,
 				3A67CF35243B9231000FEFFB /* FIRAnalyticsConnector.framework */,
 				3A67CF3A243B9232000FEFFB /* FirebaseABTesting.framework */,
 				3A67CF2C243B922F000FEFFB /* FirebaseAnalytics.framework */,
@@ -16543,6 +16591,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				3A3BE013243CA8B500D7354A /* PBXTargetDependency */,
 				3AA77042243B7E8A005CC949 /* PBXTargetDependency */,
 			);
 			name = HDWalletKit;
@@ -16696,6 +16745,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				3A3BE016243CA8F300D7354A /* PBXTargetDependency */,
 				3A82A621243B807F0021B4C2 /* PBXTargetDependency */,
 				3A82A61F243B807A0021B4C2 /* PBXTargetDependency */,
 				34EE989F23AA81B000074EC0 /* PBXTargetDependency */,
@@ -16942,6 +16992,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				3A3BE019243CA91A00D7354A /* PBXTargetDependency */,
 				340ABD73230AAF5C0032278D /* PBXTargetDependency */,
 				34C3C9892305A593008F2154 /* PBXTargetDependency */,
 				3A686571219A0BBB0009FF29 /* PBXTargetDependency */,
@@ -16952,7 +17003,6 @@
 				34EE982A23AA595100074EC0 /* PBXTargetDependency */,
 				34EE987023AA5B3100074EC0 /* PBXTargetDependency */,
 				3AD00A5F23C3AAF3004BF792 /* PBXTargetDependency */,
-				3AD00A8223C3DF28004BF792 /* PBXTargetDependency */,
 			);
 			name = Blockchain;
 			productName = Blockchain;
@@ -17140,6 +17190,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 3A3BE001243CA8A100D7354A /* Products */;
+					ProjectRef = 3A3BE000243CA8A100D7354A /* LibWally.xcodeproj */;
+				},
+				{
 					ProductGroup = 604599492118BEE500AE08C8 /* Products */;
 					ProjectRef = 604599482118BEE500AE08C8 /* OpenSSL-for-iOS.xcodeproj */;
 				},
@@ -17183,6 +17237,20 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		3A3BE006243CA8A100D7354A /* LibWally.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = LibWally.framework;
+			remoteRef = 3A3BE005243CA8A100D7354A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		3A3BE008243CA8A100D7354A /* LibWallyTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = LibWallyTests.xctest;
+			remoteRef = 3A3BE007243CA8A100D7354A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		604599372118BDC000AE08C8 /* SocketRocket.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -19868,6 +19936,21 @@
 			target = 3A6865AA219A11650009FF29 /* PlatformUIKit */;
 			targetProxy = 3A3164E3243B6546008413E2 /* PBXContainerItemProxy */;
 		};
+		3A3BE013243CA8B500D7354A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LibWally;
+			targetProxy = 3A3BE012243CA8B500D7354A /* PBXContainerItemProxy */;
+		};
+		3A3BE016243CA8F300D7354A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LibWally;
+			targetProxy = 3A3BE015243CA8F300D7354A /* PBXContainerItemProxy */;
+		};
+		3A3BE019243CA91A00D7354A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LibWally;
+			targetProxy = 3A3BE018243CA91A00D7354A /* PBXContainerItemProxy */;
+		};
 		3A4E488C21BF3070001A799D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3A4E488021BF3070001A799D /* BitcoinKit */;
@@ -19982,11 +20065,6 @@
 			isa = PBXTargetDependency;
 			target = 3AD00A5823C3AAF2004BF792 /* Localization */;
 			targetProxy = 3AD00A7823C3C96F004BF792 /* PBXContainerItemProxy */;
-		};
-		3AD00A8223C3DF28004BF792 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 3AD00A5823C3AAF2004BF792 /* Localization */;
-			targetProxy = 3AD00A8123C3DF28004BF792 /* PBXContainerItemProxy */;
 		};
 		519435A4208E61F3001EF882 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -21695,6 +21773,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -21777,6 +21856,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -21859,6 +21939,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -21922,6 +22003,7 @@
 				DYLIB_CURRENT_VERSION = 0;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -21972,6 +22054,7 @@
 				DYLIB_CURRENT_VERSION = 0;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -24338,6 +24421,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -24424,6 +24508,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -24510,6 +24595,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -24576,6 +24662,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -28089,7 +28176,10 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/lib",
 				);
-				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rainydayapps.Blockchain;
 				PRODUCT_NAME = Blockchain;
@@ -28209,7 +28299,10 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/lib",
 				);
-				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rainydayapps.Blockchain;
 				PRODUCT_NAME = Blockchain;
@@ -28328,7 +28421,10 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/lib",
 				);
-				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rainydayapps.Blockchain;
 				PRODUCT_NAME = Blockchain;
@@ -28735,7 +28831,10 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/lib",
 				);
-				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rainydayapps.Blockchain;
 				PRODUCT_NAME = Blockchain;
@@ -28853,7 +28952,10 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/lib",
 				);
-				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rainydayapps.Blockchain;
 				PRODUCT_NAME = Blockchain;
@@ -29274,6 +29376,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
