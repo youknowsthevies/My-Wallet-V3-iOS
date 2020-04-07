@@ -19,15 +19,28 @@ public final class SimpleBuyFlowAvailabilityService: SimpleBuyFlowAvailabilitySe
             .flatMap(weak: self) { (self, _: ()) in
                 Observable
                     .combineLatest(
-                        self.isFiatCurrencySupported,
                         self.isCoinifyEnabled.asObservable(),
                         self.userHasCoinify.asObservable()
                     )
-                    .map { isFiatCurrencySupported, isCoinifyEnabled, userHasCoinify in
-                        isFiatCurrencySupported && (!isCoinifyEnabled || !userHasCoinify)
+                    .map { isCoinifyEnabled, userHasCoinify in
+                         (!isCoinifyEnabled || !userHasCoinify)
                     }
                     .catchErrorJustReturn(false)
         }
+    }
+    
+    /// Indicates that the current Fiat Currency is supported by Simple Buy remotely.
+    public func isFiatCurrencySupportedRemote(currency: FiatCurrency) -> Single<Bool> {
+        supportedPairsService
+            .fetchPairs(for: .only(fiatCurrency: currency))
+            /// Backend has at least one pair for the given fiat currency
+            .map { !$0.pairs.isEmpty  }
+    }
+    
+    /// Indicates that the current Fiat Currency is supported by Simple Buy locally.
+    public func isFiatCurrencySupportedLocal(currency: FiatCurrency) -> Single<Bool> {
+        /// Frontend has implemented logic for the given fiat currency
+        Single.just(SimpleBuyLocallySupportedCurrencies.fiatCurrencies.contains(currency))
     }
 
     /// Indicates that the user traded with Coinify before
@@ -44,20 +57,6 @@ public final class SimpleBuyFlowAvailabilityService: SimpleBuyFlowAvailabilitySe
     /// Indicates that Coinify Feature Flag is enabled.
     private var isCoinifyEnabled: Single<Bool> {
         featureFetcher.fetchBool(for: .coinifyEnabled)
-    }
-
-    /// Indicates that the current Fiat Currency is supported by Simple Buy remotely.
-    private func isFiatCurrencySupportedRemote(currency: FiatCurrency) -> Single<Bool> {
-        supportedPairsService
-            .fetchPairs(for: .only(fiatCurrency: currency))
-            /// Backend has at least one pair for the given fiat currency
-            .map { !$0.pairs.isEmpty  }
-    }
-
-    /// Indicates that the current Fiat Currency is supported by Simple Buy locally.
-    private func isFiatCurrencySupportedLocal(currency: FiatCurrency) -> Single<Bool> {
-        /// Frontend has implemented logic for the given fiat currency
-        Single.just(SimpleBuyLocallySupportedCurrencies.fiatCurrencies.contains(currency))
     }
 
     /// Indicates that the current Fiat Currency is supported by Simple Buy both locally and remotely.

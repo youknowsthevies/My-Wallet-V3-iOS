@@ -74,6 +74,20 @@ public final class SelectionScreenViewController: BaseScreenViewController {
         
         // Table view setup
         
+        if let viewModel = presenter.tableHeaderViewModel {
+            let width = tableView.bounds.width
+            let height = SelectionScreenTableHeaderView.estimatedHeight(for: width, model: viewModel)
+            let headerView = SelectionScreenTableHeaderView(frame: .init(
+                origin: .zero,
+                size: .init(
+                    width: width,
+                    height: height
+                ))
+            )
+            headerView.viewModel = viewModel
+            tableView.tableHeaderView = headerView
+        }
+        
         tableView.register(SelectionItemTableViewCell.self)
         tableView.tableFooterView = UIView()
         tableView.estimatedRowHeight = 72
@@ -94,7 +108,7 @@ public final class SelectionScreenViewController: BaseScreenViewController {
             )
             .disposed(by: disposeBag)
 
-        presenter.selection
+        presenter.preselection
             .take(1)
             .bind(weak: tableView) { (tableView, index) in
                 tableView.scrollToRow(
@@ -102,6 +116,17 @@ public final class SelectionScreenViewController: BaseScreenViewController {
                     at: .middle,
                     animated: true
                 )
+            }
+            .disposed(by: disposeBag)
+        
+        presenter.selection
+            .bind(weak: self) { (self) in
+                self.presenter.recordSelection()
+                if let navController = self.navigationController {
+                    navController.popViewController(animated: true)
+                } else {
+                    self.dismiss(animated: true, completion: nil)
+                }
             }
             .disposed(by: disposeBag)
     }

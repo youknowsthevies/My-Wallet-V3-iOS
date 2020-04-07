@@ -39,6 +39,11 @@ protocol SimpleBuyCheckoutServiceAPI: RoutingPreviousStateEmitterAPI {
     func checkout(with checkoutData: SimpleBuyCheckoutData)
     func ineligible(with checkoutData: SimpleBuyCheckoutData)
     func kyc(with checkoutData: SimpleBuyCheckoutData)
+    func changeCurrency()
+}
+
+protocol SimpleBuyElibilityRelayAPI: RoutingPreviousStateEmitterAPI {
+    func ineligible(with currency: FiatCurrency)
 }
 
 /// A confirm-checkout service API
@@ -61,4 +66,5 @@ typealias SimpleBuyStateServiceAPI = RoutingStateEmitterAPI &
                                      SimpleBuyConfirmCheckoutServiceAPI &
                                      SimpleBuyStateCacheProviderAPI &
                                      SimpleBuyCheckoutServiceAPI &
-                                     SimpleBuyCancelTransferServiceAPI
+                                     SimpleBuyCancelTransferServiceAPI &
+                                     SimpleBuyElibilityRelayAPI

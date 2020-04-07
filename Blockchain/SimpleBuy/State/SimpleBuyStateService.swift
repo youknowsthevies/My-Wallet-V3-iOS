@@ -58,9 +58,19 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
         
         /// First time the user performs the simple buy flow
         case intro
+        
+        /// Fiat Selection
+        case selectFiat
+        
+        /// Fiat selection is not supported in SB
+        case unsupportedFiat(FiatCurrency)
                         
         /// In the middle of the buy screen
         case buy
+        
+        /// Change your fiat type from the `Buy` screen.
+        /// Shows only supported `fiat` types
+        case changeFiat
         
         /// During KYC process
         case kyc(SimpleBuyCheckoutData)
@@ -119,6 +129,8 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
 
     let cache: SimpleBuyEventCache
     
+    private let userInformationProviding: UserInformationServiceProviding
+    private let availabilityService: SimpleBuyFlowAvailabilityServiceAPI
     private let alertPresenter: AlertViewPresenter
     private let loadingViewPresenter: LoadingViewPresenting
     private let pendingOrderDetailsService: SimpleBuyPendingOrderDetailsServiceAPI
@@ -132,7 +144,11 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
     init(alertPresenter: AlertViewPresenter = .shared,
          loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
          pendingOrderDetailsService: SimpleBuyPendingOrderDetailsServiceAPI = SimpleBuyServiceProvider.default.pendingOrderDetails,
-         cache: SimpleBuyEventCache = SimpleBuyServiceProvider.default.cache) {
+         flowAvailabilityService: SimpleBuyFlowAvailabilityServiceAPI = SimpleBuyServiceProvider.default.flowAvailability,
+         cache: SimpleBuyEventCache = SimpleBuyServiceProvider.default.cache,
+         serviceProviding: UserInformationServiceProviding = UserInformationServiceProvider.default) {
+        self.availabilityService = flowAvailabilityService
+        self.userInformationProviding = serviceProviding
         self.alertPresenter = alertPresenter
         self.loadingViewPresenter = loadingViewPresenter
         self.pendingOrderDetailsService = pendingOrderDetailsService
@@ -157,6 +173,12 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
         case .inactive:
             startFlow()
         case .intro:
+            state = .selectFiat
+            apply(
+                action: .next(to: state),
+                states: states.states(byAppending: state)
+            )
+        case .selectFiat:
             state = .buy
             apply(
                 action: .next(to: state),
@@ -174,7 +196,11 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
                 action: .next(to: state),
                 states: states.states(byAppending: state)
             )
-        case .transferDetails, .pendingOrderDetails, .transferCancellation:
+        case .transferDetails,
+             .pendingOrderDetails,
+             .transferCancellation,
+             .unsupportedFiat,
+             .changeFiat:
             state = .inactive
             apply(
                 action: .dismiss,
@@ -193,7 +219,10 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
         switch (last, current) {
         /// Dismiss in case the current state is `inactive`.
         /// Dismiss in case the last state is `pendingKycApproval` (end user tapped the continue button)
-        case (_, .inactive), (.pendingKycApproval, _):
+        case (_, .inactive),
+             (.pendingKycApproval, _),
+             (_, .selectFiat),
+             (_, .changeFiat):
             action = .dismiss
         default:
             action = .previous(from: last)
@@ -203,16 +232,24 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
     
     private func startFlow() {
         let cache = self.cache
-        pendingOrderDetailsService.orderDetails
+        let isFiatCurrencySupported = userInformationProviding
+            .settings
+            .fiatCurrency
+            .flatMap(weak: self) { (self, currency) -> Single<Bool> in
+                self.availabilityService.isFiatCurrencySupportedLocal(currency: currency)
+            }
+        Single.zip(pendingOrderDetailsService.orderDetails,
+                   isFiatCurrencySupported)
             .handleLoaderForLifecycle(
                 loader: loadingViewPresenter,
                 style: .circle
             )
             .map { data -> State in
-                if let data = data {
+                let isFiatCurrencySupported = data.1
+                if let data = data.0 {
                     return .pendingOrderDetails(data)
                 } else {
-                    return cache[.hasShownIntroScreen] ? .buy : .intro
+                    return cache[.hasShownIntroScreen] ? (isFiatCurrencySupported ? .buy : .selectFiat) : .intro
                 }
             }
             .subscribe(
@@ -260,6 +297,16 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
     }
 }
 
+// MARK: - SimpleBuyElibilityRelayAPI
+
+extension SimpleBuyStateService: SimpleBuyElibilityRelayAPI {
+    
+    func ineligible(with currency: FiatCurrency) {
+        let states = statesRelay.value.states(byAppending: .unsupportedFiat(currency))
+        apply(action: .next(to: states.current), states: states)
+    }
+}
+
 // MARK: - SimpleBuyCheckoutServiceAPI
 
 extension SimpleBuyStateService: SimpleBuyCheckoutServiceAPI {
@@ -275,6 +322,11 @@ extension SimpleBuyStateService: SimpleBuyCheckoutServiceAPI {
 
     func ineligible(with checkoutData: SimpleBuyCheckoutData) {
         let states = statesRelay.value.states(byAppending: .pendingKycApproval(checkoutData))
+        apply(action: .next(to: states.current), states: states)
+    }
+    
+    func changeCurrency() {
+        let states = statesRelay.value.states(byAppending: .changeFiat)
         apply(action: .next(to: states.current), states: states)
     }
 }

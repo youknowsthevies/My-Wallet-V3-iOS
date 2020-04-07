@@ -9,6 +9,7 @@
 import RxSwift
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 protocol SimpleBuyRouterAPI: class {
     func start()
@@ -20,6 +21,10 @@ protocol SimpleBuyRouterAPI: class {
 /// This object is used as a router for Simple-Buy flow
 final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     
+    // MARK: - Types
+    
+    private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
+    
     // MARK: - `Router` Properties
     
     weak var topMostViewControllerProvider: TopMostViewControllerProviding!
@@ -27,6 +32,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
 
     // MARK: - Private Properties
     
+    private let analyticsRecording: AnalyticsEventRecording
     private let stateService: SimpleBuyStateServiceAPI
     private let kycRouter: KYCRouterAPI
     private let kycServiceProvider: KYCServiceProviderAPI
@@ -45,9 +51,11 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     init(serviceProvider: SimpleBuyServiceProviderAPI = SimpleBuyServiceProvider.default,
          stateService: SimpleBuyStateServiceAPI = SimpleBuyStateService(),
          kycServiceProvider: KYCServiceProviderAPI = KYCServiceProvider.default,
+         analyticsRecording: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
          topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
          kycRouter: KYCRouterAPI = KYCCoordinator.shared,
          dataProviding: DataProviding = DataProvider.default) {
+        self.analyticsRecording = analyticsRecording
         self.serviceProvider = serviceProvider
         self.stateService = stateService
         self.kycServiceProvider = kycServiceProvider
@@ -97,6 +105,26 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
         switch state {
         case .intro:
             showIntroScreen()
+        case .changeFiat:
+            let settingsService = UserInformationServiceProvider.default.settings
+            settingsService
+                .fiatCurrency
+                .observeOn(MainScheduler.instance)
+                .subscribe(onSuccess: { [weak self] currency in
+                    self?.showFiatCurrencyChangeScreen(selectedCurrency: currency)
+                })
+                .disposed(by: disposeBag)
+        case .selectFiat:
+            let settingsService = UserInformationServiceProvider.default.settings
+            settingsService
+                .fiatCurrency
+                .observeOn(MainScheduler.instance)
+                .subscribe(onSuccess: { [weak self] currency in
+                    self?.showFiatCurrencySelectionScreen(selectedCurrency: currency)
+                })
+                .disposed(by: disposeBag)
+        case .unsupportedFiat(let currency):
+            showInelligibleCurrency(with: currency)
         case .buy:
             showBuyCryptoScreen()
         case .checkout(let data):
@@ -125,6 +153,112 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
         default:
             dismiss()
         }
+    }
+    
+    private func showFiatCurrencyChangeScreen(selectedCurrency: FiatCurrency) {
+        let selectionService = FiatCurrencySelectionService(
+            defaultSelectedData: selectedCurrency,
+            availableCurrencies: SimpleBuyLocallySupportedCurrencies.fiatCurrencies
+        )
+        let interactor = SelectionScreenInteractor(service: selectionService)
+        let presenter = SelectionScreenPresenter(
+            title: LocalizationConstants.localCurrency,
+            description: LocalizationConstants.localCurrencyDescription,
+            searchBarPlaceholder: LocalizationConstants.Settings.SelectCurrency.searchBarPlaceholder,
+            interactor: interactor
+        )
+        let viewController = SelectionScreenViewController(presenter: presenter)
+        analyticsRecording.record(event: AnalyticsEvent.sbCurrencySelectScreen)
+        present(viewController: viewController)
+        
+        interactor.selectedIdOnDismissal
+            .map { FiatCurrency(code: $0)! }
+            .flatMap(weak: self, { (self, currency) -> Single<(FiatCurrency, Bool)> in
+                // TICKET: IOS-3144
+                UserInformationServiceProvider.default.settings
+                .update(
+                    currency: currency,
+                    context: .settings
+                )
+                .andThen(Single.zip(
+                    Single.just(currency),
+                    self.serviceProvider.flowAvailability.isFiatCurrencySupportedLocal(currency: currency)
+                ))
+            })
+            .observeOn(MainScheduler.instance)
+            .subscribe(
+                onSuccess: { [weak self] value in
+                    guard let self = self else { return }
+                    /// TODO: Remove this and `fiatCurrencySelected` once `ReceiveBTC` and
+                    /// `SendBTC` are replaced with Swift implementations.
+                    NotificationCenter.default.post(name: .fiatCurrencySelected, object: nil)
+                    self.analyticsRecording.record(event: AnalyticsEvent.sbCurrencySelected(currencyCode: value.0.code))
+                    
+                    self.stateService.previousRelay.accept(())
+                })
+            .disposed(by: disposeBag)
+    }
+    
+    private func showFiatCurrencySelectionScreen(selectedCurrency: FiatCurrency) {
+        let selectionService = FiatCurrencySelectionService(defaultSelectedData: selectedCurrency)
+        let interactor = SelectionScreenInteractor(service: selectionService)
+        let presenter = SelectionScreenPresenter(
+            title: LocalizationConstants.localCurrency,
+            description: LocalizationConstants.localCurrencyDescription,
+            shouldPreselect: false,
+            searchBarPlaceholder: LocalizationConstants.Settings.SelectCurrency.searchBarPlaceholder,
+            interactor: interactor
+        )
+        let viewController = SelectionScreenViewController(presenter: presenter)
+        if #available(iOS 13.0, *) {
+            viewController.isModalInPresentation = true
+        }
+        present(viewController: viewController, using: .modalOverTopMost)
+        
+        interactor.selectedIdOnDismissal
+            .map { FiatCurrency(code: $0)! }
+            .flatMap(weak: self, { (self, currency) -> Single<(FiatCurrency, Bool)> in
+                // TICKET: IOS-3144
+                UserInformationServiceProvider.default.settings
+                .update(
+                    currency: currency,
+                    context: .settings
+                )
+                .andThen(Single.zip(
+                    Single.just(currency),
+                    self.serviceProvider.flowAvailability.isFiatCurrencySupportedLocal(currency: currency)
+                ))
+            })
+            .observeOn(MainScheduler.instance)
+            .subscribe(
+                onSuccess: { [weak self] value in
+                    guard let self = self else { return }
+                    /// TODO: Remove this and `fiatCurrencySelected` once `ReceiveBTC` and
+                    /// `SendBTC` are replaced with Swift implementations.
+                    NotificationCenter.default.post(name: .fiatCurrencySelected, object: nil)
+                    self.analyticsRecording.record(event: AnalyticsEvent.sbCurrencySelected(currencyCode: value.0.code))
+                    
+                    let isFiatCurrencySupported = value.1
+                    let currency = value.0
+                    
+                    self.dismiss {
+                        if !isFiatCurrencySupported {
+                            self.stateService.ineligible(with: currency)
+                        } else {
+                            self.stateService.nextRelay.accept(())
+                        }
+                    }
+                })
+            .disposed(by: disposeBag)
+    }
+    
+    private func showInelligibleCurrency(with currency: FiatCurrency) {
+        let presenter = SimpleBuyIneligibleCurrencyScreenPresenter(currency: currency)
+        let controller = SimpleBuyIneligibleCurrencyViewController(presenter: presenter)
+        controller.transitioningDelegate = sheetPresenter
+        controller.modalPresentationStyle = .custom
+        analyticsRecording.record(event: AnalyticsEvent.sbCurrencyUnsupported)
+        topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
     }
     
     /// Shows the checkout details screen
@@ -243,7 +377,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
         )
         let viewController = BuyCryptoScreenViewController(presenter: presenter)
         
-        present(viewController: viewController)
+        present(viewController: viewController, using: .modalOverTopMost)
     }
 
     /// Shows intro screen using a specified presentation type

@@ -586,7 +586,11 @@ public struct LocalizationConstants {
     public static let goToSettings = NSLocalizedString("Go to Settings", comment: "")
     public static let swipeReceive = NSLocalizedString("Swipe to Receive", comment: "")
     public static let twostep = NSLocalizedString("Enable 2-Step", comment: "")
-    public static let localCurrency = NSLocalizedString("Local Currency", comment: "")
+    public static let localCurrency = NSLocalizedString("Select Your Currency", comment: "")
+    public static let localCurrencyDescription = NSLocalizedString(
+        "Your local currency to store funds in that currency as funds in your Blockchain Wallet.",
+        comment: "Your local currency to store funds in that currency as funds in your Blockchain Wallet."
+    )
     public static let scanQRCode = NSLocalizedString("Scan QR Code", comment: "")
     public static let scanPairingCode = NSLocalizedString("Scan Pairing Code", comment: " ")
     public static let parsingPairingCode = NSLocalizedString("Parsing Pairing Code", comment: " ")
@@ -1394,6 +1398,12 @@ public struct LocalizationConstants {
                 )
                 public static let action = NSLocalizedString("OK", comment: "OK")
             }
+        }
+        public struct Ineligible {
+            public static let title = NSLocalizedString("is Not Supported", comment: "is Not Supported")
+            public static let description = NSLocalizedString("Currently we don’t support buying crypto with", comment: "Currently we don’t support buying crypto with")
+            public static let changeCurrency = NSLocalizedString("Change Currency", comment: "Change Currency")
+            public static let viewHome = NSLocalizedString("View Home", comment: "View Home")
         }
         public struct ErrorAlert {
             public static let title = NSLocalizedString(

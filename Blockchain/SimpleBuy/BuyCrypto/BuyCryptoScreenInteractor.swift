@@ -24,11 +24,20 @@ final class BuyCryptoScreenInteractor {
         case inBounds(data: SimpleBuyCheckoutData, upperLimit: FiatValue)
         case tooLow(min: FiatValue)
         case tooHigh(max: FiatValue)
-        case empty
+        case empty(currency: FiatCurrency)
         
         var isValid: Bool {
             switch self {
             case .inBounds:
+                return true
+            default:
+                return false
+            }
+        }
+        
+        var isEmpty: Bool {
+            switch self {
+            case .empty:
                 return true
             default:
                 return false
@@ -131,7 +140,7 @@ final class BuyCryptoScreenInteractor {
     )
     
     /// The state of the screen
-    private let stateRelay = BehaviorRelay<State>(value: .empty)
+    private let stateRelay = BehaviorRelay<State>(value: .empty(currency: Constant.defaultFiatCurrency))
     
     private let disposeBag = DisposeBag()
     
@@ -193,16 +202,17 @@ final class BuyCryptoScreenInteractor {
         Observable
             .combineLatest(
                 currentAmountRelay,
-                pairForCryptoCurrency
+                pairForCryptoCurrency,
+                fiatCurrencyService.fiatCurrencyObservable
             )
-            .map { (amount, pair) -> State in
+            .map { (amount, pair, currency) -> State in
                 /// There must be a pair to compare to before calculation begins
                 guard let pair = pair, pair.fiatCurrency == amount.currency else {
-                    return .empty
+                    return .empty(currency: currency)
                 }
                 
                 if amount.amount.isZero {
-                    return .empty
+                    return .empty(currency: currency)
                 } else if try amount > pair.maxFiatValue {
                     return .tooHigh(max: pair.maxFiatValue)
                 } else if try amount < pair.minFiatValue {

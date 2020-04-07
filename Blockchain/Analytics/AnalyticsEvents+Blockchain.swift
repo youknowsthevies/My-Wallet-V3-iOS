@@ -730,6 +730,19 @@ extension AnalyticsEvents {
         case sbWithdrawalScreenClicked(asset: CryptoCurrency)
         case sbWithdrawalScreenSuccess
         case sbWithdrawalScreenFailure
+        case sbPaymentMethodShown
+        case sbPaymentMethodSelected(selection: String)
+        case sbAddCardCardClicked
+        case sbAddCardScreenShown
+        case sbCardInfoSet
+        case sbBillingAddressSet
+        case sbThreeDSecureComplete
+        case sbRemoveCard
+        case sbCurrencySelectScreen
+        case sbCurrencySelected(currencyCode: String)
+        case sbCurrencyUnsupported
+        case sbUnsupportedChangeCurrency
+        case sbUnsupportedViewHome
         
         var name: String {
             switch self {
@@ -871,6 +884,45 @@ extension AnalyticsEvents {
             // Simple buy - withdraw screen faillure (11.2)
             case .sbWithdrawalScreenFailure:
                 return "sb_withdrawal_screen_failure"
+            // Simple buy - side nav Buy button
+            case .sbPaymentMethodShown:
+                return "sb_payment_method_shown"
+            // Simple buy - payment method selected (2.1)
+            case .sbPaymentMethodSelected:
+                return "sb_payment_method_selected"
+            // Simple buy - payment method add new from dashboard (2.2)
+            case .sbAddCardCardClicked:
+                return "sb_add_card_card_clicked"
+            // Simple buy - add card (3.0)
+            case .sbAddCardScreenShown:
+                return "sb_add_card_screen_shown"
+            // Simple buy - Card Info Set (3.1)
+            case .sbCardInfoSet:
+                return "sb_card_info_set"
+            // Simple buy - Billing Address Set (3.3)
+            case .sbBillingAddressSet:
+                return "sb_billing_address_set"
+            // Simple buy - 3DS Complete (3.4)
+            case .sbThreeDSecureComplete:
+                return "sb_three_d_secure_complete"
+            // Simple Buy - Remove Card (5.1)
+            case .sbRemoveCard:
+                return "sb_remove_card"
+            // Simple Buy - Select your currency (card shown, 0.1 Fiat)
+            case .sbCurrencySelectScreen:
+                return "sb_currency_select_screen"
+            // Simple Buy - Currency selected (clicked on currency, 0.1)
+            case .sbCurrencySelected:
+                return "sb_currency_selected"
+            // Simple Buy - Currency Not Supported (screen shown, 0.2)
+            case .sbCurrencyUnsupported:
+                return "sb_currency_unsupported"
+            // Simple Buy - Change Currency (button clicked, 0.2)
+            case .sbUnsupportedChangeCurrency:
+                return "sb_unsupported_change_currency"
+            // Simple Buy - View Home (button clicked, 0.2)
+            case .sbUnsupportedViewHome:
+                return "sb_unsupported_view_home"
             }
         }
         
@@ -878,7 +930,9 @@ extension AnalyticsEvents {
             switch self {
             case .sbBankDetailsShown(currencyCode: let currencyCode),
                  .sbPendingModalShown(currencyCode: let currencyCode),
-                 .sbBuyFormFiatChanged(currencyCode: let currencyCode):
+                 .sbBuyFormFiatChanged(currencyCode: let currencyCode),
+                 .sbPaymentMethodSelected(selection: let currencyCode),
+                 .sbCurrencySelected(currencyCode: let currencyCode):
                 return ["currency": currencyCode]
             case .sbTradingWalletSend(asset: let currency),
                  .sbTradingWalletClicked(asset: let currency),

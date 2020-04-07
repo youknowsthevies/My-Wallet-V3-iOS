@@ -10,8 +10,8 @@ import RxSwift
 import RxRelay
 import ToolKit
 
-enum SimpleBuyLocallySupportedCurrencies {
-    static let fiatCurrencies: [FiatCurrency] = [.GBP, .EUR]
+public enum SimpleBuyLocallySupportedCurrencies {
+    public static let fiatCurrencies: [FiatCurrency] = [.GBP, .EUR]
 }
 
 public final class SimpleBuyAvailabilityService: SimpleBuyAvailabilityServiceAPI {

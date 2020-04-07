@@ -13,4 +13,10 @@ public protocol SimpleBuyFlowAvailabilityServiceAPI: AnyObject {
     /// It may be because the User is elegible for Simple Buy or
     /// because another condtions is satisfied.
     var isSimpleBuyFlowAvailable: Observable<Bool> { get }
+    
+    /// Indicates that the current Fiat Currency is supported by Simple Buy remotely.
+    func isFiatCurrencySupportedRemote(currency: FiatCurrency) -> Single<Bool>
+    
+    /// Indicates that the current Fiat Currency is supported by Simple Buy locally.
+    func isFiatCurrencySupportedLocal(currency: FiatCurrency) -> Single<Bool>
 }
