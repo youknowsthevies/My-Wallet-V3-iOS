@@ -80,54 +80,47 @@ Then the project ruby dependencies (`cocoapods`, `fastlane`, etc.):
 
 ## Bootstrap Carthage Dependencies
 
-    $ carthage bootstrap
+To workaround a error when bootstraping Firebase dependencies, use this custom script:
+
+    $ sh
+    $ ./carthage_bootstrap.sh
 
 ## Add production Config file
 
-    #create a directory named Config in the root
-    $ mkdir Config
+Clone `wallet-ios-credentials` repository and copy it's `Config` directory to this project root directory, it contains a `.xcconfig` for each environment:
+```
+Config/Development.xcconfig
+Config/Production.xcconfig
+Config/Release.xcconfig
+Config/Staging.xcconfig
+```
 
-    #create the config file
-    $ vi Production.xcconfig
-
-    #write the following in Production.xcconfig
-
-    #include "../Pods/Target Support Files/Pods-Blockchain/Pods-Blockchain.debug production.xcconfig"
-
-    APP_NAME = Blockchain
-
-    APP_ICON = AppIcon
-
-    API_URL = api.blockchain.info
-
-    WALLET_SERVER = blockchain.info
-
-    WEBSOCKET_SERVER = ws.blockchain.info/inv
-
-    WEBSOCKET_SERVER_BCH = ws.blockchain.info/bch/inv
-
-    WEBSOCKET_SERVER_ETH = ws.blockchain.info/eth/inv
-
-    BUY_WEBVIEW_URL = blockchain.info/wallet/#/intermediate
-
-    LOCAL_CERTIFICATE_FILE = blockchain
-
-    FABRIC_API_KEY = <API_KEY>
-
-    FABRIC_SECRET_KEY = <SECRET_KEY>
-
-    GCC_PREPROCESSOR_DEFINITIONS = DEBUG=1 COCOAPODS=1
-
-    OTHER_SWIFT_FLAGS = -DDEBUG
-
-    RETAIL_CORE_URL = api.blockchain.info/nabu-gateway
-
-    RETAIL_CORE_SOCKET_URL = ws.blockchain.info/nabu-gateway/markets/quotes
-
+This is how `Production.xcconfig` looks like:
+```
+APP_NAME = Blockchain
+APP_ICON = AppIcon
+API_URL = api.blockchain.info
+WALLET_SERVER = blockchain.info
+WEBSOCKET_SERVER = ws.blockchain.info/inv
+WEBSOCKET_SERVER_BCH = ws.blockchain.info/bch/inv
+WEBSOCKET_SERVER_ETH = ws.blockchain.info/eth/inv
+BUY_WEBVIEW_URL = blockchain.info/wallet/#/intermediate
+LOCAL_CERTIFICATE_FILE = blockchain
+FABRIC_API_KEY = <API_KEY>
+FABRIC_SECRET_KEY = <SECRET_KEY>
+GCC_PREPROCESSOR_DEFINITIONS = DEBUG=1 COCOAPODS=1
+OTHER_SWIFT_FLAGS = -DDEBUG
+RETAIL_CORE_URL = api.blockchain.info/nabu-gateway
+RETAIL_CORE_SOCKET_URL = ws.blockchain.info/nabu-gateway/markets/quotes
+```
 ## Add Firebase Config Files
 
-Create directories `./Blockchain/Firebase/Dev`, `./Blockchain/Firebase/Staging`, and `./Blockchain/Firebase/Prod`.
-Open `wallet-ios-credentials` repository on `firebase` branch and copy each environment-specific GoogleService-Info.plist into its respective directory you just created.
+Clone `wallet-ios-credentials` repository and copy it's `Firebase` directory to this project root directory, it contains a `GoogleService-Info.plist` for each environment.
+```
+Firease/Dev/GoogleService-Info.plist
+Firease/Prod/GoogleService-Info.plist
+Firease/Staging/GoogleService-Info.plist
+```
 
 ## Open the project in Xcode
 

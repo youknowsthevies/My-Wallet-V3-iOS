@@ -7,4 +7,4 @@ if ! command -v carthage; then
 fi
 
 # These dependencies are needed to build `libwally-core`
-brew install libtool pkg-config autoconf automake gnu-sed
+brew install libtool pkg-config autoconf automake gnu-sed swiftlint
