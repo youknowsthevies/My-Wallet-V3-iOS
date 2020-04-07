@@ -29237,7 +29237,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = arm64;
 				"VALID_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				"WARNING_CFLAGS[arch=*]" = "-Wno-nullability-completeness";
@@ -29358,7 +29358,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = arm64;
 				"VALID_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				"WARNING_CFLAGS[arch=*]" = "-Wno-nullability-completeness";
@@ -29479,7 +29479,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = arm64;
 				"VALID_ARCHS[sdk=iphonesimulator*]" = x86_64;
@@ -29890,7 +29890,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = arm64;
 				"VALID_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				"WARNING_CFLAGS[arch=*]" = "-Wno-nullability-completeness";
@@ -30010,7 +30010,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = arm64;
 				"VALID_ARCHS[sdk=iphonesimulator*]" = x86_64;
