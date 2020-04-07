@@ -66,7 +66,6 @@
 		340ABD85230AAF900032278D /* HexRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340ABD84230AAF900032278D /* HexRepresentable.swift */; };
 		340ABD87230AAFBA0032278D /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340ABD86230AAFBA0032278D /* Data+Extensions.swift */; };
 		340ABD97230ABC970032278D /* EthereumTransactionCandidateMockBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340ABD96230ABC970032278D /* EthereumTransactionCandidateMockBuilder.swift */; };
-		340ABD9E230ACF610032278D /* EthereumTransactionCandidateMockBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340ABD96230ABC970032278D /* EthereumTransactionCandidateMockBuilder.swift */; };
 		340D54B6234F3A2600D9137E /* Fixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C74339228AD4A500C88347 /* Fixtures.swift */; };
 		3413E3C9238FECA600B69C45 /* AirdropRegisteredAnnouncementMini.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3413E3C8238FECA600B69C45 /* AirdropRegisteredAnnouncementMini.swift */; };
 		3413E3EF239003E100B69C45 /* AnnouncementMiniCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3413E3EE239003E100B69C45 /* AnnouncementMiniCardView.swift */; };
@@ -164,7 +163,6 @@
 		349442E32264B69600593DEA /* PaxToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349442E22264B69600593DEA /* PaxToken.swift */; };
 		34998C42228F7061005B5CDD /* EthereumTransactionSendingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34998C41228F7061005B5CDD /* EthereumTransactionSendingService.swift */; };
 		34998C4F228F97D7005B5CDD /* ERC20BalanceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34998C4E228F97D7005B5CDD /* ERC20BalanceService.swift */; };
-		34998C7E2290754E005B5CDD /* EthereumWalletAccountRepositoryMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BE8B202285ED830097F535 /* EthereumWalletAccountRepositoryMock.swift */; };
 		34A0BBEA2225597400F349CD /* Importable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A0BBE92225597400F349CD /* Importable.swift */; };
 		34A3FEE222A1A9A1003AD20F /* ERC20BridgeAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A3FEE122A1A9A1003AD20F /* ERC20BridgeAPI.swift */; };
 		34A3FEE422A1A9E1003AD20F /* ERC20TokenAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A3FEE322A1A9E1003AD20F /* ERC20TokenAccount.swift */; };
@@ -695,6 +693,9 @@
 		3A5BF4EA2428AEA400F71AE5 /* WebLoginService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5BF4E92428AEA400F71AE5 /* WebLoginService.swift */; };
 		3A5BF4EC2428BE4500F71AE5 /* WalletCryptoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5BF4EB2428BE4500F71AE5 /* WalletCryptoService.swift */; };
 		3A5C24C7243CBE7B0007DCF3 /* CardData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65235AFD243742FA00997B58 /* CardData.swift */; };
+		3A5C24D1243CC3850007DCF3 /* MockEthereumWalletTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5C24D0243CC3850007DCF3 /* MockEthereumWalletTestData.swift */; };
+		3A5C24D3243CC4030007DCF3 /* EthereumWalletAccountRepositoryMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5C24D2243CC4030007DCF3 /* EthereumWalletAccountRepositoryMock.swift */; };
+		3A5C24D5243CC42B0007DCF3 /* EthereumTransactionCandidateBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5C24D4243CC42B0007DCF3 /* EthereumTransactionCandidateBuilder.swift */; };
 		3A5C3C63225D4916003C99C9 /* KYCCoinifySignedToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5C3C62225D4916003C99C9 /* KYCCoinifySignedToken.swift */; };
 		3A5C889023E35E7E002833B4 /* BalanceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5C888F23E35E7E002833B4 /* BalanceType.swift */; };
 		3A5C889B23E36448002833B4 /* CurrentBalanceCellPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5C889A23E36448002833B4 /* CurrentBalanceCellPresenter.swift */; };
@@ -3591,6 +3592,9 @@
 		3A5BF4E42424FBB000F71AE5 /* WebLoginScreenPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebLoginScreenPresenter.swift; sourceTree = "<group>"; };
 		3A5BF4E92428AEA400F71AE5 /* WebLoginService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebLoginService.swift; sourceTree = "<group>"; };
 		3A5BF4EB2428BE4500F71AE5 /* WalletCryptoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCryptoService.swift; sourceTree = "<group>"; };
+		3A5C24D0243CC3850007DCF3 /* MockEthereumWalletTestData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockEthereumWalletTestData.swift; sourceTree = "<group>"; };
+		3A5C24D2243CC4030007DCF3 /* EthereumWalletAccountRepositoryMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumWalletAccountRepositoryMock.swift; sourceTree = "<group>"; };
+		3A5C24D4243CC42B0007DCF3 /* EthereumTransactionCandidateBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTransactionCandidateBuilder.swift; sourceTree = "<group>"; };
 		3A5C3C62225D4916003C99C9 /* KYCCoinifySignedToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KYCCoinifySignedToken.swift; sourceTree = "<group>"; };
 		3A5C888F23E35E7E002833B4 /* BalanceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceType.swift; sourceTree = "<group>"; };
 		3A5C889A23E36448002833B4 /* CurrentBalanceCellPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentBalanceCellPresenter.swift; sourceTree = "<group>"; };
@@ -7797,6 +7801,9 @@
 				34C8366022A6A7DD008392E4 /* ERC20BridgeMock.swift */,
 				347B6A0822CCD444002C80E9 /* ERC20AssetAccountRepositoryMock.swift */,
 				347B6A0522CCD377002C80E9 /* PaxERC20ServiceMock.swift */,
+				3A5C24D0243CC3850007DCF3 /* MockEthereumWalletTestData.swift */,
+				3A5C24D2243CC4030007DCF3 /* EthereumWalletAccountRepositoryMock.swift */,
+				3A5C24D4243CC42B0007DCF3 /* EthereumTransactionCandidateBuilder.swift */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -18233,13 +18240,14 @@
 				347B6A0922CCD444002C80E9 /* ERC20AssetAccountRepositoryMock.swift in Sources */,
 				347B6A0622CCD377002C80E9 /* PaxERC20ServiceMock.swift in Sources */,
 				34E90606226F1E5600550750 /* ERC20EthereumWalletBridgeMock.swift in Sources */,
+				3A5C24D5243CC42B0007DCF3 /* EthereumTransactionCandidateBuilder.swift in Sources */,
+				3A5C24D1243CC3850007DCF3 /* MockEthereumWalletTestData.swift in Sources */,
+				3A5C24D3243CC4030007DCF3 /* EthereumWalletAccountRepositoryMock.swift in Sources */,
 				34AD100B22918BC600FB464D /* ERC20ServiceTests.swift in Sources */,
 				34C8366122A6A7DD008392E4 /* ERC20BridgeMock.swift in Sources */,
 				347F48182267A6CF006BCDDA /* ERC20AssetAccountDetailsServiceTests.swift in Sources */,
 				34EDB8372261065D009521D9 /* ERC20KitTests.swift in Sources */,
-				340ABD9E230ACF610032278D /* EthereumTransactionCandidateMockBuilder.swift in Sources */,
 				34E90602226F1E0F00550750 /* ERC20AccountAPIClientMock.swift in Sources */,
-				34998C7E2290754E005B5CDD /* EthereumWalletAccountRepositoryMock.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
