@@ -47,10 +47,6 @@ Install a node version manager such as [nvm](https://github.com/creationix/nvm) 
     $ cd ./Submodules/OpenSSL-for-iPhone
     $ ./build-libssl.sh --cleanup --archs="x86_64 arm64"
 
-## Install LibWallySwift build dependencies
-
-    $ make install
-
 ## Install Ruby dependencies
 
 Install a Ruby version manager such as [rbenv](https://github.com/rbenv/rbenv).
@@ -70,13 +66,15 @@ Then make that version either the `local` or `global` version, e.g.:
 
     $ rbenv global 2.6.3 
 
-Then the project ruby dependencies (`cocoapods`, `fastlane`, etc.):
+Then the project ruby dependencies (`fastlane`, etc.):
 
     $ bundle install
 
-## Install Cocoapods Dependencies
+## Prepare LibWallySwift build dependencies
 
-    $ bundle exec pod install
+    $ make install
+    $ cd ./Submodules/libwally-swift
+    $ ./build-libwally.sh -csd
 
 ## Bootstrap Carthage Dependencies
 
