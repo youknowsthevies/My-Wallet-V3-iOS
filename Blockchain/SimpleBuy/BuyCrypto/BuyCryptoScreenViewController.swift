@@ -86,6 +86,11 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavigationBar()
+    }
+    
     // MARK: - Setup
     
     private func setupNavigationBar() {

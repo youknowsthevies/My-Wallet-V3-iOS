@@ -26,9 +26,11 @@ public final class FiatCurrencySelectionService: SelectionServiceAPI {
         selectedDataRelay.distinctUntilChanged()
     }
     
-    private let availableCurrencies = FiatCurrency.supported
+    private let availableCurrencies: [FiatCurrency]
     
-    public init(defaultSelectedData: FiatCurrency = .locale) {
+    public init(defaultSelectedData: FiatCurrency = .locale,
+                availableCurrencies: [FiatCurrency] = FiatCurrency.supported) {
+        self.availableCurrencies = availableCurrencies
         self.selectedDataRelay = BehaviorRelay(value: defaultSelectedData.selectionItem)
     }
 }

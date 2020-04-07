@@ -9,6 +9,7 @@
 import RxSwift
 import RxRelay
 import RxCocoa
+import ToolKit
 import PlatformKit
 
 public final class SelectionScreenPresenter {
@@ -16,18 +17,31 @@ public final class SelectionScreenPresenter {
     // MARK: - Properties
     
     let title: String
+    let tableHeaderViewModel: SelectionScreenTableHeaderViewModel?
     let searchBarPlaceholder: String
     var presenters: Observable<[SelectionItemViewPresenter]> {
         presentersRelay.asObservable()
+    }
+    
+    var shouldPreselect: Observable<Bool> {
+        preselectionSupportedRelay.asObservable()
     }
     
     var displayPresenters: Observable<[SelectionItemViewPresenter]> {
         displayPresentersRelay.asObservable()
     }
     
+    var preselection: Observable<Int> {
+        Observable.combineLatest(selectionRelay, preselectionSupportedRelay)
+            .filter { $0.1 }
+            .compactMap { $0.0 }
+            .observeOn(MainScheduler.instance)
+    }
+    
     var selection: Observable<Int> {
-        selectionRelay
-            .compactMap { $0 }
+        Observable.combineLatest(selectionRelay, preselectionSupportedRelay)
+            .filter { !$0.1 }
+            .compactMap { $0.0 }
             .observeOn(MainScheduler.instance)
     }
     
@@ -36,6 +50,8 @@ public final class SelectionScreenPresenter {
         searchTextRelay.map { $0.lowercased() } 
     }
     
+    let preSelectionRelay = PublishRelay<Int>()
+    private let preselectionSupportedRelay = BehaviorRelay<Bool>(value: true)
     private let selectionRelay = BehaviorRelay<Int?>(value: nil)
     private let displayPresentersRelay = BehaviorRelay<[SelectionItemViewPresenter]>(value: [])
     private let presentersRelay = BehaviorRelay<[SelectionItemViewPresenter]>(value: [])
@@ -44,13 +60,21 @@ public final class SelectionScreenPresenter {
     
     // MARK: - Setup
     
-    public init(title: String, searchBarPlaceholder: String, interactor: SelectionScreenInteractor) {
+    public init(title: String,
+                description: String? = nil,
+                shouldPreselect: Bool = true,
+                searchBarPlaceholder: String,
+                interactor: SelectionScreenInteractor) {
+        self.preselectionSupportedRelay.accept(shouldPreselect)
+        self.tableHeaderViewModel = SelectionScreenTableHeaderViewModel(title: description)
         self.searchBarPlaceholder = searchBarPlaceholder
         self.title = title
         self.interactor = interactor
         
         setupPresenters()
         setupSearch()
+        
+        guard shouldPreselect else { return }
         setupDefaultSelection()
     }
     
@@ -130,6 +154,11 @@ public final class SelectionScreenPresenter {
     }
 
     func navigationBarLeadingButtonTapped() {
+        guard preselectionSupportedRelay.value else { return }
+        interactor.recordSelection()
+    }
+    
+    func recordSelection() {
         interactor.recordSelection()
     }
 }

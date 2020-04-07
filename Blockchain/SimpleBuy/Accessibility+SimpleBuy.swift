@@ -46,6 +46,13 @@ extension Accessibility.Identifier {
             static let yesButton = "\(prefix)yesButton"
             static let noButton = "\(prefix)noButton"
         }
+        enum IneligibleCurrency {
+            private static let prefix = "IneligibleCurrency."
+            static let titleLabel = "\(prefix)titleLabel"
+            static let descriptionLabel = "\(prefix)descriptionLabel"
+            static let changeCurrency = "\(prefix)changeCurrency"
+            static let viewHome = "\(prefix)viewHome"
+        }
     }
 }
 

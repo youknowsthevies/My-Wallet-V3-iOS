@@ -32,6 +32,7 @@ final class BuyCryptoScreenPresenter {
     let continueButtonViewModel: ButtonViewModel
     let separatorColor: Color = .lightBorder
     let digitPadViewModel: DigitPadViewModel
+    let currencySelectionRelay = PublishRelay<Void>()
     var labeledButtonViewModels: Driver<[CurrencyLabeledButtonViewModel]> {
         return labeledButtonViewModelsRelay.asDriver()
     }
@@ -268,26 +269,6 @@ final class BuyCryptoScreenPresenter {
             }
             .disposed(by: disposeBag)
 
-        let trailingButtonShouldShow = interactor
-            .state
-            .map { (state) -> Bool in
-                switch state {
-                case .empty, .inBounds:
-                    return false
-                default:
-                    return true
-                }
-            }
-
-        trailingButtonShouldShow
-            .bind(to: trailingButtonViewModel.isEnabledRelay)
-            .disposed(by: disposeBag)
-
-        trailingButtonShouldShow
-            .map { !$0 }
-            .bind(to: trailingButtonViewModel.isHiddenRelay)
-            .disposed(by: disposeBag)
-
         interactor
             .state
             .map {
@@ -296,8 +277,10 @@ final class BuyCryptoScreenPresenter {
                     return LocalizedString.LimitView.Max.useMax
                 case .tooLow:
                     return LocalizedString.LimitView.Min.useMin
-                case .empty, .inBounds:
-                    return ""
+                case .empty(currency: let currency):
+                    return "\(currency.code)"
+                case .inBounds(data: _, upperLimit: let fiatValue):
+                    return "\(fiatValue.currencyCode)"
                 }
             }
             .bind(to: trailingButtonViewModel.textRelay)
@@ -317,6 +300,14 @@ final class BuyCryptoScreenPresenter {
                 }
             }
             .bind(to: analyticsRecorder.recordRelay)
+            .disposed(by: disposeBag)
+        
+        trailingButtonViewModel
+            .tapRelay
+            .withLatestFrom(interactor.state)
+            .filter { ($0.isValid || $0.isEmpty) }
+            .mapToVoid()
+            .bind { stateService.changeCurrency() }
             .disposed(by: disposeBag)
 
         trailingButtonViewModel
