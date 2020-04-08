@@ -1,6 +1,5 @@
 clean(true)
 skip_build(true)
-devices(["iPhone 11"])
 workspace("Blockchain.xcworkspace")
 configuration("Debug Staging")
 scheme("Blockchain (Staging)")
