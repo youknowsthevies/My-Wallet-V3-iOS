@@ -1,6 +1,7 @@
 $(SRCROOT)/Carthage/Build/iOS/BigInt.framework
 $(SRCROOT)/Carthage/Build/iOS/Charts.framework
 $(SRCROOT)/Carthage/Build/iOS/keccak.framework
+$(SRCROOT)/Carthage/Build/iOS/LibWally.framework
 $(SRCROOT)/Carthage/Build/iOS/PhoneNumberKit.framework
 $(SRCROOT)/Carthage/Build/iOS/PromiseKit.framework
 $(SRCROOT)/Carthage/Build/iOS/RxCocoa.framework
