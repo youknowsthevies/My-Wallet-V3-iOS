@@ -373,6 +373,15 @@
 		3A15EEEB23F2128D002D5712 /* TextFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A15EEEA23F2128D002D5712 /* TextFormatting.swift */; };
 		3A15EEED23F21307002D5712 /* MobileNumberTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A15EEEC23F21307002D5712 /* MobileNumberTextFormatter.swift */; };
 		3A15EEEF23F215AF002D5712 /* TextFormatterFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A15EEEE23F215AF002D5712 /* TextFormatterFactory.swift */; };
+		3A16CC30243F13EF0054657E /* LibWally.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A16CC2F243F13EE0054657E /* LibWally.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A16CC31243F14050054657E /* LibWally.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A16CC2F243F13EE0054657E /* LibWally.framework */; };
+		3A16CC32243F140A0054657E /* LibWally.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A16CC2F243F13EE0054657E /* LibWally.framework */; };
+		3A16CC33243F14110054657E /* LibWally.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A16CC2F243F13EE0054657E /* LibWally.framework */; };
+		3A16CC34243F14150054657E /* LibWally.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A16CC2F243F13EE0054657E /* LibWally.framework */; };
+		3A16CC35243F141A0054657E /* LibWally.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A16CC2F243F13EE0054657E /* LibWally.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A16CC36243F14690054657E /* LibWally.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A16CC2F243F13EE0054657E /* LibWally.framework */; };
+		3A16CC37243F15180054657E /* LibWally.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A16CC2F243F13EE0054657E /* LibWally.framework */; };
+		3A16CC38243F151E0054657E /* LibWally.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A16CC2F243F13EE0054657E /* LibWally.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3A1B28F622F9CD4C00CFCF87 /* ValidateTransactionAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1B28F522F9CD4C00CFCF87 /* ValidateTransactionAPI.swift */; };
 		3A1B28FA22FA319100CFCF87 /* EthereumTransactionValidationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1B28F922FA319100CFCF87 /* EthereumTransactionValidationService.swift */; };
 		3A1B291322FB5E5D00CFCF87 /* StellarLedger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3C7D3A217F9ED50067F442 /* StellarLedger.swift */; };
@@ -2758,6 +2767,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		3A16CC25243F13B20054657E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				3A16CC30243F13EF0054657E /* LibWally.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3A316485243B51EA008413E2 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2825,6 +2844,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				3A16CC35243F141A0054657E /* LibWally.framework in CopyFiles */,
 				3A82A627243B81290021B4C2 /* RxCocoa.framework in CopyFiles */,
 				3A82A626243B80FE0021B4C2 /* RxRelay.framework in CopyFiles */,
 				3A82A625243B80EF0021B4C2 /* RxTest.framework in CopyFiles */,
@@ -2839,6 +2859,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				3A16CC38243F151E0054657E /* LibWally.framework in CopyFiles */,
 				3A84AD6A243B9C7200DFC0FB /* BigInt.framework in CopyFiles */,
 				3A84AD6B243B9C7200DFC0FB /* Charts.framework in CopyFiles */,
 				3A84AD6C243B9C7200DFC0FB /* keccak.framework in CopyFiles */,
@@ -3353,6 +3374,7 @@
 		3A15EEEA23F2128D002D5712 /* TextFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFormatting.swift; sourceTree = "<group>"; };
 		3A15EEEC23F21307002D5712 /* MobileNumberTextFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileNumberTextFormatter.swift; sourceTree = "<group>"; };
 		3A15EEEE23F215AF002D5712 /* TextFormatterFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFormatterFactory.swift; sourceTree = "<group>"; };
+		3A16CC2F243F13EE0054657E /* LibWally.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LibWally.framework; path = Carthage/Build/iOS/LibWally.framework; sourceTree = "<group>"; };
 		3A1B28F522F9CD4C00CFCF87 /* ValidateTransactionAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidateTransactionAPI.swift; sourceTree = "<group>"; };
 		3A1B28F922FA319100CFCF87 /* EthereumTransactionValidationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTransactionValidationService.swift; sourceTree = "<group>"; };
 		3A1B291822FB668500CFCF87 /* WalletOptionsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletOptionsAPI.swift; sourceTree = "<group>"; };
@@ -3848,6 +3870,7 @@
 		3ABB4E0A23E23041005701EB /* DefaultLineItemCellPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultLineItemCellPresenter.swift; sourceTree = "<group>"; };
 		3ABB4E1523E2306C005701EB /* PasteboardingLineItemCellPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteboardingLineItemCellPresenter.swift; sourceTree = "<group>"; };
 		3ABB80BA213F0CD300AD57BE /* Limit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Limit.swift; sourceTree = "<group>"; };
+		3ABBB3B3243F0D500004F783 /* LibWally.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LibWally.framework; path = Carthage/Build/iOS/LibWally.framework; sourceTree = "<group>"; };
 		3ABCAC20243B3C2E007DBC92 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
 		3ABCAC24243B3C61007DBC92 /* BigInt.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BigInt.framework; path = Carthage/Build/iOS/BigInt.framework; sourceTree = "<group>"; };
 		3ABCAC28243B3C6F007DBC92 /* RxRelay.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxRelay.framework; path = Carthage/Build/iOS/RxRelay.framework; sourceTree = "<group>"; };
@@ -6641,6 +6664,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A16CC32243F140A0054657E /* LibWally.framework in Frameworks */,
 				3AA77043243B7E8F005CC949 /* CommonCryptoKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -6649,6 +6673,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A16CC31243F14050054657E /* LibWally.framework in Frameworks */,
 				34C3C97E2305A593008F2154 /* HDWalletKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -6730,6 +6755,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A16CC33243F14110054657E /* LibWally.framework in Frameworks */,
 				3491E07E230C477C0096AA68 /* HDWalletKit.framework in Frameworks */,
 				34EE993123AB921F00074EC0 /* NetworkKit.framework in Frameworks */,
 				3A82A611243B804B0021B4C2 /* BigInt.framework in Frameworks */,
@@ -6743,6 +6769,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A16CC34243F14150054657E /* LibWally.framework in Frameworks */,
 				3A82A61D243B804C0021B4C2 /* RxSwift.framework in Frameworks */,
 				3A4E488A21BF3070001A799D /* BitcoinKit.framework in Frameworks */,
 				3A82A61C243B804C0021B4C2 /* BigInt.framework in Frameworks */,
@@ -6871,6 +6898,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A16CC37243F15180054657E /* LibWally.framework in Frameworks */,
 				3A4810BB243B95B100992842 /* RxSwift.framework in Frameworks */,
 				3A4810BF243B95B200992842 /* stellarsdk.framework in Frameworks */,
 				3A4810BD243B95B200992842 /* scrypt.framework in Frameworks */,
@@ -6893,6 +6921,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A16CC36243F14690054657E /* LibWally.framework in Frameworks */,
 				3A3BE035243CB46C00D7354A /* Protobuf.framework in Frameworks */,
 				3A3BE034243CB44A00D7354A /* FIRAnalyticsConnector.framework in Frameworks */,
 				3A3BE033243CB36900D7354A /* PromisesObjC.framework in Frameworks */,
@@ -15287,6 +15316,7 @@
 		9FB3636614B60128004BEA02 = {
 			isa = PBXGroup;
 			children = (
+				3A16CC2F243F13EE0054657E /* LibWally.framework */,
 				3A316486243B51FB008413E2 /* BigInt.framework */,
 				3A3164F4243B6778008413E2 /* Charts.framework */,
 				3AA77016243B7ABC005CC949 /* keccak.framework */,
@@ -15369,6 +15399,7 @@
 		9FB3637414B60128004BEA02 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3ABBB3B3243F0D500004F783 /* LibWally.framework */,
 				3A67CF35243B9231000FEFFB /* FIRAnalyticsConnector.framework */,
 				3A67CF3A243B9232000FEFFB /* FirebaseABTesting.framework */,
 				3A67CF2C243B922F000FEFFB /* FirebaseAnalytics.framework */,
@@ -16925,6 +16956,7 @@
 				34C3C9792305A593008F2154 /* Sources */,
 				34C3C97A2305A593008F2154 /* Frameworks */,
 				34C3C97B2305A593008F2154 /* Resources */,
+				3A16CC25243F13B20054657E /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -22119,7 +22151,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Carthage/Build/iOS";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -22202,7 +22234,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Carthage/Build/iOS";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -22285,7 +22317,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Carthage/Build/iOS";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -22349,7 +22381,7 @@
 				DYLIB_CURRENT_VERSION = 0;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Carthage/Build/iOS";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -22400,7 +22432,7 @@
 				DYLIB_CURRENT_VERSION = 0;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Carthage/Build/iOS";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -22463,6 +22495,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -22533,6 +22569,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -22603,6 +22643,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -22653,6 +22697,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -22690,6 +22738,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -24767,7 +24819,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
-					"$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -24854,7 +24905,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
-					"$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -24941,7 +24991,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
-					"$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -25008,7 +25057,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
-					"$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -28506,11 +28554,8 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/Submodules/OpenSSL-for-iPhone/include",
 					"$(SRCROOT)/Submodules/SocketRocket",
-					"$(SRCROOT)/Submodules/Charts",
 				);
 				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -28629,11 +28674,8 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/Submodules/OpenSSL-for-iPhone/include",
 					"$(SRCROOT)/Submodules/SocketRocket",
-					"$(SRCROOT)/Submodules/Charts",
 				);
 				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -28751,11 +28793,8 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/Submodules/OpenSSL-for-iPhone/include",
 					"$(SRCROOT)/Submodules/SocketRocket",
-					"$(SRCROOT)/Submodules/Charts",
 				);
 				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -29161,11 +29200,8 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/Submodules/OpenSSL-for-iPhone/include",
 					"$(SRCROOT)/Submodules/SocketRocket",
-					"$(SRCROOT)/Submodules/Charts",
 				);
 				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -29282,11 +29318,8 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/Submodules/OpenSSL-for-iPhone/include",
 					"$(SRCROOT)/Submodules/SocketRocket",
-					"$(SRCROOT)/Submodules/Charts",
 				);
 				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -29722,7 +29755,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
-					"$(SYMROOT)/Release$(EFFECTIVE_PLATFORM_NAME)",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
