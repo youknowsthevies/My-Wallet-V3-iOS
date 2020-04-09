@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1120"
+   LastUpgradeVersion = "1020"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,34 +14,46 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "34EE981523AA595100074EC0"
-               BuildableName = "ToolKit.framework"
-               BlueprintName = "ToolKit"
-               ReferencedContainer = "container:Blockchain.xcodeproj">
+               BlueprintIdentifier = "F5FC07710123C2A2B8E62D72"
+               BuildableName = "HDWalletKit.framework"
+               BlueprintName = "HDWalletKit"
+               ReferencedContainer = "container:Modules.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
-      buildConfiguration = "Debug Production"
+      buildConfiguration = "Development"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      onlyGenerateCoverageForSpecifiedTargets = "NO"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "34EE981D23AA595100074EC0"
-               BuildableName = "ToolKitTests.xctest"
-               BlueprintName = "ToolKitTests"
-               ReferencedContainer = "container:Blockchain.xcodeproj">
+               BlueprintIdentifier = "E77E94958BD020E7D05F9713"
+               BuildableName = "HDWalletKitTests.xctest"
+               BlueprintName = "HDWalletKitTests"
+               ReferencedContainer = "container:Modules.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "F5FC07710123C2A2B8E62D72"
+            BuildableName = "HDWalletKit.framework"
+            BlueprintName = "HDWalletKit"
+            ReferencedContainer = "container:Modules.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Debug Production"
+      buildConfiguration = "Development"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
@@ -50,6 +62,17 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "F5FC07710123C2A2B8E62D72"
+            BuildableName = "HDWalletKit.framework"
+            BlueprintName = "HDWalletKit"
+            ReferencedContainer = "container:Modules.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -57,18 +80,21 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "34EE981523AA595100074EC0"
-            BuildableName = "ToolKit.framework"
-            BlueprintName = "ToolKit"
-            ReferencedContainer = "container:Blockchain.xcodeproj">
+            BlueprintIdentifier = "F5FC07710123C2A2B8E62D72"
+            BuildableName = "HDWalletKit.framework"
+            BlueprintName = "HDWalletKit"
+            ReferencedContainer = "container:Modules.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </ProfileAction>
    <AnalyzeAction
-      buildConfiguration = "Debug Production">
+      buildConfiguration = "Development">
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Release"

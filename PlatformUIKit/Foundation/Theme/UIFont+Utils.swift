@@ -17,20 +17,21 @@ extension UIFont {
         case semiBold = "Inter-SemiBold"
         case bold = "Inter-Bold"        
     }
-    
+
+    // TODO: (paulo) Implement font registering for unit test
     public static func mainMedium(_ size: CGFloat) -> UIFont {
-        return UIFont(name: InterType.medium.rawValue, size: size)!
+        return UIFont(name: InterType.medium.rawValue, size: size) ?? UIFont.systemFont(ofSize: size)
     }
     
     public static func mainRegular(_ size: CGFloat) -> UIFont {
-        return UIFont(name: InterType.regular.rawValue, size: size)!
+        return UIFont(name: InterType.regular.rawValue, size: size) ?? UIFont.systemFont(ofSize: size)
     }
     
     public static func mainSemibold(_ size: CGFloat) -> UIFont {
-        return UIFont(name: InterType.semiBold.rawValue, size: size)!
+        return UIFont(name: InterType.semiBold.rawValue, size: size) ?? UIFont.systemFont(ofSize: size)
     }
     
     public static func mainBold(_ size: CGFloat) -> UIFont {
-        return UIFont(name: InterType.bold.rawValue, size: size)!
+        return UIFont(name: InterType.bold.rawValue, size: size) ?? UIFont.systemFont(ofSize: size)
     }
 }
