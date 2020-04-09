@@ -529,10 +529,6 @@
 		3A373C452188CBCE00DDFAFD /* StellarTransactionCaching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A373C442188CBCE00DDFAFD /* StellarTransactionCaching.swift */; };
 		3A390750217E7D5A00D2DA01 /* StellarServiceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A39074F217E7D5A00D2DA01 /* StellarServiceProvider.swift */; };
 		3A390754217E7F6E00D2DA01 /* SendXLMInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A390753217E7F6E00D2DA01 /* SendXLMInterface.swift */; };
-		3A3BE014243CA8B900D7354A /* LibWally.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3BE006243CA8A100D7354A /* LibWally.framework */; };
-		3A3BE017243CA8FA00D7354A /* LibWally.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3BE006243CA8A100D7354A /* LibWally.framework */; };
-		3A3BE01B243CA93200D7354A /* LibWally.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3BE006243CA8A100D7354A /* LibWally.framework */; };
-		3A3BE01C243CA93200D7354A /* LibWally.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3BE006243CA8A100D7354A /* LibWally.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3A3BE024243CB34E00D7354A /* FirebaseABTesting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF3A243B9232000FEFFB /* FirebaseABTesting.framework */; };
 		3A3BE025243CB34E00D7354A /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF2C243B922F000FEFFB /* FirebaseAnalytics.framework */; };
 		3A3BE026243CB34E00D7354A /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A67CF32243B9230000FEFFB /* FirebaseCore.framework */; };
@@ -2528,41 +2524,6 @@
 			remoteGlobalIDString = 3A6865AA219A11650009FF29;
 			remoteInfo = PlatformUIKit;
 		};
-		3A3BE005243CA8A100D7354A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3A3BE000243CA8A100D7354A /* LibWally.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = FE9CD3B1229C397900345DFA;
-			remoteInfo = LibWally;
-		};
-		3A3BE007243CA8A100D7354A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3A3BE000243CA8A100D7354A /* LibWally.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = FE9CD3BA229C397900345DFA;
-			remoteInfo = LibWallyTests;
-		};
-		3A3BE012243CA8B500D7354A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3A3BE000243CA8A100D7354A /* LibWally.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = FE9CD3B0229C397900345DFA;
-			remoteInfo = LibWally;
-		};
-		3A3BE015243CA8F300D7354A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3A3BE000243CA8A100D7354A /* LibWally.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = FE9CD3B0229C397900345DFA;
-			remoteInfo = LibWally;
-		};
-		3A3BE018243CA91A00D7354A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3A3BE000243CA8A100D7354A /* LibWally.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = FE9CD3B0229C397900345DFA;
-			remoteInfo = LibWally;
-		};
 		3A4E488B21BF3070001A799D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9FB3636814B60128004BEA02 /* Project object */;
@@ -2966,7 +2927,6 @@
 				3A6865F3219A26A30009FF29 /* StellarKit.framework in Embed Frameworks */,
 				34C3C98B2305A593008F2154 /* HDWalletKit.framework in Embed Frameworks */,
 				3A686573219A0BBB0009FF29 /* PlatformKit.framework in Embed Frameworks */,
-				3A3BE01C243CA93200D7354A /* LibWally.framework in Embed Frameworks */,
 				340ABD75230AAF5C0032278D /* CommonCryptoKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -3493,7 +3453,6 @@
 		3A390747217E52AB00D2DA01 /* StellarLedgerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarLedgerService.swift; sourceTree = "<group>"; };
 		3A39074F217E7D5A00D2DA01 /* StellarServiceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarServiceProvider.swift; sourceTree = "<group>"; };
 		3A390753217E7F6E00D2DA01 /* SendXLMInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendXLMInterface.swift; sourceTree = "<group>"; };
-		3A3BE000243CA8A100D7354A /* LibWally.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LibWally.xcodeproj; path = "Submodules/libwally-swift/LibWally.xcodeproj"; sourceTree = "<group>"; };
 		3A3C7D3A217F9ED50067F442 /* StellarLedger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarLedger.swift; sourceTree = "<group>"; };
 		3A3C7D522180E5D50067F442 /* SendXLMCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendXLMCoordinator.swift; sourceTree = "<group>"; };
 		3A3C7D74218126F40067F442 /* ActionableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionableLabel.swift; sourceTree = "<group>"; };
@@ -6682,7 +6641,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3A3BE014243CA8B900D7354A /* LibWally.framework in Frameworks */,
 				3AA77043243B7E8F005CC949 /* CommonCryptoKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -6772,7 +6730,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3A3BE017243CA8FA00D7354A /* LibWally.framework in Frameworks */,
 				3491E07E230C477C0096AA68 /* HDWalletKit.framework in Frameworks */,
 				34EE993123AB921F00074EC0 /* NetworkKit.framework in Frameworks */,
 				3A82A611243B804B0021B4C2 /* BigInt.framework in Frameworks */,
@@ -6958,7 +6915,6 @@
 				3A4810CD243B95BD00992842 /* secp256k1.framework in Frameworks */,
 				3A4810CF243B95BD00992842 /* web3swift.framework in Frameworks */,
 				3A4810C4243B95BD00992842 /* keccak.framework in Frameworks */,
-				3A3BE01B243CA93200D7354A /* LibWally.framework in Frameworks */,
 				3A4810C2243B95BD00992842 /* BigInt.framework in Frameworks */,
 				3A4810C8243B95BD00992842 /* RxCocoa.framework in Frameworks */,
 				340ABD74230AAF5C0032278D /* CommonCryptoKit.framework in Frameworks */,
@@ -8768,15 +8724,6 @@
 				3A53DB60226FA6A600CBCB6E /* Stellar */,
 			);
 			path = Interfaces;
-			sourceTree = "<group>";
-		};
-		3A3BE001243CA8A100D7354A /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				3A3BE006243CA8A100D7354A /* LibWally.framework */,
-				3A3BE008243CA8A100D7354A /* LibWallyTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		3A3C7D73218126E00067F442 /* ActionableLabel */ = {
@@ -15422,7 +15369,6 @@
 		9FB3637414B60128004BEA02 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				3A3BE000243CA8A100D7354A /* LibWally.xcodeproj */,
 				3A67CF35243B9231000FEFFB /* FIRAnalyticsConnector.framework */,
 				3A67CF3A243B9232000FEFFB /* FirebaseABTesting.framework */,
 				3A67CF2C243B922F000FEFFB /* FirebaseAnalytics.framework */,
@@ -16965,7 +16911,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				3A3BE013243CA8B500D7354A /* PBXTargetDependency */,
 				3AA77042243B7E8A005CC949 /* PBXTargetDependency */,
 			);
 			name = HDWalletKit;
@@ -17119,7 +17064,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				3A3BE016243CA8F300D7354A /* PBXTargetDependency */,
 				3A82A621243B807F0021B4C2 /* PBXTargetDependency */,
 				3A82A61F243B807A0021B4C2 /* PBXTargetDependency */,
 				34EE989F23AA81B000074EC0 /* PBXTargetDependency */,
@@ -17366,7 +17310,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				3A3BE019243CA91A00D7354A /* PBXTargetDependency */,
 				340ABD73230AAF5C0032278D /* PBXTargetDependency */,
 				34C3C9892305A593008F2154 /* PBXTargetDependency */,
 				3A686571219A0BBB0009FF29 /* PBXTargetDependency */,
@@ -17564,10 +17507,6 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 3A3BE001243CA8A100D7354A /* Products */;
-					ProjectRef = 3A3BE000243CA8A100D7354A /* LibWally.xcodeproj */;
-				},
-				{
 					ProductGroup = 604599492118BEE500AE08C8 /* Products */;
 					ProjectRef = 604599482118BEE500AE08C8 /* OpenSSL-for-iOS.xcodeproj */;
 				},
@@ -17611,20 +17550,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		3A3BE006243CA8A100D7354A /* LibWally.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = LibWally.framework;
-			remoteRef = 3A3BE005243CA8A100D7354A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		3A3BE008243CA8A100D7354A /* LibWallyTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = LibWallyTests.xctest;
-			remoteRef = 3A3BE007243CA8A100D7354A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		604599372118BDC000AE08C8 /* SocketRocket.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -20371,21 +20296,6 @@
 			isa = PBXTargetDependency;
 			target = 3A6865AA219A11650009FF29 /* PlatformUIKit */;
 			targetProxy = 3A3164E3243B6546008413E2 /* PBXContainerItemProxy */;
-		};
-		3A3BE013243CA8B500D7354A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = LibWally;
-			targetProxy = 3A3BE012243CA8B500D7354A /* PBXContainerItemProxy */;
-		};
-		3A3BE016243CA8F300D7354A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = LibWally;
-			targetProxy = 3A3BE015243CA8F300D7354A /* PBXContainerItemProxy */;
-		};
-		3A3BE019243CA91A00D7354A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = LibWally;
-			targetProxy = 3A3BE018243CA91A00D7354A /* PBXContainerItemProxy */;
 		};
 		3A4E488C21BF3070001A799D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
