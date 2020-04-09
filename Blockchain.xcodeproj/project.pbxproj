@@ -10597,7 +10597,6 @@
 				51E355EB2192063400753FEB /* Get SSL Certificate */,
 				C71B62D821B0794D00FC2839 /* CopyFiles */,
 				5149BD072057192900DC88A0 /* Embed Frameworks */,
-				341E47562399A74B008BAFFC /* Carthage: Outdated Run Script */,
 				34838CB22399AEFE003F945A /* Carthage: Copy Frameworks Run Script */,
 				3A2B6445241BB4A600D94B71 /* Envman BUILT_PRODUCTS_DIR Run Script */,
 				3A2C5905243BCAE300709E58 /* Crashlytics: Run */,
@@ -10992,24 +10991,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
-		};
-		341E47562399A74B008BAFFC /* Carthage: Outdated Run Script */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Carthage: Outdated Run Script";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage outdated --xcode-warnings 2>/dev/null\n";
 		};
 		34838CB22399AEFE003F945A /* Carthage: Copy Frameworks Run Script */ = {
 			isa = PBXShellScriptBuildPhase;

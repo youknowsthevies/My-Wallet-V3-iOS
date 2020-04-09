@@ -1,8 +1,9 @@
 configs:
-  Development: debug
-  Production: debug
+  Debug Dev: debug
+  Debug Production: debug
+  Debug Staging: debug
   Release: release
-  Staging: debug
+  Release Staging: release
 name: Modules
 options:
   bundleIdPrefix: com.blockchain
@@ -23,6 +24,7 @@ targetTemplates:
     type: framework
   FrameworkTest:
     dependencies:
+    - target: TestKit
     - carthage: RxSwift
     - carthage: RxBlocking
     - carthage: RxTest

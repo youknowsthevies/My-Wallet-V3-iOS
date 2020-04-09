@@ -18,10 +18,9 @@ disabled_rules:
   - discarded_notification_center_observer
   - operator_whitespace
   - function_body_length
+  - orphaned_doc_comment
 excluded:
   - Submodules/
-  - RxAlamofire/
-  - Pods/
   - Carthage/
   - vendor/bundle
 opt_in_rules:
