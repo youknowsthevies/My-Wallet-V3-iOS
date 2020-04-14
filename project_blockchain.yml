@@ -29,7 +29,9 @@ targets:
     platform: iOS
     sources:
     - Blockchain
-    - Submodules/SocketRocket/SocketRocket
+    - includes:
+      - '**/*.[hm]'
+      path: Submodules/SocketRocket/SocketRocket
     type: application
   BlockchainTests:
     dependencies:

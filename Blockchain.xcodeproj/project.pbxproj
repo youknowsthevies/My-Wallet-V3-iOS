@@ -2847,7 +2847,6 @@
 		CACF0BD91336D0DF3091DECD /* AssetAccountRepositoryMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetAccountRepositoryMock.swift; sourceTree = "<group>"; };
 		CB85AB2FBFD638BF9E3571E6 /* CheckoutScreenInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutScreenInteractor.swift; sourceTree = "<group>"; };
 		CB88C8EA32B9888863FDDB87 /* ExchangeServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeServices.swift; sourceTree = "<group>"; };
-		CB8FA2DEAAB213F2CB960A41 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CBA0A481BC02D69F280B0BC0 /* NSString+JSONParser_NSString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+JSONParser_NSString.h"; sourceTree = "<group>"; };
 		CBBED9DCB239C18CB91263E8 /* TransactionDetailTableCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TransactionDetailTableCell.m; sourceTree = "<group>"; };
 		CBC7316EE857EB0AF56C3B54 /* RemoteNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteNotificationService.swift; sourceTree = "<group>"; };
@@ -6280,14 +6279,6 @@
 			path = Introduction;
 			sourceTree = "<group>";
 		};
-		9B5A69957ACFFE3F513D7796 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				CB8FA2DEAAB213F2CB960A41 /* Info.plist */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
 		9B786020AEF9F7A2EB9DD47B /* Coordinator */ = {
 			isa = PBXGroup;
 			children = (
@@ -6592,7 +6583,6 @@
 			isa = PBXGroup;
 			children = (
 				2753FCBAE544653644D899B6 /* Internal */,
-				9B5A69957ACFFE3F513D7796 /* Resources */,
 				67D3314EF3B316C0F071A8EF /* NSRunLoop+SRWebSocket.h */,
 				3D91E77F5BE236731A920F4D /* NSRunLoop+SRWebSocket.m */,
 				EDB935847134189897C68095 /* NSURLRequest+SRWebSocket.h */,
