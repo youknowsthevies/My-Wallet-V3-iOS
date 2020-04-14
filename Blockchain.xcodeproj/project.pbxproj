@@ -1493,7 +1493,6 @@
 		0B6C5410339A347FAF870116 /* KYCTiersHeaderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KYCTiersHeaderViewModel.swift; sourceTree = "<group>"; };
 		0B6D3AA323271236083D6B86 /* zh */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh; path = zh.lproj/KYCAddressController.strings; sourceTree = "<group>"; };
 		0BD70A0E6B8EA7074B2E6E3B /* BackupNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupNavigationViewController.swift; sourceTree = "<group>"; };
-		0BF42612F8EBC80AC5EFBB8E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0BFBFCB20E5D93D92B760039 /* ExchangeRate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeRate.swift; sourceTree = "<group>"; };
 		0C07BD12ED4B2F038A62F418 /* VeriffController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeriffController.swift; sourceTree = "<group>"; };
 		0C14515A17320DD7A0C38C57 /* QRCodeScannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScannerTests.swift; sourceTree = "<group>"; };
@@ -4061,7 +4060,6 @@
 				037ACC83186902220485039B /* AssetType.xcassets */,
 				1A96739A6FAFA88BD58C4601 /* BCAddressSelectionView.xib */,
 				14B400CE3136CCD137099554 /* Images.xcassets */,
-				0BF42612F8EBC80AC5EFBB8E /* Info.plist */,
 				6FAB01EEDFB2892E58F38D0F /* InfoPlist.strings */,
 				93DD52C2B4C2B5A1AF14C428 /* KYCImages.xcassets */,
 				05A735CD4DC05B4D5B078B7C /* Localizable.strings */,
@@ -10446,7 +10444,7 @@
 					"$(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include",
 					"$(PROJECT_DIR)/Submodules/SocketRocket",
 				);
-				INFOPLIST_FILE = Blockchain/Resources/Info.plist;
+				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -10560,7 +10558,7 @@
 					"$(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include",
 					"$(PROJECT_DIR)/Submodules/SocketRocket",
 				);
-				INFOPLIST_FILE = Blockchain/Resources/Info.plist;
+				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -10598,7 +10596,7 @@
 					"$(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include",
 					"$(PROJECT_DIR)/Submodules/SocketRocket",
 				);
-				INFOPLIST_FILE = Blockchain/Resources/Info.plist;
+				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -10692,7 +10690,7 @@
 					"$(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include",
 					"$(PROJECT_DIR)/Submodules/SocketRocket",
 				);
-				INFOPLIST_FILE = Blockchain/Resources/Info.plist;
+				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -10730,7 +10728,7 @@
 					"$(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include",
 					"$(PROJECT_DIR)/Submodules/SocketRocket",
 				);
-				INFOPLIST_FILE = Blockchain/Resources/Info.plist;
+				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

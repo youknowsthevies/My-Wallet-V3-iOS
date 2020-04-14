@@ -153,13 +153,14 @@ targets:
     settings:
       base:
         GCC_PREFIX_HEADER: Blockchain/Blockchain-Prefix.pch
-        OTHER_LDFLAGS:
-        - -ObjC
         HEADER_SEARCH_PATHS:
         - $(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include
         - $(PROJECT_DIR)/Submodules/SocketRocket
+        INFOPLIST_FILE: Blockchain/Blockchain-Info.plist
         LIBRARY_SEARCH_PATHS:
         - $(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/lib
+        OTHER_LDFLAGS:
+        - -ObjC
         SWIFT_OBJC_BRIDGING_HEADER: Blockchain/Blockchain-Bridging-Header.h
       configs:
         Debug Dev:
