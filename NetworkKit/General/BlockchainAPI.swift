@@ -22,13 +22,7 @@ final public class BlockchainAPI: NSObject {
     // MARK: - Properties
 
     /// The instance variable used to access functions of the `API` class.
-    public static let shared = BlockchainAPI()
-
-    // TODO: remove once migration is complete
-    /// Objective-C compatible class function
-    @objc public class func sharedInstance() -> BlockchainAPI {
-        return BlockchainAPI.shared
-    }
+    @objc public static let shared = BlockchainAPI()
 
     /**
      Public endpoints used for Blockchain API calls.
@@ -81,36 +75,27 @@ final public class BlockchainAPI: NSObject {
     // MARK: URI
     
     @objc public var webSocketUri: String? {
-        guard let hostAndPath = Bundle.main.infoDictionary!["WEBSOCKET_SERVER"] as? String else {
-            return nil
-        }
-        return "wss://\(hostAndPath)"
+        return InfoDictionaryHelper.value(for: .websocketServerBTC, prefix: "wss://")
     }
     @objc public var ethereumWebSocketUri: String? {
-        guard let hostAndPath = Bundle.main.infoDictionary!["WEBSOCKET_SERVER_ETH"] as? String else {
-            return nil
-        }
-        return "wss://\(hostAndPath)"
+        return InfoDictionaryHelper.value(for: .websocketServerETH, prefix: "wss://")
     }
     @objc public var bitcoinCashWebSocketUri: String? {
-        guard let hostAndPath = Bundle.main.infoDictionary!["WEBSOCKET_SERVER_BCH"] as? String else {
-            return nil
-        }
-        return "wss://\(hostAndPath)"
+        return InfoDictionaryHelper.value(for: .websocketServerBCH, prefix: "wss://")
     }
     
     // MARK: URL
     
     public var apiHost: String {
-        return Bundle.main.infoDictionary!["API_URL"] as! String
+        return InfoDictionaryHelper.value(for: .apiURL)
     }
     
     public var walletHost: String {
-        return Bundle.main.infoDictionary!["WALLET_SERVER"] as! String
+        return InfoDictionaryHelper.value(for: .walletServer)
     }
     
-    public var retailHost: String {
-        return Bundle.main.infoDictionary!["RETAIL_CORE_URL"] as! String
+    public var retailCoreHost: String {
+        return InfoDictionaryHelper.value(for: .retailCoreURL)
     }
     
     @objc public var apiUrl: String {
@@ -118,27 +103,23 @@ final public class BlockchainAPI: NSObject {
     }
     
     @objc public var walletUrl: String {
-        let host = Bundle.main.infoDictionary!["WALLET_SERVER"] as! String
-        return "https://\(host)"
+        return "https://\(walletHost)"
     }
     
     @objc public var explorerUrl: String {
-        let host = Bundle.main.infoDictionary!["EXPLORER_SERVER"] as! String
-        return "https://\(host)"
+        return InfoDictionaryHelper.value(for: .explorerServer, prefix: "https://")
     }
     
     @objc public var retailCoreUrl: String {
-        return "https://\(retailHost)"
+        return "https://\(retailCoreHost)"
     }
     
     @objc public var retailCoreSocketUrl: String {
-        let host = Bundle.main.infoDictionary!["RETAIL_CORE_SOCKET_URL"] as! String
-        return "wss://\(host)"
+        return InfoDictionaryHelper.value(for: .retailCoreSocketURL, prefix: "wss://")
     }
     
     @objc public var exchangeURL: String {
-        let host = Bundle.main.infoDictionary!["EXCHANGE_URL"] as! String
-        return "https://\(host)"
+        return InfoDictionaryHelper.value(for: .exchangeURL, prefix: "https://")
     }
     
     @objc public var walletOptionsUrl: String {
@@ -146,8 +127,7 @@ final public class BlockchainAPI: NSObject {
     }
     
     @objc public var buyWebViewUrl: String? {
-        let hostAndPath = Bundle.main.infoDictionary!["BUY_WEBVIEW_URL"] as! String
-        return "https://\(hostAndPath)"
+        return InfoDictionaryHelper.value(for: .buyWebviewURL, prefix: "https://")
     }
     
     @objc public var bitcoinExplorerUrl: String {
@@ -167,8 +147,7 @@ final public class BlockchainAPI: NSObject {
     }
     
     public var coinifyEndpoint: String {
-        let host = Bundle.main.infoDictionary!["COINIFY_URL"] as! String
-        return "https://\(host)"
+        return InfoDictionaryHelper.value(for: .coinifyURL, prefix: "https://")
     }
     
     public var stellarchainUrl: String {
@@ -219,5 +198,34 @@ final public class BlockchainAPI: NSObject {
         static var quotes: String {
             return BlockchainAPI.shared.retailCoreUrl + "/markets/quotes"
         }
+    }
+}
+
+fileprivate struct InfoDictionaryHelper {
+    enum Key: String {
+        case apiURL = "API_URL"
+        case buyWebviewURL = "BUY_WEBVIEW_URL"
+        case coinifyURL = "COINIFY_URL"
+        case exchangeURL = "EXCHANGE_URL"
+        case explorerServer = "EXPLORER_SERVER"
+        case retailCoreSocketURL = "RETAIL_CORE_SOCKET_URL"
+        case retailCoreURL = "RETAIL_CORE_URL"
+        case walletServer = "WALLET_SERVER"
+        case websocketServerBTC = "WEBSOCKET_SERVER"
+        case websocketServerBCH = "WEBSOCKET_SERVER_BCH"
+        case websocketServerETH = "WEBSOCKET_SERVER_ETH"
+    }
+
+    private static let infoDictionary = Bundle(for: BlockchainAPI.self).infoDictionary
+
+    static func value(for key: Key) -> String! {
+        return infoDictionary?[key.rawValue] as? String
+    }
+
+    static func value(for key: Key, prefix: String) -> String! {
+        guard let value = value(for: key) else {
+            return nil
+        }
+        return prefix + value
     }
 }

@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>API_URL</key>
+	<string>$(API_URL)</string>
+	<key>BUY_WEBVIEW_URL</key>
+	<string>$(BUY_WEBVIEW_URL)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -13,10 +17,28 @@
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundlePackageType</key>
-	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<string>1</string>
+	<key>COINIFY_URL</key>
+	<string>$(COINIFY_URL)</string>
+	<key>EXCHANGE_URL</key>
+	<string>$(EXCHANGE_URL)</string>
+	<key>EXPLORER_SERVER</key>
+	<string>$(EXPLORER_SERVER)</string>
+	<key>RETAIL_CORE_SOCKET_URL</key>
+	<string>$(RETAIL_CORE_SOCKET_URL)</string>
+	<key>RETAIL_CORE_URL</key>
+	<string>$(RETAIL_CORE_URL)</string>
+	<key>WALLET_SERVER</key>
+	<string>$(WALLET_SERVER)</string>
+	<key>WEBSOCKET_SERVER</key>
+	<string>$(WEBSOCKET_SERVER)</string>
+	<key>WEBSOCKET_SERVER_BCH</key>
+	<string>$(WEBSOCKET_SERVER_BCH)</string>
+	<key>WEBSOCKET_SERVER_ETH</key>
+	<string>$(WEBSOCKET_SERVER_ETH)</string>
 </dict>
 </plist>

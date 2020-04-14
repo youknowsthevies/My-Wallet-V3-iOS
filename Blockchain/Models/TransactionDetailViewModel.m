@@ -57,8 +57,8 @@
         self.decimalAmount = [NSDecimalNumber decimalNumberWithString:decimalString];
         WalletManager.sharedInstance.latestMultiAddressResponse.symbol_btc = currentSymbol;
         
-        self.detailButtonTitle = [[NSString stringWithFormat:@"%@ %@",BC_STRING_VIEW_ON_URL_ARGUMENT, [[BlockchainAPI sharedInstance] blockchainDotCom]] uppercaseString];
-        self.detailButtonLink = [[[BlockchainAPI sharedInstance] bitcoinExplorerUrl] stringByAppendingFormat:@"/tx/%@", self.myHash];
+        self.detailButtonTitle = [[NSString stringWithFormat:@"%@ %@",BC_STRING_VIEW_ON_URL_ARGUMENT, [BlockchainAPI.shared blockchainDotCom]] uppercaseString];
+        self.detailButtonLink = [[BlockchainAPI.shared bitcoinExplorerUrl] stringByAppendingFormat:@"/tx/%@", self.myHash];
     }
     return self;
 }
@@ -80,9 +80,9 @@
         self.note = etherTransaction.note;
         self.time = etherTransaction.time;
         self.dateString = [NSDateFormatter verboseStringFromDate:[NSDate dateWithTimeIntervalSince1970:self.time]];
-        self.detailButtonTitle = [[NSString stringWithFormat:@"%@ %@",BC_STRING_VIEW_ON_URL_ARGUMENT, [[BlockchainAPI sharedInstance] blockchainDotCom]] uppercaseString];
+        self.detailButtonTitle = [[NSString stringWithFormat:@"%@ %@",BC_STRING_VIEW_ON_URL_ARGUMENT, [BlockchainAPI.shared blockchainDotCom]] uppercaseString];
         self.detailButtonLink =
-        [[[BlockchainAPI sharedInstance] etherExplorer] stringByAppendingFormat:@"/tx/%@", self.myHash];
+        [[BlockchainAPI.shared etherExplorer] stringByAppendingFormat:@"/tx/%@", self.myHash];
 
         self.ethExchangeRate = exchangeRate;
         // TODO: IOS-1988 Add tests for confirmations string
@@ -115,8 +115,8 @@
 
     model.assetType = LegacyAssetTypeBitcoinCash;
     model.hideNote = YES;
-    model.detailButtonTitle = [[BC_STRING_VIEW_ON_URL_ARGUMENT stringByAppendingFormat:@" %@", [[BlockchainAPI sharedInstance] blockchainDotCom]] uppercaseString];
-    model.detailButtonLink = [BlockchainAPI.sharedInstance transactionDetailURLFor:model.myHash assetType:[LegacyCryptoCurrency bitcoinCash]];
+    model.detailButtonTitle = [[BC_STRING_VIEW_ON_URL_ARGUMENT stringByAppendingFormat:@" %@", [BlockchainAPI.shared blockchainDotCom]] uppercaseString];
+    model.detailButtonLink = [BlockchainAPI.shared transactionDetailURLFor:model.myHash assetType:[LegacyCryptoCurrency bitcoinCash]];
     return model;
 }
 

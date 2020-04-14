@@ -127,7 +127,7 @@
         return;
     }
 
-    NSURL *URL = [NSURL URLWithString:[[[BlockchainAPI sharedInstance] walletUrl] stringByAppendingFormat:URL_SUFFIX_EVENT_NAME_ARGUMENT, eventName]];
+    NSURL *URL = [NSURL URLWithString:[[BlockchainAPI.shared walletUrl] stringByAppendingFormat:URL_SUFFIX_EVENT_NAME_ARGUMENT, eventName]];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:URL];
     request.HTTPMethod = @"POST";
 

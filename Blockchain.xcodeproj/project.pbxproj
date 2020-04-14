@@ -500,6 +500,9 @@
 		3AC61A6E243DC81C000F5A78 /* DigitPadViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC61A6B243DC81B000F5A78 /* DigitPadViewModelTests.swift */; };
 		3AC61A6F243DC81C000F5A78 /* PinInteractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC61A6C243DC81B000F5A78 /* PinInteractorTests.swift */; };
 		3AC61A70243DC81C000F5A78 /* PinScreenPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC61A6D243DC81C000F5A78 /* PinScreenPresenterTests.swift */; };
+		3AC82C012445FB2800EB9398 /* Dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 3AC82BFE2445FB2800EB9398 /* Dev.xcconfig */; };
+		3AC82C022445FB2800EB9398 /* Staging.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 3AC82BFF2445FB2800EB9398 /* Staging.xcconfig */; };
+		3AC82C032445FB2800EB9398 /* Production.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 3AC82C002445FB2800EB9398 /* Production.xcconfig */; };
 		3AC9755A210FBD10006A9263 /* NSAttributedString+Conveniences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC97559210FBD10006A9263 /* NSAttributedString+Conveniences.swift */; };
 		3ACFA26823A2BDCB0021408B /* SettingsRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ACFA26723A2BDCB0021408B /* SettingsRouter.swift */; };
 		3ACFA26B23A2BE6B0021408B /* SettingsScreenInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ACFA26A23A2BE6B0021408B /* SettingsScreenInteractor.swift */; };
@@ -2074,6 +2077,9 @@
 		3AC61A6B243DC81B000F5A78 /* DigitPadViewModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DigitPadViewModelTests.swift; sourceTree = "<group>"; };
 		3AC61A6C243DC81B000F5A78 /* PinInteractorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinInteractorTests.swift; sourceTree = "<group>"; };
 		3AC61A6D243DC81C000F5A78 /* PinScreenPresenterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinScreenPresenterTests.swift; sourceTree = "<group>"; };
+		3AC82BFE2445FB2800EB9398 /* Dev.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Dev.xcconfig; sourceTree = "<group>"; };
+		3AC82BFF2445FB2800EB9398 /* Staging.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Staging.xcconfig; sourceTree = "<group>"; };
+		3AC82C002445FB2800EB9398 /* Production.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Production.xcconfig; sourceTree = "<group>"; };
 		3AC97559210FBD10006A9263 /* NSAttributedString+Conveniences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+Conveniences.swift"; sourceTree = "<group>"; };
 		3ACFA26723A2BDCB0021408B /* SettingsRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRouter.swift; sourceTree = "<group>"; };
 		3ACFA26A23A2BE6B0021408B /* SettingsScreenInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreenInteractor.swift; sourceTree = "<group>"; };
@@ -2270,9 +2276,6 @@
 		515EFAD0210282B4002350B6 /* zh */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh; path = zh.lproj/Localizable.strings; sourceTree = "<group>"; };
 		515EFAD1210282B4002350B6 /* zh */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh; path = zh.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		516546F7208FCF800019EE63 /* Enum+Enumeratable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Enum+Enumeratable.swift"; sourceTree = "<group>"; };
-		516594A5204F1A7400C50E78 /* Development.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Development.xcconfig; sourceTree = "<group>"; };
-		516594A6204F1C0400C50E78 /* Production.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Production.xcconfig; sourceTree = "<group>"; };
-		516594A7204F1DE600C50E78 /* Staging.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Staging.xcconfig; sourceTree = "<group>"; };
 		5171E38F20F4F98000E8913E /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		518DBAB72188ACC40070453E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/KYCAddressController.strings; sourceTree = "<group>"; };
 		518DBAB92188ACCB0070453E /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/KYCAddressController.strings; sourceTree = "<group>"; };
@@ -2642,7 +2645,6 @@
 		51F5D30121543E70003D6237 /* zh-CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-CN"; path = "zh-CN.lproj/SendCoins.strings"; sourceTree = "<group>"; };
 		51F5D30221543E72003D6237 /* sv-SE */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sv-SE"; path = "sv-SE.lproj/SendCoins.strings"; sourceTree = "<group>"; };
 		51F5D30521543E78003D6237 /* es-ES */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-ES"; path = "es-ES.lproj/SendCoins.strings"; sourceTree = "<group>"; };
-		51F6A9BB206964D6002968EC /* Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		51FE911E213867FD00F49B12 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/KYCAddressController.storyboard; sourceTree = "<group>"; };
 		602B9CA82118E15200BD3D60 /* KYCInformationController.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = KYCInformationController.storyboard; sourceTree = "<group>"; };
 		602B9CA92118E15200BD3D60 /* KYCOnboardingNavigationController.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = KYCOnboardingNavigationController.storyboard; sourceTree = "<group>"; };
@@ -5900,6 +5902,17 @@
 			path = Authentication;
 			sourceTree = "<group>";
 		};
+		3AC82BFD2445FB2800EB9398 /* BlockchainConfig */ = {
+			isa = PBXGroup;
+			children = (
+				3AC82BFE2445FB2800EB9398 /* Dev.xcconfig */,
+				3AC82C002445FB2800EB9398 /* Production.xcconfig */,
+				3AC82BFF2445FB2800EB9398 /* Staging.xcconfig */,
+			);
+			name = BlockchainConfig;
+			path = Config/BlockchainConfig;
+			sourceTree = "<group>";
+		};
 		3ACFA25D23A2BDAA0021408B /* NewSettings */ = {
 			isa = PBXGroup;
 			children = (
@@ -6230,17 +6243,6 @@
 				515EF9F5210282B4002350B6 /* SendCoins.xib */,
 			);
 			path = Xibs;
-			sourceTree = "<group>";
-		};
-		516594A4204F1A3B00C50E78 /* Config */ = {
-			isa = PBXGroup;
-			children = (
-				516594A5204F1A7400C50E78 /* Development.xcconfig */,
-				516594A6204F1C0400C50E78 /* Production.xcconfig */,
-				51F6A9BB206964D6002968EC /* Release.xcconfig */,
-				516594A7204F1DE600C50E78 /* Staging.xcconfig */,
-			);
-			path = Config;
 			sourceTree = "<group>";
 		};
 		5176A4C4214AA5900006769F /* Dashboard */ = {
@@ -9487,8 +9489,8 @@
 			children = (
 				9FB3637B14B60128004BEA02 /* Blockchain */,
 				5194359F208E61F3001EF882 /* BlockchainTests */,
+				3AC82BFD2445FB2800EB9398 /* BlockchainConfig */,
 				51392045205C60520025EE33 /* Cert */,
-				516594A4204F1A3B00C50E78 /* Config */,
 				9FB3637414B60128004BEA02 /* Frameworks */,
 				9FB3637214B60128004BEA02 /* Products */,
 				3A16CC6E243F85760054657E /* Prototyping */,
@@ -10898,6 +10900,7 @@
 				511713B02155489D000C3AD1 /* Localizable.strings in Resources */,
 				511713AF21554880000C3AD1 /* InfoPlist.strings in Resources */,
 				51B767A92106369A003CCD46 /* Montserrat-Black.ttf in Resources */,
+				3AC82C012445FB2800EB9398 /* Dev.xcconfig in Resources */,
 				65E11C372362F01400C0154C /* TotalBalanceTableViewCell.xib in Resources */,
 				3A47826A2297452D00DE5039 /* TextFieldAccessoryButtonView.xib in Resources */,
 				51B767AA2106369A003CCD46 /* Montserrat-BlackItalic.ttf in Resources */,
@@ -10954,6 +10957,7 @@
 				3A991875240F2B2700EC0427 /* MobileCodeEntryViewController.xib in Resources */,
 				65550E7522BE671F00522656 /* LoginContainerViewController.xib in Resources */,
 				C777330F217A65F400899930 /* SimpleListViewController.storyboard in Resources */,
+				3AC82C022445FB2800EB9398 /* Staging.xcconfig in Resources */,
 				65F4DE6F23D8C8B2009F753B /* RecoveryPhraseView.xib in Resources */,
 				C70FF5661E7B051C00AC7F8B /* ContactTransactionTableCell.xib in Resources */,
 				AA54E49A216D30F7005061F9 /* KYCStateSelectionController.storyboard in Resources */,
@@ -10966,6 +10970,7 @@
 				3AAEF95A2141B05A005852D1 /* ActionableFooterView.xib in Resources */,
 				3A1BB2EF230730DB00761EF5 /* Inter-SemiBold.ttf in Resources */,
 				3A49B2C52130B56C0068F443 /* NewOrderTableViewCell.xib in Resources */,
+				3AC82C032445FB2800EB9398 /* Production.xcconfig in Resources */,
 				3AE74B4D21C04D9C00246A9C /* KYCTiersViewController.storyboard in Resources */,
 				515EFAE8210282B4002350B6 /* ReceiveCoins.xib in Resources */,
 				6510614523572A1400C871C0 /* AutoPairingViewController.xib in Resources */,
@@ -11159,7 +11164,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -ue\nsleep 3\nINFO_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\nif [ -f \"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\" ] ; then\necho \"Found Info.plist\"\nopensslURL=`/usr/libexec/PlistBuddy -c \"Print :WALLET_SERVER\" \"$INFO_PLIST\"`\nif [ ! -d ${SRCROOT}/Cert ]; then\nmkdir ${SRCROOT}/Cert\nfi\ncd ${SRCROOT}/Cert\nopenssl s_client -connect $opensslURL:443 -showcerts -CApath etc/ssl/certs/ | openssl x509 -outform DER > blockchain.der\nelse\necho \"Error: Could not find info.plist. Exiting\"\nexit 1\nfi\n\n";
+			shellScript = "set -ue\nif [ ! -d ${SRCROOT}/Cert ]; then\n    mkdir ${SRCROOT}/Cert\nfi\ncd ${SRCROOT}/Cert\nopenssl s_client -connect ${OPENSSL_CERT_URL}:443 -showcerts -CApath etc/ssl/certs/ | openssl x509 -outform DER > blockchain.der\n";
 		};
 		7ADD19D5218743A70013A525 /* Setup Firebase Environment */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -13045,10 +13050,9 @@
 		};
 		51659493204EFD1000C50E78 /* Debug Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 516594A7204F1DE600C50E78 /* Staging.xcconfig */;
+			baseConfigurationReference = 3AC82BFF2445FB2800EB9398 /* Staging.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon.debug;
 				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -13157,10 +13161,9 @@
 		};
 		517F5A3E205811AA004826CA /* Debug Dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 516594A5204F1A7400C50E78 /* Development.xcconfig */;
+			baseConfigurationReference = 3AC82BFE2445FB2800EB9398 /* Dev.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon.debug;
 				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -13263,10 +13266,9 @@
 		};
 		517F5A44205811DF004826CA /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 51F6A9BB206964D6002968EC /* Release.xcconfig */;
+			baseConfigurationReference = 3AC82C002445FB2800EB9398 /* Production.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
@@ -13471,10 +13473,9 @@
 		};
 		9FB3638A14B60128004BEA02 /* Debug Production */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 516594A6204F1C0400C50E78 /* Production.xcconfig */;
+			baseConfigurationReference = 3AC82C002445FB2800EB9398 /* Production.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -13577,10 +13578,9 @@
 		};
 		AAD7CC5321EFE03100B132F0 /* Release Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 516594A7204F1DE600C50E78 /* Staging.xcconfig */;
+			baseConfigurationReference = 3AC82BFF2445FB2800EB9398 /* Staging.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon.debug;
 				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";

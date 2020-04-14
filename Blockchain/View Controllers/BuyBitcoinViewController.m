@@ -53,7 +53,7 @@ NSString* loginWithJsonScript(NSString*, NSString*, NSString*, NSString*, BOOL);
         self.webView.scrollView.scrollEnabled = YES;
         self.webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
 
-        NSString *urlString = rootURL ? [rootURL stringByAppendingString:URL_BUY_WEBVIEW_SUFFIX] : [[BlockchainAPI sharedInstance] buyWebViewUrl];
+        NSString *urlString = rootURL ? [rootURL stringByAppendingString:URL_BUY_WEBVIEW_SUFFIX] : [BlockchainAPI.shared buyWebViewUrl];
         NSURL *login = [NSURL URLWithString:urlString];
         NSURLRequest *request = [NSURLRequest requestWithURL:login
                                                  cachePolicy:NSURLRequestUseProtocolCachePolicy
@@ -117,8 +117,8 @@ NSString* loginWithJsonScript(NSString*, NSString*, NSString*, NSString*, BOOL);
     if ([self isDebug]) {
         completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
     }else {
-        if ([challenge.protectionSpace.host hasSuffix:[[BlockchainAPI sharedInstance] blockchainDotInfo]] ||
-            [challenge.protectionSpace.host hasSuffix:[[BlockchainAPI sharedInstance] blockchainDotCom]]) {
+        if ([challenge.protectionSpace.host hasSuffix:[BlockchainAPI.shared blockchainDotInfo]] ||
+            [challenge.protectionSpace.host hasSuffix:[BlockchainAPI.shared blockchainDotCom]]) {
             [[CertificatePinner sharedInstance] didReceive:challenge completion:completionHandler];
         } else {
             completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);

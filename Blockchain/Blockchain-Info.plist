@@ -2,14 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>API_URL</key>
-	<string>$(API_URL)</string>
-	<key>BUY_WEBVIEW_URL</key>
-	<string>$(BUY_WEBVIEW_URL)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Blockchain</string>
+	<string>${PRODUCT_NAME}</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconName</key>
@@ -19,13 +15,11 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Blockchain</string>
+	<string>${PRODUCT_NAME}</string>
 	<key>CFBundlePackageType</key>
-	<string>APPL</string>
+	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
 	<string>2.24.3</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -41,10 +35,6 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>0</string>
-	<key>COINIFY_URL</key>
-	<string>$(COINIFY_URL)</string>
-	<key>EXPLORER_SERVER</key>
-	<string>$(EXPLORER_SERVER)</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -61,12 +51,6 @@
 	<string>Required for video capture.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Your permission is needed in order to upload documents from your photo library.</string>
-	<key>EXCHANGE_URL</key>
-	<string>$(EXCHANGE_URL)</string>
-	<key>RETAIL_CORE_SOCKET_URL</key>
-	<string>$(RETAIL_CORE_SOCKET_URL)</string>
-	<key>RETAIL_CORE_URL</key>
-	<string>$(RETAIL_CORE_URL)</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inter-Bold.ttf</string>
@@ -98,13 +82,5 @@
 	<string>Light</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>WALLET_SERVER</key>
-	<string>$(WALLET_SERVER)</string>
-	<key>WEBSOCKET_SERVER</key>
-	<string>$(WEBSOCKET_SERVER)</string>
-	<key>WEBSOCKET_SERVER_BCH</key>
-	<string>$(WEBSOCKET_SERVER_BCH)</string>
-	<key>WEBSOCKET_SERVER_ETH</key>
-	<string>$(WEBSOCKET_SERVER_ETH)</string>
 </dict>
 </plist>
