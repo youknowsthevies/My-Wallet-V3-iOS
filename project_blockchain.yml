@@ -15,6 +15,9 @@ options:
   groupSortPosition: top
   platform: iOS
 settingGroups:
+  base_ios:
+    base:
+      TARGETED_DEVICE_FAMILY: 1
   base_signing:
     base:
       CODE_SIGN_ENTITLEMENTS: Blockchain/Blockchain.entitlements
@@ -33,10 +36,11 @@ settingGroups:
     groups:
     - base_signing
 settings:
-  CODE_SIGN_STYLE: Manual
-  SUPPORTS_MACCATALYST: false
-  VALID_ARCHS: arm64
-  VALID_ARCHS[sdk=iphonesimulator*]: x86_64
+  base:
+    CODE_SIGN_STYLE: Manual
+    SUPPORTS_MACCATALYST: false
+    VALID_ARCHS: arm64
+    VALID_ARCHS[sdk=iphonesimulator*]: x86_64
 targets:
   Blockchain:
     configFiles:
@@ -45,27 +49,83 @@ targets:
       Debug Staging: Config/BlockchainConfig/Staging.xcconfig
       Release: Config/BlockchainConfig/Production.xcconfig
       Release Staging: Config/BlockchainConfig/Staging.xcconfig
+    dependencies:
+    - carthage: BigInt
+    - carthage: Charts
+    - carthage: keccak
+    - carthage: LibWally
+    - carthage: PhoneNumberKit
+    - carthage: PromiseKit
+    - carthage: RxCocoa
+    - carthage: RxRelay
+    - carthage: RxSwift
+    - carthage: scrypt
+    - carthage: secp256k1
+    - carthage: SocketIO
+    - carthage: Starscream
+    - carthage: stellarsdk
+    - carthage: Veriff
+    - carthage: web3swift
+    - carthage: WebRTC
+    - carthage: Zxcvbn
+    - framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
+    - framework: PlatformUIKit.framework
+      implicit: true
+    - framework: PlatformKit.framework
+      implicit: true
+    - framework: ToolKit.framework
+      implicit: true
+    - framework: NetworkKit.framework
+      implicit: true
+    - framework: StellarKit.framework
+      implicit: true
+    - framework: EthereumKit.framework
+      implicit: true
+    - framework: ERC20Kit.framework
+      implicit: true
+    - framework: BitcoinKit.framework
+      implicit: true
+    - framework: HDWalletKit.framework
+      implicit: true
+    - framework: CommonCryptoKit.framework
+      implicit: true
+    - framework: Localization.framework
+      implicit: true
+    - sdk: libicucore.tbd
     platform: iOS
     scheme:
       testTargets:
       - BlockchainTests
     settings:
+      base:
+        GCC_PREFIX_HEADER: Blockchain/Blockchain-Prefix.pch
+        HEADER_SEARCH_PATHS:
+        - $(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include
+        - $(PROJECT_DIR)/Submodules/SocketRocket
+        LIBRARY_SEARCH_PATHS:
+        - $(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/lib
+        SWIFT_OBJC_BRIDGING_HEADER: Blockchain/Blockchain-Bridging-Header.h
       configs:
         Debug Dev:
           groups:
           - debug_signing
+          - base_ios
         Debug Production:
           groups:
           - debug_signing
+          - base_ios
         Debug Staging:
           groups:
           - debug_signing
+          - base_ios
         Release:
           groups:
           - release_signing
+          - base_ios
         Release Staging:
           groups:
           - release_signing
+          - base_ios
     sources:
     - Blockchain
     - includes:
