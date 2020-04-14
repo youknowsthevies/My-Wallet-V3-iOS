@@ -1377,7 +1377,7 @@
 		09E294641E801BDC094E490B /* SendBitcoinViewController+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SendBitcoinViewController+Analytics.swift"; sourceTree = "<group>"; };
 		0A1F1EA6C0EC0C2F064EA790 /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/ReceiveCoins.strings; sourceTree = "<group>"; };
 		0A4E960C8F94149A4A1AC1C6 /* UpdateMobileRouterStateServiceAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateMobileRouterStateServiceAPI.swift; sourceTree = "<group>"; };
-		0AB40F884EC6BBCAE1FB3104 /* power.psb */ = {isa = PBXFileReference; path = power.psb; sourceTree = "<group>"; };
+		0AB40F884EC6BBCAE1FB3104 /* power.psb */ = {isa = PBXFileReference; lastKnownFileType = file; path = power.psb; sourceTree = "<group>"; };
 		0AD12A2EE028A900B874F5F8 /* StellarTransactionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarTransactionService.swift; sourceTree = "<group>"; };
 		0AF116DF5AD55EA2A4F3EC7B /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/KYCConfirmPhoneNumberController.strings; sourceTree = "<group>"; };
 		0AFC6EF85C8CB39668CAC9EF /* LinkedCardTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedCardTableViewCell.swift; sourceTree = "<group>"; };
@@ -1501,7 +1501,7 @@
 		1A24055EFFB657F054B76CFB /* HistoricalBalanceInteracting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoricalBalanceInteracting.swift; sourceTree = "<group>"; };
 		1A2F2B20844F1082103C7FC2 /* DESCRIPTION.en_us.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = DESCRIPTION.en_us.html; sourceTree = "<group>"; };
 		1A3DCFF2DA87E1B56452BD08 /* CustodyWithdrawalSubmissionInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustodyWithdrawalSubmissionInteractor.swift; sourceTree = "<group>"; };
-		1A749BD327DAED8BB49ECBE9 /* Montserrat-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; path = "Montserrat-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
+		1A749BD327DAED8BB49ECBE9 /* Montserrat-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
 		1A83D9474B8525A28AF02698 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Upgrade.strings; sourceTree = "<group>"; };
 		1AE0AAF1C1C6D4D6899504FC /* sample-unused-address.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "sample-unused-address.json"; sourceTree = "<group>"; };
 		1AF7178F1B7A22F6511F4FC2 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Upgrade.strings; sourceTree = "<group>"; };
@@ -1664,7 +1664,7 @@
 		30AAEB3016758B953B08B49A /* Arrays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arrays.swift; sourceTree = "<group>"; };
 		30B27F57D2E754E677FC19BF /* SideMenuInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuInteractor.swift; sourceTree = "<group>"; };
 		30BA6DA6536F9DA5B24F71CF /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		30C6BD4FF4AFFE12CED495CB /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; path = "Montserrat-Regular.ttf"; sourceTree = "<group>"; };
+		30C6BD4FF4AFFE12CED495CB /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Regular.ttf"; sourceTree = "<group>"; };
 		30D70F7C0E3845FAA13E9F14 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/KYCApplicationCompleteController.storyboard; sourceTree = "<group>"; };
 		30E361BDB8BCF36E6EA67AF7 /* sv-SE */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sv-SE"; path = "sv-SE.lproj/KYCCountrySelectionController.strings"; sourceTree = "<group>"; };
 		31062FEEA77CC31A3DD0B6C7 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/KYCPersonalDetailsController.strings; sourceTree = "<group>"; };
@@ -1689,7 +1689,7 @@
 		33E3E811E50C794DA7A61B7E /* TransactionsEthereumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsEthereumViewController.swift; sourceTree = "<group>"; };
 		3402D964EF1CCFDA66EE5EFB /* MultiActionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiActionTableViewCell.swift; sourceTree = "<group>"; };
 		340B4A249EDC86B335F637ED /* PersonalDetailsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalDetailsDelegate.swift; sourceTree = "<group>"; };
-		34274465F99D0FD658E2F556 /* Montserrat-Bold.ttf */ = {isa = PBXFileReference; path = "Montserrat-Bold.ttf"; sourceTree = "<group>"; };
+		34274465F99D0FD658E2F556 /* Montserrat-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Bold.ttf"; sourceTree = "<group>"; };
 		343039E6FDD00E5FE40DBFA6 /* AnnouncementPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementPresenter.swift; sourceTree = "<group>"; };
 		3455BADB17C3DC4286C32A88 /* ContinueButtonInputAccessoryView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContinueButtonInputAccessoryView.h; sourceTree = "<group>"; };
 		3456142127FD9D4504F409E6 /* Blockchain.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Blockchain.entitlements; sourceTree = "<group>"; };
@@ -1725,7 +1725,7 @@
 		38D51D268F070194594F8B97 /* ClipboardTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardTableViewCell.swift; sourceTree = "<group>"; };
 		38D903E332155B25B8C75040 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/SendCoins.strings; sourceTree = "<group>"; };
 		390D4280F74BA1DC6226FD43 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/KYCConfirmPhoneNumberController.strings; sourceTree = "<group>"; };
-		3910CC2272879AC78A544AFE /* Montserrat-BoldItalic.ttf */ = {isa = PBXFileReference; path = "Montserrat-BoldItalic.ttf"; sourceTree = "<group>"; };
+		3910CC2272879AC78A544AFE /* Montserrat-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-BoldItalic.ttf"; sourceTree = "<group>"; };
 		391901A635F33CA8D2E3B328 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/KYCApplicationCompleteController.strings; sourceTree = "<group>"; };
 		3923B0277ACEE87C34325532 /* InOut.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InOut.h; sourceTree = "<group>"; };
 		39594F2B2FBEA01CB9F93B39 /* KYCVerifyIdentityPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KYCVerifyIdentityPresenter.swift; sourceTree = "<group>"; };
@@ -1759,7 +1759,7 @@
 		3C8686440A7ABA5A04526E67 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/KYCVerifyIdentityController.strings; sourceTree = "<group>"; };
 		3C8E73AEF37B27C834959063 /* MockRemoteNotificationsRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRemoteNotificationsRegistry.swift; sourceTree = "<group>"; };
 		3C92BA1AF046465489A440C1 /* WalletIntroductionLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletIntroductionLocation.swift; sourceTree = "<group>"; };
-		3CA71D1801E929B15D77757B /* Montserrat-ExtraLightItalic.ttf */ = {isa = PBXFileReference; path = "Montserrat-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
+		3CA71D1801E929B15D77757B /* Montserrat-ExtraLightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		3CAD88E9B9AD3795B7551799 /* SendPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendPresenter.swift; sourceTree = "<group>"; };
 		3CAF02A33BDFFCFE04FDF13B /* SRIOConsumerPool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SRIOConsumerPool.m; sourceTree = "<group>"; };
 		3CCD0E52460768B38B778239 /* DashboardViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DashboardViewController.xib; sourceTree = "<group>"; };
@@ -1774,7 +1774,7 @@
 		3DA3A2049099B6634E9520A4 /* LinkedCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedCardViewModel.swift; sourceTree = "<group>"; };
 		3DF892B26490D8CC6F5124A2 /* BCFeeSelectionView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BCFeeSelectionView.m; sourceTree = "<group>"; };
 		3E5BC9E738781EAC5D7A8545 /* SecurePinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurePinView.swift; sourceTree = "<group>"; };
-		3E8F5CDEC0351C80723EE53D /* Montserrat-LightItalic.ttf */ = {isa = PBXFileReference; path = "Montserrat-LightItalic.ttf"; sourceTree = "<group>"; };
+		3E8F5CDEC0351C80723EE53D /* Montserrat-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-LightItalic.ttf"; sourceTree = "<group>"; };
 		3E9F5233841EEB2FC91BC3AE /* CustodyActionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustodyActionState.swift; sourceTree = "<group>"; };
 		3EF2DB97B2F2F6D682A104AB /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3F02CB8876AAF7A05A08D5B8 /* ExchangeLockedHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeLockedHeaderView.swift; sourceTree = "<group>"; };
@@ -1886,7 +1886,7 @@
 		4C445DC74048D6F6E984EBC0 /* KeychainItemWrapper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KeychainItemWrapper.m; sourceTree = "<group>"; };
 		4C92C4FDB0AF7722D80D0FE4 /* MockBitpayService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockBitpayService.swift; sourceTree = "<group>"; };
 		4CD207F05515813A93F58897 /* SwapIntroductionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapIntroductionViewController.swift; sourceTree = "<group>"; };
-		4CD23EC53136519112FF8180 /* Montserrat-BlackItalic.ttf */ = {isa = PBXFileReference; path = "Montserrat-BlackItalic.ttf"; sourceTree = "<group>"; };
+		4CD23EC53136519112FF8180 /* Montserrat-BlackItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-BlackItalic.ttf"; sourceTree = "<group>"; };
 		4CE10B2B847960A0BB4B6ECE /* ClipboardTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ClipboardTableViewCell.xib; sourceTree = "<group>"; };
 		4CFC1D89914CCFDEB2C1D336 /* zh-CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-CN"; path = "zh-CN.lproj/KYCAddressController.strings"; sourceTree = "<group>"; };
 		4D1A254B7ECCC9BF0DAE6100 /* DashboardContainerViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = DashboardContainerViewController.storyboard; sourceTree = "<group>"; };
@@ -2022,7 +2022,7 @@
 		5D893929A9142A001218DF93 /* KYCSettingsMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KYCSettingsMock.swift; sourceTree = "<group>"; };
 		5DCE36D7EA32259E52C212F8 /* zh */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh; path = zh.lproj/Upgrade.strings; sourceTree = "<group>"; };
 		5DD9187C16A96A5D06EB9ABF /* SideMenuCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuCell.swift; sourceTree = "<group>"; };
-		5E0AAA1C9F32181D559759F4 /* Montserrat-Italic.ttf */ = {isa = PBXFileReference; path = "Montserrat-Italic.ttf"; sourceTree = "<group>"; };
+		5E0AAA1C9F32181D559759F4 /* Montserrat-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Italic.ttf"; sourceTree = "<group>"; };
 		5E17F757EEDC6F0A7969B1D2 /* KeyImportCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyImportCoordinator.swift; sourceTree = "<group>"; };
 		5E9606CA84D86D35E86D8119 /* BCEmptyPageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BCEmptyPageView.h; sourceTree = "<group>"; };
 		5E98A23406B7EB4FEC0208C1 /* BiometryLabelContentPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometryLabelContentPresenter.swift; sourceTree = "<group>"; };
@@ -2300,7 +2300,7 @@
 		81BA44E70001AD763281341D /* SimpleBuyPendingTransactionAnnouncement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleBuyPendingTransactionAnnouncement.swift; sourceTree = "<group>"; };
 		81F5CD2B8E5D0EB34366BA06 /* SendRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendRouter.swift; sourceTree = "<group>"; };
 		81F9D5099B122B64E1721656 /* WalletIntroAnnouncement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletIntroAnnouncement.swift; sourceTree = "<group>"; };
-		824B1D61E1F8E2AF42752576 /* Montserrat-ExtraBold.ttf */ = {isa = PBXFileReference; path = "Montserrat-ExtraBold.ttf"; sourceTree = "<group>"; };
+		824B1D61E1F8E2AF42752576 /* Montserrat-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-ExtraBold.ttf"; sourceTree = "<group>"; };
 		82C99352EA82B7A3939694FC /* PAXAnnouncement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PAXAnnouncement.swift; sourceTree = "<group>"; };
 		82CFD0EC751334FF39450389 /* HistoricalBalanceCellInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoricalBalanceCellInteractor.swift; sourceTree = "<group>"; };
 		82E59B929316E2C49FF4AC4D /* Enable2FAAnnouncement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enable2FAAnnouncement.swift; sourceTree = "<group>"; };
@@ -2325,7 +2325,7 @@
 		8549D7BE579B477A4BF01E5D /* Transactions.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Transactions.xib; sourceTree = "<group>"; };
 		856382A65958AF85DBB7DA62 /* SRHTTPConnectMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SRHTTPConnectMessage.h; sourceTree = "<group>"; };
 		857FE5E3E04220EC1D4235F2 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/KYCApplicationCompleteController.strings"; sourceTree = "<group>"; };
-		85CCE9731E3EE686DF67B927 /* Inter-Medium.ttf */ = {isa = PBXFileReference; path = "Inter-Medium.ttf"; sourceTree = "<group>"; };
+		85CCE9731E3EE686DF67B927 /* Inter-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Medium.ttf"; sourceTree = "<group>"; };
 		860F3EBBD79E15ADA34CB893 /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = ms.lproj/Backup.strings; sourceTree = "<group>"; };
 		867504C807475605F1C633F5 /* TransactionDetailToCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TransactionDetailToCell.m; sourceTree = "<group>"; };
 		8686826AB0CCED55837D6166 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/KYCVerifyIdentityController.strings; sourceTree = "<group>"; };
@@ -2389,7 +2389,7 @@
 		8DB78AE6FF9619B99365C5FF /* PasteboardLabelContentInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteboardLabelContentInteractor.swift; sourceTree = "<group>"; };
 		8DD70359A7057A20A26EFD69 /* SettingsScreenPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreenPresenter.swift; sourceTree = "<group>"; };
 		8E626E3D5D73F6EC263ECC06 /* TransactionEtherTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TransactionEtherTableViewCell.m; sourceTree = "<group>"; };
-		8E68F8140397FB7B68D0A1CF /* Inter-Regular.ttf */ = {isa = PBXFileReference; path = "Inter-Regular.ttf"; sourceTree = "<group>"; };
+		8E68F8140397FB7B68D0A1CF /* Inter-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Regular.ttf"; sourceTree = "<group>"; };
 		8E72EF2370553E4CE1C7C272 /* SimpleListInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleListInteractor.swift; sourceTree = "<group>"; };
 		8E7BB03D4042D712374DAE99 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = hr.lproj/SendCoins.strings; sourceTree = "<group>"; };
 		8E7FE5A63A3078F41496FEAD /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Upgrade.strings"; sourceTree = "<group>"; };
@@ -2484,7 +2484,7 @@
 		9BAC50C88A38697F527C2A78 /* NumberFormatter+AssetsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NumberFormatter+AssetsTests.swift"; sourceTree = "<group>"; };
 		9BD740D07E2F756DD730DF91 /* BillingAddressScreenPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillingAddressScreenPresenter.swift; sourceTree = "<group>"; };
 		9C1EDDA59977554124E4326A /* SecondPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondPasswordViewController.swift; sourceTree = "<group>"; };
-		9C835D00D63276C08274A1E8 /* Montserrat-Light.ttf */ = {isa = PBXFileReference; path = "Montserrat-Light.ttf"; sourceTree = "<group>"; };
+		9C835D00D63276C08274A1E8 /* Montserrat-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Light.ttf"; sourceTree = "<group>"; };
 		9CA1E5A8F174FA4BEF4999FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/KYCResubmitIdentityController.storyboard; sourceTree = "<group>"; };
 		9CC298E2771458C515C42C42 /* TransactionDetailStatusCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TransactionDetailStatusCell.m; sourceTree = "<group>"; };
 		9CDF73BAFDB348E1BE1E6317 /* UILabel+CGRectForSubstring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UILabel+CGRectForSubstring.h"; sourceTree = "<group>"; };
@@ -2529,7 +2529,7 @@
 		A1E3CE15F9B53077570FBB62 /* sv-SE */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sv-SE"; path = "sv-SE.lproj/Upgrade.strings"; sourceTree = "<group>"; };
 		A1EBAD730A261A36BB4EDF00 /* LockboxRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockboxRepository.swift; sourceTree = "<group>"; };
 		A22DA2B63116DCAC90B26CF9 /* SideMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuViewController.swift; sourceTree = "<group>"; };
-		A250FEAA4FD7604890B8AFF2 /* Inter-Bold.ttf */ = {isa = PBXFileReference; path = "Inter-Bold.ttf"; sourceTree = "<group>"; };
+		A250FEAA4FD7604890B8AFF2 /* Inter-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Bold.ttf"; sourceTree = "<group>"; };
 		A265E7C5ABEF74B41346E605 /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/KYCCountrySelectionController.strings; sourceTree = "<group>"; };
 		A2A3C12076846B0663729752 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = hr.lproj/KYCPersonalDetailsController.strings; sourceTree = "<group>"; };
 		A2FB234BAD216D70DA03C99E /* UIApplication+Suspend.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIApplication+Suspend.h"; sourceTree = "<group>"; };
@@ -2593,7 +2593,7 @@
 		A8544CE7C8C7ACCBC327186D /* LocalizationConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LocalizationConstants.h; sourceTree = "<group>"; };
 		A8B522E8E4A9A14266D9322C /* TradingPairView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradingPairView.swift; sourceTree = "<group>"; };
 		A8BF1497609FAE3B78BD4310 /* NSData+Hex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+Hex.m"; sourceTree = "<group>"; };
-		A8D5E45D7FE7A268205FB0C7 /* Blockchain.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Blockchain.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A8D5E45D7FE7A268205FB0C7 /* Blockchain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blockchain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8D7D2A6249DB520937F7287 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/KYCPersonalDetailsController.strings; sourceTree = "<group>"; };
 		A8E1FDB7977B3C270C1D0651 /* BuyBitcoinAnnouncement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyBitcoinAnnouncement.swift; sourceTree = "<group>"; };
 		A900C3C354BA61459148A944 /* GraphTimeFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GraphTimeFrame.h; sourceTree = "<group>"; };
@@ -2608,7 +2608,7 @@
 		AA43B5E941F912C34510CDA2 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/KYCPersonalDetailsController.strings; sourceTree = "<group>"; };
 		AA59DB8C6379CC2E07702B39 /* CustodyWithdrawalRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustodyWithdrawalRouter.swift; sourceTree = "<group>"; };
 		AA68C8DBA66B9B760EEF88C8 /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = ms.lproj/ReceiveCoins.strings; sourceTree = "<group>"; };
-		AA727F294C84A77A978B1CA3 /* Montserrat-Medium.ttf */ = {isa = PBXFileReference; path = "Montserrat-Medium.ttf"; sourceTree = "<group>"; };
+		AA727F294C84A77A978B1CA3 /* Montserrat-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Medium.ttf"; sourceTree = "<group>"; };
 		AA7F2163A6371D6F994FD165 /* AccountInOut.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AccountInOut.m; sourceTree = "<group>"; };
 		AA9E3688CA7B65E6E73F4D93 /* MockSendFeeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSendFeeService.swift; sourceTree = "<group>"; };
 		AAAC5109F1EC2B3E136E23EC /* Nibable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nibable.swift; sourceTree = "<group>"; };
@@ -2859,7 +2859,7 @@
 		C8BA64A12E8E23CD29DF210B /* PairingDataQRCodeParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingDataQRCodeParser.swift; sourceTree = "<group>"; };
 		C8C48AD6118449C40AC0366B /* KYCTiersCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KYCTiersCoordinator.swift; sourceTree = "<group>"; };
 		C955E08C91D4C01A75752865 /* WalletIntroductionEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletIntroductionEvent.swift; sourceTree = "<group>"; };
-		C97E933DC8956CB845889B23 /* Montserrat-SemiBold.ttf */ = {isa = PBXFileReference; path = "Montserrat-SemiBold.ttf"; sourceTree = "<group>"; };
+		C97E933DC8956CB845889B23 /* Montserrat-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-SemiBold.ttf"; sourceTree = "<group>"; };
 		C982CD4555DC399DD34EA37A /* ExchangeModalView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExchangeModalView.m; sourceTree = "<group>"; };
 		C99238B61E5D19C7263BAB37 /* Identifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiable.swift; sourceTree = "<group>"; };
 		C999130CE8AEF64552073794 /* SRHash.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SRHash.m; sourceTree = "<group>"; };
@@ -2873,7 +2873,7 @@
 		CA4A3EBBE2A382BE5D1792E3 /* TradingPairConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradingPairConfiguration.swift; sourceTree = "<group>"; };
 		CA554D9F2F5D309FCACFAC72 /* PaxActivityPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaxActivityPresenter.swift; sourceTree = "<group>"; };
 		CAB29A720A4163D33C29CD3E /* ValidationTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationTextField.swift; sourceTree = "<group>"; };
-		CABF6CF4D7B8AE8D548BEB1F /* Montserrat-MediumItalic.ttf */ = {isa = PBXFileReference; path = "Montserrat-MediumItalic.ttf"; sourceTree = "<group>"; };
+		CABF6CF4D7B8AE8D548BEB1F /* Montserrat-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-MediumItalic.ttf"; sourceTree = "<group>"; };
 		CACF0BD91336D0DF3091DECD /* AssetAccountRepositoryMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetAccountRepositoryMock.swift; sourceTree = "<group>"; };
 		CB85AB2FBFD638BF9E3571E6 /* CheckoutScreenInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutScreenInteractor.swift; sourceTree = "<group>"; };
 		CB88C8EA32B9888863FDDB87 /* ExchangeServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeServices.swift; sourceTree = "<group>"; };
@@ -2973,7 +2973,7 @@
 		D8FBA4F36EEA2D17DD26B316 /* SimpleBuyTransferCancellationScreenPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleBuyTransferCancellationScreenPresenter.swift; sourceTree = "<group>"; };
 		D90054259BCE9F154FFD3630 /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
 		D968353AC37A17DB58B0B149 /* CustodyActionRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustodyActionRouter.swift; sourceTree = "<group>"; };
-		D96E2103056B294AC0554F8A /* Montserrat-SemiBoldItalic.ttf */ = {isa = PBXFileReference; path = "Montserrat-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		D96E2103056B294AC0554F8A /* Montserrat-SemiBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		D98DE27AD4E5A09B13E23C1C /* ExchangeNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeNavigationController.swift; sourceTree = "<group>"; };
 		D9D49BDE8FED845899BBAAB9 /* WalletUpgradeDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletUpgradeDelegate.swift; sourceTree = "<group>"; };
 		D9D83B36E0986F480443C4DF /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/ReceiveCoins.strings; sourceTree = "<group>"; };
@@ -2991,7 +2991,7 @@
 		DC6ECAA1DBF003D8DC1CD1CD /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/KYCApplicationCompleteController.strings"; sourceTree = "<group>"; };
 		DC76D93194BAA8AB555CB1BF /* FiatCurrencyResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiatCurrencyResponse.swift; sourceTree = "<group>"; };
 		DC7F3855EEE1880B986CCAC1 /* SRWebSocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SRWebSocket.h; sourceTree = "<group>"; };
-		DC8BA4C454A59F706B3AA1BA /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; path = "Inter-SemiBold.ttf"; sourceTree = "<group>"; };
+		DC8BA4C454A59F706B3AA1BA /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-SemiBold.ttf"; sourceTree = "<group>"; };
 		DC8FE9361431A8A2D61272BB /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/SendCoins.strings; sourceTree = "<group>"; };
 		DC96A679471ABAB4C924F3F8 /* SendAssetAddressSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendAssetAddressSource.swift; sourceTree = "<group>"; };
 		DCB19A47D58188E108DE94DD /* KYCVerifyPhoneNumberPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KYCVerifyPhoneNumberPresenterTests.swift; sourceTree = "<group>"; };
@@ -3001,10 +3001,10 @@
 		DD09659040DB11E5181DD313 /* BlockchainAPI+URLSuffix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlockchainAPI+URLSuffix.swift"; sourceTree = "<group>"; };
 		DDBEEF4AAE380EA5AACAB723 /* SwapCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapCoordinator.swift; sourceTree = "<group>"; };
 		DDCD939494F2ECDFCA9B7398 /* BackupFundsServiceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupFundsServiceProvider.swift; sourceTree = "<group>"; };
-		DDF800CD19B21D1D37C6C420 /* Montserrat-ThinItalic.ttf */ = {isa = PBXFileReference; path = "Montserrat-ThinItalic.ttf"; sourceTree = "<group>"; };
+		DDF800CD19B21D1D37C6C420 /* Montserrat-ThinItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-ThinItalic.ttf"; sourceTree = "<group>"; };
 		DDFA789EEC77DF3C017FCCF9 /* SwipeInstructionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeInstructionView.swift; sourceTree = "<group>"; };
 		DE1D9692997832B6DFF94330 /* StellarTradeLimitsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarTradeLimitsAPI.swift; sourceTree = "<group>"; };
-		DE32395883E1D879E5A6AC11 /* Montserrat-Thin.ttf */ = {isa = PBXFileReference; path = "Montserrat-Thin.ttf"; sourceTree = "<group>"; };
+		DE32395883E1D879E5A6AC11 /* Montserrat-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Thin.ttf"; sourceTree = "<group>"; };
 		DE57E381D449218359CCBAF7 /* NabuAuthenticationServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NabuAuthenticationServiceMock.swift; sourceTree = "<group>"; };
 		DE8CBD1057A35588C01A2C20 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		DEADABACEC4AC7609592CB55 /* MockKYCEnterPhoneNumberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockKYCEnterPhoneNumberView.swift; sourceTree = "<group>"; };
@@ -3113,7 +3113,7 @@
 		EC83D5877BB728D6F9D970CD /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		ECCB2D92EB12D166AA68F08E /* NewOrderTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewOrderTableViewCell.xib; sourceTree = "<group>"; };
 		ECCFE4CA778FAD08739C09DA /* TransactionsBitcoinCashViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TransactionsBitcoinCashViewController.m; sourceTree = "<group>"; };
-		ED21A486ACA893E8A0E20C2C /* Montserrat-ExtraLight.ttf */ = {isa = PBXFileReference; path = "Montserrat-ExtraLight.ttf"; sourceTree = "<group>"; };
+		ED21A486ACA893E8A0E20C2C /* Montserrat-ExtraLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-ExtraLight.ttf"; sourceTree = "<group>"; };
 		ED65C97F6DBB144F5D60B46C /* VerifyCodeEntryInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyCodeEntryInteractor.swift; sourceTree = "<group>"; };
 		ED70F87EA667741B1549716D /* CustodyWithdrawalViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CustodyWithdrawalViewController.xib; sourceTree = "<group>"; };
 		EDB935847134189897C68095 /* NSURLRequest+SRWebSocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSURLRequest+SRWebSocket.h"; sourceTree = "<group>"; };
@@ -3228,7 +3228,7 @@
 		FC4D66E31AE8F606BCFA91D0 /* BuyIntroScreenPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyIntroScreenPresenter.swift; sourceTree = "<group>"; };
 		FC5EA743108A545DEC4929E9 /* CustodyInformationScreenPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustodyInformationScreenPresenter.swift; sourceTree = "<group>"; };
 		FC6A5347D7BC1AD15B8D8AAB /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/KYCAddressController.strings; sourceTree = "<group>"; };
-		FCAB22AB30EE28511ED87B27 /* Montserrat-Black.ttf */ = {isa = PBXFileReference; path = "Montserrat-Black.ttf"; sourceTree = "<group>"; };
+		FCAB22AB30EE28511ED87B27 /* Montserrat-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Black.ttf"; sourceTree = "<group>"; };
 		FCFA8098017CE9240142D298 /* MobileVerificationBadgePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileVerificationBadgePresenter.swift; sourceTree = "<group>"; };
 		FD07B9DF8D726999B8C4C6BC /* PinInteracting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinInteracting.swift; sourceTree = "<group>"; };
 		FD259ACD75D77C785F0D911A /* CheckForUnusedAddressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckForUnusedAddressTests.swift; sourceTree = "<group>"; };
@@ -7915,6 +7915,13 @@
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = "Blockchain Luxembourg S.A";
 				TargetAttributes = {
+					4776A64F280E45756CBC7CAA = {
+						ProvisioningStyle = Manual;
+					};
+					CE79537B40B4A1CA87B3DBF0 = {
+						DevelopmentTeam = NZ6PH75U7K;
+						ProvisioningStyle = Manual;
+					};
 				};
 			};
 			buildConfigurationList = 2693962851241F96975361B5 /* Build configuration list for PBXProject "Blockchain" */;
@@ -9960,6 +9967,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -10063,6 +10071,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -10121,12 +10130,15 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = NZ6PH75U7K;
 				INFOPLIST_FILE = Blockchain/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.blockchain.Blockchain;
+				PROVISIONING_PROFILE_SPECIFIER = "match Development com.rainydayapps.Blockchain";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -10183,6 +10195,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -10213,12 +10226,15 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = NZ6PH75U7K;
 				INFOPLIST_FILE = Blockchain/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.blockchain.Blockchain;
+				PROVISIONING_PROFILE_SPECIFIER = "match Development com.rainydayapps.Blockchain";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -10230,12 +10246,15 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = NZ6PH75U7K;
 				INFOPLIST_FILE = Blockchain/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.blockchain.Blockchain;
+				PROVISIONING_PROFILE_SPECIFIER = "match Development com.rainydayapps.Blockchain";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -10272,6 +10291,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -10301,13 +10321,16 @@
 			baseConfigurationReference = 225574C755F665120FD2E2E5 /* Staging.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = NZ6PH75U7K;
 				INFOPLIST_FILE = Blockchain/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.blockchain.Blockchain;
+				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.rainydayapps.Blockchain";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -10318,13 +10341,16 @@
 			baseConfigurationReference = 2F706E190ACCA3AE8CF88D22 /* Production.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = NZ6PH75U7K;
 				INFOPLIST_FILE = Blockchain/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.blockchain.Blockchain;
+				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.rainydayapps.Blockchain";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -10361,6 +10387,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
