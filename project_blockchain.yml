@@ -8,7 +8,7 @@ configs:
   Release Staging: release
 name: Blockchain
 options:
-  bundleIdPrefix: com.blockchain
+  bundleIdPrefix: com.rainydayapps
   defaultConfig: Release
   deploymentTarget:
     iOS: '11.0'
@@ -50,6 +50,7 @@ targets:
       Release: Config/BlockchainConfig/Production.xcconfig
       Release Staging: Config/BlockchainConfig/Staging.xcconfig
     dependencies:
+    - sdk: libicucore.tbd
     - carthage: BigInt
     - carthage: Charts
     - carthage: keccak
@@ -91,7 +92,60 @@ targets:
       implicit: true
     - framework: Localization.framework
       implicit: true
-    - sdk: libicucore.tbd
+    - carthage: FIRAnalyticsConnector
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseABTesting
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseAnalytics
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseCore
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseCoreDiagnostics
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseCrashlytics
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseDynamicLinks
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseInstallations
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseInstanceID
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseMessaging
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseRemoteConfig
+      findFrameworks: false
+      linkType: static
+    - carthage: GoogleAppMeasurement
+      findFrameworks: false
+      linkType: static
+    - carthage: GoogleDataTransport
+      findFrameworks: false
+      linkType: static
+    - carthage: GoogleDataTransportCCTSupport
+      findFrameworks: false
+      linkType: static
+    - carthage: GoogleUtilities
+      findFrameworks: false
+      linkType: static
+    - carthage: nanopb
+      findFrameworks: false
+      linkType: static
+    - carthage: PromisesObjC
+      findFrameworks: false
+      linkType: static
+    - carthage: Protobuf
+      findFrameworks: false
+      linkType: static
     platform: iOS
     scheme:
       testTargets:
@@ -99,6 +153,8 @@ targets:
     settings:
       base:
         GCC_PREFIX_HEADER: Blockchain/Blockchain-Prefix.pch
+        OTHER_LDFLAGS:
+        - -ObjC
         HEADER_SEARCH_PATHS:
         - $(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include
         - $(PROJECT_DIR)/Submodules/SocketRocket
