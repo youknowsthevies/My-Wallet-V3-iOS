@@ -27,23 +27,28 @@ targets:
       Release: Config/BlockchainConfig/Production.xcconfig
       Release Staging: Config/BlockchainConfig/Staging.xcconfig
     platform: iOS
+    scheme:
+      testTargets:
+      - BlockchainTests
+    settings:
+      CODE_SIGN_ENTITLEMENTS: Blockchain/Blockchain.entitlements
     sources:
     - Blockchain
     - includes:
       - '**/*.[hm]'
       path: Submodules/SocketRocket/SocketRocket
     - includes:
-      - 'BTCAddress.[hm]'
-      - 'BTCBase58.[hm]'
-      - 'BTCBigNumber.[hm]'
-      - 'BTCCurvePoint.[hm]'
-      - 'BTCData.[hm]'
-      - 'BTCErrors.[hm]'
-      - 'BTCKey.[hm]'
-      - 'BTCKeychain.[hm]'
-      - 'BTCNetwork.[hm]'
-      - 'BTCProtocolSerialization.[hm]'
-      - 'NSData+BTCData.[hm]'
+      - BTCAddress.[hm]
+      - BTCBase58.[hm]
+      - BTCBigNumber.[hm]
+      - BTCCurvePoint.[hm]
+      - BTCData.[hm]
+      - BTCErrors.[hm]
+      - BTCKey.[hm]
+      - BTCKeychain.[hm]
+      - BTCNetwork.[hm]
+      - BTCProtocolSerialization.[hm]
+      - NSData+BTCData.[hm]
       path: Submodules/CoreBitcoin/CoreBitcoin
     type: application
   BlockchainTests:

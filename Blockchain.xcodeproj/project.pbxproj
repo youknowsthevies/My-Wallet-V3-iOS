@@ -10119,6 +10119,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2F706E190ACCA3AE8CF88D22 /* Production.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Blockchain/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -10210,6 +10211,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 225574C755F665120FD2E2E5 /* Staging.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Blockchain/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -10226,6 +10228,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CDCC2BB8389D8C3F60B15046 /* Dev.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Blockchain/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -10297,6 +10300,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 225574C755F665120FD2E2E5 /* Staging.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Blockchain/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -10313,6 +10317,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2F706E190ACCA3AE8CF88D22 /* Production.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Blockchain/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
