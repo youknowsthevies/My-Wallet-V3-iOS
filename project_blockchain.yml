@@ -20,9 +20,16 @@ settings:
   VALID_ARCHS[sdk=iphonesimulator*]: x86_64
 targets:
   Blockchain:
+    configFiles:
+      Debug Dev: Config/BlockchainConfig/Dev.xcconfig
+      Debug Production: Config/BlockchainConfig/Production.xcconfig
+      Debug Staging: Config/BlockchainConfig/Staging.xcconfig
+      Release: Config/BlockchainConfig/Production.xcconfig
+      Release Staging: Config/BlockchainConfig/Staging.xcconfig
     platform: iOS
     sources:
     - Blockchain
+    - Submodules/SocketRocket/SocketRocket
     type: application
   BlockchainTests:
     dependencies:
