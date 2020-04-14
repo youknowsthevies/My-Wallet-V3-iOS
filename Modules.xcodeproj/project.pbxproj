@@ -59,6 +59,7 @@
 		0FFEA2E8E5EDDCCE535316F3 /* CardTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC7FFFECF62DBBB93BC7178 /* CardTypeTests.swift */; };
 		103ACC3D4A590A10BA6D80CC /* CellModel+Conveniences.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1DD7F3549257D43FE16E801 /* CellModel+Conveniences.swift */; };
 		106D25813FAF2CD4747A7DAE /* CardExpirationDateValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616E5C4650EF82F666D27E4F /* CardExpirationDateValidator.swift */; };
+		1085645EEDBDB1ADC3484143 /* TestKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1101DBC95D39622192B57474 /* FeatureConfigurating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8183FD44A6A8C67196ACB4D3 /* FeatureConfigurating.swift */; };
 		11296C612DB57B1B95C003FA /* HDWalletKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E660C4578B317B409B3BB2E /* HDWalletKitTests.swift */; };
 		11299B405C552BB0724A63CE /* CommonCryptoKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D62BCFE0B0D6FDDB616E32 /* CommonCryptoKit.framework */; };
@@ -157,6 +158,7 @@
 		28C2D3DD934743972378E5B6 /* UIControl+Touches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8F52C07FA5A71E88D48DE3 /* UIControl+Touches.swift */; };
 		28E5B141C141601D9D7E6C20 /* SettingsServiceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B35D68266BECA27C8B973514 /* SettingsServiceAPI.swift */; };
 		29C67D8BA3B12BA36259AB76 /* IntroductionSheetViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2166A4C2BAF475BE348A1707 /* IntroductionSheetViewController.storyboard */; };
+		29DD469DFC10DF32B9C98B51 /* TestKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; };
 		29EEF8C6A2467419A99C11B8 /* BridgedDisposeBag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CF7D727D7D4B755D8ACB8E /* BridgedDisposeBag.swift */; };
 		2A570ECCC78E3F8CF055FDA8 /* PulseContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BC1FFDA375BAA328F74548 /* PulseContainerView.swift */; };
 		2A70037C4C2E0182E3481568 /* AlertModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB01C74EB47F4D65345A766 /* AlertModel.swift */; };
@@ -268,6 +270,7 @@
 		4552D6FC71A4B4C79DBFA759 /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DBC3050E69A7D3E2B3E88C6 /* RxCocoa.framework */; };
 		456FD51F1A91054CCBBFD032 /* CoinSortingStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9AEFFB8509DBDDEE5EEAF5 /* CoinSortingStrategy.swift */; };
 		457FD0999E5BEF6BA20F6B1A /* PulseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCD2513AC87B7DE3147C2F2 /* PulseViewModel.swift */; };
+		460E69CE38DA3BE2F351BF11 /* TestKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		468BFD9FF3CBDEF3E13946E8 /* UIImageView+Conveniences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE1958DA19E5C515B22E84B /* UIImageView+Conveniences.swift */; };
 		46BCA80AD7B8C3C93C35E698 /* SimpleBuyServiceProviderAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 325513A6570485700AEFB8F8 /* SimpleBuyServiceProviderAPI.swift */; };
 		46DDD55FADA3A736658B2E9E /* SelectionItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F427726532E3BCE57FFAACDE /* SelectionItemViewModel.swift */; };
@@ -301,6 +304,7 @@
 		4FFE6F5C452C0AE3AD81E5AD /* CharacterSet+Conveniences.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C39C5E4FEBBFCF99D79672 /* CharacterSet+Conveniences.swift */; };
 		50023EE45571C290B2CFE3E2 /* AnnouncementError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BAD64858624E38DE0A6B4C /* AnnouncementError.swift */; };
 		50308C66769B6C791B9CBAC5 /* WalletPayloadClientAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FBD68F5CA3AC7EC7EF76985 /* WalletPayloadClientAPI.swift */; };
+		50409269315232EDE6FD9B1E /* TestKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		50459C129C0F493DA6FFA7CD /* LoadingViewPresenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54277F0604DD80DC8B229351 /* LoadingViewPresenting.swift */; };
 		5057C0F055A7753FBA7BD22E /* CustodialBalanceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFE62F2100624A6A4F0C413C /* CustodialBalanceService.swift */; };
 		50648C4BB3A9BA4863166E39 /* FeatureTestingVariant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F915D55749F305088EA50F9 /* FeatureTestingVariant.swift */; };
@@ -315,10 +319,12 @@
 		52B502E827DEFCF1C0FDDFCA /* MnemonicValidationScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0385B6578BA8AD723AEE4E1 /* MnemonicValidationScore.swift */; };
 		52C8702EEA6F9A9F37A15099 /* ExchangeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91A56554E51B1CAEB74A2A3 /* ExchangeProvider.swift */; };
 		52FB9AB19C9F78AE72C3F599 /* TransactionDetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0146F3C46018249D1B1F4369 /* TransactionDetailCell.swift */; };
+		5338468D9462FF3A0A6A0579 /* TestKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		53531FF3B60D7D9C7DE5DE54 /* UIView+Nib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E47221F4C0FBF9A4CA3C50 /* UIView+Nib.swift */; };
 		538AF985083101BA5654EF43 /* Rx+UITextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A3AFE87D22FEA8101EC72E9 /* Rx+UITextView.swift */; };
 		53CE24BB5FC6F28C8A04653B /* HTTPRequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EDAD85873B4A57DEE80DC16 /* HTTPRequestError.swift */; };
 		54453949CD67F4EC6C8598F1 /* web3swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC306C3A104700A1F9136CC0 /* web3swift.framework */; };
+		5456A2CD12F72EF5CF6C2E0D /* TestKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		545999A07DFA27F3426C192B /* NabuAuthenticationServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD03A977B3FCEF12F778799 /* NabuAuthenticationServiceMock.swift */; };
 		546608923AD16B9950340D77 /* MainQueueExecution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339296C41EB9A1AF6EFBAE61 /* MainQueueExecution.swift */; };
 		5487858B987B97211ED9A657 /* BitcoinWalletAccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A6EC4C1BD7BD6D8C66F438F /* BitcoinWalletAccountRepository.swift */; };
@@ -344,6 +350,7 @@
 		593DDBFFBC925BAD12C51E1E /* UIColor+Conveniences.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C42514BFCF289A0209C8DF /* UIColor+Conveniences.swift */; };
 		59CC8480E58353E6F1A7D77C /* EthereumAssetAccountDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41751691ED18D1A26A1614B9 /* EthereumAssetAccountDetails.swift */; };
 		59DE65B367B8C73549129CC4 /* SimpleBuyPaymentAccountBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B7B0245F1C2F34F1CF4185F /* SimpleBuyPaymentAccountBuilder.swift */; };
+		59F581F3BC6A12B8CA9434B9 /* TestKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; };
 		59FA27661FE209E041F9EC5A /* AssetAccountDetailsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A38489FB7B5D7C5BEF1ABA9 /* AssetAccountDetailsAPI.swift */; };
 		5A3B937AF1D0576B9102FA20 /* DigitPadButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38B6B262DC6FE325E0FFE73F /* DigitPadButtonView.swift */; };
 		5A6F46AE3565C18E96A701A3 /* SimpleBuySupportedPairsClientAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276A8150753B4D3BAC3B97C9 /* SimpleBuySupportedPairsClientAPI.swift */; };
@@ -512,6 +519,7 @@
 		822008485D259CF322E89752 /* EthereumAssetAccountDetailsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95C72492A36EED576AD487C /* EthereumAssetAccountDetailsService.swift */; };
 		82819741FF83E1409D41CE9B /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF154D6045423D3DEE2C2B64 /* BaseViewController.swift */; };
 		82924A1FFA100611E1F8435E /* ToolKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FA0649C1B564F0E9CDAB37 /* ToolKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		82BEBCDE1B5C108E3ABADF43 /* TestKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		82C49E09B6910EDFE2939E32 /* RxBlocking.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0BCF2443EC967B48793C5260 /* RxBlocking.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		82E74504CF2053BF5C79DDFA /* KYCUserTiersLimits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E42A7866B61CE2579D6BA1D /* KYCUserTiersLimits.swift */; };
 		8305A175DEC6DDC7890F571E /* RxSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 00B6A9B824F8479B7052DC25 /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -547,6 +555,7 @@
 		8A87BA0E4B2BF12B9B4DC81C /* ERC20TokenAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF88BA2A18982B0B46DA14D7 /* ERC20TokenAccount.swift */; };
 		8B70FB22CB1634FF2E569FF4 /* AssetBalanceViewInteracting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36EB338ACF39BDEFFBC156AA /* AssetBalanceViewInteracting.swift */; };
 		8B76B0FFFA0239FE69947EE4 /* PinStoreKeyPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7FB39B7FDF7D76C1064A02 /* PinStoreKeyPair.swift */; };
+		8BA8F0CD13F070D05AC00F5E /* TestKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8BB4208DB24E0A8517926992 /* AnalyticsServiceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BCF05957A406235425D2F0E /* AnalyticsServiceAPI.swift */; };
 		8BE3E6710E67508D3A0710AF /* PlatformKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4415ED2C374B9213999B4E50 /* PlatformKit.framework */; };
 		8C2418A46CF9150CFA7671D2 /* EthereumAccountAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE4F97E3EDFCBA53819AFCC /* EthereumAccountAddressTests.swift */; };
@@ -563,6 +572,7 @@
 		8DC84AA7D0D6E894B5074FD7 /* StellarConfigurationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C25692C05BAC3F16FE880FCE /* StellarConfigurationService.swift */; };
 		8DFA604CF87078A40A7335F1 /* RxBlocking.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0BCF2443EC967B48793C5260 /* RxBlocking.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8E315807ABEABDF4E5BDC7E8 /* RxTest.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5DDE0E2997B37AAB1F49AB /* RxTest.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8E957B1A0C3EED72178F7ECB /* TestKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8ECC4F363FCA43ED4A25D60D /* WalletOptionsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C90C4D57D2BD841D1E6BC3B /* WalletOptionsAPI.swift */; };
 		8EF8FACEC64158267761B4E2 /* CoinifyAccountRepositoryAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64FB497C8EA02B98254B0A0F /* CoinifyAccountRepositoryAPI.swift */; };
 		8F81A19F1E036DA981BA2739 /* AssetURLPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502C535AA59D464647D0BA23 /* AssetURLPayload.swift */; };
@@ -572,6 +582,7 @@
 		902DF009FC73D20E97500D7B /* RxSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 00B6A9B824F8479B7052DC25 /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		90AA5B7F69CF3C9C13642EDA /* PromiseKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 36C985E72DA8774C8690D641 /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		90E37B23F5CCE714A36BADA6 /* SimpleBuyEligibilityResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE4B13C08C83513C2AE5413 /* SimpleBuyEligibilityResponse.swift */; };
+		91147117F8ACA01033CD900F /* TestKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; };
 		9129FD44B7D6931DD0AB82B4 /* CoinSelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CE7FFCD5B325EA6138279E /* CoinSelectionTests.swift */; };
 		9156C57B0CA45E98D7CA12B3 /* EthereumTransactionValidationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B26B2632DE9B984809033E /* EthereumTransactionValidationService.swift */; };
 		916BBE1A8FA50F745A3BF88D /* SMSClientAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD261B3CBB6AF1496E6A2C94 /* SMSClientAPI.swift */; };
@@ -712,6 +723,7 @@
 		B200342008950FAA8F432FDA /* BIP21URI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45AE827FE69FEA9D632EDE4 /* BIP21URI.swift */; };
 		B27716722D152D448F61ECE2 /* HorizontalContainerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFF6BFA10D9035B6969AF24 /* HorizontalContainerCell.swift */; };
 		B28A98A583370080F4407657 /* SimpleBuyEventCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6466FC81169521277334CB1A /* SimpleBuyEventCache.swift */; };
+		B2AB7CA69D84BC444C6F2B5D /* TestKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; };
 		B2AE9ED3C18B4C2551245C75 /* DigitPadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CE4F8D48FCB32DA0EFE2A9B /* DigitPadViewModel.swift */; };
 		B2BD08DEAED319F9896C67F6 /* RxRelay.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B16322202BA2325A6A76B /* RxRelay.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B2C13DEE87AC551B68C6C09C /* StellarKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D7203769D6C563138D6190E /* StellarKitTests.swift */; };
@@ -750,6 +762,7 @@
 		BA4DA5D38118F744D9FCE0F0 /* RxTest.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5DDE0E2997B37AAB1F49AB /* RxTest.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BA6BDE1786E2C9B6606E97FC /* PromiseKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 36C985E72DA8774C8690D641 /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BA9E0E227873049F943DB3D4 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B6A9B824F8479B7052DC25 /* RxSwift.framework */; };
+		BAD3885197681988D4228D6B /* TestKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BAE2470F1AEB2E88BE502F11 /* Localization.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 494C76BED3D61063477158AE /* Localization.framework */; };
 		BAEB98AE7C1CB3A97E422E0E /* SparklineImageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D37A8D98975E746712984DB /* SparklineImageProvider.swift */; };
 		BB88F7FF4C9E323370D0B66F /* WordValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E97C49EDAA1791912374BEE3 /* WordValidator.swift */; };
@@ -766,6 +779,7 @@
 		BE25DBB244107275C38282AD /* NetworkCommunicatorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4871066CD5CFB3D1EE6EE398 /* NetworkCommunicatorError.swift */; };
 		BE31623B7ADB4698CB78030E /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC14C9F7E7B69960DFA86E39 /* Router.swift */; };
 		BE8A5CF2D052F282B642FCB9 /* SegmentedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38FED3968C7E11860B4126CF /* SegmentedViewModel.swift */; };
+		BED673B6AE9386BC4828BEB2 /* TestKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; };
 		BF8E0A8B3F22407CF593D35D /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DBC3050E69A7D3E2B3E88C6 /* RxCocoa.framework */; };
 		BF9EB9A825BD88547185F198 /* RxRelay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B16322202BA2325A6A76B /* RxRelay.framework */; };
 		C11A38D014D3257CA14A94E7 /* CustodialBalanceServiceAPIMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DD01444D2B2A3620F8226E5 /* CustodialBalanceServiceAPIMock.swift */; };
@@ -890,6 +904,8 @@
 		DA537AE1D614A9AF7093E5EF /* EthereumKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 0467D85837903F64DC85D4A6 /* EthereumKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DA928FF3C9C5792C40CFC615 /* ERC20BalanceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44208768FADF61F201BFA995 /* ERC20BalanceService.swift */; };
 		DADF3913683548C4F2071783 /* String+SHA256.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36F0EC17507304C407DBA20D /* String+SHA256.swift */; };
+		DB446C8C373C75D41BFDD4FD /* TestKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; };
+		DB614AC273C6BF8078F51473 /* TestKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; };
 		DB8FC8E9D99A8C8551063D37 /* AssetBalanceChangeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A4E466634BA3185596FCE1 /* AssetBalanceChangeProvider.swift */; };
 		DB9146A551284FEA86DEED91 /* RxTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5DDE0E2997B37AAB1F49AB /* RxTest.framework */; };
 		DBBAD18C3C811C36B0501494 /* EthereumTransactionFinalised.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71A2215E310FBE7922C1046F /* EthereumTransactionFinalised.swift */; };
@@ -908,6 +924,7 @@
 		DE38A85ABB79A90DC778B6E7 /* RxTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5DDE0E2997B37AAB1F49AB /* RxTest.framework */; };
 		DE44D96E202FBABAB666D414 /* StandardContainerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F5F0D1A5C443A6808F15CD /* StandardContainerModel.swift */; };
 		DE4DCF8537F4CDD0ED2D500F /* EthereumWalletAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664601B371C4477842C898A0 /* EthereumWalletAccount.swift */; };
+		DEA11EF377BCA0ECFBE16F67 /* TestKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; };
 		DF0A836BA750975C35595F73 /* SparklineCalculationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01372B1FDDB2D37B2EFD7932 /* SparklineCalculationState.swift */; };
 		DF12F6FE4B93DDE92C34C056 /* SettingsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB25B5427DA1973735E8056 /* SettingsRequest.swift */; };
 		DFECA91270A46F6195279B60 /* RxTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5DDE0E2997B37AAB1F49AB /* RxTest.framework */; };
@@ -933,6 +950,7 @@
 		E4032BB401C6AAF494105BDD /* CustodialBalanceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6EE13A3CE0C0502DF7C483 /* CustodialBalanceClient.swift */; };
 		E4B608151CE4FD3B069660F4 /* TransactionDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD1A5259DB0D151794E5196 /* TransactionDetail.swift */; };
 		E5DC4AAE8712F5D331BB71FB /* RxBlocking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BCF2443EC967B48793C5260 /* RxBlocking.framework */; };
+		E6540CFA2EF4E91BEF5229AC /* TestKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; };
 		E6845552BD4688FEDD1E79C7 /* Accessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B600199777AC703BA4AB3AF /* Accessibility.swift */; };
 		E6B66403E6338AC82E60074B /* EthereumTransactionSignerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00115D030C090BFF3C8B678 /* EthereumTransactionSignerMock.swift */; };
 		E6DCB4F8F291B390513B111C /* RxTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5DDE0E2997B37AAB1F49AB /* RxTest.framework */; };
@@ -1002,6 +1020,7 @@
 		F740B785D84CC9FB8753F13A /* RxBlocking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BCF2443EC967B48793C5260 /* RxBlocking.framework */; };
 		F74818A6EA4CE0194F0678EA /* ToolKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B9E9D1B03E012C92AD18A7D /* ToolKitError.swift */; };
 		F751007BA675F395D2BC6373 /* StellarTransactionFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801582FEE56EE61083BD0C44 /* StellarTransactionFee.swift */; };
+		F756F73663DA2645B888A8AC /* TestKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; };
 		F78783996CC0A6884C9D6D12 /* SessionTokenServiceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99028A6DFDA42EB2669EFF2B /* SessionTokenServiceAPI.swift */; };
 		F7A3AB43D7B45296B17840D8 /* StellarOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A528A25C32216825DF5FDAF /* StellarOperation.swift */; };
 		F7A5434F80A98767CB78FD02 /* AlertView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2534D1BF6D01C3B8B1B1C037 /* AlertView.xib */; };
@@ -1030,6 +1049,7 @@
 		FCA18A36AD77CF1E3D537E8E /* TransactionDetailCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 545D0C9D892D06DED0EFDD62 /* TransactionDetailCell.xib */; };
 		FD14B0287D70D73EEB9336BF /* BadgeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 56D58876A7D430B84E205521 /* BadgeView.xib */; };
 		FD1BF10CCA75788F62567435 /* Zxcvbn.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC95A06C4B2BB844E42ACA5 /* Zxcvbn.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD5CBB32B8A9CC7EC06E71D6 /* TestKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FD799F527653E39A8F703545 /* ViewContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC16765CF65343052E26281 /* ViewContent.swift */; };
 		FE3AE5D01A2F432DD2E7804B /* CellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CB4C1AD720D63D05003859 /* CellModel.swift */; };
 		FE4C89A4C09AE278C7D4A59A /* PassthroughView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0106BFACE8BC66048DF171E /* PassthroughView.swift */; };
@@ -1045,6 +1065,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = F5FC07710123C2A2B8E62D72;
 			remoteInfo = HDWalletKit;
+		};
+		0AC4706A4FB04623532805C5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6566AB516821F908A61B886 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8259740E88A7C8BF9F84E424;
+			remoteInfo = TestKit;
 		};
 		0EACB0E9AE5EA6F3A9357F2E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1116,6 +1143,13 @@
 			remoteGlobalIDString = 06E4A130EED3340153042A5E;
 			remoteInfo = CommonCryptoKit;
 		};
+		5E52E860E8FE4720B0B7F07C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6566AB516821F908A61B886 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8259740E88A7C8BF9F84E424;
+			remoteInfo = TestKit;
+		};
 		5F8E45AB7E88C69B1E6692B6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C6566AB516821F908A61B886 /* Project object */;
@@ -1129,6 +1163,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 2A2757545DA9422B4EF73D31;
 			remoteInfo = ToolKit;
+		};
+		6D6B7C4EDA2FB1F869779730 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6566AB516821F908A61B886 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8259740E88A7C8BF9F84E424;
+			remoteInfo = TestKit;
 		};
 		76FABBB4B7774FE98597A8FC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1144,12 +1185,26 @@
 			remoteGlobalIDString = 77CA693812AD3B7DBC2D576A;
 			remoteInfo = Localization;
 		};
+		793847DAF193F8749828E701 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6566AB516821F908A61B886 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8259740E88A7C8BF9F84E424;
+			remoteInfo = TestKit;
+		};
 		7A1CCD269042FBDB32BF4EBF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C6566AB516821F908A61B886 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = F0A2E35C002115A9A81D4D8D;
 			remoteInfo = PlatformKit;
+		};
+		7FDA35C0B3CE522FE93A05A2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6566AB516821F908A61B886 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8259740E88A7C8BF9F84E424;
+			remoteInfo = TestKit;
 		};
 		85F1492FAD92B97AF82DA4C0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1186,6 +1241,20 @@
 			remoteGlobalIDString = 2A2757545DA9422B4EF73D31;
 			remoteInfo = ToolKit;
 		};
+		92E31818D5A1157D68A8FB9F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6566AB516821F908A61B886 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8259740E88A7C8BF9F84E424;
+			remoteInfo = TestKit;
+		};
+		9805C5EDDFEC93D8084F6A95 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6566AB516821F908A61B886 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8259740E88A7C8BF9F84E424;
+			remoteInfo = TestKit;
+		};
 		A5721BD512EA8799EDC2CA18 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C6566AB516821F908A61B886 /* Project object */;
@@ -1213,6 +1282,27 @@
 			proxyType = 1;
 			remoteGlobalIDString = F0A2E35C002115A9A81D4D8D;
 			remoteInfo = PlatformKit;
+		};
+		D15B33C4E7C2B40B32844725 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6566AB516821F908A61B886 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8259740E88A7C8BF9F84E424;
+			remoteInfo = TestKit;
+		};
+		E65419F02D4274778DD64AD0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6566AB516821F908A61B886 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8259740E88A7C8BF9F84E424;
+			remoteInfo = TestKit;
+		};
+		E77643426649EE06104A41D4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6566AB516821F908A61B886 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8259740E88A7C8BF9F84E424;
+			remoteInfo = TestKit;
 		};
 		F866043BEB031C6A78BD9B03 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1244,6 +1334,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				8BA8F0CD13F070D05AC00F5E /* TestKit.framework in Embed Frameworks */,
 				6699DF8E925C6779285C660F /* CommonCryptoKit.framework in Embed Frameworks */,
 				C1FC7E4370EE623776C1FE87 /* RxBlocking.framework in Embed Frameworks */,
 				7626DB8919C9A0EA3FD83E3D /* RxSwift.framework in Embed Frameworks */,
@@ -1258,6 +1349,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				5338468D9462FF3A0A6A0579 /* TestKit.framework in Embed Frameworks */,
 				EF8B62FD2B5B6A03C589BC61 /* ToolKit.framework in Embed Frameworks */,
 				5844ACEA4D157672BA62499F /* BigInt.framework in Embed Frameworks */,
 				88C986967BF121FC9FC1CE61 /* RxBlocking.framework in Embed Frameworks */,
@@ -1274,6 +1366,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				1085645EEDBDB1ADC3484143 /* TestKit.framework in Embed Frameworks */,
 				7196616B13CE452E67046529 /* PlatformUIKit.framework in Embed Frameworks */,
 				38DF0A713BCCCB40B9709168 /* BigInt.framework in Embed Frameworks */,
 				A70517C5051F2C57EF7F8DED /* Charts.framework in Embed Frameworks */,
@@ -1294,6 +1387,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				82BEBCDE1B5C108E3ABADF43 /* TestKit.framework in Embed Frameworks */,
 				085BE03FB6276E9DA874E9B2 /* PlatformKit.framework in Embed Frameworks */,
 				DCAFFE599B36B6954EB353FD /* BigInt.framework in Embed Frameworks */,
 				77F17A505058E384484068BA /* RxBlocking.framework in Embed Frameworks */,
@@ -1311,6 +1405,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				8E957B1A0C3EED72178F7ECB /* TestKit.framework in Embed Frameworks */,
 				C1526EE938668DB9200A6A9A /* BitcoinKit.framework in Embed Frameworks */,
 				C7C47ADDBBA5BF140265E98F /* BigInt.framework in Embed Frameworks */,
 				CAB8EB4B334AD3B03C5D9661 /* LibWally.framework in Embed Frameworks */,
@@ -1329,6 +1424,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				FD5CBB32B8A9CC7EC06E71D6 /* TestKit.framework in Embed Frameworks */,
 				9F4EC57444352FAA558FC64F /* StellarKit.framework in Embed Frameworks */,
 				FAD5B875CD49F7D83D0B7D9C /* BigInt.framework in Embed Frameworks */,
 				82C49E09B6910EDFE2939E32 /* RxBlocking.framework in Embed Frameworks */,
@@ -1347,6 +1443,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				460E69CE38DA3BE2F351BF11 /* TestKit.framework in Embed Frameworks */,
 				FFCDEC51C7E49904C2844A60 /* NetworkKit.framework in Embed Frameworks */,
 				4B03989D6D618AB532E8569F /* BigInt.framework in Embed Frameworks */,
 				4CA45DA113E59B70028409DC /* RxBlocking.framework in Embed Frameworks */,
@@ -1363,6 +1460,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				BAD3885197681988D4228D6B /* TestKit.framework in Embed Frameworks */,
 				55B6A42575D097E2127A969D /* HDWalletKit.framework in Embed Frameworks */,
 				B62ED5E92FD5A3C95D7C013C /* LibWally.framework in Embed Frameworks */,
 				01F21DE180EABD1D13F65419 /* RxBlocking.framework in Embed Frameworks */,
@@ -1378,6 +1476,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				5456A2CD12F72EF5CF6C2E0D /* TestKit.framework in Embed Frameworks */,
 				46EE0CC151C116220AC81506 /* EthereumKit.framework in Embed Frameworks */,
 				63B04D31D6F7D353191E7010 /* BigInt.framework in Embed Frameworks */,
 				BA6BDE1786E2C9B6606E97FC /* PromiseKit.framework in Embed Frameworks */,
@@ -1400,6 +1499,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				50409269315232EDE6FD9B1E /* TestKit.framework in Embed Frameworks */,
 				2217F78C28F303E49D8AFC5C /* ERC20Kit.framework in Embed Frameworks */,
 				6AD72B85AD1FDF9AD0F7026D /* BigInt.framework in Embed Frameworks */,
 				90AA5B7F69CF3C9C13642EDA /* PromiseKit.framework in Embed Frameworks */,
@@ -2363,6 +2463,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F756F73663DA2645B888A8AC /* TestKit.framework in Frameworks */,
 				DBBDE2C325F22A6BC9C171F8 /* RxSwift.framework in Frameworks */,
 				E8394F53C1E70F3E9B1A176E /* RxBlocking.framework in Frameworks */,
 				3D4C87F7535F88DAD00DAED6 /* RxTest.framework in Frameworks */,
@@ -2385,6 +2486,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2AB7CA69D84BC444C6F2B5D /* TestKit.framework in Frameworks */,
 				5C65F1956B1AE223A8A462AA /* RxSwift.framework in Frameworks */,
 				DD9F3AE4BAAB473DB964C07E /* RxBlocking.framework in Frameworks */,
 				0061351FB460214841E68A61 /* RxTest.framework in Frameworks */,
@@ -2420,6 +2522,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				91147117F8ACA01033CD900F /* TestKit.framework in Frameworks */,
 				EF8F99DD4792E78F8539CFB5 /* RxSwift.framework in Frameworks */,
 				EC58CD52B73F45CD996DD835 /* RxBlocking.framework in Frameworks */,
 				E6DCB4F8F291B390513B111C /* RxTest.framework in Frameworks */,
@@ -2463,6 +2566,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DEA11EF377BCA0ECFBE16F67 /* TestKit.framework in Frameworks */,
 				DD5EE438E37AAF1F406900C7 /* RxSwift.framework in Frameworks */,
 				116F0A56E253C16DFD21CA18 /* RxBlocking.framework in Frameworks */,
 				7359A7D3F6A3700846D22BB6 /* RxTest.framework in Frameworks */,
@@ -2491,6 +2595,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E6540CFA2EF4E91BEF5229AC /* TestKit.framework in Frameworks */,
 				7CA84346F01DC7FAB8257528 /* RxSwift.framework in Frameworks */,
 				F740B785D84CC9FB8753F13A /* RxBlocking.framework in Frameworks */,
 				80703B4969208C6D6DFB7404 /* RxTest.framework in Frameworks */,
@@ -2502,6 +2607,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB446C8C373C75D41BFDD4FD /* TestKit.framework in Frameworks */,
 				7DE94D6F6FF1884C5A529B3A /* RxSwift.framework in Frameworks */,
 				49E9E9A43C35D7D77870A55E /* RxBlocking.framework in Frameworks */,
 				DB9146A551284FEA86DEED91 /* RxTest.framework in Frameworks */,
@@ -2526,6 +2632,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				59F581F3BC6A12B8CA9434B9 /* TestKit.framework in Frameworks */,
 				AFB2B513FBC035209F4A1966 /* RxSwift.framework in Frameworks */,
 				F43C1240EA99B7FC13CF79FE /* RxBlocking.framework in Frameworks */,
 				7453D69C98417B6CED9840C4 /* RxTest.framework in Frameworks */,
@@ -2537,6 +2644,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				29DD469DFC10DF32B9C98B51 /* TestKit.framework in Frameworks */,
 				CAEF88D1918634949C088572 /* RxSwift.framework in Frameworks */,
 				87C7D4458503E1B43B76A196 /* RxBlocking.framework in Frameworks */,
 				DFECA91270A46F6195279B60 /* RxTest.framework in Frameworks */,
@@ -2548,6 +2656,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB614AC273C6BF8078F51473 /* TestKit.framework in Frameworks */,
 				BA9E0E227873049F943DB3D4 /* RxSwift.framework in Frameworks */,
 				FC334661E3A3AC3A2B4F761F /* RxBlocking.framework in Frameworks */,
 				16DC84EB1F1EDABA79900588 /* RxTest.framework in Frameworks */,
@@ -2559,6 +2668,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BED673B6AE9386BC4828BEB2 /* TestKit.framework in Frameworks */,
 				3C3C63FD5A2F4DA6BC3030A9 /* RxSwift.framework in Frameworks */,
 				E5DC4AAE8712F5D331BB71FB /* RxBlocking.framework in Frameworks */,
 				DE38A85ABB79A90DC778B6E7 /* RxTest.framework in Frameworks */,
@@ -6295,6 +6405,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				B64051E2AA1CF86F11FA3F1F /* PBXTargetDependency */,
 				59D599D2BF07E58DF31E3D5F /* PBXTargetDependency */,
 			);
 			name = ERC20KitTests;
@@ -6351,6 +6462,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				A93BB02BADF2610AC2EC39B2 /* PBXTargetDependency */,
 				1AE9A50EE60DD4001A9E6146 /* PBXTargetDependency */,
 			);
 			name = ToolKitTests;
@@ -6405,6 +6517,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				67F9E52AC243659BA2312E4A /* PBXTargetDependency */,
 				A0A37D585C7DA2FBD8187F5C /* PBXTargetDependency */,
 			);
 			name = PlatformUIKitTests;
@@ -6493,6 +6606,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				4099BFE19B615D8B62CD0BCB /* PBXTargetDependency */,
 				347D14A6927CB2418E05653B /* PBXTargetDependency */,
 			);
 			name = EthereumKitTests;
@@ -6511,6 +6625,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				7F36CA202F3C569BD7E36581 /* PBXTargetDependency */,
 				A71DB8A7A2CCAA2113464743 /* PBXTargetDependency */,
 			);
 			name = PlatformKitTests;
@@ -6529,6 +6644,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				210249D28562FA3CD3BC45CE /* PBXTargetDependency */,
 				063E0308C6E448DD5C05DB08 /* PBXTargetDependency */,
 			);
 			name = StellarKitTests;
@@ -6547,6 +6663,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				B9FF5DD0DE850D47E6CC0B64 /* PBXTargetDependency */,
 				78CEF7F8244FC4DBAF2C47B8 /* PBXTargetDependency */,
 			);
 			name = BitcoinKitTests;
@@ -6565,6 +6682,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				EAA5CD37B4D51ADF1BF880A7 /* PBXTargetDependency */,
 				3EAC4C44FADDB2949EE2672F /* PBXTargetDependency */,
 			);
 			name = NetworkKitTests;
@@ -6583,6 +6701,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				85BB8C43C9022B947B268455 /* PBXTargetDependency */,
 				8A82AAD201B2F2B5F867CFEB /* PBXTargetDependency */,
 			);
 			name = CommonCryptoKitTests;
@@ -6622,6 +6741,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				DD0FEEE5C46E8F20D6EEDEDD /* PBXTargetDependency */,
 				8A971BB8E4442ACADD3854A0 /* PBXTargetDependency */,
 			);
 			name = HDWalletKitTests;
@@ -7749,6 +7869,11 @@
 			target = 2A2757545DA9422B4EF73D31 /* ToolKit */;
 			targetProxy = A5721BD512EA8799EDC2CA18 /* PBXContainerItemProxy */;
 		};
+		210249D28562FA3CD3BC45CE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8259740E88A7C8BF9F84E424 /* TestKit */;
+			targetProxy = 5E52E860E8FE4720B0B7F07C /* PBXContainerItemProxy */;
+		};
 		347D14A6927CB2418E05653B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 21FAAE6DBE4AF3DC7F7B1765 /* EthereumKit */;
@@ -7764,6 +7889,11 @@
 			target = 1462D50A67810B2D934F2A33 /* NetworkKit */;
 			targetProxy = 3DDC87A76C8422506E8ABEAC /* PBXContainerItemProxy */;
 		};
+		4099BFE19B615D8B62CD0BCB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8259740E88A7C8BF9F84E424 /* TestKit */;
+			targetProxy = E65419F02D4274778DD64AD0 /* PBXContainerItemProxy */;
+		};
 		4B4BB7618FAB36239236D1CE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 77CA693812AD3B7DBC2D576A /* Localization */;
@@ -7778,6 +7908,11 @@
 			isa = PBXTargetDependency;
 			target = 1636238B56D431D65AD2DB85 /* ERC20Kit */;
 			targetProxy = 8D9A923EC82127625D1A558B /* PBXContainerItemProxy */;
+		};
+		67F9E52AC243659BA2312E4A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8259740E88A7C8BF9F84E424 /* TestKit */;
+			targetProxy = D15B33C4E7C2B40B32844725 /* PBXContainerItemProxy */;
 		};
 		759AFB4A87AA77CF05ED99CE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -7799,10 +7934,20 @@
 			target = 1462D50A67810B2D934F2A33 /* NetworkKit */;
 			targetProxy = FC12790EE4BDEED7254948E1 /* PBXContainerItemProxy */;
 		};
+		7F36CA202F3C569BD7E36581 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8259740E88A7C8BF9F84E424 /* TestKit */;
+			targetProxy = 0AC4706A4FB04623532805C5 /* PBXContainerItemProxy */;
+		};
 		7F87E880971BBCCE0A05EB3F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F0A2E35C002115A9A81D4D8D /* PlatformKit */;
 			targetProxy = 7A1CCD269042FBDB32BF4EBF /* PBXContainerItemProxy */;
+		};
+		85BB8C43C9022B947B268455 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8259740E88A7C8BF9F84E424 /* TestKit */;
+			targetProxy = 9805C5EDDFEC93D8084F6A95 /* PBXContainerItemProxy */;
 		};
 		8A82AAD201B2F2B5F867CFEB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -7834,10 +7979,20 @@
 			target = F0A2E35C002115A9A81D4D8D /* PlatformKit */;
 			targetProxy = FC1AB4138BD66AF78E5A7D80 /* PBXContainerItemProxy */;
 		};
+		A93BB02BADF2610AC2EC39B2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8259740E88A7C8BF9F84E424 /* TestKit */;
+			targetProxy = 7FDA35C0B3CE522FE93A05A2 /* PBXContainerItemProxy */;
+		};
 		AF00DDD710E4942A07A9F66B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1462D50A67810B2D934F2A33 /* NetworkKit */;
 			targetProxy = 179B4338B516A1DDA351038D /* PBXContainerItemProxy */;
+		};
+		B64051E2AA1CF86F11FA3F1F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8259740E88A7C8BF9F84E424 /* TestKit */;
+			targetProxy = 793847DAF193F8749828E701 /* PBXContainerItemProxy */;
 		};
 		B679AE6BD60E5D432AC0FB97 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -7849,10 +8004,25 @@
 			target = 77CA693812AD3B7DBC2D576A /* Localization */;
 			targetProxy = 76FAC24433536D00E0875145 /* PBXContainerItemProxy */;
 		};
+		B9FF5DD0DE850D47E6CC0B64 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8259740E88A7C8BF9F84E424 /* TestKit */;
+			targetProxy = E77643426649EE06104A41D4 /* PBXContainerItemProxy */;
+		};
+		DD0FEEE5C46E8F20D6EEDEDD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8259740E88A7C8BF9F84E424 /* TestKit */;
+			targetProxy = 92E31818D5A1157D68A8FB9F /* PBXContainerItemProxy */;
+		};
 		E15E08C82FEEF9D717CB8994 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 06E4A130EED3340153042A5E /* CommonCryptoKit */;
 			targetProxy = 54EE0EE8B490899F26FC2554 /* PBXContainerItemProxy */;
+		};
+		EAA5CD37B4D51ADF1BF880A7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8259740E88A7C8BF9F84E424 /* TestKit */;
+			targetProxy = 6D6B7C4EDA2FB1F869779730 /* PBXContainerItemProxy */;
 		};
 		F26F5EE5076D4DC899350A72 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

@@ -46,7 +46,6 @@
 		23DF4EFC1DBA586C0059CF92 /* KeychainItemWrapper+SwipeAddresses.m in Sources */ = {isa = PBXBuildFile; fileRef = 23DF4EFB1DBA586C0059CF92 /* KeychainItemWrapper+SwipeAddresses.m */; };
 		23E2FC081C7F60E7004CFF79 /* BCInsetLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 23E2FC071C7F60E7004CFF79 /* BCInsetLabel.m */; };
 		23E579541DB45F3A00220542 /* TransferAmountTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 23E579531DB45F3A00220542 /* TransferAmountTableCell.m */; };
-		23F601A41D09C931009102BF /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 23F601A31D09C931009102BF /* Reachability.m */; };
 		23F720F21C32DC0A00577738 /* DebugTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 23F720F11C32DC0A00577738 /* DebugTableViewController.m */; };
 		23F8DE531DAEB11C001899AE /* BCNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 23F8DE521DAEB11C001899AE /* BCNavigationController.m */; };
 		23FB5C071D9ABB450008C6AB /* TransactionDetailDescriptionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 23FB5C061D9ABB450008C6AB /* TransactionDetailDescriptionCell.m */; };
@@ -363,6 +362,17 @@
 		3A84AD76243B9C7200DFC0FB /* stellarsdk.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3AA76FE4243B7399005CC949 /* stellarsdk.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3A84AD77243B9C7200DFC0FB /* web3swift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3AA77003243B7910005CC949 /* web3swift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3A84AD78243B9C7200DFC0FB /* Zxcvbn.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3A3164F6243B67AC008413E2 /* Zxcvbn.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A875E5B2445CFA900BF7849 /* KeychainItemWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A875E392445CFA900BF7849 /* KeychainItemWrapper.m */; };
+		3A875E5D2445CFA900BF7849 /* sha256.c in Sources */ = {isa = PBXBuildFile; fileRef = 3A875E452445CFA900BF7849 /* sha256.c */; };
+		3A875E5E2445CFA900BF7849 /* crypto_scrypt-nosse.c in Sources */ = {isa = PBXBuildFile; fileRef = 3A875E462445CFA900BF7849 /* crypto_scrypt-nosse.c */; };
+		3A875E5F2445CFA900BF7849 /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A875E482445CFA900BF7849 /* RegExCategories.m */; };
+		3A875E602445CFA900BF7849 /* ECSlidingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A875E4D2445CFA900BF7849 /* ECSlidingViewController.m */; };
+		3A875E612445CFA900BF7849 /* ECPercentDrivenInteractiveTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A875E4F2445CFA900BF7849 /* ECPercentDrivenInteractiveTransition.m */; };
+		3A875E622445CFA900BF7849 /* UIViewController+ECSlidingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A875E532445CFA900BF7849 /* UIViewController+ECSlidingViewController.m */; };
+		3A875E632445CFA900BF7849 /* ECSlidingSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A875E552445CFA900BF7849 /* ECSlidingSegue.m */; };
+		3A875E642445CFA900BF7849 /* ECSlidingAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A875E562445CFA900BF7849 /* ECSlidingAnimationController.m */; };
+		3A875E652445CFA900BF7849 /* ECSlidingInteractiveTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A875E572445CFA900BF7849 /* ECSlidingInteractiveTransition.m */; };
+		3A875E662445CFA900BF7849 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A875E592445CFA900BF7849 /* Reachability.m */; };
 		3A8A1D40238743E0008E0679 /* AssetLineChartTableViewCellInteracting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A8A1D3F238743E0008E0679 /* AssetLineChartTableViewCellInteracting.swift */; };
 		3A8A1D4423874721008E0679 /* AssetLineChartPresenterContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A8A1D4323874721008E0679 /* AssetLineChartPresenterContainer.swift */; };
 		3A8A1D4723874941008E0679 /* AssetLineChartTableViewCellPresenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A8A1D4623874941008E0679 /* AssetLineChartTableViewCellPresenting.swift */; };
@@ -389,6 +399,28 @@
 		3A9A026F2178E19400E2848E /* StellarOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A9A026E2178E19400E2848E /* StellarOperation.swift */; };
 		3A9AB3CC2338D0FD00C6BD06 /* BuySellPlaceholderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A9AB3CB2338D0FD00C6BD06 /* BuySellPlaceholderViewController.swift */; };
 		3A9AB3D92338D40600C6BD06 /* BuySellPlaceholderViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3A9AB3D82338D40600C6BD06 /* BuySellPlaceholderViewController.storyboard */; };
+		3A9F13622445B48400CEE330 /* BitcoinKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F13572445B48400CEE330 /* BitcoinKit.framework */; };
+		3A9F13632445B48400CEE330 /* BitcoinKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F13572445B48400CEE330 /* BitcoinKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A9F13642445B48400CEE330 /* CommonCryptoKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F13582445B48400CEE330 /* CommonCryptoKit.framework */; };
+		3A9F13652445B48400CEE330 /* CommonCryptoKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F13582445B48400CEE330 /* CommonCryptoKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A9F13662445B48400CEE330 /* ERC20Kit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F13592445B48400CEE330 /* ERC20Kit.framework */; };
+		3A9F13672445B48400CEE330 /* ERC20Kit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F13592445B48400CEE330 /* ERC20Kit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A9F13682445B48400CEE330 /* EthereumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F135A2445B48400CEE330 /* EthereumKit.framework */; };
+		3A9F13692445B48400CEE330 /* EthereumKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F135A2445B48400CEE330 /* EthereumKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A9F136A2445B48400CEE330 /* HDWalletKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F135B2445B48400CEE330 /* HDWalletKit.framework */; };
+		3A9F136B2445B48400CEE330 /* HDWalletKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F135B2445B48400CEE330 /* HDWalletKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A9F136C2445B48400CEE330 /* Localization.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F135C2445B48400CEE330 /* Localization.framework */; };
+		3A9F136D2445B48400CEE330 /* Localization.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F135C2445B48400CEE330 /* Localization.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A9F136E2445B48400CEE330 /* NetworkKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F135D2445B48400CEE330 /* NetworkKit.framework */; };
+		3A9F136F2445B48400CEE330 /* NetworkKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F135D2445B48400CEE330 /* NetworkKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A9F13702445B48400CEE330 /* PlatformKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F135E2445B48400CEE330 /* PlatformKit.framework */; };
+		3A9F13712445B48400CEE330 /* PlatformKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F135E2445B48400CEE330 /* PlatformKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A9F13722445B48400CEE330 /* PlatformUIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F135F2445B48400CEE330 /* PlatformUIKit.framework */; };
+		3A9F13732445B48400CEE330 /* PlatformUIKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F135F2445B48400CEE330 /* PlatformUIKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A9F13742445B48400CEE330 /* StellarKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F13602445B48400CEE330 /* StellarKit.framework */; };
+		3A9F13752445B48400CEE330 /* StellarKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F13602445B48400CEE330 /* StellarKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A9F13762445B48400CEE330 /* ToolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F13612445B48400CEE330 /* ToolKit.framework */; };
+		3A9F13772445B48400CEE330 /* ToolKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9F13612445B48400CEE330 /* ToolKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3A9F72C4228604D500BF367A /* SendPAXInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F72C3228604D500BF367A /* SendPAXInterface.swift */; };
 		3A9F72E32286868200BF367A /* SendPaxCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F72E22286868200BF367A /* SendPaxCoordinator.swift */; };
 		3AA1A4AB23EDBA6B00143250 /* KYCSupportedDocumentsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AA1A4A723EDBA6A00143250 /* KYCSupportedDocumentsResponse.swift */; };
@@ -1079,7 +1111,6 @@
 		65F5E71122C3864100D00F50 /* AddressInteracting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F5E71022C3864000D00F50 /* AddressInteracting.swift */; };
 		65F5E71D22C3AFDC00D00F50 /* Pasteboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F5E71C22C3AFDC00D00F50 /* Pasteboarding.swift */; };
 		65FD2B0822E7311F00D90C44 /* SendAssetAddressSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65FD2B0722E7311F00D90C44 /* SendAssetAddressSource.swift */; };
-		670595A41AB0F59D00D2D6D9 /* KeychainItemWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 670595A31AB0F59D00D2D6D9 /* KeychainItemWrapper.m */; };
 		6710DA0E1A8E82D80089DDED /* BCLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 6710DA0D1A8E82D80089DDED /* BCLine.m */; };
 		6762507D1A2CC5800052B63F /* BCEditAccountView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6762507C1A2CC5800052B63F /* BCEditAccountView.m */; };
 		676250821A2DDF360052B63F /* AccountTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 676250811A2DDF360052B63F /* AccountTableCell.m */; };
@@ -1091,19 +1122,10 @@
 		678CD7481A2777E600748AA5 /* BCCreateAccountView.m in Sources */ = {isa = PBXBuildFile; fileRef = 678CD7471A2777E600748AA5 /* BCCreateAccountView.m */; };
 		67D95A261B3DD86B0012EBB1 /* BCTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67D95A251B3DD86B0012EBB1 /* BCTextField.swift */; };
 		67D95A281B3DDC900012EBB1 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67D95A271B3DDC900012EBB1 /* Constants.swift */; };
-		67EE1DCA19E3325900DBBFC9 /* ECPercentDrivenInteractiveTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 67EE1DBE19E3325900DBBFC9 /* ECPercentDrivenInteractiveTransition.m */; };
-		67EE1DCB19E3325900DBBFC9 /* ECSlidingAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 67EE1DC019E3325900DBBFC9 /* ECSlidingAnimationController.m */; };
-		67EE1DCC19E3325900DBBFC9 /* ECSlidingInteractiveTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 67EE1DC319E3325900DBBFC9 /* ECSlidingInteractiveTransition.m */; };
-		67EE1DCD19E3325900DBBFC9 /* ECSlidingSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 67EE1DC519E3325900DBBFC9 /* ECSlidingSegue.m */; };
-		67EE1DCE19E3325900DBBFC9 /* ECSlidingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 67EE1DC719E3325900DBBFC9 /* ECSlidingViewController.m */; };
-		67EE1DCF19E3325900DBBFC9 /* UIViewController+ECSlidingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 67EE1DC919E3325900DBBFC9 /* UIViewController+ECSlidingViewController.m */; };
-		67FA1A4D1ABA092D000C9196 /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = 67FA1A4C1ABA092D000C9196 /* RegExCategories.m */; };
 		7A4E882E218B595C00CB798C /* AnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4E882D218B595C00CB798C /* AnalyticsService.swift */; };
 		7ADD19D721874C220013A525 /* Firebase in Resources */ = {isa = PBXBuildFile; fileRef = 7ADD19D621874C220013A525 /* Firebase */; };
 		84B601CA197AD03800DA1829 /* BCModalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 84B601C9197AD03800DA1829 /* BCModalView.m */; };
 		84FC02FA1981452D00B97D5B /* NSString+JSONParser_NSString.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FC02F91981452D00B97D5B /* NSString+JSONParser_NSString.m */; };
-		84FC02FD19815F1B00B97D5B /* crypto_scrypt-nosse.c in Sources */ = {isa = PBXBuildFile; fileRef = 84FC02FB19815F1B00B97D5B /* crypto_scrypt-nosse.c */; };
-		84FC02FE19815F1B00B97D5B /* sha256.c in Sources */ = {isa = PBXBuildFile; fileRef = 84FC02FC19815F1B00B97D5B /* sha256.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		9F0CBAAA151351F400CD945D /* Wallet.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F0CBAA9151351F400CD945D /* Wallet.m */; };
 		9F1831E21516A39500FB3D52 /* NSData+Hex.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F1831E11516A39500FB3D52 /* NSData+Hex.m */; };
 		9F1831EB1516AE3500FB3D52 /* NSString+URLEncode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F1831EA1516ADDB00FB3D52 /* NSString+URLEncode.m */; };
@@ -1463,6 +1485,17 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				3A9F13692445B48400CEE330 /* EthereumKit.framework in Embed Frameworks */,
+				3A9F13752445B48400CEE330 /* StellarKit.framework in Embed Frameworks */,
+				3A9F13632445B48400CEE330 /* BitcoinKit.framework in Embed Frameworks */,
+				3A9F13772445B48400CEE330 /* ToolKit.framework in Embed Frameworks */,
+				3A9F136B2445B48400CEE330 /* HDWalletKit.framework in Embed Frameworks */,
+				3A9F13732445B48400CEE330 /* PlatformUIKit.framework in Embed Frameworks */,
+				3A9F13652445B48400CEE330 /* CommonCryptoKit.framework in Embed Frameworks */,
+				3A9F13672445B48400CEE330 /* ERC20Kit.framework in Embed Frameworks */,
+				3A9F136D2445B48400CEE330 /* Localization.framework in Embed Frameworks */,
+				3A9F13712445B48400CEE330 /* PlatformKit.framework in Embed Frameworks */,
+				3A9F136F2445B48400CEE330 /* NetworkKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1558,8 +1591,6 @@
 		23E2FC071C7F60E7004CFF79 /* BCInsetLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BCInsetLabel.m; sourceTree = "<group>"; };
 		23E579521DB45F3A00220542 /* TransferAmountTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransferAmountTableCell.h; sourceTree = "<group>"; };
 		23E579531DB45F3A00220542 /* TransferAmountTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TransferAmountTableCell.m; sourceTree = "<group>"; };
-		23F601A21D09C931009102BF /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
-		23F601A31D09C931009102BF /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		23F720F01C32DC0A00577738 /* DebugTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugTableViewController.h; sourceTree = "<group>"; };
 		23F720F11C32DC0A00577738 /* DebugTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugTableViewController.m; sourceTree = "<group>"; };
 		23F8DE511DAEB11C001899AE /* BCNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BCNavigationController.h; sourceTree = "<group>"; };
@@ -1890,6 +1921,32 @@
 		3A84AD63243B9B0300DFC0FB /* FiatCurrencySettingsServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiatCurrencySettingsServiceMock.swift; sourceTree = "<group>"; };
 		3A84AD65243B9B4500DFC0FB /* EthereumWalletServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumWalletServiceMock.swift; sourceTree = "<group>"; };
 		3A84AD67243B9B7500DFC0FB /* StellarWalletAccountRepositoryMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarWalletAccountRepositoryMock.swift; sourceTree = "<group>"; };
+		3A875E392445CFA900BF7849 /* KeychainItemWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainItemWrapper.m; sourceTree = "<group>"; };
+		3A875E3A2445CFA900BF7849 /* KeychainItemWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainItemWrapper.h; sourceTree = "<group>"; };
+		3A875E3E2445CFA900BF7849 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		3A875E3F2445CFA900BF7849 /* crypto_scrypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypto_scrypt.h; sourceTree = "<group>"; };
+		3A875E402445CFA900BF7849 /* sha256.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sha256.h; sourceTree = "<group>"; };
+		3A875E412445CFA900BF7849 /* sysendian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sysendian.h; sourceTree = "<group>"; };
+		3A875E422445CFA900BF7849 /* scrypt_platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scrypt_platform.h; sourceTree = "<group>"; };
+		3A875E452445CFA900BF7849 /* sha256.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sha256.c; sourceTree = "<group>"; };
+		3A875E462445CFA900BF7849 /* crypto_scrypt-nosse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "crypto_scrypt-nosse.c"; sourceTree = "<group>"; };
+		3A875E482445CFA900BF7849 /* RegExCategories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegExCategories.m; sourceTree = "<group>"; };
+		3A875E492445CFA900BF7849 /* RegExCategories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegExCategories.h; sourceTree = "<group>"; };
+		3A875E4B2445CFA900BF7849 /* UIViewController+ECSlidingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+ECSlidingViewController.h"; sourceTree = "<group>"; };
+		3A875E4C2445CFA900BF7849 /* ECSlidingConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSlidingConstants.h; sourceTree = "<group>"; };
+		3A875E4D2445CFA900BF7849 /* ECSlidingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSlidingViewController.m; sourceTree = "<group>"; };
+		3A875E4E2445CFA900BF7849 /* ECSlidingSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSlidingSegue.h; sourceTree = "<group>"; };
+		3A875E4F2445CFA900BF7849 /* ECPercentDrivenInteractiveTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECPercentDrivenInteractiveTransition.m; sourceTree = "<group>"; };
+		3A875E502445CFA900BF7849 /* ECSlidingAnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSlidingAnimationController.h; sourceTree = "<group>"; };
+		3A875E512445CFA900BF7849 /* ECSlidingInteractiveTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSlidingInteractiveTransition.h; sourceTree = "<group>"; };
+		3A875E522445CFA900BF7849 /* ECSlidingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSlidingViewController.h; sourceTree = "<group>"; };
+		3A875E532445CFA900BF7849 /* UIViewController+ECSlidingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+ECSlidingViewController.m"; sourceTree = "<group>"; };
+		3A875E542445CFA900BF7849 /* ECPercentDrivenInteractiveTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECPercentDrivenInteractiveTransition.h; sourceTree = "<group>"; };
+		3A875E552445CFA900BF7849 /* ECSlidingSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSlidingSegue.m; sourceTree = "<group>"; };
+		3A875E562445CFA900BF7849 /* ECSlidingAnimationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSlidingAnimationController.m; sourceTree = "<group>"; };
+		3A875E572445CFA900BF7849 /* ECSlidingInteractiveTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSlidingInteractiveTransition.m; sourceTree = "<group>"; };
+		3A875E592445CFA900BF7849 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		3A875E5A2445CFA900BF7849 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		3A8A1D3F238743E0008E0679 /* AssetLineChartTableViewCellInteracting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetLineChartTableViewCellInteracting.swift; sourceTree = "<group>"; };
 		3A8A1D4323874721008E0679 /* AssetLineChartPresenterContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetLineChartPresenterContainer.swift; sourceTree = "<group>"; };
 		3A8A1D4623874941008E0679 /* AssetLineChartTableViewCellPresenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetLineChartTableViewCellPresenting.swift; sourceTree = "<group>"; };
@@ -1916,6 +1973,17 @@
 		3A9A026E2178E19400E2848E /* StellarOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarOperation.swift; sourceTree = "<group>"; };
 		3A9AB3CB2338D0FD00C6BD06 /* BuySellPlaceholderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuySellPlaceholderViewController.swift; sourceTree = "<group>"; };
 		3A9AB3D82338D40600C6BD06 /* BuySellPlaceholderViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = BuySellPlaceholderViewController.storyboard; sourceTree = "<group>"; };
+		3A9F13572445B48400CEE330 /* BitcoinKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BitcoinKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A9F13582445B48400CEE330 /* CommonCryptoKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CommonCryptoKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A9F13592445B48400CEE330 /* ERC20Kit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = ERC20Kit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A9F135A2445B48400CEE330 /* EthereumKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = EthereumKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A9F135B2445B48400CEE330 /* HDWalletKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = HDWalletKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A9F135C2445B48400CEE330 /* Localization.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Localization.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A9F135D2445B48400CEE330 /* NetworkKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = NetworkKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A9F135E2445B48400CEE330 /* PlatformKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = PlatformKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A9F135F2445B48400CEE330 /* PlatformUIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = PlatformUIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A9F13602445B48400CEE330 /* StellarKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StellarKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A9F13612445B48400CEE330 /* ToolKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = ToolKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A9F72C3228604D500BF367A /* SendPAXInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendPAXInterface.swift; sourceTree = "<group>"; };
 		3A9F72E22286868200BF367A /* SendPaxCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendPaxCoordinator.swift; sourceTree = "<group>"; };
 		3AA1A4A723EDBA6A00143250 /* KYCSupportedDocumentsResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KYCSupportedDocumentsResponse.swift; sourceTree = "<group>"; };
@@ -3768,8 +3836,6 @@
 		65F5E71C22C3AFDC00D00F50 /* Pasteboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pasteboarding.swift; sourceTree = "<group>"; };
 		65FD2B0722E7311F00D90C44 /* SendAssetAddressSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendAssetAddressSource.swift; sourceTree = "<group>"; };
 		65FD2B2322E77C0F00D90C44 /* ExchangeAddressFetchingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeAddressFetchingTests.swift; sourceTree = "<group>"; };
-		670595A21AB0F59D00D2D6D9 /* KeychainItemWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainItemWrapper.h; sourceTree = "<group>"; };
-		670595A31AB0F59D00D2D6D9 /* KeychainItemWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainItemWrapper.m; sourceTree = "<group>"; };
 		6710DA0C1A8E82D80089DDED /* BCLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BCLine.h; sourceTree = "<group>"; };
 		6710DA0D1A8E82D80089DDED /* BCLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BCLine.m; sourceTree = "<group>"; };
 		67470A0519D438E000757D46 /* LocalizationConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LocalizationConstants.h; sourceTree = "<group>"; };
@@ -3791,34 +3857,12 @@
 		678CD7471A2777E600748AA5 /* BCCreateAccountView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BCCreateAccountView.m; sourceTree = "<group>"; };
 		67D95A251B3DD86B0012EBB1 /* BCTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BCTextField.swift; sourceTree = "<group>"; };
 		67D95A271B3DDC900012EBB1 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		67EE1DBD19E3325900DBBFC9 /* ECPercentDrivenInteractiveTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECPercentDrivenInteractiveTransition.h; sourceTree = "<group>"; };
-		67EE1DBE19E3325900DBBFC9 /* ECPercentDrivenInteractiveTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECPercentDrivenInteractiveTransition.m; sourceTree = "<group>"; };
-		67EE1DBF19E3325900DBBFC9 /* ECSlidingAnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSlidingAnimationController.h; sourceTree = "<group>"; };
-		67EE1DC019E3325900DBBFC9 /* ECSlidingAnimationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSlidingAnimationController.m; sourceTree = "<group>"; };
-		67EE1DC119E3325900DBBFC9 /* ECSlidingConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSlidingConstants.h; sourceTree = "<group>"; };
-		67EE1DC219E3325900DBBFC9 /* ECSlidingInteractiveTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSlidingInteractiveTransition.h; sourceTree = "<group>"; };
-		67EE1DC319E3325900DBBFC9 /* ECSlidingInteractiveTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSlidingInteractiveTransition.m; sourceTree = "<group>"; };
-		67EE1DC419E3325900DBBFC9 /* ECSlidingSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSlidingSegue.h; sourceTree = "<group>"; };
-		67EE1DC519E3325900DBBFC9 /* ECSlidingSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSlidingSegue.m; sourceTree = "<group>"; };
-		67EE1DC619E3325900DBBFC9 /* ECSlidingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSlidingViewController.h; sourceTree = "<group>"; };
-		67EE1DC719E3325900DBBFC9 /* ECSlidingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSlidingViewController.m; sourceTree = "<group>"; };
-		67EE1DC819E3325900DBBFC9 /* UIViewController+ECSlidingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+ECSlidingViewController.h"; sourceTree = "<group>"; };
-		67EE1DC919E3325900DBBFC9 /* UIViewController+ECSlidingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+ECSlidingViewController.m"; sourceTree = "<group>"; };
-		67FA1A4B1ABA092D000C9196 /* RegExCategories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegExCategories.h; sourceTree = "<group>"; };
-		67FA1A4C1ABA092D000C9196 /* RegExCategories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegExCategories.m; sourceTree = "<group>"; };
 		7A4E882D218B595C00CB798C /* AnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsService.swift; sourceTree = "<group>"; };
 		7ADD19D621874C220013A525 /* Firebase */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Firebase; sourceTree = "<group>"; };
 		84B601C8197AD03800DA1829 /* BCModalView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BCModalView.h; sourceTree = "<group>"; };
 		84B601C9197AD03800DA1829 /* BCModalView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BCModalView.m; sourceTree = "<group>"; };
-		84C2569119810DF300F901D1 /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = config.h; path = include/config.h; sourceTree = "<group>"; };
-		84C2569219810DF300F901D1 /* crypto_scrypt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = crypto_scrypt.h; path = include/crypto_scrypt.h; sourceTree = "<group>"; };
-		84C2569319810DF300F901D1 /* scrypt_platform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = scrypt_platform.h; path = include/scrypt_platform.h; sourceTree = "<group>"; };
-		84C2569419810DF300F901D1 /* sysendian.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = sysendian.h; path = include/sysendian.h; sourceTree = "<group>"; };
-		84C2569719810E1400F901D1 /* sha256.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = sha256.h; path = include/sha256.h; sourceTree = "<group>"; };
 		84FC02F81981452D00B97D5B /* NSString+JSONParser_NSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+JSONParser_NSString.h"; sourceTree = "<group>"; };
 		84FC02F91981452D00B97D5B /* NSString+JSONParser_NSString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+JSONParser_NSString.m"; sourceTree = "<group>"; };
-		84FC02FB19815F1B00B97D5B /* crypto_scrypt-nosse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "crypto_scrypt-nosse.c"; path = "src/crypto_scrypt-nosse.c"; sourceTree = "<group>"; };
-		84FC02FC19815F1B00B97D5B /* sha256.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha256.c; path = src/sha256.c; sourceTree = "<group>"; };
 		9F0CBAA8151351F400CD945D /* Wallet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Wallet.h; sourceTree = "<group>"; };
 		9F0CBAA9151351F400CD945D /* Wallet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Wallet.m; sourceTree = "<group>"; };
 		9F1831E01516A39500FB3D52 /* NSData+Hex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Hex.h"; sourceTree = "<group>"; };
@@ -4274,7 +4318,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A9F13622445B48400CEE330 /* BitcoinKit.framework in Frameworks */,
 				3A16CC36243F14690054657E /* LibWally.framework in Frameworks */,
+				3A9F136E2445B48400CEE330 /* NetworkKit.framework in Frameworks */,
+				3A9F13762445B48400CEE330 /* ToolKit.framework in Frameworks */,
 				3A3BE035243CB46C00D7354A /* Protobuf.framework in Frameworks */,
 				3A3BE034243CB44A00D7354A /* FIRAnalyticsConnector.framework in Frameworks */,
 				3A3BE033243CB36900D7354A /* PromisesObjC.framework in Frameworks */,
@@ -4287,6 +4334,7 @@
 				3A3BE02A243CB34E00D7354A /* FirebaseInstallations.framework in Frameworks */,
 				3A3BE02B243CB34E00D7354A /* FirebaseInstanceID.framework in Frameworks */,
 				3A3BE02C243CB34E00D7354A /* FirebaseMessaging.framework in Frameworks */,
+				3A9F136A2445B48400CEE330 /* HDWalletKit.framework in Frameworks */,
 				3A3BE02D243CB34E00D7354A /* FirebaseRemoteConfig.framework in Frameworks */,
 				3A3BE02E243CB34E00D7354A /* GoogleAppMeasurement.framework in Frameworks */,
 				3A3BE02F243CB34E00D7354A /* GoogleDataTransport.framework in Frameworks */,
@@ -4299,12 +4347,18 @@
 				3A4810C4243B95BD00992842 /* keccak.framework in Frameworks */,
 				3A4810C2243B95BD00992842 /* BigInt.framework in Frameworks */,
 				3A4810C8243B95BD00992842 /* RxCocoa.framework in Frameworks */,
+				3A9F13662445B48400CEE330 /* ERC20Kit.framework in Frameworks */,
 				3A4810C6243B95BD00992842 /* PromiseKit.framework in Frameworks */,
+				3A9F13722445B48400CEE330 /* PlatformUIKit.framework in Frameworks */,
 				3A4810CA243B95BD00992842 /* RxSwift.framework in Frameworks */,
 				34838CE22399D02B003F945A /* Starscream.framework in Frameworks */,
 				3A4810C3243B95BD00992842 /* Charts.framework in Frameworks */,
 				3A4810C9243B95BD00992842 /* RxRelay.framework in Frameworks */,
 				34838CE62399D02B003F945A /* WebRTC.framework in Frameworks */,
+				3A9F13682445B48400CEE330 /* EthereumKit.framework in Frameworks */,
+				3A9F13642445B48400CEE330 /* CommonCryptoKit.framework in Frameworks */,
+				3A9F13742445B48400CEE330 /* StellarKit.framework in Frameworks */,
+				3A9F13702445B48400CEE330 /* PlatformKit.framework in Frameworks */,
 				3A4810D0243B95BD00992842 /* Zxcvbn.framework in Frameworks */,
 				3A4810CE243B95BD00992842 /* stellarsdk.framework in Frameworks */,
 				3A4810C5243B95BD00992842 /* PhoneNumberKit.framework in Frameworks */,
@@ -4313,6 +4367,7 @@
 				34838CE02399D02B003F945A /* SocketIO.framework in Frameworks */,
 				515315F12056C0EE000161DF /* libicucore.tbd in Frameworks */,
 				3AEF9E8C21091B72006B1CF9 /* MapKit.framework in Frameworks */,
+				3A9F136C2445B48400CEE330 /* Localization.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5403,6 +5458,103 @@
 				3A84AD67243B9B7500DFC0FB /* StellarWalletAccountRepositoryMock.swift */,
 			);
 			path = PlatformKitMocks;
+			sourceTree = "<group>";
+		};
+		3A875E372445CFA900BF7849 /* Third Party */ = {
+			isa = PBXGroup;
+			children = (
+				3A875E382445CFA900BF7849 /* KeychainItemWrapper */,
+				3A875E3B2445CFA900BF7849 /* Library */,
+				3A875E472445CFA900BF7849 /* RegEx */,
+				3A875E4A2445CFA900BF7849 /* SideMenu */,
+				3A875E582445CFA900BF7849 /* Reachability */,
+			);
+			path = "Third Party";
+			sourceTree = "<group>";
+		};
+		3A875E382445CFA900BF7849 /* KeychainItemWrapper */ = {
+			isa = PBXGroup;
+			children = (
+				3A875E392445CFA900BF7849 /* KeychainItemWrapper.m */,
+				3A875E3A2445CFA900BF7849 /* KeychainItemWrapper.h */,
+			);
+			path = KeychainItemWrapper;
+			sourceTree = "<group>";
+		};
+		3A875E3B2445CFA900BF7849 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				3A875E3C2445CFA900BF7849 /* keys */,
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		3A875E3C2445CFA900BF7849 /* keys */ = {
+			isa = PBXGroup;
+			children = (
+				3A875E3D2445CFA900BF7849 /* include */,
+				3A875E442445CFA900BF7849 /* src */,
+			);
+			path = keys;
+			sourceTree = "<group>";
+		};
+		3A875E3D2445CFA900BF7849 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				3A875E3E2445CFA900BF7849 /* config.h */,
+				3A875E3F2445CFA900BF7849 /* crypto_scrypt.h */,
+				3A875E402445CFA900BF7849 /* sha256.h */,
+				3A875E412445CFA900BF7849 /* sysendian.h */,
+				3A875E422445CFA900BF7849 /* scrypt_platform.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		3A875E442445CFA900BF7849 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				3A875E452445CFA900BF7849 /* sha256.c */,
+				3A875E462445CFA900BF7849 /* crypto_scrypt-nosse.c */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		3A875E472445CFA900BF7849 /* RegEx */ = {
+			isa = PBXGroup;
+			children = (
+				3A875E482445CFA900BF7849 /* RegExCategories.m */,
+				3A875E492445CFA900BF7849 /* RegExCategories.h */,
+			);
+			path = RegEx;
+			sourceTree = "<group>";
+		};
+		3A875E4A2445CFA900BF7849 /* SideMenu */ = {
+			isa = PBXGroup;
+			children = (
+				3A875E4B2445CFA900BF7849 /* UIViewController+ECSlidingViewController.h */,
+				3A875E4C2445CFA900BF7849 /* ECSlidingConstants.h */,
+				3A875E4D2445CFA900BF7849 /* ECSlidingViewController.m */,
+				3A875E4E2445CFA900BF7849 /* ECSlidingSegue.h */,
+				3A875E4F2445CFA900BF7849 /* ECPercentDrivenInteractiveTransition.m */,
+				3A875E502445CFA900BF7849 /* ECSlidingAnimationController.h */,
+				3A875E512445CFA900BF7849 /* ECSlidingInteractiveTransition.h */,
+				3A875E522445CFA900BF7849 /* ECSlidingViewController.h */,
+				3A875E532445CFA900BF7849 /* UIViewController+ECSlidingViewController.m */,
+				3A875E542445CFA900BF7849 /* ECPercentDrivenInteractiveTransition.h */,
+				3A875E552445CFA900BF7849 /* ECSlidingSegue.m */,
+				3A875E562445CFA900BF7849 /* ECSlidingAnimationController.m */,
+				3A875E572445CFA900BF7849 /* ECSlidingInteractiveTransition.m */,
+			);
+			path = SideMenu;
+			sourceTree = "<group>";
+		};
+		3A875E582445CFA900BF7849 /* Reachability */ = {
+			isa = PBXGroup;
+			children = (
+				3A875E592445CFA900BF7849 /* Reachability.m */,
+				3A875E5A2445CFA900BF7849 /* Reachability.h */,
+			);
+			path = Reachability;
 			sourceTree = "<group>";
 		};
 		3A8A1D35238743D1008E0679 /* Interactor */ = {
@@ -9207,24 +9359,6 @@
 			path = AddressFetcher;
 			sourceTree = "<group>";
 		};
-		670595A11AB0F59D00D2D6D9 /* KeychainItemWrapper */ = {
-			isa = PBXGroup;
-			children = (
-				670595A21AB0F59D00D2D6D9 /* KeychainItemWrapper.h */,
-				670595A31AB0F59D00D2D6D9 /* KeychainItemWrapper.m */,
-			);
-			path = KeychainItemWrapper;
-			sourceTree = "<group>";
-		};
-		670DF9481A43BCB200CEA1EA /* Reachability */ = {
-			isa = PBXGroup;
-			children = (
-				23F601A21D09C931009102BF /* Reachability.h */,
-				23F601A31D09C931009102BF /* Reachability.m */,
-			);
-			path = Reachability;
-			sourceTree = "<group>";
-		};
 		678AD5EC19D4731C00E9A778 /* Modal Content Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -9241,35 +9375,6 @@
 			path = "Modal Content Views";
 			sourceTree = "<group>";
 		};
-		67E9673419DF1DD300305358 /* SideMenu */ = {
-			isa = PBXGroup;
-			children = (
-				67EE1DBD19E3325900DBBFC9 /* ECPercentDrivenInteractiveTransition.h */,
-				67EE1DBE19E3325900DBBFC9 /* ECPercentDrivenInteractiveTransition.m */,
-				67EE1DBF19E3325900DBBFC9 /* ECSlidingAnimationController.h */,
-				67EE1DC019E3325900DBBFC9 /* ECSlidingAnimationController.m */,
-				67EE1DC119E3325900DBBFC9 /* ECSlidingConstants.h */,
-				67EE1DC219E3325900DBBFC9 /* ECSlidingInteractiveTransition.h */,
-				67EE1DC319E3325900DBBFC9 /* ECSlidingInteractiveTransition.m */,
-				67EE1DC419E3325900DBBFC9 /* ECSlidingSegue.h */,
-				67EE1DC519E3325900DBBFC9 /* ECSlidingSegue.m */,
-				67EE1DC619E3325900DBBFC9 /* ECSlidingViewController.h */,
-				67EE1DC719E3325900DBBFC9 /* ECSlidingViewController.m */,
-				67EE1DC819E3325900DBBFC9 /* UIViewController+ECSlidingViewController.h */,
-				67EE1DC919E3325900DBBFC9 /* UIViewController+ECSlidingViewController.m */,
-			);
-			path = SideMenu;
-			sourceTree = "<group>";
-		};
-		67FA1A4A1ABA092D000C9196 /* RegEx */ = {
-			isa = PBXGroup;
-			children = (
-				67FA1A4B1ABA092D000C9196 /* RegExCategories.h */,
-				67FA1A4C1ABA092D000C9196 /* RegExCategories.m */,
-			);
-			path = RegEx;
-			sourceTree = "<group>";
-		};
 		7A4E8823218B593700CB798C /* Analytics */ = {
 			isa = PBXGroup;
 			children = (
@@ -9278,21 +9383,6 @@
 				AAE8754C231F27F900EAD34A /* BridgeAnalyticsRecorder.swift */,
 			);
 			path = Analytics;
-			sourceTree = "<group>";
-		};
-		84C25678198109AF00F901D1 /* Keys */ = {
-			isa = PBXGroup;
-			children = (
-				84FC02FB19815F1B00B97D5B /* crypto_scrypt-nosse.c */,
-				84FC02FC19815F1B00B97D5B /* sha256.c */,
-				84C2569719810E1400F901D1 /* sha256.h */,
-				84C2569119810DF300F901D1 /* config.h */,
-				84C2569219810DF300F901D1 /* crypto_scrypt.h */,
-				84C2569319810DF300F901D1 /* scrypt_platform.h */,
-				84C2569419810DF300F901D1 /* sysendian.h */,
-			);
-			name = Keys;
-			path = Library/keys;
 			sourceTree = "<group>";
 		};
 		9F1831F315176F2200FB3D52 /* Categories */ = {
@@ -9434,6 +9524,17 @@
 		9FB3637414B60128004BEA02 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3A9F13572445B48400CEE330 /* BitcoinKit.framework */,
+				3A9F13582445B48400CEE330 /* CommonCryptoKit.framework */,
+				3A9F13592445B48400CEE330 /* ERC20Kit.framework */,
+				3A9F135A2445B48400CEE330 /* EthereumKit.framework */,
+				3A9F135B2445B48400CEE330 /* HDWalletKit.framework */,
+				3A9F135C2445B48400CEE330 /* Localization.framework */,
+				3A9F135D2445B48400CEE330 /* NetworkKit.framework */,
+				3A9F135E2445B48400CEE330 /* PlatformKit.framework */,
+				3A9F135F2445B48400CEE330 /* PlatformUIKit.framework */,
+				3A9F13602445B48400CEE330 /* StellarKit.framework */,
+				3A9F13612445B48400CEE330 /* ToolKit.framework */,
 				3ABBB3B3243F0D500004F783 /* LibWally.framework */,
 				3A67CF35243B9231000FEFFB /* FIRAnalyticsConnector.framework */,
 				3A67CF3A243B9232000FEFFB /* FirebaseABTesting.framework */,
@@ -9477,6 +9578,7 @@
 		9FB3637B14B60128004BEA02 /* Blockchain */ = {
 			isa = PBXGroup;
 			children = (
+				3A875E372445CFA900BF7849 /* Third Party */,
 				3AC61A5D243DC625000F5A78 /* JavaScript */,
 				C8B25F4422F287850031D1B2 /* BitPay */,
 				7ADD19D621874C220013A525 /* Firebase */,
@@ -10407,11 +10509,6 @@
 			children = (
 				606399A92110FC2D005B6DF5 /* SocketRocket */,
 				23444F7B1DCD210B00573C8C /* CoreBitcoin */,
-				670595A11AB0F59D00D2D6D9 /* KeychainItemWrapper */,
-				84C25678198109AF00F901D1 /* Keys */,
-				670DF9481A43BCB200CEA1EA /* Reachability */,
-				67FA1A4A1ABA092D000C9196 /* RegEx */,
-				67E9673419DF1DD300305358 /* SideMenu */,
 			);
 			path = "Third Party";
 			sourceTree = "<group>";
@@ -11255,6 +11352,7 @@
 				6587FD1F22F9811D00206575 /* SendDestinationAccountTableViewCell.swift in Sources */,
 				65A8DEEF235F5ADD00D06CAC /* DashboardScreenPresenter.swift in Sources */,
 				C7FA9B59212F499D00B98EBF /* MarketsService.swift in Sources */,
+				3A875E632445CFA900BF7849 /* ECSlidingSegue.m in Sources */,
 				678AD5E919D4610000E9A778 /* BCModalContentView.m in Sources */,
 				3A26AF96212B36B2003A8A08 /* FromToButtonDelegateIntermediate.swift in Sources */,
 				23444F8A1DCD218F00573C8C /* BTCAddress.m in Sources */,
@@ -11276,7 +11374,6 @@
 				3A742844237BA43400A96CF6 /* LoadingState+AssetLineChart.swift in Sources */,
 				23FB5C101D9ABB730008C6AB /* TransactionDetailDateCell.m in Sources */,
 				606399EC2110FC2D005B6DF5 /* SRMutex.m in Sources */,
-				670595A41AB0F59D00D2D6D9 /* KeychainItemWrapper.m in Sources */,
 				3A3D5DD0211CA2CD00E6C241 /* PersonalDetailsInterface.swift in Sources */,
 				6509999322E224970092BFB9 /* ExchangeLinkingAnnouncement.swift in Sources */,
 				606399F62110FC2D005B6DF5 /* SRError.m in Sources */,
@@ -11284,6 +11381,7 @@
 				6586DE472433BB7A006E5468 /* Accessibility+CardDetailsScreen.swift in Sources */,
 				65F4DDF023D8C0D9009F753B /* BadgeCellPresenter.swift in Sources */,
 				3AE74B3521C00B6600246A9C /* KYCTierCell.swift in Sources */,
+				3A875E662445CFA900BF7849 /* Reachability.m in Sources */,
 				606399F42110FC2D005B6DF5 /* SRHash.m in Sources */,
 				C7387EB22181138F005D35DA /* AmountTextFieldDelegate.swift in Sources */,
 				51C9EBB620DBE4A700AB521D /* UIView+SafeAreaFrame.swift in Sources */,
@@ -11363,7 +11461,6 @@
 				3A53B94F213466580020ECAD /* ExchangeListHeaderView.swift in Sources */,
 				676250821A2DDF360052B63F /* AccountTableCell.m in Sources */,
 				3A204AF122DCF8EA008FCD0B /* ExchangeAccountAuthenticator.swift in Sources */,
-				67EE1DCF19E3325900DBBFC9 /* UIViewController+ECSlidingViewController.m in Sources */,
 				65F4DDCD23D8C024009F753B /* EmailSwitchViewInteractor.swift in Sources */,
 				3A5AF01422D5354F007C5717 /* ExchangeCoordinator.swift in Sources */,
 				65CB9FC4237336D30004BBC2 /* Transaction.m in Sources */,
@@ -11379,6 +11476,7 @@
 				65550E6F22BE671F00522656 /* PinInteractor.swift in Sources */,
 				6587FD3222F9863F00206575 /* SendSourceAccountCellPresenter.swift in Sources */,
 				3A52C1282176946F00C03103 /* SendLumensViewController.swift in Sources */,
+				3A875E5B2445CFA900BF7849 /* KeychainItemWrapper.m in Sources */,
 				3A5AD313235779F1009DDF8B /* RegistrationType.swift in Sources */,
 				3A9F72C4228604D500BF367A /* SendPAXInterface.swift in Sources */,
 				3A49B2B92130B5610068F443 /* NewOrderTableViewCell.swift in Sources */,
@@ -11410,9 +11508,9 @@
 				3A29976D237F43AF0009E7F1 /* AssetLineChartTableViewCellInteractor.swift in Sources */,
 				C777333F217E233C00899930 /* TransactionsXlmDataProvider.swift in Sources */,
 				AADF6B0721BDE34800F8CA43 /* KYCTier.swift in Sources */,
+				3A875E622445CFA900BF7849 /* UIViewController+ECSlidingViewController.m in Sources */,
 				3A0831C323F74BF8009859A3 /* CustodyWithdrawalSummaryViewController.swift in Sources */,
 				3AB757A9231852FE002A3405 /* WalletIntroductionPresenter.swift in Sources */,
-				84FC02FD19815F1B00B97D5B /* crypto_scrypt-nosse.c in Sources */,
 				602B9CE82118E15300BD3D60 /* LocationSuggestion.swift in Sources */,
 				3A307B8123465D8A00555807 /* ManualPairingViewController.swift in Sources */,
 				AA447BC82127679A00EC0FA0 /* SideMenuViewController.swift in Sources */,
@@ -11472,6 +11570,7 @@
 				6564E5B722C243A40057108B /* PinInteracting.swift in Sources */,
 				3AE6B00022947D3400BF8F56 /* ERC20HistoricalTransactionCaching.swift in Sources */,
 				3A15EED023F2063A002D5712 /* UpdateEmailScreenViewController.swift in Sources */,
+				3A875E5E2445CFA900BF7849 /* crypto_scrypt-nosse.c in Sources */,
 				3AE74B3E21C043ED00246A9C /* KYCTiersViewController.swift in Sources */,
 				C76143A5211A80380041411E /* SocketMessage.swift in Sources */,
 				65CCEA14232B8DEA00D78987 /* RemoteNotificationAuthorizer.swift in Sources */,
@@ -11569,7 +11668,6 @@
 				3AA1A4AB23EDBA6B00143250 /* KYCSupportedDocumentsResponse.swift in Sources */,
 				3AE74B4121C04B0800246A9C /* KYCTiersHeaderView.swift in Sources */,
 				3A15EECE23F2062B002D5712 /* UpdateMobileScreenPresenter.swift in Sources */,
-				67FA1A4D1ABA092D000C9196 /* RegExCategories.m in Sources */,
 				65380E5E23983A4300BE66E7 /* RemoteNotificationTokenFetching.swift in Sources */,
 				3ACFA26823A2BDCB0021408B /* SettingsRouter.swift in Sources */,
 				606399F02110FC2D005B6DF5 /* SRURLUtilities.m in Sources */,
@@ -11590,6 +11688,7 @@
 				9F0CBAAA151351F400CD945D /* Wallet.m in Sources */,
 				6510614823572A4100C871C0 /* AutoPairingScreenPresenter.swift in Sources */,
 				3A7FC699240851C700DB7815 /* CustodyActionState.swift in Sources */,
+				3A875E5D2445CFA900BF7849 /* sha256.c in Sources */,
 				3A3D5DCD211C9C6500E6C241 /* PersonalDetailsService.swift in Sources */,
 				3ABA8B5A23DA14E700689B97 /* CheckoutScreenViewController.swift in Sources */,
 				602B9CFA2118E15300BD3D60 /* KYCWelcomeController.swift in Sources */,
@@ -11668,6 +11767,7 @@
 				AA69F6592086A2720054EFCE /* AppCoordinator.swift in Sources */,
 				C7FF10DF2141A89500CBA3CB /* Fix.swift in Sources */,
 				C7614399211A7FD70041411E /* SocketManager.swift in Sources */,
+				3A875E652445CFA900BF7849 /* ECSlidingInteractiveTransition.m in Sources */,
 				67D95A261B3DD86B0012EBB1 /* BCTextField.swift in Sources */,
 				C7C572F021FBBBFC008B174D /* VeriffController.swift in Sources */,
 				C77217E820AFCC3C0087836A /* WalletBackupDelegate.swift in Sources */,
@@ -11767,14 +11867,12 @@
 				C732DF6B2201199000F3687A /* CameraPrompting.swift in Sources */,
 				6509995922E0CAE90092BFB9 /* AnnouncementPresenter.swift in Sources */,
 				AA10767122011CA9000612A1 /* ExchangeNavigatableView.swift in Sources */,
-				67EE1DCC19E3325900DBBFC9 /* ECSlidingInteractiveTransition.m in Sources */,
 				3ADB1E25237379A800AA63D5 /* MultiActionViewInteractor.swift in Sources */,
 				6775569919E752A00054699B /* BCWebViewController.m in Sources */,
 				65F4DDBA23D8C024009F753B /* SwipeReceiveSwitchViewPresenter.swift in Sources */,
 				C7442E341FBA1E7800695E4C /* ExchangeTableViewCell.m in Sources */,
 				65F4DE6C23D8C8B2009F753B /* RecoveryPhraseScreenPresenter.swift in Sources */,
 				606399E42110FC2D005B6DF5 /* SRProxyConnect.m in Sources */,
-				67EE1DCD19E3325900DBBFC9 /* ECSlidingSegue.m in Sources */,
 				3A47825F2297451600DE5039 /* TextFieldAccessoryButtonView.swift in Sources */,
 				606399DE2110FC2D005B6DF5 /* NSRunLoop+SRWebSocket.m in Sources */,
 				652A381F232F975F00A3F957 /* RemoteNotificationServiceContainer.swift in Sources */,
@@ -11828,7 +11926,6 @@
 				AA7E7723210BA487009DFB4C /* Strings.swift in Sources */,
 				238FC4D21DEC79E200591D5F /* TransactionDetailDoubleSpendWarningCell.m in Sources */,
 				23FDEF9A1D6CBC7000FC80D6 /* TransactionDetailViewController.m in Sources */,
-				67EE1DCA19E3325900DBBFC9 /* ECPercentDrivenInteractiveTransition.m in Sources */,
 				65B0F41823EC4DB100DC3563 /* DefaultLabelContentInteractor.swift in Sources */,
 				3A26AFA4212C9F88003A8A08 /* ExchangeService.swift in Sources */,
 				FA7A40AE24214E950065B35F /* AboutView.swift in Sources */,
@@ -11866,6 +11963,7 @@
 				65639BE023B6468D00869483 /* AirdropCenterClient.swift in Sources */,
 				65F4DDF123D8C0D9009F753B /* BadgeTableViewCell.swift in Sources */,
 				9F1831E21516A39500FB3D52 /* NSData+Hex.m in Sources */,
+				3A875E5F2445CFA900BF7849 /* RegExCategories.m in Sources */,
 				6710DA0E1A8E82D80089DDED /* BCLine.m in Sources */,
 				65235AE8243653DB00997B58 /* AddCardServiceProvider.swift in Sources */,
 				AA2D2015228F789100EF8A36 /* ReceiveCryptoViewControllerProvider.swift in Sources */,
@@ -11875,7 +11973,6 @@
 				AA278EA622B1764C009F203D /* PAXAnnouncement.swift in Sources */,
 				AAA3333D208813040019AD55 /* OnboardingRouter.swift in Sources */,
 				3A26D53421406C0200D79BDD /* ExchangeDetailCoordinator.swift in Sources */,
-				67EE1DCE19E3325900DBBFC9 /* ECSlidingViewController.m in Sources */,
 				65B77D6F22F9B759009AE141 /* SendAmountCellPresenter.swift in Sources */,
 				3A742840237BA37800A96CF6 /* AssetLineChartInteracting.swift in Sources */,
 				6587FD1322F97F5F00206575 /* SendViewController.swift in Sources */,
@@ -11934,6 +12031,7 @@
 				65D57227234B90D200D14342 /* SendBitcoinViewController+Analytics.swift in Sources */,
 				3AE6AFAB22936FE500BF8F56 /* PaxActivityDataProvider.swift in Sources */,
 				65B77D6C22F9B727009AE141 /* SendAmountInteracting.swift in Sources */,
+				3A875E602445CFA900BF7849 /* ECSlidingViewController.m in Sources */,
 				2322321A1B44D4CB00E5DF26 /* UpgradeViewController.m in Sources */,
 				65B77D5522F99F13009AE141 /* SendFeeCellPresenter.swift in Sources */,
 				AA0A41AB214C83A800807163 /* KYCCountrySelectionInteractor.swift in Sources */,
@@ -11946,7 +12044,6 @@
 				65A78EED2326963600A93D10 /* RemoteNotificationServicing.swift in Sources */,
 				C7BEE13B20C828B20096003B /* BuySellCoordinator.swift in Sources */,
 				65C7BEE123607D93002E5E0E /* TabBarController.swift in Sources */,
-				67EE1DCB19E3325900DBBFC9 /* ECSlidingAnimationController.m in Sources */,
 				60639A002110FC2D005B6DF5 /* SRConstants.m in Sources */,
 				652ABFA522EB2A0B00D5F846 /* AnnouncementInteracting.swift in Sources */,
 				65AFFC1D23E9D5BD000DD809 /* SimpleBuyCheckoutAction.swift in Sources */,
@@ -11964,6 +12061,7 @@
 				3A5C889B23E36448002833B4 /* CurrentBalanceCellPresenter.swift in Sources */,
 				6564E55E22C13FB00057108B /* WalletProtocol.swift in Sources */,
 				6510614323572A1400C871C0 /* AutoPairingViewController.swift in Sources */,
+				3A875E612445CFA900BF7849 /* ECPercentDrivenInteractiveTransition.m in Sources */,
 				652CDFBC230EDD680044E899 /* Enable2FAAnnouncement.swift in Sources */,
 				C7E2750E1F59C2D50054EFA5 /* UILabel+Animations.m in Sources */,
 				65B77D6022F9B2F6009AE141 /* SendDestinationAccountState.swift in Sources */,
@@ -11984,6 +12082,7 @@
 				A2599B9F1B0B5FC800C2EA81 /* BackupViewController.swift in Sources */,
 				3AA94DE922418D800083210B /* ExchangeRateMetadata.swift in Sources */,
 				3ABA8B5C23DA14F300689B97 /* CheckoutScreenPresenter.swift in Sources */,
+				3A875E642445CFA900BF7849 /* ECSlidingAnimationController.m in Sources */,
 				C7900C832177CEEB00F57A9F /* SimpleListDataProvider.swift in Sources */,
 				65463CAF22DC9AA7005E5BF6 /* AddressViewController.swift in Sources */,
 				65F4DDF823D8C0D9009F753B /* SwitchTableViewCell.swift in Sources */,
@@ -12027,7 +12126,6 @@
 				65C20CCC23576EAD009C72B7 /* PasswordRequiredScreenInteractor.swift in Sources */,
 				3A15EED223F20647002D5712 /* UpdateMobileScreenViewController.swift in Sources */,
 				3ADF158E23FD664F00034AAE /* UIApplication+ApplicationBackgroundTaskAPI.swift in Sources */,
-				84FC02FE19815F1B00B97D5B /* sha256.c in Sources */,
 				3A2BBCD521C31BFC001E55BF /* KYCCTAHeaderView.swift in Sources */,
 				3A33896D2385C88600372B84 /* AssetLineChartInteraction.swift in Sources */,
 				3A3C7D75218126F40067F442 /* ActionableLabel.swift in Sources */,
@@ -12089,7 +12187,6 @@
 				65244B26234F727B002EB289 /* ManualPairingScreenPresenter.swift in Sources */,
 				AA63F84B20A12AE9002B719B /* URLs.swift in Sources */,
 				6541550E22C54A0800E78814 /* WalletAddressContent.swift in Sources */,
-				23F601A41D09C931009102BF /* Reachability.m in Sources */,
 				65B77D6622F9B4D8009AE141 /* SendSourceAccountInteracting.swift in Sources */,
 				3A390754217E7F6E00D2DA01 /* SendXLMInterface.swift in Sources */,
 				653333AD230D83D9008B3ADF /* VerifyEmailAnnouncement.swift in Sources */,
@@ -12883,59 +12980,66 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = NO;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = NZ6PH75U7K;
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = "";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_THUMB_SUPPORT = NO;
-				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "-Xfrontend -warn-long-function-bodies=100 -Xfrontend -warn-long-expression-type-checking=100";
 				SDKROOT = iphoneos;
-				SWIFT_INCLUDE_PATHS = "";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = arm64;
 				"VALID_ARCHS[sdk=iphonesimulator*]" = x86_64;
-				"WARNING_CFLAGS[arch=*]" = "-Wno-nullability-completeness";
+				WARNING_CFLAGS = (
+					"-Wno-nullability-completeness",
+					"-Wno-nonnull",
+				);
 			};
 			name = "Debug Staging";
 		};
@@ -12943,35 +13047,25 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 516594A7204F1DE600C50E78 /* Staging.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon.debug;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 0;
-				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NZ6PH75U7K;
-				ENABLE_BITCODE = YES;
-				ENABLE_NS_ASSERTIONS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Blockchain/Blockchain-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Submodules/OpenSSL-for-iPhone/include",
 					"$(SRCROOT)/Submodules/SocketRocket",
 				);
 				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -12984,15 +13078,10 @@
 					"$(inherited)",
 					"-ObjC",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rainydayapps.Blockchain;
 				PRODUCT_NAME = Blockchain;
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.rainydayapps.Blockchain";
-				SUPPORTS_MACCATALYST = NO;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				VERSIONING_SYSTEM = "apple-generic";
 				WRAPPER_EXTENSION = app;
 			};
@@ -13003,59 +13092,66 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = NO;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = NZ6PH75U7K;
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = "";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_THUMB_SUPPORT = NO;
-				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "-Xfrontend -warn-long-function-bodies=100 -Xfrontend -warn-long-expression-type-checking=100";
 				SDKROOT = iphoneos;
-				SWIFT_INCLUDE_PATHS = "";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = arm64;
 				"VALID_ARCHS[sdk=iphonesimulator*]" = x86_64;
-				"WARNING_CFLAGS[arch=*]" = "-Wno-nullability-completeness";
+				WARNING_CFLAGS = (
+					"-Wno-nullability-completeness",
+					"-Wno-nonnull",
+				);
 			};
 			name = "Debug Dev";
 		};
@@ -13063,35 +13159,25 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 516594A5204F1A7400C50E78 /* Development.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon.debug;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 0;
-				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NZ6PH75U7K;
-				ENABLE_BITCODE = YES;
-				ENABLE_NS_ASSERTIONS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Blockchain/Blockchain-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Submodules/OpenSSL-for-iPhone/include",
 					"$(SRCROOT)/Submodules/SocketRocket",
 				);
 				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -13104,15 +13190,10 @@
 					"$(inherited)",
 					"-ObjC",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rainydayapps.Blockchain;
 				PRODUCT_NAME = Blockchain;
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.rainydayapps.Blockchain";
-				SUPPORTS_MACCATALYST = NO;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				VERSIONING_SYSTEM = "apple-generic";
 				WRAPPER_EXTENSION = app;
 			};
@@ -13123,54 +13204,55 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = NO;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = YES;
-				DEVELOPMENT_TEAM = NZ6PH75U7K;
+				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = "";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_THUMB_SUPPORT = NO;
-				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_INCLUDE_PATHS = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
@@ -13183,34 +13265,25 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 51F6A9BB206964D6002968EC /* Release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = NZ6PH75U7K;
-				ENABLE_BITCODE = YES;
-				ENABLE_NS_ASSERTIONS = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Blockchain/Blockchain-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Submodules/OpenSSL-for-iPhone/include",
 					"$(SRCROOT)/Submodules/SocketRocket",
 				);
 				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -13223,15 +13296,10 @@
 					"$(inherited)",
 					"-ObjC",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rainydayapps.Blockchain;
 				PRODUCT_NAME = Blockchain;
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.rainydayapps.Blockchain";
-				SUPPORTS_MACCATALYST = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				VERSIONING_SYSTEM = "apple-generic";
 				WRAPPER_EXTENSION = app;
 			};
@@ -13240,245 +13308,72 @@
 		519435A6208E61F3001EF882 /* Debug Production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NZ6PH75U7K;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = BlockchainTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.blockchain.BlockchainTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/RxSwift $(SRCROOT)/Charts";
-				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
-				"WARNING_CFLAGS[arch=*]" = (
-					"-fdiagnostics-show-option",
-					"-Wno-nullability-completeness",
-				);
 			};
 			name = "Debug Production";
 		};
 		519435A7208E61F3001EF882 /* Debug Staging */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NZ6PH75U7K;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = BlockchainTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.blockchain.BlockchainTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/RxSwift $(SRCROOT)/Charts";
-				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
-				"WARNING_CFLAGS[arch=*]" = (
-					"-fdiagnostics-show-option",
-					"-Wno-nullability-completeness",
-				);
 			};
 			name = "Debug Staging";
 		};
 		519435A8208E61F3001EF882 /* Debug Dev */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NZ6PH75U7K;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = BlockchainTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.blockchain.BlockchainTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/RxSwift $(SRCROOT)/Charts";
-				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
-				"WARNING_CFLAGS[arch=*]" = (
-					"-fdiagnostics-show-option",
-					"-Wno-nullability-completeness",
-					"-Wno-incompatible-property-type",
-					"-Wno-objc-property-synthesis",
-				);
 			};
 			name = "Debug Dev";
 		};
@@ -13486,41 +13381,23 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = NZ6PH75U7K;
-				ENABLE_NS_ASSERTIONS = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = BlockchainTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.blockchain.BlockchainTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/RxSwift $(SRCROOT)/Charts";
-				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
-				WARNING_CFLAGS = "-fdiagnostics-show-option";
 			};
 			name = Release;
 		};
@@ -13529,59 +13406,66 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = NO;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = NZ6PH75U7K;
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = "";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_THUMB_SUPPORT = NO;
-				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "-Xfrontend -warn-long-function-bodies=100 -Xfrontend -warn-long-expression-type-checking=100";
 				SDKROOT = iphoneos;
-				SWIFT_INCLUDE_PATHS = "";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = arm64;
 				"VALID_ARCHS[sdk=iphonesimulator*]" = x86_64;
-				"WARNING_CFLAGS[arch=*]" = "-Wno-nullability-completeness";
+				WARNING_CFLAGS = (
+					"-Wno-nullability-completeness",
+					"-Wno-nonnull",
+				);
 			};
 			name = "Debug Production";
 		};
@@ -13589,35 +13473,25 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 516594A6204F1C0400C50E78 /* Production.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 0;
-				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NZ6PH75U7K;
-				ENABLE_BITCODE = YES;
-				ENABLE_NS_ASSERTIONS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Blockchain/Blockchain-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Submodules/OpenSSL-for-iPhone/include",
 					"$(SRCROOT)/Submodules/SocketRocket",
 				);
 				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -13630,14 +13504,10 @@
 					"$(inherited)",
 					"-ObjC",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rainydayapps.Blockchain;
 				PRODUCT_NAME = Blockchain;
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.rainydayapps.Blockchain";
-				SUPPORTS_MACCATALYST = NO;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				VERSIONING_SYSTEM = "apple-generic";
 				WRAPPER_EXTENSION = app;
 			};
@@ -13648,54 +13518,55 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = NO;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = YES;
-				DEVELOPMENT_TEAM = NZ6PH75U7K;
+				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = "";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_THUMB_SUPPORT = NO;
-				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_INCLUDE_PATHS = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
@@ -13708,34 +13579,25 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 516594A7204F1DE600C50E78 /* Staging.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon.debug;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				CODE_SIGN_ENTITLEMENTS = Blockchain/Blockchain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = NZ6PH75U7K;
-				ENABLE_BITCODE = YES;
-				ENABLE_NS_ASSERTIONS = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Blockchain/Blockchain-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Submodules/OpenSSL-for-iPhone/include",
 					"$(SRCROOT)/Submodules/SocketRocket",
 				);
 				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -13748,15 +13610,10 @@
 					"$(inherited)",
 					"-ObjC",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rainydayapps.Blockchain;
 				PRODUCT_NAME = Blockchain;
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.rainydayapps.Blockchain";
-				SUPPORTS_MACCATALYST = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
 				VERSIONING_SYSTEM = "apple-generic";
 				WRAPPER_EXTENSION = app;
 			};
@@ -13766,41 +13623,23 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = NZ6PH75U7K;
-				ENABLE_NS_ASSERTIONS = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = BlockchainTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.blockchain.BlockchainTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/RxSwift $(SRCROOT)/Charts";
-				SWIFT_OBJC_BRIDGING_HEADER = "Blockchain/Blockchain-Bridging-Header.h";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
-				WARNING_CFLAGS = "-fdiagnostics-show-option";
 			};
 			name = "Release Staging";
 		};

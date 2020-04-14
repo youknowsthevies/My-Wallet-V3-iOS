@@ -69,10 +69,13 @@ typedef enum {
     switch (self.presenter) {
         case welcome:
             presenter = DEBUG_STRING_WELCOME;
+            break;
         case pin:
             presenter = BC_STRING_SETTINGS_VERIFY;
+            break;
         case settings:
             presenter = BC_STRING_SETTINGS_ABOUT;
+            break;
     }
     self.navigationItem.title = [NSString stringWithFormat:@"%@ %@ %@", DEBUG_STRING_DEBUG, DEBUG_STRING_FROM_LOWERCASE, presenter];
 }

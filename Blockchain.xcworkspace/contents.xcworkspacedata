@@ -10,4 +10,7 @@
    <FileRef
       location = "group:Blockchain.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:/Users/paulo/dev/wallet-ios-private/TestPlan/Full.xctestplan">
+   </FileRef>
 </Workspace>

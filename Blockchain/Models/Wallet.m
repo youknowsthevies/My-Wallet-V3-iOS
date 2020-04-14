@@ -31,8 +31,6 @@
 #import "NSData+BTCData.h"
 #import "NSNumberFormatter+Currencies.h"
 
-#import "Blockchain-Swift.h"
-
 @import FirebaseAnalytics;
 
 #define DICTIONARY_KEY_CURRENCY @"currency"

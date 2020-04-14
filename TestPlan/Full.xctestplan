@@ -1,0 +1,105 @@
+{
+  "configurations" : [
+    {
+      "id" : "2FA904C0-3A13-4588-8DB8-8BB16F8C4BF6",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Blockchain.xcodeproj",
+        "identifier" : "5194359D208E61F3001EF882",
+        "name" : "BlockchainTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules.xcodeproj",
+        "identifier" : "BD9FD686F491C876DE758010",
+        "name" : "BitcoinKitTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules.xcodeproj",
+        "identifier" : "D808FCAEF445EEC1C84CF979",
+        "name" : "CommonCryptoKitTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules.xcodeproj",
+        "identifier" : "0D9E9B2A32CFD80C921BBE7A",
+        "name" : "ERC20KitTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules.xcodeproj",
+        "identifier" : "872C78E9D17495FE49CC74C5",
+        "name" : "EthereumKitTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules.xcodeproj",
+        "identifier" : "E77E94958BD020E7D05F9713",
+        "name" : "HDWalletKitTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules.xcodeproj",
+        "identifier" : "CDABA458DB745269A621DB88",
+        "name" : "NetworkKitTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules.xcodeproj",
+        "identifier" : "A2C09CFEB94F3D48F143F665",
+        "name" : "PlatformKitTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules.xcodeproj",
+        "identifier" : "476F96DB235EAB89FA9421D2",
+        "name" : "PlatformUIKitTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules.xcodeproj",
+        "identifier" : "A6210D2A7F37920DACE62BCD",
+        "name" : "StellarKitTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules.xcodeproj",
+        "identifier" : "200447722AEB9F2B35F4C058",
+        "name" : "ToolKitTests"
+      }
+    }
+  ],
+  "version" : 1
+}
