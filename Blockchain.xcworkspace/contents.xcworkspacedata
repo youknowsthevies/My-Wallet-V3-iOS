@@ -2,7 +2,10 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:project.yml">
+      location = "group:project_blockchain.yml">
+   </FileRef>
+   <FileRef
+      location = "group:project_modules.yml">
    </FileRef>
    <FileRef
       location = "group:Modules.xcodeproj">

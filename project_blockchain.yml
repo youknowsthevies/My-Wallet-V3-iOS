@@ -1,0 +1,35 @@
+attributes:
+  ORGANIZATIONNAME: Blockchain Luxembourg S.A
+configs:
+  Debug Dev: debug
+  Debug Production: debug
+  Debug Staging: debug
+  Release: release
+  Release Staging: release
+name: Blockchain
+options:
+  bundleIdPrefix: com.blockchain
+  defaultConfig: Release
+  deploymentTarget:
+    iOS: '11.0'
+  groupSortPosition: top
+  platform: iOS
+settings:
+  SUPPORTS_MACCATALYST: false
+  VALID_ARCHS: arm64
+  VALID_ARCHS[sdk=iphonesimulator*]: x86_64
+targets:
+  Blockchain:
+    platform: iOS
+    sources:
+    - Blockchain
+    type: application
+  BlockchainTests:
+    dependencies:
+    - carthage: RxSwift
+    - carthage: RxBlocking
+    - carthage: RxTest
+    platform: iOS
+    sources:
+    - BlockchainTests
+    type: bundle.unit-test
