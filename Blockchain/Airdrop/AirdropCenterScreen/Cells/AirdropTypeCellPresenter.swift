@@ -41,11 +41,7 @@ struct AirdropTypeCellPresenter {
         )
         let title: String
         if let value = interactor.fiatValue {
-            title = String(
-                format: LocalizedString.fiatTitle,
-                value.toDisplayString(includeSymbol: true),
-                interactor.cryptoCurrency.displayCode
-            )
+            title = "\(value.toDisplayString(includeSymbol: true)) \(LocalizedString.fiatMiddle) \(interactor.cryptoCurrency.displayCode)"
         } else {
             /// If the fiat value is missing, then it was not returned by the backend.
             /// make sure to display something.
@@ -61,13 +57,13 @@ struct AirdropTypeCellPresenter {
         let description: String
         if let dropDate = interactor.dropDate {
             let date = DateFormatter.nominalReadable.string(from: dropDate)
-            let format: String
+            let prefix: String
             if interactor.isAvailable {
-                format = LocalizedString.availableDescription
+                prefix = LocalizedString.availableDescriptionPrefix
             } else {
-                format = LocalizedString.endedDescription
+                prefix = LocalizedString.endedDescriptionPrefix
             }
-            description = String(format: format, date)
+            description = "\(prefix) \(date)"
         } else { // Empty description
             description = ""
         }

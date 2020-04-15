@@ -1303,8 +1303,8 @@ public struct LocalizationConstants {
     }
 
     public struct VersionUpdate {
-        public static let version = NSLocalizedString(
-            "v %@",
+        public static let versionPrefix = NSLocalizedString(
+            "v",
             comment: "Version top note for a `recommended` update alert"
         )
         
@@ -1374,10 +1374,17 @@ public struct LocalizationConstants {
     public struct SimpleBuy {
         public struct Withdrawal {
             public static let title = NSLocalizedString("Send to", comment: "Send to")
-            public static let description = NSLocalizedString(
-                "At this time, Blockchain.com only allows sending your total amount from your %@ trading wallet",
-                comment: "At this time, Blockchain.com only allows sending your total amount from your %@ trading wallet"
-            )
+            public struct Description {
+                public static let prefix = NSLocalizedString(
+                    "At this time, Blockchain.com only allows sending your total amount from your",
+                    comment: "At this time, Blockchain.com only allows sending your total amount from your"
+                )
+                public static let suffix = NSLocalizedString(
+                    "trading wallet",
+                    comment: "trading wallet"
+                )
+            }
+
             public static let action = NSLocalizedString("Send", comment: "Send")
             
             public struct SummarySuccess {
@@ -1500,9 +1507,13 @@ public struct LocalizationConstants {
         public struct TransferDetails {
             
             public struct Title {
-                public static let pendingOrder = NSLocalizedString(
-                    "Pending %@ Buy",
-                    comment: "Simple Buy pending order screen title"
+                public static let pendingOrderPrefix = NSLocalizedString(
+                    "Pending",
+                    comment: "Simple Buy pending order screen title prefix"
+                )
+                public static let pendingOrderSuffix = NSLocalizedString(
+                    "Buy",
+                    comment: "Simple Buy pending order screen title suffix"
                 )
                 public static let checkout = NSLocalizedString(
                     "Transfer Details",
@@ -1539,10 +1550,21 @@ public struct LocalizationConstants {
             }
 
             public struct Summary {
-                public static let pendingOrder = NSLocalizedString(
-                    "Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order.",
-                    comment: "Simple Buy - pending order details summary label"
-                )
+                public struct PendingOrder {
+                    public static let prefix = NSLocalizedString(
+                        "Please transfer",
+                        comment: "Simple Buy - pending order details summary label"
+                    )
+                    public static let middle = NSLocalizedString(
+                        "from your bank account to Blockchain.com. Once we receive the funds, we’ll create your",
+                        comment: "Simple Buy - pending order details summary label"
+                    )
+                    public static let suffix = NSLocalizedString(
+                        "buy order.",
+                        comment: "Simple Buy - pending order details summary label"
+                    )
+                }
+
                 public struct AnyFiat {
                     public static let prefix = NSLocalizedString(
                         "Securely transfer",
@@ -1683,10 +1705,16 @@ public struct LocalizationConstants {
                 }
             }
 
-            public static let notice = NSLocalizedString(
-                "Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply.",
-                comment: "Simple buy: checkout screen notice label"
-            )
+            public struct Notice {
+                public static let prefix = NSLocalizedString(
+                    "Once we receive your funds, we’ll start your",
+                    comment: "Simple buy: checkout screen notice label prefix"
+                )
+                public static let suffix = NSLocalizedString(
+                    "buy order. Note, your final amount might change to due market activity. Fees may apply.",
+                    comment: "Simple buy: checkout screen notice label suffix"
+                )
+            }
         }
 
         public enum KYCScreen {
@@ -1796,13 +1824,21 @@ public struct LocalizationConstants {
             )
         }
         public enum SimpleBuyPendingTransaction {
-            public static let title = NSLocalizedString(
-                "Pending %@ Buy",
+            public static let titlePrefix = NSLocalizedString(
+                "Pending",
                 comment: "Simple Buy Pending Transaction announcement card title"
             )
-            public static let description = NSLocalizedString(
-                "Once we receive your bank transfer, your %@ buy order will complete.",
-                comment: "Simple Buy Pending Transaction announcement card description"
+            public static let titleSuffix = NSLocalizedString(
+                "Buy",
+                comment: "Simple Buy Pending Transaction announcement card title"
+            )
+            public static let descriptionPrefix = NSLocalizedString(
+                "Once we receive your bank transfer, your",
+                comment: "Simple Buy Pending Transaction announcement card description prefix"
+            )
+            public static let descriptionSuffix = NSLocalizedString(
+                "buy order will complete",
+                comment: "Simple Buy Pending Transaction announcement card description suffix"
             )
             public static let ctaButton = NSLocalizedString(
                 "View Bank Transfer Details",
@@ -2544,9 +2580,9 @@ public struct LocalizationConstants {
     }
     
     public struct PaymentReceivedAlert {
-        public static let titleFormat = NSLocalizedString(
-            "%@ Received",
-            comment: "alert title format announcing a payment was received")
+        public static let titleSuffix = NSLocalizedString(
+            "Received",
+            comment: "alert title suffix announcing a payment was received")
     }
 
     public struct Address {
@@ -3506,10 +3542,6 @@ public struct LocalizationConstants {
             "Minimum of 1.0 XLM needed for new accounts",
             comment: "This is the error shown when too little XLM is sent to a primary key that does not yet have an XLM account"
         )
-        public static let kycAirdropTitle = NSLocalizedString(
-            "Go for Gold",
-            comment: "Title displayed in the onboarding card prompting the user to join the waitlist to receive Stellar."
-        )
         public static let kycAirdropDescription = NSLocalizedString(
             "Complete your profile to start instantly trading crypto from the security of your wallet.",
             comment: "Description displayed on the onboarding card prompting the user to complete KYC to receive their airdrop."
@@ -3547,16 +3579,16 @@ public struct LocalizationConstants {
                 comment: "Airdrop center screen: title"
             )
             public struct Cell {
-                public static let fiatTitle = NSLocalizedString(
-                    "%@ of %@",
+                public static let fiatMiddle = NSLocalizedString(
+                    "of",
                     comment: "Airdrop center screen: cell title"
                 )
-                public static let availableDescription = NSLocalizedString(
-                    "Drops on %@",
+                public static let availableDescriptionPrefix = NSLocalizedString(
+                    "Drops on",
                     comment: "Airdrop center screen: available cell description"
                 )
-                public static let endedDescription = NSLocalizedString(
-                    "Ended on %@",
+                public static let endedDescriptionPrefix = NSLocalizedString(
+                    "Ended on",
                     comment: "Airdrop center screen: ended cell description"
                 )
             }

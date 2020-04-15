@@ -83,10 +83,7 @@ final class CheckoutScreenPresenter {
         self.interactor = interactor
         let data = interactor.checkoutData
         
-        let notice = String(
-            format: LocalizedString.notice,
-            data.cryptoCurrency.displayCode
-        )
+        let notice = "\(LocalizedString.Notice.prefix) \(data.cryptoCurrency.displayCode) \(LocalizedString.Notice.suffix)"
         noticeViewModel = NoticeViewModel(
             imageViewContent: .init(
                 imageName: "disclaimer-icon",

@@ -40,8 +40,8 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
                 size: CGSize(width: 27, height: 27),
                 tintColor: .iconWarning
             ),
-            title: String(format: LocalizedString.title, assetCode),
-            description: String(format: LocalizedString.description, assetCode),
+            title: "\(LocalizedString.titlePrefix) \(assetCode) \(LocalizedString.titleSuffix)",
+            description: "\(LocalizedString.descriptionPrefix) \(assetCode) \(LocalizedString.descriptionSuffix)",
             buttons: [button],
             recorder: errorRecorder,
             dismissState: .undismissible,

@@ -42,7 +42,7 @@ extension VersionUpdateAlertDisplaying {
         let alert = AlertModel(
             headline: LocalizationConstants.VersionUpdate.title,
             body: LocalizationConstants.VersionUpdate.description,
-            topNote: String(format: LocalizationConstants.VersionUpdate.version, currentVersion),
+            topNote: "\(LocalizationConstants.VersionUpdate.versionPrefix) \(currentVersion)",
             actions: [updateNowAction],
             image: UIImage(named: "logo_framed"),
             style: .sheet
