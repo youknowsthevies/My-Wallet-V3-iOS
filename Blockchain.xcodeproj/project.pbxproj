@@ -8123,6 +8123,7 @@
 			buildConfigurationList = 16C189721FF9E1E1DADEA7B6 /* Build configuration list for PBXNativeTarget "Blockchain" */;
 			buildPhases = (
 				87D617A435F3BFAA96EBFEC4 /* Sources */,
+				486C6028E9C1B84D3FE5E62D /* Setup Firebase Environment */,
 				BBDF1886A299BA1AB3A6731C /* Resources */,
 				30C2DDC519DB0F7491E6DE20 /* Carthage */,
 				970E117BE017CEE973F49D00 /* Frameworks */,
@@ -8456,6 +8457,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "carthage copy-frameworks\n";
+		};
+		486C6028E9C1B84D3FE5E62D /* Setup Firebase Environment */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Setup Firebase Environment";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/sh\n#\n#  Blockchain/Scritps/firebase_copy_plist.sh\n#\n#  What It Does\n#  ------------\n#  Copies the correct GoogleService-Info.plist into the built .app\n#  NOTE: GoogleService-Info.plist files should only live on the file system and should NOT be part\n#  of the target (since we'll be adding them to the target manually).\n\n# File name of the resource we're selectively copying.\nPLIST_FILENAME=GoogleService-Info.plist\n\n# Destination directory where the resource will be copied to.\nPLIST_DESTINATION=${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app\n\n# References to dev, staging, and prod versions of the resource.\nGOOGLESERVICE_INFO_DEV=${PROJECT_DIR}/${TARGET_NAME}/Firebase/Dev/${PLIST_FILENAME}\nGOOGLESERVICE_INFO_PROD=${PROJECT_DIR}/${TARGET_NAME}/Firebase/Prod/${PLIST_FILENAME}\nGOOGLESERVICE_INFO_STAG=${PROJECT_DIR}/${TARGET_NAME}/Firebase/Staging/${PLIST_FILENAME}\n\n# Will hold reference to choosen resource.\nGOOGLESERVICE_INFO=\"\"\n\n# Make sure Dev, Staging, and Prod versions exists.\n\n# Dev exists:\necho \"Looking for ${PLIST_FILENAME} in ${GOOGLESERVICE_INFO_DEV}\"\nif [ ! -f $GOOGLESERVICE_INFO_DEV ]; then\n    echo \"No Development ${PLIST_FILENAME} found. Please ensure it's in the proper directory.\"\n    exit 1\nfi\n\n# Staging exists:\necho \"Looking for ${PLIST_FILENAME} in ${GOOGLESERVICE_INFO_STAG}\"\nif [ ! -f $GOOGLESERVICE_INFO_STAG ]; then\n    echo \"No Production ${PLIST_FILENAME} found. Please ensure it's in the proper directory.\"\n    exit 1\nfi\n\n# Prod exists:\necho \"Looking for ${PLIST_FILENAME} in ${GOOGLESERVICE_INFO_PROD}\"\nif [ ! -f $GOOGLESERVICE_INFO_PROD ]; then\n    echo \"No Production ${PLIST_FILENAME} found. Please ensure it's in the proper directory.\"\n    exit 1\nfi\n\n# Select version based on the current CONFIGURATION\necho \"The current configuration is ${CONFIGURATION}\"\nif [ \"${CONFIGURATION}\" == \"Debug Dev\" ]; then\n    GOOGLESERVICE_INFO=${GOOGLESERVICE_INFO_DEV}\nelif [ \"${CONFIGURATION}\" == \"Debug Staging\" ] || [ \"${CONFIGURATION}\" == \"Release Staging\" ]; then\n    GOOGLESERVICE_INFO=${GOOGLESERVICE_INFO_STAG}\nelif [ \"${CONFIGURATION}\" == \"Debug Production\" ] || [ \"${CONFIGURATION}\" == \"Release\" ]; then\n    GOOGLESERVICE_INFO=${GOOGLESERVICE_INFO_PROD}\nelse\n    echo \"Unexpected configuration: ${CONFIGURATION}. Aborting.\"\n    exit 1\nfi\necho \"Using ${GOOGLESERVICE_INFO}\"\n\n# Copies selected version into destination directory\n\necho \"Will copy ${PLIST_FILENAME} to final destination: ${PLIST_DESTINATION}\"\ncp \"${GOOGLESERVICE_INFO}\" \"${PLIST_DESTINATION}\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

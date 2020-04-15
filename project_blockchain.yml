@@ -186,6 +186,7 @@ targets:
     sources:
     - excludes:
       - Firebase
+      - Scripts
       path: Blockchain
     - includes:
       - '**/*.[hm]'
@@ -204,6 +205,9 @@ targets:
       - NSData+BTCData.[hm]
       path: Submodules/CoreBitcoin/CoreBitcoin
     type: application
+    postCompileScripts:
+      - path: Blockchain/Scripts/firebase_copy_plist.sh
+        name: Setup Firebase Environment
   BlockchainTests:
     dependencies:
     - carthage: RxSwift
