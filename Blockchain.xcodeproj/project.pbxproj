@@ -771,7 +771,6 @@
 		922C67C30816E3C9E443B533 /* PrivateKeyReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB497349EF846E654332B91A /* PrivateKeyReader.swift */; };
 		923391419403C5ADC4821CAD /* MockXlmWallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 163E70CFB78B70205B498A5D /* MockXlmWallet.swift */; };
 		92532F60CAF5EBC1AFCD80B2 /* Zxcvbn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EB3E455904C56F4CB8EE44 /* Zxcvbn.framework */; };
-		92E12C341DD09051B729480C /* UpdateMobileSubmissionInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBE20EC6B33A95C2CE90D3 /* UpdateMobileSubmissionInteractor.swift */; };
 		92FC46DB1BC5C4163529A020 /* RecoveryPhraseStatusProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117582A402C0A92246C00A09 /* RecoveryPhraseStatusProviding.swift */; };
 		930FB770228454A289643BAD /* DevSupporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73F7C438958DFAF1EAEFAFFB /* DevSupporting.swift */; };
 		942ADFEAB6ADC90816D2633F /* my-wallet.js in Resources */ = {isa = PBXBuildFile; fileRef = 1D2EB6CDE5A6BC6A4DF6D169 /* my-wallet.js */; };
@@ -1096,7 +1095,6 @@
 		CAC78589F9BB03FD9704646F /* String+EscapeJS.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE5083B5883A0B7D2F9E169 /* String+EscapeJS.swift */; };
 		CAC9F0D85CBA3728B992E4FD /* SendPaxCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E394F91197AAAA75AC10852F /* SendPaxCoordinator.swift */; };
 		CAD072C42094B36F1EA1863C /* ValidationTextField.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1497AAD1E59CE8AC3047B25B /* ValidationTextField.xib */; };
-		CAE5040E2332CB45A106582C /* TwoFactorVerificationBadgePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD01D10719A324FD004111E9 /* TwoFactorVerificationBadgePresenter.swift */; };
 		CAE72A0FF734B93C231DACB6 /* SimpleListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 091732FE6178D36F0533FDCD /* SimpleListViewController.swift */; };
 		CB1F09BE31EAD32A590DA3AF /* BCAddressSelectionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A96739A6FAFA88BD58C4601 /* BCAddressSelectionView.xib */; };
 		CB35E57C8BB192D6FCC859B3 /* RemoteNotificationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F9EF44EE56DD0DE733616C /* RemoteNotificationServiceTests.swift */; };
@@ -1197,7 +1195,6 @@
 		DC4DC742FED26F4509154F04 /* SRMutex.m in Sources */ = {isa = PBXBuildFile; fileRef = C4526CFB0ACB7C55F3734B1D /* SRMutex.m */; };
 		DCF2B1C1E4A42902988D2763 /* AssetLineChartUserInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8FADEBAABFE5397EEE766 /* AssetLineChartUserInteractor.swift */; };
 		DD24260C9B005727AD428102 /* AddressSubscribing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6731AA4ACC36A9958403D666 /* AddressSubscribing.swift */; };
-		DDA60260A77181F43E902FB4 /* MultiActionViewInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82412B7C1D13D27676D8AF4 /* MultiActionViewInteractor.swift */; };
 		DE205380FD6F98580F20EAFC /* FirebaseMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 984D053DDA192C9BE50384EF /* FirebaseMessaging.framework */; };
 		DE8C162F8491BA35A019EBB1 /* AnnouncementTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26BE929946FEAF562021E69 /* AnnouncementTableViewCell.swift */; };
 		DEEDE3D3551852DB40B22E69 /* RecoverFundsScreenPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2048B1C8B865064DF539B916 /* RecoverFundsScreenPresenter.swift */; };
@@ -1805,7 +1802,6 @@
 		348C9BED73ACDB342FB47E1D /* RemoteNotificationNetworkServicing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteNotificationNetworkServicing.swift; sourceTree = "<group>"; };
 		34A1E4B858B2968912CC2EAF /* NSData+Hex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+Hex.h"; sourceTree = "<group>"; };
 		34AB8322036B5B3211DE6BCE /* zh-CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-CN"; path = "zh-CN.lproj/Upgrade.strings"; sourceTree = "<group>"; };
-		34BBE20EC6B33A95C2CE90D3 /* UpdateMobileSubmissionInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateMobileSubmissionInteractor.swift; sourceTree = "<group>"; };
 		34EFCC74875E07CDBE83BA09 /* BackupRouterStateServiceAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRouterStateServiceAPI.swift; sourceTree = "<group>"; };
 		354E8F806392D8D721D98259 /* KYCTierCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = KYCTierCell.xib; sourceTree = "<group>"; };
 		3566AE793AE3472B08EB5EDA /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/KYCAddressController.strings; sourceTree = "<group>"; };
@@ -2987,7 +2983,6 @@
 		C7AF7F75A44F02183A2E04D3 /* BCModalView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BCModalView.m; sourceTree = "<group>"; };
 		C7E23D4B12B0353E247796FC /* beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beep.wav; sourceTree = "<group>"; };
 		C7EC94BCC53D07FD39AF336E /* TradeExecutionAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeExecutionAPI.swift; sourceTree = "<group>"; };
-		C82412B7C1D13D27676D8AF4 /* MultiActionViewInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiActionViewInteractor.swift; sourceTree = "<group>"; };
 		C842E0AA1CEE7A889F8DDB75 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/KYCAddressController.strings; sourceTree = "<group>"; };
 		C892ED3896044182427DFD92 /* TransactionDetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TransactionDetailViewController.m; sourceTree = "<group>"; };
 		C89D27DE8F77763ADEAF6B06 /* BCAddressSelectionView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BCAddressSelectionView.m; sourceTree = "<group>"; };
@@ -3135,7 +3130,6 @@
 		DCB19A47D58188E108DE94DD /* KYCVerifyPhoneNumberPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KYCVerifyPhoneNumberPresenterTests.swift; sourceTree = "<group>"; };
 		DCC914DDEADD6D06F801A519 /* AnimatablePresentationUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatablePresentationUpdate.swift; sourceTree = "<group>"; };
 		DCEE850EC8F601B48A288E89 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		DD01D10719A324FD004111E9 /* TwoFactorVerificationBadgePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorVerificationBadgePresenter.swift; sourceTree = "<group>"; };
 		DD09659040DB11E5181DD313 /* BlockchainAPI+URLSuffix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlockchainAPI+URLSuffix.swift"; sourceTree = "<group>"; };
 		DDBEEF4AAE380EA5AACAB723 /* SwapCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapCoordinator.swift; sourceTree = "<group>"; };
 		DDCD939494F2ECDFCA9B7398 /* BackupFundsServiceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupFundsServiceProvider.swift; sourceTree = "<group>"; };
@@ -5370,7 +5364,6 @@
 			isa = PBXGroup;
 			children = (
 				5326F5E3348E413B172196AB /* TwoFactorVerificationBadgeInteractor.swift */,
-				DD01D10719A324FD004111E9 /* TwoFactorVerificationBadgePresenter.swift */,
 			);
 			path = Badge;
 			sourceTree = "<group>";
@@ -7960,7 +7953,6 @@
 				F1D5D6E2C47CEE16954EE219 /* UpdateMobileScreenSetupInteractor.swift */,
 				4B4AAE40C2A98AAC3A049EF3 /* UpdateMobileScreenViewController.swift */,
 				89E8AD9939FC1461A6563A57 /* UpdateMobileScreenViewController.xib */,
-				34BBE20EC6B33A95C2CE90D3 /* UpdateMobileSubmissionInteractor.swift */,
 			);
 			path = UpdateMobile;
 			sourceTree = "<group>";
@@ -8097,7 +8089,6 @@
 				FA327DB995D6179D983D6C72 /* MultiActionView.swift */,
 				C2421944F057CFD40729FCA8 /* MultiActionView.xib */,
 				4D837A6BD7656C6594D5661D /* MultiActionViewInteracting.swift */,
-				C82412B7C1D13D27676D8AF4 /* MultiActionViewInteractor.swift */,
 				F6069A2ECBDDDE962D1D8251 /* MultiActionViewPresenter.swift */,
 			);
 			path = MultiActionView;
@@ -9093,7 +9084,6 @@
 				149E86F6F17FA1F9B21137B0 /* MultiActionTableViewCell.swift in Sources */,
 				476C4392C9B0D1236796E55B /* MultiActionView.swift in Sources */,
 				32C946D7465CB1BC22C3E1DB /* MultiActionViewInteracting.swift in Sources */,
-				DDA60260A77181F43E902FB4 /* MultiActionViewInteractor.swift in Sources */,
 				212782C2113B6A9D6A1C0755 /* MultiActionViewPresenter.swift in Sources */,
 				E8F3453EAECA391B5DD024E8 /* MultiAddressResponse.m in Sources */,
 				E8B18DBD07DF43FF29F26EB2 /* NSArray+EncodedJSONString.m in Sources */,
@@ -9456,7 +9446,6 @@
 				E8198454B6159EACFFD4CD7B /* TransferInCryptoAnnouncement.swift in Sources */,
 				FB4410178BF8EBD35502338D /* TransitionPresentationUpdate.swift in Sources */,
 				C66F88F0B21A3CCC520A4DE9 /* TwoFactorVerificationBadgeInteractor.swift in Sources */,
-				CAE5040E2332CB45A106582C /* TwoFactorVerificationBadgePresenter.swift in Sources */,
 				CECE383CFBF3ABB9DC115B8D /* UIApplication+ApplicationBackgroundTaskAPI.swift in Sources */,
 				B65429B1567650DD95560CC2 /* UIApplication+RemoteNotificationsAPI.swift in Sources */,
 				3F3EA3353D04FDC2731B14E8 /* UIApplication+Suspend.m in Sources */,
@@ -9485,7 +9474,6 @@
 				6D44C176E44D6EE4BC86CBE8 /* UpdateMobileScreenPresenter.swift in Sources */,
 				B321BB58594894C9E4310726 /* UpdateMobileScreenSetupInteractor.swift in Sources */,
 				556347CF20302543E7DC0402 /* UpdateMobileScreenViewController.swift in Sources */,
-				92E12C341DD09051B729480C /* UpdateMobileSubmissionInteractor.swift in Sources */,
 				EDB0B290ACA714E09076E120 /* UpgradeViewController.m in Sources */,
 				137678286E50D2071F8D34A3 /* UserDefaults.swift in Sources */,
 				C0CF6EED9C4940832FE3A44E /* UserInformationServiceProvider.swift in Sources */,
