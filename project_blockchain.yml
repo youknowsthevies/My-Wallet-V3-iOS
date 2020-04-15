@@ -297,12 +297,11 @@ targets:
     type: application
   BlockchainTests:
     dependencies:
+    - target: Blockchain
     - carthage: RxSwift
     - carthage: RxBlocking
     - carthage: RxTest
     platform: iOS
-    settings:
-      TEST_HOST: $(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain
     sources:
     - BlockchainTests
     type: bundle.unit-test
