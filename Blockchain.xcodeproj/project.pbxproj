@@ -420,7 +420,6 @@
 		4E088CA22235E6E30E906143 /* stellarsdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD2FC7BC90D0FF4084236104 /* stellarsdk.framework */; };
 		4E2F7AAEA5EB5FF280A3B3F4 /* BCEditAddressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF7B6EFB6E80111BA1B6708 /* BCEditAddressView.m */; };
 		4E3A503AB8C31D969836C75E /* AddressInOut.m in Sources */ = {isa = PBXBuildFile; fileRef = CE09CABD21DBE1A6DBEEE220 /* AddressInOut.m */; };
-		4E3CD37D9FDC087D1D545B52 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 36E26F435D46C848070ABB6A /* GoogleService-Info.plist */; };
 		4E55D289ECF8FF3CC3B63AAA /* SendLumensViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C747D4AD66761580960D4FEA /* SendLumensViewController.storyboard */; };
 		4E70F343DF363929FEE8BA07 /* TradeExecutionAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7EC94BCC53D07FD39AF336E /* TradeExecutionAPI.swift */; };
 		4ECADC7AEE0E1CA318B824D0 /* StellarOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CD60828D8E823D099E8663E /* StellarOperation.swift */; };
@@ -1813,7 +1812,6 @@
 		368840571BE8B869C8B353C6 /* ECSlidingInteractiveTransition.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ECSlidingInteractiveTransition.m; sourceTree = "<group>"; };
 		36D278F3561903858B60EBC0 /* SendExchangeAddressStatePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendExchangeAddressStatePresenter.swift; sourceTree = "<group>"; };
 		36D353B5E6CFFA639C3022A4 /* ExchangeAddressFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeAddressFetcher.swift; sourceTree = "<group>"; };
-		36E26F435D46C848070ABB6A /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		36EDF16670A7E4C1106D5002 /* ExchangeInputsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeInputsService.swift; sourceTree = "<group>"; };
 		3708D8D88D15B3DDCA1FB8CF /* GoogleUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleUtilities.framework; sourceTree = "<group>"; };
 		370ACFA8F52BED6D5900FC46 /* AssetLineChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetLineChart.swift; sourceTree = "<group>"; };
@@ -4580,7 +4578,6 @@
 				B69380DC0AB738444B2D0B32 /* Exchange */,
 				839BC5D7BFEBFDBF6D49E917 /* Extensions */,
 				13D14C0780AD7ACC42891FCC /* Feature Configuration */,
-				735B866A8135D3632EAAC95C /* Firebase */,
 				F84DA7414C045AC1D3B34D6C /* Homebrew */,
 				462BAADA6581AA0EB5308C9D /* images */,
 				3717D3D6201722140C042E1C /* JavaScript */,
@@ -5851,14 +5848,6 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		735B866A8135D3632EAAC95C /* Firebase */ = {
-			isa = PBXGroup;
-			children = (
-				7D2C1B4199DFCEC1793B39BD /* Staging */,
-			);
-			path = Firebase;
-			sourceTree = "<group>";
-		};
 		737C3124292D9F71DE809945 /* RecoveryPhraseView */ = {
 			isa = PBXGroup;
 			children = (
@@ -5990,14 +5979,6 @@
 				A919A5DC055D44CCC5C83404 /* CustodialServiceProviderAPI.swift */,
 			);
 			path = Custodial;
-			sourceTree = "<group>";
-		};
-		7D2C1B4199DFCEC1793B39BD /* Staging */ = {
-			isa = PBXGroup;
-			children = (
-				36E26F435D46C848070ABB6A /* GoogleService-Info.plist */,
-			);
-			path = Staging;
 			sourceTree = "<group>";
 		};
 		7D99FBD313545ABAAA7B85BB /* NumberFormatter */ = {
@@ -8290,7 +8271,6 @@
 				D15AA5117547C22D99029BCA /* ExchangeListViewController.storyboard in Resources */,
 				5C5FE7F80045B93F58132331 /* ExchangeLockedHeaderView.xib in Resources */,
 				8430ACDFB18DAD8C52425568 /* ExchangeTableViewCell.xib in Resources */,
-				4E3CD37D9FDC087D1D545B52 /* GoogleService-Info.plist in Resources */,
 				B2E7DC1F547E97C515862DEE /* HistoricalBalanceTableViewCell.xib in Resources */,
 				598E1FBDBF768F77B0DA4961 /* Images.xcassets in Resources */,
 				AB9A6FABCD574EB136DD7821 /* InfoPlist.strings in Resources */,
