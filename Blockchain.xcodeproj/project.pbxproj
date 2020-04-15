@@ -774,6 +774,7 @@
 		92E12C341DD09051B729480C /* UpdateMobileSubmissionInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBE20EC6B33A95C2CE90D3 /* UpdateMobileSubmissionInteractor.swift */; };
 		92FC46DB1BC5C4163529A020 /* RecoveryPhraseStatusProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117582A402C0A92246C00A09 /* RecoveryPhraseStatusProviding.swift */; };
 		930FB770228454A289643BAD /* DevSupporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73F7C438958DFAF1EAEFAFFB /* DevSupporting.swift */; };
+		942ADFEAB6ADC90816D2633F /* my-wallet.js in Resources */ = {isa = PBXBuildFile; fileRef = 1D2EB6CDE5A6BC6A4DF6D169 /* my-wallet.js */; };
 		9440A17D6EE6AB69BD6237AB /* KYCResubmitIdentityController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74B097631C60BA813E72B82 /* KYCResubmitIdentityController.storyboard */; };
 		94645501DC44C474604FCA1E /* ContactTransactionTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7459DAB7DB5AC863EEDF1A19 /* ContactTransactionTableCell.xib */; };
 		9464D05CBBE06602D4B7553C /* String+EscapeJSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777C63143C88DB8B8E27B181 /* String+EscapeJSTests.swift */; };
@@ -1632,6 +1633,7 @@
 		1CBB57B413384DF1CA91F7F1 /* BuyBitcoinViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BuyBitcoinViewController.m; sourceTree = "<group>"; };
 		1CDAA335D42ADCBFFF334625 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/Upgrade.strings; sourceTree = "<group>"; };
 		1D05F19B7440528FED864820 /* PreferredCurrencyBadgePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferredCurrencyBadgePresenter.swift; sourceTree = "<group>"; };
+		1D2EB6CDE5A6BC6A4DF6D169 /* my-wallet.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = "my-wallet.js"; path = "../../Submodules/My-Wallet-V3/dist/my-wallet.js"; sourceTree = "<group>"; };
 		1D999AAD2AEAAC06D99B09CB /* SendFeeInteractorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendFeeInteractorTests.swift; sourceTree = "<group>"; };
 		1DBEB01677A463CBF7982BDE /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/KYCAddressController.strings; sourceTree = "<group>"; };
 		1DFEB83D92C943D49E99B7BF /* BillingAddressScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillingAddressScreenViewController.swift; sourceTree = "<group>"; };
@@ -4474,6 +4476,7 @@
 			isa = PBXGroup;
 			children = (
 				F6A4FE9947F761CD754EDE01 /* JSContext+Helpers.swift */,
+				1D2EB6CDE5A6BC6A4DF6D169 /* my-wallet.js */,
 				FED91AD6E5E10A2981476815 /* wallet-ios.js */,
 			);
 			path = JavaScript;
@@ -8456,6 +8459,7 @@
 				7CBBFEB3AB24B526AFB73DE1 /* alert-received.wav in Resources */,
 				03927D8AA9BBC0D43ECE7435 /* beep.wav in Resources */,
 				D5E2E28321C1E0B844546834 /* button_dark_blue@2x.png.zip in Resources */,
+				942ADFEAB6ADC90816D2633F /* my-wallet.js in Resources */,
 				E22A0DCF719B35B1A51CC63C /* power.psb in Resources */,
 				64C3080AAD095A71C82985B4 /* wallet-ios.js in Resources */,
 			);

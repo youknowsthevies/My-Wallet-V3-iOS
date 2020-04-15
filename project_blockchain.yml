@@ -266,6 +266,9 @@ targets:
           - release_signing
           - base_ios
     sources:
+    - optional: true
+      path: Submodules/My-Wallet-V3/dist/my-wallet.js
+      group: Blockchain/JavaScript
     - buildPhase:
         copyFiles:
           destination: resources
