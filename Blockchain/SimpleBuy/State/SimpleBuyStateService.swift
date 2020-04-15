@@ -178,12 +178,6 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
                 action: .next(to: state),
                 states: states.states(byAppending: state)
             )
-        case .selectFiat:
-            state = .buy
-            apply(
-                action: .next(to: state),
-                states: states.states(byAppending: state)
-            )
         case .kyc(let data):
             state = .pendingKycApproval(data)
             apply(
@@ -206,7 +200,7 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
                 action: .dismiss,
                 states: states.states(byAppending: state)
             )
-        case .buy, .checkout:
+        case .buy, .checkout, .selectFiat:
             fatalError("\(#function) should not get called with \(states.current). use `SimpleBuyCheckoutServiceAPI` instead")
         }
     }
@@ -220,16 +214,14 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
         /// Dismiss in case the current state is `inactive`.
         /// Dismiss in case the last state is `pendingKycApproval` (end user tapped the continue button)
         case (_, .inactive),
-             (.pendingKycApproval, _),
-             (_, .selectFiat),
-             (_, .changeFiat):
+             (.pendingKycApproval, _):
             action = .dismiss
         default:
             action = .previous(from: last)
         }
         apply(action: action, states: states)
     }
-    
+        
     private func startFlow() {
         let cache = self.cache
         let isFiatCurrencySupported = userInformationProviding
@@ -327,6 +319,19 @@ extension SimpleBuyStateService: SimpleBuyCheckoutServiceAPI {
     
     func changeCurrency() {
         let states = statesRelay.value.states(byAppending: .changeFiat)
+        apply(action: .next(to: states.current), states: states)
+    }
+}
+
+extension SimpleBuyStateService: SimpleBuyCurrencySelectionServiceAPI {
+    func currencySelected() {
+        let states = statesRelay.value.states(byAppending: .buy)
+        apply(action: .next(to: states.current), states: states)
+    }
+    
+    func reselectCurrency() {
+        previousRelay.accept(())
+        let states = statesRelay.value.states(byAppending: .selectFiat)
         apply(action: .next(to: states.current), states: states)
     }
 }

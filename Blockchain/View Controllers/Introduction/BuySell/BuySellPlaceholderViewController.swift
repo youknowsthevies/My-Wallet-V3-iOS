@@ -46,7 +46,7 @@ class BuySellPlaceholderViewController: UIViewController {
     }
     
     private lazy var sheetPresenter: BottomSheetPresenting = {
-        return BottomSheetPresenting()
+        return BottomSheetPresenting(ignoresBackroundTouches: false)
     }()
 }
 

@@ -35,13 +35,13 @@ final class SimpleBuyIneligibleCurrencyScreenPresenter {
     
     // MARK: - Private Properties
     
-    private unowned let coordinator: AppCoordinator
+    private let stateService: SimpleBuyStateServiceAPI
     private let disposeBag = DisposeBag()
     
     init(currency: FiatCurrency,
-         coordinator: AppCoordinator = AppCoordinator.shared,
+         stateService: SimpleBuyStateServiceAPI,
          analyticsRecording: AnalyticsEventRecording = AnalyticsEventRecorder.shared) {
-        self.coordinator = coordinator
+        self.stateService = stateService
         titleLabelContent = .init(
             text: "\(currency.name) \(LocalizationString.title)",
             font: .mainSemibold(20.0),
@@ -73,7 +73,11 @@ final class SimpleBuyIneligibleCurrencyScreenPresenter {
             .disposed(by: disposeBag)
     }
     
-    func resumeSimpleBuy() {
-        coordinator.handleBuyCrypto(simpleBuy: true)
+    func changeCurrency() {
+        stateService.reselectCurrency()
+    }
+    
+    func dismiss() {
+        stateService.previousRelay.accept(())
     }
 }

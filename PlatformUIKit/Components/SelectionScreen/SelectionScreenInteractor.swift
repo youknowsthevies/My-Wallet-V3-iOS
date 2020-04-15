@@ -25,6 +25,13 @@ public final class SelectionScreenInteractor {
             .asSingle()
             .map { $0.id }
     }
+    
+    public var dismiss: Observable<Void> {
+        dissmisRelay.asObservable()
+    }
+    
+    let dissmisRelay = PublishRelay<Void>()
+    
     private let selectionOnDismissalRelay = PublishRelay<SelectionItemViewModel>()
     
     // MARK: - Injected
