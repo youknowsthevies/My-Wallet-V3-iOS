@@ -23,7 +23,6 @@
 #import <CommonCrypto/CommonKeyDerivation.h>
 #import "HDNode.h"
 #import "Assets.h"
-#import "ExchangeTrade.h"
 #import "Blockchain-Swift.h"
 #import "BTCKey.h"
 #import "BTCData.h"

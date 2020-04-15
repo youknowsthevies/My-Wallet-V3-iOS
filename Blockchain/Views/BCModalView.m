@@ -78,14 +78,6 @@
 - (IBAction)closeModalClicked:(id)sender
 {
     if (self.closeType != ModalCloseTypeNone) {
-        // Not pretty but works
-        if ([self.myHolderView.subviews[0] respondsToSelector:@selector(prepareForModalDismissal)]) {
-            [self.myHolderView.subviews[0] prepareForModalDismissal];
-        }
-        if ([self.myHolderView.subviews[0] respondsToSelector:@selector(modalWasDismissed)]) {
-            [self.myHolderView.subviews[0] modalWasDismissed];
-        }
-
         if (self.closeType == ModalCloseTypeBack) {
             [[ModalPresenter sharedInstance] closeModalWithTransition:kCATransitionFromLeft];
         }
