@@ -117,8 +117,7 @@ final class SimpleBuyTransferDetailScreenPresenter {
         noticeViewModel = NoticeViewModel(
             imageViewContent: .init(
                 imageName: "disclaimer-icon",
-                accessibility: .id(AccessibilityId.disclaimerImage),
-                bundle: .platformUIKit
+                accessibility: .id(AccessibilityId.disclaimerImage)
             ),
             labelContent: .init(
                 text: LocalizedString.disclaimer,
