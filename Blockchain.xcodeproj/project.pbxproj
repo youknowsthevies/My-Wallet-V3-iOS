@@ -3349,6 +3349,7 @@
 		F90836B3912D90DFC076DBC4 /* ExchangeEmailVerificationViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ExchangeEmailVerificationViewController.storyboard; sourceTree = "<group>"; };
 		F916E93260C1B0792CC8D7AF /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = ms.lproj/KYCWelcomeController.strings; sourceTree = "<group>"; };
 		F917DDA32EC544EAC0766D93 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/KYCCountrySelectionController.strings; sourceTree = "<group>"; };
+		F92285B89FB1AB9E5D4DAA6A /* Modules */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Modules; path = Modules.xcodeproj; sourceTree = "<group>"; };
 		F93312D021B2EC1D2E89A356 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/KYCCountrySelectionController.strings; sourceTree = "<group>"; };
 		F96645BC631EE60FA089E74B /* LockboxViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LockboxViewController.storyboard; sourceTree = "<group>"; };
 		F9B255A28686FFFD44588D37 /* SRHash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SRHash.h; sourceTree = "<group>"; };
@@ -4931,6 +4932,14 @@
 				4C92C4FDB0AF7722D80D0FE4 /* MockBitpayService.swift */,
 			);
 			path = BitPay;
+			sourceTree = "<group>";
+		};
+		46CB5F8013A2524F820CFE93 /* Projects */ = {
+			isa = PBXGroup;
+			children = (
+				F92285B89FB1AB9E5D4DAA6A /* Modules */,
+			);
+			name = Projects;
 			sourceTree = "<group>";
 		};
 		46FE725BE3F2DBFD72245C7F /* SettingsServices */ = {
@@ -7240,6 +7249,13 @@
 			path = Kinds;
 			sourceTree = "<group>";
 		};
+		C608E30788280AF9AA6B2639 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		C89A8442ACD3D6B1801180DC /* Badge */ = {
 			isa = PBXGroup;
 			children = (
@@ -7454,6 +7470,7 @@
 				ADB3D1AFE68AB5F54A24112A /* SocketRocket */,
 				3EFA86E1258E7A898E085BF3 /* Frameworks */,
 				EBB9122F05C8FF07524207C9 /* Products */,
+				46CB5F8013A2524F820CFE93 /* Projects */,
 			);
 			sourceTree = "<group>";
 		};
@@ -8220,6 +8237,12 @@
 			);
 			mainGroup = D7456D0586544827CCA64B82;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = C608E30788280AF9AA6B2639 /* Products */;
+					ProjectRef = F92285B89FB1AB9E5D4DAA6A /* Modules */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				CE79537B40B4A1CA87B3DBF0 /* Blockchain */,
@@ -10412,6 +10435,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.rainydayapps.BlockchainTests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = Release;
 		};
@@ -10432,6 +10456,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.rainydayapps.BlockchainTests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Dev";
 		};
@@ -10516,6 +10541,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.rainydayapps.BlockchainTests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Production";
 		};
@@ -10574,6 +10600,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.rainydayapps.BlockchainTests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Debug Staging";
 		};
@@ -10922,6 +10949,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.rainydayapps.BlockchainTests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain";
 			};
 			name = "Release Staging";
 		};

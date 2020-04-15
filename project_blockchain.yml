@@ -14,6 +14,77 @@ options:
     iOS: '11.0'
   groupSortPosition: top
   platform: iOS
+projectReferences:
+  Modules:
+    path: Modules.xcodeproj
+schemeTemplates:
+  BlockchainScheme:
+    analyze:
+      config: ${debugConfig}
+    archive:
+      config: ${releaseConfig}
+    build:
+      targets:
+        Blockchain: build
+    profile:
+      config: ${releaseConfig}
+    run:
+      config: ${debugConfig}
+    test:
+      config: ${debugConfig}
+      targets:
+      - name: BlockchainTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/BitcoinKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/CommonCryptoKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/ERC20KitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/EthereumKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/HDWalletKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/NetworkKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/PlatformKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/PlatformUIKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/StellarKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/ToolKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+schemes:
+  Blockchain:
+    templateAttributes:
+      debugConfig: Debug Production
+      releaseConfig: Release
+    templates:
+    - BlockchainScheme
+  Blockchain (Dev):
+    templateAttributes:
+      debugConfig: Debug Dev
+      releaseConfig: Release
+    templates:
+    - BlockchainScheme
+  Blockchain (Staging):
+    templateAttributes:
+      debugConfig: Debug Staging
+      releaseConfig: Release Staging
+    templates:
+    - BlockchainScheme
 settingGroups:
   base_ios:
     base:
@@ -162,9 +233,6 @@ targets:
       path: Blockchain/Scripts/get_ssl_certificate.sh
     - name: Envman BUILT_PRODUCTS_DIR
       path: Blockchain/Scripts/export_built_products_dir.sh
-    scheme:
-      testTargets:
-      - BlockchainTests
     settings:
       base:
         GCC_PREFIX_HEADER: Blockchain/Blockchain-Prefix.pch
@@ -230,6 +298,8 @@ targets:
     - carthage: RxBlocking
     - carthage: RxTest
     platform: iOS
+    settings:
+      TEST_HOST: $(BUILT_PRODUCTS_DIR)/Blockchain.app/Blockchain
     sources:
     - BlockchainTests
     type: bundle.unit-test
