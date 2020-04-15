@@ -1075,7 +1075,6 @@
 		C75E62A88E92349BA0FA8CEA /* ExchangeContainerViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BD67E0FC3B91374BDAFE9C2B /* ExchangeContainerViewController.storyboard */; };
 		C7972A828FAD27B55FA3453F /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 612B92174FB0F70BA87DC874 /* FirebaseCore.framework */; };
 		C8011B083A662A9BA809FFF1 /* EthereumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B2554FDAF96D51070DF0180 /* EthereumKit.framework */; };
-		C8235D8D0A4FA825F5C57E52 /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = C8327C398B44D8B5EC6C3525 /* OFL.txt */; };
 		C83A0A3AD159EC96DFF898A9 /* AssetLineChartPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D29DA5B6F0296326501F68 /* AssetLineChartPresenter.swift */; };
 		C84A5AC15D5BD290ABC1363F /* UIViewController+AutoDismiss.m in Sources */ = {isa = PBXBuildFile; fileRef = 59B3D86D6A9C1AB6E8CF3FC8 /* UIViewController+AutoDismiss.m */; };
 		C854A1540778204F1F5996ED /* CustodyWithdrawalSubmissionInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3DCFF2DA87E1B56452BD08 /* CustodyWithdrawalSubmissionInteractor.swift */; };
@@ -1159,7 +1158,6 @@
 		D588C61220C738D6CF7BC49F /* BackupRouterAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8B0591AABC1D67B2C2D7A9 /* BackupRouterAPI.swift */; };
 		D597DE670DC8DE9C9BE436D8 /* CurrentBalanceTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = E0CBEDDCBBD560ADD111DAA9 /* CurrentBalanceTableViewCell.xib */; };
 		D59A7717D44D5243165EE76D /* MockRemoteNotificationNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7279BBB2C5873FC85C58B266 /* MockRemoteNotificationNetworkService.swift */; };
-		D5E2E28321C1E0B844546834 /* button_dark_blue@2x.png.zip in Resources */ = {isa = PBXBuildFile; fileRef = 2DF4317D154DEE4C589E322D /* button_dark_blue@2x.png.zip */; };
 		D5F066714F22C611631DDB73 /* CustodialActionScreenPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25724E1CE62867FB1FA9C5B3 /* CustodialActionScreenPresenter.swift */; };
 		D61A7CD631E674F6DBA5D3F4 /* ExchangeTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B5803E9BD93258B8C292753E /* ExchangeTableViewCell.m */; };
 		D61D3FD5CC2D49D30FEB72DE /* ActionableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5661C59FB38EDA0EC3CC8F4D /* ActionableLabel.swift */; };
@@ -1220,7 +1218,6 @@
 		E1A9E4D5986F0D0D328F0DD9 /* SendInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3FF7E9B802B634C56B9837 /* SendInteractor.swift */; };
 		E1BC3AD897FA163B5CB517D9 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6629E3A0CDAC18F479794196 /* TabBarController.swift */; };
 		E20AAEA577CF65F048447D6F /* RemoteNotificationAuthorizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA1696AEA31B1BEEDB6190E /* RemoteNotificationAuthorizer.swift */; };
-		E22A0DCF719B35B1A51CC63C /* power.psb in Resources */ = {isa = PBXBuildFile; fileRef = 0AB40F884EC6BBCAE1FB3104 /* power.psb */; };
 		E2A1C9ACABF3ED863B1CF3AA /* ExchangeInputTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C049BA70B1E172C0A2AA9FE /* ExchangeInputTests.swift */; };
 		E2A3D0B719DFD20F974BA84A /* SecondPasswordPromptable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBCBC0B7BD17CA14F0C441B9 /* SecondPasswordPromptable.swift */; };
 		E2D9DC1D9A3072E4D5D26209 /* KYCVerifyPhoneNumberInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2AD08B63ABD17F7450D536 /* KYCVerifyPhoneNumberInteractor.swift */; };
@@ -1302,7 +1299,6 @@
 		F1D8E928C241E53843A5FEF3 /* AirdropRegistrationMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022AE5166D1135F936FFADB7 /* AirdropRegistrationMock.swift */; };
 		F1FE91617A4201831468A8DD /* BridgeAnalyticsRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 537144530CE64E7A049D7BBA /* BridgeAnalyticsRecorder.swift */; };
 		F22883318B8769F44E7A2D55 /* WalletActionScreenPresenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6803376D4AD290D9F0EEBBDF /* WalletActionScreenPresenting.swift */; };
-		F26D8878943CE0952050F72F /* DESCRIPTION.en_us.html in Resources */ = {isa = PBXBuildFile; fileRef = 1A2F2B20844F1082103C7FC2 /* DESCRIPTION.en_us.html */; };
 		F2A5C09348E1A82BAD0AD879 /* AssetLineChartTableViewCellPresenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF446D4084BC7444D16738D9 /* AssetLineChartTableViewCellPresenting.swift */; };
 		F2AA4C054267A8891DA07106 /* BiometryLabelContentInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D399BA61C45C7F1F58A99DA /* BiometryLabelContentInteractor.swift */; };
 		F2E5962CAA7D2AA8D84362F7 /* BuyCryptoScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04A03C6BA06B0C14D8F0AE5 /* BuyCryptoScreenViewController.swift */; };
@@ -1490,7 +1486,6 @@
 		09E294641E801BDC094E490B /* SendBitcoinViewController+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SendBitcoinViewController+Analytics.swift"; sourceTree = "<group>"; };
 		0A1F1EA6C0EC0C2F064EA790 /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/ReceiveCoins.strings; sourceTree = "<group>"; };
 		0A4E960C8F94149A4A1AC1C6 /* UpdateMobileRouterStateServiceAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateMobileRouterStateServiceAPI.swift; sourceTree = "<group>"; };
-		0AB40F884EC6BBCAE1FB3104 /* power.psb */ = {isa = PBXFileReference; path = power.psb; sourceTree = "<group>"; };
 		0AD12A2EE028A900B874F5F8 /* StellarTransactionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarTransactionService.swift; sourceTree = "<group>"; };
 		0AF116DF5AD55EA2A4F3EC7B /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/KYCConfirmPhoneNumberController.strings; sourceTree = "<group>"; };
 		0AFC6EF85C8CB39668CAC9EF /* LinkedCardTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedCardTableViewCell.swift; sourceTree = "<group>"; };
@@ -1612,7 +1607,6 @@
 		19E1768957EE47A207DA5649 /* SendXLMModelInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendXLMModelInterface.swift; sourceTree = "<group>"; };
 		1A229C7733E047DBE6B5E423 /* DigitPadViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DigitPadViewModelTests.swift; sourceTree = "<group>"; };
 		1A24055EFFB657F054B76CFB /* HistoricalBalanceInteracting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoricalBalanceInteracting.swift; sourceTree = "<group>"; };
-		1A2F2B20844F1082103C7FC2 /* DESCRIPTION.en_us.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = DESCRIPTION.en_us.html; sourceTree = "<group>"; };
 		1A3DCFF2DA87E1B56452BD08 /* CustodyWithdrawalSubmissionInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustodyWithdrawalSubmissionInteractor.swift; sourceTree = "<group>"; };
 		1A749BD327DAED8BB49ECBE9 /* Montserrat-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; path = "Montserrat-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
 		1A83D9474B8525A28AF02698 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Upgrade.strings; sourceTree = "<group>"; };
@@ -1753,7 +1747,6 @@
 		2DA3E3003A469C13F32EFB2A /* sv-SE */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sv-SE"; path = "sv-SE.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		2DA78449935EF2CD31DAE18C /* BTCErrors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BTCErrors.h; sourceTree = "<group>"; };
 		2DA8D142193DBB99EF7CA62C /* SRProxyConnect.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SRProxyConnect.m; sourceTree = "<group>"; };
-		2DF4317D154DEE4C589E322D /* button_dark_blue@2x.png.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "button_dark_blue@2x.png.zip"; sourceTree = "<group>"; };
 		2E02104160CBA3C7327D27AC /* TabBarPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarPresenter.swift; sourceTree = "<group>"; };
 		2E34C89F9CDF5F97B5CBE2C4 /* NSString+URLEncode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+URLEncode.m"; sourceTree = "<group>"; };
 		2E949F1E3785478C31A9783F /* AssetLineChartTableViewCellInteracting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetLineChartTableViewCellInteracting.swift; sourceTree = "<group>"; };
@@ -2995,7 +2988,6 @@
 		C7E23D4B12B0353E247796FC /* beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beep.wav; sourceTree = "<group>"; };
 		C7EC94BCC53D07FD39AF336E /* TradeExecutionAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeExecutionAPI.swift; sourceTree = "<group>"; };
 		C82412B7C1D13D27676D8AF4 /* MultiActionViewInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiActionViewInteractor.swift; sourceTree = "<group>"; };
-		C8327C398B44D8B5EC6C3525 /* OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
 		C842E0AA1CEE7A889F8DDB75 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/KYCAddressController.strings; sourceTree = "<group>"; };
 		C892ED3896044182427DFD92 /* TransactionDetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TransactionDetailViewController.m; sourceTree = "<group>"; };
 		C89D27DE8F77763ADEAF6B06 /* BCAddressSelectionView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BCAddressSelectionView.m; sourceTree = "<group>"; };
@@ -4594,7 +4586,6 @@
 				839BC5D7BFEBFDBF6D49E917 /* Extensions */,
 				13D14C0780AD7ACC42891FCC /* Feature Configuration */,
 				F84DA7414C045AC1D3B34D6C /* Homebrew */,
-				462BAADA6581AA0EB5308C9D /* images */,
 				3717D3D6201722140C042E1C /* JavaScript */,
 				50529DD83D35897C4A615F16 /* KYC */,
 				C9BA5CD2D04197A9ADE13924 /* Launch */,
@@ -4919,15 +4910,6 @@
 				2B1FA9CB0E16B53F8EC317B3 /* PermissionsRequestor.swift */,
 			);
 			path = Permissions;
-			sourceTree = "<group>";
-		};
-		462BAADA6581AA0EB5308C9D /* images */ = {
-			isa = PBXGroup;
-			children = (
-				2DF4317D154DEE4C589E322D /* button_dark_blue@2x.png.zip */,
-				0AB40F884EC6BBCAE1FB3104 /* power.psb */,
-			);
-			path = images;
 			sourceTree = "<group>";
 		};
 		469CB9A82724D514F90E0A10 /* BitPay */ = {
@@ -5806,7 +5788,6 @@
 		71475FDD504923AD5C097C03 /* Montserrat */ = {
 			isa = PBXGroup;
 			children = (
-				1A2F2B20844F1082103C7FC2 /* DESCRIPTION.en_us.html */,
 				FCAB22AB30EE28511ED87B27 /* Montserrat-Black.ttf */,
 				4CD23EC53136519112FF8180 /* Montserrat-BlackItalic.ttf */,
 				34274465F99D0FD658E2F556 /* Montserrat-Bold.ttf */,
@@ -5825,7 +5806,6 @@
 				D96E2103056B294AC0554F8A /* Montserrat-SemiBoldItalic.ttf */,
 				DE32395883E1D879E5A6AC11 /* Montserrat-Thin.ttf */,
 				DDF800CD19B21D1D37C6C420 /* Montserrat-ThinItalic.ttf */,
-				C8327C398B44D8B5EC6C3525 /* OFL.txt */,
 			);
 			path = Montserrat;
 			sourceTree = "<group>";
@@ -8316,7 +8296,6 @@
 				27FC21F89C9B78C92FE4E0F1 /* CustodyInformationViewController.xib in Resources */,
 				CF971B2A0A0C838999B31CD5 /* CustodyWithdrawalSummaryViewController.xib in Resources */,
 				343470ABC5299F3282433ACE /* CustodyWithdrawalViewController.xib in Resources */,
-				F26D8878943CE0952050F72F /* DESCRIPTION.en_us.html in Resources */,
 				B1806F2F77E003A8F0467C6E /* DashboardContainerViewController.storyboard in Resources */,
 				DF2F69E98B1F926BADA0E2AB /* DashboardDetailsViewController.xib in Resources */,
 				D6F2F6C8B0F63CE82FD40654 /* DashboardViewController.xib in Resources */,
@@ -8396,7 +8375,6 @@
 				A84D983A3DB3727BFAE59A4E /* MultiActionView.xib in Resources */,
 				10E92A9508C14624B4FC3704 /* NewOrderTableViewCell.xib in Resources */,
 				D20C80A625F7B66752E60973 /* NumberKeypadView.xib in Resources */,
-				C8235D8D0A4FA825F5C57E52 /* OFL.txt in Resources */,
 				170E7B2D5E97E7EA8B173640 /* PairingIntroViewController.xib in Resources */,
 				4D84DBF033380D195D629A8D /* PasswordRequiredViewController.xib in Resources */,
 				3BE74B85CECACE725EFD49DB /* PasswordViewController.xib in Resources */,
@@ -8458,9 +8436,7 @@
 				77594A3884C950186BD1F239 /* WelcomeViewController.xib in Resources */,
 				7CBBFEB3AB24B526AFB73DE1 /* alert-received.wav in Resources */,
 				03927D8AA9BBC0D43ECE7435 /* beep.wav in Resources */,
-				D5E2E28321C1E0B844546834 /* button_dark_blue@2x.png.zip in Resources */,
 				942ADFEAB6ADC90816D2633F /* my-wallet.js in Resources */,
-				E22A0DCF719B35B1A51CC63C /* power.psb in Resources */,
 				64C3080AAD095A71C82985B4 /* wallet-ios.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
