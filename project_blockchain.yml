@@ -69,8 +69,8 @@ targets:
     - carthage: web3swift
     - carthage: WebRTC
     - carthage: Zxcvbn
-    - framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
-      embed: false
+    - embed: false
+      framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
     - framework: PlatformUIKit.framework
       implicit: true
     - framework: PlatformKit.framework
@@ -149,10 +149,10 @@ targets:
       linkType: static
     platform: iOS
     postBuildScripts:
-    - name: Run Crashlytics
+    - inputFiles:
+      - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}
+      name: Run Crashlytics
       script: ${PROJECT_DIR}/scripts/crashlytics/run
-      inputFiles:
-        - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}
     postCompileScripts:
     - name: Swiftlint
       path: Blockchain/Scripts/swiftlint.sh
@@ -171,7 +171,6 @@ targets:
         HEADER_SEARCH_PATHS:
         - $(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include
         - $(PROJECT_DIR)/Submodules/SocketRocket
-        INFOPLIST_FILE: Blockchain/Blockchain-Info.plist
         LIBRARY_SEARCH_PATHS:
         - $(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/lib
         OTHER_LDFLAGS:

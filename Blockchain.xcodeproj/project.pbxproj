@@ -1360,7 +1360,6 @@
 		FD00EADD8A5541CC19CFF109 /* HistoricalBalanceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4995E7B8839C18DFA6236AA5 /* HistoricalBalanceTableViewCell.swift */; };
 		FD9020EA4CDA3DFBE9A6C15A /* BridgeDeepLinkQRCodeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F864A2C9255FCE4D64CCFE0B /* BridgeDeepLinkQRCodeRouter.swift */; };
 		FDC4A836627583378F12F0BB /* PostAuthenticationRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = B956E2C545E988426ED4EE45 /* PostAuthenticationRoute.swift */; };
-		FDD55F72208F042ED8044A1C /* Blockchain-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6DBC49D463ECD0B439BFB525 /* Blockchain-Info.plist */; };
 		FDF898CA436B82FA26ED45C6 /* MockFeatureConfiguring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150D1BDFEFCE00CAD4DB091D /* MockFeatureConfiguring.swift */; };
 		FE4BB360B8219224939890DF /* SimpleBuyKYCPendingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8BD6AB3330E683F492C3B836 /* SimpleBuyKYCPendingViewController.xib */; };
 		FE5A2871398D9ADAE4AEA435 /* ExternalNotificationServiceProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEAD45929694D283960D519C /* ExternalNotificationServiceProviderTests.swift */; };
@@ -2278,7 +2277,6 @@
 		6D56CB40EECD2542DEC456D0 /* SwapIntroductionCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapIntroductionCollectionViewCell.swift; sourceTree = "<group>"; };
 		6D77478DD0B7331D71F2BDE0 /* SimpleListServiceAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleListServiceAPI.swift; sourceTree = "<group>"; };
 		6D7FBDDAE22180908B7E0250 /* countries.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = countries.json; sourceTree = "<group>"; };
-		6DBC49D463ECD0B439BFB525 /* Blockchain-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Blockchain-Info.plist"; sourceTree = "<group>"; };
 		6DD41B5ABAD1054E335A67AF /* NSAttributedString+Conveniences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+Conveniences.swift"; sourceTree = "<group>"; };
 		6DDCE35D8260BDCC73749557 /* RegisterWalletViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RegisterWalletViewController.xib; sourceTree = "<group>"; };
 		6E08A5D938A6CFC47995F49F /* zh-CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-CN"; path = "zh-CN.lproj/ReceiveCoins.strings"; sourceTree = "<group>"; };
@@ -3369,6 +3367,7 @@
 		FB00ACD1551849D2A921CD61 /* CustodyWithdrawalScreenPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustodyWithdrawalScreenPresenter.swift; sourceTree = "<group>"; };
 		FB24008C07EF452366081EEC /* DashboardDetailsScreenInteracting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardDetailsScreenInteracting.swift; sourceTree = "<group>"; };
 		FB497349EF846E654332B91A /* PrivateKeyReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivateKeyReader.swift; sourceTree = "<group>"; };
+		FB50E6C1FE5C3F0989F29F9C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		FB57B3704E328463A46949B9 /* KYCState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KYCState.swift; sourceTree = "<group>"; };
 		FB86E67F62F8F61451B3E37E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/KYCApplicationCompleteController.strings; sourceTree = "<group>"; };
 		FB927D5AA5130356044EE9A0 /* SRURLUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SRURLUtilities.h; sourceTree = "<group>"; };
@@ -4628,13 +4627,13 @@
 				30AAEB3016758B953B08B49A /* Arrays.swift */,
 				DF56D029111AD5FE24A511A1 /* AssetTypeLegacyHelper.swift */,
 				DB8937205604551B4427AD76 /* Blockchain-Bridging-Header.h */,
-				6DBC49D463ECD0B439BFB525 /* Blockchain-Info.plist */,
 				EE0FF7D1ED2B1DD9742E420A /* Blockchain-Prefix.pch */,
 				3456142127FD9D4504F409E6 /* Blockchain.entitlements */,
 				A301191159C2E94BDF0D50CC /* Colors.swift */,
 				ACDC826D94080AEEF8AC46F4 /* Constants.swift */,
 				5499B836B721E1C2A6E5F5BE /* CryptoCurrency+Extensions.swift */,
 				8FE46421D8DC1D70AFEEFCD7 /* Environment.swift */,
+				FB50E6C1FE5C3F0989F29F9C /* Info.plist */,
 				A8544CE7C8C7ACCBC327186D /* LocalizationConstants.h */,
 				7EDDD745E1E4A7D84CC809C5 /* ModalPresenter.swift */,
 			);
@@ -8267,7 +8266,6 @@
 				72525EFF0C1D3990820A63AD /* Backup.storyboard in Resources */,
 				47FE5437A206537C16469A73 /* BackupFundsViewController.xib in Resources */,
 				E9A1342ADB563DE53A27337E /* BadgeTableViewCell.xib in Resources */,
-				FDD55F72208F042ED8044A1C /* Blockchain-Info.plist in Resources */,
 				13A7B892B44CFA6621BF1832 /* BuyCryptoScreenViewController.xib in Resources */,
 				EEE5AB24E7F77F1F9FE24A9E /* BuyIntroScreenViewController.xib in Resources */,
 				ABF113E3C208C29AD9801CFB /* BuySellPlaceholderViewController.storyboard in Resources */,
@@ -10540,7 +10538,7 @@
 					"$(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include",
 					"$(PROJECT_DIR)/Submodules/SocketRocket",
 				);
-				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
+				INFOPLIST_FILE = Blockchain/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -10654,7 +10652,7 @@
 					"$(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include",
 					"$(PROJECT_DIR)/Submodules/SocketRocket",
 				);
-				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
+				INFOPLIST_FILE = Blockchain/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -10692,7 +10690,7 @@
 					"$(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include",
 					"$(PROJECT_DIR)/Submodules/SocketRocket",
 				);
-				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
+				INFOPLIST_FILE = Blockchain/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -10786,7 +10784,7 @@
 					"$(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include",
 					"$(PROJECT_DIR)/Submodules/SocketRocket",
 				);
-				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
+				INFOPLIST_FILE = Blockchain/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -10824,7 +10822,7 @@
 					"$(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include",
 					"$(PROJECT_DIR)/Submodules/SocketRocket",
 				);
-				INFOPLIST_FILE = "Blockchain/Blockchain-Info.plist";
+				INFOPLIST_FILE = Blockchain/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
