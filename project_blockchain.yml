@@ -147,6 +147,13 @@ targets:
       findFrameworks: false
       linkType: static
     platform: iOS
+    postCompileScripts:
+    - name: Swiftlint
+      path: Blockchain/Scripts/swiftlint.sh
+    - name: Setup Firebase Environment
+      path: Blockchain/Scripts/firebase_copy_plist.sh
+    - name: Get SSL Certificate
+      path: Blockchain/Scripts/get_ssl_certificate.sh
     scheme:
       testTargets:
       - BlockchainTests
@@ -205,9 +212,6 @@ targets:
       - NSData+BTCData.[hm]
       path: Submodules/CoreBitcoin/CoreBitcoin
     type: application
-    postCompileScripts:
-      - path: Blockchain/Scripts/firebase_copy_plist.sh
-        name: Setup Firebase Environment
   BlockchainTests:
     dependencies:
     - carthage: RxSwift
