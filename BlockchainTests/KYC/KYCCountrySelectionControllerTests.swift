@@ -57,7 +57,7 @@ class KYCCountrySelectionControllerTests: XCTestCase {
     }
 
     func testDecodeJSONFileFromDisk() {
-        guard let jsonFile = Bundle.main.url(forResource: "countries", withExtension: "json"),
+        guard let jsonFile = Bundle(for: type(of: self)).url(forResource: "countries", withExtension: "json"),
             let jsonData = try? Data(contentsOf: jsonFile) else {
                 XCTFail("Failed to load the JSON file containing the sample countries")
                 return
