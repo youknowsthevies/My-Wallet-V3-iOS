@@ -1287,7 +1287,6 @@
 		EFAE1C14A7EFF5E09F8B64A2 /* KYCImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 93DD52C2B4C2B5A1AF14C428 /* KYCImages.xcassets */; };
 		EFBBC7D5C94A32BA27F8FE40 /* KYCPagerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D736490CCC704E7DC3CB13D0 /* KYCPagerAPI.swift */; };
 		EFD6FC27FDD7A02B88E5511F /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 559E3C1662AC664666CDBF58 /* FirebaseInstanceID.framework */; };
-		EFEF9680F1A1DCA588D06DAB /* libcrypto.a in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6491F4081966AC68DEA29AF /* libcrypto.a */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F00BFDD3DA35D7D3D3800718 /* LocationSuggestionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13A8D681FFC5919A07713A8D /* LocationSuggestionService.swift */; };
 		F011569905DAF0123FA68ACC /* ExchangeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C347093AC2561EDC97FAF82 /* ExchangeHeaderView.swift */; };
 		F04BAE8DD9BEA8FC3505EA2C /* UIView+SafeAreaFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0B3A38A9D9DBD31744DE29 /* UIView+SafeAreaFrame.swift */; };
@@ -1391,7 +1390,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				EFEF9680F1A1DCA588D06DAB /* libcrypto.a in Embed Frameworks */,
 				987B348092F310449D9A6D63 /* PlatformUIKit.framework in Embed Frameworks */,
 				A3453043B66B7569C6E9C2C0 /* PlatformKit.framework in Embed Frameworks */,
 				285A5C05200F1BB4A03C9466 /* ToolKit.framework in Embed Frameworks */,
@@ -8153,6 +8151,7 @@
 				30C2DDC519DB0F7491E6DE20 /* Carthage */,
 				970E117BE017CEE973F49D00 /* Frameworks */,
 				7B09021120E56DE2092C8305 /* Embed Frameworks */,
+				A9A9684AB33322918E4EBFC7 /* Run Crashlytics */,
 			);
 			buildRules = (
 			);
@@ -8518,6 +8517,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "#!/bin/sh\n#\n#  Blockchain/Scritps/swiftlint.sh\n#\n#  What It Does\n#  ------------\n#  Runs swiftlint if it is available.\n\nif which swiftlint > /dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+		A9A9684AB33322918E4EBFC7 /* Run Crashlytics */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+			);
+			name = "Run Crashlytics";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "${PROJECT_DIR}/scripts/crashlytics/run";
 		};
 		BE65B1D860E365F10422CDDD /* Envman BUILT_PRODUCTS_DIR */ = {
 			isa = PBXShellScriptBuildPhase;

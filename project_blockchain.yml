@@ -70,6 +70,7 @@ targets:
     - carthage: WebRTC
     - carthage: Zxcvbn
     - framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
+      embed: false
     - framework: PlatformUIKit.framework
       implicit: true
     - framework: PlatformKit.framework
@@ -147,6 +148,11 @@ targets:
       findFrameworks: false
       linkType: static
     platform: iOS
+    postBuildScripts:
+    - name: Run Crashlytics
+      script: ${PROJECT_DIR}/scripts/crashlytics/run
+      inputFiles:
+        - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}
     postCompileScripts:
     - name: Swiftlint
       path: Blockchain/Scripts/swiftlint.sh
