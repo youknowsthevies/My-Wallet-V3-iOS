@@ -191,6 +191,11 @@ targets:
           - release_signing
           - base_ios
     sources:
+    - buildPhase:
+        copyFiles:
+          destination: resources
+      optional: true
+      path: Cert/blockchain.der
     - excludes:
       - Firebase
       - Scripts

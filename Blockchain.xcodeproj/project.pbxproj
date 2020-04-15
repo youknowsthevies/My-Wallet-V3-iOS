@@ -657,6 +657,7 @@
 		7967E6835A2D70FE580CC739 /* ExchangeModalView.m in Sources */ = {isa = PBXBuildFile; fileRef = C982CD4555DC399DD34EA37A /* ExchangeModalView.m */; };
 		796B46AB079320D9FF0F51C6 /* SendCoins.xib in Resources */ = {isa = PBXBuildFile; fileRef = F030B7C59AC451359734591A /* SendCoins.xib */; };
 		796EEFE4215619AE9DF7F2AD /* ReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12B74066898F7235CBFCE7FE /* ReusableView.swift */; };
+		7979A29B7570B332D90C140D /* blockchain.der in CopyFiles */ = {isa = PBXBuildFile; fileRef = 418F45A5561593C0A275EE19 /* blockchain.der */; };
 		79A106B2AFAFA52D6E50AE69 /* CardDetailsScreenPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B8E1028A1932EA2B0A168F /* CardDetailsScreenPresenter.swift */; };
 		79E42779DED2056F542CBF83 /* KYCTierPostBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1264EE4F2E3CC7616E18F716 /* KYCTierPostBody.swift */; };
 		79FAD2F37D4FFA18F5737CCB /* WebLoginScreenPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9BDF63BA2B115EE7A00E0BD /* WebLoginScreenPresenter.swift */; };
@@ -1374,6 +1375,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		4DBB0617855A940F441BB161 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				7979A29B7570B332D90C140D /* blockchain.der in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7B09021120E56DE2092C8305 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1899,6 +1910,7 @@
 		40FCB30A5F949FD5ECBF1EB7 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/KYCWelcomeController.strings; sourceTree = "<group>"; };
 		41091A4EF7CD27356248E5B4 /* KYCDeepLinkRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KYCDeepLinkRouter.swift; sourceTree = "<group>"; };
 		4174C185127E61121EDDCC9A /* BlockchainAPI+URLSuffixTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlockchainAPI+URLSuffixTests.swift"; sourceTree = "<group>"; };
+		418F45A5561593C0A275EE19 /* blockchain.der */ = {isa = PBXFileReference; path = blockchain.der; sourceTree = "<group>"; };
 		41A81DC1D214CD9BA273BF41 /* NewOrderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewOrderTableViewCell.swift; sourceTree = "<group>"; };
 		41BA159B6E79A388FF253BDD /* ExchangeLinkingAnnouncement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeLinkingAnnouncement.swift; sourceTree = "<group>"; };
 		41C9A68BE6EE2FF04361A46B /* JSContextWithDOM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSContextWithDOM.swift; sourceTree = "<group>"; };
@@ -6304,6 +6316,14 @@
 			path = UserPropertyRecorder;
 			sourceTree = "<group>";
 		};
+		8D5A5A95A3629F0084EBF47F /* Cert */ = {
+			isa = PBXGroup;
+			children = (
+				418F45A5561593C0A275EE19 /* blockchain.der */,
+			);
+			path = Cert;
+			sourceTree = "<group>";
+		};
 		8D610496000F61D5194BF83E /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -7432,6 +7452,7 @@
 				3AFA5C78F349963353AA6379 /* Blockchain */,
 				777ADE3A5E2FAC102C4271DD /* BlockchainConfig */,
 				8F7DF0A0934352A95AE6E6D5 /* BlockchainTests */,
+				8D5A5A95A3629F0084EBF47F /* Cert */,
 				82EB3FF283FE0989435FF1A8 /* CoreBitcoin */,
 				ADB3D1AFE68AB5F54A24112A /* SocketRocket */,
 				3EFA86E1258E7A898E085BF3 /* Frameworks */,
@@ -8127,6 +8148,7 @@
 				486C6028E9C1B84D3FE5E62D /* Setup Firebase Environment */,
 				CD8C0245D1C76DA633AF558F /* Get SSL Certificate */,
 				BBDF1886A299BA1AB3A6731C /* Resources */,
+				4DBB0617855A940F441BB161 /* CopyFiles */,
 				30C2DDC519DB0F7491E6DE20 /* Carthage */,
 				970E117BE017CEE973F49D00 /* Frameworks */,
 				7B09021120E56DE2092C8305 /* Embed Frameworks */,
