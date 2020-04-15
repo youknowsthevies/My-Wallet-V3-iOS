@@ -98,7 +98,7 @@ public struct ButtonViewModel {
     /// Retruns the opacity of the view
     public var alpha: Driver<CGFloat> {
         return Driver
-            .zip(
+            .combineLatest(
                 isEnabled.asDriver(),
                 isHidden.asDriver()
             )
