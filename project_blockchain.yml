@@ -154,6 +154,8 @@ targets:
       path: Blockchain/Scripts/firebase_copy_plist.sh
     - name: Get SSL Certificate
       path: Blockchain/Scripts/get_ssl_certificate.sh
+    - name: Envman BUILT_PRODUCTS_DIR
+      path: Blockchain/Scripts/export_built_products_dir.sh
     scheme:
       testTargets:
       - BlockchainTests

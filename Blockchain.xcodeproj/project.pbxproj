@@ -8147,6 +8147,7 @@
 				92CFC90F4F9C2271465715AE /* Swiftlint */,
 				486C6028E9C1B84D3FE5E62D /* Setup Firebase Environment */,
 				CD8C0245D1C76DA633AF558F /* Get SSL Certificate */,
+				BE65B1D860E365F10422CDDD /* Envman BUILT_PRODUCTS_DIR */,
 				BBDF1886A299BA1AB3A6731C /* Resources */,
 				4DBB0617855A940F441BB161 /* CopyFiles */,
 				30C2DDC519DB0F7491E6DE20 /* Carthage */,
@@ -8517,6 +8518,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "#!/bin/sh\n#\n#  Blockchain/Scritps/swiftlint.sh\n#\n#  What It Does\n#  ------------\n#  Runs swiftlint if it is available.\n\nif which swiftlint > /dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+		BE65B1D860E365F10422CDDD /* Envman BUILT_PRODUCTS_DIR */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Envman BUILT_PRODUCTS_DIR";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/sh\n#\n#  Blockchain/Scritps/export_built_products_dir.sh\n#\n#  What It Does\n#  ------------\n#  Exports $BUILT_PRODUCTS_DIR to envman as $BC_BUILT_PRODUCTS_DIR\n#  BC_BUILT_PRODUCTS_DIR is used in BitRise workflows.\n\nif command -v envman 2> /dev/null; then\n    BC_BUILT_PRODUCTS_DIR=\"${BUILT_PRODUCTS_DIR}\"\n    echo \"(i) BC_BUILT_PRODUCTS_DIR: $BC_BUILT_PRODUCTS_DIR\"\n    envman add --key BC_BUILT_PRODUCTS_DIR --value \"${BC_BUILT_PRODUCTS_DIR}\"\nelse\n    echo \"(i) envman missing\"\nfi\n";
 		};
 		CD8C0245D1C76DA633AF558F /* Get SSL Certificate */ = {
 			isa = PBXShellScriptBuildPhase;
