@@ -48,7 +48,9 @@ final class SimpleBuyIneligibleCurrencyViewController: UIViewController {
         presenter.dismissalRelay
             .observeOn(MainScheduler.instance)
             .bind(weak: self) { (self) in
-                self.dismiss(animated: true, completion: nil)
+                self.dismiss(animated: true) {
+                    self.presenter.dismiss()
+                }
             }
             .disposed(by: disposeBag)
         
@@ -56,7 +58,7 @@ final class SimpleBuyIneligibleCurrencyViewController: UIViewController {
             .observeOn(MainScheduler.instance)
             .bind(weak: self) { (self) in
                 self.dismiss(animated: true) {
-                    self.presenter.resumeSimpleBuy()
+                    self.presenter.changeCurrency()
                 }
             }
             .disposed(by: disposeBag)
