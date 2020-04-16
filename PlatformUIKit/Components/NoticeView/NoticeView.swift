@@ -62,8 +62,8 @@ public final class NoticeView: UIView {
         imageView.layoutToSuperview(.leading)
         imageView.layout(size: .init(edge: 20))
         
-        topAlignmentConstraint = imageView.layout(to: .top, of: label)
-        centerAlignmentConstraint = imageView.layout(to: .centerY, of: label)
+        topAlignmentConstraint = imageView.layout(to: .top, of: label, priority: .defaultLow)
+        centerAlignmentConstraint = imageView.layout(to: .centerY, of: label, priority: .penultimateHigh)
 
         label.layout(edge: .leading, to: .trailing, of: imageView, offset: 18)
         label.layoutToSuperview(.top, .bottom, .trailing)

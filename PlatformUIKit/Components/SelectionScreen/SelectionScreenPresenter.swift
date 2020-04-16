@@ -154,8 +154,12 @@ public final class SelectionScreenPresenter {
     }
 
     func navigationBarLeadingButtonTapped() {
-        guard preselectionSupportedRelay.value else { return }
-        interactor.recordSelection()
+        /// if `True` -> interator fires!
+        if preselectionSupportedRelay.value {
+            interactor.recordSelection()
+        } else {
+            interactor.dissmisRelay.accept(())
+        }
     }
     
     func recordSelection() {

@@ -148,7 +148,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
         switch state {
         // KYC is an independent flow which dismisses itself.
         // Therefore, do nothing.
-        case .kyc:
+        case .kyc, .selectFiat, .changeFiat, .unsupportedFiat:
             break
         default:
             dismiss()
@@ -169,7 +169,14 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
         )
         let viewController = SelectionScreenViewController(presenter: presenter)
         analyticsRecording.record(event: AnalyticsEvent.sbCurrencySelectScreen)
+        
         present(viewController: viewController)
+        
+        interactor.dismiss
+            .bind { [weak self] in
+                self?.stateService.previousRelay.accept(())
+            }
+            .disposed(by: disposeBag)        
         
         interactor.selectedIdOnDismissal
             .map { FiatCurrency(code: $0)! }
@@ -213,7 +220,19 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
         if #available(iOS 13.0, *) {
             viewController.isModalInPresentation = true
         }
-        present(viewController: viewController, using: .modalOverTopMost)
+        
+        if navigationControllerAPI == nil {
+            present(viewController: viewController)
+        } else {
+            let navigationController = UINavigationController(rootViewController: viewController)
+            navigationControllerAPI?.present(navigationController, animated: true, completion: nil)
+        }
+        
+        interactor.dismiss
+            .bind { [weak self] in
+                self?.stateService.previousRelay.accept(())
+            }
+            .disposed(by: disposeBag)
         
         interactor.selectedIdOnDismissal
             .map { FiatCurrency(code: $0)! }
@@ -242,10 +261,11 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
                     let currency = value.0
                     
                     self.dismiss {
+                        self.stateService.previousRelay.accept(())
                         if !isFiatCurrencySupported {
                             self.stateService.ineligible(with: currency)
                         } else {
-                            self.stateService.nextRelay.accept(())
+                            self.stateService.currencySelected()
                         }
                     }
                 })
@@ -253,7 +273,10 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     }
     
     private func showInelligibleCurrency(with currency: FiatCurrency) {
-        let presenter = SimpleBuyIneligibleCurrencyScreenPresenter(currency: currency)
+        let presenter = SimpleBuyIneligibleCurrencyScreenPresenter(
+            currency: currency,
+            stateService: stateService
+        )
         let controller = SimpleBuyIneligibleCurrencyViewController(presenter: presenter)
         controller.transitioningDelegate = sheetPresenter
         controller.modalPresentationStyle = .custom
@@ -377,7 +400,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
         )
         let viewController = BuyCryptoScreenViewController(presenter: presenter)
         
-        present(viewController: viewController, using: .modalOverTopMost)
+        present(viewController: viewController)
     }
 
     /// Shows intro screen using a specified presentation type
@@ -388,6 +411,6 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     }
     
     private lazy var sheetPresenter: BottomSheetPresenting = {
-        return BottomSheetPresenting()
+        return BottomSheetPresenting(ignoresBackroundTouches: true)
     }()
 }

@@ -104,7 +104,7 @@ final class DashboardDetailsViewController: BaseScreenViewController {
     }
     
     private lazy var sheetPresenter: BottomSheetPresenting = {
-        return BottomSheetPresenting()
+        return BottomSheetPresenting(ignoresBackroundTouches: false)
     }()
 }
 

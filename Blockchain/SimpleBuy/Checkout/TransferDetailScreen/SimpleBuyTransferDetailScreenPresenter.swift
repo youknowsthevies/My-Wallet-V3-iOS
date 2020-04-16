@@ -117,7 +117,8 @@ final class SimpleBuyTransferDetailScreenPresenter {
         noticeViewModel = NoticeViewModel(
             imageViewContent: .init(
                 imageName: "disclaimer-icon",
-                accessibility: .id(AccessibilityId.disclaimerImage)
+                accessibility: .id(AccessibilityId.disclaimerImage),
+                bundle: .platformUIKit
             ),
             labelContent: .init(
                 text: LocalizedString.disclaimer,
@@ -271,15 +272,8 @@ extension SimpleBuyTransferDetailScreenPresenter {
                     summary = "\(SummaryString.AnyFiat.prefix) \(currencyString) \(SummaryString.AnyFiat.suffix)"
                 }
             case .pendingOrder:
-                title = String(
-                    format: TitleString.pendingOrder,
-                    data.cryptoCurrency.displayCode
-                )
-                summary = String(
-                    format: SummaryString.pendingOrder,
-                    currencyString,
-                    data.cryptoCurrency.displayCode
-                )
+                title = "\(TitleString.pendingOrderPrefix) \(data.cryptoCurrency.displayCode) \(TitleString.pendingOrderSuffix)"
+                summary = "\(SummaryString.PendingOrder.prefix) \(currencyString) \(SummaryString.PendingOrder.middle) \(data.cryptoCurrency.displayCode) \(SummaryString.PendingOrder.suffix)"
             }
 
             let account = data.paymentAccount!

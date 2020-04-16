@@ -126,15 +126,21 @@ final class BuyCryptoScreenPresenter {
         let ctaObservable = continueButtonViewModel.tapRelay
             .withLatestFrom(interactor.data)
             .compactMap { $0 }
+            .show(loader: loadingViewPresenter, style: .circle)
             .flatMap(weak: interactor) { (interactor, data) in
-                Observable.zip(
-                    interactor.currentKycState.asObservable(),
-                    interactor.currentEligibiltyState
+                Observable
+                    .zip(
+                        interactor.currentKycState.asObservable(),
+                        interactor.currentEligibiltyState
                     )
                     .map { (currentKycState, currentEligibiltyState) -> Result<CTAData, Error> in
                         switch (currentKycState, currentEligibiltyState) {
                         case (.success(let kycState), .success(let isSimpleBuyEligible)):
-                            let ctaData = CTAData(kycState: kycState, isSimpleBuyEligible: isSimpleBuyEligible, checkoutData: data)
+                            let ctaData = CTAData(
+                                kycState: kycState,
+                                isSimpleBuyEligible: isSimpleBuyEligible,
+                                checkoutData: data
+                            )
                             return .success(ctaData)
                         case (.failure(let error), .success):
                             return .failure(error)
@@ -174,6 +180,7 @@ final class BuyCryptoScreenPresenter {
         
         ctaObservable
             .observeOn(MainScheduler.instance)
+            .hide(loader: loadingViewPresenter)
             .bind(weak: self) { (self, result) in
                 switch result {
                 case .success(let data):

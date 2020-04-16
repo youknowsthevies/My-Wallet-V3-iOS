@@ -86,7 +86,7 @@ final class CustodyWithdrawalScreenPresenter {
         self.stateService = stateService
         
         self.descriptionLabel = .init(
-            text: String(format: LocalizationConstants.SimpleBuy.Withdrawal.description, currency.displayCode),
+            text: "\(LocalizationConstants.SimpleBuy.Withdrawal.Description.prefix) \(currency.displayCode) \(LocalizationConstants.SimpleBuy.Withdrawal.Description.suffix)",
             font: .mainMedium(12.0),
             color: .descriptionText,
             alignment: .center,
