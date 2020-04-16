@@ -9,6 +9,6 @@
 #  NOTE: Some of these dependencies are needed to build `libwally-core`
 #
 
-set -ue
+set -u
 
 brew install autoconf automake carthage gnu-sed pkg-config swiftlint libtool

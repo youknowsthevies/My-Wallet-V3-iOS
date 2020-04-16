@@ -11,7 +11,7 @@
 #  NOTE: This script is meant to be run in a Bitrise workflow.
 #
 
-set -ue
+set -u
 
 WALLETJS="./Submodules/My-Wallet-V3/dist/my-wallet.js"
 

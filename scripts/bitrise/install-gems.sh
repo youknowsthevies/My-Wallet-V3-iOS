@@ -9,7 +9,7 @@
 #  NOTE: This script is meant to be run in a Bitrise workflow.
 #
 
-set -ue
+set -u
 
 brew update && brew upgrade ruby-build
 rbenv install 2.6.5
