@@ -7,9 +7,9 @@
 //
 
 import XCTest
-@testable import BitcoinKit
-@testable import PlatformKit
-@testable import PlatformUIKit
+import BitcoinKit
+import PlatformKit
+import PlatformUIKit
 @testable import Blockchain
 
 class QRCodeWrapperMock: QRCodeWrapperAPI {

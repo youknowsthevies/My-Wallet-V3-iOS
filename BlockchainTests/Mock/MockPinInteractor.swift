@@ -10,7 +10,7 @@ import Foundation
 import RxSwift
 
 @testable import Blockchain
-@testable import PlatformKit
+import PlatformKit
 
 class MockPinInteractor: PinInteracting {
     var hasLogoutAttempted = false

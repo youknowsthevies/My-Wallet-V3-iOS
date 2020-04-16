@@ -9,7 +9,7 @@
 import Foundation
 import RxSwift
 import PlatformKit
-@testable import StellarKit
+import StellarKit
 
 class StellarWalletAccountRepositoryMock: StellarWalletAccountRepositoryAPI {
     func initializeMetadataMaybe() -> Maybe<StellarWalletAccount> {

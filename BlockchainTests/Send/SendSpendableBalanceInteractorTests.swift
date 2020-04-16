@@ -9,7 +9,7 @@
 import XCTest
 import RxSwift
 
-@testable import PlatformKit
+import PlatformKit
 @testable import Blockchain
 
 // Asset agnostic tests for spendable balance interaction layer

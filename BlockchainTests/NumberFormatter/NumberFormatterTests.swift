@@ -8,7 +8,7 @@
 
 import XCTest
 
-@testable import PlatformKit
+import PlatformKit
 @testable import Blockchain
 
 extension Locale {

@@ -9,7 +9,7 @@
 import Foundation
 
 @testable import Blockchain
-@testable import PlatformKit
+import PlatformKit
 
 class MockAppSettings: ReactiveAppSettingsAuthenticating, AppSettingsAuthenticating, SwipeToReceiveConfiguring {
     @objc var pin: String?

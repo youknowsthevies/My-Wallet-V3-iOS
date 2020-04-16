@@ -11,11 +11,11 @@ import RxSwift
 import stellarsdk
 
 @testable import Blockchain
-@testable import PlatformKit
-@testable import BitcoinKit
-@testable import StellarKit
-@testable import EthereumKit
-@testable import ERC20Kit
+import PlatformKit
+import BitcoinKit
+import StellarKit
+import EthereumKit
+import ERC20Kit
 
 class StellarOperationMock: StellarOperationsAPI {
     var operations: Observable<[Blockchain.StellarOperation]> = Observable.just([])

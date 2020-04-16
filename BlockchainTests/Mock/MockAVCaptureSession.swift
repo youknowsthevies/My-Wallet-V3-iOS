@@ -8,7 +8,7 @@
 
 import Foundation
 
-@testable import PlatformKit
+import PlatformKit
 @testable import Blockchain
 
 class CaptureSessionMock: CaptureSessionProtocol {

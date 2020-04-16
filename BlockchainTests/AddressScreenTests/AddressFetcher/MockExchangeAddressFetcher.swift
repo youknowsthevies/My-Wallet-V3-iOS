@@ -9,7 +9,7 @@
 import Foundation
 import RxSwift
 
-@testable import PlatformKit
+import PlatformKit
 @testable import Blockchain
 
 /// Fake address provider by type

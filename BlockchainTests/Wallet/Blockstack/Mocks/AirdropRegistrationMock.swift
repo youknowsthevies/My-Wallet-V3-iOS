@@ -9,7 +9,7 @@
 import Foundation
 import RxSwift
 @testable import NetworkKit
-@testable import PlatformKit
+import PlatformKit
 
 class AirdropRegistrationMock: AirdropRegistrationAPI {
     

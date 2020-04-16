@@ -7,8 +7,8 @@
 //
 
 import XCTest
-@testable import PlatformKit
-@testable import EthereumKit
+import PlatformKit
+import EthereumKit
 @testable import Blockchain
 
 class EtherTransactionTests: XCTestCase {

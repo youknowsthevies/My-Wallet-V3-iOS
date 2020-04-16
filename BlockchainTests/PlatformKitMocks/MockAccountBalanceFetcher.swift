@@ -9,7 +9,7 @@
 import RxSwift
 import RxRelay
 
-@testable import PlatformKit
+import PlatformKit
 
 public final class MockAccountBalanceFetcher: AccountBalanceFetching {
 

@@ -8,7 +8,7 @@
 
 import XCTest
 
-@testable import ToolKit
+import ToolKit
 @testable import Blockchain
 
 class StringEscapeJSTests: XCTestCase {
