@@ -1,10 +1,14 @@
-#!/usr/bin/env bash
+#!/bin/sh
+#
+#  scripts/install-dependencies.sh
+#
+#  What It Does
+#  ------------
+#  Install brew dependencies.
+#
+#  NOTE: Some of these dependencies are needed to build `libwally-core`
+#
 
 set -ue
 
-if ! command -v carthage; then
-    brew install carthage 
-fi
-
-# These dependencies are needed to build `libwally-core`
-brew install libtool pkg-config autoconf automake gnu-sed swiftlint
+brew install autoconf automake carthage gnu-sed pkg-config swiftlint libtool
