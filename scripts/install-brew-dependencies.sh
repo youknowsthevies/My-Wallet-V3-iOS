@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#  scripts/install-dependencies.sh
+#  scripts/install-brew-dependencies.sh
 #
 #  What It Does
 #  ------------
