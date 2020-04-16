@@ -260,11 +260,4 @@ class AccessibilityIdentifiers: NSObject {
         static let passwordTextField = "\(prefix)passwordTextField"
         static let descriptionLabel = "\(prefix)descriptionLabel"
     }
-    
-    // MARK: Dashboard
-    
-    class AnnouncementCard {
-        static let dismissButton = "AnnouncementCard.dismissButton"
-        static let actionButton = "AnnouncementCard.actionButton"
-    }
 }

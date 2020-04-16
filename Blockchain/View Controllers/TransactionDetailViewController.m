@@ -18,7 +18,6 @@
 #import "TransactionDetailDoubleSpendWarningCell.h"
 #import "NSNumberFormatter+Currencies.h"
 #import "TransactionDetailNavigationController.h"
-#import "BCWebViewController.h"
 #import "TransactionRecipientsViewController.h"
 #import <SafariServices/SafariServices.h>
 #import "Blockchain-Swift.h"

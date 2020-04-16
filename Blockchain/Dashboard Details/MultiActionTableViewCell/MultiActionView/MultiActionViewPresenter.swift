@@ -18,17 +18,6 @@ protocol MultiActionViewPresenting {
     var segmentedViewModel: SegmentedViewModel { get }
 }
 
-final class PrimaryActionViewPresenter: MultiActionViewPresenting {
-    
-    var segmentedViewModel: SegmentedViewModel
-
-    // MARK: - Setup
-    
-    init(using items: [SegmentedViewModel.Item]) {
-        self.segmentedViewModel = .primary(items: items)
-    }
-}
-
 final class PlainActionViewPresenter: MultiActionViewPresenting {
     
     var segmentedViewModel: SegmentedViewModel
