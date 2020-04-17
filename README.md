@@ -123,6 +123,18 @@ Firease/Staging/GoogleService-Info.plist
 
     cmd-r
 
+
+## XcodeGen
+
+Installing:
+
+    $ brew install xcodegen
+
+Generating projects:
+
+    $ xcodegen -s project_blockchain.yml
+    $ xcodegen -s project_modules.yml
+
 # Contributing
 
 If you would like to contribute code to the Blockchain iOS app, you can do so by forking this repository, making the changes on your fork, and sending a pull request back to this repository.
