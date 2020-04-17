@@ -6,8 +6,6 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-
 public enum ERC20Error: Error {
     case unknown
 }

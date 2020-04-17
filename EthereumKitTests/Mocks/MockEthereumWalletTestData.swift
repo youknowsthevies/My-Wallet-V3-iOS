@@ -6,11 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import PlatformKit
 import BigInt
-import CommonCryptoKit
-@testable import TestKit
+import TestKit
 @testable import EthereumKit
 
 struct MockEthereumWalletTestData {

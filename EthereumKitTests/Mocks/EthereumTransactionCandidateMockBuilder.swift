@@ -9,8 +9,7 @@
 import Foundation
 import web3swift
 import BigInt
-
-@testable import TestKit
+import TestKit
 @testable import EthereumKit
 
 class EthereumTransactionCandidateBuilder {

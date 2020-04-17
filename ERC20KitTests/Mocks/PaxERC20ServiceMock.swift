@@ -11,6 +11,8 @@ import RxSwift
 import PlatformKit
 import EthereumKit
 import ERC20Kit
+import BigInt
+import TestKit
 
 class PaxERC20ServiceMock: ERC20ServiceAPI {
     func evaluate(amount cryptoValue: ERC20TokenValue<PaxToken>) -> Single<ERC20TransactionEvaluationResult<PaxToken>> {

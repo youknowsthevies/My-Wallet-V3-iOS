@@ -6,7 +6,6 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import RxSwift
 
 /// This is not included in `PlatformKit` as no other currency has the concept of a ledger.
