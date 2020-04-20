@@ -7,7 +7,7 @@ binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseMessagingBinary.j
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseRemoteConfigBinary.json" "6.21.0"
 github "ReactiveX/RxSwift" "5.1.1"
 github "attaswift/BigInt" "v4.0.0"
-github "blockchain/libwally-swift" "fc8c4b56f181cfadde17fa44e05ad75b594f949c"
+github "blockchain/libwally-swift" "v0.0.1"
 github "daltoniam/Starscream" "3.1.1"
 github "danielgindi/Charts" "v3.4.0"
 github "dropbox/zxcvbn-ios" "v1.0.4"
