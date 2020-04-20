@@ -115,6 +115,12 @@ Firease/Prod/GoogleService-Info.plist
 Firease/Staging/GoogleService-Info.plist
 ```
 
+## Generate projects:
+
+We are integrating XcodeGen and, despite still committing project files in git, we should generate project files using the following script:
+
+    $ sh scripts/generate_projects.sh
+
 ## Open the project in Xcode
 
     $ open Blockchain.xcworkspace

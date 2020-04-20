@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#  Blockchain/Scritps/export_built_products_dir.sh
+#  Blockchain/Scripts/export_built_products_dir.sh
 #
 #  What It Does
 #  ------------

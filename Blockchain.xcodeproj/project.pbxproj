@@ -8534,7 +8534,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\n#\n#  Blockchain/Scritps/export_built_products_dir.sh\n#\n#  What It Does\n#  ------------\n#  Exports $BUILT_PRODUCTS_DIR to envman as $BC_BUILT_PRODUCTS_DIR\n#  BC_BUILT_PRODUCTS_DIR is used in BitRise workflows.\n\nif command -v envman 2> /dev/null; then\n    BC_BUILT_PRODUCTS_DIR=\"${BUILT_PRODUCTS_DIR}\"\n    echo \"(i) BC_BUILT_PRODUCTS_DIR: $BC_BUILT_PRODUCTS_DIR\"\n    envman add --key BC_BUILT_PRODUCTS_DIR --value \"${BC_BUILT_PRODUCTS_DIR}\"\nelse\n    echo \"(i) envman missing\"\nfi\n";
+			shellScript = "#!/bin/sh\n#\n#  Blockchain/Scripts/export_built_products_dir.sh\n#\n#  What It Does\n#  ------------\n#  Exports $BUILT_PRODUCTS_DIR to envman as $BC_BUILT_PRODUCTS_DIR\n#  BC_BUILT_PRODUCTS_DIR is used in BitRise workflows.\n\nif command -v envman 2> /dev/null; then\n    BC_BUILT_PRODUCTS_DIR=\"${BUILT_PRODUCTS_DIR}\"\n    echo \"(i) BC_BUILT_PRODUCTS_DIR: $BC_BUILT_PRODUCTS_DIR\"\n    envman add --key BC_BUILT_PRODUCTS_DIR --value \"${BC_BUILT_PRODUCTS_DIR}\"\nelse\n    echo \"(i) envman missing\"\nfi\n";
 		};
 		CD8C0245D1C76DA633AF558F /* Get SSL Certificate */ = {
 			isa = PBXShellScriptBuildPhase;
