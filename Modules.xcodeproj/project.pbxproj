@@ -6811,6 +6811,8 @@
 			attributes = {
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = "Blockchain Luxembourg S.A";
+				TargetAttributes = {
+				};
 			};
 			buildConfigurationList = 5DC07C21203C91B9AC168A2F /* Build configuration list for PBXProject "Modules" */;
 			compatibilityVersion = "Xcode 10.0";

@@ -122,6 +122,7 @@ targets:
       Release Staging: Config/BlockchainConfig/Staging.xcconfig
     dependencies:
     - sdk: libicucore.tbd
+    - framework: Veriff.framework
     - carthage: BigInt
     - carthage: Charts
     - carthage: keccak
@@ -136,7 +137,6 @@ targets:
     - carthage: SocketIO
     - carthage: Starscream
     - carthage: stellarsdk
-    - carthage: Veriff
     - carthage: web3swift
     - carthage: WebRTC
     - carthage: Zxcvbn
