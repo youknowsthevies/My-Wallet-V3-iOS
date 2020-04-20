@@ -11,4 +11,4 @@
 
 set -u
 
-brew install autoconf automake carthage gnu-sed pkg-config swiftlint libtool
+brew install autoconf automake carthage gnu-sed pkg-config swiftlint libtool xcodegen
