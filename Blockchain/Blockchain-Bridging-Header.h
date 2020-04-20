@@ -2,9 +2,7 @@
 //  Use this file to import your target's public headers that you would like to expose to Swift.
 //
 
-#import <UIKit/UIKit.h>
 #import <Localization/Localization-Swift.h>
-#import "BCWebViewController.h"
 #import "AccountsAndAddressesNavigationController.h"
 #import "SendBitcoinViewController.h"
 #import "TransactionsViewController.h"
@@ -20,7 +18,6 @@
 #import "BuyBitcoinViewController.h"
 #import "DebugTableViewController.h"
 #import "ECSlidingViewController.h"
-#import "GraphTimeFrame.h"
 #import "KeychainItemWrapper+Credentials.h"
 #import "KeychainItemWrapper+SwipeAddresses.h"
 #import "KeychainItemWrapper.h"
@@ -50,7 +47,6 @@
 #import "FromToView.h"
 #import "ContinueButtonInputAccessoryView.h"
 
-#import "ExchangeTrade.h"
 #import "NSDateFormatter+TimeAgoString.h"
 #import "UIView+ChangeFrameAttribute.h"
 

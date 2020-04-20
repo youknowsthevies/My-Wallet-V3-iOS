@@ -14,7 +14,7 @@
 #  What It Does
 #  ------------
 #  Running this script will pull all the latest changes from the current branch, create a "version bump" commit, then tag that commit.
-#  These changes are done for production and are pushed to the remote `origin` repository which subsequently kicks off workflows defined 
+#  These changes are done for production and are pushed to the remote `origin` repository which subsequently kicks off workflows defined
 #  in CircleCI which ultimately uploads a production builds to the app store.
 #
 
@@ -26,8 +26,8 @@ set -o pipefail
 #
 
 if [ -n "$(git status --untracked-files=no --porcelain)" ]; then
-  printf '\e[1;31m%-6s\e[m\n' "Making a new build requires that you have a clean git working directory. Please commit your changes or stash them to continue."
-  exit 1
+    printf '\e[1;31m%-6s\e[m\n' "Making a new build requires that you have a clean git working directory. Please commit your changes or stash them to continue."
+    exit 1
 fi
 
 if ! [ -e "Blockchain.xcodeproj" ]; then
@@ -36,8 +36,8 @@ if ! [ -e "Blockchain.xcodeproj" ]; then
 fi
 
 if ! [ -x "$(command -v agvtool)" ]; then
-  printf '\e[1;31m%-6s\e[m\n' "You are missing the Xcode Command Line Tools. To install them, please run: xcode-select --install."
-  exit 1
+    printf '\e[1;31m%-6s\e[m\n' "You are missing the Xcode Command Line Tools. To install them, please run: xcode-select --install."
+    exit 1
 fi
 
 #
@@ -45,26 +45,26 @@ fi
 #
 
 git fetch --tags
-latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+latestTag=$(git describe --tags $(git rev-list --tags --max-count=1))
 read -p "‣ Enter the new value for the project version (e.g., 2.3.4; latest tag is $latestTag), followed by [ENTER]: " project_version_number
 
 if ! [[ $project_version_number =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
-  printf '\n\e[1;31m%-6s\e[m\n' "You have entered an invalid version number."
-  exit 1
+    printf '\n\e[1;31m%-6s\e[m\n' "You have entered an invalid version number."
+    exit 1
 fi
 
 read -p "‣ Enter the new value for the project build for production (e.g. 0), followed by [ENTER]: " project_build_number_prod
 
 if ! [[ $project_build_number_prod =~ ^[0-9]+ ]]; then
-  printf '\n\e[1;31m%-6s\e[m\n' "You have entered an invalid build number."
-  exit 1
+    printf '\n\e[1;31m%-6s\e[m\n' "You have entered an invalid build number."
+    exit 1
 fi
 
 git_tag_prod="v${project_version_number}(${project_build_number_prod})"
 
 if [ $(git tag -l "$git_tag_prod") ]; then
-  printf '\n\e[1;31m%-6s\e[m\n' "The version you entered already exists!"
-  exit 1
+    printf '\n\e[1;31m%-6s\e[m\n' "The version you entered already exists!"
+    exit 1
 fi
 
 #
@@ -82,9 +82,9 @@ printf "Xcode project build number to use for production (CFBundleVersion): ${pr
 printf "Git tag to use for production: ${git_tag_prod}\n\n"
 
 read -p "‣ Would you like to proceed? [y/N]: " answer
-if printf "$answer" | grep -iq "^n" ; then
-  printf '\e[1;31m%-6s\e[m' "Aborted the build process."
-  exit 6
+if printf "$answer" | grep -iq "^n"; then
+    printf '\e[1;31m%-6s\e[m' "Aborted the build process."
+    exit 6
 fi
 
 latestTagCommit=$(git show-ref -s $latestTag)
@@ -96,7 +96,7 @@ latestTagCommit=$(git show-ref -s $latestTag)
 printf "Creating production version in Info.plist file...\n"
 agvtool new-marketing-version $project_version_number > /dev/null 2>&1
 agvtool new-version -all $project_build_number_prod > /dev/null 2>&1
-git add Blockchain/Blockchain-Info.plist
+git add Blockchain/Info.plist
 git add BlockchainTests/Info.plist
 git checkout .
 
@@ -114,8 +114,8 @@ git push origin $user_branch > /dev/null 2>&1
 
 git-changelog -t $latestTagCommit > /dev/null 2>&1
 read -p "‣ Would you like to copy the contents of Changelog.md to your clipboard? [y/N]: " answer
-if printf "$answer" | grep -iq "^y" ; then
-  cat Changelog.md | pbcopy
+if printf "$answer" | grep -iq "^y"; then
+    cat Changelog.md | pbcopy
 fi
 rm Changelog.md
 git checkout $user_branch > /dev/null 2>&1

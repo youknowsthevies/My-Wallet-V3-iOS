@@ -14,7 +14,7 @@ extension JSContext {
     ///
     /// - Parameters:
     ///   - functionBlock: the native block
-    ///   - key: the function name
+    ///   - functionName: the function name
     @objc func invokeOnce(functionBlock: @escaping () -> Void, forJsFunctionName functionName: (NSCopying & NSObjectProtocol)) {
         let theBlock: @convention(block) () -> Void = { [weak self] in
             functionBlock()

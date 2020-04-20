@@ -295,35 +295,3 @@ extension ExchangeTradeCellModel: Hashable {
         hasher.combine(createdAt)
     }
 }
-
-extension ExchangeTrade {
-    
-    fileprivate func minerFeeCryptoAmount() -> String? {
-        guard let assetType = CryptoCurrency(code: minerCurrency()) else { return nil }
-        return assetType.toCrypto(amount: minerFee as Decimal)
-    }
-    
-    fileprivate func inboundFiatAmount() -> String? {
-        guard let toAsset = pair.components(separatedBy: "_").last else { return nil }
-        guard let assetType = CryptoCurrency(code: toAsset) else { return nil }
-        return assetType.toFiat(amount: withdrawalAmount as Decimal)
-    }
-    
-    fileprivate func inboundCryptoAmount() -> String? {
-        guard let currencySymbol = withdrawalCurrency() else { return nil }
-        guard let assetType = CryptoCurrency(code: currencySymbol) else { return nil }
-        return assetType.toCrypto(amount: withdrawalAmount as Decimal)
-    }
-    
-    fileprivate func outboundFiatAmount() -> String? {
-        guard let fromAsset = pair.components(separatedBy: "_").first else { return nil }
-        guard let assetType = CryptoCurrency(code: fromAsset) else { return nil }
-        return assetType.toFiat(amount: depositAmount as Decimal)
-    }
-    
-    fileprivate func outboundCryptoAmount() -> String? {
-        guard let currencySymbol = depositCurrency() else { return nil }
-        guard let assetType = CryptoCurrency(code: currencySymbol) else { return nil }
-        return assetType.toCrypto(amount: depositAmount as Decimal)
-    }
-}

@@ -9,8 +9,6 @@
 import Foundation
 import XCTest
 import RxSwift
-
-@testable import Blockchain
 @testable import PlatformUIKit
 
 /// Testing `DigitPadViewModel`'s functionality

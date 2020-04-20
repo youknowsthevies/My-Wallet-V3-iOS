@@ -8,7 +8,7 @@
 
 import XCTest
 @testable import Blockchain
-@testable import PlatformKit
+import PlatformKit
 
 class PinTests: XCTestCase {
 

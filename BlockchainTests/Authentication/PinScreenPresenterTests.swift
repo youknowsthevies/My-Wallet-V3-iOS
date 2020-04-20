@@ -10,8 +10,7 @@ import Foundation
 import XCTest
 import RxSwift
 import PlatformUIKit
-
-@testable import ToolKit
+import ToolKit
 @testable import PlatformKit
 @testable import Blockchain
 

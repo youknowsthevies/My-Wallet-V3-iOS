@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "BCModalContentView.h"
 
 //	Modal close codes
 typedef enum {

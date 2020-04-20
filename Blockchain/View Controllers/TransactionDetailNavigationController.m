@@ -98,7 +98,7 @@
     
     LegacyCryptoCurrency *assetType = [AssetTypeLegacyHelper convertFromLegacy:tabControllerManager.assetType];
 
-    NSString *txDetailString = [BlockchainAPI.sharedInstance transactionDetailURLFor:self.transactionHash assetType:assetType];
+    NSString *txDetailString = [BlockchainAPI.shared transactionDetailURLFor:self.transactionHash assetType:assetType];
     NSURL *url = [NSURL URLWithString:txDetailString];
 
     NSArray *activityItems = @[self, url];

@@ -9,9 +9,9 @@
 import Foundation
 import RxSwift
 
-@testable import PlatformKit
-@testable import EthereumKit
-@testable import PlatformUIKit
+import PlatformKit
+import EthereumKit
+import PlatformUIKit
 @testable import Blockchain
 
 extension LegacyEthereumWalletAPI {

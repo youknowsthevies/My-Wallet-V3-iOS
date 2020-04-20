@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9FB3637014B60128004BEA02"
+               BlueprintIdentifier = "CE79537B40B4A1CA87B3DBF0"
                BuildableName = "Blockchain.app"
                BlueprintName = "Blockchain"
                ReferencedContainer = "container:Blockchain.xcodeproj">
@@ -26,69 +26,8 @@
       buildConfiguration = "Debug Dev"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      codeCoverageEnabled = "YES"
-      onlyGenerateCoverageForSpecifiedTargets = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9FB3637014B60128004BEA02"
-            BuildableName = "Blockchain.app"
-            BlueprintName = "Blockchain"
-            ReferencedContainer = "container:Blockchain.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
-      <CodeCoverageTargets>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9FB3637014B60128004BEA02"
-            BuildableName = "Blockchain.app"
-            BlueprintName = "Blockchain"
-            ReferencedContainer = "container:Blockchain.xcodeproj">
-         </BuildableReference>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3A4E488021BF3070001A799D"
-            BuildableName = "BitcoinKit.framework"
-            BlueprintName = "BitcoinKit"
-            ReferencedContainer = "container:Blockchain.xcodeproj">
-         </BuildableReference>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "34EDB8262261065D009521D9"
-            BuildableName = "ERC20Kit.framework"
-            BlueprintName = "ERC20Kit"
-            ReferencedContainer = "container:Blockchain.xcodeproj">
-         </BuildableReference>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3A6A1A1621B9A64D00D97C74"
-            BuildableName = "EthereumKit.framework"
-            BlueprintName = "EthereumKit"
-            ReferencedContainer = "container:Blockchain.xcodeproj">
-         </BuildableReference>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3A68655C219A0BBA0009FF29"
-            BuildableName = "PlatformKit.framework"
-            BlueprintName = "PlatformKit"
-            ReferencedContainer = "container:Blockchain.xcodeproj">
-         </BuildableReference>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3A6865AA219A11650009FF29"
-            BuildableName = "PlatformUIKit.framework"
-            BlueprintName = "PlatformUIKit"
-            ReferencedContainer = "container:Blockchain.xcodeproj">
-         </BuildableReference>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3A6865DC219A26A30009FF29"
-            BuildableName = "StellarKit.framework"
-            BlueprintName = "StellarKit"
-            ReferencedContainer = "container:Blockchain.xcodeproj">
-         </BuildableReference>
-      </CodeCoverageTargets>
+      onlyGenerateCoverageForSpecifiedTargets = "NO"
+      shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
          <TestableReference
             skipped = "NO"
@@ -96,16 +35,11 @@
             testExecutionOrdering = "random">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5194359D208E61F3001EF882"
+               BlueprintIdentifier = "4776A64F280E45756CBC7CAA"
                BuildableName = "BlockchainTests.xctest"
                BlueprintName = "BlockchainTests"
                ReferencedContainer = "container:Blockchain.xcodeproj">
             </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "AuthenticationManagerTests/testAuthWithValidPasswordSucceeds()">
-               </Test>
-            </SkippedTests>
          </TestableReference>
          <TestableReference
             skipped = "NO"
@@ -113,46 +47,10 @@
             testExecutionOrdering = "random">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3A686564219A0BBB0009FF29"
-               BuildableName = "PlatformKitTests.xctest"
-               BlueprintName = "PlatformKitTests"
-               ReferencedContainer = "container:Blockchain.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES"
-            testExecutionOrdering = "random">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3A6865E4219A26A30009FF29"
-               BuildableName = "StellarKitTests.xctest"
-               BlueprintName = "StellarKitTests"
-               ReferencedContainer = "container:Blockchain.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES"
-            testExecutionOrdering = "random">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3A6A1A1E21B9A64D00D97C74"
-               BuildableName = "EthereumKitTests.xctest"
-               BlueprintName = "EthereumKitTests"
-               ReferencedContainer = "container:Blockchain.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES"
-            testExecutionOrdering = "random">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3A4E488821BF3070001A799D"
+               BlueprintIdentifier = "BD9FD686F491C876DE758010"
                BuildableName = "BitcoinKitTests.xctest"
                BlueprintName = "BitcoinKitTests"
-               ReferencedContainer = "container:Blockchain.xcodeproj">
+               ReferencedContainer = "container:Modules.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -161,53 +59,120 @@
             testExecutionOrdering = "random">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "34EDB82E2261065D009521D9"
-               BuildableName = "ERC20KitTests.xctest"
-               BlueprintName = "ERC20KitTests"
-               ReferencedContainer = "container:Blockchain.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "34C3C97C2305A593008F2154"
-               BuildableName = "HDWalletKitTests.xctest"
-               BlueprintName = "HDWalletKitTests"
-               ReferencedContainer = "container:Blockchain.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "340ABD66230AAF5A0032278D"
+               BlueprintIdentifier = "D808FCAEF445EEC1C84CF979"
                BuildableName = "CommonCryptoKitTests.xctest"
                BlueprintName = "CommonCryptoKitTests"
-               ReferencedContainer = "container:Blockchain.xcodeproj">
+               ReferencedContainer = "container:Modules.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
-            skipped = "NO">
+            skipped = "NO"
+            parallelizable = "YES"
+            testExecutionOrdering = "random">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "34EE981D23AA595100074EC0"
-               BuildableName = "ToolKitTests.xctest"
-               BlueprintName = "ToolKitTests"
-               ReferencedContainer = "container:Blockchain.xcodeproj">
+               BlueprintIdentifier = "0D9E9B2A32CFD80C921BBE7A"
+               BuildableName = "ERC20KitTests.xctest"
+               BlueprintName = "ERC20KitTests"
+               ReferencedContainer = "container:Modules.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
-            skipped = "NO">
+            skipped = "NO"
+            parallelizable = "YES"
+            testExecutionOrdering = "random">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "34EE986323AA5B3100074EC0"
+               BlueprintIdentifier = "872C78E9D17495FE49CC74C5"
+               BuildableName = "EthereumKitTests.xctest"
+               BlueprintName = "EthereumKitTests"
+               ReferencedContainer = "container:Modules.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES"
+            testExecutionOrdering = "random">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E77E94958BD020E7D05F9713"
+               BuildableName = "HDWalletKitTests.xctest"
+               BlueprintName = "HDWalletKitTests"
+               ReferencedContainer = "container:Modules.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES"
+            testExecutionOrdering = "random">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "CDABA458DB745269A621DB88"
                BuildableName = "NetworkKitTests.xctest"
                BlueprintName = "NetworkKitTests"
-               ReferencedContainer = "container:Blockchain.xcodeproj">
+               ReferencedContainer = "container:Modules.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES"
+            testExecutionOrdering = "random">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "A2C09CFEB94F3D48F143F665"
+               BuildableName = "PlatformKitTests.xctest"
+               BlueprintName = "PlatformKitTests"
+               ReferencedContainer = "container:Modules.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES"
+            testExecutionOrdering = "random">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "476F96DB235EAB89FA9421D2"
+               BuildableName = "PlatformUIKitTests.xctest"
+               BlueprintName = "PlatformUIKitTests"
+               ReferencedContainer = "container:Modules.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES"
+            testExecutionOrdering = "random">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "A6210D2A7F37920DACE62BCD"
+               BuildableName = "StellarKitTests.xctest"
+               BlueprintName = "StellarKitTests"
+               ReferencedContainer = "container:Modules.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES"
+            testExecutionOrdering = "random">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "200447722AEB9F2B35F4C058"
+               BuildableName = "ToolKitTests.xctest"
+               BlueprintName = "ToolKitTests"
+               ReferencedContainer = "container:Modules.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "CE79537B40B4A1CA87B3DBF0"
+            BuildableName = "Blockchain.app"
+            BlueprintName = "Blockchain"
+            ReferencedContainer = "container:Blockchain.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug Dev"
@@ -223,12 +188,14 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9FB3637014B60128004BEA02"
+            BlueprintIdentifier = "CE79537B40B4A1CA87B3DBF0"
             BuildableName = "Blockchain.app"
             BlueprintName = "Blockchain"
             ReferencedContainer = "container:Blockchain.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -240,19 +207,20 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9FB3637014B60128004BEA02"
+            BlueprintIdentifier = "CE79537B40B4A1CA87B3DBF0"
             BuildableName = "Blockchain.app"
             BlueprintName = "Blockchain"
             ReferencedContainer = "container:Blockchain.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug Dev">
    </AnalyzeAction>
    <ArchiveAction
-      buildConfiguration = "Debug Dev"
-      customArchiveName = "Blockchain"
+      buildConfiguration = "Release"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>

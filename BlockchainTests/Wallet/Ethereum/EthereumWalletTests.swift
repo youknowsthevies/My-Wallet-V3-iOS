@@ -9,10 +9,10 @@
 import XCTest
 import RxSwift
 import RxTest
-@testable import PlatformKit
-@testable import EthereumKit
-@testable import ERC20Kit
-@testable import PlatformUIKit
+import PlatformKit
+import EthereumKit
+import ERC20Kit
+import PlatformUIKit
 @testable import Blockchain
 
 class EthereumWalletTests: XCTestCase {

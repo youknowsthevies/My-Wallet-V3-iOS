@@ -19,7 +19,7 @@ extension String {
 extension NumberFormatter {
 
      /// Parses a decimal String into a UInt64 satoshis value.
-     /// - Parameter inputString: decimal string
+     /// - Parameter string: decimal string
      /// - Returns: UInt64 Satoshis representation of the value
     @objc class func parseBitcoinValue(from string: String?) -> UInt64 {
         // String should be not nil, nor empty

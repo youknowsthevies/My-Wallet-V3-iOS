@@ -23,15 +23,12 @@
 #import <CommonCrypto/CommonKeyDerivation.h>
 #import "HDNode.h"
 #import "Assets.h"
-#import "ExchangeTrade.h"
 #import "Blockchain-Swift.h"
 #import "BTCKey.h"
 #import "BTCData.h"
 #import "KeyPair.h"
 #import "NSData+BTCData.h"
 #import "NSNumberFormatter+Currencies.h"
-
-#import "Blockchain-Swift.h"
 
 @import FirebaseAnalytics;
 
@@ -803,15 +800,15 @@ NSString * const kLockboxInvitation = @"lockbox";
     NSString *websocketURL;
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        websocketURL = [[BlockchainAPI sharedInstance] webSocketUri];
+        websocketURL = [BlockchainAPI.shared webSocketUri];
     } else if (assetType == LegacyAssetTypeEther) {
-        websocketURL = [[BlockchainAPI sharedInstance] ethereumWebSocketUri];
+        websocketURL = [BlockchainAPI.shared ethereumWebSocketUri];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        websocketURL = [[BlockchainAPI sharedInstance] bitcoinCashWebSocketUri];
+        websocketURL = [BlockchainAPI.shared bitcoinCashWebSocketUri];
     }
 
     NSMutableURLRequest *webSocketRequest = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:websocketURL]];
-    [webSocketRequest addValue:[[BlockchainAPI sharedInstance] walletUrl] forHTTPHeaderField:@"Origin"];
+    [webSocketRequest addValue:[BlockchainAPI.shared walletUrl] forHTTPHeaderField:@"Origin"];
 
     // TODO: migrate to CertificatePinner class
     // Note: All `DEBUG` builds should disable certificate pinning
@@ -1056,7 +1053,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (void)getAmountReceivedForTransactionHash:(NSString *)txHash socket:(SRWebSocket *)webSocket
 {
-    NSURL *URL = [NSURL URLWithString:[[[BlockchainAPI sharedInstance] walletUrl] stringByAppendingString:[NSString stringWithFormat:TRANSACTION_RESULT_URL_SUFFIX_HASH_ARGUMENT_ADDRESS_ARGUMENT, txHash, self.btcSwipeAddressToSubscribe]]];
+    NSURL *URL = [NSURL URLWithString:[[BlockchainAPI.shared walletUrl] stringByAppendingString:[NSString stringWithFormat:TRANSACTION_RESULT_URL_SUFFIX_HASH_ARGUMENT_ADDRESS_ARGUMENT, txHash, self.btcSwipeAddressToSubscribe]]];
     NSURLRequest *request = [NSURLRequest requestWithURL:URL];
 
     NSURLSessionDataTask *task = [[[NetworkDependenciesObjc sharedInstance] session] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -2133,7 +2130,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         symbol = CURRENCY_SYMBOL_XLM;
     }
 
-    NSURL *URL = [NSURL URLWithString:[[[BlockchainAPI sharedInstance] apiUrl] stringByAppendingString:[NSString stringWithFormat:URL_SUFFIX_PRICE_INDEX_ARGUMENTS_BASE_QUOTE_TIME, symbol, currencyCode, time]]];
+    NSURL *URL = [NSURL URLWithString:[[BlockchainAPI.shared apiUrl] stringByAppendingString:[NSString stringWithFormat:URL_SUFFIX_PRICE_INDEX_ARGUMENTS_BASE_QUOTE_TIME, symbol, currencyCode, time]]];
 
     NSURLRequest *request = [NSURLRequest requestWithURL:URL];
     NSURLSessionDataTask *task = [[[NetworkDependenciesObjc sharedInstance] session] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -2485,7 +2482,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (void)isEtherContractAddress:(NSString *)address completion:(void (^ _Nullable)(NSData *, NSURLResponse *, NSError *))completion
 {
-    NSURL *URL = [NSURL URLWithString:[[[BlockchainAPI sharedInstance] apiUrl] stringByAppendingString:[NSString stringWithFormat:URL_SUFFIX_ETH_IS_CONTRACT_ADDRESS_ARGUMENT, address]]];
+    NSURL *URL = [NSURL URLWithString:[[BlockchainAPI.shared apiUrl] stringByAppendingString:[NSString stringWithFormat:URL_SUFFIX_ETH_IS_CONTRACT_ADDRESS_ARGUMENT, address]]];
     NSURLRequest *request = [NSURLRequest requestWithURL:URL];
     NSURLSessionDataTask *task = [[[NetworkDependenciesObjc sharedInstance] session] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -4207,11 +4204,11 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (void)useDebugSettingsIfSet
 {
 #ifdef DEBUG
-    [self updateServerURL:[[BlockchainAPI sharedInstance] walletUrl]];
+    [self updateServerURL:[BlockchainAPI.shared walletUrl]];
 
-    [self updateWebSocketURL:[[BlockchainAPI sharedInstance] webSocketUri]];
+    [self updateWebSocketURL:[BlockchainAPI.shared webSocketUri]];
 
-    [self updateAPIURL:[[BlockchainAPI sharedInstance] apiUrl]];
+    [self updateAPIURL:[BlockchainAPI.shared apiUrl]];
 
     BOOL testnetOn = [[[NSUserDefaults standardUserDefaults] objectForKey:USER_DEFAULTS_KEY_ENV] isEqual:ENV_INDEX_TESTNET];
     NSString *network;

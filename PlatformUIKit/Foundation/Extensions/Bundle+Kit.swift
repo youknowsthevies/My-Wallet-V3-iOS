@@ -7,7 +7,8 @@
 //
 
 extension Bundle {
+    private class PlatformUIKitBundle { }
     public static var platformUIKit: Bundle {
-        return Bundle(identifier: "blockchain.PlatformUIKit")!
+        Bundle(for: PlatformUIKitBundle.self)
     }
 }

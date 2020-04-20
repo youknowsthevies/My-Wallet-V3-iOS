@@ -9,8 +9,14 @@
 import XCTest
 import RxSwift
 import RxBlocking
-
+import ToolKit
 @testable import PlatformUIKit
+
+// TODO: (paulo) move this to its own file
+final class MockMessageRecorder: MessageRecording {
+    func record(_ message: String) {}
+    func record() {}
+}
 
 final class CardExpiryTextFieldViewModelTests: XCTestCase {
     

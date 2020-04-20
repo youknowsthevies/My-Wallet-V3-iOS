@@ -9,7 +9,7 @@
 import RxSwift
 import NetworkKit
 
-@testable import PlatformKit
+import PlatformKit
 @testable import Blockchain
 
 class MockKYCVerifyPhoneNumberInteractor: KYCVerifyPhoneNumberInteractor {

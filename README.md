@@ -51,69 +51,64 @@ Install a node version manager such as [nvm](https://github.com/creationix/nvm) 
 
 Install a Ruby version manager such as [rbenv](https://github.com/rbenv/rbenv).
 
-    $ brew install rbenv
+    $ brew update && brew install rbenv
     $ rbenv init
 
 Install a recent ruby version:
 
-    $ rbenv install -l
-    2.6.3
-    ...
-    $ rbenv install 2.6.3
-    $ rbenv rehash
-
-Then make that version either the `local` or `global` version, e.g.:
-
-    $ rbenv global 2.6.3 
+    $ rbenv install 2.6.5
+    $ rbenv global 2.6.5
 
 Then the project ruby dependencies (`fastlane`, etc.):
 
+    $ gem install bundler
     $ bundle install
 
-## Prepare LibWallySwift build dependencies
+## Install build dependencies (brew)
 
-    $ make install
-    $ cd ./Submodules/libwally-swift
-    $ ./build-libwally.sh -csd
+    $ sh scripts/install-brew-dependencies.sh
 
 ## Bootstrap Carthage Dependencies
 
 To workaround a error when bootstraping Firebase dependencies, use this custom script:
 
-    $ sh
-    $ ./carthage_bootstrap.sh
+    $ sh scripts/carthage-bootstrap.sh
 
 ## Add production Config file
 
 Clone `wallet-ios-credentials` repository and copy it's `Config` directory to this project root directory, it contains a `.xcconfig` for each environment:
 ```
-Config/Development.xcconfig
-Config/Production.xcconfig
-Config/Release.xcconfig
-Config/Staging.xcconfig
+Config/BlockchainConfig/Dev.xcconfig
+Config/BlockchainConfig/Production.xcconfig
+Config/BlockchainConfig/Staging.xcconfig
+Config/NetworkKitConfig/Dev.xcconfig
+Config/NetworkKitConfig/Production.xcconfig
+Config/NetworkKitConfig/Staging.xcconfig
 ```
 
-This is how `Production.xcconfig` looks like:
+This is how `BlockchainConfig/Production.xcconfig` looks like:
 ```
-APP_NAME = Blockchain
-APP_ICON = AppIcon
+ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
+OPENSSL_CERT_URL = blockchain.info
+```
+
+This is how `NetworkKitConfig/Production.xcconfig` looks like:
+```
 API_URL = api.blockchain.info
+BUY_WEBVIEW_URL = blockchain.info/wallet/#/intermediate
+COINIFY_URL = app-api.coinify.com
+EXCHANGE_URL = exchange.blockchain.com
+EXPLORER_SERVER = blockchain.com
+RETAIL_CORE_SOCKET_URL = ws.blockchain.info/nabu-gateway/markets/quotes
+RETAIL_CORE_URL = api.blockchain.info/nabu-gateway
 WALLET_SERVER = blockchain.info
 WEBSOCKET_SERVER = ws.blockchain.info/inv
 WEBSOCKET_SERVER_BCH = ws.blockchain.info/bch/inv
 WEBSOCKET_SERVER_ETH = ws.blockchain.info/eth/inv
-BUY_WEBVIEW_URL = blockchain.info/wallet/#/intermediate
-LOCAL_CERTIFICATE_FILE = blockchain
-FABRIC_API_KEY = <API_KEY>
-FABRIC_SECRET_KEY = <SECRET_KEY>
-GCC_PREPROCESSOR_DEFINITIONS = DEBUG=1 COCOAPODS=1
-OTHER_SWIFT_FLAGS = -DDEBUG
-RETAIL_CORE_URL = api.blockchain.info/nabu-gateway
-RETAIL_CORE_SOCKET_URL = ws.blockchain.info/nabu-gateway/markets/quotes
 ```
 ## Add Firebase Config Files
 
-Clone `wallet-ios-credentials` repository and copy it's `Firebase` directory to this project root directory, it contains a `GoogleService-Info.plist` for each environment.
+Clone `wallet-ios-credentials` repository and copy it's `Firebase` directory into `Blockchain` directory, it contains a `GoogleService-Info.plist` for each environment.
 ```
 Firease/Dev/GoogleService-Info.plist
 Firease/Prod/GoogleService-Info.plist
@@ -127,6 +122,18 @@ Firease/Staging/GoogleService-Info.plist
 ## Build the project
 
     cmd-r
+
+
+## XcodeGen
+
+Installing:
+
+    $ brew install xcodegen
+
+Generating projects:
+
+    $ xcodegen -s project_blockchain.yml
+    $ xcodegen -s project_modules.yml
 
 # Contributing
 

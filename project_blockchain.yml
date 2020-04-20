@@ -1,0 +1,307 @@
+attributes:
+  ORGANIZATIONNAME: Blockchain Luxembourg S.A
+configs:
+  Debug Dev: debug
+  Debug Production: debug
+  Debug Staging: debug
+  Release: release
+  Release Staging: release
+name: Blockchain
+options:
+  bundleIdPrefix: com.rainydayapps
+  defaultConfig: Release
+  deploymentTarget:
+    iOS: '11.0'
+  groupSortPosition: top
+  platform: iOS
+projectReferences:
+  Modules:
+    path: Modules.xcodeproj
+schemeTemplates:
+  BlockchainScheme:
+    analyze:
+      config: ${debugConfig}
+    archive:
+      config: ${releaseConfig}
+    build:
+      targets:
+        Blockchain: build
+    profile:
+      config: ${releaseConfig}
+    run:
+      config: ${debugConfig}
+    test:
+      config: ${debugConfig}
+      targets:
+      - name: BlockchainTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/BitcoinKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/CommonCryptoKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/ERC20KitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/EthereumKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/HDWalletKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/NetworkKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/PlatformKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/PlatformUIKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/StellarKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: Modules/ToolKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+schemes:
+  Blockchain:
+    templateAttributes:
+      debugConfig: Debug Production
+      releaseConfig: Release
+    templates:
+    - BlockchainScheme
+  Blockchain (Dev):
+    templateAttributes:
+      debugConfig: Debug Dev
+      releaseConfig: Release
+    templates:
+    - BlockchainScheme
+  Blockchain (Staging):
+    templateAttributes:
+      debugConfig: Debug Staging
+      releaseConfig: Release Staging
+    templates:
+    - BlockchainScheme
+settingGroups:
+  base_ios:
+    base:
+      TARGETED_DEVICE_FAMILY: 1
+  base_signing:
+    base:
+      CODE_SIGN_ENTITLEMENTS: Blockchain/Blockchain.entitlements
+      CODE_SIGN_STYLE: Manual
+      DEVELOPMENT_TEAM: NZ6PH75U7K
+  debug_signing:
+    base:
+      CODE_SIGN_IDENTITY: iPhone Developer
+      PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain
+    groups:
+    - base_signing
+  release_signing:
+    base:
+      CODE_SIGN_IDENTITY: iPhone Distribution
+      PROVISIONING_PROFILE_SPECIFIER: match AppStore com.rainydayapps.Blockchain
+    groups:
+    - base_signing
+settings:
+  base:
+    CODE_SIGN_STYLE: Manual
+    SUPPORTS_MACCATALYST: false
+    VALID_ARCHS: arm64
+    VALID_ARCHS[sdk=iphonesimulator*]: x86_64
+targets:
+  Blockchain:
+    configFiles:
+      Debug Dev: Config/BlockchainConfig/Dev.xcconfig
+      Debug Production: Config/BlockchainConfig/Production.xcconfig
+      Debug Staging: Config/BlockchainConfig/Staging.xcconfig
+      Release: Config/BlockchainConfig/Production.xcconfig
+      Release Staging: Config/BlockchainConfig/Staging.xcconfig
+    dependencies:
+    - sdk: libicucore.tbd
+    - carthage: BigInt
+    - carthage: Charts
+    - carthage: keccak
+    - carthage: LibWally
+    - carthage: PhoneNumberKit
+    - carthage: PromiseKit
+    - carthage: RxCocoa
+    - carthage: RxRelay
+    - carthage: RxSwift
+    - carthage: scrypt
+    - carthage: secp256k1
+    - carthage: SocketIO
+    - carthage: Starscream
+    - carthage: stellarsdk
+    - carthage: Veriff
+    - carthage: web3swift
+    - carthage: WebRTC
+    - carthage: Zxcvbn
+    - embed: false
+      framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
+    - framework: PlatformUIKit.framework
+      implicit: true
+    - framework: PlatformKit.framework
+      implicit: true
+    - framework: ToolKit.framework
+      implicit: true
+    - framework: NetworkKit.framework
+      implicit: true
+    - framework: StellarKit.framework
+      implicit: true
+    - framework: EthereumKit.framework
+      implicit: true
+    - framework: ERC20Kit.framework
+      implicit: true
+    - framework: BitcoinKit.framework
+      implicit: true
+    - framework: HDWalletKit.framework
+      implicit: true
+    - framework: CommonCryptoKit.framework
+      implicit: true
+    - framework: Localization.framework
+      implicit: true
+    - carthage: FIRAnalyticsConnector
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseABTesting
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseAnalytics
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseCore
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseCoreDiagnostics
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseCrashlytics
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseDynamicLinks
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseInstallations
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseInstanceID
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseMessaging
+      findFrameworks: false
+      linkType: static
+    - carthage: FirebaseRemoteConfig
+      findFrameworks: false
+      linkType: static
+    - carthage: GoogleAppMeasurement
+      findFrameworks: false
+      linkType: static
+    - carthage: GoogleDataTransport
+      findFrameworks: false
+      linkType: static
+    - carthage: GoogleDataTransportCCTSupport
+      findFrameworks: false
+      linkType: static
+    - carthage: GoogleUtilities
+      findFrameworks: false
+      linkType: static
+    - carthage: nanopb
+      findFrameworks: false
+      linkType: static
+    - carthage: PromisesObjC
+      findFrameworks: false
+      linkType: static
+    - carthage: Protobuf
+      findFrameworks: false
+      linkType: static
+    platform: iOS
+    postBuildScripts:
+    - inputFiles:
+      - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}
+      name: Run Crashlytics
+      script: ${PROJECT_DIR}/scripts/crashlytics/run
+    postCompileScripts:
+    - name: Swiftlint
+      path: Blockchain/Scripts/swiftlint.sh
+    - name: Setup Firebase Environment
+      path: Blockchain/Scripts/firebase_copy_plist.sh
+    - name: Get SSL Certificate
+      path: Blockchain/Scripts/get_ssl_certificate.sh
+    - name: Envman BUILT_PRODUCTS_DIR
+      path: Blockchain/Scripts/export_built_products_dir.sh
+    settings:
+      base:
+        GCC_PREFIX_HEADER: Blockchain/Blockchain-Prefix.pch
+        HEADER_SEARCH_PATHS:
+        - $(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include
+        - $(PROJECT_DIR)/Submodules/SocketRocket
+        LIBRARY_SEARCH_PATHS:
+        - $(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/lib
+        OTHER_LDFLAGS:
+        - -ObjC
+        SWIFT_OBJC_BRIDGING_HEADER: Blockchain/Blockchain-Bridging-Header.h
+      configs:
+        Debug Dev:
+          groups:
+          - debug_signing
+          - base_ios
+        Debug Production:
+          groups:
+          - debug_signing
+          - base_ios
+        Debug Staging:
+          groups:
+          - debug_signing
+          - base_ios
+        Release:
+          groups:
+          - release_signing
+          - base_ios
+        Release Staging:
+          groups:
+          - release_signing
+          - base_ios
+    sources:
+    - group: Blockchain/JavaScript
+      optional: true
+      path: Submodules/My-Wallet-V3/dist/my-wallet.js
+    - buildPhase:
+        copyFiles:
+          destination: resources
+      optional: true
+      path: Cert/blockchain.der
+    - excludes:
+      - Firebase
+      - Scripts
+      path: Blockchain
+    - includes:
+      - '**/*.[hm]'
+      path: Submodules/SocketRocket/SocketRocket
+    - includes:
+      - BTCAddress.[hm]
+      - BTCBase58.[hm]
+      - BTCBigNumber.[hm]
+      - BTCCurvePoint.[hm]
+      - BTCData.[hm]
+      - BTCErrors.[hm]
+      - BTCKey.[hm]
+      - BTCKeychain.[hm]
+      - BTCNetwork.[hm]
+      - BTCProtocolSerialization.[hm]
+      - NSData+BTCData.[hm]
+      path: Submodules/CoreBitcoin/CoreBitcoin
+    type: application
+  BlockchainTests:
+    dependencies:
+    - target: Blockchain
+    - carthage: RxSwift
+    - carthage: RxBlocking
+    - carthage: RxTest
+    platform: iOS
+    sources:
+    - BlockchainTests
+    type: bundle.unit-test

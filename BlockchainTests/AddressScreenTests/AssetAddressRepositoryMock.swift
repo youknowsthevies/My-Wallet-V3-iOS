@@ -8,7 +8,7 @@
 
 import RxSwift
 
-@testable import PlatformKit
+import PlatformKit
 @testable import Blockchain
 
 class AssetAddressRepositoryMock: AssetAddressFetching {

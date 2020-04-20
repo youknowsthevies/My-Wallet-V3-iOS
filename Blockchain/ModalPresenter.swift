@@ -149,10 +149,6 @@ typealias OnModalResumed = () -> Void
 
         onResume?()
 
-        if let modalContentView = content as? BCModalContentView {
-            modalContentView.prepareForModalPresentation()
-        }
-
         content.frame = CGRect(
             x: 0,
             y: 0,
