@@ -115,12 +115,6 @@ Firease/Prod/GoogleService-Info.plist
 Firease/Staging/GoogleService-Info.plist
 ```
 
-## Generate projects:
-
-We are integrating XcodeGen and, despite still committing project files in git, we should generate project files using the following script:
-
-    $ sh scripts/generate_projects.sh
-
 ## Open the project in Xcode
 
     $ open Blockchain.xcworkspace
@@ -132,14 +126,16 @@ We are integrating XcodeGen and, despite still committing project files in git, 
 
 ## XcodeGen
 
-Installing:
+### Installing:
 
     $ brew install xcodegen
 
-Generating projects:
+### Generate projects:
 
-    $ xcodegen -s project_blockchain.yml
-    $ xcodegen -s project_modules.yml
+We are integrating XcodeGen and, despite still committing project files in git, we should generate project files using the following script:
+
+    $ sh scripts/generate_projects.sh
+
 
 # Contributing
 
