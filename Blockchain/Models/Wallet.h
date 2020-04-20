@@ -35,12 +35,7 @@
        WalletRepository,
        EtherTransaction;
 
-@protocol ExchangeAccountDelegate
-- (void)watchPendingTrades:(BOOL)shouldSync;
-- (void)showCompletedTrade:(NSString *_Nullable)txHash;
-@end
-
-@interface Wallet : NSObject <UIWebViewDelegate, SRWebSocketDelegate, ExchangeAccountDelegate>
+@interface Wallet : NSObject <UIWebViewDelegate, SRWebSocketDelegate>
 
 // Core Wallet Init Properties
 @property (readonly, nonatomic) JSContext *context;
@@ -227,11 +222,6 @@
 
 - (int)getDefaultAccountLabelledAddressesCount;
 
-/// Java Script core evaluates if user is inside Buy Rollout and they can buy using Coinify
-/// This is Coinify related only.
-- (BOOL)isBuyEnabled;
-
-- (BOOL)isCoinifyTrader;
 - (BOOL)isLockboxEnabled;
 
 // Settings
@@ -339,11 +329,6 @@
 // XLM
 - (NSArray *_Nullable)getXlmAccounts;
 - (void)saveXlmAccount:(NSString *_Nonnull)publicKey label:(NSString *_Nullable)label sucess:(void (^ _Nonnull)(void))success error:(void (^)(NSString *_Nonnull))error;
-
-// Coinify
-- (NSNumber *_Nullable)coinifyID;
-- (NSString *_Nullable)coinifyOfflineToken;
-- (void)saveCoinifyID:(NSInteger)coinifyID token:(NSString *_Nonnull)token success:(void (^ _Nonnull)(void))success error:(void (^)(NSString *_Nonnull))error;
 
 /// Call this method to build an Exchange order.
 /// It constructs and stores a payment object with a given CryptoCurrency, to, from, and amount (properties of OrderTransactionLegacy).

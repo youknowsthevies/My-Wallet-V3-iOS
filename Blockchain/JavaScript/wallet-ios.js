@@ -124,10 +124,6 @@ WalletStore.addEventListener(function (event, obj) {
 
 // My Wallet phone functions
 
-MyWalletPhone.getAPICode = function() {
-    return API_CODE;
-}
-
 MyWalletPhone.upgradeToV3 = function(firstAccountName) {
     var success = function () {
         console.log('Upgraded legacy wallet to HD wallet');
@@ -1913,118 +1909,6 @@ MyWalletPhone.changeNetwork = function(newNetwork) {
     Blockchain.constants.NETWORK = newNetwork;
 }
 
-MyWalletPhone.getExchangeAccount = function () {
-    var coinify = MyWallet.wallet.external.coinify;
-    var partners = walletOptions.getValue().partners;
-    if (coinify.user) {
-        console.log('Found coinify user');
-        coinify.partnerId = partners.coinify.partnerId;
-        return coinify;
-    } else {
-        console.log('Found no coinify user');
-    }
-}
-
-MyWalletPhone.isCoinifyTrader = function() {
-    return MyWallet.wallet.external.coinify.hasAccount;
-}
-
-var tradeToObject = function (trade) {
-  return {
-    createdAt: new Date(trade.createdAt).toLocaleString(),
-    receiveAddress: trade.receiveAddress,
-    txHash: trade.txHash
-  }
-}
-
-var watchTrade = function (trade) {
-  console.log('watching ' + trade.receiveAddress);
-  trade.watchAddress().then(function () {
-    console.log('trade complete ' + trade.receiveAddress);
-    objc_show_completed_trade(tradeToObject(trade));
-  });
-}
-
-MyWalletPhone.getPendingTrades = function(shouldSync) {
-
-      var watchTrades = function() {
-        var exchange = MyWalletPhone.getExchangeAccount();
-        if (exchange) {
-          console.log('Getting pending trades');
-          exchange.getTrades().then(function () {
-            console.log(exchange.trades);
-            exchange.monitorPayments();
-            exchange.trades
-              .filter(function (trade) { return !trade.txHash; })
-              .forEach(watchTrade);
-          });
-        }
-      }
-
-      var loadMetadataIfNeeded = function(errorCallBack) {
-        if (MyWallet.wallet.isMetadataReady) {
-          watchTrades();
-        } else {
-          var wallet = MyWallet.wallet;
-          var p = wallet.loadMetadata();
-          return p.then(function () {
-            objc_loading_stop();
-            watchTrades();
-          }).catch(function(e){console.log('Error getting exchange account:'); console.log(e)});
-        }
-      }
-
-      var error = function(e) {
-        console.log(e);
-        objc_on_get_pending_trades_error(e);
-      };
-
-      if (shouldSync) {
-          console.log('Getting wallet then watching trades');
-          MyWallet.getWallet(function() {
-              loadMetadataIfNeeded(error);
-          }, error);
-      } else {
-          console.log('Watching trades');
-          loadMetadataIfNeeded(error);
-      }
-}
-
-MyWalletPhone.getWebViewLoginData = function () {
-  var wallet = MyWallet.wallet
-  var magicHash = wallet.external._metadata._magicHash
-  return {
-    walletJson: JSON.stringify(wallet.toJSON()),
-    externalJson: wallet.external.toJSON() ? JSON.stringify(wallet.external.toJSON()) : null,
-    magicHash: magicHash ? magicHash.toString('hex') : null
-  }
-}
-
-MyWalletPhone.isBuyFeatureEnabled = function() {
-  var userHasAccessToBuy = function(wallet) {
-    var guidHash = WalletCrypto.sha256(
-      new Buffer(wallet.guid.replace(/-/g, ""), "hex")
-    );
-    var iosBuyPercent = options.iosBuyPercent || 0;
-    var hasAccess = (guidHash[0] + 1) / 256 <= iosBuyPercent;
-    return hasAccess;
-  };
-  var canBuyWithCoinify = function(wallet, options) {
-    var external = wallet && wallet.external;
-    var userHasCoinifyAccount = external && external.coinify && external.coinify.hasAccount;
-    var accountInfo = wallet.accountInfo;
-    var isCoinifyCountry = accountInfo && options.partners.coinify.countries.indexOf(accountInfo.countryCodeGuess) > -1;
-    return userHasCoinifyAccount || isCoinifyCountry;
-  };
-  var wallet = MyWallet.wallet;
-  var options = walletOptions.getValue();
-  return (
-    wallet.external &&
-    userHasAccessToBuy(wallet) &&
-    canBuyWithCoinify(wallet, options)
-  );
-};
-
 function WalletOptions (api) {
   var optionsCache = {};
 
@@ -2697,26 +2581,6 @@ MyWalletPhone.getHistoryForAllAssets = function() {
     var bch = MyWallet.wallet.bch;
     var getBitcoinCashHistory = bch ? bch.getHistory() : {};
     return Promise.all([getBitcoinHistory, getBitcoinCashHistory]);
-}
-
-MyWalletPhone.coinify = {
-    saveCoinifyID: function(identifier, token) {
-        MyWallet.wallet.external.coinify.user = identifier
-        MyWallet.wallet.external.coinify.offlineToken = token
-        MyWallet.wallet.external.save()
-        .then(objc_saveCoinifyMetadata_success).catch(function(e) {
-               objc_saveCoinifyMetadata_error(JSON.stringify(e))
-        });
-    },
-
-    getCoinifyID: function() {
-        return MyWallet.wallet.external.coinify._user;
-    },
-
-    getOfflineToken: function() {
-        var coinify = MyWallet.wallet.external.coinify
-        return coinify._offlineToken;
-    }
 }
 
 MyWalletPhone.tradeExecution = {

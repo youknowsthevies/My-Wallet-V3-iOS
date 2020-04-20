@@ -54,13 +54,7 @@ struct AnnouncementPreliminaryData {
         simpleBuyEventCache[.hasShownBuyScreen] && isSimpleBuyAvailable
     }
 
-    var isSimpleBuyFlow: Bool {
-        return isSimpleBuyEligible || isSimpleBuyFlowAvailable
-    }
-
-    private let isSimpleBuyEligible: Bool
     private let isSimpleBuyAvailable: Bool
-    private let isSimpleBuyFlowAvailable: Bool
     private let airdropCampaigns: AirdropCampaigns
     private let simpleBuyCheckoutData: SimpleBuyCheckoutData?
     private let simpleBuyEventCache: SimpleBuyEventCache
@@ -74,9 +68,7 @@ struct AnnouncementPreliminaryData {
          simpleBuyEventCache: SimpleBuyEventCache = SimpleBuyServiceProvider.default.cache,
          authenticatorType: AuthenticatorType,
          simpleBuyCheckoutData: SimpleBuyCheckoutData?,
-         isSimpleBuyEligible: Bool,
-         isSimpleBuyAvailable: Bool,
-         isSimpleBuyFlowAvailable: Bool) {
+         isSimpleBuyAvailable: Bool) {
         self.airdropCampaigns = airdropCampaigns
         self.user = user
         self.tiers = tiers
@@ -85,9 +77,7 @@ struct AnnouncementPreliminaryData {
         self.simpleBuyEventCache = simpleBuyEventCache
         self.authenticatorType = authenticatorType
         self.simpleBuyCheckoutData = simpleBuyCheckoutData
-        self.isSimpleBuyEligible = isSimpleBuyEligible
         self.isSimpleBuyAvailable = isSimpleBuyAvailable
-        self.isSimpleBuyFlowAvailable = isSimpleBuyFlowAvailable
         country = countries.first { $0.code == user.address?.countryCode }
     }
 }

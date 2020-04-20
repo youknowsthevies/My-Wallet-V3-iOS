@@ -80,7 +80,7 @@ final class BuyCryptoScreenInteractor {
             }
     }
     
-    /// MARK: - Output (readable)
+    // MARK: - Output (readable)
     
     /// Streams the amount as `FiatValue`
     var amount: Observable<FiatValue> {
@@ -105,7 +105,7 @@ final class BuyCryptoScreenInteractor {
     }
 
     /// Streams a boolean indicating whether the user is eligible to Simple Buy
-    var currentEligibiltyState: Observable<Result<Bool, Error>> {
+    var currentEligibilityState: Observable<Result<Bool, Error>> {
         eligibilityService
             .fetch()
             .mapToResult()

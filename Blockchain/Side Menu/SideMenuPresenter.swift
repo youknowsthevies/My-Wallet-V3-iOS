@@ -27,12 +27,12 @@ class SideMenuPresenter {
     // MARK: Public Properties
     
     var sideMenuItems: Observable<[SideMenuItem]> {
-        interactor.isSimpleBuyFlowAvailable
-            .map(weak: self) { (self, isSimpleBuyFlowAvailable) -> [SideMenuItem] in
-                self.menuItems(showSimpleBuy: isSimpleBuyFlowAvailable)
+        featureFetcher
+            .fetchBool(for: .simpleBuyEnabled)
+            .asObservable()
+            .map(weak: self) { (self, isSimpleBuyEnabled) in
+                self.menuItems(showSimpleBuy: isSimpleBuyEnabled)
             }
-            .startWith(menuItems(showSimpleBuy: false))
-            .observeOn(MainScheduler.instance)
     }
     
     var itemSelection: Signal<SideMenuItem> {
@@ -42,7 +42,7 @@ class SideMenuPresenter {
     private weak var view: SideMenuView?
     private var introductionSequence = WalletIntroductionSequence()
     private let introInterator: WalletIntroductionInteractor
-    private let featureFetcher: FeatureConfiguring
+    private let featureFetcher: FeatureFetching
     private let introductionRelay = PublishRelay<WalletIntroductionEventType>()
     private let itemSelectionRelay = PublishRelay<SideMenuItem>()
     
@@ -54,19 +54,16 @@ class SideMenuPresenter {
     private let analyticsRecorder: AnalyticsEventRecording
     private let disposeBag = DisposeBag()
     private var disposable: Disposable?
-    private let interactor: SideMenuInteractor
     
     init(
-        interactor: SideMenuInteractor = SideMenuInteractor(),
         view: SideMenuView,
         wallet: Wallet = WalletManager.shared.wallet,
         walletService: WalletService = WalletService.shared,
-        featureFetcher: FeatureConfiguring = AppFeatureConfigurator.shared,
+        featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
         exchangeConfiguration: AppFeatureConfiguration = AppFeatureConfigurator.shared.configuration(for: .exchangeLinking),
         onboardingSettings: BlockchainSettings.Onboarding = .shared,
         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
     ) {
-        self.interactor = interactor
         self.view = view
         self.wallet = wallet
         self.walletService = walletService
@@ -129,10 +126,6 @@ class SideMenuPresenter {
         triggerNextStep()
     }
 
-    private var mayUseCoinify: Bool {
-        return featureFetcher.configuration(for: .coinifyEnabled).isEnabled && wallet.isBuyEnabled()
-    }
-
     private func menuItems(showSimpleBuy: Bool) -> [SideMenuItem] {
         var items: [SideMenuItem] = [.accountsAndAddresses]
         
@@ -148,8 +141,6 @@ class SideMenuPresenter {
         
         if showSimpleBuy {
             items.append(.simpleBuy)
-        } else if mayUseCoinify {
-            items.append(.buyBitcoin)
         }
 
         items += [.support, .airdrops, .settings]

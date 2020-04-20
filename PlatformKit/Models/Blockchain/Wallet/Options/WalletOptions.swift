@@ -48,7 +48,6 @@ public struct WalletOptions: Decodable {
         static let domains = "domains"
         
         static let partners = "partners"
-        static let coinify = "coinify"
         static let partnerId = "partnerId"
         static let ethereum = "ethereum"
         static let lastTxFuse = "lastTxFuse"
@@ -69,7 +68,6 @@ public struct WalletOptions: Decodable {
     enum CodingKeys: String, CodingKey {
         case domains
         case partners
-        case coinify
         case partnerId
         case countries
         case mobile
@@ -130,22 +128,6 @@ public struct WalletOptions: Decodable {
     
     public struct Ethereum: Decodable {
         public let lastTxFuse: Int64
-    }
-    
-    public struct Coinify: Decodable {
-        public let partnerId: Int
-        public let countries: [String]
-        
-        enum CodingKeys: String, CodingKey {
-            case partnerId
-            case countries
-        }
-        
-        public init(from decoder: Decoder) throws {
-            let values = try decoder.container(keyedBy: CodingKeys.self)
-            partnerId = try values.decode(Int.self, forKey: .partnerId)
-            countries = try values.decode([String].self, forKey: .countries)
-        }
     }
     
     public struct XLMMetadata: Decodable {
@@ -211,8 +193,6 @@ public struct WalletOptions: Decodable {
     
     public let mobile: Mobile?
     
-    public let coinifyMetadata: Coinify?
-    
     public let xlmMetadata: XLMMetadata?
 
     public let ethereum: Ethereum
@@ -231,20 +211,6 @@ extension WalletOptions.Domains {
                 return nil
         }
         self.stellarHorizon = stellarHorizonURL.absoluteString
-    }
-}
-
-public extension WalletOptions.Coinify {
-    init?(json: JSON) {
-        if let partners = json[WalletOptions.Keys.partners] as? [String: [String: Any]] {
-            guard let coinify = partners[WalletOptions.Keys.coinify] else { return nil }
-            guard let identifier = coinify[WalletOptions.Keys.partnerId] as? Int else { return nil }
-            guard let countries = coinify[WalletOptions.Keys.countries] as? [String] else { return nil }
-            self.partnerId = identifier
-            self.countries = countries
-        } else {
-            return nil
-        }
     }
 }
 
@@ -332,7 +298,6 @@ public extension WalletOptions {
         self.downForMaintenance = json[Keys.maintenance] as? Bool ?? false
         self.mobile = WalletOptions.Mobile(json: json)
         self.mobileInfo = WalletOptions.MobileInfo(json: json)
-        self.coinifyMetadata = WalletOptions.Coinify(json: json)
         self.xlmMetadata = WalletOptions.XLMMetadata(json: json)
         updateType = WalletOptions.UpdateType(json: json)
         let xlmExchangeContainer = json[CodingKeys.xlmExchange.rawValue] as? [String: [String]]
@@ -357,8 +322,6 @@ public extension WalletOptions {
         }
         let xlmExchangeAddressContainer = try values.nestedContainer(keyedBy: CodingKeys.self, forKey: .xlmExchange)
         self.xlmExchangeAddresses = try xlmExchangeAddressContainer.decodeIfPresent([String].self, forKey: .exchangeAddresses)
-        let nestedCoinifyContainer = try values.nestedContainer(keyedBy: CodingKeys.self, forKey: .partners)
-        self.coinifyMetadata = try nestedCoinifyContainer.decodeIfPresent(Coinify.self, forKey: .coinify)
         let appUpdateMetaData = try values.decodeIfPresent(AppUpdateMetadata.self, forKey: .ios)
         if let value = appUpdateMetaData {
             updateType = value.updateType

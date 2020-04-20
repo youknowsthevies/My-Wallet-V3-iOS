@@ -22,10 +22,10 @@ final class SwapWalletIntroductionEvent: CompletableWalletIntroductionEvent {
         let location = SwapWalletIntroductionEvent.location
         let viewModel = WalletIntroductionPulseViewModel(
             location: location,
-            action: {
-                self.introductionEntry.updateLatestLocation(location)
-                self.selection()
-        })
+            action: { [weak self] in
+                self?.introductionEntry.updateLatestLocation(location)
+                self?.selection()
+            })
         return .pulse(viewModel)
     }
     
@@ -57,11 +57,9 @@ final class SwapDescriptionIntroductionEvent: WalletIntroductionEvent, WalletInt
             description: LocalizationConstants.Onboarding.IntroductionSheet.Swap.description,
             buttonTitle: buttonTitle,
             thumbnail: #imageLiteral(resourceName: "Icon-Swap"),
-            onSelection: {
-                self.selection()
-        }
-        )
-        
+            onSelection: { [weak self] in
+                self?.selection()
+            })
         return .sheet(viewModel)
     }
     
@@ -76,9 +74,8 @@ final class SwapDescriptionIntroductionEvent: WalletIntroductionEvent, WalletInt
     }
     
     private var buttonTitle: String {
-        /// If `Buy` is enabled, the user will see an additional
-        /// introduction event. 
-        switch isBuyEnabled {
+        /// If `Buy` is enabled, the user will see an additional introduction event.
+        switch isSimpleBuyEnabled {
         case true:
             return LocalizationConstants.Onboarding.IntroductionSheet.next
         case false:
@@ -86,10 +83,10 @@ final class SwapDescriptionIntroductionEvent: WalletIntroductionEvent, WalletInt
         }
     }
     
-    private let isBuyEnabled: Bool
+    private let isSimpleBuyEnabled: Bool
     
-    init(isBuyEnabled: Bool, selection: @escaping WalletIntroductionAction) {
-        self.isBuyEnabled = isBuyEnabled
+    init(isSimpleBuyEnabled: Bool, selection: @escaping WalletIntroductionAction) {
+        self.isSimpleBuyEnabled = isSimpleBuyEnabled
         self.selection = selection
     }
 }

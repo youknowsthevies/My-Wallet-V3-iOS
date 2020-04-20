@@ -18,7 +18,6 @@ public enum AnnouncementType: String, Codable {
     case twoFA = "two_fa"
     case backupFunds = "backup_funds"
     case verifyIdentity = "kyc_incomplete"
-    case coinifyKyc = "kyc_more_info"
     case resubmitDocuments = "kyc_resubmit"
     case blockstackAirdropReceived = "stx_airdrop_complete"
     case blockstackAirdropRegisteredMini = "stx_registered_airdrop_mini"
@@ -58,8 +57,6 @@ public enum AnnouncementType: String, Codable {
             return .pax
         case .bitpay:
             return .bitpay
-        case .coinifyKyc:
-            return .coinifyKyc
         case .resubmitDocuments:
             return .resubmitDocuments
         case .simpleBuyPendingTransaction:

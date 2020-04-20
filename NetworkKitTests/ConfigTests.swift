@@ -21,7 +21,6 @@ class ConfigTests: XCTestCase {
         let keys: [String] = [
             "API_URL",
             "BUY_WEBVIEW_URL",
-            "COINIFY_URL",
             "EXCHANGE_URL",
             "EXPLORER_SERVER",
             "RETAIL_CORE_SOCKET_URL",

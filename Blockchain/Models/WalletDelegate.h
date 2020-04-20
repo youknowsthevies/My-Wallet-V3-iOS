@@ -78,9 +78,7 @@
 - (void)didSendPaymentRequest:(NSDictionary *)info amount:(uint64_t)amount name:(NSString *)name requestId:(NSString *)requestId;
 - (void)didRequestPaymentRequest:(NSDictionary *)info name:(NSString *)name;
 - (void)didSendPaymentRequestResponse;
-- (void)didCompleteTrade:(NSDictionary *)trade;
 - (void)didPushTransaction;
-- (void)showCompletedTrade:(NSString *)txHash;
 - (void)didGetSwipeAddresses:(NSArray *)newSwipeAddresses assetType:(LegacyAssetType)assetType;
 - (void)didFetchEthHistory;
 - (void)didUpdateEthPayment:(NSDictionary *)payment;

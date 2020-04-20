@@ -125,10 +125,7 @@ final class AnnouncementPresenter {
             case .backupFunds:
                 announcement = backupFunds(reappearanceTimeInterval: metadata.interval)
             case .buyBitcoin:
-                announcement = buyBitcoin(
-                    reappearanceTimeInterval: metadata.interval,
-                    isSimpleBuyFlow: preliminaryData.isSimpleBuyFlow
-                )
+                announcement = buyBitcoin(reappearanceTimeInterval: metadata.interval)
             case .transferBitcoin:
                 announcement = transferBitcoin(
                     isKycSupported: preliminaryData.isKycSupported,
@@ -145,8 +142,6 @@ final class AnnouncementPresenter {
                 announcement = verifyIdentity(using: preliminaryData.user)
             case .swap:
                 announcement = swap(using: preliminaryData, reappearanceTimeInterval: metadata.interval)
-            case .coinifyKyc:
-                announcement = coinifyKyc(tiers: preliminaryData.tiers, reappearanceTimeInterval: metadata.interval)
             case .exchangeLinking:
                 announcement = exchangeLinking(user: preliminaryData.user)
             case .bitpay:
@@ -206,7 +201,7 @@ extension AnnouncementPresenter {
             action: { [weak self] in
                 guard let self = self else { return }
                 self.hideAnnouncement()
-                self.appCoordinator.handleBuyCrypto(simpleBuy: true)
+                self.appCoordinator.handleBuyCrypto()
             }
         )
     }
@@ -220,7 +215,7 @@ extension AnnouncementPresenter {
             action: { [weak self] in
                 guard let self = self else { return }
                 self.hideAnnouncement()
-                self.appCoordinator.handleBuyCrypto(simpleBuy: true)
+                self.appCoordinator.handleBuyCrypto()
             }
         )
     }
@@ -331,16 +326,13 @@ extension AnnouncementPresenter {
     }
     
     /// Computes Buy BTC announcement
-    private func buyBitcoin(reappearanceTimeInterval: TimeInterval, isSimpleBuyFlow: Bool) -> Announcement {
-        let isCoinifyEnabled = featureConfigurator.configuration(for: .coinifyEnabled).isEnabled
-        let isEnabled = (isSimpleBuyFlow && !wallet.isBitcoinWalletFunded)
-            || (isCoinifyEnabled && wallet.isBuyEnabled() && !wallet.isBitcoinWalletFunded)
+    private func buyBitcoin(reappearanceTimeInterval: TimeInterval) -> Announcement {
         return BuyBitcoinAnnouncement(
-            isEnabled: isEnabled,
+            isEnabled: !wallet.isBitcoinWalletFunded,
             reappearanceTimeInterval: reappearanceTimeInterval,
             dismiss: hideAnnouncement,
             action: { [weak appCoordinator] in
-                appCoordinator?.handleBuyCrypto(simpleBuy: isSimpleBuyFlow)
+                appCoordinator?.handleBuyCrypto()
             }
         )
     }
@@ -383,29 +375,7 @@ extension AnnouncementPresenter {
             }
         )
     }
-    
-    /// Computes Coinify KYC alert announcement
-    private func coinifyKyc(tiers: KYC.UserTiers,
-                            reappearanceTimeInterval: TimeInterval) -> Announcement {
-        let coinifyFeatureFlag = featureConfigurator.configuration(for: .coinifyEnabled)
-        let coinifyConfig = featureConfigurator.configuration(for: .notifyCoinifyUserToKyc)
-        
-        let approve = { [weak self] in
-            let rootVC = UIApplication.shared.keyWindow!.rootViewController!
-            self?.kycCoordinator.start(from: rootVC, tier: .tier2)
-        }
 
-        return CoinifyKycAnnouncement(
-            configuration: coinifyConfig,
-            isCoinifyEnabled: coinifyFeatureFlag.isEnabled,
-            tiers: tiers,
-            wallet: wallet,
-            reappearanceTimeInterval: reappearanceTimeInterval,
-            dismiss: hideAnnouncement,
-            action: approve
-        )
-    }
-    
     /// Computes Upload Documents card announcement
     private func resubmitDocuments(user: NabuUser) -> Announcement {
         return ResubmitDocumentsAnnouncement(

@@ -42,8 +42,8 @@ final class WalletIntroductionPresenter: NSObject {
     
     // The current introduction sequence.
     private var introductionSequence = WalletIntroductionSequence()
-    
-    private let wallet: Wallet
+
+    private let featureConfigurator: FeatureConfiguring
     private let interactor: WalletIntroductionInteractor
     private let recorder: AnalyticsEventRecording
     private let screen: WalletIntroductionLocation.Screen
@@ -52,15 +52,15 @@ final class WalletIntroductionPresenter: NSObject {
     private let disposeBag = DisposeBag()
     
     init(
+        featureConfigurator: FeatureConfiguring = AppFeatureConfigurator.shared,
         onboardingSettings: BlockchainSettings.Onboarding = .shared,
         screen: WalletIntroductionLocation.Screen,
-        wallet: Wallet = WalletManager.shared.wallet,
         recorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
         ) {
+        self.featureConfigurator = featureConfigurator
         self.onboardingSettings = onboardingSettings
         self.screen = screen
         self.interactor = WalletIntroductionInteractor(onboardingSettings: onboardingSettings, screen: screen)
-        self.wallet = wallet
         self.recorder = recorder
     }
     
@@ -175,11 +175,12 @@ extension WalletIntroductionPresenter {
     }
     
     private var swapDescription: SwapDescriptionIntroductionEvent {
-        return SwapDescriptionIntroductionEvent(isBuyEnabled: wallet.isBuyEnabled(), selection: { [weak self] in
+        let isSimpleBuyEnabled = featureConfigurator.configuration(for: .simpleBuyEnabled).isEnabled
+        return SwapDescriptionIntroductionEvent(isSimpleBuyEnabled: isSimpleBuyEnabled, selection: { [weak self] in
             guard let self = self else { return }
             self.triggerNextStep()
             // If `Buy` isn't enabled, then we don't need to open the side menu.
-            guard self.wallet.isBuyEnabled() else { return }
+            guard isSimpleBuyEnabled else { return }
             AppCoordinator.shared.toggleSideMenu()
         })
     }

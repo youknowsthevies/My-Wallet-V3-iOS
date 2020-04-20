@@ -14,8 +14,6 @@
 #import "BCModalView.h"
 #import "BCNavigationController.h"
 #import "BCNavigationController.h"
-#import "BuyBitcoinNavigationController.h"
-#import "BuyBitcoinViewController.h"
 #import "DebugTableViewController.h"
 #import "ECSlidingViewController.h"
 #import "KeychainItemWrapper+Credentials.h"

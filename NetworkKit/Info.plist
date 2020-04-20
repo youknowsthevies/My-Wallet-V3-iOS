@@ -22,8 +22,6 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>COINIFY_URL</key>
-	<string>$(COINIFY_URL)</string>
 	<key>EXCHANGE_URL</key>
 	<string>$(EXCHANGE_URL)</string>
 	<key>EXPLORER_SERVER</key>

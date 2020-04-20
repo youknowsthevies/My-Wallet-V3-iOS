@@ -194,14 +194,12 @@ struct Mobile: Decodable {
 struct Tags: Decodable {
     let sunriver: Sunriver?
     let blockstack: Blockstack?
-    let coinify: Bool?
     let powerPax: PowerPax?
     let simpleBuy: SimpleBuy?
     
     enum CodingKeys: String, CodingKey {
         case sunriver = "SUNRIVER"
         case blockstack = "BLOCKSTACK"
-        case coinify = "COINIFY"
         case powerPax = "POWER_PAX"
         case simpleBuy = "SIMPLE_BUY"
     }
@@ -210,19 +208,16 @@ struct Tags: Decodable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         sunriver = try values.decodeIfPresent(Sunriver.self, forKey: .sunriver)
         blockstack = try values.decodeIfPresent(Blockstack.self, forKey: .blockstack)
-        coinify = try values.decodeIfPresent(Bool.self, forKey: .coinify)
         powerPax = try values.decodeIfPresent(PowerPax.self, forKey: .powerPax)
         simpleBuy = try values.decodeIfPresent(SimpleBuy.self, forKey: .simpleBuy)
     }
 
     init(sunriver: Sunriver? = nil,
          blockstack: Blockstack? = nil,
-         coinify: Bool = false,
          powerPax: PowerPax? = nil,
          simpleBuy: SimpleBuy? = nil) {
         self.sunriver = sunriver
         self.blockstack = blockstack
-        self.coinify = coinify
         self.powerPax = powerPax
         self.simpleBuy = simpleBuy
     }

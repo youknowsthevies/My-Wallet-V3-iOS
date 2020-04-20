@@ -21,10 +21,6 @@ public enum AppFeature: Int, CaseIterable {
     case stellarAirdropPopup
     case stellarLargeBacklog
 
-    /// Coinify
-    case coinifyEnabled
-    case notifyCoinifyUserToKyc
-
     /// Exchange linking enabled
     case exchangeLinking
 
@@ -44,8 +40,6 @@ extension AppFeature {
         switch self {
         case .stellarAirdrop:
             return "ios_sunriver_airdrop_enabled"
-        case .notifyCoinifyUserToKyc:
-            return "ios_notify_coinify_users_to_kyc"
         case .stellarAirdropPopup:
             return "get_free_xlm_popup"
         case .stellarLargeBacklog:
@@ -58,8 +52,6 @@ extension AppFeature {
             return "announcements"
         case .simpleBuyEnabled:
             return "simple_buy_enabled"
-        case .coinifyEnabled:
-            return "coinify_enabled"
         case .biometry,
              .stellar,
              .swipeToReceive,

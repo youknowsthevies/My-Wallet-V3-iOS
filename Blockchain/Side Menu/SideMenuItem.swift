@@ -16,7 +16,6 @@ enum SideMenuItem {
     typealias Title = String
     case accountsAndAddresses
     case backup
-    case buyBitcoin
     case simpleBuy
     case logout
     case airdrops
@@ -36,8 +35,6 @@ extension SideMenuItem {
             return .sideNavAccountsAndAddresses
         case .backup:
             return .sideNavBackup
-        case .buyBitcoin:
-            return .sideNavBuyBitcoin
         case .simpleBuy:
             return .sideNavSimpleBuy
         case .logout:
@@ -65,8 +62,6 @@ extension SideMenuItem {
             return LocalizationConstants.SideMenu.addresses
         case .backup:
             return LocalizationConstants.SideMenu.backupFunds
-        case .buyBitcoin:
-            return LocalizationConstants.SideMenu.buySellBitcoin
         case .simpleBuy:
             return LocalizationConstants.SideMenu.buyCrypto
         case .logout:
@@ -94,8 +89,6 @@ extension SideMenuItem {
             return "menu-icon-addresses"
         case .backup:
             return "menu-icon-backup"
-        case .buyBitcoin:
-            return "menu-icon-buy"
         case .simpleBuy:
             return "menu-icon-buy"
         case .logout:
@@ -125,7 +118,6 @@ extension SideMenuItem {
         switch self {
         case .accountsAndAddresses,
              .backup,
-             .buyBitcoin,
              .simpleBuy,
              .logout,
              .settings,

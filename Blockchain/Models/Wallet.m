@@ -601,16 +601,6 @@ NSString * const kLockboxInvitation = @"lockbox";
         [weakSelf on_error_recover_with_passphrase:error];
     };
 
-#pragma mark Buy/Sell
-
-    self.context[@"objc_show_completed_trade"] = ^(JSValue *trade) {
-        [weakSelf show_completed_trade:trade];
-    };
-
-    self.context[@"objc_on_get_pending_trades_error"] = ^(JSValue *error) {
-        [weakSelf on_get_pending_trades_error:error];
-    };
-
 #pragma mark Settings
     
     self.context[@"objc_on_get_account_info_and_exchange_rates"] = ^() {
@@ -1098,11 +1088,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
     
     return isInitialized;
-}
-
-- (NSString *)getAPICode
-{
-    return [[self.context evaluateScript:@"MyWalletPhone.getAPICode()"] toString];
 }
 
 - (void)setEncryptedWalletData {
@@ -2173,17 +2158,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     return [[[self.context evaluateScript:@"MyWalletPhone.getDefaultAccountLabelledAddressesCount()"] toNumber] intValue];
 }
 
-- (BOOL)isBuyEnabled
-{
-
-    return [[self.context evaluateScript:@"MyWalletPhone.isBuyFeatureEnabled()"] toBool];
-}
-
-- (BOOL)isCoinifyTrader
-{
-    return [[self.context evaluateScript:@"MyWalletPhone.isCoinifyTrader()"] toBool];
-}
-
 - (BOOL)isLockboxEnabled
 {
     if ([self.accountInfo objectForKey:kAccountInvitations]) {
@@ -2192,24 +2166,6 @@ NSString * const kLockboxInvitation = @"lockbox";
         return enabled;
     } else {
         return NO;
-    }
-}
-
-- (void)watchPendingTrades:(BOOL)shouldSync
-{
-    if (shouldSync) {
-        [[LoadingViewPresenter sharedInstance] showWith:[LocalizationConstantsObjcBridge syncingWallet]];
-    }
-
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getPendingTrades(%d)", shouldSync]];
-}
-
-- (void)showCompletedTrade:(NSString *)txHash
-{
-    if ([self.delegate respondsToSelector:@selector(showCompletedTrade:)]) {
-        [self.delegate showCompletedTrade:txHash];
-    } else {
-        DLog(@"Error: delegate of class %@ does not respond to selector showCompletedTrade!", [delegate class]);
     }
 }
 
@@ -2402,54 +2358,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
     
     [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.tradeExecution.%@.send(\"%@\")", tradeExecutionType, [secondPassword escapedForJS]]];
-}
-
-#pragma mark - Coinify API
-
-- (NSNumber *_Nullable)coinifyID
-{
-    if ([self isInitialized]) {
-        JSValue *output = [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.coinify.getCoinifyID()"]];
-        if ([output isUndefined]) {
-            return nil;
-        }
-        NSNumber *result = [output toNumber];
-        return result;
-    } else {
-        DLog(@"Wallet not initialized");
-    }
-    // TODO:
-    return nil;
-}
-
-- (NSString *_Nullable)coinifyOfflineToken
-{
-    if ([self isInitialized]) {
-        JSValue *output = [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.coinify.getOfflineToken()"]];
-        if ([output isUndefined]) {
-            return nil;
-        }
-        
-        NSString *result = [output toString];
-        return result;
-    } else {
-        DLog(@"Wallet not initialized");
-    }
-    // TODO:
-    return nil;
-}
-
-- (void)saveCoinifyID:(NSInteger)coinifyID token:(NSString *)token success:(void (^)(void))success error:(void (^)(NSString * _Nonnull))error
-{
-    if ([self isInitialized]) {
-        [self.context invokeOnceWithFunctionBlock:success forJsFunctionName:@"objc_saveCoinifyMetadata_success"];
-        [self.context invokeOnceWithStringFunctionBlock:error forJsFunctionName:@"objc_saveCoinifyMetadata_error"];
-        NSString *formatted = [NSString stringWithFormat:@"MyWalletPhone.coinify.saveCoinifyID(%ld, \"%@\")", coinifyID, token];
-        [self.context evaluateScript:formatted];
-    } else {
-        DLog(@"Wallet not initialized");
-        error(@"Wallet not initialized");
-    }
 }
 
 # pragma mark - Ethereum
@@ -3063,8 +2971,6 @@ NSString * const kLockboxInvitation = @"lockbox";
         }
     }
 
-    [self watchPendingTrades:NO];
-
     if ([delegate respondsToSelector:@selector(walletDidFinishLoad)]) {
 
         [delegate walletDidFinishLoad];
@@ -3596,23 +3502,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     } else {
         DLog(@"Error: delegate of class %@ does not respond to selector didGetSwipeAddresses!", [delegate class]);
     }
-}
-
-- (void)show_completed_trade:(JSValue *)trade
-{
-    NSDictionary *tradeDict = [trade toDictionary];
-    DLog(@"show_completed_trade %@", tradeDict);
-
-    if ([self.delegate respondsToSelector:@selector(didCompleteTrade:)]) {
-        [self.delegate didCompleteTrade:tradeDict];
-    } else {
-        DLog(@"Error: delegate of class %@ does not respond to selector didCompleteTrade:!", [delegate class]);
-    }
-}
-
-- (void)on_get_pending_trades_error:(JSValue *)error
-{
-    [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:[error toString] title:BC_STRING_ERROR in:nil handler:nil];
 }
 
 - (void)on_create_eth_account_for_exchange_success

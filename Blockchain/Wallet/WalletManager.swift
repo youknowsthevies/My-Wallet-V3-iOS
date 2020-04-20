@@ -36,7 +36,6 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI {
 
     @objc weak var settingsDelegate: WalletSettingsDelegate?
     weak var authDelegate: WalletAuthDelegate?
-    weak var buySellDelegate: WalletBuySellDelegate?
     weak var accountInfoDelegate: WalletAccountInfoDelegate?
     @objc weak var addressesDelegate: WalletAddressesDelegate?
     @objc weak var recoveryDelegate: WalletRecoveryDelegate?
@@ -134,8 +133,6 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI {
         BlockchainSettings.App.shared.biometryEnabled = false
 
         AppCoordinator.shared.tabControllerManager.transition(to: 1)
-
-        BuySellCoordinator.shared.start()
     }
 
     private var backgroundUpdateTaskIdentifer: UIBackgroundTaskIdentifier?
@@ -244,22 +241,6 @@ extension WalletManager: WalletDelegate {
             self.authDelegate?.authenticationError(error: AuthenticationError(
                 code: AuthenticationError.ErrorCode.failedToLoadWallet.rawValue
             ))
-        }
-    }
-
-    // MARK: - Buy/Sell
-
-    func didCompleteTrade(_ tradeDict: [AnyHashable: Any]!) {
-        guard let hash = tradeDict["txHash"] as? String else { return }
-        guard let date = tradeDict["createdAt"] as? String else { return }
-        DispatchQueue.main.async { [unowned self] in
-            self.buySellDelegate?.didCompleteTrade(with: hash, date: date)
-        }
-    }
-
-    func showCompletedTrade(_ txHash: String) {
-        DispatchQueue.main.async { [unowned self] in
-            self.buySellDelegate?.showCompletedTrade(tradeHash: txHash)
         }
     }
 

@@ -9,7 +9,10 @@
 import RxSwift
 
 public protocol SimpleBuyAvailabilityServiceAPI: class {
+    
     var valueObservable: Observable<Bool> { get }
     var valueSingle: Single<Bool> { get }
+
+    /// Feature is enabled and SimpleBuySupportedPairsInteractorServiceAPI returns a pair is locally supported (SimpleBuyLocallySupportedCurrencies)
     func fetch() -> Single<Bool>
 }
