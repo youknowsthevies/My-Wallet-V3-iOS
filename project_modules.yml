@@ -189,6 +189,8 @@ targets:
     - carthage: RxSwift
     - carthage: RxRelay
     - carthage: RxCocoa
+    - carthage: RxDataSources
+    - carthage: Differentiator
     - carthage: Zxcvbn
     scheme:
       testTargets:

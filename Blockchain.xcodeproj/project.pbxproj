@@ -246,6 +246,7 @@
 		2A7038A725CC7F3D4D4575DA /* LocationSuggestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB9EDCD73835EAC6A27DB760 /* LocationSuggestion.swift */; };
 		2AC56DC920953C8573BF295A /* TransactionProgressListeners.m in Sources */ = {isa = PBXBuildFile; fileRef = 42A920788ED6DA9D7713B104 /* TransactionProgressListeners.m */; };
 		2B07E5C0F5679435AA1A01D9 /* VerifyBackupViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6491A7CE9580526ED6111B09 /* VerifyBackupViewController.xib */; };
+		2B0C47D155A699E157C47118 /* RxDataSources.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C14A59C0424B7BA7B99ADB0 /* RxDataSources.framework */; };
 		2B3A7F7DC7AE24B7780EF858 /* countries.json in Resources */ = {isa = PBXBuildFile; fileRef = 6D7FBDDAE22180908B7E0250 /* countries.json */; };
 		2B45E3DA8739B190965C1B62 /* WalletNabuSynchronizerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7EAE03565B650CF1F6A1556 /* WalletNabuSynchronizerService.swift */; };
 		2BBD806EC021D138F9B3DAE8 /* SendWalletIntroductionEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F48B46B58275035FC66BC5E /* SendWalletIntroductionEvent.swift */; };
@@ -490,6 +491,7 @@
 		5A6CA1017C5E3D9793388414 /* KYCCTAHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 49712A85C51A967C10AE4971 /* KYCCTAHeaderView.xib */; };
 		5A748CBFD6839773378B1C3A /* LocationSuggestionAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96BADF77EF0E80385567B0B /* LocationSuggestionAPI.swift */; };
 		5A7C757CED590E6608AC8060 /* ExchangeCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395CF0E495CA600CA1276998 /* ExchangeCoordinator.swift */; };
+		5A92B68742190F1FC5194308 /* Differentiator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D81ADEAB58EF903B63B004FE /* Differentiator.framework */; };
 		5A98DDFB95A7EA9BA34F651E /* LabelContentPresenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A81975634C64FAE079F9B1 /* LabelContentPresenting.swift */; };
 		5AF7157E0BAD187CB897D8A4 /* AssetLineChartInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B34F6B0B710AEB7D10453BD /* AssetLineChartInteraction.swift */; };
 		5AFA4C067DBC7BC589F5A184 /* SendSourceAccountTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746D84C542FF8D7465011CCD /* SendSourceAccountTableViewCell.swift */; };
@@ -670,6 +672,7 @@
 		7CE80EF3CC4121766DA6F973 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = BE21FDD63B89237BD5C6344D /* SettingsViewController.xib */; };
 		7CE8F4CFB8D7A61F6BF26FCD /* MockEthereumWalletTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE84C39C9DEDFC0CEE700D0 /* MockEthereumWalletTestData.swift */; };
 		7CEE9497B318CAEFA4226A9D /* BackupRouterStateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45ECAA06E70942AFB87A5E26 /* BackupRouterStateService.swift */; };
+		7D1B2B45D0043F9F7904FB84 /* Differentiator.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D81ADEAB58EF903B63B004FE /* Differentiator.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7D1E76905012776E93924941 /* TotalBalanceTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CA15534A809CC48CC55C0B5C /* TotalBalanceTableViewCell.xib */; };
 		7D45913FB634D52EF7F9C26F /* PaymentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4FEF6C85FFC498CF927EA28 /* PaymentPresenter.swift */; };
 		7DF118995E6BBE8670AAE93E /* BitpayServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69862E79C8E8BA968267A7F8 /* BitpayServiceTests.swift */; };
@@ -701,6 +704,7 @@
 		85029C7873700AA0B797FD0A /* AddressSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8305B8FB222B5773E3E8A23F /* AddressSubscriber.swift */; };
 		850810A472DCCA0AFFA48A4A /* AirdropCampaigns+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51687C280E1BA8F945DFF159 /* AirdropCampaigns+Mock.swift */; };
 		851E9458E83C7D411C6A6430 /* ConversionRatesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0D5D88EB3FAB90950ADEED70 /* ConversionRatesView.xib */; };
+		852D961BAD8024B144325B50 /* RxDataSources.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3C14A59C0424B7BA7B99ADB0 /* RxDataSources.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		853699FBA9CF4C23BFAD5E68 /* AirdropCenterScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F57B29488A172990BCF4FBD /* AirdropCenterScreenViewController.swift */; };
 		85401A16FFBB29324292FC2A /* StellarOperationsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759296E92A2AB38A04B17380 /* StellarOperationsAPI.swift */; };
 		856D2321996246B05CDDEBE2 /* KYCResubmitIdentityRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28D79BCBD16D66B8D3FC8C4 /* KYCResubmitIdentityRouter.swift */; };
@@ -1421,11 +1425,13 @@
 			files = (
 				AF73362054BD2B13CFFD2C04 /* BigInt.framework in Embed Frameworks */,
 				84E68E400AC349AB7AF04316 /* Charts.framework in Embed Frameworks */,
+				7D1B2B45D0043F9F7904FB84 /* Differentiator.framework in Embed Frameworks */,
 				B3229F49B0DA2913B7D6B3CB /* LibWally.framework in Embed Frameworks */,
 				4DDA5214B08117C8D836A157 /* PhoneNumberKit.framework in Embed Frameworks */,
 				8EC8E7CBD1A7022888F2B689 /* PromiseKit.framework in Embed Frameworks */,
 				7534387E6D832F921C7611B9 /* RxBlocking.framework in Embed Frameworks */,
 				704FD2371205F345C6441C0A /* RxCocoa.framework in Embed Frameworks */,
+				852D961BAD8024B144325B50 /* RxDataSources.framework in Embed Frameworks */,
 				FC9175C3403056A79DE9D7F0 /* RxRelay.framework in Embed Frameworks */,
 				126A24034BD9CCA3F0B6B985 /* RxSwift.framework in Embed Frameworks */,
 				743FFACEB807DB0D5BAD1A53 /* RxTest.framework in Embed Frameworks */,
@@ -1884,6 +1890,7 @@
 		3BD790B5EE2477595C4F8C87 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/KYCCountrySelectionController.strings; sourceTree = "<group>"; };
 		3C0C6AA772DE71D220A605C5 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/KYCAddressController.strings; sourceTree = "<group>"; };
 		3C1006E9341889D1CF12F278 /* NSRunLoop+SRWebSocketPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSRunLoop+SRWebSocketPrivate.h"; sourceTree = "<group>"; };
+		3C14A59C0424B7BA7B99ADB0 /* RxDataSources.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RxDataSources.framework; sourceTree = "<group>"; };
 		3C231524A6A09A31B20195FB /* BTCData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BTCData.h; sourceTree = "<group>"; };
 		3C293FAF82B1309FE49AC357 /* BlockchainDataRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainDataRepository.swift; sourceTree = "<group>"; };
 		3C3896532BAB176CF95728D3 /* SendExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendExecutor.swift; sourceTree = "<group>"; };
@@ -3082,6 +3089,7 @@
 		D7B2B2FB5D7697B773C073E1 /* TransactionProgressListeners.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TransactionProgressListeners.h; sourceTree = "<group>"; };
 		D7CB2BECE9B2A433175451C5 /* zh */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh; path = zh.lproj/KYCWelcomeController.strings; sourceTree = "<group>"; };
 		D7DB0ADDA728C201ABA95757 /* TextCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TextCell.xib; sourceTree = "<group>"; };
+		D81ADEAB58EF903B63B004FE /* Differentiator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Differentiator.framework; sourceTree = "<group>"; };
 		D82C14BDFA67393D817E2D35 /* MainFlowProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainFlowProviding.swift; sourceTree = "<group>"; };
 		D84593977D8B39D1A85156EF /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/KYCEnterPhoneNumberController.strings; sourceTree = "<group>"; };
 		D856394826F70AA55776E14B /* BuyIntroScreenViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BuyIntroScreenViewController.xib; sourceTree = "<group>"; };
@@ -3424,6 +3432,8 @@
 				10BCFA4291141E147AA72915 /* RxCocoa.framework in Frameworks */,
 				7224A263A89DB55D0DAC55FA /* RxRelay.framework in Frameworks */,
 				2DFE39D85CCBACFF65B13C64 /* RxSwift.framework in Frameworks */,
+				2B0C47D155A699E157C47118 /* RxDataSources.framework in Frameworks */,
+				5A92B68742190F1FC5194308 /* Differentiator.framework in Frameworks */,
 				677760467A78243E169474FC /* scrypt.framework in Frameworks */,
 				7804F58EA403D5EA374E851B /* secp256k1.framework in Frameworks */,
 				EE800149FB3FE0F7C2098624 /* SocketIO.framework in Frameworks */,
@@ -4652,6 +4662,7 @@
 			children = (
 				37D3CF9729E712DC26E5E44B /* BigInt.framework */,
 				07A32EB5ED225EED889C4A93 /* Charts.framework */,
+				D81ADEAB58EF903B63B004FE /* Differentiator.framework */,
 				399271DC0B785D12BDD1BDF7 /* FIRAnalyticsConnector.framework */,
 				04DA263F6704236AFFC815C4 /* FirebaseABTesting.framework */,
 				92663E0715630C7A895CE48C /* FirebaseAnalytics.framework */,
@@ -4676,6 +4687,7 @@
 				3A7BC555F720027566880477 /* Protobuf.framework */,
 				77599F2CA13029F10F26437C /* RxBlocking.framework */,
 				8DDEC58DEC02DD13D417C1CB /* RxCocoa.framework */,
+				3C14A59C0424B7BA7B99ADB0 /* RxDataSources.framework */,
 				F4804E4D91AA591AD8DDF913 /* RxRelay.framework */,
 				03C0E49B0E40D8A3FCCBAAF8 /* RxSwift.framework */,
 				E045A644021CFDB4A2621357 /* RxTest.framework */,
@@ -8376,10 +8388,12 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/BigInt.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Charts.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Differentiator.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/LibWally.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/PhoneNumberKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/PromiseKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/RxCocoa.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/RxDataSources.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/RxRelay.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/RxSwift.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SocketIO.framework",
@@ -8397,10 +8411,12 @@
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/BigInt.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Charts.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Differentiator.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/LibWally.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/PhoneNumberKit.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/PromiseKit.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxCocoa.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxDataSources.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxRelay.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxSwift.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SocketIO.framework",

@@ -133,6 +133,8 @@ targets:
     - carthage: RxCocoa
     - carthage: RxRelay
     - carthage: RxSwift
+    - carthage: RxDataSources
+    - carthage: Differentiator
     - carthage: scrypt
     - carthage: secp256k1
     - carthage: SocketIO
