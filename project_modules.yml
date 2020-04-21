@@ -15,9 +15,11 @@ options:
   groupSortPosition: top
   platform: iOS
 settings:
-  SUPPORTS_MACCATALYST: false
-  VALID_ARCHS: arm64
-  VALID_ARCHS[sdk=iphonesimulator*]: x86_64
+  base:
+    ENABLE_BITCODE: false
+    SUPPORTS_MACCATALYST: false
+    VALID_ARCHS: arm64
+    VALID_ARCHS[sdk=iphonesimulator*]: x86_64
 targetTemplates:
   Framework:
     platform: iOS

@@ -13,3 +13,5 @@ carthage bootstrap --use-ssh --cache-builds --platform iOS FirebaseAnalyticsBina
     carthage bootstrap --use-ssh --cache-builds --platform iOS FirebaseRemoteConfigBinary &&
     carthage bootstrap --use-ssh --cache-builds --platform iOS FirebaseMessagingBinary &&
     carthage bootstrap --use-ssh --cache-builds --platform iOS
+
+sh scripts/move-veriff-sdk.sh
