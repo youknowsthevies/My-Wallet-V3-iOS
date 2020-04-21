@@ -327,8 +327,10 @@ extension AnnouncementPresenter {
     
     /// Computes Buy BTC announcement
     private func buyBitcoin(reappearanceTimeInterval: TimeInterval) -> Announcement {
+        let simpleBuyEnabled = featureConfigurator.configuration(for: .simpleBuyEnabled).isEnabled
+        let isEnabled = simpleBuyEnabled && !wallet.isBitcoinWalletFunded
         return BuyBitcoinAnnouncement(
-            isEnabled: !wallet.isBitcoinWalletFunded,
+            isEnabled: isEnabled,
             reappearanceTimeInterval: reappearanceTimeInterval,
             dismiss: hideAnnouncement,
             action: { [weak appCoordinator] in
