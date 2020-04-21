@@ -574,7 +574,6 @@
 		8E315807ABEABDF4E5BDC7E8 /* RxTest.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5DDE0E2997B37AAB1F49AB /* RxTest.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8E957B1A0C3EED72178F7ECB /* TestKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EA184CC33B6F6AE70DB6E29B /* TestKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8ECC4F363FCA43ED4A25D60D /* WalletOptionsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C90C4D57D2BD841D1E6BC3B /* WalletOptionsAPI.swift */; };
-		8EF8FACEC64158267761B4E2 /* CoinifyAccountRepositoryAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64FB497C8EA02B98254B0A0F /* CoinifyAccountRepositoryAPI.swift */; };
 		8F81A19F1E036DA981BA2739 /* AssetURLPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502C535AA59D464647D0BA23 /* AssetURLPayload.swift */; };
 		8FB544740F8DFDD00D265B9F /* Accessibility+LabeledButtonCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A40C67DA093B7919B3C2073 /* Accessibility+LabeledButtonCollectionView.swift */; };
 		8FC591FF316B25798A2CDCED /* ERC20AccountAPIClientAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CD70C4BE23E2F8E4AE393CF /* ERC20AccountAPIClientAPI.swift */; };
@@ -1895,7 +1894,6 @@
 		645448C09DE1421978C8BF2E /* UIStackView+Conveniences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIStackView+Conveniences.swift"; sourceTree = "<group>"; };
 		6466FC81169521277334CB1A /* SimpleBuyEventCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleBuyEventCache.swift; sourceTree = "<group>"; };
 		647FE6E2B4E79D08585E7FD7 /* UserInformationServiceProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInformationServiceProviding.swift; sourceTree = "<group>"; };
-		64FB497C8EA02B98254B0A0F /* CoinifyAccountRepositoryAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinifyAccountRepositoryAPI.swift; sourceTree = "<group>"; };
 		65585C60E84FB7501C97CAF2 /* Network+UserAgent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Network+UserAgent.swift"; sourceTree = "<group>"; };
 		65697C19AA9EA25A6BBE0F9E /* SingleExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleExtensions.swift; sourceTree = "<group>"; };
 		65B1052E960BEDEDDEF95B78 /* PlatformKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlatformKit.h; sourceTree = "<group>"; };
@@ -3499,14 +3497,6 @@
 			path = KeyPair;
 			sourceTree = "<group>";
 		};
-		36CB6E867672276B102B2727 /* Coinify */ = {
-			isa = PBXGroup;
-			children = (
-				64FB497C8EA02B98254B0A0F /* CoinifyAccountRepositoryAPI.swift */,
-			);
-			path = Coinify;
-			sourceTree = "<group>";
-		};
 		371072D216787F6BE258C15D /* Accounts */ = {
 			isa = PBXGroup;
 			children = (
@@ -4013,7 +4003,6 @@
 			isa = PBXGroup;
 			children = (
 				F88992C1FC87B8AC68C45C06 /* AssetAccountAPIs */,
-				36CB6E867672276B102B2727 /* Coinify */,
 				2F9FF5790AB3D7ACA303D7BE /* KeyPair */,
 				D12C1045A7EF0446F6333BE7 /* WalletAccountAPIs */,
 				46CC5EC1B9E1247573B83ED2 /* AccountValidationAPI.swift */,
@@ -7117,7 +7106,6 @@
 				176EAA8389CA97C7DA2BE06D /* BlockchainDataRepositoryAPI.swift in Sources */,
 				4CE191B091F2EC24E215F5A4 /* CachedValue+Setup.swift in Sources */,
 				FF14DFBFB17C18F5C7E8ECD4 /* CardData.swift in Sources */,
-				8EF8FACEC64158267761B4E2 /* CoinifyAccountRepositoryAPI.swift in Sources */,
 				0EB5217CF78FBB1CEE848340 /* Country.swift in Sources */,
 				C287D3AC14860AED7857E98A /* Crypto.swift in Sources */,
 				17F005078637229031EBB9B5 /* CryptoAssetQRMetadata.swift in Sources */,

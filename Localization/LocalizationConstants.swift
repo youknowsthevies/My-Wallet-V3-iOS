@@ -2021,20 +2021,6 @@ public struct LocalizationConstants {
                 comment: "2FA announcement card CTA button title"
             )
         }
-        public struct CoinifyKyc {
-            public static let title = NSLocalizedString(
-                "More Information Needed",
-                comment: "Coinify kyc announcement card title"
-            )
-            public static let description = NSLocalizedString(
-                "To keep using Buy, you’ll need to update your profile. Once completed, you’ll also unlock higher trading limits in Swap.",
-                comment: "Coinify kyc announcement card description"
-            )
-            public static let ctaButton = NSLocalizedString(
-                "Update Now",
-                comment: "Coinify kyc announcement card CTA button title"
-            )
-        }
     }
     
     public struct Exchange {

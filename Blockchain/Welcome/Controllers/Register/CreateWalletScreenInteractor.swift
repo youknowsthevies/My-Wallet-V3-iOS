@@ -92,9 +92,7 @@ extension CreateWalletScreenInteractor: WalletDelegate {
         /// Mark the wallet as new
         wallet.isNew = true
         authenticationCoordinator.isCreatingWallet = true
-        
-        // TODO: Remove this?
-        BuySellCoordinator.shared.buyBitcoinViewController?.isNew = true
+
         BlockchainSettings.App.shared.hasEndedFirstSession = false
     }
     

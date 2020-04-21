@@ -408,18 +408,6 @@ final class BlockchainSettings: NSObject {
             }
         }
         
-        /// Determines whether we show a modal prompt telling users that they are about to
-        /// have a Coinify account created on their behalf and buy continuing to Buy-Sell
-        /// they agree to Coinify's TOS
-        var didAcceptCoinifyTOS: Bool {
-            get {
-                return defaults.bool(forKey: UserDefaults.Keys.didAcceptCoinifyTOS.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.didAcceptCoinifyTOS.rawValue)
-            }
-        }
-        
         /// Users that are linking their Exchange account to their blockchain wallet will deep-link
         /// from the Exchange into the mobile app.
         var exchangeLinkIdentifier: String? {
@@ -480,7 +468,6 @@ final class BlockchainSettings: NSObject {
             didTapOnExchangeDeepLink = false
             didAttemptToRouteForAirdrop = false
             didTapOnKycDeepLink = false
-            didAcceptCoinifyTOS = false
             exchangeLinkIdentifier = nil
 
             KYCSettings.shared.reset()

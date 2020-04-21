@@ -39,10 +39,8 @@ final public class BlockchainAPI: NSObject {
     /// Public hosts used for partner API calls.
     public enum PartnerHosts: String, CaseIterable {
         case bitpay = "bitpay.com"
-        case coinify = "app-api.coinify.com"
         case stellarchain = "stellarchain.io"
         case googleAnalytics = "www.google-analytics.com"
-        case iSignThis = "coinify-verify.isignthis.com"
         case shapeshift = "shapeshift.io"
         case firebaseAnalytics = "app-measurement.com"
     }
@@ -146,10 +144,6 @@ final public class BlockchainAPI: NSObject {
         return "https://\(PartnerHosts.bitpay.rawValue)"
     }
     
-    public var coinifyEndpoint: String {
-        return InfoDictionaryHelper.value(for: .coinifyURL, prefix: "https://")
-    }
-    
     public var stellarchainUrl: String {
         return "https://\(PartnerHosts.stellarchain.rawValue)"
     }
@@ -205,7 +199,6 @@ fileprivate struct InfoDictionaryHelper {
     enum Key: String {
         case apiURL = "API_URL"
         case buyWebviewURL = "BUY_WEBVIEW_URL"
-        case coinifyURL = "COINIFY_URL"
         case exchangeURL = "EXCHANGE_URL"
         case explorerServer = "EXPLORER_SERVER"
         case retailCoreSocketURL = "RETAIL_CORE_SOCKET_URL"

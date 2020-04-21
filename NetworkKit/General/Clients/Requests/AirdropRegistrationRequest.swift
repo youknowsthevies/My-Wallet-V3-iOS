@@ -15,7 +15,6 @@ public struct AirdropRegistrationRequest: Codable {
     public enum CampaignIdentifier: String, CodingKey {
         case sunriver = "SUNRIVER"
         case blockstack = "BLOCKSTACK"
-        case coinify = "COINIFY"
         case powerPax = "POWER_PAX"
     }
     

@@ -131,10 +131,10 @@ final class BuyCryptoScreenPresenter {
                 Observable
                     .zip(
                         interactor.currentKycState.asObservable(),
-                        interactor.currentEligibiltyState
+                        interactor.currentEligibilityState
                     )
-                    .map { (currentKycState, currentEligibiltyState) -> Result<CTAData, Error> in
-                        switch (currentKycState, currentEligibiltyState) {
+                    .map { (currentKycState, currentEligibilityState) -> Result<CTAData, Error> in
+                        switch (currentKycState, currentEligibilityState) {
                         case (.success(let kycState), .success(let isSimpleBuyEligible)):
                             let ctaData = CTAData(
                                 kycState: kycState,

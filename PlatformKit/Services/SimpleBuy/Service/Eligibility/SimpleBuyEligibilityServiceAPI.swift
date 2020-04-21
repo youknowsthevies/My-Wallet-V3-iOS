@@ -9,6 +9,8 @@
 import RxSwift
 
 public protocol SimpleBuyEligibilityServiceAPI: class {
+
+    /// Feature is enabled and SimpleBuyEligibilityClientAPI returns eligible for current fiat currency.
     var isEligible: Observable<Bool> { get }
     func fetch() -> Observable<Bool>
 }

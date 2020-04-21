@@ -96,7 +96,6 @@ import PlatformKit
     
     @objc func start() {
         appFeatureConfigurator.initialize()
-        BuySellCoordinator.shared.start()
 
         // Display welcome screen if no wallet is authenticated
         if blockchainSettings.guid == nil || blockchainSettings.sharedKey == nil {
@@ -255,10 +254,8 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
             handleAirdrops()
         case .logout:
             handleLogout()
-        case .buyBitcoin:
-            handleBuyCrypto(simpleBuy: false)
         case .simpleBuy:
-            handleBuyCrypto(simpleBuy: true)
+            handleBuyCrypto()
         case .exchange:
             handleExchange()
         case .lockbox:
@@ -370,31 +367,11 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         sideMenuViewController = nil
     }
 
-    /// Starts Coinify or Simple Buy flow.
-    func handleBuyCrypto(simpleBuy: Bool) {
-        /// Starts Coinify flow
-        func startBuyCrypto() {
-            BuySellCoordinator.shared.showBuyBitcoinView()
-        }
-        /// Starts Simple Buy Flow
-        func startSimpleBuy() {
-            let stateService = SimpleBuyStateService()
-            simpleBuyRouter = SimpleBuyRouter(stateService: stateService)
-            simpleBuyRouter.start()
-        }
-        if simpleBuy {
-            startSimpleBuy()
-        } else {
-            startBuyCrypto()
-            // TODO: IOS-2833 - Remove previous line and uncomment following code to disable Coinify once Simple Buy is ready for release.
-            // AlertViewPresenter.shared.standardNotify(
-            //   message: LocalizationConstants.BuySell.DeprecationError.message,
-            //   title: LocalizationConstants.Errors.error,
-            //   actions: [
-            //     UIAlertAction(title: LocalizationConstants.okString, style: .default)
-            //   ]
-            // )
-        }
+    /// Starts Simple Buy flow.
+    @objc func handleBuyCrypto() {
+        let stateService = SimpleBuyStateService()
+        simpleBuyRouter = SimpleBuyRouter(stateService: stateService)
+        simpleBuyRouter.start()
     }
     
     func startSimpleBuyAtLogin() {
@@ -404,32 +381,6 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         }
         simpleBuyRouter = SimpleBuyRouter(stateService: stateService)
         simpleBuyRouter.start()
-    }
-
-    /// Checks for simple buy flow availability, and for coinify feature flag and isBuyEnabled flag, then
-    /// starts the correct Crypto Buy Flow.
-    /// If no flow is available, executes onError..
-    @objc
-    func startBuyUsingCoinifyOrSimpleBuy(onError: @escaping () -> Void) {
-        let flowAvailability = SimpleBuyServiceProvider.default.flowAvailability
-        flowAvailability
-            .isSimpleBuyFlowAvailable
-            .take(1)
-            .asSingle()
-            .handleLoaderForLifecycle(
-                loader: loadingViewPresenter,
-                style: .circle
-            )
-            .subscribe(onSuccess: { [unowned self] isEligible in
-                if isEligible {
-                    self.handleBuyCrypto(simpleBuy: true)
-                } else if self.appFeatureConfigurator.configuration(for: .coinifyEnabled).isEnabled, self.walletManager.wallet.isBuyEnabled() {
-                    self.handleBuyCrypto(simpleBuy: false)
-                } else {
-                    onError()
-                }
-            })
-            .disposed(by: disposeBag)
     }
 }
 

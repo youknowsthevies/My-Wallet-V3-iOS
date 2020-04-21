@@ -89,7 +89,6 @@ extension AnalyticsEvents {
     enum SideMenu: AnalyticsEvent {
         case sideNavAccountsAndAddresses
         case sideNavBackup
-        case sideNavBuyBitcoin
         case sideNavSimpleBuy
         case sideNavLogout
         case sideNavSettings
@@ -108,9 +107,6 @@ extension AnalyticsEvents {
             // Menu - backup clicked
             case .sideNavBackup:
                 return "side_nav_backup"
-            // Menu - buy bitcoin clicked
-            case .sideNavBuyBitcoin:
-                return "side_nav_buy_bitcoin"
             // Menu - simple-buy clicked
             case .sideNavSimpleBuy:
                 return "side_nav_simple_buy"

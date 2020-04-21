@@ -144,11 +144,7 @@
 
 - (void)getAssetButtonClicked
 {
-    [AppCoordinator.sharedInstance startBuyUsingCoinifyOrSimpleBuyOnError:^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [AppCoordinator.sharedInstance.tabControllerManager receiveCoinClicked:nil];
-        });
-    }];
+    [AppCoordinator.sharedInstance handleBuyCrypto];
 }
 
 - (NSInteger)tableView:(UITableView *)_tableView numberOfRowsInSection:(NSInteger)section

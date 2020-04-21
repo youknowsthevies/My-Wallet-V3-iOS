@@ -34,8 +34,7 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
 
     // MARK: - Setup
     
-    init(walletManager: WalletManager = WalletManager.shared,
-         wallet: ReactiveWalletAPI = ReactiveWallet(),
+    init(wallet: ReactiveWalletAPI = ReactiveWallet(),
          authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
          client: SimpleBuyClientAPI = SimpleBuyClient(),
          cacheSuite: CacheSuite = UserDefaults.standard,
@@ -97,13 +96,7 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
             orderDetailsService: ordersDetails,
             authenticationService: authenticationService
         )
-        flowAvailability = SimpleBuyFlowAvailabilityService(
-            coinifyAccountRepository: CoinifyAccountRepository(bridge: walletManager.wallet),
-            featureFetcher: featureFetcher,
-            fiatCurrencyService: settings,
-            reactiveWallet: wallet,
-            supportedPairsService: supportedPairs
-        )
+        flowAvailability = SimpleBuyFlowAvailabilityService()
 
         self.dataRepository = dataRepository
         self.settings = settings

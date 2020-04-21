@@ -34,7 +34,6 @@ extension AnnouncementRecord {
         case pax = "announcement-cache-pax"
         case exchange = "announcement-cache-pit"
         case bitpay = "announcement-cache-bitpay"
-        case coinifyKyc = "announcement-cache-coinify-kyc"
         case resubmitDocuments = "announcement-cache-resubmit-documents"
     }
     
