@@ -40,7 +40,7 @@ public struct HDPrivateKey: Equatable {
     }
     
     public func publicKey() -> HDPublicKey {
-        return HDPublicKey(data: libWallyKey.pubKey)
+        return HDPublicKey(data: libWallyKey.pubKey.data)
     }
     
     public func derive(at path: HDKeyPath) throws -> HDPrivateKey {
