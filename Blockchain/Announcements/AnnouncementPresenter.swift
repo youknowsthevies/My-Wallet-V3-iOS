@@ -350,10 +350,6 @@ extension AnnouncementPresenter {
         )
     }
 
-    // TODO: `wallet.getTotalActiveBalance()` is wrong because it doesn't deduce the state of all asset
-    // accounts. only BTC is included. therefore, we should have a service that does it.
-    // TICKET: IOS-2503 - iOS Wallet Networking | Replace JS network calls with native
-    
     /// Computes Backup Funds (recovery phrase)
     private func backupFunds(reappearanceTimeInterval: TimeInterval) -> Announcement {
         let shouldBackupFunds = !wallet.isRecoveryPhraseVerified() && wallet.isBitcoinWalletFunded
@@ -364,7 +360,7 @@ extension AnnouncementPresenter {
             action: appCoordinator.showBackupView
         )
     }
-    
+
     /// Computes 2FA announcement
     private func twoFA(data: AnnouncementPreliminaryData, reappearanceTimeInterval: TimeInterval) -> Announcement {
         let shouldEnable2FA = !data.hasTwoFA && wallet.isBitcoinWalletFunded
