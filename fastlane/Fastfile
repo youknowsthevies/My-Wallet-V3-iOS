@@ -65,6 +65,7 @@ platform :ios do
     # cd $BITRISE_SOURCE_DIR/output/Blockchain.xcarchive/dSYMs/
     # zip -r $BITRISE_SOURCE_DIR/output/blockchain-dsyms.zip . 
     upload_symbols_to_crashlytics(
+      binary_path: "./scripts/crashlytics/upload-symbols",
       dsym_path: "./output/blockchain-dsyms.zip",
       gsp_path: "./Blockchain/Firebase/Prod/GoogleService-Info.plist"
     )
