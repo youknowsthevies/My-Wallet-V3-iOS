@@ -8,8 +8,7 @@
 #
 
 if command -v xcodegen 2> /dev/null; then
-    xcodegen -s project_blockchain.yml
-    xcodegen -s project_modules.yml
+    xcodegen
 else
     echo "(i) xcodegen missing"
 fi
