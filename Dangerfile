@@ -9,6 +9,8 @@ failure("PR is classed as not ready to be merged") if github.pr_labels == "Don't
 declared_trivial = github.pr_labels == "Easy PR"
 
 swiftlint.lint_files
+swiftlint.lint_files inline_mode: true
+swiftlint.lint_all_files = false
 
 failure "Please add labels to this PR" if github.pr_labels.empty?
 
