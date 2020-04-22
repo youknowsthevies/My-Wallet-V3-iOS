@@ -8,6 +8,8 @@ failure("PR is classed as not ready to be merged") if github.pr_labels == "Don't
 
 declared_trivial = github.pr_labels == "Easy PR"
 
+swiftlint.lint_files
+
 failure "Please add labels to this PR" if github.pr_labels.empty?
 
 # Warn when there is a big PR
