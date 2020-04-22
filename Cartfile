@@ -1,22 +1,18 @@
-binary "https://cdn.veriff.me/ios/carthage/VeriffWebRTC.json" ~> 1.0.1
-github "socketio/socket.io-client-swift" == 15.0.0
-github "daltoniam/Starscream" ~> 3.1.1
-
-github "ReactiveX/RxSwift" ~> 5.0
-github "RxSwiftCommunity/RxDataSources" ~> 4.0
+binary "https://cdn.veriff.me/ios/carthage/VeriffWebRTC.json" == 1.0.1
+binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json" == 6.23.0
+binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseCrashlyticsBinary.json" == 6.23.0
+binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseDynamicLinksBinary.json" == 6.23.0
+binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseMessagingBinary.json" == 6.23.0
+binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseProtobufBinary.json" == 6.23.0
+binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseRemoteConfigBinary.json" == 6.23.0
 github "attaswift/BigInt" ~> 4.0
-
-github "thisisalexmcgregor/web3swift" "blockchain"
-github "thisisalexmcgregor/stellar-ios-mac-sdk" "blockchain"
-
-github "dropbox/zxcvbn-ios" == 1.0.4
-github "danielgindi/Charts" == 3.4.0
-github "marmelroy/PhoneNumberKit" == 3.1.0
-
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json" == 6.21.0
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseCrashlyticsBinary.json" == 6.21.0
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseDynamicLinksBinary.json" == 6.21.0
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseRemoteConfigBinary.json" == 6.21.0
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseMessagingBinary.json" == 6.21.0
-
 github "blockchain/libwally-swift" == 0.0.1
+github "daltoniam/Starscream" ~> 3.1.1
+github "danielgindi/Charts" ~> 3.5
+github "dropbox/zxcvbn-ios" ~> 1.0
+github "marmelroy/PhoneNumberKit" ~> 3.2
+github "ReactiveX/RxSwift" ~> 5.1
+github "RxSwiftCommunity/RxDataSources" ~> 4.0
+github "socketio/socket.io-client-swift" == 15.0.0
+github "thisisalexmcgregor/stellar-ios-mac-sdk" "blockchain"
+github "thisisalexmcgregor/web3swift" "blockchain"
