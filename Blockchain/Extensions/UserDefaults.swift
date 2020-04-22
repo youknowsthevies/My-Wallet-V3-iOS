@@ -12,11 +12,10 @@ import Foundation
 extension UserDefaults {
 
     // TICKET: IOS-1289 - Refactor key-value mapping such that key = value
-    // Refactor enableCertificatePinning, simulateZeroTicker, shouldHideBuySellCard,
+    // Refactor simulateZeroTicker, shouldHideBuySellCard,
     // swipeToReceiveEnabled such that key = value (where possible)
     enum DebugKeys: String {
         case appReviewPromptCount = "debug_appReviewPromptCount"
-        case enableCertificatePinning = "debug_certificatePinning"
         case securityReminderTimer = "debug_securiterReminderTimer"
         case simulateSurge = "debug_simulateSurge"
         case simulateZeroTicker = "debug_zeroTicker"
@@ -39,7 +38,6 @@ extension UserDefaults {
         case encryptedPinPassword
         // legacyEncryptedPinPassword is required for wallets that created a PIN prior to Homebrew release - see IOS-1537
         case legacyEncryptedPinPassword = "encryptedPINPassword"
-        case environment
         case firstRun
         case graphTimeFrameKey = "timeFrame"
         case hasEndedFirstSession

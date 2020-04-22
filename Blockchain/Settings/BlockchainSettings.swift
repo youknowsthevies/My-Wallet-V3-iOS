@@ -113,15 +113,6 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        @objc var enableCertificatePinning: Bool {
-            get {
-                return defaults.bool(forKey: UserDefaults.DebugKeys.enableCertificatePinning.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.DebugKeys.enableCertificatePinning.rawValue)
-            }
-        }
-
         @objc var hasEndedFirstSession: Bool {
             get {
                 return defaults.bool(forKey: UserDefaults.Keys.hasEndedFirstSession.rawValue)
@@ -444,8 +435,7 @@ final class BlockchainSettings: NSObject {
 
             defaults.register(defaults: [
                 UserDefaults.Keys.swipeToReceiveEnabled.rawValue: true,
-                UserDefaults.Keys.assetType.rawValue: CryptoCurrency.bitcoin.code,
-                UserDefaults.DebugKeys.enableCertificatePinning.rawValue: true
+                UserDefaults.Keys.assetType.rawValue: CryptoCurrency.bitcoin.code
             ])
             migratePasswordAndPinIfNeeded()
             handleMigrationIfNeeded()

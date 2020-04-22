@@ -10,8 +10,6 @@ import Foundation
 import RxSwift
 import ToolKit
 
-fileprivate var DISABLE_CERT_PINNING: Bool = false
-
 public protocol NetworkCommunicatorAPI {
     func perform(request: NetworkRequest) -> Completable
     func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Completable
@@ -42,10 +40,6 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
         self.scheduler = scheduler
         
         sessionDelegate.delegate = sessionHandler
-        
-        #if DEBUG
-            DISABLE_CERT_PINNING = true
-        #endif
     }
     
     // MARK: - Recordable
@@ -133,7 +127,7 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
 
 class NetworkCommunicatorSessionHandler: NetworkSessionDelegateAPI {
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping AuthChallengeHandler) {
-        guard !DISABLE_CERT_PINNING else {
+        guard BlockchainAPI.shared.shouldPinCertificate else {
             completionHandler(.performDefaultHandling, nil)
             return
         }
