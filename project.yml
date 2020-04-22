@@ -148,11 +148,11 @@ targets:
     - FrameworkTest
   Blockchain:
     configFiles:
-      Debug Dev: Config/BlockchainConfig/Dev.xcconfig
-      Debug Production: Config/BlockchainConfig/Production.xcconfig
-      Debug Staging: Config/BlockchainConfig/Staging.xcconfig
-      Release: Config/BlockchainConfig/Production.xcconfig
-      Release Staging: Config/BlockchainConfig/Staging.xcconfig
+      Debug Dev: Config/BlockchainConfig/Blockchain-Dev.xcconfig
+      Debug Production: Config/BlockchainConfig/Blockchain-Production.xcconfig
+      Debug Staging: Config/BlockchainConfig/Blockchain-Staging.xcconfig
+      Release: Config/BlockchainConfig/Blockchain-Production.xcconfig
+      Release Staging: Config/BlockchainConfig/Blockchain-Staging.xcconfig
     dependencies:
     - sdk: libicucore.tbd
     - carthage: BigInt
@@ -401,11 +401,11 @@ targets:
     - Framework
   NetworkKit:
     configFiles:
-      Debug Dev: Config/NetworkKitConfig/Dev.xcconfig
-      Debug Production: Config/NetworkKitConfig/Production.xcconfig
-      Debug Staging: Config/NetworkKitConfig/Staging.xcconfig
-      Release: Config/NetworkKitConfig/Production.xcconfig
-      Release Staging: Config/NetworkKitConfig/Staging.xcconfig
+      Debug Dev: Config/NetworkKitConfig/NetworkKit-Dev.xcconfig
+      Debug Production: Config/NetworkKitConfig/NetworkKit-Production.xcconfig
+      Debug Staging: Config/NetworkKitConfig/NetworkKit-Staging.xcconfig
+      Release: Config/NetworkKitConfig/NetworkKit-Production.xcconfig
+      Release Staging: Config/NetworkKitConfig/NetworkKit-Staging.xcconfig
     dependencies:
     - carthage: RxSwift
     - target: ToolKit
@@ -416,6 +416,7 @@ targets:
         BUY_WEBVIEW_URL: $(BUY_WEBVIEW_URL)
         EXCHANGE_URL: $(EXCHANGE_URL)
         EXPLORER_SERVER: $(EXPLORER_SERVER)
+        PIN_CERTIFICATE: $(PIN_CERTIFICATE)
         RETAIL_CORE_SOCKET_URL: $(RETAIL_CORE_SOCKET_URL)
         RETAIL_CORE_URL: $(RETAIL_CORE_URL)
         WALLET_SERVER: $(WALLET_SERVER)

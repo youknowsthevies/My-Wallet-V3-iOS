@@ -22,13 +22,7 @@ final public class CertificatePinner: NSObject {
     // MARK: - Properties
 
     /// The instance variable used to access functions of the `CertificatePinner` class.
-    public static let shared = CertificatePinner()
-
-    // TODO: remove once migration is complete
-    /// Objective-C compatible class function
-    @objc public class func sharedInstance() -> CertificatePinner {
-        return CertificatePinner.shared
-    }
+    @objc public static let shared = CertificatePinner()
 
     /// Path to the local certificate file
     @objc public var localCertificatePath: String? {
@@ -54,34 +48,19 @@ final public class CertificatePinner: NSObject {
         super.init()
     }
 
-    public func pinCertificate() {
+    public func pinCertificateIfNeeded() {
+        guard BlockchainAPI.shared.shouldPinCertificate else {
+            return
+        }
         let walletUrl = BlockchainAPI.shared.walletUrl
         guard let url = URL(string: walletUrl) else {
-                fatalError("Failed to get wallet url from Bundle.")
+            fatalError("Failed to get wallet url from Bundle.")
         }
         session.sessionDescription = url.host
         // TODO:
         // * inject NetworkCommunicator
-        let task = session.dataTask(with: url) { _, response, error in
-            if let transportError = error {
-                self.handleClientError(transportError)
-                return
-            }
-            guard let httpResponse = response as? HTTPURLResponse,
-                (200...299).contains(httpResponse.statusCode) else {
-                    self.handleServerError(response!)
-                    return
-            }
-        }
+        let task = session.dataTask(with: url) { _, _, _ in }
         task.resume()
-    }
-
-    private func handleClientError(_ error: Error) {
-
-    }
-
-    private func handleServerError(_ response: URLResponse) {
-
     }
 
     @objc

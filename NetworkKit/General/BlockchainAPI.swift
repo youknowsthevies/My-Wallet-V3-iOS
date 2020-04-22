@@ -193,6 +193,18 @@ final public class BlockchainAPI: NSObject {
             return BlockchainAPI.shared.retailCoreUrl + "/markets/quotes"
         }
     }
+
+    @objc public var shouldPinCertificate: Bool {
+        let value = InfoDictionaryHelper.value(for: .certificatePinning)
+        switch value {
+        case "1":
+            return true
+        case "0":
+            return false
+        default:
+            return true
+        }
+    }
 }
 
 fileprivate struct InfoDictionaryHelper {
@@ -207,6 +219,7 @@ fileprivate struct InfoDictionaryHelper {
         case websocketServerBTC = "WEBSOCKET_SERVER"
         case websocketServerBCH = "WEBSOCKET_SERVER_BCH"
         case websocketServerETH = "WEBSOCKET_SERVER_ETH"
+        case certificatePinning = "PIN_CERTIFICATE"
     }
 
     private static let infoDictionary = Bundle(for: BlockchainAPI.self).infoDictionary

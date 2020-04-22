@@ -803,10 +803,10 @@ NSString * const kLockboxInvitation = @"lockbox";
     // TODO: migrate to CertificatePinner class
     // Note: All `DEBUG` builds should disable certificate pinning
     // so as QA can see network requests.
-#if DEBUG
-    return webSocketRequest;
-#else
-    NSString *cerPath = [[CertificatePinner sharedInstance] localCertificatePath];
+    if (!BlockchainAPI.shared.shouldPinCertificate) {
+        return webSocketRequest;
+    }
+    NSString *cerPath = CertificatePinner.shared.localCertificatePath;
     NSData *certData = [[NSData alloc] initWithContentsOfFile:cerPath];
     CFDataRef certDataRef = (__bridge CFDataRef)certData;
     SecCertificateRef certRef = SecCertificateCreateWithData(NULL, certDataRef);
@@ -818,7 +818,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     CFRelease(certRef);
     
     return webSocketRequest;
-#endif
 }
 
 - (void)pingBtcSocket
@@ -4092,13 +4091,13 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (void)useDebugSettingsIfSet
 {
-#ifdef DEBUG
     [self updateServerURL:[BlockchainAPI.shared walletUrl]];
 
     [self updateWebSocketURL:[BlockchainAPI.shared webSocketUri]];
 
     [self updateAPIURL:[BlockchainAPI.shared apiUrl]];
 
+#ifdef DEBUG
     BOOL testnetOn = [[[NSUserDefaults standardUserDefaults] objectForKey:USER_DEFAULTS_KEY_ENV] isEqual:ENV_INDEX_TESTNET];
     NSString *network;
     if (testnetOn) {

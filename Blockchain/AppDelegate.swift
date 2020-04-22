@@ -16,8 +16,6 @@ import PlatformKit
 import PlatformUIKit
 import BitcoinKit
 
-private var DISABLE_CERT_PINNING: Bool = false
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -66,8 +64,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                      launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         if isDebug {
-            DISABLE_CERT_PINNING = true
-            
             guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else {
                 return true
             }
@@ -104,12 +100,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         navigationBarAppearance.tintColor = .white
 
         if isDebug {
-            let envKey = UserDefaults.Keys.environment.rawValue
-            let environment = Environment.production.rawValue
-            UserDefaults.standard.set(environment, forKey: envKey)
-
-            BlockchainSettings.App.shared.enableCertificatePinning = true
-
             let securityReminderKey = UserDefaults.DebugKeys.securityReminderTimer.rawValue
             UserDefaults.standard.removeObject(forKey: securityReminderKey)
 
@@ -123,10 +113,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             UserDefaults.standard.set(false, forKey: simulateSurgeKey)
         }
 
-        if !DISABLE_CERT_PINNING {
-            // TODO: prevent any other data tasks from executing until cert is pinned
-            CertificatePinner.shared.pinCertificate()
-        }
+        // TODO: prevent any other data tasks from executing until cert is pinned
+        CertificatePinner.shared.pinCertificateIfNeeded()
 
         // If isDebug build, and ProcessInfo environment contains "erase_wallet": true, erase wallet and settings.
         if isDebug, ProcessInfo.processInfo.environmentBoolean(for: "erase_wallet") == true {
