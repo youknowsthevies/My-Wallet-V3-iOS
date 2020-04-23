@@ -73,7 +73,7 @@ final public class CertificatePinner: NSObject {
             let certificateData = self.certificateData,
             let localCertificate = SecCertificateCreateWithData(kCFAllocatorDefault, certificateData),
             SecTrustCreateWithCertificates(localCertificate, policy, &localTrust) == errSecSuccess
-            else {
+        else {
                 Logger.shared.error("Failed Certificate Validation")
                 completion(.cancelAuthenticationChallenge, nil)
                 return
