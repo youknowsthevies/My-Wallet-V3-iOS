@@ -74,9 +74,9 @@ final public class CertificatePinner: NSObject {
             let localCertificate = SecCertificateCreateWithData(kCFAllocatorDefault, certificateData),
             SecTrustCreateWithCertificates(localCertificate, policy, &localTrust) == errSecSuccess
         else {
-                Logger.shared.error("Failed Certificate Validation")
-                completion(.cancelAuthenticationChallenge, nil)
-                return
+            Logger.shared.error("Failed Certificate Validation")
+            completion(.cancelAuthenticationChallenge, nil)
+            return
         }
 
         let localPublicKey = SecTrustCopyPublicKey(localTrust!)
