@@ -9,13 +9,6 @@
 import Foundation
 import ToolKit
 
-/**
- Handles certificate pinning for connections to blockchain.info.
- # Usage
- TBD
- - Author: Maurice Achtenhagen
- - Copyright: Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
- */
 @objc
 final public class CertificatePinner: NSObject {
 
@@ -25,12 +18,16 @@ final public class CertificatePinner: NSObject {
     @objc public static let shared = CertificatePinner()
 
     /// Path to the local certificate file
-    @objc public var localCertificatePath: String? {
-        guard
-            let path = Bundle.main.path(forResource: "blockchain", ofType: "der", inDirectory: "Cert") else {
-                return nil
+    private lazy var localCertificatePath: String? = {
+        Bundle(for: CertificatePinner.self).path(forResource: "blockchain", ofType: "der")
+    }()
+
+    /// Path to the local certificate file
+    @objc public var certificateData: NSData? {
+        guard let localCertificatePath = self.localCertificatePath else {
+            return nil
         }
-        return path
+        return NSData(contentsOfFile: localCertificatePath)
     }
     
     private let session: URLSession
@@ -57,8 +54,7 @@ final public class CertificatePinner: NSObject {
             fatalError("Failed to get wallet url from Bundle.")
         }
         session.sessionDescription = url.host
-        // TODO:
-        // * inject NetworkCommunicator
+        // TODO: inject NetworkCommunicator
         let task = session.dataTask(with: url) { _, _, _ in }
         task.resume()
     }
@@ -69,33 +65,28 @@ final public class CertificatePinner: NSObject {
     }
 
     private func respond(to challenge: URLAuthenticationChallenge, completion: AuthChallengeHandler) {
+        let policy = SecPolicyCreateBasicX509()
         var localTrust: SecTrust?
-        guard let serverTrust = challenge.protectionSpace.serverTrust else {
+
+        guard
+            let serverTrust = challenge.protectionSpace.serverTrust,
+            let certificateData = self.certificateData,
+            let localCertificate = SecCertificateCreateWithData(kCFAllocatorDefault, certificateData),
+            SecTrustCreateWithCertificates(localCertificate, policy, &localTrust) == errSecSuccess
+        else {
+            Logger.shared.error("Failed Certificate Validation")
             completion(.cancelAuthenticationChallenge, nil)
             return
         }
 
-        guard
-            let certificatePath = localCertificatePath,
-            let certificateData = NSData(contentsOfFile: certificatePath),
-            let localCertificate = SecCertificateCreateWithData(kCFAllocatorDefault, certificateData) else {
-                completion(.cancelAuthenticationChallenge, nil)
-                return
-        }
-
-        let policy = SecPolicyCreateBasicX509()
-
-        // Public key pinning check
-        if SecTrustCreateWithCertificates(localCertificate, policy, &localTrust) == errSecSuccess {
-            let localPublicKey = SecTrustCopyPublicKey(localTrust!)
-            let serverPublicKey = SecTrustCopyPublicKey(serverTrust)
-            if (localPublicKey as AnyObject).isEqual(serverPublicKey as AnyObject) {
-                let credential = URLCredential(trust: serverTrust)
-                completion(.useCredential, credential)
-            } else {
-                Logger.shared.error("Failed Certificate Validation")
-                completion(.cancelAuthenticationChallenge, nil)
-            }
+        let localPublicKey = SecTrustCopyPublicKey(localTrust!)
+        let serverPublicKey = SecTrustCopyPublicKey(serverTrust)
+        if (localPublicKey as AnyObject).isEqual(serverPublicKey as AnyObject) {
+            let credential = URLCredential(trust: serverTrust)
+            completion(.useCredential, credential)
+        } else {
+            Logger.shared.error("Failed Certificate Validation")
+            completion(.cancelAuthenticationChallenge, nil)
         }
     }
 }
