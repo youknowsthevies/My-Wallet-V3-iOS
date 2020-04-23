@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#  Blockchain/Scritps/swiftlint.sh
+#  Blockchain/Scripts/swiftlint.sh
 #
 #  What It Does
 #  ------------

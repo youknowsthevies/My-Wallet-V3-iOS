@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#  Blockchain/Scritps/firebase_copy_plist.sh
+#  Blockchain/Scripts/firebase_copy_plist.sh
 #
 #  What It Does
 #  ------------

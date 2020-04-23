@@ -115,7 +115,9 @@ targetTemplates:
   Framework:
     platform: iOS
     sources:
-    - ${target_name}
+    - excludes:
+      - Scripts
+      path: ${target_name}
     type: framework
   FrameworkTest:
     dependencies:
@@ -253,8 +255,6 @@ targets:
       path: Blockchain/Scripts/swiftlint.sh
     - name: Setup Firebase Environment
       path: Blockchain/Scripts/firebase_copy_plist.sh
-    - name: Get SSL Certificate
-      path: Blockchain/Scripts/get_ssl_certificate.sh
     - name: Envman BUILT_PRODUCTS_DIR
       path: Blockchain/Scripts/export_built_products_dir.sh
     settings:
@@ -293,11 +293,6 @@ targets:
     - group: Blockchain/JavaScript
       optional: true
       path: Submodules/My-Wallet-V3/dist/my-wallet.js
-    - buildPhase:
-        copyFiles:
-          destination: resources
-      optional: true
-      path: Cert/blockchain.der
     - excludes:
       - Firebase
       - Scripts
@@ -423,11 +418,25 @@ targets:
         WEBSOCKET_SERVER: $(WEBSOCKET_SERVER)
         WEBSOCKET_SERVER_BCH: $(WEBSOCKET_SERVER_BCH)
         WEBSOCKET_SERVER_ETH: $(WEBSOCKET_SERVER_ETH)
+    platform: iOS
+    postCompileScripts:
+    - name: Get SSL Certificate
+      path: NetworkKit/Scripts/get_ssl_certificate.sh
     scheme:
       testTargets:
       - NetworkKitTests
-    templates:
-    - Framework
+    sources:
+    - excludes:
+      - Scripts
+      - Cert
+      path: NetworkKit
+    - buildPhase:
+        copyFiles:
+          destination: resources
+      group: NetworkKit/Cert
+      optional: true
+      path: NetworkKit/Cert/blockchain.der
+    type: framework
   NetworkKitTests:
     dependencies:
     - target: NetworkKit

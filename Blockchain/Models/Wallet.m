@@ -800,23 +800,17 @@ NSString * const kLockboxInvitation = @"lockbox";
     NSMutableURLRequest *webSocketRequest = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:websocketURL]];
     [webSocketRequest addValue:[BlockchainAPI.shared walletUrl] forHTTPHeaderField:@"Origin"];
 
-    // TODO: migrate to CertificatePinner class
-    // Note: All `DEBUG` builds should disable certificate pinning
-    // so as QA can see network requests.
-    if (!BlockchainAPI.shared.shouldPinCertificate) {
-        return webSocketRequest;
+    if (BlockchainAPI.shared.shouldPinCertificate) {
+        // TODO: migrate to CertificatePinner class
+        // Note: All `DEV` and `STAGING` builds should disable certificate pinning
+        // so as QA can see network requests.
+        NSData *certificateData = CertificatePinner.shared.certificateData;
+        SecCertificateRef certRef = SecCertificateCreateWithData(kCFAllocatorDefault, (__bridge CFDataRef)certificateData);
+        id certificate = (__bridge id)certRef;
+        [webSocketRequest setSR_SSLPinnedCertificates:@[certificate]];
+        [webSocketRequest setSR_comparesPublicKeys:YES];
+        CFRelease(certRef);
     }
-    NSString *cerPath = CertificatePinner.shared.localCertificatePath;
-    NSData *certData = [[NSData alloc] initWithContentsOfFile:cerPath];
-    CFDataRef certDataRef = (__bridge CFDataRef)certData;
-    SecCertificateRef certRef = SecCertificateCreateWithData(NULL, certDataRef);
-    id certificate = (__bridge id)certRef;
-
-    [webSocketRequest setSR_SSLPinnedCertificates:@[certificate]];
-    [webSocketRequest setSR_comparesPublicKeys:YES];
-
-    CFRelease(certRef);
-    
     return webSocketRequest;
 }
 
