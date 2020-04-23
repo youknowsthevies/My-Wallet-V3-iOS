@@ -32,7 +32,7 @@ class SideMenuPresenter {
                 self.featureFetcher
                     .fetchBool(for: .simpleBuyEnabled)
                     .asObservable()
-                    .map(weak: self) { (self, isSimpleBuyEnabled) in
+                    .map { isSimpleBuyEnabled in
                         self.menuItems(showSimpleBuy: isSimpleBuyEnabled)
                     }
             }
