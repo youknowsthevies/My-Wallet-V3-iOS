@@ -6,11 +6,11 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
-import ToolKit
-import PlatformKit
 import PlatformUIKit
+import PlatformKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 /// Protocol definition for a view that displays a list of
 /// SideMenuItem objects.
@@ -27,16 +27,21 @@ class SideMenuPresenter {
     // MARK: Public Properties
     
     var sideMenuItems: Observable<[SideMenuItem]> {
-        featureFetcher
-            .fetchBool(for: .simpleBuyEnabled)
-            .asObservable()
-            .map(weak: self) { (self, isSimpleBuyEnabled) in
-                self.menuItems(showSimpleBuy: isSimpleBuyEnabled)
+        reactiveWallet.waitUntilInitialized
+            .flatMap(weak: self) { (self, _: ()) in
+                self.featureFetcher
+                    .fetchBool(for: .simpleBuyEnabled)
+                    .asObservable()
+                    .map(weak: self) { (self, isSimpleBuyEnabled) in
+                        self.menuItems(showSimpleBuy: isSimpleBuyEnabled)
+                }
             }
+            .startWith(menuItems(showSimpleBuy: false))
+            .observeOn(MainScheduler.instance)
     }
     
     var itemSelection: Signal<SideMenuItem> {
-        return itemSelectionRelay.asSignal()
+        itemSelectionRelay.asSignal()
     }
 
     private weak var view: SideMenuView?
@@ -50,6 +55,7 @@ class SideMenuPresenter {
     
     private let wallet: Wallet
     private let walletService: WalletService
+    private let reactiveWallet: ReactiveWalletAPI
     private let exchangeConfiguration: AppFeatureConfiguration
     private let analyticsRecorder: AnalyticsEventRecording
     private let disposeBag = DisposeBag()
@@ -59,6 +65,7 @@ class SideMenuPresenter {
         view: SideMenuView,
         wallet: Wallet = WalletManager.shared.wallet,
         walletService: WalletService = WalletService.shared,
+        reactiveWallet: ReactiveWalletAPI = ReactiveWallet(),
         featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
         exchangeConfiguration: AppFeatureConfiguration = AppFeatureConfigurator.shared.configuration(for: .exchangeLinking),
         onboardingSettings: BlockchainSettings.Onboarding = .shared,
@@ -67,6 +74,7 @@ class SideMenuPresenter {
         self.view = view
         self.wallet = wallet
         self.walletService = walletService
+        self.reactiveWallet = reactiveWallet
         self.exchangeConfiguration = exchangeConfiguration
         self.introInterator = WalletIntroductionInteractor(onboardingSettings: onboardingSettings, screen: .sideMenu)
         self.analyticsRecorder = analyticsRecorder
@@ -132,13 +140,15 @@ class SideMenuPresenter {
         if wallet.isLockboxEnabled() {
             items.append(.lockbox)
         }
-        
-        if wallet.didUpgradeToHd() {
-            items.append(.backup)
-        } else {
-            items.append(.upgrade)
+
+        if wallet.isInitialized() {
+            if wallet.didUpgradeToHd() {
+                items.append(.backup)
+            } else {
+                items.append(.upgrade)
+            }
         }
-        
+
         if showSimpleBuy {
             items.append(.simpleBuy)
         }

@@ -116,7 +116,7 @@
 
 - (NSString *)labelForLegacyAddress:(NSString *)address assetType:(LegacyAssetType)assetType;
 
-- (Boolean)isAddressArchived:(NSString *)address;
+- (BOOL)isAddressArchived:(NSString *)address;
 
 - (void)subscribeToSwipeAddress:(NSString *)address assetType:(LegacyAssetType)assetType;
 - (void)subscribeToAddress:(NSString *)address assetType:(LegacyAssetType)assetType;
@@ -170,8 +170,8 @@
 
 // HD Wallet
 - (void)upgradeToV3Wallet;
-- (Boolean)hasAccount;
-- (Boolean)didUpgradeToHd;
+- (BOOL)hasAccount;
+- (BOOL)didUpgradeToHd;
 - (void)getRecoveryPhrase:(NSString *)secondPassword;
 
 /**
