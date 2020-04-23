@@ -1491,7 +1491,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     return nil;
 }
 
-- (Boolean)isAddressArchived:(NSString *)address
+- (BOOL)isAddressArchived:(NSString *)address
 {
     if (![self isInitialized] || !address) {
         return FALSE;
@@ -3614,7 +3614,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.upgradeToV3(\"%@\");", [LocalizationConstantsObjcBridge myBitcoinWallet], nil]];
 }
 
-- (Boolean)hasAccount
+- (BOOL)hasAccount
 {
     if (![self isInitialized]) {
         return NO;
@@ -3623,7 +3623,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     return [[self.context evaluateScript:@"MyWallet.wallet.isUpgradedToHD"] toBool];
 }
 
-- (Boolean)didUpgradeToHd
+- (BOOL)didUpgradeToHd
 {
     if (![self isInitialized]) {
         return NO;

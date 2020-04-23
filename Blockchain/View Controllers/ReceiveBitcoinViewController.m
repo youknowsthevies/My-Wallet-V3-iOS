@@ -582,7 +582,7 @@ NSString *const BCFiatCurrencySelected = @"fiat_currency_selected";
 - (IBAction)archiveAddressClicked:(id)sender
 {
     NSString *addr = self.clickedAddress;
-    Boolean isArchived = [WalletManager.sharedInstance.wallet isAddressArchived:addr];
+    BOOL isArchived = [WalletManager.sharedInstance.wallet isAddressArchived:addr];
     
     if (isArchived) {
         [WalletManager.sharedInstance.wallet toggleArchiveLegacyAddress:addr];
