@@ -34,7 +34,7 @@ class SideMenuPresenter {
                     .asObservable()
                     .map(weak: self) { (self, isSimpleBuyEnabled) in
                         self.menuItems(showSimpleBuy: isSimpleBuyEnabled)
-                }
+                    }
             }
             .startWith(menuItems(showSimpleBuy: false))
             .observeOn(MainScheduler.instance)
