@@ -265,6 +265,11 @@ public class CachedValue<Value> {
                 },
                 onSubscribe: { [weak stateRelay] in
                     stateRelay?.accept(.calculating)
+                },
+                onDispose: { [weak stateRelay] in
+                    if case .calculating = stateRelay?.value {
+                        stateRelay?.accept(.empty)
+                    }
                 }
             )
     }
@@ -284,6 +289,11 @@ public class CachedValue<Value> {
                 },
                 onSubscribe: { [weak stateRelay] in
                     stateRelay?.accept(.calculating)
+                },
+                onDispose: { [weak stateRelay] in
+                    if case .calculating = stateRelay?.value {
+                        stateRelay?.accept(.empty)
+                    }
                 }
             )
     }
