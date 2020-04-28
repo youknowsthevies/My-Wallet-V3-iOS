@@ -50,7 +50,6 @@ public final class NoticeView: UIView {
     }
         
     private func setup() {
-        
         imageView.contentMode = .scaleAspectFit
         label.font = .mainMedium(12)
         label.textColor = .descriptionText
@@ -62,8 +61,8 @@ public final class NoticeView: UIView {
         imageView.layoutToSuperview(.leading)
         imageView.layout(size: .init(edge: 20))
         
-        topAlignmentConstraint = imageView.layout(to: .top, of: label, priority: .defaultLow)
-        centerAlignmentConstraint = imageView.layout(to: .centerY, of: label, priority: .penultimateHigh)
+        topAlignmentConstraint = imageView.layout(to: .top, of: label, priority: .penultimateHigh)
+        centerAlignmentConstraint = imageView.layout(to: .centerY, of: label, priority: .defaultLow)
 
         label.layout(edge: .leading, to: .trailing, of: imageView, offset: 18)
         label.layoutToSuperview(.top, .bottom, .trailing)

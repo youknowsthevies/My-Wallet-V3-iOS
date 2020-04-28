@@ -24,7 +24,8 @@ open class BaseScreenViewController: UIViewController {
         didSet {
             baseNavigationController?.navigationBar.titleTextAttributes = [
                 .font: UIFont.mainMedium(16),
-                .foregroundColor: barStyle.contentColor]
+                .foregroundColor: barStyle.contentColor.standardColor
+            ]
             setBackground(by: barStyle)
         }
     }
@@ -37,26 +38,10 @@ open class BaseScreenViewController: UIViewController {
      */
     public var titleViewStyle = Screen.Style.TitleView.none {
         didSet {
-            guard let navigationItem = currentNavigationItem else {
-                return
-            }
-            switch titleViewStyle {
-            case .text(value: let text):
-                navigationItem.titleView = nil
-                navigationItem.title = text
-            case .image(name: let image, width: let width):
-                let view = UIImageView(image: UIImage(named: image))
-                view.contentMode = .scaleAspectFit
-                view.layout(size: CGSize(width: width, height: Constant.titleViewHeight))
-                navigationItem.titleView = view
-                navigationItem.title = nil
-            case .none:
-                navigationItem.titleView = nil
-                navigationItem.title = nil
-            }
+            set(titleViewStyle: titleViewStyle)
         }
     }
-    
+        
     /**
      The style of the left button in the navigation bar.
      By setting this property, the left button of the navigation bar
@@ -73,7 +58,7 @@ open class BaseScreenViewController: UIViewController {
             } else {
                 itemType = .none
             }
-            leadingBarButtonItem = NavigationBarButtonItem(type: itemType, color: barStyle.contentColor)
+            leadingBarButtonItem = NavigationBarButtonItem(type: itemType, color: barStyle.contentColor.standardColor)
         }
     }
     
@@ -87,8 +72,10 @@ open class BaseScreenViewController: UIViewController {
     public var trailingButtonStyle = Screen.Style.TrailingButton.none {
         didSet {
             let itemType: NavigationBarButtonItem.ItemType
+            var color = barStyle.contentColor.standardColor
             switch trailingButtonStyle {
             case .content(let content):
+                
                 itemType = .content(content: content) { [weak self] in
                     self?.navigationBarTrailingButtonPressed()
                 }
@@ -98,10 +85,15 @@ open class BaseScreenViewController: UIViewController {
                 itemType = .content(content: trailingButtonStyle.content!) { [weak self] in
                     self?.navigationBarTrailingButtonPressed()
                 }
+            case .close:
+                itemType = .content(content: trailingButtonStyle.content!) { [weak self] in
+                    self?.navigationBarTrailingButtonPressed()
+                }
+                color = .navigationBarCloseButton
             case .none:
                 itemType = .none
             }
-            rightBarButtonItem = NavigationBarButtonItem(type: itemType, color: barStyle.contentColor)
+            trailingBarButtonItem = NavigationBarButtonItem(type: itemType, color: color)
         }
     }
     
@@ -133,9 +125,9 @@ open class BaseScreenViewController: UIViewController {
         return barStyle.statusBarStyle
     }
     
-    private var rightBarButtonItem: UIBarButtonItem! {
+    private var trailingBarButtonItem: UIBarButtonItem! {
         didSet {
-            currentNavigationItem?.setRightBarButton(rightBarButtonItem, animated: false)
+            currentNavigationItem?.setRightBarButton(trailingBarButtonItem, animated: false)
         }
     }
     
@@ -150,6 +142,7 @@ open class BaseScreenViewController: UIViewController {
     override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         baseNavigationController?.navigationBar.isTranslucent = true
+        set(titleViewStyle: titleViewStyle)
         setBackground(by: barStyle)
         if !barStyle.ignoresStatusBar {
             UIApplication.shared.statusBarStyle = barStyle.statusBarStyle
@@ -172,7 +165,47 @@ open class BaseScreenViewController: UIViewController {
         baseNavigationController?.navigationBar.shadowImage = UIImage()
     }
     
+    private func set(titleViewStyle: Screen.Style.TitleView) {
+        guard let navigationItem = currentNavigationItem else {
+            return
+        }
+        
+        switch titleViewStyle {
+        case .text(value: let text):
+            navigationItem.titleView = nil
+            navigationItem.title = text
+        case .image(name: let image, width: let width):
+            let view = UIImageView(image: UIImage(named: image))
+            view.contentMode = .scaleAspectFit
+            view.layout(size: CGSize(width: width, height: Constant.titleViewHeight))
+            navigationItem.titleView = view
+            navigationItem.title = nil
+        case .none:
+            navigationItem.titleView = nil
+            navigationItem.title = nil
+        }
+    }
+    
     // MARK: - Exposed
+    
+    public var standardNavigationBarButtonStyles: (leading: Screen.Style.LeadingButton, trailing: Screen.Style.TrailingButton) {
+        var trailing: Screen.Style.TrailingButton = .none
+        var leading: Screen.Style.LeadingButton = .none
+        let viewControllersCount = navigationController?.viewControllers.count ?? 1
+        if viewControllersCount > 1 {
+            leading = .back
+        } else {
+            trailing = .close
+        }
+        return (leading, trailing)
+    }
+    
+    public func setStandardDarkContentStyle() {
+        let (leading, trailing) = standardNavigationBarButtonStyles
+        set(barStyle: .darkContent(ignoresStatusBar: false, background: .white),
+            leadingButtonStyle: leading,
+            trailingButtonStyle: trailing)
+    }
     
     public func set(barStyle: Screen.Style.Bar,
                     leadingButtonStyle: Screen.Style.LeadingButton = .none,
@@ -189,8 +222,14 @@ open class BaseScreenViewController: UIViewController {
     
     // MARK: - User Interaction
 
-    // TODO: Handle according to various styles
-    open func navigationBarTrailingButtonPressed() {}
+    open func navigationBarTrailingButtonPressed() {
+        switch trailingButtonStyle {
+        case .close:
+            dismiss(animated: true, completion: nil)
+        case .none, .processing, .qrCode, .content:
+            break
+        }
+    }
     
     open func navigationBarLeadingButtonPressed() {
         switch leadingButtonStyle {

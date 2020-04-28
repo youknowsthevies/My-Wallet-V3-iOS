@@ -41,6 +41,16 @@ extension UIView {
         public struct Constraints {
             public let horizontal: NSLayoutConstraint
             public let vertical: NSLayoutConstraint
+            
+            public func setConstant(horizontal: CGFloat, vertical: CGFloat) {
+                self.horizontal.constant = horizontal
+                self.vertical.constant = vertical
+            }
+            
+            public func set(priority: UILayoutPriority) {
+                self.horizontal.priority = priority
+                self.vertical.priority = priority
+            }
         }
         
         fileprivate var attributes: (horizontal: Attribute, vertical: Attribute) {
@@ -67,6 +77,11 @@ extension UIView {
         public struct Constraints {
             public let leading: NSLayoutConstraint
             public let trailing: NSLayoutConstraint
+            
+            public func set(offset: CGFloat) {
+                leading.constant = offset
+                trailing.constant = -offset
+            }
         }
         
         fileprivate var attributes: (leading: Attribute, trailing: Attribute) {

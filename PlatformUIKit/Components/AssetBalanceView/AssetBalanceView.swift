@@ -110,8 +110,8 @@ public final class AssetBalanceView: UIView {
     }
     
     private func startShimmering() {
-        guard fiatBalanceLabel.content.isEmpty() else { return }
-        guard cryptoBalanceLabel.content.isEmpty() else { return }
+        guard fiatBalanceLabel.content.isEmpty else { return }
+        guard cryptoBalanceLabel.content.isEmpty else { return }
         fiatLabelShimmeringView.start()
         cryptoLabelShimmeringView.start()
     }

@@ -12,6 +12,10 @@ import PlatformUIKit
 
 final class LinkedCardViewModel {
     
+    // MARK: - Private Types
+    
+    private typealias AccessibilityIDs = Accessibility.Identifier.LinkedCardView
+    
     // MARK: - Types
     
     struct Theme {
@@ -50,12 +54,12 @@ final class LinkedCardViewModel {
                                 font: theme.cardNameFont,
                                 color: theme.cardNameContentColor,
                                 alignment: .left,
-                                accessibility: .none)
+                                accessibility: .id(AccessibilityIDs.name))
             limitContent = .init(text: theme.limit,
                                  font: theme.limitFont,
                                  color: theme.limitContentColor,
                                  alignment: .left,
-                                 accessibility: .none)
+                                 accessibility: .id(AccessibilityIDs.limit))
         }
     }
     
@@ -70,7 +74,7 @@ final class LinkedCardViewModel {
             limitContentRelay.accept(newValue.limitContent)
         }
         get {
-            return Content(theme: Theme(
+            Content(theme: Theme(
                 cardName: nameTextRelay.value,
                 limit: limitTextRelay.value)
             )
@@ -85,36 +89,32 @@ final class LinkedCardViewModel {
         limitContentRelay.asDriver()
     }
     
+    let accessibility: Accessibility = .id(AccessibilityIDs.view)
     let badgeImageViewModel: BadgeImageViewModel
     
     // MARK: - Private
     
     private let nameContentRelay = BehaviorRelay<LabelContent>(value: .empty)
     private let limitContentRelay = BehaviorRelay<LabelContent>(value: .empty)
-    private let nameTextRelay = BehaviorRelay<String>(value: "")
-    private let limitTextRelay = BehaviorRelay<String>(value: "")
+    private let nameTextRelay = BehaviorRelay(value: "")
+    private let limitTextRelay = BehaviorRelay(value: "")
     
-    init(imageName: String) {
-        self.badgeImageViewModel = .default(with: imageName)
+    init(type: CardType) {
+        self.badgeImageViewModel = .default(
+            with: type.thumbnail ?? "",
+            cornerRadius: .value(4),
+            accessibilityIdSuffix: type.name
+        )
+        badgeImageViewModel.marginOffsetRelay.accept(0)
     }
 }
 
-extension LinkedCardViewModel {
-    static func visa(cardName: String, limit: FiatValue) -> LinkedCardViewModel {
-        let viewModel = LinkedCardViewModel(imageName: "Visa")
-        viewModel.content = Content(theme:
-            .init(cardName: cardName,
-                  limit: limit.toDisplayString(includeSymbol: true))
-        )
-        return viewModel
-    }
-    
-    static func mastercard(cardName: String, limit: FiatValue) -> LinkedCardViewModel {
-        let viewModel = LinkedCardViewModel(imageName: "Mastercard")
-        viewModel.content = Content(theme:
-            .init(cardName: cardName,
-                  limit: limit.toDisplayString(includeSymbol: true))
-        )
-        return viewModel
+extension Accessibility.Identifier {
+    enum LinkedCardView {
+        private static let prefix = "LinkedCardView."
+        static let view = "\(prefix)view"
+        static let name = "\(prefix)name"
+        static let limit = "\(prefix)limit"
     }
 }
+

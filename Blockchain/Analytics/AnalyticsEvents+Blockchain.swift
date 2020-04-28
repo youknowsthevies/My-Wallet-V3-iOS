@@ -680,6 +680,24 @@ extension AnalyticsEvents {
     }
     
     enum SimpleBuy: AnalyticsEvent {
+        
+        enum PaymentMethod: String {
+            case card
+            case bank
+            case newCard
+            
+            var string: String {
+                switch self {
+                case .card:
+                    return "CARD"
+                case .bank:
+                    return "BANK"
+                case .newCard:
+                    return "NEW_CARD"
+                }
+            }
+        }
+        
         case sbWantToBuyScreenShown
         case sbWantToBuyButtonClicked
         case sbWantToBuyButtonSkip
@@ -727,8 +745,7 @@ extension AnalyticsEvents {
         case sbWithdrawalScreenSuccess
         case sbWithdrawalScreenFailure
         case sbPaymentMethodShown
-        case sbPaymentMethodSelected(selection: String)
-        case sbAddCardCardClicked
+        case sbPaymentMethodSelected(selection: PaymentMethod)
         case sbAddCardScreenShown
         case sbCardInfoSet
         case sbBillingAddressSet
@@ -880,21 +897,12 @@ extension AnalyticsEvents {
             // Simple buy - withdraw screen faillure (11.2)
             case .sbWithdrawalScreenFailure:
                 return "sb_withdrawal_screen_failure"
-            // Simple buy - side nav Buy button
+            // Simple buy - payment method screen shown (2.0)
             case .sbPaymentMethodShown:
                 return "sb_payment_method_shown"
             // Simple buy - payment method selected (2.1)
             case .sbPaymentMethodSelected:
                 return "sb_payment_method_selected"
-            // Simple buy - payment method add new from dashboard (2.2)
-            case .sbAddCardCardClicked:
-                return "sb_add_card_card_clicked"
-            // Simple buy - add card (3.0)
-            case .sbAddCardScreenShown:
-                return "sb_add_card_screen_shown"
-            // Simple buy - Card Info Set (3.1)
-            case .sbCardInfoSet:
-                return "sb_card_info_set"
             // Simple buy - Billing Address Set (3.3)
             case .sbBillingAddressSet:
                 return "sb_billing_address_set"
@@ -919,15 +927,20 @@ extension AnalyticsEvents {
             // Simple Buy - View Home (button clicked, 0.2)
             case .sbUnsupportedViewHome:
                 return "sb_unsupported_view_home"
+            case .sbAddCardScreenShown:
+                return "sb_add_card_screen_shown"
+            case .sbCardInfoSet:
+                return "sb_card_info_set"
             }
         }
-        
+
         var params: [String : String]? {
             switch self {
+            case .sbPaymentMethodSelected(selection: let selection):
+                return ["selection": selection.rawValue]
             case .sbBankDetailsShown(currencyCode: let currencyCode),
                  .sbPendingModalShown(currencyCode: let currencyCode),
                  .sbBuyFormFiatChanged(currencyCode: let currencyCode),
-                 .sbPaymentMethodSelected(selection: let currencyCode),
                  .sbCurrencySelected(currencyCode: let currencyCode):
                 return ["currency": currencyCode]
             case .sbTradingWalletSend(asset: let currency),

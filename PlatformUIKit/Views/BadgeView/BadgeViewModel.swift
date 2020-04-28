@@ -120,7 +120,7 @@ extension BadgeViewModel {
         return viewModel
     }
     
-    /// Returns a destructive button with text only
+    /// Returns a default badgeViewModel with text only
     public static func `default`(
         with text: String,
         accessibilityId: String = Accessibility.Identifier.General.defaultBadgeView

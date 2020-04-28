@@ -25,14 +25,14 @@ final public class DevicePresenter {
 }
 
 extension UIDevice {
-    private enum PhoneHeight: CGFloat {
+    public enum PhoneHeight: CGFloat {
         case se = 568
         case eight = 667
         case plus = 736
         case x = 812
         case max = 896
     }
-
+    
     fileprivate var type: DevicePresenter.DeviceType {
         guard userInterfaceIdiom == .phone
             else { return .regular }

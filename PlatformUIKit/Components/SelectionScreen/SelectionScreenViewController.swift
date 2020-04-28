@@ -47,14 +47,7 @@ public final class SelectionScreenViewController: BaseScreenViewController {
     
     private func setupNavigationBar() {
         titleViewStyle = .text(value: presenter.title)
-        
-        var leading: Screen.Style.LeadingButton = .close
-        if let navController = navigationController {
-            leading = navController.viewControllers.count > 1 ? .back : .close
-        }
-        set(barStyle: .darkContent(ignoresStatusBar: false, background: .white),
-            leadingButtonStyle: leading,
-            trailingButtonStyle: .none)
+        setStandardDarkContentStyle()
     }
     
     private func setupSearchController() {
@@ -131,8 +124,15 @@ public final class SelectionScreenViewController: BaseScreenViewController {
             .disposed(by: disposeBag)
     }
     
+    // MARK: - Navigation
+    
     override public func navigationBarLeadingButtonPressed() {
         super.navigationBarLeadingButtonPressed()
-        presenter.navigationBarLeadingButtonTapped()
+        presenter.previousTapped()
+    }
+    
+    override public func navigationBarTrailingButtonPressed() {
+        super.navigationBarTrailingButtonPressed()
+        presenter.previousTapped()
     }
 }

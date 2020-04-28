@@ -35,6 +35,10 @@ public extension LocalizationConstants {
                 "JCB",
                 comment: "Card type: JCB"
             )
+            public static let unknown = NSLocalizedString(
+                "Unknown Card Type",
+                comment: "Card type: Unknown"
+            )
         }
         public struct Placeholder {
             public struct Card {

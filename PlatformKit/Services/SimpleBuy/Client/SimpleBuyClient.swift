@@ -16,7 +16,9 @@ public typealias SimpleBuyClientAPI = SimpleBuyEligibilityClientAPI &
                                       SimpleBuyOrderCancellationClientAPI &
                                       SimpleBuyPaymentAccountClientAPI &
                                       SimpleBuyOrderCreationClientAPI &
-                                      SimpleBuyQuoteClientAPI
+                                      SimpleBuyCardOrderConfirmationClientAPI &
+                                      SimpleBuyQuoteClientAPI &
+                                      SimpleBuyPaymentMethodsClientAPI
 
 /// Simple-Buy network client
 public final class SimpleBuyClient: SimpleBuyClientAPI {
@@ -36,6 +38,7 @@ public final class SimpleBuyClient: SimpleBuyClientAPI {
     }
         
     private enum Path {
+        static let paymentMethods = [ "payments", "methods" ]
         static let supportedPairs = [ "simple-buy", "pairs" ]
         static let suggestedAmounts = [ "simple-buy", "amounts" ]
         static let trades = [ "simple-buy", "trades" ]
@@ -130,12 +133,23 @@ public final class SimpleBuyClient: SimpleBuyClientAPI {
     
     // MARK: - SimpleBuyOrderDetailsClientAPI
 
-    public func orderDetails(token: String) -> Single<[SimpleBuyOrderDetailsResponse]> {
+    public func orderDetails(token: String) -> Single<[SimpleBuyOrderPayload.Response]> {
         let path = Path.trades
         let headers = [HttpHeaderField.authorization: token]
-        guard let request = requestBuilder.get(path: path, headers: headers) else {
-            return Single.error(ClientError.unknown)
-        }
+        let request = requestBuilder.get(
+            path: path,
+            headers: headers
+        )!
+        return communicator.perform(request: request)
+    }
+    
+    public func orderDetails(with identifer: String, token: String) -> Single<SimpleBuyOrderPayload.Response> {
+        let path = Path.trades + [identifer]
+        let headers = [HttpHeaderField.authorization: token]
+        let request = requestBuilder.get(
+            path: path,
+            headers: headers
+        )!
         return communicator.perform(request: request)
     }
     
@@ -157,12 +171,44 @@ public final class SimpleBuyClient: SimpleBuyClientAPI {
 
     // MARK: - SimpleBuyOrderCreationClientAPI
     
-    public func create(order: SimpleBuyOrderCreationData.Request, token: String) -> Single<SimpleBuyOrderCreationData.Response> {
+    public func create(order: SimpleBuyOrderPayload.Request,
+                       createPendingOrder: Bool,
+                       token: String) -> Single<SimpleBuyOrderPayload.Response> {
+        var parameters: [URLQueryItem] = []
+        if createPendingOrder {
+            parameters.append(
+                URLQueryItem(
+                    name: Parameter.action,
+                    value: SimpleBuyOrderPayload.CreateActionType.pending.rawValue
+                )
+            )
+        }
+        
         let path = Path.trades
         let headers = [HttpHeaderField.authorization: token]
         let request = requestBuilder.post(
             path: path,
+            parameters: parameters,
             body: try? order.encode(),
+            headers: headers
+        )!
+        return communicator.perform(request: request)
+    }
+    
+    // MARK: - SimpleBuyCardOrderConfirmationClientAPI
+    
+    public func confirmOrder(with identifier: String,
+                             partner: SimpleBuyOrderPayload.ConfirmOrder.Partner,
+                             token: String) -> Single<SimpleBuyOrderPayload.Response> {
+        let payload = SimpleBuyOrderPayload.ConfirmOrder(
+            partner: partner,
+            action: .confirm
+        )
+        let path = Path.trades + [identifier]
+        let headers = [HttpHeaderField.authorization: token]
+        let request = requestBuilder.post(
+            path: path,
+            body: try? payload.encode(),
             headers: headers
         )!
         return communicator.perform(request: request)
@@ -194,6 +240,22 @@ public final class SimpleBuyClient: SimpleBuyClientAPI {
             path: path,
             parameters: parameters,
             headers: headers
+        )!
+        return communicator.perform(request: request)
+    }
+    
+    // MARK: - SimpleBuyPaymentMethodsClientAPI
+    
+    public func paymentMethods(for currency: String, token: String) -> Single<SimpleBuyPaymentMethodsResponse> {
+        let queryParameters = [
+            URLQueryItem(
+                name: Parameter.currency,
+                value: currency
+            )
+        ]
+        let request = requestBuilder.get(
+            path: Path.paymentMethods,
+            parameters: queryParameters
         )!
         return communicator.perform(request: request)
     }

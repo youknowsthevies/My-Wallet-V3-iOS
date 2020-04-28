@@ -1,0 +1,193 @@
+//
+//  CardResponse.swift
+//  PlatformKit
+//
+//  Created by Alex McGregor on 3/30/20.
+//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+public struct CardPayload {
+    
+    /// The id of the card
+    let identifier: String
+    
+    /// The partner of the card (e.g: EVERYPAY)
+    let partner: Partner
+    
+    /// The billing address
+    let address: BillingAddress
+    
+    /// The currency of the card
+    let currency: String
+    
+    /// The state (e.g: PENDING)
+    let state: State
+    
+    /// The details on the card
+    let card: CardDetails!
+    
+    /// The addition date (e.g: `2020-04-07T23:23:26.761Z`)
+    let additionDate: String
+}
+
+// MARK: - Decodable
+
+extension CardPayload: Decodable {
+    
+    private enum CodingKeys: String, CodingKey {
+        case identifier = "id"
+        case partner
+        case address
+        case currency
+        case state
+        case card
+        case additionDate = "addedAt"
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        identifier = try values.decode(String.self, forKey: .identifier)
+        
+        let partner = try values.decode(String.self, forKey: .partner)
+        self.partner = Partner(partner: partner)
+        
+        address = try values.decode(BillingAddress.self, forKey: .address)
+        currency = try values.decode(String.self, forKey: .currency)
+        
+        state = try values.decodeIfPresent(State.self, forKey: .state) ?? .none
+        
+        additionDate = try values.decode(String.self, forKey: .additionDate)
+        
+        card = try values.decodeIfPresent(CardDetails.self, forKey: .card)
+    }
+}
+
+// MARK: - Types
+
+extension CardPayload {
+    
+    /// The card details
+    public struct CardDetails {
+        
+        /// e.g `1234` (4 digits)
+        let number: String
+        
+        /// e.g `10`
+        let month: String
+        
+        /// e.g `2021`
+        let year: String
+        
+        /// e.g: `MASTERCARD`
+        let type: String
+        
+        /// e.g: `AS LHV BANK`
+        let label: String
+    }
+    
+    /// The partner for the card
+    public enum Partner: String, Decodable {
+        
+        /// EveryPay partner
+        case everyPay = "EVERYPAY"
+        
+        /// Any other
+        case unknown
+        
+        var isKnown: Bool {
+            switch self {
+            case .unknown:
+                return false
+            default:
+                return true
+            }
+        }
+        
+        init(partner: String) {
+            self = Partner(rawValue: partner) ?? .unknown
+        }
+    }
+    
+    /// The state for a card
+    public enum State: String, Decodable {
+        
+        // Initial card state
+        case none = "NONE"
+        
+        // Waiting for activation
+        case pending = "PENDING"
+        
+        // Card ready to be used
+        case active = "ACTIVE"
+        
+        // Card created
+        case created = "CREATED"
+
+        // Blocked for fraud or other reason
+        case blocked = "BLOCKED"
+        
+        /// Card under manual review
+        case manualReview = "MANUAL_REVIEW"
+        
+        /// The card is under fraud review
+        case fraudReview = "FRAUD_REVIEW"
+        
+        // Card is expired
+        case expired = "EXPIRED"
+        
+        /// Card is active
+        var isActive: Bool {
+            switch self {
+            case .active:
+                return true
+            default:
+                return false
+            }
+        }
+        
+        /// This is `true` if the card is usable (created on BE, and was or is in a
+        /// usable state.
+        var isUsable: Bool {
+            switch self {
+            case .active, .blocked, .expired, .fraudReview, .manualReview:
+                return true
+            case .created, .none, .pending:
+                return false
+            }
+        }
+    }
+    
+    /// The billing address for a card
+    public struct BillingAddress: Codable {
+        public let line1: String
+        public let line2: String?
+        public let postCode: String
+        public let city: String
+        public let state: String?
+        public let country: String
+    }
+}
+
+extension CardPayload.CardDetails: Decodable {
+
+    private enum CodingKeys: String, CodingKey {
+        case number
+        case expireMonth
+        case expireYear
+        case type
+        case label
+    }
+
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        number = try values.decode(String.self, forKey: .number)
+        let month = try values.decode(Int.self, forKey: .expireMonth)
+        self.month = String(format: "%02d", month)
+        
+        let year = try values.decode(Int.self, forKey: .expireYear)
+        self.year = "\(year)"
+        
+        type = try values.decode(String.self, forKey: .type)
+        label = try values.decode(String.self, forKey: .label)
+    }
+}

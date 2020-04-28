@@ -1347,6 +1347,21 @@ public struct LocalizationConstants {
         )
     }
     
+    public enum ErrorScreen {
+        public static let title = NSLocalizedString(
+            "Oops! Something Went Wrong.",
+            comment: "Pending active card error screen: title"
+        )
+        public static let subtitle = NSLocalizedString(
+            "Please go back and try again.",
+            comment: "Pending active card error screen: subtitle"
+        )
+        public static let button = NSLocalizedString(
+            "OK",
+            comment: "Pending active card error screen: ok button"
+        )
+    }
+    
     public struct DashboardScreen {
         public static let title = NSLocalizedString(
             "Home",
@@ -1412,19 +1427,25 @@ public struct LocalizationConstants {
             public static let changeCurrency = NSLocalizedString("Change Currency", comment: "Change Currency")
             public static let viewHome = NSLocalizedString("View Home", comment: "View Home")
         }
-        public struct ErrorAlert {
+        public struct PaymentMethodSelectionScreen {
             public static let title = NSLocalizedString(
-                "Oops!",
-                comment: "Generic error bottom sheet title"
+                "Payment Methods",
+                comment: "Simple Buy: Payment method selection screen title"
             )
-            public static let message = NSLocalizedString(
-                "Something went wrong. Please try again.",
-                comment: "Generic error bottom sheet message"
-            )
-            public static let button = NSLocalizedString(
-                "OK",
-                comment: "Generic error bottom sheet OK button"
-            )
+            public struct Types {
+                public static let bankWireTitle = NSLocalizedString(
+                    "Bank Wire Transfer",
+                    comment: "Simple Buy: Payment method selection screen: bank wire transfer"
+                )
+                public static let cardTitle = NSLocalizedString(
+                    "Credit or Debit Card",
+                    comment: "Simple Buy: Payment method selection screen: card"
+                )
+                public static let limitSubtitle = NSLocalizedString(
+                    "Limit",
+                    comment: "Simple Buy: Payment method selection screen: type subtitle (max amount limit)"
+                )
+            }
         }
         public struct CryptoSelectionScreen {
             public static let title = NSLocalizedString(
@@ -1486,12 +1507,12 @@ public struct LocalizationConstants {
                     comment: "Simple Buy Intro Screen - buy crypto card: title label"
                 )
                 public static let description = NSLocalizedString(
-                    "Verify your idenity and buy crypto with your bank or card.",
+                    "Verify your identity and buy crypto with the fastest experience in the market.",
                     comment: "Simple Buy Intro Screen - buy crypto card: description label"
                 )
             }
             public static let title = NSLocalizedString(
-                "Welcome to Blockchain",
+                "Welcome to Blockchain.com",
                 comment: "Simple Buy Intro Screen - title label"
             )
             public static let continueButton = NSLocalizedString(
@@ -1681,6 +1702,14 @@ public struct LocalizationConstants {
                     "Buying Fee",
                     comment: "Buying Fee"
                 )
+                public static let paymentMethod = NSLocalizedString(
+                    "Payment Method",
+                    comment: "Payment Method"
+                )
+                public static let bankTransfer = NSLocalizedString(
+                    "Bank Transfer",
+                    comment: "Bank Transfer"
+                )
                 public struct Copyable {
                     public static let bankCode = NSLocalizedString(
                         "Bank Code (SWIFT/BIC)",
@@ -1713,6 +1742,39 @@ public struct LocalizationConstants {
                 public static let suffix = NSLocalizedString(
                     "buy order. Note, your final amount might change to due market activity. Fees may apply.",
                     comment: "Simple buy: checkout screen notice label suffix"
+                )
+            }
+            
+            public struct PendingOrderScreen {
+                public struct Loading {
+                    public static let titlePrefix = NSLocalizedString(
+                        "Buying",
+                        comment: "Simple buy: final screen title prefix: Buying 0.00525688 BTC"
+                    )
+                    public static let subtitle = NSLocalizedString(
+                        "We’re completing your purchase now.",
+                        comment: "Simple buy: final screen subtitle: We’re completing your purchase now."
+                    )
+                }
+                public struct Success {
+                    public static let titleSuffix = NSLocalizedString(
+                        "Purchased",
+                        comment: "Simple buy: final screen title suffix: E.G 0.0052568 BTC Purchased"
+                    )
+                    public struct Subtitle {
+                        public static let prefix = NSLocalizedString(
+                            "Your",
+                            comment: "Simple buy: final screen subtitle prefix: Your Asset is now available in your Wallet."
+                        )
+                        public static let suffix = NSLocalizedString(
+                            "is now available in your Wallet.",
+                            comment: "Simple buy: final screen subtitle suffix: Your Asset is now available in your Wallet."
+                        )
+                    }
+                }
+                public static let button = NSLocalizedString(
+                    "OK",
+                    comment: "Simple buy: final screen ok button"
                 )
             }
         }
@@ -2358,6 +2420,11 @@ public struct LocalizationConstants {
             public static let unconfirmed = NSLocalizedString("Unconfirmed", comment: "Unconfirmed")
             public static let localCurrency = NSLocalizedString("Local Currency", comment: "Local Currency")
             public static let expired = NSLocalizedString("Expired", comment: "Expired")
+            public static let pending = NSLocalizedString("Pending", comment: "Pending")
+            public static let inReview = NSLocalizedString("In Review", comment: "In Review")
+            public static let unknown = NSLocalizedString("Unknown", comment: "Unknown")
+            public static let limit = NSLocalizedString("Limit", comment: "Limit")
+            public static let expires = NSLocalizedString("Exp:", comment: "Exp: - Abbreviation for expiration")
         }
         
         public struct About {
@@ -2386,7 +2453,15 @@ public struct LocalizationConstants {
         public static let enableFaceID = NSLocalizedString("Enable Face ID", comment: "Enable Face ID")
         public static let swipeToReceive = NSLocalizedString("Swipe to Receive", comment: "Swipe to Receive")
         public static let expires = NSLocalizedString("Exp:", comment: "Abbreviation for Expiration")
-        public static let addACard = NSLocalizedString("Add a Card", comment: "Add a Card")
+        public struct Cards {
+            public static let addACard = NSLocalizedString("Add a Card", comment: "Add a Card")
+            public static let maximum = NSLocalizedString(
+                "You can have a maximum of three cards",
+                comment: "You can have a maximum of three cards"
+            )
+            public static let removeCard = NSLocalizedString("Remove Card", comment: "Remove Card")
+            public static let unverified = NSLocalizedString("You must have Gold Level verification status to add a credit card.", comment: "You must have Gold Level verification status to add a credit card.")
+        }
     
     public struct RemoveCardScreen {
             public static let action = NSLocalizedString("Remove Card", comment: "Remove Card")
@@ -2563,6 +2638,21 @@ public struct LocalizationConstants {
             public static let eleventh = NSLocalizedString("eleventh", comment: "eleventh word")
             public static let twelfth = NSLocalizedString("twelfth word", comment: "twelfth word")
         }
+    }
+    
+    public struct ErrorAlert {
+        public static let title = NSLocalizedString(
+            "Oops!",
+            comment: "Generic error bottom sheet title"
+        )
+        public static let message = NSLocalizedString(
+            "Something went wrong. Please try again.",
+            comment: "Generic error bottom sheet message"
+        )
+        public static let button = NSLocalizedString(
+            "OK",
+            comment: "Generic error bottom sheet OK button"
+        )
     }
     
     public struct PaymentReceivedAlert {
@@ -2822,8 +2912,8 @@ public struct LocalizationConstants {
             comment: "KYC verification is unconfirmed."
         )
         public static let accountUnverifiedBadge = NSLocalizedString(
-            "Unverified",
-            comment: "KYC verification is unverified."
+            "Verify Now",
+            comment: "Verify Now"
         )
         public static let accountVerifiedBadge = NSLocalizedString(
             "Verified",

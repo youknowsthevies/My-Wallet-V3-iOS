@@ -10,9 +10,24 @@ import RxSwift
 import RxCocoa
 
 public struct ImageViewContent {
-    private let bundle: Bundle
-    let imageName: String?
-    let accessibility: Accessibility
+    
+    public enum RenderingMode {
+        case template(Color)
+        case normal
+        
+        var templateColor: Color? {
+            switch self {
+            case .template(let color):
+                return color
+            case .normal:
+                return nil
+            }
+        }
+    }
+    
+    public static var empty: ImageViewContent {
+        return .init()
+    }
     
     public var isEmpty: Bool {
         return imageName == nil
@@ -20,18 +35,29 @@ public struct ImageViewContent {
     
     var image: UIImage? {
         guard let imageName = imageName else { return nil }
-        return UIImage(named: imageName, in: bundle, compatibleWith: .none)
-    }
         
-    public static var empty: ImageViewContent {
-        return .init()
+        switch renderingMode {
+        case .normal:
+            return UIImage(named: imageName, in: bundle, compatibleWith: .none)
+        case .template:
+            let image = UIImage(named: imageName, in: bundle, compatibleWith: .none)
+            return image?.withRenderingMode(.alwaysTemplate)
+        }
     }
+    
+    let imageName: String?
+    let accessibility: Accessibility
+    
+    private let renderingMode: RenderingMode
+    private let bundle: Bundle
     
     public init(imageName: String? = nil,
                 accessibility: Accessibility = .none,
+                renderingMode: RenderingMode = .normal,
                 bundle: Bundle = .main) {
         self.imageName = imageName
         self.accessibility = accessibility
+        self.renderingMode = renderingMode
         self.bundle = bundle
     }
 }

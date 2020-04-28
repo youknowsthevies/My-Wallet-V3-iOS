@@ -11,29 +11,54 @@ import ToolKit
 
 public final class SimpleBuyPendingOrderDetailsService: SimpleBuyPendingOrderDetailsServiceAPI {
     
-    public var orderDetails: Single<SimpleBuyCheckoutData?> {
-        ordersService.orders
-            .map { $0.pendingDeposit.first }
+    public var checkoutData: Single<SimpleBuyCheckoutData?> {
+        pendingDepositOrderDetails
             .flatMap(weak: self) { (self, pendingOrder) in
                 guard let pendingOrder = pendingOrder else {
                     return .just(nil)
                 }
                 let checkoutData = SimpleBuyCheckoutData(orderDetails: pendingOrder)
-                return self.paymentAccountService.paymentAccount(for: pendingOrder.fiatValue.currency)
-                    .map { checkoutData.checkoutData(byAppending: $0) }
+                if pendingOrder.isBankWire {
+                    return self.paymentAccountService.paymentAccount(for: pendingOrder.fiatValue.currency)
+                        .map { checkoutData.checkoutData(byAppending: $0) }
+                } else {
+                    return .just(checkoutData)
+                }
             }
     }
     
+    public var pendingOrderDetails: Single<SimpleBuyOrderDetails?> {
+        ordersService.fetchOrders()
+            .map { $0.filter { $0.isAwaitingAction } }
+            .map { $0.first }
+    }
+    
+    public var pendingDepositOrderDetails: Single<SimpleBuyOrderDetails?> {
+        ordersService.fetchOrders()
+            .map { $0.filter { $0.state == .pendingDeposit } }
+            .map { $0.first }
+    }
     // MARK: - Injected
     
-    private let ordersService: SimpleBuyOrdersServiceAPI
     private let paymentAccountService: SimpleBuyPaymentAccountServiceAPI
+    private let ordersService: SimpleBuyOrdersServiceAPI
+    private let cancallationService: SimpleBuyOrderCancellationServiceAPI
     
     // MARK: - Setup
     
-    public init(ordersService: SimpleBuyOrdersServiceAPI,
-                paymentAccountService: SimpleBuyPaymentAccountServiceAPI) {
-        self.ordersService = ordersService
+    public init(paymentAccountService: SimpleBuyPaymentAccountServiceAPI,
+                ordersService: SimpleBuyOrdersServiceAPI,
+                cancallationService: SimpleBuyOrderCancellationServiceAPI) {
         self.paymentAccountService = paymentAccountService
+        self.ordersService = ordersService
+        self.cancallationService = cancallationService
+    }
+    
+    public func cancel() -> Completable {
+        pendingOrderDetails
+            .flatMapCompletable(weak: self) { (self, details) -> Completable in
+                guard let details = details else { return .empty() }
+                return self.cancallationService.cancel(order: details.identifier)
+            }
     }
 }

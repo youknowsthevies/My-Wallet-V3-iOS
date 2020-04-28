@@ -36,9 +36,10 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
         return AnnouncementCardViewModel(
             type: type,
             image: AnnouncementCardViewModel.Image(
-                name: "icon_clock_inverted",
+                name: "clock-error-icon",
                 size: CGSize(width: 27, height: 27),
-                tintColor: .iconWarning
+                tintColor: .iconWarning,
+                bundle: .platformUIKit
             ),
             title: "\(LocalizedString.titlePrefix) \(assetCode) \(LocalizedString.titleSuffix)",
             description: "\(LocalizedString.descriptionPrefix) \(assetCode) \(LocalizedString.descriptionSuffix)",

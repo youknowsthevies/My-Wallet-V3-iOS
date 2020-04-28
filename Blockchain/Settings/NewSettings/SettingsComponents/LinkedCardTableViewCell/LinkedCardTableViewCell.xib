@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -17,8 +17,8 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="76M-fr-eeJ" customClass="LinkedCardView" customModule="Blockchain" customModuleProvider="target">
-                        <rect key="frame" x="16" y="16" width="200" height="101"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <rect key="frame" x="24" y="16" width="200" height="101"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="width" priority="250" constant="200" id="fqs-uT-tT1"/>
                         </constraints>
@@ -48,13 +48,26 @@
                             <constraint firstAttribute="width" priority="750" constant="75" id="TnS-yP-iab"/>
                         </constraints>
                     </view>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3kS-Jy-aBk">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="133"/>
+                        <connections>
+                            <action selector="touchDown" destination="5Zl-CV-A8F" eventType="touchDown" id="Pk5-8I-37Y"/>
+                            <action selector="touchUp" destination="5Zl-CV-A8F" eventType="touchCancel" id="TqI-qG-mGQ"/>
+                            <action selector="touchUp" destination="5Zl-CV-A8F" eventType="touchUpOutside" id="aTI-dh-ojZ"/>
+                            <action selector="touchUp" destination="5Zl-CV-A8F" eventType="touchUpInside" id="axQ-zD-YpS"/>
+                        </connections>
+                    </button>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="76M-fr-eeJ" firstAttribute="leading" secondItem="MEf-m8-HjS" secondAttribute="leading" constant="16" id="0MZ-mg-z6p"/>
+                    <constraint firstItem="76M-fr-eeJ" firstAttribute="leading" secondItem="MEf-m8-HjS" secondAttribute="leading" constant="24" id="0MZ-mg-z6p"/>
+                    <constraint firstAttribute="trailing" secondItem="3kS-Jy-aBk" secondAttribute="trailing" id="Cvo-2e-8tR"/>
                     <constraint firstAttribute="trailing" secondItem="uiN-NR-F9a" secondAttribute="trailing" constant="16" id="Ij4-Vc-Aq5"/>
+                    <constraint firstItem="3kS-Jy-aBk" firstAttribute="leading" secondItem="MEf-m8-HjS" secondAttribute="leading" id="JW8-VZ-kWY"/>
+                    <constraint firstAttribute="bottom" secondItem="3kS-Jy-aBk" secondAttribute="bottom" id="Kw9-6R-qtf"/>
                     <constraint firstItem="k68-bD-h9r" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="76M-fr-eeJ" secondAttribute="trailing" constant="4" id="QMu-dw-BMc"/>
                     <constraint firstAttribute="trailing" secondItem="k68-bD-h9r" secondAttribute="trailing" constant="16" id="TP8-1h-H2n"/>
                     <constraint firstAttribute="bottom" secondItem="76M-fr-eeJ" secondAttribute="bottom" constant="16" id="Tfc-cN-Y0k"/>
+                    <constraint firstItem="3kS-Jy-aBk" firstAttribute="top" secondItem="MEf-m8-HjS" secondAttribute="top" id="cLt-Dx-jhv"/>
                     <constraint firstItem="uiN-NR-F9a" firstAttribute="centerY" secondItem="76M-fr-eeJ" secondAttribute="centerY" id="clZ-St-fUh"/>
                     <constraint firstItem="k68-bD-h9r" firstAttribute="top" secondItem="MEf-m8-HjS" secondAttribute="top" constant="16" id="dAu-U1-4EE"/>
                     <constraint firstAttribute="bottom" secondItem="k68-bD-h9r" secondAttribute="bottom" constant="16" id="rvt-G2-Rbv"/>
@@ -62,6 +75,7 @@
                 </constraints>
             </tableViewCellContentView>
             <connections>
+                <outlet property="button" destination="3kS-Jy-aBk" id="T1b-Mp-ags"/>
                 <outlet property="cardDigitsLabel" destination="ru7-XZ-6vY" id="JCg-Tw-Gtf"/>
                 <outlet property="expirationDateLabel" destination="JTi-iw-9BN" id="oWG-HI-KkZ"/>
                 <outlet property="expiredBadgeView" destination="uiN-NR-F9a" id="818-eC-pah"/>

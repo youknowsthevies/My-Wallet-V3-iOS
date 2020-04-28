@@ -9,6 +9,7 @@
 import RxSwift
 import RxRelay
 import Localization
+import PlatformKit
 
 public final class CardNumberValidator: TextValidating, CardTypeSource {
             
@@ -24,7 +25,7 @@ public final class CardNumberValidator: TextValidating, CardTypeSource {
     }
     
     /// An observable that streams the card type
-    public var cardType: Observable<CardType?> {
+    public var cardType: Observable<CardType> {
         cardTypeRelay.asObservable()
     }
     
@@ -33,7 +34,7 @@ public final class CardNumberValidator: TextValidating, CardTypeSource {
     // MARK: - Private Properties
     
     private let supportedCardTypes: Set<CardType>
-    private let cardTypeRelay = BehaviorRelay<CardType?>(value: nil)
+    private let cardTypeRelay = BehaviorRelay<CardType>(value: .unknown)
     private let luhnValidator = LuhnNumberValidator()
     private let validationStateRelay = BehaviorRelay<TextValidationState>(value: .invalid(reason: nil))
     private let disposeBag = DisposeBag()
@@ -43,7 +44,7 @@ public final class CardNumberValidator: TextValidating, CardTypeSource {
     public init(supportedCardTypes: Set<CardType> = [.visa, .mastercard, .amex]) {
         self.supportedCardTypes = supportedCardTypes
         valueRelay
-            .map { CardType.determineType(from: $0) }
+            .map { .determineType(from: $0) }
             .bind(to: cardTypeRelay)
             .disposed(by: disposeBag)
            
@@ -53,7 +54,7 @@ public final class CardNumberValidator: TextValidating, CardTypeSource {
                 let (value, cardType) = payload
                 
                 let isSupported: Bool
-                if let cardType = cardType {
+                if cardType.isKnown {
                     isSupported = self.supportedCardTypes.contains(cardType)
                 } else {
                     isSupported = true
@@ -84,7 +85,7 @@ public final class CardNumberValidator: TextValidating, CardTypeSource {
         guard luhnValidator.validate(number: number) else {
             return false
         }
-        for type in CardType.allCases {
+        for type in CardType.all {
             let predicate = NSPredicate(format: "SELF MATCHES %@", type.regex)
             if predicate.evaluate(with: number) {
                 return true

@@ -53,6 +53,7 @@ final class CardDetailsScreenPresenter {
         }
     }
     
+    private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias LocalizedString = LocalizationConstants.CardDetailsScreen
     private typealias AccessibilityId = Accessibility.Identifier.CardDetailsScreen
 
@@ -75,11 +76,14 @@ final class CardDetailsScreenPresenter {
     private let disposeBag = DisposeBag()
 
     private let stateService: AddCardStateService
+    private let eventRecorder: AnalyticsEventRecording
     
     // MARK: - Setup
     
-    init(stateService: AddCardStateService) {
+    init(stateService: AddCardStateService,
+         eventRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared) {
         self.stateService = stateService
+        self.eventRecorder = eventRecorder
         
         // Setup of the stored properties
         
@@ -101,11 +105,9 @@ final class CardDetailsScreenPresenter {
             matchValidator: cvvToCardNumberMatcher,
             messageRecorder: CrashlyticsRecorder()
         )
-        
         let cardExpiryTextFieldViewModel = CardExpiryTextFieldViewModel(
             messageRecorder: CrashlyticsRecorder()
         )
-        
         let cardholderNameTextFieldViewModel = TextFieldViewModel(
             with: .cardholderName,
             hintDisplayType: .constant,
@@ -185,10 +187,20 @@ final class CardDetailsScreenPresenter {
         buttonViewModel.tapRelay
             .withLatestFrom(dataRelay)
             .compactMap { $0 }
-            .bind(weak: stateService) { (stateService, cardData) in
-                stateService.addBillingAddress(to: cardData)
+            .bind(weak: self) { (self, cardData) in
+                self.eventRecorder.record(event: AnalyticsEvent.sbCardInfoSet)
+                self.stateService.addBillingAddress(to: cardData)
             }
             .disposed(by: disposeBag)
     }
     
+    func viewDidAppear() {
+        eventRecorder.record(event: AnalyticsEvent.sbAddCardScreenShown)
+    }
+    
+    // MARK: - Navigation
+    
+    func previous() {
+        stateService.previousRelay.accept(())
+    }
 }

@@ -55,13 +55,7 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
         backgroundColor = viewModel.background.color
         backgroundImageView.image = viewModel.background.image
 
-        thumbImageView.image = UIImage(named: viewModel.image.name)
-            .map {
-                if viewModel.image.tintColor != nil {
-                    return $0.withRenderingMode(.alwaysTemplate)
-                }
-                return $0
-            }
+        thumbImageView.image = viewModel.image.uiImage
         thumbImageView.tintColor = viewModel.image.tintColor
         thumbImageView.layout(size: viewModel.image.size)
         titleLabel.text = viewModel.title

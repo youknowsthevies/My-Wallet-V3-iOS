@@ -71,7 +71,7 @@ final class SimpleBuyTransferDetailScreenViewController: BaseTableViewController
     // MARK: - Navigation
     
     override func navigationBarLeadingButtonPressed() {
-        presenter.navigationBarLeadingButtonTapped()
+        presenter.previous()
     }
 }
 

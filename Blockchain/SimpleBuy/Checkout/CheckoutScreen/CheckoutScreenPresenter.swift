@@ -24,25 +24,28 @@ final class CheckoutScreenPresenter {
     // MARK: - Navigation Bar Properties
     
     var trailingButton: Screen.Style.TrailingButton { .none }
-    var leadingButton: Screen.Style.LeadingButton { .close }
+    var leadingButton: Screen.Style.LeadingButton { .back }
     var titleView: Screen.Style.TitleView { .text(value: LocalizedString.title) }
     var barStyle: Screen.Style.Bar {
-        return .lightContent(ignoresStatusBar: false, background: .navigationBarBackground)
+        .darkContent(ignoresStatusBar: false, background: .white)
     }
     
     /// Returns the ordered cell types
     let cellArrangement: [CheckoutCellType] = {
-        return [.summary,
-                .separator,
-                .lineItem(.date),
-                .lineItem(.totalCost),
-                .lineItem(.estimatedAmount),
-                .lineItem(.buyingFee),
-                .separator,
-                .disclaimer]
+        [
+            .summary,
+            .separator,
+            .lineItem(.date),
+            .lineItem(.totalCost),
+            .lineItem(.estimatedAmount),
+            .lineItem(.buyingFee),
+            .lineItem(.paymentMethod),
+            .separator,
+            .disclaimer
+        ]
     }()
     
-    /// MARK: - View Models / Presenters
+    // MARK: - View Models / Presenters
     
     let summaryLabelContent: LabelContent
     let noticeViewModel: NoticeViewModel
@@ -55,6 +58,7 @@ final class CheckoutScreenPresenter {
     let totalCostLineItemCellPresenter: DefaultLineItemCellPresenter
     let estimatedLineItemCellPresenter: DefaultLineItemCellPresenter
     let buyingFeeLineItemCellPresenter: DefaultLineItemCellPresenter
+    let paymentMethodLineItemCellPresenter: DefaultLineItemCellPresenter
 
     // MARK: - Injected
     
@@ -87,7 +91,8 @@ final class CheckoutScreenPresenter {
         noticeViewModel = NoticeViewModel(
             imageViewContent: .init(
                 imageName: "disclaimer-icon",
-                accessibility: .id(AccessibilityId.disclaimerImage)
+                accessibility: .id(AccessibilityId.disclaimerImage),
+                bundle: .platformUIKit
             ),
             labelContent: .init(
                 text: notice,
@@ -139,21 +144,31 @@ final class CheckoutScreenPresenter {
         )
         buyingFeeLineItemCellPresenter = .init(interactor: feeLineItemInteractor)
 
+        let paymentMethodLineItemInteractor = DefaultLineItemCellInteractor()
+        paymentMethodLineItemInteractor.title.stateRelay.accept(
+            .loaded(next: .init(text: LocalizedString.LineItem.paymentMethod))
+        )
+        
+        paymentMethodLineItemInteractor.description.stateRelay.accept(
+            .loaded(next: .init(text: interactor.checkoutData.localizedPaymentMethod))
+        )
+        paymentMethodLineItemCellPresenter = .init(interactor: paymentMethodLineItemInteractor)
+        
         buyButtonViewModel.tapRelay
             .show(loader: loadingViewPresenter, style: .circle)
             .flatMap(weak: self) { (self, _) in
-                self.interactor.buy()
+                self.interactor.confirm()
+                    .mapToResult()
             }
-            .mapToResult()
             .hide(loader: loadingViewPresenter)
             .bind(weak: self) { (self, result) in
                 switch result {
-                case .success:
+                case .success(let data):
                     self.stateService.confirmCheckout(
-                        with: self.interactor.checkoutData
+                        with: data
                     )
                 case .failure:
-                    self.buyDidFail()
+                    self.alertPresenter.error()
                 }
             }
             .disposed(by: disposeBag)
@@ -164,7 +179,9 @@ final class CheckoutScreenPresenter {
             .disposed(by: disposeBag)
         
         cancelButtonViewModel.tapRelay
-            .bind(to: stateService.previousRelay)
+            .bind(weak: self) { (self) in
+                self.cancel()
+            }
             .disposed(by: disposeBag)
         
         cancelButtonViewModel.tapRelay
@@ -190,11 +207,23 @@ final class CheckoutScreenPresenter {
         analyticsRecorder.record(event: AnalyticsEvent.sbCheckoutShown)
     }
     
+    private func cancel() {
+        interactor.cancel()
+            .handleLoaderForLifecycle(loader: loadingViewPresenter, style: .circle)
+            .subscribe(
+                onCompleted: { [weak self] in
+                    guard let self = self else { return }
+                    self.analyticsRecorder.record(event: AnalyticsEvent.sbCheckoutCancelGoBack)
+                    self.stateService.previousRelay.accept(())
+                }
+            )
+            .disposed(by: disposeBag)
+    }
+    
     // MARK: - Navigation
     
-    func navigationBarLeadingButtonTapped() {
-        analyticsRecorder.record(event: AnalyticsEvent.sbCheckoutCancelGoBack)
-        stateService.previousRelay.accept(())
+    func previous() {
+        cancel()
     }
     
     // MARK: - Accessors
@@ -215,25 +244,31 @@ final class CheckoutScreenPresenter {
     
     /// Is called as the interaction setup fails
     private func setupDidFail() {
-        typealias AlertString = LocalizationConstants.SimpleBuy.ErrorAlert
-        let action = UIAlertAction(
-            title: AlertString.button,
-            style: .default) { [weak stateService] _ in
-                stateService?.previousRelay.accept(())
-            }
-        alertPresenter.standardNotify(
-            message: AlertString.message,
-            title: AlertString.title,
-            actions: [action]
-        )
+        alertPresenter.error { [weak stateService] in
+            stateService?.previousRelay.accept(())
+        }
     }
-    
-    private func buyDidFail() {
-        typealias AlertString = LocalizationConstants.SimpleBuy.ErrorAlert
-        alertPresenter.standardNotify(
-            message: AlertString.message,
-            title: AlertString.title,
-            actions: [UIAlertAction(title: AlertString.button, style: .default)]
-        )
+}
+
+fileprivate extension SimpleBuyCheckoutData {
+    var localizedPaymentMethod: String {
+        var localizedPaymentMethod = ""
+        switch detailType {
+        case .candidate(let details):
+            switch details.paymentMethod {
+            case .card(let card):
+                localizedPaymentMethod = "\(card.label) \(card.displaySuffix)"
+            case .suggested(let method):
+                switch method.type {
+                case .bankTransfer:
+                    localizedPaymentMethod = LocalizationConstants.SimpleBuy.Checkout.LineItem.bankTransfer
+                case .card:
+                    break
+                }
+            }
+        case .order:
+            break
+        }
+        return localizedPaymentMethod
     }
 }

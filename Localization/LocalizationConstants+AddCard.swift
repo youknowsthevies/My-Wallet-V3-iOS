@@ -30,7 +30,16 @@ extension LocalizationConstants {
             "Next",
             comment: "Billing Address Screen: add card button label"
         )
-
+        public static let linkingYourCard = NSLocalizedString(
+            "Secrurely Linking Your Card",
+            comment: "Billing Address Screen: loader"
+        )
+    }
+    public struct AuthorizeCardScreen {
+        public static let title = NSLocalizedString(
+            "Authorize Card",
+            comment: "Card Authorization Screen: screen title"
+        )
     }
     public struct CountrySelectionScreen {
         public static let title = NSLocalizedString(
@@ -42,4 +51,17 @@ extension LocalizationConstants {
             comment: "Country Selection Screen: search bar placeholder"
         )
     }
+    public enum PendingCardStatusScreen {
+        public enum LoadingScreen {
+            public static let title = NSLocalizedString(
+                "Secrurely Linking Your Card",
+                comment: "Pending active card screen: title"
+            )
+            public static let subtitle = NSLocalizedString(
+                "This could take up to 1 minute.",
+                comment: "Pending active card screen: subtitle"
+            )
+        }
+    }
+    
 }

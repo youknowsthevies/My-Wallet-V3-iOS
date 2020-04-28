@@ -47,7 +47,7 @@ struct AnnouncementPreliminaryData {
     }
 
     var pendingSimpleBuyOrderAssetType: CryptoCurrency? {
-        simpleBuyCheckoutData?.cryptoCurrency
+        pendingOrderDetails?.cryptoValue.currencyType
     }
 
     var hasIncompleteBuyFlow: Bool {
@@ -56,7 +56,7 @@ struct AnnouncementPreliminaryData {
 
     private let isSimpleBuyAvailable: Bool
     private let airdropCampaigns: AirdropCampaigns
-    private let simpleBuyCheckoutData: SimpleBuyCheckoutData?
+    private let pendingOrderDetails: SimpleBuyOrderDetails?
     private let simpleBuyEventCache: SimpleBuyEventCache
     
     init(user: NabuUser,
@@ -67,7 +67,7 @@ struct AnnouncementPreliminaryData {
          countries: Countries,
          simpleBuyEventCache: SimpleBuyEventCache = SimpleBuyServiceProvider.default.cache,
          authenticatorType: AuthenticatorType,
-         simpleBuyCheckoutData: SimpleBuyCheckoutData?,
+         pendingOrderDetails: SimpleBuyOrderDetails?,
          isSimpleBuyAvailable: Bool) {
         self.airdropCampaigns = airdropCampaigns
         self.user = user
@@ -76,7 +76,7 @@ struct AnnouncementPreliminaryData {
         self.hasPaxTransactions = hasPaxTransactions
         self.simpleBuyEventCache = simpleBuyEventCache
         self.authenticatorType = authenticatorType
-        self.simpleBuyCheckoutData = simpleBuyCheckoutData
+        self.pendingOrderDetails = pendingOrderDetails
         self.isSimpleBuyAvailable = isSimpleBuyAvailable
         country = countries.first { $0.code == user.address?.countryCode }
     }

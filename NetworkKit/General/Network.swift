@@ -51,6 +51,13 @@ public struct Network {
             apiCode: BlockchainAPI.Parameters.apiCode,
             pathComponents: []
         )
+        
+        public static let everypayConfig = Config(
+            apiScheme: "https",
+            apiHost: BlockchainAPI.shared.everyPayHost,
+            apiCode: "",
+            pathComponents: []
+        )
     }
     
     public struct Dependencies {
@@ -120,6 +127,24 @@ public struct Network {
             let requestBuilder = RequestBuilder(networkConfig: blockchainAPIConfig)
             return Dependencies(
                 blockchainAPIConfig: blockchainAPIConfig,
+                session: session,
+                requestBuilder: requestBuilder,
+                sessionConfiguration: sessionConfiguration,
+                sessionDelegate: sessionDelegate,
+                communicator: communicator
+            )
+        }()
+        
+        public static let everypay: Dependencies = {
+            let sessionConfiguration = URLSessionConfiguration.default
+            sessionConfiguration.waitsForConnectivity = true
+            let sessionDelegate = SessionDelegate()
+            let session = URLSession(configuration: sessionConfiguration, delegate: sessionDelegate, delegateQueue: nil)
+            let communicator = NetworkCommunicator(session: session, sessionDelegate: sessionDelegate)
+            let config = Config.everypayConfig
+            let requestBuilder = RequestBuilder(networkConfig: config)
+            return Dependencies(
+                blockchainAPIConfig: config,
                 session: session,
                 requestBuilder: requestBuilder,
                 sessionConfiguration: sessionConfiguration,

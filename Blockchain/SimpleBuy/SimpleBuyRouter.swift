@@ -39,7 +39,10 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     private let serviceProvider: SimpleBuyServiceProviderAPI
     private let cryptoSelectionService: SelectionServiceAPI
     private let dataProviding: DataProviding
-
+    
+    private var addCardStateService: AddCardStateService!
+    private var addCardRouter: AddCardRouter!
+    
     /// A kyc subscription dispose bag
     private var kycDisposeBag = DisposeBag()
         
@@ -62,7 +65,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.dataProviding = dataProviding
         self.kycRouter = kycRouter
-        
+                
         let cryptoSelectionService = SimpleBuyCryptoCurrencySelectionService(
             service: serviceProvider.supportedPairsInteractor,
             defaultSelectedData: CryptoCurrency.bitcoin
@@ -83,7 +86,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
         let navigationController = UINavigationController(rootViewController: viewController)
         navigationControllerAPI?.present(navigationController, animated: true, completion: nil)
     }
-        
+            
     /// Should be called once
     func start() {
         stateService.action
@@ -129,6 +132,12 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
             showBuyCryptoScreen()
         case .checkout(let data):
             showCheckoutScreen(with: data)
+        case .authorizeCard(let data):
+            showCardAuthorization(with: data)
+        case .pendingOrderCompleted(amount: let amount, orderId: let orderId):
+            showPendingOrderCompletionScreen(for: orderId, cryptoValue: amount)
+        case .paymentMethods:
+            showPaymentMethodsScreen()
         case .transferDetails(let data):
             showTransferDetailScreen(with: data, presentationType: .checkoutSummary)
         case .transferCancellation(let data):
@@ -139,6 +148,8 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
             showKYC()
         case .pendingKycApproval:
             showPendingKycApprovalScreen()
+        case .addCard(let data):
+            startCardAdditionFlow(with: data)
         case .inactive:
             navigationControllerAPI?.dismiss(animated: true, completion: nil)
         }
@@ -146,13 +157,25 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     
     func previous(from state: SimpleBuyStateService.State) {
         switch state {
-        // KYC is an independent flow which dismisses itself.
+        // Some independent flows which dismiss themselves.
         // Therefore, do nothing.
-        case .kyc, .selectFiat, .changeFiat, .unsupportedFiat:
+        case .kyc, .selectFiat, .changeFiat, .unsupportedFiat, .addCard:
             break
+        case .paymentMethods:
+            topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
         default:
             dismiss()
         }
+    }
+    
+    private func startCardAdditionFlow(with checkoutData: SimpleBuyCheckoutData) {
+        let addCardStateService = stateService.addCardStateService(with: checkoutData)
+        addCardRouter = AddCardRouter(
+            stateService: addCardStateService,
+            routingType: .modal
+        )
+        addCardRouter.setup()
+        addCardStateService.start()
     }
     
     private func showFiatCurrencyChangeScreen(selectedCurrency: FiatCurrency) {
@@ -272,6 +295,19 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
             .disposed(by: disposeBag)
     }
     
+    private func showPaymentMethodsScreen() {
+        let interactor = PaymentMethodsScreenInteractor(
+            service: serviceProvider.paymentMethodTypes
+        )
+        let presenter = PaymentMethodsScreenPresenter(
+            interactor: interactor,
+            stateService: stateService
+        )
+        let viewController = PaymentMethodsScreenViewController(presenter: presenter)
+        let navigationController = UINavigationController(rootViewController: viewController)
+        navigationControllerAPI?.present(navigationController, animated: true, completion: nil)
+    }
+    
     private func showInelligibleCurrency(with currency: FiatCurrency) {
         let presenter = SimpleBuyIneligibleCurrencyScreenPresenter(
             currency: currency,
@@ -328,9 +364,9 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     /// Shows the checkout screen
     private func showCheckoutScreen(with data: SimpleBuyCheckoutData) {
         let interactor = CheckoutScreenInteractor(
-            paymentAccountService: serviceProvider.paymentAccount,
-            orderQuoteService: serviceProvider.orderQuote,
-            orderCreationService: serviceProvider.orderCreation,
+            creationService: serviceProvider.orderCreation(for: data.detailType.paymentMethod),
+            confirmationService: serviceProvider.orderConfirmation,
+            cancellationService: serviceProvider.orderCancellation,
             checkoutData: data
         )
         let presenter = CheckoutScreenPresenter(
@@ -338,6 +374,33 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
             interactor: interactor
         )
         let viewController = CheckoutScreenViewController(using: presenter)
+        present(viewController: viewController)
+    }
+    
+    private func showPendingOrderCompletionScreen(for orderId: String, cryptoValue: CryptoValue) {
+        let interactor = PendingOrderStateScreenInteractor(
+            orderId: orderId,
+            amount: cryptoValue,
+            service: serviceProvider.orderCompletion
+        )
+        let presenter = PendingOrderStateScreenPresenter(
+            stateService: stateService,
+            interactor: interactor
+        )
+        let viewController = PendingStateViewController(
+            presenter: presenter
+        )
+        present(viewController: viewController)
+    }
+    
+    private func showCardAuthorization(with data: SimpleBuyOrderDetails) {
+        let presenter = CardAuthorizationScreenPresenter(
+            stateService: stateService,
+            data: data.authorizationData!
+        )
+        let viewController = CardAuthorizationScreenViewController(
+            presenter: presenter
+        )
         present(viewController: viewController)
     }
 
@@ -351,7 +414,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
             stateService: stateService,
             interactor: interactor
         )
-        let viewController = SimpleBuyKYCPendingViewController(presenter: presenter)
+        let viewController = PendingStateViewController(presenter: presenter)
         present(viewController: viewController, using: .navigationFromCurrent)
     }
     
@@ -389,6 +452,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
             fiatCurrencyService: serviceProvider.settings,
             pairsService: serviceProvider.supportedPairsInteractor,
             eligibilityService: serviceProvider.eligibility,
+            paymentMethodTypesService: serviceProvider.paymentMethodTypes,
             cryptoCurrencySelectionService: cryptoSelectionService,
             suggestedAmountsService: serviceProvider.suggestedAmounts
         )

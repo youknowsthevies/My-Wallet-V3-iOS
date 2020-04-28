@@ -29,17 +29,14 @@ final class CardTextFieldViewModelTests: XCTestCase {
             "5555555555554444",
             "5105105105105100",
             "5101180000000007",
-            "2222 4000 7000 0005",
             "5100 2900 2900 2909",
             "5555 3412 4444 1115",
             "5577 0000 5577 0004",
             "5136 3333 3333 3335",
             "5585558555855583",
             "5555 4444 3333 1111",
-            "2223 0000 4841 0010",
             "5100 0600 00000002",
-            "5424 0000 0000 0015",
-            "2222 4000 5000 0009"
+            "5424 0000 0000 0015"
         ]
         
         try numbers.forEach {
@@ -87,7 +84,6 @@ final class CardTextFieldViewModelTests: XCTestCase {
             }
         }
     }
-    
 
     func testValidDinersCardNumbers() throws {
         let numbers = [
@@ -173,9 +169,6 @@ final class CardTextFieldViewModelTests: XCTestCase {
         try numbers.forEach {
             _ = viewModel.editIfNecessary($0, operation: .addition)
             let state = try viewModel.state.toBlocking().first()!
-            if state.isValid {
-                print(state.value)
-            }
             XCTAssertFalse(state.isValid)
         }
     }

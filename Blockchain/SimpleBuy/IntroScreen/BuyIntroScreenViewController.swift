@@ -58,13 +58,16 @@ final class BuyIntroScreenViewController: BaseScreenViewController {
 
     private func setupNavigationBar() {
         titleViewStyle = .text(value: presenter.title)
-        set(barStyle: .lightContent(ignoresStatusBar: false, background: .navigationBarBackground),
-            leadingButtonStyle: .back)
+        setStandardDarkContentStyle()
     }
 
     // MARK: - Navigation
     
     override func navigationBarLeadingButtonPressed() {
-        presenter.navigationBarLeadingButtonTapped()
+        presenter.previous()
+    }
+    
+    override func navigationBarTrailingButtonPressed() {
+        presenter.previous()
     }
 }

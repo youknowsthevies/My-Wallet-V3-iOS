@@ -1,5 +1,5 @@
 //
-//  SimpleBuyOrderCreationData.swift
+//  SimpleBuyOrderPayload.swift
 //  PlatformKit
 //
 //  Created by Daniel Huri on 05/02/2020.
@@ -15,7 +15,40 @@ public struct SimpleBuyOrder {
     }
 }
 
-public struct SimpleBuyOrderCreationData {
+public struct SimpleBuyOrderPayload {
+
+    public enum CreateActionType: String, Encodable {
+        case confirm
+        case pending
+    }
+    
+    public struct ConfirmOrder: Encodable {
+        
+        public enum Partner {
+            case everyPay(customerUrl: String)
+            case bank
+        }
+        
+        struct Attributes: Encodable {
+            struct EveryPay: Encodable {
+                let customerUrl: String
+            }
+            let everypay: EveryPay?
+        }
+                
+        let action: CreateActionType
+        let attributes: Attributes?
+        
+        init(partner: Partner, action: CreateActionType) {
+            switch partner {
+            case .everyPay(customerUrl: let url):
+                attributes = Attributes(everypay: .init(customerUrl: url))
+            case .bank:
+                attributes = nil
+            }
+            self.action = action
+        }
+    }
     
     public struct Request: Encodable {
         struct Input: Encodable {
@@ -31,9 +64,14 @@ public struct SimpleBuyOrderCreationData {
         let action: SimpleBuyOrder.Action
         let input: Input
         let output: Output
+        let paymentMethodId: String?
         
-        init(action: SimpleBuyOrder.Action, fiatValue: FiatValue, for cryptoCurrency: CryptoCurrency) {
+        init(action: SimpleBuyOrder.Action,
+             fiatValue: FiatValue,
+             for cryptoCurrency: CryptoCurrency,
+             paymentMethodId: String? = nil) {
             self.action = action
+            self.paymentMethodId = paymentMethodId
             input = .init(
                 symbol: fiatValue.currencyCode,
                 amount: fiatValue.string
@@ -44,14 +82,37 @@ public struct SimpleBuyOrderCreationData {
     }
     
     public struct Response: Decodable {
+        struct Attributes: Decodable {
+            struct EveryPay: Decodable {
+                enum PaymentState: String, Decodable {
+                    case waitingFor3DS = "WAITING_FOR_3DS_RESPONSE"
+                }
+                
+                let paymentLink: String
+                let paymentState: PaymentState
+            }
+            
+            let paymentId: String
+            let everypay: EveryPay?
+        }
+        
+        let state: String
+        
         let id: String
+        
         let inputCurrency: String
         let inputQuantity: String
+        
         let outputCurrency: String
         let outputQuantity: String
-        let state: String
+        
         let insertedAt: String
         let updatedAt: String
         let expiresAt: String
+        
+        let price: String?
+        let fee: String?
+        let paymentMethodId: String?
+        let attributes: Attributes?
     }
 }

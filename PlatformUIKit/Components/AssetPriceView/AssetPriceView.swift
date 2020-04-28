@@ -110,8 +110,8 @@ public final class AssetPriceView: UIView {
     }
     
     private func startShimmering() {
-        guard priceLabel.content.isEmpty() else { return }
-        guard changeLabel.content.isEmpty() else { return }
+        guard priceLabel.content.isEmpty else { return }
+        guard changeLabel.content.isEmpty else { return }
         priceLabelShimmeringView.start()
         changeLabelShimmeringView.start()
     }

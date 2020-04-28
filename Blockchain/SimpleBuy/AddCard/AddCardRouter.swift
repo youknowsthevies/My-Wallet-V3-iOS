@@ -13,56 +13,116 @@ import PlatformUIKit
 
 final class AddCardRouter: Router {
     
+    // MARK: - Types
+    
+    enum RoutingType {
+        case modal
+        case embed(inside: NavigationControllerAPI)
+    }
+    
     // MARK: - `Router` Properties
     
     weak var topMostViewControllerProvider: TopMostViewControllerProviding!
     weak var navigationControllerAPI: NavigationControllerAPI?
-        
+    
+    let stateService: AddCardStateService
+    
     // MARK: - Private Properties
 
-    private let serviceProvider: AddCardServiceProvider
-    private let stateService = AddCardStateService()
+    private let routingType: RoutingType
+    private let cardServiceProvider: CardServiceProviderAPI
+    private let simpleBuyServiceProvider: SimpleBuyServiceProviderAPI
     private let disposeBag = DisposeBag()
     
-    init(serviceProvider: AddCardServiceProvider = AddCardServiceProvider(),
+    init(stateService: AddCardStateService,
+         cardServiceProvider: CardServiceProviderAPI = CardServiceProvider.default,
+         simpleBuyServiceProvider: SimpleBuyServiceProviderAPI = SimpleBuyServiceProvider.default,
+         routingType: RoutingType = .modal,
          topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared) {
+        self.stateService = stateService
+        self.routingType = routingType
         self.topMostViewControllerProvider = topMostViewControllerProvider
-        self.serviceProvider = serviceProvider
+        self.cardServiceProvider = cardServiceProvider
+        self.simpleBuyServiceProvider = simpleBuyServiceProvider
     }
     
     /// Entry method to card addition / editing that should be called once
-    func start() {
+    func setup() {
+        // Embed the entire flow in another navigation controller
+        // instead of generating one of its own
+        if case .embed(inside: let navigationController) = routingType {
+            navigationControllerAPI = navigationController
+        }
         stateService.action
             .bind(weak: self) { (self, action) in
                 switch action {
-                case .previous:
-                    self.dismiss()
+                case .previous(from: let state):
+                    self.previous(from: state)
                 case .next(to: let state):
                     self.next(to: state)
                 }
             }
             .disposed(by: disposeBag)
-        stateService.start()
     }
     
-    func next(to state: AddCardStateService.State) {
+    // MARK: - State Routing
+    
+    private func previous(from state: AddCardStateService.State) {
+        dismiss()
+    }
+        
+    private func next(to state: AddCardStateService.State) {
         switch state {
         case .cardDetails:
             showCardDetailsScreen()
         case .billingAddress(let cardData):
             showBillingAddressScreen(for: cardData)
-        case .inactive:
+        case .authorization(let data):
+            showAuthorizationScreen(for: data)
+        case .pendingCardState(cardId: let cardId):
+            showPendingCardStateScreen(for: cardId)
+        case .completed, .inactive:
             navigationControllerAPI?.dismiss(animated: true, completion: nil)
         }
     }
     
     // MARK: - Accessors
     
+    private func showPendingCardStateScreen(for cardId: String) {
+        let interactor = PendingCardStatusInteractor(
+            cardId: cardId,
+            activationService: cardServiceProvider.cardActivation,
+            paymentMethodTypesService: simpleBuyServiceProvider.paymentMethodTypes
+        )
+        let presenter = PendingCardStatusPresenter(
+            stateService: stateService,
+            interactor: interactor
+        )
+        let viewController = PendingStateViewController(
+            presenter: presenter
+        )
+        present(viewController: viewController)
+    }
+    
+    private func showAuthorizationScreen(for data: PartnerAuthorizationData) {
+        let presenter = CardAuthorizationScreenPresenter(
+            stateService: stateService,
+            data: data
+        )
+        let viewController = CardAuthorizationScreenViewController(
+            presenter: presenter
+        )
+        present(viewController: viewController)
+    }
+    
     private func showCardDetailsScreen() {
         let presenter = CardDetailsScreenPresenter(
             stateService: stateService
         )
         let viewController = CardDetailsScreenViewController(presenter: presenter)
+        if #available(iOS 13.0, *) {
+            viewController.isModalInPresentation = true
+        }
         present(viewController: viewController)
     }
     
@@ -70,7 +130,8 @@ final class AddCardRouter: Router {
         let selectionRouter = SelectionRouter(parent: navigationControllerAPI!)
         let interactor = BillingAddressScreenInteractor(
             cardData: cardData,
-            userDataRepository: serviceProvider.dataRepository
+            service: cardServiceProvider.cardUpdate,
+            userDataRepository: cardServiceProvider.dataRepository
         )
         let presenter = BillingAddressScreenPresenter(
             interactor: interactor,

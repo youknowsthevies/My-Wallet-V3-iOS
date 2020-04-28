@@ -23,20 +23,29 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
     let availability: SimpleBuyAvailabilityServiceAPI
     let flowAvailability: SimpleBuyFlowAvailabilityServiceAPI
     let eligibility: SimpleBuyEligibilityServiceAPI
-    let orderCreation: SimpleBuyOrderCreationServiceAPI
     let orderCancellation: SimpleBuyOrderCancellationServiceAPI
-    let orderQuote: SimpleBuyOrderQuoteServiceAPI
-    let paymentAccount: SimpleBuyPaymentAccountServiceAPI
+    let orderConfirmation: SimpleBuyOrderConfirmationServiceAPI
+    var paymentMethods: SimpleBuyPaymentMethodsServiceAPI
+    let paymentMethodTypes: SimpleBuyPaymentMethodTypesService
     let cache: SimpleBuyEventCache
+    
+    var orderCompletion: SimpleBuyPendingOrderCompletionServiceAPI {
+        SimpleBuyPendingOrderCompletionService(ordersService: ordersDetails)
+    }
+    
+    private let orderCreation: SimpleBuyOrderCreationServiceAPI
+    private let orderQuote: SimpleBuyOrderQuoteServiceAPI
+    private let paymentAccount: SimpleBuyPaymentAccountServiceAPI
     
     let settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI
     let dataRepository: DataRepositoryAPI
 
     // MARK: - Setup
     
-    init(wallet: ReactiveWalletAPI = ReactiveWallet(),
+    init(cardServiceProvider: CardServiceProviderAPI = CardServiceProvider.default,
+         wallet: ReactiveWalletAPI = ReactiveWallet(),
          authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
-         client: SimpleBuyClientAPI = SimpleBuyClient(),
+         simpleBuyClient: SimpleBuyClientAPI = SimpleBuyClient(),
          cacheSuite: CacheSuite = UserDefaults.standard,
          settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI = UserInformationServiceProvider.default.settings,
          dataRepository: DataRepositoryAPI = BlockchainDataRepository.shared,
@@ -44,20 +53,20 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
         
         cache = SimpleBuyEventCache(cacheSuite: cacheSuite)
         
-        supportedPairs = SimpleBuySupportedPairsService(client: client)
+        supportedPairs = SimpleBuySupportedPairsService(client: simpleBuyClient)
         
         supportedPairsInteractor = SimpleBuySupportedPairsInteractorService(
             pairsService: supportedPairs,
             fiatCurrencySettingsService: settings
         )
         suggestedAmounts = SimpleBuySuggestedAmountsService(
-            client: client,
+            client: simpleBuyClient,
             reactiveWallet: wallet,
             authenticationService: authenticationService,
             fiatCurrencySettingsService: settings
         )
         ordersDetails = SimpleBuyOrdersService(
-            client: client,
+            client: simpleBuyClient,
             reactiveWallet: wallet,
             authenticationService: authenticationService
         )
@@ -66,39 +75,70 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
             featureFetcher: featureFetcher
         )
         eligibility = SimpleBuyEligibilityService(
-            client: client,
+            client: simpleBuyClient,
             reactiveWallet: wallet,
             authenticationService: authenticationService,
             fiatCurrencyService: settings,
             featureFetcher: featureFetcher
         )
-        orderCreation = SimpleBuyOrderCreationService(
-            client: client,
-            ordersService: ordersDetails,
-            authenticationService: authenticationService
-        )
         orderQuote = SimpleBuyOrderQuoteService(
-            client: client,
+            client: simpleBuyClient,
             authenticationService: authenticationService
         )
         paymentAccount = SimpleBuyPaymentAccountService(
-            client: client,
+            client: simpleBuyClient,
             dataRepository: dataRepository,
             authenticationService: authenticationService,
             fiatCurrencyService: settings
         )
-        pendingOrderDetails = SimpleBuyPendingOrderDetailsService(
-            ordersService: ordersDetails,
-            paymentAccountService: paymentAccount
+        orderConfirmation = SimpleBuyOrderConfirmationService(
+            client: simpleBuyClient,
+            authenticationService: authenticationService
         )
         orderCancellation = SimpleBuyOrderCancellationService(
-            client: client,
+            client: simpleBuyClient,
             orderDetailsService: ordersDetails,
             authenticationService: authenticationService
+        )
+        pendingOrderDetails = SimpleBuyPendingOrderDetailsService(
+            paymentAccountService: paymentAccount,
+            ordersService: ordersDetails,
+            cancallationService: orderCancellation
+        )
+        orderCreation = SimpleBuyOrderCreationService(
+            client: simpleBuyClient,
+            pendingOrderDetailsService: pendingOrderDetails,
+            authenticationService: authenticationService
+        )
+        paymentMethods = SimpleBuyPaymentMethodsService(
+            client: simpleBuyClient,
+            reactiveWallet: wallet,
+            authenticationService: authenticationService,
+            fiatCurrencyService: settings
+        )
+        paymentMethodTypes = SimpleBuyPaymentMethodTypesService(
+            paymentMethodsService: paymentMethods,
+            cardListService: cardServiceProvider.cardList
         )
         flowAvailability = SimpleBuyFlowAvailabilityService()
 
         self.dataRepository = dataRepository
         self.settings = settings
+    }
+    
+    public func orderCreation(for paymentMethod: SimpleBuyPaymentMethod.MethodType) -> SimpleBuyPendingOrderCreationServiceAPI {
+        switch paymentMethod {
+        case .bankTransfer:
+            return SimpleBuyBankOrderCreationService(
+                paymentAccountService: paymentAccount,
+                orderQuoteService: orderQuote,
+                orderCreationService: orderCreation
+            )
+        case .card:
+            return SimpleBuyCardOrderCreationService(
+                orderQuoteService: orderQuote,
+                orderCreationService: orderCreation
+            )
+        }
     }
 }

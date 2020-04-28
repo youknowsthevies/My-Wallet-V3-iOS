@@ -6,19 +6,23 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformUIKit
+
+struct ClipboardCellViewModel {
+    let title: String
+    let accessibilityID: String?
+    
+    init(title: String, accessibilityID: String? = nil) {
+        self.title = title
+        self.accessibilityID = accessibilityID
+    }
+}
+
 final class ClipboardTableViewCell: UITableViewCell {
     
     // MARK: - Model
     
-    struct ViewModel {
-        let title: String
-        let accessibilityID: String?
-        
-        init(title: String, accessibilityID: String? = nil) {
-            self.title = title
-            self.accessibilityID = accessibilityID
-        }
-    }
+    typealias ViewModel = ClipboardCellViewModel
     
     var viewModel: ViewModel! {
         didSet {

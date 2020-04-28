@@ -37,6 +37,20 @@ public struct Screen {
         /// Describes the bar style
         public enum Bar {
             
+            enum Color {
+                case light
+                case dark
+                
+                var standardColor: UIColor {
+                    switch self {
+                    case .dark:
+                        return .black
+                    case .light:
+                        return .white
+                    }
+                }
+            }
+            
             /// Light bar style - white background, black content
             case lightContent(ignoresStatusBar: Bool, background: UIColor)
             
@@ -44,12 +58,12 @@ public struct Screen {
             case darkContent(ignoresStatusBar: Bool, background: UIColor)
             
             /// Returns the tint color of the content - title, left / right buttons
-            var contentColor: UIColor {
+            var contentColor: Color {
                 switch self {
                 case .lightContent:
-                    return .white
+                    return .light
                 case .darkContent:
-                    return .black
+                    return .dark
                 }
             }
             
@@ -87,7 +101,7 @@ public struct Screen {
         // MARK: - Title view style
         
         /// The view that represents the title
-        public enum TitleView {
+        public enum TitleView: Equatable {
             
             /// Textual view
             case text(value: String)
@@ -116,6 +130,9 @@ public struct Screen {
             /// QR code
             case qrCode
             
+            /// Close icon
+            case close
+            
             /// Returns the content of the button
             public var content: NavigationBarContent? {
                 switch self {
@@ -126,6 +143,13 @@ public struct Screen {
                         image: UIImage(named: "qr-code-icon"),
                         accessibility: .init(
                             id: .value(Accessibility.Identifier.NavigationBar.qrCodeButton)
+                        )
+                    )
+                case .close:
+                    return NavigationBarContent(
+                        image: UIImage(named: "Icon-Close-Circle"),
+                        accessibility: .init(
+                            id: .value(Accessibility.Identifier.NavigationBar.dismissButton)
                         )
                     )
                 default:

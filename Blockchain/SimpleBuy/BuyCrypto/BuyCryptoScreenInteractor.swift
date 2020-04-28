@@ -11,15 +11,20 @@ import RxRelay
 import PlatformKit
 import PlatformUIKit
 
+/// The KYC state when related to simple-buy
+enum SimpleBuyKycState {
+    
+    /// Completed
+    case completed
+    
+    /// Should be completed
+    case shouldComplete
+}
+
 final class BuyCryptoScreenInteractor {
 
     // MARK: - Types
-    
-    enum KYCState {
-        case completed
-        case shouldComplete
-    }
-    
+
     enum State {
         case inBounds(data: SimpleBuyCheckoutData, upperLimit: FiatValue)
         case tooLow(min: FiatValue)
@@ -44,13 +49,13 @@ final class BuyCryptoScreenInteractor {
             }
         }
     }
-                
+               
     private enum Constant {
         static var defaultFiatCurrency: FiatCurrency { FiatCurrency.USD }
         static var defaultCryptoCurrency: CryptoCurrency { CryptoCurrency.bitcoin }
     }
-    
-    /// MARK: - Input Properties (writable)
+        
+    // MARK: - Input Properties (writable)
 
     /// Input scanner - scans each digit and map it into
     /// a valid fiat number
@@ -86,7 +91,7 @@ final class BuyCryptoScreenInteractor {
     var amount: Observable<FiatValue> {
         currentAmountRelay.asObservable()
     }
-    
+        
     /// Calculation state of the supported pairs
     var pairsCalculationState: Observable<BuyCryptoSupportedPairsCalculationState> {
         pairsCalculationStateRelay.asObservable()
@@ -97,8 +102,8 @@ final class BuyCryptoScreenInteractor {
         suggestedAmountsRelay.asObservable()
     }
 
-    /// Streams a `KYCState` indicating whether the user should complete KYC
-    var currentKycState: Single<Result<KYCState, Error>> {
+    /// Streams a `SimpleBuyKycState` indicating whether the user should complete KYC
+    var currentKycState: Single<Result<SimpleBuyKycState, Error>> {
         kycTiersService.fetchTiers()
             .map { $0.isTier2Approved }
             .mapToResult(successMap: { $0 ? .completed : .shouldComplete })
@@ -114,16 +119,25 @@ final class BuyCryptoScreenInteractor {
     var exchangeProviding: ExchangeProviding {
         return dataProviding.exchange
     }
-        
+
+    var paymentMethodTypes: Observable<[SimpleBuyPaymentMethodType]> {
+        paymentMethodTypesService.methodTypes
+    }
+    
+    var preferredPaymentMethodType: Observable<SimpleBuyPaymentMethodType?> {
+        paymentMethodTypesService.preferredPaymentMethodType
+    }
+    
     // MARK: - Injected
     
     let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
+    private let dataProviding: DataProviding
     private let suggestedAmountsService: SimpleBuySuggestedAmountsServiceAPI
     private let pairsService: SimpleBuySupportedPairsInteractorServiceAPI
     private let cryptoCurrencySelectionService: SelectionServiceAPI
     private let eligibilityService: SimpleBuyEligibilityServiceAPI
-    private let dataProviding: DataProviding
+    private let paymentMethodTypesService: SimpleBuyPaymentMethodTypesService
 
     // MARK: - Accessors
     
@@ -151,6 +165,7 @@ final class BuyCryptoScreenInteractor {
          fiatCurrencyService: FiatCurrencySettingsServiceAPI,
          pairsService: SimpleBuySupportedPairsInteractorServiceAPI,
          eligibilityService: SimpleBuyEligibilityServiceAPI,
+         paymentMethodTypesService: SimpleBuyPaymentMethodTypesService,
          cryptoCurrencySelectionService: SelectionServiceAPI,
          suggestedAmountsService: SimpleBuySuggestedAmountsServiceAPI) {
         self.kycTiersService = kycTiersService
@@ -159,8 +174,9 @@ final class BuyCryptoScreenInteractor {
         self.suggestedAmountsService = suggestedAmountsService
         self.cryptoCurrencySelectionService = cryptoCurrencySelectionService
         self.eligibilityService = eligibilityService
+        self.paymentMethodTypesService = paymentMethodTypesService
         self.dataProviding = dataProviding
-
+        
         suggestedAmountsService.calculationState
             .compactMap { $0.value }
             .bind(to: suggestedAmountsRelay)
@@ -199,13 +215,17 @@ final class BuyCryptoScreenInteractor {
                 pairs.pairs(per: item.cryptoCurrency).first
             }
         
+        let preferredPaymentMethod = self.preferredPaymentMethodType
+            .compactMap { $0 }
+        
         Observable
             .combineLatest(
+                preferredPaymentMethod,
                 currentAmountRelay,
                 pairForCryptoCurrency,
                 fiatCurrencyService.fiatCurrencyObservable
             )
-            .map { (amount, pair, currency) -> State in
+            .map { (preferredPaymentMethod, amount, pair, currency) -> State in
                 /// There must be a pair to compare to before calculation begins
                 guard let pair = pair, pair.fiatCurrency == amount.currency else {
                     return .empty(currency: currency)
@@ -218,7 +238,11 @@ final class BuyCryptoScreenInteractor {
                 } else if try amount < pair.minFiatValue {
                     return .tooLow(min: pair.minFiatValue)
                 }
-                let data = SimpleBuyCheckoutData(fiatValue: amount, cryptoCurrency: pair.cryptoCurrency)
+                let data = SimpleBuyCheckoutData(
+                    fiatValue: amount,
+                    cryptoCurrency: pair.cryptoCurrency,
+                    paymentMethod: preferredPaymentMethod
+                )
                 
                 return .inBounds(data: data, upperLimit: pair.maxFiatValue)
             }

@@ -57,8 +57,10 @@ final class BillingAddressScreenViewController: BaseTableViewController {
     }
     
     private func setupNavigationBar() {
-        self.set(
-            barStyle: .lightContent(ignoresStatusBar: false, background: .navigationBarBackground),
+        set(barStyle: .darkContent(
+                ignoresStatusBar: false,
+                background: .white
+            ),
             leadingButtonStyle: .back
         )
         titleViewStyle = .text(value: presenter.title)
@@ -95,6 +97,12 @@ final class BillingAddressScreenViewController: BaseTableViewController {
         presenter.refresh
             .bind(weak: tableView) { $0.reloadData() }
             .disposed(by: disposeBag)
+    }
+    
+    // MARK: - Navigation
+    
+    override func navigationBarLeadingButtonPressed() {
+        presenter.previous()
     }
 }
 

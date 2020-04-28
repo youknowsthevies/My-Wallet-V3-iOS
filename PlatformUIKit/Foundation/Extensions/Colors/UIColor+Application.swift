@@ -33,6 +33,8 @@ public extension UIColor {
     static let lightBlueBackground = blue000
     static let lightRedBackground = red000
     
+    static let navigationBarCloseButton = grey400
+    
     static let lightBorder = grey000
     static let mediumBorder = grey100
     static let destructiveBackground = red100

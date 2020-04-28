@@ -16,90 +16,101 @@ public struct BadgeImageViewModel {
     
     public struct Theme {
         public let backgroundColor: UIColor
-        public let contentColor: UIColor?
-        public let imageName: String
+        public let imageViewContent: ImageViewContent
         
         public init(backgroundColor: UIColor,
-                    contentColor: UIColor? = nil,
-                    imageName: String) {
+                    imageViewContent: ImageViewContent) {
             self.backgroundColor = backgroundColor
-            self.contentColor = contentColor
-            self.imageName = imageName
-                //contentColor != nil ? image.withRenderingMode(.alwaysTemplate) : image
+            self.imageViewContent = imageViewContent
         }
+    }
+    
+    public enum SizingType {
+        case configuredByOwner
+        case constant(CGSize)
+    }
+    
+    public enum CornerRadius {
+        case round
+        case value(CGFloat)
     }
     
     // MARK: - Properties
-    
-    /// The theme of the view
-    public var theme: Theme {
-        set {
-            backgroundColorRelay.accept(newValue.backgroundColor)
-            contentColorRelay.accept(newValue.contentColor)
-            imageNameRelay.accept(newValue.imageName)
-        }
-        get {
-            return Theme(backgroundColor: backgroundColorRelay.value,
-                         contentColor: contentColorRelay.value,
-                         imageName: imageNameRelay.value)
-        }
-    }
-    
+        
     /// Corner radius
-    public let cornerRadius: CGFloat
+    public let cornerRadiusRelay = BehaviorRelay<CornerRadius>(value: .value(8))
+    
+    /// Image to be displayed on the badge
+    public var cornerRadius: Driver<CornerRadius> {
+        cornerRadiusRelay.asDriver()
+    }
     
     /// The background color relay
     public let backgroundColorRelay = BehaviorRelay<UIColor>(value: .clear)
     
     /// The background color of the badge
     public var backgroundColor: Driver<UIColor> {
-        return backgroundColorRelay.asDriver()
+        backgroundColorRelay.asDriver()
     }
     
-    /// The content color relay
-    public let contentColorRelay = BehaviorRelay<UIColor?>(value: nil)
-    
-    /// The content color of the title
-    public var contentColor: Driver<UIColor?> {
-        return contentColorRelay.asDriver()
+    public let marginOffsetRelay = BehaviorRelay<CGFloat>(value: 4)
+    public var marginOffset: Driver<CGFloat> {
+        marginOffsetRelay.asDriver()
     }
     
+    public let sizingTypeRelay = BehaviorRelay<SizingType>(value: .configuredByOwner)
+    public var sizingType: Driver<SizingType> {
+        sizingTypeRelay.asDriver()
+    }
+        
     /// The image name relay
-    public let imageNameRelay = BehaviorRelay<String>(value: "")
+    public let imageContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
     
     /// Image to be displayed on the badge
-    public var image: Driver<UIImage> {
-        let imageObservable =  imageNameRelay
-            .compactMap { UIImage(named: $0) }
-        return Observable
-            .combineLatest(
-                imageObservable,
-                contentColorRelay
-            )
-            .map { (image, color) in
-                color != nil ? image.withRenderingMode(.alwaysTemplate) : image
-            }
-            .asDriver(onErrorJustReturn: .init())
+    public var imageContent: Driver<ImageViewContent> {
+        imageContentRelay.asDriver()
     }
     
     /// - parameter cornerRadius: corner radius of the component
-    public init(cornerRadius: CGFloat = 4) {
-        self.cornerRadius = cornerRadius
+    public init(cornerRadius: CornerRadius = .value(4)) {
+        cornerRadiusRelay.accept(cornerRadius)
+    }
+    
+    func set(theme: Theme) {
+        backgroundColorRelay.accept(theme.backgroundColor)
+        imageContentRelay.accept(theme.imageViewContent)
     }
 }
 
+// MARK: - Factory
+
 extension BadgeImageViewModel {
+    
+    private typealias AccessibilityId = Accessibility.Identifier.BadgeImageView
+    
+    public static var empty: BadgeImageViewModel {
+        let viewModel = BadgeImageViewModel()
+        return viewModel
+    }
     
     /// Returns a default badge with an image. It uses the standard
     /// `background` color and does not apply a tintColor to the image.
     /// It has rounded corners.
     public static func `default`(
-        with imageName: String
-        ) -> BadgeImageViewModel {
-        var viewModel = BadgeImageViewModel()
-        viewModel.theme = Theme(
-            backgroundColor: .background,
-            imageName: imageName
+        with imageName: String,
+        cornerRadius: CornerRadius = .value(8),
+        accessibilityIdSuffix: String) -> BadgeImageViewModel {
+        let viewModel = BadgeImageViewModel(cornerRadius: cornerRadius)
+        viewModel.set(
+            theme: Theme(
+                backgroundColor: .background,
+                imageViewContent: ImageViewContent(
+                    imageName: imageName,
+                    accessibility: .id("\(AccessibilityId.prefix)\(accessibilityIdSuffix)"),
+                    renderingMode: .normal,
+                    bundle: .platformUIKit
+                )
+            )
         )
         return viewModel
     }
@@ -112,15 +123,27 @@ extension BadgeImageViewModel {
         with imageName: String,
         contentColor: UIColor = .defaultBadge,
         backgroundColor: UIColor = .lightBadgeBackground,
-        cornerRadius: CGFloat = 8
-        ) -> BadgeImageViewModel {
-        var viewModel = BadgeImageViewModel(
-            cornerRadius: cornerRadius
-        )
-        viewModel.theme = Theme(
-            backgroundColor: backgroundColor,
-            imageName: imageName
+        cornerRadius: CornerRadius = .value(8),
+        accessibilityIdSuffix: String) -> BadgeImageViewModel {
+        let viewModel = BadgeImageViewModel(cornerRadius: cornerRadius)
+        viewModel.set(
+            theme: Theme(
+                backgroundColor: backgroundColor,
+                imageViewContent: ImageViewContent(
+                    imageName: imageName,
+                    accessibility: .id("\(AccessibilityId.prefix)\(accessibilityIdSuffix)"),
+                    renderingMode: .template(contentColor),
+                    bundle: .platformUIKit
+                )
+            )
         )
         return viewModel
     }
 }
+
+extension BadgeImageViewModel: Equatable {
+    public static func == (lhs: BadgeImageViewModel, rhs: BadgeImageViewModel) -> Bool {
+        lhs.imageContentRelay.value == rhs.imageContentRelay.value
+    }
+}
+

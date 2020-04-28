@@ -8,19 +8,21 @@
 
 import PlatformUIKit
 
+struct PlainCellViewModel {
+    let title: String
+    let accessibilityID: String?
+    
+    init(title: String, accessibilityID: String? = nil) {
+        self.title = title
+        self.accessibilityID = accessibilityID
+    }
+}
+
 final class PlainTableViewCell: UITableViewCell {
     
     // MARK: - Model
     
-    struct ViewModel {
-        let title: String
-        let accessibilityID: String?
-        
-        init(title: String, accessibilityID: String? = nil) {
-            self.title = title
-            self.accessibilityID = accessibilityID
-        }
-    }
+    typealias ViewModel = PlainCellViewModel
     
     var viewModel: ViewModel! {
         didSet {

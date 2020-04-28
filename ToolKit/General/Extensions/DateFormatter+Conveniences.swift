@@ -9,10 +9,9 @@
 import Foundation
 
 extension DateFormatter {
-    public static let iso8601Format: ISO8601DateFormatter = {
-        let formatter = ISO8601DateFormatter()
-        return formatter
-    }()
+    public static var iso8601Format: ISO8601DateFormatter {
+        ISO8601DateFormatter()
+    }
     
     public static let medium: DateFormatter = {
         let formatter = DateFormatter()

@@ -185,19 +185,17 @@ public class TextFieldView: UIView {
         switch accessoryContentType {
         case .empty:
             resetAccessoryView()
-        case .image(let imageViewContent):
-            if let imageView = accessoryView.subviews.first as? UIImageView {
-                imageView.set(imageViewContent)
+        case .badge(let viewModel):
+            if let badgeImageView = accessoryView.subviews.first as? BadgeImageView {
+                badgeImageView.viewModel = viewModel
             } else {
                 resetAccessoryView()
-                let imageView = UIImageView()
-                imageView.contentMode = .scaleAspectFit
-                imageView.set(imageViewContent)
-                imageView.layout(dimension: .width, to: 32)
-                accessoryView.addSubview(imageView)
-                imageView.layoutToSuperview(.leading)
-                imageView.layoutToSuperview(.trailing, offset: -16)
-                imageView.layoutToSuperview(axis: .vertical)
+                let badgeImageView = BadgeImageView()
+                badgeImageView.viewModel = viewModel
+                accessoryView.addSubview(badgeImageView)
+                badgeImageView.layoutToSuperview(.leading)
+                badgeImageView.layoutToSuperview(.trailing, offset: -16)
+                badgeImageView.layoutToSuperview(axis: .vertical)
             }
         }
     }

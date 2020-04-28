@@ -12,6 +12,12 @@ import ToolKit
 
 public final class SimpleBuyOrdersService: SimpleBuyOrdersServiceAPI {
     
+    // MARK: - Service Error
+    
+    enum ServiceError: Error {
+        case mappingError
+    }
+    
     // MARK: - Exposed
     
     public var orders: Single<[SimpleBuyOrderDetails]> {
@@ -51,5 +57,20 @@ public final class SimpleBuyOrdersService: SimpleBuyOrdersServiceAPI {
     
     public func fetchOrders() -> Single<[SimpleBuyOrderDetails]> {
         ordersCachedValue.fetchValue
+    }
+    
+    public func fetchOrder(with identifier: String) -> Single<SimpleBuyOrderDetails> {
+        authenticationService
+            .tokenString
+            .flatMap(weak: self) { (self, token) in
+                self.client.orderDetails(with: identifier, token: token)
+            }
+            .map { SimpleBuyOrderDetails(response: $0) }
+            .map { details -> SimpleBuyOrderDetails in
+                guard let details = details else {
+                    throw ServiceError.mappingError
+                }
+                return details
+            }
     }
 }

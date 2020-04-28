@@ -33,7 +33,8 @@ public final class SimpleBuyEligibilityService: SimpleBuyEligibilityServiceAPI {
                 refreshType: .periodic(seconds: 2),
                 fetchPriority: .fetchAll,
                 flushNotificationName: .logout,
-                fetchNotificationName: .login)
+                fetchNotificationName: .login
+            )
         )
         
         isEligibleCachedValue

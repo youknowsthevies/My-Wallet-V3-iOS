@@ -99,6 +99,14 @@ extension LabelContentAsset.Value.Presentation.LabelItem.Descriptors {
         )
     }
     
+    /// Returns a descriptor for a disclaimer in a `Settings` cell.
+    public static var disclaimer: Descriptors {
+        return .init(
+            titleFontSize: 12,
+            accessibilityIdSuffix: Accessibility.Identifier.Settings.SettingsCell.titleLabelFormat
+        )
+    }
+    
     public static var lineItemTitle: Descriptors {
         return .init(
             fontType: .medium,

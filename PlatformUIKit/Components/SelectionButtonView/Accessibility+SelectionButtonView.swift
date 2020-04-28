@@ -8,11 +8,11 @@
 
 extension Accessibility.Identifier {
     enum SelectionButtonView {
-        private static let prefix = "SelectionView."
+        private static let prefix = "SelectionView.%@."
         static let label = "\(prefix)title"
         static let subtitle = "\(prefix)subtitle"
-        static let image = "\(prefix)image"
+        static let leadingContent = "\(prefix)leadingContent"
+        static let trailingImage = "\(prefix)trailingImage"
         static let button = "\(prefix)button"
-        static let disclosureImage = "\(prefix)disclosureImage"
     }
 }

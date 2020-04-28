@@ -29,15 +29,19 @@ public final class SelectionButtonView: UIView {
                 .drive(onNext: { [weak self] content in
                     guard let self = self else { return }
                     switch content {
-                    case .image(let content):
-                        self.leadingImageView.set(content)
+                    case .badgeImage(let viewModel):
+                        self.leadingBadgeImageView.viewModel = viewModel
                         self.leadingLabel.content = .empty
+                        self.stackViewToLabelConstraint.priority = .defaultLow
+                        self.stackViewToImageConstraint.priority = .penultimateHigh
                     case .label(let content):
                         self.leadingLabel.content = content
-                        self.leadingImageView.set(.empty)
+                        self.leadingBadgeImageView.viewModel = .empty
+                        self.stackViewToLabelConstraint.priority = .penultimateHigh
+                        self.stackViewToImageConstraint.priority = .defaultLow
                     case .none:
                         self.leadingLabel.content = .empty
-                        self.leadingImageView.set(.empty)
+                        self.leadingBadgeImageView.viewModel = .empty
                     }
                 })
                 .disposed(by: disposeBag)
@@ -59,10 +63,23 @@ public final class SelectionButtonView: UIView {
                 })
                 .disposed(by: disposeBag)
 
-            viewModel.disclosureImageViewContent
-                .drive(disclosureImageView.rx.content)
+            viewModel.trailingImageViewContent
+                .drive(trailingImageView.rx.content)
                 .disposed(by: disposeBag)
 
+            viewModel.horizontalOffset
+                .drive(onNext: { [weak self] offset in
+                    self?.leadingConstraint.constant = offset
+                    self?.trailingConstraint.constant = -offset
+                })
+                .disposed(by: disposeBag)
+            
+            viewModel.verticalOffset
+                .drive(onNext: { [weak self] offset in
+                    self?.verticalConstraints.set(offset: offset)
+                })
+                .disposed(by: disposeBag)
+            
             button.rx
                 .controlEvent(.touchUpInside)
                 .bind(to: viewModel.tapRelay)
@@ -76,21 +93,37 @@ public final class SelectionButtonView: UIView {
                 .map { !$0 }
                 .drive(separatorView.rx.isHidden)
                 .disposed(by: disposeBag)
+            
+            viewModel.leadingImageViewSize
+                .drive(onNext: { [weak self] size in
+                    self?.badgeImageViewSizeConstraints.setConstant(
+                        horizontal: size.width,
+                        vertical: size.height
+                    )
+                })
+                .disposed(by: disposeBag)
         }
     }
 
     // MARK: - UI Properties
 
-    private let leadingImageView = UIImageView()
+    private let leadingBadgeImageView = BadgeImageView()
     private let leadingLabel = UILabel()
     private let separatorView = UIView()
+    private let labelsStackView = UIStackView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
-    private let disclosureImageView = UIImageView()
-    private let button = UIControl()
-    private var titleLabelBottomToCenterY: NSLayoutConstraint!
-    private var titleLabelCenterYToCenterY: NSLayoutConstraint!
+    private let trailingImageView = UIImageView()
+    private let button = UIButton()
 
+    private var leadingConstraint: NSLayoutConstraint!
+    private var stackViewToImageConstraint: NSLayoutConstraint!
+    private var stackViewToLabelConstraint: NSLayoutConstraint!
+    private var trailingConstraint: NSLayoutConstraint!
+    private var verticalConstraints: Axis.Constraints!
+    
+    private var badgeImageViewSizeConstraints: LayoutForm.Constraints!
+    
     // MARK: - Accessors
 
     private var disposeBag = DisposeBag()
@@ -108,10 +141,11 @@ public final class SelectionButtonView: UIView {
     }
 
     private func relayoutToDisplaySubtitle(shouldDisplay: Bool) {
-        subtitleLabel.isHidden = !shouldDisplay
-        titleLabelBottomToCenterY.isActive = shouldDisplay
-        titleLabelCenterYToCenterY.isActive = !shouldDisplay
-        setNeedsLayout()
+        if shouldDisplay {
+            labelsStackView.addArrangedSubview(subtitleLabel)
+        } else {
+            labelsStackView.removeArrangedSubview(subtitleLabel)
+        }
     }
 
     private func setup() {
@@ -124,14 +158,18 @@ public final class SelectionButtonView: UIView {
 
         // Subviews hierarchy setup
 
-        addSubview(leadingImageView)
+        addSubview(leadingBadgeImageView)
         addSubview(leadingLabel)
-        addSubview(titleLabel)
-        addSubview(subtitleLabel)
-        addSubview(disclosureImageView)
+        addSubview(labelsStackView)
+        addSubview(trailingImageView)
         addSubview(button)
+        labelsStackView.addArrangedSubview(titleLabel)
         addSubview(separatorView)
 
+        labelsStackView.distribution = .fillProportionally
+        labelsStackView.axis = .vertical
+        labelsStackView.spacing = 6
+        
         // Layout the view leading to trailing
 
         separatorView.layout(edges: .leading, .trailing, .bottom, to: self)
@@ -141,25 +179,44 @@ public final class SelectionButtonView: UIView {
         button.addTargetForTouchDown(self, selector: #selector(touchDown))
         button.addTargetForTouchUp(self, selector: #selector(touchUp))
 
-        leadingImageView.layoutToSuperview(.leading, offset: 24)
-        leadingImageView.layoutToSuperview(.centerY)
-        leadingImageView.layout(size: .init(edge: 32))
+        leadingBadgeImageView.layoutToSuperview(.centerY)
+        badgeImageViewSizeConstraints = leadingBadgeImageView.layout(
+            size: .init(edge: 32),
+            priority: .penultimateHigh
+        )
+        leadingConstraint = leadingBadgeImageView.layoutToSuperview(.leading, offset: 24)
+        
+        leadingLabel.layout(to: .leading, of: leadingBadgeImageView)
+        leadingLabel.layout(to: .centerY, of: leadingBadgeImageView)
+        
+        leadingLabel.horizontalContentHuggingPriority = .required
+        
+        verticalConstraints = labelsStackView.layoutToSuperview(axis: .vertical)
+        stackViewToImageConstraint = labelsStackView.layout(
+            edge: .leading,
+            to: .trailing,
+            of: leadingBadgeImageView,
+            offset: 16,
+            priority: .penultimateHigh
+        )
+        stackViewToLabelConstraint = labelsStackView.layout(
+            edge: .leading,
+            to: .trailing,
+            of: leadingLabel,
+            offset: 16,
+            priority: .defaultLow
+        )
+        labelsStackView.layout(edge: .trailing, to: .leading, of: trailingImageView, offset: -8)
 
-        leadingLabel.layout(to: .centerX, of: leadingImageView)
-        leadingLabel.layout(to: .centerY, of: leadingImageView)
-
-        titleLabel.layout(edge: .leading, to: .trailing, of: leadingImageView, offset: 16)
-        titleLabelBottomToCenterY = titleLabel.layout(edge: .bottom, to: .centerY, of: self, offset: -3)
-        titleLabelCenterYToCenterY = titleLabel.layout(edge: .centerY, to: .centerY, of: self, activate: false)
-        titleLabel.layout(edge: .trailing, to: .leading, of: disclosureImageView, offset: -8)
-
-        subtitleLabel.layout(edge: .leading, to: .trailing, of: leadingImageView, offset: 16)
-        subtitleLabel.layout(edge: .top, to: .centerY, of: self, offset: 3)
-        subtitleLabel.layout(edge: .trailing, to: .leading, of: disclosureImageView, offset: -8)
-
-        disclosureImageView.layoutToSuperview(.trailing, offset: -30)
-        disclosureImageView.layoutToSuperview(.centerY)
-        disclosureImageView.maximizeResistanceAndHuggingPriorities()
+        titleLabel.verticalContentHuggingPriority = .required
+        titleLabel.verticalContentCompressionResistancePriority = .required
+        
+        subtitleLabel.verticalContentHuggingPriority = .required
+        subtitleLabel.verticalContentCompressionResistancePriority = .required
+        
+        trailingConstraint = trailingImageView.layoutToSuperview(.trailing, offset: -24)
+        trailingImageView.layoutToSuperview(.centerY)
+        trailingImageView.maximizeResistanceAndHuggingPriorities()
     }
 
     @objc

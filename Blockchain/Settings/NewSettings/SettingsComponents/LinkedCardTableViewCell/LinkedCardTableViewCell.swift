@@ -21,30 +21,38 @@ final class LinkedCardTableViewCell: UITableViewCell {
         didSet {
             guard let presenter = presenter else { return }
             
+            accessibility = presenter.accessibility
             linkedCardView.viewModel = presenter.linkedCardViewModel
             cardDigitsLabel.content = presenter.digitsLabelContent
             expirationDateLabel.content = presenter.expirationLabelContent
-            expiredBadgeView.viewModel = presenter.expiredBadgeViewModel
+            expiredBadgeView.viewModel = presenter.badgeViewModel
+            button.isEnabled = presenter.acceptsUserInteraction
             
-            presenter.expiredBadgeVisibility
+            presenter.badgeVisibility
                 .map { $0.isHidden }
                 .drive(expiredBadgeView.rx.isHidden)
                 .disposed(by: disposeBag)
             
-            presenter.expiredBadgeVisibility
+            presenter.badgeVisibility
                 .map { $0.invertedAlpha }
                 .drive(cardDigitsLabel.rx.alpha)
                 .disposed(by: disposeBag)
             
-            presenter.expiredBadgeVisibility
+            presenter.badgeVisibility
                 .map { $0.invertedAlpha }
                 .drive(expirationDateLabel.rx.alpha)
+                .disposed(by: disposeBag)
+        
+            button.rx
+                .controlEvent(.touchUpInside)
+                .bind(to: presenter.tapRelay)
                 .disposed(by: disposeBag)
         }
     }
     
     // MARK: - Private IBOutlets
     
+    @IBOutlet private var button: UIButton!
     @IBOutlet private var linkedCardView: LinkedCardView!
     @IBOutlet private var cardDigitsLabel: UILabel!
     @IBOutlet private var expirationDateLabel: UILabel!
@@ -54,4 +62,13 @@ final class LinkedCardTableViewCell: UITableViewCell {
     
     private var disposeBag = DisposeBag()
     
+    // MARK: - Touches
+    
+    @IBAction private func touchDown() {
+        backgroundColor = .hightlightedBackground
+    }
+
+    @IBAction private func touchUp() {
+        backgroundColor = .white
+    }
 }

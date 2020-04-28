@@ -16,7 +16,7 @@ public struct SimpleBuyCreditCardPaymentSubmission: Encodable {
     public let amount: FiatValue
     
     /// e.g. `SIMPLEBUY`. Defaults to `SIMPLEBUY`
-    public let product: String = "SIMPLEBUY"
+    public let product = "SIMPLEBUY"
     
     /// e.g. `SIMPLEBUY` order identifier
     public let productReference: String

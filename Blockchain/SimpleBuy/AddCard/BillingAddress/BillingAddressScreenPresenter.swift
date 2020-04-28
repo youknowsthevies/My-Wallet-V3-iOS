@@ -60,6 +60,7 @@ final class BillingAddressScreenPresenter {
         }
     }
     
+    private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias LocalizedString = LocalizationConstants.BillingAddressScreen
     
     // MARK: - Properties
@@ -95,15 +96,22 @@ final class BillingAddressScreenPresenter {
     private let countrySelectionRouter: SelectionRouterAPI
     private let stateService: AddCardStateService
     private let loadingViewPresenter: LoadingViewPresenting
+    private let alertViewPresenter: AlertViewPresenter
+    private let eventRecorder: AnalyticsEventRecording
 
     init(interactor: BillingAddressScreenInteractor,
+         alertViewPresenter: AlertViewPresenter = .shared,
          countrySelectionRouter: SelectionRouterAPI,
          stateService: AddCardStateService,
-         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared) {
+         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
+         eventRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared) {
         self.interactor = interactor
         self.stateService = stateService
         self.countrySelectionRouter = countrySelectionRouter
         self.loadingViewPresenter = loadingViewPresenter
+        self.alertViewPresenter = alertViewPresenter
+        self.eventRecorder = eventRecorder
+        
         selectionButtonViewModel = SelectionButtonViewModel()
         buttonViewModel = .primary(with: LocalizedString.button)
         
@@ -114,7 +122,7 @@ final class BillingAddressScreenPresenter {
         
         interactor.selectedCountry
             .map { .text($0.flag) }
-            .bind(to: selectionButtonViewModel.leadingContentRelay)
+            .bind(to: selectionButtonViewModel.leadingContentTypeRelay)
             .disposed(by: disposeBag)
 
         interactor.selectedCountry
@@ -124,7 +132,12 @@ final class BillingAddressScreenPresenter {
 
         interactor.selectedCountry
             .map { $0.code }
-            .bind(to: selectionButtonViewModel.accessibilityLabelRelay)
+            .bind(to: selectionButtonViewModel.subtitleRelay)
+            .disposed(by: disposeBag)
+        
+        interactor.selectedCountry
+            .map { .init(id: $0.code, label: $0.name) }
+            .bind(to: selectionButtonViewModel.accessibilityContentRelay)
             .disposed(by: disposeBag)
         
         interactor.selectedCountry
@@ -144,6 +157,12 @@ final class BillingAddressScreenPresenter {
             .bind(to: refreshRelay)
             .disposed(by: disposeBag)
 
+        selectionButtonViewModel.trailingImageViewContentRelay.accept(
+            ImageViewContent(
+                imageName: "icon-disclosure-down-small"
+            )
+        )
+        
         selectionButtonViewModel.tap
             .emit(onNext: { [unowned self] in
                 self.showCountrySelectionScreen()
@@ -196,6 +215,7 @@ final class BillingAddressScreenPresenter {
                     fullName: states.name.value,
                     addressLine1: states.addressLine1.value,
                     addressLine2: states.addressLine2.value,
+                    city: states.city.value,
                     state: states.state?.value ?? "",
                     postCode: states.postcode.value
                 )
@@ -219,6 +239,7 @@ final class BillingAddressScreenPresenter {
         buttonViewModel.tapRelay
             .withLatestFrom(interactor.billingAddress)
             .bind(weak: self) { (self, billingAddress) in
+                self.eventRecorder.record(event: AnalyticsEvent.sbBillingAddressSet)
                 self.add(billingAddress: billingAddress)
             }
             .disposed(by: disposeBag)
@@ -227,13 +248,17 @@ final class BillingAddressScreenPresenter {
     private func add(billingAddress: BillingAddress) {
         interactor
             .add(billingAddress: billingAddress)
-            .handleLoaderForLifecycle(loader: loadingViewPresenter, style: .circle)
+            .handleLoaderForLifecycle(
+                loader: loadingViewPresenter,
+                style: .circle,
+                text: LocalizedString.linkingYourCard
+            )
             .subscribe(
-                onCompleted: { [weak stateService] in
-                    stateService?.end()
+                onSuccess: { [weak stateService] data in
+                    stateService?.authorizeCardAddition(with: data)
                 },
-                onError: { error in
-                    // TODO: IOS-3100 - Cards: Error handling
+                onError: { [weak alertViewPresenter] error in
+                    alertViewPresenter?.error()
                 }
             )
             .disposed(by: disposeBag)
@@ -271,5 +296,11 @@ final class BillingAddressScreenPresenter {
             searchBarPlaceholder: LocalizationConstants.CountrySelectionScreen.searchBarPlaceholder,
             using: interactor.countrySelectionService
         )
+    }
+    
+    // MARK: - Navigation
+    
+    func previous() {
+        stateService.previousRelay.accept(())
     }
 }

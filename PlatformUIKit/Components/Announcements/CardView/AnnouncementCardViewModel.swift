@@ -80,11 +80,26 @@ public final class AnnouncementCardViewModel {
         let name: String
         let size: CGSize
         let tintColor: UIColor?
+        let bundle: Bundle
         
-        public init(name: String, size: CGSize = CGSize(width: 40, height: 40), tintColor: UIColor? = nil) {
+        var uiImage: UIImage? {
+            UIImage(named: name, in: bundle, compatibleWith: .none)
+                .map {
+                    if tintColor != nil {
+                        return $0.withRenderingMode(.alwaysTemplate)
+                    }
+                    return $0
+                }
+        }
+        
+        public init(name: String,
+                    size: CGSize = CGSize(width: 40, height: 40),
+                    tintColor: UIColor? = nil,
+                    bundle: Bundle = .main) {
             self.name = name
             self.size = size
             self.tintColor = tintColor
+            self.bundle = bundle
         }
     }
     

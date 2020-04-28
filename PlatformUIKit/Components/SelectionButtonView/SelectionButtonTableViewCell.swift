@@ -19,6 +19,8 @@ public final class SelectionButtonTableViewCell: UITableViewCell {
     // MARK: - UI Properties
     
     private let selectionButtonView = SelectionButtonView()
+    private var horizontalConstraints: Axis.Constraints!
+    private var verticalConstraints: Axis.Constraints!
     
     // MARK: - Setup
     
@@ -26,9 +28,8 @@ public final class SelectionButtonTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         contentView.addSubview(selectionButtonView)
-        selectionButtonView.layout(dimension: .height, to: 48)
-        selectionButtonView.layoutToSuperview(axis: .horizontal, offset: 24)
-        selectionButtonView.layoutToSuperview(axis: .vertical, offset: 8)
+        selectionButtonView.layoutToSuperview(axis: .horizontal)
+        verticalConstraints = selectionButtonView.layoutToSuperview(axis: .vertical)
     }
     
     @available(*, unavailable)

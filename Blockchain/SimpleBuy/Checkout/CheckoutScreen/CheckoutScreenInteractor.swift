@@ -15,49 +15,61 @@ final class CheckoutScreenInteractor {
     
     private(set) var checkoutData: SimpleBuyCheckoutData
     
+    private var order: SimpleBuyOrderDetails {
+        switch checkoutData.detailType {
+        case .order(let details):
+            return details
+        case .candidate:
+            fatalError("Order must be present when accessing it")
+        }
+    }
+    
     // MARK: - Services
     
-    private let paymentAccountService: SimpleBuyPaymentAccountServiceAPI
-    private let orderQuoteService: SimpleBuyOrderQuoteServiceAPI
-    private let orderCreationService: SimpleBuyOrderCreationServiceAPI
-    
+    private let creationService: SimpleBuyPendingOrderCreationServiceAPI
+    private let cancellationService: SimpleBuyOrderCancellationServiceAPI
+    private let confirmationService: SimpleBuyOrderConfirmationServiceAPI
+
     // MARK: - Setup
     
-    init(paymentAccountService: SimpleBuyPaymentAccountServiceAPI,
-         orderQuoteService: SimpleBuyOrderQuoteServiceAPI,
-         orderCreationService: SimpleBuyOrderCreationServiceAPI,
+    init(creationService: SimpleBuyPendingOrderCreationServiceAPI,
+         confirmationService: SimpleBuyOrderConfirmationServiceAPI,
+         cancellationService: SimpleBuyOrderCancellationServiceAPI,
          checkoutData: SimpleBuyCheckoutData) {
-        self.paymentAccountService = paymentAccountService
-        self.orderQuoteService = orderQuoteService
-        self.orderCreationService = orderCreationService
+        self.creationService = creationService
+        self.confirmationService = confirmationService
+        self.cancellationService = cancellationService
         self.checkoutData = checkoutData
     }
     
     func setup() -> Single<SimpleBuyQuote> {
-        return paymentAccountService
-            .paymentAccount(for: checkoutData.fiatValue.currency)
-            .flatMap(weak: self) { (self, account) -> Single<SimpleBuyCheckoutData> in
-                self.set(account: account)
-            }
-            .flatMap(weak: self) { (self, checkoutData) -> Single<SimpleBuyQuote> in
-                self.orderQuoteService.getQuote(
-                    for: .buy,
-                    using: checkoutData
-                )
+        creationService
+            .create(using: checkoutData)
+            .flatMap(weak: self) { (self, data) in
+                self.set(data: data.checkoutData)
+                    .map { _ in data.quote }
             }
     }
-    
-    /// Creates the order itself
-    func buy() -> Observable<Void> {
-        return orderCreationService.buy(using: checkoutData)
-            .andThen(.just(()))
+
+    /// Confirms the order
+    func confirm() -> Observable<SimpleBuyCheckoutData> {
+        confirmationService
+            .confirm(checkoutData: checkoutData)
+            .flatMap(weak: self) { (self, data) -> Single<SimpleBuyCheckoutData> in
+                self.set(data: data)
+            }
+            .asObservable()
     }
     
-    private func set(account: SimpleBuyPaymentAccount) -> Single<SimpleBuyCheckoutData> {
-        return Single
+    func cancel() -> Completable {
+        cancellationService.cancel(order: order.identifier)
+    }
+
+    private func set(data: SimpleBuyCheckoutData) -> Single<SimpleBuyCheckoutData> {
+        Single
             .create(weak: self) { (self, observer) -> Disposable in
-                self.checkoutData = self.checkoutData.checkoutData(byAppending: account)
-                observer(.success(self.checkoutData))
+                self.checkoutData = data
+                observer(.success(data))
                 return Disposables.create()
             }
     }

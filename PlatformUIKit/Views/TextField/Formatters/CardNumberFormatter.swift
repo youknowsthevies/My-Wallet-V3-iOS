@@ -6,6 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformKit
+
 final class CardNumberFormatter: TextFormatting {
     
     // MARK: - Properties
@@ -18,7 +20,9 @@ final class CardNumberFormatter: TextFormatting {
         var processedString = string
         processedString.removeAll { illegalCharacterSet.contains($0) }
         
-        if let cardType = CardType.determineType(from: processedString) {
+        let cardType = CardType.determineType(from: processedString)
+        
+        if cardType.isKnown {
             processedString = format(string: processedString, by: cardType.parts)
         } else {
             processedString = String(processedString.prefix(CardType.maxPossibleLength))

@@ -15,8 +15,57 @@ public final class SelectionButtonViewModel {
 
     // MARK: - Types
 
+    public struct AccessibilityContent {
+        public let id: String
+        public let label: String
+        
+        fileprivate static var empty: AccessibilityContent {
+            return AccessibilityContent(id: "", label: "")
+        }
+
+        fileprivate var accessibility: Accessibility {
+            Accessibility(
+                id: .value(id),
+                label: .value(label),
+                traits: .value(.button),
+                isAccessible: !id.isEmpty
+            )
+        }
+        
+        public init(id: String, label: String) {
+            self.id = id
+            self.label = label
+        }
+    }
+    
+    public enum LeadingContent {
+        case badgeImage(BadgeImageViewModel)
+        case label(LabelContent)
+        case none
+    }
+    
     public enum LeadingContentType {
-        case image(String)
+        public struct Image {
+            let name: String
+            let background: Color
+            let cornerRadius: BadgeImageViewModel.CornerRadius
+            let offset: CGFloat
+            let size: CGSize
+            
+            public init(name: String,
+                        background: Color,
+                        offset: CGFloat = 4,
+                        cornerRadius: BadgeImageViewModel.CornerRadius,
+                        size: CGSize) {
+                self.name = name
+                self.background = background
+                self.offset = offset
+                self.cornerRadius = cornerRadius
+                self.size = size
+            }
+        }
+        
+        case image(Image)
         case text(String)
     }
 
@@ -33,55 +82,65 @@ public final class SelectionButtonViewModel {
     public let subtitleRelay = BehaviorRelay<String?>(value: "")
 
     /// Image Name Relay:  A `String` for image asset name.
-    public let leadingContentRelay = BehaviorRelay<LeadingContentType?>(value: nil)
+    public let leadingContentTypeRelay = BehaviorRelay<LeadingContentType?>(value: nil)
 
-    /// Accessibility Label Relay : A `String` that stands for the button accessibility
-    public let accessibilityLabelRelay = BehaviorRelay<String>(value: "")
-
+    /// The leading content's size
+    public var leadingImageViewSize: Driver<CGSize> {
+        leadingContentTypeRelay
+            .asDriver()
+            .map { type in
+                switch type {
+                case .image(let image):
+                    return image.size
+                case .text, .none:
+                    return CGSize(edge: 1)
+                }
+            }
+    }
+    
+    /// Accessibility content relay
+    public let accessibilityContentRelay = BehaviorRelay<AccessibilityContent>(value: .empty)
+    
+    /// Trailing image content relay
+    public let trailingImageViewContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
+    
+    /// Title Relay: title describing the selection
+    public let shouldShowSeparatorRelay = BehaviorRelay(value: false)
+    
+    /// Horizontal offset relay
+    public let horizontalOffsetRelay = BehaviorRelay<CGFloat>(value: 24)
+    
+    /// Vertical offset relay
+    public let verticalOffsetRelay = BehaviorRelay<CGFloat>(value: 16)
+    
     /// Allows any component to observe taps
     public var tap: Signal<Void> {
         tapRelay.asSignal()
     }
-
-    /// Title Relay: title describing the selection
-    public let shouldShowSeparatorRelay = BehaviorRelay<Bool>(value: false)
-
+    
     // MARK: - Internal Properties
 
     /// A tap relay that accepts taps on the button
     let tapRelay = PublishRelay<Void>()
 
+    /// The horizontal offset of the content
+    var horizontalOffset: Driver<CGFloat> {
+        horizontalOffsetRelay.asDriver()
+    }
+    
+    /// The vertical offset of the content
+    var verticalOffset: Driver<CGFloat> {
+        verticalOffsetRelay.asDriver()
+    }
+    
     /// Streams the leading image
     var shouldShowSeparator: Driver<Bool> {
         shouldShowSeparatorRelay.asDriver()
     }
-
-    /// Streams the leading image
-    var leadingContent: Driver<ViewContent> {
-        leadingContentRelay
-            .map {
-                switch $0 {
-                case .image(let name):
-                    return .image(
-                        ImageViewContent(
-                            imageName: name,
-                            accessibility: .id(AccessibilityId.image)
-                        )
-                    )
-                case .text(let text):
-                    return .label(
-                        LabelContent(
-                            text: text,
-                            font: .mainMedium(30),
-                            color: .black,
-                            accessibility: .id(AccessibilityId.image)
-                        )
-                    )
-                case .none:
-                    return .none
-                }
-            }
-            .asDriver(onErrorJustReturn: .none)
+    
+    /// Streams the leading content
+    var leadingContent: Driver<LeadingContent> {
+        leadingContentRelay.asDriver()
     }
 
     /// Streams the title
@@ -90,7 +149,7 @@ public final class SelectionButtonViewModel {
             .map {
                 LabelContent(
                     text: $0,
-                    font: .mainMedium(16),
+                    font: .mainSemibold(16),
                     color: .titleText,
                     accessibility: .id(AccessibilityId.label)
                 )
@@ -114,35 +173,57 @@ public final class SelectionButtonViewModel {
             .asDriver(onErrorJustReturn: LabelContent.empty)
     }
 
-    /// Streams the disclosure image
-    var disclosureImageViewContent: Driver<ImageViewContent> {
-        disclosureImageViewContentRelay.asDriver()
+    /// Streams the trailing image
+    var trailingImageViewContent: Driver<ImageViewContent> {
+        trailingImageViewContentRelay.asDriver()
     }
 
     /// Streams the accessibility
     var accessibility: Driver<Accessibility> {
-        accessibilityLabelRelay
-            .map {
-                Accessibility(
-                    id: .value(AccessibilityId.button),
-                    label: .value($0),
-                    traits: .value(.button)
-                )
-            }
-            .asDriver(onErrorJustReturn: Accessibility())
+        accessibilityContentRelay
+            .asDriver()
+            .map { $0.accessibility }
     }
 
     // MARK: - Private Properties
 
-    private let disclosureImageViewContentRelay = BehaviorRelay<ImageViewContent>(
-        value: ImageViewContent(
-            imageName: "icon-disclosure-down-small",
-            accessibility: .id(AccessibilityId.disclosureImage)
-        )
-    )
-
-    /// An empty initializer
+    private let leadingContentRelay = BehaviorRelay<LeadingContent>(value: .none)
+    private let disposeBag = DisposeBag()
+    
     public init(showSeparator: Bool = false) {
         shouldShowSeparatorRelay.accept(showSeparator)
+        
+        leadingContentTypeRelay
+            .map { type in
+                switch type {
+                case .image(let image):
+                    let imageViewContent = ImageViewContent(
+                        imageName: image.name,
+                        bundle: .platformUIKit
+                    )
+                    let badgeViewModel = BadgeImageViewModel()
+                    badgeViewModel.marginOffsetRelay.accept(image.offset)
+                    badgeViewModel.cornerRadiusRelay.accept(image.cornerRadius)
+                    badgeViewModel.set(
+                        theme: .init(
+                            backgroundColor: image.background,
+                            imageViewContent: imageViewContent
+                        )
+                    )
+                    return .badgeImage(badgeViewModel)
+                case .text(let text):
+                    return .label(
+                        LabelContent(
+                            text: text,
+                            font: .mainMedium(30),
+                            color: .black
+                        )
+                    )
+                case .none:
+                    return .none
+                }
+            }
+            .bind(to: leadingContentRelay)
+            .disposed(by: disposeBag)
     }
 }

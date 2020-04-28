@@ -418,6 +418,7 @@ targets:
         WEBSOCKET_SERVER: $(WEBSOCKET_SERVER)
         WEBSOCKET_SERVER_BCH: $(WEBSOCKET_SERVER_BCH)
         WEBSOCKET_SERVER_ETH: $(WEBSOCKET_SERVER_ETH)
+        EVERYPAY_API_URL: $(EVERYPAY_API_URL)
     platform: iOS
     postCompileScripts:
     - name: Get SSL Certificate

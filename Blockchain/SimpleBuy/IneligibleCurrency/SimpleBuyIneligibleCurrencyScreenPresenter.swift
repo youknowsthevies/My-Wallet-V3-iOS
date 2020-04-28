@@ -27,7 +27,7 @@ final class SimpleBuyIneligibleCurrencyScreenPresenter {
     
     // MARK: - Public Properties
     
-    let thumbnail = UIImage.init(named: "icon-error-region") ?? .init()
+    let thumbnail = UIImage(named: "region-error-icon", in: .platformUIKit, compatibleWith: nil)!
     let changeCurrencyButtonViewModel: ButtonViewModel
     let viewHomeButtonViewModel: ButtonViewModel
     let titleLabelContent: LabelContent
@@ -58,15 +58,21 @@ final class SimpleBuyIneligibleCurrencyScreenPresenter {
             accessibility: .id(AccessibilityID.descriptionLabel)
         )
         
-        viewHomeButtonViewModel = .secondary(with: LocalizationString.viewHome,
-                                             accessibilityId: AccessibilityID.viewHome)
+        viewHomeButtonViewModel = .secondary(
+            with: LocalizationString.viewHome,
+            accessibilityId: AccessibilityID.viewHome
+        )
+        
         viewHomeButtonViewModel.tapRelay
             .record(analyticsEvent: AnalyticsEvent.sbUnsupportedViewHome, using: analyticsRecording)
             .bind(to: dismissalRelay)
             .disposed(by: disposeBag)
         
-        changeCurrencyButtonViewModel = .primary(with: LocalizationString.changeCurrency,
-                                                 accessibilityId: AccessibilityID.changeCurrency)
+        changeCurrencyButtonViewModel = .primary(
+            with: LocalizationString.changeCurrency,
+            accessibilityId: AccessibilityID.changeCurrency
+        )
+        
         changeCurrencyButtonViewModel.tapRelay
             .record(analyticsEvent: AnalyticsEvent.sbUnsupportedChangeCurrency, using: analyticsRecording)
             .bind(to: restartRelay)

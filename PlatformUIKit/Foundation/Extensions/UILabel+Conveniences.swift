@@ -15,6 +15,10 @@ public struct LabelContent: Equatable {
         return LabelContent()
     }
     
+    public var isEmpty: Bool {
+        text.isEmpty
+    }
+    
     let text: String
     let font: UIFont
     let color: Color
@@ -35,10 +39,6 @@ public struct LabelContent: Equatable {
     
     public static func == (lhs: LabelContent, rhs: LabelContent) -> Bool {
         return lhs.text == rhs.text
-    }
-    
-    public func isEmpty() -> Bool {
-        text.isEmpty
     }
 }
 

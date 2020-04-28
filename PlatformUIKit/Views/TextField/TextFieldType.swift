@@ -198,17 +198,17 @@ extension TextFieldType {
              .postcode,
              .personFullName,
              .state,
-             .mobile:
-            return false
-        case .password,
-             .newPassword,
-             .confirmNewPassword,
-             .walletIdentifier,
-             .oneTimeCode,
+             .mobile,
              .cardCVV,
              .expirationDate,
              .cardholderName,
              .cardNumber:
+             return false
+        case .password,
+             .newPassword,
+             .confirmNewPassword,
+             .walletIdentifier,
+             .oneTimeCode:
             return true
         }
     }

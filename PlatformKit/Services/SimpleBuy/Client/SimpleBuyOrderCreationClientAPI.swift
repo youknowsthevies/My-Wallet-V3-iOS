@@ -11,7 +11,8 @@ import RxSwift
 public protocol SimpleBuyOrderCreationClientAPI: class {
     
     /// Creates a buy order using the given data
-    func create(order: SimpleBuyOrderCreationData.Request,
-                token: String) -> Single<SimpleBuyOrderCreationData.Response>
+    func create(order: SimpleBuyOrderPayload.Request,
+                createPendingOrder: Bool,
+                token: String) -> Single<SimpleBuyOrderPayload.Response>
 }
 

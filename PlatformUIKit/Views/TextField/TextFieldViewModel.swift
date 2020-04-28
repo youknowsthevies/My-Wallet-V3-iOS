@@ -38,7 +38,7 @@ public class TextFieldViewModel {
     public enum AccessoryContentType: Equatable {
         
         /// Image accessory view
-        case image(ImageViewContent)
+        case badge(BadgeImageViewModel)
         
         /// Empty accessory view
         case empty
@@ -48,7 +48,7 @@ public class TextFieldViewModel {
 
     /// The state of the text field
     public var state: Observable<State> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
     }
     
     /// Should text field gain focus or remove
@@ -66,38 +66,38 @@ public class TextFieldViewModel {
     
     /// The content type of the `UITextField`
     var contentType: Driver<UITextContentType?> {
-        return contentTypeRelay
+        contentTypeRelay
             .asDriver()
             .distinctUntilChanged()
     }
     
     /// The keyboard type of the `UITextField`
     var keyboardType: Driver<UIKeyboardType> {
-        return keyboardTypeRelay
+        keyboardTypeRelay
             .asDriver()
             .distinctUntilChanged()
     }
     
     /// The isSecureTextEntry of the `UITextField`
     var isSecure: Driver<Bool> {
-        return isSecureRelay
+        isSecureRelay
             .asDriver()
             .distinctUntilChanged()
     }
     
     /// The placeholder of the text-field
     var placeholder: Driver<NSAttributedString> {
-        return placeholderRelay.asDriver()
+        placeholderRelay.asDriver()
     }
     
     /// The color of the content (.mutedText, .textFieldText)
     var textColor: Driver<UIColor> {
-        return textColorRelay.asDriver()
+        textColorRelay.asDriver()
     }
         
     /// A text to display below the text field in case of an error
     var gestureMessage: Driver<GestureMessage> {
-        return Driver
+        Driver
             .combineLatest(
                 hintRelay.asDriver(),
                 isHintVisibleRelay.asDriver()
@@ -130,7 +130,8 @@ public class TextFieldViewModel {
     /// The content of the text field
     public let textRelay = BehaviorRelay<String>(value: "")
     var text: Observable<String> {
-        return textRelay
+        textRelay
+            .map { $0.trimmingCharacters(in: .whitespaces) }
             .distinctUntilChanged()
     }
         

@@ -6,14 +6,13 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import RxSwift
 import RxRelay
 import RxCocoa
 import ToolKit
 import PlatformUIKit
 
-final class SimpleBuyKYCPendingPresenter {
+final class SimpleBuyKYCPendingPresenter: PendingStatePresenterAPI {
 
     // MARK: - Types
 
@@ -37,7 +36,7 @@ final class SimpleBuyKYCPendingPresenter {
         return AccessibilityId.goToWalletButton
     }
 
-    var model: Driver<SimpleBuyKYCPendingViewModel> {
+    var viewModel: Driver<PendingStateViewModel> {
         modelRelay.asDriver()
     }
 
@@ -45,8 +44,10 @@ final class SimpleBuyKYCPendingPresenter {
     private let interactor: SimpleBuyKYCPendingInteractor
     private unowned let stateService: RoutingStateEmitterAPI
     private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
-    private var modelRelay: BehaviorRelay<SimpleBuyKYCPendingViewModel>!
+    private var modelRelay: BehaviorRelay<PendingStateViewModel>!
 
+    // MARK: - Setup
+    
     init(stateService: RoutingStateEmitterAPI,
          interactor: SimpleBuyKYCPendingInteractor,
          analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
@@ -79,7 +80,7 @@ final class SimpleBuyKYCPendingPresenter {
         interactor.startPollingForGoldTier()
     }
 
-    private func model(verificationState: SimpleBuyKYCPendingVerificationState) -> SimpleBuyKYCPendingViewModel {
+    private func model(verificationState: SimpleBuyKYCPendingVerificationState) -> PendingStateViewModel {
         func actionButton(title: String) -> ButtonViewModel {
             let button = ButtonViewModel.primary(with: title)
             button.tapRelay
@@ -90,7 +91,7 @@ final class SimpleBuyKYCPendingPresenter {
 
         switch verificationState {
         case .ineligible:
-            return SimpleBuyKYCPendingViewModel(
+            return PendingStateViewModel(
                 asset: .image(.region),
                 title: LocalizedString.Ineligible.title,
                 subtitle: LocalizedString.Ineligible.subtitle,
@@ -98,21 +99,21 @@ final class SimpleBuyKYCPendingPresenter {
             )
         case .completed,
              .loading:
-            return SimpleBuyKYCPendingViewModel(
+            return PendingStateViewModel(
                 asset: .loading,
                 title: LocalizedString.Verifying.title,
                 subtitle: LocalizedString.Verifying.subtitle,
                 button: actionButton(title: LocalizedString.button)
             )
         case .manualReview:
-            return SimpleBuyKYCPendingViewModel(
-                asset: .image(.error),
+            return PendingStateViewModel(
+                asset: .image(.triangleError),
                 title: LocalizedString.ManualReview.title,
                 subtitle: LocalizedString.ManualReview.subtitle,
                 button: actionButton(title: LocalizedString.button)
             )
         case .pending:
-            return SimpleBuyKYCPendingViewModel(
+            return PendingStateViewModel(
                 asset: .image(.clock),
                 title: LocalizedString.PendingReview.title,
                 subtitle: LocalizedString.PendingReview.subtitle,

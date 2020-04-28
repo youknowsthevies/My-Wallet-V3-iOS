@@ -20,6 +20,16 @@ final class BuyCryptoScreenPresenter {
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.BuyCryptoScreen
     private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.BuyScreen
+
+    /// The state of the payment method selection button
+    enum PaymentMethodSelectionButtonViewModelState {
+        
+        /// Visible
+        case visible(SelectionButtonViewModel)
+        
+        /// Hidden (no payment methods available to the user)
+        case hidden
+    }
     
     // MARK: - Properties
 
@@ -27,7 +37,7 @@ final class BuyCryptoScreenPresenter {
 
     let title = LocalizedString.title
     
-    let selectionButtonViewModel: SelectionButtonViewModel
+    let assetSelectionButtonViewModel: SelectionButtonViewModel
     let amountLabelViewModel: AmountLabelViewModel
     let continueButtonViewModel: ButtonViewModel
     let separatorColor: Color = .lightBorder
@@ -38,8 +48,16 @@ final class BuyCryptoScreenPresenter {
     }
     let trailingButtonViewModel: ButtonViewModel
 
-    private let labeledButtonViewModelsRelay = BehaviorRelay<[CurrencyLabeledButtonViewModel]>(value: [])
+    var paymentMethodSelectionButtonViewModelState: Driver<PaymentMethodSelectionButtonViewModelState> {
+        paymentMethodSelectionButtonViewModelStateRelay.asDriver()
+    }
     
+    private let labeledButtonViewModelsRelay = BehaviorRelay<[CurrencyLabeledButtonViewModel]>(
+        value: []
+    )
+    private let paymentMethodSelectionButtonViewModelStateRelay = BehaviorRelay(
+        value: PaymentMethodSelectionButtonViewModelState.hidden
+    )
     // MARK: - Injected
     
     private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
@@ -55,7 +73,6 @@ final class BuyCryptoScreenPresenter {
     
     // MARK: - Setup
     
-    /// TODO: Remove router dependency once the selection screen generics is simplified
     init(loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
          alertPresenter: AlertViewPresenter = .shared,
          analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared,
@@ -113,12 +130,12 @@ final class BuyCryptoScreenPresenter {
         
         // Asset Selection Button Setup
         
-        selectionButtonViewModel = SelectionButtonViewModel(showSeparator: true)
+        assetSelectionButtonViewModel = SelectionButtonViewModel(showSeparator: true)
 
         /// Additional binding
         
         struct CTAData {
-            let kycState: BuyCryptoScreenInteractor.KYCState
+            let kycState: SimpleBuyKycState
             let isSimpleBuyEligible: Bool
             let checkoutData: SimpleBuyCheckoutData
         }
@@ -186,7 +203,7 @@ final class BuyCryptoScreenPresenter {
                 case .success(let data):
                     switch (data.kycState, data.isSimpleBuyEligible) {
                     case (.completed, true):
-                        self.stateService.checkout(with: data.checkoutData)
+                        self.stateService.nextFromBuyCrypto(with: data.checkoutData)
                     case (.completed, false):
                         self.stateService.ineligible(with: data.checkoutData)
                     case (.shouldComplete, _):
@@ -199,25 +216,35 @@ final class BuyCryptoScreenPresenter {
             .disposed(by: disposeBag)
 
         interactor.selectedCryptoCurrency
-            .map { .image($0.logoImageName) }
-            .bind(to: selectionButtonViewModel.leadingContentRelay)
+            .map {
+                .image(
+                    .init(
+                        name: $0.logoImageName,
+                        background: .clear,
+                        offset: 0,
+                        cornerRadius: .round,
+                        size: .init(edge: 32)
+                    )
+                )
+            }
+            .bind(to: assetSelectionButtonViewModel.leadingContentTypeRelay)
             .disposed(by: disposeBag)
 
         interactor.selectedCryptoCurrency
             .map { $0.name }
-            .bind(to: selectionButtonViewModel.titleRelay)
+            .bind(to: assetSelectionButtonViewModel.titleRelay)
             .disposed(by: disposeBag)
 
         interactor.selectedCryptoCurrency
-            .map { $0.displayCode }
-            .bind(to: selectionButtonViewModel.accessibilityLabelRelay)
+            .map { .init(id: $0.displayCode, label: $0.name) }
+            .bind(to: assetSelectionButtonViewModel.accessibilityContentRelay)
             .disposed(by: disposeBag)
 
         interactor.selectedCryptoCurrency
             .flatMap(weak: self) { (self, cryptoCurrency) -> Observable<String?> in
                 self.subtitleForCryptoCurrencyPicker(cryptoCurrency: cryptoCurrency)
             }
-            .bind(to: selectionButtonViewModel.subtitleRelay)
+            .bind(to: assetSelectionButtonViewModel.subtitleRelay)
             .disposed(by: disposeBag)
 
         interactor.selectedCryptoCurrency
@@ -247,7 +274,13 @@ final class BuyCryptoScreenPresenter {
             .bind(to: amountLabelViewModel.stateRelay)
             .disposed(by: disposeBag)
 
-        selectionButtonViewModel.tap
+        assetSelectionButtonViewModel.trailingImageViewContentRelay.accept(
+            ImageViewContent(
+                imageName: "icon-disclosure-down-small"
+            )
+        )
+        
+        assetSelectionButtonViewModel.tap
             .emit(onNext: { [unowned self] in
                 self.router.showCryptoSelectionScreen()
             })
@@ -274,6 +307,36 @@ final class BuyCryptoScreenPresenter {
                         .disposed(by: self.disposeBag)
                 }
             }
+            .disposed(by: disposeBag)
+
+        // Payment Method Selection Button Setup
+        
+        interactor.preferredPaymentMethodType
+            .bind(weak: self) { (self, type) in
+                self.setup(preferredPaymentMethodType: type)
+            }
+            .disposed(by: disposeBag)
+        
+        // Trailing Button Setup
+        
+        let trailingButtonShouldShow = interactor
+            .state
+            .map { (state) -> Bool in
+                switch state {
+                case .empty, .inBounds:
+                    return false
+                default:
+                    return true
+                }
+            }
+
+        trailingButtonShouldShow
+            .bind(to: trailingButtonViewModel.isEnabledRelay)
+            .disposed(by: disposeBag)
+
+        trailingButtonShouldShow
+            .map { !$0 }
+            .bind(to: trailingButtonViewModel.isHiddenRelay)
             .disposed(by: disposeBag)
 
         interactor
@@ -342,18 +405,33 @@ final class BuyCryptoScreenPresenter {
         analyticsRecorder.record(event: AnalyticsEvent.sbBuyFormShown)
     }
     
-    func navigationBarLeadingButtonTapped() {
+    func previous() {
         stateService.previousRelay.accept(())
     }
     
     // MARK: - Private methods
 
+    private func setup(preferredPaymentMethodType: SimpleBuyPaymentMethodType?) {
+        guard let type = preferredPaymentMethodType else { return }
+        
+        let viewModel = SelectionButtonViewModel(with: type)
+        viewModel.trailingImageViewContentRelay.accept(
+            ImageViewContent(
+                imageName: "icon-disclosure-down-small"
+            )
+        )
+        viewModel.tap
+            .emit(onNext: { [weak stateService] in
+                stateService?.paymentMethods()
+            })
+            .disposed(by: disposeBag)
+        
+        paymentMethodSelectionButtonViewModelStateRelay.accept(.visible(viewModel))
+    }
+    
     private func handleError() {
         analyticsRecorder.record(event: AnalyticsEvent.sbBuyFormConfirmFailure)
-        alertPresenter.standardNotify(
-            message: LocalizationConstants.SimpleBuy.ErrorAlert.message,
-            title: LocalizationConstants.SimpleBuy.ErrorAlert.title
-        )
+        alertPresenter.error()
     }
 
     func subtitleForCryptoCurrencyPicker(cryptoCurrency: CryptoCurrency) -> Observable<String?> {

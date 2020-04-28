@@ -9,5 +9,5 @@
 import RxSwift
 
 public protocol SimpleBuyOrderCreationServiceAPI: class {
-    func buy(using checkoutData: SimpleBuyCheckoutData) -> Completable
+    func create(using checkoutData: SimpleBuyCheckoutData) -> Single<SimpleBuyCheckoutData>
 }

@@ -120,13 +120,7 @@ final class SimpleBuyTransferCancellationScreenPresenter {
     }
     
     private func cancellationDidFail() {
-        typealias AlertString = LocalizationConstants.SimpleBuy.ErrorAlert
-        alertPresenter.standardNotify(
-            message: AlertString.message,
-            title: AlertString.title,
-            actions: [UIAlertAction(title: AlertString.button, style: .default)]
-        )
-        
+        alertPresenter.error()
         analyticsRecorder.record(event: AnalyticsEvent.sbCancelOrderError)
     }
     

@@ -16,4 +16,7 @@ public protocol SimpleBuyOrdersServiceAPI: class {
     
     /// Fetches the orders from remote
     func fetchOrders() -> Single<[SimpleBuyOrderDetails]>
+    
+    /// Fetches the order for a given identifier
+    func fetchOrder(with identifier: String) -> Single<SimpleBuyOrderDetails>
 }

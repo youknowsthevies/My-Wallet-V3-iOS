@@ -8,7 +8,7 @@
 
 import Foundation
 import PlatformKit
-
+ 
 /// `MarketPair` is to keep track of what accounts
 /// the user is transferring from and to. We originally
 /// used just a `TradingPair` but some users may have

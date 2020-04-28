@@ -92,6 +92,10 @@ final public class BlockchainAPI: NSObject {
         return InfoDictionaryHelper.value(for: .walletServer)
     }
     
+    public var everyPayHost: String {
+        InfoDictionaryHelper.value(for: .everyPayURL)
+    }
+    
     public var retailCoreHost: String {
         return InfoDictionaryHelper.value(for: .retailCoreURL)
     }
@@ -220,6 +224,7 @@ fileprivate struct InfoDictionaryHelper {
         case websocketServerBCH = "WEBSOCKET_SERVER_BCH"
         case websocketServerETH = "WEBSOCKET_SERVER_ETH"
         case certificatePinning = "PIN_CERTIFICATE"
+        case everyPayURL = "EVERYPAY_API_URL"
     }
 
     private static let infoDictionary = Bundle(for: BlockchainAPI.self).infoDictionary

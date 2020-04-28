@@ -17,6 +17,14 @@ extension Accessibility.Identifier {
             public static let badgeView = "\(prefix)badgeView."
         }
         
+        public enum LinkedCardCell {
+            private static let prefix = "\(Settings.prefix)LinkedCardCell."
+            public static let view = "\(prefix)view"
+            public static let expiration = "\(prefix)expiration"
+            public static let badgeView = "\(prefix)badgeView"
+            public static let cardPrefix = "\(prefix)cardPrefix"
+        }
+        
         public enum SwitchView {
             private static let prefix = "\(Settings.prefix)SwitchView."
             public static let SMSSwitchView = "\(prefix)SMSSwitchView"
@@ -73,6 +81,13 @@ extension Accessibility.Identifier {
             private static let prefix = "AboutFooterView."
             public static let versionLabel = "\(prefix)versionLabel"
             public static let copyrightLabel = "\(prefix)copyrightLabel"
+        }
+        
+        public enum RemoveCard {
+            private static let prefix = "RemoveCardScreen."
+            public static let cardNameLabel = "\(prefix)cardNameLabel"
+            public static let cardPrefixLabel = "\(prefix)cardPrefixLabel"
+            public static let removeCardButton = "\(prefix)removeCardButton"
         }
     }
 }

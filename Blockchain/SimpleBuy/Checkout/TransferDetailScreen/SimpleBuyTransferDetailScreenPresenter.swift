@@ -41,7 +41,7 @@ final class SimpleBuyTransferDetailScreenPresenter {
         .text(value: contentReducer.title)
     }
     var barStyle: Screen.Style.Bar {
-        .lightContent(ignoresStatusBar: false, background: .navigationBarBackground)
+        .darkContent(ignoresStatusBar: false, background: .white)
     }
     
     /// The dashboard action
@@ -220,7 +220,7 @@ final class SimpleBuyTransferDetailScreenPresenter {
     
     // MARK: - Navigation
     
-    func navigationBarLeadingButtonTapped() {
+    func previous() {
         stateService.previousRelay.accept(())
     }
     
@@ -237,12 +237,7 @@ final class SimpleBuyTransferDetailScreenPresenter {
     }
     
     private func cancellationDidFail() {
-         typealias AlertString = LocalizationConstants.SimpleBuy.ErrorAlert
-         alertPresenter.standardNotify(
-             message: AlertString.message,
-             title: AlertString.title,
-             actions: [UIAlertAction(title: AlertString.button, style: .default)]
-         )
+         alertPresenter.error()
      }
 }
 

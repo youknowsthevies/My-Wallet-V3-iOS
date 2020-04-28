@@ -10,6 +10,9 @@ import RxSwift
 
 public protocol SimpleBuyOrderDetailsClientAPI: class {
 
-    /// Fetch all Simple Buy Orders Details
-    func orderDetails(token: String) -> Single<[SimpleBuyOrderDetailsResponse]>
+    /// Fetch all Buy orders
+    func orderDetails(token: String) -> Single<[SimpleBuyOrderPayload.Response]>
+    
+    /// Fetch a single Buy order
+    func orderDetails(with identifer: String, token: String) -> Single<SimpleBuyOrderPayload.Response>
 }

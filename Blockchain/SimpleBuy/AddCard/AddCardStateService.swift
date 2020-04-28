@@ -11,7 +11,7 @@ import RxRelay
 import RxCocoa
 import PlatformKit
 
-final class AddCardStateService {
+final class AddCardStateService: CardAuthorizationStateServiceAPI {
     
     // MARK: - Types
                 
@@ -51,12 +51,21 @@ final class AddCardStateService {
     
     /// Marks a past or present state in the state-machine
     enum State {
-        
+                        
         /// Card details screen
         case cardDetails
                         
         /// Billing address screen
         case billingAddress(CardData)
+        
+        /// Authorization screen (in-app web view)
+        case authorization(PartnerAuthorizationData)
+        
+        /// Pending card state
+        case pendingCardState(cardId: String)
+        
+        /// Completed state
+        case completed(CardData)
         
         /// Inactive state
         case inactive
@@ -64,7 +73,7 @@ final class AddCardStateService {
     
     enum Action {
         case next(to: State)
-        case previous
+        case previous(from: State)
     }
     
     // MARK: - Properties
@@ -74,8 +83,22 @@ final class AddCardStateService {
             .observeOn(MainScheduler.instance)
     }
     
+    /// Fire onces upon completion of the entire process
+    var completionCardData: Observable<CardData> {
+        action
+            .compactMap { action in
+                switch action {
+                case .next(to: .completed(let data)):
+                    return data
+                default:
+                    return nil
+                }
+            }
+            .take(1)
+    }
+    
     private let statesRelay = BehaviorRelay<States>(value: .inactive)
-    private let previousRelay = PublishRelay<Void>()
+    let previousRelay = PublishRelay<Void>()
     
     private let actionRelay = PublishRelay<Action>()
     private let disposeBag = DisposeBag()
@@ -96,14 +119,20 @@ final class AddCardStateService {
         apply(action: .next(to: states.current), states: states)
     }
     
-    func end() {
+    func end(with data: CardData) {
+        let states = statesRelay.value.states(byAppending: .completed(data))
+        apply(action: .next(to: states.current), states: states)
+    }
+    
+    func dismiss() {
         let states = statesRelay.value.states(byAppending: .inactive)
         apply(action: .next(to: states.current), states: states)
     }
     
     private func previous() {
+        let last = statesRelay.value.current
         let states = statesRelay.value.statesByRemovingLast()
-        apply(action: .previous, states: states)
+        apply(action: .previous(from: last), states: states)
     }
         
     private func apply(action: Action, states: States) {
@@ -115,6 +144,16 @@ final class AddCardStateService {
     
     func addBillingAddress(to cardData: CardData) {
         let states = statesRelay.value.states(byAppending: .billingAddress(cardData))
+        apply(action: .next(to: states.current), states: states)
+    }
+    
+    func authorizeCardAddition(with data: PartnerAuthorizationData) {
+        let states = statesRelay.value.states(byAppending: .authorization(data))
+        apply(action: .next(to: states.current), states: states)
+    }
+    
+    func cardAuthorized(with identifier: String) {
+        let states = statesRelay.value.states(byAppending: .pendingCardState(cardId: identifier))
         apply(action: .next(to: states.current), states: states)
     }
 }

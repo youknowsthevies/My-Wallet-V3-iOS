@@ -49,10 +49,8 @@ final class CardExpirationDateFormatter: TextFormatting {
             case 1 where month.count == 1:
                 if operation == .addition {
                     output += "\(monthInteger)"
-                } else {
-                    
                 }
-            case (2...9):
+            case (1...9):
                 if month.count == 1 {
                     output += String(format: "%02d/", monthInteger)
                 } else if !year.isEmpty { // The year is filled

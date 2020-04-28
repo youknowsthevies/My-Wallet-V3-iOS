@@ -58,16 +58,16 @@ final class CheckoutScreenViewController: BaseScreenViewController {
     }
     
     private func setupNavigationBar() {
+        titleViewStyle = presenter.titleView
         set(barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
             trailingButtonStyle: presenter.trailingButton)
-        titleViewStyle = presenter.titleView
     }
     
     // MARK: - Navigation
     
     override func navigationBarLeadingButtonPressed() {
-        presenter.navigationBarLeadingButtonTapped()
+        presenter.previous()
     }
 }
 
@@ -116,6 +116,8 @@ extension CheckoutScreenViewController: UITableViewDelegate, UITableViewDataSour
             cell.presenter = presenter.estimatedLineItemCellPresenter
         case .buyingFee:
             cell.presenter = presenter.buyingFeeLineItemCellPresenter
+        case .paymentMethod:
+            cell.presenter = presenter.paymentMethodLineItemCellPresenter
         case .paymentAccountField:
             break
         }

@@ -170,6 +170,13 @@ extension CryptoValue {
         return CryptoValue(currencyType: assetType, amount: 0)
     }
 
+    init?(minor: String, cryptoCurreny: CryptoCurrency) {
+        guard let value = BigInt(minor) else {
+            return nil
+        }
+        self.init(currencyType: cryptoCurreny, amount: value)
+    }
+    
     public static func createFromMinorValue(_ value: String, assetType: CryptoCurrency) -> CryptoValue? {
         guard let valueInBigInt = BigInt(value) else {
             return nil

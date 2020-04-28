@@ -32,13 +32,17 @@ final class BillingAddressScreenInteractor {
     
     let billingAddressRelay = BehaviorRelay<BillingAddress?>(value: nil)
     
+    private let service: CardUpdateServiceAPI
     private let cardData: CardData    
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
-    init(cardData: CardData, userDataRepository: DataRepositoryAPI) {
+    init(cardData: CardData,
+         service: CardUpdateServiceAPI,
+         userDataRepository: DataRepositoryAPI) {
         self.cardData = cardData
+        self.service = service
         countrySelectionService = CountrySelectionService(defaultSelectedData: Country.current ?? .US)
         
         userDataRepository.userSingle
@@ -52,9 +56,9 @@ final class BillingAddressScreenInteractor {
             .disposed(by: disposeBag)
     }
     
-    // TODO: IOS-3100 - Cards: Hook to a service 
-    func add(billingAddress: BillingAddress) -> Completable {
-        return .empty()
+    func add(billingAddress: BillingAddress) -> Single<PartnerAuthorizationData> {
+        let cardData = self.cardData.data(byAppending: billingAddress)
+        return service.add(card: cardData)
     }
     
     private func set(userAddress: UserAddress) {

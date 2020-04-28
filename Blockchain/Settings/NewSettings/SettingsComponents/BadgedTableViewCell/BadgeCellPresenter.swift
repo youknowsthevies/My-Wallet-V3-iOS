@@ -16,7 +16,7 @@ import RxCocoa
 /// types of `BadgeTableViewCell` (e.g. PIT connection status, KYC status, mobile
 /// verification status, etc). Each of these cells need their own implementation of
 /// `LabelContentPresenting` and `BadgeAssetPresenting`
-protocol BadgeCellPresenting {
+protocol BadgeCellPresenting: SettingsAsyncPresenting {
     var labelContentPresenting: LabelContentPresenting { get }
     var badgeAssetPresenting: BadgeAssetPresenting { get }
 }
@@ -26,8 +26,15 @@ final class MobileVerificationCellPresenter: BadgeCellPresenting {
     
     // MARK: - Properties
     
+    var isLoading: Bool {
+        isLoadingRelay.value
+    }
+    
     let labelContentPresenting: LabelContentPresenting
     let badgeAssetPresenting: BadgeAssetPresenting
+    
+    private let isLoadingRelay = BehaviorRelay<Bool>(value: true)
+    private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
@@ -39,6 +46,11 @@ final class MobileVerificationCellPresenter: BadgeCellPresenting {
         badgeAssetPresenting = MobileVerificationBadgePresenter(
             interactor: interactor
         )
+        
+        badgeAssetPresenting.state
+            .map { $0.isLoading }
+            .bind(to: isLoadingRelay)
+            .disposed(by: disposeBag)
     }
 }
 
@@ -47,8 +59,15 @@ final class EmailVerificationCellPresenter: BadgeCellPresenting {
     
     // MARK: - Properties
     
+    var isLoading: Bool {
+        isLoadingRelay.value
+    }
+    
     let labelContentPresenting: LabelContentPresenting
     let badgeAssetPresenting: BadgeAssetPresenting
+    
+    private let isLoadingRelay = BehaviorRelay<Bool>(value: true)
+    private let disposeBag = DisposeBag()
     
     init(interactor: EmailVerificationBadgeInteractor) {
         labelContentPresenting = DefaultLabelContentPresenter(
@@ -58,6 +77,11 @@ final class EmailVerificationCellPresenter: BadgeCellPresenting {
         badgeAssetPresenting = EmailVerificationBadgePresenter(
             interactor: interactor
         )
+        
+        badgeAssetPresenting.state
+            .map { $0.isLoading }
+            .bind(to: isLoadingRelay)
+            .disposed(by: disposeBag)
     }
 }
 
@@ -66,8 +90,15 @@ final class PreferredCurrencyCellPresenter: BadgeCellPresenting {
     
     // MARK: - Properties
     
+    var isLoading: Bool {
+        isLoadingRelay.value
+    }
+    
     let labelContentPresenting: LabelContentPresenting
     let badgeAssetPresenting: BadgeAssetPresenting
+    
+    private let isLoadingRelay = BehaviorRelay<Bool>(value: true)
+    private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
@@ -79,26 +110,50 @@ final class PreferredCurrencyCellPresenter: BadgeCellPresenting {
         badgeAssetPresenting = PreferredCurrencyBadgePresenter(
             interactor: interactor
         )
+        
+        badgeAssetPresenting.state
+            .map { $0.isLoading }
+            .bind(to: isLoadingRelay)
+            .disposed(by: disposeBag)
     }
 }
 
 /// A `BadgeCellPresenting` class for showing the user's Swap Limits
 final class TierLimitsCellPresenter: BadgeCellPresenting {
     
+    var isLoading: Bool {
+        isLoadingRelay.value
+    }
+    
     let labelContentPresenting: LabelContentPresenting
     let badgeAssetPresenting: BadgeAssetPresenting
+    
+    private let isLoadingRelay = BehaviorRelay<Bool>(value: true)
+    private let disposeBag = DisposeBag()
     
     init(tiersProviding: TierLimitsProviding) {
         labelContentPresenting = TierLimitsLabelContentPresenter(provider: tiersProviding, descriptors: .settings)
         badgeAssetPresenting = TierLimitsBadgePresenter(provider: tiersProviding)
+        
+        badgeAssetPresenting.state
+            .map { $0.isLoading }
+            .bind(to: isLoadingRelay)
+            .disposed(by: disposeBag)
     }
 }
 
 /// A `BadgeCellPresenting` class for showing the user's PIT connection status
 final class PITConnectionCellPresenter: BadgeCellPresenting {
     
+    var isLoading: Bool {
+        isLoadingRelay.value
+    }
+    
     let labelContentPresenting: LabelContentPresenting
     let badgeAssetPresenting: BadgeAssetPresenting
+    
+    private let isLoadingRelay = BehaviorRelay<Bool>(value: true)
+    private let disposeBag = DisposeBag()
     
     init(pitConnectionProvider: PITConnectionStatusProviding) {
         labelContentPresenting = DefaultLabelContentPresenter(
@@ -106,14 +161,26 @@ final class PITConnectionCellPresenter: BadgeCellPresenting {
             descriptors: .settings
         )
         badgeAssetPresenting = PITConnectionBadgePresenter(provider: pitConnectionProvider)
+        
+        badgeAssetPresenting.state
+            .map { $0.isLoading }
+            .bind(to: isLoadingRelay)
+            .disposed(by: disposeBag)
     }
 }
 
 /// A `BadgeCellPresenting` class for showing the user's recovery phrase status
 final class RecoveryStatusCellPresenter: BadgeCellPresenting {
     
+    var isLoading: Bool {
+        isLoadingRelay.value
+    }
+    
     let labelContentPresenting: LabelContentPresenting
     let badgeAssetPresenting: BadgeAssetPresenting
+    
+    private let isLoadingRelay = BehaviorRelay<Bool>(value: true)
+    private let disposeBag = DisposeBag()
     
     init(recoveryStatusProviding: RecoveryPhraseStatusProviding) {
         labelContentPresenting = DefaultLabelContentPresenter(
@@ -121,5 +188,10 @@ final class RecoveryStatusCellPresenter: BadgeCellPresenting {
             descriptors: .settings    
         )
         badgeAssetPresenting = RecoveryPhraseBadgePresenter(provider: recoveryStatusProviding)
+        
+        badgeAssetPresenting.state
+            .map { $0.isLoading }
+            .bind(to: isLoadingRelay)
+            .disposed(by: disposeBag)
     }
 }

@@ -14,7 +14,6 @@ final class NoticeTableViewCell: UITableViewCell {
     
     var viewModel: NoticeViewModel! {
         didSet {
-            guard let viewModel = viewModel else { return }
             noticeView.viewModel = viewModel
         }
     }

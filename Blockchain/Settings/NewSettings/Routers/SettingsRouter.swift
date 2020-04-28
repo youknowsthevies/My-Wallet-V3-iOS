@@ -8,16 +8,15 @@
 
 import PlatformKit
 import PlatformUIKit
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 import SafariServices
 import ToolKit
 
 final class SettingsRouter: SettingsRouterAPI {
     
     typealias AnalyticsEvent = AnalyticsEvents.Settings
-    typealias CellType = SettingsScreenPresenter.Section.CellType
     
     let actionRelay = PublishRelay<SettingsScreenAction>()
     let previousRelay = PublishRelay<Void>()
@@ -25,11 +24,11 @@ final class SettingsRouter: SettingsRouterAPI {
     // MARK: - Routers
     
     private lazy var updateMobileRouter: UpdateMobileRouter = {
-        return UpdateMobileRouter(navigationControllerAPI: navigationControllerAPI)
+        UpdateMobileRouter(navigationControllerAPI: navigationControllerAPI)
     }()
     
     private lazy var backupRouterAPI: BackupRouterAPI = {
-        return BackupFundsSettingsRouter(navigationControllerAPI: navigationControllerAPI)
+        BackupFundsSettingsRouter(navigationControllerAPI: navigationControllerAPI)
     }()
     
     // MARK: - Private
@@ -37,12 +36,15 @@ final class SettingsRouter: SettingsRouterAPI {
     private let guidRepositoryAPI: GuidRepositoryAPI
     private let analyticsRecording: AnalyticsEventRecording
     private let alertPresenter: AlertViewPresenter
+    private let cardsServiceProvider: CardServiceProviderAPI
+    private var addCardRouter: AddCardRouter!
     private unowned let currencyRouting: CurrencyRouting
     private unowned let tabSwapping: TabSwapping
     
     weak var navigationControllerAPI: NavigationControllerAPI?
     weak var topMostViewControllerProvider: TopMostViewControllerProviding!
     
+    private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
     
     init(wallet: Wallet = WalletManager.shared.wallet,
@@ -50,8 +52,10 @@ final class SettingsRouter: SettingsRouterAPI {
          analyticsRecording: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
          topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
          alertPresenter: AlertViewPresenter = AlertViewPresenter.shared,
+         cardsServiceProvider: CardServiceProviderAPI = CardServiceProvider.default,
          currencyRouting: CurrencyRouting,
          tabSwapping: TabSwapping) {
+        self.cardsServiceProvider = cardsServiceProvider
         self.alertPresenter = alertPresenter
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.analyticsRecording = analyticsRecording
@@ -70,6 +74,17 @@ final class SettingsRouter: SettingsRouterAPI {
                 self.handle(action: action)
             }
             .disposed(by: disposeBag)
+        
+        addCardCompletionRelay
+            .bind(weak: self) { (self) in
+                self.cardsServiceProvider
+                    .cardList
+                    .fetchCards()
+                    .subscribe()
+                    .disposed(by: self.disposeBag)
+            }
+            .disposed(by: disposeBag)
+            
     }
     
     func presentSettings() {
@@ -77,11 +92,6 @@ final class SettingsRouter: SettingsRouterAPI {
         let presenter = SettingsScreenPresenter(interactor: interactor, router: self)
         let controller = SettingsViewController(presenter: presenter)
         present(viewController: controller, using: .modalOverTopMost)
-    }
-    
-    func presentSettingsAndThen(handle action: SettingsScreenAction) {
-        // TODO: Deep Linking
-        presentSettings()
     }
     
     func dismiss() {
@@ -104,6 +114,30 @@ final class SettingsRouter: SettingsRouterAPI {
             let presenter = ChangePasswordScreenPresenter(previousAPI: self, interactor: interactor)
             let controller = ChangePasswordViewController(presenter: presenter)
             present(viewController: controller)
+        case .showRemoveCardScreen(let data):
+            let presenter = RemoveCardScreenPresenter(
+                cardData: data,
+                service: cardsServiceProvider.cardDeletion,
+                cardListService: cardsServiceProvider.cardList
+            )
+            let controller = RemoveCardViewController(presenter: presenter)
+            controller.transitioningDelegate = sheetPresenter
+            controller.modalPresentationStyle = .custom
+            topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
+        case .showAddCardScreen:
+            let stateService = AddCardStateService()
+            stateService
+                .completionCardData
+                .mapToVoid()
+                .bind(to: addCardCompletionRelay)
+                .disposed(by: disposeBag)
+            
+            addCardRouter = AddCardRouter(
+                stateService: stateService,
+                routingType: .modal
+            )
+            addCardRouter.setup()
+            stateService.start()
         case .showAppStore:
             UIApplication.shared.openAppStore()
         case .showBackupScreen:
@@ -127,7 +161,7 @@ final class SettingsRouter: SettingsRouterAPI {
         case .promptGuidCopy:
             guidRepositoryAPI.guid
                 .map(weak: self) { (self, value) -> String in
-                    return value ?? ""
+                    value ?? ""
                 }
                 .observeOn(MainScheduler.instance)
                 .subscribe(onSuccess: { [weak self] guid in
@@ -154,9 +188,9 @@ final class SettingsRouter: SettingsRouterAPI {
             
         case .launchKYC:
             guard let navController = navigationControllerAPI as? UINavigationController else { return }
-            KYCTiersViewController.routeToTiers(
-                fromViewController: navController
-            ).disposed(by: disposeBag)
+            KYCTiersViewController
+                .routeToTiers(fromViewController: navController)
+                .disposed(by: disposeBag)
         case .launchPIT:
             guard let supportURL = URL(string: Constants.Url.exchangeSupport) else { return }
             let startPITCoordinator = { [weak self] in
@@ -252,4 +286,8 @@ final class SettingsRouter: SettingsRouterAPI {
             )
             .disposed(by: disposeBag)
     }
+    
+    private lazy var sheetPresenter: BottomSheetPresenting = {
+        BottomSheetPresenting()
+    }()
 }

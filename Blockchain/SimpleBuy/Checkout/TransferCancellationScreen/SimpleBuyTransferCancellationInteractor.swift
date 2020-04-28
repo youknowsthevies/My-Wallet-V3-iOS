@@ -41,7 +41,7 @@ final class SimpleBuyTransferCancellationInteractor {
             return .error(InteractionError.uncancellable)
         case .order(let order):
             return cancellationService
-                .cancel(order: order.id)
+                .cancel(order: order.identifier)
                 .andThen(.just(()))
         }
     }

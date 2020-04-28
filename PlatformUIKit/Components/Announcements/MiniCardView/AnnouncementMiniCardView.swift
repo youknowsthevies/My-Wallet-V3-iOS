@@ -72,7 +72,7 @@ public final class AnnouncementMiniCardView: UIView, AnnouncementCardViewConform
         backgroundImageView.contentMode = .scaleAspectFill
         backgroundImageView.clipsToBounds = true
         
-        thumbImageView.image = UIImage(named: viewModel.image.name)
+        thumbImageView.image = viewModel.image.uiImage
         thumbImageView.contentMode = .scaleAspectFill
         thumbImageView.layout(size: viewModel.image.size)
         

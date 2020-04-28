@@ -47,7 +47,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         let hasTrades = exchangeService.hasExecutedTrades()
         let simpleBuyOrderDetails = simpleBuyServiceProvider
             .pendingOrderDetails
-            .orderDetails
+            .pendingDepositOrderDetails
 
         let isSimpleBuyAvailable = simpleBuyServiceProvider.availability.valueSingle
 
@@ -69,7 +69,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             .subscribeOn(SerialDispatchQueueScheduler(internalSerialQueueName: dispatchQueueName))
             .observeOn(MainScheduler.instance)
             .map { (arg) -> AnnouncementPreliminaryData in
-                let (user, tiers, airdropCampaigns, hasTrades, hasPaxTransactions, countries, authenticatorType, (isSimpleBuyAvailable, simpleBuyCheckoutData)) = arg
+                let (user, tiers, airdropCampaigns, hasTrades, hasPaxTransactions, countries, authenticatorType, (isSimpleBuyAvailable, pendingOrderDetails)) = arg
                 return AnnouncementPreliminaryData(
                     user: user,
                     tiers: tiers,
@@ -78,7 +78,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                     hasPaxTransactions: hasPaxTransactions,
                     countries: countries,
                     authenticatorType: authenticatorType,
-                    simpleBuyCheckoutData: simpleBuyCheckoutData,
+                    pendingOrderDetails: pendingOrderDetails,
                     isSimpleBuyAvailable: isSimpleBuyAvailable
                 )
             }

@@ -45,6 +45,7 @@ final class CardDetailsScreenViewController: BaseTableViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         keyboardObserver.setup()
+        presenter.viewDidAppear()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -53,13 +54,8 @@ final class CardDetailsScreenViewController: BaseTableViewController {
     }
     
     private func setupNavigationBar() {
-        set(barStyle: .lightContent(
-                ignoresStatusBar: false,
-                background: .navigationBarBackground
-            ),
-            leadingButtonStyle: .back
-        )
         titleViewStyle = .text(value: presenter.title)
+        setStandardDarkContentStyle()
     }
     
     private func setupKeyboardObserver() {
@@ -88,6 +84,12 @@ final class CardDetailsScreenViewController: BaseTableViewController {
         tableView.separatorColor = .clear
         tableView.delegate = self
         tableView.dataSource = self
+    }
+    
+    // MARK: - Navigation
+    
+    override func navigationBarTrailingButtonPressed() {
+        presenter.previous()
     }
 }
 

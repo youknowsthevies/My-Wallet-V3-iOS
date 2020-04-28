@@ -8,7 +8,9 @@
 
 import SafariServices
 
-extension UIApplication: WebViewServiceAPI {
+extension UIApplication: WebViewServiceAPI {}
+
+extension WebViewServiceAPI {
     // Prefer using SFSafariViewController over UIWebview due to privacy and security improvements.
     // https://medium.com/ios-os-x-development/security-flaw-with-uiwebview-95bbd8508e3c
     public func openSafari(url: String, from parent: ViewControllerAPI) {

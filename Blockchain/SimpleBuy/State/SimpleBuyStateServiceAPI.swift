@@ -36,9 +36,11 @@ protocol SimpleBuyStateReceiverServiceAPI: class {
 /// A checkout service API
 protocol SimpleBuyCheckoutServiceAPI: RoutingPreviousStateEmitterAPI {
     var previousRelay: PublishRelay<Void> { get }
-    func checkout(with checkoutData: SimpleBuyCheckoutData)
+    func nextFromBuyCrypto(with checkoutData: SimpleBuyCheckoutData)
     func ineligible(with checkoutData: SimpleBuyCheckoutData)
     func kyc(with checkoutData: SimpleBuyCheckoutData)
+    func addCardStateService(with checkoutData: SimpleBuyCheckoutData) -> AddCardStateService
+    func paymentMethods()
     func changeCurrency()
     func currencySelected()
     func reselectCurrency()
@@ -67,6 +69,10 @@ protocol SimpleBuyStateCacheProviderAPI: class {
     var cache: SimpleBuyEventCache { get }
 }
 
+protocol PendingOrderCompletionStateServiceAPI: class {
+    func orderCompleted()
+}
+
 /// A composition of all of Simple-Buy state-services
 typealias SimpleBuyStateServiceAPI = RoutingStateEmitterAPI &
                                      SimpleBuyStateReceiverServiceAPI &
@@ -75,4 +81,6 @@ typealias SimpleBuyStateServiceAPI = RoutingStateEmitterAPI &
                                      SimpleBuyCheckoutServiceAPI &
                                      SimpleBuyCancelTransferServiceAPI &
                                      SimpleBuyCurrencySelectionServiceAPI &
+                                     CardAuthorizationStateServiceAPI &
+                                     PendingOrderCompletionStateServiceAPI &
                                      SimpleBuyElibilityRelayAPI

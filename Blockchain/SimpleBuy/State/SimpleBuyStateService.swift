@@ -13,9 +13,7 @@ import ToolKit
 import PlatformKit
 import PlatformUIKit
 
-final class SimpleBuyStateService: RoutingStateEmitterAPI,
-                                   SimpleBuyStateReceiverServiceAPI,
-                                   SimpleBuyStateCacheProviderAPI {
+final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
 
     // MARK: - Types
             
@@ -72,6 +70,12 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
         /// Shows only supported `fiat` types
         case changeFiat
         
+        /// The user wants to view his payment method types
+        case paymentMethods
+        
+        /// The user would enter add-card flow before checking out
+        case addCard(SimpleBuyCheckoutData)
+        
         /// During KYC process
         case kyc(SimpleBuyCheckoutData)
         
@@ -81,14 +85,20 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
         /// The user is checking-out
         case checkout(SimpleBuyCheckoutData)
         
-        /// The user is after the checkout
+        /// The user authorized his bank wire
         case transferDetails(SimpleBuyCheckoutData)
         
+        /// The user authorized his card payment and should now be referred to partner
+        case authorizeCard(order: SimpleBuyOrderDetails)
+
         /// The user may cancel their transfer
         case transferCancellation(SimpleBuyCheckoutData)
         
         /// The user has a pending order
         case pendingOrderDetails(SimpleBuyCheckoutData)
+        
+        /// Purchase completed
+        case pendingOrderCompleted(amount: CryptoValue, orderId: String)
         
         /// Inactive state - no buy flow is performed at the moment
         case inactive
@@ -165,6 +175,20 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
             .disposed(by: disposeBag)
     }
     
+    func addCardStateService(with checkoutData: SimpleBuyCheckoutData) -> AddCardStateService {
+        let addCardStateService = AddCardStateService()
+        addCardStateService.completionCardData
+            .bind { [weak self] cardData in
+                guard let self = self else { return }
+                let checkoutData = checkoutData.checkoutData(byAppending: cardData)
+                self.previous()
+                self.nextFromBuyCrypto(with: checkoutData)
+            }
+            .disposed(by: disposeBag)
+        
+        return addCardStateService
+    }
+        
     // TODO: Look into reactive state machine
     private func next() {
         let states = statesRelay.value
@@ -185,7 +209,11 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
                 states: states.states(byAppending: state)
             )
         case .pendingKycApproval(let data):
-            state = .checkout(data)
+            if data.isSuggestedCard {
+                state = .addCard(data)
+            } else {
+                state = .checkout(data)
+            }
             apply(
                 action: .next(to: state),
                 states: states.states(byAppending: state)
@@ -200,7 +228,7 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
                 action: .dismiss,
                 states: states.states(byAppending: state)
             )
-        case .buy, .checkout, .selectFiat:
+        case .buy, .checkout, .paymentMethods, .selectFiat, .addCard, .authorizeCard, .pendingOrderCompleted:
             fatalError("\(#function) should not get called with \(states.current). use `SimpleBuyCheckoutServiceAPI` instead")
         }
     }
@@ -230,8 +258,11 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
             .flatMap(weak: self) { (self, currency) -> Single<Bool> in
                 self.availabilityService.isFiatCurrencySupportedLocal(currency: currency)
             }
-        Single.zip(pendingOrderDetailsService.orderDetails,
-                   isFiatCurrencySupported)
+        Single
+            .zip(
+                pendingOrderDetailsService.checkoutData,
+                isFiatCurrencySupported
+            )
             .handleLoaderForLifecycle(
                 loader: loadingViewPresenter,
                 style: .circle
@@ -239,7 +270,17 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
             .map { data -> State in
                 let isFiatCurrencySupported = data.1
                 if let data = data.0 {
-                    return .pendingOrderDetails(data)
+                    switch data.detailType.paymentMethod {
+                    case .bankTransfer:
+                        return .pendingOrderDetails(data)
+                    case .card:
+                        switch data.detailType {
+                        case .order(let orderDetails):
+                            return .authorizeCard(order: orderDetails)
+                        case .candidate:
+                            fatalError("Impossible case to reach")
+                        }
+                    }
                 } else {
                     return cache[.hasShownIntroScreen] ? (isFiatCurrencySupported ? .buy : .selectFiat) : .intro
                 }
@@ -249,8 +290,11 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
                     guard let self = self else { return }
                     /// The user already has a pending order, so
                     /// mark the intro screen as `shown`.
-                    if case .pendingOrderDetails = state {
+                    switch state {
+                    case .authorizeCard, .pendingOrderDetails:
                         cache[.hasShownIntroScreen] = true
+                    default:
+                        break
                     }
                     
                     self.apply(
@@ -259,13 +303,7 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
                     )
                 },
                 onError: { [weak alertPresenter] error in
-                    guard let alertPresenter = alertPresenter else { return }
-                    alertPresenter.notify(
-                        content: .init(
-                            title: LocalizationConstants.SimpleBuy.ErrorAlert.title,
-                            message: LocalizationConstants.SimpleBuy.ErrorAlert.message
-                        )
-                    )
+                    alertPresenter?.error()
                 }
             )
             .disposed(by: disposeBag)
@@ -291,7 +329,7 @@ final class SimpleBuyStateService: RoutingStateEmitterAPI,
 
 // MARK: - SimpleBuyElibilityRelayAPI
 
-extension SimpleBuyStateService: SimpleBuyElibilityRelayAPI {
+extension SimpleBuyStateService {
     
     func ineligible(with currency: FiatCurrency) {
         let states = statesRelay.value.states(byAppending: .unsupportedFiat(currency))
@@ -301,12 +339,19 @@ extension SimpleBuyStateService: SimpleBuyElibilityRelayAPI {
 
 // MARK: - SimpleBuyCheckoutServiceAPI
 
-extension SimpleBuyStateService: SimpleBuyCheckoutServiceAPI {
-    func checkout(with checkoutData: SimpleBuyCheckoutData) {
-        let states = statesRelay.value.states(byAppending: .checkout(checkoutData))
+extension SimpleBuyStateService {
+    
+    func nextFromBuyCrypto(with checkoutData: SimpleBuyCheckoutData) {
+        let state: State
+        if checkoutData.isSuggestedCard {
+            state = .addCard(checkoutData)
+        } else {
+            state = .checkout(checkoutData)
+        }
+        let states = statesRelay.value.states(byAppending: state)
         apply(action: .next(to: states.current), states: states)
     }
-
+    
     func kyc(with checkoutData: SimpleBuyCheckoutData) {
         let states = statesRelay.value.states(byAppending: .kyc(checkoutData))
         apply(action: .next(to: states.current), states: states)
@@ -316,6 +361,11 @@ extension SimpleBuyStateService: SimpleBuyCheckoutServiceAPI {
         let states = statesRelay.value.states(byAppending: .pendingKycApproval(checkoutData))
         apply(action: .next(to: states.current), states: states)
     }
+
+    func paymentMethods() {
+        let states = statesRelay.value.states(byAppending: .paymentMethods)
+        apply(action: .next(to: states.current), states: states)
+    }
     
     func changeCurrency() {
         let states = statesRelay.value.states(byAppending: .changeFiat)
@@ -323,7 +373,9 @@ extension SimpleBuyStateService: SimpleBuyCheckoutServiceAPI {
     }
 }
 
-extension SimpleBuyStateService: SimpleBuyCurrencySelectionServiceAPI {
+// MARK: - SimpleBuyCurrencySelectionServiceAPI
+
+extension SimpleBuyStateService {
     func currencySelected() {
         let states = statesRelay.value.states(byAppending: .buy)
         apply(action: .next(to: states.current), states: states)
@@ -338,16 +390,48 @@ extension SimpleBuyStateService: SimpleBuyCurrencySelectionServiceAPI {
 
 // MARK: - SimpleBuyConfirmCheckoutServiceAPI
 
-extension SimpleBuyStateService: SimpleBuyConfirmCheckoutServiceAPI {
+extension SimpleBuyStateService {
     func confirmCheckout(with checkoutData: SimpleBuyCheckoutData) {
-        let states = statesRelay.value.states(byAppending: .transferDetails(checkoutData))
+        let state: State
+        let data = (checkoutData.detailType, checkoutData.detailType.paymentMethod)
+        switch data {
+        case (.order, .bankTransfer):
+            state = .transferDetails(checkoutData)
+        case (.order(let details), .card):
+            state = .authorizeCard(order: details)
+        default:
+            fatalError("Cannot executed checkout with \(data)")
+        }
+        let states = statesRelay.value.states(byAppending: state)
+        apply(action: .next(to: state), states: states)
+    }
+}
+
+extension SimpleBuyStateService {
+    func cancelTransfer(with checkoutData: SimpleBuyCheckoutData) {
+        let states = statesRelay.value.states(byAppending: .transferCancellation(checkoutData))
         apply(action: .next(to: states.current), states: states)
     }
 }
 
-extension SimpleBuyStateService: SimpleBuyCancelTransferServiceAPI {
-    func cancelTransfer(with checkoutData: SimpleBuyCheckoutData) {
-        let states = statesRelay.value.states(byAppending: .transferCancellation(checkoutData))
+extension SimpleBuyStateService {
+    func cardAuthorized(with paymentMethodId: String) {
+        guard case .authorizeCard(order: let order) = statesRelay.value.current else {
+            return
+        }
+        let states = statesRelay.value.states(
+            byAppending: .pendingOrderCompleted(
+                amount: order.cryptoValue,
+                orderId: order.identifier
+            )
+        )
+        apply(action: .next(to: states.current), states: states)
+    }
+}
+
+extension SimpleBuyStateService {
+    func orderCompleted() {
+        let states = statesRelay.value.states(byAppending: .inactive)
         apply(action: .next(to: states.current), states: states)
     }
 }

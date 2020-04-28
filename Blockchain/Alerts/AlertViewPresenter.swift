@@ -183,6 +183,24 @@ import RxCocoa
         }
     }
     
+    /// Notify the user on error that occurred 
+    func error(action: (() -> Void)? = nil) {
+        typealias AlertString = LocalizationConstants.ErrorAlert
+        standardNotify(
+            message: AlertString.message,
+            title: AlertString.title,
+            actions: [
+                UIAlertAction(
+                    title: AlertString.button,
+                    style: .default,
+                    handler: { _ in
+                        action?()
+                    }
+                )
+            ]
+        )
+    }
+    
     func notify(content: Content) {
         standardNotify(message: content.message, title: content.title)
     }

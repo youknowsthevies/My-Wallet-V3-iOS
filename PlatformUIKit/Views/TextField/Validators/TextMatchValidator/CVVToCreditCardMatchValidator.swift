@@ -8,6 +8,7 @@
 
 import RxSwift
 import RxRelay
+import PlatformKit
 
 public final class CVVToCreditCardMatchValidator: TextMatchValidatorAPI {
     
@@ -26,9 +27,9 @@ public final class CVVToCreditCardMatchValidator: TextMatchValidatorAPI {
     public init(cvvTextSource: TextSource, cardTypeSource: CardTypeSource, invalidReason: String) {
         Observable
             .combineLatest(cvvTextSource.valueRelay, cardTypeSource.cardType)
-            .map { (payload: (cvv: String, cardType: CardType?)) in
-                guard let cardType = payload.cardType else { return true }
-                return payload.cvv.count == cardType.cvvLength
+            .map { (payload: (cvv: String, cardType: CardType)) in
+                guard payload.cardType.isKnown else { return true }
+                return payload.cvv.count == payload.cardType.cvvLength
             }
             .map { $0 ? .valid : .invalid(reason: invalidReason) }
             .bind(to: validationStateRelay)

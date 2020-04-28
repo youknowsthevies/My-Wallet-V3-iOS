@@ -6,37 +6,82 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-/// TODO: Create a parent struct from the transfer/checkout details screen (use composition for `paymentAccount`).
 public struct SimpleBuyCheckoutData {
     
     // MARK: - Types
     
     public enum DetailType {
         
+        /// The candidate order details
+        public struct CandidateOrderDetails {
+            
+            /// The payment method
+            public let paymentMethod: SimpleBuyPaymentMethodType
+            
+            /// Fiat value
+            let fiatValue: FiatValue
+            
+            /// The currency type
+            let cryptoCurrency: CryptoCurrency
+        }
+        
         /// An order detail or an already existing order
         case order(SimpleBuyOrderDetails)
         
         /// Suggested candidate for a buy order
-        case candidate(fiatValue: FiatValue, cryptoCurrency: CryptoCurrency)
+        case candidate(CandidateOrderDetails)
+        
+        public var paymentMethod: SimpleBuyPaymentMethod.MethodType {
+            switch self {
+            case .candidate(let details):
+                return details.paymentMethod.method
+            case .order(let details):
+                return details.paymentMethod
+            }
+        }
+        
+        var paymentMethodId: String? {
+            switch self {
+            case .candidate(let details):
+                return details.paymentMethod.methodId
+            case .order(let details):
+                return details.paymentMethodId
+            }
+        }
     }
     
     // MARK: - Properties
     
     public var fiatValue: FiatValue {
         switch detailType {
-        case .candidate(fiatValue: let fiatValue, cryptoCurrency: _):
-            return fiatValue
-        case .order(let order):
-            return order.fiatValue
+        case .candidate(let details):
+            return details.fiatValue
+        case .order(let details):
+            return details.fiatValue
         }
     }
     
     public var cryptoCurrency: CryptoCurrency {
         switch detailType {
-        case .candidate(fiatValue: _, cryptoCurrency: let cryptoCurrency):
-            return cryptoCurrency
-        case .order(let order):
-            return order.cryptoCurrency
+        case .candidate(let details):
+            return details.cryptoCurrency
+        case .order(let details):
+            return details.cryptoValue.currencyType
+        }
+    }
+    
+    /// Computes to `true` if the payment method is a suggested card
+    public var isSuggestedCard: Bool {
+        switch detailType {
+        case .candidate(let details):
+            switch details.paymentMethod {
+            case .suggested(let method):
+                return method.type == .card
+            default:
+                return false
+            }
+        default:
+            return false
         }
     }
     
@@ -44,14 +89,20 @@ public struct SimpleBuyCheckoutData {
     public let detailType: DetailType
     
     public init(fiatValue: FiatValue,
-                cryptoCurrency: CryptoCurrency) {
-        detailType = .candidate(fiatValue: fiatValue, cryptoCurrency: cryptoCurrency)
+                cryptoCurrency: CryptoCurrency,
+                paymentMethod: SimpleBuyPaymentMethodType) {
+        let candidateDetails = DetailType.CandidateOrderDetails(
+            paymentMethod: paymentMethod,
+            fiatValue: fiatValue,
+            cryptoCurrency: cryptoCurrency
+        )
+        detailType = .candidate(candidateDetails)
         paymentAccount = nil
     }
     
-    public init(orderDetails: SimpleBuyOrderDetails) {
+    init(orderDetails: SimpleBuyOrderDetails, paymentAccount: SimpleBuyPaymentAccount? = nil) {
         self.detailType = .order(orderDetails)
-        paymentAccount = nil
+        self.paymentAccount = paymentAccount
     }
     
     private init(detailType: DetailType, paymentAccount: SimpleBuyPaymentAccount) {
@@ -59,9 +110,29 @@ public struct SimpleBuyCheckoutData {
         self.paymentAccount = paymentAccount
     }
     
-    public func checkoutData(byAppending paymentAccount: SimpleBuyPaymentAccount) -> SimpleBuyCheckoutData {
-        return SimpleBuyCheckoutData(
+    public func checkoutData(byAppending cardData: CardData) -> SimpleBuyCheckoutData {
+        switch detailType {
+        case .candidate(let candidate):
+            return SimpleBuyCheckoutData(
+                fiatValue: candidate.fiatValue,
+                cryptoCurrency: candidate.cryptoCurrency,
+                paymentMethod: .card(cardData)
+            )
+        case .order:
+            fatalError("\(#function) should not be used with prepared order, only with candidate data")
+        }
+    }
+    
+    func checkoutData(byAppending paymentAccount: SimpleBuyPaymentAccount) -> SimpleBuyCheckoutData {
+        SimpleBuyCheckoutData(
             detailType: detailType,
+            paymentAccount: paymentAccount
+        )
+    }
+    
+    func checkoutData(byAppending orderDetails: SimpleBuyOrderDetails) -> SimpleBuyCheckoutData {
+        SimpleBuyCheckoutData(
+            orderDetails: orderDetails,
             paymentAccount: paymentAccount
         )
     }

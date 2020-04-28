@@ -7,28 +7,97 @@
 //
 
 import PlatformUIKit
+import PlatformKit
+import RxCocoa
+import RxSwift
 
 final class AddCardTableViewCell: UITableViewCell {
     
     // MARK: - Public Properites
     
     var presenter: AddCardCellPresenter! {
+        willSet {
+            disposeBag = DisposeBag()
+        }
         didSet {
             guard let presenter = presenter else { return }
-            badgeImageView.viewModel = presenter.badgeImageViewModel
-            titleLabel.content = presenter.descriptionLabelContent
+            presenter.badgeImagePresenter.state
+                .compactMap { $0 }
+                .bind(to: rx.viewModel)
+                .disposed(by: disposeBag)
+            
+            presenter.labelContentPresenter.state
+                .compactMap { $0 }
+                .bind(to: rx.content)
+                .disposed(by: disposeBag)
+            
+            presenter.addIconImageVisibility
+                .map { $0.defaultAlpha }
+                .drive(iconAddImageView.rx.alpha)
+                .disposed(by: disposeBag)
         }
     }
     
     // MARK: - Private IBOutlets
     
-    @IBOutlet private var badgeImageView: BadgeImageView!
-    @IBOutlet private var titleLabel: UILabel!
+    @IBOutlet fileprivate var iconAddImageView: UIImageView!
+    @IBOutlet fileprivate var badgeImageView: BadgeImageView!
+    @IBOutlet fileprivate var titleLabel: UILabel!
+    
+    // MARK: - Private Properties
+    
+    private var disposeBag = DisposeBag()
+    fileprivate var titleShimmeringView: ShimmeringView!
     
     // MARK: - Lifecycle
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        shimmer()
         titleLabel.textColor = .titleText
+    }
+    
+    /// Should be called once when the parent view loads
+    private func shimmer() {
+        titleShimmeringView = ShimmeringView(
+            in: self,
+            anchorView: titleLabel,
+            size: .init(width: 150, height: 24)
+        )
+    }
+}
+
+// MARK: - Rx
+
+extension Reactive where Base: AddCardTableViewCell {
+    var viewModel: Binder<LoadingState<BadgeImageViewModel>> {
+        Binder(base) { view, state in
+            switch state {
+            case .loading:
+                break
+            case .loaded(next: let value):
+                UIView.animate(withDuration: 0.2, delay: 0.0, options: .transitionCrossDissolve, animations: {
+                    view.badgeImageView.viewModel = value
+                }, completion: nil)
+            }
+        }
+    }
+    
+    var content: Binder<LabelContentAsset.State.LabelItem.Presentation> {
+        Binder(base) { view, state in
+            let loading = {
+                view.titleShimmeringView.start()
+            }
+            
+            switch state {
+            case .loading:
+                UIView.animate(withDuration: 0.5, animations: loading)
+            case .loaded(next: let value):
+                UIView.animate(withDuration: 0.2, delay: 0.0, options: .transitionCrossDissolve, animations: {
+                    view.titleLabel.content = value.labelContent
+                    view.titleShimmeringView.stop()
+                }, completion: nil)
+            }
+        }
     }
 }

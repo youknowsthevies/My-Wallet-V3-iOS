@@ -10,6 +10,7 @@ import XCTest
 import RxSwift
 import RxBlocking
 
+@testable import PlatformKit
 @testable import PlatformUIKit
 
 final class CardTypeValidationTests: XCTestCase {
@@ -86,7 +87,7 @@ final class CardTypeValidationTests: XCTestCase {
             "aa5101180000000007"
         ]
         
-        try assert(numbers: numbers, to: nil, expectedIsValid: false)
+        try assert(numbers: numbers, to: .unknown, expectedIsValid: false)
     }
     
     func testInvalidMastercardType() throws {
@@ -98,7 +99,7 @@ final class CardTypeValidationTests: XCTestCase {
         try assert(numbers: numbers, to: .mastercard, expectedIsValid: false)
     }
     
-    private func assert(numbers: [String], to expectedCardType: CardType?, expectedIsValid: Bool) throws {
+    private func assert(numbers: [String], to expectedCardType: CardType, expectedIsValid: Bool) throws {
         try numbers.forEach {
             validator.valueRelay.accept($0)
                         

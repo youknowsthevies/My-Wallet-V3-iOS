@@ -97,9 +97,9 @@ final class BuyIntroScreenPresenter {
         analyticsRecorder.record(event: AnalyticsEvent.sbWantToBuyScreenShown)
     }
     
-    /// MARK: - Exposed
+    // MARK: - Exposed
     
-    func navigationBarLeadingButtonTapped() {
+    func previous() {
         stateService.previousRelay.accept(())
     }
 }

@@ -12,5 +12,4 @@ import RxRelay
 protocol SettingsRouterAPI: Router, RoutingPreviousStateEmitterAPI {
     var actionRelay: PublishRelay<SettingsScreenAction> { get }
     func presentSettings()
-    func presentSettingsAndThen(handle action: SettingsScreenAction)
 }

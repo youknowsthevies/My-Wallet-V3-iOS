@@ -153,8 +153,8 @@ public final class SelectionScreenPresenter {
             .disposed(by: disposeBag)
     }
 
-    func navigationBarLeadingButtonTapped() {
-        /// if `True` -> interator fires!
+    func previousTapped() {
+        /// if `True` -> interactor fires!
         if preselectionSupportedRelay.value {
             interactor.recordSelection()
         } else {

@@ -74,7 +74,7 @@ public struct ButtonViewModel {
     public let font: UIFont
 
     /// Observe the button hidden state
-    public let isHiddenRelay = BehaviorRelay<Bool>(value: false)
+    public let isHiddenRelay = BehaviorRelay(value: false)
 
     /// Is the button enabled
     public var isHidden: Driver<Bool> {
@@ -82,7 +82,7 @@ public struct ButtonViewModel {
     }
 
     /// Observe the button enabled state
-    public let isEnabledRelay = BehaviorRelay<Bool>(value: true)
+    public let isEnabledRelay = BehaviorRelay(value: true)
     
     /// Is the button enabled
     public var isEnabled: Driver<Bool> {
