@@ -96,15 +96,18 @@ public final class CardClient: CardClientAPI {
     // MARK: - CardAdditionClientAPI
     
     public func add(for currency: String,
+                    email: String,
                     billingAddress: CardPayload.BillingAddress,
                     token: String) -> Single<CardPayload> {
         struct RequestPayload: Encodable {
             let currency: String
+            let email: String
             let address: CardPayload.BillingAddress
         }
         
         let payload = RequestPayload(
             currency: currency,
+            email: email,
             address: billingAddress
         )
         
@@ -154,7 +157,7 @@ public final class CardClient: CardClientAPI {
         return communicator
             .perform(request: request)
             .map { (response: ActivateCardResponse) in
-                return response.partner
+                response.partner
             }
     }
 }

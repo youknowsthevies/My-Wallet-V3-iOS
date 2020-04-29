@@ -56,6 +56,7 @@ final class CardServiceProvider: CardServiceProviderAPI {
             authenticationService: authenticationService
         )
         cardUpdate = CardUpdateService(
+            dataRepository: dataRepository,
             cardClient: cardClient,
             everyPayClient: everyPayClient,
             fiatCurrencyService: fiatCurrencyService,

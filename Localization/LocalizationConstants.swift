@@ -1653,9 +1653,17 @@ public struct LocalizationConstants {
                         comment: "Simple buy checkout screen - title suffix"
                     )
                 }
-                public static let buttonPrefix = NSLocalizedString(
+                public static let buyButtonPrefix = NSLocalizedString(
                     "Buy ",
                     comment: "Simple buy checkout screen - buy button prefix"
+                )
+                public static let continueButtonPrefix = NSLocalizedString(
+                    "OK",
+                    comment: "Simple buy checkout screen - continue button"
+                )
+                public static let completePaymentButton = NSLocalizedString(
+                    "Complete Payment",
+                    comment: "Simple buy checkout screen - complete payment button"
                 )
             }
 

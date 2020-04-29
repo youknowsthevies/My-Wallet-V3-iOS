@@ -41,7 +41,7 @@ public final class CardNumberValidator: TextValidating, CardTypeSource {
     
     // MARK: - Setup
     
-    public init(supportedCardTypes: Set<CardType> = [.visa, .mastercard, .amex]) {
+    public init(supportedCardTypes: Set<CardType> = [.visa]) {
         self.supportedCardTypes = supportedCardTypes
         valueRelay
             .map { .determineType(from: $0) }

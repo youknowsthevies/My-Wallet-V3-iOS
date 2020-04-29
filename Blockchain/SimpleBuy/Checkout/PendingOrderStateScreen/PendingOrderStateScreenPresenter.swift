@@ -110,11 +110,15 @@ final class PendingOrderStateScreenPresenter: PendingStatePresenterAPI {
                 showError()
             case .finished:
                 success()
-            case .pendingConfirmation, .pendingDeposit, .depositMatched, .pendingExecution:
-                break // Not final states - do nothing
+            case .pendingConfirmation, .pendingDeposit, .depositMatched:
+                // This state is practically not possible by design since the app polls until
+                // the order is in one of the final states (success / error).
+                stateService.orderPending(with: order)
             }
-        case .timeout, .cancel:
-            showError()
+        case .timeout(let order):
+            stateService.orderPending(with: order)
+        case .cancel:
+            break
         }
     }
 }

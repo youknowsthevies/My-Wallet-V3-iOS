@@ -34,9 +34,6 @@ public struct SimpleBuyOrderDetails {
         
         /// Order executed and done
         case finished = "FINISHED"
-        
-        /// The order is pending execution
-        case pendingExecution = "PENDING_EXECUTION"
     }
     
     // MARK: - Properties
@@ -94,7 +91,7 @@ public struct SimpleBuyOrderDetails {
         switch state {
         case .cancelled, .failed, .expired, .finished:
             return true
-        case .pendingDeposit, .pendingConfirmation, .depositMatched, .pendingExecution:
+        case .pendingDeposit, .pendingConfirmation, .depositMatched:
             return false
         }
     }

@@ -76,10 +76,16 @@ final class CheckoutScreenPresenter {
         let data = interactor.checkoutData
         
         let amountLineTitle: String
+        let buttonTitle: String
         
         if data.hasCheckoutMade {
             title = LocalizedString.Title.orderDetails
             amountLineTitle = LocalizedString.LineItem.amount
+            if data.isPending3DS {
+                buttonTitle = LocalizedString.Summary.completePaymentButton
+            } else {
+                buttonTitle = LocalizedString.Summary.continueButtonPrefix
+            }
             cellArrangement = [
                 .separator,
                 .lineItem(.orderId),
@@ -96,6 +102,7 @@ final class CheckoutScreenPresenter {
         } else {
             title = LocalizedString.Title.checkout
             amountLineTitle = LocalizedString.LineItem.estimatedAmount
+            buttonTitle = "\(LocalizedString.Summary.buyButtonPrefix)\(data.cryptoCurrency.displayCode)"
             typealias TitleString = LocalizedString.Summary.Title
             let summary = "\(TitleString.prefix)\(data.cryptoCurrency.displayCode)\(TitleString.suffix)"
             summaryLabelContent = .init(
@@ -113,7 +120,6 @@ final class CheckoutScreenPresenter {
                 .lineItem(.estimatedAmount),
                 .lineItem(.buyingFee),
                 .lineItem(.paymentMethod),
-                .lineItem(.status),
                 .separator,
                 .disclaimer
             ]
@@ -142,7 +148,7 @@ final class CheckoutScreenPresenter {
         )
         
         continueButtonViewModel = .primary(
-            with: "\(LocalizedString.Summary.buttonPrefix)\(data.cryptoCurrency.displayCode)"
+            with: buttonTitle
         )
         
         if interactor.isCancellable {
@@ -290,10 +296,7 @@ final class CheckoutScreenPresenter {
             .loaded(next: .init(text: data.fee.toDisplayString()))
         )
         
-        var amount = data.amount.toDisplayString(includeSymbol: true)
-        if !interactor.checkoutData.hasCheckoutMade {
-            amount = "~ \(amount)"
-        }
+        let amount = "~ \(data.amount.toDisplayString(includeSymbol: true))"
         amountLineItemCellPresenter.interactor.description.stateRelay.accept(
             .loaded(next: .init(text: amount))
         )

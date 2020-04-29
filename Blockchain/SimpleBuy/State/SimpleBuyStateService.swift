@@ -297,7 +297,7 @@ final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
                     /// The user already has a pending order, so
                     /// mark the intro screen as `shown`.
                     switch state {
-                    case .authorizeCard, .pendingOrderDetails:
+                    case .pendingOrderDetails:
                         cache[.hasShownIntroScreen] = true
                     default:
                         break
@@ -443,5 +443,14 @@ extension SimpleBuyStateService {
     func orderCompleted() {
         let states = statesRelay.value.states(byAppending: .inactive)
         apply(action: .next(to: states.current), states: states)
+    }
+    
+    func orderPending(with orderDetails: SimpleBuyOrderDetails) {
+        let checkoutData = SimpleBuyCheckoutData(orderDetails: orderDetails)
+        let state = State.checkout(checkoutData)
+        self.apply(
+            action: .next(to: state),
+            states: self.statesRelay.value.states(byAppending: state)
+        )
     }
 }

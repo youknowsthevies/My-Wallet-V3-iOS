@@ -66,7 +66,7 @@ final class CheckoutScreenInteractor {
         /// Pending 3DS on card for this order
         if order.isPendingConfirmation {
             return recreateOrder()
-        } else if order.is3DSConfirmedCardOrder {
+        } else if order.is3DSConfirmedCardOrder || order.isPending3DSCardOrder {
             /// 3DS was confirmed on this order - just fetch the details
             guard let fee = order.fee else { return .error(InteractionError.missingInternalOrderData ) }
             guard let price = order.price else { return .error(InteractionError.missingInternalOrderData ) }
@@ -82,7 +82,7 @@ final class CheckoutScreenInteractor {
                         card: card,
                         orderId: order.identifier
                     )
-                }
+                }            
         } else {
             return .error(InteractionError.impossibleState)
         }

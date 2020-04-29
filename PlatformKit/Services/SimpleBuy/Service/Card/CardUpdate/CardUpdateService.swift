@@ -21,15 +21,18 @@ public final class CardUpdateService: CardUpdateServiceAPI {
     
     private let cardClient: CardClientAPI
     private let everyPayClient: EveryPayClientAPI
+    private let dataRepository: DataRepositoryAPI
     private let authenticationService: NabuAuthenticationServiceAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     
     // MARK: - Setup
     
-    public init(cardClient: CardClientAPI,
+    public init(dataRepository: DataRepositoryAPI,
+                cardClient: CardClientAPI,
                 everyPayClient: EveryPayClientAPI,
                 fiatCurrencyService: FiatCurrencySettingsServiceAPI,
                 authenticationService: NabuAuthenticationServiceAPI) {
+        self.dataRepository = dataRepository
         self.cardClient = cardClient
         self.everyPayClient = everyPayClient
         self.authenticationService = authenticationService
@@ -37,17 +40,24 @@ public final class CardUpdateService: CardUpdateServiceAPI {
     }
     
     public func add(card: CardData) -> Single<PartnerAuthorizationData> {
-        Single
+        
+        // Get the user email
+        let email = dataRepository.userSingle
+            .map { $0.email.address }
+        
+        return Single
             .zip(
                 authenticationService.tokenString,
-                fiatCurrencyService.fiatCurrency
+                fiatCurrencyService.fiatCurrency,
+                email
             )
-            .map { (token: $0.0, currency: $0.1) }
+            .map { (token: $0.0, currency: $0.1, email: $0.2) }
             // 1. Add the card details via BE
             .flatMap(weak: self) { (self, payload) -> Single<(response: CardPayload, token: String)> in
                 self.cardClient
                     .add(
                         for: payload.currency.code,
+                        email: payload.email,
                         billingAddress: card.billingAddress.requestPayload,
                         token: payload.token
                     )

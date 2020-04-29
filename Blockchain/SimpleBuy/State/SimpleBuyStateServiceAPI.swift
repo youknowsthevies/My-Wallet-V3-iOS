@@ -70,6 +70,7 @@ protocol SimpleBuyStateCacheProviderAPI: class {
 }
 
 protocol PendingOrderCompletionStateServiceAPI: class {
+    func orderPending(with orderDetails: SimpleBuyOrderDetails)
     func orderCompleted()
 }
 

@@ -66,7 +66,16 @@ public struct SimpleBuyCheckoutData {
         case .candidate:
             return false
         case .order(let details):
-            return details.is3DSConfirmedCardOrder
+            return details.is3DSConfirmedCardOrder || details.isPending3DSCardOrder
+        }
+    }
+    
+    public var isPending3DS: Bool {
+        switch detailType {
+        case .candidate:
+            return false
+        case .order(let details):
+            return details.isPending3DSCardOrder
         }
     }
     
@@ -118,7 +127,7 @@ public struct SimpleBuyCheckoutData {
         paymentAccount = nil
     }
     
-    init(orderDetails: SimpleBuyOrderDetails, paymentAccount: SimpleBuyPaymentAccount? = nil) {
+    public init(orderDetails: SimpleBuyOrderDetails, paymentAccount: SimpleBuyPaymentAccount? = nil) {
         self.detailType = .order(orderDetails)
         self.paymentAccount = paymentAccount
     }
