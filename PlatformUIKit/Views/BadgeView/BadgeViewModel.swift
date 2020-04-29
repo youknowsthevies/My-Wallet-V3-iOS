@@ -79,7 +79,7 @@ public struct BadgeViewModel {
     
     /// - parameter cornerRadius: corner radius of the component
     /// - parameter accessibility: accessibility for the view
-    public init(font: UIFont = .mainMedium(12), cornerRadius: CGFloat = 4, accessibility: Accessibility) {
+    public init(font: UIFont = .main(.medium, 12), cornerRadius: CGFloat = 4, accessibility: Accessibility) {
         self.font = font
         self.cornerRadius = cornerRadius
         self.accessibility = accessibility

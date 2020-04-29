@@ -15,7 +15,7 @@ final class TierLimitsLabelContentInteractor: LabelContentInteracting {
     
     // MARK: - Types
     
-    typealias InteractionState = LabelContentAsset.State.LabelItem.Interaction
+    typealias InteractionState = LabelContent.State.Interaction
     
     // MARK: - Properties
     

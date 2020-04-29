@@ -56,17 +56,6 @@ extension Accessibility.Identifier {
     }
 }
 
-extension Accessibility.Identifier {
-    
-    enum LineItem {
-        private static let prefix = "LineItem."
-        static let titleLabel = "\(prefix)titleLabel"
-        static let descriptionLabel = "\(prefix)descriptionLabel"
-        static let disclaimerLabel = "\(prefix)disclaimerLabel"
-        static let disclaimerImage = "\(prefix)disclaimerImage"
-    }
-}
-
 extension Accessibility.Identifier.SimpleBuy {
     enum KYCScreen {
         static let titleLabel = "titleLabel"

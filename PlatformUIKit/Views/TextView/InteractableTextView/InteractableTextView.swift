@@ -19,8 +19,10 @@ public final class InteractableTextView: UITextView {
     // MARK: - Injected
     
     public var viewModel: InteractableTextViewModel! {
-        didSet {
+        willSet {
             disposeBag = DisposeBag()
+        }
+        didSet {
             guard let viewModel = viewModel else { return }
             linkTextAttributes = [.foregroundColor: viewModel.linkStyle.color]
             viewModel.inputsRelay

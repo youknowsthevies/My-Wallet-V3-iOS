@@ -87,7 +87,7 @@ final class CustodyWithdrawalScreenPresenter {
         
         self.descriptionLabel = .init(
             text: "\(LocalizationConstants.SimpleBuy.Withdrawal.Description.prefix) \(currency.displayCode) \(LocalizationConstants.SimpleBuy.Withdrawal.Description.suffix)",
-            font: .mainMedium(12.0),
+            font: .main(.medium, 12.0),
             color: .descriptionText,
             alignment: .center,
             accessibility: .none
@@ -96,9 +96,9 @@ final class CustodyWithdrawalScreenPresenter {
         self.assetBalanceViewPresenter = AssetBalanceViewPresenter(
             alignment: .center,
             interactor: interactor.assetBalanceInteractor,
-            descriptors: .init(fiatFont: .mainMedium(48.0),
+            descriptors: .init(fiatFont: .main(.medium, 48.0),
                                fiatTextColor: .textFieldText,
-                               cryptoFont: .mainMedium(14.0),
+                               cryptoFont: .main(.medium, 14.0),
                                cryptoTextColor: .textFieldText)
         )
         

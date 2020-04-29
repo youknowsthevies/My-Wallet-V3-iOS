@@ -40,7 +40,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
-        continueButtonView.viewModel = presenter.buttonViewModel
+        addButton(with: presenter.buttonViewModel)
         keyboardInteractionController = KeyboardInteractionController(in: self)
         setupTableView()
         setupKeyboardObserver()

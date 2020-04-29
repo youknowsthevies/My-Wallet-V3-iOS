@@ -10,7 +10,7 @@ import Foundation
 
 protocol ExchangeDetailInterface: class {
     func updateBackgroundColor(_ color: UIColor)
-    func updateNavigationBar(appearance: NavigationBarAppearance, color: UIColor)
+    func updateNavigationBar(appearance: BCNavigationBarAppearance, color: UIColor)
     func presentURL(_ url: URL)
     func presentTiers()
     func navigationBarVisibility(_ visibility: Visibility)

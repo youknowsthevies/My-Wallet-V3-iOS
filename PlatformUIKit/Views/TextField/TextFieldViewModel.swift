@@ -140,7 +140,7 @@ public class TextFieldViewModel {
         
     let isHintVisibleRelay = BehaviorRelay(value: false)
     
-    let font = UIFont.mainMedium(16)
+    let font = UIFont.main(.medium, 16)
     
     private let autocapitalizationTypeRelay: BehaviorRelay<UITextAutocapitalizationType>
     private let keyboardTypeRelay: BehaviorRelay<UIKeyboardType>

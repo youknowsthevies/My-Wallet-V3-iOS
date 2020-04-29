@@ -58,7 +58,7 @@ public final class LinkViewModel {
     
     // MARK: - Setup
     
-    public init(font: UIFont = .mainMedium(14),
+    public init(font: UIFont = .main(.medium, 14),
                 textColor: Color = .mutedText,
                 linkColor: Color = .primaryButton) {
         textViewModel = InteractableTextViewModel(

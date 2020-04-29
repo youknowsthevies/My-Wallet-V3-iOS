@@ -15,7 +15,7 @@ class BiometryLabelContentPresenter: LabelContentPresenting {
     
     // MARK: - Types
     
-    typealias PresentationState = LabelContentAsset.State.LabelItem.Presentation
+    typealias PresentationState = LabelContent.State.Presentation
     
     // MARK: - Properties
     
@@ -30,7 +30,7 @@ class BiometryLabelContentPresenter: LabelContentPresenting {
     private let disposeBag = DisposeBag()
     
     init(provider: BiometryProviding,
-         descriptors: LabelContentAsset.Value.Presentation.LabelItem.Descriptors) {
+         descriptors: LabelContent.Value.Presentation.Content.Descriptors) {
         interactor = BiometryLabelContentInteractor(biometryProviding: provider)
         interactor.state
             .map { .init(with: $0, descriptors: descriptors) }

@@ -59,7 +59,7 @@ public final class AmountLabelViewModel {
                 }
                 return LabelContent(
                     text: currency.symbol,
-                    font: .mainMedium(48),
+                    font: .main(.medium, 48),
                     color: color,
                     accessibility: .id(AccessibilityId.fiatCurrencyCodeLabel)
                 )
@@ -152,7 +152,7 @@ extension AmountLabelViewModel {
                 amount += "\(decimalSeparator)\(amountComponents[1])"
             }
         
-            let font = UIFont.mainMedium(48)
+            let font = UIFont.main(.medium, 48)
             self.amount = LabelContent(
                 text: amount,
                 font: font,

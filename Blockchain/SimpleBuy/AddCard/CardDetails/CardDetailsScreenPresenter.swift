@@ -148,7 +148,7 @@ final class CardDetailsScreenPresenter {
             ),
             labelContent: .init(
                 text: LocalizedString.notice,
-                font: .mainMedium(12),
+                font: .main(.medium, 12),
                 color: .descriptionText,
                 accessibility: .id(AccessibilityId.noticeLabel)
             ),

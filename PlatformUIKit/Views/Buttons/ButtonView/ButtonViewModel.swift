@@ -1,6 +1,6 @@
 //
 //  ButtonViewModel.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by Daniel Huri on 26/06/2019.
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
@@ -171,7 +171,7 @@ public struct ButtonViewModel {
     
     /// - parameter cornerRadius: corner radius of the component
     /// - parameter accessibility: accessibility for the view
-    public init(font: UIFont = .mainSemibold(16), cornerRadius: CGFloat = 8, accessibility: Accessibility) {
+    public init(font: UIFont = .main(.semibold, 16), cornerRadius: CGFloat = 8, accessibility: Accessibility) {
         self.font = font
         self.cornerRadius = cornerRadius
         self.accessibility = accessibility
@@ -201,7 +201,7 @@ extension ButtonViewModel {
         accessibilityId: String = Accessibility.Identifier.General.mainCTAButton
         ) -> ButtonViewModel {
         var viewModel = ButtonViewModel(
-            font: .mainSemibold(16),
+            font: .main(.semibold, 16),
             cornerRadius: cornerRadius,
             accessibility: .init(id: .value(accessibilityId))
         )
@@ -224,7 +224,7 @@ extension ButtonViewModel {
         accessibilityId: String = Accessibility.Identifier.General.secondaryCTAButton
         ) -> ButtonViewModel {
         var viewModel = ButtonViewModel(
-            font: .mainSemibold(16),
+            font: .main(.semibold, 16),
             cornerRadius: cornerRadius,
             accessibility: .init(id: .value(accessibilityId))
         )
@@ -244,7 +244,7 @@ extension ButtonViewModel {
         accessibilityId: String = Accessibility.Identifier.General.destructiveCTAButton
         ) -> ButtonViewModel {
         var viewModel = ButtonViewModel(
-            font: .mainSemibold(16),
+            font: .main(.semibold, 16),
             cornerRadius: cornerRadius,
             accessibility: .init(id: .value(accessibilityId))
         )
@@ -263,7 +263,7 @@ extension ButtonViewModel {
         accessibilityId: String = Accessibility.Identifier.General.cancelCTAButton
         ) -> ButtonViewModel {
         var viewModel = ButtonViewModel(
-            font: .mainSemibold(16),
+            font: .main(.semibold, 16),
             cornerRadius: cornerRadius,
             accessibility: .init(id: .value(accessibilityId))
         )

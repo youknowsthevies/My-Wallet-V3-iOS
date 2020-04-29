@@ -45,12 +45,12 @@ final class SideMenuCell: UITableViewCell {
         super.awakeFromNib()
         title.textColor = #colorLiteral(red: 0.51, green: 0.55, blue: 0.62, alpha: 1)
         title.highlightedTextColor = #colorLiteral(red: 0.51, green: 0.55, blue: 0.62, alpha: 1)
-        title.font = .mainMedium(DevicePresenter.type != .superCompact ? 17 : 14)
+        title.font = .main(.medium, DevicePresenter.type != .superCompact ? 17 : 14)
         icon.tintColor = #colorLiteral(red: 0.51, green: 0.55, blue: 0.62, alpha: 1)
         newContainerView.layer.cornerRadius = 4.0
         newContainerView.backgroundColor = .primaryButton
         newLabel.text = LocalizationConstants.SideMenu.new
-        newLabel.font = .mainMedium(DevicePresenter.type != .superCompact ? 15 : 12)
+        newLabel.font = .main(.medium, DevicePresenter.type != .superCompact ? 15 : 12)
         let padding = SideMenuCell.newContainerViewTrailingPadding
         guard newContainerTrailingConstraint.constant != padding + peekPadding else { return }
         newContainerTrailingConstraint.constant = padding + peekPadding

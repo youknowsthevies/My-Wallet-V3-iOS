@@ -31,7 +31,7 @@ class NavigationBarButtonItem: UIBarButtonItem {
         
         switch type {
         case .content(content: let content, tap: let tap):
-            let font = UIFont.mainMedium(16)
+            let font = UIFont.main(.medium, 16)
             let attributes: [NSAttributedString.Key: Any] = [
                 .font: font,
                 .foregroundColor: color

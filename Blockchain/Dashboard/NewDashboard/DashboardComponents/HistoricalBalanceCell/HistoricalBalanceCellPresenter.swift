@@ -29,7 +29,7 @@ final class HistoricalBalanceCellPresenter {
         return .just(
             .init(
                 text: interactor.cryptoCurrency.name,
-                font: .mainSemibold(20),
+                font: .main(.semibold, 20),
                 color: .dashboardAssetTitle,
                 accessibility: .id("\(AccessibilityId.titleLabelFormat)\(interactor.cryptoCurrency.displayCode)")
             )

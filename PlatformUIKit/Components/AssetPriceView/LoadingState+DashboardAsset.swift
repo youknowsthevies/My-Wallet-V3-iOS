@@ -1,6 +1,6 @@
 //
 //  LoadingState+DashboardAsset.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by Daniel Huri on 25/10/2019.
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.

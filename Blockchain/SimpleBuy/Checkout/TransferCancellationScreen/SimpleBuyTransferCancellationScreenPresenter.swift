@@ -53,14 +53,14 @@ final class SimpleBuyTransferCancellationScreenPresenter {
         
         titleContent = .init(
             text: LocalizationIDs.title,
-            font: .mainSemibold(20.0),
+            font: .main(.semibold, 20.0),
             color: .textFieldText,
             alignment: .center,
             accessibility: .id(AccessibilityIDs.titleLabel)
         )
         descriptionContent = .init(
             text: "\(LocalizationIDs.Description.thisWillRemove) \(currency.name) \(LocalizationIDs.Description.buyOrder)",
-            font: .mainMedium(14.0),
+            font: .main(.medium, 14.0),
             color: .textFieldText,
             alignment: .center,
             accessibility: .id(AccessibilityIDs.descriptionLabel)

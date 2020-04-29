@@ -1,6 +1,6 @@
 //
 //  DashboardAssetPrice.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by Daniel Huri on 25/10/2019.
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
@@ -213,7 +213,7 @@ public struct DashboardAsset {
                     let fiatPrice = value.fiatValue.toDisplayString(includeSymbol: true)
                     price = LabelContent(
                         text: fiatPrice,
-                        font: .mainSemibold(descriptors.priceFontSize),
+                        font: .main(.semibold, descriptors.priceFontSize),
                         color: .dashboardAssetTitle,
                         accessibility: .init(
                             id: .value("\(AccessibilityId.fiatBalanceLabelFormat)\(descriptors.accessibilityIdSuffix)")
@@ -241,7 +241,7 @@ public struct DashboardAsset {
                         fiatChange = NSAttributedString(
                             LabelContent(
                                 text: "\(sign)\(fiat)\(suffix)",
-                                font: .mainMedium(descriptors.changeFontSize),
+                                font: .main(.medium, descriptors.changeFontSize),
                                 color: color
                             )
                         )
@@ -265,7 +265,7 @@ public struct DashboardAsset {
                         percentageChange = NSAttributedString(
                             LabelContent(
                                 text: "\(prefix)\(percentageString)%\(suffix)",
-                                font: .mainMedium(descriptors.changeFontSize),
+                                font: .main(.medium, descriptors.changeFontSize),
                                 color: color
                             )
                         )
@@ -276,7 +276,7 @@ public struct DashboardAsset {
                     let period = NSAttributedString(
                         LabelContent(
                             text: " \(value.time.string)",
-                            font: .mainMedium(descriptors.changeFontSize),
+                            font: .main(.medium, descriptors.changeFontSize),
                             color: .mutedText
                         )
                     )
@@ -317,9 +317,9 @@ extension DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
 public extension DashboardAsset.Value.Presentation.AssetBalance.Descriptors {
     typealias Descriptors = DashboardAsset.Value.Presentation.AssetBalance.Descriptors
     static let `default` = Descriptors(
-        fiatFont: .mainMedium(16.0),
+        fiatFont: .main(.medium, 16.0),
         fiatTextColor: .dashboardFiatPriceTitle,
-        cryptoFont: .mainMedium(14.0),
+        cryptoFont: .main(.medium, 14.0),
         cryptoTextColor: .mutedText
     )
 }

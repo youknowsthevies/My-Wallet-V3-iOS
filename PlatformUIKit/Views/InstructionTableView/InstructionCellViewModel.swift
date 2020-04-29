@@ -25,12 +25,12 @@ public struct InstructionCellViewModel {
         self.number = number
         numberViewModel = .init(
             text:  "\(number)",
-            font: .mainBold(20),
+            font: .main(.bold, 20),
             color: .titleText,
             alignment: .center,
             accessibility: .none
         )
-        let font = UIFont.mainMedium(14)
+        let font = UIFont.main(.medium, 14)
         textViewModel = .init(
             inputs: inputs,
             textStyle: .init(color: .descriptionText, font: font),

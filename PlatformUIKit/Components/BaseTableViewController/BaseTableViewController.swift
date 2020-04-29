@@ -1,6 +1,6 @@
 //
 //  BaseTableViewController.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by Daniel Huri on 30/03/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
@@ -10,9 +10,8 @@ open class BaseTableViewController: BaseScreenViewController {
 
     // MARK: - Public UI Elements
     
-    @IBOutlet public var buttonStackView: UIStackView!
+    @IBOutlet private var buttonStackView: UIStackView!
     @IBOutlet public var tableView: SelfSizingTableView!
-    @IBOutlet public var continueButtonView: ButtonView!
     
     // MARK: - Public UI Constraints
     
@@ -22,6 +21,13 @@ open class BaseTableViewController: BaseScreenViewController {
     
     public init() {
         super.init(nibName: BaseTableViewController.objectName, bundle: BaseTableViewController.bundle)
+    }
+
+    public func addButton(with viewModel: ButtonViewModel) {
+        let buttonView = ButtonView()
+        buttonView.viewModel = viewModel
+        buttonStackView.addArrangedSubview(buttonView)
+        buttonView.layout(dimension: .height, to: 48)
     }
     
     public required init?(coder: NSCoder) {

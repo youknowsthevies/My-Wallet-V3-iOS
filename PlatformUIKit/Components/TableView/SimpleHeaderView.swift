@@ -1,6 +1,6 @@
 //
 //  HeaderView.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by Daniel Huri on 30/12/2019.
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
@@ -28,7 +28,7 @@ public final class SimpleHeaderView: UITableViewHeaderFooterView {
         
         label.layoutToSuperview(axis: .horizontal, offset: 16)
         label.layoutToSuperview(axis: .vertical, offset: 10)
-        label.font = .mainMedium(12)
+        label.font = .main(.medium, 12)
         label.textColor = .descriptionText
         label.verticalContentHuggingPriority = .required
         label.verticalContentCompressionResistancePriority = .required

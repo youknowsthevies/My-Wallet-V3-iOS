@@ -1,6 +1,6 @@
 //
 //  PasteboardingLineItemCellPresenter.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by AlexM on 1/29/20.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
@@ -8,21 +8,19 @@
 
 import ToolKit
 import PlatformKit
-import PlatformUIKit
 import RxRelay
 import RxSwift
 import RxCocoa
 
-protocol PasteboardLineItemPresenting: class {
-    var tapRelay: PublishRelay<Void> { get }
+public protocol PasteboardLineItemPresenting: class {
     var pasteboardValue: String { get }
 }
 
-final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, PasteboardLineItemPresenting {
+public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, PasteboardLineItemPresenting {
     
     // MARK: - Input
     
-    struct Input {
+    public struct Input {
         let title: String
         let titleInteractionText: String
         let description: String
@@ -30,12 +28,12 @@ final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, Pasteboa
         let interactionDuration: Int
         let analyticsEvent: AnalyticsEvent?
         
-        init(title: String,
-             titleInteractionText: String,
-             description: String,
-             descriptionInteractionText: String,
-             analyticsEvent: AnalyticsEvent? = nil,
-             interactionDuration: Int = 4) {
+        public init(title: String,
+                    titleInteractionText: String,
+                    description: String,
+                    descriptionInteractionText: String,
+                    analyticsEvent: AnalyticsEvent? = nil,
+                    interactionDuration: Int = 4) {
             self.title = title
             self.titleInteractionText = titleInteractionText
             self.description = description
@@ -45,25 +43,21 @@ final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, Pasteboa
         }
     }
     
-    // MARK: - Types
-    
-    private typealias LocalizedString = LocalizationConstants.SimpleBuy.Checkout.LineItem
-    
     // MARK: - Properties
     
-    let titleLabelContentPresenter: LabelContentPresenting
-    let descriptionLabelContentPresenter: LabelContentPresenting
+    public let titleLabelContentPresenter: LabelContentPresenting
+    public let descriptionLabelContentPresenter: LabelContentPresenting
     
     /// The background color relay
     let backgroundColorRelay = BehaviorRelay<UIColor>(value: .clear)
     
     /// The background color of the button
-    var backgroundColor: Driver<UIColor> {
-        return backgroundColorRelay.asDriver()
+    public var backgroundColor: Driver<UIColor> {
+        backgroundColorRelay.asDriver()
     }
     
-    var image: Driver<UIImage?> {
-        return imageRelay.asDriver()
+    public var image: Driver<UIImage?> {
+        imageRelay.asDriver()
     }
     
     /// The background color relay
@@ -72,8 +66,8 @@ final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, Pasteboa
     // MARK: - PasteboardLineItemPresenting
     
     /// Streams events when the component is being tapped
-    let tapRelay = PublishRelay<Void>()
-    let pasteboardValue: String
+    public let tapRelay = PublishRelay<Void>()
+    public let pasteboardValue: String
     
     // MARK: - Private Properties
     
@@ -82,9 +76,9 @@ final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, Pasteboa
     
     // MARK: - Init
     
-    init(input: Input,
-         pasteboard: Pasteboarding = UIPasteboard.general,
-         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
+    public init(input: Input,
+                pasteboard: Pasteboarding = UIPasteboard.general,
+                analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording) {
         self.analyticsRecorder = analyticsRecorder
         pasteboardValue = input.description
         
@@ -106,7 +100,7 @@ final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, Pasteboa
         )
         descriptionLabelContentPresenter = PasteboardLabelContentPresenter(
             interactor: descriptionInteractor,
-                descriptors: .lineItemDescription
+            descriptors: .lineItemDescription
         )
         
         tapRelay
@@ -151,13 +145,13 @@ final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, Pasteboa
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .userInitiated)
             )
             .share(replay: 1)
-                        
+
         delay
             .map { "clipboard" }
             .map { UIImage(named: $0) }
             .bind(to: imageRelay)
             .disposed(by: disposeBag)
-            
+
         delay
             .map { .clear }
             .bind(to: backgroundColorRelay)

@@ -1,6 +1,6 @@
 //
 //  PasteboardLabelContentInteractor.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by AlexM on 1/28/20.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
@@ -8,32 +8,31 @@
 
 import RxSwift
 import RxRelay
-import PlatformUIKit
 import PlatformKit
 
 /// A protocol for `UILabels` whose content can be copied to the clipboard.
-protocol PasteboardLabelContentInteracting: LabelContentInteracting {
+public protocol PasteboardLabelContentInteracting: LabelContentInteracting {
     var pasteboardTriggerRelay: PublishRelay<Void> { get }
     var isPasteboarding: BehaviorRelay<Bool> { get }
 }
 
-final class PasteboardLabelContentInteractor: PasteboardLabelContentInteracting {
+public final class PasteboardLabelContentInteractor: PasteboardLabelContentInteracting {
     
     // MARK: - Types
     
-    typealias InteractionState = LabelContentAsset.State.LabelItem.Interaction
+    public typealias InteractionState = LabelContent.State.Interaction
     
     /// A `PublishRelay` that triggers the applying of the `interactionText`.
     /// After the `interactionDuration` has passed (in seconds) the original
     /// text will be shown.
-    var pasteboardTriggerRelay = PublishRelay<Void>()
+    public var pasteboardTriggerRelay = PublishRelay<Void>()
     
     /// Returns whether or not the pasteboarding effect is still visible.
     /// Effect lasts as long as the `interactionDuration` provided.
-    var isPasteboarding = BehaviorRelay(value: false)
+    public var isPasteboarding = BehaviorRelay(value: false)
     
-    let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
-    var state: Observable<InteractionState> {
+    public let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
+    public var state: Observable<InteractionState> {
         return stateRelay.asObservable()
     }
     

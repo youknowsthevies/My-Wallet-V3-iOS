@@ -13,11 +13,11 @@ import RxRelay
 
 final class TierLimitsLabelContentPresenter: LabelContentPresenting {
     
-    typealias PresentationState = LabelContentAsset.State.LabelItem.Presentation
+    typealias PresentationState = LabelContent.State.Presentation
     
     let stateRelay = BehaviorRelay<PresentationState>(value: .loading)
     var state: Observable<PresentationState> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
     }
     
     // MARK: - Private Accessors
@@ -26,9 +26,9 @@ final class TierLimitsLabelContentPresenter: LabelContentPresenting {
     private let disposeBag = DisposeBag()
     
     init(provider: TierLimitsProviding,
-         descriptors: LabelContentAsset.Value.Presentation.LabelItem.Descriptors) {
+         descriptors: LabelContent.Value.Presentation.Content.Descriptors) {
         interactor = TierLimitsLabelContentInteractor(limitsProviding: provider)
-        interactor.state.map { .init(with: $0, descriptors: descriptors) }
+        interactor.state.map { PresentationState(with: $0, descriptors: descriptors) }
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
 

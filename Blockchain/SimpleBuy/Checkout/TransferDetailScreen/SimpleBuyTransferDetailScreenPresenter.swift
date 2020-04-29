@@ -6,92 +6,65 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
-import RxRelay
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
+import ToolKit
 
-final class SimpleBuyTransferDetailScreenPresenter {
-    
+final class SimpleBuyTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
+
     // MARK: - Types
-    
+
     /// The presentation type of the simple buy screen
     enum PresentationType {
-        
+
         /// A presentation type for pending order. In case the user
         /// has an order which is currently at a pending-deposit state.
         case pendingOrder
-        
+
         /// A presentation type for checkout summary. Once the user
         /// did a checkout by completing a simple buy flow.
         case checkoutSummary
     }
-    
+
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.TransferDetails
     private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.TransferDetails
 
+    // MARK: - Screen Properties
+
+    private(set) var buttons: [ButtonViewModel] = []
+
+    private(set) var cells: [DetailsScreen.CellType] = []
+
     // MARK: - Navigation Properties
-    
-    let trailingButton = Screen.Style.TrailingButton.none
-    let leadingButton = Screen.Style.LeadingButton.none
+
+    var navigationBarAppearance: DetailsScreen.NavigationBarAppearance {
+        .custom(leading: .none, trailing: .none, barStyle: .darkContent(ignoresStatusBar: false, background: .white))
+    }
+
     var titleView: Screen.Style.TitleView {
         .text(value: contentReducer.title)
     }
-    var barStyle: Screen.Style.Bar {
-        .darkContent(ignoresStatusBar: false, background: .white)
-    }
-    
-    /// The dashboard action
-    var action: Signal<SimpleBuyCheckoutAction> {
-        actionRelay.asSignal()
-    }
-    
-    var cellArrangement: [CheckoutCellType] {
-        let prefix: [CheckoutCellType] = [.summary, .separator]
-        let mid = contentReducer.lineItems.map { CheckoutCellType.lineItem($0) }
-        var suffix: [CheckoutCellType] = [.lineItem(.totalCost), .separator, .disclaimer]
-        if contentReducer.termsTextViewModel != nil {
-            suffix += [.termsAndConditions]
-        }
-        return prefix + mid + suffix
-    }
-    
-    var termsViewModel: InteractableTextViewModel! {
-        contentReducer.termsTextViewModel
-    }
-    
-    let noticeViewModel: NoticeViewModel
-    
-    let cancelButtonViewModel: ButtonViewModel!
-    let continueButtonViewModel: ButtonViewModel
-    
-    // MARK: - Cell Presenters
-    
-    private(set) var presentersByCellType: [CheckoutCellType.LineItemType: LineItemCellPresenting] = [:]
-    let summaryLabelContent: LabelContent
 
     // MARK: - Private Properties
-    
-    private let actionRelay = PublishRelay<SimpleBuyCheckoutAction>()
+
     private let disposeBag = DisposeBag()
     private let contentReducer: ContentReducer
-    
+
     // MARK: - Injected
-    
+
     private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
     private let presentationType: PresentationType
     private let webViewRouter: WebViewRouterAPI
-    private let alertPresenter: AlertViewPresenter
     private let stateService: SimpleBuyStateServiceAPI
     private let interactor: SimpleBuyTransferDetailScreenInteractor
-    
+
     // MARK: - Setup
-    
+
     init(presentationType: PresentationType,
-         alertPresenter: AlertViewPresenter = .shared,
          webViewRouter: WebViewRouterAPI,
          analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared,
          interactor: SimpleBuyTransferDetailScreenInteractor,
@@ -99,22 +72,24 @@ final class SimpleBuyTransferDetailScreenPresenter {
         self.analyticsRecorder = analyticsRecorder
         self.presentationType = presentationType
         self.webViewRouter = webViewRouter
-        self.alertPresenter = alertPresenter
         self.interactor = interactor
         self.stateService = stateService
+
         contentReducer = ContentReducer(
             data: interactor.checkoutData,
             presentationType: presentationType
         )
 
-        summaryLabelContent = .init(
+        // MARK: Cells Setup
+
+        let summary = LabelContent(
             text: contentReducer.summary,
-            font: .mainMedium(14.0),
+            font: .main(.medium, 14.0),
             color: .descriptionText,
             accessibility: .id(AccessibilityId.descriptionLabel)
         )
-        
-        noticeViewModel = NoticeViewModel(
+
+        let notice = NoticeViewModel(
             imageViewContent: .init(
                 imageName: "disclaimer-icon",
                 accessibility: .id(AccessibilityId.disclaimerImage),
@@ -122,92 +97,68 @@ final class SimpleBuyTransferDetailScreenPresenter {
             ),
             labelContent: .init(
                 text: LocalizedString.disclaimer,
-                font: .mainMedium(12),
+                font: .main(.medium, 12),
                 color: .descriptionText,
                 accessibility: .id(AccessibilityId.disclaimerLabel)
             ),
             verticalAlignment: .top
         )
-        
-        switch presentationType {
-        case .pendingOrder:
-            cancelButtonViewModel = .cancel(with: LocalizedString.Button.cancel)
-        case .checkoutSummary:
-            cancelButtonViewModel = nil
+
+        let totalCost = CheckoutCellType.LineItemType
+            .totalCost(interactor.checkoutData.fiatValue.toDisplayString())
+            .presenter()
+
+        cells.append(.label(summary))
+        cells.append(.separator)
+        contentReducer
+            .lineItems
+            .forEach { cells.append(.lineItem($0)) }
+        cells.append(.lineItem(totalCost))
+        cells.append(.separator)
+        cells.append(.notice(notice))
+        if let termsTextViewModel = contentReducer.termsTextViewModel {
+            termsTextViewModel.tap
+                .bind(to: webViewRouter.launchRelay)
+                .disposed(by: disposeBag)
+            cells.append(.interactableTextCell(termsTextViewModel))
         }
-        
-        continueButtonViewModel = .primary(with: LocalizedString.Button.ok)
-        
-        let pastboardPresenters = contentReducer.lineItems
-            .filter { $0.isCopyable }
-            .map { item -> [CheckoutCellType.LineItemType: PasteboardingLineItemCellPresenter] in
-                let presenter = PasteboardingLineItemCellPresenter(
-                    input: .init(
-                        title: item.title,
-                        titleInteractionText: LocalizationConstants.SimpleBuy.Checkout.LineItem.Copyable.copied,
-                        description: item.paymentAccountField?.content ?? "",
-                        descriptionInteractionText: contentReducer.copyMessage(for: item),
-                        analyticsEvent: item.analyticsEvent
-                    )
-                )
-                return [item: presenter]
-            }
-            .reduce([:], +)
-        
-        presentersByCellType += pastboardPresenters
-        presentersByCellType += contentReducer.lineItems
-            .filter { !$0.isCopyable }
-            .map { item in
-                let interactor = DefaultLineItemCellInteractor(
-                    title: .init(knownValue: item.title),
-                    description: .init(knownValue: item.paymentAccountField?.content ?? "")
-                )
-                let presenter = DefaultLineItemCellPresenter(interactor: interactor)
-                return [item: presenter]
-            }
-            .reduce([:], +)
-        
-        let amountCellType = CheckoutCellType.LineItemType.totalCost
-        let amountInteractor = DefaultLineItemCellInteractor(
-            title: .init(knownValue: amountCellType.title),
-            description: .init(knownValue: interactor.checkoutData.fiatValue.toDisplayString())
-        )
-        let amountPresenter = DefaultLineItemCellPresenter(interactor: amountInteractor)
-        presentersByCellType += [amountCellType: amountPresenter]
-                  
+
+        // MARK: Continue Button Setup
+
+        let continueButtonViewModel = ButtonViewModel.primary(with: LocalizedString.Button.ok)
         continueButtonViewModel.tapRelay
             .bind(weak: self) { (self) in
-                if presentationType == .checkoutSummary {
-                    analyticsRecorder.record(event: AnalyticsEvent.sbBankDetailsFinished)
-                }
-                stateService.nextRelay.accept(())
+                self.stateService.nextRelay.accept(())
             }
             .disposed(by: disposeBag)
-        
-        setupCancellationBindingIfNeeded()
-        setupTermsViewModelIfNeeded()
-    }
-    
-    // MARK: - Setup Cancellation
-    
-    private func setupTermsViewModelIfNeeded() {
-        termsViewModel?.tap
-            .bind(to: webViewRouter.launchRelay)
-            .disposed(by: disposeBag)
-    }
-    
-    private func setupCancellationBindingIfNeeded() {
-        guard let cancelButtonViewModel = cancelButtonViewModel else { return }
-        cancelButtonViewModel.tapRelay
+        continueButtonViewModel.tapRelay
             .bind(weak: self) { (self) in
-                self.analyticsRecorder.record(event: AnalyticsEvent.sbPendingModalCancelClick)
-                self.stateService.cancelTransfer(with: self.interactor.checkoutData)
+                if self.presentationType == .checkoutSummary {
+                    self.analyticsRecorder.record(event: AnalyticsEvent.sbBankDetailsFinished)
+                }
             }
             .disposed(by: disposeBag)
+        buttons.append(continueButtonViewModel)
+
+        // MARK: Cancel Button Setup
+
+        switch presentationType {
+        case .pendingOrder:
+            let cancelButtonViewModel = ButtonViewModel.cancel(with: LocalizedString.Button.cancel)
+            cancelButtonViewModel.tapRelay
+                .bind(weak: self) { (self) in
+                    self.analyticsRecorder.record(event: AnalyticsEvent.sbPendingModalCancelClick)
+                    self.stateService.cancelTransfer(with: self.interactor.checkoutData)
+            }
+            .disposed(by: disposeBag)
+            buttons.append(cancelButtonViewModel)
+        case .checkoutSummary:
+            break
+        }
     }
-    
-    // MARK: - Analytics
-    
+
+    // MARK: - View Life Cycle
+
     func viewDidLoad() {
         let currencyCode = interactor.checkoutData.fiatValue.currencyCode
         switch presentationType {
@@ -217,39 +168,22 @@ final class SimpleBuyTransferDetailScreenPresenter {
             analyticsRecorder.record(event: AnalyticsEvent.sbPendingModalShown(currencyCode: currencyCode))
         }
     }
-    
+
     // MARK: - Navigation
-    
-    func previous() {
-        stateService.previousRelay.accept(())
-    }
-    
-    /// TODO: Look for a more elegant way to communicate the tap
-    func didSelectItem(with index: Int) {
-        let cellType = cellArrangement[index]
-        guard case .lineItem(let lineItem) = cellType else {
-            return
-        }
-        guard let presenter = presentersByCellType[lineItem] as? PasteboardLineItemPresenting else {
-            return
-        }
-        presenter.tapRelay.accept(())
-    }
-    
-    private func cancellationDidFail() {
-         alertPresenter.error()
-     }
+
+    func navigationBarLeadingButtonPressed() { }
+    func navigationBarTrailingButtonPressed() { }
 }
 
 // MARK: - Content Reducer
 
 extension SimpleBuyTransferDetailScreenPresenter {
-    
+
     final class ContentReducer {
-        
+
         let title: String
         let summary: String
-        let lineItems: [CheckoutCellType.LineItemType]
+        let lineItems: [LineItemCellPresenting]
         let termsTextViewModel: InteractableTextViewModel!
 
         init(data: SimpleBuyCheckoutData, presentationType: PresentationType) {
@@ -272,12 +206,14 @@ extension SimpleBuyTransferDetailScreenPresenter {
             }
 
             let account = data.paymentAccount!
-            lineItems = account.fields.map { .paymentAccountField($0) }
-            
+            lineItems = account.fields
+                .map { CheckoutCellType.LineItemType.paymentAccountField($0) }
+                .map { $0.presenter() }
+
             switch currency {
             case .GBP:
                 typealias LinkString = LocalizedString.TermsLink.GBP
-                let font = UIFont.mainMedium(12)
+                let font = UIFont.main(.medium, 12)
                 termsTextViewModel = InteractableTextViewModel(
                     inputs: [
                         .text(string: LinkString.prefix),
@@ -289,18 +225,6 @@ extension SimpleBuyTransferDetailScreenPresenter {
                 )
             default:
                 termsTextViewModel = nil
-            }
-        }
-        
-        func copyMessage(for field: CheckoutCellType.LineItemType) -> String {
-            typealias CopyString = LocalizationConstants.SimpleBuy.Checkout.LineItem.Copyable
-            switch field {
-            case .paymentAccountField(.iban):
-                return "\(CopyString.iban) \(CopyString.copyMessageSuffix)"
-            case .paymentAccountField(.bankCode):
-                return "\(CopyString.bankCode) \(CopyString.copyMessageSuffix)"
-            default:
-                return CopyString.defaultCopyMessage
             }
         }
     }

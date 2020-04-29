@@ -75,35 +75,35 @@ final class VerifyBackupScreenPresenter {
         
         firstNumberLabel = LabelContent(
             text: "\(firstIndex + 1)",
-            font: .mainMedium(12.0),
+            font: .main(.medium, 12.0),
             color: .textFieldText,
             accessibility: .id(AccessibilityId.firstNumberLabel)
         )
         
         secondNumberLabel = LabelContent(
             text: "\(secondIndex + 1)",
-            font: .mainMedium(12.0),
+            font: .main(.medium, 12.0),
             color: .textFieldText,
             accessibility: .id(AccessibilityId.secondNumberLabel)
         )
         
         thirdNumberLabel = LabelContent(
             text: "\(thirdIndex + 1)",
-            font: .mainMedium(12.0),
+            font: .main(.medium, 12.0),
             color: .textFieldText,
             accessibility: .id(AccessibilityId.thirdNumberLabel)
         )
         
         errorLabel = LabelContent(
             text: LocalizationConstants.VerifyBackupScreen.errorDescription,
-            font: .mainMedium(12.0),
+            font: .main(.medium, 12.0),
             color: .destructive,
             accessibility: .id(AccessibilityId.errorLabel)
         )
         
         descriptionLabel = LabelContent(
             text: LocalizationConstants.VerifyBackupScreen.description,
-            font: .mainMedium(14.0),
+            font: .main(.medium, 14.0),
             color: .textFieldText,
             accessibility: .id(AccessibilityId.descriptionLabel)
         )

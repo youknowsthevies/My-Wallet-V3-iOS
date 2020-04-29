@@ -29,13 +29,13 @@ final class AirdropStatusCellPresenter {
     init(data: AirdropStatusCellData) {
         title = LabelContent(
             text: data.title.text,
-            font: .mainMedium(14),
+            font: .main(.medium, 14),
             color: .descriptionText,
             accessibility: data.title.accessibility
         )
         value = LabelContent(
             text: data.value.text,
-            font: .mainMedium(14),
+            font: .main(.medium, 14),
             color: .titleText,
             accessibility: data.value.accessibility
         )

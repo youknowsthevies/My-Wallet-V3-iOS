@@ -44,7 +44,7 @@ final class PasswordViewController: BaseScreenViewController {
         keyboardInteractionController = KeyboardInteractionController(in: self)
         
         descriptionLabel.text = presenter.description
-        descriptionLabel.font = .mainMedium(14)
+        descriptionLabel.font = .main(.medium, 14)
         descriptionLabel.textColor = .descriptionText
     
         textFieldView.setup(

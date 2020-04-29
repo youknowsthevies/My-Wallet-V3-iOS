@@ -54,7 +54,7 @@ final class PasswordRequiredViewController: BaseScreenViewController {
         forgotPasswordButtonView.viewModel = presenter.forgotPasswordButtonViewModel
         forgetWalletButtonView.viewModel = presenter.forgetWalletButtonViewModel
         
-        let descriptionFont = UIFont.mainMedium(14)
+        let descriptionFont = UIFont.main(.medium, 14)
         
         descriptionLabel.text = presenter.description
         descriptionLabel.font = descriptionFont

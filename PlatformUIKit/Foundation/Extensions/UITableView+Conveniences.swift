@@ -44,7 +44,12 @@ public extension UITableView {
     func registerHeaderView(_ name: String, bundle: Bundle = .main) {
         register(UINib(nibName: name, bundle: bundle), forHeaderFooterViewReuseIdentifier: name)
     }
-    
+
+    func registerNibCell(_ type: UITableViewCell.Type) {
+        let name = type.objectName
+        register(UINib(nibName: name, bundle: type.bundle), forCellReuseIdentifier: name)
+    }
+
     func registerNibCell(_ name: String, bundle: Bundle = .main) {
         register(UINib(nibName: name, bundle: bundle), forCellReuseIdentifier: name)
     }

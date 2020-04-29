@@ -205,7 +205,7 @@ final class AirdropStatusScreenPresenter {
         titleRelay.accept(
             .init(
                 text: title,
-                font: .mainSemibold(20),
+                font: .main(.semibold, 20),
                 color: .titleText,
                 accessibility: .id(AccessibilityId.titleLabel)
             )
@@ -214,7 +214,7 @@ final class AirdropStatusScreenPresenter {
         descriptionRelay.accept(
             .init(
                 text: description,
-                font: .mainMedium(14),
+                font: .main(.medium, 14),
                 color: .descriptionText,
                 accessibility: .id(AccessibilityId.descriptionLabel)
             )

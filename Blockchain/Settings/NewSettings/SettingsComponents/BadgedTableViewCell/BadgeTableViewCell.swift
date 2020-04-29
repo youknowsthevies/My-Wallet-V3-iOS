@@ -92,7 +92,7 @@ extension Reactive where Base: BadgeTableViewCell {
         }
     }
     
-    var content: Binder<LabelContentAsset.State.LabelItem.Presentation> {
+    var content: Binder<LabelContent.State.Presentation> {
         return Binder(base) { view, state in
             let loading = {
                 view.titleShimmeringView.start()

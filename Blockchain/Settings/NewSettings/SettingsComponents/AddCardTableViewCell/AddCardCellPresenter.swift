@@ -34,7 +34,7 @@ final class AddCardCellPresenter: SettingsAsyncPresenting {
     
     let descriptionLabelContent: LabelContent = .init(
         text: LocalizationIDs.addACard,
-        font: .mainMedium(16.0),
+        font: .main(.medium, 16.0),
         color: .textFieldText,
         alignment: .left,
         accessibility: .none

@@ -56,7 +56,7 @@ final class DashboardNoticePresenter {
             ),
             labelContent: .init(
                 text: LocalizedString.lockboxNotice,
-                font: .mainMedium(12),
+                font: .main(.medium, 12),
                 color: .descriptionText,
                 accessibility: .id(AccessibilityId.label)
             ),

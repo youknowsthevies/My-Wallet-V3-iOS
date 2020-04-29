@@ -3,7 +3,7 @@
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -11,7 +11,6 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="BaseTableViewController" customModule="PlatformUIKit" customModuleProvider="target">
             <connections>
                 <outlet property="buttonStackView" destination="oTl-7w-dRh" id="lbH-in-2e4"/>
-                <outlet property="continueButtonView" destination="1HG-tW-JS5" id="gJI-Kt-I7X"/>
                 <outlet property="footerHeightConstraint" destination="GaU-PJ-U9B" id="viw-YY-9sT"/>
                 <outlet property="tableView" destination="xuL-CF-a4J" id="7ag-5V-ELu"/>
                 <outlet property="view" destination="jBV-s9-JPu" id="7oG-19-boR"/>
@@ -51,15 +50,6 @@
                                         </view>
                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="oTl-7w-dRh">
                                             <rect key="frame" x="16" y="17" width="382" height="48"/>
-                                            <subviews>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1HG-tW-JS5" customClass="ButtonView" customModule="PlatformUIKit">
-                                                    <rect key="frame" x="0.0" y="0.0" width="382" height="48"/>
-                                                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="48" id="IfW-eK-SW5"/>
-                                                    </constraints>
-                                                </view>
-                                            </subviews>
                                         </stackView>
                                     </subviews>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>

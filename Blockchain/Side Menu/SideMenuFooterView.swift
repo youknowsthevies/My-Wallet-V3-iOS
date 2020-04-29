@@ -35,7 +35,7 @@ class SideMenuFooterView: NibBasedView {
         
         buttonHeightConstraints.constant = SideMenuCell.defaultHeight
         
-        let font = UIFont.mainMedium(DevicePresenter.type == .superCompact ? 14 : 17)
+        let font = UIFont.main(.medium, DevicePresenter.type == .superCompact ? 14 : 17)
         
         pairButton.setTitle(LocalizationConstants.SideMenu.loginToWebWallet, for: .normal)
         pairButton.titleLabel?.font = font

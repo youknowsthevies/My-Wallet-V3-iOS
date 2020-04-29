@@ -64,7 +64,7 @@ final class RemoveCardScreenPresenter {
         
         titleLabelContent = .init(
             text: cardData.type.name,
-            font: .mainSemibold(20),
+            font: .main(.semibold, 20),
             color: .titleText,
             alignment: .center,
             accessibility: .id(AccessibilityIDs.cardNameLabel)
@@ -72,7 +72,7 @@ final class RemoveCardScreenPresenter {
         
         descriptionLabelContent = .init(
             text: "••••" + " \(cardData.number.suffix(4))",
-            font: .mainMedium(14),
+            font: .main(.medium, 14),
             color: .descriptionText,
             alignment: .center,
             accessibility: .id(AccessibilityIDs.cardPrefixLabel)

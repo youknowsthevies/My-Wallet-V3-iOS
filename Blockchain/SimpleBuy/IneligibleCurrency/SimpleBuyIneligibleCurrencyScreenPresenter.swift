@@ -44,7 +44,7 @@ final class SimpleBuyIneligibleCurrencyScreenPresenter {
         self.stateService = stateService
         titleLabelContent = .init(
             text: "\(currency.name) \(LocalizationString.title)",
-            font: .mainSemibold(20.0),
+            font: .main(.semibold, 20.0),
             color: .titleText,
             alignment: .center,
             accessibility: .id(AccessibilityID.titleLabel)
@@ -52,7 +52,7 @@ final class SimpleBuyIneligibleCurrencyScreenPresenter {
         
         descriptionLabelContent = .init(
             text: "\(LocalizationString.description) \(currency.name).",
-            font: .mainMedium(14.0),
+            font: .main(.medium, 14.0),
             color: .titleText,
             alignment: .center,
             accessibility: .id(AccessibilityID.descriptionLabel)

@@ -31,7 +31,7 @@ struct TableHeaderViewModel {
     let font: UIFont
     
     /// - parameter cornerRadius: corner radius of the component
-    public init(font: UIFont = .mainMedium(12), title: String, textColor: UIColor) {
+    public init(font: UIFont = .main(.medium, 12), title: String, textColor: UIColor) {
         self.font = font
         self.textRelay.accept(title)
         self.contentColorRelay.accept(textColor)
@@ -40,6 +40,6 @@ struct TableHeaderViewModel {
 
 extension TableHeaderViewModel {
     static func settings(title: String) -> TableHeaderViewModel {
-        return .init(font: .mainSemibold(20), title: title, textColor: .titleText)
+        return .init(font: .main(.semibold, 20), title: title, textColor: .titleText)
     }
 }

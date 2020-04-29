@@ -9,8 +9,6 @@
 import Foundation
 
 public class BaseCell: UICollectionViewCell {
-    // TODO: Bring `ReusableView` into `PlatformUIKit`
-    public static var identifier: String { return String(describing: self) }
     
     public func configure(_ model: ContainerModel) {
         assertionFailure("Should be implemented by subclasses")
@@ -21,20 +19,19 @@ public class BaseCell: UICollectionViewCell {
     }
     
     public class func heightForProposedWidth(_ width: CGFloat, model: CellModel) -> CGFloat {
-        return 0.0 // Cells should override this method.
+        0.0 // Cells should override this method.
     }
     
     public class func heightForProposedWidth(_ width: CGFloat, containerModel: ContainerModel) -> CGFloat {
-        return 0.0 // Containers should override this method.
+        0.0 // Containers should override this method.
     }
     
     public class func sectionTitleFont() -> UIFont {
-        let font = Font(.branded(.montserratRegular), size: .custom(24.0))
-        return font.result
+        Font(.branded(.montserratRegular), size: .custom(24.0)).result
     }
     
     public class func sectionTitleColor() -> UIColor {
-        return UIColor.black
+        .black
     }
     
     // MARK: - Accessibility

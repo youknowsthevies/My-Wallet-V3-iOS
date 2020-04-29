@@ -27,12 +27,12 @@ final class WelcomeScreenPresenter {
     )
     let title = LabelContent(
         text: LocalizedString.title,
-        font: .mainSemibold(Constants.Booleans.isUsingScreenSizeEqualIphone5S ? 20 : 24),
+        font: .main(.semibold, Constants.Booleans.isUsingScreenSizeEqualIphone5S ? 20 : 24),
         color: .titleText,
         alignment: .center
     )
     let description: NSAttributedString = {
-        let font = UIFont.mainMedium(Constants.Booleans.isUsingScreenSizeEqualIphone5S ? 14 : 16)
+        let font = UIFont.main(.medium, Constants.Booleans.isUsingScreenSizeEqualIphone5S ? 14 : 16)
         let prefix = NSAttributedString(LocalizedString.Description.prefix, font: font, color: .mutedText)
         let send = NSAttributedString(LocalizedString.Description.send, font: font, color: .descriptionText)
         let receive = NSAttributedString(LocalizedString.Description.receive, font: font, color: .descriptionText)
@@ -45,7 +45,7 @@ final class WelcomeScreenPresenter {
     }()
     let version = LabelContent(
         text: Bundle.applicationVersion ?? "",
-        font: .mainMedium(12),
+        font: .main(.medium, 12),
         color: .mutedText
     )
     
@@ -76,7 +76,7 @@ final class WelcomeScreenPresenter {
         self.alertPresenter = alertPresenter
         self.devSupport = devSupport
         
-        let font = UIFont.mainSemibold(16)
+        let font = UIFont.main(.semibold, 16)
         let cornerRadius: CGFloat = 8
         
         // Set create wallet button

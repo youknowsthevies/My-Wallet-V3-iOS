@@ -29,14 +29,14 @@ extension LabeledButtonViewStyle {
     public static var currency: LabeledButtonViewStyle {
         return .init(
             backgroundColor: .lightBlueBackground,
-            font: .mainSemibold(14),
+            font: .main(.semibold, 14),
             textColor: .secondary
         )
     }
     public static var currencyTooLow: LabeledButtonViewStyle {
         return .init(
             backgroundColor: .lightRedBackground,
-            font: .mainSemibold(14),
+            font: .main(.semibold, 14),
             textColor: .negativePrice
         )
     }

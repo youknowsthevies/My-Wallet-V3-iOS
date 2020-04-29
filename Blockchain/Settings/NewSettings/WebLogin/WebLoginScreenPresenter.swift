@@ -83,21 +83,21 @@ final class WebLoginScreenPresenter {
         self.service = service
         securityAlert = .init(
             text: LocalizedString.securityMessageHidden,
-            font: .mainMedium(14),
+            font: .main(.medium, 14),
             color: .descriptionText,
             alignment: .center,
             accessibility: .id(AccessibilityIDs.securityAlertLabel)
         )
         qrCodeSecurityAlertTop = .init(
             text: LocalizedString.securityMessageVisible1,
-            font: .mainMedium(14),
+            font: .main(.medium, 14),
             color: .descriptionText,
             alignment: .center,
             accessibility: .id(AccessibilityIDs.securityAlertTopLabel)
         )
         qrCodeSecurityAlertBottom = .init(
             text: LocalizedString.securityMessageVisible2,
-            font: .mainMedium(14),
+            font: .main(.medium, 14),
             color: .descriptionText,
             alignment: .center,
             accessibility: .id(AccessibilityIDs.securityAlertBottomLabel)
