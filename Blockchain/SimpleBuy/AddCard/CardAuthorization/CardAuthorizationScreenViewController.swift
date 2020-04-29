@@ -46,14 +46,14 @@ final class CardAuthorizationScreenViewController: BaseScreenViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        switch presenter.requiredAuthorizationType {
-        case .url(let urls):
+        switch presenter.authorizationState {
+        case .required(let urls):
             self.exitUrl = urls.exitLink
             view.addSubview(webView)
             webView.fillSuperview()
             webView.navigationDelegate = self
             webView.load(URLRequest(url: urls.paymentLink))
-        case .none: /// Cannot arrive at this state with a `none` value
+        case .none, .confirmed: /// Cannot arrive at this state with a `none` value
             break
         }
     }

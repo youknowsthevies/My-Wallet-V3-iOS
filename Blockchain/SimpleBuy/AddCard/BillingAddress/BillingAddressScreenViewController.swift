@@ -111,7 +111,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
 extension BillingAddressScreenViewController: UITableViewDelegate, UITableViewDataSource {
             
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return presenter.presentationDataRelay.value.cellCount
+        presenter.presentationDataRelay.value.cellCount
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

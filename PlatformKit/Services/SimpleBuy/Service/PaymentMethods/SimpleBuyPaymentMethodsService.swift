@@ -45,7 +45,7 @@ public final class SimpleBuyPaymentMethodsService: SimpleBuyPaymentMethodsServic
         
         cachedValue
             .setFetch { () -> Observable<[SimpleBuyPaymentMethod]> in
-                return reactiveWallet.waitUntilInitializedSingle
+                reactiveWallet.waitUntilInitializedSingle
                     .asObservable()
                     .flatMap {
                         Observable.combineLatest(

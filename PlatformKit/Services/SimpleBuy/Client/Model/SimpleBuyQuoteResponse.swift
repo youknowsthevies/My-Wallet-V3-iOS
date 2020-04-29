@@ -34,6 +34,7 @@ public struct SimpleBuyQuote {
 
     public let time: Date
     public let fee: FiatValue
+    public let rate: FiatValue
     public let estimatedAmount: CryptoValue
 
     private let dateFormatter = DateFormatter.sessionDateFormat
@@ -59,5 +60,6 @@ public struct SimpleBuyQuote {
         /// Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
         self.fee = FiatValue(minor: "\(feeAmountMinor)", currency: amount.currency, locale: .US)
         self.time = time
+        self.rate = FiatValue(minor: response.rate, currency: amount.currency)
     }
 }

@@ -271,7 +271,7 @@ extension TextFieldType {
         case .mobile:
             return .phonePad
         case .expirationDate, .cardCVV, .cardNumber:
-            return .decimalPad
+            return .numberPad
         case .cardholderName,
              .personFullName:
             return .namePhonePad
@@ -339,15 +339,7 @@ extension TextFieldType {
 
 extension TextFieldType {
     /// Returns `UITextAutocorrectionType`
-    var autocorrectionType: UITextAutocorrectionType {
-        return .no
-    }
-}
-
-extension TextFieldType {
-    var returnKeyType: UIReturnKeyType {
-        return .done
-    }
+    var autocorrectionType: UITextAutocorrectionType { .no }
 }
 
 extension TextFieldType {
@@ -376,7 +368,13 @@ extension TextFieldType {
             } else {
                 return UITextContentType(rawValue: "")
             }
-        case .newPassword, .confirmNewPassword, .password:
+        case .newPassword, .confirmNewPassword:
+            if #available(iOS 12.0, *) {
+                return .newPassword
+            } else {
+                return UITextContentType(rawValue: "")
+            }
+        case .password:
             /// Disable password suggestions (avoid setting `.password` as value)
             return UITextContentType(rawValue: "")
         case .addressLine(let line):

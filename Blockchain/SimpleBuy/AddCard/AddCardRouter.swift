@@ -68,7 +68,12 @@ final class AddCardRouter: Router {
     // MARK: - State Routing
     
     private func previous(from state: AddCardStateService.State) {
-        dismiss()
+        switch state {
+        case .cardDetails:
+            dismiss(completion: nil)
+        default:
+            dismiss()
+        }
     }
         
     private func next(to state: AddCardStateService.State) {

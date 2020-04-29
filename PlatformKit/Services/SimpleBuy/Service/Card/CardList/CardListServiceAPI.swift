@@ -13,6 +13,9 @@ public protocol CardListServiceAPI: class {
     /// Streams an updated array of cards.
     /// Expected to reactively stream the updated cards after
     var cards: Observable<[CardData]> { get }
+    
+    func card(by identifier: String) -> Single<CardData?>
+    
     func fetchCards() -> Single<[CardData]>
 }
 

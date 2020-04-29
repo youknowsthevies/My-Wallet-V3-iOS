@@ -97,6 +97,12 @@ final class AddCardStateService: CardAuthorizationStateServiceAPI {
             .take(1)
     }
     
+    var cancellation: Observable<Void> {
+        cancellationRelay.take(1)
+    }
+    
+    private let cancellationRelay = PublishRelay<Void>()
+    
     private let statesRelay = BehaviorRelay<States>(value: .inactive)
     let previousRelay = PublishRelay<Void>()
     
@@ -133,6 +139,13 @@ final class AddCardStateService: CardAuthorizationStateServiceAPI {
         let last = statesRelay.value.current
         let states = statesRelay.value.statesByRemovingLast()
         apply(action: .previous(from: last), states: states)
+        
+        switch states.current {
+        case .inactive:
+            cancellationRelay.accept(())
+        default:
+            break
+        }
     }
         
     private func apply(action: Action, states: States) {

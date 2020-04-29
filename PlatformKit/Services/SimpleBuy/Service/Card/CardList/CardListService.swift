@@ -49,6 +49,13 @@ public final class CardListService: CardListServiceAPI {
             }
     }
     
+    public func card(by identifier: String) -> Single<CardData?> {
+        cards
+            .take(1)
+            .asSingle()
+            .map { $0.filter { $0.identifier == identifier }.first }
+    }
+    
     public func fetchCards() -> Single<[CardData]> {
         cachedValue.fetchValueObservable
             .take(1)

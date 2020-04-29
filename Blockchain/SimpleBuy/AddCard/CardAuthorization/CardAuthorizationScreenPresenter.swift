@@ -17,8 +17,8 @@ final class CardAuthorizationScreenPresenter {
     
     let title = LocalizationConstants.AuthorizeCardScreen.title
     
-    var requiredAuthorizationType: PartnerAuthorizationData.RequiredAuthorizationType {
-        data.requiredAuthorizationType
+    var authorizationState: PartnerAuthorizationData.State {
+        data.state
     }
     
     private let stateService: CardAuthorizationStateServiceAPI

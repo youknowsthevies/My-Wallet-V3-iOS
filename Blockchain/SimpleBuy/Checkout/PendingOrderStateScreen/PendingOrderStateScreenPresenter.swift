@@ -95,7 +95,7 @@ final class PendingOrderStateScreenPresenter: PendingStatePresenterAPI {
                 }
                 .disposed(by: self.disposeBag)
             let viewModel = PendingStateViewModel(
-                asset: .image(.circleError),
+                asset: .image(.success),
                 title: "\(self.amount) \(LocalizedString.Success.titleSuffix)",
                 subtitle: "\(LocalizedString.Success.Subtitle.prefix) \(self.cryptoCurrencyName) \(LocalizedString.Success.Subtitle.suffix)",
                 button: button

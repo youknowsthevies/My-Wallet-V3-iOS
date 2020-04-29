@@ -31,6 +31,13 @@ extension Reactive where Base: UITextField {
         }
     }
     
+    /// Bindable for `returnKeyType` property
+    public var returnKeyType: Binder<UIReturnKeyType> {
+        return Binder(self.base) { textField, returnKeyType in
+            textField.returnKeyType = returnKeyType
+        }
+    }
+    
     /// Bindable for `autocapitalizationType` property
     public var autocapitalizationType: Binder<UITextAutocapitalizationType> {
         return Binder(self.base) { textField, autocapitalizationType in

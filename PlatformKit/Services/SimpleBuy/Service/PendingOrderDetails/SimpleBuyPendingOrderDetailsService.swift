@@ -12,7 +12,7 @@ import ToolKit
 public final class SimpleBuyPendingOrderDetailsService: SimpleBuyPendingOrderDetailsServiceAPI {
     
     public var checkoutData: Single<SimpleBuyCheckoutData?> {
-        pendingDepositOrderDetails
+        pendingOrderDetails
             .flatMap(weak: self) { (self, pendingOrder) in
                 guard let pendingOrder = pendingOrder else {
                     return .just(nil)
@@ -29,15 +29,24 @@ public final class SimpleBuyPendingOrderDetailsService: SimpleBuyPendingOrderDet
     
     public var pendingOrderDetails: Single<SimpleBuyOrderDetails?> {
         ordersService.fetchOrders()
-            .map { $0.filter { $0.isAwaitingAction } }
+            .map { orders in
+                orders
+                    .filter { !$0.isFinal }
+                    .filter { $0.isAwaitingAction || $0.is3DSConfirmedCardOrder }
+            }
             .map { $0.first }
     }
     
-    public var pendingDepositOrderDetails: Single<SimpleBuyOrderDetails?> {
+    public var pendingActionOrderDetails: Single<SimpleBuyOrderDetails?> {
         ordersService.fetchOrders()
-            .map { $0.filter { $0.state == .pendingDeposit } }
+            .map { orders in
+                orders
+                    .filter { !$0.isFinal }
+                    .filter { $0.isAwaitingAction }
+            }
             .map { $0.first }
     }
+    
     // MARK: - Injected
     
     private let paymentAccountService: SimpleBuyPaymentAccountServiceAPI

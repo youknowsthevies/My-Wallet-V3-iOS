@@ -253,9 +253,11 @@ public final class SimpleBuyClient: SimpleBuyClientAPI {
                 value: currency
             )
         ]
+        let headers = [HttpHeaderField.authorization: token]
         let request = requestBuilder.get(
             path: Path.paymentMethods,
-            parameters: queryParameters
+            parameters: queryParameters,
+            headers: headers
         )!
         return communicator.perform(request: request)
     }

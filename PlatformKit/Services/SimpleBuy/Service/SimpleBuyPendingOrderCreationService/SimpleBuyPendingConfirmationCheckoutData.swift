@@ -13,4 +13,9 @@ public struct SimpleBuyPendingConfirmationCheckoutData {
     func data(byAppending checkoutData: SimpleBuyCheckoutData) -> SimpleBuyPendingConfirmationCheckoutData {
         return .init(quote: quote, checkoutData: checkoutData)
     }
+    
+    public init(quote: SimpleBuyQuote, checkoutData: SimpleBuyCheckoutData) {
+        self.quote = quote
+        self.checkoutData = checkoutData
+    }
 }

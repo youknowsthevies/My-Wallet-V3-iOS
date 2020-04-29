@@ -115,6 +115,10 @@ final class CardDetailsScreenPresenter {
             messageRecorder: CrashlyticsRecorder()
         )
         
+        cardholderNameTextFieldViewModel.set(next: cardNumberTextFieldViewModel)
+        cardNumberTextFieldViewModel.set(next: cardExpiryTextFieldViewModel)
+        cardExpiryTextFieldViewModel.set(next: cardCVVTextFieldViewModel)
+
         textFieldViewModelByType = [
             .cardholderName: cardholderNameTextFieldViewModel,
             .expirationDate: cardExpiryTextFieldViewModel,

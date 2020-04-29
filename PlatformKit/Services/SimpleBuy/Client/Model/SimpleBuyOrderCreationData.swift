@@ -86,6 +86,9 @@ public struct SimpleBuyOrderPayload {
             struct EveryPay: Decodable {
                 enum PaymentState: String, Decodable {
                     case waitingFor3DS = "WAITING_FOR_3DS_RESPONSE"
+                    
+                    // TODO: Daniel - Replace with the real value
+                    case confirmed3DS = "3DS_CONFIRMED"
                 }
                 
                 let paymentLink: String

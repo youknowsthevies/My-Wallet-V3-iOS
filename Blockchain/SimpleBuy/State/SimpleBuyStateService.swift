@@ -186,6 +186,12 @@ final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
             }
             .disposed(by: disposeBag)
         
+        addCardStateService.cancellation
+            .bind { [weak self] in
+                self?.previous()
+            }
+            .disposed(by: disposeBag)
+
         return addCardStateService
     }
         
@@ -275,8 +281,8 @@ final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
                         return .pendingOrderDetails(data)
                     case .card:
                         switch data.detailType {
-                        case .order(let orderDetails):
-                            return .authorizeCard(order: orderDetails)
+                        case .order:
+                            return .checkout(data)
                         case .candidate:
                             fatalError("Impossible case to reach")
                         }
@@ -398,7 +404,11 @@ extension SimpleBuyStateService {
         case (.order, .bankTransfer):
             state = .transferDetails(checkoutData)
         case (.order(let details), .card):
-            state = .authorizeCard(order: details)
+            if details.isPending3DSCardOrder {
+                state = .authorizeCard(order: details)
+            } else {
+                state = .inactive
+            }
         default:
             fatalError("Cannot executed checkout with \(data)")
         }

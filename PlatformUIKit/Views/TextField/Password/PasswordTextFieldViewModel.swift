@@ -95,7 +95,7 @@ public final class PasswordTextFieldViewModel: TextFieldViewModel {
     
     /// The score of the text field content
     var score: Observable<Score> {
-        return scoreRelay
+        scoreRelay
             .asObservable()
             .distinctUntilChanged()
     }

@@ -11,16 +11,21 @@ import ToolKit
 
 enum CheckoutCellType: Hashable {
     enum LineItemType: Hashable {
+        case orderId
+        case status
         case date
         case totalCost
         case estimatedAmount
+        case exchangeRate
+        case amount
         case buyingFee
         case paymentAccountField(SimpleBuyPaymentAccountProperty.Field)
         case paymentMethod
         
         var content: String? {
             switch self {
-            case .date, .totalCost, .estimatedAmount, .buyingFee, .paymentMethod:
+            case .date, .totalCost, .estimatedAmount, .buyingFee,
+                 .paymentMethod, .orderId, .status, .amount, .exchangeRate:
                 return nil
             case .paymentAccountField(let field):
                 return field.content
@@ -52,7 +57,8 @@ extension CheckoutCellType.LineItemType {
         switch self {
         case .paymentAccountField(let field):
             return field
-        case .date, .totalCost, .estimatedAmount, .buyingFee, .paymentMethod:
+        case .date, .totalCost, .estimatedAmount, .buyingFee,
+             .paymentMethod, .orderId, .status, .amount, .exchangeRate:
             return nil
         }
     }
@@ -74,6 +80,10 @@ extension CheckoutCellType.LineItemType {
             return LocalizedString.iban
         case .paymentAccountField(.bankCode):
             return LocalizedString.bankCode
+        case .orderId:
+            return LocalizedString.orderId
+        case .status:
+            return LocalizedString.status
         case .date:
             return LocalizedString.date
         case .totalCost:
@@ -84,6 +94,10 @@ extension CheckoutCellType.LineItemType {
             return LocalizedString.buyingFee
         case .paymentMethod:
             return LocalizedString.paymentMethod
+        case .amount:
+            return LocalizedString.amount
+        case .exchangeRate:
+            return LocalizedString.exchangeRate
         }
     }
     

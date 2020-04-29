@@ -47,7 +47,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         let hasTrades = exchangeService.hasExecutedTrades()
         let simpleBuyOrderDetails = simpleBuyServiceProvider
             .pendingOrderDetails
-            .pendingDepositOrderDetails
+            .pendingActionOrderDetails
 
         let isSimpleBuyAvailable = simpleBuyServiceProvider.availability.valueSingle
 

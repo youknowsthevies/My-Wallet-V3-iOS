@@ -1632,10 +1632,16 @@ public struct LocalizationConstants {
         }
         
         public struct Checkout {
-            public static let title = NSLocalizedString(
-                "Checkout",
-                comment: "Checkout Screen Title"
-            )
+            public struct Title {
+                public static let checkout = NSLocalizedString(
+                    "Checkout",
+                    comment: "Checkout screen Title"
+                )
+                public static let orderDetails = NSLocalizedString(
+                    "Order Details",
+                    comment: "Order Details screen Title"
+                )
+            }
             public struct Summary {
                 public struct Title {
                     public static let prefix = NSLocalizedString(
@@ -1698,17 +1704,37 @@ public struct LocalizationConstants {
                     "Est. Amount",
                     comment: "Estimated Amount"
                 )
+                public static let amount = NSLocalizedString(
+                    "Amount",
+                    comment: "Amount"
+                )
                 public static let buyingFee = NSLocalizedString(
                     "Buying Fee",
                     comment: "Buying Fee"
+                )
+                public static let exchangeRate = NSLocalizedString(
+                    "Exchange Rate",
+                    comment: "Exchange Rate"
                 )
                 public static let paymentMethod = NSLocalizedString(
                     "Payment Method",
                     comment: "Payment Method"
                 )
+                public static let orderId = NSLocalizedString(
+                    "Transaction ID",
+                    comment: "Transaction ID"
+                )
+                public static let status = NSLocalizedString(
+                    "Status",
+                    comment: "Status"
+                )
                 public static let bankTransfer = NSLocalizedString(
                     "Bank Transfer",
                     comment: "Bank Transfer"
+                )
+                public static let pending = NSLocalizedString(
+                    "Pending",
+                    comment: "Pending"
                 )
                 public struct Copyable {
                     public static let bankCode = NSLocalizedString(
@@ -1734,7 +1760,7 @@ public struct LocalizationConstants {
                 }
             }
 
-            public struct Notice {
+            public struct BankNotice {
                 public static let prefix = NSLocalizedString(
                     "Once we receive your funds, we’ll start your",
                     comment: "Simple buy: checkout screen notice label prefix"
@@ -1744,6 +1770,11 @@ public struct LocalizationConstants {
                     comment: "Simple buy: checkout screen notice label suffix"
                 )
             }
+            
+            public static let cardNotice = NSLocalizedString(
+                "We wil debit your payment method in 2 business days once your order is approved. Your final amount might change due to market activity.",
+                comment: "Simple buy: checkout screen notice label for card"
+            )
             
             public struct PendingOrderScreen {
                 public struct Loading {

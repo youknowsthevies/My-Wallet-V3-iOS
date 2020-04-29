@@ -100,7 +100,6 @@ public class TextFieldView: UIView {
         
         textField.inputAccessoryView = keyboardInteractionController.toolbar
         textField.autocorrectionType = viewModel.type.autocorrectionType
-        textField.returnKeyType = viewModel.type.returnKeyType
         textField.autocapitalizationType = viewModel.type.autocapitalizationType
         textField.font = viewModel.font
         
@@ -122,6 +121,11 @@ public class TextFieldView: UIView {
         /// Bind `keyboardType`
         viewModel.keyboardType
             .drive(textField.rx.keyboardType)
+            .disposed(by: disposeBag)
+        
+        /// Bind `returnKeyType`
+        viewModel.returnKeyType
+            .drive(textField.rx.returnKeyType)
             .disposed(by: disposeBag)
         
         /// Bind `placeholder`
@@ -154,15 +158,24 @@ public class TextFieldView: UIView {
             .bind(to: textField.rx.isEnabled)
             .disposed(by: disposeBag)
         
-        viewModel.focusRelay
-            .bind { [weak self] shouldGainFocus in
+        if viewModel.type == .newPassword || viewModel.type == .confirmNewPassword {
+            textField.rx.text.orEmpty
+                .bind(weak: self) { [weak viewModel] (self, text) in
+                    guard !self.textField.isFirstResponder else { return }
+                    viewModel?.textFieldEdited(with: text)
+                }
+                .disposed(by: disposeBag)
+        }
+        
+        viewModel.focus
+            .emit(onNext: { [weak self] shouldGainFocus in
                 guard let self = self else { return }
                 if shouldGainFocus {
                     self.textField.becomeFirstResponder()
                 } else {
                     self.textField.resignFirstResponder()
                 }
-            }
+            })
             .disposed(by: disposeBag)
     }
     
@@ -227,7 +240,7 @@ extension TextFieldView: UITextFieldDelegate {
     }
     
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
+        viewModel.focusRelay.accept(false)
         return true
     }
     
@@ -241,7 +254,7 @@ extension TextFieldView: UITextFieldDelegate {
 extension Reactive where Base: TextFieldView {
     
     fileprivate var accessoryContentType: Binder<TextFieldViewModel.AccessoryContentType> {
-        return Binder(base) { view, contentType in
+        Binder(base) { view, contentType in
             view.set(accessoryContentType: contentType)
         }
     }

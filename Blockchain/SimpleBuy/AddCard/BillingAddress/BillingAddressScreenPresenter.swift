@@ -56,7 +56,7 @@ final class BillingAddressScreenPresenter {
         }
         
         func cellType(for row: Int) -> CellType {
-            return cellTypes[row]
+            cellTypes[row]
         }
     }
     
@@ -276,13 +276,28 @@ final class BillingAddressScreenPresenter {
         }
         
         var viewModelByType: [TextFieldType: TextFieldViewModel] = [:]
+        var previousTextFieldViewModel: TextFieldViewModel?
         for cell in data.cellTypes {
             switch cell {
             case .doubleTextField(let leadingType, let trailingType):
-                viewModelByType[leadingType] = viewModel(by: leadingType)
-                viewModelByType[trailingType] = viewModel(by: trailingType)
+                let leading = viewModel(by: leadingType)
+                let trailing = viewModel(by: trailingType)
+                
+                viewModelByType[leadingType] = leading
+                viewModelByType[trailingType] = trailing
+                
+                previousTextFieldViewModel?.set(next: leading)
+                leading.set(next: trailing)
+                
+                previousTextFieldViewModel = trailing
             case .textField(let type):
-                viewModelByType[type] = viewModel(by: type)
+                let textFieldViewModel = viewModel(by: type)
+                
+                viewModelByType[type] = textFieldViewModel
+                
+                previousTextFieldViewModel?.set(next: textFieldViewModel)
+                
+                previousTextFieldViewModel = textFieldViewModel
             case .selectionView:
                 break
             }

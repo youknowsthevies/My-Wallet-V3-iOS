@@ -37,6 +37,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     private let kycRouter: KYCRouterAPI
     private let kycServiceProvider: KYCServiceProviderAPI
     private let serviceProvider: SimpleBuyServiceProviderAPI
+    private let cardServiceProvider: CardServiceProviderAPI
     private let cryptoSelectionService: SelectionServiceAPI
     private let dataProviding: DataProviding
     
@@ -52,6 +53,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     // MARK: - Setup
     
     init(serviceProvider: SimpleBuyServiceProviderAPI = SimpleBuyServiceProvider.default,
+         cardServiceProvider: CardServiceProviderAPI = CardServiceProvider.default,
          stateService: SimpleBuyStateServiceAPI = SimpleBuyStateService(),
          kycServiceProvider: KYCServiceProviderAPI = KYCServiceProvider.default,
          analyticsRecording: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
@@ -60,6 +62,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
          dataProviding: DataProviding = DataProvider.default) {
         self.analyticsRecording = analyticsRecording
         self.serviceProvider = serviceProvider
+        self.cardServiceProvider = cardServiceProvider
         self.stateService = stateService
         self.kycServiceProvider = kycServiceProvider
         self.topMostViewControllerProvider = topMostViewControllerProvider
@@ -364,6 +367,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     /// Shows the checkout screen
     private func showCheckoutScreen(with data: SimpleBuyCheckoutData) {
         let interactor = CheckoutScreenInteractor(
+            cardListService: cardServiceProvider.cardList,
             creationService: serviceProvider.orderCreation(for: data.detailType.paymentMethod),
             confirmationService: serviceProvider.orderConfirmation,
             cancellationService: serviceProvider.orderCancellation,

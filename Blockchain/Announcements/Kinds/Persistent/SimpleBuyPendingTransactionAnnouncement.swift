@@ -32,17 +32,32 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
             }
             .disposed(by: disposeBag)
 
-        let assetCode = assetType?.displayCode ?? ""
+        let orderDetails = order!
+        let assetCode = orderDetails.cryptoValue.currencyType.displayCode
+        
+        let imageName: String
+        let title: String
+        let description: String
+        if orderDetails.isBankWire {
+            title = "\(LocalizedString.titlePrefix) \(assetCode) \(LocalizedString.titleSuffix)"
+            description = "\(LocalizedString.descriptionPrefix) \(assetCode) \(LocalizedString.descriptionSuffix)"
+            imageName = "clock-error-icon"
+        } else {
+            title = ""
+            description = ""
+            imageName = "icon-card"
+        }
+        
         return AnnouncementCardViewModel(
             type: type,
             image: AnnouncementCardViewModel.Image(
-                name: "clock-error-icon",
+                name: imageName,
                 size: CGSize(width: 27, height: 27),
                 tintColor: .iconWarning,
                 bundle: .platformUIKit
             ),
-            title: "\(LocalizedString.titlePrefix) \(assetCode) \(LocalizedString.titleSuffix)",
-            description: "\(LocalizedString.descriptionPrefix) \(assetCode) \(LocalizedString.descriptionSuffix)",
+            title: title,
+            description: description,
             buttons: [button],
             recorder: errorRecorder,
             dismissState: .undismissible,
@@ -54,7 +69,11 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
     }
 
     var shouldShow: Bool {
-        return assetType != nil
+        guard let order = order else {
+            return false
+        }
+        // Shows only for bank wire - we need copy for card orders
+        return order.isBankWire
     }
 
     let type = AnnouncementType.simpleBuyPendingTransaction
@@ -62,18 +81,18 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
 
     let action: CardAnnouncementAction
 
-    private let assetType: CryptoCurrency?
+    private let order: SimpleBuyOrderDetails?
 
     private let disposeBag = DisposeBag()
     private let errorRecorder: ErrorRecording
 
     // MARK: - Setup
 
-    init(hasPendingTransactionFor assetType: CryptoCurrency?,
+    init(order: SimpleBuyOrderDetails?,
          analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          action: @escaping CardAnnouncementAction) {
-        self.assetType = assetType
+        self.order = order
         self.errorRecorder = errorRecorder
         self.action = action
         self.analyticsRecorder = analyticsRecorder

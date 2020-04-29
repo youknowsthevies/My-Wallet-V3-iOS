@@ -152,7 +152,7 @@ final class AnnouncementPresenter {
                 announcement = resubmitDocuments(user: preliminaryData.user)
             case .simpleBuyPendingTransaction:
                 announcement = simpleBuyPendingTransaction(
-                    hasPendingTransactionFor: preliminaryData.pendingSimpleBuyOrderAssetType
+                    for: preliminaryData.pendingOrderDetails
                 )
             case .simpleBuyKYCIncomplete:
                 announcement = simpleBuyFinishSignup(
@@ -195,9 +195,9 @@ extension AnnouncementPresenter {
     }
 
     /// Computes Simple Buy Pending Transaction Announcement
-    private func simpleBuyPendingTransaction(hasPendingTransactionFor assetType: CryptoCurrency?) -> Announcement {
+    private func simpleBuyPendingTransaction(for order: SimpleBuyOrderDetails?) -> Announcement {
         return SimpleBuyPendingTransactionAnnouncement(
-            hasPendingTransactionFor: assetType,
+            order: order,
             action: { [weak self] in
                 guard let self = self else { return }
                 self.hideAnnouncement()

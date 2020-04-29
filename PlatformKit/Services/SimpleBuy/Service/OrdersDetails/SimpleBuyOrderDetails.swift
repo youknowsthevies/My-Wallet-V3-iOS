@@ -45,34 +45,52 @@ public struct SimpleBuyOrderDetails {
         paymentMethodId == nil ? .bankTransfer : .card
     }
     
+    public let expirationDate: Date
+    public let creationDate: Date
+
     public let fiatValue: FiatValue
     public let cryptoValue: CryptoValue
+    
+    public var price: FiatValue?
+    public var fee: FiatValue?
+    
     public let identifier: String
     public let paymentMethodId: String?
     
     public let authorizationData: PartnerAuthorizationData?
     public let state: State
     
-    var isAwaitingAction: Bool {
-        switch state {
-        case .pendingDeposit where paymentMethodId == nil: // bank
-            return true
-        case .pendingConfirmation:
-            return true
-        case .cancelled, .depositMatched, .failed, .expired, .finished, .pendingExecution, .pendingDeposit:
-            return false
-        }
+    public var isAwaitingAction: Bool {
+        isPendingDepositBankWire || isPendingConfirmation || isPending3DSCardOrder
     }
     
-    var isBankWire: Bool {
+    public var isBankWire: Bool {
         paymentMethodId == nil
     }
-    
-    var isPendingDepositBankWire: Bool {
-        state == .pendingDeposit && paymentMethodId == nil
+
+    public var isCancellable: Bool {
+        isPendingDepositBankWire || isPendingConfirmation
     }
     
-    var isFinal: Bool {
+    public var isPendingConfirmation: Bool {
+        state == .pendingConfirmation
+    }
+    
+    public var isPendingDepositBankWire: Bool {
+        state == .pendingDeposit && isBankWire
+    }
+    
+    public var isPending3DSCardOrder: Bool {
+        guard let state = authorizationData?.state else { return false }
+        return paymentMethodId != nil && state.isRequired
+    }
+    
+    public var is3DSConfirmedCardOrder: Bool {
+        guard let state = authorizationData?.state else { return false }
+        return paymentMethodId != nil && state.isConfirmed
+    }
+    
+    public var isFinal: Bool {
         switch state {
         case .cancelled, .failed, .expired, .finished:
             return true
@@ -102,6 +120,17 @@ public struct SimpleBuyOrderDetails {
         self.state = state
         self.paymentMethodId = response.paymentMethodId
         authorizationData = PartnerAuthorizationData(orderPayloadResponse: response)
+        
+        if let price = response.price {
+            self.price = FiatValue(minor: price, currency: fiatCurrency)
+        }
+        
+        if let fee = response.fee {
+            self.fee = FiatValue(minor: fee, currency: fiatCurrency)
+        }
+
+        expirationDate = DateFormatter.sessionDateFormat.date(from: response.expiresAt)!
+        creationDate = DateFormatter.sessionDateFormat.date(from: response.updatedAt)!
     }
 }
 

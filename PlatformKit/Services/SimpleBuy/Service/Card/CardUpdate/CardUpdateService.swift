@@ -82,7 +82,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                     )
                     .map {
                         PartnerAuthorizationData(
-                            requiredAuthorizationType: $0,
+                            state: $0,
                             paymentMethodId: payload.cardId
                         )
                     }
@@ -92,7 +92,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
     // MARK: - Partner Integration
     
     private func add(card: CardData,
-                     via partner: ActivateCardResponse.Partner) -> Single<PartnerAuthorizationData.RequiredAuthorizationType> {
+                     via partner: ActivateCardResponse.Partner) -> Single<PartnerAuthorizationData.State> {
         switch partner {
         case .everypay(let data):
             return add(card: card, with: data)
@@ -103,18 +103,18 @@ public final class CardUpdateService: CardUpdateServiceAPI {
     
     /// Add via every pay
     private func add(card: CardData,
-                     with everyPayData: ActivateCardResponse.Partner.EveryPayData) -> Single<PartnerAuthorizationData.RequiredAuthorizationType> {
+                     with everyPayData: ActivateCardResponse.Partner.EveryPayData) -> Single<PartnerAuthorizationData.State> {
         everyPayClient
             .send(
                 cardDetails: card.everyPayCardDetails,
                 apiUserName: everyPayData.apiUsername,
                 token: everyPayData.mobileToken
             )
-            .map { response -> PartnerAuthorizationData.RequiredAuthorizationType in
+            .map { response -> PartnerAuthorizationData.State in
                 switch response.status {
                 case .waitingFor3DResponse:
                     let url = URL(string: everyPayData.paymentLink)!
-                    return .url(.init(paymentLink: url))
+                    return .required(.init(paymentLink: url))
                 case .failed, .authorized, .settled, .waitingForBav:
                     return .none
                 }

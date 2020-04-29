@@ -53,6 +53,9 @@ public class TextFieldViewModel {
     
     /// Should text field gain focus or remove
     public let focusRelay = PublishRelay<Bool>()
+    public var focus: Signal<Bool> {
+        focusRelay.asSignal()
+    }
     
     public var isHintVisible: Observable<Bool> {
         isHintVisibleRelay.asObservable()
@@ -111,6 +114,11 @@ public class TextFieldViewModel {
             .distinctUntilChanged()
     }
     
+    /// The type of the return key
+    var returnKeyType: Driver<UIReturnKeyType> {
+        returnKeyTypeRelay.asDriver()
+    }
+        
     public let isEnabledRelay = BehaviorRelay<Bool>(value: true)
     var isEnabled: Observable<Bool> {
         isEnabledRelay.asObservable()
@@ -147,6 +155,7 @@ public class TextFieldViewModel {
     private let textColorRelay = BehaviorRelay<UIColor>(value: .textFieldText)
     private let hintRelay = BehaviorRelay<String>(value: "")
     private let stateRelay = BehaviorRelay<State>(value: .empty)
+    private let returnKeyTypeRelay = BehaviorRelay<UIReturnKeyType>(value: .done)
     private let disposeBag = DisposeBag()
     
     // MARK: - Injected
@@ -162,6 +171,7 @@ public class TextFieldViewModel {
     // MARK: - Setup
     
     public init(with type: TextFieldType,
+                returnKeyType: UIReturnKeyType = .done,
                 hintDisplayType: HintDisplayType = .dynamic,
                 validator: TextValidating,
                 formatter: TextFormatting = TextFormatterFactory.alwaysCorrect,
@@ -187,6 +197,7 @@ public class TextFieldViewModel {
         contentTypeRelay = BehaviorRelay(value: type.contentType)
         isSecureRelay.accept(type.isSecure)
         accessibility = type.accessibility
+        returnKeyTypeRelay.accept(returnKeyType)
 
         text
             .bind(to: validator.valueRelay)
@@ -210,6 +221,15 @@ public class TextFieldViewModel {
         self.state
             .map { $0.hint ?? "" }
             .bind(to: hintRelay)
+            .disposed(by: disposeBag)
+    }
+    
+    public func set(next: TextFieldViewModel) {
+        returnKeyTypeRelay.accept(.next)
+        focusRelay
+            .filter { !$0 }
+            .map { _ in true }
+            .bind(to: next.focusRelay)
             .disposed(by: disposeBag)
     }
     

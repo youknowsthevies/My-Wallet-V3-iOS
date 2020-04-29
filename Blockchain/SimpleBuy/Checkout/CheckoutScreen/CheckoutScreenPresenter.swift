@@ -9,9 +9,9 @@
 import RxSwift
 import RxCocoa
 import RxRelay
+import ToolKit
 import PlatformKit
 import PlatformUIKit
-import ToolKit
 
 final class CheckoutScreenPresenter {
 
@@ -23,42 +23,28 @@ final class CheckoutScreenPresenter {
         
     // MARK: - Navigation Bar Properties
     
-    var trailingButton: Screen.Style.TrailingButton { .none }
-    var leadingButton: Screen.Style.LeadingButton { .back }
-    var titleView: Screen.Style.TitleView { .text(value: LocalizedString.title) }
-    var barStyle: Screen.Style.Bar {
-        .darkContent(ignoresStatusBar: false, background: .white)
-    }
-    
+    var titleView: Screen.Style.TitleView { .text(value: title) }
+
     /// Returns the ordered cell types
-    let cellArrangement: [CheckoutCellType] = {
-        [
-            .summary,
-            .separator,
-            .lineItem(.date),
-            .lineItem(.totalCost),
-            .lineItem(.estimatedAmount),
-            .lineItem(.buyingFee),
-            .lineItem(.paymentMethod),
-            .separator,
-            .disclaimer
-        ]
-    }()
+    let cellArrangement: [CheckoutCellType]
     
     // MARK: - View Models / Presenters
     
-    let summaryLabelContent: LabelContent
+    private(set) var summaryLabelContent: LabelContent?
     let noticeViewModel: NoticeViewModel
-    let buyButtonViewModel: ButtonViewModel
-    let cancelButtonViewModel: ButtonViewModel
+    let continueButtonViewModel: ButtonViewModel
+    let cancelButtonViewModel: ButtonViewModel?
     
     // MARK: - Cell Presenters
 
+    let orderIdLineItemCellPresenter: DefaultLineItemCellPresenter
     let dateLineItemCellPresenter: DefaultLineItemCellPresenter
     let totalCostLineItemCellPresenter: DefaultLineItemCellPresenter
-    let estimatedLineItemCellPresenter: DefaultLineItemCellPresenter
+    let amountLineItemCellPresenter: DefaultLineItemCellPresenter
     let buyingFeeLineItemCellPresenter: DefaultLineItemCellPresenter
     let paymentMethodLineItemCellPresenter: DefaultLineItemCellPresenter
+    let exchangeRateLineItemCellPresenter: DefaultLineItemCellPresenter
+    let statusLineItemCellPresenter: DefaultLineItemCellPresenter
 
     // MARK: - Injected
     
@@ -69,6 +55,8 @@ final class CheckoutScreenPresenter {
     private let interactor: CheckoutScreenInteractor
     private unowned let stateService: SimpleBuyConfirmCheckoutServiceAPI
 
+    private let title: String
+    
     // MARK: - Accessors
     
     private let disposeBag = DisposeBag()
@@ -87,7 +75,57 @@ final class CheckoutScreenPresenter {
         self.interactor = interactor
         let data = interactor.checkoutData
         
-        let notice = "\(LocalizedString.Notice.prefix) \(data.cryptoCurrency.displayCode) \(LocalizedString.Notice.suffix)"
+        let amountLineTitle: String
+        
+        if data.hasCheckoutMade {
+            title = LocalizedString.Title.orderDetails
+            amountLineTitle = LocalizedString.LineItem.amount
+            cellArrangement = [
+                .separator,
+                .lineItem(.orderId),
+                .lineItem(.date),
+                .lineItem(.amount),
+                .lineItem(.exchangeRate),
+                .lineItem(.paymentMethod),
+                .lineItem(.buyingFee),
+                .lineItem(.totalCost),
+                .lineItem(.status),
+                .separator,
+                .disclaimer
+            ]
+        } else {
+            title = LocalizedString.Title.checkout
+            amountLineTitle = LocalizedString.LineItem.estimatedAmount
+            typealias TitleString = LocalizedString.Summary.Title
+            let summary = "\(TitleString.prefix)\(data.cryptoCurrency.displayCode)\(TitleString.suffix)"
+            summaryLabelContent = .init(
+                text: summary,
+                font: .mainMedium(14.0),
+                color: .descriptionText,
+                accessibility: .id(AccessibilityId.descriptionLabel)
+            )
+            cellArrangement = [
+                .summary,
+                .separator,
+                .lineItem(.orderId),
+                .lineItem(.date),
+                .lineItem(.totalCost),
+                .lineItem(.estimatedAmount),
+                .lineItem(.buyingFee),
+                .lineItem(.paymentMethod),
+                .lineItem(.status),
+                .separator,
+                .disclaimer
+            ]
+        }
+        
+        let notice: String
+        switch data.detailType.paymentMethod {
+        case .card:
+            notice = LocalizedString.cardNotice
+        case .bankTransfer:
+            notice = "\(LocalizedString.BankNotice.prefix) \(data.cryptoCurrency.displayCode) \(LocalizedString.BankNotice.suffix)"
+        }
         noticeViewModel = NoticeViewModel(
             imageViewContent: .init(
                 imageName: "disclaimer-icon",
@@ -103,25 +141,36 @@ final class CheckoutScreenPresenter {
             verticalAlignment: .top
         )
         
-        typealias TitleString = LocalizedString.Summary.Title
-        let summary = "\(TitleString.prefix)\(data.cryptoCurrency.displayCode)\(TitleString.suffix)"
-        summaryLabelContent = .init(
-            text: summary,
-            font: .mainMedium(14.0),
-            color: .descriptionText,
-            accessibility: .id(AccessibilityId.descriptionLabel)
-        )
-        
-        buyButtonViewModel = .primary(
+        continueButtonViewModel = .primary(
             with: "\(LocalizedString.Summary.buttonPrefix)\(data.cryptoCurrency.displayCode)"
         )
-        cancelButtonViewModel = .cancel(with: LocalizationConstants.cancel)
+        
+        if interactor.isCancellable {
+            cancelButtonViewModel = .cancel(with: LocalizationConstants.cancel)
+        } else {
+            cancelButtonViewModel = nil
+        }
         
         let dateLineItemInteractor = DefaultLineItemCellInteractor()
         dateLineItemInteractor.title.stateRelay.accept(
             .loaded(next: .init(text: LocalizedString.LineItem.date))
         )
         dateLineItemCellPresenter = .init(interactor: dateLineItemInteractor)
+        
+        let orderIdLineItemInteractor = DefaultLineItemCellInteractor()
+        orderIdLineItemInteractor.title.stateRelay.accept(
+            .loaded(next: .init(text: LocalizedString.LineItem.orderId))
+        )
+        orderIdLineItemCellPresenter = .init(interactor: orderIdLineItemInteractor)
+        
+        let statusLineItemInteractor = DefaultLineItemCellInteractor()
+        statusLineItemInteractor.title.stateRelay.accept(
+            .loaded(next: .init(text: LocalizedString.LineItem.status))
+        )
+        statusLineItemInteractor.description.stateRelay.accept(
+            .loaded(next: .init(text: LocalizedString.LineItem.pending))
+        )
+        statusLineItemCellPresenter = .init(interactor: statusLineItemInteractor)
         
         let totalCostLineItemInteractor = DefaultLineItemCellInteractor()
         totalCostLineItemInteractor.title.stateRelay.accept(
@@ -132,11 +181,11 @@ final class CheckoutScreenPresenter {
         )
         totalCostLineItemCellPresenter = .init(interactor: totalCostLineItemInteractor)
 
-        let estimatedLineItemInteractor = DefaultLineItemCellInteractor()
-        estimatedLineItemInteractor.title.stateRelay.accept(
-            .loaded(next: .init(text: LocalizedString.LineItem.estimatedAmount))
+        let amountLineItemInteractor = DefaultLineItemCellInteractor()
+        amountLineItemInteractor.title.stateRelay.accept(
+            .loaded(next: .init(text: amountLineTitle))
         )
-        estimatedLineItemCellPresenter = .init(interactor: estimatedLineItemInteractor)
+        amountLineItemCellPresenter = .init(interactor: amountLineItemInteractor)
 
         let feeLineItemInteractor = DefaultLineItemCellInteractor()
         feeLineItemInteractor.title.stateRelay.accept(
@@ -144,20 +193,22 @@ final class CheckoutScreenPresenter {
         )
         buyingFeeLineItemCellPresenter = .init(interactor: feeLineItemInteractor)
 
+        let exchangeRateItemInteractor = DefaultLineItemCellInteractor()
+        exchangeRateItemInteractor.title.stateRelay.accept(
+            .loaded(next: .init(text: LocalizedString.LineItem.exchangeRate))
+        )
+        exchangeRateLineItemCellPresenter = .init(interactor: exchangeRateItemInteractor)
+
         let paymentMethodLineItemInteractor = DefaultLineItemCellInteractor()
         paymentMethodLineItemInteractor.title.stateRelay.accept(
             .loaded(next: .init(text: LocalizedString.LineItem.paymentMethod))
         )
-        
-        paymentMethodLineItemInteractor.description.stateRelay.accept(
-            .loaded(next: .init(text: interactor.checkoutData.localizedPaymentMethod))
-        )
         paymentMethodLineItemCellPresenter = .init(interactor: paymentMethodLineItemInteractor)
         
-        buyButtonViewModel.tapRelay
+        continueButtonViewModel.tapRelay
             .show(loader: loadingViewPresenter, style: .circle)
             .flatMap(weak: self) { (self, _) in
-                self.interactor.confirm()
+                self.interactor.continue()
                     .mapToResult()
             }
             .hide(loader: loadingViewPresenter)
@@ -173,18 +224,18 @@ final class CheckoutScreenPresenter {
             }
             .disposed(by: disposeBag)
         
-        buyButtonViewModel.tapRelay
+        continueButtonViewModel.tapRelay
             .map { _ in AnalyticsEvent.sbCheckoutConfirm }
             .bind(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
         
-        cancelButtonViewModel.tapRelay
+        cancelButtonViewModel?.tapRelay
             .bind(weak: self) { (self) in
                 self.cancel()
             }
             .disposed(by: disposeBag)
         
-        cancelButtonViewModel.tapRelay
+        cancelButtonViewModel?.tapRelay
             .map { _ in AnalyticsEvent.sbCheckoutCancel }
             .bind(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
@@ -195,8 +246,8 @@ final class CheckoutScreenPresenter {
         interactor.setup()
             .handleLoaderForLifecycle(loader: loadingViewPresenter, style: .circle)
             .subscribe(
-                onSuccess: { [weak self] quote in
-                    self?.setupDidSucceed(with: quote)
+                onSuccess: { [weak self] data in
+                    self?.setupDidSucceed(with: data)
                 },
                 onError: { [weak self] _ in
                     self?.setupDidFail()
@@ -208,12 +259,14 @@ final class CheckoutScreenPresenter {
     }
     
     private func cancel() {
-        interactor.cancel()
+        interactor.cancelIfPossible()
             .handleLoaderForLifecycle(loader: loadingViewPresenter, style: .circle)
             .subscribe(
-                onCompleted: { [weak self] in
+                onSuccess: { [weak self] wasCancelled in
                     guard let self = self else { return }
-                    self.analyticsRecorder.record(event: AnalyticsEvent.sbCheckoutCancelGoBack)
+                    if wasCancelled {
+                        self.analyticsRecorder.record(event: AnalyticsEvent.sbCheckoutCancelGoBack)
+                    }
                     self.stateService.previousRelay.accept(())
                 }
             )
@@ -228,17 +281,37 @@ final class CheckoutScreenPresenter {
     
     // MARK: - Accessors
     
-    private func setupDidSucceed(with quote: SimpleBuyQuote) {
-        let time = DateFormatter.elegantDateFormatter.string(from: quote.time)
+    private func setupDidSucceed(with data: CheckoutScreenInteractor.InteractionData) {
+        let time = DateFormatter.elegantDateFormatter.string(from: data.time)
         dateLineItemCellPresenter.interactor.description.stateRelay.accept(
             .loaded(next: .init(text: time))
         )
         buyingFeeLineItemCellPresenter.interactor.description.stateRelay.accept(
-            .loaded(next: .init(text: quote.fee.toDisplayString()))
+            .loaded(next: .init(text: data.fee.toDisplayString()))
         )
-        let estimatedAmount = "~ \(quote.estimatedAmount.toDisplayString(includeSymbol: true))"
-        estimatedLineItemCellPresenter.interactor.description.stateRelay.accept(
-            .loaded(next: .init(text: estimatedAmount))
+        
+        var amount = data.amount.toDisplayString(includeSymbol: true)
+        if !interactor.checkoutData.hasCheckoutMade {
+            amount = "~ \(amount)"
+        }
+        amountLineItemCellPresenter.interactor.description.stateRelay.accept(
+            .loaded(next: .init(text: amount))
+        )
+        exchangeRateLineItemCellPresenter.interactor.description.stateRelay.accept(
+            .loaded(next: .init(text: data.exchangeRate.toDisplayString(includeSymbol: true)))
+        )
+        orderIdLineItemCellPresenter.interactor.description.stateRelay.accept(
+            .loaded(next: .init(text: data.orderId))
+        )
+        
+        let localizedPaymentMethod: String
+        if let card = data.card {
+            localizedPaymentMethod = "\(card.label) \(card.displaySuffix)"
+        } else {
+            localizedPaymentMethod = LocalizationConstants.SimpleBuy.Checkout.LineItem.bankTransfer
+        }
+        paymentMethodLineItemCellPresenter.interactor.description.stateRelay.accept(
+            .loaded(next: .init(text: localizedPaymentMethod))
         )
     }
     
@@ -247,28 +320,5 @@ final class CheckoutScreenPresenter {
         alertPresenter.error { [weak stateService] in
             stateService?.previousRelay.accept(())
         }
-    }
-}
-
-fileprivate extension SimpleBuyCheckoutData {
-    var localizedPaymentMethod: String {
-        var localizedPaymentMethod = ""
-        switch detailType {
-        case .candidate(let details):
-            switch details.paymentMethod {
-            case .card(let card):
-                localizedPaymentMethod = "\(card.label) \(card.displaySuffix)"
-            case .suggested(let method):
-                switch method.type {
-                case .bankTransfer:
-                    localizedPaymentMethod = LocalizationConstants.SimpleBuy.Checkout.LineItem.bankTransfer
-                case .card:
-                    break
-                }
-            }
-        case .order:
-            break
-        }
-        return localizedPaymentMethod
     }
 }

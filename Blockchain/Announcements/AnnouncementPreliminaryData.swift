@@ -28,15 +28,15 @@ struct AnnouncementPreliminaryData {
     let authenticatorType: AuthenticatorType
     
     var hasLinkedExchangeAccount: Bool {
-        return user.hasLinkedExchangeAccount
+        user.hasLinkedExchangeAccount
     }
     
     var isKycSupported: Bool {
-        return country?.isKycSupported ?? false
+        country?.isKycSupported ?? false
     }
     
     var hasTwoFA: Bool {
-        return authenticatorType != .standard
+        authenticatorType != .standard
     }
 
     var hasReceivedBlockstackAirdrop: Bool {
@@ -46,17 +46,14 @@ struct AnnouncementPreliminaryData {
         return campaign.currentState == .received
     }
 
-    var pendingSimpleBuyOrderAssetType: CryptoCurrency? {
-        pendingOrderDetails?.cryptoValue.currencyType
-    }
-
     var hasIncompleteBuyFlow: Bool {
         simpleBuyEventCache[.hasShownBuyScreen] && isSimpleBuyAvailable
     }
+    
+    let pendingOrderDetails: SimpleBuyOrderDetails?
 
     private let isSimpleBuyAvailable: Bool
     private let airdropCampaigns: AirdropCampaigns
-    private let pendingOrderDetails: SimpleBuyOrderDetails?
     private let simpleBuyEventCache: SimpleBuyEventCache
     
     init(user: NabuUser,

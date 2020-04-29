@@ -40,6 +40,15 @@ public struct SimpleBuyCheckoutData {
             }
         }
         
+        public var order: SimpleBuyOrderDetails? {
+            switch self {
+            case .order(let details):
+                return details
+            case .candidate:
+                return nil
+            }
+        }
+        
         var paymentMethodId: String? {
             switch self {
             case .candidate(let details):
@@ -51,6 +60,15 @@ public struct SimpleBuyCheckoutData {
     }
     
     // MARK: - Properties
+    
+    public var hasCheckoutMade: Bool {
+        switch detailType {
+        case .candidate:
+            return false
+        case .order(let details):
+            return details.is3DSConfirmedCardOrder
+        }
+    }
     
     public var fiatValue: FiatValue {
         switch detailType {

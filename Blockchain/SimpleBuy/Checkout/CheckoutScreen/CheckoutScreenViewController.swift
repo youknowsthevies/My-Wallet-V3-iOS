@@ -8,14 +8,10 @@
 
 import PlatformUIKit
 
-final class CheckoutScreenViewController: BaseScreenViewController {
+final class CheckoutScreenViewController: BaseTableViewController {
     
     // MARK: - Private IBOutlets
-    
-    @IBOutlet private var tableView: SelfSizingTableView!
-    @IBOutlet private var buyButtonView: ButtonView!
-    @IBOutlet private var cancelButtonView: ButtonView!
-    
+        
     // MARK: - Injected
     
     private let presenter: CheckoutScreenPresenter
@@ -24,9 +20,10 @@ final class CheckoutScreenViewController: BaseScreenViewController {
     
     init(using presenter: CheckoutScreenPresenter) {
         self.presenter = presenter
-        super.init(nibName: CheckoutScreenViewController.objectName, bundle: nil)
+        super.init()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -38,8 +35,13 @@ final class CheckoutScreenViewController: BaseScreenViewController {
         setupNavigationBar()
         setupTableView()
                 
-        buyButtonView.viewModel = presenter.buyButtonViewModel
-        cancelButtonView.viewModel = presenter.cancelButtonViewModel
+        continueButtonView.viewModel = presenter.continueButtonViewModel
+        if let cancelButtonViewModel = presenter.cancelButtonViewModel {
+            let cancelButtonView = ButtonView()
+            buttonStackView.addArrangedSubview(cancelButtonView)
+            cancelButtonView.viewModel = cancelButtonViewModel
+            cancelButtonView.layout(dimension: .height, to: 48)
+        }
         
         presenter.viewDidLoad()
     }
@@ -59,14 +61,16 @@ final class CheckoutScreenViewController: BaseScreenViewController {
     
     private func setupNavigationBar() {
         titleViewStyle = presenter.titleView
-        set(barStyle: presenter.barStyle,
-            leadingButtonStyle: presenter.leadingButton,
-            trailingButtonStyle: presenter.trailingButton)
+        setStandardDarkContentStyle()
     }
     
     // MARK: - Navigation
     
     override func navigationBarLeadingButtonPressed() {
+        presenter.previous()
+    }
+    
+    override func navigationBarTrailingButtonPressed() {
         presenter.previous()
     }
 }
@@ -108,16 +112,22 @@ extension CheckoutScreenViewController: UITableViewDelegate, UITableViewDataSour
     private func lineItemCell(for indexPath: IndexPath, type: CheckoutCellType.LineItemType) -> LineItemTableViewCell {
         let cell = tableView.dequeue(LineItemTableViewCell.self, for: indexPath)
         switch type {
+        case .orderId:
+            cell.presenter = presenter.orderIdLineItemCellPresenter
+        case .status:
+            cell.presenter = presenter.statusLineItemCellPresenter
         case .date:
             cell.presenter = presenter.dateLineItemCellPresenter
         case .totalCost:
             cell.presenter = presenter.totalCostLineItemCellPresenter
-        case .estimatedAmount:
-            cell.presenter = presenter.estimatedLineItemCellPresenter
+        case .estimatedAmount, .amount:
+            cell.presenter = presenter.amountLineItemCellPresenter
         case .buyingFee:
             cell.presenter = presenter.buyingFeeLineItemCellPresenter
         case .paymentMethod:
             cell.presenter = presenter.paymentMethodLineItemCellPresenter
+        case .exchangeRate:
+            cell.presenter = presenter.exchangeRateLineItemCellPresenter
         case .paymentAccountField:
             break
         }
