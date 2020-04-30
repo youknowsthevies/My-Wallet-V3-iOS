@@ -189,7 +189,7 @@ class FiatValueTests: XCTestCase {
     }
     
     func testValueDecrease() {
-        let current = FiatValue(minor: "12000", currency: .USD) // $USD 11.00
+        let current = FiatValue(minor: "12000", currency: .USD) // $USD 120.00
         let before = current.value(before: -0.2) // before 20% decrease
         XCTAssertTrue(before.minorAmount == 15000)
     }
