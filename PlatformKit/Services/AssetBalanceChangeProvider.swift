@@ -30,7 +30,7 @@ public final class AssetBalanceChangeProvider: AssetBalanceChangeProviding {
     public let prices: HistoricalFiatPriceServiceAPI
     
     public var calculationState: Observable<AssetFiatCryptoBalanceCalculationState> {
-        return calculationStateRelay.asObservable()
+        calculationStateRelay.asObservable()
     }
     
     // MARK: - Private Accessors
@@ -53,12 +53,12 @@ public final class AssetBalanceChangeProvider: AssetBalanceChangeProviding {
                 
                 let delta = historicalPriceValue.historicalPrices.delta
                 
-                let noncustodialValue = try noncustodialBalance.value(before: delta)
-                let custodialValue = try custodialBalance.value(before: delta)
-                
+                let previousNoncustodialBalance = try noncustodialBalance.value(before: delta)
+                let previousCustodialValue = try custodialBalance.value(before: delta)
+                                
                 return .value(.init(
-                    noncustodial: try noncustodialValue - noncustodialBalance,
-                    custodial: try custodialValue - custodialBalance)
+                    noncustodial: try noncustodialBalance - previousNoncustodialBalance,
+                    custodial: try custodialBalance - previousCustodialValue)
                 )
             }
             .catchErrorJustReturn(.calculating) // TODO: Error handling
