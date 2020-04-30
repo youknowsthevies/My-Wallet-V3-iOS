@@ -12,10 +12,10 @@ public struct SimpleBuyPaymentMethod: Equatable {
     public enum MethodType: String {
         
         /// Card payment method
-        case card = "CARD"
+        case card = "PAYMENT_CARD"
         
         /// Bank transfer payment method
-        case bankTransfer = "BANK_TRANSFER"
+        case bankTransfer = "BANK_ACCOUNT"
     }
 
     /// The type of the payment method
