@@ -77,16 +77,6 @@ public struct Screen {
                 }
             }
             
-            /// Returns the status bar style
-            var statusBarStyle: UIStatusBarStyle {
-                switch self {
-                case .lightContent:
-                    return .lightContent
-                case .darkContent:
-                    return .default
-                }
-            }
-            
             /// Ignores the status bar if marked as `true`
             var ignoresStatusBar: Bool {
                 switch self {

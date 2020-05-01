@@ -44,7 +44,7 @@ final class BuyCryptoScreenPresenter {
     let digitPadViewModel: DigitPadViewModel
     let currencySelectionRelay = PublishRelay<Void>()
     var labeledButtonViewModels: Driver<[CurrencyLabeledButtonViewModel]> {
-        return labeledButtonViewModelsRelay.asDriver()
+        labeledButtonViewModelsRelay.asDriver()
     }
     let trailingButtonViewModel: ButtonViewModel
 
@@ -311,34 +311,16 @@ final class BuyCryptoScreenPresenter {
 
         // Payment Method Selection Button Setup
         
-        interactor.preferredPaymentMethodType
-            .bind(weak: self) { (self, type) in
-                self.setup(preferredPaymentMethodType: type)
+        Observable
+            .combineLatest(
+                interactor.preferredPaymentMethodType,
+                interactor.paymentMethodTypes.map { $0.count }
+            )
+            .bind(weak: self) { (self, payload) in
+                self.setup(preferredPaymentMethodType: payload.0, methodCount: payload.1)
             }
             .disposed(by: disposeBag)
         
-        // Trailing Button Setup
-        
-        let trailingButtonShouldShow = interactor
-            .state
-            .map { (state) -> Bool in
-                switch state {
-                case .empty, .inBounds:
-                    return false
-                default:
-                    return true
-                }
-            }
-
-        trailingButtonShouldShow
-            .bind(to: trailingButtonViewModel.isEnabledRelay)
-            .disposed(by: disposeBag)
-
-        trailingButtonShouldShow
-            .map { !$0 }
-            .bind(to: trailingButtonViewModel.isHiddenRelay)
-            .disposed(by: disposeBag)
-
         interactor
             .state
             .map {
@@ -411,15 +393,27 @@ final class BuyCryptoScreenPresenter {
     
     // MARK: - Private methods
 
-    private func setup(preferredPaymentMethodType: SimpleBuyPaymentMethodType?) {
+    private func setup(preferredPaymentMethodType: SimpleBuyPaymentMethodType?, methodCount: Int) {
         guard let type = preferredPaymentMethodType else { return }
         
         let viewModel = SelectionButtonViewModel(with: type)
-        viewModel.trailingImageViewContentRelay.accept(
-            ImageViewContent(
+        if deviceType == .superCompact {
+            viewModel.subtitleRelay.accept(nil)
+        }
+        
+        let trailingImageViewContent: ImageViewContent
+        if methodCount > 1 {
+            trailingImageViewContent = ImageViewContent(
                 imageName: "icon-disclosure-down-small"
             )
-        )
+            viewModel.isButtonEnabledRelay.accept(true)
+        } else {
+            trailingImageViewContent = .empty
+            viewModel.isButtonEnabledRelay.accept(false)
+        }
+        
+        viewModel.trailingImageViewContentRelay.accept(trailingImageViewContent)
+
         viewModel.tap
             .emit(onNext: { [weak stateService] in
                 stateService?.paymentMethods()

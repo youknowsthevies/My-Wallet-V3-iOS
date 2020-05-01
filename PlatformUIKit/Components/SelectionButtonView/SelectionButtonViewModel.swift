@@ -118,6 +118,12 @@ public final class SelectionButtonViewModel {
         tapRelay.asSignal()
     }
     
+    /// Determines if the button accepts touches
+    public let isButtonEnabledRelay = BehaviorRelay(value: true)
+    var isButtonEnabled: Driver<Bool> {
+        isButtonEnabledRelay.asDriver()
+    }
+    
     // MARK: - Internal Properties
 
     /// A tap relay that accepts taps on the button

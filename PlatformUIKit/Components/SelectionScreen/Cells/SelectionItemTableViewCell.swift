@@ -105,7 +105,7 @@ final class SelectionItemTableViewCell: UITableViewCell {
         thumbLabel.layout(to: .top, of: thumbImageView)
         thumbLabel.layout(to: .bottom, of: thumbImageView)
         
-        stackView.layoutToSuperview(axis: .vertical, offset: 16)
+        stackView.layoutToSuperview(axis: .vertical, offset: 24)
         stackView.layout(edge: .leading, to: .trailing, of: thumbImageView, offset: 16)
         stackView.layout(edge: .trailing, to: .leading, of: selectionImageView, offset: -16)
         stackView.axis = .vertical
@@ -120,7 +120,7 @@ final class SelectionItemTableViewCell: UITableViewCell {
         descriptionLabel.verticalContentCompressionResistancePriority = .required
         
         selectionImageView.layout(size: .init(edge: 20))
-        selectionImageView.layoutToSuperview(.trailing, offset: -16)
+        selectionImageView.layoutToSuperview(.trailing, offset: -24)
         selectionImageView.layoutToSuperview(.centerY)
     }
     

@@ -27,7 +27,7 @@ final class BillingAddressScreenPresenter {
         let cellTypes: [CellType]
         
         var cellCount: Int {
-            return cellTypes.count
+            cellTypes.count
         }
         
         init(country: Country) {
@@ -113,6 +113,8 @@ final class BillingAddressScreenPresenter {
         self.eventRecorder = eventRecorder
         
         selectionButtonViewModel = SelectionButtonViewModel()
+        selectionButtonViewModel.shouldShowSeparatorRelay.accept(true)
+        
         buttonViewModel = .primary(with: LocalizedString.button)
         
         // 1. Country is selected

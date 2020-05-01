@@ -27,7 +27,8 @@ final class NoticeTableViewCell: UITableViewCell {
         selectionStyle = .none
         contentView.addSubview(noticeView)
         noticeView.layoutToSuperview(axis: .horizontal, offset: 24)
-        noticeView.layoutToSuperview(axis: .vertical, offset: 16)
+        noticeView.layoutToSuperview(axis: .vertical, offset: 16, priority: .penultimateHigh)
+        noticeView.layoutToSuperview(.centerY)
     }
     
     required init?(coder: NSCoder) {

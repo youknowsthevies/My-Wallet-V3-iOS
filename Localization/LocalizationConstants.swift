@@ -1717,7 +1717,7 @@ public struct LocalizationConstants {
                     comment: "Amount"
                 )
                 public static let buyingFee = NSLocalizedString(
-                    "Buying Fee",
+                    "Fees",
                     comment: "Buying Fee"
                 )
                 public static let exchangeRate = NSLocalizedString(

@@ -281,10 +281,14 @@ final class CheckoutScreenPresenter {
     
     // MARK: - Navigation
     
-    func previous() {
+    func navigationBarLeadingButtonTapped() {
         cancel()
     }
     
+    func navigationBarTrailingButtonTapped() {
+        stateService.previousRelay.accept(())
+    }
+        
     // MARK: - Accessors
     
     private func setupDidSucceed(with data: CheckoutScreenInteractor.InteractionData) {

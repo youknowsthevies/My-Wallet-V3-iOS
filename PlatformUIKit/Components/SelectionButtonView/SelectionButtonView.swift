@@ -80,6 +80,10 @@ public final class SelectionButtonView: UIView {
                 })
                 .disposed(by: disposeBag)
             
+            viewModel.isButtonEnabled
+                .drive(button.rx.isEnabled)
+                .disposed(by: disposeBag)
+            
             button.rx
                 .controlEvent(.touchUpInside)
                 .bind(to: viewModel.tapRelay)

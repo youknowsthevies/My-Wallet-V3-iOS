@@ -16,6 +16,12 @@ public final class SelectionButtonTableViewCell: UITableViewCell {
         }
     }
     
+    public var bottomSpace: CGFloat = 0 {
+        didSet {
+            verticalConstraints.trailing.constant = -bottomSpace
+        }
+    }
+    
     // MARK: - UI Properties
     
     private let selectionButtonView = SelectionButtonView()
@@ -29,7 +35,8 @@ public final class SelectionButtonTableViewCell: UITableViewCell {
         
         contentView.addSubview(selectionButtonView)
         selectionButtonView.layoutToSuperview(axis: .horizontal)
-        verticalConstraints = selectionButtonView.layoutToSuperview(axis: .vertical)
+        verticalConstraints = selectionButtonView.layoutToSuperview(axis: .vertical, priority: .penultimateHigh)
+        verticalConstraints.trailing.constant = -bottomSpace
     }
     
     @available(*, unavailable)

@@ -67,11 +67,11 @@ final class CheckoutScreenViewController: BaseTableViewController {
     // MARK: - Navigation
     
     override func navigationBarLeadingButtonPressed() {
-        presenter.previous()
+        presenter.navigationBarLeadingButtonTapped()
     }
     
     override func navigationBarTrailingButtonPressed() {
-        presenter.previous()
+        presenter.navigationBarTrailingButtonTapped()
     }
 }
 

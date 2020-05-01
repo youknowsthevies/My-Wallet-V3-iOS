@@ -10,8 +10,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="BuyCryptoScreenViewController" customModule="Blockchain" customModuleProvider="target">
             <connections>
+                <outlet property="amountLabelContainerView" destination="V8l-aZ-eJq" id="6Qv-Yv-emc"/>
                 <outlet property="amountLabelView" destination="ELa-1q-8kp" id="zpP-JE-ogn"/>
-                <outlet property="amountLabelViewTopConstraint" destination="7Qs-HH-bCI" id="ghH-Kh-Qhi"/>
                 <outlet property="assetSelectionButtonView" destination="HJn-pf-CnC" id="PKF-bd-58K"/>
                 <outlet property="assetSelectionViewHeightConstraint" destination="hiZ-nM-ula" id="ikg-Yh-Szh"/>
                 <outlet property="continueButtonView" destination="HZj-9M-8pa" id="duI-bO-ACd"/>
@@ -19,10 +19,12 @@
                 <outlet property="digitPadHeightConstraint" destination="zE9-KJ-zuz" id="tzE-h1-aqC"/>
                 <outlet property="digitPadView" destination="2wS-rG-Li2" id="itW-xo-cbD"/>
                 <outlet property="paymentMethodSelectionButtonView" destination="j2d-Ih-Nc5" id="dMg-B0-z07"/>
+                <outlet property="paymentMethodSelectionViewBottomConstraint" destination="PYi-Wk-YKT" id="0HA-ho-X8Z"/>
                 <outlet property="paymentMethodSelectionViewHeightConstraint" destination="Yal-26-PRt" id="4SJ-pS-GIM"/>
-                <outlet property="separatorView" destination="jQa-en-e1e" id="GqO-F4-bV1"/>
                 <outlet property="trailingButtonView" destination="r3s-Q8-51x" id="Gwc-xJ-XBN"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+                <outletCollection property="separatorViews" destination="jQa-en-e1e" collectionClass="NSMutableArray" id="Pgx-wR-ekr"/>
+                <outletCollection property="separatorViews" destination="D2l-YT-jm4" collectionClass="NSMutableArray" id="zox-R3-p1p"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -37,15 +39,26 @@
                         <constraint firstAttribute="height" constant="78" id="hiZ-nM-ula"/>
                     </constraints>
                 </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ELa-1q-8kp" customClass="AmountLabelView" customModule="PlatformUIKit">
-                    <rect key="frame" x="24" y="186" width="366" height="40"/>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="V8l-aZ-eJq">
+                    <rect key="frame" x="0.0" y="122" width="414" height="314"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ELa-1q-8kp" customClass="AmountLabelView" customModule="PlatformUIKit">
+                            <rect key="frame" x="24" y="137" width="366" height="40"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="40" id="syp-kN-xYl"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="40" id="syp-kN-xYl"/>
+                        <constraint firstItem="ELa-1q-8kp" firstAttribute="leading" secondItem="V8l-aZ-eJq" secondAttribute="leading" constant="24" id="FtW-xv-D4y"/>
+                        <constraint firstItem="ELa-1q-8kp" firstAttribute="centerY" secondItem="V8l-aZ-eJq" secondAttribute="centerY" id="hxd-tq-IOl"/>
+                        <constraint firstAttribute="trailing" secondItem="ELa-1q-8kp" secondAttribute="trailing" constant="24" id="o9q-jW-Vgz"/>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="r3s-Q8-51x" customClass="ButtonView" customModule="PlatformUIKit">
-                    <rect key="frame" x="388" y="418" width="10" height="10"/>
+                    <rect key="frame" x="380" y="418" width="10" height="10"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="10" placeholder="YES" id="Aoi-CD-3aK"/>
@@ -57,6 +70,13 @@
                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="78" id="Yal-26-PRt"/>
+                    </constraints>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="D2l-YT-jm4">
+                    <rect key="frame" x="0.0" y="436" width="414" height="1"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="OCK-I0-gSl"/>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HZj-9M-8pa" customClass="ButtonView" customModule="PlatformUIKit">
@@ -84,25 +104,29 @@
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="2wS-rG-Li2" firstAttribute="top" secondItem="HZj-9M-8pa" secondAttribute="bottom" constant="24" id="4GS-b2-D6G"/>
-                <constraint firstItem="ELa-1q-8kp" firstAttribute="top" secondItem="HJn-pf-CnC" secondAttribute="bottom" constant="64" id="7Qs-HH-bCI"/>
                 <constraint firstItem="HJn-pf-CnC" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="7fl-l2-5wf"/>
                 <constraint firstItem="jQa-en-e1e" firstAttribute="bottom" secondItem="2wS-rG-Li2" secondAttribute="top" id="9ux-8T-qBP"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="HJn-pf-CnC" secondAttribute="trailing" id="F4c-DP-1aq"/>
-                <constraint firstItem="ELa-1q-8kp" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="24" id="F5E-83-O8a"/>
                 <constraint firstItem="2wS-rG-Li2" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="FiR-xs-eYh"/>
                 <constraint firstItem="j2d-Ih-Nc5" firstAttribute="top" secondItem="r3s-Q8-51x" secondAttribute="bottom" constant="8" placeholder="YES" id="Fyw-uu-qbW"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="j2d-Ih-Nc5" secondAttribute="trailing" id="JsT-k6-Xjq"/>
+                <constraint firstItem="j2d-Ih-Nc5" firstAttribute="top" secondItem="V8l-aZ-eJq" secondAttribute="bottom" priority="250" id="OLL-gq-wOb"/>
                 <constraint firstItem="HZj-9M-8pa" firstAttribute="top" secondItem="j2d-Ih-Nc5" secondAttribute="bottom" constant="16" id="PYi-Wk-YKT"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="2wS-rG-Li2" secondAttribute="trailing" id="Phc-PT-oml"/>
                 <constraint firstItem="HJn-pf-CnC" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="To9-C6-HeR"/>
                 <constraint firstItem="jQa-en-e1e" firstAttribute="leading" secondItem="2wS-rG-Li2" secondAttribute="leading" id="UN9-Ae-wqb"/>
+                <constraint firstItem="D2l-YT-jm4" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="Ved-ja-b4z"/>
+                <constraint firstItem="V8l-aZ-eJq" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="W5D-Md-Zhg"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="2wS-rG-Li2" secondAttribute="bottom" id="ZTI-B5-lEx"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="ELa-1q-8kp" secondAttribute="trailing" constant="24" id="cCh-BP-Wzz"/>
                 <constraint firstItem="jQa-en-e1e" firstAttribute="trailing" secondItem="2wS-rG-Li2" secondAttribute="trailing" id="dda-EW-Hnv"/>
+                <constraint firstItem="V8l-aZ-eJq" firstAttribute="top" secondItem="HJn-pf-CnC" secondAttribute="bottom" id="fFN-1B-aRc"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="HZj-9M-8pa" secondAttribute="trailing" constant="24" id="gF0-5I-A9T"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="r3s-Q8-51x" secondAttribute="trailing" constant="16" id="hUy-kd-ZwE"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="r3s-Q8-51x" secondAttribute="trailing" constant="24" id="hUy-kd-ZwE"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="D2l-YT-jm4" secondAttribute="trailing" id="mGp-1P-XSt"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="V8l-aZ-eJq" secondAttribute="trailing" id="mcP-fD-fQb"/>
                 <constraint firstItem="j2d-Ih-Nc5" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="uME-s0-MFV"/>
                 <constraint firstItem="HZj-9M-8pa" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="24" id="xb9-2z-xv4"/>
+                <constraint firstItem="D2l-YT-jm4" firstAttribute="top" secondItem="j2d-Ih-Nc5" secondAttribute="top" id="zZD-el-1Q8"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <point key="canvasLocation" x="137.68115942028987" y="87.723214285714278"/>

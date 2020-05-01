@@ -122,7 +122,7 @@ open class BaseScreenViewController: UIViewController {
     
     override open var preferredStatusBarStyle: UIStatusBarStyle {
         loadViewIfNeeded()
-        return barStyle.statusBarStyle
+        return determineStatusBarStyle()
     }
     
     private var trailingBarButtonItem: UIBarButtonItem! {
@@ -145,12 +145,24 @@ open class BaseScreenViewController: UIViewController {
         set(titleViewStyle: titleViewStyle)
         setBackground(by: barStyle)
         if !barStyle.ignoresStatusBar {
-            UIApplication.shared.statusBarStyle = barStyle.statusBarStyle
+            UIApplication.shared.statusBarStyle = determineStatusBarStyle()
         }
         currentNavigationItem?.setHidesBackButton(true, animated: false)
     }
-    
+        
     // MARK: - Setup
+    
+    private func determineStatusBarStyle() -> UIStatusBarStyle {
+        if #available(iOS 13.0, *), isPresentedModally {
+            return .lightContent
+        }
+        switch barStyle {
+        case .lightContent:
+            return .lightContent
+        case .darkContent:
+            return .default
+        }
+    }
     
     private func setBackground(by style: Screen.Style.Bar) {
         let animation = CATransition()

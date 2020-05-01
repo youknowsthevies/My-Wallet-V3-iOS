@@ -171,6 +171,7 @@ extension BillingAddressScreenViewController: UITableViewDelegate, UITableViewDa
             for: IndexPath(row: row, section: 0)
         )
         cell.viewModel = presenter.selectionButtonViewModel
+        cell.bottomSpace = 16
         return cell
     }
 }

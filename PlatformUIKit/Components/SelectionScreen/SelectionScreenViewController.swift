@@ -85,7 +85,7 @@ public final class SelectionScreenViewController: BaseScreenViewController {
         tableView.tableFooterView = UIView()
         tableView.estimatedRowHeight = 72
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.separatorInset = UIEdgeInsets(top: 0, left: 80, bottom: 0, right: 0)
+        tableView.separatorInset = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
         
         // Table view binding
         
