@@ -39,7 +39,7 @@ public struct SimpleBuyOrderDetails {
     // MARK: - Properties
 
     public var paymentMethod: SimpleBuyPaymentMethod.MethodType {
-        paymentMethodId == nil ? .bankTransfer : .card
+        paymentMethodId == nil ? .bankTransfer : .card([])
     }
     
     public let expirationDate: Date

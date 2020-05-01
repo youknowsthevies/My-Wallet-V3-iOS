@@ -121,8 +121,12 @@ final class AddCardRouter: Router {
     }
     
     private func showCardDetailsScreen() {
+        let interactor = CardDetailsScreenInteractor(
+            paymentMethodsService: simpleBuyServiceProvider.paymentMethods
+        )
         let presenter = CardDetailsScreenPresenter(
-            stateService: stateService
+            stateService: stateService,
+            interactor: interactor
         )
         let viewController = CardDetailsScreenViewController(presenter: presenter)
         if #available(iOS 13.0, *) {

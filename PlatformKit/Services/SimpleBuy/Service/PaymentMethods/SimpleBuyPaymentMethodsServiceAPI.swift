@@ -14,5 +14,6 @@ import ToolKit
 public protocol SimpleBuyPaymentMethodsServiceAPI: class {
     var paymentMethods: Observable<[SimpleBuyPaymentMethod]> { get }
     var paymentMethodsSingle: Single<[SimpleBuyPaymentMethod]> { get }
+    var supportedCardTypes: Single<Set<CardType>> { get }
 }
 

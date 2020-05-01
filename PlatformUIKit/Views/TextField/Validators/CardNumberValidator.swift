@@ -30,10 +30,10 @@ public final class CardNumberValidator: TextValidating, CardTypeSource {
     }
     
     public let valueRelay = BehaviorRelay<String>(value: "")
-        
+    public let supportedCardTypesRelay = BehaviorRelay<Set<CardType>>(value: [])
+    
     // MARK: - Private Properties
     
-    private let supportedCardTypes: Set<CardType>
     private let cardTypeRelay = BehaviorRelay<CardType>(value: .unknown)
     private let luhnValidator = LuhnNumberValidator()
     private let validationStateRelay = BehaviorRelay<TextValidationState>(value: .invalid(reason: nil))
@@ -42,20 +42,27 @@ public final class CardNumberValidator: TextValidating, CardTypeSource {
     // MARK: - Setup
     
     public init(supportedCardTypes: Set<CardType> = [.visa]) {
-        self.supportedCardTypes = supportedCardTypes
+        supportedCardTypesRelay.accept(supportedCardTypes)
+        
         valueRelay
             .map { .determineType(from: $0) }
             .bind(to: cardTypeRelay)
             .disposed(by: disposeBag)
-           
-        Observable
+
+        let inputData = Observable
             .zip(valueRelay, cardType)
+    
+        Observable
+            .combineLatest(
+                inputData,
+                supportedCardTypesRelay
+            )
             .map(weak: self) { (self, payload) in
-                let (value, cardType) = payload
+                let ((value, cardType), supportedCardTypes) = payload
                 
                 let isSupported: Bool
                 if cardType.isKnown {
-                    isSupported = self.supportedCardTypes.contains(cardType)
+                    isSupported = supportedCardTypes.contains(cardType)
                 } else {
                     isSupported = true
                 }
@@ -75,7 +82,7 @@ public final class CardNumberValidator: TextValidating, CardTypeSource {
     }
     
     func supports(cardType: CardType) -> Bool {
-        supportedCardTypes.contains(cardType)
+        supportedCardTypesRelay.value.contains(cardType)
     }
         
     private func isValid(_ number: String) -> Bool {

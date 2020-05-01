@@ -59,8 +59,14 @@ public final class LoadingAnimatingView: LoadingCircleView {
     
     // MARK: - Setup
     
-    override public init(diameter: CGFloat, strokeColor: UIColor, strokeBackgroundColor: UIColor, fillColor: UIColor) {
-        super.init(diameter: diameter, strokeColor: strokeColor, strokeBackgroundColor: strokeBackgroundColor, fillColor: fillColor)
+    override public init(diameter: CGFloat, strokeColor: UIColor, strokeBackgroundColor: UIColor, fillColor: UIColor, strokeWidth: CGFloat = 8) {
+        super.init(
+            diameter: diameter,
+            strokeColor: strokeColor,
+            strokeBackgroundColor: strokeBackgroundColor,
+            fillColor: fillColor,
+            strokeWidth: strokeWidth
+        )
         accessibility = Accessibility(id: .value(Accessibility.Identifier.LoadingView.loadingView))
     }
     

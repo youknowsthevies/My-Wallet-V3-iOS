@@ -22,6 +22,7 @@ public final class SearchController: UISearchController {
         searchResultsUpdater = self
         searchBar.placeholder = placeholderText
         searchBar.showsCancelButton = false
+        searchBar.tintColor = .descriptionText
     }
     
     public required init?(coder: NSCoder) {

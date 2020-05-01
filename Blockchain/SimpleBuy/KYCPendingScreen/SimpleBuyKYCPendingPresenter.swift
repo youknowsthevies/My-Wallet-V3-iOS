@@ -24,18 +24,6 @@ final class SimpleBuyKYCPendingPresenter: PendingStatePresenterAPI {
 
     let title = LocalizedString.title
 
-    var titleAccessibility: String {
-        return AccessibilityId.titleLabel
-    }
-    
-    var subtitleAccessibility: String {
-        return AccessibilityId.subtitleLabel
-    }
-    
-    var buttonAccessibility: String {
-        return AccessibilityId.goToWalletButton
-    }
-
     var viewModel: Driver<PendingStateViewModel> {
         modelRelay.asDriver()
     }
@@ -92,7 +80,7 @@ final class SimpleBuyKYCPendingPresenter: PendingStatePresenterAPI {
         switch verificationState {
         case .ineligible:
             return PendingStateViewModel(
-                asset: .image(.region),
+                compositeStatusViewType: .image(PendingStateViewModel.Image.region.name),
                 title: LocalizedString.Ineligible.title,
                 subtitle: LocalizedString.Ineligible.subtitle,
                 button: actionButton(title: LocalizedString.Ineligible.button)
@@ -100,21 +88,21 @@ final class SimpleBuyKYCPendingPresenter: PendingStatePresenterAPI {
         case .completed,
              .loading:
             return PendingStateViewModel(
-                asset: .loading,
+                compositeStatusViewType: .loader,
                 title: LocalizedString.Verifying.title,
                 subtitle: LocalizedString.Verifying.subtitle,
                 button: actionButton(title: LocalizedString.button)
             )
         case .manualReview:
             return PendingStateViewModel(
-                asset: .image(.triangleError),
+                compositeStatusViewType: .image(PendingStateViewModel.Image.triangleError.name),
                 title: LocalizedString.ManualReview.title,
                 subtitle: LocalizedString.ManualReview.subtitle,
                 button: actionButton(title: LocalizedString.button)
             )
         case .pending:
             return PendingStateViewModel(
-                asset: .image(.clock),
+                compositeStatusViewType: .image(PendingStateViewModel.Image.clock.name),
                 title: LocalizedString.PendingReview.title,
                 subtitle: LocalizedString.PendingReview.subtitle,
                 button: actionButton(title: LocalizedString.button)

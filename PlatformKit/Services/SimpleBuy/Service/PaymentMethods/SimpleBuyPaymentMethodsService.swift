@@ -21,6 +21,20 @@ public final class SimpleBuyPaymentMethodsService: SimpleBuyPaymentMethodsServic
     public var paymentMethodsSingle: Single<[SimpleBuyPaymentMethod]> {
         cachedValue.valueSingle
     }
+    
+    public var supportedCardTypes: Single<Set<CardType>> {
+        cachedValue.valueSingle.map { paymentMethods in
+            guard let card = paymentMethods.first(where: { $0.type.isCard }) else {
+                return []
+            }
+            switch card.type {
+            case .card(let types):
+                return types
+            case .bankTransfer:
+                return []
+            }
+        }
+    }
         
     // MARK: - Private properties
     

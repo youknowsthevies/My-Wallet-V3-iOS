@@ -77,18 +77,23 @@ final class CardDetailsScreenPresenter {
 
     private let stateService: AddCardStateService
     private let eventRecorder: AnalyticsEventRecording
+    private let alertPreseter: AlertViewPresenter
+    private let cardNumberValidator: CardNumberValidator
     
     // MARK: - Setup
     
     init(stateService: AddCardStateService,
+         interactor: CardDetailsScreenInteractor,
+         alertPreseter: AlertViewPresenter = .shared,
          eventRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared) {
+        self.alertPreseter = alertPreseter
         self.stateService = stateService
         self.eventRecorder = eventRecorder
         
         // Setup of the stored properties
         
         let cardCVVValidator = TextValidationFactory.Card.cvv
-        let cardNumberValidator = TextValidationFactory.Card.number
+        cardNumberValidator = TextValidationFactory.Card.number
         
         let cvvToCardNumberMatcher = CVVToCreditCardMatchValidator(
             cvvTextSource: cardCVVValidator,
@@ -195,6 +200,17 @@ final class CardDetailsScreenPresenter {
                 self.eventRecorder.record(event: AnalyticsEvent.sbCardInfoSet)
                 self.stateService.addBillingAddress(to: cardData)
             }
+            .disposed(by: disposeBag)
+        
+        interactor.supportedCardTypes
+            .subscribe(
+                onSuccess: { [weak cardNumberValidator] cardTypes in
+                    cardNumberValidator?.supportedCardTypesRelay.accept(cardTypes)
+                },
+                onError: { [weak alertPreseter] error in
+                    alertPreseter?.error()
+                }
+            )
             .disposed(by: disposeBag)
     }
     

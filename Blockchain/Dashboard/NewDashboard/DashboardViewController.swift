@@ -190,7 +190,7 @@ final class DashboardViewController: BaseScreenViewController {
 extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
-        return presenter.cellCount
+        presenter.cellCount
     }
     
     func tableView(_ tableView: UITableView,

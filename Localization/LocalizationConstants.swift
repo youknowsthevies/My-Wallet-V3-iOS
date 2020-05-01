@@ -1811,6 +1811,17 @@ public struct LocalizationConstants {
                         )
                     }
                 }
+                public enum Timeout {
+                    public static let titleSuffix = NSLocalizedString(
+                        "Buy In Progress",
+                        comment: "Pending active card error screen: title"
+                    )
+                    public static let subtitle = NSLocalizedString(
+                        "We’ll notify you when your order is complete.",
+                        comment: "Pending active card error screen: subtitle"
+                    )
+                }
+                
                 public static let button = NSLocalizedString(
                     "OK",
                     comment: "Simple buy: final screen ok button"

@@ -9,13 +9,55 @@
 /// The available payment methods
 public struct SimpleBuyPaymentMethod: Equatable {
     
-    public enum MethodType: String {
+    public enum MethodType: Equatable {
+        
+        private enum RawValue {
+            static let card = "PAYMENT_CARD"
+            static let bankTransfer = "BANK_ACCOUNT"
+        }
         
         /// Card payment method
-        case card = "PAYMENT_CARD"
+        case card(Set<CardType>)
         
         /// Bank transfer payment method
-        case bankTransfer = "BANK_ACCOUNT"
+        case bankTransfer
+        
+        public var isCard: Bool {
+            switch self {
+            case .card:
+                return true
+            case .bankTransfer:
+                return false
+            }
+        }
+        
+        public var rawValue: String {
+            switch self {
+            case .card:
+                return RawValue.card
+            case .bankTransfer:
+                return RawValue.bankTransfer
+            }
+        }
+        
+        public init?(rawValue: String, subTypes: [String]) {
+            switch rawValue {
+            case RawValue.card:
+                let cardTypes = Set(subTypes.compactMap { CardType(rawValue: $0) })
+                /// Addition validation - make sure that if `.card` is returned
+                /// at least one sub type is included. e.g: "VISA".
+                guard !cardTypes.isEmpty else { return nil }
+                self = .card(cardTypes)
+            case RawValue.bankTransfer:
+                self = .bankTransfer
+            default:
+                return nil
+            }
+        }
+        
+        public static func == (lhs: Self, rhs: Self) -> Bool {
+            lhs.rawValue == rhs.rawValue
+        }
     }
 
     /// The type of the payment method
@@ -31,16 +73,17 @@ public struct SimpleBuyPaymentMethod: Equatable {
         guard let currency = FiatCurrency(code: currency) else {
             return nil
         }
-        guard let type = MethodType(rawValue: method.type) else {
+        guard let type = MethodType(rawValue: method.type, subTypes: method.subTypes) else {
             return nil
         }
+        
         self.type = type
         min = FiatValue(minor: method.limits.min, currency: currency)
         max = FiatValue(minor: method.limits.max, currency: currency)
     }
     
     public static func == (lhs: SimpleBuyPaymentMethod, rhs: SimpleBuyPaymentMethod) -> Bool {
-        return lhs.type == rhs.type
+        lhs.type == rhs.type
     }
 }
 

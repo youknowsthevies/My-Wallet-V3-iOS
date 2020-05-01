@@ -18,10 +18,9 @@ public final class PendingStateViewController: BaseScreenViewController {
     // MARK: - Private IBOutlets
 
     @IBOutlet private var actionButton: ButtonView!
-    @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var subtitleLabel: UILabel!
-    private var spinnerView: LoadingAnimatingView!
+    private let compositeStatusView = CompositeStatusView(edge: 80)
 
     // MARK: - Properties
 
@@ -45,7 +44,7 @@ public final class PendingStateViewController: BaseScreenViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
-        setupSpinnerView()
+        setupCompositeStatusView()
         setupAccessibility()
         presenter.viewModel
             .drive(rx.viewModel)
@@ -61,22 +60,15 @@ public final class PendingStateViewController: BaseScreenViewController {
         actionButton.accessibilityIdentifier = AccessibilityId.button
     }
 
-    private func setupSpinnerView() {
-        spinnerView = LoadingAnimatingView(
-            diameter: 52,
-            strokeColor: .secondary,
-            strokeBackgroundColor: UIColor.secondary.withAlphaComponent(0.3),
-            fillColor: .clear
-        )
-        spinnerView.isHidden = true
-        view.addSubview(spinnerView)
-        spinnerView.layout(edges: .bottom, .centerX, to: imageView)
-        spinnerView.layout(size: CGSize(width: 52, height: 52))
-    }
-
     private func setupNavigationBar() {
         titleViewStyle = .text(value: presenter.title)
         set(barStyle: .darkContent(ignoresStatusBar: false, background: .white))
+    }
+    
+    private func setupCompositeStatusView() {
+        view.addSubview(compositeStatusView)
+        compositeStatusView.layout(edge: .bottom, to: .top, of: titleLabel, offset: -16)
+        compositeStatusView.layoutToSuperview(.centerX)
     }
 
     // MARK: - View Update
@@ -84,19 +76,7 @@ public final class PendingStateViewController: BaseScreenViewController {
     fileprivate func update(with model: PendingStateViewModel) {
         titleLabel.attributedText = model.title
         subtitleLabel.attributedText = model.subtitle
-
-        switch model.asset {
-        case .loading:
-            imageView.isHidden = true
-            spinnerView.isHidden = false
-            spinnerView.animate()
-        case .image(let image):
-            imageView.isHidden = false
-            spinnerView.isHidden = true
-            imageView.image = image.image
-            spinnerView.stop()
-        }
-
+        compositeStatusView.currentTypeRelay.accept(model.compositeStatusViewType)
         if let buttonModel = model.button {
             actionButton.viewModel = buttonModel
             actionButton.isHidden = false
@@ -110,7 +90,7 @@ public final class PendingStateViewController: BaseScreenViewController {
 
 extension Reactive where Base: PendingStateViewController {
     var viewModel: Binder<PendingStateViewModel> {
-        return Binder(base) { viewController, viewModel in
+        Binder(base) { viewController, viewModel in
             viewController.update(with: viewModel)
         }
     }

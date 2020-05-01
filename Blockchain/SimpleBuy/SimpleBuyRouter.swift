@@ -39,7 +39,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     private let serviceProvider: SimpleBuyServiceProviderAPI
     private let cardServiceProvider: CardServiceProviderAPI
     private let cryptoSelectionService: SelectionServiceAPI
-    private let dataProviding: DataProviding
+    private let exchangeProvider: ExchangeProviding
     
     private var addCardStateService: AddCardStateService!
     private var addCardRouter: AddCardRouter!
@@ -59,14 +59,14 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
          analyticsRecording: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
          topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
          kycRouter: KYCRouterAPI = KYCCoordinator.shared,
-         dataProviding: DataProviding = DataProvider.default) {
+         exchangeProvider: ExchangeProviding = DataProvider.default.exchange) {
         self.analyticsRecording = analyticsRecording
         self.serviceProvider = serviceProvider
         self.cardServiceProvider = cardServiceProvider
         self.stateService = stateService
         self.kycServiceProvider = kycServiceProvider
         self.topMostViewControllerProvider = topMostViewControllerProvider
-        self.dataProviding = dataProviding
+        self.exchangeProvider = exchangeProvider
         self.kycRouter = kycRouter
                 
         let cryptoSelectionService = SimpleBuyCryptoCurrencySelectionService(
@@ -452,7 +452,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     private func showBuyCryptoScreen() {
         let interactor = BuyCryptoScreenInteractor(
             kycTiersService: kycServiceProvider.tiers,
-            dataProviding: dataProviding,
+            exchangeProvider: exchangeProvider,
             fiatCurrencyService: serviceProvider.settings,
             pairsService: serviceProvider.supportedPairsInteractor,
             eligibilityService: serviceProvider.eligibility,

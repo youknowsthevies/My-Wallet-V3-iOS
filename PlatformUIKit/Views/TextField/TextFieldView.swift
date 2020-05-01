@@ -83,9 +83,9 @@ public class TextFieldView: UIView {
     /// Must be called by specialized subclasses
     public func setup(viewModel: TextFieldViewModel,
                       keyboardInteractionController: KeyboardInteractionController) {
+        disposeBag = DisposeBag()
         self.keyboardInteractionController = keyboardInteractionController
         self.viewModel = viewModel
-        disposeBag = DisposeBag()
         
         if let hintHeightConstraint = hintHeightConstraint {
             removeConstraint(hintHeightConstraint)
@@ -98,6 +98,7 @@ public class TextFieldView: UIView {
         /// Set the accessibility property
         textField.accessibility = viewModel.accessibility
         
+        textField.returnKeyType = viewModel.returnKeyType
         textField.inputAccessoryView = keyboardInteractionController.toolbar
         textField.autocorrectionType = viewModel.type.autocorrectionType
         textField.autocapitalizationType = viewModel.type.autocapitalizationType
@@ -117,23 +118,18 @@ public class TextFieldView: UIView {
         viewModel.contentType
             .drive(textField.rx.contentType)
             .disposed(by: disposeBag)
-        
+
         /// Bind `keyboardType`
         viewModel.keyboardType
             .drive(textField.rx.keyboardType)
             .disposed(by: disposeBag)
         
-        /// Bind `returnKeyType`
-        viewModel.returnKeyType
-            .drive(textField.rx.returnKeyType)
-            .disposed(by: disposeBag)
-        
-        /// Bind `placeholder`
+        // Bind `placeholder`
         viewModel.placeholder
             .drive(textField.rx.placeholderAttributedText)
             .disposed(by: disposeBag)
         
-        /// Bind `textColor`
+        // Bind `textColor`
         viewModel.textColor
             .drive(textField.rx.textColor)
             .disposed(by: disposeBag)
@@ -149,11 +145,7 @@ public class TextFieldView: UIView {
             .map { $0.isVisible ? $0.message : "" }
             .drive(rx.gestureMessage)
             .disposed(by: disposeBag)
-        
-        viewModel.keyboardType
-            .drive(textField.rx.keyboardType)
-            .disposed(by: disposeBag)
-        
+
         viewModel.isEnabled
             .bind(to: textField.rx.isEnabled)
             .disposed(by: disposeBag)

@@ -30,8 +30,8 @@ public enum SimpleBuyPaymentMethodType: Equatable {
     
     var method: SimpleBuyPaymentMethod.MethodType {
         switch self {
-        case .card:
-            return .card
+        case .card(let data):
+            return .card([data.type])
         case .suggested(let method):
             return method.type
         }
@@ -106,7 +106,7 @@ public final class SimpleBuyPaymentMethodTypesService {
                     cardListService.cards
                 )
                 .map { (methods, cards) in
-                    let topLimit = (methods.first { $0.type == .card })?.max
+                    let topLimit = (methods.first { $0.type.isCard })?.max
                     let cardTypes = cards
                         .filter { $0.state.isUsable }
                         .map { card in

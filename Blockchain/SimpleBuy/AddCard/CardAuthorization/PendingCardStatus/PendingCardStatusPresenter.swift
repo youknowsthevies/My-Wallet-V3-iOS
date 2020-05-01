@@ -38,7 +38,7 @@ final class PendingCardStatusPresenter: PendingStatePresenterAPI {
         self.interactor = interactor
         viewModelRelay.accept(
             PendingStateViewModel(
-                asset: .loading,
+                compositeStatusViewType: .loader,
                 title: LocalizedString.LoadingScreen.title,
                 subtitle: LocalizedString.LoadingScreen.subtitle
             )
@@ -73,7 +73,7 @@ final class PendingCardStatusPresenter: PendingStatePresenterAPI {
                 }
                 .disposed(by: disposeBag)
             let viewModel = PendingStateViewModel(
-                asset: .image(.circleError),
+                compositeStatusViewType: .image(PendingStateViewModel.Image.circleError.name),
                 title: LocalizationConstants.ErrorScreen.title,
                 subtitle: LocalizationConstants.ErrorScreen.subtitle,
                 button: button
@@ -87,7 +87,7 @@ final class PendingCardStatusPresenter: PendingStatePresenterAPI {
                 }
                 .disposed(by: disposeBag)
             let viewModel = PendingStateViewModel(
-                asset: .image(.circleError),
+                compositeStatusViewType: .image(PendingStateViewModel.Image.circleError.name),
                 title: LocalizationConstants.ErrorScreen.title,
                 subtitle: LocalizationConstants.ErrorScreen.subtitle,
                 button: button

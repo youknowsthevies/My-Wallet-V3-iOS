@@ -17,7 +17,7 @@ public struct PendingStateViewModel {
         case success
         case cutsom(String)
         
-        var name: String {
+        public var name: String {
             switch self {
             case .circleError:
                 return "circular-error-icon"
@@ -33,18 +33,9 @@ public struct PendingStateViewModel {
                 return name
             }
         }
-        
-        public var image: UIImage {
-            return UIImage(named: name, in: .platformUIKit, compatibleWith: nil)!
-        }
     }
 
-    public enum Asset {
-        case loading
-        case image(Image)
-    }
-
-    let asset: Asset
+    let compositeStatusViewType: CompositeStatusViewType
     let title: NSAttributedString
     let subtitle: NSAttributedString
     let button: ButtonViewModel?
@@ -65,8 +56,11 @@ public struct PendingStateViewModel {
         )
     }
     
-    public init(asset: Asset, title: String, subtitle: String, button: ButtonViewModel? = nil) {
-        self.asset = asset
+    public init(compositeStatusViewType: CompositeStatusViewType,
+                title: String,
+                subtitle: String,
+                button: ButtonViewModel? = nil) {
+        self.compositeStatusViewType = compositeStatusViewType
         self.title = Self.title(title)
         self.subtitle = Self.subtitle(subtitle)
         self.button = button

@@ -103,7 +103,7 @@ public struct SimpleBuyCheckoutData {
         case .candidate(let details):
             switch details.paymentMethod {
             case .suggested(let method):
-                return method.type == .card
+                return method.type.isCard
             default:
                 return false
             }

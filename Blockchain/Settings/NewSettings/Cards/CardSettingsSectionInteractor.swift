@@ -32,7 +32,7 @@ final class CardSettingsSectionInteractor {
     }
     private var max: Observable<FiatValue> {
         payments.paymentMethods
-            .map { $0.filter { $0.type == .card } }
+            .map { $0.filter { $0.type.isCard } }
             .compactMap { $0.first }
             .map { $0.max }
             .catchErrorJustReturn(.zero(currency: .USD))

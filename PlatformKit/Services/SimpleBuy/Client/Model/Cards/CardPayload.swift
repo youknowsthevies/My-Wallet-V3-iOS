@@ -188,6 +188,6 @@ extension CardPayload.CardDetails: Decodable {
         self.year = "\(year)"
         
         type = try values.decode(String.self, forKey: .type)
-        label = try values.decode(String.self, forKey: .label)
+        label = try values.decodeIfPresent(String.self, forKey: .label) ?? ""
     }
 }

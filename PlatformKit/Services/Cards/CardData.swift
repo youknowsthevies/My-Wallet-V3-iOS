@@ -84,7 +84,11 @@ extension CardData {
         self.identifier = response.identifier
         self.ownerName = ""
         self.number = response.card?.number ?? ""
-        self.label = response.card?.label ?? type.name
+        if let label = response.card?.label, !label.isEmpty {
+            self.label = label
+        } else {
+            self.label = type.name
+        }
         self.month = response.card?.month ?? ""
         self.year = response.card?.year ?? ""
         self.cvv = ""
@@ -102,7 +106,7 @@ extension CardData {
 
 extension CardData: Equatable {
     public static func == (lhs: CardData, rhs: CardData) -> Bool {
-        return lhs.identifier == rhs.identifier
+        lhs.identifier == rhs.identifier
     }
 }
 

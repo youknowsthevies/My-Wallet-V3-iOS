@@ -13,7 +13,7 @@ public class LoadingCircleView: UIView {
     // MARK: - Properties
 
     /// The width of the stroke line
-    let strokeWidth: CGFloat = 8
+    let strokeWidth: CGFloat
 
     override public var layer: CAShapeLayer {
         return super.layer as! CAShapeLayer
@@ -25,8 +25,13 @@ public class LoadingCircleView: UIView {
 
     // MARK: - Setup
 
-    init(diameter: CGFloat, strokeColor: UIColor, strokeBackgroundColor: UIColor, fillColor: UIColor) {
-        super.init(frame: CGRect(origin: .zero, size: CGSize(width: diameter, height: diameter)))
+    init(diameter: CGFloat,
+         strokeColor: UIColor,
+         strokeBackgroundColor: UIColor,
+         fillColor: UIColor,
+         strokeWidth: CGFloat = 8) {
+        self.strokeWidth = strokeWidth
+        super.init(frame: CGRect(origin: .zero, size: CGSize(edge: diameter)))
         configure(layer, strokeColor: strokeColor, fillColor: fillColor)
         let strokeBackgroundLayer: CAShapeLayer = CAShapeLayer()
         configure(strokeBackgroundLayer, strokeColor: strokeBackgroundColor, fillColor: fillColor)

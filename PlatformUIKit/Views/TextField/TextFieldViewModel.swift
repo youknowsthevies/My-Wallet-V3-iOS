@@ -113,12 +113,7 @@ public class TextFieldViewModel {
             }
             .distinctUntilChanged()
     }
-    
-    /// The type of the return key
-    var returnKeyType: Driver<UIReturnKeyType> {
-        returnKeyTypeRelay.asDriver()
-    }
-        
+
     public let isEnabledRelay = BehaviorRelay<Bool>(value: true)
     var isEnabled: Observable<Bool> {
         isEnabledRelay.asObservable()
@@ -155,11 +150,11 @@ public class TextFieldViewModel {
     private let textColorRelay = BehaviorRelay<UIColor>(value: .textFieldText)
     private let hintRelay = BehaviorRelay<String>(value: "")
     private let stateRelay = BehaviorRelay<State>(value: .empty)
-    private let returnKeyTypeRelay = BehaviorRelay<UIReturnKeyType>(value: .done)
     private let disposeBag = DisposeBag()
     
     // MARK: - Injected
     
+    let returnKeyType: UIReturnKeyType
     let validator: TextValidating
     let formatter: TextFormatting
     let textMatcher: TextMatchValidatorAPI?
@@ -193,12 +188,12 @@ public class TextFieldViewModel {
         )
         autocapitalizationTypeRelay = BehaviorRelay(value: type.autocapitalizationType)
         placeholderRelay = BehaviorRelay(value: placeholder)
-        keyboardTypeRelay = BehaviorRelay(value: type.keyboardType)
         contentTypeRelay = BehaviorRelay(value: type.contentType)
+        keyboardTypeRelay = BehaviorRelay(value: type.keyboardType)
         isSecureRelay.accept(type.isSecure)
         accessibility = type.accessibility
-        returnKeyTypeRelay.accept(returnKeyType)
-
+        self.returnKeyType = returnKeyType
+    
         text
             .bind(to: validator.valueRelay)
             .disposed(by: disposeBag)
@@ -225,7 +220,6 @@ public class TextFieldViewModel {
     }
     
     public func set(next: TextFieldViewModel) {
-        returnKeyTypeRelay.accept(.next)
         focusRelay
             .filter { !$0 }
             .map { _ in true }

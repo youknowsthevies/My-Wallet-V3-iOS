@@ -438,9 +438,14 @@ final class BuyCryptoScreenPresenter {
         guard deviceType != .superCompact else {
             return .just(nil)
         }
+        
+        let exchangeRate = interactor.exchangeProvider[cryptoCurrency]
+            .fiatPrice
+            .share(replay: 1)
+        
         return Observable
-            .zip(
-                interactor.exchangeProviding[cryptoCurrency].fiatPrice.share(replay: 1),
+            .combineLatest(
+                exchangeRate,
                 Observable.just(cryptoCurrency)
             )
             .map { payload -> String in

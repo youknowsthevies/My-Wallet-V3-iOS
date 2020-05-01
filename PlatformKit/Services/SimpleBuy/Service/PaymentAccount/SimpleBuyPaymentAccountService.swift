@@ -75,13 +75,13 @@ public final class SimpleBuyPaymentAccountService: SimpleBuyPaymentAccountServic
     private func fetchPaymentAccount(for currency: FiatCurrency,
                                      with token: String,
                                      patcher: SimpleBuyPaymentAccountPatcher) -> Single<SimpleBuyPaymentAccount> {
-        return Single
+        Single
             .zip(
                 client.paymentAccount(for: currency, token: token),
                 dataRepository.user.take(1).asSingle()
             )
             .map { (response, user) -> SimpleBuyPaymentAccount? in
-                return SimpleBuyPaymentAccountBuilder
+                SimpleBuyPaymentAccountBuilder
                     .build(response: response)
                     .map { patcher.patch($0, recipientName: user.personalDetails.fullName) }
             }

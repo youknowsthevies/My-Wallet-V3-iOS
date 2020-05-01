@@ -53,6 +53,7 @@ public final class CardTextFieldViewModel: TextFieldViewModel {
         cardNumberValidator = validator
         super.init(
             with: .cardNumber,
+            returnKeyType: .default,
             hintDisplayType: hintDisplayType,
             validator: validator,
             formatter: TextFormatterFactory.cardNumber,

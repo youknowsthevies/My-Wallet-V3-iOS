@@ -16,7 +16,9 @@ enum SimpleBuyPaymentAccountBuilder {
     /// An array of possible `SimpleBuyPaymentAccount.Type`s
     private static let builders: [SimpleBuyPaymentAccount.Type] = [
         SimpleBuyPaymentAccountGBP.self,
-        SimpleBuyPaymentAccountEUR.self
+        SimpleBuyPaymentAccountEUR.self,
+        // TODO: Uncomment and handle when USD is supported
+//        SimpleBuyPaymentAccountUSD.self
     ]
 
     // MARK: - Methods

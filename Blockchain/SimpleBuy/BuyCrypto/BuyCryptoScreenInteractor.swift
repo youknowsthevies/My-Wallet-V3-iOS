@@ -116,10 +116,6 @@ final class BuyCryptoScreenInteractor {
             .mapToResult()
     }
 
-    var exchangeProviding: ExchangeProviding {
-        return dataProviding.exchange
-    }
-
     var paymentMethodTypes: Observable<[SimpleBuyPaymentMethodType]> {
         paymentMethodTypesService.methodTypes
     }
@@ -131,8 +127,9 @@ final class BuyCryptoScreenInteractor {
     // MARK: - Injected
     
     let fiatCurrencyService: FiatCurrencySettingsServiceAPI
+    let exchangeProvider: ExchangeProviding
+    
     private let kycTiersService: KYCTiersServiceAPI
-    private let dataProviding: DataProviding
     private let suggestedAmountsService: SimpleBuySuggestedAmountsServiceAPI
     private let pairsService: SimpleBuySupportedPairsInteractorServiceAPI
     private let cryptoCurrencySelectionService: SelectionServiceAPI
@@ -161,7 +158,7 @@ final class BuyCryptoScreenInteractor {
     // MARK: - Setup
     
     init(kycTiersService: KYCTiersServiceAPI,
-         dataProviding: DataProviding,
+         exchangeProvider: ExchangeProviding,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI,
          pairsService: SimpleBuySupportedPairsInteractorServiceAPI,
          eligibilityService: SimpleBuyEligibilityServiceAPI,
@@ -175,7 +172,7 @@ final class BuyCryptoScreenInteractor {
         self.cryptoCurrencySelectionService = cryptoCurrencySelectionService
         self.eligibilityService = eligibilityService
         self.paymentMethodTypesService = paymentMethodTypesService
-        self.dataProviding = dataProviding
+        self.exchangeProvider = exchangeProvider
         
         suggestedAmountsService.calculationState
             .compactMap { $0.value }

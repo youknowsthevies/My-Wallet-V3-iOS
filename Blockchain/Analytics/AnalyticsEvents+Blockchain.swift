@@ -698,6 +698,12 @@ extension AnalyticsEvents {
             }
         }
         
+        enum CheckoutStatus: String {
+            case success = "SUCCESS"
+            case failure = "FAILURE"
+            case timeout = "TIMEOUT"
+        }
+        
         case sbWantToBuyScreenShown
         case sbWantToBuyButtonClicked
         case sbWantToBuyButtonSkip
@@ -756,7 +762,8 @@ extension AnalyticsEvents {
         case sbCurrencyUnsupported
         case sbUnsupportedChangeCurrency
         case sbUnsupportedViewHome
-        
+        case sbCheckoutCompleted(status: CheckoutStatus)
+            
         var name: String {
             switch self {
             // Simple buy - I want to buy crypto screen shown (4.0)
@@ -931,11 +938,15 @@ extension AnalyticsEvents {
                 return "sb_add_card_screen_shown"
             case .sbCardInfoSet:
                 return "sb_card_info_set"
+            case .sbCheckoutCompleted:
+                return "sb_checkout_completed"
             }
         }
 
         var params: [String : String]? {
             switch self {
+            case .sbCheckoutCompleted(status: let status):
+                return ["status": status.rawValue]
             case .sbPaymentMethodSelected(selection: let selection):
                 return ["selection": selection.rawValue]
             case .sbBankDetailsShown(currencyCode: let currencyCode),

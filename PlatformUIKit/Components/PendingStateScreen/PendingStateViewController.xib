@@ -11,7 +11,6 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PendingStateViewController" customModule="PlatformUIKit" customModuleProvider="target">
             <connections>
                 <outlet property="actionButton" destination="ybS-oG-XyE" id="CCX-SA-5Yz"/>
-                <outlet property="imageView" destination="Bgd-6D-lpj" id="2Hu-yT-IGm"/>
                 <outlet property="subtitleLabel" destination="9s1-rX-U5P" id="JAV-Ub-NGr"/>
                 <outlet property="titleLabel" destination="iOS-oo-LEl" id="xqq-ps-up3"/>
                 <outlet property="view" destination="iN0-l3-epB" id="uYW-ZW-eJ6"/>
@@ -22,7 +21,7 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iOS-oo-LEl">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" text="Title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iOS-oo-LEl">
                     <rect key="frame" x="190.5" y="438" width="33.5" height="20.5"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <nil key="textColor"/>
@@ -34,13 +33,6 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Bgd-6D-lpj">
-                    <rect key="frame" x="181" y="354" width="52" height="52"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="52" id="8lP-Hn-hIT"/>
-                        <constraint firstAttribute="height" constant="52" id="WAN-nQ-N8k"/>
-                    </constraints>
-                </imageView>
                 <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ybS-oG-XyE" customClass="ButtonView" customModule="PlatformUIKit">
                     <rect key="frame" x="24" y="799" width="366" height="48"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
@@ -51,7 +43,6 @@
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="Bgd-6D-lpj" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="0aH-8y-2Gy"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="ybS-oG-XyE" secondAttribute="bottom" constant="15" id="1Am-ub-1oU"/>
                 <constraint firstItem="iOS-oo-LEl" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="B9g-j6-3ow"/>
                 <constraint firstItem="ybS-oG-XyE" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="Chn-KD-Xmk"/>
@@ -60,7 +51,6 @@
                 <constraint firstItem="ybS-oG-XyE" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="24" id="Yzz-1Q-lKF"/>
                 <constraint firstItem="iOS-oo-LEl" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="24" id="bhG-tF-Rma"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="9s1-rX-U5P" secondAttribute="trailing" constant="24" id="jwp-8t-Pbj"/>
-                <constraint firstItem="iOS-oo-LEl" firstAttribute="top" secondItem="Bgd-6D-lpj" secondAttribute="bottom" constant="32" id="nps-3B-p8M"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="ybS-oG-XyE" secondAttribute="trailing" constant="24" id="pAm-Wa-SGh"/>
                 <constraint firstItem="iOS-oo-LEl" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="wWp-FR-Jts"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="iOS-oo-LEl" secondAttribute="trailing" constant="24" id="z5T-ds-Jot"/>
