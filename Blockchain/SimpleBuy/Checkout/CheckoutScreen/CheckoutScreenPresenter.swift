@@ -148,12 +148,16 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
     
     // MARK: - Navigation
 
-    func navigationBarLeadingButtonPressed() {
-        cancel()
+    var navigationBarLeadingButtonAction: DetailsScreen.BarButtonAction {
+        .custom { [weak self] in
+            self?.cancel()
+        }
     }
 
-    func navigationBarTrailingButtonPressed() {
-        stateService.previousRelay.accept(())
+    var navigationBarTrailingButtonAction: DetailsScreen.BarButtonAction {
+        .custom { [weak self] in
+            self?.stateService.previousRelay.accept(())
+        }
     }
 
     // MARK: - Accessors

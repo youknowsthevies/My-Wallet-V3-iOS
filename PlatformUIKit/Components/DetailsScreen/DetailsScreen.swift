@@ -10,9 +10,11 @@ import Foundation
 
 public enum DetailsScreen {
 
-    public enum NavigationBarAppearance {
-        case defaultDark
-        case custom(leading: Screen.Style.LeadingButton, trailing: Screen.Style.TrailingButton, barStyle: Screen.Style.Bar)
+    public enum BarButtonAction {
+        /// Uses default action from view controller
+        case `default`
+        /// Uses custom action
+        case custom(() -> Void)
     }
 
     public enum CellType {
@@ -21,5 +23,10 @@ public enum DetailsScreen {
         case lineItem(LineItemCellPresenting)
         case separator
         case interactableTextCell(InteractableTextViewModel)
+    }
+
+    public enum NavigationBarAppearance {
+        case defaultDark
+        case custom(leading: Screen.Style.LeadingButton, trailing: Screen.Style.TrailingButton, barStyle: Screen.Style.Bar)
     }
 }

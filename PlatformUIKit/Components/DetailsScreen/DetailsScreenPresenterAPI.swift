@@ -14,8 +14,8 @@ public protocol DetailsScreenPresenterAPI: class {
     var cells: [DetailsScreen.CellType] { get }
     var titleView: Screen.Style.TitleView { get }
     var navigationBarAppearance: DetailsScreen.NavigationBarAppearance { get }
+    var navigationBarLeadingButtonAction: DetailsScreen.BarButtonAction { get }
+    var navigationBarTrailingButtonAction: DetailsScreen.BarButtonAction { get }
 
     func viewDidLoad()
-    func navigationBarLeadingButtonPressed()
-    func navigationBarTrailingButtonPressed()
 }

@@ -41,6 +41,9 @@ final class SimpleBuyTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Navigation Properties
 
+    let navigationBarTrailingButtonAction: DetailsScreen.BarButtonAction = .default
+    let navigationBarLeadingButtonAction: DetailsScreen.BarButtonAction = .default
+
     var navigationBarAppearance: DetailsScreen.NavigationBarAppearance {
         .custom(leading: .none, trailing: .none, barStyle: .darkContent(ignoresStatusBar: false, background: .white))
     }
@@ -168,11 +171,6 @@ final class SimpleBuyTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
             analyticsRecorder.record(event: AnalyticsEvent.sbPendingModalShown(currencyCode: currencyCode))
         }
     }
-
-    // MARK: - Navigation
-
-    func navigationBarLeadingButtonPressed() { }
-    func navigationBarTrailingButtonPressed() { }
 }
 
 // MARK: - Content Reducer

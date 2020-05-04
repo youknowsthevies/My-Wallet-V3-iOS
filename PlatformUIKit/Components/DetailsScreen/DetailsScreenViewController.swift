@@ -70,7 +70,21 @@ public final class DetailsScreenViewController: BaseTableViewController {
     // MARK: - Navigation
 
     public override func navigationBarLeadingButtonPressed() {
-        presenter.navigationBarLeadingButtonPressed()
+        switch presenter.navigationBarLeadingButtonAction {
+        case .default:
+            super.navigationBarLeadingButtonPressed()
+        case .custom(let action):
+            action()
+        }
+    }
+
+    public override func navigationBarTrailingButtonPressed() {
+        switch presenter.navigationBarTrailingButtonAction {
+        case .default:
+            super.navigationBarTrailingButtonPressed()
+        case .custom(let action):
+            action()
+        }
     }
 }
 
