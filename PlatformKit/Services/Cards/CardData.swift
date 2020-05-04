@@ -7,7 +7,7 @@
 //
 
 public struct CardData {
-    
+        
     /// The identifier of the card
     public let identifier: String
     
@@ -163,6 +163,10 @@ extension Array where Element == CardData {
         let data = response.compactMap { CardData(response: $0) }
         append(contentsOf: data)
     }
+}
+
+extension CardData {
+    public static let maxCardCount = 3
 }
 
 extension CardData {

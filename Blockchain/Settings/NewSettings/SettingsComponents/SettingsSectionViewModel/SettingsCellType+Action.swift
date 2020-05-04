@@ -30,7 +30,7 @@ extension SettingsSectionType.CellType {
         case .cards(let type):
             switch type {
             case .linkedCard(let presenter):
-                return .showRemoveCardScreen(presenter.data)
+                return .showRemoveCardScreen(presenter.cardData)
             case .addCard(let presenter):
                 guard !presenter.isLoading else { return .none }
                 return presenter.action

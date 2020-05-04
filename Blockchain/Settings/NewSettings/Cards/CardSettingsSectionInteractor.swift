@@ -12,12 +12,7 @@ import RxRelay
 
 final class CardSettingsSectionInteractor {
     
-    typealias State = LoadingState<[InteractionModel]>
-    
-    struct InteractionModel {
-        let data: CardData
-        var max: FiatValue
-    }
+    typealias State = LoadingState<[CardData]>
     
     var state: Observable<State> {
         stateRelay.asObservable()
@@ -25,32 +20,19 @@ final class CardSettingsSectionInteractor {
     
     private let stateRelay = BehaviorRelay<State>(value: .loading)
     private let disposeBag = DisposeBag()
-    private let service: CardListServiceAPI
-    private let payments: SimpleBuyPaymentMethodsServiceAPI
-    private var cards: Observable<[CardData]> {
-        service.cards.catchErrorJustReturn([])
-    }
-    private var max: Observable<FiatValue> {
-        payments.paymentMethods
-            .map { $0.filter { $0.type.isCard } }
-            .compactMap { $0.first }
-            .map { $0.max }
-            .catchErrorJustReturn(.zero(currency: .USD))
-    }
+    private let service: SimpleBuyPaymentMethodTypesService
     
+    private var cards: Observable<[CardData]> {
+        service.cards
+            .map { $0.filter { $0.state == .active || $0.state == .expired } }
+            .catchErrorJustReturn([])
+    }
+
     // MARK: - Setup
     
-    init(service: CardListServiceAPI, payments: SimpleBuyPaymentMethodsServiceAPI) {
+    init(service: SimpleBuyPaymentMethodTypesService) {
         self.service = service
-        self.payments = payments
-        setup()
-    }
-    
-    private func setup() {
-        Observable.combineLatest(cards, max)
-            .map { (data, max) -> [InteractionModel] in
-                data.map { .init(data: $0, max: max) }
-            }
+        cards
             .map { .loaded(next: $0) }
             .startWith(.loading)
             .bind(to: stateRelay)

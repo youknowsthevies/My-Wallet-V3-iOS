@@ -90,10 +90,12 @@ final class SettingsScreenPresenter {
         self.router = router
         self.interactor = interactor
         addCardCellPresenter = AddCardCellPresenter(
-            service: interactor.cardsService.cardList,
+            paymentMethodTypesService: interactor.simpleBuyService.paymentMethodTypes,
             tierLimitsProviding: interactor.tiersProviding
         )
-        emailNotificationsCellPresenter = EmailNotificationsSwitchCellPresenter(service: interactor.emailNotificationsService)
+        emailNotificationsCellPresenter = EmailNotificationsSwitchCellPresenter(
+            service: interactor.emailNotificationsService
+        )
         emailCellPresenter = EmailVerificationCellPresenter(
             interactor: interactor.emailVerificationBadgeInteractor
         )
@@ -126,8 +128,7 @@ final class SettingsScreenPresenter {
         smsTwoFactorSwitchCellPresenter = SMSTwoFactorSwitchCellPresenter(service: interactor.smsTwoFactorService)
         
         cardsSectionPresenter = CardsSettingsSectionPresenter(
-            service: interactor.cardsService.cardList,
-            payments: interactor.simpleBuyService.paymentMethods
+            interactor: interactor.cardSectionInteractor
         )
         
         setup()

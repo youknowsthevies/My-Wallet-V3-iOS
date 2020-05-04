@@ -96,7 +96,7 @@ final class PaymentMethodsScreenPresenter {
         case .card(let cardData):
             let presenter = LinkedCardCellPresenter(
                 acceptsUserInteraction: true,
-                viewModel: .init(data: cardData, max: cardData.topLimit)
+                cardData: cardData
             )
             presenter.tap
                 .emit(onNext: { [weak self] in

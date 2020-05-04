@@ -15,22 +15,13 @@ import PlatformUIKit
 
 final class LinkedCardCellPresenter {
     
-    struct CardDataViewModel {
-        let data: CardData
-        let max: FiatValue
-    }
-    
     // MARK: - Private Types
     
     private typealias LocalizationIDs = LocalizationConstants.Settings.Badge
     private typealias AccessibilityIDs = Accessibility.Identifier.Settings.LinkedCardCell
 
     // MARK: - Public
-    
-    
-    var data: CardData {
-        viewModel.data
-    }
+        
     let accessibility: Accessibility = .id(AccessibilityIDs.view)
     let linkedCardViewModel: LinkedCardViewModel
     let digitsLabelContent: LabelContent
@@ -48,21 +39,21 @@ final class LinkedCardCellPresenter {
         tapRelay.asSignal()
     }
     
-    private let badgeVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
-    private let viewModel: CardDataViewModel
+    let cardData: CardData
     
-    init(acceptsUserInteraction: Bool, viewModel: CardDataViewModel) {
-        self.viewModel = viewModel
+    private let badgeVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
+    
+    init(acceptsUserInteraction: Bool, cardData: CardData) {
+        self.cardData = cardData
         
-        linkedCardViewModel = .init(type: viewModel.data.type)
-        let data = viewModel.data
-        let currencyCode = data.topLimit.currencyCode
-        let limitAmount = data.topLimitDisplayValue
+        linkedCardViewModel = .init(type: cardData.type)
+        let currencyCode = cardData.topLimit.currencyCode
+        let limitAmount = cardData.topLimitDisplayValue
         let limitDisplayValue = limitAmount + " \(currencyCode) \(LocalizationIDs.limit)"
         
         linkedCardViewModel.content = .init(theme:
             .init(
-                cardName: viewModel.data.label,
+                cardName: cardData.label,
                 limit: limitDisplayValue
             )
         )
@@ -70,16 +61,16 @@ final class LinkedCardCellPresenter {
         self.acceptsUserInteraction = acceptsUserInteraction
 
         expirationLabelContent = .init(
-            text: "\(LocalizationIDs.expires) " + data.displayExpirationDate,
+            text: "\(LocalizationIDs.expires) " + cardData.displayExpirationDate,
             font: .mainMedium(14.0),
             color: .descriptionText,
             alignment: .right,
             accessibility: .id(AccessibilityIDs.expiration)
         )
         
-        let state = viewModel.data.state
+        let state = cardData.state
         
-        let accessibilityId = "\(viewModel.data.type).\(state.rawValue)"
+        let accessibilityId = "\(cardData.type).\(state.rawValue)"
         switch state {
         case .created, .pending:
             badgeViewModel = .default(
@@ -101,11 +92,12 @@ final class LinkedCardCellPresenter {
                 with: LocalizationIDs.unknown,
                 accessibilityId: accessibilityId
             )
-            badgeVisibilityRelay.accept(viewModel.data.state == .active ? .hidden: .visible)
         }
         
+        badgeVisibilityRelay.accept(cardData.state == .active ? .hidden: .visible)
+        
         digitsLabelContent = .init(
-            text: viewModel.data.displaySuffix,
+            text: cardData.displaySuffix,
             font: .mainSemibold(16.0),
             color: .textFieldText,
             alignment: .right,

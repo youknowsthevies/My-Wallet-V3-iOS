@@ -86,7 +86,7 @@ enum SettingsSectionType: String, Equatable {
                 case .addCard:
                     return "addCard"
                 case .linkedCard(let value):
-                    return value.data.identifier
+                    return value.cardData.identifier
                 }
             }
             
@@ -97,7 +97,7 @@ enum SettingsSectionType: String, Equatable {
                             rhs: SettingsSectionType.CellType.CardsCellType) -> Bool {
                 switch (lhs, rhs) {
                 case (.linkedCard(let left), .linkedCard(let right)):
-                    return left.data.identifier == right.data.identifier
+                    return left.cardData.identifier == right.cardData.identifier
                 case (.addCard, .addCard):
                     return true
                 default:

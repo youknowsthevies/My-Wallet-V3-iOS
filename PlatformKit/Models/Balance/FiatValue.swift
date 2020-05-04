@@ -10,8 +10,8 @@ import BigInt
 import ToolKit
 
 public struct FiatComparisonError: Error {
-    let currencyCode1: String
-    let currencyCode2: String
+    let currencyCode1: FiatCurrency
+    let currencyCode2: FiatCurrency
 }
 
 public struct FiatValue {
@@ -182,7 +182,7 @@ extension FiatValue: Money {
 extension FiatValue: Hashable, Equatable {
     private static func ensureComparable(value: FiatValue, other: FiatValue) throws {
         if value.currency != other.currency {
-            throw FiatComparisonError(currencyCode1: value.currency.code, currencyCode2: other.currency.code)
+            throw FiatComparisonError(currencyCode1: value.currency, currencyCode2: other.currency)
         }
     }
     

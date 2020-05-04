@@ -25,9 +25,9 @@ final class AddCardLabelContentPresenter: LabelContentPresenting {
     private let interactor: AddCardLabelContentInteractor
     private let disposeBag = DisposeBag()
     
-    init(service: CardListServiceAPI, tierLimitsProviding: TierLimitsProviding) {
+    init(paymentMethodTypesService: SimpleBuyPaymentMethodTypesService, tierLimitsProviding: TierLimitsProviding) {
         interactor = AddCardLabelContentInteractor(
-            service: service,
+            paymentMethodTypesService: paymentMethodTypesService,
             tierLimitsProviding: tierLimitsProviding
         )
         Observable

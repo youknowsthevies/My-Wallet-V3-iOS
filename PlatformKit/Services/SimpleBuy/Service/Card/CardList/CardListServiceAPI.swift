@@ -15,7 +15,7 @@ public protocol CardListServiceAPI: class {
     var cards: Observable<[CardData]> { get }
     
     func card(by identifier: String) -> Single<CardData?>
-    
+        
     func fetchCards() -> Single<[CardData]>
 }
 

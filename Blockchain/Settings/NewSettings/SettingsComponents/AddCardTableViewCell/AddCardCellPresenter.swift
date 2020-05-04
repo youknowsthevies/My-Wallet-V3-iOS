@@ -14,7 +14,7 @@ import RxCocoa
 
 final class AddCardCellPresenter: SettingsAsyncPresenting {
     
-    // MARK: - Localization
+    // MARK: - Types
     
     private typealias LocalizationIDs = LocalizationConstants.Settings.Cards
     
@@ -51,46 +51,54 @@ final class AddCardCellPresenter: SettingsAsyncPresenting {
     
     // MARK: - Private Properties
     
-    private let cardListService: CardListServiceAPI
+    private let paymentMethodTypesService: SimpleBuyPaymentMethodTypesService
     private let tierLimitsProviding: TierLimitsProviding
     private let imageVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let actionTypeRelay = BehaviorRelay<SettingsScreenAction>(value: .none)
     private let isLoadingRelay = BehaviorRelay<Bool>(value: true)
     private let disposeBag = DisposeBag()
+    
     private var isKYCVerified: Observable<Bool> {
         tierLimitsProviding
             .tiers
             .map { $0.isTier2Approved }
             .catchErrorJustReturn(false)
     }
-    private var cards: Observable<[CardData]> {
-        cardListService.cards.catchErrorJustReturn([])
+    
+    private var activeCards: Observable<[CardData]> {
+        paymentMethodTypesService.cards
+            .map { $0.filter { $0.state == .active || $0.state == .expired } }
+            .catchErrorJustReturn([])
     }
     
-    init(service: CardListServiceAPI, tierLimitsProviding: TierLimitsProviding) {
-        self.cardListService = service
+    init(paymentMethodTypesService: SimpleBuyPaymentMethodTypesService, tierLimitsProviding: TierLimitsProviding) {
+        self.paymentMethodTypesService = paymentMethodTypesService
         self.tierLimitsProviding = tierLimitsProviding
         
         labelContentPresenter = AddCardLabelContentPresenter(
-            service: service,
+            paymentMethodTypesService: paymentMethodTypesService,
             tierLimitsProviding: tierLimitsProviding
         )
         badgeImagePresenter = AddCardBadgePresenter(
-            service: service,
+            paymentMethodTypesService: paymentMethodTypesService,
             tierLimitsProviding: tierLimitsProviding
         )
         setup()
     }
     
     private func setup() {
-        Observable.combineLatest(cards, isKYCVerified)
-            .map { $0.0.count < 3 && $0.1 }
+        
+        let isAbleToAddCard = Observable
+            .combineLatest(activeCards, isKYCVerified)
+            .map { $0.0.count < CardData.maxCardCount && $0.1 }
+            .share(replay: 1)
+        
+        isAbleToAddCard
             .map { $0 ? .visible : .hidden }
             .bind(to: imageVisibilityRelay)
             .disposed(by: disposeBag)
         
-        Observable.combineLatest(cards, isKYCVerified)
-            .map { $0.0.count < 3 && $0.1 }
+        isAbleToAddCard
             .map { $0 ? .showAddCardScreen : .none }
             .bind(to: actionTypeRelay)
             .disposed(by: disposeBag)
