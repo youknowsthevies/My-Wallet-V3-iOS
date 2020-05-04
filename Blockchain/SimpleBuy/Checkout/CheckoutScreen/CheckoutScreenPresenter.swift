@@ -322,8 +322,7 @@ extension CheckoutScreenPresenter {
                     totalCostLineItemCellPresenter,
                     amountLineItemCellPresenter,
                     buyingFeeLineItemCellPresenter,
-                    paymentMethodLineItemCellPresenter,
-                    buyingFeeLineItemCellPresenter
+                    paymentMethodLineItemCellPresenter
                     ]
                     .map { DetailsScreen.CellType.lineItem($0) }
 
