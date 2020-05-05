@@ -47,6 +47,20 @@ public final class SimpleBuyPaymentMethodTypesService {
         cachedValue.valueObservable
     }
     
+    public var cards: Observable<[CardData]> {
+        methodTypes
+            .map { types in
+                types.compactMap {
+                    switch $0 {
+                    case .card(let data):
+                        return data
+                    case .suggested:
+                        return nil
+                    }
+                }
+            }
+    }
+    
     /// Preferred payment method
     public let preferredPaymentMethodTypeRelay = BehaviorRelay<SimpleBuyPaymentMethodType?>(value: nil)
     public var preferredPaymentMethodType: Observable<SimpleBuyPaymentMethodType?> {
@@ -105,30 +119,52 @@ public final class SimpleBuyPaymentMethodTypesService {
                     paymentMethodsService.paymentMethods,
                     cardListService.cards
                 )
-                .map { (methods, cards) in
-                    let topLimit = (methods.first { $0.type.isCard })?.max
-                    let cardTypes = cards
-                        .filter { $0.state.isUsable }
-                        .map { card in
-                            var card = card
-                            if let limit = topLimit {
-                                card.topLimit = limit
-                            }
-                            return card
-                        }
-                        .map { SimpleBuyPaymentMethodType.card($0) }
-                    let suggestedMethods = methods.map { SimpleBuyPaymentMethodType.suggested($0) }
-                    return cardTypes + suggestedMethods
+                .map(weak: self) { (self, payload) in
+                    self.merge(paymentMethods: payload.0, with: payload.1)
                 }
         }
     }
     
     public func fetchCards(andPrefer cardId: String) -> Completable {
-        cardListService.fetchCards()
-            .do(onSuccess: { [weak preferredPaymentMethodTypeRelay] cards in
-                guard let data = cards.first(where: { $0.identifier == cardId }) else { return }
+        Single
+            .zip(
+                paymentMethodsService.paymentMethodsSingle,
+                cardListService.fetchCards()
+            )
+            .map(weak: self) { (self, payload) in
+                self.merge(paymentMethods: payload.0, with: payload.1)
+            }
+            .do(onSuccess: { [weak preferredPaymentMethodTypeRelay] types in
+                let card = types
+                    .compactMap { type -> CardData? in
+                        switch type {
+                        case .card(let cardData):
+                            return cardData
+                        case .suggested:
+                            return nil
+                        }
+                    }
+                    .first
+                guard let data = card else { return }
                 preferredPaymentMethodTypeRelay?.accept(.card(data))
             })
             .asCompletable()
+    }
+    
+    private func merge(paymentMethods: [SimpleBuyPaymentMethod],
+                       with cards: [CardData]) -> [SimpleBuyPaymentMethodType] {
+        let topLimit = (paymentMethods.first { $0.type.isCard })?.max
+        let cardTypes = cards
+            .filter { $0.state.isUsable }
+            .map { card in
+                var card = card
+                if let limit = topLimit {
+                    card.topLimit = limit
+                }
+                return card
+            }
+            .map { SimpleBuyPaymentMethodType.card($0) }
+        let suggestedMethods = paymentMethods.map { SimpleBuyPaymentMethodType.suggested($0) }
+        return cardTypes + suggestedMethods
     }
 }

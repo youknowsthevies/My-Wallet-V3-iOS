@@ -19,7 +19,7 @@ final class AddCardBadgePresenter: BadgeImageAssetPresenting {
         stateRelay.asObservable()
     }
     
-    private let cardListService: CardListServiceAPI
+    private let paymentMethodTypesService: SimpleBuyPaymentMethodTypesService
     private let tiersLimitsProviding: TierLimitsProviding
     private let stateRelay = BehaviorRelay<BadgeImageState>(value: .loading)
     private let disposeBag = DisposeBag()
@@ -29,19 +29,23 @@ final class AddCardBadgePresenter: BadgeImageAssetPresenting {
             .map { $0.isTier2Approved }
             .catchErrorJustReturn(false)
     }
-    private var cards: Observable<[CardData]> {
-        cardListService.cards.catchErrorJustReturn([])
+    
+    private var activeCards: Observable<[CardData]> {
+        paymentMethodTypesService.cards
+            .map { $0.filter { $0.state == .active || $0.state == .expired } }
+            .catchErrorJustReturn([])
     }
     
-    init(service: CardListServiceAPI, tierLimitsProviding: TierLimitsProviding) {
+    init(paymentMethodTypesService: SimpleBuyPaymentMethodTypesService, tierLimitsProviding: TierLimitsProviding) {
         self.tiersLimitsProviding = tierLimitsProviding
-        self.cardListService = service
+        self.paymentMethodTypesService = paymentMethodTypesService
         setup()
     }
     
     private func setup() {
-        Observable.combineLatest(cards, isKYCVerified)
-            .map { $0.0.count < 3 && $0.1 }
+        Observable
+            .combineLatest(activeCards, isKYCVerified)
+            .map { $0.0.count < CardData.maxCardCount && $0.1 }
             .map { $0 ? .card : .info }
             .map { .loaded(next: $0) }
             .bind(to: stateRelay)

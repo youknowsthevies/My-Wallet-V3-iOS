@@ -33,12 +33,12 @@ final class RemoveCardScreenPresenter {
     private let disposeBag = DisposeBag()
     
     init(cardData: CardData,
-         service: CardDeletionServiceAPI,
+         deletionService: CardDeletionServiceAPI,
          cardListService: CardListServiceAPI,
          loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared) {
         interactor = RemoveCardScreenInteractor(
-            service: service,
-            cardListService: cardListService
+            cardListService: cardListService,
+            deletionService: deletionService
         )
         interactor.contentRelay.accept(cardData.identifier)
         

@@ -18,6 +18,7 @@ final class SettingsScreenInteractor {
     let mobileVerificationBadgeInteractor: MobileVerificationBadgeInteractor
     let twoFactorVerificationBadgeInteractor: TwoFactorVerificationBadgeInteractor
     let preferredCurrencyBadgeInteractor: PreferredCurrencyBadgeInteractor
+    let cardSectionInteractor: CardSettingsSectionInteractor
     
     // MARK: - Services
 
@@ -48,7 +49,7 @@ final class SettingsScreenInteractor {
          featureConfigurator: FeatureConfiguring = AppFeatureConfigurator.shared,
          settingsService: SettingsServiceAPI = UserInformationServiceProvider.default.settings,
          smsTwoFactorService: SMSTwoFactorSettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         emailNotificationSerivce: EmailNotificationSettingsServiceAPI = UserInformationServiceProvider.default.settings,
+         emailNotificationService: EmailNotificationSettingsServiceAPI = UserInformationServiceProvider.default.settings,
          appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          pitConnectionAPI: PITConnectionStatusProviding = PITConnectionStatusProvider(),
@@ -61,7 +62,12 @@ final class SettingsScreenInteractor {
         self.smsTwoFactorService = smsTwoFactorService
         self.appSettings = appSettings
         self.settingsService = settingsService
-        self.emailNotificationsService = emailNotificationSerivce
+        self.emailNotificationsService = emailNotificationService
+        
+        cardSectionInteractor = CardSettingsSectionInteractor(
+            service: simpleBuyService.paymentMethodTypes
+        )
+        
         emailVerificationBadgeInteractor = EmailVerificationBadgeInteractor(
             service: settingsService
         )

@@ -321,8 +321,7 @@ final class BuyCryptoScreenPresenter {
             }
             .disposed(by: disposeBag)
         
-        interactor
-            .state
+        interactor.state
             .map {
                 switch $0 {
                 case .tooHigh:

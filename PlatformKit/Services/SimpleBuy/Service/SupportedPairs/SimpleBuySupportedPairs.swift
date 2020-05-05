@@ -17,7 +17,7 @@ public struct SimpleBuySupportedPairs {
         
         /// The fiat currency type
         public var fiatCurrency: FiatCurrency {
-            return minFiatValue.currency
+            minFiatValue.currency
         }
         
         /// The minimum fiat value to buy

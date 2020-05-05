@@ -135,7 +135,7 @@ final class CheckoutScreenInteractor {
                     .map { card in
                         InteractionData(
                             time: data.quote.time,
-                            fee: data.quote.fee,
+                            fee: data.order.fee ?? data.quote.fee,
                             amount: data.quote.estimatedAmount,
                             exchangeRate: data.quote.rate,
                             card: card,

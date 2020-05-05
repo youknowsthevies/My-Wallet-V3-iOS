@@ -223,17 +223,35 @@ final class BuyCryptoScreenInteractor {
                 fiatCurrencyService.fiatCurrencyObservable
             )
             .map { (preferredPaymentMethod, amount, pair, currency) -> State in
+                
                 /// There must be a pair to compare to before calculation begins
-                guard let pair = pair, pair.fiatCurrency == amount.currency else {
+                guard let pair = pair else {
+                    return .empty(currency: currency)
+                }
+                
+                let minFiatValue = pair.minFiatValue
+                let maxFiatValue: FiatValue
+                
+                switch preferredPaymentMethod {
+                case .card(let cardData):
+                    maxFiatValue = cardData.topLimit
+                case .suggested(let method):
+                    guard method.max.currency == pair.maxFiatValue.currency else {
+                        return .empty(currency: currency)
+                    }
+                    maxFiatValue = try FiatValue.min(pair.maxFiatValue, method.max)
+                }
+                
+                guard minFiatValue.currency == amount.currency && maxFiatValue.currency == amount.currency else {
                     return .empty(currency: currency)
                 }
                 
                 if amount.amount.isZero {
                     return .empty(currency: currency)
-                } else if try amount > pair.maxFiatValue {
-                    return .tooHigh(max: pair.maxFiatValue)
-                } else if try amount < pair.minFiatValue {
-                    return .tooLow(min: pair.minFiatValue)
+                } else if try amount > maxFiatValue {
+                    return .tooHigh(max: maxFiatValue)
+                } else if try amount < minFiatValue {
+                    return .tooLow(min: minFiatValue)
                 }
                 let data = SimpleBuyCheckoutData(
                     fiatValue: amount,

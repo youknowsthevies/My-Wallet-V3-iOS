@@ -37,6 +37,7 @@ final class SettingsRouter: SettingsRouterAPI {
     private let analyticsRecording: AnalyticsEventRecording
     private let alertPresenter: AlertViewPresenter
     private let cardsServiceProvider: CardServiceProviderAPI
+    private let simpleBuyServiceProvider: SimpleBuyServiceProviderAPI
     private var addCardRouter: AddCardRouter!
     private unowned let currencyRouting: CurrencyRouting
     private unowned let tabSwapping: TabSwapping
@@ -53,8 +54,10 @@ final class SettingsRouter: SettingsRouterAPI {
          topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
          alertPresenter: AlertViewPresenter = AlertViewPresenter.shared,
          cardsServiceProvider: CardServiceProviderAPI = CardServiceProvider.default,
+         simpleBuyServiceProvider: SimpleBuyServiceProviderAPI = SimpleBuyServiceProvider.default,
          currencyRouting: CurrencyRouting,
          tabSwapping: TabSwapping) {
+        self.simpleBuyServiceProvider = simpleBuyServiceProvider
         self.cardsServiceProvider = cardsServiceProvider
         self.alertPresenter = alertPresenter
         self.topMostViewControllerProvider = topMostViewControllerProvider
@@ -117,7 +120,7 @@ final class SettingsRouter: SettingsRouterAPI {
         case .showRemoveCardScreen(let data):
             let presenter = RemoveCardScreenPresenter(
                 cardData: data,
-                service: cardsServiceProvider.cardDeletion,
+                deletionService: cardsServiceProvider.cardDeletion,
                 cardListService: cardsServiceProvider.cardList
             )
             let controller = RemoveCardViewController(presenter: presenter)

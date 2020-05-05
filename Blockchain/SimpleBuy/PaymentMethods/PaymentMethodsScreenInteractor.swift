@@ -16,6 +16,17 @@ final class PaymentMethodsScreenInteractor {
     /// Streams the available payment methods
     var methods: Single<[SimpleBuyPaymentMethodType]> {
         service.methodTypes
+            .map { types in
+                types
+                    .filter { type in
+                        switch type {
+                        case .card(let data):
+                            return data.state == .active
+                        case .suggested:
+                            return true
+                        }
+                    }
+            }
             .take(1)
             .asSingle()
     }
