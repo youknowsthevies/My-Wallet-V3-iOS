@@ -1,6 +1,6 @@
 //
 //  InfoScreenPresenter.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by Daniel Huri on 07/11/2019.
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
@@ -44,17 +44,17 @@ public struct InfoScreenPresenter {
         )
         titleLabelContent = .init(
             text: content.title,
-            font: .mainSemibold(20),
+            font: .main(.semibold, 20),
             color: .titleText,
             accessibility: .id(AccessibilityId.titleLabel)
         )
         descriptionLabelContent = .init(
             text: content.description,
-            font: .mainMedium(16),
+            font: .main(.medium, 16),
             color: .descriptionText,
             accessibility: .id(AccessibilityId.descriptionLabel)
         )
-        let disclaimerFont = UIFont.mainMedium(12)
+        let disclaimerFont = UIFont.main(.medium, 12)
         disclaimerViewModel = InteractableTextViewModel(
             inputs: content.disclaimerInputs,
             textStyle: .init(color: .descriptionText, font: disclaimerFont),

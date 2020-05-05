@@ -1,6 +1,6 @@
 //
 //  BadgeView.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by AlexM on 12/12/19.
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.

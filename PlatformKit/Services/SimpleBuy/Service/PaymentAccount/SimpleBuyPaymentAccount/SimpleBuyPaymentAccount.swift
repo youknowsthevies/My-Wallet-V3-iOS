@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Localization
 
 /// Protocol describing a SimpleBuyPaymentAccount
 public protocol SimpleBuyPaymentAccount {
@@ -62,6 +63,26 @@ public enum SimpleBuyPaymentAccountProperty {
                 return value
             case .bankCode(let value):
                 return value
+            }
+        }
+
+        public var title: String {
+            typealias LocalizedString = LocalizationConstants.SimpleBuy.Checkout.LineItem
+            switch self {
+            case .accountNumber:
+                return LocalizedString.accountNumber
+            case .sortCode:
+                return LocalizedString.sortCode
+            case .recipientName:
+                return LocalizedString.recipient
+            case .bankName:
+                return LocalizedString.bankName
+            case .bankCountry:
+                return LocalizedString.bankCountry
+            case .iban:
+                return LocalizedString.iban
+            case .bankCode:
+                return LocalizedString.bankCode
             }
         }
     }

@@ -1,6 +1,6 @@
 //
 //  AssetSparklinePresenter.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by AlexM on 10/25/19.
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.

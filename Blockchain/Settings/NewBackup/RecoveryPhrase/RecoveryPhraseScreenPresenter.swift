@@ -63,13 +63,13 @@ final class RecoveryPhraseScreenPresenter {
         
         subtitle = LabelContent(
             text: LocalizationConstants.RecoveryPhraseScreen.subtitle,
-            font: .mainSemibold(20.0),
+            font: .main(.semibold, 20.0),
             color: .textFieldText,
             accessibility: .id(AccessibilityId.subtitleLabel)
         )
         description = LabelContent(
             text: LocalizationConstants.RecoveryPhraseScreen.description,
-            font: .mainMedium(14.0),
+            font: .main(.medium, 14.0),
             color: .textFieldText,
             accessibility: .id(AccessibilityId.descriptionLabel)
         )

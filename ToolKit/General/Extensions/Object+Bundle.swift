@@ -8,17 +8,26 @@
 
 import Foundation
 
-extension NSObject {
-    
+public protocol BundleRetrievable: AnyObject {
+
     /// Returns the object's class bundle. Particularly useful in registering resources
     /// that do not belong to the `Bundle.main`
+    var bundle: Bundle { get }
+
+    /// Returns the object's class bundle. Particularly useful in registering resources
+    /// that do not belong to the `Bundle.main`
+    static var bundle: Bundle { get }
+}
+
+extension BundleRetrievable {
+
     public var bundle: Bundle {
-        return Bundle(for: type(of: self))
+        Bundle(for: type(of: self))
     }
-    
-    /// Returns the object's class bundle. Particularly useful in registering resources
-    /// that do not belong to the `Bundle.main`
-    public class var bundle: Bundle {
-        return Bundle(for: self)
+
+    public static var bundle: Bundle {
+        Bundle(for: self)
     }
 }
+
+extension NSObject: BundleRetrievable { }

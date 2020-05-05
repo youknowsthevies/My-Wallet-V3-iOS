@@ -1,6 +1,6 @@
 //
 //  AnnouncementRecorder.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by Chris Arriola on 6/12/19.
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.

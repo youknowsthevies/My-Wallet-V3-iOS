@@ -74,7 +74,7 @@
     [self.topBar addSubview:self.backButton];    
 }
 
-- (void)applyNavigationBarAppearance:(NavigationBarAppearance)appearance withBackgroundColor:(UIColor *)backgroundColor
+- (void)applyNavigationBarAppearance:(BCNavigationBarAppearance)appearance withBackgroundColor:(UIColor *)backgroundColor
 {
     UIColor *appearanceColor = appearance == NavigationBarAppearanceDark ? [UIColor whiteColor] : [UIColor brandPrimary];
 

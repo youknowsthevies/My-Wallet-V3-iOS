@@ -92,8 +92,8 @@ public struct SegmentedViewModel {
         }
         get {
             return Theme(
-                font: .mainMedium(14),
-                selectedFont: .mainMedium(14),
+                font: .main(.medium, 14),
+                selectedFont: .main(.medium, 14),
                 backgroundColor: backgroundColorRelay.value,
                 contentColor: contentColorRelay.value
             )
@@ -158,8 +158,8 @@ public struct SegmentedViewModel {
     public let borderColorRelay = BehaviorRelay<UIColor>(value: .clear)
     public let dividerColorRelay = BehaviorRelay<UIColor?>(value: nil)
     public let selectedFontColorRelay = BehaviorRelay<UIColor?>(value: nil)
-    public let normalFontRelay = BehaviorRelay<UIFont>(value: .mainMedium(14))
-    public let selectedFontRelay = BehaviorRelay<UIFont>(value: .mainMedium(14))
+    public let normalFontRelay = BehaviorRelay<UIFont>(value: .main(.medium, 14))
+    public let selectedFontRelay = BehaviorRelay<UIFont>(value: .main(.medium, 14))
     
     /// The border color around the button
     public var borderColor: Driver<UIColor> {
@@ -233,8 +233,8 @@ extension SegmentedViewModel {
             items: items
         )
         viewModel.theme = Theme(
-            font: .mainSemibold(16),
-            selectedFont: .mainSemibold(16),
+            font: .main(.semibold, 16),
+            selectedFont: .main(.semibold, 16),
             backgroundColor: background,
             borderColor: .clear,
             dividerColor: .white,
@@ -256,8 +256,8 @@ extension SegmentedViewModel {
             items: items
         )
         viewModel.theme = Theme(
-            font: .mainSemibold(16),
-            selectedFont: .mainSemibold(16),
+            font: .main(.semibold, 16),
+            selectedFont: .main(.semibold, 16),
             backgroundColor: background,
             borderColor: .lightBorder,
             dividerColor: .lightBorder,
@@ -279,8 +279,8 @@ extension SegmentedViewModel {
             items: items
         )
         viewModel.theme = Theme(
-            font: .mainMedium(14),
-            selectedFont: .mainSemibold(14),
+            font: .main(.medium, 14),
+            selectedFont: .main(.semibold, 14),
             backgroundColor: nil,
             contentColor: #colorLiteral(red: 0.596, green: 0.631, blue: 0.698, alpha: 1),
             selectedContentColor: .black
@@ -303,8 +303,8 @@ extension SegmentedViewModel {
             items: items
         )
         viewModel.theme = Theme(
-            font: .mainMedium(14),
-            selectedFont: .mainMedium(14),
+            font: .main(.medium, 14),
+            selectedFont: .main(.medium, 14),
             backgroundColor: nil
         )
         return viewModel

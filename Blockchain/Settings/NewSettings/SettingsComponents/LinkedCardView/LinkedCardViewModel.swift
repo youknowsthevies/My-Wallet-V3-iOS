@@ -27,10 +27,10 @@ final class LinkedCardViewModel {
         let limitContentColor: UIColor
         
         init(cardName: String,
-             cardNameFont: UIFont = .mainSemibold(16.0),
+             cardNameFont: UIFont = .main(.semibold, 16.0),
              cardNameContentColor: UIColor = .textFieldText,
              limit: String,
-             limitFont: UIFont = .mainMedium(14.0),
+             limitFont: UIFont = .main(.medium, 14.0),
              limitContentColor: UIColor = .descriptionText) {
             self.cardName = cardName
             self.cardNameFont = cardNameFont

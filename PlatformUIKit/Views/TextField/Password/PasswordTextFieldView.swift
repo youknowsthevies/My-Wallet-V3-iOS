@@ -52,7 +52,7 @@ public final class PasswordTextFieldView: TextFieldView {
         accessoryView.addSubview(scoreLabel)
         scoreLabel.layoutToSuperview(axis: .horizontal)
         scoreLabel.layoutToSuperview(axis: .vertical)
-        scoreLabel.font = .mainMedium(16)
+        scoreLabel.font = .main(.medium, 16)
     }
     
     private func setupPasswordStrengthIndicatorView() {

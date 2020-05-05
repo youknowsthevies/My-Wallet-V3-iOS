@@ -1,23 +1,22 @@
 //
 //  PasteboardLabelContentPresenter.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by AlexM on 1/28/20.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
 import PlatformKit
 import RxSwift
 import RxRelay
 
-final class PasteboardLabelContentPresenter: LabelContentPresenting {
+public final class PasteboardLabelContentPresenter: LabelContentPresenting {
     
-    typealias PresentationState = LabelContentAsset.State.LabelItem.Presentation
-    typealias PresentationDescriptors = LabelContentAsset.Value.Presentation.LabelItem.Descriptors
+    public typealias PresentationState = LabelContent.State.Presentation
+    typealias PresentationDescriptors = LabelContent.Value.Presentation.Content.Descriptors
     
-    let stateRelay = BehaviorRelay<PresentationState>(value: .loading)
-    var state: Observable<PresentationState> {
+    public let stateRelay = BehaviorRelay<PresentationState>(value: .loading)
+    public var state: Observable<PresentationState> {
         return stateRelay.asObservable()
     }
     
@@ -30,13 +29,13 @@ final class PasteboardLabelContentPresenter: LabelContentPresenting {
          descriptors: PresentationDescriptors) {
         self.interactor = interactor
         let successDescriptors: PresentationDescriptors = .success(
-            fontSize: descriptors.titleFontSize,
+            fontSize: descriptors.fontSize,
             accessibilityIdSuffix: descriptors.accessibilityIdSuffix
         )
         let descriptorObservable: Observable<PresentationDescriptors> = interactor.isPasteboarding
             .map { $0 ? successDescriptors : descriptors }
             .flatMap { Observable.just($0) }
-            
+        
         Observable
             .combineLatest(interactor.state, descriptorObservable)
             .map { .init(with: $0.0, descriptors: $0.1) }

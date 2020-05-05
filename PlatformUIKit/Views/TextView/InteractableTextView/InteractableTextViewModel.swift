@@ -17,7 +17,7 @@ public struct TitledLink {
 /// A view model for `InteractableTextView`
 public struct InteractableTextViewModel {
     
-    /// A style for text or lonk
+    /// A style for text or link
     public struct Style {
         public let color: Color
         public let font: UIFont

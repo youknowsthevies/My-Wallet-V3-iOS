@@ -477,7 +477,7 @@ final class BuyCryptoScreenPresenter {
 
     private static func trailingButtonViewModel() -> ButtonViewModel {
         var model = ButtonViewModel(
-            font: .mainSemibold(14),
+            font: .main(.semibold, 14),
             cornerRadius: 8,
             accessibility: .init(id: .value(AccessibilityId.traillingActionButton))
         )

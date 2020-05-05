@@ -62,7 +62,7 @@ final class SelectionItemViewPresenter {
             thumb = .label(
                 LabelContent(
                     text: value,
-                    font: .mainMedium(30),
+                    font: .main(.medium, 30),
                     color: .black,
                     accessibility: .id("\(AccessibilityId.imageViewPrefix)\(item.accessibilityId)")
                 )
@@ -73,13 +73,13 @@ final class SelectionItemViewPresenter {
 
         title = LabelContent(
             text: item.title,
-            font: .mainSemibold(16),
+            font: .main(.semibold, 16),
             color: .titleText,
             accessibility: .id("\(AccessibilityId.titleLabelPrefix)\(item.accessibilityId)")
         )
         description = LabelContent(
             text: item.subtitle,
-            font: .mainMedium(14),
+            font: .main(.medium, 14),
             color: .titleText,
             accessibility: .id("\(AccessibilityId.descriptionLabelPrefix)\(item.accessibilityId)")
         )

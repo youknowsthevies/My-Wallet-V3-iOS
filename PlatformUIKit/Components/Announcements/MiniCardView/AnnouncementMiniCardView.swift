@@ -76,11 +76,11 @@ public final class AnnouncementMiniCardView: UIView, AnnouncementCardViewConform
         thumbImageView.contentMode = .scaleAspectFill
         thumbImageView.layout(size: viewModel.image.size)
         
-        titleLabel.font = UIFont.mainMedium(16.0)
+        titleLabel.font = UIFont.main(.medium, 16.0)
         titleLabel.text = viewModel.title
         titleLabel.textColor = .titleText
         
-        descriptionLabel.font = UIFont.mainMedium(12.0)
+        descriptionLabel.font = UIFont.main(.medium, 12.0)
         descriptionLabel.text = viewModel.description
         descriptionLabel.textColor = .descriptionText
         

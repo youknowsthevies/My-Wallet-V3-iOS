@@ -42,7 +42,7 @@ final class CustodyInformationScreenPresenter {
     var description: LabelContent {
         return .init(
             text: LocalizationID.Description.partOne,
-            font: .mainMedium(14.0),
+            font: .main(.medium, 14.0),
             color: .textFieldText,
             alignment: .left,
             accessibility: .id(AccessibilityId.descriptionLabel)
@@ -52,7 +52,7 @@ final class CustodyInformationScreenPresenter {
     var subDescription: LabelContent {
         return .init(
             text: LocalizationID.Description.partTwo,
-            font: .mainMedium(14.0),
+            font: .main(.medium, 14.0),
             color: .textFieldText,
             alignment: .left,
             accessibility: .id(AccessibilityId.subDescriptionLabel)

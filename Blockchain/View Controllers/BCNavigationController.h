@@ -26,13 +26,13 @@
 typedef enum {
     NavigationBarAppearanceLight,
     NavigationBarAppearanceDark
-} NavigationBarAppearance;
+} BCNavigationBarAppearance;
 
 // Use an appearance that describes the backgroundColor
 // in order to get a text color that is easily readable.
 // If the backgroundColor is dark, use NavigationBarAppearanceDark.
 // If the backgroundColor is light, use NavigationBarAppearanceLight.
-- (void)applyNavigationBarAppearance:(NavigationBarAppearance)appearance withBackgroundColor:(UIColor *)backgroundColor;
+- (void)applyNavigationBarAppearance:(BCNavigationBarAppearance)appearance withBackgroundColor:(UIColor *)backgroundColor;
 
 - (_Nonnull id)initWithRootViewController:(UIViewController *)rootViewController title:(NSString *)title;
 

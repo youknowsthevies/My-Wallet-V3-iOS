@@ -1,6 +1,6 @@
 //
 //  DigitPadButtonView.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by Daniel Huri on 07/06/2019.
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
@@ -62,7 +62,7 @@ final class DigitPadButtonView: UIView {
     
     private func setup() {
         fromNib()
-        button.titleLabel?.font = .mainMedium(32)
+        button.titleLabel?.font = .main(.medium, 32)
         backgroundView.clipsToBounds = true
         backgroundColor = .clear
     }

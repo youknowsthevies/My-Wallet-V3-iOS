@@ -1,22 +1,21 @@
 //
 //  LineItemTableViewCell.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by AlexM on 1/27/20.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
 import RxSwift
 import RxCocoa
 
 /// Has two labels, one which is a `title` and the other a `description`.
 /// They are in a vertical stackView and appear as a list on `Checkout` screens.
-final class LineItemTableViewCell: UITableViewCell {
-    
+public final class LineItemTableViewCell: UITableViewCell {
+
     // MARK: - Exposed Properites
-    
-    var presenter: LineItemCellPresenting! {
+
+    public var presenter: LineItemCellPresenting! {
         didSet {
             disposeBag = DisposeBag()
             guard let presenter = presenter else { return }
@@ -24,16 +23,16 @@ final class LineItemTableViewCell: UITableViewCell {
                 .compactMap { $0 }
                 .bind(to: rx.titleContent)
                 .disposed(by: disposeBag)
-            
+
             presenter.descriptionLabelContentPresenter.state
                 .compactMap { $0 }
                 .bind(to: rx.descriptionContent)
                 .disposed(by: disposeBag)
-            
+
             presenter.backgroundColor
                 .drive(rx.backgroundColor)
                 .disposed(by: disposeBag)
-            
+
             presenter.image
                 .map { [weak self] in
                     $0 == nil ? 0 : self?.imageViewWidth
@@ -42,20 +41,20 @@ final class LineItemTableViewCell: UITableViewCell {
                     self?.imageWidthConstraint.constant = value ?? 0
                 })
                 .disposed(by: disposeBag)
-            
+
             presenter.image
                 .drive(accessoryImageView.rx.image)
                 .disposed(by: disposeBag)
         }
     }
-    
+
     // MARK: - Private Properties
-    
+
     private var disposeBag = DisposeBag()
     private let imageViewWidth: CGFloat = 22
-    
+
     // MARK: - Private IBOutlets
-    
+
     @IBOutlet private var accessoryImageView: UIImageView!
     @IBOutlet private var imageWidthConstraint: NSLayoutConstraint!
     @IBOutlet private var stackViewTrailingConstraint: NSLayoutConstraint!
@@ -66,8 +65,8 @@ final class LineItemTableViewCell: UITableViewCell {
 // MARK: - Rx
 
 fileprivate extension Reactive where Base: LineItemTableViewCell {
-    
-    var titleContent: Binder<LabelContentAsset.State.LabelItem.Presentation> {
+
+    var titleContent: Binder<LabelContent.State.Presentation> {
         return Binder(base) { view, state in
             switch state {
             case .loading:
@@ -77,8 +76,8 @@ fileprivate extension Reactive where Base: LineItemTableViewCell {
             }
         }
     }
-    
-    var descriptionContent: Binder<LabelContentAsset.State.LabelItem.Presentation> {
+
+    var descriptionContent: Binder<LabelContent.State.Presentation> {
         return Binder(base) { view, state in
             switch state {
             case .loading:

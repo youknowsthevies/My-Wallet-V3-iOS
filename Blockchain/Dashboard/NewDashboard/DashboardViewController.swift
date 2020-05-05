@@ -92,8 +92,8 @@ final class DashboardViewController: BaseScreenViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.register(AnnouncementTableViewCell.self)
         tableView.register(NoticeTableViewCell.self)
-        tableView.registerNibCell(TotalBalanceTableViewCell.objectName)
-        tableView.registerNibCell(HistoricalBalanceTableViewCell.objectName)
+        tableView.registerNibCell(TotalBalanceTableViewCell.self)
+        tableView.registerNibCell(HistoricalBalanceTableViewCell.self)
         tableView.separatorColor = .clear
         
         refreshControl = UIRefreshControl()

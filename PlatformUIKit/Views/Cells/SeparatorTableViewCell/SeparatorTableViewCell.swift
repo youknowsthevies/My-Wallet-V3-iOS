@@ -1,17 +1,15 @@
 //
 //  SeparatorTableViewCell.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by AlexM on 1/28/20.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
-
 /// The `Checkout` screens show a line separator with eight points of verical
 /// padding on either side. This separator only appears above the first and below
 /// the last `LineItemTableViewCell`
-final class SeparatorTableViewCell: UITableViewCell {
+public final class SeparatorTableViewCell: UITableViewCell {
     
     // MARK: - Private IBOutlets
     
@@ -19,7 +17,7 @@ final class SeparatorTableViewCell: UITableViewCell {
     
     // MARK: - Lifecycle
     
-    override func awakeFromNib() {
+    public override func awakeFromNib() {
         super.awakeFromNib()
         lineView.backgroundColor = .mediumBackground
     }

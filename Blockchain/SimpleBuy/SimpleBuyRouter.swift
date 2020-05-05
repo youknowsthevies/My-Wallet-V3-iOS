@@ -342,7 +342,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
             interactor: interactor,
             stateService: stateService
         )
-        let viewController = SimpleBuyTransferDetailScreenViewController(using: presenter)
+        let viewController = DetailsScreenViewController(presenter: presenter)
         present(viewController: viewController)
     }
     
@@ -377,7 +377,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
             stateService: stateService,
             interactor: interactor
         )
-        let viewController = CheckoutScreenViewController(using: presenter)
+        let viewController = DetailsScreenViewController(presenter: presenter)
         present(viewController: viewController)
     }
     

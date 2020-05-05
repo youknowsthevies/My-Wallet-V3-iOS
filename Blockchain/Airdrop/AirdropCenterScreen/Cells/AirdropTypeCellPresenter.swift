@@ -50,7 +50,7 @@ struct AirdropTypeCellPresenter {
 
         self.title = .init(
             text: title,
-            font: .mainMedium(16),
+            font: .main(.medium, 16),
             color: .titleText,
             accessibility: .id("\(AccessibilityId.title)\(interactor.campaignIdentifier)")
         )
@@ -69,7 +69,7 @@ struct AirdropTypeCellPresenter {
         }
         self.description = .init(
             text: description,
-            font: .mainMedium(12),
+            font: .main(.medium, 12),
             color: .descriptionText,
             accessibility: .id("\(AccessibilityId.title)\(interactor.campaignIdentifier)")
         )

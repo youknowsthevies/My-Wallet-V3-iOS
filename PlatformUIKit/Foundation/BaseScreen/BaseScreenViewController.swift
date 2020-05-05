@@ -23,7 +23,7 @@ open class BaseScreenViewController: UIViewController {
     public var barStyle = Screen.Style.Bar.lightContent(ignoresStatusBar: false, background: .clear) {
         didSet {
             baseNavigationController?.navigationBar.titleTextAttributes = [
-                .font: UIFont.mainMedium(16),
+                .font: UIFont.main(.medium, 16),
                 .foregroundColor: barStyle.contentColor.standardColor
             ]
             setBackground(by: barStyle)
@@ -249,7 +249,9 @@ open class BaseScreenViewController: UIViewController {
             baseNavigationController?.popViewController(animated: true)
         case .close:
             dismiss(animated: true, completion: nil)
-        default:
+        case .drawer,
+             .none,
+             .text:
             break
         }
     }

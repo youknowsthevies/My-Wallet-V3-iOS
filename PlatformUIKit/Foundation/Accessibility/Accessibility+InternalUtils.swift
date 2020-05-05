@@ -115,3 +115,13 @@ extension Accessibility.Identifier {
         static let recoveryPhrase = "\(prefix)recoveryPhrase"
     }
 }
+
+extension Accessibility.Identifier {
+    public enum LineItem {
+        private static let prefix = "LineItem."
+        public static let titleLabel = "\(prefix)titleLabel"
+        public static let descriptionLabel = "\(prefix)descriptionLabel"
+        public static let disclaimerLabel = "\(prefix)disclaimerLabel"
+        public static let disclaimerImage = "\(prefix)disclaimerImage"
+    }
+}

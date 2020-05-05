@@ -13,7 +13,7 @@ import RxRelay
 
 final class AddCardLabelContentPresenter: LabelContentPresenting {
     
-    typealias PresentationState = LabelContentAsset.State.LabelItem.Presentation
+    typealias PresentationState = LabelContent.State.Presentation
     
     let stateRelay = BehaviorRelay<PresentationState>(value: .loading)
     var state: Observable<PresentationState> {
@@ -35,7 +35,7 @@ final class AddCardLabelContentPresenter: LabelContentPresenting {
                 interactor.state,
                 interactor.descriptorObservable
             )
-            .map { .init(with: $0.0, descriptors: $0.1) }
+            .map { PresentationState(with: $0.0, descriptors: $0.1) }
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
     }

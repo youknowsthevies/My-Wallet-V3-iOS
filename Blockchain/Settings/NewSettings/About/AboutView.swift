@@ -45,14 +45,14 @@ final class AboutView: UIView {
         logoImageView.tintColor = .textFieldText
         versionLabel.content = .init(
             text: LocalizationIDs.version + " " + "\(Bundle.applicationVersion ?? "")",
-            font: .mainMedium(12.0),
+            font: .main(.medium, 12.0),
             color: .textFieldPlaceholder,
             alignment: .center,
             accessibility: .id(AccessibilityIDs.versionLabel)
         )
         copyrightLabel.content = .init(
             text: LocalizationIDs.copyright,
-            font: .mainMedium(12.0),
+            font: .main(.medium, 12.0),
             color: .textFieldPlaceholder,
             alignment: .center,
             accessibility: .id(AccessibilityIDs.copyrightLabel)
@@ -61,11 +61,11 @@ final class AboutView: UIView {
     
     static func estimatedHeight(for width: CGFloat) -> CGFloat {
         let version = NSAttributedString(string: LocalizationIDs.version,
-                                         attributes: [.font: UIFont.mainMedium(12.0)])
+                                         attributes: [.font: UIFont.main(.medium, 12.0)])
             .heightForWidth(width: width - horizontalPadding)
         
         let copyright = NSAttributedString(string: LocalizationIDs.copyright,
-                                           attributes: [.font: UIFont.mainMedium(12.0)])
+                                           attributes: [.font: UIFont.main(.medium, 12.0)])
             .heightForWidth(width: width - horizontalPadding)
         
         return verticalPadding + version + copyright + logoHeight

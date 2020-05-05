@@ -13,7 +13,7 @@ import RxRelay
 
 final class BiometryLabelContentInteractor: LabelContentInteracting {
     
-    typealias InteractionState = LabelContentAsset.State.LabelItem.Interaction
+    typealias InteractionState = LabelContent.State.Interaction
     
     let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     var state: Observable<InteractionState> {

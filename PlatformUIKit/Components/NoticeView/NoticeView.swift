@@ -1,6 +1,6 @@
 //
 //  NoticeView.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by Daniel Huri on 28/10/2019.
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
@@ -51,7 +51,7 @@ public final class NoticeView: UIView {
         
     private func setup() {
         imageView.contentMode = .scaleAspectFit
-        label.font = .mainMedium(12)
+        label.font = .main(.medium, 12)
         label.textColor = .descriptionText
         label.numberOfLines = 0
         

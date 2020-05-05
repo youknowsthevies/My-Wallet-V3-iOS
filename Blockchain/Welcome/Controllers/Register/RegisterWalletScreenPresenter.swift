@@ -38,7 +38,7 @@ final class RegisterWalletScreenPresenter {
         with: LocalizedString.button
     )
     let termsOfUseTextViewModel: InteractableTextViewModel = {
-        let font = UIFont.mainMedium(12)
+        let font = UIFont.main(.medium, 12)
         return InteractableTextViewModel(
             inputs: [
                 .text(string: LocalizedString.TermsOfUse.prefix),

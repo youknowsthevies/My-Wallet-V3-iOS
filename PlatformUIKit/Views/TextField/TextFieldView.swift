@@ -1,6 +1,6 @@
 //
 //  TextFieldView.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by Daniel Huri on 08/10/2019.
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
@@ -62,7 +62,7 @@ public class TextFieldView: UIView {
         fromNib(named: TextFieldView.objectName)
         separatorView.backgroundColor = .lightBorder
         textField.textAlignment = .left
-        gestureMessageLabel.font = .mainMedium(12)
+        gestureMessageLabel.font = .main(.medium, 12)
         gestureMessageLabel.textColor = .destructive
         gestureMessageLabel.verticalContentHuggingPriority = .required
         gestureMessageLabel.verticalContentCompressionResistancePriority = .required

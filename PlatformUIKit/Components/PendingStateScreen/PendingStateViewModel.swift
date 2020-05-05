@@ -1,6 +1,6 @@
 //
 //  PendingStateViewModel.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by Paulo on 22/01/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
@@ -43,7 +43,7 @@ public struct PendingStateViewModel {
     static private func title(_ string: String) -> NSAttributedString {
         return NSAttributedString(
             string,
-            font: .mainRegular(20),
+            font: .main(.regular, 20),
             color: .titleText
         )
     }
@@ -51,7 +51,7 @@ public struct PendingStateViewModel {
     static private func subtitle(_ string: String) -> NSAttributedString {
         return NSAttributedString(
             string,
-            font: .mainRegular(14),
+            font: .main(.regular, 14),
             color: .descriptionText
         )
     }

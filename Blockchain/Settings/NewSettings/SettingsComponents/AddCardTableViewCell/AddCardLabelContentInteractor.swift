@@ -16,9 +16,9 @@ final class AddCardLabelContentInteractor: LabelContentInteracting {
     // MARK: - Types
     
     typealias LocalizationString = LocalizationConstants.Settings.Cards
-    typealias InteractionState = LabelContentAsset.State.LabelItem.Interaction
-    typealias Descriptors = LabelContentAsset.Value.Presentation.LabelItem.Descriptors
-        
+    typealias InteractionState = LabelContent.State.Interaction
+    typealias Descriptors = LabelContent.Value.Presentation.Content.Descriptors
+
     // MARK: - Properties
     
     let stateRelay = BehaviorRelay<InteractionState>(value: .loading)

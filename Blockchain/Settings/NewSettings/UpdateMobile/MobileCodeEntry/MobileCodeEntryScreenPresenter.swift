@@ -57,7 +57,7 @@ final class MobileCodeEntryScreenPresenter {
         
         descriptionContent = .init(
             text: LocalizationIDs.description,
-            font: .mainMedium(14.0),
+            font: .main(.medium, 14.0),
             color: .textFieldText,
             alignment: .left,
             accessibility: .id(AccessibilityIDs.descriptionLabel)

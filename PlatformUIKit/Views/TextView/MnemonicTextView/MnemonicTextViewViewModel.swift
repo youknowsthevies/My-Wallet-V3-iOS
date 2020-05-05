@@ -91,7 +91,7 @@ public struct MnemonicTextViewViewModel {
     
     let attributedPlaceholder = NSAttributedString(
         string: LocalizationConstants.TextField.Placeholder.recoveryPhrase,
-        attributes: [.font: UIFont.mainMedium(16.0)]
+        attributes: [.font: UIFont.main(.medium, 16.0)]
     )
     
     let attributedTextRelay = BehaviorRelay<NSAttributedString>(value: .init(string: ""))
@@ -168,12 +168,12 @@ public struct MnemonicTextViewViewModel {
 extension MnemonicTextViewViewModel.Style {
     static let `default`: MnemonicTextViewViewModel.Style = .init(
         color: .black,
-        font: UIFont.mainMedium(16.0)
+        font: UIFont.main(.medium, 16.0)
     )
     
     static let desctructive: MnemonicTextViewViewModel.Style = .init(
         color: .destructive,
-        font: UIFont.mainMedium(16.0)
+        font: UIFont.main(.medium, 16.0)
     )
 }
 

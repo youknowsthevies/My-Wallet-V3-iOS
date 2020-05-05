@@ -15,7 +15,7 @@ final class TotalBalanceViewPresenter {
 
     let titleContent = LabelContent(
         text: LocalizationConstants.Dashboard.Balance.totalBalance,
-        font: .mainMedium(16),
+        font: .main(.medium, 16),
         color: .mutedText,
         accessibility: .init(
             id: .value(Accessibility.Identifier.Dashboard.TotalBalanceCell.titleLabel)

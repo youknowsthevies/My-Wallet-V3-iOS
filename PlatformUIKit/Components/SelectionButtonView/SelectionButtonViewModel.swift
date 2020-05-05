@@ -155,7 +155,7 @@ public final class SelectionButtonViewModel {
             .map {
                 LabelContent(
                     text: $0,
-                    font: .mainSemibold(16),
+                    font: .main(.semibold, 16),
                     color: .titleText,
                     accessibility: .id(AccessibilityId.label)
                 )
@@ -171,7 +171,7 @@ public final class SelectionButtonViewModel {
                     else { return nil }
                 return LabelContent(
                     text: subtitle,
-                    font: .mainMedium(14),
+                    font: .main(.medium, 14),
                     color: .descriptionText,
                     accessibility: .id(AccessibilityId.label)
                 )
@@ -221,7 +221,7 @@ public final class SelectionButtonViewModel {
                     return .label(
                         LabelContent(
                             text: text,
-                            font: .mainMedium(30),
+                            font: .main(.medium, 30),
                             color: .black
                         )
                     )

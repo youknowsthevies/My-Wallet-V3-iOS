@@ -7,30 +7,22 @@
 //
 
 import PlatformKit
+import PlatformUIKit
 import ToolKit
 
 enum CheckoutCellType: Hashable {
+
     enum LineItemType: Hashable {
-        case orderId
-        case status
-        case date
-        case totalCost
-        case estimatedAmount
-        case exchangeRate
-        case amount
-        case buyingFee
+        case amount(String?)
+        case buyingFee(String?)
+        case date(String?)
+        case estimatedAmount(String?)
+        case exchangeRate(String?)
+        case orderId(String?)
         case paymentAccountField(SimpleBuyPaymentAccountProperty.Field)
-        case paymentMethod
-        
-        var content: String? {
-            switch self {
-            case .date, .totalCost, .estimatedAmount, .buyingFee,
-                 .paymentMethod, .orderId, .status, .amount, .exchangeRate:
-                return nil
-            case .paymentAccountField(let field):
-                return field.content
-            }
-        }
+        case paymentMethod(String?)
+        case status(String?)
+        case totalCost(String?)
     }
     
     case termsAndConditions
@@ -38,9 +30,7 @@ enum CheckoutCellType: Hashable {
     case separator
     case lineItem(LineItemType)
     case summary
-}
 
-extension CheckoutCellType {
     var isInteractable: Bool {
         switch self {
         case .lineItem:
@@ -52,52 +42,47 @@ extension CheckoutCellType {
 }
 
 extension CheckoutCellType.LineItemType {
-    
-    var paymentAccountField: SimpleBuyPaymentAccountProperty.Field? {
+
+    var content: String? {
         switch self {
+        case .amount(let content),
+             .buyingFee(let content),
+             .date(let content),
+             .estimatedAmount(let content),
+             .exchangeRate(let content),
+             .orderId(let content),
+             .paymentMethod(let content),
+             .status(let content),
+             .totalCost(let content):
+            return content
         case .paymentAccountField(let field):
-            return field
-        case .date, .totalCost, .estimatedAmount, .buyingFee,
-             .paymentMethod, .orderId, .status, .amount, .exchangeRate:
-            return nil
+            return field.content
         }
     }
-    
+
     var title: String {
         typealias LocalizedString = LocalizationConstants.SimpleBuy.Checkout.LineItem
         switch self {
-        case .paymentAccountField(.accountNumber):
-            return LocalizedString.accountNumber
-        case .paymentAccountField(.sortCode):
-            return LocalizedString.sortCode
-        case .paymentAccountField(.recipientName):
-            return LocalizedString.recipient
-        case .paymentAccountField(.bankName):
-            return LocalizedString.bankName
-        case .paymentAccountField(.bankCountry):
-            return LocalizedString.bankCountry
-        case .paymentAccountField(.iban):
-            return LocalizedString.iban
-        case .paymentAccountField(.bankCode):
-            return LocalizedString.bankCode
-        case .orderId:
-            return LocalizedString.orderId
-        case .status:
-            return LocalizedString.status
-        case .date:
-            return LocalizedString.date
-        case .totalCost:
-            return LocalizedString.totalCost
-        case .estimatedAmount:
-            return LocalizedString.estimatedAmount
-        case .buyingFee:
-            return LocalizedString.buyingFee
-        case .paymentMethod:
-            return LocalizedString.paymentMethod
         case .amount:
             return LocalizedString.amount
+        case .buyingFee:
+            return LocalizedString.buyingFee
+        case .date:
+            return LocalizedString.date
+        case .estimatedAmount:
+            return LocalizedString.estimatedAmount
         case .exchangeRate:
             return LocalizedString.exchangeRate
+        case .orderId:
+            return LocalizedString.orderId
+        case .paymentAccountField(let field):
+            return field.title
+        case .paymentMethod:
+            return LocalizedString.paymentMethod
+        case .status:
+            return LocalizedString.status
+        case .totalCost:
+            return LocalizedString.totalCost
         }
     }
     
@@ -120,5 +105,42 @@ extension CheckoutCellType.LineItemType {
         default:
             return false
         }
+    }
+
+    var descriptionInteractionText: String {
+        typealias CopyString = LocalizationConstants.SimpleBuy.Checkout.LineItem.Copyable
+        switch self {
+        case .paymentAccountField(.iban):
+            return "\(CopyString.iban) \(CopyString.copyMessageSuffix)"
+        case .paymentAccountField(.bankCode):
+            return "\(CopyString.bankCode) \(CopyString.copyMessageSuffix)"
+        default:
+            return CopyString.defaultCopyMessage
+        }
+    }
+
+    func presenter() -> LineItemCellPresenting {
+        isCopyable ? defaultCopyablePresenter() : defaultPresenter()
+    }
+
+    func defaultPresenter() -> DefaultLineItemCellPresenter {
+        let interactor = DefaultLineItemCellInteractor(
+            title: DefaultLabelContentInteractor(knownValue: title),
+            description: DefaultLabelContentInteractor(knownValue: content ?? "")
+        )
+        return DefaultLineItemCellPresenter(interactor: interactor)
+    }
+
+    func defaultCopyablePresenter() -> PasteboardingLineItemCellPresenter {
+        PasteboardingLineItemCellPresenter(
+            input: .init(
+                title: title,
+                titleInteractionText: LocalizationConstants.SimpleBuy.Checkout.LineItem.Copyable.copied,
+                description: content ?? "",
+                descriptionInteractionText: descriptionInteractionText,
+                analyticsEvent: analyticsEvent
+            ),
+            analyticsRecorder: AnalyticsEventRecorder.shared
+        )
     }
 }

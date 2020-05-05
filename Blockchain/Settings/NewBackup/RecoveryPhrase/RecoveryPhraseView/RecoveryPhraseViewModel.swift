@@ -27,7 +27,7 @@ class RecoveryPhraseViewModel {
             return $0.enumerated().map {
                 LabelContent(
                     text: $0.element,
-                    font: .mainSemibold(16.0),
+                    font: .main(.semibold, 16.0),
                     color: .textFieldText,
                     accessibility: .id("\(AccessibilityId.word).\($0.offset)")
                 )

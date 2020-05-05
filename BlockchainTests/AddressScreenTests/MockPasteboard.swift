@@ -7,8 +7,7 @@
 //
 
 import Foundation
-
-@testable import Blockchain
+import PlatformUIKit
 
 class MockPasteboard: Pasteboarding {
     var string: String?

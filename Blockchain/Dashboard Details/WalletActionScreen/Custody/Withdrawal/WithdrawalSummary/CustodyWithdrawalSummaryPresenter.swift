@@ -100,14 +100,14 @@ final class CustodyWithdrawalSummaryPresenter {
         case .failed:
             let title: LabelContent = .init(
                 text: LocalizationFailureIDs.title,
-                font: .mainSemibold(20.0),
+                font: .main(.semibold, 20.0),
                 color: .textFieldText,
                 alignment: .center,
                 accessibility: .none
             )
             let description: LabelContent = .init(
                 text: LocalizationFailureIDs.description,
-                font: .mainMedium(14.0),
+                font: .main(.medium, 14.0),
                 color: .textFieldText,
                 alignment: .center,
                 accessibility: .none
@@ -121,7 +121,7 @@ final class CustodyWithdrawalSummaryPresenter {
         case .successful:
             let title: LabelContent = .init(
                 text: "\(LocalizationSuccessIDs.title) \(currency.displayCode) \(LocalizationSuccessIDs.sent).",
-                font: .mainSemibold(20.0),
+                font: .main(.semibold, 20.0),
                 color: .textFieldText,
                 alignment: .center,
                 accessibility: .none
@@ -129,7 +129,7 @@ final class CustodyWithdrawalSummaryPresenter {
             
             let description: LabelContent = .init(
                 text: LocalizationSuccessIDs.description,
-                font: .mainMedium(14.0),
+                font: .main(.medium, 14.0),
                 color: .textFieldText,
                 alignment: .center,
                 accessibility: .none

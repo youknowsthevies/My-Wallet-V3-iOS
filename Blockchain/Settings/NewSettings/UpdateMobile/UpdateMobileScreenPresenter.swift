@@ -76,14 +76,14 @@ final class UpdateMobileScreenPresenter {
         
         descriptionLabel = .init(
             text: LocalizationIDs.description,
-            font: .mainMedium(14.0),
+            font: .main(.medium, 14.0),
             color: .textFieldText,
             accessibility: .id(AccessibilityIDs.descriptionLabel)
         )
         
         disable2FALabel = .init(
             text: LocalizationIDs.disableSMS2FA,
-            font: .mainMedium(14.0),
+            font: .main(.medium, 14.0),
             color: .textFieldText,
             accessibility: .id(AccessibilityIDs.disable2FALabel)
         )
