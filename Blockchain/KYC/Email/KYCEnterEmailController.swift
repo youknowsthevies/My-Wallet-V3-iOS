@@ -9,6 +9,7 @@
 import Foundation
 import ToolKit
 import PlatformKit
+import PlatformUIKit
 
 class KYCEnterEmailController: KYCBaseViewController, BottomButtonContainerView, ProgressableView {
 

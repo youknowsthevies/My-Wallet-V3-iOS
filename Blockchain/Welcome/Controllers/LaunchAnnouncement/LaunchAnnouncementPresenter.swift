@@ -9,6 +9,7 @@
 import RxSwift
 import ToolKit
 import PlatformKit
+import PlatformUIKit
 
 final class LaunchAnnouncementPresenter: VersionUpdateAlertDisplaying {
     

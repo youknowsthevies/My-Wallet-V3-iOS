@@ -32,10 +32,12 @@ final class AddCardRouter: Router {
     private let routingType: RoutingType
     private let cardServiceProvider: CardServiceProviderAPI
     private let simpleBuyServiceProvider: SimpleBuyServiceProviderAPI
+    private let utilityProvider: UIUtilityProviderAPI
     private let disposeBag = DisposeBag()
     
     init(stateService: AddCardStateService,
          cardServiceProvider: CardServiceProviderAPI = CardServiceProvider.default,
+         utilityProvider: UIUtilityProviderAPI = UIUtilityProvider.default,
          simpleBuyServiceProvider: SimpleBuyServiceProviderAPI = SimpleBuyServiceProvider.default,
          routingType: RoutingType = .modal,
          topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared) {
@@ -44,6 +46,7 @@ final class AddCardRouter: Router {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.cardServiceProvider = cardServiceProvider
         self.simpleBuyServiceProvider = simpleBuyServiceProvider
+        self.utilityProvider = utilityProvider
     }
     
     /// Entry method to card addition / editing that should be called once
@@ -147,7 +150,10 @@ final class AddCardRouter: Router {
             countrySelectionRouter: selectionRouter,
             stateService: stateService
         )
-        let viewController = BillingAddressScreenViewController(presenter: presenter)
+        let viewController = BillingAddressScreenViewController(
+            presenter: presenter,
+            alertViewPresenter: utilityProvider.alert
+        )
         present(viewController: viewController)
     }
 }

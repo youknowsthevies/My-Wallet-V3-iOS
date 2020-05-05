@@ -145,7 +145,7 @@ extension NabuUser: NabuUserBlockstackAirdropRegistering {
 
 extension NabuUser: NabuUserSimpleBuyEnabled {
     var isSimpleBuyEnabled: Bool {
-        return tags?.simpleBuy != nil
+        tags?.simpleBuy != nil
     }
 }
 

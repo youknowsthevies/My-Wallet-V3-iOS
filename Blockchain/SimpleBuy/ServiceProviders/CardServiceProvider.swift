@@ -39,6 +39,7 @@ final class CardServiceProvider: CardServiceProviderAPI {
          wallet: ReactiveWalletAPI = ReactiveWallet(),
          authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
          dataRepository: DataRepositoryAPI = BlockchainDataRepository.shared,
+         featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings) {
         self.cardClient = cardClient
         self.everyPayClient = everyPayClient
@@ -48,6 +49,7 @@ final class CardServiceProvider: CardServiceProviderAPI {
         cardList = CardListService(
             client: cardClient,
             reactiveWallet: wallet,
+            featureFetcher: featureFetcher,
             authenticationService: authenticationService,
             fiatCurrencyService: fiatCurrencyService
         )

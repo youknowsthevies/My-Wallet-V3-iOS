@@ -45,6 +45,11 @@ public final class SelectionScreenPresenter {
             .observeOn(MainScheduler.instance)
     }
     
+    let dismissRelay = PublishRelay<Void>()
+    var dismiss: Signal<Void> {
+        dismissRelay.asSignal()
+    }
+    
     let searchTextRelay = BehaviorRelay<String>(value: "")
     var searchText: Observable<String> {
         searchTextRelay.map { $0.lowercased() } 
@@ -74,8 +79,9 @@ public final class SelectionScreenPresenter {
         setupPresenters()
         setupSearch()
         
-        guard shouldPreselect else { return }
-        setupDefaultSelection()
+        if shouldPreselect {
+            setupDefaultSelection()
+        }
     }
     
     private func setupPresenters() {
@@ -94,13 +100,18 @@ public final class SelectionScreenPresenter {
                     .enumerated()
                     .forEach { (index, presenter) in
                         presenter.setup {
-                            guard self.selectionRelay.value != index else { return }
-                            if let previousIndex = self.selectionRelay.value {
-                                presenters[previousIndex].deselect()
-                            }
+                            let previousIndex = self.selectionRelay.value
+                            guard previousIndex != index else { return }
                             
                             presenters[index].select()
                             self.selectionRelay.accept(index)
+                            
+                            if let previousIndex = previousIndex {
+                                self.dismissRelay.accept(())
+                                presenters[previousIndex].deselect()
+                            } else if !self.preselectionSupportedRelay.value {
+                                self.dismissRelay.accept(())
+                            }
                         }
                     }
             }
@@ -154,15 +165,7 @@ public final class SelectionScreenPresenter {
     }
 
     func previousTapped() {
-        /// if `True` -> interactor fires!
-        if preselectionSupportedRelay.value {
-            interactor.recordSelection()
-        } else {
-            interactor.dissmisRelay.accept(())
-        }
-    }
-    
-    func recordSelection() {
         interactor.recordSelection()
+        interactor.dissmisRelay.accept(())
     }
 }

@@ -35,6 +35,7 @@ final class AddCardLabelContentInteractor: LabelContentInteracting {
     
     private let disposeBag = DisposeBag()
     private let tierLimitsProviding: TierLimitsProviding
+    private let featureFetcher: FeatureFetching
     private let paymentMethodTypesService: SimpleBuyPaymentMethodTypesService
     private var isKYCVerified: Observable<Bool> {
         tierLimitsProviding
@@ -51,29 +52,43 @@ final class AddCardLabelContentInteractor: LabelContentInteracting {
     
     // MARK: - Setup
     
-    init(paymentMethodTypesService: SimpleBuyPaymentMethodTypesService, tierLimitsProviding: TierLimitsProviding) {
+    init(paymentMethodTypesService: SimpleBuyPaymentMethodTypesService,
+         tierLimitsProviding: TierLimitsProviding,
+         featureFetcher: FeatureFetching) {
         self.paymentMethodTypesService = paymentMethodTypesService
         self.tierLimitsProviding = tierLimitsProviding
+        self.featureFetcher = featureFetcher
         setup()
     }
     
     private func setup() {
         
-        Observable
-            .combineLatest(activeCards, isKYCVerified)
-            .map { $0.0.count < CardData.maxCardCount && $0.1 }
+        let featureEnabled = featureFetcher
+            .fetchBool(for: .simpleBuyCardsEnabled)
+            .asObservable()
+        let data = Observable
+            .combineLatest(activeCards, isKYCVerified, featureEnabled)
+            .map {
+                (
+                    isCardCountBelowLimit: $0.0.count < CardData.maxCardCount,
+                    isKYCVerified: $0.1,
+                    isFeatureEnabled: $0.2
+                )
+            }
+            .share(replay: 1)
+        
+        data
+            .map { $0.isCardCountBelowLimit && $0.isKYCVerified && $0.isFeatureEnabled }
             .map { $0 ? .settings : .disclaimer }
             .bind(to: descriptorRelay)
             .disposed(by: disposeBag)
-        
-        Observable
-            .combineLatest(activeCards, isKYCVerified)
-            .map { ($0.0.count < CardData.maxCardCount, $0.1) }
-            .map { values in
-                let underLimit = values.0
-                let isKYCVerified = values.1
-                guard isKYCVerified else { return LocalizationString.unverified }
-                return underLimit ? LocalizationString.addACard : LocalizationString.maximum
+            
+        data
+            .map { data in
+                guard data.isFeatureEnabled else { return LocalizationString.disabled }
+                guard data.isKYCVerified else { return LocalizationString.unverified }
+                guard data.isCardCountBelowLimit else { return LocalizationString.maximum }
+                return LocalizationString.addACard
             }
             .map { .loaded(next: .init(text: $0)) }
             .bind(to: stateRelay)

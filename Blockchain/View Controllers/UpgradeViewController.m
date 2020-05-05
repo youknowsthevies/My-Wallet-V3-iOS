@@ -34,7 +34,7 @@
 - (IBAction)upgradeTapped:(UIButton *)sender
 {
     if (!Reachability.hasInternetConnection) {
-        [AlertViewPresenter.sharedInstance showNoInternetConnectionAlert];
+        [AlertViewPresenter.sharedInstance internetConnection];
         return;
     }
 
@@ -221,8 +221,8 @@
 - (void)onWalletUpgraded
 {
     __weak UpgradeViewController *weakSelf = self;
-    [AlertViewPresenter.sharedInstance standardNotifyWithMessage:LocalizationConstantsObjcBridge.upgradeSuccess
-                                                           title:LocalizationConstantsObjcBridge.upgradeSuccessTitle
+    [AlertViewPresenter.sharedInstance standardNotifyWithTitle:LocalizationConstantsObjcBridge.upgradeSuccessTitle    
+                                                       message: LocalizationConstantsObjcBridge.upgradeSuccess
                                                               in:self
                                                          handler:^(UIAlertAction * _Nonnull action) {
                                                              [weakSelf dismissViewControllerAnimated:YES completion:nil];

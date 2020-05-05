@@ -210,7 +210,7 @@ extension KeyImportCoordinator: WalletKeyImportDelegate {
         let importedKeyButForIncorrectAddress = LocalizationConstants.AddressAndKeyImport.importedKeyButForIncorrectAddress
         let importedKeyDoesNotCorrespondToAddress = LocalizationConstants.AddressAndKeyImport.importedKeyDoesNotCorrespondToAddress
         let message = String(format: "%@\n\n%@", importedKeyButForIncorrectAddress, importedKeyDoesNotCorrespondToAddress)
-        AlertViewPresenter.shared.standardNotify(message: message, title: LocalizationConstants.success, handler: nil)
+        AlertViewPresenter.shared.standardNotify(title: LocalizationConstants.success, message: message, handler: nil)
     }
 
     @objc func alertUserOfImportedKey() {
@@ -220,13 +220,13 @@ extension KeyImportCoordinator: WalletKeyImportDelegate {
         let importedPrivateKeyArgument = LocalizationConstants.AddressAndKeyImport.importedPrivateKeyArgument
         let format = isWatchOnly ? importedAddressArgument : importedPrivateKeyArgument
         let message = String(format: format, walletManager.wallet.lastImportedAddress)
-        AlertViewPresenter.shared.standardNotify(message: message, title: LocalizationConstants.success, handler: nil)
+        AlertViewPresenter.shared.standardNotify(title: LocalizationConstants.success, message: message, handler: nil)
     }
 
     @objc func alertUserOfImportedPrivateKeyIntoLegacyAddress() {
         NotificationCenter.default.removeObserver(self, name: backupKey, object: nil)
         let importedKeySuccess = LocalizationConstants.AddressAndKeyImport.importedKeySuccess
-        AlertViewPresenter.shared.standardNotify(message: importedKeySuccess, title: LocalizationConstants.success, handler: nil)
+        AlertViewPresenter.shared.standardNotify(title: LocalizationConstants.success, message: importedKeySuccess, handler: nil)
     }
 
     func askUserToAddWatchOnlyAddress(_ address: AssetAddress, then: @escaping () -> Void) {
@@ -238,7 +238,7 @@ extension KeyImportCoordinator: WalletKeyImportDelegate {
             then()
         }
         let cancelAction = UIAlertAction(title: LocalizationConstants.cancel, style: .cancel, handler: nil)
-        AlertViewPresenter.shared.standardNotify(message: message, title: title, actions: [continueAction, cancelAction])
+        AlertViewPresenter.shared.standardNotify(title: title, message: message, actions: [continueAction, cancelAction])
     }
 
     func didImportIncorrectPrivateKey() {
@@ -261,7 +261,7 @@ extension KeyImportCoordinator: WalletKeyImportDelegate {
             error = LocalizationConstants.AddressAndKeyImport.incorrectBip38Password
         }
 
-        AlertViewPresenter.shared.standardNotify(message: error, title: LocalizationConstants.Errors.error, handler: nil)
+        AlertViewPresenter.shared.standardNotify(title: LocalizationConstants.Errors.error, message: error, handler: nil)
     }
 
     func failedToImportPrivateKeyForSendingFromWatchOnlyAddress(errorDescription: String) {
@@ -299,7 +299,7 @@ extension KeyImportCoordinator: WalletKeyImportDelegate {
         }
 
         let title = LocalizationConstants.Errors.error
-        AlertViewPresenter.shared.standardNotify(message: error, title: title, actions: [cancelAction, tryAgainAction])
+        AlertViewPresenter.shared.standardNotify(title: title, message: error, actions: [cancelAction, tryAgainAction])
     }
 
     func importKey(from address: AssetAddress) {
@@ -324,7 +324,7 @@ extension KeyImportCoordinator: WalletKeyImportDelegate {
 
     func scanPrivateKeyForWatchOnlyAddress(_ address: AssetAddress) {
         if !Reachability.hasInternetConnection() {
-            AlertViewPresenter.shared.showNoInternetConnectionAlert()
+            AlertViewPresenter.shared.internetConnection()
             return
         }
 

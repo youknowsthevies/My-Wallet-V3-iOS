@@ -84,8 +84,13 @@ final class BillingAddressScreenPresenter {
         textFieldViewModelsMapRelay.value
     }
     
-    let textFieldViewModelsMapRelay = BehaviorRelay<[TextFieldType: TextFieldViewModel]>(value: [:])
+    var errorTrigger: Signal<Void> {
+        errorTriggerRelay.asSignal()
+    }
     
+    let textFieldViewModelsMapRelay = BehaviorRelay<[TextFieldType: TextFieldViewModel]>(value: [:])
+        
+    private let errorTriggerRelay = PublishRelay<Void>()
     private let isValidRelay = BehaviorRelay(value: false)
     private let refreshRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
@@ -96,11 +101,9 @@ final class BillingAddressScreenPresenter {
     private let countrySelectionRouter: SelectionRouterAPI
     private let stateService: AddCardStateService
     private let loadingViewPresenter: LoadingViewPresenting
-    private let alertViewPresenter: AlertViewPresenter
     private let eventRecorder: AnalyticsEventRecording
 
     init(interactor: BillingAddressScreenInteractor,
-         alertViewPresenter: AlertViewPresenter = .shared,
          countrySelectionRouter: SelectionRouterAPI,
          stateService: AddCardStateService,
          loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
@@ -109,7 +112,6 @@ final class BillingAddressScreenPresenter {
         self.stateService = stateService
         self.countrySelectionRouter = countrySelectionRouter
         self.loadingViewPresenter = loadingViewPresenter
-        self.alertViewPresenter = alertViewPresenter
         self.eventRecorder = eventRecorder
         
         selectionButtonViewModel = SelectionButtonViewModel()
@@ -255,12 +257,16 @@ final class BillingAddressScreenPresenter {
                 style: .circle,
                 text: LocalizedString.linkingYourCard
             )
+            .mapToResult()
             .subscribe(
-                onSuccess: { [weak stateService] data in
-                    stateService?.authorizeCardAddition(with: data)
-                },
-                onError: { [weak alertViewPresenter] error in
-                    alertViewPresenter?.error()
+                onSuccess: { [weak self] result in
+                    guard let self = self else { return }
+                    switch result {
+                    case .success(let data):
+                        self.stateService.authorizeCardAddition(with: data)
+                    case .failure:
+                        self.errorTriggerRelay.accept(())
+                    }
                 }
             )
             .disposed(by: disposeBag)

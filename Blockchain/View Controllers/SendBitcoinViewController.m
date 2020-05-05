@@ -571,7 +571,7 @@ BOOL displayingLocalSymbolSend;
                     [self selectToAddress:self.exchangeAddressViewModel.address];
                     destinationAddressIndicatorLabel.hidden = false;
                 } else {
-                    [AlertViewPresenter.sharedInstance standardErrorWithMessage:[LocalizationConstantsObjcBridge twoFactorExchangeDisabled] title:BC_STRING_ERROR in:self handler:nil];
+                    [AlertViewPresenter.sharedInstance standardErrorWithTitle:BC_STRING_ERROR message:[LocalizationConstantsObjcBridge twoFactorExchangeDisabled] in:self handler:nil];
                 }
             }
             break;
@@ -633,7 +633,7 @@ BOOL displayingLocalSymbolSend;
 - (void)handleSigningPaymentError:(NSString *)errorMessage
 {
     DLog(@"Send error: %@", errorMessage);
-    [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:errorMessage title:BC_STRING_ERROR in:self handler: nil];
+    [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:errorMessage in:self handler: nil];
     
     [self->sendProgressActivityIndicator stopAnimating];
     
@@ -688,7 +688,7 @@ BOOL displayingLocalSymbolSend;
         /// The transaction was not successful
         if (error != nil) {
             DLog(@"Send error: %@", error);
-            [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:error.localizedDescription title:BC_STRING_ERROR in:self handler: nil];
+            [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:error.localizedDescription in:self handler: nil];
             
             [self->sendProgressActivityIndicator stopAnimating];
             
@@ -805,13 +805,13 @@ BOOL displayingLocalSymbolSend;
              [self reportSendSummaryConfirmFailure];
              
              if ([error isEqualToString:ERROR_UNDEFINED]) {
-                 [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:BC_STRING_SEND_ERROR_NO_INTERNET_CONNECTION title:BC_STRING_ERROR in:self handler: nil];
+                 [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_SEND_ERROR_NO_INTERNET_CONNECTION in:self handler: nil];
              } else if ([error isEqualToString:ERROR_FEE_TOO_LOW]) {
-                 [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:BC_STRING_SEND_ERROR_FEE_TOO_LOW title:BC_STRING_ERROR in:self handler: nil];
+                 [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_SEND_ERROR_FEE_TOO_LOW in:self handler: nil];
              } else if ([error isEqualToString:ERROR_FAILED_NETWORK_REQUEST]) {
-                 [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:[LocalizationConstantsObjcBridge requestFailedCheckConnection] title:BC_STRING_ERROR in:self handler: nil];
+                 [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:[LocalizationConstantsObjcBridge requestFailedCheckConnection] in:self handler: nil];
              } else if (error && error.length != 0)  {
-                 [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:error title:BC_STRING_ERROR in:self handler: nil];
+                 [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:error in:self handler: nil];
              }
              
              [self->sendProgressActivityIndicator stopAnimating];
@@ -1325,10 +1325,10 @@ BOOL displayingLocalSymbolSend;
     if ([self isKeyboardVisible]) {
         [self hideKeyboard];
         dispatch_after(DELAY_KEYBOARD_DISMISSAL, dispatch_get_main_queue(), ^{
-            [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:error title:BC_STRING_ERROR in:self handler:nil];
+            [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:error in:self handler:nil];
         });
     } else {
-        [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:error title:BC_STRING_ERROR in:self handler:nil];
+        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:error in:self handler:nil];
     }
 }
 
@@ -1417,7 +1417,7 @@ BOOL displayingLocalSymbolSend;
     
     if ([amount longLongValue] + [fee longLongValue] > [WalletManager.sharedInstance.wallet getTotalBalanceForSpendableActiveLegacyAddresses]) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * ANIMATION_DURATION * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:BC_STRING_SOME_FUNDS_CANNOT_BE_TRANSFERRED_AUTOMATICALLY title:BC_STRING_WARNING_TITLE in:self handler:nil];
+            [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_WARNING_TITLE message:BC_STRING_SOME_FUNDS_CANNOT_BE_TRANSFERRED_AUTOMATICALLY in:self handler:nil];
             [[LoadingViewPresenter sharedInstance] hide];
         });
     }
@@ -2381,7 +2381,7 @@ BOOL displayingLocalSymbolSend;
                     if (address == nil || ![payload.schemeCompat isEqualToString:scheme] || ![WalletManager.sharedInstance.wallet isValidAddress:address assetType:self.assetType]) {
                         NSString *assetName = ([type legacy] == LegacyAssetTypeBitcoin) ? @"Bitcoin" : @"Bitcoin Cash";
                         NSString *errorMessage = [NSString stringWithFormat:LocalizationConstantsObjcBridge.invalidXAddressY, assetName, address];
-                        [AlertViewPresenter.sharedInstance standardErrorWithMessage:errorMessage title:LocalizationConstantsObjcBridge.error in:self handler:nil];
+                        [AlertViewPresenter.sharedInstance standardErrorWithTitle:LocalizationConstantsObjcBridge.error message:errorMessage in:self handler:nil];
                         return;
                     }
 

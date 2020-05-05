@@ -62,7 +62,7 @@
         [allowedCharSet formUnionWithCharacterSet:[NSCharacterSet whitespaceCharacterSet]];
         
         if ([label rangeOfCharacterFromSet:[allowedCharSet invertedSet]].location != NSNotFound) {
-            [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:BC_STRING_LABEL_MUST_BE_ALPHANUMERIC title:BC_STRING_ERROR in:nil handler:nil];
+            [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_LABEL_MUST_BE_ALPHANUMERIC in:nil handler:nil];
             return;
         }
     }

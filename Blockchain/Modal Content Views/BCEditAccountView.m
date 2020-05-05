@@ -62,18 +62,18 @@
     NSString *label = [self.labelTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 
     if (label.length == 0) {
-        [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:BC_STRING_YOU_MUST_ENTER_A_LABEL title:BC_STRING_ERROR in:nil handler:nil];
+        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_YOU_MUST_ENTER_A_LABEL in:nil handler:nil];
         return;
     }
 
     if (label.length > 17) {
         // TODO i18n
-        [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:BC_STRING_LABEL_MUST_HAVE_LESS_THAN_18_CHAR title:BC_STRING_ERROR in:nil handler:nil];
+        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_LABEL_MUST_HAVE_LESS_THAN_18_CHAR in:nil handler:nil];
         return;
     }
 
     if (![WalletManager.sharedInstance.wallet isAccountNameValid:label]) {
-        [[AlertViewPresenter sharedInstance] standardErrorWithMessage:[LocalizationConstantsObjcBridge nameAlreadyInUse] title:[LocalizationConstantsObjcBridge error] in:nil handler:nil];
+        [[AlertViewPresenter sharedInstance] standardErrorWithTitle:[LocalizationConstantsObjcBridge error] message:[LocalizationConstantsObjcBridge nameAlreadyInUse] in:nil handler:nil];
         [LoadingViewPresenter.sharedInstance hide];
         return;
     }

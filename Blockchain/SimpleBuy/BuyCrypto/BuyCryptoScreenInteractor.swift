@@ -261,6 +261,13 @@ final class BuyCryptoScreenInteractor {
                 
                 return .inBounds(data: data, upperLimit: pair.maxFiatValue)
             }
+            // Handle posssible errors: it is unlikely to get here unless
+            // there was a connection / BE error
+            .catchError { _ in
+                fiatCurrencyService.fiatCurrencyObservable
+                    .take(1)
+                    .map { .empty(currency: $0) }
+            }
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
     }

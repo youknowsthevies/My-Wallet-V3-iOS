@@ -138,8 +138,8 @@ final class PasswordRequiredScreenPresenter {
         }
         let cancelAction = UIAlertAction(title: LocalizationConstants.cancel, style: .cancel)
         alertPresenter.standardNotify(
-            message: message,
             title: title,
+            message: message,
             actions: [okAction, cancelAction]
         )
     }
@@ -153,8 +153,8 @@ final class PasswordRequiredScreenPresenter {
         }
         let cancelAction = UIAlertAction(title: LocalizationConstants.cancel, style: .cancel)
         alertPresenter.standardNotify(
-            message: message,
             title: title,
+            message: message,
             actions: [okAction, cancelAction]
         )
     }

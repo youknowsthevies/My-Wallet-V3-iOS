@@ -91,7 +91,8 @@ final class SettingsScreenPresenter {
         self.interactor = interactor
         addCardCellPresenter = AddCardCellPresenter(
             paymentMethodTypesService: interactor.simpleBuyService.paymentMethodTypes,
-            tierLimitsProviding: interactor.tiersProviding
+            tierLimitsProviding: interactor.tiersProviding,
+            featureFetcher: interactor.featureConfigurator
         )
         emailNotificationsCellPresenter = EmailNotificationsSwitchCellPresenter(
             service: interactor.emailNotificationsService
@@ -272,7 +273,7 @@ final class SettingsScreenPresenter {
         interactor.refresh()
     }
     
-    /// MARK: - Exposed
+    // MARK: - Exposed
     
     func navigationBarLeadingButtonTapped() {
         router.previousRelay.accept(())

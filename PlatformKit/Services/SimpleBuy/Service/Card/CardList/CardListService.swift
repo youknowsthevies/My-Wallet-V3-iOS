@@ -25,6 +25,7 @@ public final class CardListService: CardListServiceAPI {
     
     public init(client: CardListClientAPI,
                 reactiveWallet: ReactiveWalletAPI,
+                featureFetcher: FeatureFetching,
                 authenticationService: NabuAuthenticationServiceAPI,
                 fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
         cachedValue = .init(
@@ -45,7 +46,12 @@ public final class CardListService: CardListServiceAPI {
                     .flatMap { token in
                         client.cardList(by: token)
                     }
-                    .map { .init(response: $0) }
+                    .map { Array<CardData>.init(response: $0) }
+                    .flatMap { cards -> Observable<[CardData]> in
+                        featureFetcher.fetchBool(for: .simpleBuyCardsEnabled)
+                            .map { $0 ? cards : [] }
+                            .asObservable()
+                    }
             }
     }
     

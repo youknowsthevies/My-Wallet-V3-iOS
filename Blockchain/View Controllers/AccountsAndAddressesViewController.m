@@ -211,7 +211,7 @@
 - (void)generateNewAddress
 {
     if (!Reachability.hasInternetConnection) {
-        [AlertViewPresenter.sharedInstance showNoInternetConnectionAlert];
+        [AlertViewPresenter.sharedInstance internetConnection];
         return;
     }
     
@@ -238,7 +238,7 @@
 - (void)importAddress
 {
     if (!Reachability.hasInternetConnection) {
-        [AlertViewPresenter.sharedInstance showNoInternetConnectionAlert];
+        [AlertViewPresenter.sharedInstance internetConnection];
         return;
     }
 

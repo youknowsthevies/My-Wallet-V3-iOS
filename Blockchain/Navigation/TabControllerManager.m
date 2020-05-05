@@ -383,13 +383,13 @@
         !LoadingViewPresenter.sharedInstance.isVisible &&
         AuthenticationCoordinator.sharedInstance.isDisplayingLoginAuthenticationFlow &&
         !self.tabViewController.presentedViewController) {
-        [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:notice title:[LocalizationConstantsObjcBridge information] in:self handler: nil];
+        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:[LocalizationConstantsObjcBridge information] message:notice in:self handler: nil];
     }
 }
 
 - (void)didErrorWhileBuildingPaymentWithError:(NSString *)message
 {
-    [[AlertViewPresenter sharedInstance] standardErrorWithMessage:message title:[LocalizationConstantsObjcBridge error] in:self handler:nil];
+    [[AlertViewPresenter sharedInstance] standardErrorWithTitle:[LocalizationConstantsObjcBridge error] message:message in:self handler:nil];
 }
 
 #pragma mark - Eth Send
@@ -409,7 +409,7 @@
 
     [[ModalPresenter sharedInstance] closeAllModals];
 
-    [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:BC_STRING_PAYMENT_SENT_ETHER title:[LocalizationConstantsObjcBridge success] in:self handler:nil];
+    [[AlertViewPresenter sharedInstance] standardErrorWithTitle:[LocalizationConstantsObjcBridge success] message:BC_STRING_PAYMENT_SENT_ETHER in:self handler:nil];
 
     [self showTransactionsAnimated:YES];
 
@@ -425,7 +425,7 @@
 {
     [[ModalPresenter sharedInstance] closeAllModals];
 
-    [[AlertViewPresenter sharedInstance] standardErrorWithMessage:error title:[LocalizationConstantsObjcBridge error] in:self handler:nil];
+    [[AlertViewPresenter sharedInstance] standardErrorWithTitle:[LocalizationConstantsObjcBridge error] message:error in:self handler:nil];
 }
 
 - (void)didUpdateEthPaymentWithPayment:(NSDictionary * _Nonnull)payment
@@ -467,7 +467,7 @@
 
 - (void)didErrorWhenGettingFiatAtTimeWithError:(NSString * _Nullable)error
 {
-    [[AlertViewPresenter sharedInstance] standardErrorWithMessage:BC_STRING_ERROR_GETTING_FIAT_AT_TIME title:BC_STRING_ERROR in:self handler:nil];
+    [[AlertViewPresenter sharedInstance] standardErrorWithTitle:BC_STRING_ERROR message:BC_STRING_ERROR_GETTING_FIAT_AT_TIME in:self handler:nil];
 }
 
 #pragma mark - Receive

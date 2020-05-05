@@ -88,8 +88,8 @@ final class AutoPairingScreenPresenter {
                 self.fallbackActionRelay.accept(.cancel)
             }
         alertPresenter.standardNotify(
-            message: LocalizedString.ErrorAlert.message,
             title: LocalizedString.ErrorAlert.title,
+            message: LocalizedString.ErrorAlert.message,
             actions: [tryAgain, manualPairing]
         )
     }

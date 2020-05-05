@@ -6,8 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import RxSwift
+import PlatformUIKit
 
 class TransactionsXlmViewController: SimpleTransactionsViewController {
 

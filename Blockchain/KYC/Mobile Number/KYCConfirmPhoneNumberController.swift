@@ -9,6 +9,7 @@
 import Foundation
 import ToolKit
 import PlatformKit
+import PlatformUIKit
 
 final class KYCConfirmPhoneNumberController: KYCBaseViewController, BottomButtonContainerView, ProgressableView {
     

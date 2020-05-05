@@ -114,11 +114,11 @@
         }
                 
         if ([error isEqualToString:ERROR_UNDEFINED]) {
-            [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:BC_STRING_SEND_ERROR_NO_INTERNET_CONNECTION title:BC_STRING_ERROR in:nil handler:nil];
+            [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_SEND_ERROR_NO_INTERNET_CONNECTION in:nil handler:nil];
         } else if ([error isEqualToString:ERROR_FAILED_NETWORK_REQUEST]) {
-            [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:[LocalizationConstantsObjcBridge requestFailedCheckConnection] title:BC_STRING_ERROR in:nil handler:nil];
+            [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:[LocalizationConstantsObjcBridge requestFailedCheckConnection] in:nil handler:nil];
         } else if (error && error.length != 0)  {
-            [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:error title:BC_STRING_ERROR in:nil handler:nil];
+            [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:error in:nil handler:nil];
         }
         
         if (self.on_error) self.on_error(error, secondPassword);

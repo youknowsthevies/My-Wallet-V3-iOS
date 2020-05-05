@@ -86,8 +86,8 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
                     })
                 AlertViewPresenter.shared
                     .standardNotify(
-                        message: error.localizedDescription,
                         title: LocalizationConstants.Errors.error,
+                        message: error.localizedDescription,
                         actions: [accept]
                 )
                 return Disposables.create()
@@ -109,8 +109,8 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
                 })
             AlertViewPresenter.shared
                 .standardNotify(
-                    message: biometryWarning,
                     title: name,
+                    message: biometryWarning,
                     actions: [cancel, accept]
             )
             return Disposables.create()

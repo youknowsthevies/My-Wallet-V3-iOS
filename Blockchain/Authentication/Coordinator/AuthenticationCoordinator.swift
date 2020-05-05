@@ -124,7 +124,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         guard error == nil, isAuthenticated else {
             switch error!.code {
             case AuthenticationError.ErrorCode.noInternet.rawValue:
-                alertPresenter.showNoInternetConnectionAlert()
+                alertPresenter.internetConnection()
             case AuthenticationError.ErrorCode.failedToLoadWallet.rawValue:
                 handleFailedToLoadWallet()
             default:

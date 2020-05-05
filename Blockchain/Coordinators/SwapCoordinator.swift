@@ -11,6 +11,7 @@ import RxSwift
 import ToolKit
 import NetworkKit
 import PlatformKit
+import PlatformUIKit
 import StellarKit
 
 enum SwapCoordinatorEvent {
@@ -65,8 +66,8 @@ protocol SwapCoordinatorAPI {
             }, onError: { [weak self] error in
                 guard let this = self else { return }
                 AlertViewPresenter.shared.standardError(
-                    message: this.errorMessage(for: error),
                     title: LocalizationConstants.Errors.error,
+                    message: this.errorMessage(for: error),
                     in: this.rootViewController
                 )
                 Logger.shared.error("Failed to get user: \(error.localizedDescription)")

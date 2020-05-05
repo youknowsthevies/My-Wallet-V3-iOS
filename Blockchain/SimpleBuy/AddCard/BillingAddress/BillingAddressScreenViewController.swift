@@ -16,6 +16,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
     // MARK: - Injected
     
     private let presenter: BillingAddressScreenPresenter
+    private let alertViewPresenter: AlertViewPresenterAPI
     
     // MARK: - Accessors
     
@@ -25,8 +26,10 @@ final class BillingAddressScreenViewController: BaseTableViewController {
     
     // MARK: - Setup
     
-    init(presenter: BillingAddressScreenPresenter) {
+    init(presenter: BillingAddressScreenPresenter,
+         alertViewPresenter: AlertViewPresenterAPI) {
         self.presenter = presenter
+        self.alertViewPresenter = alertViewPresenter
         super.init()
     }
     
@@ -44,6 +47,13 @@ final class BillingAddressScreenViewController: BaseTableViewController {
         keyboardInteractionController = KeyboardInteractionController(in: self)
         setupTableView()
         setupKeyboardObserver()
+        
+        presenter.errorTrigger
+            .emit(onNext: { [weak self] in
+                guard let self = self else { return }
+                self.alertViewPresenter.error(in: self, action: nil)
+            })
+            .disposed(by: disposeBag)
     }
     
     override func viewDidAppear(_ animated: Bool) {
