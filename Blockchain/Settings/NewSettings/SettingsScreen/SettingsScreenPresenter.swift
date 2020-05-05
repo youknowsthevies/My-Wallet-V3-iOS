@@ -153,10 +153,15 @@ final class SettingsScreenPresenter {
         var sections: [Section] = [
             .profile,
             .preferences,
-            .security,
-            .cards,
-            .about
+            .security
         ]
+        
+        if AppFeatureConfigurator.shared.configuration(for: .simpleBuyCardsEnabled).isEnabled {
+            sections.append(.cards)
+        }
+        
+        sections.append(.about)
+        
         if exchangeEnabled {
             sections.insert(.connect, at: 2)
         }
