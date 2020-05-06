@@ -29,11 +29,11 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
     
     private let scheduler: ConcurrentDispatchQueueScheduler
     private let session: URLSession
-    private let sessionHandler: NetworkCommunicatorSessionHandler
+    private let sessionHandler: NetworkSessionDelegateAPI
     
     init(session: URLSession,
          sessionDelegate: SessionDelegateAPI,
-         sessionHandler: NetworkCommunicatorSessionHandler = NetworkCommunicatorSessionHandler(),
+         sessionHandler: NetworkSessionDelegateAPI = NetworkCommunicatorSessionHandler(),
          scheduler: ConcurrentDispatchQueueScheduler = ConcurrentDispatchQueueScheduler(qos: .background)) {
         self.session = session
         self.sessionHandler = sessionHandler

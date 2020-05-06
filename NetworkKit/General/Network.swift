@@ -136,11 +136,22 @@ public struct Network {
         }()
         
         public static let everypay: Dependencies = {
+            
+            class SessionHandler: NetworkSessionDelegateAPI {
+                func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping AuthChallengeHandler) {
+                    completionHandler(.performDefaultHandling, nil)
+                }
+            }
+            
             let sessionConfiguration = URLSessionConfiguration.default
             sessionConfiguration.waitsForConnectivity = true
             let sessionDelegate = SessionDelegate()
             let session = URLSession(configuration: sessionConfiguration, delegate: sessionDelegate, delegateQueue: nil)
-            let communicator = NetworkCommunicator(session: session, sessionDelegate: sessionDelegate)
+            let communicator = NetworkCommunicator(
+                session: session,
+                sessionDelegate: sessionDelegate,
+                sessionHandler: SessionHandler()
+            )
             let config = Config.everypayConfig
             let requestBuilder = RequestBuilder(networkConfig: config)
             return Dependencies(
