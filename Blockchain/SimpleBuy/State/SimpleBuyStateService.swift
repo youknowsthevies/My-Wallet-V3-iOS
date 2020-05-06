@@ -276,16 +276,21 @@ final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
             .map { data -> State in
                 let isFiatCurrencySupported = data.1
                 if let data = data.0 {
-                    switch data.detailType.paymentMethod {
-                    case .bankTransfer:
-                        return .pendingOrderDetails(data)
-                    case .card:
-                        switch data.detailType {
-                        case .order:
+                    switch data.detailType {
+                    case .order(let details):
+                        switch data.detailType.paymentMethod {
+                        case .card:
                             return .checkout(data)
-                        case .candidate:
-                            fatalError("Impossible case to reach")
+                        case .bankTransfer:
+                            switch details.state {
+                            case .pendingConfirmation:
+                                return .checkout(data)
+                            default:
+                                return .pendingOrderDetails(data)
+                            }
                         }
+                    case .candidate:
+                        fatalError("Impossible case to reach")
                     }
                 } else {
                     return cache[.hasShownIntroScreen] ? (isFiatCurrencySupported ? .buy : .selectFiat) : .intro

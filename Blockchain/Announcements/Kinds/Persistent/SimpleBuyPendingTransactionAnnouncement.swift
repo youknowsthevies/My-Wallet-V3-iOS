@@ -73,7 +73,7 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
             return false
         }
         // Shows only for bank wire - we need copy for card orders
-        return order.isBankWire
+        return order.isBankWire && order.state == .pendingDeposit
     }
 
     let type = AnnouncementType.simpleBuyPendingTransaction

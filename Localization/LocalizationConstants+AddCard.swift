@@ -31,7 +31,7 @@ extension LocalizationConstants {
             comment: "Billing Address Screen: add card button label"
         )
         public static let linkingYourCard = NSLocalizedString(
-            "Secrurely Linking Your Card",
+            "Securely Linking Your Card",
             comment: "Billing Address Screen: loader"
         )
     }
@@ -54,7 +54,7 @@ extension LocalizationConstants {
     public enum PendingCardStatusScreen {
         public enum LoadingScreen {
             public static let title = NSLocalizedString(
-                "Secrurely Linking Your Card",
+                "Securely Linking Your Card",
                 comment: "Pending active card screen: title"
             )
             public static let subtitle = NSLocalizedString(
