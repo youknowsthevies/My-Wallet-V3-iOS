@@ -37,7 +37,7 @@ d'accélérer la réception de bitcoins. Cinq adresses seront chargées consécu
         " = "\
         You currently have email notifications enabled. Changing your email will disable email notifications.\
         ";
-" %@ (%@ %@)" = "%1$@ ( %2$@ %3$@ )";
+" %@ (%@ %@)" = "%@ ( %@ %@ )";
 " & " = "&";
 " and " = "et";
 " buy." = "acheter.";
@@ -48,7 +48,7 @@ d'accélérer la réception de bitcoins. Cinq adresses seront chargées consécu
 "%@ Confirmations" = "%@ Confirmations";
 "%@ copied to clipboard" = "%@ copié dans le presse-papiers";
 "%@ needed to exchange" = "%@ nécessaire pour échanger";
-"%@ of %@" = "%1$@ sur %2$@";
+"%@ of %@" = "%@ sur %@";
 "%@ payment request" = "%@ demande de paiement";
 "%@ payment request." = "Demande de paiement %@.";
 "%@ Received" = "%@ Reçu";
@@ -58,7 +58,7 @@ d'accélérer la réception de bitcoins. Cinq adresses seront chargées consécu
 "%d address" = "adresse %d";
 "%d addresses" = "%d adresses";
 "%d Confirmations" = "Confirmations %d";
-"%d login attempts left. Please enter your %@ 2FA code" = "%1$d tentatives de connexion restantes. Veuillez saisir votre code %2$@ 2FA";
+"%d login attempts left. Please enter your %@ 2FA code" = "%d tentatives de connexion restantes. Veuillez saisir votre code %@ 2FA";
 "%d Transactions" = "Transactions %d";
 "%lld hours ago" = "Il y a %lld heures";
 "%lld minutes ago" = "Il y a %lld minutes";
@@ -126,7 +126,7 @@ d'accélérer la réception de bitcoins. Cinq adresses seront chargées consécu
 "An Error Occurred" = "Une erreur s'est produite";
 "An error occurred due to interruptions during PIN verification. Please close the app and try again." = "Une erreur s'est produite en raison d'interruptions lors de la vérification du code PIN. Veuillez fermer l'application et réessayer.";
 "An error occurred when getting an approximate quote. Please try again later. Details: %@" = "Une erreur s'est produite lors de l'obtention d'un devis approximatif. Veuillez réessayer plus tard. Détails: %@";
-"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "Une erreur s'est produite lors de l'obtention de votre solde %1$@ . Veuillez réessayer plus tard. Détails: %2$@";
+"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "Une erreur s'est produite lors de l'obtention de votre solde %@ . Veuillez réessayer plus tard. Détails: %@";
 "An error occurred when selecting your tier. Please try again later." = "Une erreur s'est produite lors de la sélection de votre niveau. Veuillez réessayer plus tard.";
 "An error occurred while changing 2-Step verification." = "Une erreur s'est produite lors de la modification de la validation en deux étapes.";
 "An error occurred while copying your address to the clipboard. Please re-select the destination address or restart the app and try again." = "Une erreur s'est produite lors de la copie de votre adresse dans le presse-papiers. Veuillez resélectionner l'adresse de destination ou redémarrer l'application et réessayer.";
@@ -217,10 +217,10 @@ d'accélérer la réception de bitcoins. Cinq adresses seront chargées consécu
 "By creating a wallet you agree to Blockchain’s " = "En créant un portefeuille, vous acceptez les conditions de Blockchain";
 "By creating a wallet you agree to Blockchain’s Terms of Services & Privacy Policy" = "En créant un portefeuille, vous acceptez les conditions d'utilisation et la politique de confidentialité de Blockchain";
 "By depositing funds to this account, you agree to " = "En déposant des fonds sur ce compte, vous acceptez de";
-"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "En appuyant sur « Commencer maintenant », j'accepte les %1$@ & %2$@ de Blockchain";
+"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "En appuyant sur « Commencer maintenant », j'accepte les %@ & %@ de Blockchain";
 "By tapping Begin Now, you agree to Coinify's Terms of Service & Privacy Policy" = "En appuyant sur Commencez maintenant, vous acceptez les conditions d'utilisation et la politique de confidentialité de Coinify.";
-"By tapping Submit, you agree to Blockchain’s %@ & %@" = "En appuyant sur Soumettre, vous acceptez les options %1$@ & %2$@ de Blockchain.";
-"Calculating: Address %@ of %@" = "Calcul: adresse %1$@ sur %2$@";
+"By tapping Submit, you agree to Blockchain’s %@ & %@" = "En appuyant sur Soumettre, vous acceptez les options %@ & %@ de Blockchain.";
+"Calculating: Address %@ of %@" = "Calcul: adresse %@ sur %@";
 "Camera Access Denied" = "Accès à l’appareil photo refusé";
 "Canadian Dollar" = "Dollar canadien";
 "Cancel" = "Annuler";
@@ -241,7 +241,7 @@ d'accélérer la réception de bitcoins. Cinq adresses seront chargées consécu
 "Check out Swap" = "Découvrez Swap";
 "Check Your Inbox" = "Vérifiez votre boîte de réception";
 "Check your inbox." = "Vérifiez votre boîte de réception.";
-"Checking for more: Step %d of %d" = "Recherche supplémentaire: étape %1$d sur %2$d";
+"Checking for more: Step %d of %d" = "Recherche supplémentaire: étape %d sur %d";
 "Checking for Wallet updates" = "Vérification des mises-à-jours du portefeuille";
 "Checkout" = "Check-out";
 "Checkout the Exchange" = "Commander l'échange";
@@ -405,7 +405,7 @@ d'accélérer la réception de bitcoins. Cinq adresses seront chargées consécu
 "Everything you need to store, spend and receive BTC, ETH and BCH." = "Tout ce dont vous avez besoin pour stocker, dépenser et recevoir des BTC, ETH et BCH.";
 "Exchange" = "Échange";
 "Exchange %@ Address" = "Échange %@ adresse";
-"Exchange %@ for %@" = "Échange %1$@ contre %2$@";
+"Exchange %@ for %@" = "Échange %@ contre %@";
 "Exchange %@ Wallet" = "Échangez %@ Wallet";
 "Exchange Completed" = "Opération de change effectuée";
 "Exchange In Progress" = "Change en cours";
@@ -443,7 +443,7 @@ d'accélérer la réception de bitcoins. Cinq adresses seront chargées consécu
 "Forget" = "Oublier";
 "Forget Wallet" = "Oublier le portefeuille";
 "Forgot Password?" = "Mot de passe oublié?\"";
-"Found %d, with %@" = "%1$d trouvé, avec %2$@";
+"Found %d, with %@" = "%d trouvé, avec %@";
 "fourth" = "Quatrième";
 "fourth word" = "quatrième mot";
 "From" = "De";
@@ -518,7 +518,7 @@ Veuillez noter que la liste d’attente pour les airdrops Stellar est longue et 
 "Introducing the Exchange" = "Présentation de l'échange";
 "Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX = 1 USD." = "Découvrez USD PAX, un actif crypto fiable et stable que vous pouvez utiliser pour stocker de la valeur. 1 PAX équivaut à 1 USD.";
 "Invalid %@ Address" = "Adresse %@ invalide";
-"Invalid %@ address: %@" = "Adresse %1$@ non valide: %2$@";
+"Invalid %@ address: %@" = "Adresse %@ non valide: %@";
 "Invalid Bitcoin address: %@" = "Adresse bitcoin non valide : %@";
 "Invalid destination address" = "Adresse de destination non valide";
 "Invalid email address." = "Adresse e-mail erronée.";
@@ -579,7 +579,7 @@ Veuillez noter que la liste d’attente pour les airdrops Stellar est longue et 
 "Log In" = "Se connecter";
 "Log in to refresh addresses" = "Se connecter pour actualiser les adresses";
 "Log in to Web Wallet" = "Connectez-vous à Web Wallet";
-"Log in to your Blockchain Wallet via your PC or Mac at " = "Connectez-vous à votre portefeuille Blockchain via votre PC ou Mac à %1$s .";
+"Log in to your Blockchain Wallet via your PC or Mac at " = "Connectez-vous à votre portefeuille Blockchain via votre PC ou Mac à %s .";
 "Log Out" = "Se déconnecter";
 "Login existing Wallet" = "Connexion au portefeuille existant";
 "login.blockchain.com" = "login.blockchain.com";
@@ -745,12 +745,12 @@ Veuillez noter que la liste d’attente pour les airdrops Stellar est longue et 
 "Please review and confirm your " = "Veuillez vérifier et confirmer votre";
 "Please select a different address to send from." = "Veuillez sélectionner une autre adresse à partir de laquelle envoyer.";
 "Please send %@ to" = "Veuillez envoyer %@ à";
-"Please send %@ to bitcoin address.\n%@" = "Veuillez envoyer %1$@ BTC à l'adresse Bitcoin. \
-%2$@";
+"Please send %@ to bitcoin address.\n%@" = "Veuillez envoyer %@ BTC à l'adresse Bitcoin. \
+%@";
 "Please send BCH to the Bitcoin Cash address\n%@" = "Veuillez envoyer BCH à l'adresse Bitcoin Cash \
  %@";
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "Veuillez envoyer le paiement à l'adresse bitcoin ( <a href=\"https://blockchain.info/wallet/bitcoin-faq\"> aide? </a> ): %@";
-"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Veuillez transférer %1$@ de votre compte bancaire vers Blockchain.com. Une fois que nous aurons reçu les fonds, nous créerons votre ordre d'achat de %2$@.";
+"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Veuillez transférer %@ de votre compte bancaire vers Blockchain.com. Une fois que nous aurons reçu les fonds, nous créerons votre ordre d'achat de %@.";
 "Please try again" = "Veuillez réessayer";
 "Please verify your email address first." = "Veuillez d’abord vérifier votre adresse e-mail.";
 "Please verify your mobile number first." = "Veuillez d'abord vérifier votre numéro de mobile.";
@@ -893,7 +893,7 @@ Veuillez noter que la liste d’attente pour les airdrops Stellar est longue et 
 "Stellar is an open-source, decentralized payment protocol that allows for fast and cheap cross-border transactions between any pair of currencies." = "Stellar est un protocole de paiement décentralisé open source qui permet des transactions transfrontalières rapides et bon marché entre n'importe quelle paire de devises.";
 "Stellar Price" = "Prix de Stellar";
 "Stellar requires that all Stellar accounts hold a minimum balance of lumens, or XLM. This means you cannot send a balance out of your Stellar Wallet that would leave your Stellar Wallet with less than the minimum balance. This also means that in order to send XLM to a new Stellar account, you must send enough XLM to meet the minimum balance requirement." = "Stellar exige que tous les comptes Stellar aient un solde minimum de lumens, ou XLM. Cela signifie que vous ne pouvez pas envoyer un solde de votre Portefeuille Stellaire qui laisserait moins que le solde minimum. Cela signifie également que pour envoyer XLM à un nouveau compte Stellar, vous devez envoyer suffisamment de XLM pour atteindre le solde minimum requis.";
-"Step %d of %d" = "Étape %1$d de %2$d";
+"Step %d of %d" = "Étape %d de %d";
 "store" = "stocker";
 "Stored" = "Stocké";
 "Street line" = "Rue Ligne";
@@ -1030,9 +1030,9 @@ Veuillez noter que la liste d’attente pour les airdrops Stellar est longue et 
 "Transfer imported addresses?" = "Transférer des adresses importées?";
 "Transfer In Crypto" = "Transfert en crypto";
 "Transferred" = "Transféré";
-"Transferred funds from %d %@" = "Fonds transférés de %1$d %2$@";
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Fonds transférés de %1$d %2$@ . Les sorties pour %3$d %4$@ étaient trop petites.";
-"Transferring all funds: Address %i of %i" = "Transfert de tous les fonds: adresse %1$i de %2$i";
+"Transferred funds from %d %@" = "Fonds transférés de %d %@";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Fonds transférés de %d %@ . Les sorties pour %d %@ étaient trop petites.";
+"Transferring all funds: Address %i of %i" = "Transfert de tous les fonds: adresse %i de %i";
 "Try again" = "Réessayer";
 "Try Again" = "Réessayer";
 "twelfth" = "douzième";
@@ -1132,7 +1132,7 @@ Veuillez noter que la liste d’attente pour les airdrops Stellar est longue et 
 "Wallets" = "Portefeuilles";
 "Want Free Crypto?" = "Vous voulez de la crypto gratuite?";
 "Want to learn more? Tap here to visit %@" = "Voulez-vous en savoir plus? Appuyez ici pour visiter \
- %1$s";
+ %s";
 "Warning" = "avertissement";
 "Warning!!!" = "Avertissement!!!";
 "Warning: Your wallet identifier is sensitive information. Copying it may compromise the security of your wallet." = "Avertissement : votre identifiant du portefeuille est considéré comme une information sensible. Le copier pourrait compromettre la sécurité de votre portefeuille.";
@@ -1184,7 +1184,7 @@ Veuillez noter que la liste d’attente pour les airdrops Stellar est longue et 
 "With Blockchain Airdrops, get free crypto sent right to your Blockchain Wallet." = "Avec Blockchain Airdrops, obtenez un crypto gratuit directement dans votre portefeuille Blockchain.";
 "With Swap your crypto is safe, secure, and your keys are always intact." = "Avec Swap, votre cryptomonnaie est sécurisée et vos clés sont toujours intactes.";
 "word" = "mot";
-"Word %@ of %@" = "Mot %1$@ sur %2$@";
+"Word %@ of %@" = "Mot %@ sur %@";
 "Would you like to add the bitcoin address %@ to your address book?" = "Souhaitez-vous ajouter l'adresse bitcoin %@ à votre carnet d'adresses ?";
 "Would you like to archive the addresses used?" = "Souhaitez-vous archiver les adresses utilisées?";
 "Would you like to tell us about your experience with Blockchain?" = "Souhaitez-vous nous parler de votre expérience avec Blockchain?";
@@ -1195,7 +1195,7 @@ Veuillez noter que la liste d’attente pour les airdrops Stellar est longue et 
 "XLM is a token that enables quick, low cost global transactions. Send, receive, and trade XLM in the wallet today." = "XLM est un jeton permettant des transactions globales rapides et à faible coût. Envoyez, recevez et échangez XLM dans le portefeuille aujourd'hui.";
 "XLM Reserve Requirement" = "Réserves obligatoires XLM";
 "xxx" = "xxx";
-"xxx %@ (%@ %@)" = "xxx %1$@ ( %2$@ %3$@ )";
+"xxx %@ (%@ %@)" = "xxx %@ ( %@ %@ )";
 "year" = "année";
 "Year" = "Année";
 "years" = "ans";
@@ -1232,13 +1232,13 @@ Veuillez noter que la liste d’attente pour les airdrops Stellar est longue et 
 "You must leave at least one active address" = "Vous devez fournir au moins une adresse active";
 "You need to confirm your email address so that we can keep you informed about your wallet." = "Vous devez confirmer votre adresse électronique afin que nous puissions vous tenir informé au sujet de votre portefeuille.";
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "Vous devriez toujours jumeler votre appareil ou vous connecter si vous avez accès à votre identifiant du portefeuille et mot de passe. Un nouvel identifiant portefeuille est créé lorsque vous récupérez vos fonds. Souhaitez-vous continuer ?";
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Vous avez spécifié des frais de transaction exceptionnellement faibles de %1$s.\
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Vous avez spécifié des frais de transaction exceptionnellement faibles de %s.\
 \
-Votre transaction pourrait se retrouver bloquée et ne jamais être confirmée. Pour augmenter les chances que votre transaction soit confirmée dans environ une heure (6 blocs), nous recommandons fortement des frais non inférieurs à %2$s.";
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Vous avez spécifié des frais de transaction exceptionnellement faibles de %1$@ . Votre transaction peut rester bloquée et ne jamais être confirmée. Pour augmenter la probabilité de confirmation de votre transaction dans environ une heure (six blocs), nous recommandons fortement des frais d'au moins %2$@ . Comme vous ne disposez pas de fonds suffisants, cela signifie que le montant de l'envoi devra également être réduit à %3$@ .";
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Vous avez spécifié des frais de transaction anormalement élevés de %1$s.\
+Votre transaction pourrait se retrouver bloquée et ne jamais être confirmée. Pour augmenter les chances que votre transaction soit confirmée dans environ une heure (6 blocs), nous recommandons fortement des frais non inférieurs à %s.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Vous avez spécifié des frais de transaction exceptionnellement faibles de %@ . Votre transaction peut rester bloquée et ne jamais être confirmée. Pour augmenter la probabilité de confirmation de votre transaction dans environ une heure (six blocs), nous recommandons fortement des frais d'au moins %@ . Comme vous ne disposez pas de fonds suffisants, cela signifie que le montant de l'envoi devra également être réduit à %@ .";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Vous avez spécifié des frais de transaction anormalement élevés de %s.\
 \
-Même si vous diminuez les frais à %2$s, vous pouvez vous attendre à la confirmation de la transaction dans les 10 prochaines minutes ~ (1 bloc).";
+Même si vous diminuez les frais à %s, vous pouvez vous attendre à la confirmation de la transaction dans les 10 prochaines minutes ~ (1 bloc).";
 "You will be leaving the app." = "Vous quitterez l'application.";
 "You will be redirected to\n%@." = "Vous serez redirigé vers \
  %@ .";
@@ -1386,3 +1386,84 @@ Même si vous diminuez les frais à %2$s, vous pouvez vous attendre à la confir
 "Your USD Digital transactions will show up here once you make your first transaction." = "Vos transactions numériques en USD apparaîtront ici une fois que vous aurez effectué votre première transaction.";
 "~0–60 min" = "~0–60 min";
 "© 2020 Blockchain Luxembourg S.A. All rights reserved." = "© 2020 Blockchain Luxembourg S.A. Tous droits réservés.";
+"Add a Card" = "Ajouter une carte";
+"Add Now" = "Ajouter maintenant";
+"Address Line" = "Ligne d'adresse";
+"American Express" = "American Express";
+"At this time, Blockchain.com only allows sending your total amount from your" = "Pour le moment, Blockchain.com autorise uniquement l'envoi de votre montant total depuis votre";
+"Authorize Card" = "Autoriser la carte";
+"Bank Transfer" = "Virement";
+"Bank Wire Transfer" = "Virement bancaire";
+"Billing Address" = "Adresse de facturation";
+"Buy" = "Acheter";
+"Buy In Progress" = "Achat en cours";
+"buy order will complete" = "la commande d'achat sera terminée";
+"buy order." = "ordre d'achat.";
+"buy order. Note, your final amount might change to due market activity. Fees may apply." = "ordre d'achat. Notez que votre montant final peut changer en fonction de l'activité du marché. Des frais peuvent s'appliquer.";
+"Buying" = "Achat";
+"Card not supported" = "Carte non prise en charge";
+"Card Number" = "Numéro de carte";
+"Change Currency" = "Changer la devise";
+"Complete Payment" = "Paiement complet";
+"Credit or Debit Card" = "Carte de crédit ou de débit";
+"Currently we don’t support buying crypto with" = "Actuellement, nous ne prenons pas en charge l'achat de crypto avec";
+"CVV" = "CVV";
+"Diners Club" = "Diners Club";
+"Discover" = "Découvrir";
+"Drops on" = "Gouttes sur";
+"Ended on" = "Terminé le";
+"Exp:" = "Exp:";
+"Expiry Date" = "Date d'expiration";
+"from your bank account to Blockchain.com. Once we receive the funds, we’ll create your" = "de votre compte bancaire à Blockchain.com. Une fois que nous aurons reçu les fonds, nous créerons votre";
+"Full Name" = "Nom complet";
+"Invalid card number" = "numéro de carte invalide";
+"Invalid cardholder name" = "Nom de titulaire de carte invalide";
+"Invalid CVV" = "CVV invalide";
+"Invalid expiry date" = "Date d'expiration non valide";
+"is Not Supported" = "n'est pas pris en charge";
+"is now available in your Wallet." = "est désormais disponible dans votre portefeuille.";
+"JCB" = "JCB";
+"Limit" = "Limite";
+"Linked Cards" = "Cartes liées";
+"Mastercard" = "MasterCard";
+"Maximum Buy" = "Achat maximum";
+"Minimum Buy" = "Achat minimum";
+"Name on Card" = "Nom sur la carte";
+"Not currently available" = "Pas disponible actuellement";
+"of" = "de";
+"Once we receive your bank transfer, your" = "Une fois que nous recevons votre virement bancaire, votre";
+"Once we receive your funds, we’ll start your" = "Une fois que nous aurons reçu vos fonds, nous commencerons votre";
+"Oops! Something Went Wrong." = "Oops! Quelque chose s'est mal passé.";
+"Order Details" = "détails de la commande";
+"Payment Method" = "Mode de paiement";
+"Payment Methods" = "méthodes de payement";
+"Please go back and try again." = "Veuillez revenir en arrière et réessayer.";
+"Please transfer" = "Veuillez transférer";
+"Post Code" = "Code postal";
+"Privacy protected with 256-Bit SSL encryption." = "Confidentialité protégée par un cryptage SSL 256 bits.";
+"Purchased" = "Acheté";
+"Remove Card" = "Retirer la carte";
+"Search Country" = "Rechercher un pays";
+"Search Currency" = "Recherche de devise";
+"Securely Linking Your Card" = "Lier en toute sécurité votre carte";
+"Select Country" = "Choisissez le pays";
+"Select Your Currency" = "Sélectionnez votre devise";
+"This could take up to 1 minute." = "Cela peut prendre jusqu'à 1 minute.";
+"trading wallet" = "portefeuille commercial";
+"Transaction ID" = "identifiant de transaction";
+"Unknown Card Type" = "Type de carte inconnu";
+"Use Max" = "Utiliser Max";
+"Use Min" = "Utiliser min";
+"v" = "v";
+"Verify Now" = "Vérifiez maintenant";
+"Verify your identity and buy crypto with the fastest experience in the market." = "Vérifiez votre identité et achetez une crypto avec l'expérience la plus rapide du marché.";
+"View Home" = "Voir Accueil";
+"Visa" = "Visa";
+"We wil debit your payment method in 2 business days once your order is approved. Your final amount might change due to market activity." = "Nous débiterons votre mode de paiement dans les 2 jours ouvrables une fois votre commande approuvée. Votre montant final peut changer en raison de l'activité du marché.";
+"Welcome to Blockchain.com" = "Bienvenue sur Blockchain.com";
+"We’ll notify you when your order is complete." = "Nous vous informerons lorsque votre commande sera terminée.";
+"We’re completing your purchase now." = "Nous finalisons votre achat maintenant.";
+"You can have a maximum of three cards" = "Vous pouvez avoir un maximum de trois cartes";
+"You must have Gold Level verification status to add a credit card." = "Vous devez avoir le statut de vérification Gold Level pour ajouter une carte de crédit.";
+"Your local currency to store funds in that currency as funds in your Blockchain Wallet." = "Votre devise locale pour stocker des fonds dans cette devise en tant que fonds dans votre portefeuille Blockchain.";
+"Zip" = "Zip *: français";
