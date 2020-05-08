@@ -200,7 +200,7 @@
 "Blocked" = "Bloquejat";
 
 /* (No Commment) */
-"Calculating: Address %d of %d" = "Càlcul: Adreça %1$d de %2$d";
+"Calculating: Address %d of %d" = "Càlcul: Adreça %d de %d";
 
 /* (No Commment) */
 "Camera Access Denied" = "Càmera accés negat";
@@ -236,7 +236,7 @@
 "Checking for Wallet updates" = "S'estan cercant actualitzacions de cartera";
 
 /* (No Commment) */
-"Checking for more: Step %d of %d" = "Comprovant per a més informació: %1$d pas de %2$d";
+"Checking for more: Step %d of %d" = "Comprovant per a més informació: %d pas de %d";
 
 /* No comment provided by engineer. */
 "Close" = "Tancar";
@@ -455,7 +455,7 @@
 "Forget Wallet" = "Oblidar la cartera";
 
 /* (No Commment) */
-"Found %d, with %@" = "Es troba %1$d, amb %2$@";
+"Found %d, with %@" = "Es troba %d, amb %@";
 
 /* (No Commment) */
 "From and destination address have to be different" = "Des i adreça de destinació ha de ser diferents";
@@ -1001,7 +1001,7 @@
 "The PIN you have selected is extremely common and may be easily guessed by someone with access to your phone within 3 tries. Would you like to use this PIN anyway?" = "El PIN que heu seleccionat és molt comú i es pot fàcilment endevinar per algú amb accés al seu telèfon dins de 3 intents. Voleu utilitzar aquest PIN anyways?";
 
 /* (No Commment) */
-"The amount you want to send (%@) is greater than the maximum amount you can spend minus the fee (%@ - %@). Would you like to send %@?" = "La quantitat que voleu enviar (%1$@) és més gran que la quantitat màxima que pot gastar menys la quota (%2$@ - %3$@). Li agradaria enviar %4$@?";
+"The amount you want to send (%@) is greater than the maximum amount you can spend minus the fee (%@ - %@). Would you like to send %@?" = "La quantitat que voleu enviar (%@) és més gran que la quantitat màxima que pot gastar menys la quota (%@ - %@). Li agradaria enviar %@?";
 
 /* (No Commment) */
 "The fee you have specified is too low." = "L'import que heu especificat és massa baix.";
@@ -1053,7 +1053,7 @@
 %@
 Total Amount: %@
 Fee: %@
-(%@)" = "A: %1$@%2$@ import Total: %3$@ quota: %4$@ (%5$@)";
+(%@)" = "A: %@%@ import Total: %@ quota: %@ (%@)";
 
 /* (No Commment) */
 "Tor Requests" = "Sol·licituds de Tor";
@@ -1104,13 +1104,13 @@ Fee: %@
 "Transferred" = "Transferits";
 
 /* (No Commment) */
-"Transferred funds from %d %@" = "Fons transferits des %1$d %2$@";
+"Transferred funds from %d %@" = "Fons transferits des %d %@";
 
 /* (No Commment) */
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Fons transferits des %1$d %2$@. Sortides per %3$d %4$@ eren massa petites.";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Fons transferits des %d %@. Sortides per %d %@ eren massa petites.";
 
 /* (No Commment) */
-"Transferring all funds: Address %i of %i" = "Transferint tots els fons: %1$i adreça de %2$i";
+"Transferring all funds: Address %i of %i" = "Transferint tots els fons: %i adreça de %i";
 
 /* (No Commment) */
 "Try again" = "Torneu";
@@ -1324,13 +1324,13 @@ wallet experience for you" = "Hem dissenyat una experiència totalment nova cart
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "Sempre cal ajuntar o connectar si teniu accés a la seva cartera ID i contrasenya. Recuperant el seu fons crearà un nou identificador de cartera. Voleu continuar?";
 
 /* (No Commment) */
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Heu especificat un càrrec per transacció excepcionalment petit de %1$@. L'operació pot ser enganxat i possiblement mai ser confirmat. Per augmentar la probabilitat de la transacció confirmar en aproximadament una hora (sis blocs), recomanem una quota de no menys de %2$@.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Heu especificat un càrrec per transacció excepcionalment petit de %@. L'operació pot ser enganxat i possiblement mai ser confirmat. Per augmentar la probabilitat de la transacció confirmar en aproximadament una hora (sis blocs), recomanem una quota de no menys de %@.";
 
 /* (No Commment) */
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Heu especificat un càrrec per transacció excepcionalment petit de %1$@. La transacció pot tornar-se enganxat i possiblement mai confirmar. Per augmentar la probabilitat de la transacció confirmar en aproximadament una hora (sis blocs), recomanem una quota de no menys de %2$@. Ja que vostè no té prou fons, que significa que la quantitat d'enviar també haurà de ser baixat a %3$@.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Heu especificat un càrrec per transacció excepcionalment petit de %@. La transacció pot tornar-se enganxat i possiblement mai confirmar. Per augmentar la probabilitat de la transacció confirmar en aproximadament una hora (sis blocs), recomanem una quota de no menys de %@. Ja que vostè no té prou fons, que significa que la quantitat d'enviar també haurà de ser baixat a %@.";
 
 /* (No Commment) */
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Heu especificat un càrrec per transacció inusualment alt de %1$@. Fins i tot si vostè abaixar la taxa de %2$@, vostè pot esperar la transacció per confirmar en els propers 10 minuts (un bloc).";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Heu especificat un càrrec per transacció inusualment alt de %@. Fins i tot si vostè abaixar la taxa de %@, vostè pot esperar la transacció per confirmar en els propers 10 minuts (un bloc).";
 
 /* (No Commment) */
 "You've successfully imported a private key." = "Vostè haver importat reeixidament una clau privada.";

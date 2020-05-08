@@ -221,7 +221,7 @@
 "Blocked" = "Bloqueado";
 
 /* (No Commment) */
-"Calculating: Address %@ of %@" = "Calculando: Endereço %1$@ de %2$@";
+"Calculating: Address %@ of %@" = "Calculando: Endereço %@ de %@";
 
 /* (No Commment) */
 "Camera Access Denied" = "Acesso à câmera negado";
@@ -257,7 +257,7 @@
 "Checking for Wallet updates" = "Verificando se há atualizações da Carteira";
 
 /* (No Commment) */
-"Checking for more: Step %d of %d" = "Verificando se há mais: Etapa %1$d de %2$d";
+"Checking for more: Step %d of %d" = "Verificando se há mais: Etapa %d de %d";
 
 /* No comment provided by engineer. */
 "Close" = "Fechar";
@@ -491,7 +491,7 @@
 "Forget Wallet" = "Descartar Carteira";
 
 /* (No Commment) */
-"Found %d, with %@" = "Encontrado %1$d, com 2%$@";
+"Found %d, with %@" = "Encontrado %d, com 2%$@";
 
 /* (No Commment) */
 "From" = "De";
@@ -885,8 +885,8 @@
 
 /* (No Commment) */
 "Please send %@ to bitcoin address.
-%@" = "Por favor, envie %1$@ ao endereço bitcoin.
-%2$@";
+%@" = "Por favor, envie %@ ao endereço bitcoin.
+%@";
 
 /* (No Commment) */
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "Por favor, envie pagamento ao endereço bitcoin (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">ajuda?</a>): %@";
@@ -1096,7 +1096,7 @@
 "The PIN you have selected is extremely common and may be easily guessed by someone with access to your phone within 3 tries. Would you like to use this PIN anyway?" = "O PIN que você escolheu é extremamente comum e pode ser descoberto em 3 tentativas por alguém com acesso ao seu telefone. Gostaria de usar este PIN mesmo assim?";
 
 /* (No Commment) */
-"The amount you want to send (%@) is greater than the maximum amount you can spend minus the fee (%@ - %@). Would you like to send %@?" = "O valor que você deseja enviar (%1$@) é superior ao valor máximo que você pode gastar, subtraindo-se a taxa (%2$@ - %3$@). Gostaria de enviar %4$@?";
+"The amount you want to send (%@) is greater than the maximum amount you can spend minus the fee (%@ - %@). Would you like to send %@?" = "O valor que você deseja enviar (%@) é superior ao valor máximo que você pode gastar, subtraindo-se a taxa (%@ - %@). Gostaria de enviar %@?";
 
 /* (No Commment) */
 "The fee you have specified is too low." = "A taxa que você especificou é muito baixa.";
@@ -1204,13 +1204,13 @@
 "Transferred" = "Transferido";
 
 /* (No Commment) */
-"Transferred funds from %d %@" = "Fundos Transferidos de %1$d %2$@";
+"Transferred funds from %d %@" = "Fundos Transferidos de %d %@";
 
 /* (No Commment) */
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Fundos Transferidos de %1$d %2$@. As saídas de %3$d %4$@ estavam muito baixas.";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Fundos Transferidos de %d %@. As saídas de %d %@ estavam muito baixas.";
 
 /* (No Commment) */
-"Transferring all funds: Address %i of %i" = "Transferindo todos os fundos: Endereço %1$i de %2$i";
+"Transferring all funds: Address %i of %i" = "Transferindo todos os fundos: Endereço %i de %i";
 
 /* (No Commment) */
 "Try again" = "Tentar novamente";
@@ -1417,13 +1417,13 @@
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "Você deve fazer login ou parear seu dispositivo sempre que tiver acesso ao seu ID de Carteira e senha. Ao recuperar seus fundos, um novo ID de Carteira será criado. Gostaria de continuar?";
 
 /* (No Commment) */
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Você especificou uma taxa de transação excepcionalmente baixa de %1$@. Sua transação pode ficar travada e até mesmo nunca ser confirmada. Para aumentar a probabilidade de sua transação ser confirmada em aproximadamente uma hora (seis blocos), uma taxa não inferior a %2$@ é altamente recomendável.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Você especificou uma taxa de transação excepcionalmente baixa de %@. Sua transação pode ficar travada e até mesmo nunca ser confirmada. Para aumentar a probabilidade de sua transação ser confirmada em aproximadamente uma hora (seis blocos), uma taxa não inferior a %@ é altamente recomendável.";
 
 /* (No Commment) */
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Você especificou uma taxa de transação excepcionalmente baixa de %1$@. Sua transação pode ficar travada e até mesmo nunca ser confirmada. Para aumentar a probabilidade de sua transação ser confirmada em aproximadamente uma hora (seis blocos), uma taxa não inferior a %2$@ é altamente recomendável. Como você não tem fundos suficientes, isso significa que o valor de Envio também precisará ser diminuído para %3$@.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Você especificou uma taxa de transação excepcionalmente baixa de %@. Sua transação pode ficar travada e até mesmo nunca ser confirmada. Para aumentar a probabilidade de sua transação ser confirmada em aproximadamente uma hora (seis blocos), uma taxa não inferior a %@ é altamente recomendável. Como você não tem fundos suficientes, isso significa que o valor de Envio também precisará ser diminuído para %@.";
 
 /* (No Commment) */
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Você especificou uma taxa de transação excepcionalmente alta de %1$@. Mesmo se diminuir a taxa para %2$@, você pode esperar que a transação seja confirmada nos próximos 10 minutos (um bloco).";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Você especificou uma taxa de transação excepcionalmente alta de %@. Mesmo se diminuir a taxa para %@, você pode esperar que a transação seja confirmada nos próximos 10 minutos (um bloco).";
 
 /* (No Commment) */
 "You will be leaving the app." = "Você sairá do aplicativo.";
