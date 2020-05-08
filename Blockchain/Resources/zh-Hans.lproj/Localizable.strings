@@ -37,7 +37,7 @@
         " = "\
         您当前已启用了电子邮件通知。更改电子邮件将禁用电子邮件通知。\
         ";
-" %@ (%@ %@)" = "%1$@ （ %2$@ %3$@ ）";
+" %@ (%@ %@)" = "%@ （ %@ %@ ）";
 " & " = "和";
 " and " = "和";
 " buy." = "购买。";
@@ -48,7 +48,7 @@
 "%@ Confirmations" = "%@确认";
 "%@ copied to clipboard" = "%@ 已复制到剪贴板";
 "%@ needed to exchange" = "需要%@进行交换";
-"%@ of %@" = "%1$@ ，共%2$@";
+"%@ of %@" = "%@ ，共%@";
 "%@ payment request" = "%@付款要求";
 "%@ payment request." = "%@付款请求。";
 "%@ Received" = "%@ 已收到";
@@ -58,7 +58,7 @@
 "%d address" = "%d地址";
 "%d addresses" = "%d地址";
 "%d Confirmations" = "%d 个确认";
-"%d login attempts left. Please enter your %@ 2FA code" = "还剩%1$d登录尝试。请输入您的%2$@ 2FA代码";
+"%d login attempts left. Please enter your %@ 2FA code" = "还剩%d登录尝试。请输入您的%@ 2FA代码";
 "%d Transactions" = "%d 笔交易";
 "%lld hours ago" = "%lld 小时前";
 "%lld minutes ago" = "%lld 分钟前";
@@ -126,7 +126,7 @@
 "An Error Occurred" = "出现错误";
 "An error occurred due to interruptions during PIN verification. Please close the app and try again." = "由于PIN验证期间的中断而发生错误。请关闭该应用，然后重试。";
 "An error occurred when getting an approximate quote. Please try again later. Details: %@" = "获取近似报价时发生错误。请稍后再试。详细信息： %@";
-"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "取得您的%1$@余额时发生错误。请稍后再试。详细信息： %2$@";
+"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "取得您的%@余额时发生错误。请稍后再试。详细信息： %@";
 "An error occurred when selecting your tier. Please try again later." = "选择级别时出现错误。请再试一次。";
 "An error occurred while changing 2-Step verification." = "更改两步验证时发生错误。";
 "An error occurred while copying your address to the clipboard. Please re-select the destination address or restart the app and try again." = "将您的地址复制到剪贴板时发生错误。请重新选择目标地址或重新启动应用程序，然后重试。";
@@ -217,10 +217,10 @@
 "By creating a wallet you agree to Blockchain’s " = "创建钱包则表示您同意 Blockchain 的";
 "By creating a wallet you agree to Blockchain’s Terms of Services & Privacy Policy" = "创建钱包意味着您同意Blockchain的服务条款和隐私政策";
 "By depositing funds to this account, you agree to " = "将资金存入该帐户，即表示您同意";
-"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "点击“立即开始”，则表示您同意 Blockchain 的 %1$@ 和 %2$@";
+"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "点击“立即开始”，则表示您同意 Blockchain 的 %@ 和 %@";
 "By tapping Begin Now, you agree to Coinify's Terms of Service & Privacy Policy" = "通过点击“立即开始”，即表示您同意Coinify的服务条款和隐私政策";
-"By tapping Submit, you agree to Blockchain’s %@ & %@" = "点击确认即表示您同意 Blockchain 的%1$@和%2$@";
-"Calculating: Address %@ of %@" = "计算：地址%1$@ ，共%2$@";
+"By tapping Submit, you agree to Blockchain’s %@ & %@" = "点击确认即表示您同意 Blockchain 的%@和%@";
+"Calculating: Address %@ of %@" = "计算：地址%@ ，共%@";
 "Camera Access Denied" = "相机访问被拒绝";
 "Canadian Dollar" = "加拿大元";
 "Cancel" = "取消";
@@ -241,7 +241,7 @@
 "Check out Swap" = "查看 Swap";
 "Check Your Inbox" = "检查你的收件箱";
 "Check your inbox." = "检查你的收件箱。";
-"Checking for more: Step %d of %d" = "检查更多内容：从%2$d第%1$d步";
+"Checking for more: Step %d of %d" = "检查更多内容：从%d第%d步";
 "Checking for Wallet updates" = "检查钱包更新";
 "Checkout" = "查看";
 "Checkout the Exchange" = "结帐交易所";
@@ -404,7 +404,7 @@
 "Everything you need to store, spend and receive BTC, ETH and BCH." = "您存储、支出和接收 BTC、ETH 和 BCH 所需的一切。";
 "Exchange" = "交换";
 "Exchange %@ Address" = "交换%@地址";
-"Exchange %@ for %@" = "用 %1$@ 兑换 %2$@";
+"Exchange %@ for %@" = "用 %@ 兑换 %@";
 "Exchange %@ Wallet" = "交换%@钱包";
 "Exchange Completed" = "兑换已完成";
 "Exchange In Progress" = "兑换进行中";
@@ -442,7 +442,7 @@
 "Forget" = "忘记";
 "Forget Wallet" = "忘记钱包";
 "Forgot Password?" = "忘记密码？”";
-"Found %d, with %@" = "找到%1$d ，其中有%2$@";
+"Found %d, with %@" = "找到%d ，其中有%@";
 "fourth" = "第四";
 "fourth word" = "第四个字";
 "From" = "从";
@@ -517,7 +517,7 @@
 "Introducing the Exchange" = "交易所介绍";
 "Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX = 1 USD." = "推出 USD PAX，这是一种安全稳定的加密资产，可用于存储价值。 1 PAX 等于 1 美元。";
 "Invalid %@ Address" = "无效的 %@ 地址";
-"Invalid %@ address: %@" = "无效的%1$@地址： %2$@";
+"Invalid %@ address: %@" = "无效的%@地址： %@";
 "Invalid Bitcoin address: %@" = "无效 Bitcoin 地址: %@";
 "Invalid destination address" = "无效目标地址";
 "Invalid email address." = "无效电子邮件地址。";
@@ -578,7 +578,7 @@
 "Log In" = "登录";
 "Log in to refresh addresses" = "登录刷新地址";
 "Log in to Web Wallet" = "登录到网络钱包";
-"Log in to your Blockchain Wallet via your PC or Mac at " = "通过PC或Mac以%1$s登录到您的Blockchain Wallet。";
+"Log in to your Blockchain Wallet via your PC or Mac at " = "通过PC或Mac以%s登录到您的Blockchain Wallet。";
 "Log Out" = "登出";
 "Login existing Wallet" = "登录现有钱包";
 "login.blockchain.com" = "login.blockchain.com";
@@ -671,7 +671,7 @@
 "OK" = "好";
 "Once an order starts, we are unable to stop it." = "订单开始后，我们无法中止订单。";
 "Once we receive your bank transfer, your %@ buy order will complete." = "我们收到您的银行转帐后，您的购买订单将完成。";
-"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "收到您的资金后，我们将开始您的%1$s购买订单。请注意，您的最终金额可能会因应市场活动而改变。可能需要付费。";
+"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "收到您的资金后，我们将开始您的%s购买订单。请注意，您的最终金额可能会因应市场活动而改变。可能需要付费。";
 "Once your verification is confirmed, you’ll automatically secure a spot in the Airdrop for Stacks." = "确认确认后，您将自动在Airdrop for Stacks中确保位置。";
 "Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected." = "仅使用您的名字从银行帐户发送资金。如果没有，您的存款可能会被延迟或拒绝。";
 "Ooops! Something went wrong." = "哎呀！出错了。";
@@ -744,12 +744,12 @@
 "Please review and confirm your " = "请检查并确认您的";
 "Please select a different address to send from." = "请选择其他发送地址。";
 "Please send %@ to" = "请发送%@到";
-"Please send %@ to bitcoin address.\n%@" = "请将 %1$@ 发送到比特币地址。 \
- %2$@";
+"Please send %@ to bitcoin address.\n%@" = "请将 %@ 发送到比特币地址。 \
+ %@";
 "Please send BCH to the Bitcoin Cash address\n%@" = "请发送BCH到比特币现金地址\
  %@";
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "请将付款发送到比特币地址（ <a href=\"https://blockchain.info/wallet/bitcoin-faq\">帮助？ </a> ）： %@";
-"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "请将%1$s从您的银行帐户转移到Blockchain.com。收到资金后，我们将创建您的%2$s购买订单。";
+"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "请将%s从您的银行帐户转移到Blockchain.com。收到资金后，我们将创建您的%s购买订单。";
 "Please try again" = "请重试";
 "Please verify your email address first." = "请先验证您的电子邮件地址。";
 "Please verify your mobile number first." = "请先验证您的手机号码。";
@@ -892,7 +892,7 @@
 "Stellar is an open-source, decentralized payment protocol that allows for fast and cheap cross-border transactions between any pair of currencies." = "恒星币（Stellar）是一种开源，去中心化的支付协议，允许在任何一对货币之间进行快速，廉价的跨境交易。";
 "Stellar Price" = "Stellar 价格";
 "Stellar requires that all Stellar accounts hold a minimum balance of lumens, or XLM. This means you cannot send a balance out of your Stellar Wallet that would leave your Stellar Wallet with less than the minimum balance. This also means that in order to send XLM to a new Stellar account, you must send enough XLM to meet the minimum balance requirement." = "Stellar 要求所有 Stellar 账户保持最低余额的 lumens 或 XLM。这意味着如果您发送的金额会使您的 Stellar 钱包余额低于最低要求，则无法发送。也意味着为了将 XLM 发送至新 Stellar 账户，您必须发送足够的 XLM 以满足最低余额要求。";
-"Step %d of %d" = "第%1$d步，共%2$d";
+"Step %d of %d" = "第%d步，共%d";
 "store" = "存储";
 "Stored" = "已存储";
 "Street line" = "街道地址行";
@@ -1029,9 +1029,9 @@
 "Transfer imported addresses?" = "转移导入的地址？";
 "Transfer In Crypto" = "加密转移";
 "Transferred" = "转入";
-"Transferred funds from %d %@" = "已从%1$d %2$@转移资金";
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "已从%1$d %2$@转移资金。 %3$d %4$@的输出太小。";
-"Transferring all funds: Address %i of %i" = "转移所有资金：地址%1$i的%2$i";
+"Transferred funds from %d %@" = "已从%d %@转移资金";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "已从%d %@转移资金。 %d %@的输出太小。";
+"Transferring all funds: Address %i of %i" = "转移所有资金：地址%i的%i";
 "Try again" = "再试一次";
 "Try Again" = "再试一次";
 "twelfth" = "第十二";
@@ -1182,7 +1182,7 @@
 "With Blockchain Airdrops, get free crypto sent right to your Blockchain Wallet." = "借助Blockchain Airdrops，可将免费加密货币直接发送到您的Blockchain Wallet。";
 "With Swap your crypto is safe, secure, and your keys are always intact." = "通过Swap，您的加密货币安全而可靠，密钥始终完整。";
 "word" = "字";
-"Word %@ of %@" = "第%1$@ ，共%2$@";
+"Word %@ of %@" = "第%@ ，共%@";
 "Would you like to add the bitcoin address %@ to your address book?" = "您想要将比特币地址 %@ 添加到您的通讯簿吗?";
 "Would you like to archive the addresses used?" = "您要存档使用的地址吗？";
 "Would you like to tell us about your experience with Blockchain?" = "您想告诉我们您在区块链方面的经验吗？";
@@ -1193,7 +1193,7 @@
 "XLM is a token that enables quick, low cost global transactions. Send, receive, and trade XLM in the wallet today." = "XLM是一种代币，它可实现快速、低成本的全球交易。今天就从您的钱包里发送、接收和交易XLM吧。";
 "XLM Reserve Requirement" = "XLM 储备要求";
 "xxx" = "xxx";
-"xxx %@ (%@ %@)" = "xxx %1$@ （ %2$@ %3$@ ）";
+"xxx %@ (%@ %@)" = "xxx %@ （ %@ %@ ）";
 "year" = "年";
 "Year" = "年";
 "years" = "年份";
@@ -1230,13 +1230,13 @@
 "You must leave at least one active address" = "您必须至少提供一个活跃地址";
 "You need to confirm your email address so that we can keep you informed about your wallet." = "您需要确认您的电子邮件地址，以便我们可以随时通知您有关您的钱包的相关信息。";
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "如果您能访问钱包 ID 和密码，您将应始终能够进行配对或登录。 找回资金将创建一个新的钱包 ID。 是否要继续?";
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "你指定了一笔特别小的交易手续费%1$s.\
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "你指定了一笔特别小的交易手续费%s.\
 \
-您的交易可能会被卡住甚至可能永远不会被确认。 为了将您的交易被确认的可能性增加到大约1小时（6个区块）以内，我们强烈建议手续费不低于%2$s。";
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "您指定了%1$@一笔非常小的交易费用。您的交易可能会卡住，甚至可能永远无法确认。为了增加您的交易在大约一小时（六个区块）内完成确认的可能性，我们强烈建议您收取不少于%2$@ 。由于您没有足够的资金，这意味着发送金额也必须降低到%3$@ 。";
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "您指定了一笔异常高的手续费%1$s。\
+您的交易可能会被卡住甚至可能永远不会被确认。 为了将您的交易被确认的可能性增加到大约1小时（6个区块）以内，我们强烈建议手续费不低于%s。";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "您指定了%@一笔非常小的交易费用。您的交易可能会卡住，甚至可能永远无法确认。为了增加您的交易在大约一小时（六个区块）内完成确认的可能性，我们强烈建议您收取不少于%@ 。由于您没有足够的资金，这意味着发送金额也必须降低到%@ 。";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "您指定了一笔异常高的手续费%s。\
 \
-即使您把手续费降低到%2$s，您的交易预计将会在下一个10分钟（1个区块）被确认。";
+即使您把手续费降低到%s，您的交易预计将会在下一个10分钟（1个区块）被确认。";
 "You will be leaving the app." = "您将离开应用程序。";
 "You will be redirected to\n%@." = "您将被重定向到\
  %@ 。";
