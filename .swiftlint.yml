@@ -34,7 +34,6 @@ opt_in_rules:
   - switch_case_alignment
   - switch_case_on_newline
   - unneeded_break_in_switch
-  - unneeded_parentheses_in_closure_argument
   - unused_import
   - closure_spacing
   - empty_string
