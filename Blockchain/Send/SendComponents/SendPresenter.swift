@@ -105,7 +105,7 @@ final class SendPresenter {
     }
     
     /// Signals for alert notification
-    var alert: Signal<AlertViewPresenter.Content> {
+    var alert: Signal<AlertViewContent> {
         alertRelay.asSignal()
     }
     
@@ -137,7 +137,7 @@ final class SendPresenter {
     
     // MARK: - Accessors
     
-    private let alertRelay = PublishRelay<AlertViewPresenter.Content>()
+    private let alertRelay = PublishRelay<AlertViewContent>()
     private let errorRelay = PublishRelay<SendInputState.StateError>()
     private let navigationRightButtonRelay = BehaviorRelay<NavigationRightButtonUpdate>(value: .init(state: .empty))
     private let disposeBag = DisposeBag()

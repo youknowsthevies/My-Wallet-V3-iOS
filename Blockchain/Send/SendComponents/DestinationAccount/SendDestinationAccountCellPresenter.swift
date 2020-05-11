@@ -12,6 +12,7 @@ import RxRelay
 import RxCocoa
 import ToolKit
 import PlatformKit
+import PlatformUIKit
 
 /// The destination account presenter on the send screen
 final class SendDestinationAccountCellPresenter {
@@ -71,7 +72,7 @@ final class SendDestinationAccountCellPresenter {
     }
     
     /// Signals if the user has to configure 2FA in order to send to his PIT account
-    var twoFAConfigurationAlertSignal: Signal<AlertViewPresenter.Content> {
+    var twoFAConfigurationAlertSignal: Signal<AlertViewContent> {
         return twoFAConfigurationAlertRelay.asSignal()
     }
     
@@ -129,7 +130,7 @@ final class SendDestinationAccountCellPresenter {
     private let selectionStateRelay = BehaviorRelay<SelectionState>(value: .empty)
     
     /// Sends signals when the user taps the exchange button while he still hasn't configured 2FA
-    private let twoFAConfigurationAlertRelay = PublishRelay<AlertViewPresenter.Content>()
+    private let twoFAConfigurationAlertRelay = PublishRelay<AlertViewContent>()
     
     private let isTextFieldHiddenRelay = BehaviorRelay<Bool>(value: false)
     private let isCoverTextHiddenRelay = BehaviorRelay<Bool>(value: true)
@@ -177,7 +178,7 @@ final class SendDestinationAccountCellPresenter {
         twoFAConditionalSelectionState
             .filter { $0.0 }
             .map { _ in
-                return AlertViewPresenter.Content(
+                return AlertViewContent(
                     title: LocalizationConstants.Errors.error,
                     message: LocalizationConstants.Exchange.twoFactorNotEnabled
                 )

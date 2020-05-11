@@ -44,6 +44,7 @@ public final class SimpleBuyPaymentMethodsService: SimpleBuyPaymentMethodsServic
     
     public init(client: SimpleBuyPaymentMethodsClientAPI,
                 reactiveWallet: ReactiveWalletAPI,
+                featureFetcher: FeatureFetching,
                 authenticationService: NabuAuthenticationServiceAPI,
                 fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
         
@@ -72,6 +73,14 @@ public final class SimpleBuyPaymentMethodsService: SimpleBuyPaymentMethodsServic
                         client.paymentMethods(for: payload.currency.code, token: payload.token).asObservable()
                     }
                     .map { Array<SimpleBuyPaymentMethod>.init(response: $0) }
+                    .flatMap { methods -> Observable<[SimpleBuyPaymentMethod]> in
+                        featureFetcher.fetchBool(for: .simpleBuyCardsEnabled)
+                            .map { isEnabled in
+                                guard !isEnabled else { return methods }
+                                return methods.filter { !$0.type.isCard }
+                            }
+                            .asObservable()
+                    }
             }
     }
 }

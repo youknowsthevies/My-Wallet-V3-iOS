@@ -44,7 +44,14 @@ public final class SimpleBuyPaymentMethodTypesService {
     // MARK: - Exposed
     
     public var methodTypes: Observable<[SimpleBuyPaymentMethodType]> {
-        cachedValue.valueObservable
+        Observable
+            .combineLatest(
+                paymentMethodsService.paymentMethods,
+                cardListService.cards
+            )
+            .map(weak: self) { (self, payload) in
+                self.merge(paymentMethods: payload.0, with: payload.1)
+            }
     }
     
     public var cards: Observable<[CardData]> {
@@ -92,37 +99,12 @@ public final class SimpleBuyPaymentMethodTypesService {
     private let paymentMethodsService: SimpleBuyPaymentMethodsServiceAPI
     private let cardListService: CardListServiceAPI
     
-    // MARK: - Accessories
-    
-    private let cachedValue: CachedValue<[SimpleBuyPaymentMethodType]>
-    
     // MARK: - Setup
     
     public init(paymentMethodsService: SimpleBuyPaymentMethodsServiceAPI,
                 cardListService: CardListServiceAPI) {
         self.paymentMethodsService = paymentMethodsService
         self.cardListService = cardListService
-                    
-        cachedValue = .init(
-            configuration: .init(
-                identifier: "simple-buy-payment-method-types",
-                refreshType: .onSubscription,
-                fetchPriority: .fetchAll,
-                flushNotificationName: .logout,
-                fetchNotificationName: .login
-            )
-        )
-        
-        cachedValue.setFetch { () -> Observable<[SimpleBuyPaymentMethodType]> in
-            Observable
-                .combineLatest(
-                    paymentMethodsService.paymentMethods,
-                    cardListService.cards
-                )
-                .map(weak: self) { (self, payload) in
-                    self.merge(paymentMethods: payload.0, with: payload.1)
-                }
-        }
     }
     
     public func fetchCards(andPrefer cardId: String) -> Completable {

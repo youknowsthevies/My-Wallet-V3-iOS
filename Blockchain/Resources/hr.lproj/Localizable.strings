@@ -218,7 +218,7 @@
 "Blocked" = "Blokiran";
 
 /* (No Commment) */
-"Calculating: Address %@ of %@" = "Izračun: Adresa %1$@ od %2$@";
+"Calculating: Address %@ of %@" = "Izračun: Adresa %@ od %@";
 
 /* (No Commment) */
 "Camera Access Denied" = "Kamera pristup odbijen";
@@ -254,7 +254,7 @@
 "Checking for Wallet updates" = "Provjera ažuriranja novčanik";
 
 /* (No Commment) */
-"Checking for more: Step %d of %d" = "Provjera za više: korak %1$d %2$d";
+"Checking for more: Step %d of %d" = "Provjera za više: korak %d %d";
 
 /* No comment provided by engineer. */
 "Close" = "Zatvori";
@@ -488,7 +488,7 @@
 "Forget Wallet" = "Zaboravi novčanik";
 
 /* (No Commment) */
-"Found %d, with %@" = "Našao %1$d, s %2$@";
+"Found %d, with %@" = "Našao %d, s %@";
 
 /* (No Commment) */
 "From" = "Od";
@@ -882,8 +882,8 @@
 
 /* (No Commment) */
 "Please send %@ to bitcoin address.
-%@" = "Pošaljite %1$@ bitcoin adresu.
-%2$@";
+%@" = "Pošaljite %@ bitcoin adresu.
+%@";
 
 /* (No Commment) */
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "Molimo pošaljite plaćanje bitcoin adresu (< a href = \"https://blockchain.info/wallet/bitcoin-faq\" > pomoći < /a >): %@";
@@ -1093,7 +1093,7 @@
 "The PIN you have selected is extremely common and may be easily guessed by someone with access to your phone within 3 tries. Would you like to use this PIN anyway?" = "PIN odaberete je vrlo čest i može se lako pogoditi neko telefon u 3 pokušaja. Želite li ipak koristiti ovaj PIN?";
 
 /* (No Commment) */
-"The amount you want to send (%@) is greater than the maximum amount you can spend minus the fee (%@ - %@). Would you like to send %@?" = "Iznos koji želite poslati (%1$@) je veći od maksimalnog iznosa možete provesti bez naknade (%2$@ - %3$@). Želite li poslati %4$@?";
+"The amount you want to send (%@) is greater than the maximum amount you can spend minus the fee (%@ - %@). Would you like to send %@?" = "Iznos koji želite poslati (%@) je veći od maksimalnog iznosa možete provesti bez naknade (%@ - %@). Želite li poslati %@?";
 
 /* (No Commment) */
 "The fee you have specified is too low." = "Naknada koje ste naveli je niska.";
@@ -1201,13 +1201,13 @@
 "Transferred" = "Prenose";
 
 /* (No Commment) */
-"Transferred funds from %d %@" = "Prenesena sredstva iz %1$d %2$@";
+"Transferred funds from %d %@" = "Prenesena sredstva iz %d %@";
 
 /* (No Commment) */
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Prenesena sredstva iz %1$d %2$@. Izlaza za %3$d %4$@ su premali.";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Prenesena sredstva iz %d %@. Izlaza za %d %@ su premali.";
 
 /* (No Commment) */
-"Transferring all funds: Address %i of %i" = "Prijenos svih sredstava: adresa %1$i %2$i";
+"Transferring all funds: Address %i of %i" = "Prijenos svih sredstava: adresa %i %i";
 
 /* (No Commment) */
 "Try again" = "pokušaj ponovo";
@@ -1414,13 +1414,13 @@
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "Par ili se prijaviti ako imate pristup na svoj novčanik ID i lozinku. Oporavlja se sredstva će stvoriti novi novčanik ID. Želite li nastaviti?";
 
 /* (No Commment) */
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Navedeni izuzetno malih transakcija naknada od %1$@. Vaša transakcija možda ostale i eventualno nikada biti potvrđena. Da biste povećali vjerojatnost za vašu transakciju potvrditi u roku od oko jednog sata (šest blokova), preporučujemo naknadu od ne manje od %2$@.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Navedeni izuzetno malih transakcija naknada od %@. Vaša transakcija možda ostale i eventualno nikada biti potvrđena. Da biste povećali vjerojatnost za vašu transakciju potvrditi u roku od oko jednog sata (šest blokova), preporučujemo naknadu od ne manje od %@.";
 
 /* (No Commment) */
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Navedeni izuzetno malih transakcija naknada od %1$@. Transakcije može ponijeti i možda nikada ne potvrdi. Da biste povećali vjerojatnost za vašu transakciju potvrditi u roku od oko jednog sata (šest blokova), preporučujemo naknadu od ne manje od %2$@. Budući da nemate dovoljno sredstava, to znači poslati iznos će također morati biti smanjena na %3$@.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Navedeni izuzetno malih transakcija naknada od %@. Transakcije može ponijeti i možda nikada ne potvrdi. Da biste povećali vjerojatnost za vašu transakciju potvrditi u roku od oko jednog sata (šest blokova), preporučujemo naknadu od ne manje od %@. Budući da nemate dovoljno sredstava, to znači poslati iznos će također morati biti smanjena na %@.";
 
 /* (No Commment) */
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Navedeni neuobičajeno visoku transakciju naknada od %1$@. Čak i ako te niže naknade za %2$@, možete očekivati transakciju potvrditi unutar slijedećih 10 minuta (jedan blok).";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Navedeni neuobičajeno visoku transakciju naknada od %@. Čak i ako te niže naknade za %@, možete očekivati transakciju potvrditi unutar slijedećih 10 minuta (jedan blok).";
 
 /* (No Commment) */
 "You will be leaving the app." = "Otići će aplikaciju.";

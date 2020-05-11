@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
-import PlatformUIKit
 import RxSwift
 import RxRelay
 import RxCocoa
+import PlatformKit
+import PlatformUIKit
 
 final class AddCardCellPresenter: SettingsAsyncPresenting {
     
@@ -53,6 +53,8 @@ final class AddCardCellPresenter: SettingsAsyncPresenting {
     
     private let paymentMethodTypesService: SimpleBuyPaymentMethodTypesService
     private let tierLimitsProviding: TierLimitsProviding
+    private let featureFetcher: FeatureFetching
+    
     private let imageVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let actionTypeRelay = BehaviorRelay<SettingsScreenAction>(value: .none)
     private let isLoadingRelay = BehaviorRelay<Bool>(value: true)
@@ -71,26 +73,36 @@ final class AddCardCellPresenter: SettingsAsyncPresenting {
             .catchErrorJustReturn([])
     }
     
-    init(paymentMethodTypesService: SimpleBuyPaymentMethodTypesService, tierLimitsProviding: TierLimitsProviding) {
+    init(paymentMethodTypesService: SimpleBuyPaymentMethodTypesService,
+         tierLimitsProviding: TierLimitsProviding,
+         featureFetcher: FeatureFetching) {
+        
+        self.featureFetcher = featureFetcher
         self.paymentMethodTypesService = paymentMethodTypesService
         self.tierLimitsProviding = tierLimitsProviding
         
         labelContentPresenter = AddCardLabelContentPresenter(
             paymentMethodTypesService: paymentMethodTypesService,
-            tierLimitsProviding: tierLimitsProviding
+            tierLimitsProviding: tierLimitsProviding,
+            featureFeatcher: featureFetcher
         )
         badgeImagePresenter = AddCardBadgePresenter(
             paymentMethodTypesService: paymentMethodTypesService,
-            tierLimitsProviding: tierLimitsProviding
+            tierLimitsProviding: tierLimitsProviding,
+            featureFetcher: featureFetcher
         )
         setup()
     }
     
     private func setup() {
         
+        let featureEnabled = featureFetcher
+            .fetchBool(for: .simpleBuyCardsEnabled)
+            .asObservable()
+        
         let isAbleToAddCard = Observable
-            .combineLatest(activeCards, isKYCVerified)
-            .map { $0.0.count < CardData.maxCardCount && $0.1 }
+            .combineLatest(activeCards, isKYCVerified, featureEnabled)
+            .map { $0.0.count < CardData.maxCardCount && $0.1 && $0.2 }
             .share(replay: 1)
         
         isAbleToAddCard

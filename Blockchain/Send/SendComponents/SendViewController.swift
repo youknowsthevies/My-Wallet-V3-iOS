@@ -268,7 +268,7 @@ extension Reactive where Base: SendViewController {
     }
     
     /// Binder for any alert
-    fileprivate var alertHandler: Binder<AlertViewPresenter.Content> {
+    fileprivate var alertHandler: Binder<AlertViewContent> {
         return Binder(base) { viewController, content in
             viewController.alertPresenter.notify(content: content)
         }

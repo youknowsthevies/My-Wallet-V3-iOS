@@ -102,6 +102,7 @@ final class SelectionItemViewPresenter {
         
         tapRelay
             .withLatestFrom(isSelectedRelay)
+            .filter { !$0 }
             .map { !$0 }
             .bind(to: isSelectedRelay)
             .disposed(by: disposeBag)
@@ -133,7 +134,7 @@ final class SelectionItemViewPresenter {
 
 extension SelectionItemViewPresenter: Equatable, Hashable {
     public static func == (lhs: SelectionItemViewPresenter, rhs: SelectionItemViewPresenter) -> Bool {
-        return lhs.interactor == rhs.interactor
+        lhs.interactor == rhs.interactor
     }
     
     public func hash(into hasher: inout Hasher) {

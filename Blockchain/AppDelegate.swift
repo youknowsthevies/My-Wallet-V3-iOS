@@ -341,8 +341,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             UIAlertAction(title: LocalizationConstants.cancel, style: .cancel)
         ]
         AlertViewPresenter.shared.standardNotify(
-            message: LocalizationConstants.DeepLink.deepLinkUpdateMessage,
             title: LocalizationConstants.DeepLink.deepLinkUpdateTitle,
+            message: LocalizationConstants.DeepLink.deepLinkUpdateMessage,
             actions: actions
         )
     }

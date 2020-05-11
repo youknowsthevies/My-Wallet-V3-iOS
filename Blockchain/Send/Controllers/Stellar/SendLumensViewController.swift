@@ -422,8 +422,7 @@ protocol SendXLMViewControllerDelegate: class {
             }
         case .showAlertForEnabling2FA:
             alertViewPresenter.standardNotify(
-                message: LocalizationConstants.Exchange.twoFactorNotEnabled,
-                title: LocalizationConstants.Errors.error
+                title: LocalizationConstants.Errors.error, message: LocalizationConstants.Exchange.twoFactorNotEnabled
             )
         }
     }
@@ -432,8 +431,7 @@ protocol SendXLMViewControllerDelegate: class {
         let controller = AppCoordinator.shared.tabControllerManager
         controller.showTransactionsStellar()
         AlertViewPresenter.shared.standardNotify(
-            message: LocalizationConstants.SendAsset.paymentSent,
-            title: LocalizationConstants.success
+            title: LocalizationConstants.success, message: LocalizationConstants.SendAsset.paymentSent
         )
     }
 

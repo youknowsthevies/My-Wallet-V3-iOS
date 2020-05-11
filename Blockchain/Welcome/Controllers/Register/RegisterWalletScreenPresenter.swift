@@ -176,7 +176,7 @@ final class RegisterWalletScreenPresenter {
         do {
             try interactor.execute()
         } catch { // TODO: Handle additional errors
-            alertPresenter.showNoInternetConnectionAlert()
+            alertPresenter.internetConnection()
             loadingViewPresenter.hide()
         }
     }

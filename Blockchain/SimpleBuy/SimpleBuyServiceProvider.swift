@@ -113,6 +113,7 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
         paymentMethods = SimpleBuyPaymentMethodsService(
             client: simpleBuyClient,
             reactiveWallet: wallet,
+            featureFetcher: featureFetcher,
             authenticationService: authenticationService,
             fiatCurrencyService: settings
         )

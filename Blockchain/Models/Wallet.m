@@ -699,7 +699,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     self.context[@"objc_on_fetch_bch_history_error"] = ^(JSValue *error) {
         [FIRAnalytics logEventWithName:@"bch_history_error" parameters:@{@"error": [error toString]}];
-        [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:[LocalizationConstantsObjcBridge balancesErrorGeneric] title:BC_STRING_ERROR in:nil handler: nil];
+        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:[LocalizationConstantsObjcBridge balancesErrorGeneric] in:nil handler: nil];
     };
     
     self.context[@"objc_did_get_bitcoin_cash_exchange_rates"] = ^(JSValue *result) {
@@ -1594,7 +1594,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (!Reachability.hasInternetConnection) {
-        [AlertViewPresenter.sharedInstance showNoInternetConnectionAlert];
+        [AlertViewPresenter.sharedInstance internetConnection];
         return;
     }
 
@@ -1610,7 +1610,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (!Reachability.hasInternetConnection) {
-        [AlertViewPresenter.sharedInstance showNoInternetConnectionAlert];
+        [AlertViewPresenter.sharedInstance internetConnection];
         return;
     }
 
@@ -1626,7 +1626,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (!Reachability.hasInternetConnection) {
-        [AlertViewPresenter.sharedInstance showNoInternetConnectionAlert];
+        [AlertViewPresenter.sharedInstance internetConnection];
         return;
     }
 
@@ -2871,14 +2871,14 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     NSRange errorSavingWalletStringRange = [message rangeOfString:@"Error Saving Wallet" options:NSCaseInsensitiveSearch range:NSMakeRange(0, message.length) locale:[NSLocale currentLocale]];
     if (errorSavingWalletStringRange.location != NSNotFound) {
-        [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:BC_STRING_ERROR_SAVING_WALLET_CHECK_FOR_OTHER_DEVICES title:BC_STRING_ERROR in:nil handler:nil];
+        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_ERROR_SAVING_WALLET_CHECK_FOR_OTHER_DEVICES in:nil handler:nil];
         return;
     }
 
     if ([type isEqualToString:@"error"]) {
-        [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:message title:BC_STRING_ERROR in:nil handler: nil];
+        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:message in:nil handler: nil];
     } else if ([type isEqualToString:@"info"]) {
-        [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:[LocalizationConstantsObjcBridge information] title:BC_STRING_ERROR in:nil handler: nil];
+        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:[LocalizationConstantsObjcBridge information] in:nil handler: nil];
     }
 }
 
@@ -2892,12 +2892,12 @@ NSString * const kLockboxInvitation = @"lockbox";
         NSRange identifierRange = [message rangeOfString:BC_STRING_IDENTIFIER options:NSCaseInsensitiveSearch range:NSMakeRange(0, message.length) locale:[NSLocale currentLocale]];
         NSRange connectivityErrorRange = [message rangeOfString:ERROR_FAILED_NETWORK_REQUEST options:NSCaseInsensitiveSearch range:NSMakeRange(0, message.length) locale:[NSLocale currentLocale]];
         if (identifierRange.location != NSNotFound) {
-            [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:message title:BC_STRING_ERROR in:nil handler:nil];
+            [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:message in:nil handler:nil];
             [self error_restoring_wallet];
             return;
         } else if (connectivityErrorRange.location != NSNotFound) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION_LONG * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:[LocalizationConstantsObjcBridge requestFailedCheckConnection] title:BC_STRING_ERROR in:nil handler:nil];
+                [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:[LocalizationConstantsObjcBridge requestFailedCheckConnection] in:nil handler:nil];
             });
             [self error_restoring_wallet];
             return;
@@ -2905,7 +2905,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
         if (![KeychainItemWrapper guid]) {
             // This error is used whe trying to login with incorrect passwords or when the account is locked, so present an alert if the app has no guid, since it currently conflicts with makeNotice when backgrounding after changing password in-app
-            [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:message title:BC_STRING_ERROR in:nil handler:nil];
+            [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:message in:nil handler:nil];
         }
     }
 }
@@ -3110,7 +3110,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (void)on_change_currency_error
 {
     DLog(@"on_change_local_currency_error");
-    [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:BC_STRING_SETTINGS_ERROR_LOADING_MESSAGE title:BC_STRING_SETTINGS_ERROR_UPDATING_TITLE in:nil handler:nil];
+    [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_SETTINGS_ERROR_UPDATING_TITLE message:BC_STRING_SETTINGS_ERROR_LOADING_MESSAGE in:nil handler:nil];
 }
 
 - (void)on_get_account_info_success:(NSString *)accountInfo
@@ -3283,7 +3283,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (void)on_error_creating_new_address:(NSString*)error
 {
     DLog(@"on_error_creating_new_address");
-    [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:error title:BC_STRING_ERROR in:nil handler:nil];
+    [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:error in:nil handler:nil];
 }
 
 - (void)on_add_new_account
@@ -3300,7 +3300,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (void)on_error_add_new_account:(NSString*)error
 {
     DLog(@"on_error_generating_new_address");
-    [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:error title:BC_STRING_ERROR in:nil handler:nil];
+    [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:error in:nil handler:nil];
 }
 
 - (void)on_success_get_recovery_phrase:(NSString*)phrase
@@ -3327,13 +3327,13 @@ NSString * const kLockboxInvitation = @"lockbox";
     DLog(@"on_error_recover_with_passphrase:");
     [self loading_stop];
     if ([error isEqualToString:ERROR_INVALID_PASSPHRASE]) {
-        [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:BC_STRING_INVALID_RECOVERY_PHRASE title:BC_STRING_ERROR in:nil handler:nil];
+        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_INVALID_RECOVERY_PHRASE in:nil handler:nil];
     } else if ([error isEqualToString:@""]) {
-        [AlertViewPresenter.sharedInstance showNoInternetConnectionAlert];
+        [AlertViewPresenter.sharedInstance internetConnection];
     } else if ([error isEqualToString:ERROR_TIMEOUT_REQUEST]){
-        [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:LocalizationConstantsObjcBridge.timedOut title:BC_STRING_ERROR in:nil handler:nil];
+        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:LocalizationConstantsObjcBridge.timedOut in:nil handler:nil];
     } else {
-        [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:error title:BC_STRING_ERROR in:nil handler:nil];
+        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:error in:nil handler:nil];
     }
     if ([delegate respondsToSelector:@selector(didFailRecovery)]) {
         [delegate didFailRecovery];
@@ -3361,13 +3361,13 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (void)on_error_downloading_account_settings
 {
     DLog(@"on_error_downloading_account_settings");
-    [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:BC_STRING_SETTINGS_ERROR_LOADING_MESSAGE title:BC_STRING_SETTINGS_ERROR_LOADING_TITLE in:nil handler:nil];
+    [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_SETTINGS_ERROR_LOADING_TITLE message:BC_STRING_SETTINGS_ERROR_LOADING_MESSAGE in:nil handler:nil];
     [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithBool:NO] forKey:USER_DEFAULTS_KEY_LOADED_SETTINGS];
 }
 
 - (void)on_update_email_error
 {
-    [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:BC_STRING_INVALID_EMAIL_ADDRESS title:BC_STRING_ERROR in:nil handler:nil];
+    [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_INVALID_EMAIL_ADDRESS in:nil handler:nil];
 }
 
 - (void)on_error_get_history:(NSString *)error
@@ -3583,7 +3583,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     if ([error isEqualToString:ERROR_NO_FREE_OUTPUTS_TO_SPEND]) {
         [self.delegate didGetAvailableBtcBalance:nil];
     } else {
-        [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:[NSString stringWithFormat:BC_STRING_ERROR_GETTING_BALANCE_ARGUMENT_ASSET_ARGUMENT_MESSAGE, currencySymbol, error] title:BC_STRING_ERROR in:nil handler:nil];
+        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:[NSString stringWithFormat:BC_STRING_ERROR_GETTING_BALANCE_ARGUMENT_ASSET_ARGUMENT_MESSAGE, currencySymbol, error] in:nil handler:nil];
     }
 }
 
@@ -3827,7 +3827,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (void)setLabelForAccount:(int)account label:(NSString *)label assetType:(LegacyAssetType)assetType
 {
     if (!Reachability.hasInternetConnection) {
-        [AlertViewPresenter.sharedInstance showNoInternetConnectionAlert];
+        [AlertViewPresenter.sharedInstance internetConnection];
         return;
     }
 
@@ -4039,7 +4039,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     NSString * decription = [NSString stringWithFormat:@"Javscript Exception: %@ File: %@ lineNumber: %@", message, url, lineNumber];
 
-    [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:decription title:BC_STRING_ERROR in:nil handler:nil];
+    [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:decription in:nil handler:nil];
 }
 
 #pragma mark - Helper methods
@@ -4061,11 +4061,11 @@ NSString * const kLockboxInvitation = @"lockbox";
     } else if ([message isEqualToString:ERROR_BELOW_DUST_THRESHOLD]) {
         id errorObject = error[DICTIONARY_KEY_MESSAGE][DICTIONARY_KEY_ERROR];
         uint64_t threshold = [errorObject isKindOfClass:[NSString class]] ? [error[DICTIONARY_KEY_MESSAGE][DICTIONARY_KEY_THRESHOLD] longLongValue] : [error[DICTIONARY_KEY_MESSAGE][DICTIONARY_KEY_ERROR][DICTIONARY_KEY_THRESHOLD] longLongValue];
-        [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:[NSString stringWithFormat:BC_STRING_MUST_BE_ABOVE_OR_EQUAL_TO_DUST_THRESHOLD, threshold] title:BC_STRING_ERROR in:nil handler:nil];
+        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:[NSString stringWithFormat:BC_STRING_MUST_BE_ABOVE_OR_EQUAL_TO_DUST_THRESHOLD, threshold] in:nil handler:nil];
     } else if ([message isEqualToString:ERROR_FETCH_UNSPENT]) {
-        [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:BC_STRING_SOMETHING_WENT_WRONG_CHECK_INTERNET_CONNECTION title:BC_STRING_ERROR in:nil handler:nil];
+        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_SOMETHING_WENT_WRONG_CHECK_INTERNET_CONNECTION in:nil handler:nil];
     } else {
-        [[AlertViewPresenter sharedInstance] standardNotifyWithMessage:message title:BC_STRING_ERROR in:nil handler:nil];
+        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:message in:nil handler:nil];
     }
 }
 

@@ -21,6 +21,8 @@ final class AddCardBadgePresenter: BadgeImageAssetPresenting {
     
     private let paymentMethodTypesService: SimpleBuyPaymentMethodTypesService
     private let tiersLimitsProviding: TierLimitsProviding
+    private let featureFetcher: FeatureFetching
+    
     private let stateRelay = BehaviorRelay<BadgeImageState>(value: .loading)
     private let disposeBag = DisposeBag()
     private var isKYCVerified: Observable<Bool> {
@@ -36,16 +38,23 @@ final class AddCardBadgePresenter: BadgeImageAssetPresenting {
             .catchErrorJustReturn([])
     }
     
-    init(paymentMethodTypesService: SimpleBuyPaymentMethodTypesService, tierLimitsProviding: TierLimitsProviding) {
+    init(paymentMethodTypesService: SimpleBuyPaymentMethodTypesService,
+         tierLimitsProviding: TierLimitsProviding,
+         featureFetcher: FeatureFetching) {
         self.tiersLimitsProviding = tierLimitsProviding
         self.paymentMethodTypesService = paymentMethodTypesService
+        self.featureFetcher = featureFetcher
         setup()
     }
     
     private func setup() {
+        let featureEnabled = featureFetcher
+            .fetchBool(for: .simpleBuyCardsEnabled)
+            .asObservable()
+        
         Observable
-            .combineLatest(activeCards, isKYCVerified)
-            .map { $0.0.count < CardData.maxCardCount && $0.1 }
+            .combineLatest(activeCards, isKYCVerified, featureEnabled)
+            .map { $0.0.count < CardData.maxCardCount && $0.1 && $0.2 }
             .map { $0 ? .card : .info }
             .map { .loaded(next: $0) }
             .bind(to: stateRelay)

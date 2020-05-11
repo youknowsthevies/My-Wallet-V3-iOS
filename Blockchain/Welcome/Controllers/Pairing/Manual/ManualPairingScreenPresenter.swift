@@ -176,7 +176,7 @@ final class ManualPairingScreenPresenter {
         do {
             try interactor.pair(using: type)
         } catch { // TODO: Handle additional errors
-            alertPresenter.showNoInternetConnectionAlert()
+            alertPresenter.internetConnection()
             loadingViewPresenter.hide()
         }
     }
@@ -189,8 +189,8 @@ final class ManualPairingScreenPresenter {
                 onError: { [weak alertPresenter] _ in
                     guard let alertPresenter = alertPresenter else { return }
                     alertPresenter.standardNotify(
-                        message: LocalizedString.RequestOtpMessageErrorAlert.message,
-                        title: LocalizedString.RequestOtpMessageErrorAlert.title
+                        title: LocalizedString.RequestOtpMessageErrorAlert.title,
+                        message: LocalizedString.RequestOtpMessageErrorAlert.message
                     )
                 }
             )

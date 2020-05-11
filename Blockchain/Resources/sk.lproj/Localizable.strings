@@ -218,7 +218,7 @@
 "Blocked" = "Blokované";
 
 /* (No Commment) */
-"Calculating: Address %@ of %@" = "Výpočet: Adresu %1$@ %2$@";
+"Calculating: Address %@ of %@" = "Výpočet: Adresu %@ %@";
 
 /* (No Commment) */
 "Camera Access Denied" = "Fotoaparát prístup bol odmietnutý";
@@ -254,7 +254,7 @@
 "Checking for Wallet updates" = "Kontrola aktualizácií peňaženka";
 
 /* (No Commment) */
-"Checking for more: Step %d of %d" = "Kontrolu viac: krok %1$d %2$d";
+"Checking for more: Step %d of %d" = "Kontrolu viac: krok %d %d";
 
 /* No comment provided by engineer. */
 "Close" = "Zavrieť";
@@ -488,7 +488,7 @@
 "Forget Wallet" = "Zabudnite na peňaženky";
 
 /* (No Commment) */
-"Found %d, with %@" = "Nájsť %1$d s %2$@";
+"Found %d, with %@" = "Nájsť %d s %@";
 
 /* (No Commment) */
 "From" = "Od";
@@ -882,8 +882,8 @@
 
 /* (No Commment) */
 "Please send %@ to bitcoin address.
-%@" = "Bitcoin adresu pošlite %1$@.
-%2$@";
+%@" = "Bitcoin adresu pošlite %@.
+%@";
 
 /* (No Commment) */
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "Platbu odošlite na adresu bitcoin (< href = \"https://blockchain.info/wallet/bitcoin-faq\" > Nápoveda? < /a >): %@";
@@ -1093,7 +1093,7 @@
 "The PIN you have selected is extremely common and may be easily guessed by someone with access to your phone within 3 tries. Would you like to use this PIN anyway?" = "PIN ste vybrali je veľmi časté a môže byť ľahko uhádnuté niekoho s prístupom k telefónu do 3 skúša. Chceli by ste použiť tento kód PIN?";
 
 /* (No Commment) */
-"The amount you want to send (%@) is greater than the maximum amount you can spend minus the fee (%@ - %@). Would you like to send %@?" = "Sumu, ktorú chcete poslať (%1$@) je väčšia ako maximálna výška môžete stráviť mínus poplatok (%2$@ - %3$@). Chceli by ste poslať %4$@?";
+"The amount you want to send (%@) is greater than the maximum amount you can spend minus the fee (%@ - %@). Would you like to send %@?" = "Sumu, ktorú chcete poslať (%@) je väčšia ako maximálna výška môžete stráviť mínus poplatok (%@ - %@). Chceli by ste poslať %@?";
 
 /* (No Commment) */
 "The fee you have specified is too low." = "Poplatok, ktorý ste zadali, je príliš nízka.";
@@ -1201,13 +1201,13 @@
 "Transferred" = "Prevedené";
 
 /* (No Commment) */
-"Transferred funds from %d %@" = "Prevedených finančných prostriedkov z %1$d %2$@";
+"Transferred funds from %d %@" = "Prevedených finančných prostriedkov z %d %@";
 
 /* (No Commment) */
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Prevedených finančných prostriedkov z %1$d %2$@. Výstupy pre %3$d %4$@ boli príliš malé.";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Prevedených finančných prostriedkov z %d %@. Výstupy pre %d %@ boli príliš malé.";
 
 /* (No Commment) */
-"Transferring all funds: Address %i of %i" = "Prenos všetkých fondov: adresu %1$i %2$i";
+"Transferring all funds: Address %i of %i" = "Prenos všetkých fondov: adresu %i %i";
 
 /* (No Commment) */
 "Try again" = "skús znova";
@@ -1414,13 +1414,13 @@
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "Vždy by ste mali pár alebo prihlásiť, ak máte prístup k vašej peňaženke ID a heslo. Obnovuje svoje finančné prostriedky budú vytvárať novú peňaženku ID. Chcete pokračovať?";
 
 /* (No Commment) */
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Zadali ste mimoriadne nízke transakčné poplatok z %1$@. Transakcie môžu byť prilepené a možno nikdy nepotvrdila. Zvýšiť pravdepodobnosť pre vašu transakciu potvrdiť do približne jednej hodiny (šesť blokov), odporúčame vo výške nie menej ako %2$@.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Zadali ste mimoriadne nízke transakčné poplatok z %@. Transakcie môžu byť prilepené a možno nikdy nepotvrdila. Zvýšiť pravdepodobnosť pre vašu transakciu potvrdiť do približne jednej hodiny (šesť blokov), odporúčame vo výške nie menej ako %@.";
 
 /* (No Commment) */
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Zadali ste mimoriadne nízke transakčné poplatok z %1$@. Transakcie môže stať uviazol, a možno nikdy potvrdiť. Zvýšiť pravdepodobnosť pre vašu transakciu potvrdiť do približne jednej hodiny (šesť blokov), odporúčame vo výške nie menej ako %2$@. Vzhľadom k tomu, že nemáte dostatok finančných prostriedkov, to znamená, že poslať sumu bude musieť byť znížená na %3$@.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Zadali ste mimoriadne nízke transakčné poplatok z %@. Transakcie môže stať uviazol, a možno nikdy potvrdiť. Zvýšiť pravdepodobnosť pre vašu transakciu potvrdiť do približne jednej hodiny (šesť blokov), odporúčame vo výške nie menej ako %@. Vzhľadom k tomu, že nemáte dostatok finančných prostriedkov, to znamená, že poslať sumu bude musieť byť znížená na %@.";
 
 /* (No Commment) */
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Zadali ste nezvyčajne vysoké transakčné poplatok z %1$@. Aj v prípade, že znížite poplatok na %2$@, môžete očakávať, že transakciu potvrdiť v nasledujúcich 10 minút (jeden blok).";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Zadali ste nezvyčajne vysoké transakčné poplatok z %@. Aj v prípade, že znížite poplatok na %@, môžete očakávať, že transakciu potvrdiť v nasledujúcich 10 minút (jeden blok).";
 
 /* (No Commment) */
 "You will be leaving the app." = "Ste vyšli z aplikácie.";

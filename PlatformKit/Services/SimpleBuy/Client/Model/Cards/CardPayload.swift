@@ -15,7 +15,7 @@ public struct CardPayload {
     let partner: Partner
     
     /// The billing address
-    let address: BillingAddress
+    let address: BillingAddress!
     
     /// The currency of the card
     let currency: String
@@ -51,7 +51,7 @@ extension CardPayload: Decodable {
         let partner = try values.decode(String.self, forKey: .partner)
         self.partner = Partner(partner: partner)
         
-        address = try values.decode(BillingAddress.self, forKey: .address)
+        address = try values.decodeIfPresent(BillingAddress.self, forKey: .address)
         currency = try values.decode(String.self, forKey: .currency)
         
         state = try values.decodeIfPresent(State.self, forKey: .state) ?? .none

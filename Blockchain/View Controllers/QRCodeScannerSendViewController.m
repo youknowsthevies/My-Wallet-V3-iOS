@@ -34,7 +34,7 @@
         if ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo] != AVAuthorizationStatusAuthorized) {
             [AlertViewPresenter.sharedInstance showNeedsCameraPermissionAlert];
         } else {
-            [AlertViewPresenter.sharedInstance standardNotifyWithMessage:[error localizedDescription] title:LocalizationConstantsObjcBridge.error in:self handler:nil];
+            [AlertViewPresenter.sharedInstance standardNotifyWithTitle:LocalizationConstantsObjcBridge.error message:[error localizedDescription] in:self handler:nil];
         }
         return NO;
     }

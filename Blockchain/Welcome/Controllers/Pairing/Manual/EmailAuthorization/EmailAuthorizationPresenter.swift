@@ -6,8 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import RxSwift
+import PlatformKit
+import PlatformUIKit
 
 final class EmailAuthorizationPresenter {
     
@@ -55,8 +56,8 @@ final class EmailAuthorizationPresenter {
     
     private func showAlert() {
         alertPresenter.standardNotify(
-            message: LocalizedString.message,
             title: LocalizedString.title,
+            message: LocalizedString.message,
             actions: [
                 UIAlertAction(title: LocalizationConstants.openMailApp, style: .default) { _ in
                     UIApplication.shared.openMailApplication()

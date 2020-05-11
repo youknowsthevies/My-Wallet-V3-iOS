@@ -8,8 +8,8 @@
 
 import RxSwift
 import RxCocoa
-import PlatformUIKit
 import PlatformKit
+import PlatformUIKit
 
 final class PinScreenViewController: BaseScreenViewController {
     
@@ -184,7 +184,7 @@ extension PinScreenViewController {
         case .tooManyAttempts:
             displayLogoutAlert()
         case .noInternetConnection(recovery: let recovery):
-            alertViewPresenter.showNoInternetConnectionAlert(in: self, completion: recovery)
+            alertViewPresenter.internetConnection(in: self, completion: recovery)
         case .serverMaintenance(message: let message):
             alertViewPresenter.standardError(message: message, in: self)
         case .serverError(message: let message):
@@ -228,8 +228,8 @@ extension PinScreenViewController {
             UIAlertAction(title: LocalizationConstants.cancel, style: .cancel)
         ]
         alertViewPresenter.standardNotify(
-            message: LocalizationConstants.Pin.LogoutAlert.message,
             title: LocalizationConstants.Pin.LogoutAlert.title,
+            message: LocalizationConstants.Pin.LogoutAlert.message,
             actions: actions,
             in: self
         )

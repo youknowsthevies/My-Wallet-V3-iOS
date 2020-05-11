@@ -37,7 +37,7 @@ final class SettingsScreenInteractor {
     let settingsAuthenticating: AppSettingsAuthenticating
     let biometryProviding: BiometryProviding
     let appSettings: BlockchainSettings.App
-    
+    let featureConfigurator: FeatureFetching & FeatureConfiguring
     let recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
     let pitLinkingConfiguration: AppFeatureConfiguration
     
@@ -46,7 +46,7 @@ final class SettingsScreenInteractor {
     private let disposeBag = DisposeBag()
     
     init(repository: BlockchainDataRepository = BlockchainDataRepository.shared,
-         featureConfigurator: FeatureConfiguring = AppFeatureConfigurator.shared,
+         featureConfigurator: FeatureFetching & FeatureConfiguring = AppFeatureConfigurator.shared,
          settingsService: SettingsServiceAPI = UserInformationServiceProvider.default.settings,
          smsTwoFactorService: SMSTwoFactorSettingsServiceAPI = UserInformationServiceProvider.default.settings,
          emailNotificationService: EmailNotificationSettingsServiceAPI = UserInformationServiceProvider.default.settings,
@@ -62,6 +62,7 @@ final class SettingsScreenInteractor {
         self.smsTwoFactorService = smsTwoFactorService
         self.appSettings = appSettings
         self.settingsService = settingsService
+        self.featureConfigurator = featureConfigurator
         self.emailNotificationsService = emailNotificationService
         
         cardSectionInteractor = CardSettingsSectionInteractor(

@@ -77,6 +77,7 @@ extension CardData {
     public init?(response: CardPayload?) {
         guard let response = response else { return nil }
         guard let currency = FiatCurrency(code: response.currency) else { return nil }
+        guard let billingAddress = response.address else { return nil }
         guard response.partner.isKnown else { return nil }
         guard let type = CardType(rawValue: response.card?.type ?? "") else { return nil }
         
@@ -97,8 +98,7 @@ extension CardData {
         self.state = response.state
         self.currency = currency
         self.partner = response.partner
-        
-        billingAddress = BillingAddress(response: response.address)
+        self.billingAddress = BillingAddress(response: billingAddress)
     }
 }
 
@@ -172,7 +172,7 @@ extension CardData {
 extension CardData {
     
     var everyPayCardDetails: CardPartnerPayload.EveryPay.SendCardDetailsRequest.CardDetails {
-        return .init(
+        .init(
             cardNumber: number,
             month: month,
             year: year,

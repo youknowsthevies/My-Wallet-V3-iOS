@@ -9,13 +9,19 @@
 import Foundation
 
 public protocol ViewControllerAPI: class {
+    var presentedViewControllerAPI: ViewControllerAPI? { get }
     var navigationControllerAPI: NavigationControllerAPI? { get }
     func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)?)
     func dismiss(animated flag: Bool, completion: (() -> Void)?)
 }
 
 extension UIViewController: ViewControllerAPI {
+    
+    public var presentedViewControllerAPI: ViewControllerAPI? {
+        presentedViewController
+    }
+    
     public var navigationControllerAPI: NavigationControllerAPI? {
-        return navigationController
+        navigationController
     }
 }

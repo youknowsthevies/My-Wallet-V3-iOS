@@ -255,4 +255,19 @@ open class BaseScreenViewController: UIViewController {
             break
         }
     }
+    
+    public func removeFromHierarchy() {
+        switch (leadingButtonStyle, trailingButtonStyle) {
+        case (.close, _), (_, .close):
+            dismiss(animated: true, completion: nil)
+        case (.back, _):
+            baseNavigationController?.popViewController(animated: true)
+        default:
+            if isPresentedModally {
+                dismiss(animated: true, completion: nil)
+            } else {
+                baseNavigationController?.popViewController(animated: true)
+            }
+        }
+    }
 }

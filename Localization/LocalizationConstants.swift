@@ -2511,6 +2511,7 @@ public struct LocalizationConstants {
             )
             public static let removeCard = NSLocalizedString("Remove Card", comment: "Remove Card")
             public static let unverified = NSLocalizedString("You must have Gold Level verification status to add a credit card.", comment: "You must have Gold Level verification status to add a credit card.")
+            public static let disabled = NSLocalizedString("Not currently available", comment: "Not currently available")
         }
     
     public struct RemoveCardScreen {

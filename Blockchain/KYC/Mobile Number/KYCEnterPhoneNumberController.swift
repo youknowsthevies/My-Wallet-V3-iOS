@@ -7,9 +7,9 @@
 //
 
 import PhoneNumberKit
-import UIKit
 import ToolKit
 import PlatformKit
+import PlatformUIKit
 
 final class KYCEnterPhoneNumberController: KYCBaseViewController, BottomButtonContainerView, ProgressableView {
     

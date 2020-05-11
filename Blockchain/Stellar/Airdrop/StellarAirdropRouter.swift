@@ -10,6 +10,7 @@ import RxSwift
 import ToolKit
 import NetworkKit
 import PlatformKit
+import PlatformUIKit
 import StellarKit
 
 /// Router for handling the XLM airdrop flow
@@ -90,8 +91,8 @@ class StellarAirdropRouter: DeepLinkRouting {
             guard case let .badStatusCode(_, payload, _) = httpError else { return }
             guard let value = payload as? NabuNetworkError else {
                 AlertViewPresenter.shared.standardNotify(
-                    message: LocalizationConstants.Errors.genericError,
-                    title: LocalizationConstants.Errors.error
+                    title: LocalizationConstants.Errors.error,
+                    message: LocalizationConstants.Errors.genericError
                 )
                 return
             }
@@ -111,8 +112,8 @@ class StellarAirdropRouter: DeepLinkRouting {
             }
 
             AlertViewPresenter.shared.standardNotify(
-                message: errorMessage,
-                title: LocalizationConstants.Errors.error
+                title: LocalizationConstants.Errors.error,
+                message: errorMessage
             )
         })
         return true

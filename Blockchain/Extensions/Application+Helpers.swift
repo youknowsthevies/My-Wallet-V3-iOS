@@ -6,8 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import SafariServices
+import PlatformUIKit
 
 extension UIApplication {
     @objc func openWebView(url: String, title: String, presentingViewController: UIViewController) {

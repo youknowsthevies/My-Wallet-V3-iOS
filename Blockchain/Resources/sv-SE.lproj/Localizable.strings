@@ -218,7 +218,7 @@
 "Blocked" = "Blockerade";
 
 /* (No Commment) */
-"Calculating: Address %@ of %@" = "Beräkna: Adress %1$@ av %2$@";
+"Calculating: Address %@ of %@" = "Beräkna: Adress %@ av %@";
 
 /* (No Commment) */
 "Camera Access Denied" = "Kameraåtkomst nekad";
@@ -254,7 +254,7 @@
 "Checking for Wallet updates" = "Plånbok uppdateringar";
 
 /* (No Commment) */
-"Checking for more: Step %d of %d" = "Kontroll för mer: steg %1$d av %2$d";
+"Checking for more: Step %d of %d" = "Kontroll för mer: steg %d av %d";
 
 /* No comment provided by engineer. */
 "Close" = "Stäng";
@@ -488,7 +488,7 @@
 "Forget Wallet" = "Glömma plånboken";
 
 /* (No Commment) */
-"Found %d, with %@" = "Hittade %1$d, med %2$@";
+"Found %d, with %@" = "Hittade %d, med %@";
 
 /* (No Commment) */
 "From" = "Från";
@@ -879,8 +879,8 @@
 
 /* (No Commment) */
 "Please send %@ to bitcoin address.
-%@" = "Behaga sända %1$@ till bitcoin adress.
-%2$@";
+%@" = "Behaga sända %@ till bitcoin adress.
+%@";
 
 /* (No Commment) */
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "Vänligen skicka betalning till bitcoin adress (< en href = \"https://blockchain.info/wallet/bitcoin-faq\" > hjälpa? < /a >): %@";
@@ -1090,7 +1090,7 @@
 "The PIN you have selected is extremely common and may be easily guessed by someone with access to your phone within 3 tries. Would you like to use this PIN anyway?" = "PIN-koden du har valt är mycket vanligt och lätt kan gissas av någon med tillgång till telefonen inom 3 försök. Vill du använda detta stift ändå?";
 
 /* (No Commment) */
-"The amount you want to send (%@) is greater than the maximum amount you can spend minus the fee (%@ - %@). Would you like to send %@?" = "Det belopp du vill skicka (%1$@) är större än det högsta belopp du kan spendera minus avgiften (%2$@ - %3$@). Vill du skicka %4$@?";
+"The amount you want to send (%@) is greater than the maximum amount you can spend minus the fee (%@ - %@). Would you like to send %@?" = "Det belopp du vill skicka (%@) är större än det högsta belopp du kan spendera minus avgiften (%@ - %@). Vill du skicka %@?";
 
 /* (No Commment) */
 "The fee you have specified is too low." = "Den avgift som du har angett är för låg.";
@@ -1198,13 +1198,13 @@
 "Transferred" = "Överfört";
 
 /* (No Commment) */
-"Transferred funds from %d %@" = "Överförda medel från %1$d %2$@";
+"Transferred funds from %d %@" = "Överförda medel från %d %@";
 
 /* (No Commment) */
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Överförda medel från %1$d %2$@. Utgångar för %3$d %4$@ var för liten.";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Överförda medel från %d %@. Utgångar för %d %@ var för liten.";
 
 /* (No Commment) */
-"Transferring all funds: Address %i of %i" = "Överföring av alla medel: adress %1$i av %2$i";
+"Transferring all funds: Address %i of %i" = "Överföring av alla medel: adress %i av %i";
 
 /* (No Commment) */
 "Try again" = "Försök igen";
@@ -1411,13 +1411,13 @@
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "Du bör alltid par eller logga in om du har tillgång till din plånbok-ID och lösenord. Återfå dina pengar kommer att skapa en ny plånbok-ID. Vill du fortsätta?";
 
 /* (No Commment) */
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Du angav en ovanligt liten transaktionsavgift för %1$@. Din transaktion kan vara fast och eventuellt bekräftas aldrig. För att öka sannolikheten för din transaktion att bekräfta inom ungefär en timme (sex kvarter), rekommenderar vi en avgift på inte mindre än %2$@.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Du angav en ovanligt liten transaktionsavgift för %@. Din transaktion kan vara fast och eventuellt bekräftas aldrig. För att öka sannolikheten för din transaktion att bekräfta inom ungefär en timme (sex kvarter), rekommenderar vi en avgift på inte mindre än %@.";
 
 /* (No Commment) */
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Du angav en ovanligt liten transaktionsavgift för %1$@. Din transaktion kan bli fastnat och möjligen bekräfta aldrig. För att öka sannolikheten för din transaktion att bekräfta inom ungefär en timme (sex kvarter), rekommenderar vi en avgift på inte mindre än %2$@. Eftersom du inte har tillräckliga medel, vilket innebär att skicka beloppet också måste sänkas till %3$@.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Du angav en ovanligt liten transaktionsavgift för %@. Din transaktion kan bli fastnat och möjligen bekräfta aldrig. För att öka sannolikheten för din transaktion att bekräfta inom ungefär en timme (sex kvarter), rekommenderar vi en avgift på inte mindre än %@. Eftersom du inte har tillräckliga medel, vilket innebär att skicka beloppet också måste sänkas till %@.";
 
 /* (No Commment) */
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Du angav en ovanligt hög transaktionsavgift för %1$@. Även om du sänker avgiften till %2$@, kan du förvänta dig transaktionen till bekräfta inom de nästa 10 minuterna (1 kvarter).";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Du angav en ovanligt hög transaktionsavgift för %@. Även om du sänker avgiften till %@, kan du förvänta dig transaktionen till bekräfta inom de nästa 10 minuterna (1 kvarter).";
 
 /* (No Commment) */
 "You will be leaving the app." = "Du kommer att lämna app.";

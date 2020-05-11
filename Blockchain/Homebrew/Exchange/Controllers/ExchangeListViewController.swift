@@ -9,6 +9,7 @@
 import Foundation
 import ToolKit
 import PlatformKit
+import PlatformUIKit
 
 protocol ExchangeListDelegate: class {
     func onLoaded()

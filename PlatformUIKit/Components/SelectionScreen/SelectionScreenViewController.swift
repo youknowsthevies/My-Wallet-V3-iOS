@@ -41,6 +41,21 @@ public final class SelectionScreenViewController: BaseScreenViewController {
         setupNavigationBar()
         setupSearchController()
         setupTableView()
+        
+        presenter.dismiss
+            .emit(onNext: { [weak self] in
+                guard let self = self else { return }
+                let completion = {
+                    self.removeFromHierarchy()
+                    self.presenter.previousTapped()
+                }
+                if self.navigationItem.searchController?.isActive ?? false {
+                    self.navigationItem.searchController?.dismiss(animated: true, completion: completion)
+                } else {
+                    completion()
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
     // MARK: - Setup
@@ -109,17 +124,6 @@ public final class SelectionScreenViewController: BaseScreenViewController {
                     at: .middle,
                     animated: true
                 )
-            }
-            .disposed(by: disposeBag)
-        
-        presenter.selection
-            .bind(weak: self) { (self) in
-                self.presenter.recordSelection()
-                if let navController = self.navigationController {
-                    navController.popViewController(animated: true)
-                } else {
-                    self.dismiss(animated: true, completion: nil)
-                }
             }
             .disposed(by: disposeBag)
     }

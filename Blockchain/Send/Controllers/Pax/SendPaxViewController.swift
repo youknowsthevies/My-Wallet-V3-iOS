@@ -247,8 +247,7 @@ class SendPaxViewController: UIViewController {
             }
         case .showAlertForEnabling2FA:
             alertViewPresenter.standardNotify(
-                message: LocalizationConstants.Exchange.twoFactorNotEnabled,
-                title: LocalizationConstants.Errors.error
+                title: LocalizationConstants.Errors.error, message: LocalizationConstants.Exchange.twoFactorNotEnabled
             )
         }
     }

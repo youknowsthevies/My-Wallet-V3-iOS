@@ -218,7 +218,7 @@
 "Blocked" = "阻止";
 
 /* (No Commment) */
-"Calculating: Address %@ of %@" = "計算︰ 位址 %1$@ 的 %2$@";
+"Calculating: Address %@ of %@" = "計算︰ 位址 %@ 的 %@";
 
 /* (No Commment) */
 "Camera Access Denied" = "相機訪問被拒絕";
@@ -254,7 +254,7 @@
 "Checking for Wallet updates" = "檢查錢包更新";
 
 /* (No Commment) */
-"Checking for more: Step %d of %d" = "檢查更多: 步 %1$d 的 %2$d";
+"Checking for more: Step %d of %d" = "檢查更多: 步 %d 的 %d";
 
 /* No comment provided by engineer. */
 "Close" = "關閉";
@@ -488,7 +488,7 @@
 "Forget Wallet" = "忘了錢包";
 
 /* (No Commment) */
-"Found %d, with %@" = "發現 %1$d，與 %2$@";
+"Found %d, with %@" = "發現 %d，與 %@";
 
 /* (No Commment) */
 "From" = "從";
@@ -882,8 +882,8 @@
 
 /* (No Commment) */
 "Please send %@ to bitcoin address.
-%@" = "請發送 %1$@ 到比特幣位址。
-%2$@";
+%@" = "請發送 %@ 到比特幣位址。
+%@";
 
 /* (No Commment) */
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "請向比特幣位址發送付款 (< href =\"HTTPs://blockchain.info/wallet/bitcoin-faq\"> 説明? < /a >): %@";
@@ -1093,7 +1093,7 @@
 "The PIN you have selected is extremely common and may be easily guessed by someone with access to your phone within 3 tries. Would you like to use this PIN anyway?" = "您已選擇引腳是極為常見，可能具有訪問到您的手機內 3 個嘗試的人很容易猜到了。你想使用這針嗎?";
 
 /* (No Commment) */
-"The amount you want to send (%@) is greater than the maximum amount you can spend minus the fee (%@ - %@). Would you like to send %@?" = "您想要發送 (%1$@) 的金額大於你可以花減去費用 (%2$@-%3$@) 的最高限額。你想發送 %4$@ 嗎?";
+"The amount you want to send (%@) is greater than the maximum amount you can spend minus the fee (%@ - %@). Would you like to send %@?" = "您想要發送 (%@) 的金額大於你可以花減去費用 (%@-%@) 的最高限額。你想發送 %@ 嗎?";
 
 /* (No Commment) */
 "The fee you have specified is too low." = "您已指定的費用是太低。";
@@ -1201,13 +1201,13 @@
 "Transferred" = "轉移";
 
 /* (No Commment) */
-"Transferred funds from %d %@" = "轉移的資金，從 %1$d %2$@";
+"Transferred funds from %d %@" = "轉移的資金，從 %d %@";
 
 /* (No Commment) */
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "%1$d %2$@ 的轉移的資金。%3$d %4$@ 的輸出結果太小了。";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "%d %@ 的轉移的資金。%d %@ 的輸出結果太小了。";
 
 /* (No Commment) */
-"Transferring all funds: Address %i of %i" = "將所有資金都轉 ︰ 位址 %1$i 的 %2$i";
+"Transferring all funds: Address %i of %i" = "將所有資金都轉 ︰ 位址 %i 的 %i";
 
 /* (No Commment) */
 "Try again" = "再試一次";
@@ -1414,13 +1414,13 @@
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "你應該總是成對或登錄如果您可以訪問您的錢包 ID 和密碼。恢復您的資金將會創建一個新的錢包 id。你想繼續嗎?";
 
 /* (No Commment) */
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "您指定 %1$@ 極少的交易費。您的交易可能會卡住，可能從來沒有被證實。為了增加您的交易確認在大約一小時 （六塊） 的可能性，我們強烈建議費用不低於 %2$@。";
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "您指定 %@ 極少的交易費。您的交易可能會卡住，可能從來沒有被證實。為了增加您的交易確認在大約一小時 （六塊） 的可能性，我們強烈建議費用不低於 %@。";
 
 /* (No Commment) */
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "您指定 %1$@ 極少的交易費。您的交易可能會被卡住，並可能永遠不會確認。為了增加您的交易確認在大約一小時 （六塊） 的可能性，我們強烈建議費用不低於 %2$@。因為你沒有足夠的資金，這意味著發送量亦會降低到 %3$@。";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "您指定 %@ 極少的交易費。您的交易可能會被卡住，並可能永遠不會確認。為了增加您的交易確認在大約一小時 （六塊） 的可能性，我們強烈建議費用不低於 %@。因為你沒有足夠的資金，這意味著發送量亦會降低到 %@。";
 
 /* (No Commment) */
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "您指定 %1$@ 異常高昂的交易費用。即使你降低到 %2$@ 費，你可以期望要確認在接下來的 10 分鐘 （一個塊） 內的交易記錄。";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "您指定 %@ 異常高昂的交易費用。即使你降低到 %@ 費，你可以期望要確認在接下來的 10 分鐘 （一個塊） 內的交易記錄。";
 
 /* (No Commment) */
 "You will be leaving the app." = "你將離開該應用程式。";

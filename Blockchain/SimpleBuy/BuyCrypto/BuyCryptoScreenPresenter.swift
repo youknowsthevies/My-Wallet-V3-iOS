@@ -331,7 +331,7 @@ final class BuyCryptoScreenPresenter {
                 case .empty(currency: let currency):
                     return "\(currency.code)"
                 case .inBounds(data: _, upperLimit: let fiatValue):
-                    return "\(fiatValue.currencyCode)"
+                    return "\(fiatValue.currency.code)"
                 }
             }
             .bind(to: trailingButtonViewModel.textRelay)
