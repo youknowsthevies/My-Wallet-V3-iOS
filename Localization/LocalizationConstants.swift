@@ -1780,7 +1780,7 @@ public struct LocalizationConstants {
             }
             
             public static let cardNotice = NSLocalizedString(
-                "We wil debit your payment method in 2 business days once your order is approved. Your final amount might change due to market activity.",
+                "We will debit your payment method in 2 business days once your order is approved. Your final amount might change due to market activity.",
                 comment: "Simple buy: checkout screen notice label for card"
             )
             
