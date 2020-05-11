@@ -15,9 +15,22 @@ public final class NoticeTableViewCell: UITableViewCell {
             noticeView.viewModel = viewModel
         }
     }
-
+    
+    public var topOffset: CGFloat = 16 {
+        didSet {
+            verticalConstraints.leading.constant = topOffset
+        }
+    }
+    
+    public var bottomOffset: CGFloat = 16 {
+        didSet {
+            verticalConstraints.trailing.constant = -bottomOffset
+        }
+    }
+        
     private let noticeView = NoticeView()
-
+    private var verticalConstraints: Axis.Constraints!
+        
     // MARK: - Lifecycle
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -25,8 +38,11 @@ public final class NoticeTableViewCell: UITableViewCell {
         selectionStyle = .none
         contentView.addSubview(noticeView)
         noticeView.layoutToSuperview(axis: .horizontal, offset: 24)
-        noticeView.layoutToSuperview(axis: .vertical, offset: 16, priority: .penultimateHigh)
-        noticeView.layoutToSuperview(.centerY)
+        verticalConstraints = noticeView.layoutToSuperview(
+            axis: .vertical,
+            offset: topOffset,
+            priority: .penultimateHigh
+        )
     }
 
     required init?(coder: NSCoder) {

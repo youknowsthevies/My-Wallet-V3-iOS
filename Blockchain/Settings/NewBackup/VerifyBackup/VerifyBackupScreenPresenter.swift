@@ -42,9 +42,6 @@ final class VerifyBackupScreenPresenter {
     let thirdTextFieldViewModel: ValidationTextFieldViewModel
     
     let descriptionLabel: LabelContent
-    let firstNumberLabel: LabelContent
-    let secondNumberLabel: LabelContent
-    let thirdNumberLabel: LabelContent
     let errorLabel: LabelContent
     
     // MARK: - Rx
@@ -72,27 +69,6 @@ final class VerifyBackupScreenPresenter {
         let firstIndex = mnemonic.firstIndex(of: subset[0]) ?? 0
         let secondIndex = mnemonic.firstIndex(of: subset[1]) ?? 0
         let thirdIndex = mnemonic.firstIndex(of: subset[2]) ?? 0
-        
-        firstNumberLabel = LabelContent(
-            text: "\(firstIndex + 1)",
-            font: .main(.medium, 12.0),
-            color: .textFieldText,
-            accessibility: .id(AccessibilityId.firstNumberLabel)
-        )
-        
-        secondNumberLabel = LabelContent(
-            text: "\(secondIndex + 1)",
-            font: .main(.medium, 12.0),
-            color: .textFieldText,
-            accessibility: .id(AccessibilityId.secondNumberLabel)
-        )
-        
-        thirdNumberLabel = LabelContent(
-            text: "\(thirdIndex + 1)",
-            font: .main(.medium, 12.0),
-            color: .textFieldText,
-            accessibility: .id(AccessibilityId.thirdNumberLabel)
-        )
         
         errorLabel = LabelContent(
             text: LocalizationConstants.VerifyBackupScreen.errorDescription,

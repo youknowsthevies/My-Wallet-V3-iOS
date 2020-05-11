@@ -167,7 +167,7 @@ final class RegisterWalletScreenPresenter {
     }
     
     func viewDidLoad() {
-        emailTextFieldViewModel.focusRelay.accept(true)
+        emailTextFieldViewModel.focusRelay.accept(.on)
     }
     
     /// Calls the interactor to initiate wallet creation

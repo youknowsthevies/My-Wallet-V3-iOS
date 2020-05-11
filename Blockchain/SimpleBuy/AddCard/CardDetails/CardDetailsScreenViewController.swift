@@ -37,7 +37,10 @@ final class CardDetailsScreenViewController: BaseTableViewController {
         super.viewDidLoad()
         setupNavigationBar()
         addButton(with: presenter.buttonViewModel)
-        keyboardInteractionController = KeyboardInteractionController(in: self)
+        keyboardInteractionController = KeyboardInteractionController(
+            in: self,
+            disablesToolBar: true
+        )
         setupTableView()
         setupKeyboardObserver()
     }
@@ -63,10 +66,9 @@ final class CardDetailsScreenViewController: BaseTableViewController {
             .bind(weak: self) { (self, state) in
                 switch state.visibility {
                 case .visible:
-                    self.footerHeightConstraint.priority = .penultimateHigh
-                    self.footerHeightConstraint.constant = state.payload.height
+                    self.tableViewBottomConstraint.constant = state.payload.height
                 case .hidden:
-                    self.footerHeightConstraint.priority = .defaultLow
+                    self.tableViewBottomConstraint.constant = 0
                 }
                 self.view.layoutIfNeeded()
             }
@@ -75,7 +77,6 @@ final class CardDetailsScreenViewController: BaseTableViewController {
     
     private func setupTableView() {
         tableView.tableFooterView = UIView()
-        tableView.contentInset = .init(top: 16, left: 0, bottom: 0, right: 0)
         tableView.estimatedRowHeight = 80
         tableView.rowHeight = UITableView.automaticDimension
         tableView.register(TextFieldTableViewCell.self)
@@ -104,7 +105,8 @@ extension CardDetailsScreenViewController: UITableViewDelegate, UITableViewDataS
         )
         cell.setup(
             viewModel: presenter.textFieldViewModelByType[type]!,
-            keyboardInteractionController: keyboardInteractionController
+            keyboardInteractionController: keyboardInteractionController,
+            scrollView: tableView
         )
         return cell
     }
@@ -121,7 +123,8 @@ extension CardDetailsScreenViewController: UITableViewDelegate, UITableViewDataS
                 leading: presenter.textFieldViewModelByType[leadingType]!,
                 trailing: presenter.textFieldViewModelByType[trailingType]!
             ),
-            keyboardInteractionController: keyboardInteractionController
+            keyboardInteractionController: keyboardInteractionController,
+            scrollView: tableView
         )
         return cell
     }
@@ -132,11 +135,13 @@ extension CardDetailsScreenViewController: UITableViewDelegate, UITableViewDataS
             for: IndexPath(row: type.row, section: 0)
         )
         cell.viewModel = presenter.noticeViewModel
+        cell.topOffset = 20
+        cell.bottomOffset = 48
         return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
+        presenter.rowCount
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

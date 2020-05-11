@@ -84,7 +84,7 @@ final class ManualPairingScreenPresenter {
             
         let stateObservable = latestStatesObservable
             .map(weak: self) { (self, payload) -> FormPresentationState in
-                return try self.stateReducer.reduce(states: [payload.0, payload.1])
+                try self.stateReducer.reduce(states: [payload.0, payload.1])
             }
             /// Should never get to `catchErrorJustReturn`.
             .catchErrorJustReturn(.invalid(.invalidTextField))
@@ -158,7 +158,7 @@ final class ManualPairingScreenPresenter {
     // MARK: - Lifecycle
     
     func viewDidLoad() {
-        walletIdTextFieldViewModel.focusRelay.accept(true)
+        walletIdTextFieldViewModel.focusRelay.accept(.on)
     }
     
     func viewDidDisappear() {

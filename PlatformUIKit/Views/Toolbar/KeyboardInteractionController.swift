@@ -33,7 +33,7 @@ public final class KeyboardInteractionController {
     
     // MARK: - Public Properties
     
-    public let toolbar = UIToolbar()
+    public private(set) var toolbar: UIToolbar?
     
     // MARK: - Private Properties
     
@@ -42,23 +42,31 @@ public final class KeyboardInteractionController {
     
     // MARK: - Setup
     
-    public convenience init(in viewController: UIViewController) {
+    public convenience init(in viewController: UIViewController, disablesToolBar: Bool = false) {
         let parent = Parent.viewController(UnretainedContentBox(viewController))
-        self.init(using: parent)
+        self.init(using: parent, disablesToolBar: disablesToolBar)
     }
     
-    public convenience init(in view: UIView) {
+    public convenience init(in view: UIView, disablesToolBar: Bool = false) {
         let parent = Parent.view(UnretainedContentBox(view))
-        self.init(using: parent)
+        self.init(using: parent, disablesToolBar: disablesToolBar)
     }
     
-    private init(using parent: Parent) {
+    private init(using parent: Parent, disablesToolBar: Bool) {
         self.parent = parent
+        if !disablesToolBar {
+            setupToolbar()
+        }
+        setupTapGestureRecognizer()
+    }
+    
+    private func setupToolbar() {
+        let toolbar = UIToolbar()
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissKeyboard))
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         toolbar.setItems([flexibleSpace, doneButton], animated: false)
         toolbar.sizeToFit()
-        setupTapGestureRecognizer()
+        self.toolbar = toolbar
     }
     
     private func setupTapGestureRecognizer() {

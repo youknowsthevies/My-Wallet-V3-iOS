@@ -65,6 +65,7 @@ final class CardDetailsScreenPresenter {
     
     let title = LocalizedString.title
     
+    let rowCount = 4
     let textFieldViewModelByType: [TextFieldType: TextFieldViewModel]
     let textFieldViewModels: [TextFieldViewModel]
     let noticeViewModel: NoticeViewModel
@@ -115,7 +116,7 @@ final class CardDetailsScreenPresenter {
         )
         let cardholderNameTextFieldViewModel = TextFieldViewModel(
             with: .cardholderName,
-            hintDisplayType: .constant,
+            returnKeyType: .next,
             validator: TextValidationFactory.Card.name,
             messageRecorder: CrashlyticsRecorder()
         )

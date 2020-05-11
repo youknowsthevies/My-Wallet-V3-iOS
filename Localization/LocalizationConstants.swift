@@ -2683,7 +2683,7 @@ public struct LocalizationConstants {
             public static let fifth = NSLocalizedString("fifth word", comment: "fifth word")
             public static let sixth = NSLocalizedString("sixth word", comment: "sixth word")
             public static let seventh = NSLocalizedString("seventh word", comment: "seventh word")
-            public static let eigth = NSLocalizedString("eigth word", comment: "eigth word")
+            public static let eighth = NSLocalizedString("eighth word", comment: "eighth word")
             public static let ninth = NSLocalizedString("ninth word", comment: "ninth word")
             public static let tenth = NSLocalizedString("tenth word", comment: "tenth word")
             public static let eleventh = NSLocalizedString("eleventh", comment: "eleventh word")

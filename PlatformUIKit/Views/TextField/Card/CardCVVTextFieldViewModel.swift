@@ -14,11 +14,9 @@ public final class CardCVVTextFieldViewModel: TextFieldViewModel {
     
     public init(validator: TextValidating,
                 matchValidator: CVVToCreditCardMatchValidator,
-                hintDisplayType: HintDisplayType = .constant,
                 messageRecorder: MessageRecording) {
         super.init(
             with: .cardCVV,
-            hintDisplayType: hintDisplayType,
             validator: validator,
             formatter: TextFormatterFactory.cardCVV,
             textMatcher: matchValidator,

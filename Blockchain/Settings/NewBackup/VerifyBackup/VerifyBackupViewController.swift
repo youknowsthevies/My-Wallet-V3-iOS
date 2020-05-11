@@ -18,9 +18,6 @@ final class VerifyBackupViewController: BaseScreenViewController {
     // MARK: - Private IBOutlets (UILabel)
     
     @IBOutlet private var descriptionLabel: UILabel!
-    @IBOutlet private var firstNumberLabel: UILabel!
-    @IBOutlet private var secondNumberLabel: UILabel!
-    @IBOutlet private var thirdNumberLabel: UILabel!
     @IBOutlet private var errorLabel: UILabel!
     
     // MARK: - Private IBOutlets (TextFieldView)
@@ -58,10 +55,6 @@ final class VerifyBackupViewController: BaseScreenViewController {
         keyboardInteractionController = KeyboardInteractionController(in: self)
         
         descriptionLabel.content = presenter.descriptionLabel
-        
-        firstNumberLabel.content = presenter.firstNumberLabel
-        secondNumberLabel.content = presenter.secondNumberLabel
-        thirdNumberLabel.content = presenter.thirdNumberLabel
         errorLabel.content = presenter.errorLabel
         
         firstTextFieldView.setup(
@@ -90,7 +83,8 @@ final class VerifyBackupViewController: BaseScreenViewController {
         titleViewStyle = presenter.titleView
         set(barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
-            trailingButtonStyle: presenter.trailingButton)
+            trailingButtonStyle: presenter.trailingButton
+        )
     }
     
     // MARK: - Navigation

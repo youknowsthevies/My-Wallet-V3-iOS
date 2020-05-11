@@ -16,34 +16,76 @@ import Localization
 public class TextFieldViewModel {
     
     // MARK: - Type
-    
-    private typealias LocalizedString = LocalizationConstants.TextField
-        
-    struct GestureMessage: Equatable {
-        let message: String
-        let isVisible: Bool
-    }
-    
-    public enum HintDisplayType {
-        
-        /// Varies in height
-        case dynamic
-        
-        /// Has constant height
-        case constant
-    }
-    
+
     /// The trailing accessory view.
     /// Can potentially support, images, labels and even custom views
     public enum AccessoryContentType: Equatable {
         
         /// Image accessory view
-        case badge(BadgeImageViewModel)
+        case badgeImageView(BadgeImageViewModel)
+        
+        /// Label accessory view
+        case badgeLabel(BadgeViewModel)
         
         /// Empty accessory view
         case empty
     }
     
+    public enum Focus: Equatable {
+        public enum OffSource: Equatable {
+            case returnTapped
+            case unknown
+        }
+        
+        case on
+        case off(OffSource)
+        
+        var isOn: Bool {
+            switch self {
+            case .on:
+                return true
+            case .off:
+                return false
+            }
+        }
+    }
+    
+    struct Mode: Equatable {
+        
+        /// The title text
+        let title: String
+        
+        /// The title color
+        let titleColor: Color
+        
+        /// The border color
+        let borderColor: Color
+        
+        /// The cursor color
+        let cursorColor: Color
+        
+        init(isFocused: Bool, shouldShowHint: Bool, hint: String, title: String) {
+            if shouldShowHint && !hint.isEmpty {
+                self.title = hint
+                borderColor = .destructive
+                titleColor = .destructive
+                cursorColor = .destructive
+            } else {
+                self.title = title
+                titleColor = .descriptionText
+                if isFocused {
+                    borderColor = .primaryButton
+                    cursorColor = .primaryButton
+                } else {
+                    borderColor = .mediumBorder
+                    cursorColor = .mediumBorder
+                }
+            }
+        }
+    }
+        
+    private typealias LocalizedString = LocalizationConstants.TextField
+
     // MARK: Properties
 
     /// The state of the text field
@@ -51,21 +93,13 @@ public class TextFieldViewModel {
         stateRelay.asObservable()
     }
     
-    /// Should text field gain focus or remove
-    public let focusRelay = PublishRelay<Bool>()
-    public var focus: Signal<Bool> {
-        focusRelay.asSignal()
+    /// Should text field gain / drop focus 
+    public let focusRelay = BehaviorRelay<Focus>(value: .off(.unknown))
+    public var focus: Driver<Focus> {
+        focusRelay
+            .asDriver()
+            .distinctUntilChanged()
     }
-    
-    public var isHintVisible: Observable<Bool> {
-        isHintVisibleRelay.asObservable()
-    }
-    
-    var becameFirstResponder: Observable<Void> {
-        becameFirstResponderRelay.asObservable()
-    }
-    
-    let becameFirstResponderRelay = PublishRelay<Void>()
     
     /// The content type of the `UITextField`
     var contentType: Driver<UITextContentType?> {
@@ -88,27 +122,26 @@ public class TextFieldViewModel {
             .distinctUntilChanged()
     }
     
-    /// The placeholder of the text-field
-    var placeholder: Driver<NSAttributedString> {
-        placeholderRelay.asDriver()
-    }
-    
     /// The color of the content (.mutedText, .textFieldText)
     var textColor: Driver<UIColor> {
         textColorRelay.asDriver()
     }
         
     /// A text to display below the text field in case of an error
-    var gestureMessage: Driver<GestureMessage> {
+    var mode: Driver<Mode> {
         Driver
             .combineLatest(
+                focus,
+                showHintIfNeededRelay.asDriver(),
                 hintRelay.asDriver(),
-                isHintVisibleRelay.asDriver()
+                titleRelay.asDriver()
             )
             .map {
-                GestureMessage(
-                    message: $0.0,
-                    isVisible: $0.1
+                Mode(
+                    isFocused: $0.0.isOn,
+                    shouldShowHint: $0.1,
+                    hint: $0.2,
+                    title: $0.3
                 )
             }
             .distinctUntilChanged()
@@ -117,6 +150,11 @@ public class TextFieldViewModel {
     public let isEnabledRelay = BehaviorRelay<Bool>(value: true)
     var isEnabled: Observable<Bool> {
         isEnabledRelay.asObservable()
+    }
+    
+    /// The placeholder of the text-field
+    var placeholder: Driver<NSAttributedString> {
+        placeholderRelay.asDriver()
     }
     
     var autocapitalizationType: Observable<UITextAutocapitalizationType> {
@@ -138,15 +176,17 @@ public class TextFieldViewModel {
             .distinctUntilChanged()
     }
         
-    let isHintVisibleRelay = BehaviorRelay(value: false)
+    let showHintIfNeededRelay = BehaviorRelay(value: false)
     
-    let font = UIFont.main(.medium, 16)
+    let titleFont = UIFont.main(.medium, 14)
+    let textFont = UIFont.main(.medium, 16)
     
     private let autocapitalizationTypeRelay: BehaviorRelay<UITextAutocapitalizationType>
     private let keyboardTypeRelay: BehaviorRelay<UIKeyboardType>
     private let contentTypeRelay: BehaviorRelay<UITextContentType?>
     private let isSecureRelay = BehaviorRelay(value: false)
     private let placeholderRelay: BehaviorRelay<NSAttributedString>
+    private let titleRelay: BehaviorRelay<String>
     private let textColorRelay = BehaviorRelay<UIColor>(value: .textFieldText)
     private let hintRelay = BehaviorRelay<String>(value: "")
     private let stateRelay = BehaviorRelay<State>(value: .empty)
@@ -158,7 +198,6 @@ public class TextFieldViewModel {
     let validator: TextValidating
     let formatter: TextFormatting
     let textMatcher: TextMatchValidatorAPI?
-    let hintDisplayType: HintDisplayType
     let type: TextFieldType
     let accessibility: Accessibility
     let messageRecorder: MessageRecording
@@ -167,7 +206,6 @@ public class TextFieldViewModel {
     
     public init(with type: TextFieldType,
                 returnKeyType: UIReturnKeyType = .done,
-                hintDisplayType: HintDisplayType = .dynamic,
                 validator: TextValidating,
                 formatter: TextFormatting = TextFormatterFactory.alwaysCorrect,
                 textMatcher: TextMatchValidatorAPI? = nil,
@@ -177,17 +215,18 @@ public class TextFieldViewModel {
         self.validator = validator
         self.textMatcher = textMatcher
         self.type = type
-        self.hintDisplayType = hintDisplayType
         
         let placeholder = NSAttributedString(
             string: type.placeholder,
             attributes: [
                 .foregroundColor: UIColor.textFieldPlaceholder,
-                .font: font
+                .font: textFont
             ]
         )
+        
         autocapitalizationTypeRelay = BehaviorRelay(value: type.autocapitalizationType)
         placeholderRelay = BehaviorRelay(value: placeholder)
+        titleRelay = BehaviorRelay(value: type.title)
         contentTypeRelay = BehaviorRelay(value: type.contentType)
         keyboardTypeRelay = BehaviorRelay(value: type.keyboardType)
         isSecureRelay.accept(type.isSecure)
@@ -206,9 +245,17 @@ public class TextFieldViewModel {
         }
                 
         Observable
-            .combineLatest(matchState, validator.validationState, text.asObservable())
-            .map { (matchState, validationState, text) in
-                State(matchState: matchState, validationState: validationState, text: text)
+            .combineLatest(
+                matchState,
+                validator.validationState,
+                text.asObservable()
+            )
+            .map { matchState, validationState, text in
+                State(
+                    matchState: matchState,
+                    validationState: validationState,
+                    text: text
+                )
             }
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
@@ -221,21 +268,32 @@ public class TextFieldViewModel {
     
     public func set(next: TextFieldViewModel) {
         focusRelay
-            .filter { !$0 }
-            .map { _ in true }
+            .filter { $0 == .off(.returnTapped) }
+            .map { _ in .on }
             .bind(to: next.focusRelay)
             .disposed(by: disposeBag)
     }
     
     func textFieldDidEndEditing() {
-        isHintVisibleRelay.accept(true)
+        focusRelay.accept(.off(.unknown))
+        showHintIfNeededRelay.accept(true)
     }
-        
+    
+    func textFieldShouldReturn() -> Bool {
+        focusRelay.accept(.off(.returnTapped))
+        return true
+    }
+    
+    func textFieldShouldBeginEditing() -> Bool {
+        focusRelay.accept(.on)
+        return true
+    }
+    
     /// Should be called upon editing the text field
     func textFieldEdited(with value: String) {
         messageRecorder.record("Text field \(type.debugDescription) edited")
         textRelay.accept(value)
-        isHintVisibleRelay.accept(type.showsHintWhileTyping)
+        showHintIfNeededRelay.accept(type.showsHintWhileTyping)
     }
     
     func editIfNecessary(_ text: String, operation: TextInputOperation) -> TextFormattingSource {

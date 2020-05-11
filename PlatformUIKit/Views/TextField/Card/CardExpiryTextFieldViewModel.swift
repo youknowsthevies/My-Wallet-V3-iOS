@@ -12,10 +12,9 @@ public final class CardExpiryTextFieldViewModel: TextFieldViewModel {
             
     // MARK: - Setup
     
-    public init(hintDisplayType: HintDisplayType = .constant, messageRecorder: MessageRecording) {
+    public init(messageRecorder: MessageRecording) {
         super.init(
             with: .expirationDate,
-            hintDisplayType: hintDisplayType,
             validator: TextValidationFactory.Card.expirationDate,
             formatter: TextFormatterFactory.cardExpirationDate,
             messageRecorder: messageRecorder

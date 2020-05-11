@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -25,10 +25,10 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="05V-Vo-xgo">
-                    <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                    <rect key="frame" x="0.0" y="44" width="414" height="794"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="k6B-i7-gXW">
-                            <rect key="frame" x="0.0" y="0.0" width="414" height="818"/>
+                            <rect key="frame" x="0.0" y="0.0" width="414" height="794"/>
                             <subviews>
                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="fc2-6U-z5n">
                                     <rect key="frame" x="16" y="0.0" width="382" height="348"/>
@@ -80,7 +80,7 @@
                                     </subviews>
                                 </stackView>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7N9-GK-aBg" customClass="ButtonView" customModule="PlatformUIKit">
-                                    <rect key="frame" x="16" y="770" width="382" height="48"/>
+                                    <rect key="frame" x="16" y="746" width="382" height="48"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="48" id="LiT-2T-fXQ"/>
                                     </constraints>
@@ -109,7 +109,7 @@
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="05V-Vo-xgo" secondAttribute="trailing" id="FsG-FN-WBN"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="05V-Vo-xgo" secondAttribute="bottom" id="X6r-Gk-TxA"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="05V-Vo-xgo" secondAttribute="bottom" constant="24" id="X6r-Gk-TxA"/>
                 <constraint firstItem="05V-Vo-xgo" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="erq-FW-phJ"/>
                 <constraint firstItem="05V-Vo-xgo" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="ugk-IL-k0h"/>
             </constraints>

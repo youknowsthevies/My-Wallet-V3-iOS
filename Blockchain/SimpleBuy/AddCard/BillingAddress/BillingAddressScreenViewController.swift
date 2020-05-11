@@ -44,7 +44,10 @@ final class BillingAddressScreenViewController: BaseTableViewController {
         super.viewDidLoad()
         setupNavigationBar()
         addButton(with: presenter.buttonViewModel)
-        keyboardInteractionController = KeyboardInteractionController(in: self)
+        keyboardInteractionController = KeyboardInteractionController(
+            in: self,
+            disablesToolBar: true
+        )
         setupTableView()
         setupKeyboardObserver()
         
@@ -81,10 +84,9 @@ final class BillingAddressScreenViewController: BaseTableViewController {
             .bind(weak: self) { (self, state) in
                 switch state.visibility {
                 case .visible:
-                    self.footerHeightConstraint.priority = .penultimateHigh
-                    self.footerHeightConstraint.constant = state.payload.height
+                    self.tableViewBottomConstraint.constant = state.payload.height
                 case .hidden:
-                    self.footerHeightConstraint.priority = .defaultLow
+                    self.tableViewBottomConstraint.constant = 0
                 }
                 self.view.layoutIfNeeded()
             }
@@ -153,8 +155,14 @@ extension BillingAddressScreenViewController: UITableViewDelegate, UITableViewDa
         )
         cell.setup(
             viewModel: presenter.textFieldViewModelsMap[type]!,
-            keyboardInteractionController: keyboardInteractionController
+            keyboardInteractionController: keyboardInteractionController,
+            scrollView: tableView
         )
+        if row == presenter.presentationDataRelay.value.cellCount - 1 {
+            cell.bottomInset = 48
+        } else {
+            cell.bottomInset = 0
+        }
         return cell
     }
     
@@ -170,8 +178,14 @@ extension BillingAddressScreenViewController: UITableViewDelegate, UITableViewDa
                 leading: presenter.textFieldViewModelsMap[leadingType]!,
                 trailing: presenter.textFieldViewModelsMap[trailingType]!
             ),
-            keyboardInteractionController: keyboardInteractionController
+            keyboardInteractionController: keyboardInteractionController,
+            scrollView: tableView
         )
+        if row == presenter.presentationDataRelay.value.cellCount - 1 {
+            cell.bottomInset = 48
+        } else {
+            cell.bottomInset = 0
+        }
         return cell
     }
     

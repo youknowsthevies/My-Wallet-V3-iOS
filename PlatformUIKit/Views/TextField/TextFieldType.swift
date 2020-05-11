@@ -182,11 +182,6 @@ extension TextFieldType {
             return .id(AccessibilityId.postCode)
         }
     }
-}
-
-// MARK: - Gesture
-
-extension TextFieldType {
     
     /// This is `true` if the text field should show hints during typing
     var showsHintWhileTyping: Bool {
@@ -212,14 +207,37 @@ extension TextFieldType {
             return true
         }
     }
-}
-
-// MARK: - Placeholder
-
-extension TextFieldType {
-    /// The placeholder of the text field
+    
+    /// The title of the text field
     var placeholder: String {
         typealias LocalizedString = LocalizationConstants.TextField.Placeholder
+        switch self {
+        case .cardCVV:
+            return LocalizedString.cvv
+        case .expirationDate:
+            return LocalizedString.expirationDate
+        case .password,
+             .newPassword,
+             .confirmNewPassword,
+             .walletIdentifier,
+             .oneTimeCode,
+             .email,
+             .backupVerification,
+             .addressLine,
+             .city,
+             .postcode,
+             .personFullName,
+             .state,
+             .mobile,
+             .cardholderName,
+             .cardNumber:
+            return ""
+        }
+    }
+
+    /// The title of the text field
+    var title: String {
+        typealias LocalizedString = LocalizationConstants.TextField.Title
         switch self {
         case .cardholderName:
             return LocalizedString.Card.name
@@ -272,10 +290,9 @@ extension TextFieldType {
             return .phonePad
         case .expirationDate, .cardCVV, .cardNumber:
             return .numberPad
-        case .cardholderName,
-             .personFullName:
-            return .namePhonePad
         case .addressLine,
+             .cardholderName,
+             .personFullName,
              .city,
              .state,
              .postcode:
@@ -307,11 +324,6 @@ extension TextFieldType {
             return .none
         }
     }
-}
-
-// MARK: - Secure
-
-extension TextFieldType {
 
     /// Returns `true` if the text-field's input has to be secure
     var isSecure: Bool {
@@ -335,14 +347,9 @@ extension TextFieldType {
             return true
         }
     }
-}
 
-extension TextFieldType {
     /// Returns `UITextAutocorrectionType`
     var autocorrectionType: UITextAutocorrectionType { .no }
-}
-
-extension TextFieldType {
     
     /// The `UITextContentType` of the textField which can
     /// drive auto-fill behavior.
@@ -399,32 +406,31 @@ extension TextFieldType {
 private extension Int {
     typealias Index = LocalizationConstants.VerifyBackupScreen.Index
     var placeholder: String {
-        let word = LocalizationConstants.TextField.Placeholder.word
         switch self {
         case 0:
-            return "\(Index.first) \(word)"
+            return Index.first
         case 1:
-            return "\(Index.second) \(word)"
+            return Index.second
         case 2:
-            return "\(Index.third) \(word)"
+            return Index.third
         case 3:
-            return "\(Index.fourth) \(word)"
+            return Index.fourth
         case 4:
-            return "\(Index.fifth) \(word)"
+            return Index.fifth
         case 5:
-            return "\(Index.sixth) \(word)"
+            return Index.sixth
         case 6:
-            return "\(Index.seventh) \(word)"
+            return Index.seventh
         case 7:
-            return "\(Index.eigth) \(word)"
+            return Index.eighth
         case 8:
-            return "\(Index.ninth) \(word)"
+            return Index.ninth
         case 9:
-            return "\(Index.tenth) \(word)"
+            return Index.tenth
         case 10:
-            return "\(Index.eleventh) \(word)"
+            return Index.eleventh
         case 11:
-            return "\(Index.twelfth) \(word)"
+            return Index.twelfth
         default:
             return ""
         }

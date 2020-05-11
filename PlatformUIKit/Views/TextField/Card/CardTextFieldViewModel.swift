@@ -48,13 +48,11 @@ public final class CardTextFieldViewModel: TextFieldViewModel {
     // MARK: - Setup
     
     public init(validator: CardNumberValidator,
-                hintDisplayType: HintDisplayType = .constant,
                 messageRecorder: MessageRecording) {
         cardNumberValidator = validator
         super.init(
             with: .cardNumber,
             returnKeyType: .default,
-            hintDisplayType: hintDisplayType,
             validator: validator,
             formatter: TextFormatterFactory.cardNumber,
             messageRecorder: messageRecorder
@@ -63,7 +61,7 @@ public final class CardTextFieldViewModel: TextFieldViewModel {
         cardThumbnailBadgeImageViewModel
             .map { viewModel in
                 if let viewModel = viewModel {
-                    return .badge(viewModel)
+                    return .badgeImageView(viewModel)
                 } else {
                     return .empty
                 }

@@ -342,7 +342,7 @@ extension AnnouncementPresenter {
     /// Computes Swap card announcement
     private func swap(using data: AnnouncementPreliminaryData,
                       reappearanceTimeInterval: TimeInterval) -> Announcement {
-        return SwapAnnouncement(
+        SwapAnnouncement(
             hasTrades: data.hasTrades,
             reappearanceTimeInterval: reappearanceTimeInterval,
             dismiss: hideAnnouncement,
@@ -357,7 +357,7 @@ extension AnnouncementPresenter {
             shouldBackupFunds: shouldBackupFunds,
             reappearanceTimeInterval: reappearanceTimeInterval,
             dismiss: hideAnnouncement,
-            action: appCoordinator.showBackupView
+            action: appCoordinator.startBackupFlow
         )
     }
 

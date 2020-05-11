@@ -21,9 +21,9 @@ final class RegisterWalletViewController: BaseScreenViewController {
     @IBOutlet private var confirmPasswordTextField: PasswordTextFieldView!
     @IBOutlet private var termsOfUseTextView: InteractableTextView!
     @IBOutlet private var buttonView: ButtonView!
-
-    private var keyboardInteractionController: KeyboardInteractionController!
     
+    private var keyboardInteractionController: KeyboardInteractionController!
+
     // MARK: - Injected
     
     private let presenter: RegisterWalletScreenPresenter
@@ -49,7 +49,10 @@ final class RegisterWalletViewController: BaseScreenViewController {
         super.viewDidLoad()
         set(barStyle: presenter.navBarStyle, leadingButtonStyle: .back)
         titleViewStyle = presenter.titleStyle
-        keyboardInteractionController = KeyboardInteractionController(in: self)
+        keyboardInteractionController = KeyboardInteractionController(
+            in: self,
+            disablesToolBar: DevicePresenter.type == .superCompact
+        )
         emailTextField.setup(
             viewModel: presenter.emailTextFieldViewModel,
             keyboardInteractionController: keyboardInteractionController
@@ -63,6 +66,13 @@ final class RegisterWalletViewController: BaseScreenViewController {
             keyboardInteractionController: keyboardInteractionController
         )
         
+        if DevicePresenter.type == .superCompact {
+            let topInset: CGFloat = 8
+            emailTextField.topInset = topInset
+            passwordTextField.topInset = topInset
+            confirmPasswordTextField.topInset = topInset
+        }
+
         // Setup button
         buttonView.viewModel = presenter.buttonViewModel
         buttonView.viewModel.tapRelay
@@ -71,10 +81,8 @@ final class RegisterWalletViewController: BaseScreenViewController {
             .disposed(by: disposeBag)
 
         // Setup the terms text view
-        termsOfUseTextView.layoutToSuperview(axis: .horizontal, offset: 16)
-        NSLayoutConstraint.activate([
-            termsOfUseTextView.topAnchor.constraint(equalTo: stackView.bottomAnchor)
-        ])
+        termsOfUseTextView.layoutToSuperview(axis: .horizontal, offset: 24)
+        termsOfUseTextView.layout(edge: .top, to: .bottom, of: stackView, offset: 16)
         termsOfUseTextView.viewModel = presenter.termsOfUseTextViewModel
         view.layoutIfNeeded()
         termsOfUseTextView.setupHeight()

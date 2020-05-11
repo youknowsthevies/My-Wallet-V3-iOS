@@ -48,7 +48,10 @@ final class UpdateMobileScreenViewController: BaseScreenViewController {
         titleViewStyle = presenter.titleView
         keyboardInteractionController = KeyboardInteractionController(in: self)
         descriptionLabel.content = presenter.descriptionLabel
-        mobileNumberTextFieldView.setup(viewModel: presenter.textField, keyboardInteractionController: keyboardInteractionController)
+        mobileNumberTextFieldView.setup(
+            viewModel: presenter.textField,
+            keyboardInteractionController: keyboardInteractionController
+        )
         continueButtonView.viewModel = presenter.continueButtonViewModel
         updateButtonView.viewModel = presenter.updateButtonViewModel
         disable2FALabel.content = presenter.disable2FALabel

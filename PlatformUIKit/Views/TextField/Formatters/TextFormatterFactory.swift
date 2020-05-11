@@ -26,6 +26,6 @@ public final class TextFormatterFactory {
     }
     
     public static var mobile: TextFormatting {
-        return MobileNumberTextFormatter()
+        MobileNumberTextFormatter()
     }
 }

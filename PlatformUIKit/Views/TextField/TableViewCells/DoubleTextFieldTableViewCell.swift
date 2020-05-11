@@ -10,6 +10,14 @@ public final class DoubleTextFieldTableViewCell: UITableViewCell {
     
     // MARK: - Types
     
+    // MARK: - Properties
+    
+    public var bottomInset: CGFloat = 0 {
+        didSet {
+            bottomInsetConstraint.constant = -bottomInset
+        }
+    }
+    
     public struct ViewModel {
         let leading: TextFieldViewModel
         let trailing: TextFieldViewModel
@@ -26,6 +34,8 @@ public final class DoubleTextFieldTableViewCell: UITableViewCell {
     private let leadingTextFieldView = TextFieldView()
     private let trailingTextFieldView = TextFieldView()
 
+    private var bottomInsetConstraint: NSLayoutConstraint!
+    
     // MARK: - Lifecycle
     
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -34,7 +44,8 @@ public final class DoubleTextFieldTableViewCell: UITableViewCell {
         contentView.addSubview(stackView)
 
         stackView.layoutToSuperview(axis: .horizontal, offset: 24)
-        stackView.layoutToSuperview(axis: .vertical)
+        let verticalConstraints = stackView.layoutToSuperview(axis: .vertical)
+        bottomInsetConstraint = verticalConstraints?.trailing
 
         stackView.addArrangedSubview(leadingTextFieldView)
         stackView.addArrangedSubview(trailingTextFieldView)
@@ -42,8 +53,8 @@ public final class DoubleTextFieldTableViewCell: UITableViewCell {
         stackView.distribution = .fillEqually
         stackView.spacing = 32
         
-        leadingTextFieldView.layout(dimension: .height, to: 48, priority: .defaultLow)
-        trailingTextFieldView.layout(dimension: .height, to: 48, priority: .defaultLow)
+        leadingTextFieldView.layout(dimension: .height, to: 80, priority: .defaultLow)
+        trailingTextFieldView.layout(dimension: .height, to: 80, priority: .defaultLow)
     }
     
     public required init?(coder: NSCoder) {
@@ -51,14 +62,17 @@ public final class DoubleTextFieldTableViewCell: UITableViewCell {
     }
     
     public func setup(viewModel: ViewModel,
-                      keyboardInteractionController: KeyboardInteractionController) {
+                      keyboardInteractionController: KeyboardInteractionController,
+                      scrollView: UIScrollView) {
         leadingTextFieldView.setup(
             viewModel: viewModel.leading,
-            keyboardInteractionController: keyboardInteractionController
+            keyboardInteractionController: keyboardInteractionController,
+            scrollView: scrollView
         )
         trailingTextFieldView.setup(
             viewModel: viewModel.trailing,
-            keyboardInteractionController: keyboardInteractionController
+            keyboardInteractionController: keyboardInteractionController,
+            scrollView: scrollView
         )
     }
 }

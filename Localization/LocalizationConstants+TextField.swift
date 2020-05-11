@@ -41,6 +41,16 @@ public extension LocalizationConstants {
             )
         }
         public struct Placeholder {
+            public static let cvv = NSLocalizedString(
+                "123",
+                comment: "CVV placeholder"
+            )
+            public static let expirationDate = NSLocalizedString(
+                "MM/YY",
+                comment: "Expiration date placeholder"
+            )
+        }
+        public struct Title {
             public struct Card {
                 public static let name = NSLocalizedString(
                     "Name on Card",
@@ -134,28 +144,27 @@ public extension LocalizationConstants {
         
         public struct Gesture {
             public static let passwordMismatch = NSLocalizedString(
-                "Password do not match",
+                "Passwords Do Not Match",
                 comment: "Error label when two passwords do not match"
             )
             public static let invalidEmail = NSLocalizedString(
-                "Email address is not valid",
+                "Invalid Email Address",
                 comment: "Error label when email address is not valid"
             )
-            public static let invalidMobile = NSLocalizedString("Invalid mobile number", comment: "Error label when the mobile number is incorrect")
-            public static let invalidRecoveryPhrase = NSLocalizedString(
-                "Invalid recovery phrase. Please try again,",
-                comment: "Error label when the recovery phrase is incorrect"
+            public static let invalidMobile = NSLocalizedString(
+                "Invalid Mobile Number",
+                comment: "Error label when the mobile number is incorrect"
             )
             public static let invalidCardNumber = NSLocalizedString(
-                "Invalid card number",
+                "Invalid Card Number",
                 comment: "Error label when the card number is invalid"
             )
             public static let unsupportedCardType = NSLocalizedString(
-                "Card not supported",
+                "Card Not Supported",
                 comment: "Error label when the card type is not supported"
             )
             public static let invalidExpirationDate = NSLocalizedString(
-                "Invalid expiry date",
+                "Invalid Expiry Date",
                 comment: "Error label when the expiry date is invalid"
             )
             public static let invalidCVV = NSLocalizedString(
@@ -163,11 +172,11 @@ public extension LocalizationConstants {
                 comment: "Error label when the CVV is invalid"
             )
             public static let invalidCardholderName = NSLocalizedString(
-                "Invalid cardholder name",
+                "Invalid Cardholder Name",
                 comment: "Error label when the name is invalid"
             )
             public static let walletId = NSLocalizedString(
-                "Wallet id is not valid",
+                "Invalid Wallet Identifier",
                 comment: "Error label when wallet id is not valid"
             )
             public static let invalidCode = NSLocalizedString(
@@ -177,6 +186,10 @@ public extension LocalizationConstants {
             public static let recoveryMismatch = NSLocalizedString(
                 "The word does not match your Recovery Phrase",
                 comment: "Error label when the word does not match the word in the mnemonic."
+            )
+            public static let invalidRecoveryPhrase = NSLocalizedString(
+                "Invalid recovery phrase. Please try again,",
+                comment: "Error label when the recovery phrase is incorrect"
             )
         }
     }

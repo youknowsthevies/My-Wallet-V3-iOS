@@ -56,11 +56,13 @@ public struct ButtonViewModel {
             contentInsetRelay.accept(newValue.contentInset)
         }
         get {
-            return Theme(backgroundColor: backgroundColorRelay.value,
-                         contentColor: contentColorRelay.value,
-                         imageName: imageName.value,
-                         text: textRelay.value,
-                         contentInset: contentInsetRelay.value)
+            Theme(
+                backgroundColor: backgroundColorRelay.value,
+                contentColor: contentColorRelay.value,
+                imageName: imageName.value,
+                text: textRelay.value,
+                contentInset: contentInsetRelay.value
+            )
         }
     }
     
@@ -78,7 +80,7 @@ public struct ButtonViewModel {
 
     /// Is the button enabled
     public var isHidden: Driver<Bool> {
-        return isHiddenRelay.asDriver()
+        isHiddenRelay.asDriver()
     }
 
     /// Observe the button enabled state
@@ -86,18 +88,18 @@ public struct ButtonViewModel {
     
     /// Is the button enabled
     public var isEnabled: Driver<Bool> {
-        return isEnabledRelay.asDriver()
+        isEnabledRelay.asDriver()
     }
 
     /// Observe the button Content Inset
     public var contentInsetRelay = BehaviorRelay<UIEdgeInsets>(value: .zero)
     public var contentInset: Driver<UIEdgeInsets> {
-        return contentInsetRelay.asDriver()
+        contentInsetRelay.asDriver()
     }
 
     /// Retruns the opacity of the view
     public var alpha: Driver<CGFloat> {
-        return Driver
+        Driver
             .combineLatest(
                 isEnabled.asDriver(),
                 isHidden.asDriver()
@@ -119,7 +121,7 @@ public struct ButtonViewModel {
     
     /// The background color of the button
     public var backgroundColor: Driver<UIColor> {
-        return backgroundColorRelay.asDriver()
+        backgroundColorRelay.asDriver()
     }
     
     /// The content color relay
@@ -127,7 +129,7 @@ public struct ButtonViewModel {
     
     /// The content color of the button, that includes image's and label's
     public var contentColor: Driver<UIColor> {
-        return contentColorRelay.asDriver()
+        contentColorRelay.asDriver()
     }
     
     /// Border color relay
@@ -135,7 +137,7 @@ public struct ButtonViewModel {
     
     /// The border color around the button
     public var borderColor: Driver<UIColor> {
-        return borderColorRelay.asDriver()
+        borderColorRelay.asDriver()
     }
     
     /// The text relay
@@ -143,7 +145,7 @@ public struct ButtonViewModel {
     
     /// Text to be displayed on the button
     public var text: Driver<String> {
-        return textRelay.asDriver()
+        textRelay.asDriver()
     }
     
     /// Name for the image
@@ -154,7 +156,7 @@ public struct ButtonViewModel {
     
     /// The image corresponding to `imageName`, rendered as template
     public var image: Driver<UIImage?> {
-        return imageName.asDriver()
+        imageName.asDriver()
             .map { name in
                 if let name = name {
                     return UIImage(named: name)!.withRenderingMode(.alwaysTemplate)
@@ -165,7 +167,7 @@ public struct ButtonViewModel {
     
     /// Streams `true` if the view model contains an image
     public var containsImage: Observable<Bool> {
-        return imageName.asObservable()
+        imageName.asObservable()
             .map { $0 != nil }
     }
     

@@ -274,10 +274,10 @@ final class BillingAddressScreenPresenter {
     
     private func transformPresentationDataIntoViewModels(_ data: PresentationData) -> [TextFieldType: TextFieldViewModel] {
                 
-        func viewModel(by type: TextFieldType) -> TextFieldViewModel {
+        func viewModel(by type: TextFieldType, returnKeyType: UIReturnKeyType) -> TextFieldViewModel {
             TextFieldViewModel(
                 with: type,
-                hintDisplayType: .constant,
+                returnKeyType: returnKeyType,
                 validator: TextValidationFactory.General.notEmpty,
                 messageRecorder: CrashlyticsRecorder()
             )
@@ -285,11 +285,11 @@ final class BillingAddressScreenPresenter {
         
         var viewModelByType: [TextFieldType: TextFieldViewModel] = [:]
         var previousTextFieldViewModel: TextFieldViewModel?
-        for cell in data.cellTypes {
+        for (index, cell) in data.cellTypes.enumerated() {
             switch cell {
             case .doubleTextField(let leadingType, let trailingType):
-                let leading = viewModel(by: leadingType)
-                let trailing = viewModel(by: trailingType)
+                let leading = viewModel(by: leadingType, returnKeyType: .next)
+                let trailing = viewModel(by: trailingType, returnKeyType: .done)
                 
                 viewModelByType[leadingType] = leading
                 viewModelByType[trailingType] = trailing
@@ -299,7 +299,10 @@ final class BillingAddressScreenPresenter {
                 
                 previousTextFieldViewModel = trailing
             case .textField(let type):
-                let textFieldViewModel = viewModel(by: type)
+                let textFieldViewModel = viewModel(
+                    by: type,
+                    returnKeyType: index == data.cellTypes.count - 1 ? .done : .next
+                )
                 
                 viewModelByType[type] = textFieldViewModel
                 

@@ -17,7 +17,7 @@ extension LocalizationConstants {
             comment: "Add Card Screen: privacy notice label"
         )
         public static let button = NSLocalizedString(
-            "Add Now",
+            "Next",
             comment: "Add Card Screen: add card button label"
         )
     }
@@ -27,7 +27,7 @@ extension LocalizationConstants {
             comment: "Billing Address Screen: screen title"
         )
         public static let button = NSLocalizedString(
-            "Next",
+            "Save My Card",
             comment: "Billing Address Screen: add card button label"
         )
         public static let linkingYourCard = NSLocalizedString(

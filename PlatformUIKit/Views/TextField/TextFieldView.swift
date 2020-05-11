@@ -6,34 +6,55 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import RxSwift
 import RxRelay
 import RxCocoa
+import PlatformKit
 
 /// A styled text field component with validation and password expression scoring
 public class TextFieldView: UIView {
 
+    /// Determines the top insert: title label to superview
+    public var topInset: CGFloat = 16 {
+        didSet {
+            topInsetConstraint.constant = topInset
+            layoutIfNeeded()
+        }
+    }
+    
+    public var bottomInset: CGFloat = 0 {
+        didSet {
+            bottomInsetConstraint.constant = bottomInset
+            layoutIfNeeded()
+        }
+    }
+    
     /// Equals to the expression: `textField.text ?? ""`
     var text: String {
-        return textField.text ?? ""
+        textField.text ?? ""
     }
     
     /// Returns a boolean indicating whether the field is currently focused
     var isTextFieldFocused: Bool {
-        return textField.isFirstResponder
+        textField.isFirstResponder
     }
     
     // MARK: - UI Properties
     
     @IBOutlet var textField: UITextField!
-    @IBOutlet private(set) var separatorView: UIView!
-    @IBOutlet fileprivate var gestureMessageLabel: UILabel!
+    @IBOutlet private(set) var textFieldBackgroundView: UIView!
+    @IBOutlet fileprivate var titleLabel: UILabel!
     @IBOutlet private(set) var accessoryView: UIView!
     @IBOutlet private(set) var accessoryViewWidthConstraint: NSLayoutConstraint!
     
-    private weak var hintHeightConstraint: NSLayoutConstraint!
     private var keyboardInteractionController: KeyboardInteractionController!
+    
+    @IBOutlet private var topInsetConstraint: NSLayoutConstraint!
+    @IBOutlet private var bottomInsetConstraint: NSLayoutConstraint!
+
+    /// Scroll view container.
+    /// To being the text field into focus when it becomes first responder
+    private weak var scrollView: UIScrollView?
     
     // Mutable since we would like to make the text field
     // compatible with constructs like table/collection views
@@ -60,12 +81,11 @@ public class TextFieldView: UIView {
     /// Should be called once upon instantiation
     func setup() {
         fromNib(named: TextFieldView.objectName)
-        separatorView.backgroundColor = .lightBorder
         textField.textAlignment = .left
-        gestureMessageLabel.font = .main(.medium, 12)
-        gestureMessageLabel.textColor = .destructive
-        gestureMessageLabel.verticalContentHuggingPriority = .required
-        gestureMessageLabel.verticalContentCompressionResistancePriority = .required
+        titleLabel.font = .main(.medium, 12)
+        titleLabel.textColor = .destructive
+        titleLabel.verticalContentHuggingPriority = .required
+        titleLabel.verticalContentCompressionResistancePriority = .required
         
         /// Cleanup the sensitive data if necessary
         NotificationCenter.when(UIApplication.didEnterBackgroundNotification) { [weak textField, weak viewModel] _ in
@@ -82,19 +102,13 @@ public class TextFieldView: UIView {
     
     /// Must be called by specialized subclasses
     public func setup(viewModel: TextFieldViewModel,
-                      keyboardInteractionController: KeyboardInteractionController) {
+                      keyboardInteractionController: KeyboardInteractionController,
+                      scrollView: UIScrollView? = nil) {
         disposeBag = DisposeBag()
+        self.scrollView = scrollView
         self.keyboardInteractionController = keyboardInteractionController
         self.viewModel = viewModel
-        
-        if let hintHeightConstraint = hintHeightConstraint {
-            removeConstraint(hintHeightConstraint)
-        }
-        
-        if viewModel.hintDisplayType == .constant {
-            hintHeightConstraint = gestureMessageLabel.layout(dimension: .height, to: 16)
-        }
-        
+                        
         /// Set the accessibility property
         textField.accessibility = viewModel.accessibility
         
@@ -102,7 +116,14 @@ public class TextFieldView: UIView {
         textField.inputAccessoryView = keyboardInteractionController.toolbar
         textField.autocorrectionType = viewModel.type.autocorrectionType
         textField.autocapitalizationType = viewModel.type.autocapitalizationType
-        textField.font = viewModel.font
+        textField.font = viewModel.textFont
+        textField.placeholder = nil
+        titleLabel.font = viewModel.titleFont
+        
+        textFieldBackgroundView.clipsToBounds = true
+        textFieldBackgroundView.backgroundColor = .clear
+        textFieldBackgroundView.layer.cornerRadius = 8
+        textFieldBackgroundView.layer.borderWidth = 1
         
         /// Bind `accessoryContentType`
         viewModel.accessoryContentType
@@ -123,7 +144,7 @@ public class TextFieldView: UIView {
         viewModel.keyboardType
             .drive(textField.rx.keyboardType)
             .disposed(by: disposeBag)
-        
+                
         // Bind `placeholder`
         viewModel.placeholder
             .drive(textField.rx.placeholderAttributedText)
@@ -141,9 +162,8 @@ public class TextFieldView: UIView {
             .bind(to: textField.rx.text)
             .disposed(by: disposeBag)
         
-        viewModel.gestureMessage
-            .map { $0.isVisible ? $0.message : "" }
-            .drive(rx.gestureMessage)
+        viewModel.mode
+            .drive(rx.mode)
             .disposed(by: disposeBag)
 
         viewModel.isEnabled
@@ -160,10 +180,11 @@ public class TextFieldView: UIView {
         }
         
         viewModel.focus
-            .emit(onNext: { [weak self] shouldGainFocus in
+            .map { $0.isOn }
+            .drive(onNext: { [weak self] shouldGainFocus in
                 guard let self = self else { return }
                 if shouldGainFocus {
-                    self.textField.becomeFirstResponder()
+                    self.textFieldGainedFocus()
                 } else {
                     self.textField.resignFirstResponder()
                 }
@@ -171,13 +192,24 @@ public class TextFieldView: UIView {
             .disposed(by: disposeBag)
     }
     
-    fileprivate func showGesture(message: String) {
+    private func textFieldGainedFocus() {
+        textField.becomeFirstResponder()
+        if let scrollView = scrollView {
+            let frameInScrollView = convert(frame, to: scrollView)
+            scrollView.scrollRectToVisible(frameInScrollView, animated: true)
+        }
+    }
+    
+    fileprivate func set(mode: TextFieldViewModel.Mode) {
         UIView.transition(
-            with: gestureMessageLabel,
+            with: titleLabel,
             duration: 0.15,
             options: [.beginFromCurrentState, .transitionCrossDissolve],
             animations: {
-                self.gestureMessageLabel.text = message
+                self.titleLabel.text = mode.title
+                self.titleLabel.textColor = mode.titleColor
+                self.textFieldBackgroundView.layer.borderColor = mode.borderColor.cgColor
+                self.textField.tintColor = mode.cursorColor
             },
             completion: nil)
     }
@@ -190,7 +222,7 @@ public class TextFieldView: UIView {
         switch accessoryContentType {
         case .empty:
             resetAccessoryView()
-        case .badge(let viewModel):
+        case .badgeImageView(let viewModel):
             if let badgeImageView = accessoryView.subviews.first as? BadgeImageView {
                 badgeImageView.viewModel = viewModel
             } else {
@@ -202,6 +234,18 @@ public class TextFieldView: UIView {
                 badgeImageView.layoutToSuperview(.trailing, offset: -16)
                 badgeImageView.layoutToSuperview(axis: .vertical)
             }
+        case .badgeLabel(let viewModel):
+            if let badgeView = accessoryView.subviews.first as? BadgeView {
+                badgeView.viewModel = viewModel
+            } else {
+                resetAccessoryView()
+                let badgeView = BadgeView()
+                badgeView.viewModel = viewModel
+                accessoryView.addSubview(badgeView)
+                badgeView.layoutToSuperview(.leading)
+                badgeView.layoutToSuperview(.trailing, offset: -16)
+                badgeView.layoutToSuperview(axis: .vertical)
+            }
         }
     }
 }
@@ -211,8 +255,7 @@ public class TextFieldView: UIView {
 extension TextFieldView: UITextFieldDelegate {
     
     public func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        viewModel.becameFirstResponderRelay.accept(())
-        return true
+        viewModel.textFieldShouldBeginEditing()
     }
     
     public func textField(_ textField: UITextField,
@@ -232,8 +275,7 @@ extension TextFieldView: UITextFieldDelegate {
     }
     
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        viewModel.focusRelay.accept(false)
-        return true
+        viewModel.textFieldShouldReturn()
     }
     
     public func textFieldDidEndEditing(_ textField: UITextField) {
@@ -250,11 +292,11 @@ extension Reactive where Base: TextFieldView {
             view.set(accessoryContentType: contentType)
         }
     }
-    
+        
     /// Binder for the error handling
-    fileprivate var gestureMessage: Binder<String> {
-        return Binder(base) { view, message in
-            view.showGesture(message: message)
+    fileprivate var mode: Binder<TextFieldViewModel.Mode> {
+        Binder(base) { view, mode in
+            view.set(mode: mode)
         }
     }
 }

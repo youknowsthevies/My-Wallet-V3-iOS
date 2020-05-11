@@ -90,7 +90,7 @@ public struct MnemonicTextViewViewModel {
     let accessibility: Accessibility = .init(id: .value(Accessibility.Identifier.MnemonicTextView.recoveryPhrase))
     
     let attributedPlaceholder = NSAttributedString(
-        string: LocalizationConstants.TextField.Placeholder.recoveryPhrase,
+        string: LocalizationConstants.TextField.Title.recoveryPhrase,
         attributes: [.font: UIFont.main(.medium, 16.0)]
     )
     

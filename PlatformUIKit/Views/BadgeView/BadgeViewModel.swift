@@ -137,3 +137,10 @@ extension BadgeViewModel {
     }
 }
 
+// MARK: - Equatable
+
+extension BadgeViewModel: Equatable {
+    public static func == (lhs: BadgeViewModel, rhs: BadgeViewModel) -> Bool {
+        lhs.textRelay.value == rhs.textRelay.value
+    }
+}

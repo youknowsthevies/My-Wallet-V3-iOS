@@ -87,7 +87,7 @@ public struct SimpleBuyOrderPayload {
                 enum PaymentState: String, Decodable {
                     case waitingFor3DS = "WAITING_FOR_3DS_RESPONSE"
                     
-                    // TODO: Daniel - Replace with the real value
+                    // TODO: Remove treatment or wait for BE to implement on another partner
                     case confirmed3DS = "3DS_CONFIRMED"
                 }
                 

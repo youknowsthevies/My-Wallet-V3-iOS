@@ -42,7 +42,8 @@ import PlatformKit
     let airdropRouter: AirdropRouterAPI
     private var settingsRouterAPI: SettingsRouterAPI?
     private var simpleBuyRouter: SimpleBuyRouterAPI!
-
+    private var backupRouter: BackupRouterAPI?
+    
     // MARK: - UIViewController Properties
     
     @objc var slidingViewController: ECSlidingViewController!
@@ -158,15 +159,6 @@ import PlatformKit
         self.tabControllerManager = tabControllerManager
     }
 
-    @objc func showBackupView() {
-        let storyboard = UIStoryboard(name: "Backup", bundle: nil)
-        let backupController = storyboard.instantiateViewController(withIdentifier: "BackupNavigation") as! BackupNavigationViewController
-        backupController.wallet = walletManager.wallet
-        backupController.modalPresentationStyle = .fullScreen
-        backupController.modalTransitionStyle = .coverVertical
-        UIApplication.shared.keyWindow?.rootViewController?.topMostViewController?.present(backupController, animated: true)
-    }
-
     func showSettingsView() {
         settingsRouterAPI = SettingsRouter(currencyRouting: self, tabSwapping: self)
         settingsRouterAPI?.presentSettings()
@@ -241,7 +233,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         case .upgrade:
             handleUpgrade()
         case .backup:
-            handleBackup()
+            startBackupFlow()
         case .accountsAndAddresses:
             handleAccountsAndAddresses()
         case .settings:
@@ -275,8 +267,9 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         AppCoordinator.shared.showHdUpgradeView()
     }
 
-    private func handleBackup() {
-        showBackupView()
+    func startBackupFlow() {
+        backupRouter = BackupFundsCustodialRouter()
+        backupRouter?.start()
     }
 
     private func handleAccountsAndAddresses() {

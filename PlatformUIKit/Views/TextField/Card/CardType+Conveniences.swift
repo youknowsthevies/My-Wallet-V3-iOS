@@ -39,7 +39,7 @@ extension CardType {
         case .diners:
             return [4, 6, 4]
         case .unknown:
-            return []
+            return [CardType.maxPossibleLength]
         }
     }
 }

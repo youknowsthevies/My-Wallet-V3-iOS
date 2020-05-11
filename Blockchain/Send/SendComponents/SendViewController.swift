@@ -213,14 +213,14 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
                 for: indexPath
             )
             cell.presenter = presenter.destinationPresenter
-            cell.prepare(using: keyboardInteractionController.toolbar)
+            cell.prepare(using: keyboardInteractionController.toolbar!)
             return cell
         case CellIndex.amount:
             let cell: SendAmountTableViewCell = tableView.dequeue(
                 SendAmountTableViewCell.identifier, for: indexPath
             )
             cell.presenter = presenter.amountPresenter
-            cell.prepare(using: keyboardInteractionController.toolbar)
+            cell.prepare(using: keyboardInteractionController.toolbar!)
             return cell
         case CellIndex.fee:
             let cell: SendFeeTableViewCell = tableView.dequeue(

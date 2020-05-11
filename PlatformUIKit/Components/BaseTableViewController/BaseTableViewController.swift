@@ -12,9 +12,11 @@ open class BaseTableViewController: BaseScreenViewController {
     
     @IBOutlet private var buttonStackView: UIStackView!
     @IBOutlet public var tableView: SelfSizingTableView!
-    
+    @IBOutlet private var scrollView: UIScrollView!
+
     // MARK: - Public UI Constraints
     
+    @IBOutlet public var tableViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet public var footerHeightConstraint: NSLayoutConstraint!
     
     // MARK: - Setup
@@ -23,14 +25,19 @@ open class BaseTableViewController: BaseScreenViewController {
         super.init(nibName: BaseTableViewController.objectName, bundle: BaseTableViewController.bundle)
     }
 
+    public required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    open override func viewDidLoad() {
+        super.viewDidLoad()
+        scrollView.keyboardDismissMode = .interactive
+    }
+    
     public func addButton(with viewModel: ButtonViewModel) {
         let buttonView = ButtonView()
         buttonView.viewModel = viewModel
         buttonStackView.addArrangedSubview(buttonView)
         buttonView.layout(dimension: .height, to: 48)
-    }
-    
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
     }
 }

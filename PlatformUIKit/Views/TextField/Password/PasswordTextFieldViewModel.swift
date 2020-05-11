@@ -115,5 +115,21 @@ public final class PasswordTextFieldViewModel: TextFieldViewModel {
             .map { Score(score: $0) }
             .bind(to: scoreRelay)
             .disposed(by: disposeBag)
+        
+        // Bind score title to score label
+        scoreRelay
+            .map {
+                let viewModel = BadgeViewModel(
+                    font: .main(.medium, 14),
+                    cornerRadius: 8,
+                    accessibility: .none
+                )
+                viewModel.textRelay.accept($0.title)
+                viewModel.contentColorRelay.accept($0.color)
+                return viewModel
+            }
+            .map { .badgeLabel($0) }
+            .bind(to: accessoryContentTypeRelay)
+            .disposed(by: disposeBag)
     }
 }

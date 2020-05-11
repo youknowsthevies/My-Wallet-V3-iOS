@@ -10,6 +10,15 @@ public final class TextFieldTableViewCell: UITableViewCell {
     
     // MARK: - Properties
     
+    public var bottomInset: CGFloat {
+        set {
+            textFieldView.bottomInset = newValue
+        }
+        get {
+            textFieldView.bottomInset
+        }
+    }
+    
     private let textFieldView = TextFieldView()
     
     // MARK: - Lifecycle
@@ -20,7 +29,7 @@ public final class TextFieldTableViewCell: UITableViewCell {
         contentView.addSubview(textFieldView)
         textFieldView.layoutToSuperview(axis: .horizontal, offset: 24)
         textFieldView.layoutToSuperview(axis: .vertical)
-        textFieldView.layout(dimension: .height, to: 48, priority: .defaultLow)
+        textFieldView.layout(dimension: .height, to: 80, priority: .defaultLow)
     }
     
     public required init?(coder: NSCoder) {
@@ -28,10 +37,12 @@ public final class TextFieldTableViewCell: UITableViewCell {
     }
         
     public func setup(viewModel: TextFieldViewModel,
-                      keyboardInteractionController: KeyboardInteractionController) {
+                      keyboardInteractionController: KeyboardInteractionController,
+                      scrollView: UIScrollView) {
         textFieldView.setup(
             viewModel: viewModel,
-            keyboardInteractionController: keyboardInteractionController
+            keyboardInteractionController: keyboardInteractionController,
+            scrollView: scrollView
         )
     }
 }

@@ -22,7 +22,6 @@ public final class PasswordTextFieldView: TextFieldView {
     
     // MARK: - Private Properties
     
-    private let scoreLabel = UILabel()
     private var disposeBag = DisposeBag()
     
     fileprivate var scoreViewTrailingConstraint: NSLayoutConstraint!
@@ -31,7 +30,6 @@ public final class PasswordTextFieldView: TextFieldView {
     
     override func setup() {
         super.setup()
-        setupScoreLabel()
         setupPasswordStrengthIndicatorView()
         
         /// *NOTE:* If `isSecureTextEntry` is set to `true`, and the text field regains focus.
@@ -48,37 +46,22 @@ public final class PasswordTextFieldView: TextFieldView {
         }
     }
     
-    private func setupScoreLabel() {
-        accessoryView.addSubview(scoreLabel)
-        scoreLabel.layoutToSuperview(axis: .horizontal)
-        scoreLabel.layoutToSuperview(axis: .vertical)
-        scoreLabel.font = .main(.medium, 16)
-    }
-    
     private func setupPasswordStrengthIndicatorView() {
-        addSubview(passwordStrengthIndicatorView)
-        passwordStrengthIndicatorView.layoutToSuperview(axis: .horizontal)
-        NSLayoutConstraint.activate([
-            passwordStrengthIndicatorView.heightAnchor.constraint(equalToConstant: 1),
-            passwordStrengthIndicatorView.bottomAnchor.constraint(equalTo: separatorView.bottomAnchor)
-        ])
+        textFieldBackgroundView.addSubview(passwordStrengthIndicatorView)
+        passwordStrengthIndicatorView.layoutToSuperview(.leading, .trailing)
+        passwordStrengthIndicatorView.layoutToSuperview(.bottom, offset: -1)
+        passwordStrengthIndicatorView.layout(dimension: .height, to: 1)
     }
     
     public func setup(viewModel: PasswordTextFieldViewModel,
                       keyboardInteractionController: KeyboardInteractionController) {
         super.setup(viewModel: viewModel, keyboardInteractionController: keyboardInteractionController)
         self.viewModel = viewModel
-        
-        // Bind score title to score label
-        self.viewModel.score
-            .map { $0.title }
-            .bind(to: scoreLabel.rx.text)
-            .disposed(by: disposeBag)
-        
+                
         // Bind score color to score label
         self.viewModel.score
             .map { $0.color }
-            .bind(to: scoreLabel.rx.textColor, passwordStrengthIndicatorView.rx.fillColor)
+            .bind(to: passwordStrengthIndicatorView.rx.fillColor)
             .disposed(by: disposeBag)
         
         // Bind score color to score label
