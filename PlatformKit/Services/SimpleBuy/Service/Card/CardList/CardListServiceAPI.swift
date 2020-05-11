@@ -17,5 +17,7 @@ public protocol CardListServiceAPI: class {
     func card(by identifier: String) -> Single<CardData?>
         
     func fetchCards() -> Single<[CardData]>
+    
+    func doesCardExist(number: String, expiryMonth: String, expiryYear: String) -> Single<Bool>
 }
 

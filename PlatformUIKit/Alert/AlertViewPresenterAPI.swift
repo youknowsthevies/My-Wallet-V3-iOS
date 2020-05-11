@@ -7,6 +7,6 @@
 //
 
 public protocol AlertViewPresenterAPI: AnyObject {
-    func notify(content: AlertViewContent)
+    func notify(content: AlertViewContent, in viewController: UIViewController?)
     func error(in viewController: UIViewController?, action: (() -> Void)?)
 }

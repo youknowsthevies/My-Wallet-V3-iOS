@@ -69,8 +69,8 @@ public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
         }
     }
         
-    public func notify(content: AlertViewContent) {
-        standardNotify(title: content.title, message: content.message)
+    public func notify(content: AlertViewContent, in viewController: UIViewController? = nil) {
+        standardNotify(title: content.title, message: content.message, in: viewController)
     }
     
     // MARK: - Error

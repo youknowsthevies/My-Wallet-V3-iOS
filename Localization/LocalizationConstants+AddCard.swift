@@ -20,6 +20,16 @@ extension LocalizationConstants {
             "Next",
             comment: "Add Card Screen: add card button label"
         )
+        public struct Alert {
+            public static let title = NSLocalizedString(
+                "Error",
+                comment: "Add Card Screen: Error alert title"
+            )
+            public static let message = NSLocalizedString(
+                "This card has already been saved",
+                comment: "Add Card Screen: This card has already been saved"
+            )
+        }
     }
     public struct BillingAddressScreen {
         public static let title = NSLocalizedString(

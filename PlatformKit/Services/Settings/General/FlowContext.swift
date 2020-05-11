@@ -14,5 +14,6 @@ public enum FlowContext: String {
     case exchangeSignup = "PIT_SIGNUP"
     case kyc = "KYC"
     case settings = "SETTINGS"
+    case simpleBuy = "SIMPLE_BUY"
     case walletCreation = "WALLET_CREATION"
 }

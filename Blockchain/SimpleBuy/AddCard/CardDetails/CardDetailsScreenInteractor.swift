@@ -18,10 +18,17 @@ final class CardDetailsScreenInteractor {
     }
     
     private let paymentMethodsService: SimpleBuyPaymentMethodsServiceAPI
+    private let cardListService: CardListServiceAPI
     
     // MARK: - Setup
     
-    init(paymentMethodsService: SimpleBuyPaymentMethodsServiceAPI) {
+    init(paymentMethodsService: SimpleBuyPaymentMethodsServiceAPI,
+         cardListService: CardListServiceAPI) {
         self.paymentMethodsService = paymentMethodsService
+        self.cardListService = cardListService
+    }
+    
+    func doesCardExist(number: String, expiryMonth: String, expiryYear: String) -> Single<Bool> {
+        cardListService.doesCardExist(number: number, expiryMonth: expiryMonth, expiryYear: expiryYear)
     }
 }

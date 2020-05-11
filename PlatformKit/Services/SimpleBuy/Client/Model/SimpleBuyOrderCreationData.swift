@@ -86,9 +86,7 @@ public struct SimpleBuyOrderPayload {
             struct EveryPay: Decodable {
                 enum PaymentState: String, Decodable {
                     case waitingFor3DS = "WAITING_FOR_3DS_RESPONSE"
-                    
-                    // TODO: Remove treatment or wait for BE to implement on another partner
-                    case confirmed3DS = "3DS_CONFIRMED"
+                    case confirmed3DS = "CONFIRMED_3DS"
                 }
                 
                 let paymentLink: String
@@ -117,5 +115,20 @@ public struct SimpleBuyOrderPayload {
         let fee: String?
         let paymentMethodId: String?
         let attributes: Attributes?
+    }
+}
+
+extension SimpleBuyOrderPayload.Response.Attributes.EveryPay {
+    
+    private enum CodingKeys: String, CodingKey {
+        case paymentLink
+        case paymentState
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        paymentLink = try container.decode(String.self, forKey: .paymentLink)
+        let paymentState = try container.decode(String.self, forKey: .paymentState)
+        self.paymentState = PaymentState(rawValue: paymentState) ?? .confirmed3DS
     }
 }

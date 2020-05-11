@@ -67,4 +67,17 @@ public final class CardListService: CardListServiceAPI {
             .take(1)
             .asSingle()
     }
+    
+    public func doesCardExist(number: String, expiryMonth: String, expiryYear: String) -> Single<Bool> {
+        cards.take(1)
+            .asSingle()
+            .map {
+                $0.contains {
+                    $0.number.suffix(4) == number.suffix(4) &&
+                    $0.month == expiryMonth &&
+                    $0.year.suffix(2) == expiryYear.suffix(2) &&
+                    $0.state != .blocked
+                }
+            }
+    }
 }

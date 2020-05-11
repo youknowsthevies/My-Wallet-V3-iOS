@@ -125,7 +125,8 @@ final class AddCardRouter: Router {
     
     private func showCardDetailsScreen() {
         let interactor = CardDetailsScreenInteractor(
-            paymentMethodsService: simpleBuyServiceProvider.paymentMethods
+            paymentMethodsService: simpleBuyServiceProvider.paymentMethods,
+            cardListService: cardServiceProvider.cardList
         )
         let presenter = CardDetailsScreenPresenter(
             stateService: stateService,

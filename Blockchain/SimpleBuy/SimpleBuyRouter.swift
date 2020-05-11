@@ -194,38 +194,34 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
             interactor: interactor
         )
         let viewController = SelectionScreenViewController(presenter: presenter)
+        if #available(iOS 13.0, *) {
+            viewController.isModalInPresentation = true
+        }
+        
         analyticsRecording.record(event: AnalyticsEvent.sbCurrencySelectScreen)
         
-        present(viewController: viewController)
-        
-        interactor.dismiss
-            .bind { [weak self] in
-                self?.stateService.previousRelay.accept(())
-            }
-            .disposed(by: disposeBag)        
+        let navigationController = UINavigationController(rootViewController: viewController)
+        navigationControllerAPI?.present(navigationController, animated: true, completion: nil)
         
         interactor.selectedIdOnDismissal
             .map { FiatCurrency(code: $0)! }
-            .flatMap(weak: self, { (self, currency) -> Single<(FiatCurrency, Bool)> in
+            .flatMap(weak: self, { (self, currency) -> Single<FiatCurrency> in
                 // TICKET: IOS-3144
-                UserInformationServiceProvider.default.settings
-                .update(
-                    currency: currency,
-                    context: .settings
-                )
-                .andThen(Single.zip(
-                    Single.just(currency),
-                    self.serviceProvider.flowAvailability.isFiatCurrencySupportedLocal(currency: currency)
-                ))
+                self.serviceProvider.settings
+                    .update(
+                        currency: currency,
+                        context: .simpleBuy
+                    )
+                    .andThen(Single.just(currency))
             })
             .observeOn(MainScheduler.instance)
             .subscribe(
-                onSuccess: { [weak self] value in
+                onSuccess: { [weak self] currency in
                     guard let self = self else { return }
                     /// TODO: Remove this and `fiatCurrencySelected` once `ReceiveBTC` and
                     /// `SendBTC` are replaced with Swift implementations.
                     NotificationCenter.default.post(name: .fiatCurrencySelected, object: nil)
-                    self.analyticsRecording.record(event: AnalyticsEvent.sbCurrencySelected(currencyCode: value.0.code))
+                    self.analyticsRecording.record(event: AnalyticsEvent.sbCurrencySelected(currencyCode: currency.code))
                     
                     self.stateService.previousRelay.accept(())
                 })
@@ -264,15 +260,15 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
             .map { FiatCurrency(code: $0)! }
             .flatMap(weak: self, { (self, currency) -> Single<(FiatCurrency, Bool)> in
                 // TICKET: IOS-3144
-                UserInformationServiceProvider.default.settings
-                .update(
-                    currency: currency,
-                    context: .settings
-                )
-                .andThen(Single.zip(
-                    Single.just(currency),
-                    self.serviceProvider.flowAvailability.isFiatCurrencySupportedLocal(currency: currency)
-                ))
+                self.serviceProvider.settings
+                    .update(
+                        currency: currency,
+                        context: .simpleBuy
+                    )
+                    .andThen(Single.zip(
+                        Single.just(currency),
+                        self.serviceProvider.flowAvailability.isFiatCurrencySupportedLocal(currency: currency)
+                    ))
             })
             .observeOn(MainScheduler.instance)
             .subscribe(
@@ -460,7 +456,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
             cryptoCurrencySelectionService: cryptoSelectionService,
             suggestedAmountsService: serviceProvider.suggestedAmounts
         )
-        /// TODO: Remove router injection - use `stateService` as replacement
+
         let presenter = BuyCryptoScreenPresenter(
             router: self,
             stateService: stateService,
@@ -479,6 +475,6 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     }
     
     private lazy var sheetPresenter: BottomSheetPresenting = {
-        return BottomSheetPresenting(ignoresBackroundTouches: true)
+        BottomSheetPresenting(ignoresBackroundTouches: true)
     }()
 }

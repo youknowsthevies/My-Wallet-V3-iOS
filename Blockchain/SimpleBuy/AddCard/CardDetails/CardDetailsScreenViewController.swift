@@ -15,14 +15,17 @@ final class CardDetailsScreenViewController: BaseTableViewController {
     
     private let keyboardObserver = KeyboardObserver()
     private let presenter: CardDetailsScreenPresenter
+    private let alertPresenter: AlertViewPresenterAPI
     
     private var keyboardInteractionController: KeyboardInteractionController!
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
-    init(presenter: CardDetailsScreenPresenter) {
+    init(presenter: CardDetailsScreenPresenter,
+         alertPresenter: AlertViewPresenterAPI = AlertViewPresenter.shared) {
         self.presenter = presenter
+        self.alertPresenter = alertPresenter
         super.init()
     }
     
@@ -43,6 +46,25 @@ final class CardDetailsScreenViewController: BaseTableViewController {
         )
         setupTableView()
         setupKeyboardObserver()
+        
+        presenter.error
+            .emit(onNext: { [weak self] error in
+                guard let self = self else { return }
+                switch error {
+                case .cardAlreadySaved:
+                    typealias LocalizedString = LocalizationConstants.CardDetailsScreen.Alert
+                    self.alertPresenter.notify(
+                        content: .init(
+                            title: LocalizedString.title,
+                            message: LocalizedString.message
+                        ),
+                        in: self
+                    )
+                case .generic:
+                    self.alertPresenter.error(in: self, action: nil)
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
     override func viewDidAppear(_ animated: Bool) {

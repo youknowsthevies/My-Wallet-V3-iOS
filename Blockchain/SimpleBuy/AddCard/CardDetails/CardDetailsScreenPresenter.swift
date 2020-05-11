@@ -17,6 +17,11 @@ final class CardDetailsScreenPresenter {
     
     // MARK: - Types
     
+    enum PresentationError: Error {
+        case generic
+        case cardAlreadySaved
+    }
+    
     enum CellType {
         case textField(TextFieldType)
         case doubleTextField(TextFieldType, TextFieldType)
@@ -63,6 +68,10 @@ final class CardDetailsScreenPresenter {
         isValidRelay.asDriver()
     }
     
+    var error: Signal<PresentationError> {
+        errorRelay.asSignal()
+    }
+    
     let title = LocalizedString.title
     
     let rowCount = 4
@@ -71,23 +80,23 @@ final class CardDetailsScreenPresenter {
     let noticeViewModel: NoticeViewModel
     let buttonViewModel: ButtonViewModel
     
+    private let errorRelay = PublishRelay<PresentationError>()
     private let dataRelay = BehaviorRelay<CardData?>(value: nil)
     private let isValidRelay = BehaviorRelay(value: false)
     private let stateReducer = FormPresentationStateReducer()
     private let disposeBag = DisposeBag()
 
+    private let interactor: CardDetailsScreenInteractor
     private let stateService: AddCardStateService
     private let eventRecorder: AnalyticsEventRecording
-    private let alertPreseter: AlertViewPresenter
     private let cardNumberValidator: CardNumberValidator
     
     // MARK: - Setup
     
     init(stateService: AddCardStateService,
          interactor: CardDetailsScreenInteractor,
-         alertPreseter: AlertViewPresenter = .shared,
          eventRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared) {
-        self.alertPreseter = alertPreseter
+        self.interactor = interactor
         self.stateService = stateService
         self.eventRecorder = eventRecorder
         
@@ -197,9 +206,23 @@ final class CardDetailsScreenPresenter {
         buttonViewModel.tapRelay
             .withLatestFrom(dataRelay)
             .compactMap { $0 }
-            .bind(weak: self) { (self, cardData) in
-                self.eventRecorder.record(event: AnalyticsEvent.sbCardInfoSet)
-                self.stateService.addBillingAddress(to: cardData)
+            .flatMap(weak: self) { (self, cardData) in
+                interactor
+                    .doesCardExist(
+                        number: cardData.number,
+                        expiryMonth: cardData.month,
+                        expiryYear: cardData.year
+                    )
+                    .map { (isExist: $0, data: cardData) }
+                    .asObservable()
+            }
+            .bind(weak: self) { (self, payload) in
+                if payload.isExist {
+                    self.errorRelay.accept(.cardAlreadySaved)
+                } else {
+                    self.eventRecorder.record(event: AnalyticsEvent.sbCardInfoSet)
+                    self.stateService.addBillingAddress(to: payload.data)
+                }
             }
             .disposed(by: disposeBag)
         
@@ -208,13 +231,13 @@ final class CardDetailsScreenPresenter {
                 onSuccess: { [weak cardNumberValidator] cardTypes in
                     cardNumberValidator?.supportedCardTypesRelay.accept(cardTypes)
                 },
-                onError: { [weak alertPreseter] error in
-                    alertPreseter?.error()
+                onError: { [weak errorRelay] _ in
+                    errorRelay?.accept(.generic)
                 }
             )
             .disposed(by: disposeBag)
     }
-    
+        
     func viewDidAppear() {
         eventRecorder.record(event: AnalyticsEvent.sbAddCardScreenShown)
     }

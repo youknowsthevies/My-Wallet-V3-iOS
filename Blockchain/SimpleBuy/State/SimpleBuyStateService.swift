@@ -280,7 +280,14 @@ final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
                     case .order(let details):
                         switch data.detailType.paymentMethod {
                         case .card:
-                            return .checkout(data)
+                            if details.is3DSConfirmedCardOrder {
+                                return .pendingOrderCompleted(
+                                    amount: details.cryptoValue,
+                                    orderId: details.identifier
+                                )
+                            } else {
+                                return .checkout(data)
+                            }
                         case .bankTransfer:
                             switch details.state {
                             case .pendingConfirmation:
