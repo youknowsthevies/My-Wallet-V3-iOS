@@ -51,7 +51,7 @@ import RxSwift
     }
 
     private func fetchRemoteConfig() {
-        var expiration = TimeInterval(4 * 60 * 60) // 4 hours
+        var expiration = TimeInterval(1 * 60 * 60) // 1 hour
         #if DEBUG
         expiration = TimeInterval(60) // 1 min
         #endif
