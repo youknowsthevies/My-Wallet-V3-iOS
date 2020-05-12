@@ -37,7 +37,7 @@
         " = "\
  Du har för närvarande e-postmeddelanden aktiverade. Att ändra din e-post kommer att avaktivera e-postmeddelanden. \
 ";
-" %@ (%@ %@)" = "%@ ( %@ %@ )";
+" %@ (%@ %@)" = "%1$@ ( %2$@ %3$@ )";
 " & " = "&";
 " and " = "och";
 " buy." = "köpa.";
@@ -48,7 +48,7 @@
 "%@ Confirmations" = "%@ Bekräftelser";
 "%@ copied to clipboard" = "%@ kopieras till Urklipp";
 "%@ needed to exchange" = "%@ behövs för att byta";
-"%@ of %@" = "%@ av %@";
+"%@ of %@" = "%1$@ av %2$@";
 "%@ payment request" = "%@ betalningsförfrågan.";
 "%@ payment request." = "%@ betalningsförfrågan.";
 "%@ Received" = "%@ Mottaget";
@@ -58,7 +58,7 @@
 "%d address" = "%d adress";
 "%d addresses" = "%d adresser";
 "%d Confirmations" = "%d bekräftelser";
-"%d login attempts left. Please enter your %@ 2FA code" = "%d inloggningsförsök kvar. Ange din %@ 2FA-kod";
+"%d login attempts left. Please enter your %@ 2FA code" = "%1$d inloggningsförsök kvar. Ange din %2$@ 2FA-kod";
 "%d Transactions" = "%d transaktioner";
 "%lld hours ago" = "%lld timmar sedan";
 "%lld minutes ago" = "%lld minuter sedan";
@@ -126,7 +126,7 @@
 "An Error Occurred" = "Ett fel uppstod";
 "An error occurred due to interruptions during PIN verification. Please close the app and try again." = "Ett fel inträffade på grund av avbrott under PIN-verifiering. Stäng appen och försök igen.";
 "An error occurred when getting an approximate quote. Please try again later. Details: %@" = "Ett fel inträffade när du fick en ungefärlig offert. Vänligen försök igen senare. Detaljer: %@";
-"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "Ett fel uppstod när du fick ditt %@ -balans. Vänligen försök igen senare. Detaljer: %@";
+"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "Ett fel uppstod när du fick ditt %1$@ -balans. Vänligen försök igen senare. Detaljer: %2$@";
 "An error occurred when selecting your tier. Please try again later." = "Ett fel uppstod när du valde din nivå. Vänligen försök igen senare.";
 "An error occurred while changing 2-Step verification." = "Ett fel inträffade vid ändring av tvåstegsverifiering.";
 "An error occurred while copying your address to the clipboard. Please re-select the destination address or restart the app and try again." = "Ett fel inträffade vid kopiering av din adress till urklipp. Välj destinationsadressen igen eller starta om appen och försök igen.";
@@ -217,10 +217,10 @@
 "By creating a wallet you agree to Blockchain’s " = "Genom att skapa en plånbok godkänner du Blockchains";
 "By creating a wallet you agree to Blockchain’s Terms of Services & Privacy Policy" = "Genom att skapa en plånbok godkänner du Blockchains användarvillkor och integritetspolicy";
 "By depositing funds to this account, you agree to " = "Genom att sätta in pengar på detta konto, samtycker du till";
-"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "Genom att slå \"Börja nu\" godkänner du Blockchains %@ & %@";
+"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "Genom att slå \"Börja nu\" godkänner du Blockchains %1$@ & %2$@";
 "By tapping Begin Now, you agree to Coinify's Terms of Service & Privacy Policy" = "Genom att klicka på Start nu godkänner du Coinify: s användarvillkor och sekretesspolicy";
-"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Genom att trycka på Skicka, godkänner du Blockchains %@ & %@";
-"Calculating: Address %@ of %@" = "Beräkning: Adress %@ av %@";
+"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Genom att trycka på Skicka, godkänner du Blockchains %1$@ & %2$@";
+"Calculating: Address %@ of %@" = "Beräkning: Adress %1$@ av %2$@";
 "Camera Access Denied" = "Kameraåtkomst nekad";
 "Canadian Dollar" = "Kanadensisk dollar";
 "Cancel" = "Annullera";
@@ -241,7 +241,7 @@
 "Check out Swap" = "Kolla in byte";
 "Check Your Inbox" = "Kolla din inkorg";
 "Check your inbox." = "Kolla din inkorg.";
-"Checking for more: Step %d of %d" = "Söker efter mer: Steg %d av %d";
+"Checking for more: Step %d of %d" = "Söker efter mer: Steg %1$d av %2$d";
 "Checking for Wallet updates" = "Plånbok uppdateringar";
 "Checkout" = "Kolla upp";
 "Checkout the Exchange" = "Kassautbytet";
@@ -401,12 +401,12 @@
 "Ether Price" = "Ether Price";
 "Euro" = "Euro";
 "Even better, since you need ETH to make USD PAX trades, we just airdropped enough ETH into your Wallet to cover your first 3 transactions 🙌🏻" = "Ännu bättre, eftersom du behöver ETH för att göra USD PAX-affärer, flyttade vi bara tillräckligt med ETH till din plånbok för att täcka dina första 3 transaktioner 🙌🏻";
-"Every country has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Varje land har olika regler för hur man köper och säljer kryptokurser. Håll ögonen skalade, så meddelar vi dig så snart vi startar i %s !";
+"Every country has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Varje land har olika regler för hur man köper och säljer kryptokurser. Håll ögonen skalade, så meddelar vi dig så snart vi startar i %1$s !";
 "Every state has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Varje stat har olika regler för hur man köper och säljer kryptokurser. Håll ögonen skalade, vi meddelar dig så snart vi startar i %@ !";
 "Everything you need to store, spend and receive BTC, ETH and BCH." = "Allt du behöver för att lagra, spendera och ta emot BTC, ETH och BCH.";
 "Exchange" = "Utbyta";
 "Exchange %@ Address" = "Byt ut %@ Adress";
-"Exchange %@ for %@" = "Byt ut %@ för %@";
+"Exchange %@ for %@" = "Byt ut %1$@ för %2$@";
 "Exchange %@ Wallet" = "Byt ut %@ Plånbok";
 "Exchange Completed" = "Byt slutfört";
 "Exchange In Progress" = "Transaktion pågår";
@@ -444,7 +444,7 @@
 "Forget" = "Glömma";
 "Forget Wallet" = "Glömma plånboken";
 "Forgot Password?" = "Glömt ditt lösenord?\"";
-"Found %d, with %@" = "Hittade %d , med %@";
+"Found %d, with %@" = "Hittade %1$d , med %2$@";
 "fourth" = "fjärde";
 "fourth word" = "fjärde ordet";
 "From" = "Från";
@@ -519,7 +519,7 @@
 "Introducing the Exchange" = "Vi presenterar börsen";
 "Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX = 1 USD." = "Vi introducerar USD PAX, en säker och stabil krypto tillgång du kan använda för att lagra värde. 1 PAX = 1 USD.";
 "Invalid %@ Address" = "Ogiltig %@ adress";
-"Invalid %@ address: %@" = "Ogiltig %@ -adress: %@";
+"Invalid %@ address: %@" = "Ogiltig %1$@ -adress: %2$@";
 "Invalid Bitcoin address: %@" = "Ogiltig Bitcoin-adress: %@";
 "Invalid destination address" = "Ogiltig destinationsadress";
 "Invalid email address." = "Ogiltig e-postadress.";
@@ -580,7 +580,7 @@
 "Log In" = "Logga in";
 "Log in to refresh addresses" = "Logga in för att uppdatera adresser";
 "Log in to Web Wallet" = "Logga in på webbplånbok";
-"Log in to your Blockchain Wallet via your PC or Mac at " = "Logga in på din Blockchain-plånbok via din PC eller Mac på %s .";
+"Log in to your Blockchain Wallet via your PC or Mac at " = "Logga in på din Blockchain-plånbok via din PC eller Mac på %1$s .";
 "Log Out" = "Logga ut";
 "Login existing Wallet" = "Logga in befintliga plånbok";
 "login.blockchain.com" = "login.blockchain.com";
@@ -673,7 +673,7 @@
 "OK" = "OK";
 "Once an order starts, we are unable to stop it." = "När en beställning startar kan vi inte stoppa den.";
 "Once we receive your bank transfer, your %@ buy order will complete." = "När vi har fått din banköverföring kommer din inköpsorder att vara klar.";
-"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "När vi har fått dina medel börjar du din beställning av %s . Observera att ditt slutliga belopp kan ändras till marknadsaktivitet. Avgifter kan tillkomma.";
+"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "När vi har fått dina medel börjar du din beställning av %1$s . Observera att ditt slutliga belopp kan ändras till marknadsaktivitet. Avgifter kan tillkomma.";
 "Once your verification is confirmed, you’ll automatically secure a spot in the Airdrop for Stacks." = "När din verifiering har bekräftats kommer du automatiskt att säkra en plats i Airdrop for Stacks.";
 "Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected." = "Skicka bara pengar från ett bankkonto i ditt namn. Om inte, kan din insättning försenas eller avvisas.";
 "Ooops! Something went wrong." = "Oj! Något gick fel.";
@@ -746,12 +746,12 @@
 "Please review and confirm your " = "Vänligen granska och bekräfta din";
 "Please select a different address to send from." = "Välj en annan adress att skicka från.";
 "Please send %@ to" = "Vänligen skicka %@ till";
-"Please send %@ to bitcoin address.\n%@" = "Skicka %@ till bitcoin-adressen. \
- %@";
+"Please send %@ to bitcoin address.\n%@" = "Skicka %1$@ till bitcoin-adressen. \
+ %2$@";
 "Please send BCH to the Bitcoin Cash address\n%@" = "Skicka BCH till Bitcoin Cash-adressen \
  %@";
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "Skicka betalning till bitcoin-adressen ( <a href=\"https://blockchain.info/wallet/bitcoin-faq\"> hjälp? </a> ): %@";
-"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Överför %s från ditt bankkonto till Blockchain.com. När vi har fått pengarna skapar vi din beställning av %s .";
+"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Överför %1$s från ditt bankkonto till Blockchain.com. När vi har fått pengarna skapar vi din beställning av %2$s .";
 "Please try again" = "Behaga försök igen";
 "Please verify your email address first." = "Kontrollera din e-postadress först.";
 "Please verify your mobile number first." = "Bekräfta ditt mobilnummer först.";
@@ -894,7 +894,7 @@
 "Stellar is an open-source, decentralized payment protocol that allows for fast and cheap cross-border transactions between any pair of currencies." = "Stellar är ett open source, decentraliserat betalningsprotokoll som möjliggör snabba och billiga gränsöverskridande transaktioner mellan valutapar.";
 "Stellar Price" = "Stellar Pris";
 "Stellar requires that all Stellar accounts hold a minimum balance of lumens, or XLM. This means you cannot send a balance out of your Stellar Wallet that would leave your Stellar Wallet with less than the minimum balance. This also means that in order to send XLM to a new Stellar account, you must send enough XLM to meet the minimum balance requirement." = "Stellar kräver att alla Stellar-konton håller en minsta balans av lumen, eller XLM. Det betyder att du inte kan skicka en balans från din Stellar Plånbok som skulle lämna din Stellar Plånbok med mindre än lägsta saldo. Det innebär också att för att skicka XLM till ett nytt Stellar-konto måste du skicka tillräckligt med XLM för att uppfylla minimikravet.";
-"Step %d of %d" = "Steg %d av %d";
+"Step %d of %d" = "Steg %1$d av %2$d";
 "store" = "Lagra";
 "Stored" = "Lagrade";
 "Street line" = "Gatlinje";
@@ -1033,9 +1033,9 @@
 "Transfer imported addresses?" = "Överföra importerade adresser?";
 "Transfer In Crypto" = "Överför i krypto";
 "Transferred" = "Överförd";
-"Transferred funds from %d %@" = "Överförda medel från %d %@";
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Överförda medel från %d %@ . Output för %d %@ var för små.";
-"Transferring all funds: Address %i of %i" = "Överföra alla medel: Adress %i av %i";
+"Transferred funds from %d %@" = "Överförda medel från %1$d %2$@";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Överförda medel från %1$d %2$@ . Output för %3$d %4$@ var för små.";
+"Transferring all funds: Address %i of %i" = "Överföra alla medel: Adress %1$i av %2$i";
 "Try again" = "Försök igen";
 "Try Again" = "Försök igen";
 "twelfth" = "tolfte";
@@ -1186,7 +1186,7 @@
 "With Blockchain Airdrops, get free crypto sent right to your Blockchain Wallet." = "Med Blockchain Airdrops kan du skicka gratis krypto direkt till din Blockchain-plånbok.";
 "With Swap your crypto is safe, secure, and your keys are always intact." = "Med Swap är din krypto säker, säker och dina nycklar är alltid intakta.";
 "word" = "ord";
-"Word %@ of %@" = "Word %@ av %@";
+"Word %@ of %@" = "Word %1$@ av %2$@";
 "Would you like to add the bitcoin address %@ to your address book?" = "Vill du lägga till bitcoin adressen %@ i din adressbok?";
 "Would you like to archive the addresses used?" = "Vill du arkivera de adresser som används?";
 "Would you like to tell us about your experience with Blockchain?" = "Vill du berätta om din upplevelse med Blockchain?";
@@ -1197,7 +1197,7 @@
 "XLM is a token that enables quick, low cost global transactions. Send, receive, and trade XLM in the wallet today." = "XLM är en token som möjliggör snabba och låga globala transaktioner. Skicka, ta emot och handla XLM i plånboken idag.";
 "XLM Reserve Requirement" = "XLM-reservkrav";
 "xxx" = "xxx";
-"xxx %@ (%@ %@)" = "xxx %@ ( %@ %@ )";
+"xxx %@ (%@ %@)" = "xxx %1$@ ( %2$@ %3$@ )";
 "year" = "år";
 "Year" = "År";
 "years" = "år";
@@ -1234,13 +1234,13 @@
 "You must leave at least one active address" = "Du måste lämna minst en aktiv adress";
 "You need to confirm your email address so that we can keep you informed about your wallet." = "Du måste bekräfta din e-postadress så att vi kan hålla dig informerad om din plånbok.";
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "Du bör alltid par eller logga in om du har tillgång till din plånbok-ID och lösenord. Återfå dina pengar kommer att skapa en ny plånbok-ID. Vill du fortsätta?";
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Du angav en ovanligt liten transaktionsavgift på %s . \
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Du angav en ovanligt liten transaktionsavgift på %1$s . \
 \
- Din transaktion kan bli fast och kanske aldrig bekräfta. För att öka sannolikheten för att transaktionen ska bekräftas inom cirka en timme (6 block) rekommenderar vi starkt en avgift på inte mindre än %s .";
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Du specificerade en exceptionellt liten transaktionsavgift på %@ . Din transaktion kan fastna och eventuellt aldrig bekräfta. För att öka sannolikheten för din transaktion att bekräfta inom ungefär en timme (sex kvarter) rekommenderar vi starkt en avgift på inte mindre än %@ . Eftersom du inte har tillräckligt med medel, betyder det att Send-beloppet också måste sänkas till %@ .";
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Du angav en ovanligt hög transaktionsavgift på %s . \
+ Din transaktion kan bli fast och kanske aldrig bekräfta. För att öka sannolikheten för att transaktionen ska bekräftas inom cirka en timme (6 block) rekommenderar vi starkt en avgift på inte mindre än %2$s .";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Du specificerade en exceptionellt liten transaktionsavgift på %1$@ . Din transaktion kan fastna och eventuellt aldrig bekräfta. För att öka sannolikheten för din transaktion att bekräfta inom ungefär en timme (sex kvarter) rekommenderar vi starkt en avgift på inte mindre än %2$@ . Eftersom du inte har tillräckligt med medel, betyder det att Send-beloppet också måste sänkas till %3$@ .";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Du angav en ovanligt hög transaktionsavgift på %1$s . \
 \
- Även om du sänker avgiften till %s , kan du förvänta dig att transaktionen ska bekräftas inom de närmaste ~ 10 minuterna (1 block).";
+ Även om du sänker avgiften till %2$s , kan du förvänta dig att transaktionen ska bekräftas inom de närmaste ~ 10 minuterna (1 block).";
 "You will be leaving the app." = "Du kommer att lämna appen.";
 "You will be redirected to\n%@." = "Du kommer att omdirigeras till \
  %@ .";
@@ -1469,3 +1469,19 @@
 "You must have Gold Level verification status to add a credit card." = "Du måste ha guldnivåverifieringsstatus för att lägga till ett kreditkort.";
 "Your local currency to store funds in that currency as funds in your Blockchain Wallet." = "Din lokala valuta för att lagra fonder i den valutan som fonder i din Blockchain-plånbok.";
 "Zip" = "Blixtlås";
+"123" = "123";
+"Cancelled" = "Inställt";
+"Card Not Supported" = "Kort stöds inte";
+"Finished" = "Färdiga";
+"Invalid Card Number" = "Ogiltigt kortnummer";
+"Invalid Cardholder Name" = "Ogiltigt kortinnehavarnamn";
+"Invalid Email Address" = "Ogiltig e-postadress";
+"Invalid Expiry Date" = "Ogiltigt utgångsdatum";
+"Invalid Mobile Number" = "Ogiltigt mobilnummer";
+"Invalid Wallet Identifier" = "Ogiltig plånbokidentifierare";
+"MM/YY" = "MMÅÅ";
+"Passwords Do Not Match" = "Lösenorden matchar inte";
+"Save My Card" = "Spara mitt kort";
+"This card has already been saved" = "Det här kortet har redan sparats";
+"Waiting on Funds" = "Väntar på fonder";
+"Your final amount may change due to market activity" = "Ditt slutliga belopp kan förändras på grund av marknadsaktivitet";
