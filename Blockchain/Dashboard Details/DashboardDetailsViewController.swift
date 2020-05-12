@@ -63,10 +63,10 @@ final class DashboardDetailsViewController: BaseScreenViewController {
         tableView.tableFooterView = UIView()
         tableView.estimatedRowHeight = 312
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.registerNibCell(MultiActionTableViewCell.objectName)
-        tableView.registerNibCell(PriceAlertTableViewCell.objectName)
-        tableView.registerNibCell(AssetLineChartTableViewCell.objectName)
-        tableView.registerNibCell(CurrentBalanceTableViewCell.objectName)
+        tableView.registerNibCell(MultiActionTableViewCell.self)
+        tableView.registerNibCell(PriceAlertTableViewCell.self)
+        tableView.registerNibCell(AssetLineChartTableViewCell.self)
+        tableView.registerNibCell(CurrentBalanceTableViewCell.self)
         tableView.separatorColor = .clear
         presenter.isScrollEnabled
             .drive(tableView.rx.isScrollEnabled)

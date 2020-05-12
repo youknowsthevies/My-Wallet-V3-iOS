@@ -98,6 +98,14 @@ extension LabelContent.Value.Presentation.Content.Descriptors {
         )
     }
 
+    public static var h1: Descriptors {
+        Descriptors(
+            fontWeight: .semibold,
+            fontSize: 32,
+            accessibilityIdSuffix: Accessibility.Identifier.Settings.SettingsCell.titleLabelFormat
+        )
+    }
+
     public static func success(fontSize: CGFloat, accessibilityIdSuffix: String) -> Descriptors {
         Descriptors(
             contentColor: .positivePrice,

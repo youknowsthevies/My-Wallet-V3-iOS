@@ -50,27 +50,19 @@ public extension UITableView {
         register(UINib(nibName: name, bundle: type.bundle), forCellReuseIdentifier: name)
     }
 
-    func registerNibCell(_ name: String, bundle: Bundle = .main) {
-        register(UINib(nibName: name, bundle: bundle), forCellReuseIdentifier: name)
-    }
-    
-    func registerNibCells(_ names: String..., bundle: Bundle = .main) {
-        for name in names {
-            register(UINib(nibName: name, bundle: bundle), forCellReuseIdentifier: name)
+    func registerNibCells(_ types: UITableViewCell.Type...) {
+        for type in types {
+            registerNibCell(type)
         }
     }
     
     // MARK: - Dequeue accessors
     
     func dequeue<CellType: UITableViewCell>(_ type: CellType.Type, for indexPath: IndexPath) -> CellType {
-        return dequeueReusableCell(withIdentifier: type.objectName, for: indexPath) as! CellType
+        dequeueReusableCell(withIdentifier: type.objectName, for: indexPath) as! CellType
     }
-    
-    func dequeue<CellType: UITableViewCell>(_ identifier: String, for indexPath: IndexPath) -> CellType {
-        return dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! CellType
-    }
-    
+
     func dequeue<HeaderType: UITableViewHeaderFooterView>(_ type: HeaderType.Type) -> HeaderType {
-        return dequeueReusableHeaderFooterView(withIdentifier: type.objectName) as! HeaderType
+        dequeueReusableHeaderFooterView(withIdentifier: type.objectName) as! HeaderType
     }
 }

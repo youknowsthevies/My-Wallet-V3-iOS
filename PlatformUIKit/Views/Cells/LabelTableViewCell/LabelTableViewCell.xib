@@ -31,7 +31,7 @@
                 </constraints>
             </tableViewCellContentView>
             <connections>
-                <outlet property="descriptionLabel" destination="fng-ql-ERj" id="Cnj-2r-jzz"/>
+                <outlet property="titleLabel" destination="fng-ql-ERj" id="VW9-oY-AkD"/>
             </connections>
             <point key="canvasLocation" x="137.68115942028987" y="102.79017857142857"/>
         </tableViewCell>

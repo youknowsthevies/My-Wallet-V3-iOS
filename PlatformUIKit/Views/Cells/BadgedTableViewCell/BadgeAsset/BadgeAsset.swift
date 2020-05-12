@@ -6,25 +6,25 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
 import PlatformKit
 import RxSwift
+import Localization
 
-public struct BadgeAsset {
+public enum BadgeAsset {
     
-    public struct State {
+    public enum State {
         
         /// The state of the `BadgeItem` interactor and presenter
-        public struct BadgeItem {
+        public enum BadgeItem {
             public typealias Interaction = LoadingState<Value.Interaction.BadgeItem>
             public typealias Presentation = LoadingState<Value.Presentation.BadgeItem>
         }
     }
     
-    public struct Value {
-        public struct Interaction {
+    public enum Value {
+        public enum Interaction {
             public struct BadgeItem: Equatable {
-                
+
                 public enum BadgeType: Equatable {
                     case `default`
                     case verified
@@ -35,13 +35,18 @@ public struct BadgeAsset {
                 
                 // TODO-Settings: Should not be in the interaction layer
                 public let description: String
+
+                public init(type: BadgeType, description: String) {
+                    self.type = type
+                    self.description = description
+                }
             }
         }
         
-        public struct Presentation {
+        public enum Presentation {
             public struct BadgeItem {
                 
-                let viewModel: BadgeViewModel
+                public let viewModel: BadgeViewModel
                 
                 public init(with value: Interaction.BadgeItem) {
                     switch value.type {
@@ -59,48 +64,44 @@ public struct BadgeAsset {
 }
 
 extension BadgeAsset.Value.Interaction.BadgeItem {
-    static let verified: BadgeAsset.Value.Interaction.BadgeItem = .init(
+    public static let verified: BadgeAsset.Value.Interaction.BadgeItem = .init(
         type: .verified,
         description: LocalizationConstants.verified
     )
     
-    static let unverified: BadgeAsset.Value.Interaction.BadgeItem = .init(
+    public static let unverified: BadgeAsset.Value.Interaction.BadgeItem = .init(
         type: .destructive,
         description: LocalizationConstants.unverified
     )
     
-    static let connect: BadgeAsset.Value.Interaction.BadgeItem = .init(
+    public static let connect: BadgeAsset.Value.Interaction.BadgeItem = .init(
         type: .default,
         description: LocalizationConstants.Exchange.connect
     )
     
-    static let confirmed: BadgeAsset.Value.Interaction.BadgeItem = .init(
+    public static let confirmed: BadgeAsset.Value.Interaction.BadgeItem = .init(
         type: .default,
         description: LocalizationConstants.Settings.Badge.confirmed
     )
     
-    static let unconfirmed: BadgeAsset.Value.Interaction.BadgeItem = .init(
+    public static let unconfirmed: BadgeAsset.Value.Interaction.BadgeItem = .init(
         type: .destructive,
         description: LocalizationConstants.Settings.Badge.unconfirmed
     )
     
-    static let connected: BadgeAsset.Value.Interaction.BadgeItem = .init(
+    public static let connected: BadgeAsset.Value.Interaction.BadgeItem = .init(
         type: .default,
         description: LocalizationConstants.Exchange.connected
     )
 }
 
 extension LoadingState where Content == BadgeAsset.Value.Presentation.BadgeItem {
-    init(with state: LoadingState<BadgeAsset.Value.Interaction.BadgeItem>) {
+    public init(with state: LoadingState<BadgeAsset.Value.Interaction.BadgeItem>) {
         switch state {
         case .loading:
             self = .loading
         case .loaded(next: let content):
-            self = .loaded(
-                next: .init(
-                    with: content
-                )
-            )
+            self = .loaded(next: .init(with: content))
         }
     }
 }

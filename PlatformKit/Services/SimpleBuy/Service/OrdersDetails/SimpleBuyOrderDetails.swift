@@ -7,9 +7,11 @@
 //
 
 import Foundation
+import Localization
 
 public struct SimpleBuyOrderDetails {
 
+    typealias LocalizedString = LocalizationConstants.SimpleBuy.OrderState
     // MARK: - Types
 
     public enum State: String {
@@ -34,6 +36,25 @@ public struct SimpleBuyOrderDetails {
         
         /// Order executed and done
         case finished = "FINISHED"
+
+        public var localizedDescription: String {
+            switch self {
+            case .pendingDeposit:
+                return LocalizedString.waitingOnFunds
+            case .cancelled:
+                return LocalizedString.cancelled
+            case .depositMatched:
+                return LocalizedString.pending
+            case .expired:
+                return LocalizedString.expired
+            case .failed:
+                return LocalizedString.failed
+            case .finished:
+                return LocalizedString.finished
+            case .pendingConfirmation:
+                return LocalizedString.pending
+            }
+        }
     }
     
     // MARK: - Properties

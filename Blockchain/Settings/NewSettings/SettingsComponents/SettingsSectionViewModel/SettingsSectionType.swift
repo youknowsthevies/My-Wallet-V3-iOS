@@ -7,6 +7,7 @@
 //
 
 import RxDataSources
+import PlatformUIKit
 
 enum SettingsSectionType: String, Equatable {
     case profile

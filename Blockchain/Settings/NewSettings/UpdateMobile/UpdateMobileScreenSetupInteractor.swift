@@ -9,6 +9,7 @@
 import RxSwift
 import RxRelay
 import PlatformKit
+import PlatformUIKit
 
 final class UpdateMobileScreenSetupInteractor {
     

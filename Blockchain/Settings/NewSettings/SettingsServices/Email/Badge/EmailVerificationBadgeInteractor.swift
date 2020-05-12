@@ -9,34 +9,23 @@
 import RxSwift
 import RxRelay
 import PlatformKit
+import PlatformUIKit
 
-final class EmailVerificationBadgeInteractor: BadgeAssetInteracting {
-    
-    // MARK: - Types
-    
-    typealias InteractionState = BadgeAsset.State.BadgeItem.Interaction
-    
-    var state: Observable<InteractionState> {
-        return stateRelay.asObservable()
-    }
-        
-    // MARK: - Private Accessors
-    
-    private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
-    private let disposeBag = DisposeBag()
+final class EmailVerificationBadgeInteractor: DefaultBadgeAssetInteractor {
     
     // MARK: - Setup
     
     init(service: SettingsServiceAPI) {
+        super.init()
         service
             .valueObservable
-                .map { $0.isEmailVerified }
-                .map { $0 ? .verified : .unverified }
-                .map { .loaded(next: $0) }
-                // TODO: Error handing
-                .catchErrorJustReturn(.loading)
-                .startWith(.loading)
-                .bind(to: stateRelay)
-                .disposed(by: disposeBag)
+            .map { $0.isEmailVerified }
+            .map { $0 ? .verified : .unverified }
+            .map { .loaded(next: $0) }
+            // TODO: Error handing
+            .catchErrorJustReturn(.loading)
+            .startWith(.loading)
+            .bind(to: stateRelay)
+            .disposed(by: disposeBag)
     }
 }

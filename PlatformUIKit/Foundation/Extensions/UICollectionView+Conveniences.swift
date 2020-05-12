@@ -10,21 +10,22 @@ import Foundation
 
 public extension UICollectionView {
     
-    func register<CellType: UICollectionViewCell>(_ cellType: CellType.Type) {
+    func register(_ cellType: UICollectionViewCell.Type) {
         register(cellType, forCellWithReuseIdentifier: cellType.objectName)
     }
     
-    func registerNibCell(_ name: String, bundle: Bundle = .main) {
-        register(UINib(nibName: name, bundle: bundle), forCellWithReuseIdentifier: name)
+    func registerNibCell(_ type: UICollectionViewCell.Type) {
+        let name = type.objectName
+        register(UINib(nibName: name, bundle: type.bundle), forCellWithReuseIdentifier: name)
     }
     
-    func registerNibCells(_ names: String..., bundle: Bundle = .main) {
-        for name in names {
-            register(UINib(nibName: name, bundle: bundle), forCellWithReuseIdentifier: name)
+    func registerNibCells(_ types: UICollectionViewCell.Type...) {
+        for type in types {
+            registerNibCell(type)
         }
     }
     
     func dequeue<CellType: UICollectionViewCell>(_ type: CellType.Type, for indexPath: IndexPath) -> CellType {
-        return dequeueReusableCell(withReuseIdentifier: type.objectName, for: indexPath) as! CellType
+        dequeueReusableCell(withReuseIdentifier: type.objectName, for: indexPath) as! CellType
     }
 }

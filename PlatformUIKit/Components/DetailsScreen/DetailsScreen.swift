@@ -18,7 +18,10 @@ public enum DetailsScreen {
     }
 
     public enum CellType {
-        case label(LabelContent)
+        case badges([BadgeAssetPresenting])
+        case buttons([ButtonViewModel])
+        case label(LabelContentPresenting)
+        case staticLabel(LabelContent)
         case notice(NoticeViewModel)
         case lineItem(LineItemCellPresenting)
         case separator

@@ -23,16 +23,12 @@ final class CheckoutScreenInteractor {
         let time: Date
         let fee: FiatValue
         let amount: CryptoValue
-        let exchangeRate: FiatValue
+        let exchangeRate: FiatValue?
         let card: CardData?
         let orderId: String
     }
     
     // MARK: - Properties
-    
-    var isCancellable: Bool {
-        !checkoutData.hasCheckoutMade
-    }
     
     private(set) var checkoutData: SimpleBuyCheckoutData
         
@@ -62,15 +58,44 @@ final class CheckoutScreenInteractor {
         guard let order = checkoutData.detailType.order else {
             return recreateOrder()
         }
-        
-        /// Pending 3DS on card for this order
+        switch order.paymentMethod {
+        case .bankTransfer:
+            return bankTransferSetup(order)
+        case .card:
+            return cardSetup(order)
+        }
+    }
+
+    private func bankTransferSetup(_ order: SimpleBuyOrderDetails) -> Single<InteractionData> {
+        // Pending confirmation
+        if order.isPendingConfirmation {
+            return recreateOrder()
+        } else if order.isPendingDepositBankWire {
+            // order was confirmed - just fetch the details
+            guard let fee = order.fee else { return .error(InteractionError.missingInternalOrderData ) }
+
+            return .just(InteractionData(
+                time: order.creationDate,
+                fee: fee,
+                amount: order.cryptoValue,
+                exchangeRate: nil,
+                card: nil,
+                orderId: order.identifier
+            ))
+        } else {
+            return .error(InteractionError.impossibleState)
+        }
+    }
+
+    private func cardSetup(_ order: SimpleBuyOrderDetails) -> Single<InteractionData> {
+        // Pending 3DS on card for this order
         if order.isPendingConfirmation {
             return recreateOrder()
         } else if order.is3DSConfirmedCardOrder || order.isPending3DSCardOrder {
             /// 3DS was confirmed on this order - just fetch the details
             guard let fee = order.fee else { return .error(InteractionError.missingInternalOrderData ) }
             guard let price = order.price else { return .error(InteractionError.missingInternalOrderData ) }
-            
+
             return cardListService
                 .card(by: order.paymentMethodId ?? "")
                 .map { card in
@@ -82,14 +107,16 @@ final class CheckoutScreenInteractor {
                         card: card,
                         orderId: order.identifier
                     )
-                }            
+            }
         } else {
             return .error(InteractionError.impossibleState)
         }
     }
     
     /// Confirms the order if needed and then continue
-    func `continue`() -> Observable<SimpleBuyCheckoutData> {
+    /// - returns: Observable<(SimpleBuyCheckoutData, Bool)> that emits pairs composed of a  SimpleBuyCheckoutData
+    ///  and a `Bool` flag informing if the order needed confirmation.
+    func `continue`() -> Observable<(SimpleBuyCheckoutData, Bool)> {
         guard let order = checkoutData.detailType.order else {
             return .error(InteractionError.missingOrder)
         }
@@ -100,9 +127,10 @@ final class CheckoutScreenInteractor {
                 .flatMap(weak: self) { (self, data) -> Single<SimpleBuyCheckoutData> in
                     self.set(data: data)
                 }
+                .map { ($0, true) }
                 .asObservable()
         } else {
-            return .just(checkoutData)
+            return .just((checkoutData, false))
         }
     }
     

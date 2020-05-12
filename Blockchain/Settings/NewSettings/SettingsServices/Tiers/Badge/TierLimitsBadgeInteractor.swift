@@ -9,22 +9,16 @@
 import RxSwift
 import RxRelay
 import PlatformKit
+import PlatformUIKit
 
-final class TierLimitsBadgeInteractor: BadgeAssetInteracting {
-    
-    typealias InteractionState = BadgeAsset.State.BadgeItem.Interaction
-    
-    var state: Observable<InteractionState> {
-        return stateRelay.asObservable()
-    }
-    
-    // MARK: - Private Accessors
-    
-    private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
-    private let disposeBag = DisposeBag()
-    
+final class TierLimitsBadgeInteractor: DefaultBadgeAssetInteractor {
+
+    // MARK: - Setup
+
     init(limitsProviding: TierLimitsProviding) {
-        limitsProviding.tiers.map { $0.interactionModel }
+        super.init()
+        limitsProviding.tiers
+            .map { $0.interactionModel }
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
     }

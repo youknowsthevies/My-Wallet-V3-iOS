@@ -6,9 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-/// The `Checkout` screens show a line separator with eight points of verical
-/// padding on either side. This separator only appears above the first and below
-/// the last `LineItemTableViewCell`
+/// A simple cell displaying a single 1pt line with `0` padding.
 public final class SeparatorTableViewCell: UITableViewCell {
     
     // MARK: - Private IBOutlets
@@ -19,6 +17,6 @@ public final class SeparatorTableViewCell: UITableViewCell {
     
     public override func awakeFromNib() {
         super.awakeFromNib()
-        lineView.backgroundColor = .mediumBackground
+        lineView.backgroundColor = .background
     }
 }

@@ -12,7 +12,7 @@ import RxCocoa
 import PlatformKit
 import PlatformUIKit
 
-final class AddCardCellPresenter: SettingsAsyncPresenting {
+final class AddCardCellPresenter: AsyncPresenting {
     
     // MARK: - Types
     

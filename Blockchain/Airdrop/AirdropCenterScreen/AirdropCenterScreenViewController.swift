@@ -55,7 +55,7 @@ final class AirdropCenterScreenViewController: BaseScreenViewController {
         tableView.estimatedRowHeight = 100
         tableView.sectionHeaderHeight = UITableView.automaticDimension
         tableView.estimatedSectionHeaderHeight = 32
-        tableView.registerNibCell(AirdropTypeTableViewCell.objectName)
+        tableView.registerNibCell(AirdropTypeTableViewCell.self)
         tableView.register(SimpleHeaderView.self)
     }
 }

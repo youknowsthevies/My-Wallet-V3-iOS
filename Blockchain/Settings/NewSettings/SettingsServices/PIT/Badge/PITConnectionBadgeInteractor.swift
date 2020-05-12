@@ -9,22 +9,14 @@
 import RxSwift
 import RxRelay
 import PlatformKit
+import PlatformUIKit
 
-final class PITConnectionBadgeInteractor: BadgeAssetInteracting {
-    
-    typealias InteractionState = BadgeAsset.State.BadgeItem.Interaction
-    
-    var state: Observable<InteractionState> {
-        return stateRelay.asObservable()
-    }
-    
-    // MARK: - Private Accessors
-    
-    private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
-    private let disposeBag = DisposeBag()
+final class PITConnectionBadgeInteractor: DefaultBadgeAssetInteractor {
     
     init(provider: PITConnectionStatusProviding) {
-        provider.hasLinkedPITAccount
+        super.init()
+        provider
+            .hasLinkedPITAccount
             .map { $0 == true ? .connected : .connect }
             .map { .loaded(next: $0) }
             .bind(to: stateRelay)

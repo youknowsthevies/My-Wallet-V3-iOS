@@ -75,12 +75,12 @@ final class SettingsViewController: BaseScreenViewController {
         tableView.estimatedSectionHeaderHeight = 70
         tableView.sectionHeaderHeight = UITableView.automaticDimension
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.registerNibCell(SwitchTableViewCell.objectName)
-        tableView.registerNibCell(ClipboardTableViewCell.objectName)
-        tableView.registerNibCell(BadgeTableViewCell.objectName)
-        tableView.registerNibCell(PlainTableViewCell.objectName)
-        tableView.registerNibCell(AddCardTableViewCell.objectName)
-        tableView.registerNibCell(LinkedCardTableViewCell.objectName)
+        tableView.registerNibCell(SwitchTableViewCell.self)
+        tableView.registerNibCell(ClipboardTableViewCell.self)
+        tableView.registerNibCell(BadgeTableViewCell.self)
+        tableView.registerNibCell(PlainTableViewCell.self)
+        tableView.registerNibCell(AddCardTableViewCell.self)
+        tableView.registerNibCell(LinkedCardTableViewCell.self)
         tableView.registerHeaderView(TableHeaderView.objectName)
         
         let dataSource = RxDataSource(configureCell: { [weak self] _, _, indexPath, item in

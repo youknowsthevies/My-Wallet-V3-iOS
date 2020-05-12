@@ -54,7 +54,7 @@ final class PaymentMethodsScreenViewController: BaseScreenViewController {
         
     private func setupTableView() {
         tableView.register(SelectionButtonTableViewCell.self)
-        tableView.registerNibCell(LinkedCardTableViewCell.objectName)
+        tableView.registerNibCell(LinkedCardTableViewCell.self)
         tableView.allowsSelection = false
         tableView.separatorInset = .zero
         tableView.tableFooterView = UIView()

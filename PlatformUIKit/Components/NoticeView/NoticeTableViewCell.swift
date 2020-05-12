@@ -40,8 +40,7 @@ public final class NoticeTableViewCell: UITableViewCell {
         noticeView.layoutToSuperview(axis: .horizontal, offset: 24)
         verticalConstraints = noticeView.layoutToSuperview(
             axis: .vertical,
-            offset: topOffset,
-            priority: .penultimateHigh
+            offset: topOffset
         )
     }
 

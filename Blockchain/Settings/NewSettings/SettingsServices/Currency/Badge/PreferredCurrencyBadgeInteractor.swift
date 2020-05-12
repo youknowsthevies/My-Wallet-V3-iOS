@@ -9,25 +9,15 @@
 import RxSwift
 import RxRelay
 import PlatformKit
+import PlatformUIKit
 
-final class PreferredCurrencyBadgeInteractor: BadgeAssetInteracting {
-    
-    typealias InteractionState = BadgeAsset.State.BadgeItem.Interaction
-    typealias BadgeItem = BadgeAsset.Value.Interaction.BadgeItem
-    
-    var state: Observable<InteractionState> {
-        return stateRelay.asObservable()
-    }
-    
-    // MARK: - Private Accessors
-        
-    private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
-    private let disposeBag = DisposeBag()
-    
+final class PreferredCurrencyBadgeInteractor: DefaultBadgeAssetInteractor {
+
     // MARK: - Setup
     
     init(settingsService: SettingsServiceAPI,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
+        super.init()
         let settingsFiatCurrency = settingsService.valueObservable
             .map { $0.fiatCurrency }
         let fiatCurrency = fiatCurrencyService.fiatCurrencyObservable

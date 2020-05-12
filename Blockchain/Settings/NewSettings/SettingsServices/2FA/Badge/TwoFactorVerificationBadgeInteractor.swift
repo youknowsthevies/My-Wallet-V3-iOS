@@ -9,23 +9,14 @@
 import RxSwift
 import RxRelay
 import PlatformKit
+import PlatformUIKit
 
-final class TwoFactorVerificationBadgeInteractor: BadgeAssetInteracting {
-    
-    typealias InteractionState = BadgeAsset.State.BadgeItem.Interaction
-    
-    var state: Observable<InteractionState> {
-        return stateRelay.asObservable()
-    }
-    
-    // MARK: - Private Accessors
-    
-    private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
-    private let disposeBag = DisposeBag()
-    
+final class TwoFactorVerificationBadgeInteractor: DefaultBadgeAssetInteractor {
+
     // MARK: - Setup
     
     init(service: SettingsServiceAPI) {
+        super.init()
         service
             .valueObservable
             .map { $0.authenticator.isTwoFactor }

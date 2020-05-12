@@ -68,7 +68,7 @@ final class WalletActionScreenViewController: UIViewController {
         tableView.tableFooterView = UIView()
         tableView.estimatedRowHeight = 85
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.registerNibCell(CurrentBalanceTableViewCell.objectName)
+        tableView.registerNibCell(CurrentBalanceTableViewCell.self)
         tableView.separatorColor = .clear
     }
 }

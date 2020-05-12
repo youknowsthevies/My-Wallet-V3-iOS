@@ -17,18 +17,6 @@ final class SimpleBuyTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Types
 
-    /// The presentation type of the simple buy screen
-    enum PresentationType {
-
-        /// A presentation type for pending order. In case the user
-        /// has an order which is currently at a pending-deposit state.
-        case pendingOrder
-
-        /// A presentation type for checkout summary. Once the user
-        /// did a checkout by completing a simple buy flow.
-        case checkoutSummary
-    }
-
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.TransferDetails
     private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.TransferDetails
@@ -60,28 +48,40 @@ final class SimpleBuyTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     // MARK: - Injected
 
     private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
-    private let presentationType: PresentationType
     private let webViewRouter: WebViewRouterAPI
     private let stateService: SimpleBuyStateServiceAPI
     private let interactor: SimpleBuyTransferDetailScreenInteractor
 
     // MARK: - Setup
 
-    init(presentationType: PresentationType,
-         webViewRouter: WebViewRouterAPI,
+    init(webViewRouter: WebViewRouterAPI,
          analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared,
          interactor: SimpleBuyTransferDetailScreenInteractor,
          stateService: SimpleBuyStateServiceAPI) {
         self.analyticsRecorder = analyticsRecorder
-        self.presentationType = presentationType
         self.webViewRouter = webViewRouter
         self.interactor = interactor
         self.stateService = stateService
 
         contentReducer = ContentReducer(
-            data: interactor.checkoutData,
-            presentationType: presentationType
+            data: interactor.checkoutData
         )
+
+        // MARK: Continue Button Setup
+
+        let continueButtonViewModel = ButtonViewModel.primary(with: LocalizedString.Button.ok)
+        continueButtonViewModel.tapRelay
+            .bind(weak: self) { (self) in
+                self.stateService.nextRelay.accept(())
+            }
+            .disposed(by: disposeBag)
+        continueButtonViewModel
+            .tapRelay
+            .bind(weak: self) { (self) in
+                self.analyticsRecorder.record(event: AnalyticsEvent.sbBankDetailsFinished)
+            }
+            .disposed(by: disposeBag)
+        buttons.append(continueButtonViewModel)
 
         // MARK: Cells Setup
 
@@ -111,7 +111,7 @@ final class SimpleBuyTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
             .totalCost(interactor.checkoutData.fiatValue.toDisplayString())
             .presenter()
 
-        cells.append(.label(summary))
+        cells.append(.staticLabel(summary))
         cells.append(.separator)
         contentReducer
             .lineItems
@@ -119,44 +119,12 @@ final class SimpleBuyTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
         cells.append(.lineItem(totalCost))
         cells.append(.separator)
         cells.append(.notice(notice))
+
         if let termsTextViewModel = contentReducer.termsTextViewModel {
             termsTextViewModel.tap
                 .bind(to: webViewRouter.launchRelay)
                 .disposed(by: disposeBag)
             cells.append(.interactableTextCell(termsTextViewModel))
-        }
-
-        // MARK: Continue Button Setup
-
-        let continueButtonViewModel = ButtonViewModel.primary(with: LocalizedString.Button.ok)
-        continueButtonViewModel.tapRelay
-            .bind(weak: self) { (self) in
-                self.stateService.nextRelay.accept(())
-            }
-            .disposed(by: disposeBag)
-        continueButtonViewModel.tapRelay
-            .bind(weak: self) { (self) in
-                if self.presentationType == .checkoutSummary {
-                    self.analyticsRecorder.record(event: AnalyticsEvent.sbBankDetailsFinished)
-                }
-            }
-            .disposed(by: disposeBag)
-        buttons.append(continueButtonViewModel)
-
-        // MARK: Cancel Button Setup
-
-        switch presentationType {
-        case .pendingOrder:
-            let cancelButtonViewModel = ButtonViewModel.cancel(with: LocalizedString.Button.cancel)
-            cancelButtonViewModel.tapRelay
-                .bind(weak: self) { (self) in
-                    self.analyticsRecorder.record(event: AnalyticsEvent.sbPendingModalCancelClick)
-                    self.stateService.cancelTransfer(with: self.interactor.checkoutData)
-            }
-            .disposed(by: disposeBag)
-            buttons.append(cancelButtonViewModel)
-        case .checkoutSummary:
-            break
         }
     }
 
@@ -164,12 +132,7 @@ final class SimpleBuyTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
 
     func viewDidLoad() {
         let currencyCode = interactor.checkoutData.fiatValue.currencyCode
-        switch presentationType {
-        case .checkoutSummary:
-            analyticsRecorder.record(event: AnalyticsEvent.sbBankDetailsShown(currencyCode: currencyCode))
-        case .pendingOrder:
-            analyticsRecorder.record(event: AnalyticsEvent.sbPendingModalShown(currencyCode: currencyCode))
-        }
+        analyticsRecorder.record(event: AnalyticsEvent.sbBankDetailsShown(currencyCode: currencyCode))
     }
 }
 
@@ -184,23 +147,18 @@ extension SimpleBuyTransferDetailScreenPresenter {
         let lineItems: [LineItemCellPresenting]
         let termsTextViewModel: InteractableTextViewModel!
 
-        init(data: SimpleBuyCheckoutData, presentationType: PresentationType) {
+        init(data: SimpleBuyCheckoutData) {
             typealias SummaryString = LocalizedString.Summary
             typealias TitleString = LocalizedString.Title
             let currency = data.fiatValue.currency
             let currencyString = "\(currency.name) (\(currency.symbol))"
-            switch presentationType {
-            case .checkoutSummary:
-                title = TitleString.checkout
-                switch data.fiatValue.currency {
-                case .USD, .GBP:
-                    summary = "\(SummaryString.GbpAndUsd.prefix) \(currencyString) \(SummaryString.GbpAndUsd.suffix)"
-                default:
-                    summary = "\(SummaryString.AnyFiat.prefix) \(currencyString) \(SummaryString.AnyFiat.suffix)"
-                }
-            case .pendingOrder:
-                title = "\(TitleString.pendingOrderPrefix) \(data.cryptoCurrency.displayCode) \(TitleString.pendingOrderSuffix)"
-                summary = "\(SummaryString.PendingOrder.prefix) \(currencyString) \(SummaryString.PendingOrder.middle) \(data.cryptoCurrency.displayCode) \(SummaryString.PendingOrder.suffix)"
+
+            title = TitleString.checkout
+            switch data.fiatValue.currency {
+            case .USD, .GBP:
+                summary = "\(SummaryString.GbpAndUsd.prefix) \(currencyString) \(SummaryString.GbpAndUsd.suffix)"
+            default:
+                summary = "\(SummaryString.AnyFiat.prefix) \(currencyString) \(SummaryString.AnyFiat.suffix)"
             }
 
             let account = data.paymentAccount!

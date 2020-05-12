@@ -51,8 +51,15 @@ protocol SimpleBuyElibilityRelayAPI: RoutingPreviousStateEmitterAPI {
 }
 
 /// A confirm-checkout service API
+protocol SimpleBuyTransferDetailsServiceAPI: RoutingPreviousStateEmitterAPI {
+    func transferDetails(with checkoutData: SimpleBuyCheckoutData)
+}
+
+/// A confirm-checkout service API
 protocol SimpleBuyConfirmCheckoutServiceAPI: RoutingPreviousStateEmitterAPI {
-    func confirmCheckout(with checkoutData: SimpleBuyCheckoutData)
+    /// - parameter isOrderNew: Bool flag representing if the given `SimpleBuyCheckoutData` is from a newly created order
+    /// or if it is from an existing order.
+    func confirmCheckout(with checkoutData: SimpleBuyCheckoutData, isOrderNew: Bool)
 }
 
 /// A cancellation service API
@@ -77,6 +84,7 @@ protocol PendingOrderCompletionStateServiceAPI: class {
 /// A composition of all of Simple-Buy state-services
 typealias SimpleBuyStateServiceAPI = RoutingStateEmitterAPI &
                                      SimpleBuyStateReceiverServiceAPI &
+                                     SimpleBuyTransferDetailsServiceAPI &
                                      SimpleBuyConfirmCheckoutServiceAPI &
                                      SimpleBuyStateCacheProviderAPI &
                                      SimpleBuyCheckoutServiceAPI &

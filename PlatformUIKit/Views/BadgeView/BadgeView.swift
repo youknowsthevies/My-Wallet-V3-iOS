@@ -27,9 +27,11 @@ public final class BadgeView: UIView {
     // MARK: - Public Properties
     
     public var viewModel: BadgeViewModel! {
-        didSet {
+        willSet {
             disposeBag = DisposeBag()
-            
+        }
+        didSet {
+            guard viewModel != nil else { return }
             // Set non-reactive properties
             layer.cornerRadius = viewModel.cornerRadius
             titleLabel.font = viewModel.font
@@ -69,5 +71,18 @@ public final class BadgeView: UIView {
     private func setup() {
         fromNib()
         clipsToBounds = true
+    }
+}
+
+extension Reactive where Base: BadgeView {
+    public var viewModel: Binder<BadgeAsset.State.BadgeItem.Presentation> {
+        Binder(base) { (view, state) in
+            switch state {
+            case .loaded(let next):
+                view.viewModel = next.viewModel
+            case .loading:
+                view.viewModel = nil
+            }
+        }
     }
 }

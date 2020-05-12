@@ -135,6 +135,8 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
             showBuyCryptoScreen()
         case .checkout(let data):
             showCheckoutScreen(with: data)
+        case .pendingOrderDetails(let data):
+            showCheckoutScreen(with: data)
         case .authorizeCard(let data):
             showCardAuthorization(with: data)
         case .pendingOrderCompleted(amount: let amount, orderId: let orderId):
@@ -142,11 +144,9 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
         case .paymentMethods:
             showPaymentMethodsScreen()
         case .transferDetails(let data):
-            showTransferDetailScreen(with: data, presentationType: .checkoutSummary)
+            showTransferDetailScreen(with: data)
         case .transferCancellation(let data):
             showTransferCancellation(with: data)
-        case .pendingOrderDetails(let data):
-            showTransferDetailScreen(with: data, presentationType: .pendingOrder)
         case .kyc:
             showKYC()
         case .pendingKycApproval:
@@ -320,8 +320,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     }
     
     /// Shows the checkout details screen
-    private func showTransferDetailScreen(with data: SimpleBuyCheckoutData,
-                                          presentationType: SimpleBuyTransferDetailScreenPresenter.PresentationType) {
+    private func showTransferDetailScreen(with data: SimpleBuyCheckoutData) {
         let interactor = SimpleBuyTransferDetailScreenInteractor(
             checkoutData: data,
             cancellationService: serviceProvider.orderCancellation
@@ -333,7 +332,6 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
         )
         
         let presenter = SimpleBuyTransferDetailScreenPresenter(
-            presentationType: presentationType,
             webViewRouter: webViewRouter,
             interactor: interactor,
             stateService: stateService

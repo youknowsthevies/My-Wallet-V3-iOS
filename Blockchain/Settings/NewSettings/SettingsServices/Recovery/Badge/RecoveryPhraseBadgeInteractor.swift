@@ -9,21 +9,12 @@
 import RxSwift
 import RxRelay
 import PlatformKit
+import PlatformUIKit
 
-final class RecoveryPhraseBadgeInteractor: BadgeAssetInteracting {
-    
-    typealias InteractionState = BadgeAsset.State.BadgeItem.Interaction
-    
-    var state: Observable<InteractionState> {
-        return stateRelay.asObservable()
-    }
-    
-    // MARK: - Private Accessors
-    
-    private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
-    private let disposeBag = DisposeBag()
-    
+final class RecoveryPhraseBadgeInteractor: DefaultBadgeAssetInteractor {
+
     init(provider: RecoveryPhraseStatusProviding) {
+        super.init()
         provider.isRecoveryPhraseVerified
             .map { $0 == true ? .confirmed : .unconfirmed }
             .map { .loaded(next: $0) }

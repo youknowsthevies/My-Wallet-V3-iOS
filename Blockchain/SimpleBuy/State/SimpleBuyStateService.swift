@@ -93,10 +93,10 @@ final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
 
         /// The user may cancel their transfer
         case transferCancellation(SimpleBuyCheckoutData)
-        
+
         /// The user has a pending order
         case pendingOrderDetails(SimpleBuyCheckoutData)
-        
+
         /// Purchase completed
         case pendingOrderCompleted(amount: CryptoValue, orderId: String)
         
@@ -296,6 +296,7 @@ final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
                                 return .pendingOrderDetails(data)
                             }
                         }
+
                     case .candidate:
                         fatalError("Impossible case to reach")
                     }
@@ -309,7 +310,7 @@ final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
                     /// The user already has a pending order, so
                     /// mark the intro screen as `shown`.
                     switch state {
-                    case .pendingOrderDetails:
+                    case .checkout, .pendingOrderDetails, .pendingOrderCompleted, .transferDetails:
                         cache[.hasShownIntroScreen] = true
                     default:
                         break
@@ -389,6 +390,11 @@ extension SimpleBuyStateService {
         let states = statesRelay.value.states(byAppending: .changeFiat)
         apply(action: .next(to: states.current), states: states)
     }
+
+    func transferDetails(with checkoutData: SimpleBuyCheckoutData) {
+        let states = statesRelay.value.states(byAppending: .transferDetails(checkoutData))
+        apply(action: .next(to: states.current), states: states)
+    }
 }
 
 // MARK: - SimpleBuyCurrencySelectionServiceAPI
@@ -409,13 +415,15 @@ extension SimpleBuyStateService {
 // MARK: - SimpleBuyConfirmCheckoutServiceAPI
 
 extension SimpleBuyStateService {
-    func confirmCheckout(with checkoutData: SimpleBuyCheckoutData) {
+    func confirmCheckout(with checkoutData: SimpleBuyCheckoutData, isOrderNew: Bool) {
         let state: State
-        let data = (checkoutData.detailType, checkoutData.detailType.paymentMethod)
+        let data = (checkoutData.detailType, checkoutData.detailType.paymentMethod, isOrderNew)
         switch data {
-        case (.order, .bankTransfer):
+        case (.order, .bankTransfer, true):
             state = .transferDetails(checkoutData)
-        case (.order(let details), .card):
+        case (.order, .bankTransfer, false):
+            state = .inactive
+        case (.order(let details), .card, _):
             if details.isPending3DSCardOrder {
                 state = .authorizeCard(order: details)
             } else {

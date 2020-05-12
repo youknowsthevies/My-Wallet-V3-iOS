@@ -36,10 +36,7 @@ public final class InstructionTableView: UITableView {
         estimatedRowHeight = 80
         rowHeight = UITableView.automaticDimension
         allowsSelection = false
-        registerNibCell(
-            InstructionTableViewCell.objectName,
-            bundle: InstructionTableViewCell.bundle
-        )
+        registerNibCell(InstructionTableViewCell.self)
         tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 32))
     }
 }
@@ -52,7 +49,7 @@ extension InstructionTableView: UITableViewDelegate, UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: InstructionTableViewCell = tableView.dequeue(InstructionTableViewCell.objectName, for: indexPath)
+        let cell: InstructionTableViewCell = tableView.dequeue(InstructionTableViewCell.self, for: indexPath)
         cell.viewModel = viewModels[indexPath.row]
         return cell
     }

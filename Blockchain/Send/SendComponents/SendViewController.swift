@@ -101,10 +101,10 @@ final class SendViewController: UIViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.tableFooterView = UIView()
         tableView.registerNibCells(
-            SendDestinationAccountTableViewCell.identifier,
-            SendSourceAccountTableViewCell.identifier,
-            SendFeeTableViewCell.identifier,
-            SendAmountTableViewCell.identifier
+            SendDestinationAccountTableViewCell.self,
+            SendSourceAccountTableViewCell.self,
+            SendFeeTableViewCell.self,
+            SendAmountTableViewCell.self
         )
     }
     
@@ -202,14 +202,14 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
         switch indexPath.row {
         case CellIndex.source:
             let cell: SendSourceAccountTableViewCell = tableView.dequeue(
-                SendSourceAccountTableViewCell.identifier,
+                SendSourceAccountTableViewCell.self,
                 for: indexPath
             )
             cell.presenter = presenter.sourcePresenter
             return cell
         case CellIndex.destination:
             let cell: SendDestinationAccountTableViewCell = tableView.dequeue(
-                SendDestinationAccountTableViewCell.identifier,
+                SendDestinationAccountTableViewCell.self,
                 for: indexPath
             )
             cell.presenter = presenter.destinationPresenter
@@ -217,14 +217,14 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
             return cell
         case CellIndex.amount:
             let cell: SendAmountTableViewCell = tableView.dequeue(
-                SendAmountTableViewCell.identifier, for: indexPath
+                SendAmountTableViewCell.self, for: indexPath
             )
             cell.presenter = presenter.amountPresenter
             cell.prepare(using: keyboardInteractionController.toolbar!)
             return cell
         case CellIndex.fee:
             let cell: SendFeeTableViewCell = tableView.dequeue(
-                SendFeeTableViewCell.identifier,
+                SendFeeTableViewCell.self,
                 for: indexPath
             )
             cell.presenter = presenter.feePresenter

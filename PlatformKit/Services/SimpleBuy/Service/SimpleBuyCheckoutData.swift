@@ -60,13 +60,22 @@ public struct SimpleBuyCheckoutData {
     }
     
     // MARK: - Properties
-    
-    public var hasCheckoutMade: Bool {
+
+    public var hasCardCheckoutMade: Bool {
         switch detailType {
         case .candidate:
             return false
         case .order(let details):
             return details.is3DSConfirmedCardOrder || details.isPending3DSCardOrder
+        }
+    }
+
+    public var isPendingDepositBankWire: Bool {
+        switch detailType {
+        case .candidate:
+            return false
+        case .order(let details):
+            return details.isPendingDepositBankWire
         }
     }
     

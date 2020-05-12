@@ -3,16 +3,16 @@
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="BaseTableViewController" customModule="PlatformUIKit" customModuleProvider="target">
             <connections>
+                <outlet property="bottomContainerView" destination="FXt-LH-FaD" id="4iQ-uk-2fh"/>
                 <outlet property="buttonStackView" destination="oTl-7w-dRh" id="lbH-in-2e4"/>
-                <outlet property="footerHeightConstraint" destination="GaU-PJ-U9B" id="viw-YY-9sT"/>
-                <outlet property="scrollView" destination="QII-la-J12" id="x5E-ga-95j"/>
+                <outlet property="scrollView" destination="QII-la-J12" id="r4N-Gd-ScX"/>
                 <outlet property="tableView" destination="xuL-CF-a4J" id="7ag-5V-ELu"/>
                 <outlet property="tableViewBottomConstraint" destination="d9b-Rm-Ez3" id="sJy-HU-pfw"/>
                 <outlet property="view" destination="jBV-s9-JPu" id="7oG-19-boR"/>
@@ -27,21 +27,18 @@
                     <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="X2Z-7x-U96">
-                            <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                            <rect key="frame" x="0.0" y="0.0" width="414" height="851"/>
                             <subviews>
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="xuL-CF-a4J" customClass="SelfSizingTableView" customModule="PlatformUIKit">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="753"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="810"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                                    <constraints>
-                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="488" placeholder="YES" id="Z53-Po-IJu"/>
-                                    </constraints>
                                     <connections>
                                         <outlet property="dataSource" destination="-1" id="tfh-CA-nGH"/>
                                         <outlet property="delegate" destination="-1" id="89P-oC-cFW"/>
                                     </connections>
                                 </tableView>
-                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FXt-LH-FaD">
-                                    <rect key="frame" x="0.0" y="761" width="414" height="81"/>
+                                <view contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="414" placeholderIntrinsicHeight="33" translatesAutoresizingMaskIntoConstraints="NO" id="FXt-LH-FaD">
+                                    <rect key="frame" x="0.0" y="818" width="414" height="33"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G7c-BJ-ebB">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="1"/>
@@ -51,7 +48,7 @@
                                             </constraints>
                                         </view>
                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="oTl-7w-dRh">
-                                            <rect key="frame" x="16" y="17" width="382" height="48"/>
+                                            <rect key="frame" x="16" y="17" width="382" height="0.0"/>
                                         </stackView>
                                     </subviews>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
@@ -59,7 +56,6 @@
                                         <constraint firstItem="oTl-7w-dRh" firstAttribute="top" secondItem="G7c-BJ-ebB" secondAttribute="bottom" priority="750" constant="16" id="386-UZ-haH"/>
                                         <constraint firstAttribute="trailing" secondItem="G7c-BJ-ebB" secondAttribute="trailing" id="5OJ-uK-IQ6"/>
                                         <constraint firstAttribute="trailing" secondItem="oTl-7w-dRh" secondAttribute="trailing" constant="16" id="AqR-Jq-KPf"/>
-                                        <constraint firstAttribute="height" priority="250" constant="81" id="GaU-PJ-U9B"/>
                                         <constraint firstItem="G7c-BJ-ebB" firstAttribute="top" secondItem="FXt-LH-FaD" secondAttribute="top" id="HeA-Ql-sPA"/>
                                         <constraint firstItem="G7c-BJ-ebB" firstAttribute="leading" secondItem="FXt-LH-FaD" secondAttribute="leading" id="PpQ-dR-T0r"/>
                                         <constraint firstItem="oTl-7w-dRh" firstAttribute="leading" secondItem="FXt-LH-FaD" secondAttribute="leading" constant="16" id="btj-5U-A3J"/>

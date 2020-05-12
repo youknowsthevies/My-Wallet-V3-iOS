@@ -10,14 +10,17 @@ import RxSwift
 import RxCocoa
 
 /// Has two labels, one which is a `title` and the other a `description`.
-/// They are in a vertical stackView and appear as a list on `Checkout` screens.
 public final class LineItemTableViewCell: UITableViewCell {
+
+    private static let imageViewWidth: CGFloat = 22
 
     // MARK: - Exposed Properites
 
     public var presenter: LineItemCellPresenting! {
-        didSet {
+        willSet {
             disposeBag = DisposeBag()
+        }
+        didSet {
             guard let presenter = presenter else { return }
             presenter.titleLabelContentPresenter.state
                 .compactMap { $0 }
@@ -34,12 +37,8 @@ public final class LineItemTableViewCell: UITableViewCell {
                 .disposed(by: disposeBag)
 
             presenter.image
-                .map { [weak self] in
-                    $0 == nil ? 0 : self?.imageViewWidth
-                }
-                .drive(onNext: { [weak self] value in
-                    self?.imageWidthConstraint.constant = value ?? 0
-                })
+                .map { $0 == nil ? 0 : LineItemTableViewCell.imageViewWidth }
+                .drive(imageWidthConstraint.rx.constant)
                 .disposed(by: disposeBag)
 
             presenter.image
@@ -51,15 +50,18 @@ public final class LineItemTableViewCell: UITableViewCell {
     // MARK: - Private Properties
 
     private var disposeBag = DisposeBag()
-    private let imageViewWidth: CGFloat = 22
 
     // MARK: - Private IBOutlets
 
     @IBOutlet private var accessoryImageView: UIImageView!
     @IBOutlet private var imageWidthConstraint: NSLayoutConstraint!
-    @IBOutlet private var stackViewTrailingConstraint: NSLayoutConstraint!
     @IBOutlet fileprivate var titleLabel: UILabel!
     @IBOutlet fileprivate var descriptionLabel: UILabel!
+
+    public override func prepareForReuse() {
+        super.prepareForReuse()
+        presenter = nil
+    }
 }
 
 // MARK: - Rx
@@ -67,7 +69,7 @@ public final class LineItemTableViewCell: UITableViewCell {
 fileprivate extension Reactive where Base: LineItemTableViewCell {
 
     var titleContent: Binder<LabelContent.State.Presentation> {
-        return Binder(base) { view, state in
+        Binder(base) { view, state in
             switch state {
             case .loading:
                 break
@@ -78,7 +80,7 @@ fileprivate extension Reactive where Base: LineItemTableViewCell {
     }
 
     var descriptionContent: Binder<LabelContent.State.Presentation> {
-        return Binder(base) { view, state in
+        Binder(base) { view, state in
             switch state {
             case .loading:
                 break

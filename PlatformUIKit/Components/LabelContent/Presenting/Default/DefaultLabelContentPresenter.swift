@@ -26,7 +26,7 @@ public final class DefaultLabelContentPresenter: LabelContentPresenting {
 
     // MARK: - Private Accessors
 
-    private let interactor: LabelContentInteracting
+    public let interactor: LabelContentInteracting
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
