@@ -450,7 +450,7 @@ extension LocalizationConstants.SimpleBuy {
         }
 
         public static let cardNotice = NSLocalizedString(
-            "We will debit your payment method in 2 business days once your order is approved. Your final amount might change due to market activity.",
+            "Your final amount may change due to market activity",
             comment: "Simple buy: checkout screen notice label for card"
         )
 
