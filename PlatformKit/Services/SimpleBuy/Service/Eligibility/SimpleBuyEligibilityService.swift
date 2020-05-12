@@ -59,7 +59,8 @@ public final class SimpleBuyEligibilityService: SimpleBuyEligibilityServiceAPI {
                                         SimpleBuyPaymentMethod.MethodType.RawValue.bankTransfer,
                                         SimpleBuyPaymentMethod.MethodType.RawValue.card
                                     ],
-                                    token: payload.token)
+                                    token: payload.token
+                                )
                             }
                             .map { $0.eligible }
                     }
