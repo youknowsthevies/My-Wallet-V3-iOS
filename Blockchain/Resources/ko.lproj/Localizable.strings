@@ -37,7 +37,7 @@
         " = "\
  현재 이메일 알림이 활성화되어 있습니다. 이메일을 변경하면 이메일 알림이 비활성화됩니다. \
 ";
-" %@ (%@ %@)" = "%@ ( %@ %@ )";
+" %@ (%@ %@)" = "%1$@ ( %2$@ %3$@ )";
 " & " = "&";
 " and " = "과";
 " buy." = "구입.";
@@ -48,7 +48,7 @@
 "%@ Confirmations" = "%@ 확인";
 "%@ copied to clipboard" = "클립보드로 %@ 가 복사됨";
 "%@ needed to exchange" = "%@ 은 교환에 필요";
-"%@ of %@" = "%@ 의 %@";
+"%@ of %@" = "%1$@ 의 %2$@";
 "%@ payment request" = "%@ 지불 요청.";
 "%@ payment request." = "%@ 지불 요청.";
 "%@ Received" = "%@ 받은";
@@ -58,7 +58,7 @@
 "%d address" = "%d 주소";
 "%d addresses" = "%d 주소";
 "%d Confirmations" = "확인 %d 개";
-"%d login attempts left. Please enter your %@ 2FA code" = "로그인 시도가 %d 남았습니다. %@ 2FA 코드를 입력하십시오";
+"%d login attempts left. Please enter your %@ 2FA code" = "로그인 시도가 %1$d 남았습니다. %2$@ 2FA 코드를 입력하십시오";
 "%d Transactions" = "거래 %d 개";
 "%lld hours ago" = "%lld 시간 전";
 "%lld minutes ago" = "%lld 분 전";
@@ -126,7 +126,7 @@
 "An Error Occurred" = "오류가 발생했습니다";
 "An error occurred due to interruptions during PIN verification. Please close the app and try again." = "PIN 확인 중 중단으로 인해 오류가 발생했습니다. 앱을 닫고 다시 시도하십시오.";
 "An error occurred when getting an approximate quote. Please try again later. Details: %@" = "대략적인 견적을받을 때 오류가 발생했습니다. 나중에 다시 시도하세요. 세부 정보 : %@";
-"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "%@ 잔액을 가져 오는 중에 오류가 발생했습니다. 나중에 다시 시도하세요. 세부 사항 : %@";
+"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "%1$@ 잔액을 가져 오는 중에 오류가 발생했습니다. 나중에 다시 시도하세요. 세부 사항 : %2$@";
 "An error occurred when selecting your tier. Please try again later." = "계층을 선택할 때 오류가 발생했습니다. 나중에 다시 시도하십시오.";
 "An error occurred while changing 2-Step verification." = "2 단계 인증을 변경하는 중에 오류가 발생했습니다.";
 "An error occurred while copying your address to the clipboard. Please re-select the destination address or restart the app and try again." = "주소를 클립 보드에 복사하는 중에 오류가 발생했습니다. 대상 주소를 다시 선택하거나 앱을 다시 시작한 후 다시 시도하십시오.";
@@ -217,10 +217,10 @@
 "By creating a wallet you agree to Blockchain’s " = "지갑을 만들면 블록 체인의";
 "By creating a wallet you agree to Blockchain’s Terms of Services & Privacy Policy" = "지갑을 만들면 블록 체인의 서비스 약관 및 개인 정보 보호 정책에 동의하게됩니다";
 "By depositing funds to this account, you agree to " = "이 계좌에 자금을 입금함으로써 귀하는";
-"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "\"지금 시작\"을 누르면 블록 체인의 %@ 및 %@ 동의하는 것으로 간주됩니다";
+"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "\"지금 시작\"을 누르면 블록 체인의 %1$@ 및 %2$@ 동의하는 것으로 간주됩니다";
 "By tapping Begin Now, you agree to Coinify's Terms of Service & Privacy Policy" = "Begin Now (시작하기)를 누르면 Coinify의 서비스 약관 및 개인 정보 취급 방침에 동의하게됩니다.";
-"By tapping Submit, you agree to Blockchain’s %@ & %@" = "제출을 누르면 Blockchain의 %@ & %@ 동의하게됩니다.";
-"Calculating: Address %@ of %@" = "계산 : 주소 %@ of %@";
+"By tapping Submit, you agree to Blockchain’s %@ & %@" = "제출을 누르면 Blockchain의 %1$@ & %2$@ 동의하게됩니다.";
+"Calculating: Address %@ of %@" = "계산 : 주소 %1$@ of %2$@";
 "Camera Access Denied" = "카메라 접근 거부됨";
 "Canadian Dollar" = "캐나다 달러";
 "Cancel" = "취소";
@@ -241,7 +241,7 @@
 "Check out Swap" = "스왑 확인";
 "Check Your Inbox" = "받은 편지함을 확인";
 "Check your inbox." = "받은 편지함을 확인.";
-"Checking for more: Step %d of %d" = "추가 확인 중 : %d 의 단계 %d %d";
+"Checking for more: Step %d of %d" = "추가 확인 중 : %2$d 의 단계 %1$d %2$d";
 "Checking for Wallet updates" = "지갑 업데이트 확인 중";
 "Checkout" = "점검";
 "Checkout the Exchange" = "거래소 확인";
@@ -399,12 +399,12 @@
 "Ether Price" = "이더 가격";
 "Euro" = "유로";
 "Even better, since you need ETH to make USD PAX trades, we just airdropped enough ETH into your Wallet to cover your first 3 transactions 🙌🏻" = "더 좋은 점은 USD PAX 거래를하기 위해 ETH가 필요하기 때문에 처음 3 건의 거래를 처리하기 위해 월렛에 충분한 ETH를 송금했습니다.";
-"Every country has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "모든 국가에는 암호 화폐 구매 및 판매 방법에 대해 서로 다른 규칙이 있습니다. 눈을 떼지 말고 %s 출시하자마자 알려 드리겠습니다!";
+"Every country has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "모든 국가에는 암호 화폐 구매 및 판매 방법에 대해 서로 다른 규칙이 있습니다. 눈을 떼지 말고 %1$s 출시하자마자 알려 드리겠습니다!";
 "Every state has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "각 주마다 암호 화폐를 사고 파는 방법에 대해 서로 다른 규칙이 있습니다. 눈을 떼지 말고 %@ 에서 시작하자마자 알려 드리겠습니다!";
 "Everything you need to store, spend and receive BTC, ETH and BCH." = "BTC, ETH 및 BCH를 저장, 소비 및 받기 위해 필요한 모든 것.";
 "Exchange" = "교환";
 "Exchange %@ Address" = "교환 %@ 주소";
-"Exchange %@ for %@" = "%@ 대한 %@ 교환";
+"Exchange %@ for %@" = "%2$@ 대한 %1$@ 교환";
 "Exchange %@ Wallet" = "교환 %@ 지갑";
 "Exchange Completed" = "교환 완료";
 "Exchange In Progress" = "교환 진행 중";
@@ -442,7 +442,7 @@
 "Forget" = "잊다";
 "Forget Wallet" = "지갑 잊기";
 "Forgot Password?" = "비밀번호를 잊으 셨나요?\"";
-"Found %d, with %@" = "%@ 와 (과) %d 찾았습니다.";
+"Found %d, with %@" = "%2$@ 와 (과) %1$d 찾았습니다.";
 "fourth" = "네번째";
 "fourth word" = "네 번째 단어";
 "From" = "에서";
@@ -517,7 +517,7 @@
 "Introducing the Exchange" = "거래소 소개";
 "Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX = 1 USD." = "가치를 저장하는 데 사용할 수있는 안전하고 안정적인 암호화 자산 인 USD PAX를 소개합니다. 1 PAX = 1 USD입니다.";
 "Invalid %@ Address" = "잘못된 %@ 주소";
-"Invalid %@ address: %@" = "잘못된 %@ 주소 : %@";
+"Invalid %@ address: %@" = "잘못된 %1$@ 주소 : %2$@";
 "Invalid Bitcoin address: %@" = "잘못된 비트 코인 주소 : %@";
 "Invalid destination address" = "잘못된 목적지 주소";
 "Invalid email address." = "유효하지 않은 이메일 주소.";
@@ -578,7 +578,7 @@
 "Log In" = "로그인";
 "Log in to refresh addresses" = "로그인하여 주소 새로 고침";
 "Log in to Web Wallet" = "웹 월렛에 로그인";
-"Log in to your Blockchain Wallet via your PC or Mac at " = "%s 에서 PC 또는 Mac을 통해 Blockchain Wallet에 로그인하십시오.";
+"Log in to your Blockchain Wallet via your PC or Mac at " = "%1$s 에서 PC 또는 Mac을 통해 Blockchain Wallet에 로그인하십시오.";
 "Log Out" = "로그 아웃";
 "Login existing Wallet" = "기존 지갑에 로그인";
 "login.blockchain.com" = "login.blockchain.com";
@@ -671,7 +671,7 @@
 "OK" = "확인";
 "Once an order starts, we are unable to stop it." = "주문이 시작되면 주문을 중지 할 수 없습니다.";
 "Once we receive your bank transfer, your %@ buy order will complete." = "은행 송금이 접수되면 구매 주문이 완료됩니다.";
-"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "귀하의 자금을 받으면 %s 구매 주문을 시작합니다. 최종 금액은 시장 활동으로 인해 변경 될 수 있습니다. 요금이 부과 될 수 있습니다.";
+"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "귀하의 자금을 받으면 %1$s 구매 주문을 시작합니다. 최종 금액은 시장 활동으로 인해 변경 될 수 있습니다. 요금이 부과 될 수 있습니다.";
 "Once your verification is confirmed, you’ll automatically secure a spot in the Airdrop for Stacks." = "확인이 확인되면 Airdrop for Stacks에서 자동으로 자리를 확보하게됩니다.";
 "Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected." = "귀하의 이름으로 된 은행 계좌에서만 자금을 송금하십시오. 그렇지 않으면 입금이 지연되거나 거부 될 수 있습니다.";
 "Ooops! Something went wrong." = "너! 문제가 발생했습니다.";
@@ -744,12 +744,12 @@
 "Please review and confirm your " = "검토하고 확인하십시오";
 "Please select a different address to send from." = "보낼 다른 주소를 선택하십시오.";
 "Please send %@ to" = "%@ 을 (으)로 보내주십시오.";
-"Please send %@ to bitcoin address.\n%@" = "비트 코인 주소로 %@ 을 (를) 보내십시오. \
- %@";
+"Please send %@ to bitcoin address.\n%@" = "비트 코인 주소로 %1$@ 을 (를) 보내십시오. \
+ %2$@";
 "Please send BCH to the Bitcoin Cash address\n%@" = "비트 코인 현금 주소로 BCH를 보내십시오 \
  %@";
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "비트 코인 주소 ( <a href=\"https://blockchain.info/wallet/bitcoin-faq\"> 도움이 되십니까? </a> )로 지불하십시오 : %@";
-"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "은행 계좌에서 %s 을 (를) Blockchain.com으로 이체하십시오. 자금이 입금되면 %s 구매 주문이 생성됩니다.";
+"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "은행 계좌에서 %1$s 을 (를) Blockchain.com으로 이체하십시오. 자금이 입금되면 %2$s 구매 주문이 생성됩니다.";
 "Please try again" = "다시 해 보세요";
 "Please verify your email address first." = "이메일 주소를 먼저 확인하세요";
 "Please verify your mobile number first." = "먼저 휴대폰 번호를 확인하십시오.";
@@ -892,7 +892,7 @@
 "Stellar is an open-source, decentralized payment protocol that allows for fast and cheap cross-border transactions between any pair of currencies." = "스텔라는 오픈 소스, 분산 형 지불 프로토콜로 모든 통화 쌍 사이에서 빠르고 저렴한 국경 간 거래를 허용합니다.";
 "Stellar Price" = "스텔라 가격";
 "Stellar requires that all Stellar accounts hold a minimum balance of lumens, or XLM. This means you cannot send a balance out of your Stellar Wallet that would leave your Stellar Wallet with less than the minimum balance. This also means that in order to send XLM to a new Stellar account, you must send enough XLM to meet the minimum balance requirement." = "스텔라는 모든 스텔라 계정에 최소 루멘스 또는 XLM 균형을 유지해야합니다. 즉, 스텔라 월렛에서 최소 잔액보다 적은 금액으로 스텔라 월렛을 떠날 수있는 스텔라 지갑에서 잔액을 보낼 수 없습니다. 이것은 또한 XLM을 새로운 스텔라 계정으로 보내려면 최소 잔액 요구 사항을 충족시키기에 충분한 XLM을 보내야 함을 의미합니다.";
-"Step %d of %d" = "%d 의 단계 %d %d";
+"Step %d of %d" = "%1$d 의 단계 %1$d %2$d";
 "store" = "저장";
 "Stored" = "저장됨";
 "Street line" = "거리 선";
@@ -1029,9 +1029,9 @@
 "Transfer imported addresses?" = "가져온 주소를 이전 하시겠습니까?";
 "Transfer In Crypto" = "암호화로 전송";
 "Transferred" = "양도";
-"Transferred funds from %d %@" = "%d 에서 송금 %@";
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "%d %@ 에서 송금했습니다. %d %@ 이 너무 작습니다.";
-"Transferring all funds: Address %i of %i" = "모든 자금 이체 : 주소 %i 중 %i";
+"Transferred funds from %d %@" = "%1$d 에서 송금 %2$@";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "%1$d %2$@ 에서 송금했습니다. %3$d %4$@ 이 너무 작습니다.";
+"Transferring all funds: Address %i of %i" = "모든 자금 이체 : 주소 %1$i 중 %2$i";
 "Try again" = "다시 시도하십시오";
 "Try Again" = "다시 시도하십시오";
 "twelfth" = "열 두번째";
@@ -1182,7 +1182,7 @@
 "With Blockchain Airdrops, get free crypto sent right to your Blockchain Wallet." = "Blockchain Airdrops를 사용하면 무료 암호를 Blockchain Wallet으로 바로 보낼 수 있습니다.";
 "With Swap your crypto is safe, secure, and your keys are always intact." = "스왑을 사용하면 암호가 안전하고 안전하며 키는 항상 손상되지 않습니다.";
 "word" = "워드";
-"Word %@ of %@" = "%@ 의 단어 %@ %@";
+"Word %@ of %@" = "%1$@ 의 단어 %1$@ %2$@";
 "Would you like to add the bitcoin address %@ to your address book?" = "비트코인 주소 %@를 귀하 주소록에 추가하겠습니까?";
 "Would you like to archive the addresses used?" = "사용 된 주소를 보관 하시겠습니까?";
 "Would you like to tell us about your experience with Blockchain?" = "블록 체인 사용 경험에 대해 말씀해 주시겠습니까?";
@@ -1193,7 +1193,7 @@
 "XLM is a token that enables quick, low cost global transactions. Send, receive, and trade XLM in the wallet today." = "XLM은 빠르고 저렴한 글로벌 트랜잭션을 가능하게하는 토큰입니다. 오늘 지갑에서 XLM을 보내고 받고 교환하십시오.";
 "XLM Reserve Requirement" = "XLM 예약 요구 사항";
 "xxx" = "트리플 엑스";
-"xxx %@ (%@ %@)" = "xxx %@ ( %@ %@ )";
+"xxx %@ (%@ %@)" = "xxx %1$@ ( %2$@ %3$@ )";
 "year" = "년";
 "Year" = "년";
 "years" = "연령";
@@ -1230,13 +1230,13 @@
 "You must leave at least one active address" = "적어도 하나 이상 활성화 된 주소를 남겨야 합니다";
 "You need to confirm your email address so that we can keep you informed about your wallet." = "지갑에 대한 정보를 계속 받으려면 이메일 주소를 확인해야합니다.";
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "지갑 아이디와 암호가 있으면 항상 페어링 또는 로그인 하세요. 지갑을 복구하면 새 지갑 아이디가 만들어집니다. 계속하겠습니까?";
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "아주 낮은 수수료 %s를 제시했습니다. \
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "아주 낮은 수수료 %1$s를 제시했습니다. \
 \
-거래가 막히거나 확인이 안될 수 있습니다. 다음 1 시간 (6 블록)이내에 거래 승인이 될 확률을 높이려면 거래 수수료를 적어도 %s 이상으로 하기를 권합니다.";
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "매우 적은 거래 수수료 %@ . 거래가 중단되어 확인되지 않을 수 있습니다. 약 1 시간 (6 개 블록) 이내에 거래가 확인 될 가능성을 높이려면 %@ 이상의 수수료를 적극 권장합니다. 잔액이 충분하지 않기 때문에 송금액도 %@ 로 낮춰야합니다.";
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "아주 높은 수수료 %s를 제시했습니다. \
+거래가 막히거나 확인이 안될 수 있습니다. 다음 1 시간 (6 블록)이내에 거래 승인이 될 확률을 높이려면 거래 수수료를 적어도 %2$s 이상으로 하기를 권합니다.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "매우 적은 거래 수수료 %1$@ . 거래가 중단되어 확인되지 않을 수 있습니다. 약 1 시간 (6 개 블록) 이내에 거래가 확인 될 가능성을 높이려면 %2$@ 이상의 수수료를 적극 권장합니다. 잔액이 충분하지 않기 때문에 송금액도 %3$@ 로 낮춰야합니다.";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "아주 높은 수수료 %1$s를 제시했습니다. \
 \
-수수료를 %s로 내려도 다음 ~10분 이내(1 블록)에 거래 확인을 받을 수 있습니다.";
+수수료를 %2$s로 내려도 다음 ~10분 이내(1 블록)에 거래 확인을 받을 수 있습니다.";
 "You will be leaving the app." = "당신은 응용 프로그램을 떠날 것입니다.";
 "You will be redirected to\n%@." = "로 리디렉션됩니다 \
  %@ .";
@@ -1465,3 +1465,19 @@
 "You must have Gold Level verification status to add a credit card." = "신용 카드를 추가하려면 골드 레벨 인증 상태 여야합니다.";
 "Your local currency to store funds in that currency as funds in your Blockchain Wallet." = "해당 통화에 자금을 블록 체인 월렛에 자금으로 저장하기위한 현지 통화.";
 "Zip" = "지퍼";
+"123" = "123";
+"Cancelled" = "취소 된";
+"Card Not Supported" = "지원되지 않는 카드";
+"Finished" = "끝마친";
+"Invalid Card Number" = "유효하지 않은 카드 번호";
+"Invalid Cardholder Name" = "잘못된 카드 소지자 이름";
+"Invalid Email Address" = "잘못된 이메일 주소";
+"Invalid Expiry Date" = "유효하지 않은 만료 날짜";
+"Invalid Mobile Number" = "잘못된 휴대 전화 번호";
+"Invalid Wallet Identifier" = "잘못된 월렛 식별자";
+"MM/YY" = "MM / YY";
+"Passwords Do Not Match" = "비밀번호가 일치하지 않습니다";
+"Save My Card" = "내 카드 저장";
+"This card has already been saved" = "이 카드는 이미 저장되었습니다";
+"Waiting on Funds" = "자금 대기";
+"Your final amount may change due to market activity" = "시장 활동으로 인해 최종 금액이 변경 될 수 있습니다";
