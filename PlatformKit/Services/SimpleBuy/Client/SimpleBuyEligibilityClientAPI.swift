@@ -11,5 +11,7 @@ import RxSwift
 public protocol SimpleBuyEligibilityClientAPI: class {
     
     /// Streams a boolean value indicating whether the user can or cannot trade
-    func isEligible(for currency: String, token: String) -> Single<SimpleBuyEligibilityResponse>
+    func isEligible(for currency: String,
+                    methods: [String],
+                    token: String) -> Single<SimpleBuyEligibilityResponse>
 }

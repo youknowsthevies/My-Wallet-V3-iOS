@@ -35,6 +35,7 @@ public final class SimpleBuyClient: SimpleBuyClientAPI {
         static let currencyPair = "currencyPair"
         static let action = "action"
         static let amount = "amount"
+        static let methods = "methods"
     }
         
     private enum Path {
@@ -62,11 +63,16 @@ public final class SimpleBuyClient: SimpleBuyClientAPI {
     // MARK: - SimpleBuyEligibilityClientAPI
     
     public func isEligible(for currency: String,
+                           methods: [String],
                            token: String) -> Single<SimpleBuyEligibilityResponse> {
         let parameters = [
             URLQueryItem(
                 name: Parameter.fiatCurrency,
                 value: currency
+            ),
+            URLQueryItem(
+                name: Parameter.methods,
+                value: methods.joined(separator: ",")
             )
         ]
         let request = requestBuilder.get(
