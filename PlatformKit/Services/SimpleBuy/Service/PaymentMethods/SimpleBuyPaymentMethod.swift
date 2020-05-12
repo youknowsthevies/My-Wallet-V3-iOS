@@ -11,7 +11,7 @@ public struct SimpleBuyPaymentMethod: Equatable {
     
     public enum MethodType: Equatable {
         
-        private enum RawValue {
+        enum RawValue {
             static let card = "PAYMENT_CARD"
             static let bankTransfer = "BANK_ACCOUNT"
         }

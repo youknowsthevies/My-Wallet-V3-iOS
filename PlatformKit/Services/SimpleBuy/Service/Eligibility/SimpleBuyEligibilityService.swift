@@ -53,7 +53,13 @@ public final class SimpleBuyEligibilityService: SimpleBuyEligibilityServiceAPI {
                                     .map { (token: $0, currency: currency) }
                             }
                             .flatMap { payload in
-                                client.isEligible(for: payload.currency.code, token: payload.token)
+                                client.isEligible(
+                                    for: payload.currency.code,
+                                    methods: [
+                                        SimpleBuyPaymentMethod.MethodType.RawValue.bankTransfer,
+                                        SimpleBuyPaymentMethod.MethodType.RawValue.card
+                                    ],
+                                    token: payload.token)
                             }
                             .map { $0.eligible }
                     }
