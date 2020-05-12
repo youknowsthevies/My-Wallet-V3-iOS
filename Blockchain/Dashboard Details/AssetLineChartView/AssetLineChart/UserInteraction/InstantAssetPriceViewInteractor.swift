@@ -64,7 +64,7 @@ final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                 case (.value(let result), .selected(let index)):
                     let historicalPrices = result.historicalPrices
                     let currentFiatValue = result.currentFiatValue
-                    let prices = Array(historicalPrices.prices[0...index])
+                    let prices = Array(historicalPrices.prices[0...min(index, historicalPrices.prices.count - 1)])
                     let currencyCode = currentFiatValue.currencyCode
                     guard let selected = prices.last else { return .loading }
                     let priceInFiatValue = selected.toPriceInFiatValue(currencyCode: currencyCode)
