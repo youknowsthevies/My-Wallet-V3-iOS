@@ -164,7 +164,6 @@
 #define BC_STRING_MANUALLY NSLocalizedString(@"Manually", nil)
 #define BC_STRING_AUTOMATICALLY NSLocalizedString(@"Automatically", nil)
 #define BC_STRING_ENTER_PIN NSLocalizedString(@"Enter PIN", nil)
-#define BC_STRING_PLEASE_ENTER_PIN NSLocalizedString(@"Enter PIN", nil)
 #define BC_STRING_PLEASE_ENTER_NEW_PIN NSLocalizedString(@"Please enter a new PIN", nil)
 #define BC_STRING_CONFIRM_PIN NSLocalizedString(@"Confirm your PIN", nil)
 #define BC_STRING_WARNING_TITLE NSLocalizedString(@"Warning", nil)

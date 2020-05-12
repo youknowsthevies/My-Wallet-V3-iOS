@@ -143,7 +143,6 @@ public struct LocalizationConstants {
         public static let  BC_STRING_MANUALLY = NSLocalizedString("Manually", comment: "")
         public static let  BC_STRING_AUTOMATICALLY = NSLocalizedString("Automatically", comment: "")
         public static let  BC_STRING_ENTER_PIN = NSLocalizedString("Enter PIN", comment: "")
-        public static let  BC_STRING_PLEASE_ENTER_PIN = NSLocalizedString("", comment: "")
         public static let  BC_STRING_PLEASE_ENTER_NEW_PIN = NSLocalizedString("Please enter a new PIN", comment: "")
         public static let  BC_STRING_CONFIRM_PIN = NSLocalizedString("Confirm your PIN", comment: "")
         public static let  BC_STRING_WARNING_TITLE = NSLocalizedString("Warning", comment: "")
