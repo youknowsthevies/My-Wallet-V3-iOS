@@ -37,7 +37,7 @@
         " = "\
  În prezent, aveți activate notificările prin e-mail. Modificarea e-mailului va dezactiva notificările prin e-mail. \
 ";
-" %@ (%@ %@)" = "%@ ( %@ %@ )";
+" %@ (%@ %@)" = "%1$@ ( %2$@ %3$@ )";
 " & " = "&";
 " and " = "și";
 " buy." = "Cumpără.";
@@ -48,7 +48,7 @@
 "%@ Confirmations" = "%@ Confirmări";
 "%@ copied to clipboard" = "%@ copiate în clipboard";
 "%@ needed to exchange" = "%@ trebuia să facă schimb";
-"%@ of %@" = "%@ din %@";
+"%@ of %@" = "%1$@ din %2$@";
 "%@ payment request" = "%@ cerere de plată.";
 "%@ payment request." = "%@ cerere de plată.";
 "%@ Received" = "%@ Primit";
@@ -58,7 +58,7 @@
 "%d address" = "%d adresa";
 "%d addresses" = "%d adrese";
 "%d Confirmations" = "%d confirmări";
-"%d login attempts left. Please enter your %@ 2FA code" = "Au rămas %d încercări de conectare. Introduceți codul dvs. %@ 2FA";
+"%d login attempts left. Please enter your %@ 2FA code" = "Au rămas %1$d încercări de conectare. Introduceți codul dvs. %2$@ 2FA";
 "%d Transactions" = "%d tranzacţii";
 "%lld hours ago" = "%lld ore în urmă";
 "%lld minutes ago" = "%lld minute în urmă";
@@ -126,7 +126,7 @@
 "An Error Occurred" = "A aparut o eroare";
 "An error occurred due to interruptions during PIN verification. Please close the app and try again." = "A apărut o eroare din cauza întreruperilor din timpul verificării PIN. Închideți aplicația și încercați din nou.";
 "An error occurred when getting an approximate quote. Please try again later. Details: %@" = "A apărut o eroare la obținerea unui ofertă aproximativă. Vă rugăm să încercați din nou mai târziu. Detalii: %@";
-"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "A apărut o eroare la obținerea soldului %@ . Vă rugăm să încercați din nou mai târziu. Detalii: %@";
+"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "A apărut o eroare la obținerea soldului %1$@ . Vă rugăm să încercați din nou mai târziu. Detalii: %2$@";
 "An error occurred when selecting your tier. Please try again later." = "A apărut o eroare la selectarea nivelului dvs. Vă rugăm să încercați din nou mai târziu.";
 "An error occurred while changing 2-Step verification." = "A apărut o eroare la modificarea verificării în doi pași.";
 "An error occurred while copying your address to the clipboard. Please re-select the destination address or restart the app and try again." = "A apărut o eroare la copierea adresei în clipboard. Vă rugăm să selectați din nou adresa de destinație sau reporniți aplicația și încercați din nou.";
@@ -217,10 +217,10 @@
 "By creating a wallet you agree to Blockchain’s " = "Prin crearea unui portofel, sunteți de acord cu Blockchain";
 "By creating a wallet you agree to Blockchain’s Terms of Services & Privacy Policy" = "Prin crearea unui portofel, sunteți de acord cu Termenii de servicii și politica de confidențialitate de la Blockchain";
 "By depositing funds to this account, you agree to " = "Depunând fonduri în acest cont, sunteți de acord";
-"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "Apăsând „Începeți acum”, sunteți de acord cu %@ și %@ la Blockchain";
+"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "Apăsând „Începeți acum”, sunteți de acord cu %1$@ și %2$@ la Blockchain";
 "By tapping Begin Now, you agree to Coinify's Terms of Service & Privacy Policy" = "Prin apăsarea butonului Începeți acum, sunteți de acord cu Termenii și condițiile de coinficare și de politica de confidențialitate";
-"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Prin atingerea Submit, sunteți de acord cu blocarea %@ & %@";
-"Calculating: Address %@ of %@" = "Calcularea: adresa %@ din %@";
+"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Prin atingerea Submit, sunteți de acord cu blocarea %1$@ & %2$@";
+"Calculating: Address %@ of %@" = "Calcularea: adresa %1$@ din %2$@";
 "Camera Access Denied" = "Aparat de fotografiat acces refuzat";
 "Canadian Dollar" = "Dolarul canadian";
 "Cancel" = "Anulare";
@@ -241,7 +241,7 @@
 "Check out Swap" = "Aflați Swap";
 "Check Your Inbox" = "Verifica-ti casuta";
 "Check your inbox." = "Verifica-ti casuta.";
-"Checking for more: Step %d of %d" = "Se verifică mai multe: Pasul %d din %d";
+"Checking for more: Step %d of %d" = "Se verifică mai multe: Pasul %1$d din %2$d";
 "Checking for Wallet updates" = "Verificarea pentru portofel actualizări";
 "Checkout" = "Verifică";
 "Checkout the Exchange" = "Verificați schimbul";
@@ -401,12 +401,12 @@
 "Ether Price" = "Pret eter";
 "Euro" = "Euro";
 "Even better, since you need ETH to make USD PAX trades, we just airdropped enough ETH into your Wallet to cover your first 3 transactions 🙌🏻" = "Chiar mai bine, din moment ce aveți nevoie de ETH pentru a efectua tranzacții USD PAX, am trimis doar ETH suficient în Wallet pentru a acoperi primele 3 tranzacții 🙌🏻";
-"Every country has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Fiecare țară are reguli diferite despre cumpărarea și vânzarea criptomonedelor. Ține-ți ochii decojiți și te vom anunța imediat ce vom lansa în %s !";
+"Every country has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Fiecare țară are reguli diferite despre cumpărarea și vânzarea criptomonedelor. Ține-ți ochii decojiți și te vom anunța imediat ce vom lansa în %1$s !";
 "Every state has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Fiecare stat are reguli diferite cu privire la cumpărarea și vânzarea criptomonedelor. Ține-ți ochii decojiți, te vom anunța imediat ce vom lansa în %@ !";
 "Everything you need to store, spend and receive BTC, ETH and BCH." = "Tot ce ai nevoie pentru a stoca, cheltui și primi BTC, ETH și BCH.";
 "Exchange" = "schimb valutar";
 "Exchange %@ Address" = "Faceți schimb de adresă %@";
-"Exchange %@ for %@" = "Schimbă %@ pentru %@";
+"Exchange %@ for %@" = "Schimbă %1$@ pentru %2$@";
 "Exchange %@ Wallet" = "Exchange %@ Portofel";
 "Exchange Completed" = "Schimbul este finalizat";
 "Exchange In Progress" = "Schimb în curs";
@@ -444,7 +444,7 @@
 "Forget" = "A uita";
 "Forget Wallet" = "Uita de portofel";
 "Forgot Password?" = "Ați uitat parola?\"";
-"Found %d, with %@" = "Găsit %d , cu %@";
+"Found %d, with %@" = "Găsit %1$d , cu %2$@";
 "fourth" = "Al patrulea";
 "fourth word" = "al patrulea cuvânt";
 "From" = "Din";
@@ -519,7 +519,7 @@
 "Introducing the Exchange" = "Prezentarea schimbului";
 "Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX = 1 USD." = "Introducerea USD PAX, un activ criptat sigur și stabil pe care îl puteți utiliza pentru a stoca valoarea. 1 PAX = 1 USD.";
 "Invalid %@ Address" = "Adresa %@ nevalidă";
-"Invalid %@ address: %@" = "Adresa %@ nevalidă: %@";
+"Invalid %@ address: %@" = "Adresa %1$@ nevalidă: %2$@";
 "Invalid Bitcoin address: %@" = "Adresa Bitcoin nevalidă: %@";
 "Invalid destination address" = "Adresa de destinație nevalidă";
 "Invalid email address." = "Adresă e-mail nevalidă.";
@@ -580,7 +580,7 @@
 "Log In" = "Logare";
 "Log in to refresh addresses" = "Conectați-vă pentru a actualiza adresele";
 "Log in to Web Wallet" = "Conectați-vă la Google Wallet";
-"Log in to your Blockchain Wallet via your PC or Mac at " = "Conectați-vă la portofelul Blockchain prin computer sau Mac la %s .";
+"Log in to your Blockchain Wallet via your PC or Mac at " = "Conectați-vă la portofelul Blockchain prin computer sau Mac la %1$s .";
 "Log Out" = "Deconectați-vă";
 "Login existing Wallet" = "Conectare existente portofel";
 "login.blockchain.com" = "login.blockchain.com";
@@ -673,7 +673,7 @@
 "OK" = "O.K";
 "Once an order starts, we are unable to stop it." = "Odată ce începe o comandă, nu putem să o oprim.";
 "Once we receive your bank transfer, your %@ buy order will complete." = "Odată ce vom primi transferul bancar, comanda dvs. de cumpărare va fi finalizată.";
-"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "După ce primim fondurile dvs., vom începe comanda dvs. de cumpărare de %s . Rețineți, valoarea dvs. finală s-ar putea modifica în funcție de activitatea pieței datorată. Se pot aplica comisioane.";
+"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "După ce primim fondurile dvs., vom începe comanda dvs. de cumpărare de %1$s . Rețineți, valoarea dvs. finală s-ar putea modifica în funcție de activitatea pieței datorată. Se pot aplica comisioane.";
 "Once your verification is confirmed, you’ll automatically secure a spot in the Airdrop for Stacks." = "După confirmarea verificării, veți asigura automat un loc în Airdrop pentru stive.";
 "Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected." = "Trimiteți numai fonduri dintr-un cont bancar pe numele dvs. În caz contrar, depunerea dvs. poate fi amânată sau respinsă.";
 "Ooops! Something went wrong." = "Hopa! Ceva n-a mers bine.";
@@ -746,12 +746,12 @@
 "Please review and confirm your " = "Vă rugăm să verificați și să confirmați";
 "Please select a different address to send from." = "Vă rugăm să selectați o altă adresă de la care să trimiteți.";
 "Please send %@ to" = "Trimiteți %@ la";
-"Please send %@ to bitcoin address.\n%@" = "Vă rugăm să trimiteți %@ la adresa bitcoin. \
- %@";
+"Please send %@ to bitcoin address.\n%@" = "Vă rugăm să trimiteți %1$@ la adresa bitcoin. \
+ %2$@";
 "Please send BCH to the Bitcoin Cash address\n%@" = "Vă rugăm să trimiteți BCH la adresa Bitcoin Cash \
  %@";
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "Vă rugăm să trimiteți plata la adresa bitcoin ( <a href=\"https://blockchain.info/wallet/bitcoin-faq\"> ajutor? </a> ): %@";
-"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Vă rugăm să transferați %s din contul dvs. bancar pe Blockchain.com. Odată ce primim fondurile, vom crea comanda dvs. de cumpărare %s .";
+"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Vă rugăm să transferați %1$s din contul dvs. bancar pe Blockchain.com. Odată ce primim fondurile, vom crea comanda dvs. de cumpărare %2$s .";
 "Please try again" = "Vă rugăm să încercaţi din nou";
 "Please verify your email address first." = "Vă rugăm să verificaţi adresa de e-mail în primul rând.";
 "Please verify your mobile number first." = "Verificați mai întâi numărul de telefon mobil.";
@@ -894,7 +894,7 @@
 "Stellar is an open-source, decentralized payment protocol that allows for fast and cheap cross-border transactions between any pair of currencies." = "Stellar este un protocol de plată descentralizat open-source, care permite tranzacții transfrontaliere rapide și ieftine între orice pereche de valute.";
 "Stellar Price" = "Preț stelar";
 "Stellar requires that all Stellar accounts hold a minimum balance of lumens, or XLM. This means you cannot send a balance out of your Stellar Wallet that would leave your Stellar Wallet with less than the minimum balance. This also means that in order to send XLM to a new Stellar account, you must send enough XLM to meet the minimum balance requirement." = "Stellar cere ca toate conturile Stelare să aibă un echilibru minim de lumeni sau XLM. Aceasta înseamnă că nu puteți să trimiteți un echilibru din portofelul stelar, care ar lăsa portofelul stelar cu mai puțin decât soldul minim. De asemenea, acest lucru înseamnă că, pentru a trimite XLM la un nou cont Stellar, trebuie să trimiteți suficiente XLM pentru a satisface cerința minimă de echilibru.";
-"Step %d of %d" = "Pasul %d din %d";
+"Step %d of %d" = "Pasul %1$d din %2$d";
 "store" = "magazin";
 "Stored" = "Stocate";
 "Street line" = "Linia stradală";
@@ -1033,9 +1033,9 @@
 "Transfer imported addresses?" = "Transferați adrese importate?";
 "Transfer In Crypto" = "Transfer în Crypto";
 "Transferred" = "transferat";
-"Transferred funds from %d %@" = "Transferuri de fonduri de la %d %@";
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Transferuri de fonduri de la %d %@ . Rezultatele pentru %d %@ au fost prea mici.";
-"Transferring all funds: Address %i of %i" = "Transferul tuturor fondurilor: adresa %i a %i";
+"Transferred funds from %d %@" = "Transferuri de fonduri de la %1$d %2$@";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Transferuri de fonduri de la %1$d %2$@ . Rezultatele pentru %3$d %4$@ au fost prea mici.";
+"Transferring all funds: Address %i of %i" = "Transferul tuturor fondurilor: adresa %1$i a %2$i";
 "Try again" = "Încearcă din nou";
 "Try Again" = "Încearcă din nou";
 "twelfth" = "al doisprezecelea";
@@ -1186,7 +1186,7 @@
 "With Blockchain Airdrops, get free crypto sent right to your Blockchain Wallet." = "Cu Blockchain Airdrops, primiți cripto gratuit trimis direct în portofelul dvs. Blockchain.";
 "With Swap your crypto is safe, secure, and your keys are always intact." = "Cu Swap, cripto-ul dvs. este în siguranță, iar tastele dvs. sunt întotdeauna intacte.";
 "word" = "cuvânt";
-"Word %@ of %@" = "Cuvânt %@ din %@";
+"Word %@ of %@" = "Cuvânt %1$@ din %2$@";
 "Would you like to add the bitcoin address %@ to your address book?" = "Doriţi să adăugaţi bitcoin adresa %@ în agendă?";
 "Would you like to archive the addresses used?" = "Doriți să arhivați adresele utilizate?";
 "Would you like to tell us about your experience with Blockchain?" = "Doriți să ne spuneți despre experiența dvs. cu Blockchain?";
@@ -1197,7 +1197,7 @@
 "XLM is a token that enables quick, low cost global transactions. Send, receive, and trade XLM in the wallet today." = "XLM este un simbol care permite tranzacții globale rapide și cu costuri reduse. Trimiteți, primiți și tranzacționați XLM în portofel astăzi.";
 "XLM Reserve Requirement" = "Cerința de rezervă XLM";
 "xxx" = "xxx";
-"xxx %@ (%@ %@)" = "xxx %@ ( %@ %@ )";
+"xxx %@ (%@ %@)" = "xxx %1$@ ( %2$@ %3$@ )";
 "year" = "an";
 "Year" = "An";
 "years" = "ani";
@@ -1234,13 +1234,13 @@
 "You must leave at least one active address" = "Trebuie să lăsaţi cel puţin o adresă activ";
 "You need to confirm your email address so that we can keep you informed about your wallet." = "Trebuie să confirmați adresa dvs. de e-mail, astfel încât să vă putem ține la curent cu portofelul.";
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "Tu ar trebui să întotdeauna pereche sau login dacă aveţi acces la portofel ID-ul şi parola. Recuperarea fondurilor dumneavoastră va crea un nou portofel ID. Doriţi să continuaţi?";
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Ați specificat o taxă de tranzacție excepțional de mică de %s . \
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Ați specificat o taxă de tranzacție excepțional de mică de %1$s . \
 \
- Tranzacția dvs. poate fi blocată și, eventual, nu poate fi confirmată. Pentru a crește probabilitatea ca tranzacția dvs. să confirme în aproximativ o oră (6 blocuri), vă recomandăm cu insistență o taxă de cel puțin %s .";
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Ați specificat o taxă de tranzacție deosebit de mică de %@ . Tranzacția dvs. poate rămâne blocată și, eventual, nu se confirmă niciodată. Pentru a crește probabilitatea de confirmare a tranzacției dvs. în aproximativ o oră (șase blocuri), vă recomandăm cu tarie o taxă de cel puțin %@ . Deoarece nu aveți suficiente fonduri, asta înseamnă că suma Trimitere va trebui redusă la %@ .";
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Ați specificat o taxă de tranzacție neobișnuit de mare de %s . \
+ Tranzacția dvs. poate fi blocată și, eventual, nu poate fi confirmată. Pentru a crește probabilitatea ca tranzacția dvs. să confirme în aproximativ o oră (6 blocuri), vă recomandăm cu insistență o taxă de cel puțin %2$s .";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Ați specificat o taxă de tranzacție deosebit de mică de %1$@ . Tranzacția dvs. poate rămâne blocată și, eventual, nu se confirmă niciodată. Pentru a crește probabilitatea de confirmare a tranzacției dvs. în aproximativ o oră (șase blocuri), vă recomandăm cu tarie o taxă de cel puțin %2$@ . Deoarece nu aveți suficiente fonduri, asta înseamnă că suma Trimitere va trebui redusă la %3$@ .";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Ați specificat o taxă de tranzacție neobișnuit de mare de %1$s . \
 \
- Chiar dacă reduceți comisionul la %s , vă puteți aștepta ca tranzacția să confirme în următoarele 10 minute (1 bloc).";
+ Chiar dacă reduceți comisionul la %2$s , vă puteți aștepta ca tranzacția să confirme în următoarele 10 minute (1 bloc).";
 "You will be leaving the app." = "Veți părăsi aplicația.";
 "You will be redirected to\n%@." = "Vei fi redirecționat către \
  %@ .";
@@ -1469,3 +1469,19 @@
 "You must have Gold Level verification status to add a credit card." = "Pentru a adăuga un card de credit, trebuie să aveți starea de verificare a nivelului de aur.";
 "Your local currency to store funds in that currency as funds in your Blockchain Wallet." = "Moneda dvs. locală pentru a stoca fonduri în această monedă ca fonduri în portofelul Blockchain.";
 "Zip" = "Zip";
+"123" = "123";
+"Cancelled" = "Anulat";
+"Card Not Supported" = "Cardul nu este acceptat";
+"Finished" = "Terminat";
+"Invalid Card Number" = "Numar de card invalid";
+"Invalid Cardholder Name" = "Nume titular nevalid";
+"Invalid Email Address" = "Adresa email invalida";
+"Invalid Expiry Date" = "Data de expirare nevalidă";
+"Invalid Mobile Number" = "Număr de telefon invalid";
+"Invalid Wallet Identifier" = "Identificator de portofel nevalid";
+"MM/YY" = "LUNĂ AN";
+"Passwords Do Not Match" = "Parolele nu se potrivesc";
+"Save My Card" = "Salvați cardul meu";
+"This card has already been saved" = "Acest card a fost deja salvat";
+"Waiting on Funds" = "Așteptarea fondurilor";
+"Your final amount may change due to market activity" = "Suma finală se poate modifica din cauza activității de pe piață";
