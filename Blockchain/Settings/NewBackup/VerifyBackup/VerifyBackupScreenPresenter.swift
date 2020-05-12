@@ -13,27 +13,29 @@ import RxCocoa
 
 final class VerifyBackupScreenPresenter {
     
+    // MARK: - Types
+    
     private typealias AccessibilityId = Accessibility.Identifier.Backup.VerifyBackup
     
     // MARK: - Navigation Properties
     
     var trailingButton: Screen.Style.TrailingButton {
-        return .none
+        .none
     }
     
     var leadingButton: Screen.Style.LeadingButton {
-        return .back
+        .back
     }
     
     var titleView: Screen.Style.TitleView {
-        return .text(value: LocalizationConstants.VerifyBackupScreen.title)
+        .text(value: LocalizationConstants.VerifyBackupScreen.title)
     }
     
     var barStyle: Screen.Style.Bar {
-        return .darkContent(ignoresStatusBar: false, background: .white)
+        .darkContent(ignoresStatusBar: false, background: .white)
     }
     
-    // MARK: - Public Properties
+    // MARK: - View Models
     
     let verifyButtonViewModel: ButtonViewModel
     
@@ -47,21 +49,28 @@ final class VerifyBackupScreenPresenter {
     // MARK: - Rx
     
     var errorDescriptionVisibility: Driver<Visibility> {
-        return errorDescriptionVisibilityRelay.asDriver()
+        errorDescriptionVisibilityRelay.asDriver()
     }
     
-    // MARK: - Private Properties
+    // MARK: - Injected
     
+    private let loadingViewPresenter: LoadingViewPresenting
+    private let stateService: BackupRouterStateServiceAPI
+    private let service: RecoveryPhraseVerifyingServiceAPI
+    
+    // MARK: - Accessors
+    
+    private let errorDescriptionVisibilityRelay = BehaviorRelay(value: Visibility.hidden)
     private let disposeBag = DisposeBag()
-    private let errorDescriptionVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
-    private unowned let stateService: BackupRouterStateServiceAPI
     
     // MARK: - Init
     
     init(stateService: BackupRouterStateService,
          service: RecoveryPhraseVerifyingServiceAPI,
-         loadingViewPresenting: LoadingViewPresenting = LoadingViewPresenter.shared) {
+         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared) {
         self.stateService = stateService
+        self.loadingViewPresenter = loadingViewPresenter
+        self.service = service
         
         let subset = service.selection
         let mnemonic = service.phraseComponents
@@ -107,20 +116,29 @@ final class VerifyBackupScreenPresenter {
             accessibilityId: AccessibilityId.verifyBackupButton
         )
         
-        let isValidObservable = Observable.combineLatest(
-            firstTextFieldViewModel.state,
-            secondTextFieldViewModel.state,
-            thirdTextFieldViewModel.state
-            ).map { $0.0.isValid && $0.1.isValid && $0.2.isValid }
+        let states = Observable
+            .combineLatest(
+                firstTextFieldViewModel.state,
+                secondTextFieldViewModel.state,
+                thirdTextFieldViewModel.state
+            )
+            .share(replay: 1)
             
-        isValidObservable
+        let isValid = states
+            .map { $0.0.isValid && $0.1.isValid && $0.2.isValid }
+            .share(replay: 1)
+        
+        isValid
             .bind(to: verifyButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
-        // TODO: Handle the empty state. e.g. If all the fields are
-        // empty, we shouldn't show the error label.
-        isValidObservable
-            .map { $0 == true ? .hidden : .visible }
+        let isEmpty = states
+            .map { $0.0.isEmpty || $0.1.isEmpty || $0.2.isEmpty }
+        
+        Observable
+            .combineLatest(isValid, isEmpty)
+            .map { $0.0 || $0.1 }
+            .map { $0 ? .hidden : .visible }
             .bind(to: errorDescriptionVisibilityRelay)
             .disposed(by: disposeBag)
         
@@ -130,23 +148,26 @@ final class VerifyBackupScreenPresenter {
                 .milliseconds(500),
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
             )
-            .show(
-                loader: loadingViewPresenting,
-                style: .circle,
-                text: LocalizationConstants.syncingWallet
-            )
             .bind(weak: self) { (self) in
-                service.markBackupVerified()
-                    .andThen(Observable.just(()))
-                    .mapToVoid()
-                    .hideLoaderOnDisposal(loader: loadingViewPresenting)
-                    .bind(to: stateService.nextRelay)
-                    .disposed(by: self.disposeBag)
+                self.markBackupVerified()
             }
             .disposed(by: disposeBag)
     }
     
     func navigationBarLeadingButtonTapped() {
         stateService.previousRelay.accept(())
+    }
+    
+    private func markBackupVerified() {
+        service.markBackupVerified()
+            .handleLoaderForLifecycle(
+                loader: loadingViewPresenter,
+                style: .circle,
+                text: LocalizationConstants.syncingWallet
+            )
+            .andThen(Observable.just(()))
+            .mapToVoid()
+            .bind(to: stateService.nextRelay)
+            .disposed(by: disposeBag)
     }
 }

@@ -10,6 +10,6 @@ import RxSwift
 
 // TICKET: IOS-2848 - Move Mnemonic Verification Logic from JS to Swift
 protocol MnemonicVerificationAPI: class {
-    var isVerified: Observable<Bool> { get }
+    var isVerified: Single<Bool> { get }
     func verifyMnemonicAndSync() -> Completable
 }

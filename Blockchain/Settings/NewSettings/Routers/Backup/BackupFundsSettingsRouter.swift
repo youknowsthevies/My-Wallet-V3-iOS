@@ -62,7 +62,7 @@ final class BackupFundsSettingsRouter: BackupRouterAPI, Router {
         case .backupFunds(let presentationType, let entry):
             showBackupFunds(presentationType: presentationType, entry: entry)
         case .recovery:
-            let presenter = RecoveryPhraseScreenPresenter(stateService: stateService, services: serviceProvider)
+            let presenter = RecoveryPhraseScreenPresenter(stateService: stateService, serviceProvider: serviceProvider)
             let controller = RecoveryPhraseViewController(presenter: presenter)
             navigationControllerAPI?.pushViewController(controller, animated: true)
         case .verification:

@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
-import PlatformKit
 import RxSwift
 import RxRelay
+import PlatformKit
+import PlatformUIKit
 
 class RecoveryPhraseViewModel {
     
@@ -23,8 +23,8 @@ class RecoveryPhraseViewModel {
     // MARK: - Public Properties
     
     var words: Observable<[LabelContent]> {
-        return wordsRelay.map {
-            return $0.enumerated().map {
+        wordsRelay.map {
+            $0.enumerated().map {
                 LabelContent(
                     text: $0.element,
                     font: .main(.semibold, 16.0),
@@ -54,10 +54,11 @@ class RecoveryPhraseViewModel {
         
         self.mnemonicAPI = mnemonicAPI
         self.copyButtonViewModel = .secondary(with: LocalizationConstants.RecoveryPhraseScreen.copyToClipboard)
-        Observable.zip(self.copyButtonViewModel.tapRelay, mnemonicAPI.mnemonic.asObservable())
-            .bind { [weak self] (_, mnemonic) in
-                guard let self = self else { return }
-                
+
+        copyButtonViewModel.tapRelay
+            .withLatestFrom(mnemonicAPI.mnemonic.asObservable())
+            .observeOn(MainScheduler.instance)
+            .bind(weak: self) { (self, mnemonic) in
                 pasteboarding.string = mnemonic
                 
                 let theme = ButtonViewModel.Theme(
@@ -65,12 +66,27 @@ class RecoveryPhraseViewModel {
                     contentColor: .white,
                     text: LocalizationConstants.Address.copiedButton
                 )
-                
                 self.copyButtonViewModel.animate(theme: theme)
-                
+                                
                 let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
                 feedbackGenerator.prepare()
                 feedbackGenerator.impactOccurred()
+            }
+            .disposed(by: disposeBag)
+        
+        copyButtonViewModel.tapRelay
+            .debounce(
+                .seconds(3),
+                scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
+            )
+            .observeOn(MainScheduler.instance)
+            .bind(weak: self) { (self, mnemonic) in
+                let theme = ButtonViewModel.Theme(
+                    backgroundColor: .white,
+                    contentColor: .primaryButton,
+                    text: LocalizationConstants.RecoveryPhraseScreen.copyToClipboard
+                )
+                self.copyButtonViewModel.animate(theme: theme)
             }
             .disposed(by: disposeBag)
     }

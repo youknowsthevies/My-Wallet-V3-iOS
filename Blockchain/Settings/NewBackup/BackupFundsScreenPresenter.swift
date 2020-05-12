@@ -20,7 +20,12 @@ final class BackupFundsScreenPresenter {
     // MARK: - Navigation Properties
     
     var trailingButton: Screen.Style.TrailingButton {
-        return .none
+        switch entry {
+        case .settings:
+            return .none
+        case .custody:
+            return .close
+        }
     }
     
     var leadingButton: Screen.Style.LeadingButton {
@@ -28,7 +33,7 @@ final class BackupFundsScreenPresenter {
         case .settings:
             return .back
         case .custody:
-            return .close
+            return .none
         }
     }
     

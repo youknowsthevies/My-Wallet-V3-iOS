@@ -333,6 +333,15 @@ extension TextFieldViewModel {
                 return nil
             }
         }
+        
+        public var isEmpty: Bool {
+            switch self {
+            case .empty:
+                return true
+            default:
+                return false
+            }
+        }
 
         var isInvalid: Bool {
             switch self {

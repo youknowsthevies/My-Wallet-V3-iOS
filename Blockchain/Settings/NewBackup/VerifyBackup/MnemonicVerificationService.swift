@@ -23,19 +23,23 @@ final class MnemonicVerificationService: MnemonicVerificationAPI {
     
     // MARK: - MnemonicVerificationAPI
     
-    var isVerified: Observable<Bool> {
-        return Observable.just(wallet.isRecoveryPhraseVerified())
+    var isVerified: Single<Bool> {
+        Single
+            .just(wallet.isRecoveryPhraseVerified())
+            .subscribeOn(jsScheduler)
     }
     
     func verifyMnemonicAndSync() -> Completable {
-        return Completable.create { [weak self] observer -> Disposable in
-            guard let self = self else { return Disposables.create() }
-            self.wallet.markRecoveryPhraseVerified(completion: {
-                observer(.completed)
-            }, error: {
-                observer(.error(ServiceError.mnemonicVerificationError))
-            })
-            return Disposables.create()
-        }
+        Completable
+            .create { [weak self] observer -> Disposable in
+                guard let self = self else { return Disposables.create() }
+                self.wallet.markRecoveryPhraseVerified(completion: {
+                    observer(.completed)
+                }, error: {
+                    observer(.error(ServiceError.mnemonicVerificationError))
+                })
+                return Disposables.create()
+            }
+            .subscribeOn(jsScheduler)
     }
 }

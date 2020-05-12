@@ -14,49 +14,49 @@ final class RecoveryPhraseScreenPresenter {
     
     private typealias AccessibilityId = Accessibility.Identifier.Backup.RecoveryPhrase
     
-    // MARK: - Private Properties
+    // MARK: - Navigation Properties
     
-    private unowned let stateService: BackupRouterStateService
-    private weak var services: BackupFundsServiceProviderAPI?
-    private let disposeBag = DisposeBag()
+    var trailingButton: Screen.Style.TrailingButton {
+        .none
+    }
     
-    // MARK: - Public Properties
+    var leadingButton: Screen.Style.LeadingButton {
+        .back
+    }
+    
+    var titleView: Screen.Style.TitleView {
+        .text(value: LocalizationConstants.RecoveryPhraseScreen.title)
+    }
+    
+    var barStyle: Screen.Style.Bar {
+        .darkContent(ignoresStatusBar: false, background: .white)
+    }
+    
+    // MARK: - View Models
     
     let recoveryViewModel: RecoveryPhraseViewModel
     let nextViewModel: ButtonViewModel
     let title = LocalizationConstants.RecoveryPhraseScreen.title
     let subtitle: LabelContent
     let description: LabelContent
+        
+    // MARK: - Injected
     
-    // MARK: - Navigation Properties
-    
-    var trailingButton: Screen.Style.TrailingButton {
-        return .none
-    }
-    
-    var leadingButton: Screen.Style.LeadingButton {
-        return .back
-    }
-    
-    var titleView: Screen.Style.TitleView {
-        return .text(value: LocalizationConstants.RecoveryPhraseScreen.title)
-    }
-    
-    var barStyle: Screen.Style.Bar {
-        return .darkContent(ignoresStatusBar: false, background: .white)
-    }
+    private let stateService: BackupRouterStateService
+    private let disposeBag = DisposeBag()
     
     // MARK: - Init
     
     init(stateService: BackupRouterStateService,
-         services: BackupFundsServiceProviderAPI) {
+         serviceProvider: BackupFundsServiceProviderAPI) {
         self.stateService = stateService
-        self.services = services
-        self.recoveryViewModel = RecoveryPhraseViewModel(
-            mnemonicAPI: services.mnemonicAccessAPI,
-            mnemonicComponentsProviding: services.mnemonicComponentsProviding
+        
+        recoveryViewModel = RecoveryPhraseViewModel(
+            mnemonicAPI: serviceProvider.mnemonicAccessAPI,
+            mnemonicComponentsProviding: serviceProvider.mnemonicComponentsProviding
         )
-        self.nextViewModel = .primary(
+        
+        nextViewModel = .primary(
             with: LocalizationConstants.RecoveryPhraseScreen.next,
             accessibilityId: AccessibilityId.clipboardButton
         )
@@ -67,6 +67,7 @@ final class RecoveryPhraseScreenPresenter {
             color: .textFieldText,
             accessibility: .id(AccessibilityId.subtitleLabel)
         )
+        
         description = LabelContent(
             text: LocalizationConstants.RecoveryPhraseScreen.description,
             font: .main(.medium, 14.0),
@@ -74,11 +75,11 @@ final class RecoveryPhraseScreenPresenter {
             accessibility: .id(AccessibilityId.descriptionLabel)
         )
         
-        Observable.combineLatest(self.nextViewModel.tapRelay, services.mnemonicComponentsProviding.components)
-            .bind { [weak self] in
-                guard let self = self else { return }
-                self.services?.recoveryPhraseVerifyingAPI.phraseComponents = $0.1
-                self.services?.recoveryPhraseVerifyingAPI.selection = $0.1.pick(3)
+        nextViewModel.tapRelay
+            .withLatestFrom(serviceProvider.mnemonicComponentsProviding.components)
+            .bind { components in
+                serviceProvider.recoveryPhraseVerifyingAPI.phraseComponents = components
+                serviceProvider.recoveryPhraseVerifyingAPI.selection = components.pick(3)
                 stateService.nextRelay.accept(())
             }
             .disposed(by: disposeBag)

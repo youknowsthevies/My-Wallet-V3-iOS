@@ -15,6 +15,9 @@ final class RecoveryPhraseView: UIView {
     // MARK: - Public Properties
     
     var viewModel: RecoveryPhraseViewModel! {
+        willSet {
+            disposeBag = DisposeBag()
+        }
         didSet {
             viewModel.words
                 .bind(to: rx.mnemonicContent)
@@ -47,7 +50,7 @@ final class RecoveryPhraseView: UIView {
     // MARK: - Private Properties
     
     fileprivate var labels: [UILabel] {
-        return [
+        [
             firstLabel,
             secondLabel,
             thirdLabel,
@@ -63,7 +66,7 @@ final class RecoveryPhraseView: UIView {
         ]
     }
     
-    private let disposeBag = DisposeBag()
+    private var disposeBag = DisposeBag()
     
     // MARK: - Setup
     
@@ -88,7 +91,7 @@ final class RecoveryPhraseView: UIView {
 
 fileprivate extension Reactive where Base: RecoveryPhraseView {
     var mnemonicContent: Binder<([LabelContent])> {
-        return Binder(base) { view, payload in
+        Binder(base) { view, payload in
             payload.enumerated().forEach { value in
                 view.labels[value.0].content = value.1
             }

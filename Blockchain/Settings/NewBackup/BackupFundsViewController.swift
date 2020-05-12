@@ -40,7 +40,6 @@ final class BackupFundsViewController: BaseScreenViewController {
         super.viewDidLoad()
         setupNavigationBar()
         applyAnimation()
-        title = LocalizationConstants.BackupFundsScreen.title
         subtitleLabel.content = presenter.subtitle
         primaryDescriptionLabel.content = presenter.primaryDescription
         secondaryDescriptionLabel.content = presenter.secondaryDescription
@@ -52,8 +51,8 @@ final class BackupFundsViewController: BaseScreenViewController {
     private func setupNavigationBar() {
         titleViewStyle = .text(value: LocalizationConstants.BackupFundsScreen.title)
         set(barStyle: .darkContent(ignoresStatusBar: false, background: .white),
-        leadingButtonStyle: presenter.leadingButton,
-        trailingButtonStyle: presenter.trailingButton)
+            leadingButtonStyle: presenter.leadingButton,
+            trailingButtonStyle: presenter.trailingButton)
     }
     
     private func applyAnimation() {

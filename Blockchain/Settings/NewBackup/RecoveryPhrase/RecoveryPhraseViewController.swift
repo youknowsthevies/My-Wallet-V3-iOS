@@ -37,7 +37,6 @@ final class RecoveryPhraseViewController: BaseScreenViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
-        title = presenter.title
         subtitleLabel.content = presenter.subtitle
         descriptionLabel.content = presenter.description
         recoveryPhraseView.viewModel = presenter.recoveryViewModel
