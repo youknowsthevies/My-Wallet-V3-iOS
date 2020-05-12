@@ -84,7 +84,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
             .bind(weak: self) { (self, state) in
                 switch state.visibility {
                 case .visible:
-                    self.tableViewBottomConstraint.constant = state.payload.height
+                    self.tableViewBottomConstraint.constant = state.payload.height - self.view.safeAreaInsets.bottom
                 case .hidden:
                     self.tableViewBottomConstraint.constant = 0
                 }
@@ -94,6 +94,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
     }
     
     private func setupTableView() {
+        tableView.selfSizingBehaviour = .fill
         tableView.tableFooterView = UIView()
         tableView.allowsSelection = false
         tableView.contentInset = .init(top: 16, left: 0, bottom: 0, right: 0)

@@ -88,7 +88,7 @@ final class CardDetailsScreenViewController: BaseTableViewController {
             .bind(weak: self) { (self, state) in
                 switch state.visibility {
                 case .visible:
-                    self.tableViewBottomConstraint.constant = state.payload.height
+                    self.tableViewBottomConstraint.constant = state.payload.height - self.view.safeAreaInsets.bottom
                 case .hidden:
                     self.tableViewBottomConstraint.constant = 0
                 }
@@ -98,6 +98,7 @@ final class CardDetailsScreenViewController: BaseTableViewController {
     }
     
     private func setupTableView() {
+        tableView.selfSizingBehaviour = .fill
         tableView.tableFooterView = UIView()
         tableView.estimatedRowHeight = 80
         tableView.rowHeight = UITableView.automaticDimension

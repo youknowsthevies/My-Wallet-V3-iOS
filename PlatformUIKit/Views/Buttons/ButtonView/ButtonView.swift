@@ -106,11 +106,17 @@ final public class ButtonView: UIView {
             
             // Bind button taps
             button.rx.tap
+                .throttle(
+                    .milliseconds(200),
+                    latest: false,
+                    scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
+                )
+                .observeOn(MainScheduler.instance)
                 .bind(to: viewModel.tapRelay)
                 .disposed(by: disposeBag)
 
             viewModel.contentInset
-                .drive(onNext: { [weak self] (contentInset) in
+                .drive(onNext: { [weak self] contentInset in
                     self?.updateContentInset(to: contentInset)
                 })
                 .disposed(by: disposeBag)
