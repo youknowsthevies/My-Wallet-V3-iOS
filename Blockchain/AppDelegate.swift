@@ -19,7 +19,7 @@ import BitcoinKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    var window: UIWindow!
+    var window: UIWindow?
 
     private var isDebug: Bool {
         var isDebug = false
@@ -64,7 +64,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                      launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         if isDebug {
-            guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else {
+            // If isDebug build, and ProcessInfo environment contains "erase_wallet": true, erase wallet and settings.
+            if ProcessInfo.processInfo.environmentBoolean(for: "erase_wallet") == true {
+                WalletManager.shared.forgetWallet()
+                BlockchainSettings.App.shared.clear()
+            }
+
+            // If isDebug build, and we are running unit test, skip rest of AppDelegate.
+            if ProcessInfo.processInfo.isUnitTesting {
                 return true
             }
         }
@@ -72,8 +79,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         
         window = UIWindow(frame: UIScreen.main.bounds)
-        window.makeKeyAndVisible()
-        window.backgroundColor = #colorLiteral(red: 0.0431372549, green: 0.1019607843, blue: 0.2784313725, alpha: 1)
+        window?.makeKeyAndVisible()
+        window?.backgroundColor = #colorLiteral(red: 0.0431372549, green: 0.1019607843, blue: 0.2784313725, alpha: 1)
 
         // Trigger routing hierarchy
         appCoordinator = AppCoordinator.shared
@@ -115,12 +122,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // TODO: prevent any other data tasks from executing until cert is pinned
         CertificatePinner.shared.pinCertificateIfNeeded()
-
-        // If isDebug build, and ProcessInfo environment contains "erase_wallet": true, erase wallet and settings.
-        if isDebug, ProcessInfo.processInfo.environmentBoolean(for: "erase_wallet") == true {
-            WalletManager.shared.forgetWallet()
-            BlockchainSettings.App.shared.clear()
-        }
 
         Network.Dependencies.default.communicator.use(eventRecorder: AnalyticsEventRecorder.shared)
         
