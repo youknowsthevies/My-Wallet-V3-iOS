@@ -37,7 +37,7 @@
         " = "\
  U heeft momenteel e-mailmeldingen ingeschakeld. Als u uw e-mail wijzigt, worden e-mailmeldingen uitgeschakeld. \
 ";
-" %@ (%@ %@)" = "%@ ( %@ %@ )";
+" %@ (%@ %@)" = "%1$@ ( %2$@ %3$@ )";
 " & " = "&";
 " and " = "en";
 " buy." = "kopen.";
@@ -48,7 +48,7 @@
 "%@ Confirmations" = "%@ Bevestigingen";
 "%@ copied to clipboard" = "%@ gekopieerd naar het klembord";
 "%@ needed to exchange" = "%@ moest uitwisselen";
-"%@ of %@" = "%@ van %@";
+"%@ of %@" = "%1$@ van %2$@";
 "%@ payment request" = "%@ betalingsverzoek";
 "%@ payment request." = "%@ betalingsverzoek.";
 "%@ Received" = "%@ Ontvangen";
@@ -58,7 +58,7 @@
 "%d address" = "%d adres";
 "%d addresses" = "%d adressen";
 "%d Confirmations" = "%d bevestigingen";
-"%d login attempts left. Please enter your %@ 2FA code" = "%d inlogpogingen. Voer uw %@ 2FA-code in";
+"%d login attempts left. Please enter your %@ 2FA code" = "%1$d inlogpogingen. Voer uw %2$@ 2FA-code in";
 "%d Transactions" = "%d transacties";
 "%lld hours ago" = "%lld uur geleden";
 "%lld minutes ago" = "%lld minuten geleden";
@@ -126,7 +126,7 @@
 "An Error Occurred" = "Er is een fout opgetreden";
 "An error occurred due to interruptions during PIN verification. Please close the app and try again." = "Er is een fout opgetreden vanwege onderbrekingen tijdens pincodeverificatie. Sluit de app en probeer het opnieuw.";
 "An error occurred when getting an approximate quote. Please try again later. Details: %@" = "Er is een fout opgetreden bij het ophalen van een geschatte offerte. Probeer het later opnieuw. Details: %@";
-"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "Er is een fout opgetreden bij het %@ uw %@ -saldo. Probeer het later opnieuw. Details: %@";
+"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "Er is een fout opgetreden bij het %1$@ uw %1$@ -saldo. Probeer het later opnieuw. Details: %2$@";
 "An error occurred when selecting your tier. Please try again later." = "Er is een fout opgetreden bij het selecteren van uw laag. Probeer het later opnieuw.";
 "An error occurred while changing 2-Step verification." = "Er is een fout opgetreden bij het wijzigen van authenticatie in twee stappen.";
 "An error occurred while copying your address to the clipboard. Please re-select the destination address or restart the app and try again." = "Er is een fout opgetreden bij het kopiëren van uw adres naar het klembord. Selecteer het bestemmingsadres opnieuw of start de app opnieuw en probeer het opnieuw.";
@@ -217,10 +217,10 @@
 "By creating a wallet you agree to Blockchain’s " = "Door een portemonnee te maken, gaat u akkoord met Blockchain's";
 "By creating a wallet you agree to Blockchain’s Terms of Services & Privacy Policy" = "Door een portemonnee te maken, gaat u akkoord met de servicevoorwaarden en het privacybeleid van Blockchain";
 "By depositing funds to this account, you agree to " = "Door geld op deze rekening te storten, gaat u ermee akkoord";
-"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "Door op \"Begin nu\" te klikken, gaat u akkoord met Blockchain's %@ & %@";
+"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "Door op \"Begin nu\" te klikken, gaat u akkoord met Blockchain's %1$@ & %2$@";
 "By tapping Begin Now, you agree to Coinify's Terms of Service & Privacy Policy" = "Door Begin nu te tikken, gaat u akkoord met de servicevoorwaarden en het privacybeleid van Coinify";
-"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Door op Submit te tikken, ga je akkoord met Blockchain's %@ & %@";
-"Calculating: Address %@ of %@" = "Berekenen: adres %@ van %@";
+"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Door op Submit te tikken, ga je akkoord met Blockchain's %1$@ & %2$@";
+"Calculating: Address %@ of %@" = "Berekenen: adres %1$@ van %2$@";
 "Camera Access Denied" = "Cameratoegang geweigerd";
 "Canadian Dollar" = "Canadese dollar";
 "Cancel" = "annuleren";
@@ -241,7 +241,7 @@
 "Check out Swap" = "Bekijk Swap";
 "Check Your Inbox" = "Controleer uw inbox";
 "Check your inbox." = "Controleer je inbox.";
-"Checking for more: Step %d of %d" = "Controleren op meer: stap %d van %d";
+"Checking for more: Step %d of %d" = "Controleren op meer: stap %1$d van %2$d";
 "Checking for Wallet updates" = "Controleren op Portemonnee-updates";
 "Checkout" = "Uitchecken";
 "Checkout the Exchange" = "Bekijk de Exchange";
@@ -399,12 +399,12 @@
 "Ether Price" = "Ether prijs";
 "Euro" = "Euro";
 "Even better, since you need ETH to make USD PAX trades, we just airdropped enough ETH into your Wallet to cover your first 3 transactions 🙌🏻" = "Nog beter, omdat je ETH nodig hebt om USD PAX-transacties te doen, hebben we genoeg ETH in je Wallet gelicht om je eerste 3 transacties te dekken 🙌🏻";
-"Every country has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Elk land heeft andere regels voor het kopen en verkopen van cryptocurrencies. Houd je ogen open en we laten het je weten zodra we over %s starten!";
+"Every country has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Elk land heeft andere regels voor het kopen en verkopen van cryptocurrencies. Houd je ogen open en we laten het je weten zodra we over %1$s starten!";
 "Every state has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Elke staat heeft verschillende regels voor het kopen en verkopen van cryptocurrencies. Houd je ogen open, we laten het je weten zodra we starten in %@ !";
 "Everything you need to store, spend and receive BTC, ETH and BCH." = "Alles wat u nodig heeft om BTC, ETH en BCH op te slaan, uit te geven en te ontvangen.";
 "Exchange" = "Uitwisseling";
 "Exchange %@ Address" = "Exchange %@ Address";
-"Exchange %@ for %@" = "Wissel %@ voor %@";
+"Exchange %@ for %@" = "Wissel %1$@ voor %2$@";
 "Exchange %@ Wallet" = "Exchange %@ Wallet";
 "Exchange Completed" = "Uitwisseling is voltooid.";
 "Exchange In Progress" = "Uitwisselen wordt uitgevoerd";
@@ -442,7 +442,7 @@
 "Forget" = "Vergeten";
 "Forget Wallet" = "Portemonnee vergeten";
 "Forgot Password?" = "Wachtwoord vergeten?\"";
-"Found %d, with %@" = "%d , met %@";
+"Found %d, with %@" = "%1$d , met %2$@";
 "fourth" = "vierde";
 "fourth word" = "vierde woord";
 "From" = "Van";
@@ -517,7 +517,7 @@
 "Introducing the Exchange" = "Introductie van de Exchange";
 "Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX = 1 USD." = "Introductie van USD PAX, een veilige en stabiele crypto-asset die u kunt gebruiken om waarde op te slaan. 1 PAX = 1 USD.";
 "Invalid %@ Address" = "Ongeldig %@ adres";
-"Invalid %@ address: %@" = "Ongeldig %@ -adres: %@";
+"Invalid %@ address: %@" = "Ongeldig %1$@ -adres: %2$@";
 "Invalid Bitcoin address: %@" = "Ongeldig Bitcoin-adres: %@";
 "Invalid destination address" = "Ongeldig bestemmingsadres";
 "Invalid email address." = "Ongeldig e-mailadres.";
@@ -578,7 +578,7 @@
 "Log In" = "Log in";
 "Log in to refresh addresses" = "Log in om adressen te vernieuwen";
 "Log in to Web Wallet" = "Log in op Web Wallet";
-"Log in to your Blockchain Wallet via your PC or Mac at " = "Log in op uw Blockchain-portemonnee via uw pc of Mac op %s .";
+"Log in to your Blockchain Wallet via your PC or Mac at " = "Log in op uw Blockchain-portemonnee via uw pc of Mac op %1$s .";
 "Log Out" = "Uitloggen";
 "Login existing Wallet" = "Inloggen op bestaande Portemonnee";
 "login.blockchain.com" = "login.blockchain.com";
@@ -671,7 +671,7 @@
 "OK" = "OK";
 "Once an order starts, we are unable to stop it." = "Zodra een bestelling is gestart, kunnen we deze niet meer stoppen.";
 "Once we receive your bank transfer, your %@ buy order will complete." = "Zodra we uw overboeking hebben ontvangen, is uw kooporder voltooid.";
-"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "Zodra we uw geld hebben ontvangen, starten we uw %s kooporder. Houd er rekening mee dat uw uiteindelijke bedrag kan veranderen naar marktactiviteit. Mogelijk zijn toeslagen van toepassing.";
+"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "Zodra we uw geld hebben ontvangen, starten we uw %1$s kooporder. Houd er rekening mee dat uw uiteindelijke bedrag kan veranderen naar marktactiviteit. Mogelijk zijn toeslagen van toepassing.";
 "Once your verification is confirmed, you’ll automatically secure a spot in the Airdrop for Stacks." = "Zodra uw verificatie is bevestigd, beveiligt u automatisch een plek in de Airdrop for Stacks.";
 "Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected." = "Maak alleen geld over van een bankrekening op uw naam. Zo niet, dan kan uw aanbetaling worden vertraagd of geweigerd.";
 "Ooops! Something went wrong." = "Ooops! Er is iets fout gegaan.";
@@ -744,12 +744,12 @@
 "Please review and confirm your " = "Controleer en bevestig uw";
 "Please select a different address to send from." = "Selecteer een ander adres om vanaf te verzenden.";
 "Please send %@ to" = "Stuur %@ naar";
-"Please send %@ to bitcoin address.\n%@" = "Stuur %@ naar het bitcoin-adres. \
- %@";
+"Please send %@ to bitcoin address.\n%@" = "Stuur %1$@ naar het bitcoin-adres. \
+ %2$@";
 "Please send BCH to the Bitcoin Cash address\n%@" = "Stuur BCH naar het Bitcoin Cash-adres \
  %@";
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "Stuur de betaling naar het bitcoin-adres ( <a href=\"https://blockchain.info/wallet/bitcoin-faq\"> help? </a> ): %@";
-"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Maak %s van uw bankrekening naar Blockchain.com. Zodra we het geld hebben ontvangen, maken we uw %s kooporder aan.";
+"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Maak %1$s van uw bankrekening naar Blockchain.com. Zodra we het geld hebben ontvangen, maken we uw %2$s kooporder aan.";
 "Please try again" = "Probeer het opnieuw";
 "Please verify your email address first." = "Verifieer eerst uw e-mailadres.";
 "Please verify your mobile number first." = "Controleer eerst uw mobiele nummer.";
@@ -892,7 +892,7 @@
 "Stellar is an open-source, decentralized payment protocol that allows for fast and cheap cross-border transactions between any pair of currencies." = "Stellar is een open-source, gedecentraliseerd betalingsprotocol dat snelle en goedkope grensoverschrijdende transacties tussen elk valutapaar mogelijk maakt.";
 "Stellar Price" = "Stellaire prijs";
 "Stellar requires that all Stellar accounts hold a minimum balance of lumens, or XLM. This means you cannot send a balance out of your Stellar Wallet that would leave your Stellar Wallet with less than the minimum balance. This also means that in order to send XLM to a new Stellar account, you must send enough XLM to meet the minimum balance requirement." = "Stellar vereist dat alle Stellar-accounts een minimale balans van lumen of XLM bevatten. Dit betekent dat u geen saldo uit uw Stellar-portemonnee kunt sturen dat uw Stellar Wallet met minder dan het minimumevenwicht zou verlaten. Dit betekent ook dat om XLM naar een nieuw Stellar-account te verzenden, u voldoende XLM moet verzenden om aan de vereiste minimumbalans te voldoen.";
-"Step %d of %d" = "Stap %d van %d";
+"Step %d of %d" = "Stap %1$d van %2$d";
 "store" = "winkel";
 "Stored" = "Opgeslagen";
 "Street line" = "straatlijn";
@@ -1029,9 +1029,9 @@
 "Transfer imported addresses?" = "Geïmporteerde adressen overzetten?";
 "Transfer In Crypto" = "Overdracht in Crypto";
 "Transferred" = "Overgedragen";
-"Transferred funds from %d %@" = "Geld overgemaakt van %d %@";
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Geld overgeboekt van %d %@ . Uitvoer voor %d %@ was te klein.";
-"Transferring all funds: Address %i of %i" = "Alle bedragen overboeken: adres %i van %i";
+"Transferred funds from %d %@" = "Geld overgemaakt van %1$d %2$@";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Geld overgeboekt van %1$d %2$@ . Uitvoer voor %3$d %4$@ was te klein.";
+"Transferring all funds: Address %i of %i" = "Alle bedragen overboeken: adres %1$i van %2$i";
 "Try again" = "Probeer het opnieuw";
 "Try Again" = "Probeer het opnieuw";
 "twelfth" = "twaalfde";
@@ -1182,7 +1182,7 @@
 "With Blockchain Airdrops, get free crypto sent right to your Blockchain Wallet." = "Met Blockchain Airdrops krijg je gratis crypto rechtstreeks naar je Blockchain-portemonnee gestuurd.";
 "With Swap your crypto is safe, secure, and your keys are always intact." = "Met Swap is je crypto veilig, en zijn je sleutels altijd intact.";
 "word" = "woord";
-"Word %@ of %@" = "Woord %@ van %@";
+"Word %@ of %@" = "Woord %1$@ van %2$@";
 "Would you like to add the bitcoin address %@ to your address book?" = "Wilt u Bitcoin-adres %@ toevoegen aan uw adresboek?";
 "Would you like to archive the addresses used?" = "Wilt u de gebruikte adressen archiveren?";
 "Would you like to tell us about your experience with Blockchain?" = "Wil je ons vertellen over je ervaringen met Blockchain?";
@@ -1193,7 +1193,7 @@
 "XLM is a token that enables quick, low cost global transactions. Send, receive, and trade XLM in the wallet today." = "XLM is een token dat snelle, goedkope wereldwijde transacties mogelijk maakt. Verzend, ontvang en ruil XLM vandaag in de portemonnee.";
 "XLM Reserve Requirement" = "XLM-reserveverplichting";
 "xxx" = "xxx";
-"xxx %@ (%@ %@)" = "xxx %@ ( %@ %@ )";
+"xxx %@ (%@ %@)" = "xxx %1$@ ( %2$@ %3$@ )";
 "year" = "jaar";
 "Year" = "Jaar";
 "years" = "jaar";
@@ -1230,13 +1230,13 @@
 "You must leave at least one active address" = "U moet ten minste één actief e-mailadres achterlaten";
 "You need to confirm your email address so that we can keep you informed about your wallet." = "U moet uw e-mailadres bevestigen zodat we u op de hoogte kunnen houden van uw portemonnee.";
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "U moet altijd koppelen of inloggen als u toegang heeft tot uw Portemonnee-ID en -wachtwoord. Door uw tegoeden te herstellen zal er een nieuwe Portemonnee-ID worden aangemaakt. Wilt u doorgaan?";
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "U heeft uitzonderlijk lage transactiekosten van %s opgegeven.\
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "U heeft uitzonderlijk lage transactiekosten van %1$s opgegeven.\
 \
-Uw transactie kan vast komen te zitten en misschien nooit worden bevestigd. Om de kans te verhogen dat uw transactie binnen ongeveer een uur (zes blokken) wordt bevestigd, raden wij een tarief aan van niet minder dan %s.";
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "U heeft een uitzonderlijk lage transactiekost van %@ opgegeven. Uw transactie kan vastlopen en mogelijk nooit bevestigen. Om de kans te vergroten dat uw transactie binnen ongeveer een uur (zes blokken) wordt bevestigd, raden we ten zeerste een vergoeding van niet minder dan %@ . Aangezien u niet voldoende geld heeft, betekent dit dat het bedrag voor verzenden ook moet worden verlaagd naar %@ .";
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "U heeft ongewoon hoge transactiekosten van %s opgegeven.\
+Uw transactie kan vast komen te zitten en misschien nooit worden bevestigd. Om de kans te verhogen dat uw transactie binnen ongeveer een uur (zes blokken) wordt bevestigd, raden wij een tarief aan van niet minder dan %2$s.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "U heeft een uitzonderlijk lage transactiekost van %1$@ opgegeven. Uw transactie kan vastlopen en mogelijk nooit bevestigen. Om de kans te vergroten dat uw transactie binnen ongeveer een uur (zes blokken) wordt bevestigd, raden we ten zeerste een vergoeding van niet minder dan %2$@ . Aangezien u niet voldoende geld heeft, betekent dit dat het bedrag voor verzenden ook moet worden verlaagd naar %3$@ .";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "U heeft ongewoon hoge transactiekosten van %1$s opgegeven.\
 \
-Zelfs als u het tarief verlaagt naar %s, kunt u verwachten dat de transactie zal worden bevestigd in de komende ~10 minuten (één blok).";
+Zelfs als u het tarief verlaagt naar %2$s, kunt u verwachten dat de transactie zal worden bevestigd in de komende ~10 minuten (één blok).";
 "You will be leaving the app." = "U verlaat de app.";
 "You will be redirected to\n%@." = "U wordt doorgestuurd naar \
  %@ .";
@@ -1465,3 +1465,19 @@ Zelfs als u het tarief verlaagt naar %s, kunt u verwachten dat de transactie zal
 "You must have Gold Level verification status to add a credit card." = "Je moet de Gold Level-verificatiestatus hebben om een creditcard toe te voegen.";
 "Your local currency to store funds in that currency as funds in your Blockchain Wallet." = "Uw lokale valuta om geld in die valuta op te slaan als geld in uw Blockchain-portemonnee.";
 "Zip" = "Zip";
+"123" = "123";
+"Cancelled" = "Geannuleerd";
+"Card Not Supported" = "Kaart niet ondersteund";
+"Finished" = "Afgewerkt";
+"Invalid Card Number" = "Ongeldig kaart nummer";
+"Invalid Cardholder Name" = "Ongeldige naam van kaarthouder";
+"Invalid Email Address" = "Ongeldig e-mailadres";
+"Invalid Expiry Date" = "Ongeldige vervaldatum";
+"Invalid Mobile Number" = "Ongeldig telefoonnummer";
+"Invalid Wallet Identifier" = "Ongeldige Wallet-ID";
+"MM/YY" = "MM / JJ";
+"Passwords Do Not Match" = "Wachtwoorden komen niet overeen";
+"Save My Card" = "Bewaar mijn kaart";
+"This card has already been saved" = "Deze kaart is al opgeslagen";
+"Waiting on Funds" = "Wachten op fondsen";
+"Your final amount may change due to market activity" = "Uw uiteindelijke bedrag kan veranderen als gevolg van marktactiviteit";
