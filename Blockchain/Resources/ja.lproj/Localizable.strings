@@ -37,7 +37,7 @@
         " = "\
 現在、メール通知が有効になっています。メールを変更すると、メール通知が無効になります。 \
 ";
-" %@ (%@ %@)" = "%1$@ （ %2$@ %3$@ ）";
+" %@ (%@ %@)" = "%@ （ %@ %@ ）";
 " & " = "＆";
 " and " = "そして";
 " buy." = "購入。";
@@ -48,7 +48,7 @@
 "%@ Confirmations" = "%@確認";
 "%@ copied to clipboard" = "%@をクリップボードにコピーしました";
 "%@ needed to exchange" = "%@は交換する必要があります";
-"%@ of %@" = "%1$@の%2$@";
+"%@ of %@" = "%@の%@";
 "%@ payment request" = "%@支払い要求。";
 "%@ payment request." = "%@支払い要求。";
 "%@ Received" = "受信した%@";
@@ -58,7 +58,7 @@
 "%d address" = "%dアドレス";
 "%d addresses" = "%dアドレス";
 "%d Confirmations" = "%dの確認";
-"%d login attempts left. Please enter your %@ 2FA code" = "残り%1$dログイン試行。 %2$@ 2FAコードを入力してください";
+"%d login attempts left. Please enter your %@ 2FA code" = "残り%dログイン試行。 %@ 2FAコードを入力してください";
 "%d Transactions" = "%dの取引";
 "%lld hours ago" = "%lld時間前";
 "%lld minutes ago" = "%lld分前";
@@ -126,7 +126,7 @@
 "An Error Occurred" = "エラーが発生しました";
 "An error occurred due to interruptions during PIN verification. Please close the app and try again." = "PIN検証中の中断によりエラーが発生しました。アプリを閉じてもう一度お試しください。";
 "An error occurred when getting an approximate quote. Please try again later. Details: %@" = "おおよその見積もりを取得中にエラーが発生しました。後でもう一度やり直してください。詳細： %@";
-"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "%1$@残高の取得中にエラーが発生しました。後でもう一度やり直してください。詳細： %2$@";
+"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "%@残高の取得中にエラーが発生しました。後でもう一度やり直してください。詳細： %@";
 "An error occurred when selecting your tier. Please try again later." = "ティアを選択する際にエラーが発生しました。後でもう一度お試しください。";
 "An error occurred while changing 2-Step verification." = "2段階認証プロセスの変更中にエラーが発生しました。";
 "An error occurred while copying your address to the clipboard. Please re-select the destination address or restart the app and try again." = "住所をクリップボードにコピー中にエラーが発生しました。宛先アドレスを再選択するか、アプリを再起動してもう一度お試しください。";
@@ -217,10 +217,10 @@
 "By creating a wallet you agree to Blockchain’s " = "ウォレットを作成することにより、ブロックチェーンの";
 "By creating a wallet you agree to Blockchain’s Terms of Services & Privacy Policy" = "ウォレットを作成すると、ブロックチェーンの利用規約とプライバシーポリシーに同意したことになります";
 "By depositing funds to this account, you agree to " = "この口座に資金を預けることにより、あなたは";
-"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "「今すぐ開始」を押すと、ブロックチェーンの%1$@と%2$@同意したことになります";
+"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "「今すぐ開始」を押すと、ブロックチェーンの%@と%@同意したことになります";
 "By tapping Begin Now, you agree to Coinify's Terms of Service & Privacy Policy" = "今すぐ始めるをタップすると、Coinifyの利用規約とプライバシーポリシーに同意したことになります。";
-"By tapping Submit, you agree to Blockchain’s %@ & %@" = "[送信]をタップすると、ブロックチェーンの%1$@ ＆ %2$@";
-"Calculating: Address %@ of %@" = "計算： %2$@アドレス%1$@ %2$@";
+"By tapping Submit, you agree to Blockchain’s %@ & %@" = "[送信]をタップすると、ブロックチェーンの%@ ＆ %@";
+"Calculating: Address %@ of %@" = "計算： %@アドレス%@ %@";
 "Camera Access Denied" = "カメラのアクセスが拒否されました";
 "Canadian Dollar" = "カナダドル";
 "Cancel" = "キャンセル";
@@ -241,7 +241,7 @@
 "Check out Swap" = "スワップを確認する";
 "Check Your Inbox" = "メールチェックしてみて";
 "Check your inbox." = "メールチェックしてみて。";
-"Checking for more: Step %d of %d" = "詳細を確認： %2$dステップ%1$d %2$d";
+"Checking for more: Step %d of %d" = "詳細を確認： %dステップ%d %d";
 "Checking for Wallet updates" = "ウォレットのアップデートを確認中";
 "Checkout" = "チェックアウト";
 "Checkout the Exchange" = "取引所をチェックアウトする";
@@ -399,12 +399,12 @@
 "Ether Price" = "エーテル価格";
 "Euro" = "ユーロ";
 "Even better, since you need ETH to make USD PAX trades, we just airdropped enough ETH into your Wallet to cover your first 3 transactions 🙌🏻" = "さらに良いことに、USD PAX取引を行うにはETHが必要なので、最初の3つの取引をカバーするのに十分なETHをWalletに投入しました。";
-"Every country has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "暗号通貨の売買方法については、国ごとに異なるルールがあります。目を離さないでください。 %1$s起動するとすぐにお知らせします。";
+"Every country has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "暗号通貨の売買方法については、国ごとに異なるルールがあります。目を離さないでください。 %s起動するとすぐにお知らせします。";
 "Every state has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "暗号通貨の売買方法については、州ごとに異なるルールがあります。目を離さないでください。 %@起動するとすぐにお知らせします。";
 "Everything you need to store, spend and receive BTC, ETH and BCH." = "BTC、ETH、BCHを保存、使用、受け取るために必要なものすべて。";
 "Exchange" = "両替";
 "Exchange %@ Address" = "Exchange %@アドレス";
-"Exchange %@ for %@" = "%1$@を%2$@交換します";
+"Exchange %@ for %@" = "%@を%@交換します";
 "Exchange %@ Wallet" = "交換%@ウォレット";
 "Exchange Completed" = "交換が完了しました";
 "Exchange In Progress" = "交換が進行中";
@@ -442,7 +442,7 @@
 "Forget" = "忘れる";
 "Forget Wallet" = "ウォレットを忘れました";
 "Forgot Password?" = "パスワードをお忘れですか？\"";
-"Found %d, with %@" = "%2$@ %1$d見つかりました";
+"Found %d, with %@" = "%@ %d見つかりました";
 "fourth" = "第4";
 "fourth word" = "4番目の言葉";
 "From" = "から";
@@ -517,7 +517,7 @@
 "Introducing the Exchange" = "Exchangeの紹介";
 "Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX = 1 USD." = "価値を保存するために使用できる安全で安定した暗号資産であるUSD PAXの紹介。 1 PAX = 1 USD。";
 "Invalid %@ Address" = "無効な%@アドレス";
-"Invalid %@ address: %@" = "無効な%1$@アドレス： %2$@";
+"Invalid %@ address: %@" = "無効な%@アドレス： %@";
 "Invalid Bitcoin address: %@" = "無効なビットコインアドレス： %@";
 "Invalid destination address" = "無効な宛先アドレス";
 "Invalid email address." = "無効なメールアドレス";
@@ -578,7 +578,7 @@
 "Log In" = "ログイン";
 "Log in to refresh addresses" = "アドレスを更新するにはログインしてください";
 "Log in to Web Wallet" = "ウェブウォレットにログイン";
-"Log in to your Blockchain Wallet via your PC or Mac at " = "%1$sでPCまたはMacを介してBlockchain Walletにログインします。";
+"Log in to your Blockchain Wallet via your PC or Mac at " = "%sでPCまたはMacを介してBlockchain Walletにログインします。";
 "Log Out" = "ログアウト";
 "Login existing Wallet" = "既存のウォレットにログイン";
 "login.blockchain.com" = "login.blockchain.com";
@@ -671,7 +671,7 @@
 "OK" = "OK";
 "Once an order starts, we are unable to stop it." = "注文が開始されると、停止することはできません。";
 "Once we receive your bank transfer, your %@ buy order will complete." = "銀行振込を受け取ったら、購入注文が完了します。";
-"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "資金を受け取ったら、 %1$s購入注文を開始します。最終的な金額は、適正な市場活動に変わる可能性があることに注意してください。料金がかかる場合があります。";
+"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "資金を受け取ったら、 %s購入注文を開始します。最終的な金額は、適正な市場活動に変わる可能性があることに注意してください。料金がかかる場合があります。";
 "Once your verification is confirmed, you’ll automatically secure a spot in the Airdrop for Stacks." = "確認が確認されると、Airdrop for Stacksにスポットが自動的に確保されます。";
 "Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected." = "あなたの名前の銀行口座からのみ資金を送ってください。そうでない場合、入金が遅延または拒否される可能性があります。";
 "Ooops! Something went wrong." = "おっと！何か問題がありました。";
@@ -744,12 +744,12 @@
 "Please review and confirm your " = "確認して確認してください";
 "Please select a different address to send from." = "別のアドレスを選択して送信してください。";
 "Please send %@ to" = "に%@を送ってください";
-"Please send %@ to bitcoin address.\n%@" = "%1$@をビットコインアドレスに送信してください。 \
- %2$@";
+"Please send %@ to bitcoin address.\n%@" = "%@をビットコインアドレスに送信してください。 \
+ %@";
 "Please send BCH to the Bitcoin Cash address\n%@" = "BCHをビットコインキャッシュアドレスに送信してください\
  %@";
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "ビットコインアドレスに支払いを送ってください（ <a href=\"https://blockchain.info/wallet/bitcoin-faq\">ヘルプ？ </a> ）： %@";
-"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "%1$sを銀行口座からBlockchain.comに転送してください。資金を受け取ったら、 %2$s購入注文を作成します。";
+"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "%sを銀行口座からBlockchain.comに転送してください。資金を受け取ったら、 %s購入注文を作成します。";
 "Please try again" = "再試行してください";
 "Please verify your email address first." = "まずメールアドレスを認証してください。";
 "Please verify your mobile number first." = "最初に携帯電話番号を確認してください。";
@@ -892,7 +892,7 @@
 "Stellar is an open-source, decentralized payment protocol that allows for fast and cheap cross-border transactions between any pair of currencies." = "Stellarはオープンソースの分散型決済プロトコルであり、通貨ペア間で高速かつ安価なクロスボーダー取引を可能にします。";
 "Stellar Price" = "星の価格";
 "Stellar requires that all Stellar accounts hold a minimum balance of lumens, or XLM. This means you cannot send a balance out of your Stellar Wallet that would leave your Stellar Wallet with less than the minimum balance. This also means that in order to send XLM to a new Stellar account, you must send enough XLM to meet the minimum balance requirement." = "ステラは、すべてのステラアカウントが最小のルーメンバランス、すなわちXLMを保持することを要求します。つまり、あなたのStellar Walletから残高が少なくても、あなたのStellar Walletを残しておくことはできません。これはまた、新しいStellarアカウントにXLMを送信するには、最小残高要件を満たすのに十分なXLMを送信する必要があることを意味します。";
-"Step %d of %d" = "%2$dステップ%1$d %2$d";
+"Step %d of %d" = "%dステップ%d %d";
 "store" = "格納";
 "Stored" = "保存済み";
 "Street line" = "ストリートライン";
@@ -1029,9 +1029,9 @@
 "Transfer imported addresses?" = "インポートした住所を転送しますか？";
 "Transfer In Crypto" = "暗号化で転送";
 "Transferred" = "譲渡済み";
-"Transferred funds from %d %@" = "%1$d %2$@から送金されました";
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "%1$d %2$@から送金されました。 %3$d %4$@出力が小さすぎました。";
-"Transferring all funds: Address %i of %i" = "すべての資金の振替： %2$iアドレス%1$i %2$i";
+"Transferred funds from %d %@" = "%d %@から送金されました";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "%d %@から送金されました。 %d %@出力が小さすぎました。";
+"Transferring all funds: Address %i of %i" = "すべての資金の振替： %iアドレス%i %i";
 "Try again" = "再試行";
 "Try Again" = "再試行";
 "twelfth" = "12番目";
@@ -1182,7 +1182,7 @@
 "With Blockchain Airdrops, get free crypto sent right to your Blockchain Wallet." = "Blockchain Airdropsを使用すると、無料の暗号をブロックチェーンウォレットに直接送信できます。";
 "With Swap your crypto is safe, secure, and your keys are always intact." = "スワップを使用すると、暗号化は安全で安全であり、キーは常に無傷です。";
 "word" = "語";
-"Word %@ of %@" = "%2$@単語%1$@ %2$@";
+"Word %@ of %@" = "%@単語%@ %@";
 "Would you like to add the bitcoin address %@ to your address book?" = "ビットコインアドレス%@をアドレスブックに追加しますか？";
 "Would you like to archive the addresses used?" = "使用したアドレスをアーカイブしますか？";
 "Would you like to tell us about your experience with Blockchain?" = "ブロックチェーンでの経験についてお聞かせください。";
@@ -1193,7 +1193,7 @@
 "XLM is a token that enables quick, low cost global transactions. Send, receive, and trade XLM in the wallet today." = "XLMは、迅速で低コストのグローバルトランザクションを可能にするトークンです。今日のウォレットでXLMを送受信し、取引します。";
 "XLM Reserve Requirement" = "XLMリザーブ要件";
 "xxx" = "xxx";
-"xxx %@ (%@ %@)" = "xxx %1$@ （ %2$@ %3$@ ）";
+"xxx %@ (%@ %@)" = "xxx %@ （ %@ %@ ）";
 "year" = "年";
 "Year" = "年";
 "years" = "年";
@@ -1230,12 +1230,12 @@
 "You must leave at least one active address" = "少なくとも1以上のアクティブなアドレスが必要です";
 "You need to confirm your email address so that we can keep you informed about your wallet." = "ウォレットに関する最新情報をお届けするために、メールアドレスを確認する必要があります。";
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "ウォレットIDやパスワードにアクセスがある場合、ペアリングやログインを常に行ってください。 資金を復元すると新規ウォレットIDが作成されます。 続行しますか？";
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "%1$sの指定した手数料が非常に小額です。n\
-取引が保留され、確認が行われない場合もがあります。約1時間(6ブロック)で取引の確認を完了する可能性を増やすには、 %2$s以上の手数料を推奨します。";
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "%1$@非常に小さな取引手数料を指定しました。トランザクションがスタックし、場合によっては確認できなくなる可能性があります。トランザクションが約1時間（6ブロック）以内に確認される可能性を高めるため、 %2$@以上の料金を強くお勧めします。十分な資金がないため、送信金額も%3$@下げる必要があります。";
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "%1$sの指定した手数料が非常に高額です。\
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "%sの指定した手数料が非常に小額です。n\
+取引が保留され、確認が行われない場合もがあります。約1時間(6ブロック)で取引の確認を完了する可能性を増やすには、 %s以上の手数料を推奨します。";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "%@非常に小さな取引手数料を指定しました。トランザクションがスタックし、場合によっては確認できなくなる可能性があります。トランザクションが約1時間（6ブロック）以内に確認される可能性を高めるため、 %@以上の料金を強くお勧めします。十分な資金がないため、送信金額も%@下げる必要があります。";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "%sの指定した手数料が非常に高額です。\
 \
-手数料を%2$sに下げても、10分以内（1ブロック）で取引の確認が行われると思われます。";
+手数料を%sに下げても、10分以内（1ブロック）で取引の確認が行われると思われます。";
 "You will be leaving the app." = "アプリを終了します。";
 "You will be redirected to\n%@." = "にリダイレクトされます\
  %@ 。";

@@ -35,7 +35,7 @@ Ocorreu um erro ao validar o seu código PIN com o servidor remoto. Pode estar o
         " = "\
  Atualmente, tem notificações por e-mail ativadas. Alterar o seu e-mail desativará as notificações por email. \
 ";
-" %@ (%@ %@)" = "%1$@ ( %2$@ %3$@ )";
+" %@ (%@ %@)" = "%@ ( %@ %@ )";
 " & " = "&";
 " and " = "e";
 " buy." = " comprar ";
@@ -46,7 +46,7 @@ Ocorreu um erro ao validar o seu código PIN com o servidor remoto. Pode estar o
 "%@ Confirmations" = "%@ Confirmações";
 "%@ copied to clipboard" = "%@ copiados para a área de transferência";
 "%@ needed to exchange" = "%@ necessário para trocar";
-"%@ of %@" = "%1$@ de %2$@";
+"%@ of %@" = "%@ de %@";
 "%@ payment request" = "%@ solicitação de pagamento.";
 "%@ payment request." = "%@ solicitação de pagamento.";
 "%@ Received" = "%@ Recebido";
@@ -56,7 +56,7 @@ Ocorreu um erro ao validar o seu código PIN com o servidor remoto. Pode estar o
 "%d address" = "%d endereço";
 "%d addresses" = "%d endereços";
 "%d Confirmations" = "%d confirmações";
-"%d login attempts left. Please enter your %@ 2FA code" = "%1$d tentativas de login restantes. Digite seu código %2$@ 2FA";
+"%d login attempts left. Please enter your %@ 2FA code" = "%d tentativas de login restantes. Digite seu código %@ 2FA";
 "%d Transactions" = "%d operações";
 "%lld hours ago" = "%lld horas atrás";
 "%lld minutes ago" = "%lld minutos atrás";
@@ -124,7 +124,7 @@ Ocorreu um erro ao validar o seu código PIN com o servidor remoto. Pode estar o
 "An Error Occurred" = "Ocorreu um erro.";
 "An error occurred due to interruptions during PIN verification. Please close the app and try again." = "Ocorreu um erro devido a interrupções durante a verificação do PIN. Por favor, feche a aplicação e tente novamente.";
 "An error occurred when getting an approximate quote. Please try again later. Details: %@" = "Ocorreu um erro ao obter uma cotação aproximada. Por favor, tente novamente mais tarde. Detalhes: %@";
-"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "Ocorreu um erro ao obter seu saldo de %1$@ . Por favor, tente novamente mais tarde. Detalhes: %2$@";
+"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "Ocorreu um erro ao obter seu saldo de %@ . Por favor, tente novamente mais tarde. Detalhes: %@";
 "An error occurred when selecting your tier. Please try again later." = "Ocorreu um erro ao selecionar o seu Nível. Tente novamente mais tarde.";
 "An error occurred while changing 2-Step verification." = "Ocorreu um erro ao alterar a verificação em duas etapas.";
 "An error occurred while copying your address to the clipboard. Please re-select the destination address or restart the app and try again." = "Ocorreu um erro ao copiar o seu endereço para a área de transferência. Por favor, re-selecione o endereço de destino ou reinicie a aplicação e tente novamente.";
@@ -215,10 +215,10 @@ Ocorreu um erro ao validar o seu código PIN com o servidor remoto. Pode estar o
 "By creating a wallet you agree to Blockchain’s " = "Ao criar uma wallet, concorda com a Blockchain";
 "By creating a wallet you agree to Blockchain’s Terms of Services & Privacy Policy" = "Ao criar uma carteira, você concorda com os Termos de Serviço e a Política de Privacidade da Blockchain";
 "By depositing funds to this account, you agree to " = "Ao depositar fundos nessa conta, você concorda em";
-"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "Ao clicar em \"Começar agora\", concorda com %1$@ e %2$@ do Blockchain";
+"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "Ao clicar em \"Começar agora\", concorda com %@ e %@ do Blockchain";
 "By tapping Begin Now, you agree to Coinify's Terms of Service & Privacy Policy" = "Ao tocar em Começar agora, concordará com os Termos de Serviço e a Política de Privacidade da Coinify.";
-"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Ao tocar em Submeter, aceita os %1$@ e %2$@ da Blockchain";
-"Calculating: Address %@ of %@" = "Cálculo: endereço %1$@ de %2$@";
+"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Ao tocar em Submeter, aceita os %@ e %@ da Blockchain";
+"Calculating: Address %@ of %@" = "Cálculo: endereço %@ de %@";
 "Camera Access Denied" = "Acesso à câmera negado";
 "Canadian Dollar" = "Dólar Canadiano";
 "Cancel" = "Cancelar";
@@ -239,7 +239,7 @@ Ocorreu um erro ao validar o seu código PIN com o servidor remoto. Pode estar o
 "Check out Swap" = "Verificar troca";
 "Check Your Inbox" = "Verifique sua caixa de entrada";
 "Check your inbox." = "Verifique sua caixa de entrada.";
-"Checking for more: Step %d of %d" = "À procura de mais: passo %1$d de %2$d";
+"Checking for more: Step %d of %d" = "À procura de mais: passo %d de %d";
 "Checking for Wallet updates" = "Verificação de atualizações de carteira";
 "Checkout" = "Verificação de saída";
 "Checkout the Exchange" = "Finalize a troca";
@@ -404,7 +404,7 @@ Ocorreu um erro ao validar o seu código PIN com o servidor remoto. Pode estar o
 "Everything you need to store, spend and receive BTC, ETH and BCH." = "Tudo que precisa para armazenar, passar e receber BTC, ETH e BCH.";
 "Exchange" = "Troca";
 "Exchange %@ Address" = "Exchange %@ Endereço";
-"Exchange %@ for %@" = "Troca%1$@por%2$@";
+"Exchange %@ for %@" = "Troca%@por%@";
 "Exchange %@ Wallet" = "Trocar %@ carteira";
 "Exchange Completed" = "Troca concluída";
 "Exchange In Progress" = "Conversão em andamento";
@@ -442,7 +442,7 @@ Ocorreu um erro ao validar o seu código PIN com o servidor remoto. Pode estar o
 "Forget" = "Esqueço";
 "Forget Wallet" = "Esqueça a carteira";
 "Forgot Password?" = "Esqueceu a senha?\"";
-"Found %d, with %@" = "Encontrado %1$d , com %2$@";
+"Found %d, with %@" = "Encontrado %d , com %@";
 "fourth" = "quarto";
 "fourth word" = "quarta palavra";
 "From" = "A partir de";
@@ -517,7 +517,7 @@ Fique ciente que há uma grande lista de espera para os airdrops Stellar e, infe
 "Introducing the Exchange" = "Apresentando o Exchange";
 "Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX = 1 USD." = "Apresentamos o USD PAX, um ativo de criptomoeda seguro e estável que pode utilizar para armazenar valor. 1 PAX = 1 USD.";
 "Invalid %@ Address" = "Endereço %@ inválido";
-"Invalid %@ address: %@" = "%1$@ endereço inválido: %2$@";
+"Invalid %@ address: %@" = "%@ endereço inválido: %@";
 "Invalid Bitcoin address: %@" = "Endereço Bitcoin inválido:%@";
 "Invalid destination address" = "Endereço de destinatário inválido";
 "Invalid email address." = "Endereço de e-mail inválido.";
@@ -578,7 +578,7 @@ Fique ciente que há uma grande lista de espera para os airdrops Stellar e, infe
 "Log In" = "Iniciar sessão";
 "Log in to refresh addresses" = "Iniciar sessão para atualizar os endereços";
 "Log in to Web Wallet" = "Faça login na Web Wallet";
-"Log in to your Blockchain Wallet via your PC or Mac at " = "Faça login na sua carteira Blockchain via PC ou Mac em %1$s .";
+"Log in to your Blockchain Wallet via your PC or Mac at " = "Faça login na sua carteira Blockchain via PC ou Mac em %s .";
 "Log Out" = "Sair";
 "Login existing Wallet" = "Inicio de sessão da carteira existente";
 "login.blockchain.com" = "login.blockchain.com";
@@ -744,12 +744,12 @@ Fique ciente que há uma grande lista de espera para os airdrops Stellar e, infe
 "Please review and confirm your " = "Reveja e confirme a sua";
 "Please select a different address to send from." = "Selecione um endereço diferente para enviar.";
 "Please send %@ to" = "Envie %@ para";
-"Please send %@ to bitcoin address.\n%@" = "Por favor, envie %1$@ para o endereço bitcoin. \
-%2$@";
+"Please send %@ to bitcoin address.\n%@" = "Por favor, envie %@ para o endereço bitcoin. \
+%@";
 "Please send BCH to the Bitcoin Cash address\n%@" = "Por favor, envie BCH para a Caixa de endereços do Bitcoin\
 %@";
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "Por favor enviar o pagamento ao endereço bitcoin (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">ajuda</a>): %@";
-"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Transfira %1$@ da sua conta bancária para o Blockchain.com. Depois de recebermos os fundos, criaremos o seu pedido de compra de %2$@.";
+"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Transfira %@ da sua conta bancária para o Blockchain.com. Depois de recebermos os fundos, criaremos o seu pedido de compra de %@.";
 "Please try again" = "Por favor, tente novamente";
 "Please verify your email address first." = "Por favor verifique o seu endereço de e-mail primeiro.";
 "Please verify your mobile number first." = "Por favor, verifique seu número de celular primeiro.";
@@ -892,7 +892,7 @@ Fique ciente que há uma grande lista de espera para os airdrops Stellar e, infe
 "Stellar is an open-source, decentralized payment protocol that allows for fast and cheap cross-border transactions between any pair of currencies." = "Stellar é um protocolo de pagamento descentralizado e de código aberto que permite transações internacionais rápidas e baratas entre qualquer par de moedas.";
 "Stellar Price" = "Preço do Stellar";
 "Stellar requires that all Stellar accounts hold a minimum balance of lumens, or XLM. This means you cannot send a balance out of your Stellar Wallet that would leave your Stellar Wallet with less than the minimum balance. This also means that in order to send XLM to a new Stellar account, you must send enough XLM to meet the minimum balance requirement." = "O Stellar exige que todas as contas do Stellar mantenham um saldo mínimo de lumens, ou XLM. Isso significa que não pode enviar um saldo da Wallet Stellar que deixaria na sua Wallet Stellar com saldo menor que o mínimo. Isso também significa que, para enviar a XLM para uma nova conta Stellar, deverá enviar XLM suficiente de forma a atender ao requisito de saldo mínimo.";
-"Step %d of %d" = "Etapa %1$d de %2$d";
+"Step %d of %d" = "Etapa %d de %d";
 "store" = "armazene";
 "Stored" = "Armazenados";
 "Street line" = "Linha da rua";
@@ -1031,9 +1031,9 @@ Fique ciente que há uma grande lista de espera para os airdrops Stellar e, infe
 "Transfer imported addresses?" = "Transferência de endereços importados?";
 "Transfer In Crypto" = "Transferir em criptografia";
 "Transferred" = "Transferido";
-"Transferred funds from %d %@" = "Fundos transferidos de %1$d %2$@";
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Fundos transferidos de %1$d %2$@ . As saídas para %3$d %4$@ eram muito pequenas.";
-"Transferring all funds: Address %i of %i" = "A transferência de todos os fundos: endereço de %1$ia %2$i";
+"Transferred funds from %d %@" = "Fundos transferidos de %d %@";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Fundos transferidos de %d %@ . As saídas para %d %@ eram muito pequenas.";
+"Transferring all funds: Address %i of %i" = "A transferência de todos os fundos: endereço de %ia %i";
 "Try again" = "Tente novamente";
 "Try Again" = "Tente novamente";
 "twelfth" = "décimo segundo";
@@ -1184,7 +1184,7 @@ Fique ciente que há uma grande lista de espera para os airdrops Stellar e, infe
 "With Blockchain Airdrops, get free crypto sent right to your Blockchain Wallet." = "Com o Blockchain Airdrops, receba criptografia gratuita enviada diretamente para sua Carteira Blockchain.";
 "With Swap your crypto is safe, secure, and your keys are always intact." = "Com Swap, as suas criptomoedas estão seguras, protegidas e as suas chaves estão sempre intactas.";
 "word" = "palavra";
-"Word %@ of %@" = "Palavra %1$@ de %2$@";
+"Word %@ of %@" = "Palavra %@ de %@";
 "Would you like to add the bitcoin address %@ to your address book?" = "Gostaria de adicionar o bitcoin endereço %@ ao seu catálogo de endereços?";
 "Would you like to archive the addresses used?" = "Deseja arquivar os endereços usados?";
 "Would you like to tell us about your experience with Blockchain?" = "Gostaria de dizer-nos sobre a sua experiência com Blockchain?";
@@ -1195,7 +1195,7 @@ Fique ciente que há uma grande lista de espera para os airdrops Stellar e, infe
 "XLM is a token that enables quick, low cost global transactions. Send, receive, and trade XLM in the wallet today." = "O XLM é um token que permite transações globais rápidas e de baixo custo. Envie, receba e negocie o XLM na carteira hoje mesmo.";
 "XLM Reserve Requirement" = "Requisito de Reserva XLM";
 "xxx" = "xxx";
-"xxx %@ (%@ %@)" = "xxx %1$@ ( %2$@ %3$@ )";
+"xxx %@ (%@ %@)" = "xxx %@ ( %@ %@ )";
 "year" = "ano";
 "Year" = "Ano";
 "years" = "anos";
@@ -1232,9 +1232,9 @@ Fique ciente que há uma grande lista de espera para os airdrops Stellar e, infe
 "You must leave at least one active address" = "Você deve deixar pelo menos um endereço ativo";
 "You need to confirm your email address so that we can keep you informed about your wallet." = "Tem de confirmar o seu endereço de e-mail para que possamos mantê-lo informado sobre a sua carteira.";
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "Você sempre deve emparelhar ou iniciar sessão se você tem acesso a sua carteira de ID e senha. Recuperar os seus fundos criará uma nova carteira de identificação. Gostaria de continuar?";
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Especificou uma taxa de transação excecionalmente pequena de %1$@. A transação pode ser preso e possivelmente nunca ser confirmada. Para aumentar a probabilidade da sua transação confirmar dentro de aproximadamente uma hora (seis blocos), recomendamos uma taxa de não menos do que %2$@.";
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Especificou uma taxa de transação excecionalmente pequena de %1$@. A sua transação pode ficar preso e possivelmente nunca confirmar. Para aumentar a probabilidade da sua transação confirmar dentro de aproximadamente uma hora (seis blocos), recomendamos uma taxa de não menos do que %2$@. Desde que não possua fundos suficientes, o que significa que a quantidade de envio também terá de ser reduzido para %3$@.";
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Especificou uma taxa de transação invulgarmente elevado de %1$@. Mesmo se  baixar a taxa para %2$@, pode esperar a transação para confirmar dentro de 10 minutos (um bloco).";
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Especificou uma taxa de transação excecionalmente pequena de %@. A transação pode ser preso e possivelmente nunca ser confirmada. Para aumentar a probabilidade da sua transação confirmar dentro de aproximadamente uma hora (seis blocos), recomendamos uma taxa de não menos do que %@.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Especificou uma taxa de transação excecionalmente pequena de %@. A sua transação pode ficar preso e possivelmente nunca confirmar. Para aumentar a probabilidade da sua transação confirmar dentro de aproximadamente uma hora (seis blocos), recomendamos uma taxa de não menos do que %@. Desde que não possua fundos suficientes, o que significa que a quantidade de envio também terá de ser reduzido para %@.";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Especificou uma taxa de transação invulgarmente elevado de %@. Mesmo se  baixar a taxa para %@, pode esperar a transação para confirmar dentro de 10 minutos (um bloco).";
 "You will be leaving the app." = "Vai sair da aplicação.";
 "You will be redirected to\n%@." = "Você será redirecionado para \
  %@ .";
