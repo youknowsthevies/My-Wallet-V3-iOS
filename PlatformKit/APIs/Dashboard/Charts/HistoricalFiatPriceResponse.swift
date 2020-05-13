@@ -10,10 +10,10 @@
 public struct HistoricalFiatPriceResponse {
     
     /// The prices for the given `PriceWindow`
-    public let historicalPrices: HistoricalPrices
+    public let historicalPrices: HistoricalPriceSeries
     
     /// The current `FiatValue` of the CryptoCurrency. This is **not** the `.last`
-    /// value in `HistoricalPrices`. This is fetched separately from a different service.
+    /// value in `HistoricalPriceSeries`. This is fetched separately from a different service.
     public let currentFiatValue: FiatValue
     
     /// The `PriceWindow`
@@ -21,7 +21,7 @@ public struct HistoricalFiatPriceResponse {
     
     // MARK: - Init
     
-    public init(prices: HistoricalPrices, fiatValue: FiatValue, priceWindow: PriceWindow) {
+    public init(prices: HistoricalPriceSeries, fiatValue: FiatValue, priceWindow: PriceWindow) {
         self.historicalPrices = prices
         self.currentFiatValue = fiatValue
         self.priceWindow = priceWindow

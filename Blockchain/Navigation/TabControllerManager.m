@@ -50,7 +50,7 @@
     walletManager.partnerExchangeIntermediateDelegate = self;
     walletManager.transactionDelegate = self;
     walletManager.watchOnlyDelegate = self;
-    walletManager.fiatAtTimeDelegate = self;
+    WalletFiatAtTime.shared.delegate = self;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -433,8 +433,7 @@
 
 #pragma mark - Fiat at Time
 
-- (void)didGetFiatAtTimeWithFiatAmount:(NSNumber * _Nonnull)fiatAmount currencyCode:(NSString * _Nonnull)currencyCode assetType:(LegacyAssetType)assetType
-{
+- (void)didGetFiatAtTimeWithFiatAmount:(NSDecimalNumber *)fiatAmount currencyCode:(NSString *)currencyCode assetType:(LegacyAssetType)assetType {
     NSArray *transactions;
     NSString *targetHash;
 
@@ -451,7 +450,7 @@
 
     NSString *amount = [[NSNumberFormatter localCurrencyFormatterWithGroupingSeparator] stringFromNumber:fiatAmount];
     NSDictionary *result = @{currencyCode : amount};
-    
+
     for (id item in transactions) {
         if ([item conformsToProtocol:@protocol(TransactionProtocol)]) {
             id<TransactionProtocol> transaction = (id<TransactionProtocol>)item;
@@ -461,12 +460,11 @@
             }
         }
     }
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:[ConstantsObjcBridge notificationKeyGetFiatAtTime] object:result];
+
+    [NSNotificationCenter.defaultCenter postNotificationName:[ConstantsObjcBridge notificationKeyGetFiatAtTime] object:result];
 }
 
-- (void)didErrorWhenGettingFiatAtTimeWithError:(NSString * _Nullable)error
-{
+- (void)didErrorWhenGettingFiatAtTimeWithError:(NSString *)error {
     [[AlertViewPresenter sharedInstance] standardErrorWithTitle:BC_STRING_ERROR message:BC_STRING_ERROR_GETTING_FIAT_AT_TIME in:self handler:nil];
 }
 

@@ -45,7 +45,6 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI {
     @objc weak var sendBitcoinDelegate: WalletSendBitcoinDelegate?
     @objc weak var sendEtherDelegate: WalletSendEtherDelegate?
     @objc weak var partnerExchangeIntermediateDelegate: WalletExchangeIntermediateDelegate?
-    @objc weak var fiatAtTimeDelegate: WalletFiatAtTimeDelegate?
     @objc weak var transactionDelegate: WalletTransactionDelegate?
     @objc weak var transferAllDelegate: WalletTransferAllDelegate?
     @objc weak var watchOnlyDelegate: WalletWatchOnlyDelegate?
@@ -521,23 +520,6 @@ extension WalletManager: WalletDelegate {
     func didErrorDuringTransferAll(_ error: String!, secondPassword: String?) {
         DispatchQueue.main.async { [unowned self] in
             self.transferAllDelegate?.didErrorDuringTransferAll(error: error, secondPassword: secondPassword)
-        }
-    }
-
-    // MARK: - Fiat at Time
-    func didGetFiat(atTime fiatAmount: NSNumber!, currencyCode: String!, assetType: LegacyAssetType) {
-        DispatchQueue.main.async { [unowned self] in
-            self.fiatAtTimeDelegate?.didGetFiatAtTime(
-                fiatAmount: fiatAmount,
-                currencyCode: currencyCode,
-                assetType: assetType
-            )
-        }
-    }
-
-    func didErrorWhenGettingFiat(atTime error: String?) {
-        DispatchQueue.main.async { [unowned self] in
-            self.fiatAtTimeDelegate?.didErrorWhenGettingFiatAtTime(error: error)
         }
     }
 

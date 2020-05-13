@@ -11,7 +11,7 @@ import RxSwift
 import stellarsdk
 
 @testable import Blockchain
-import PlatformKit
+@testable import PlatformKit
 import BitcoinKit
 import StellarKit
 import EthereumKit
@@ -34,21 +34,20 @@ class StellarOperationMock: StellarOperationsAPI {
 }
 
 final class PriceServiceMock: PriceServiceAPI {
-    
-    private let expectedResult: PriceInFiatValue
-    
-    init(expectedResult: PriceInFiatValue) {
-        self.expectedResult = expectedResult
+
+    var historicalPriceSeries: HistoricalPriceSeries = HistoricalPriceSeries(currency: .bitcoin, prices: [.empty])
+    var priceInFiatValue: PriceInFiatValue = PriceInFiat.empty.toPriceInFiatValue(fiatCurrency: .USD)
+
+    func price(for cryptoCurrency: CryptoCurrency, in fiatCurrency: FiatCurrency) -> Single<PriceInFiatValue> {
+        .just(priceInFiatValue)
     }
-    
-    func fiatPrice(forCurrency cryptoCurrency: CryptoCurrency, fiatSymbol: String) -> Single<PriceInFiatValue> {
-        return Single.error(NSError())
-        return .just(expectedResult)
+
+    func price(for cryptoCurrency: CryptoCurrency, in fiatCurrency: FiatCurrency, at date: Date) -> Single<PriceInFiatValue> {
+        .just(priceInFiatValue)
     }
-    
-    func fiatPrice(forCurrency cryptoCurrency: CryptoCurrency, fiatSymbol: String, timestamp: Date) -> Single<PriceInFiatValue> {
-        return Single.error(NSError())
-        return .just(expectedResult)
+
+    func priceSeries(within window: PriceWindow, of cryptoCurrency: CryptoCurrency, in fiatCurrency: FiatCurrency) -> Single<HistoricalPriceSeries> {
+        .just(historicalPriceSeries)
     }
 }
 
@@ -75,7 +74,7 @@ class StellarDependenciesMock: StellarDependenciesAPI {
     var transaction: StellarTransactionAPI = StellarTransactionMock()
     var limits: StellarTradeLimitsAPI = StellarTradeLimitsMock()
     var repository: StellarWalletAccountRepositoryAPI = StellarWalletAccountRepositoryMock()
-    var prices: PriceServiceAPI = PriceServiceMock(expectedResult: PriceInFiat.empty.toPriceInFiatValue(currencyCode: "USD"))
+    var prices: PriceServiceAPI = PriceServiceMock()
     var walletActionEventBus: WalletActionEventBus = WalletActionEventBus()
     var feeService: StellarFeeServiceAPI = StellarFeeServiceMock()
 }

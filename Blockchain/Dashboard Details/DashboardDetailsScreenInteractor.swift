@@ -22,8 +22,7 @@ final class DashboardDetailsScreenInteractor: DashboardDetailsScreenInteracting 
          service: AssetBalanceFetching,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI,
          exchangeAPI: PairExchangeServiceAPI,
-         wallet: Wallet = WalletManager.shared.wallet,
-         historicalPricesAPI: HistoricalPricesAPI = HistoricalPriceService()) {
+         wallet: Wallet = WalletManager.shared.wallet) {
         self.priceServiceAPI = HistoricalFiatPriceService(
             cryptoCurrency: currency,
             exchangeAPI: exchangeAPI,

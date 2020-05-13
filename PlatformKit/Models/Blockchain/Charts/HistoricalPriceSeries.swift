@@ -1,5 +1,5 @@
 //
-//  HistoricalPrices.swift
+//  HistoricalPriceSeries.swift
 //  PlatformKit
 //
 //  Created by AlexM on 9/25/19.
@@ -8,11 +8,7 @@
 
 import Foundation
 
-public struct AssetPriceHistory {
-    let current: FiatValue
-}
-
-public struct HistoricalPrices {
+public struct HistoricalPriceSeries {
     public let currency: CryptoCurrency
         
     /// The difference in percentage between the latest price to the first price

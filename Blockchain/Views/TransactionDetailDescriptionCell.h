@@ -25,6 +25,6 @@
 @property (nonatomic) UILabel *textViewPlaceholderLabel;
 @property (nonatomic) CGFloat defaultTextViewHeight;
 @property (nonatomic) UIButton *editButton;
-@property (nonatomic) id<DescriptionDelegate> descriptionDelegate;
+@property (nonatomic, weak) id<DescriptionDelegate> descriptionDelegate;
 
 @end

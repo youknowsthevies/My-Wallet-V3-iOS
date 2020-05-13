@@ -942,10 +942,7 @@ extension FiatCurrency {
     }
     
     public init?(code: String) {
-        guard let currency = FiatCurrency(rawValue: code) else {
-            return nil
-        }
-        self = currency
+        self.init(rawValue: code.uppercased())
     }
 }
 
@@ -953,7 +950,7 @@ extension FiatCurrency {
     
     /// The code of the currency. e.g USD, GBP, EUR
     public var code: String {
-        return rawValue
+        rawValue
     }
     
     /// The symbol of the currency. e.g $, £, €

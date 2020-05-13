@@ -51,7 +51,7 @@ final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                     let currentPrice = result.currentFiatValue
                     let fiatChange = FiatValue.create(
                         amount: result.historicalPrices.fiatChange,
-                        currencyCode: result.currentFiatValue.currencyCode
+                        currency: result.currentFiatValue.currency
                     )
                     return .loaded(
                         next: .init(
@@ -65,19 +65,19 @@ final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                     let historicalPrices = result.historicalPrices
                     let currentFiatValue = result.currentFiatValue
                     let prices = Array(historicalPrices.prices[0...min(index, historicalPrices.prices.count - 1)])
-                    let currencyCode = currentFiatValue.currencyCode
+                    let fiatCurrency = currentFiatValue.currency
                     guard let selected = prices.last else { return .loading }
-                    let priceInFiatValue = selected.toPriceInFiatValue(currencyCode: currencyCode)
-                    let adjusted = HistoricalPrices(currency: historicalPrices.currency, prices: prices)
+                    let priceInFiatValue = selected.toPriceInFiatValue(fiatCurrency: fiatCurrency)
+                    let adjusted = HistoricalPriceSeries(currency: historicalPrices.currency, prices: prices)
                     
                     let fiatChange = FiatValue.create(
                         amount: adjusted.fiatChange,
-                        currencyCode: currencyCode
+                        currency: fiatCurrency
                     )
-                    
+
                     return .loaded(
                         next: .init(
-                            time: .timestamp(selected.timestamp ?? Date()),
+                            time: .timestamp(selected.timestamp),
                             fiatValue: priceInFiatValue.priceInFiat,
                             changePercentage: adjusted.delta,
                             fiatChange: fiatChange

@@ -17,6 +17,6 @@
 @property (nonatomic) UILabel *accessoryLabel;
 @property (nonatomic) UIButton *accessoryButton;
 @property (nonatomic) UIButton *bannerButton;
-@property (nonatomic) id<StatusDelegate> statusDelegate;
+@property (nonatomic, weak) id<StatusDelegate> statusDelegate;
 
 @end

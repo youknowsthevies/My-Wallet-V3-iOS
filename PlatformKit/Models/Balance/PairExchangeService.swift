@@ -47,7 +47,7 @@ public final class PairExchangeService: PairExchangeServiceAPI {
     // MARK: - Setup
     
     public init(cryptoCurrency: CryptoCurrency,
-                priceService: PriceServiceAPI = PriceServiceClient(),
+                priceService: PriceServiceAPI = PriceService(),
                 currencyService: FiatCurrencySettingsServiceAPI) {
         self.cryptoCurrency = cryptoCurrency
         self.priceService = priceService
@@ -58,14 +58,12 @@ public final class PairExchangeService: PairExchangeServiceAPI {
         fiatPrice = Observable
             .combineLatest(currencyService.fiatCurrencyObservable, fetchTriggerRelay)
             .throttle(.milliseconds(100), scheduler: scheduler)
-            .map { $0.0.code }
+            .map { $0.0 }
             .subscribeOn(scheduler)
             .observeOn(scheduler)
-            .flatMapLatest { code -> Observable<PriceInFiatValue> in
-                return priceService.fiatPrice(
-                        forCurrency: cryptoCurrency,
-                        fiatSymbol: code
-                    )
+            .flatMapLatest { fiatCurrency -> Observable<PriceInFiatValue> in
+                priceService
+                    .price(for: cryptoCurrency, in: fiatCurrency)
                     .asObservable()
             }
             .map { $0.priceInFiat }

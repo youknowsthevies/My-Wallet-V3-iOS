@@ -29,19 +29,19 @@ final class AssetLineChartInteractor: AssetLineChartInteracting {
     // MARK: - Private Accessors
     
     private let stateRelay = BehaviorRelay<AssetLineChart.State.Interaction>(value: .loading)
-    private let currency: CryptoCurrency
-    private let currencyCode: String
-    private let pricesAPI: HistoricalPricesAPI
+    private let cryptoCurrency: CryptoCurrency
+    private let fiatCurrency: FiatCurrency
+    private let priceService: PriceServiceAPI
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
-    init(currency: CryptoCurrency,
-         code: String,
-         pricesAPI: HistoricalPricesAPI = HistoricalPriceService()) {
-        self.currencyCode = code
-        self.pricesAPI = pricesAPI
-        self.currency = currency
+    init(cryptoCurrency: CryptoCurrency,
+         fiatCurrency: FiatCurrency,
+         priceService: PriceServiceAPI = PriceService()) {
+        self.fiatCurrency = fiatCurrency
+        self.priceService = priceService
+        self.cryptoCurrency = cryptoCurrency
         setup()
     }
     
@@ -54,13 +54,11 @@ final class AssetLineChartInteractor: AssetLineChartInteracting {
     }
     
     private func loadHistoricalPrices(within window: PriceWindow) {
-        pricesAPI.historicalPrices(within: window,
-                                   currency: currency,
-                                   code: currencyCode).asObservable()
-            .map(weak: self) { (self, result) -> (Double, [PriceInFiat]) in
-                return (result.delta, result.prices)
-            }
-            .map { .init(delta: $0.0, currency: self.currency, prices: $0.1) }
+        let cryptoCurrency = self.cryptoCurrency
+        priceService
+            .priceSeries(within: window, of: cryptoCurrency, in: fiatCurrency)
+            .asObservable()
+            .map { .init(delta: $0.delta, currency: cryptoCurrency, prices: $0.prices) }
             .map { .loaded(next: $0) }
             .startWith(.loading)
             .bind(to: stateRelay)

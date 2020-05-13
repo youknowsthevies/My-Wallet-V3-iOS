@@ -10,6 +10,6 @@ import Foundation
 
 /// The response returned when registering a `publicKey`
 /// for a soon to be received Airdropped asset.
-public struct AirdropRegistrationResponse: Codable {
+public struct AirdropRegistrationResponse: Decodable {
     public let message: String
 }

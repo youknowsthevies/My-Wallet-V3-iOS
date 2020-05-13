@@ -16,7 +16,7 @@ public protocol AirdropRegistrationAPI {
 
 public class AirdropRegistrationService: AirdropRegistrationAPI {
     
-    private let client: APIClientAPI
+    private let client: AirdropRegistrationClientAPI
     
     // MARK: - Setup
     
@@ -25,10 +25,10 @@ public class AirdropRegistrationService: AirdropRegistrationAPI {
     //   ideal world, the client would be provided by a `public` provider
     //   with internal properties
     public convenience init() {
-        self.init(client: APIClient(config: .retailConfig))
+        self.init(client: AirdropRegistrationClient())
     }
     
-    init(client: APIClientAPI) {
+    init(client: AirdropRegistrationClientAPI) {
         self.client = client
     }
     

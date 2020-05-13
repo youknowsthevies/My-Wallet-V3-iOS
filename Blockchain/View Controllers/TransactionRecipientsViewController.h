@@ -12,7 +12,7 @@
 - (void)toggleSymbol;
 @end
 @interface TransactionRecipientsViewController : UIViewController
-@property (nonatomic) id<RecipientsDelegate> recipientsDelegate;
+@property (nonatomic, weak) id<RecipientsDelegate> recipientsDelegate;
 - (id)initWithRecipients:(NSArray *)recipients;
 - (void)reloadTableView;
 @end

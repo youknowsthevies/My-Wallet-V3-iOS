@@ -284,7 +284,6 @@
 // Transaction Details
 - (void)saveNote:(NSString *)note forTransaction:(NSString *)hash;
 - (void)saveEtherNote:(NSString *)note forTransaction:(NSString *)hash;
-- (void)getFiatAtTime:(uint64_t)time value:(NSDecimalNumber *)value currencyCode:(NSString *)currencyCode assetType:(LegacyAssetType)assetType;
 - (NSString *)getNotePlaceholderForTransactionHash:(NSString *)myHash;
 
 - (JSValue *)executeJSSynchronous:(NSString *)command;

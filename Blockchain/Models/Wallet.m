@@ -2095,43 +2095,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 }
 
-- (void)getFiatAtTime:(uint64_t)time value:(NSDecimalNumber *)value currencyCode:(NSString *)currencyCode assetType:(LegacyAssetType)assetType
-{
-    NSString *symbol;
-    if (assetType == LegacyAssetTypeBitcoin) {
-        symbol = CURRENCY_SYMBOL_BTC;
-    } else if (assetType == LegacyAssetTypeEther) {
-        symbol = CURRENCY_SYMBOL_ETH;
-    } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        symbol = CURRENCY_SYMBOL_BCH;
-    } else if (assetType == LegacyAssetTypeStellar) {
-        symbol = CURRENCY_SYMBOL_XLM;
-    }
-
-    NSURL *URL = [NSURL URLWithString:[[BlockchainAPI.shared apiUrl] stringByAppendingString:[NSString stringWithFormat:URL_SUFFIX_PRICE_INDEX_ARGUMENTS_BASE_QUOTE_TIME, symbol, currencyCode, time]]];
-
-    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
-    NSURLSessionDataTask *task = [[[NetworkDependenciesObjc sharedInstance] session] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (error) {
-                [self on_get_fiat_at_time_error:[error localizedDescription]];
-            } else {
-                NSError *jsonError;
-                NSDictionary *dictResult = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
-                if (jsonError) DLog(@"JSON error getting fiat at time: %@", [error localizedDescription]);
-                if ([dictResult objectForKey:DICTIONARY_KEY_ERROR]) return;
-
-                NSNumber *result = [dictResult objectForKey:DICTIONARY_KEY_PRICE];
-                NSDecimalNumber *amount = [value decimalNumberByMultiplyingBy:[NSDecimalNumber decimalNumberWithDecimal:[result decimalValue]]];
-
-                [self on_get_fiat_at_time_success:amount currencyCode:currencyCode assetType:assetType];
-            }
-        });
-    }];
-
-    [task resume];
-}
-
 - (NSString *)getNotePlaceholderForTransactionHash:(NSString *)myHash
 {
     return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getNotePlaceholder(\"%@\")", myHash]] toString];
@@ -3455,26 +3418,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     if ([self.delegate respondsToSelector:@selector(updateLoadedAllTransactions:)]) {
         [self.delegate updateLoadedAllTransactions:[loadedAll boolValue]];
-    }
-}
-
-- (void)on_get_fiat_at_time_success:(NSNumber *)fiatAmount currencyCode:(NSString *)currencyCode assetType:(LegacyAssetType)assetType
-{
-    DLog(@"on_get_fiat_at_time_success");
-    if ([self.delegate respondsToSelector:@selector(didGetFiatAtTime:currencyCode:assetType:)]) {
-        [self.delegate didGetFiatAtTime:fiatAmount currencyCode:currencyCode assetType:assetType];
-    } else {
-        DLog(@"Error: delegate of class %@ does not respond to selector didGetFiatAtTime:currencyCode!", [delegate class]);
-    }
-}
-
-- (void)on_get_fiat_at_time_error:(NSString *)error
-{
-    DLog(@"on_get_fiat_at_time_error");
-    if ([self.delegate respondsToSelector:@selector(didErrorWhenGettingFiatAtTime:)]) {
-        [self.delegate didErrorWhenGettingFiatAtTime:error];
-    } else {
-        DLog(@"Error: delegate of class %@ does not respond to selector didErrorWhenGettingFiatAtTime!", [delegate class]);
     }
 }
 

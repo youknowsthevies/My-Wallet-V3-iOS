@@ -21,6 +21,6 @@
 @property (nonatomic) UILabel *mainLabel;
 @property (nonatomic) UILabel *accessoryLabel;
 @property (nonatomic) UIButton *accessoryButton;
-@property (nonatomic) id<ValueDelegate> valueDelegate;
+@property (nonatomic, weak) id<ValueDelegate> valueDelegate;
 
 @end

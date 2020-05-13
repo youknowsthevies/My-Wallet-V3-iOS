@@ -63,10 +63,11 @@ final class DashboardRouter {
             fiatCurrencyService: userInformationServiceProvider.settings,
             exchangeAPI: dataProvider.exchange[currency]
         )
+        let fiatCurrencyCode = BlockchainSettings.App.shared.fiatCurrencyCode
         let detailsPresenter = DashboardDetailsScreenPresenter(
             using: detailsInteractor,
             with: currency,
-            currencyCode: BlockchainSettings.App.shared.fiatCurrencyCode,
+            fiatCurrency: FiatCurrency(code: fiatCurrencyCode)!,
             router: self
         )
         

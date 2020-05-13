@@ -60,7 +60,7 @@ struct StellarServices: StellarDependenciesAPI {
             configurationService: configurationService,
             repository: repository
         )
-        prices = PriceServiceClient()
+        prices = PriceService()
         limits = StellarTradeLimitsService(
             ledgerService: ledger,
             accountsService: accounts

@@ -155,9 +155,10 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
             ) else {
                 return Single.error(NetworkError.generic(message: "URL is invalid."))
         }
-        return Network.Dependencies.default.communicator.perform(request: NetworkRequest(endpoint: url, method: .get))
+        return Network.Dependencies.default.communicator
+            .perform(request: NetworkRequest(endpoint: url, method: .get))
             .map { (price: PriceInFiat) -> PriceInFiatValue in
-                price.toPriceInFiatValue(currencyCode: currencyCode)
+                price.toPriceInFiatValue(fiatCurrency: FiatCurrency(code: currencyCode)!)
             }
     }
     

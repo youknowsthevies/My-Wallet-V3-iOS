@@ -36,16 +36,16 @@ final class AssetLineChartTableViewCellPresenter: AssetLineChartTableViewCellPre
     
     private let scrollingEnabledRelay = BehaviorRelay(value: false)
     private let interactor: AssetLineChartTableViewCellInteracting
-    private let currency: CryptoCurrency
+    private let cryptoCurrency: CryptoCurrency
     private let windowRelay = PublishRelay<PriceWindow>()
     private let disposeBag = DisposeBag()
     
     // MARK: - Init
     
-    init(currency: CryptoCurrency,
-         currencyCode: String,
+    init(cryptoCurrency: CryptoCurrency,
+         fiatCurrency: FiatCurrency,
          historicalFiatPriceService: HistoricalFiatPriceServiceAPI) {
-        self.currency = currency
+        self.cryptoCurrency = cryptoCurrency
         
         /// Setup `lineChartView`
         self.lineChartView = LineChartView()
@@ -63,26 +63,28 @@ final class AssetLineChartTableViewCellPresenter: AssetLineChartTableViewCellPre
         lineChartView.data = LineChartData.empty
         
         self.interactor = AssetLineChartTableViewCellInteractor(
-            currency: currency,
-            currencyCode: currencyCode,
+            cryptoCurrency: cryptoCurrency,
+            fiatCurrency: fiatCurrency,
             historicalFiatPriceService: historicalFiatPriceService,
             lineChartView: lineChartView
         )
         
-        self.presenterContainer = .init(priceViewPresenter:
-            .init(
+        self.presenterContainer = .init(
+            priceViewPresenter: AssetPriceViewPresenter(
                 interactor: interactor.assetPriceViewInteractor,
                 alignment: .center,
                 descriptors: .assetPrice(
-                    accessibilityIdSuffix: currency.displayCode,
+                    accessibilityIdSuffix: cryptoCurrency.displayCode,
                     priceFontSize: 32.0,
                     changeFontSize: 14.0
                 )
-            ), lineChartPresenter: .init(edge: 0.0, interactor: interactor.lineChartInteractor),
-               lineChartView: lineChartView
+            ),
+            lineChartPresenter: .init(edge: 0.0, interactor: interactor.lineChartInteractor),
+            lineChartView: lineChartView
         )
         
-        interactor.isDeselected
+        interactor
+            .isDeselected
             .drive(scrollingEnabledRelay)
             .disposed(by: disposeBag)
         
@@ -92,35 +94,43 @@ final class AssetLineChartTableViewCellPresenter: AssetLineChartTableViewCellPre
     }
     
     private func setup() {
-        window.emit(onNext: { [weak self] priceWindow in
-            guard let self = self else { return }
-            self.windowRelay.accept(priceWindow)
-        })
-        .disposed(by: disposeBag)
+        window
+            .emit(onNext: { [weak self] priceWindow in
+                guard let self = self else { return }
+                self.windowRelay.accept(priceWindow)
+            })
+            .disposed(by: disposeBag)
     }
     
     private lazy var priceWindowItems: [SegmentedViewModel.Item] = {
-        return [.text(LocalizationConstants.DashboardDetails.day, action: { [weak self] in
+        [
+            .text(LocalizationConstants.DashboardDetails.day,
+                  action: { [weak self] in
                     guard let self = self else { return }
                     self.windowRelay.accept(.day(.fifteenMinutes))
-                    }
-                ),
-                .text(LocalizationConstants.DashboardDetails.week, action: { [weak self] in
+                }
+            ),
+            .text(LocalizationConstants.DashboardDetails.week,
+                  action: { [weak self] in
                     guard let self = self else { return }
                     self.windowRelay.accept(.week(.oneHour))
-                }),
-                .text(LocalizationConstants.DashboardDetails.month, action: { [weak self] in
+            }),
+            .text(LocalizationConstants.DashboardDetails.month,
+                  action: { [weak self] in
                     guard let self = self else { return }
                     self.windowRelay.accept(.month(.twoHours))
-                    }
-                ),
-                .text(LocalizationConstants.DashboardDetails.year, action: { [weak self] in
+                }
+            ),
+            .text(LocalizationConstants.DashboardDetails.year,
+                  action: { [weak self] in
                     guard let self = self else { return }
                     self.windowRelay.accept(.year(.oneDay))
-                }),
-                .text(LocalizationConstants.DashboardDetails.all, action: { [weak self] in
+            }),
+            .text(LocalizationConstants.DashboardDetails.all,
+                  action: { [weak self] in
                     guard let self = self else { return }
                     self.windowRelay.accept(.all(.fiveDays))
-                })]
+            })
+        ]
     }()
 }

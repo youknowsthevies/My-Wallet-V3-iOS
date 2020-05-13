@@ -47,7 +47,7 @@ class SendPaxCoordinator {
     init(
         interface: SendPAXInterface,
         serviceProvider: PAXServiceProvider = PAXServiceProvider.shared,
-        priceService: PriceServiceAPI = PriceServiceClient(),
+        priceService: PriceServiceAPI = PriceService(),
         exchangeAddressPresenter: SendExchangeAddressStatePresenter,
         bus: WalletActionEventBus = WalletActionEventBus.shared,
         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
@@ -156,16 +156,16 @@ extension SendPaxCoordinator {
 
         let currencyCode = BlockchainSettings.App.shared.fiatCurrencyCode
         return Single.zip(
-            priceAPI.fiatPrice(forCurrency: .ethereum, fiatSymbol: currencyCode),
-            priceAPI.fiatPrice(forCurrency: .pax, fiatSymbol: currencyCode),
+            priceAPI.price(for: .ethereum, in: FiatCurrency(code: currencyCode)!),
+            priceAPI.price(for: .pax, in: FiatCurrency(code: currencyCode)!),
             fees,
             balance
         )
         .map { (ethPrice, paxPrice, etherTransactionFee, balance) -> Metadata in
             return Metadata(etherInFiat: ethPrice.priceInFiat,
-                                   paxInFiat: paxPrice.priceInFiat,
-                                   etherFee: etherTransactionFee,
-                                   balance: balance)
+                            paxInFiat: paxPrice.priceInFiat,
+                            etherFee: etherTransactionFee,
+                            balance: balance)
         }
     }
     

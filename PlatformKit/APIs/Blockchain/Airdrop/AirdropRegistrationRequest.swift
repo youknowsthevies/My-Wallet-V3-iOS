@@ -9,29 +9,28 @@
 import Foundation
 
 /// Used for registering a `publicKey` for an asset that will be Airdropped.
-public struct AirdropRegistrationRequest: Codable {
-    
-    // FIXME: this shouldn't be in `PlatformKit`
+public struct AirdropRegistrationRequest: Encodable {
+
     public enum CampaignIdentifier: String, CodingKey {
         case sunriver = "SUNRIVER"
         case blockstack = "BLOCKSTACK"
         case powerPax = "POWER_PAX"
     }
-    
+
     /// Token derived from a `NabuSessionTokenResponse`
     let authToken: String
-    
+
     /// The `publicKey` for any `CryptoCurrency` that you are registering
     /// for an Airdrop.
     let publicKey: String
-    
+
     /// The `campaignIdentifier` that is tied to the asset.
     let campaignIdentifier: String
-    
+
     /// A new user is a user who has `.none` for `NabuUser.UserState`
     /// and `isCompletingKyc` evaulates to `false`.
     let newUser: Bool
-    
+
     public init(authToken: String, publicKey: String, campaignIdentifier: CampaignIdentifier, isNewUser: Bool) {
         self.authToken = authToken
         self.publicKey = publicKey

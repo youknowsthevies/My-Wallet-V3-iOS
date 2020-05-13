@@ -9,10 +9,6 @@
 import Foundation
 
 public enum PriceWindow {
-    public typealias Start = Date
-    public typealias Timeline = TimeInterval
-    public typealias CurrencyCode = String
-    
     public enum TimelineInterval {
         case fifteenMinutes
         case oneHour
@@ -43,11 +39,31 @@ extension PriceWindow {
             return interval ?? .twoHours
         }
     }
+
+    func timeIntervalSince1970(cryptoCurrency: CryptoCurrency, calendar: Calendar, date: Date) -> TimeInterval {
+        var components = DateComponents()
+        switch self {
+        case .all:
+            return cryptoCurrency.maxStartDate
+        case .day:
+            components.day = -1
+            return calendar.date(byAdding: components, to: date)?.timeIntervalSince1970 ?? date.timeIntervalSince1970
+        case .week:
+            components.day = -7
+            return calendar.date(byAdding: components, to: date)?.timeIntervalSince1970 ?? date.timeIntervalSince1970
+        case .month:
+            components.month = -1
+            return calendar.date(byAdding: components, to: date)?.timeIntervalSince1970 ?? date.timeIntervalSince1970
+        case .year:
+            components.year = -1
+            return calendar.date(byAdding: components, to: date)?.timeIntervalSince1970 ?? date.timeIntervalSince1970
+        }
+    }
 }
 
 public extension PriceWindow {
     var scale: Int {
-        return Int(timelineInterval.value)
+        Int(timelineInterval.value)
     }
 }
 

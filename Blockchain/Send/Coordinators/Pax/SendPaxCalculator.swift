@@ -66,7 +66,7 @@ class SendPaxCalculator {
     private let priceService: PriceServiceAPI
     private let erc20Service: ERC20Service<PaxToken>
     
-    init(serviceAPI: PriceServiceAPI = PriceServiceClient(),
+    init(serviceAPI: PriceServiceAPI = PriceService(),
          erc20Service: ERC20Service<PaxToken>,
          input: Input = .empty) {
         self.priceService = serviceAPI
@@ -122,9 +122,9 @@ class SendPaxCalculator {
         let currencyCode = BlockchainSettings.App.shared.fiatCurrencyCode
         /// Conversion completed regardless of user ETH or token balance
         return priceService
-            .fiatPrice(
-                forCurrency: input.paxAmount.currencyType,
-                fiatSymbol: currencyCode
+            .price(
+                for: input.paxAmount.currencyType,
+                in: FiatCurrency(code: currencyCode)!
             )
             .asObservable()
             .flatMapLatest { priceInFiatValue -> Observable<SendPaxInput> in
@@ -142,9 +142,9 @@ class SendPaxCalculator {
         let currencyCode = BlockchainSettings.App.shared.fiatCurrencyCode
         /// Conversion completed regardless of user ETH or token balance
         return priceService
-            .fiatPrice(
-                forCurrency: value.currencyType,
-                fiatSymbol: currencyCode
+            .price(
+                for: value.currencyType,
+                in: FiatCurrency(code: currencyCode)!
             )
             .asObservable()
             .flatMapLatest { priceInFiatValue -> Observable<SendPaxInput> in

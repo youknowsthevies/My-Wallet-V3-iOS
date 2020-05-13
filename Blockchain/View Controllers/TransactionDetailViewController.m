@@ -105,9 +105,23 @@ const CGFloat rowHeightValueReceived = 80;
 
 - (void)getFiatAtTime
 {
-    [WalletManager.sharedInstance.wallet getFiatAtTime:self.transactionModel.time value:self.transactionModel.decimalAmount currencyCode:[WalletManager.sharedInstance.latestMultiAddressResponse.symbol_local.code lowercaseString] assetType:self.transactionModel.assetType];
+    NSString *currencyCode = [WalletManager.sharedInstance.latestMultiAddressResponse.symbol_local.code lowercaseString];
+    [WalletFiatAtTime.shared getFiatAtTime:self.transactionModel.time
+                                     value:self.transactionModel.decimalAmount
+                              currencyCode:currencyCode
+                                 assetType:self.transactionModel.assetType];
     self.isGettingFiatAtTime = YES;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDataAfterGetFiatAtTime:) name:[ConstantsObjcBridge notificationKeyGetFiatAtTime] object:nil];
+
+
+    __weak TransactionDetailViewController *weakSelf = self;
+    NSNotificationCenter * __weak center = NSNotificationCenter.defaultCenter;
+    id __block token = [center addObserverForName:ConstantsObjcBridge.notificationKeyGetFiatAtTime
+                                           object:nil
+                                            queue:NSOperationQueue.mainQueue
+                                       usingBlock:^(NSNotification * _Nonnull note) {
+        [center removeObserver:token];
+        [weakSelf reloadDataAfterGetFiatAtTime:note];
+    }];
 }
 
 - (NSString *)getNotePlaceholder
@@ -163,7 +177,6 @@ const CGFloat rowHeightValueReceived = 80;
 - (void)reloadDataAfterGetFiatAtTime:(NSNotification * _Nullable)notification
 {
     self.isGettingFiatAtTime = NO;
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:[ConstantsObjcBridge notificationKeyGetFiatAtTime] object:nil];
     [self reloadDataWithTransactionDetails:[notification object]];
 }
 

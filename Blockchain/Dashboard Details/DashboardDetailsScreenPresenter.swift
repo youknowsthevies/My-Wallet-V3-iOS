@@ -135,7 +135,7 @@ final class DashboardDetailsScreenPresenter {
     
     init(using interactor: DashboardDetailsScreenInteracting,
          with currency: CryptoCurrency,
-         currencyCode: String,
+         fiatCurrency: FiatCurrency,
          router: DashboardRouter) {
         let custodialBalanceFetching = interactor.balanceFetching.custodialBalance
         self.custodialPresenter = DashboardDetailsCustodialTypePresenter(balanceFetching: custodialBalanceFetching)
@@ -144,8 +144,8 @@ final class DashboardDetailsScreenPresenter {
         self.interactor = interactor
         
         lineChartCellPresenter = AssetLineChartTableViewCellPresenter(
-            currency: currency,
-            currencyCode: currencyCode,
+            cryptoCurrency: currency,
+            fiatCurrency: fiatCurrency,
             historicalFiatPriceService: interactor.priceServiceAPI
         )
         

@@ -21,7 +21,7 @@ final class AssetLineChartTableViewCellInteractor: AssetLineChartTableViewCellIn
     let assetPriceViewInteractor: AssetPriceViewInteracting
     let window = PublishRelay<PriceWindow>()
     var isDeselected: Driver<Bool> {
-        return isDeselectedRelay.asDriver()
+        isDeselectedRelay.asDriver()
     }
     
     // MARK: - Private Properties
@@ -32,30 +32,31 @@ final class AssetLineChartTableViewCellInteractor: AssetLineChartTableViewCellIn
     
     // MARK: - Init
     
-    init(currency: CryptoCurrency,
-         currencyCode: String,
+    init(cryptoCurrency: CryptoCurrency,
+         fiatCurrency: FiatCurrency,
          historicalFiatPriceService: HistoricalFiatPriceServiceAPI,
          lineChartView: LineChartView) {
         self.historicalFiatPriceService = historicalFiatPriceService
-        self.lineChartInteractor = AssetLineChartInteractor(currency: currency, code: currencyCode)
+        self.lineChartInteractor = AssetLineChartInteractor(cryptoCurrency: cryptoCurrency, fiatCurrency: fiatCurrency)
         self.lineChartUserInteractor = AssetLineChartUserInteractor(chartView: lineChartView)
-        
         self.assetPriceViewInteractor = InstantAssetPriceViewInteractor(
             historicalPriceProvider: historicalFiatPriceService,
             chartUserInteracting: lineChartUserInteractor
         )
-        
-        lineChartUserInteractor.state.map { $0 == .deselected }
-        .bind(to: isDeselectedRelay)
-        .disposed(by: disposeBag)
+
+        lineChartUserInteractor
+            .state
+            .map { $0 == .deselected }
+            .bind(to: isDeselectedRelay)
+            .disposed(by: disposeBag)
         
         /// Bind window relay to the `PublishRelay<PriceWindow>` on
         /// both the `AssetLineChartInteractor` and the `HistoricalFiatPriceService`.
-        self.window
+        window
             .bind(to: lineChartInteractor.priceWindowRelay)
             .disposed(by: disposeBag)
         
-        self.window
+        window
             .bind(to: historicalFiatPriceService.fetchTriggerRelay)
             .disposed(by: disposeBag)
     }
