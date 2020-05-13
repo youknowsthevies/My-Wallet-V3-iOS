@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import EthereumKit
 import NetworkKit
 import PlatformKit
-import EthereumKit
 import RxSwift
 
 public protocol ERC20WalletTranscationsBridgeAPI: class {
@@ -20,70 +20,43 @@ public class AnyERC20HistoricalTransactionService<Token: ERC20Token>: TokenizedH
     public typealias Model = ERC20HistoricalTransaction<Token>
     public typealias Bridge = ERC20WalletTranscationsBridgeAPI
     public typealias PageModel = PageResult<Model>
-    
+
     /// Streams `true` in case the account has at least one transaction
     public var hasTransactions: Single<Bool> {
-        return fetchTransactions().map { !$0.isEmpty }
+        fetchTransactions().map { !$0.isEmpty }
     }
-    
+
+    private let accountClient: ERC20AccountAPIClient<Token>
     private let bridge: EthereumWalletBridgeAPI
     
-    private var ethereumAddress: Single<String> {
-        return bridge.address
-    }
-    
-    private let communicator: NetworkCommunicatorAPI
-    
-    public init(bridge: EthereumWalletBridgeAPI, communicator: NetworkCommunicatorAPI = NetworkCommunicator.shared) {
+    public init(bridge: EthereumWalletBridgeAPI, accountClient: ERC20AccountAPIClient<Token> = ERC20AccountAPIClient<Token>()) {
         self.bridge = bridge
-        self.communicator = communicator
+        self.accountClient = accountClient
     }
     
     public func fetchTransactions(token: String?, size: Int) -> Single<PageModel> {
-        let page = token ?? "0"
-        return ethereumAddress.flatMap { address in
-            return self.fetchTransactionResponse(from: page).flatMap {
-                let result: [ERC20HistoricalTransaction<Token>] = $0.transactions.map { transaction in
-                    let direction: Direction = transaction.fromAddress.publicKey == address.lowercased() ? .debit : .credit
-                    return transaction.make(from: direction)
-                }
-                let output = PageModel(
-                    hasNextPage: result.count >= size,
-                    items: result
-                )
-                return Single.just(output)
+        bridge.address
+            .flatMap(weak: self) { (self, address) in
+                self.fetchTransactions(from: address, page: token ?? "0")
             }
-        }
+            .map { PageModel(hasNextPage: $0.count >= size, items: $0) }
     }
     
     public func fetchTransactions() -> Single<[ERC20HistoricalTransaction<Token>]> {
-        return ethereumAddress.flatMap {
-            return self.fetchTransactions(from: $0)
-        }
+        bridge.address
+            .flatMap(weak: self) { (self, address) in
+                self.fetchTransactions(from: address, page: "0")
+            }
     }
-    
-    private func fetchTransactions(from address: String) -> Single<[ERC20HistoricalTransaction<Token>]> {
-        return fetchTransactionResponse().flatMap {
-            let result: [ERC20HistoricalTransaction<Token>] = $0.transactions.map {
-                let direction: Direction = $0.fromAddress.publicKey == address ? .debit : .credit
-                return $0.make(from: direction)
+
+    private func fetchTransactions(from address: EthereumAddress, page: String) -> Single<[ERC20HistoricalTransaction<Token>]> {
+        accountClient
+            .fetchWalletAccount(from: address.rawValue, page: page)
+            .map {
+                $0.transactions.map {
+                    let direction: Direction = $0.fromAddress == address ? .debit : .credit
+                    return $0.make(from: direction)
+                }
             }
-            return Single.just(result)
-        }
-    }
-    
-    private func fetchTransactionResponse(from page: String = "0") -> Single<ERC20AccountTransactionsResponse<Token>> {
-        return ethereumAddress.flatMap(weak: self) { (self, address) -> Single<ERC20AccountTransactionsResponse<Token>> in
-            guard let baseURL = URL(string: BlockchainAPI.shared.apiUrl) else {
-                return Single.error(NetworkError.generic(message: "Invalid URL"))
-            }
-            let params = ["page": String(page)]
-            let components = ["v2", "eth", "data", "account", address, "token", Token.contractAddress.ethereumAddress.rawValue, "wallet"]
-            guard let endpoint = URL.endpoint(baseURL, pathComponents: components, queryParameters: params) else {
-                return Single.error(NetworkError.generic(message: "Invalid URL"))
-            }
-            
-            return self.communicator.perform(request: NetworkRequest(endpoint: endpoint, method: .get))
-        }
     }
 }

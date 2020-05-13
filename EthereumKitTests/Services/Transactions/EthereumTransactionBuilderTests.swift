@@ -30,16 +30,14 @@ class EthereumTransactionBuilderTests: XCTestCase {
     }
     
     func test_build_transaction() {
-        let toAddress: EthereumKit.EthereumAssetAddress = EthereumKit.EthereumAssetAddress(
-            publicKey: "0x3535353535353535353535353535353535353535"
-        )
+        let toAddress = EthereumKit.EthereumAddress(stringLiteral: "0x3535353535353535353535353535353535353535")
         let value: BigUInt = BigUInt(0.01658472)
         let nonce = MockEthereumWalletTestData.Transaction.nonce
         let gasPrice = MockEthereumWalletTestData.Transaction.gasPrice
         let gasLimit = MockEthereumWalletTestData.Transaction.gasLimit
         
         let transaction = EthereumKit.EthereumTransactionCandidate(
-            to: EthereumAddress(rawValue: toAddress.publicKey)!,
+            to: toAddress,
             gasPrice: gasPrice,
             gasLimit: gasLimit,
             value: value,
@@ -50,7 +48,7 @@ class EthereumTransactionBuilderTests: XCTestCase {
             nonce: nonce,
             gasPrice: gasPrice,
             gasLimit: gasLimit,
-            to: Address(toAddress.publicKey),
+            to: toAddress.web3swiftAddress,
             value: transaction.value,
             data: Data()
         )

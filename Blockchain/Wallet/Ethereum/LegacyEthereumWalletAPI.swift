@@ -20,8 +20,6 @@ public protocol LegacyEthereumWalletAPI: class {
                 
     func erc20Tokens(with secondPassword: String?, success: @escaping ([String: [String: Any]]) -> Void, error: @escaping (String) -> Void)
     func saveERC20Tokens(with secondPassword: String?, tokensJSONString: String, success: @escaping () -> Void, error: @escaping (String) -> Void)
-    
-    var lastEthereumTransactionDetails: Single<LegacyLastTransactionDetails?> { get }
-    var hasLastTransactionDetails: Single<Bool> { get }
+
     func recordLastEthereumTransaction(transactionHash: String, success: @escaping () -> Void, error: @escaping (String) -> Void)
 }

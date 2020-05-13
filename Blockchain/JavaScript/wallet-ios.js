@@ -2066,24 +2066,6 @@ MyWalletPhone.getEtherAddress = function(helperText) {
     }
 }
 
-MyWalletPhone.getEtherAddressAsync = function(secondPassword) {
-    var success = function () {
-        objc_on_get_ether_address_success(MyWallet.wallet.eth.defaultAccount.address);
-    };
-
-    var error = function (e) {
-        objc_on_get_ether_address_error(e);
-    };
-
-    var getLastAddress = function () {
-        return Promise.resolve(MyWallet.wallet.eth.defaultAccount.address);
-    }
-    MyWalletPhone.createEthAccountIfNeeded(secondPassword)
-        .then(getLastAddress)
-        .then(success)
-        .catch(error);
-};
-
 MyWalletPhone.recordLastTransactionAsync = function(txHash) {
     var success = function () {
         objc_on_recordLastTransactionAsync_success();
@@ -2096,18 +2078,6 @@ MyWalletPhone.recordLastTransactionAsync = function(txHash) {
     return MyWallet.wallet.eth.setLastTxAndSync(txHash)
         .then(success)
         .catch(error);
-};
-
-MyWalletPhone.hasLastEthTransaction = function() {
-    return MyWallet.wallet.eth.lastTx != null && MyWallet.wallet.eth.lastTxTimestamp != null;
-};
-
-MyWalletPhone.lastEthTransactionHash = function() {
-    return MyWallet.wallet.eth.lastTx;
-};
-
-MyWalletPhone.lastEthTransactionTimestamp = function() {
-    return MyWallet.wallet.eth.lastTxTimestamp;
 };
 
 MyWalletPhone.saveEtherAccountAsync = function (privateKey, label) {

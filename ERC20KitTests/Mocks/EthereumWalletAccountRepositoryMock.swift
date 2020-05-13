@@ -58,13 +58,6 @@ class EthereumAPIClientMock: EthereumKit.APIClientProtocol {
         return latestBlockValue
     }
 
-    var lastAccountForAddress: String?
-    var accountForAddressValue: Single<EthereumAccountResponse> = Single.error(EthereumAPIClientMockError.mockError)
-    func account(for address: String) -> Single<EthereumAccountResponse> {
-        lastAccountForAddress = address
-        return accountForAddressValue
-    }
-
     var lastTransactionsForAccount: String?
     var transactionsForAccountValue: Single<[EthereumHistoricalTransactionResponse]> = Single.just([])
     func transactions(for account: String) -> Single<[EthereumHistoricalTransactionResponse]> {

@@ -26,8 +26,6 @@ public class EthereumTransactionBuilder: EthereumTransactionBuilderAPI {
         let gasPrice = transaction.gasPrice
         let gasLimit = transaction.gasLimit
         let data = transaction.data ?? Data()
-
-        let fee = gasPrice * gasLimit
         
         let to: web3swift.Address = transaction.to.web3swiftAddress
         

@@ -18,7 +18,7 @@ enum EthereumWalletBridgeMockError: Error {
 }
 
 class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBridgeAPI, MnemonicAccessAPI, PasswordAccessAPI {
-    
+
     public var balanceType: BalanceType {
         return .nonCustodial
     }
@@ -57,10 +57,10 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
     var name: Single<String> {
         return nameValue
     }
-    
-    var addressValue: Single<String> = Single.just(MockEthereumWalletTestData.account)
-    var address: Single<String> {
-        return addressValue
+
+    var addressValue: Single<EthereumAddress> = .just(EthereumAddress(stringLiteral: MockEthereumWalletTestData.account))
+    var address: Single<EthereumAddress> {
+        addressValue
     }
     
     var transactionsValue: Single<[EthereumHistoricalTransaction]> = Single.just([])

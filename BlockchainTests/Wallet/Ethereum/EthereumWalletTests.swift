@@ -70,17 +70,17 @@ class EthereumWalletTests: XCTestCase {
 
     func test_wallet_address() {
         // Arrange
-        let expectedAddress = "address"
-        let addressObservable: Observable<String> = subject
+        let expectedAddress = EthereumKit.EthereumAddress(stringLiteral: "address")
+        let addressObservable: Observable<EthereumKit.EthereumAddress> = subject
             .address
             .asObservable()
         
         // Act
-        let result: TestableObserver<String> = scheduler
+        let result: TestableObserver<EthereumKit.EthereumAddress> = scheduler
             .start { addressObservable }
         
         // Assert
-        let expectedEvents: [Recorded<Event<String>>] = Recorded.events(
+        let expectedEvents: [Recorded<Event<EthereumKit.EthereumAddress>>] = Recorded.events(
             .next(
                 200,
                 expectedAddress

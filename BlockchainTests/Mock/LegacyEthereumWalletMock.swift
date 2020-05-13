@@ -14,15 +14,6 @@ import EthereumKit
 import PlatformUIKit
 @testable import Blockchain
 
-extension LegacyEthereumWalletAPI {
-    var lastEthereumTransactionDetails: Single<LegacyLastTransactionDetails?> {
-        return .just(nil)
-    }
-    var hasLastTransactionDetails: Single<Bool> {
-        return lastEthereumTransactionDetails.map { $0 != nil }
-    }
-}
-
 class MockLegacyEthereumWallet: LegacyEthereumWalletAPI & LegacyWalletAPI & MnemonicAccessAPI {
     
     // MARK: - LegacyWalletAPI

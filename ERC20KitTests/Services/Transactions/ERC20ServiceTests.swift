@@ -132,17 +132,18 @@ class ERC20ServiceTests: XCTestCase {
         
         let ethBalance = CryptoValue.etherFromMajor(string: "10.0")!
         ethereumAPIAccountClient.balanceDetailsValue = Single.just(.init(balance: ethBalance.amount.string(), nonce: 1))
-        
-        let balance = CryptoValue.paxFromMajor(string: "0.1")!.amount
-            .string(unitDecimals: 0)
+
         let accountResponse = ERC20AccountResponse<PaxToken>(
-            accountHash: "",
-            tokenHash: "",
-            balance: balance,
-            decimals: 0
+            currentPage: 0,
+            fromAddress: EthereumKit.EthereumAddress(stringLiteral: ""),
+            pageSize: 0,
+            transactions: [],
+            balance: CryptoValue.paxFromMajor(string: "0.1")!.amount.string(unitDecimals: 0),
+            decimals: 0,
+            tokenHash: ""
         )
         accountAPIClient.fetchWalletAccountResponse = Single<ERC20AccountResponse<PaxToken>>.just(accountResponse)
-                
+
         let cryptoValue = CryptoValue.paxFromMajor(string: "1.0")!
         let amount = try ERC20TokenValue<PaxToken>(crypto: cryptoValue)
         let to = EthereumAddress(

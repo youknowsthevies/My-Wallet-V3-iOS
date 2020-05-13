@@ -50,7 +50,7 @@ final class ETHServiceProvider {
     static let shared = ETHServiceProvider.make()
     
     class func make() -> ETHServiceProvider {
-        return ETHServiceProvider(services: ETHServices())
+        ETHServiceProvider(services: ETHServices())
     }
     
     init(services: ETHServices) {
@@ -58,18 +58,18 @@ final class ETHServiceProvider {
     }
     
     var repository: EthereumWalletAccountRepository {
-        return services.repository
+        services.repository
     }
     
     var assetAccountRepository: EthereumAssetAccountRepository {
-        return services.assetAccountRepository
+        services.assetAccountRepository
     }
     
     var transactionService: EthereumHistoricalTransactionService {
-        return services.transactionService
+        services.transactionService
     }
 
     var qrMetadataFactory: EthereumQRMetadataFactory {
-        return services.qrMetadataFactory
+        services.qrMetadataFactory
     }
 }

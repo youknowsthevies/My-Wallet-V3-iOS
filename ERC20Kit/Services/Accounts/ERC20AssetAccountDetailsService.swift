@@ -11,54 +11,37 @@ import PlatformKit
 import EthereumKit
 
 public class ERC20AssetAccountDetailsService<Token: ERC20Token>: AssetAccountDetailsAPI {
-    public typealias AccountDetails = ERC20AssetAccountDetails
-    
-    public typealias Bridge = EthereumWalletBridgeAPI
 
-    private let bridge: Bridge
+    private let bridge: EthereumWalletBridgeAPI
     private let service: AnyERC20BalanceService<Token>
-    
-    public convenience init<C: ERC20AccountAPIClientAPI>(with bridge: Bridge, accountClient: C) where C.Token == Token {
+
+    public convenience init<C: ERC20AccountAPIClientAPI>(with bridge: EthereumWalletBridgeAPI, accountClient: C) where C.Token == Token {
         self.init(
             with: bridge,
-            service: AnyERC20BalanceService<Token>(
-                with: bridge,
-                accountClient: accountClient
-            )
+            service: AnyERC20BalanceService<Token>(with: bridge, accountClient: accountClient)
         )
     }
-    
-    public init(with bridge: Bridge, service: AnyERC20BalanceService<Token>) {
+
+    public init(with bridge: EthereumWalletBridgeAPI, service: AnyERC20BalanceService<Token>) {
         self.bridge = bridge
         self.service = service
     }
-    
-    public func accountDetails(for accountID: String) -> Single<AccountDetails> {
-        return bridge.address
-            .flatMap { [weak self] address -> Single<(String, CryptoValue)> in
-                guard let self = self else { throw ERC20Error.unknown }
-                guard let ethereumAddress = EthereumAddress(rawValue: address) else {
-                    throw ERC20Error.unknown
-                }
-                return self.service.balance(for: ethereumAddress)
-                    .flatMap { balance -> Single<(String, CryptoValue)> in
-                        return Single.just((address, balance.value))
-                    }
+
+    // TODO: IOS-3217 Method should use accountID parameter
+    public func accountDetails(for accountID: String) -> Single<ERC20AssetAccountDetails> {
+        bridge.address
+            .flatMap(weak: self) { (self, address) -> Single<(address: EthereumAddress, balance: CryptoValue)> in
+                return self.service.balance(for: address).map { (address, $0.value) }
             }
-            .flatMap { value -> Single<AccountDetails> in
-                let (address, balance) = value
-                // TICKET: IOS-2298
-                return Single.just(
-                    ERC20AssetAccountDetails(
-                        account: ERC20AssetAccountDetails.Account(
-                            walletIndex: 0,
-                            accountAddress: address,
-                            name: "My \(Token.assetType.name) Wallet"
-                        ),
-                        balance: balance
-                    )
+            .map { tuple -> ERC20AssetAccountDetails in
+                ERC20AssetAccountDetails(
+                    account: ERC20AssetAccountDetails.Account(
+                        walletIndex: 0,
+                        accountAddress: tuple.address.rawValue,
+                        name: "My \(Token.assetType.name) Wallet"
+                    ),
+                    balance: tuple.balance
                 )
             }
     }
 }
-

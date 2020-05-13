@@ -6,26 +6,17 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import BigInt
-import PlatformKit
+import ERC20Kit
 import EthereumKit
-@testable import ERC20Kit
+import PlatformKit
+import RxSwift
 
 class ERC20AccountAPIClientMock: ERC20AccountAPIClientAPI {
     typealias Token = PaxToken
-    
-    static let balance = CryptoValue.paxFromMajor(string: "2.0")!.amount
-        .string(unitDecimals: 0)
-    static let accountResponse = ERC20AccountResponse<PaxToken>(
-        accountHash: "",
-        tokenHash: "",
-        balance: balance,
-        decimals: 0
-    )
-    
-    var fetchWalletAccountResponse = Single<ERC20AccountResponse<PaxToken>>.just(accountResponse)
-    func fetchWalletAccount(ethereumAddress: String) -> Single<ERC20AccountResponse<PaxToken>> {
-        return fetchWalletAccountResponse
+
+    var fetchWalletAccountResponse = Single<ERC20AccountResponse<PaxToken>>.just(ERC20AccountResponse<PaxToken>.accountResponseMock)
+    func fetchWalletAccount(from address: String, page: String) -> Single<ERC20AccountResponse<PaxToken>> {
+        fetchWalletAccountResponse
     }
 }

@@ -87,26 +87,30 @@ public final class EthereumHistoricalTransactionService: HistoricalTransactionAP
     }
     
     public func hasTransactionBeenProcessed(transactionHash: String) -> Single<Bool> {
-        return transactions
+        transactions
             .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
             .map { $0.contains { $0.transactionHash == transactionHash } }
     }
     
     // MARK: - Privately used accessors
-        
+
     private func fetch() -> Single<[EthereumHistoricalTransaction]> {
-        return Single
+        Single
             .zip(account, latestBlock)
             .flatMap(weak: self) { (self, tuple) -> Single<[EthereumHistoricalTransaction]> in
-                let (account, latestBlock) = tuple
-                return self.client.transactions(for: account.accountAddress)
-                    .map(weak: self) { (self, response) -> [EthereumHistoricalTransaction] in
-                        return self.transactions(
-                            from: account.accountAddress,
-                            latestBlock: latestBlock,
-                            response: response
-                        )
-                    }
+                self.fetch(account: tuple.0, latestBlock: tuple.1)
+            }
+    }
+
+    private func fetch(account: EthereumAssetAccount, latestBlock: Int) -> Single<[EthereumHistoricalTransaction]> {
+        client
+            .transactions(for: account.accountAddress)
+            .map(weak: self) { (self, response) -> [EthereumHistoricalTransaction] in
+                self.transactions(
+                    from: account.accountAddress,
+                    latestBlock: latestBlock,
+                    response: response
+                )
             }
     }
     
@@ -117,9 +121,9 @@ public final class EthereumHistoricalTransactionService: HistoricalTransactionAP
     private func transactions(from address: String,
                               latestBlock: Int,
                               response: [EthereumHistoricalTransactionResponse]) -> [EthereumHistoricalTransaction] {
-        return response
+        response
             .map { transactionResponse -> EthereumHistoricalTransaction in
-                return EthereumHistoricalTransaction(
+                EthereumHistoricalTransaction(
                     response: transactionResponse,
                     accountAddress: address,
                     latestBlock: latestBlock

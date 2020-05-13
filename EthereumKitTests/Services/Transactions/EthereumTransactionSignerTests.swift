@@ -31,7 +31,7 @@ class EthereumTransactionSignerTests: XCTestCase {
     func test_sign_transaction() throws {
         let keyPair = MockEthereumWalletTestData.keyPair
         let account = MockEthereumWalletTestData.account
-        let toAddress = EthereumHistoricalTransaction.Address(publicKey: "0x3535353535353535353535353535353535353535")
+        let toAddress = EthereumKit.EthereumAddress.init(stringLiteral: "0x3535353535353535353535353535353535353535")
         let amount: String = "0.1"
         let nonce: BigUInt = 9
         var web3transaction: web3swift.EthereumTransaction = EthereumTransaction(

@@ -23,7 +23,7 @@ public protocol EthereumWalletAccountBridgeAPI: class {
 
 public protocol EthereumWalletBridgeAPI: AccountBalanceFetching {
     var name: Single<String> { get }
-    var address: Single<String> { get }
+    var address: Single<EthereumAddress> { get }
     var account: Single<EthereumAssetAccount> { get }
     var nonce: Single<BigUInt> { get }
     

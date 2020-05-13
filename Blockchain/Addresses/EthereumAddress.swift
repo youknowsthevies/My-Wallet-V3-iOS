@@ -6,26 +6,23 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
+import Foundation
 
-// TODO: convert class to struct once there are no more objc dependents
-
-@objc
+@available(*, deprecated, message: "This is deprecated. Use `EthereumKit.EthereumAddress` instead")
 class EthereumAddress: NSObject & AssetAddress {
 
     // MARK: - Properties
 
-    private(set) var address: String
-
-    let assetType = LegacyCryptoCurrency.ethereum
+    let address: String
+    let assetType: LegacyCryptoCurrency = .ethereum
 
     override var description: String {
-        return address
+        address
     }
 
     // MARK: - Initialization
 
     required init(string: String) {
-        self.address = string
+        address = string
     }
 }

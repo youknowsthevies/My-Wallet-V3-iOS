@@ -9,6 +9,10 @@
 import Foundation
 
 public class RequestBuilder {
+
+    public enum Error: Swift.Error {
+        case buildingRequest
+    }
     
     private var defaultComponents: URLComponents {
         var urlComponents = URLComponents()

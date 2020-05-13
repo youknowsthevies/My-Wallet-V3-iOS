@@ -47,12 +47,12 @@ class ERC20EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
     var name: Single<String> {
         return nameValue
     }
-    
-    var addressValue: Single<String> = Single.just("")
-    var address: Single<String> {
-        return addressValue
+
+    var addressValue: Single<EthereumAddress> = .just(EthereumAddress(stringLiteral: "0x0000000000000000000000000000000000000000"))
+    var address: Single<EthereumAddress> {
+        addressValue
     }
-    
+
     var transactionsValue: Single<[EthereumHistoricalTransaction]> = Single.just([])
     var transactions: Single<[EthereumHistoricalTransaction]> {
         return transactionsValue

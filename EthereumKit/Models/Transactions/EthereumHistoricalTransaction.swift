@@ -6,19 +6,20 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import BigInt
-
-public protocol EthereumTransaction {
-    var isConfirmed: Bool { get }
-    var confirmations: UInt { get }
-}
+import PlatformKit
 
 public struct EthereumHistoricalTransaction: EthereumTransaction, HistoricalTransaction, Mineable {
-    public typealias Address = EthereumAssetAddress
-    
-    public var fromAddress: EthereumAssetAddress
-    public var toAddress: EthereumAssetAddress
+    public typealias Address = EthereumAddress
+
+    public enum State: String, CaseIterable {
+        case confirmed = "CONFIRMED"
+        case pending = "PENDING"
+        case replaced = "REPLACED"
+    }
+
+    public var fromAddress: EthereumAddress
+    public var toAddress: EthereumAddress
     public var identifier: String
     public var direction: Direction
     public var amount: String
@@ -27,21 +28,24 @@ public struct EthereumHistoricalTransaction: EthereumTransaction, HistoricalTran
     public var fee: CryptoValue?
     public var memo: String?
     public var confirmations: UInt
+    public var state: State
     public var isConfirmed: Bool {
-        return confirmations == 12
+        confirmations == 12
     }
     
     public init(
         identifier: String,
-        fromAddress: Address,
-        toAddress: Address,
+        fromAddress: EthereumAddress,
+        toAddress: EthereumAddress,
         direction: Direction,
         amount: String,
         transactionHash: String,
         createdAt: Date,
         fee: CryptoValue?,
         memo: String?,
-        confirmations: UInt) {
+        confirmations: UInt,
+        state: State
+    ) {
         self.identifier = identifier
         self.fromAddress = fromAddress
         self.toAddress = toAddress
@@ -52,6 +56,7 @@ public struct EthereumHistoricalTransaction: EthereumTransaction, HistoricalTran
         self.fee = fee
         self.memo = memo
         self.confirmations = confirmations
+        self.state = state
     }
     
     public init(response: EthereumHistoricalTransactionResponse,
@@ -59,8 +64,8 @@ public struct EthereumHistoricalTransaction: EthereumTransaction, HistoricalTran
                 accountAddress: String,
                 latestBlock: Int) {
         self.identifier = response.hash
-        self.fromAddress = EthereumAssetAddress(publicKey: response.from)
-        self.toAddress = EthereumAssetAddress(publicKey: response.to)
+        self.fromAddress = EthereumAddress(stringLiteral: response.from)
+        self.toAddress = EthereumAddress(stringLiteral: response.to)
         self.direction = EthereumHistoricalTransaction.direction(
             to: response.to,
             from: response.from,
@@ -68,9 +73,7 @@ public struct EthereumHistoricalTransaction: EthereumTransaction, HistoricalTran
         )
         self.amount = EthereumHistoricalTransaction.amount(value: response.value)
         self.transactionHash = response.hash
-        self.createdAt = EthereumHistoricalTransaction.created(
-            timestamp: response.timeStamp
-        )
+        self.createdAt = response.createdAt
         self.fee = EthereumHistoricalTransaction.fee(
             gasPrice: response.gasPrice,
             gasUsed: response.gasUsed
@@ -80,10 +83,11 @@ public struct EthereumHistoricalTransaction: EthereumTransaction, HistoricalTran
             latestBlock: latestBlock,
             blockNumber: response.blockNumber
         )
+        self.state = response.state.transactionState
     }
     
     private static func created(timestamp: Int) -> Date {
-        return Date(timeIntervalSince1970: TimeInterval(timestamp))
+        Date(timeIntervalSince1970: TimeInterval(timestamp))
     }
     
     private static func amount(value: String) -> String {
@@ -108,12 +112,18 @@ public struct EthereumHistoricalTransaction: EthereumTransaction, HistoricalTran
         return .debit
     }
     
-    private static func fee(gasPrice: Int, gasUsed: Int) -> CryptoValue {
-        let fee = gasPrice * gasUsed
-        return CryptoValue.etherFromWei(string: "\(fee)") ?? CryptoValue.etherZero
+    private static func fee(gasPrice: String, gasUsed: String?) -> CryptoValue {
+        guard let gasUsed = gasUsed else {
+            return CryptoValue.etherZero
+        }
+        let fee = BigInt(stringLiteral: gasPrice) * BigInt(stringLiteral: gasUsed)
+        return CryptoValue.createFromMinorValue(fee, assetType: .ethereum)
     }
     
-    private static func confirmations(latestBlock: Int, blockNumber: Int) -> UInt {
+    private static func confirmations(latestBlock: Int, blockNumber: String?) -> UInt {
+        guard let blockNumber: Int = blockNumber.flatMap({ Int($0) }) else {
+            return 0
+        }
         let confirmations = latestBlock - blockNumber + 1
         guard confirmations > 0 else {
             return 0
@@ -122,14 +132,27 @@ public struct EthereumHistoricalTransaction: EthereumTransaction, HistoricalTran
     }
 }
 
+fileprivate extension EthereumHistoricalTransactionResponse.State {
+    var transactionState: EthereumHistoricalTransaction.State {
+        switch self {
+        case .confirmed:
+            return .confirmed
+        case .pending:
+            return .pending
+        case .replaced:
+            return .replaced
+        }
+    }
+}
+
 extension EthereumHistoricalTransaction: Comparable {
     public static func < (lhs: EthereumHistoricalTransaction, rhs: EthereumHistoricalTransaction) -> Bool {
-        return lhs.createdAt < rhs.createdAt
+        lhs.createdAt < rhs.createdAt
     }
 }
 
 extension EthereumHistoricalTransaction: Equatable {
     public static func == (lhs: EthereumHistoricalTransaction, rhs: EthereumHistoricalTransaction) -> Bool {
-        return lhs.identifier == rhs.identifier
+        lhs.identifier == rhs.identifier
     }
 }

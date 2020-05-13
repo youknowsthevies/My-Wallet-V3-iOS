@@ -46,66 +46,11 @@ extension EtherTransaction {
         self.confirmations = transaction.confirmations
         self.fiatAmountsAtTime = [:]
     }
-    
-    public var transaction: EthereumHistoricalTransaction? {
-        return EtherTransaction.mapToTransaction(self)
-    }
-    
-    public static func mapToTransaction(_ legacyTransaction: EtherTransaction) -> EthereumHistoricalTransaction? {
-        guard let from = legacyTransaction.from,
-            let to = legacyTransaction.to,
-            let amount = legacyTransaction.amount,
-            let myHash = legacyTransaction.myHash,
-            let txType = legacyTransaction.txType else {
-            return nil
-        }
-        
-        let fromAddress = EthereumAssetAddress(
-            publicKey: from
-        )
-        
-        let toAddress = EthereumAssetAddress(
-            publicKey:  to
-        )
-        
-        guard let direction = TxType(rawValue: txType)?.platformDirection,
-            let f = legacyTransaction.fee else {
-            return nil
-        }
-        
-        // Convert from Ether to GWei
-        let feeGwei: Int = NSDecimalNumber(string: f)
-            .multiplying(
-                byPowerOf10: 9,
-                withBehavior: NSDecimalNumberHandler(
-                    roundingMode: .bankers,
-                    scale: 2,
-                    raiseOnExactness: true,
-                    raiseOnOverflow: true,
-                    raiseOnUnderflow: true,
-                    raiseOnDivideByZero: true
-                )
-            )
-            .intValue
-        
-        return EthereumHistoricalTransaction(
-            identifier: myHash,
-            fromAddress: fromAddress,
-            toAddress: toAddress,
-            direction: direction,
-            amount: amount,
-            transactionHash: myHash,
-            createdAt: Date(timeIntervalSince1970: TimeInterval(legacyTransaction.time)),
-            fee: CryptoValue.etherFromGwei(string: "\(feeGwei)"),
-            memo: legacyTransaction.note,
-            confirmations: legacyTransaction.confirmations
-        )
-    }
 }
 
 extension EthereumHistoricalTransaction {
     var legacyTransaction: EtherTransaction? {
-        return EtherTransaction(transaction: self)
+        EtherTransaction(transaction: self)
     }
 }
 

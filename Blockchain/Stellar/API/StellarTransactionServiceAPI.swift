@@ -37,9 +37,7 @@ class StellarTransactionServiceAPI: SimpleListServiceAPI {
     fileprivate func fetch(with output: SimpleListOutput?) {
         let disposable = operationService.operations
             .map { $0 }
-            .scan([], accumulator: {
-                return $1 + $0
-            })
+            .scan([], accumulator: { $1 + $0 })
             .catchError({ error -> Observable<[StellarOperation]> in
                 /// The only time we call `fetch` is if the user has
                 /// an XLM account. Since `operationService.operations` is backed

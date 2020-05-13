@@ -30,7 +30,7 @@ class ERC20AssetAccountDetailsServiceTests: XCTestCase {
         accountClient = ERC20AccountAPIClientMock()
         subject = ERC20AssetAccountDetailsService<PaxToken>(
             with: bridge,
-            accountClient: accountClient
+            service: AnyERC20BalanceService(with: bridge, accountClient: accountClient)
         )
     }
 
@@ -47,7 +47,7 @@ class ERC20AssetAccountDetailsServiceTests: XCTestCase {
     func test_fetch_asset_account_details() {
         // Arrange
         let accountDetailsObservable = subject
-            .accountDetails(for: "")
+            .accountDetails(for: "IOS-3217")
             .asObservable()
 
         // Act
@@ -61,7 +61,7 @@ class ERC20AssetAccountDetailsServiceTests: XCTestCase {
                 ERC20AssetAccountDetails(
                     account: ERC20AssetAccount(
                         walletIndex: 0,
-                        accountAddress: "",
+                        accountAddress: "0x0000000000000000000000000000000000000000",
                         name: "My \(CryptoCurrency.pax.name) Wallet"
                     ),
                     balance: CryptoValue.paxFromMajor(string: "2.0")!

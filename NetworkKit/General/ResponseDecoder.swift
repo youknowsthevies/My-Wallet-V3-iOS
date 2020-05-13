@@ -46,7 +46,6 @@ public protocol NetworkResponseDecoderAPI {
     func decode<ResponseType: Decodable>(response: ServerResponse) -> Single<ResponseType>
     func decode<ResponseType: Decodable>(result: Result<ServerResponse, ServerErrorResponse>) -> Single<ResponseType>
     func decode<ResponseType: Decodable, ErrorResponseType: Error & Decodable>(result: Result<ServerResponse, ServerErrorResponse>) -> Single<Result<ResponseType, ErrorResponseType>>
-    func decodeFailure<ErrorResponseType: Error & Decodable>(errorResponse: ServerErrorResponse, type: ErrorResponseType.Type) throws -> Result<Never, ErrorResponseType>
     func decodeFailureToString(errorResponse: ServerErrorResponse) -> String?
 }
 
@@ -94,7 +93,7 @@ public class NetworkResponseDecoder: NetworkResponseDecoderAPI {
                 .single
         case .failure(let networkErrorResponse):
             return Result<Result<Never, ErrorResponseType>, Error> {
-                    try decodeFailure(errorResponse: networkErrorResponse, type: ErrorResponseType.self)
+                    try decodeFailure(errorResponse: networkErrorResponse)
                 }
                 .map { result -> Result<ResponseType, ErrorResponseType> in
                     result.map()
@@ -102,11 +101,7 @@ public class NetworkResponseDecoder: NetworkResponseDecoderAPI {
                 .single
         }
     }
-    
-    public func decodeFailure<ErrorResponseType: Error & Decodable>(errorResponse: ServerErrorResponse, type: ErrorResponseType.Type) throws -> Result<Never, ErrorResponseType> {
-        return try decodeFailure(errorResponse: errorResponse)
-    }
-    
+
     public func decodeFailureToString(errorResponse: ServerErrorResponse) -> String? {
         guard let payload = errorResponse.payload else {
             return nil
@@ -162,7 +157,7 @@ public class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         do {
             decodedErrorResponse = try self.jsonDecoder.decode(ErrorResponseType.self, from: payload)
         } catch let decodingError {
-            Logger.shared.debug("Error payload decoding error: \(decodingError)")
+            Logger.shared.debug("Error payload decoding 'ErrorResponseType'. Error: \(decodingError)")
             let message = String(data: payload, encoding: .utf8) ?? ""
             Logger.shared.debug("Message: \(message)")
             throw NetworkCommunicatorError.payloadError(.badData(rawPayload: message))
@@ -171,7 +166,7 @@ public class NetworkResponseDecoder: NetworkResponseDecoderAPI {
     }
     
     private func decodeSuccess<ResponseType: Decodable>(response: ServerResponse, type: ResponseType.Type) throws -> Result<ResponseType, Never> {
-        return try decodeSuccess(response: response)
+        try decodeSuccess(response: response)
     }
     
     private func decodeSuccess<ResponseType: Decodable>(response: ServerResponse) throws -> Result<ResponseType, Never> {
@@ -193,7 +188,7 @@ public class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         do {
             decodedResponse = try self.jsonDecoder.decode(ResponseType.self, from: payload)
         } catch let decodingError {
-            Logger.shared.debug("Payload decoding error: \(decodingError)")
+            Logger.shared.debug("Payload decoding error '\(String(describing: ResponseType.self))': \(decodingError)")
             let message = String(data: payload, encoding: .utf8) ?? ""
             Logger.shared.debug("Message: \(message)")
             throw NetworkCommunicatorError.payloadError(.badData(rawPayload: message))

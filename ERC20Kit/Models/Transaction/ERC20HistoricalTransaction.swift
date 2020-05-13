@@ -12,53 +12,22 @@ import EthereumKit
 import BigInt
 import RxSwift
 
-public struct ERC20AccountTransactionsResponse<Token: ERC20Token>: Decodable, Tokenized {
-    
-    public let fromAddress: EthereumAssetAddress
-    public let transactions: [ERC20HistoricalTransaction<Token>]
-    public let pageSize: Int
-    public let currentPage: Int
-    
-    public var token: String {
-        return String(currentPage)
-    }
-    
-    // MARK: Decodable
-    
-    enum CodingKeys: String, CodingKey {
-        case transactions = "transfers"
-        case fromAddress = "accountHash"
-        case page
-        case size
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        let from = try values.decode(String.self, forKey: .fromAddress)
-        fromAddress = EthereumAssetAddress(publicKey: from)
-        transactions = try values.decode([ERC20HistoricalTransaction<Token>].self, forKey: .transactions)
-        let page = try values.decode(String.self, forKey: .page)
-        currentPage = Int(page) ?? 0
-        pageSize = try values.decode(Int.self, forKey: .size)
-    }
-}
-
 public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable, HistoricalTransaction, Tokenized {
 
-    public typealias Address = EthereumAssetAddress
+    public typealias Address = EthereumAddress
     
     /// There's not much point to `token` in this case since
     /// for ERC20 paging we use the `wallet.transactions.count` to determine
     /// if we need to fetch additional transactions.
     public var token: String {
-        return transactionHash
+        transactionHash
     }
     
     public var identifier: String {
-        return transactionHash
+        transactionHash
     }
-    public var fromAddress: EthereumAssetAddress
-    public var toAddress: EthereumAssetAddress
+    public var fromAddress: EthereumAddress
+    public var toAddress: EthereumAddress
     public var direction: Direction
     public var amount: String
     public var transactionHash: String
@@ -67,12 +36,12 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
     public var historicalFiatValue: FiatValue?
     public var memo: String?
     public var cryptoAmount: CryptoValue {
-        return CryptoValue.createFromMinorValue(BigInt(stringLiteral: amount), assetType: Token.assetType)
+        CryptoValue.createFromMinorValue(BigInt(stringLiteral: amount), assetType: Token.assetType)
     }
     
     public init(
-        fromAddress: Address,
-        toAddress: Address,
+        fromAddress: EthereumAddress,
+        toAddress: EthereumAddress,
         direction: Direction,
         amount: String,
         transactionHash: String,
@@ -91,7 +60,7 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
     }
     
     public func make(from direction: Direction, fee: CryptoValue? = nil, memo: String? = nil) -> ERC20HistoricalTransaction<Token> {
-        return ERC20HistoricalTransaction<Token>(
+        ERC20HistoricalTransaction<Token>(
             fromAddress: fromAddress,
             toAddress: toAddress,
             direction: direction,
@@ -120,8 +89,8 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
         let timestampString = try values.decode(String.self, forKey: .timestamp)
         transactionHash = try values.decode(String.self, forKey: .transactionHash)
         amount = try values.decode(String.self, forKey: .value)
-        fromAddress = EthereumAssetAddress(publicKey: from)
-        toAddress = EthereumAssetAddress(publicKey: to)
+        fromAddress = EthereumAddress(stringLiteral: from)
+        toAddress = EthereumAddress(stringLiteral: to)
         if let timeSinceEpoch = Double(timestampString) {
             createdAt = Date(timeIntervalSince1970: timeSinceEpoch)
         } else {
@@ -141,13 +110,17 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
     
     // MARK: Public
     
-    public func fetchTransactionDetails(currencyCode: String = "USD") -> Single<ERC20HistoricalTransaction<Token>> {
-        let zip = Single.zip(transactionDetails, historicalFiatPrice(with: currencyCode))
-        return zip.flatMap {
-            var output = self.make(from: self.direction, fee: $0.0.fee, memo: nil)
-            output.historicalFiatValue = self.cryptoAmount.convertToFiatValue(exchangeRate: $0.1.priceInFiat)
-            return Single.just(output)
-        }
+    public func fetchTransactionDetails(currencyCode: String) -> Single<ERC20HistoricalTransaction<Token>> {
+        Single
+            .zip(
+                transactionDetails,
+                historicalFiatPrice(with: currencyCode)
+            )
+            .map {
+                var output = self.make(from: self.direction, fee: $0.0.fee, memo: nil)
+                output.historicalFiatValue = self.cryptoAmount.convertToFiatValue(exchangeRate: $0.1.priceInFiat)
+                return output
+            }
     }
     
     // MARK: Private
@@ -207,7 +180,12 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
         let gasUsed: BigInt
         let success: Bool
         let data: Data?
-        
+
+        fileprivate var fee: CryptoValue {
+            let amount = gasUsed * gasPrice
+            return CryptoValue.createFromMinorValue(amount, assetType: .ethereum)
+        }
+
         // MARK: Decodable
         
         enum CodingKeys: String, CodingKey {
@@ -230,12 +208,5 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
             gasLimit = BigInt(stringLiteral: limit)
             gasUsed = BigInt(stringLiteral: used)
         }
-    }
-}
-
-private extension ERC20HistoricalTransaction.ERC20TransactionDetails {
-    var fee: CryptoValue {
-        let amount = gasUsed * gasPrice
-        return CryptoValue.createFromMinorValue(amount, assetType: .ethereum)
     }
 }

@@ -15,13 +15,13 @@ import RxRelay
 final class ERC20AssetBalanceFetcher: AccountBalanceFetching {
 
     // MARK: - Exposed Properties
-    
+
     var balanceType: BalanceType {
-        return .nonCustodial
+        .nonCustodial
     }
-    
+
     var balance: Single<CryptoValue> {
-        return assetAccountRepository
+        assetAccountRepository
             .currentAssetAccountDetails(fromCache: true)
             .asObservable()
             .asSingle()
@@ -31,23 +31,23 @@ final class ERC20AssetBalanceFetcher: AccountBalanceFetching {
     }
 
     var balanceObservable: Observable<CryptoValue> {
-        return balanceRelay.asObservable()
+        balanceRelay.asObservable()
     }
-    
+
     let balanceFetchTriggerRelay = PublishRelay<Void>()
-    
+
     // MARK: - Private Properties
-    
+
     private let balanceRelay = PublishRelay<CryptoValue>()
     private let disposeBag = DisposeBag()
     private let assetAccountRepository: ERC20AssetAccountRepository<PaxToken>
-    
+
     // MARK: - Setup
-    
+
     init(wallet: EthereumWalletBridgeAPI = WalletManager.shared.wallet.ethereum) {
-        let service = ERC20AssetAccountDetailsService(
+        let service = ERC20AssetAccountDetailsService<PaxToken>(
             with: wallet,
-            accountClient: AnyERC20AccountAPIClient<PaxToken>()
+            accountClient: ERC20AccountAPIClient<PaxToken>()
         )
         assetAccountRepository = ERC20AssetAccountRepository(service: service)
         balanceFetchTriggerRelay

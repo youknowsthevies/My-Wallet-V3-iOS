@@ -11,28 +11,29 @@ import PlatformKit
 import BigInt
 
 public class EthereumAssetAccountDetailsService: AssetAccountDetailsAPI {
-            
+
     // MARK: - Properties
 
     private var balanceDetails: Single<BalanceDetailsResponse> {
         return bridge.address
             .flatMap(weak: self) { (self, address) -> Single<BalanceDetailsResponse> in
-                 return self.client.balanceDetails(from: address)
+                self.client.balanceDetails(from: address.rawValue)
             }
     }
-    
+
     // MARK: - Injected
-    
+
     private let bridge: EthereumWalletBridgeAPI
     private let client: APIClientProtocol
-    
+
     // MARK: - Setup
-    
+
     public init(with bridge: EthereumWalletBridgeAPI, client: APIClientProtocol) {
         self.bridge = bridge
         self.client = client
     }
-    
+
+    // TODO: IOS-3217 Method should use accountID parameter.
     /// Streams the account details
     public func accountDetails(for accountID: String) -> Single<EthereumAssetAccountDetails> {
         return Single
