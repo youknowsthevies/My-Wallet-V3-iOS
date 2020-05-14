@@ -5,9 +5,7 @@
 //  Created by AlexM on 1/6/20.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 
-// swiftlint:disable line_length
-// swiftlint:disable identifier_name
-// swiftlint:disable type_body_length
+// swiftlint:disable all
 
 import Foundation
 
