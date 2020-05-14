@@ -49,6 +49,10 @@ public extension LocalizationConstants {
                 "MM/YY",
                 comment: "Expiration date placeholder"
             )
+            public static let oneTimeCode = NSLocalizedString(
+                "XXXX",
+                comment: "Placeholder for a one time code."
+            )
         }
         public struct Title {
             public struct Card {
@@ -98,7 +102,7 @@ public extension LocalizationConstants {
                 comment: "Partial placeholder for mnemonic word entry. e.g. \"1st word\" "
             )
             public static let oneTimeCode = NSLocalizedString(
-                "XXXX",
+                "Code",
                 comment: "Placeholder for a one time code."
             )
             public static let addressLine = NSLocalizedString(
