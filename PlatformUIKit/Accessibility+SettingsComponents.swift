@@ -9,14 +9,15 @@
 import Foundation
 
 extension Accessibility.Identifier {
-    public struct Settings {
+    public enum Settings {
         private static let prefix = "Settings."
-        public struct SettingsCell {
+
+        public enum SettingsCell {
             private static let prefix = "\(Settings.prefix)SettingsCell."
             public static let titleLabelFormat = "\(prefix)titleLabel."
             public static let badgeView = "\(prefix)badgeView."
         }
-        
+
         public enum LinkedCardCell {
             private static let prefix = "\(Settings.prefix)LinkedCardCell."
             public static let view = "\(prefix)view"
@@ -24,7 +25,12 @@ extension Accessibility.Identifier {
             public static let badgeView = "\(prefix)badgeView"
             public static let cardPrefix = "\(prefix)cardPrefix"
         }
-        
+
+        public enum AddCardCell {
+            private static let prefix = "\(Settings.prefix)AddCardCell."
+            public static let disclaimer = "\(prefix)disclaimer"
+        }
+
         public enum SwitchView {
             private static let prefix = "\(Settings.prefix)SwitchView."
             public static let SMSSwitchView = "\(prefix)SMSSwitchView"
@@ -32,7 +38,7 @@ extension Accessibility.Identifier {
             public static let swipeToReceive = "\(prefix)swipeToReceiveSwitchView"
             public static let twoFactorSwitchView = "\(prefix)twoFactorSwitchView"
         }
-        
+
         public enum ChangePassword {
             private static let prefix = "ChangePasswordScreen."
             public static let descriptionLabel = "\(prefix)descriptionLabel"
@@ -41,7 +47,7 @@ extension Accessibility.Identifier {
             public static let confirmPasswordTextField = "\(prefix)confirmPasswordTextField"
             public static let changePasswordButton = "\(prefix)changePasswordButton"
         }
-        
+
         public enum UpdateEmail {
             private static let prefix = "UpdateEmailScreen."
             public static let titleLabel = "\(prefix)titleLabel"
@@ -50,7 +56,7 @@ extension Accessibility.Identifier {
             public static let updateEmailButton = "\(prefix)updateEmailButton"
             public static let resendEmailButton = "\(prefix)resendEmailButton"
         }
-        
+
         public enum UpdateMobile {
             private static let prefix = "UpdateMobileScreen."
             public static let descriptionLabel = "\(prefix)descriptionLabel"
@@ -59,7 +65,7 @@ extension Accessibility.Identifier {
             public static let continueButton = "\(prefix)continueButton"
             public static let updateButton = "\(prefix)updateButton"
         }
-        
+
         public enum MobileCodeEntry {
             private static let prefix = "MobileCodeEntryScreen."
             public static let descriptionLabel = "\(prefix)descriptionLabel"
@@ -68,7 +74,7 @@ extension Accessibility.Identifier {
             public static let resendCodeButton = "\(prefix)resendCodeButton"
             public static let confirmButton = "\(prefix)confirmButton"
         }
-        
+
         public enum WebLogin {
             private static let prefix = "WebLoginScreen."
             public static let securityAlertLabel = "\(prefix)securityAlertLabel"
@@ -76,13 +82,13 @@ extension Accessibility.Identifier {
             public static let securityAlertBottomLabel = "\(prefix)securityAlertBottomLabel"
             public static let showQRCodeButton = "\(prefix)securityAlertBottomLabel"
         }
-        
+
         public enum About {
             private static let prefix = "AboutFooterView."
             public static let versionLabel = "\(prefix)versionLabel"
             public static let copyrightLabel = "\(prefix)copyrightLabel"
         }
-        
+
         public enum RemoveCard {
             private static let prefix = "RemoveCardScreen."
             public static let cardNameLabel = "\(prefix)cardNameLabel"

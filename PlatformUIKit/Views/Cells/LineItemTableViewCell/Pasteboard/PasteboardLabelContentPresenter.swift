@@ -30,7 +30,7 @@ public final class PasteboardLabelContentPresenter: LabelContentPresenting {
         self.interactor = interactor
         let successDescriptors: PresentationDescriptors = .success(
             fontSize: descriptors.fontSize,
-            accessibilityIdSuffix: descriptors.accessibilityIdSuffix
+            accessibilityId: descriptors.accessibilityId
         )
         let descriptorObservable: Observable<PresentationDescriptors> = interactor.isPasteboarding
             .map { $0 ? successDescriptors : descriptors }

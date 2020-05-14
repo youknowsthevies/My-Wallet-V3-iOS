@@ -48,35 +48,3 @@ public final class DefaultLabelContentPresenter: LabelContentPresenting {
         )
     }
 }
-
-// MARK: - Factory Makers
-
-extension DefaultLabelContentPresenter {
-
-    private typealias AccessibilityId = Accessibility.Identifier.LineItem
-
-    public static func description(interactor: LabelContentInteracting) -> DefaultLabelContentPresenter {
-        DefaultLabelContentPresenter(
-            interactor: interactor,
-            descriptors: .lineItemDescription
-        )
-    }
-
-    public static func title(interactor: LabelContentInteracting) -> DefaultLabelContentPresenter {
-        DefaultLabelContentPresenter(
-            interactor: interactor,
-            descriptors: .lineItemTitle
-        )
-    }
-
-    public static func disclaimer(interactor: LabelContentInteracting) -> DefaultLabelContentPresenter {
-        DefaultLabelContentPresenter(
-            interactor: interactor,
-            descriptors: .init(
-                contentColor: .descriptionText,
-                fontSize: 12,
-                accessibilityIdSuffix: AccessibilityId.disclaimerLabel
-            )
-        )
-    }
-}

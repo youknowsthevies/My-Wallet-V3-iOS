@@ -78,7 +78,8 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
     
     public init(input: Input,
                 pasteboard: Pasteboarding = UIPasteboard.general,
-                analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording) {
+                analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording,
+                accessibilityIdPrefix: String) {
         self.analyticsRecorder = analyticsRecorder
         pasteboardValue = input.description
         
@@ -96,11 +97,11 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
         
         titleLabelContentPresenter = PasteboardLabelContentPresenter(
             interactor: titleInteractor,
-            descriptors: .lineItemTitle
+            descriptors: .lineItemTitle(accessibilityIdPrefix: accessibilityIdPrefix)
         )
         descriptionLabelContentPresenter = PasteboardLabelContentPresenter(
             interactor: descriptionInteractor,
-            descriptors: .lineItemDescription
+            descriptors: .lineItemDescription(accessibilityIdPrefix: accessibilityIdPrefix)
         )
         
         tapRelay

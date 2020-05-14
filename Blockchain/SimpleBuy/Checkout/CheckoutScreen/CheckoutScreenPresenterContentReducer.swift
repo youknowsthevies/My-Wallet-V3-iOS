@@ -19,7 +19,8 @@ final class CheckoutScreenContentReducer {
 
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.Checkout
     private typealias LocalizedSummary = LocalizedString.Summary
-    private typealias AccessibilityId = Accessibility.Identifier.LineItem
+    private typealias AccessibilityLineItem = Accessibility.Identifier.LineItem
+    private typealias AccessibilitySimpleBuy = Accessibility.Identifier.SimpleBuy
     private typealias LineItem = CheckoutCellType.LineItemType
 
     // MARK: - Properties
@@ -31,7 +32,7 @@ final class CheckoutScreenContentReducer {
 
     let continueButtonViewModel: ButtonViewModel
     let cancelButtonViewModel: ButtonViewModel?
-    private(set) var transferDetailsButtonViewModel: ButtonViewModel? = nil
+    private(set) var transferDetailsButtonViewModel: ButtonViewModel?
 
     // MARK: - Cell Presenters
 
@@ -43,8 +44,14 @@ final class CheckoutScreenContentReducer {
     private let exchangeRateLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.exchangeRate(nil).defaultPresenter()
     private let statusLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.status(LocalizedString.LineItem.pending).defaultPresenter()
 
-    private let cryptoAmountLabelPresenter: DefaultLabelContentPresenter = .init(knownValue: " ", descriptors: .h1)
-    private let fiatAmountLabelPresenter: DefaultLabelContentPresenter = .init(knownValue: " ", descriptors: .h1)
+    private let cryptoAmountLabelPresenter: DefaultLabelContentPresenter = .init(
+        knownValue: " ",
+        descriptors: .h1(accessibilityIdPrefix: AccessibilitySimpleBuy.LineItem.cryptoAmount)
+    )
+    private let fiatAmountLabelPresenter: DefaultLabelContentPresenter = .init(
+        knownValue: " ",
+        descriptors: .h1(accessibilityIdPrefix: AccessibilitySimpleBuy.LineItem.fiatAmount)
+    )
 
     private let statusBadge: DefaultBadgeAssetPresenter = .init()
 
@@ -53,7 +60,7 @@ final class CheckoutScreenContentReducer {
             text: data.detailType.paymentMethod.checkoutNotice(cryptoCurrency: data.cryptoCurrency),
             font: .main(.medium, 12),
             color: .descriptionText,
-            accessibility: .id(AccessibilityId.disclaimerLabel)
+            accessibility: .id(AccessibilityLineItem.disclaimerLabel)
         )
     }
 
@@ -214,7 +221,10 @@ final class CheckoutScreenContentReducer {
 
             // MARK: Cells Setup
 
-            transferDetailsButtonViewModel = .primary(with: LocalizedString.Button.transferDetails)
+            transferDetailsButtonViewModel = .primary(
+                with: LocalizedString.Button.transferDetails,
+                accessibilityId: AccessibilitySimpleBuy.Checkout.Button.transferDetails
+            )
 
             cells = [
                 .label(fiatAmountLabelPresenter),

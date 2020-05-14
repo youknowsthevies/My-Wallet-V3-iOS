@@ -290,10 +290,9 @@ public struct DashboardAsset {
 }
 
 extension DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
-    
     /// Returns a descriptor for dashboard total balance
     public static var balance: DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
-        return .init(
+        .init(
             contentOptions: [.fiat, .percentage],
             priceFontSize: 24,
             changeFontSize: 14,
@@ -303,9 +302,9 @@ extension DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
     
     /// Returns a descriptor for dashboard asset price
     public static func assetPrice(accessibilityIdSuffix: String,
-                           priceFontSize: CGFloat = 16.0,
-                           changeFontSize: CGFloat = 14.0) -> DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
-        return .init(
+                                  priceFontSize: CGFloat = 16.0,
+                                  changeFontSize: CGFloat = 14.0) -> DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
+        .init(
             contentOptions: [.percentage],
             priceFontSize: priceFontSize,
             changeFontSize: changeFontSize,

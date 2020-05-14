@@ -9,7 +9,7 @@
 import Foundation
 
 extension Accessibility {
-    public struct Identifier {}
+    public enum Identifier {}
 }
 
 // MARK: - Public

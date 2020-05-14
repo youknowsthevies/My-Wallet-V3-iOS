@@ -53,13 +53,15 @@ public final class DefaultLineItemCellPresenter: LineItemCellPresenting {
 
     // MARK: - Init
 
-    public init(interactor: DefaultLineItemCellInteractor) {
+    public init(interactor: DefaultLineItemCellInteractor, accessibilityIdPrefix: String) {
         self.interactor = interactor
-        titleLabelContentPresenter = DefaultLabelContentPresenter.title(
-            interactor: interactor.title
+        titleLabelContentPresenter = DefaultLabelContentPresenter(
+            interactor: interactor.title,
+            descriptors: .lineItemTitle(accessibilityIdPrefix: accessibilityIdPrefix)
         )
-        descriptionLabelContentPresenter = DefaultLabelContentPresenter.description(
-            interactor: interactor.description
+        descriptionLabelContentPresenter = DefaultLabelContentPresenter(
+            interactor: interactor.description,
+            descriptors: .lineItemDescription(accessibilityIdPrefix: accessibilityIdPrefix)
         )
     }
 }

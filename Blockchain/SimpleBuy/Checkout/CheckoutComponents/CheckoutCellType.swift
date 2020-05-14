@@ -43,6 +43,32 @@ enum CheckoutCellType: Hashable {
 
 extension CheckoutCellType.LineItemType {
 
+    var accessibilityID: String {
+        typealias AccessibilityID = Accessibility.Identifier.SimpleBuy.LineItem
+        switch self {
+        case .amount:
+            return AccessibilityID.amount
+        case .buyingFee:
+            return AccessibilityID.buyingFee
+        case .date:
+            return AccessibilityID.date
+        case .estimatedAmount:
+            return AccessibilityID.estimatedAmount
+        case .exchangeRate:
+            return AccessibilityID.exchangeRate
+        case .orderId:
+            return AccessibilityID.orderId
+        case .paymentAccountField(let field):
+            return field.accessibilityID
+        case .paymentMethod:
+            return AccessibilityID.paymentMethod
+        case .status:
+            return AccessibilityID.status
+        case .totalCost:
+            return AccessibilityID.totalCost
+        }
+    }
+
     var content: String? {
         switch self {
         case .amount(let content),
@@ -128,7 +154,7 @@ extension CheckoutCellType.LineItemType {
             title: DefaultLabelContentInteractor(knownValue: title),
             description: DefaultLabelContentInteractor(knownValue: content ?? "")
         )
-        return DefaultLineItemCellPresenter(interactor: interactor)
+        return DefaultLineItemCellPresenter(interactor: interactor, accessibilityIdPrefix: accessibilityID)
     }
 
     func defaultCopyablePresenter() -> PasteboardingLineItemCellPresenter {
@@ -140,7 +166,30 @@ extension CheckoutCellType.LineItemType {
                 descriptionInteractionText: descriptionInteractionText,
                 analyticsEvent: analyticsEvent
             ),
-            analyticsRecorder: AnalyticsEventRecorder.shared
+            analyticsRecorder: AnalyticsEventRecorder.shared,
+            accessibilityIdPrefix: accessibilityID
         )
+    }
+}
+
+extension SimpleBuyPaymentAccountProperty.Field {
+    var accessibilityID: String {
+        typealias AccessibilityID = Accessibility.Identifier.SimpleBuy.LineItem
+        switch self {
+        case .accountNumber:
+            return AccessibilityID.accountNumber
+        case .sortCode:
+            return AccessibilityID.sortCode
+        case .recipientName:
+            return AccessibilityID.recipient
+        case .bankName:
+            return AccessibilityID.bankName
+        case .bankCountry:
+            return AccessibilityID.bankCountry
+        case .iban:
+            return AccessibilityID.iban
+        case .bankCode:
+            return AccessibilityID.bankCode
+        }
     }
 }

@@ -14,7 +14,8 @@ import RxRelay
 final class AddCardLabelContentInteractor: LabelContentInteracting {
     
     // MARK: - Types
-    
+
+    typealias AccessibilityID = Accessibility.Identifier.Settings
     typealias LocalizationString = LocalizationConstants.Settings.Cards
     typealias InteractionState = LabelContent.State.Interaction
     typealias Descriptors = LabelContent.Value.Presentation.Content.Descriptors
@@ -79,7 +80,7 @@ final class AddCardLabelContentInteractor: LabelContentInteracting {
         
         data
             .map { $0.isCardCountBelowLimit && $0.isKYCVerified && $0.isFeatureEnabled }
-            .map { $0 ? .settings : .disclaimer }
+            .map { $0 ? .settings : .disclaimer(accessibilityId: AccessibilityID.AddCardCell.disclaimer) }
             .bind(to: descriptorRelay)
             .disposed(by: disposeBag)
             

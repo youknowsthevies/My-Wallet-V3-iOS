@@ -40,18 +40,18 @@ extension LabelContent.Value.Presentation {
             let fontWeight: FontWeight
             let contentColor: UIColor
             let fontSize: CGFloat
-            let accessibilityIdSuffix: String
+            let accessibilityId: String
 
             public init(
                 fontWeight: FontWeight = .medium,
                 contentColor: UIColor = .titleText,
                 fontSize: CGFloat,
-                accessibilityIdSuffix: String
+                accessibilityId: String
             ) {
                 self.fontWeight = fontWeight
                 self.contentColor = contentColor
                 self.fontSize = fontSize
-                self.accessibilityIdSuffix = accessibilityIdSuffix
+                self.accessibilityId = accessibilityId
             }
         }
 
@@ -62,55 +62,52 @@ extension LabelContent.Value.Presentation {
                 text: value.text,
                 font: .main(descriptors.fontWeight, descriptors.fontSize),
                 color: descriptors.contentColor,
-                accessibility: .init(id: .value(descriptors.accessibilityIdSuffix))
+                accessibility: .init(id: .value(descriptors.accessibilityId))
             )
         }
     }
 }
 
 extension LabelContent.Value.Presentation.Content.Descriptors {
-
-    public typealias Descriptors = LabelContent.Value.Presentation.Content.Descriptors
-
     /// Returns a descriptor for a disclaimer in a `Settings` cell.
-    public static var disclaimer: Descriptors {
-        Descriptors(
+    public static func disclaimer(accessibilityId: String) -> LabelContent.Value.Presentation.Content.Descriptors {
+        .init(
             fontSize: 12,
-            accessibilityIdSuffix: Accessibility.Identifier.Settings.SettingsCell.titleLabelFormat
+            accessibilityId: accessibilityId
         )
     }
-
-    public static var lineItemTitle: Descriptors {
-        Descriptors(
+    
+    public static func lineItemTitle(accessibilityIdPrefix: String) -> LabelContent.Value.Presentation.Content.Descriptors {
+        .init(
             fontWeight: .medium,
             contentColor: .descriptionText,
             fontSize: 14,
-            accessibilityIdSuffix: Accessibility.Identifier.Settings.SettingsCell.titleLabelFormat
+            accessibilityId: "\(accessibilityIdPrefix)title"
         )
     }
-
-    public static var lineItemDescription: Descriptors {
-        Descriptors(
+    
+    public static func lineItemDescription(accessibilityIdPrefix: String) -> LabelContent.Value.Presentation.Content.Descriptors {
+        .init(
             fontWeight: .semibold,
             contentColor: .textFieldText,
             fontSize: 16,
-            accessibilityIdSuffix: Accessibility.Identifier.Settings.SettingsCell.titleLabelFormat
+            accessibilityId: "\(accessibilityIdPrefix)description"
         )
     }
-
-    public static var h1: Descriptors {
-        Descriptors(
+    
+    public static func h1(accessibilityIdPrefix: String) -> LabelContent.Value.Presentation.Content.Descriptors {
+        .init(
             fontWeight: .semibold,
             fontSize: 32,
-            accessibilityIdSuffix: Accessibility.Identifier.Settings.SettingsCell.titleLabelFormat
+            accessibilityId: "\(accessibilityIdPrefix)title"
         )
     }
-
-    public static func success(fontSize: CGFloat, accessibilityIdSuffix: String) -> Descriptors {
-        Descriptors(
+    
+    public static func success(fontSize: CGFloat, accessibilityId: String) -> LabelContent.Value.Presentation.Content.Descriptors {
+        .init(
             contentColor: .positivePrice,
             fontSize: fontSize,
-            accessibilityIdSuffix: accessibilityIdSuffix
+            accessibilityId: accessibilityId
         )
     }
 }
