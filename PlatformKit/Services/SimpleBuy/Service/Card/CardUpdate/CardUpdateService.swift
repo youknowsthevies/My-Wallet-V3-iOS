@@ -8,13 +8,39 @@
 
 import RxSwift
 import ToolKit
-
+    
 public final class CardUpdateService: CardUpdateServiceAPI {
     
     // MARK: - Types
     
     public enum ServiceError: Error {
         case unknownPartner
+    }
+    
+    private enum CardUpdateEvent: AnalyticsEvent {
+        case sbAddCardFailure
+        case sbCardActivationFailure
+        case sbCardEverypayFailure(data: String)
+        
+        var name: String {
+            switch self {
+            case .sbAddCardFailure:
+                return "sb_add_card_failure"
+            case .sbCardActivationFailure:
+                return "sb_card_activation_failure"
+            case .sbCardEverypayFailure:
+                return "sb_card_everypay_failure"
+            }
+        }
+        
+        var params: [String : String]? {
+            switch self {
+            case .sbCardEverypayFailure(data: let data):
+                return ["data": data]
+            default:
+                return nil
+            }
+        }
     }
     
     // MARK: - Injected
@@ -24,6 +50,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
     private let dataRepository: DataRepositoryAPI
     private let authenticationService: NabuAuthenticationServiceAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
+    private let analyticsRecorder: AnalyticsEventRecording
     
     // MARK: - Setup
     
@@ -31,10 +58,12 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                 cardClient: CardClientAPI,
                 everyPayClient: EveryPayClientAPI,
                 fiatCurrencyService: FiatCurrencySettingsServiceAPI,
+                analyticsRecorder: AnalyticsEventRecording,
                 authenticationService: NabuAuthenticationServiceAPI) {
         self.dataRepository = dataRepository
         self.cardClient = cardClient
         self.everyPayClient = everyPayClient
+        self.analyticsRecorder = analyticsRecorder
         self.authenticationService = authenticationService
         self.fiatCurrencyService = fiatCurrencyService
     }
@@ -64,6 +93,9 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                     .map { response -> (response: CardPayload, token: String) in
                         return (response, payload.token)
                     }
+                    .do(onError: { error in
+                        self.analyticsRecorder.record(event: CardUpdateEvent.sbAddCardFailure)
+                    })
             }
             // 2. Make sure the card partner is supported
             .map { payload -> (response: CardPayload, token: String) in
@@ -82,6 +114,9 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                 .map {
                     (cardId: payload.response.identifier, partner: $0)
                 }
+                .do(onError: { error in
+                    self.analyticsRecorder.record(event: CardUpdateEvent.sbCardActivationFailure)
+                })
             }
             // 4. Partner
             .flatMap(weak: self) { (self, payload) -> Single<PartnerAuthorizationData> in
@@ -129,5 +164,10 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                     return .none
                 }
             }
+            .do(onError: { [weak self] error in
+                self?.analyticsRecorder.record(
+                    event: CardUpdateEvent.sbCardEverypayFailure(data: error.localizedDescription)
+                )
+            })
     }
 }

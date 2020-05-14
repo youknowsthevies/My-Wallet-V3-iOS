@@ -40,6 +40,7 @@ final class CardServiceProvider: CardServiceProviderAPI {
          authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
          dataRepository: DataRepositoryAPI = BlockchainDataRepository.shared,
          featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
+         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings) {
         self.cardClient = cardClient
         self.everyPayClient = everyPayClient
@@ -62,6 +63,7 @@ final class CardServiceProvider: CardServiceProviderAPI {
             cardClient: cardClient,
             everyPayClient: everyPayClient,
             fiatCurrencyService: fiatCurrencyService,
+            analyticsRecorder: analyticsRecorder,
             authenticationService: authenticationService
         )
     }

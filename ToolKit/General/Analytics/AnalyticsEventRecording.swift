@@ -21,7 +21,7 @@ public protocol AnalyticsEventRelayRecording {
     var recordRelay: PublishRelay<AnalyticsEvent> { get }
 }
 
-public protocol AnalyticsEventRecording {
+public protocol AnalyticsEventRecording: AnyObject {
     func record(event: AnalyticsEvent)
 }
 
