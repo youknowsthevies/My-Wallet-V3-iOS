@@ -62,18 +62,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions
                      launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
-        if isDebug {
-            // If isDebug build, and ProcessInfo environment contains "erase_wallet": true, erase wallet and settings.
-            if ProcessInfo.processInfo.environmentBoolean(for: "erase_wallet") == true {
-                WalletManager.shared.forgetWallet()
-                BlockchainSettings.App.shared.clear()
-            }
 
+        if ProcessInfo.processInfo.environmentBoolean(for: "automation_erase_data") == true {
+            // If ProcessInfo environment contains "automation_erase_data": true, erase wallet and settings.
+            // This behaviour happens even on non-debug builds, this is necessary because our UI tests
+            //   run on real devices with 'release-staging' builds.
+            WalletManager.shared.forgetWallet()
+            BlockchainSettings.App.shared.clear()
+        }
+
+        if isDebug, ProcessInfo.processInfo.isUnitTesting {
             // If isDebug build, and we are running unit test, skip rest of AppDelegate.
-            if ProcessInfo.processInfo.isUnitTesting {
-                return true
-            }
+            return true
         }
 
         FirebaseApp.configure()
