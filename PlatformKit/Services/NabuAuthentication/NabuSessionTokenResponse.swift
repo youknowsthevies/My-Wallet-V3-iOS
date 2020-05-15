@@ -17,10 +17,10 @@ public struct NabuSessionTokenResponse {
     public let expiresAt: Date?
     
     public init(identifier: String,
-        userId: String,
-        token: String,
-        isActive: Bool,
-        expiresAt: Date?) {
+                userId: String,
+                token: String,
+                isActive: Bool,
+                expiresAt: Date?) {
         self.identifier = identifier
         self.userId = userId
         self.token = token

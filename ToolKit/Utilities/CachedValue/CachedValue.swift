@@ -26,8 +26,8 @@ public class CachedValue<Value> {
         case single(() -> Single<Value>)
     }
     
-    private enum StreamState {
-                
+    private enum StreamState: CustomDebugStringConvertible {
+                        
         /// The data has not been calculated yet
         case empty
         
@@ -61,6 +61,28 @@ public class CachedValue<Value> {
         var isInvalid: Bool {
             guard case .invalid = self else { return false }
             return true
+        }
+        
+        var debugDescription: String {
+            switch self {
+            case .calculating:
+                return "calculating"
+            case .empty:
+                return "empty"
+            case .flush:
+                return "flush"
+            case .invalid(shouldFetch: let shouldFetch):
+                return "invalid(shouldFetch: \(shouldFetch)"
+            case .stream(let type):
+                switch type {
+                case .none:
+                    return "stream: none"
+                case .private:
+                    return "stream: value"
+                case .public:
+                    return "stream: value"
+                }
+            }
         }
     }
     
@@ -122,7 +144,14 @@ public class CachedValue<Value> {
     
     @available(*, deprecated, message: "Do not use this! It is meant to support legacy code")
     public var legacyValue: Value? {
-        return stateRelay.value.streamType?.value
+        stateRelay.value.streamType?.value
+    }
+
+    public var invalidate: Completable {
+        Completable.create { [weak self] observer -> Disposable in
+            self?.refreshControl.actionRelay.accept(.flush)
+            return Disposables.create()
+        }
     }
     
     /// Streams a single value and terminates
@@ -138,7 +167,7 @@ public class CachedValue<Value> {
             .do(onSubscribe: { [weak stateRelay] in
                 guard let stateRelay = stateRelay else { return }
                 switch stateRelay.value {
-                case .invalid(false):
+                case .invalid(shouldFetch: false):
                     stateRelay.accept(.invalid(shouldFetch: true))
                 default:
                     break
@@ -164,6 +193,7 @@ public class CachedValue<Value> {
                 case .calculating:
                     return .just(.none)
                 case .flush:
+                    self.stateRelay.accept(.invalid(shouldFetch: false))
                     return .just(.none)
                 case .invalid(shouldFetch: let shouldFetch):
                     if shouldFetch {
@@ -255,7 +285,7 @@ public class CachedValue<Value> {
     /// This method is expected to keep streaming values until a termination / disposal event occurs.
     /// Suitable for complex streams throughout the app.
     public func fetchObservableValue(_ fetch: () -> Observable<Value>) -> Observable<Value> {
-        return fetch()
+        fetch()
             .do(
                 /// On successful fetch make the relay accept a privately distributed value
                 onNext: { [weak self] value in
@@ -278,8 +308,7 @@ public class CachedValue<Value> {
     /// This method is expected to stream a single value per subscription.
     /// Suitable simple use streams and use cases.
     public func fetchSingleValue(_ fetch: () -> Single<Value>) -> Single<Value> {
-        /// Fetch the value
-        return fetch()
+        fetch()
             .do(
                 /// On successful fetch make the relay accept a privately distributed value
                 onSuccess: { [weak self] value in

@@ -6,7 +6,6 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxCocoa
 import RxSwift
 import ToolKit
 import NetworkKit
@@ -24,31 +23,34 @@ final class NabuAuthenticationService: NabuAuthenticationServiceAPI {
     var value: Single<NabuSessionTokenResponse> {
         cachedValue.valueSingle
     }
-    
+
     private var cachedValue: CachedValue<NabuSessionTokenResponse>!
+    private let userCreationClient: UserCreationClientAPI
+    private let authenticationClient: NabuAuthenticationClientAPI
+    private let settingsService: SettingsServiceAPI
+    private let walletRepository: WalletRepositoryAPI
+    
     private let wallet: Wallet
-    private let walletManager: WalletManager
     private let walletNabuSynchronizer: WalletNabuSynchronizerAPI
-    private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
-    private let supportedPairsService: SimpleBuySupportedPairsServiceAPI
     
     // MARK: - Initialization
 
-    init(
-        fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-        supportedPairsService: SimpleBuySupportedPairsServiceAPI = SimpleBuySupportedPairsService(client: SimpleBuyClient()),
-        walletManager: WalletManager = .shared,
-        wallet: Wallet = WalletManager.shared.wallet,
-        reactiveWallet: ReactiveWalletAPI = ReactiveWallet(),
-        walletNabuSynchronizer: WalletNabuSynchronizerAPI = WalletNabuSynchronizerService()
-    ) {
-        self.fiatCurrencyService = fiatCurrencyService
-        self.supportedPairsService = supportedPairsService
-        self.walletManager = walletManager
+    init(authenticationClient: NabuAuthenticationClientAPI = NabuAuthenticationClient(),
+         userCreationClient: UserCreationClientAPI = UserCreationClient(),
+         settingsService: SettingsServiceAPI = UserInformationServiceProvider.default.settings,
+         wallet: Wallet = WalletManager.shared.wallet,
+         reactiveWallet: ReactiveWalletAPI = ReactiveWallet(),
+         walletRepository: WalletRepositoryAPI = WalletManager.shared.repository,
+         walletNabuSynchronizer: WalletNabuSynchronizerAPI = WalletNabuSynchronizerService()) {
+        self.authenticationClient = authenticationClient
+        self.userCreationClient = userCreationClient
+        self.walletRepository = walletRepository
+        self.settingsService = settingsService
         self.wallet = wallet
         self.walletNabuSynchronizer = walletNabuSynchronizer
         
         let configuration = CachedValueConfiguration(
+            identifier: "fetch-nabu-user-token",
             refreshType: .custom { [weak self] () -> Single<Bool> in
                 guard let self = self else { return .just(false) }
                 return self.getOrCreateNabuUserResponse()
@@ -68,9 +70,12 @@ final class NabuAuthenticationService: NabuAuthenticationServiceAPI {
 
                         return false
                     }
-            }
+            },
+            fetchPriority: .fetchAll,
+            flushNotificationName: .logout
         )
         cachedValue = CachedValue<NabuSessionTokenResponse>(configuration: configuration)
+        
         cachedValue
             .setFetch(weak: self) { (self) in
                 reactiveWallet.waitUntilInitializedSingle
@@ -107,41 +112,34 @@ final class NabuAuthenticationService: NabuAuthenticationServiceAPI {
     private func getSessionToken() -> Single<NabuSessionTokenResponse> {
         getOrCreateNabuUserResponse()
             .flatMap(weak: self) { (self, response) -> Single<NabuSessionTokenResponse> in
-                self.requestNewSessionToken(from: response)
+                self.sessionToken(from: response)
             }
     }
 
     // MARK: - Private Methods
 
     /// Requests a new session token from Nabu followed by caching the response if successful
-    private func requestNewSessionToken(from userResponse: NabuCreateUserResponse) -> Single<NabuSessionTokenResponse> {
-        guard let guid = self.walletManager.legacyRepository.legacyGuid else {
-            Logger.shared.warning("Cannot get Nabu authentication token, guid is nil.")
-            return Single.error(WalletError.notInitialized)
+    private func sessionToken(from userResponse: CreateUserResponse) -> Single<NabuSessionTokenResponse> {
+        let guid = walletRepository.guid
+        let email = settingsService.valueSingle.map { $0.email }
+  
+        return Single
+            .zip(guid, email)
+            .flatMap(weak: self) { (self, payload) in
+                guard let guid = payload.0 else {
+                    throw MissingCredentialsError.guid
+                }
+                let email = payload.1
+                
+                return self.authenticationClient
+                    .sessionToken(
+                        for: guid,
+                        userToken: userResponse.token,
+                        userIdentifier: userResponse.userId,
+                        deviceId: UIDevice.current.identifierForVendor?.uuidString ?? "",
+                        email: email
+                )
         }
-
-        guard let email = self.wallet.getEmail() else {
-            Logger.shared.warning("Cannot get Nabu authentication token, email is nil.")
-            return Single.error(WalletError.notInitialized)
-        }
-
-        let headers: [String: String] = [
-            HttpHeaderField.authorization: userResponse.token,
-            HttpHeaderField.appVersion: Bundle.applicationVersion ?? "",
-            HttpHeaderField.clientType: HttpHeaderValue.clientTypeApp,
-            HttpHeaderField.deviceId: UIDevice.current.identifierForVendor?.uuidString ?? "",
-            HttpHeaderField.walletGuid: guid,
-            HttpHeaderField.walletEmail: email
-        ]
-        
-        Logger.shared.debug("Sending Session Token Request")
-        
-        return KYCNetworkRequest.request(
-            post: .sessionToken(userId: userResponse.userId),
-            parameters: [:],
-            headers: headers,
-            type: NabuSessionTokenResponse.self
-        )
     }
 
     /// Retrieves the user's Nabu user ID and API token from the wallet metadata if the Nabu user ID
@@ -150,55 +148,34 @@ final class NabuAuthenticationService: NabuAuthenticationServiceAPI {
     /// with the retrieved Nabu user ID.
     ///
     /// - Returns: a Single returning the user's Nabu api token
-    private func getOrCreateNabuUserResponse() -> Single<NabuCreateUserResponse> {
+    private func getOrCreateNabuUserResponse() -> Single<CreateUserResponse> {
         guard let kycUserId = wallet.kycUserId(),
             let kycToken = wallet.kycLifetimeToken() else {
                 return createAndSaveUserResponse()
         }
-        return Single.just(NabuCreateUserResponse(userId: kycUserId, token: kycToken))
+        return Single.just(CreateUserResponse(userId: kycUserId, token: kycToken))
     }
 
     /// Creates a KYC user ID and API token followed by updating the wallet metadata with
     /// the KYC user ID and API token.
-    private func createAndSaveUserResponse() -> Single<NabuCreateUserResponse> {
+    private func createAndSaveUserResponse() -> Single<CreateUserResponse> {
         return walletNabuSynchronizer.getSignedRetailToken()
-            .flatMap(weak: self) { (self, tokenResponse) -> Single<NabuCreateUserResponse> in
+            .flatMap(weak: self) { (self, tokenResponse) -> Single<CreateUserResponse> in
                 self.createNabuUser(tokenResponse: tokenResponse)
             }
-            .flatMap(weak: self) { (self, createUserResponse) -> Single<NabuCreateUserResponse> in
+            .flatMap(weak: self) { (self, createUserResponse) -> Single<CreateUserResponse> in
                 self.saveToWalletMetadata(createUserResponse: createUserResponse)
             }
     }
     
-    /// TODO: Fix this as part of IOS-2875 Part II
-    /// For now we are using the fact that the user's currency is supported to determine
-    /// if the `SIMPLE_BUY` tag should be added to the user or not.
-    private func createNabuUser(tokenResponse: SignedRetailTokenResponse) -> Single<NabuCreateUserResponse> {
+    private func createNabuUser(tokenResponse: SignedRetailTokenResponse) -> Single<CreateUserResponse> {
         guard let token = tokenResponse.token, tokenResponse.success else {
             return Single.error(NabuAuthenticationError.invalidSignedRetailToken)
         }
-        
-        return fiatCurrencyService.fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<KYCNetworkRequest.KYCEndpoints.POST.UserType> in
-                self.supportedPairsService.fetchPairs(for: .only(fiatCurrency: fiatCurrency))
-                    .map { pairsResponse in
-                        guard pairsResponse.pairs.count > 0 else {
-                            return .regular
-                        }
-                        return .simpleBuy(fiatCurrency: fiatCurrency.code)
-                    }
-            }
-            .flatMap { userType -> Single<NabuCreateUserResponse> in
-                KYCNetworkRequest.request(
-                    post: .createUser(userType),
-                    parameters: ["jwt": token],
-                    headers: nil,
-                    type: NabuCreateUserResponse.self
-                )
-            }
+        return userCreationClient.createUser(for: token)
     }
 
-    private func saveToWalletMetadata(createUserResponse: NabuCreateUserResponse) -> Single<NabuCreateUserResponse> {
+    private func saveToWalletMetadata(createUserResponse: CreateUserResponse) -> Single<CreateUserResponse> {
         return Single.create(subscribe: { [unowned self] observer -> Disposable in
             self.wallet.updateKYCUserCredentials(
                 withUserId: createUserResponse.userId,

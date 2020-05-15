@@ -40,7 +40,7 @@ final class CachedValueRefreshControl {
     }
     
     /// The action relay
-    private let actionRelay = PublishRelay<Action>()
+    let actionRelay = PublishRelay<Action>()
     private let lastRefreshRelay = BehaviorRelay(value: Date.distantPast)
     private let configuration: CachedValueConfiguration
     
