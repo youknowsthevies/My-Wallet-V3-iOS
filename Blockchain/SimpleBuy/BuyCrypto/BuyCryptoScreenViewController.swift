@@ -31,23 +31,20 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
     
     // MARK: - Properties
     
-    @IBOutlet private var assetSelectionButtonView: SelectionButtonView!
-    @IBOutlet private var amountLabelView: AmountLabelView!
-    @IBOutlet private var amountLabelContainerView: UIView!
-    private var labeledButtonCollectionView: LabeledButtonCollectionView<CurrencyLabeledButtonViewModel>!
-    @IBOutlet private var trailingButtonView: ButtonView!
-    @IBOutlet private var paymentMethodSelectionButtonView: SelectionButtonView!
-    @IBOutlet private var continueButtonView: ButtonView!
-    @IBOutlet private var separatorViews: [UIView]!
-    @IBOutlet private var digitPadView: DigitPadView!
+    private let assetSelectionButtonView = SelectionButtonView()
+    private let amountLabelView = AmountLabelView()
+    private let amountLabelContainerView = UIView()
+    private var labeledButtonCollectionView = LabeledButtonCollectionView<CurrencyLabeledButtonViewModel>()
+    private let trailingButtonView = ButtonView()
+    private let paymentMethodSelectionButtonView = SelectionButtonView()
+    private let continueButtonView = ButtonView()
+    private let digitPadView = DigitPadView()
 
-    @IBOutlet private var assetSelectionViewHeightConstraint: NSLayoutConstraint!
-    @IBOutlet private var paymentMethodSelectionViewHeightConstraint: NSLayoutConstraint!
-    @IBOutlet private var paymentMethodSelectionViewBottomConstraint: NSLayoutConstraint!
-    @IBOutlet private var digitPadHeightConstraint: NSLayoutConstraint!
-    
-    private var amountContainerBottomConstraint: NSLayoutConstraint!
-    @IBOutlet private var continueButtonViewBottomConstraint: NSLayoutConstraint!
+    private var assetSelectionViewHeightConstraint: NSLayoutConstraint!
+    private var paymentMethodSelectionViewHeightConstraint: NSLayoutConstraint!
+    private var digitPadHeightConstraint: NSLayoutConstraint!
+    private var continueButtonTopConstraint: NSLayoutConstraint!
+    private var digitPadSeparatorTopConstraint: NSLayoutConstraint!
 
     // MARK: - Injected
     
@@ -58,19 +55,110 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
     
     init(presenter: BuyCryptoScreenPresenter) {
         self.presenter = presenter
-        super.init(nibName: BuyCryptoScreenViewController.objectName, bundle: nil)
+        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func loadView() {
+        view = UIView()
+        view.backgroundColor = .white
+        
+        view.addSubview(assetSelectionButtonView)
+        
+        amountLabelContainerView.addSubview(amountLabelView)
+        view.addSubview(amountLabelContainerView)
+
+        view.addSubview(labeledButtonCollectionView)
+        view.addSubview(trailingButtonView)
+        
+        let paymentMethodTopSeparatorView = UIView()
+        view.addSubview(paymentMethodTopSeparatorView)
+        
+        view.addSubview(paymentMethodSelectionButtonView)
+        
+        view.addSubview(continueButtonView)
+        
+        let digitPadTopSeparatorView = UIView()
+        view.addSubview(digitPadTopSeparatorView)
+        
+        view.addSubview(digitPadView)
+        
+        assetSelectionButtonView.layoutToSuperview(.top, usesSafeAreaLayoutGuide: true)
+        assetSelectionButtonView.layoutToSuperview(.leading, .trailing)
+        assetSelectionViewHeightConstraint = assetSelectionButtonView.layout(dimension: .height, to: 78)
+                
+        amountLabelContainerView.layoutToSuperview(.leading, .trailing)
+        amountLabelContainerView.layout(edge: .top, to: .bottom, of: assetSelectionButtonView)
+        amountLabelContainerView.layout(edge: .bottom, to: .top, of: labeledButtonCollectionView)
+        
+        amountLabelView.layoutToSuperview(axis: .horizontal, offset: 24, priority: .penultimateHigh)
+        amountLabelView.layoutToSuperview(.centerY)
+        amountLabelView.layout(dimension: .height, to: 40)
+        
+        labeledButtonCollectionView.layoutToSuperview(axis: .horizontal, priority: .penultimateHigh)
+        labeledButtonCollectionView.layout(
+            edge: .bottom,
+            to: .top,
+            of: paymentMethodTopSeparatorView,
+            offset: -16
+        )
+        labeledButtonCollectionView.layout(dimension: .height, to: 32, priority: .penultimateHigh)
+        
+        trailingButtonView.layoutToSuperview(.trailing, offset: -24)
+        trailingButtonView.layout(to: .centerY, of: labeledButtonCollectionView)
+        trailingButtonView.layout(dimension: .height, to: 32)
+        trailingButtonView.layout(dimension: .width, to: 50)
+
+        paymentMethodTopSeparatorView.layoutToSuperview(.leading, .trailing)
+        paymentMethodTopSeparatorView.layout(edge: .top, to: .bottom, of: labeledButtonCollectionView)
+        paymentMethodTopSeparatorView.layout(dimension: .height, to: 1)
+
+        paymentMethodSelectionButtonView.layoutToSuperview(.leading, .trailing)
+        paymentMethodSelectionButtonView.layout(
+            edge: .top,
+            to: .bottom,
+            of: paymentMethodTopSeparatorView,
+            priority: .defaultLow
+        )
+        paymentMethodSelectionViewHeightConstraint = paymentMethodSelectionButtonView.layout(
+            dimension: .height,
+            to: 78
+        )
+        
+        continueButtonView.layoutToSuperview(axis: .horizontal, offset: 24, priority: .penultimateHigh)
+        continueButtonTopConstraint = continueButtonView.layout(
+            edge: .top,
+            to: .bottom,
+            of: paymentMethodSelectionButtonView,
+            offset: 16
+        )
+        continueButtonView.layout(dimension: .height, to: 48)
+
+        digitPadTopSeparatorView.layoutToSuperview(.leading, .trailing)
+        digitPadSeparatorTopConstraint = digitPadTopSeparatorView.layout(
+            edge: .top,
+            to: .bottom,
+            of: continueButtonView,
+            offset: 24
+        )
+        digitPadTopSeparatorView.layout(dimension: .height, to: 1)
+        
+        digitPadView.layoutToSuperview(axis: .horizontal, priority: .penultimateHigh)
+        digitPadView.layout(edge: .top, to: .bottom, of: digitPadTopSeparatorView)
+        digitPadView.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true)
+        digitPadHeightConstraint = digitPadView.layout(dimension: .height, to: 260, priority: .penultimateHigh)
+                
+        digitPadTopSeparatorView.backgroundColor = presenter.separatorColor
+        paymentMethodTopSeparatorView.backgroundColor = presenter.separatorColor
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
-        setupLabeledButtonCollectionView()
         digitPadView.viewModel = presenter.digitPadViewModel
-        separatorViews.forEach { $0.backgroundColor = presenter.separatorColor }
         continueButtonView.viewModel = presenter.continueButtonViewModel
         amountLabelView.viewModel = presenter.amountLabelViewModel
         assetSelectionButtonView.viewModel = presenter.assetSelectionButtonViewModel
@@ -91,11 +179,11 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
         /// This is a special treatment due to the manner view controllers
         /// are modally displayed on iOS 13 (with additional gap on the top that enable
         /// dismissal of the screen.
-        if view.bounds.height < UIDevice.PhoneHeight.eight.rawValue {
+        if view.bounds.height <= UIDevice.PhoneHeight.eight.rawValue {
             digitPadHeightConstraint.constant = Constant.SuperCompact.digitPadHeight
-            continueButtonViewBottomConstraint.constant = Constant.SuperCompact.continueButtonViewBottomOffset
+            digitPadSeparatorTopConstraint.constant = Constant.SuperCompact.continueButtonViewBottomOffset
             if view.bounds.height <= UIDevice.PhoneHeight.se.rawValue {
-                paymentMethodSelectionViewBottomConstraint.constant = Constant.SuperCompact.paymentMethodSelectionBottomOffset
+                continueButtonTopConstraint.constant = Constant.SuperCompact.paymentMethodSelectionBottomOffset
                 assetSelectionViewHeightConstraint.constant = Constant.SuperCompact.selectionButtonHeight
             }
         }
@@ -112,22 +200,7 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
         titleViewStyle = .text(value: presenter.title)
         setStandardDarkContentStyle()
     }
-    
-    private func setupLabeledButtonCollectionView() {
-        labeledButtonCollectionView = LabeledButtonCollectionView<CurrencyLabeledButtonViewModel>()
-        view.insertSubview(labeledButtonCollectionView, belowSubview: trailingButtonView)
-        labeledButtonCollectionView.layout(to: .centerY, of: trailingButtonView)
-        labeledButtonCollectionView.layoutToSuperview(axis: .horizontal)
-        labeledButtonCollectionView.layout(dimension: .height, to: 32)
-        labeledButtonCollectionView.layout(edge: .bottom, to: .top, of: paymentMethodSelectionButtonView, offset: -16)
         
-        amountContainerBottomConstraint = amountLabelContainerView.layout(
-            edge: .bottom,
-            to: .top,
-            of: labeledButtonCollectionView
-        )
-    }
-    
     private func setupPaymentMethodSelectionButtonView() {
         presenter.paymentMethodSelectionButtonViewModelState
             .drive(

@@ -17,7 +17,7 @@ final class DashboardViewController: BaseScreenViewController {
 
     // MARK: - Outlets
     
-    @IBOutlet private var tableView: UITableView!
+    private let tableView = UITableView()
     private var refreshControl: UIRefreshControl!
     
     // MARK: - Injected
@@ -46,7 +46,7 @@ final class DashboardViewController: BaseScreenViewController {
     
     init() {
         self.presenter = DashboardScreenPresenter()
-        super.init(nibName: DashboardViewController.objectName, bundle: nil)
+        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
@@ -54,6 +54,11 @@ final class DashboardViewController: BaseScreenViewController {
     }
     
     // MARK: - Lifecycle
+    
+    override func loadView() {
+        view = UIView()
+        view.backgroundColor = .white
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,6 +92,9 @@ final class DashboardViewController: BaseScreenViewController {
     }
     
     private func setupTableView() {
+        view.addSubview(tableView)
+        tableView.layoutToSuperview(axis: .horizontal, usesSafeAreaLayoutGuide: true)
+        tableView.layoutToSuperview(axis: .vertical, usesSafeAreaLayoutGuide: true)
         tableView.tableFooterView = UIView()
         tableView.estimatedRowHeight = 80
         tableView.rowHeight = UITableView.automaticDimension
@@ -95,6 +103,8 @@ final class DashboardViewController: BaseScreenViewController {
         tableView.registerNibCell(TotalBalanceTableViewCell.self)
         tableView.registerNibCell(HistoricalBalanceTableViewCell.self)
         tableView.separatorColor = .clear
+        tableView.delegate = self
+        tableView.dataSource = self
         
         refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)

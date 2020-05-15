@@ -140,7 +140,7 @@ extension UIView {
             verticalContentHuggingPriority = newValue.vertical
         }
         get {
-            return (horizontalContentHuggingPriority, verticalContentHuggingPriority)
+            (horizontalContentHuggingPriority, verticalContentHuggingPriority)
         }
     }
     
@@ -151,7 +151,7 @@ extension UIView {
             setContentCompressionResistancePriority(newValue, for: .vertical)
         }
         get {
-            return contentCompressionResistancePriority(for: .vertical)
+            contentCompressionResistancePriority(for: .vertical)
         }
     }
     
@@ -160,7 +160,7 @@ extension UIView {
             setContentCompressionResistancePriority(newValue, for: .horizontal)
         }
         get {
-            return contentCompressionResistancePriority(for: .horizontal)
+            contentCompressionResistancePriority(for: .horizontal)
         }
     }
     
@@ -170,7 +170,7 @@ extension UIView {
             verticalContentCompressionResistancePriority = newValue.vertical
         }
         get {
-            return (horizontalContentCompressionResistancePriority, verticalContentCompressionResistancePriority)
+            (horizontalContentCompressionResistancePriority, verticalContentCompressionResistancePriority)
         }
     }
     
@@ -225,6 +225,7 @@ extension UIView {
             assertionFailure("\(String(describing: self)) Error in func: \(#function)")
             return nil
         }
+        
         let constraint = NSLayoutConstraint(
             item: self,
             attribute: edge ?? otherEdge,
@@ -272,6 +273,7 @@ extension UIView {
     @discardableResult
     public func layoutToSuperview(_ edge: Attribute,
                                   relation: Relation = .equal,
+                                  usesSafeAreaLayoutGuide: Bool = false,
                                   ratio: CGFloat = 1,
                                   offset: CGFloat = 0,
                                   priority: Priority = .required) -> NSLayoutConstraint? {
@@ -279,11 +281,20 @@ extension UIView {
             assertionFailure("\(String(describing: self)) Error in func: \(#function)")
             return nil
         }
+        let superview = self.superview!
+        
+        let secondItem: Any
+        if usesSafeAreaLayoutGuide {
+            secondItem = superview.safeAreaLayoutGuide
+        } else {
+            secondItem = superview
+        }
+        
         let constraint = NSLayoutConstraint(
             item: self,
             attribute: edge,
             relatedBy: relation,
-            toItem: superview,
+            toItem: secondItem,
             attribute: edge,
             multiplier: ratio,
             constant: offset
@@ -296,6 +307,7 @@ extension UIView {
     @discardableResult
     public func layoutToSuperview(_ edges: Attribute...,
                                   relation: Relation = .equal,
+                                  usesSafeAreaLayoutGuide: Bool = false,
                                   ratio: CGFloat = 1,
                                   offset: CGFloat = 0,
                                   priority: Priority = .required) -> Constraints {
@@ -303,13 +315,22 @@ extension UIView {
         guard !edges.isEmpty && prepareForAutoLayout() else {
             return constraints
         }
+        let superview = self.superview!
+        
+        let secondItem: Any
+        if usesSafeAreaLayoutGuide {
+            secondItem = superview.safeAreaLayoutGuide
+        } else {
+            secondItem = superview
+        }
+        
         let uniqueEdges = Set(edges)
         for edge in uniqueEdges {
             let constraint = NSLayoutConstraint(
                 item: self,
                 attribute: edge,
                 relatedBy: relation,
-                toItem: superview,
+                toItem: secondItem,
                 attribute: edge,
                 multiplier: ratio,
                 constant: offset
@@ -323,13 +344,20 @@ extension UIView {
     
     @discardableResult
     public func layoutToSuperview(axis: Axis,
+                                  usesSafeAreaLayoutGuide: Bool = false,
                                   offset: CGFloat = 0,
                                   priority: Priority = .required) -> Axis.Constraints? {
         let attributes = axis.attributes
-        guard let leading = layoutToSuperview(attributes.leading, offset: offset, priority: priority) else {
+        guard let leading = layoutToSuperview(attributes.leading,
+                                              usesSafeAreaLayoutGuide: usesSafeAreaLayoutGuide,
+                                              offset: offset,
+                                              priority: priority) else {
             return nil
         }
-        guard let trailing = layoutToSuperview(attributes.trailing, offset: -offset, priority: priority) else {
+        guard let trailing = layoutToSuperview(attributes.trailing,
+                                               usesSafeAreaLayoutGuide: usesSafeAreaLayoutGuide,
+                                               offset: -offset,
+                                               priority: priority) else {
             return nil
         }
         return .init(leading: leading, trailing: trailing)
@@ -347,22 +375,31 @@ extension UIView {
     }
     
     @discardableResult
-    public func layoutToSuperviewSize(ratio: CGFloat = 1,
+    public func layoutToSuperviewSize(usesSafeAreaLayoutGuide: Bool = false,
+                                      ratio: CGFloat = 1,
                                       offset: CGFloat = 0,
                                       priority: Priority = .required) -> LayoutForm.Constraints? {
-        guard let width = layoutToSuperview(.width, ratio: ratio, offset: offset, priority: priority) else {
+        guard let width = layoutToSuperview(.width,
+                                            usesSafeAreaLayoutGuide: usesSafeAreaLayoutGuide,
+                                            ratio: ratio,
+                                            offset: offset,
+                                            priority: priority) else {
             return nil
         }
-        guard let height = layoutToSuperview(.height, ratio: ratio, offset: offset, priority: priority) else {
+        guard let height = layoutToSuperview(.height,
+                                             usesSafeAreaLayoutGuide: usesSafeAreaLayoutGuide,
+                                             ratio: ratio,
+                                             offset: offset,
+                                             priority: priority) else {
             return nil
         }
         return .init(horizontal: width, vertical: height)
     }
     
     @discardableResult
-    public func fillSuperview() -> Frame? {
+    public func fillSuperview(usesSafeAreaLayoutGuide: Bool = false) -> Frame? {
         guard let center = layoutToSuperviewCenter() else { return nil }
-        guard let size = layoutToSuperviewSize() else { return nil }
+        guard let size = layoutToSuperviewSize(usesSafeAreaLayoutGuide: usesSafeAreaLayoutGuide) else { return nil }
         return .init(center: center, size: size)
     }
     
