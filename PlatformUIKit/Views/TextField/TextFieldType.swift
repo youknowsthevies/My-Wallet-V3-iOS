@@ -216,11 +216,12 @@ extension TextFieldType {
             return LocalizedString.cvv
         case .expirationDate:
             return LocalizedString.expirationDate
+        case .oneTimeCode:
+            return LocalizedString.oneTimeCode
         case .password,
              .newPassword,
              .confirmNewPassword,
              .walletIdentifier,
-             .oneTimeCode,
              .email,
              .backupVerification,
              .addressLine,

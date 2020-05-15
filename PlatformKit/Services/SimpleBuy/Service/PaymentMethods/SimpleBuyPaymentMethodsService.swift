@@ -53,24 +53,26 @@ public final class SimpleBuyPaymentMethodsService: SimpleBuyPaymentMethodsServic
                 identifier: "simple-buy-payment-methods",
                 refreshType: .onSubscription,
                 fetchPriority: .fetchAll,
-                flushNotificationName: .logout,
-                fetchNotificationName: .login
+                flushNotificationName: .logout
             )
         )
         
         cachedValue
             .setFetch { () -> Observable<[SimpleBuyPaymentMethod]> in
-                reactiveWallet.waitUntilInitializedSingle
-                    .asObservable()
-                    .flatMap {
-                        Observable.combineLatest(
-                            authenticationService.tokenString.asObservable(),
-                            fiatCurrencyService.fiatCurrencyObservable
-                        )
-                        .map { (token: $0.0, currency: $0.1) }
+                fiatCurrencyService.fiatCurrencyObservable
+                    .flatMap { currency in
+                        authenticationService
+                            .tokenString
+                            .asObservable()
+                            .map { (token: $0, currency: currency) }
                     }
                     .flatMap { payload in
-                        client.paymentMethods(for: payload.currency.code, token: payload.token).asObservable()
+                        client
+                            .paymentMethods(
+                                for: payload.currency.code,
+                                token: payload.token
+                            )
+                            .asObservable()
                     }
                     .map { Array<SimpleBuyPaymentMethod>.init(response: $0) }
                     .flatMap { methods -> Observable<[SimpleBuyPaymentMethod]> in
@@ -82,5 +84,9 @@ public final class SimpleBuyPaymentMethodsService: SimpleBuyPaymentMethodsServic
                             .asObservable()
                     }
             }
+    }
+    
+    public func fetch() -> Observable<[SimpleBuyPaymentMethod]> {
+        cachedValue.fetchValueObservable
     }
 }

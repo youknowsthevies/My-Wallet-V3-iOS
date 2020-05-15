@@ -46,26 +46,23 @@ public final class SimpleBuyPaymentMethodTypesService {
     public var methodTypes: Observable<[SimpleBuyPaymentMethodType]> {
         Observable
             .combineLatest(
-                paymentMethodsService.paymentMethods,
+                paymentMethodsService.fetch(),
                 cardListService.cards
             )
             .map(weak: self) { (self, payload) in
                 self.merge(paymentMethods: payload.0, with: payload.1)
             }
+            .do(onNext: { [weak preferredPaymentMethodTypeRelay] types in
+                if let preferredCard = types.cards.first {
+                    preferredPaymentMethodTypeRelay?.accept(.card(preferredCard))
+                } else if let preferredMethod = types.first {
+                    preferredPaymentMethodTypeRelay?.accept(preferredMethod)
+                }
+            })
     }
     
     public var cards: Observable<[CardData]> {
-        methodTypes
-            .map { types in
-                types.compactMap {
-                    switch $0 {
-                    case .card(let data):
-                        return data
-                    case .suggested:
-                        return nil
-                    }
-                }
-            }
+        methodTypes.map { $0.cards }
     }
     
     /// Preferred payment method
@@ -148,5 +145,18 @@ public final class SimpleBuyPaymentMethodTypesService {
             .map { SimpleBuyPaymentMethodType.card($0) }
         let suggestedMethods = paymentMethods.map { SimpleBuyPaymentMethodType.suggested($0) }
         return cardTypes + suggestedMethods
+    }
+}
+
+private extension Array where Element == SimpleBuyPaymentMethodType {
+    var cards: [CardData] {
+        compactMap { paymentMethod in
+            switch paymentMethod {
+            case .card(let data):
+                return data
+            case .suggested:
+                return nil
+            }
+        }
     }
 }
