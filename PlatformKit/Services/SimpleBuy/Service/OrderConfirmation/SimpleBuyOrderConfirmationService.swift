@@ -7,6 +7,7 @@
 //
 
 import RxSwift
+import ToolKit
 
 public final class SimpleBuyOrderConfirmationService: SimpleBuyOrderConfirmationServiceAPI {
     
@@ -18,13 +19,16 @@ public final class SimpleBuyOrderConfirmationService: SimpleBuyOrderConfirmation
     
     // MARK: - Properties
     
+    private let analyticsRecorder: AnalyticsEventRecording
     private let client: SimpleBuyCardOrderConfirmationClientAPI
     private let authenticationService: NabuAuthenticationServiceAPI
 
     // MARK: - Setup
     
-    public init(client: SimpleBuyCardOrderConfirmationClientAPI,
+    public init(analyticsRecorder: AnalyticsEventRecording,
+                client: SimpleBuyCardOrderConfirmationClientAPI,
                 authenticationService: NabuAuthenticationServiceAPI) {
+        self.analyticsRecorder = analyticsRecorder
         self.client = client
         self.authenticationService = authenticationService
     }
@@ -55,7 +59,9 @@ public final class SimpleBuyOrderConfirmationService: SimpleBuyOrderConfirmation
                     token: token
                 )
             }
-            .map { SimpleBuyOrderDetails(response: $0) }
+            .map(weak: self) { (self, response) in
+                SimpleBuyOrderDetails(recorder: self.analyticsRecorder, response: response)
+            }
             .map { details -> SimpleBuyOrderDetails in
                 guard let details = details else {
                     throw ServiceError.mappingError

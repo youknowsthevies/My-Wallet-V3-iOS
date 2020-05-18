@@ -107,7 +107,6 @@ public struct SimpleBuyOrderPayload {
         let outputCurrency: String
         let outputQuantity: String
         
-        let insertedAt: String
         let updatedAt: String
         let expiresAt: String
         

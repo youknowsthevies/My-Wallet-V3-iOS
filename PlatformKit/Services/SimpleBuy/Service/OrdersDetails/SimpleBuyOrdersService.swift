@@ -28,15 +28,18 @@ public final class SimpleBuyOrdersService: SimpleBuyOrdersServiceAPI {
 
     // MARK: - Injected
     
+    private let analyticsRecorder: AnalyticsEventRecording
     private let client: SimpleBuyOrderDetailsClientAPI
     private let authenticationService: NabuAuthenticationServiceAPI
     private let reactiveWallet: ReactiveWalletAPI
     
     // MARK: - Setup
     
-    public init(client: SimpleBuyOrderDetailsClientAPI,
+    public init(analyticsRecorder: AnalyticsEventRecording,
+                client: SimpleBuyOrderDetailsClientAPI,
                 reactiveWallet: ReactiveWalletAPI,
                 authenticationService: NabuAuthenticationServiceAPI) {
+        self.analyticsRecorder = analyticsRecorder
         self.client = client
         self.reactiveWallet = reactiveWallet
         self.authenticationService = authenticationService
@@ -49,7 +52,9 @@ public final class SimpleBuyOrdersService: SimpleBuyOrdersServiceAPI {
                         .tokenString
                         .flatMap { client.orderDetails(token: $0) }
                         .map { rawOrders in
-                            rawOrders.compactMap { SimpleBuyOrderDetails(response: $0) }
+                            rawOrders.compactMap {
+                                SimpleBuyOrderDetails(recorder: analyticsRecorder, response: $0)
+                            }
                         }
                 }
         }
@@ -65,7 +70,9 @@ public final class SimpleBuyOrdersService: SimpleBuyOrdersServiceAPI {
             .flatMap(weak: self) { (self, token) in
                 self.client.orderDetails(with: identifier, token: token)
             }
-            .map { SimpleBuyOrderDetails(response: $0) }
+            .map(weak: self) { (self, response) in
+                SimpleBuyOrderDetails(recorder: self.analyticsRecorder, response: response)
+            }
             .map { details -> SimpleBuyOrderDetails in
                 guard let details = details else {
                     throw ServiceError.mappingError

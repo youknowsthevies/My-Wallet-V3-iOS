@@ -66,6 +66,7 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
             fiatCurrencySettingsService: settings
         )
         ordersDetails = SimpleBuyOrdersService(
+            analyticsRecorder: AnalyticsEventRecorder.shared,
             client: simpleBuyClient,
             reactiveWallet: wallet,
             authenticationService: authenticationService
@@ -92,6 +93,7 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
             fiatCurrencyService: settings
         )
         orderConfirmation = SimpleBuyOrderConfirmationService(
+            analyticsRecorder: AnalyticsEventRecorder.shared,
             client: simpleBuyClient,
             authenticationService: authenticationService
         )
@@ -106,6 +108,7 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
             cancallationService: orderCancellation
         )
         orderCreation = SimpleBuyOrderCreationService(
+            analyticsRecorder: AnalyticsEventRecorder.shared,
             client: simpleBuyClient,
             pendingOrderDetailsService: pendingOrderDetails,
             authenticationService: authenticationService

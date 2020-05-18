@@ -115,9 +115,12 @@ final class CheckoutScreenContentReducer {
     // MARK: - Accessors
 
     func setupDidSucceed(with data: CheckoutScreenInteractor.InteractionData) {
-        let time = DateFormatter.elegantDateFormatter.string(from: data.time)
+        var formattedTime = ""
+        if let time = data.time {
+            formattedTime = DateFormatter.elegantDateFormatter.string(from: time)
+        }
         dateLineItemCellPresenter.interactor.description.stateRelay.accept(
-            .loaded(next: .init(text: time))
+            .loaded(next: .init(text: formattedTime))
         )
         buyingFeeLineItemCellPresenter.interactor.description.stateRelay.accept(
             .loaded(next: .init(text: data.fee.toDisplayString()))

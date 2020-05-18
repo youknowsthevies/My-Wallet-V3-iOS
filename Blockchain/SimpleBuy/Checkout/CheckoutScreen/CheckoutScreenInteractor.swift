@@ -20,7 +20,7 @@ final class CheckoutScreenInteractor {
     }
     
     struct InteractionData {
-        let time: Date
+        let time: Date?
         let fee: FiatValue
         let amount: CryptoValue
         let exchangeRate: FiatValue?

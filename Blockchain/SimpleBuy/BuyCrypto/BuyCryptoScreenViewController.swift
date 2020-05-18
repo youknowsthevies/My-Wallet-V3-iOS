@@ -110,7 +110,6 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
         trailingButtonView.layoutToSuperview(.trailing, offset: -24)
         trailingButtonView.layout(to: .centerY, of: labeledButtonCollectionView)
         trailingButtonView.layout(dimension: .height, to: 32)
-        trailingButtonView.layout(dimension: .width, to: 50)
 
         paymentMethodTopSeparatorView.layoutToSuperview(.leading, .trailing)
         paymentMethodTopSeparatorView.layout(edge: .top, to: .bottom, of: labeledButtonCollectionView)

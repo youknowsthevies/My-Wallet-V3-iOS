@@ -6,7 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import ToolKit
 import Localization
 
 public struct SimpleBuyOrderDetails {
@@ -64,7 +64,7 @@ public struct SimpleBuyOrderDetails {
     }
     
     public let expirationDate: Date
-    public let creationDate: Date
+    public let creationDate: Date?
 
     public let fiatValue: FiatValue
     public let cryptoValue: CryptoValue
@@ -119,7 +119,7 @@ public struct SimpleBuyOrderDetails {
     
     // MARK: - Setup
     
-    init?(response: SimpleBuyOrderPayload.Response) {
+    init?(recorder: AnalyticsEventRecording, response: SimpleBuyOrderPayload.Response) {
         guard let state = State(rawValue: response.state) else {
             return nil
         }
@@ -148,12 +148,35 @@ public struct SimpleBuyOrderDetails {
         }
 
         expirationDate = DateFormatter.sessionDateFormat.date(from: response.expiresAt)!
-        creationDate = DateFormatter.sessionDateFormat.date(from: response.updatedAt)!
+        creationDate = DateFormatter.sessionDateFormat.date(from: response.updatedAt)
+        if creationDate == nil {
+            recorder.record(event: AnalyticsEvents.DebugEvent.updatedAtParsingError(date: response.updatedAt))
+        }
     }
 }
 
 extension Array where Element == SimpleBuyOrderDetails {
     var pendingDeposit: [SimpleBuyOrderDetails] {
         filter { $0.state == .pendingDeposit }
+    }
+}
+
+private extension AnalyticsEvents {
+    enum DebugEvent: AnalyticsEvent {
+        case updatedAtParsingError(date: String)
+
+        var name: String {
+            switch self {
+            case .updatedAtParsingError:
+                return "updated_at_parsing_error"
+            }
+        }
+        
+        var params: [String : String]? {
+            switch self {
+            case .updatedAtParsingError(date: let date):
+                return ["data" : date]
+            }
+        }
     }
 }
