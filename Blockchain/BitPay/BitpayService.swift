@@ -119,7 +119,7 @@ final class BitpayService: BitpayServiceProtocol {
         dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
         
         guard let dt = dateFormatter.date(from: date) else {
-            let debugMessage = "Failed to format date. date: \(date)"
+            let debugMessage = "Failed to format date. date: \(date). Locale: \(Locale.current.description)"
             CrashlyticsRecorder().error(debugMessage)
             fatalError(debugMessage)
         }
@@ -128,7 +128,7 @@ final class BitpayService: BitpayServiceProtocol {
         let dateLocalString = dateFormatter.string(from: dt)
         
         guard let date = dateFormatter.date(from: dateLocalString) else {
-            let debugMessage = "Failed to format date. dateLocalString: \(dateLocalString)"
+            let debugMessage = "Failed to format date. dateLocalString: \(dateLocalString). Locale: \(Locale.current.description)"
             CrashlyticsRecorder().error(debugMessage)
             fatalError(debugMessage)
         }
