@@ -13,8 +13,8 @@ final class AssetLineChartTableViewCell: UITableViewCell {
     
     var presenter: AssetLineChartTableViewCellPresenter! {
         didSet {
-            assetLineChartView.presenter = presenter.presenterContainer
-            segmentedView.viewModel = presenter.priceWindowPresenter.segmentedViewModel
+            assetLineChartView.presenter = presenter?.presenterContainer
+            segmentedView.viewModel = presenter?.priceWindowPresenter.segmentedViewModel
         }
     }
     

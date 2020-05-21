@@ -98,7 +98,6 @@ extension WalletActionScreenViewController: UITableViewDelegate, UITableViewData
     private func currentBalanceCell(for indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeue(CurrentBalanceTableViewCell.self, for: indexPath)
         cell.presenter = presenter.assetBalanceViewPresenter
-        cell.currency = presenter.currency
         return cell
     }
 }

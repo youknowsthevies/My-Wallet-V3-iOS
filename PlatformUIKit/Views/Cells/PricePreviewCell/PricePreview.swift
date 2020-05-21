@@ -18,7 +18,7 @@ public struct PricePreview: Equatable {
 }
 
 extension PricePreview {
-    public static func ==(lhs: PricePreview, rhs: PricePreview) -> Bool {
+    public static func == (lhs: PricePreview, rhs: PricePreview) -> Bool {
         return lhs.value == rhs.value &&
         lhs.title == rhs.title &&
         lhs.CTA == rhs.CTA

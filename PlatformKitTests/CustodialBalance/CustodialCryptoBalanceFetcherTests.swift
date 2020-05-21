@@ -16,7 +16,7 @@ import XCTest
 class CustodialCryptoBalanceFetcherTests: XCTestCase {
 
     let currency: CryptoCurrency = .bitcoin
-    var api: CustodialBalanceServiceAPIMock!
+    var api: TradingBalanceServiceAPIMock!
     var sut: CustodialAccountBalanceFetching!
     var provider: SimpleBuyServiceProviderAPIMock!
     var disposeBag: DisposeBag!
@@ -27,7 +27,7 @@ class CustodialCryptoBalanceFetcherTests: XCTestCase {
         /// TestScheduler with `0.001` resolution (milliseconds)
         scheduler = TestScheduler(initialClock: 0, resolution: 0.001, simulateProcessingDelay: false)
         provider = SimpleBuyServiceProviderAPIMock()
-        api = CustodialBalanceServiceAPIMock()
+        api = TradingBalanceServiceAPIMock()
         sut = CustodialCryptoBalanceFetcher(currencyType: currency, service: api, scheduler: scheduler)
     }
 
@@ -39,128 +39,154 @@ class CustodialCryptoBalanceFetcherTests: XCTestCase {
         scheduler = nil
     }
 
-    func testNilResponseIsFunded() {
-        api.underlyingCustodialBalance = .absent
-        let events = obervedIsFundedEvents()
+    // MARK: - Test Funding
+    
+    func testValidResponseIsFundedAfterThrottlingTimespan() {
+        api.underlyingCustodialBalance = .present(
+            TradingAccountBalance(
+                currency: currency,
+                response: .init(available: "1", pending: "2")
+            )
+        )
+        let events = obervedIsFundedEvents(times: [20, 100, 140, 180])
         let expectedEvents: [Recorded<Event<Bool>>] = [
-            .next(1, false),
-            .completed(1)
+            .next(180, true)
         ]
         XCTAssertEqual(events, expectedEvents)
     }
-
+    
     func testZeroedResponseIsFunded() {
-        api.underlyingCustodialBalance = .present(CustodialBalance(currency: currency, response: .init(available: "0", pending: "0")))
-        let events = obervedIsFundedEvents()
+        api.underlyingCustodialBalance = .present(
+            TradingAccountBalance(
+                currency: currency,
+                response: .init(available: "0", pending: "0")
+            )
+        )
+        let events = obervedIsFundedEvents(times: [20, 30, 40])
         let expectedEvents: [Recorded<Event<Bool>>] = [
-            .next(1, true),
-            .completed(1)
+            .next(40, true)
         ]
         XCTAssertEqual(events, expectedEvents)
     }
 
     func testValidResponseIsFunded() {
-        api.underlyingCustodialBalance = .present(CustodialBalance(currency: currency, response: .init(available: "1", pending: "2")))
-        let events = obervedIsFundedEvents()
+        api.underlyingCustodialBalance = .present(
+            TradingAccountBalance(
+                currency: currency,
+                response: .init(available: "1", pending: "2")
+            )
+        )
+        let events = obervedIsFundedEvents(times: [20, 30, 40])
         let expectedEvents: [Recorded<Event<Bool>>] = [
-            .next(1, true),
-            .completed(1)
+            .next(40, true)
         ]
         XCTAssertEqual(events, expectedEvents)
     }
+    
+    func testNilResponseIsFunded() {
+        api.underlyingCustodialBalance = .absent
+        let events = obervedIsFundedEvents(times: [20, 30, 80])
+        let expectedEvents: [Recorded<Event<Bool>>] = [
+            .next(80, false)
+        ]
+        XCTAssertEqual(events, expectedEvents)
+    }
+    
+    // MARK: - Helper methods
 
+    private func obervedIsFundedEvents(times: [Int])  -> [Recorded<Event<Bool>>] {
+        let observer = scheduler.createObserver(Bool.self)
+                
+        scheduler
+            .createHotObservable(times.map { .next($0, ()) })
+            .bind(to: sut.balanceFetchTriggerRelay)
+            .disposed(by: disposeBag)
+        
+        scheduler.start()
+        
+        sut.isFunded
+            .bind(to: observer)
+            .disposed(by: disposeBag)
+        
+        return observer.events
+    }
+    
+    // MARK: - Test Balance
+        
     func testNilResponseBalance() {
         api.underlyingCustodialBalance = .absent
-        let events = obervedCryptoValueEvents(for: sut.balance.asObservable())
+        let events = obervedBalanceEvents(
+            data: [
+                (20, .absent)
+            ]
+        )
         let expectedEvents: [Recorded<Event<CryptoValue>>] = [
-            .next(1, CryptoValue.zero(assetType: currency)),
-            .completed(1)
+            .next(20, CryptoValue.zero(assetType: .bitcoin))
         ]
         XCTAssertEqual(events, expectedEvents)
     }
 
-    func testNilResponseBalanceObservable() {
-        api.underlyingCustodialBalance = .absent
-        let events = obervedCryptoValueEvents(for: sut.balanceObservable)
-        let expectedEvents: [Recorded<Event<CryptoValue>>] = [
-            .next(1, CryptoValue.zero(assetType: currency)),
-            .next(101, CryptoValue.createFromMinorValue("99999", assetType: currency)!)
-        ]
-        XCTAssertEqual(events, expectedEvents)
-    }
 
     func testZeroedResponse() {
-        api.underlyingCustodialBalance = .present(CustodialBalance(currency: currency, response: .init(available: "0", pending: "0")))
-        let events = obervedCryptoValueEvents(for: sut.balance.asObservable())
+        api.underlyingCustodialBalance = .absent
+        let events = obervedBalanceEvents(
+            data: [
+                (20, .present(
+                        .init(
+                            currency: .bitcoin,
+                            response: .init(available: "0", pending: "0")
+                        )
+                    )
+                )
+            ]
+        )
         let expectedEvents: [Recorded<Event<CryptoValue>>] = [
-            .next(1, CryptoValue.zero(assetType: currency)),
-            .completed(1)
+            .next(20, CryptoValue(minor: "0", cryptoCurreny: .bitcoin)!)
         ]
         XCTAssertEqual(events, expectedEvents)
     }
 
     func testValidResponse() {
-        api.underlyingCustodialBalance = .present(CustodialBalance(currency: currency, response: .init(available: "1", pending: "2")))
-        let events = obervedCryptoValueEvents(for: sut.balance.asObservable())
+        api.underlyingCustodialBalance = .absent
+        let events = obervedBalanceEvents(
+            data: [
+                (40, .present(
+                        .init(
+                            currency: .bitcoin,
+                            response: .init(available: "10", pending: "0")
+                        )
+                    )
+                )
+            ]
+        )
         let expectedEvents: [Recorded<Event<CryptoValue>>] = [
-            .next(1, CryptoValue.createFromMinorValue("1", assetType: currency)),
-            .completed(1)
+            .next(40, CryptoValue(minor: "10", cryptoCurreny: .bitcoin)!)
         ]
         XCTAssertEqual(events, expectedEvents)
     }
-
-    // MARK: - Helper methods
-
-    func obervedIsFundedEvents()  -> [Recorded<Event<Bool>>] {
-        let minorValue = "99999"
-        let laterBalance = CustodialBalance(currency: currency, response: .init(available: minorValue, pending: minorValue))
-
-        let observer: TestableObserver<Bool> = scheduler.createObserver(Bool.self)
-
-        sut.isFunded
-            .asObservable()
-            .bind(to: observer)
-            .disposed(by: disposeBag)
-
-        scheduler.scheduleAt(30, action: { [unowned self] in
-            self.api.underlyingCustodialBalance = .present(laterBalance)
-        })
+    
+    private func obervedBalanceEvents(data: [(refresh: Int, state: CustodialAccountBalanceState<TradingAccountBalance>)])  -> [Recorded<Event<CryptoValue>>] {
+        
+        let observer = scheduler.createObserver(CryptoValue.self)
+    
+        for item in data {
+            scheduler.scheduleAt(item.refresh - 1) { [unowned self] in
+                self.api.underlyingCustodialBalance = item.state
+            }
+        }
 
         scheduler
-            .createColdObservable([.next(1, ()),
-                                   .next(99, ()),
-                                   .next(100, ())])
+            .createHotObservable(data.map { .next($0.refresh, ()) })
             .bind(to: sut.balanceFetchTriggerRelay)
             .disposed(by: disposeBag)
 
         scheduler.start()
 
-        return observer.events
-    }
-
-    func obervedCryptoValueEvents(for observable: Observable<CryptoValue>)  -> [Recorded<Event<CryptoValue>>] {
-        let minorValue = "99999"
-        let laterBalance = CustodialBalance(currency: currency, response: .init(available: minorValue, pending: minorValue))
-
-        let observer: TestableObserver<CryptoValue> = scheduler.createObserver(CryptoValue.self)
-
-        observable
+        sut.balanceObservable
             .bind(to: observer)
             .disposed(by: disposeBag)
 
-        scheduler.scheduleAt(30, action: { [unowned self] in
-            self.api.underlyingCustodialBalance = .present(laterBalance)
-        })
-
-        scheduler
-            .createColdObservable([.next(1, ()),
-                                   .next(99, ()),
-                                   .next(100, ())])
-            .bind(to: sut.balanceFetchTriggerRelay)
-            .disposed(by: disposeBag)
-
-        scheduler.start()
-
         return observer.events
     }
+
 }

@@ -14,39 +14,43 @@ import PlatformUIKit
 final class CurrentBalanceTableViewCell: UITableViewCell {
     
     var presenter: CurrentBalanceCellPresenter! {
-        didSet {
+        willSet {
             disposeBag = DisposeBag()
+        }
+        didSet {
+            assetBalanceView.presenter = presenter?.assetBalanceViewPresenter
             guard let presenter = presenter else { return }
-            assetBalanceView.presenter = presenter.assetBalanceViewPresenter
             
-            presenter.custodialVisibility
-                .map { $0.defaultAlpha }
-                .drive(custodyImageView.rx.alpha)
+            presenter.imageViewContent
+                .drive(thumbImageView.rx.content)
+                .disposed(by: disposeBag)
+            
+            presenter.iconImageViewContent
+                .drive(thumbSideImageView.rx.content)
+                .disposed(by: disposeBag)
+            
+            presenter.title
+                .drive(titleLabel.rx.text)
                 .disposed(by: disposeBag)
             
             presenter.description
-                .drive(currencyTypeDescription.rx.text)
+                .drive(descriptionLabel.rx.text)
                 .disposed(by: disposeBag)
         }
     }
-    
-    var currency: CryptoCurrency! {
-        didSet {
-            currencyImageView.image = currency.logo
-            currencyType.text = currency.name
-        }
-    }
-    
+
     // MARK: - Private Properties
     
     private var disposeBag = DisposeBag()
     
     // MARK: - Private IBOutlets
-    
-    @IBOutlet private var custodyImageView: UIImageView!
-    @IBOutlet private var currencyImageView: UIImageView!
-    @IBOutlet private var currencyType: UILabel!
-    @IBOutlet private var currencyTypeDescription: UILabel!
+
+    @IBOutlet private var thumbImageView: UIImageView!
+    @IBOutlet private var thumbSideImageView: UIImageView!
+
+    @IBOutlet private var titleLabel: UILabel!
+    @IBOutlet private var descriptionLabel: UILabel!
+
     @IBOutlet private var assetBalanceView: AssetBalanceView!
     
     // MARK: - Lifecycle
@@ -62,6 +66,5 @@ final class CurrentBalanceTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil
-        assetBalanceView.presenter = nil
     }
 }

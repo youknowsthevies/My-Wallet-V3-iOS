@@ -543,7 +543,6 @@ public struct LocalizationConstants {
     }
     
     public static let wallet = NSLocalizedString("Wallet", comment: "Wallet")
-    public static let tradingWallet = NSLocalizedString("Trading Wallet", comment: "Trading Wallet")
     public static let verified = NSLocalizedString("Verified", comment: "")
     public static let unverified = NSLocalizedString("Unverified", comment: "")
     public static let verify = NSLocalizedString ("Verify", comment: "")
@@ -1283,6 +1282,19 @@ public struct LocalizationConstants {
     }
     
     public struct DashboardDetails {
+        public struct BalanceCell {
+            public struct Title {
+                public static let trading = NSLocalizedString("Trading", comment: "Trading")
+                public static let savings = NSLocalizedString("Interest", comment: "Interest")
+            }
+            public struct Description {
+                public static let nonCustodial = NSLocalizedString("Wallet Balance", comment: "Wallet Balance")
+                public static let trading = NSLocalizedString("Trading Wallet", comment: "Trading Wallet")
+                public static let savingsPrefix = NSLocalizedString("Earn", comment: "Earn 3% APY")
+                public static let savingsSuffix = NSLocalizedString("% APY", comment: "Earn 3% APY")
+            }
+        }
+                
         public static let current = NSLocalizedString("Current", comment: "Current")
         public static let price = NSLocalizedString("Price", comment: "Price")
         

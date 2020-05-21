@@ -8,7 +8,30 @@
 
 import Foundation
 
-public enum BalanceType {
+public enum BalanceType: Hashable {
+    public enum CustodialType: Hashable {
+        case trading
+        case savings
+    }
+    
     case nonCustodial
-    case custodial
+    case custodial(CustodialType)
+    
+    public var isCustodial: Bool {
+        switch self {
+        case .custodial:
+            return true
+        case .nonCustodial:
+            return false
+        }
+    }
+    
+    public var isTrading: Bool {
+        switch self {
+        case .custodial(let type):
+            return type == .trading
+        case .nonCustodial:
+            return false
+        }
+    }
 }

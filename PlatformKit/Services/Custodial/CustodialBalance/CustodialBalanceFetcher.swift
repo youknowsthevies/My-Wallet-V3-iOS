@@ -6,75 +6,100 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import RxSwift
 import RxRelay
 
 public final class CustodialCryptoBalanceFetcher: CustodialAccountBalanceFetching {
 
+    // MARK: - Types
+    
+    public typealias Fetch = (CryptoCurrency) -> Single<CryptoValue?>
+    
     // MARK: - Public Properties
-
-    public let balanceType: BalanceType = .custodial
+    
+    public let balanceType: BalanceType
     
     public var balance: Single<CryptoValue> {
-        return balanceObservable
+        balanceObservable
             .take(1)
             .asSingle()
     }
-    
+     
     public var balanceObservable: Observable<CryptoValue> {
-        let asset = self.asset
+        let currencyType = self.currencyType
         return balanceRelay
-            .map { $0 ?? CryptoValue.zero(assetType: asset) }
+            .map { $0 ?? CryptoValue.zero(assetType: currencyType) }
     }
 
-    public var isFunded: Single<Bool> {
-        balanceRelay
-            .map { $0 != nil }
-            .take(1)
-            .asSingle()
+    public var isFunded: Observable<Bool> {
+        balanceRelay.map { $0 != nil }
     }
 
     public let balanceFetchTriggerRelay = PublishRelay<Void>()
 
     // MARK: - Private Properties
 
-    private let balanceRelay = PublishRelay<CryptoValue?>()
+    private let balanceRelay: BehaviorRelay<CryptoValue?>
+    private let currencyType: CryptoCurrency
     private let disposeBag = DisposeBag()
-    private let asset: CryptoCurrency
-    private let custodialBalanceService: CustodialBalanceServiceAPI
-
+    
     // MARK: Init
 
-    init(currencyType: CryptoCurrency, service: CustodialBalanceServiceAPI, scheduler: SchedulerType) {
-        asset = currencyType
-        custodialBalanceService = service
-
+    init(custodialType: BalanceType.CustodialType,
+         currencyType: CryptoCurrency,
+         fetch: @escaping Fetch,
+         scheduler: SchedulerType) {
+                
+        self.balanceRelay = BehaviorRelay(value: nil)
+        self.balanceType = .custodial(custodialType)
+        self.currencyType = currencyType
+         
         balanceFetchTriggerRelay
             .throttle(
                 .milliseconds(100),
+                latest: false,
                 scheduler: scheduler
             )
-            .flatMapLatest(weak: self) { (self, _: ()) -> Observable<CustodialBalanceState> in
-                self.custodialBalanceService.balance(for: self.asset).asObservable()
+            .flatMapLatest {
+                fetch(currencyType).asObservable()
             }
-            .map { $0.custodialBalance?.available }
+            .catchErrorJustReturn(nil)
             .bind(to: balanceRelay)
             .disposed(by: disposeBag)
     }
-
-    public convenience init(currencyType: CryptoCurrency, service: CustodialBalanceServiceAPI) {
-        self.init(currencyType: currencyType, service: service, scheduler: ConcurrentDispatchQueueScheduler(qos: .background))
-    }
 }
 
-fileprivate extension CustodialBalanceState {
-    var custodialBalance: CustodialBalance? {
-        switch self {
-        case .absent:
-            return nil
-        case .present(let custodialBalance):
-            return custodialBalance
+// MARK: - Initializers
+
+extension CustodialCryptoBalanceFetcher {
+    
+    public convenience init(currencyType: CryptoCurrency,
+                            service: TradingBalanceServiceAPI,
+                            scheduler: SchedulerType = ConcurrentDispatchQueueScheduler(qos: .background)) {
+        let fetch = { (currency: CryptoCurrency) in
+            service.balance(for: currency).map { $0.balance?.available }
         }
+        
+        self.init(
+            custodialType: .trading,
+            currencyType: currencyType,
+            fetch: fetch,
+            scheduler: scheduler
+        )
+    }
+    
+    public convenience init(currencyType: CryptoCurrency,
+                            service: SavingAccountServiceAPI,
+                            scheduler: SchedulerType = ConcurrentDispatchQueueScheduler(qos: .background)) {
+        let fetch = { (currency: CryptoCurrency) in
+            service.balance(for: currency).map { $0.balance?.available }
+        }
+        
+        self.init(
+            custodialType: .savings,
+            currencyType: currencyType,
+            fetch: fetch,
+            scheduler: scheduler
+        )
     }
 }

@@ -65,16 +65,21 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
          stateService: NonCustodialActionStateServiceAPI) {
         self.interactor = interactor
         
+        let descriptionValue: () -> Observable<String> = {
+            .just(LocalizationConstants.DashboardDetails.BalanceCell.Description.nonCustodial)
+        }
+        
         assetBalanceViewPresenter = CurrentBalanceCellPresenter(
-            balanceFetching: interactor.balanceFetching,
+            balanceFetcher: interactor.balanceFetching,
+            descriptionValue: descriptionValue,
             currency: interactor.currency,
             balanceType: interactor.balanceType,
             alignment: .trailing
         )
         
-        activityButtonVisibilityRelay.accept(interactor.balanceType == .nonCustodial ? .visible : .hidden)
-        swapButtonVisibilityRelay.accept(interactor.balanceType == .nonCustodial ? .visible : .hidden)
-        sendToWalletVisibilityRelay.accept(interactor.balanceType == .custodial ? .visible : .hidden)
+        activityButtonVisibilityRelay.accept(!interactor.balanceType.isCustodial ? .visible : .hidden)
+        swapButtonVisibilityRelay.accept(!interactor.balanceType.isCustodial ? .visible : .hidden)
+        sendToWalletVisibilityRelay.accept(interactor.balanceType.isTrading ? .visible : .hidden)
         
         swapButtonViewModel = .primary(with: LocalizationIds.swap)
         activityButtonViewModel = .secondary(with: LocalizationIds.viewActivity)

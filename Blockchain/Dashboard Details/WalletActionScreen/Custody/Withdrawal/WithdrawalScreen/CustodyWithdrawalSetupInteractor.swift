@@ -59,7 +59,7 @@ final class CustodyWithdrawalSetupInteractor {
                 case .value(let balancePairs):
                     return .loaded(
                         next: .init(
-                            balance: balancePairs[.custodial].crypto,
+                            balance: balancePairs[.custodial(.trading)].crypto,
                             destination: destination
                         )
                     )

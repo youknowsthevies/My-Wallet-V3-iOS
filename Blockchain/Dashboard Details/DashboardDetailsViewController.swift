@@ -31,9 +31,8 @@ final class DashboardDetailsViewController: BaseScreenViewController {
         super.init(nibName: DashboardDetailsViewController.objectName, bundle: nil)
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { nil }
 
     // MARK: - Lifecycle
     
@@ -48,13 +47,13 @@ final class DashboardDetailsViewController: BaseScreenViewController {
             navigationController?.setNavigationBarHidden(false, animated: false)
         }
         
-        presenter.setup()
-        presenter.refresh()
-        presenter.collectionAction
+        presenter.presentationAction
             .emit(onNext: { [weak self] action in
                 self?.execute(action: action)
             })
             .disposed(by: disposeBag)
+        
+        presenter.setup()
     }
     
     // MARK: - Setup
@@ -68,11 +67,16 @@ final class DashboardDetailsViewController: BaseScreenViewController {
         tableView.registerNibCell(AssetLineChartTableViewCell.self)
         tableView.registerNibCell(CurrentBalanceTableViewCell.self)
         tableView.separatorColor = .clear
+        
         presenter.isScrollEnabled
             .drive(tableView.rx.isScrollEnabled)
             .disposed(by: disposeBag)
+        
         tableView.rx.itemSelected
-            .map { self.presenter.cellArrangement[$0.row] }
+            .map { $0.row }
+            .map(weak: self) { (self, row) in
+                self.presenter.cellArrangement[row]
+            }
             .bind(to: presenter.presenterSelectionRelay)
             .disposed(by: disposeBag)
     }
@@ -86,26 +90,14 @@ final class DashboardDetailsViewController: BaseScreenViewController {
     
     // MARK: - Actions
     
-    private func execute(action: DashboardDetailsCollectionAction) {
+    private func execute(action: DashboardDetailsScreenPresenter.PresentationAction) {
         switch action {
-        case .custodial(let custodialAction):
-            execute(custodialAction: custodialAction)
+        case .show(let balanceType):
+            let row = presenter.indexByCellType[.balance(balanceType)]!
+            let indexPath = IndexPath(row: row, section: 0)
+            tableView.insertRows(at: [indexPath], with: .automatic)
         }
     }
-    
-    private func execute(custodialAction: CustodialCellTypeAction) {
-        switch custodialAction {
-        case .none:
-            break
-        case .show:
-            let row = presenter.indexByCellType[.balance(.custodial)]!
-            tableView.insertRows(at: [.init(row: row, section: 0)], with: .automatic)
-        }
-    }
-    
-    private lazy var sheetPresenter: BottomSheetPresenting = {
-        return BottomSheetPresenting(ignoresBackroundTouches: false)
-    }()
 }
 
 // MARK: - UITableViewDelegate, UITableViewDataSource
@@ -113,7 +105,7 @@ final class DashboardDetailsViewController: BaseScreenViewController {
 extension DashboardDetailsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
-        return presenter.cellCount
+        presenter.cellCount
     }
     
     func tableView(_ tableView: UITableView,
@@ -142,25 +134,29 @@ extension DashboardDetailsViewController: UITableViewDelegate, UITableViewDataSo
         return cell
     }
     
-    private func multiActionCell(for indexPath: IndexPath, presenter: MultiActionViewPresenting) -> MultiActionTableViewCell {
+    private func multiActionCell(for indexPath: IndexPath,
+                                 presenter: MultiActionViewPresenting) -> MultiActionTableViewCell {
         let cell = tableView.dequeue(MultiActionTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
     
-    private func currentBalanceCell(for indexPath: IndexPath, type: BalanceType) -> UITableViewCell {
+    private func currentBalanceCell(for indexPath: IndexPath,
+                                    type: BalanceType) -> UITableViewCell {
         let cell = tableView.dequeue(CurrentBalanceTableViewCell.self, for: indexPath)
         switch type {
-        case .custodial:
-            cell.presenter = presenter.custodyAssetBalanceViewPresenter
         case .nonCustodial:
-            cell.presenter = presenter.balanceCellPresenter
+            cell.presenter = presenter.walletBalancePresenter
+        case .custodial(.trading):
+            cell.presenter = presenter.tradingBalancePresenter
+        case .custodial(.savings):
+            cell.presenter = presenter.savingsBalancePresenter
         }
-        cell.currency = presenter.currency
         return cell
     }
     
-    private func assetLineChartCell(for indexPath: IndexPath, presenter: AssetLineChartTableViewCellPresenter) -> AssetLineChartTableViewCell {
+    private func assetLineChartCell(for indexPath: IndexPath,
+                                    presenter: AssetLineChartTableViewCellPresenter) -> AssetLineChartTableViewCell {
         let cell = tableView.dequeue(AssetLineChartTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell

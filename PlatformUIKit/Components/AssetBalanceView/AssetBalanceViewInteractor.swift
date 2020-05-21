@@ -55,7 +55,7 @@ public final class AssetBalanceTypeViewInteractor: AssetBalanceTypeViewInteracti
     
     public let balanceType: BalanceType
     public var state: Observable<InteractionState> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
     }
             
     // MARK: - Private Accessors

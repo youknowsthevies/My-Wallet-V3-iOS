@@ -13,47 +13,65 @@ import PlatformUIKit
 
 final class CurrentBalanceCellPresenter {
     
-    /// Returns the visibility of the custodial imageView
-    var custodialVisibility: Driver<Visibility> {
-        return imageViewVisibilityRelay.asDriver()
+    private typealias LocalizedString = LocalizationConstants.DashboardDetails.BalanceCell
+    
+    var iconImageViewContent: Driver<ImageViewContent> {
+        iconImageViewContentRelay.asDriver()
     }
     
-    /// Returns the `Description`
+    var imageViewContent: Driver<ImageViewContent> {
+        imageViewContentRelay.asDriver()
+    }
+    
+    /// Returns the description of the balance
+    var title: Driver<String> {
+        titleRelay.asDriver()
+    }
+    
+    /// Returns the description of the balance
     var description: Driver<String> {
-        return descriptionRelay.asDriver()
+        descriptionRelay.asDriver()
     }
-    
+        
     let assetBalanceViewPresenter: AssetBalanceViewPresenter
-    let currency: CryptoCurrency
-    let balanceType: BalanceType
-    
+        
     // MARK: - Private Properties
     
-    private let imageViewVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
+    private let imageViewContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
+    private let iconImageViewContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
+    private let titleRelay = BehaviorRelay<String>(value: "")
     private let descriptionRelay = BehaviorRelay<String>(value: "")
     
-    init(balanceFetching: AssetBalanceFetching,
+    private let disposeBag = DisposeBag()
+    
+    init(balanceFetcher: AssetBalanceFetching,
+         descriptionValue: () -> Observable<String>,
          currency: CryptoCurrency,
          balanceType: BalanceType,
          alignment: UIStackView.Alignment) {
         self.assetBalanceViewPresenter = AssetBalanceViewPresenter(
             alignment: alignment,
             interactor: AssetBalanceTypeViewInteractor(
-                assetBalanceFetching:
-                balanceFetching,
+                assetBalanceFetching: balanceFetcher,
                 balanceType: balanceType
             )
         )
-        self.currency = currency
-        self.balanceType = balanceType
         
+        imageViewContentRelay.accept(ImageViewContent(imageName: currency.logoImageName))
         switch balanceType {
         case .nonCustodial:
-            imageViewVisibilityRelay.accept(.hidden)
-            descriptionRelay.accept("\(LocalizationConstants.wallet) \(LocalizationConstants.Swap.balance)")
-        case .custodial:
-            imageViewVisibilityRelay.accept(.visible)
-            descriptionRelay.accept(LocalizationConstants.tradingWallet)
+            iconImageViewContentRelay.accept(.empty)
+            titleRelay.accept(currency.name)
+        case .custodial(.trading):
+            iconImageViewContentRelay.accept(ImageViewContent(imageName: "icon_custody_lock"))
+            titleRelay.accept(LocalizedString.Title.trading)
+        case .custodial(.savings):
+            iconImageViewContentRelay.accept(.empty)
+            titleRelay.accept(LocalizedString.Title.savings)
         }
+        
+        descriptionValue()
+            .bind(to: descriptionRelay)
+            .disposed(by: disposeBag)
     }
 }

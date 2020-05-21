@@ -26,9 +26,11 @@ public final class SegmentedView: UIView {
     // MARK: - Dependencies
     
     public var viewModel: SegmentedViewModel! {
-        didSet {
-            
+        willSet {
             disposeBag = DisposeBag()
+        }
+        didSet {
+            guard let viewModel = viewModel else { return }
             
             layer.cornerRadius = viewModel.cornerRadius
             

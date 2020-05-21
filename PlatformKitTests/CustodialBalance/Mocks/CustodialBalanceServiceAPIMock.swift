@@ -1,5 +1,5 @@
 //
-//  CustodialBalanceServiceAPIMock.swift
+//  TradingBalanceServiceAPIMock.swift
 //  PlatformKitTests
 //
 //  Created by Paulo on 11/02/2020.
@@ -9,9 +9,9 @@
 import PlatformKit
 import RxSwift
 
-class CustodialBalanceServiceAPIMock: CustodialBalanceServiceAPI {
-    var underlyingCustodialBalance: CustodialBalanceState = .absent
-    func balance(for crypto: CryptoCurrency) -> Single<CustodialBalanceState> {
+class TradingBalanceServiceAPIMock: TradingBalanceServiceAPI {
+    var underlyingCustodialBalance: CustodialAccountBalanceState<TradingAccountBalance> = .absent
+    func balance(for crypto: CryptoCurrency) -> Single<CustodialAccountBalanceState<TradingAccountBalance>> {
         return .just(underlyingCustodialBalance)
     }
 }

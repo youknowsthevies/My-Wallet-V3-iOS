@@ -30,7 +30,9 @@ final class DataProvider: DataProviding {
     /// Balance service for any asset
     let balance: BalanceProviding
     
-    init(fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
+    init(tradingAccountClient: TradingBalanceClientAPI = TradingBalanceClient(),
+         savingsAccountClient: SavingsAccountClientAPI = SavingsAccountClient(),
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared) {
         self.exchange = ExchangeProvider(
             ether: PairExchangeService(
@@ -89,49 +91,74 @@ final class DataProvider: DataProviding {
             bitcoinCash: bitcoinCashHistoricalFiatService
         )
         
-        let custodialBalanceService = CustodialBalanceService(
-            client: CustodialBalanceClient(),
+        let tradingBalanceService = TradingBalanceService(
+            client: tradingAccountClient,
             authenticationService: authenticationService
         )
         
+        let savingsAccountService = SavingAccountService(
+            client: savingsAccountClient,
+            authenticationService: authenticationService
+        )
+                
         let etherBalanceFetcher = AssetBalanceFetcher(
-            custodialBalance: CustodialCryptoBalanceFetcher(
+            wallet: WalletManager.shared.wallet.ethereum,
+            trading: CustodialCryptoBalanceFetcher(
                 currencyType: .ethereum,
-                service: custodialBalanceService
+                service: tradingBalanceService
             ),
-            balance: WalletManager.shared.wallet.ethereum,
+            savings: CustodialCryptoBalanceFetcher(
+                currencyType: .ethereum,
+                service: savingsAccountService
+            ),
             exchange: exchange[.ethereum]
         )
         let paxBalanceFetcher = AssetBalanceFetcher(
-            custodialBalance: CustodialCryptoBalanceFetcher(
+            wallet: ERC20AssetBalanceFetcher(),
+            trading: CustodialCryptoBalanceFetcher(
                 currencyType: .pax,
-                service: custodialBalanceService
+                service: tradingBalanceService
             ),
-            balance: ERC20AssetBalanceFetcher(),
+            savings: CustodialCryptoBalanceFetcher(
+                currencyType: .pax,
+                service: savingsAccountService
+            ),
             exchange: exchange[.pax]
         )
         let stellarBalanceFetcher = AssetBalanceFetcher(
-            custodialBalance: CustodialCryptoBalanceFetcher(
+            wallet: StellarServiceProvider.shared.services.accounts,
+            trading: CustodialCryptoBalanceFetcher(
                 currencyType: .stellar,
-                service: custodialBalanceService
+                service: tradingBalanceService
             ),
-            balance: StellarServiceProvider.shared.services.accounts,
+            savings: CustodialCryptoBalanceFetcher(
+                currencyType: .stellar,
+                service: savingsAccountService
+            ),
             exchange: exchange[.stellar]
         )
         let bitcoinBalanceFetcher = AssetBalanceFetcher(
-            custodialBalance: CustodialCryptoBalanceFetcher(
+            wallet: BitcoinAssetBalanceFetcher(),
+            trading: CustodialCryptoBalanceFetcher(
                 currencyType: .bitcoin,
-                service: custodialBalanceService
+                service: tradingBalanceService
             ),
-            balance: BitcoinAssetBalanceFetcher(),
+            savings: CustodialCryptoBalanceFetcher(
+                currencyType: .bitcoin,
+                service: savingsAccountService
+            ),
             exchange: exchange[.bitcoin]
         )
         let bitcoinCashBalanceFetcher = AssetBalanceFetcher(
-            custodialBalance: CustodialCryptoBalanceFetcher(
+            wallet: BitcoinCashAssetBalanceFetcher(),
+            trading: CustodialCryptoBalanceFetcher(
                 currencyType: .bitcoinCash,
-                service: custodialBalanceService
+                service: tradingBalanceService
             ),
-            balance: BitcoinCashAssetBalanceFetcher(),
+            savings: CustodialCryptoBalanceFetcher(
+                currencyType: .bitcoinCash,
+                service: savingsAccountService
+            ),
             exchange: exchange[.bitcoinCash]
         )
         

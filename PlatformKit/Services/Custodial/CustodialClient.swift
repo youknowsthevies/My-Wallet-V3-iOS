@@ -9,8 +9,8 @@
 import RxSwift
 import NetworkKit
 
-public typealias CustodialClientAPI =   CustodialBalanceClientAPI &
-                                        CustodyWithdrawalClientAPI
+public typealias CustodialClientAPI = TradingBalanceClientAPI &
+                                      CustodyWithdrawalClientAPI
 
 public final class CustodialClient: CustodialClientAPI {
     
@@ -37,11 +37,11 @@ public final class CustodialClient: CustodialClientAPI {
         self.requestBuilder = RequestBuilder(networkConfig: dependencies.blockchainAPIConfig)
     }
     
-    // MARK: - CustodialBalanceClientAPI
+    // MARK: - TradingBalanceClientAPI
 
-    public func balance(with authToken: String) -> Single<CustodialBalanceResponse> {
+    public func balance(for currency: String, token: String) -> Single<CustodialBalanceResponse> {
         let path = Path.custodialBalance
-        let headers = [HttpHeaderField.authorization: authToken]
+        let headers = [HttpHeaderField.authorization: token]
         guard let request = requestBuilder.get(path: path, headers: headers) else {
             return Single.error(ClientError.unknown)
         }

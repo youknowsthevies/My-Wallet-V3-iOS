@@ -120,7 +120,8 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
     
     private func showSendCustody() {
         let interactor = WalletActionScreenInteractor(
-            balanceType: .custodial, currency: currency,
+            balanceType: .custodial(.trading),
+            currency: currency,
             service: dataProviding.balance[currency]
         )
         let presenter = CustodialActionScreenPresenter(using: interactor, stateService: stateService)

@@ -9,14 +9,14 @@
 import Foundation
 
 /// Holds custodial balance values for a crypto asset
-public struct CustodialBalance {
+public struct TradingAccountBalance {
     /// Current available amount
     let available: CryptoValue
     /// Amount on Pending Withdraws
     let pending: CryptoValue
 
     init(currency: CryptoCurrency, response: CustodialBalanceResponse.Balance) {
-        self.available = CryptoValue.createFromMinorValue(response.available, assetType: currency) ?? .zero(assetType: currency)
-        self.pending = CryptoValue.createFromMinorValue(response.pending, assetType: currency) ?? .zero(assetType: currency)
+        self.available = CryptoValue(minor: response.available, cryptoCurreny: currency) ?? .zero(assetType: currency)
+        self.pending = CryptoValue(minor: response.pending, cryptoCurreny: currency) ?? .zero(assetType: currency)
     }
 }

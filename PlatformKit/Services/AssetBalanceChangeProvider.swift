@@ -47,18 +47,22 @@ public final class AssetBalanceChangeProvider: AssetBalanceChangeProviding {
         Observable
             .combineLatest(balance.calculationState, prices.calculationState)
             .map { (balance, prices) in
-                guard let noncustodialBalance = balance.value?[.nonCustodial] else { return .calculating }
-                guard let custodialBalance = balance.value?[.custodial] else { return .calculating }
+                guard let walletBalance = balance.value?[.nonCustodial] else { return .calculating }
+                guard let tradingBalance = balance.value?[.custodial(.trading)] else { return .calculating }
+                guard let savingsBalance = balance.value?[.custodial(.savings)] else { return .calculating }
                 guard let historicalPriceValue = prices.value else { return .calculating }
                 
                 let delta = historicalPriceValue.historicalPrices.delta
                 
-                let previousNoncustodialBalance = try noncustodialBalance.value(before: delta)
-                let previousCustodialValue = try custodialBalance.value(before: delta)
-                                
+                let previousWalletBalance = try walletBalance.value(before: delta)
+                let previousTradingBalance = try tradingBalance.value(before: delta)
+                let previousSavingsBalance = try savingsBalance.value(before: delta)
+
                 return .value(.init(
-                    noncustodial: try noncustodialBalance - previousNoncustodialBalance,
-                    custodial: try custodialBalance - previousCustodialValue)
+                        wallet: try walletBalance - previousWalletBalance,
+                        trading: try tradingBalance - previousTradingBalance,
+                        savings: try savingsBalance - previousSavingsBalance
+                    )
                 )
             }
             .catchErrorJustReturn(.calculating) // TODO: Error handling

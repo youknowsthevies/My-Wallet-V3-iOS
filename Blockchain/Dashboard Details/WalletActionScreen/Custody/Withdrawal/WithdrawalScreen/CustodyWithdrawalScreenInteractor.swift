@@ -64,7 +64,7 @@ final class CustodyWithdrawalScreenInteractor {
          accountRepository: AssetAccountRepositoryAPI) {
         assetBalanceInteractor = AssetBalanceTypeViewInteractor(
             assetBalanceFetching: balanceFetching,
-            balanceType: .custodial
+            balanceType: .custodial(.trading)
         )
         setupInteractor = CustodyWithdrawalSetupInteractor(
             currency: currency,

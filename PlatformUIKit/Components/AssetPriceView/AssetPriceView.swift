@@ -14,8 +14,10 @@ public final class AssetPriceView: UIView {
     // MARK: - Injected
     
     public var presenter: AssetPriceViewPresenter! {
-        didSet {
+        willSet {
             disposeBag = DisposeBag()
+        }
+        didSet {
             guard let presenter = presenter else {
                 return
             }

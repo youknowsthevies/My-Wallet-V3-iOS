@@ -29,8 +29,10 @@ final class AssetLineChartView: UIView {
     /// because the view should be compatible with queueing
     /// mechanism.
     var presenter: AssetLineChartPresenterContainer! {
-        didSet {
+        willSet {
             disposeBag = DisposeBag()
+        }
+        didSet {
             guard let presenter = presenter else { return }
             assetPriceView.presenter = presenter.priceViewPresenter
             setupLineChartView(presenter.lineChartView)

@@ -10,5 +10,5 @@ import PlatformKit
 
 protocol CustodialServiceProviderAPI: class {
     var withdrawal: CustodyWithdrawalServiceAPI { get }
-    var balance: CustodialBalanceServiceAPI { get }
+    var balance: TradingBalanceServiceAPI { get }
 }

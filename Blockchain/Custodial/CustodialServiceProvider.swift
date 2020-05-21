@@ -15,14 +15,14 @@ final class CustodialServiceProvider: CustodialServiceProviderAPI {
     
     // MARK: - Properties
 
-    let balance: CustodialBalanceServiceAPI
+    let balance: TradingBalanceServiceAPI
     let withdrawal: CustodyWithdrawalServiceAPI
         
     // MARK: - Setup
     
     init(authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
          client: CustodialClientAPI = CustodialClient()) {
-        self.balance = CustodialBalanceService(
+        self.balance = TradingBalanceService(
             client: client,
             authenticationService: authenticationService
         )

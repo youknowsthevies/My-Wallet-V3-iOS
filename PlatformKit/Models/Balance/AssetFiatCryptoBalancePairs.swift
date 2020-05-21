@@ -17,7 +17,7 @@ public struct AssetFiatCryptoBalancePairs {
     public let currencyCode: String
     
     public subscript(balanceType: BalanceType) -> FiatCryptoPair {
-        return fiatCryptoPairs[balanceType]!
+        fiatCryptoPairs[balanceType]!
     }
     
     // MARK: - Services
@@ -26,12 +26,14 @@ public struct AssetFiatCryptoBalancePairs {
     
     // MARK: - Setup
     
-    public init(noncustodial: FiatCryptoPair,
-                custodial: FiatCryptoPair) {
-        currencyCode = noncustodial.fiat.currencyCode
-        currency = noncustodial.crypto.currencyType
-        fiatCryptoPairs[.nonCustodial] = noncustodial
-        fiatCryptoPairs[.custodial] = custodial
+    public init(wallet: FiatCryptoPair,
+                trading: FiatCryptoPair,
+                savings: FiatCryptoPair) {
+        currencyCode = trading.fiat.currencyCode
+        currency = trading.crypto.currencyType
+        fiatCryptoPairs[.nonCustodial] = wallet
+        fiatCryptoPairs[.custodial(.trading)] = trading
+        fiatCryptoPairs[.custodial(.savings)] = savings
     }
 }
 
@@ -39,7 +41,7 @@ public extension AssetFiatCryptoBalancePairs {
     /// The `FiatCryptoPair` representing the total `FiatValue` and `CryptoValue`
     /// across all `BalanceTypes`
     var total: FiatCryptoPair {
-        return .init(crypto: crypto, fiat: fiat)
+        .init(crypto: crypto, fiat: fiat)
     }
     
     /// The total `FiatValue` across all `BalanceTypes`
@@ -55,6 +57,6 @@ public extension AssetFiatCryptoBalancePairs {
     }
     
     var isZero: Bool {
-        return fiat.isZero || crypto.isZero
+        fiat.isZero || crypto.isZero
     }
 }

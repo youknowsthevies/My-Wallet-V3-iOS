@@ -20,5 +20,5 @@ public protocol AccountBalanceFetching: class {
 
 public protocol CustodialAccountBalanceFetching: AccountBalanceFetching {
     /// Indicates, based on the data provided by the API, if the user has funded this account in the past.
-    var isFunded: Single<Bool> { get }
+    var isFunded: Observable<Bool> { get }
 }
