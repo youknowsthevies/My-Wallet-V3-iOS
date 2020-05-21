@@ -49,6 +49,7 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
          cacheSuite: CacheSuite = UserDefaults.standard,
          settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI = UserInformationServiceProvider.default.settings,
          dataRepository: DataRepositoryAPI = BlockchainDataRepository.shared,
+         tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
          featureFetcher: FeatureFetching = AppFeatureConfigurator.shared) {
         
         cache = SimpleBuyEventCache(cacheSuite: cacheSuite)
@@ -115,6 +116,7 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
         )
         paymentMethods = SimpleBuyPaymentMethodsService(
             client: simpleBuyClient,
+            tiersService: tiersService,
             reactiveWallet: wallet,
             featureFetcher: featureFetcher,
             authenticationService: authenticationService,

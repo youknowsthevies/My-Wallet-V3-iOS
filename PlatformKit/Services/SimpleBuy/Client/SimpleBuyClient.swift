@@ -36,6 +36,7 @@ public final class SimpleBuyClient: SimpleBuyClientAPI {
         static let action = "action"
         static let amount = "amount"
         static let methods = "methods"
+        static let checkEligibility = "checkEligibility"
     }
         
     private enum Path {
@@ -252,11 +253,17 @@ public final class SimpleBuyClient: SimpleBuyClientAPI {
     
     // MARK: - SimpleBuyPaymentMethodsClientAPI
     
-    public func paymentMethods(for currency: String, token: String) -> Single<SimpleBuyPaymentMethodsResponse> {
+    public func paymentMethods(for currency: String,
+                               checkEligibility: Bool,
+                               token: String) -> Single<SimpleBuyPaymentMethodsResponse> {
         let queryParameters = [
             URLQueryItem(
                 name: Parameter.currency,
                 value: currency
+            ),
+            URLQueryItem(
+                name: Parameter.checkEligibility,
+                value: "\(checkEligibility)"
             )
         ]
         let headers = [HttpHeaderField.authorization: token]

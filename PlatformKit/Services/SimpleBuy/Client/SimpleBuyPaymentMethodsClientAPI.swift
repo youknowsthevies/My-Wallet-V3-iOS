@@ -9,5 +9,7 @@
 import RxSwift
 
 public protocol SimpleBuyPaymentMethodsClientAPI: class {
-    func paymentMethods(for currency: String, token: String) -> Single<SimpleBuyPaymentMethodsResponse>
+    func paymentMethods(for currency: String,
+                        checkEligibility: Bool,
+                        token: String) -> Single<SimpleBuyPaymentMethodsResponse>
 }

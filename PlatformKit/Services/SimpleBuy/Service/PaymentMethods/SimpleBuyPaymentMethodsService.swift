@@ -43,6 +43,7 @@ public final class SimpleBuyPaymentMethodsService: SimpleBuyPaymentMethodsServic
     // MARK: - Setup
     
     public init(client: SimpleBuyPaymentMethodsClientAPI,
+                tiersService: KYCTiersServiceAPI,
                 reactiveWallet: ReactiveWalletAPI,
                 featureFetcher: FeatureFetching,
                 authenticationService: NabuAuthenticationServiceAPI,
@@ -67,11 +68,15 @@ public final class SimpleBuyPaymentMethodsService: SimpleBuyPaymentMethodsServic
                             .map { (token: $0, currency: currency) }
                     }
                     .flatMap { payload in
-                        client
-                            .paymentMethods(
-                                for: payload.currency.code,
-                                token: payload.token
-                            )
+                        tiersService.fetchTiers()
+                            .map { $0.isTier2Approved }
+                            .flatMap { isTier2Approved in
+                                client.paymentMethods(
+                                    for: payload.currency.code,
+                                    checkEligibility: isTier2Approved,
+                                    token: payload.token
+                                )
+                            }
                             .asObservable()
                     }
                     .map { Array<SimpleBuyPaymentMethod>.init(response: $0) }
