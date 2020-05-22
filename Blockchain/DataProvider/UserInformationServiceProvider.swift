@@ -30,11 +30,15 @@ final class UserInformationServiceProvider: UserInformationServiceProviding {
         )
     }
     
+    let general: GeneralInformationService
+    
     init(repository: WalletRepositoryAPI = WalletManager.shared.repository,
+         informationClient: GeneralInformationClientAPI = GeneralInformationClient(),
          settingsClient: SettingsClientAPI = SettingsClient()) {
         settings = SettingsService(
             client: settingsClient,
             credentialsRepository: repository
         )
+        general = GeneralInformationService(client: informationClient)
     }
 }

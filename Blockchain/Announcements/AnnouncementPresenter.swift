@@ -110,12 +110,6 @@ final class AnnouncementPresenter {
         for type in metadata.order {
             let announcement: Announcement
             switch type {
-            case .blockstackAirdropReceived:
-                announcement = receivedBlockstackAirdrop(
-                    hasReceivedBlockstackAirdrop: preliminaryData.hasReceivedBlockstackAirdrop
-                )
-            case .blockstackAirdropRegisteredMini:
-                announcement = airdropRegisterd(user: preliminaryData.user)
             case .verifyEmail:
                 announcement = verifyEmail(user: preliminaryData.user)
             case .walletIntro:
@@ -188,7 +182,7 @@ extension AnnouncementPresenter {
 
     /// Computes email verification announcement
     private func verifyEmail(user: NabuUser) -> Announcement {
-        return VerifyEmailAnnouncement(
+        VerifyEmailAnnouncement(
             isEmailVerified: user.email.verified,
             action: UIApplication.shared.openMailApplication
           )
@@ -196,7 +190,7 @@ extension AnnouncementPresenter {
 
     /// Computes Simple Buy Pending Transaction Announcement
     private func simpleBuyPendingTransaction(for order: SimpleBuyOrderDetails?) -> Announcement {
-        return SimpleBuyPendingTransactionAnnouncement(
+        SimpleBuyPendingTransactionAnnouncement(
             order: order,
             action: { [weak self] in
                 guard let self = self else { return }
@@ -209,7 +203,7 @@ extension AnnouncementPresenter {
     /// Computes Simple Buy Finish Signup Announcement
     private func simpleBuyFinishSignup(tiers: KYC.UserTiers,
                                        hasIncompleteBuyFlow: Bool) -> Announcement {
-        return SimpleBuyFinishSignupAnnouncement(
+        SimpleBuyFinishSignupAnnouncement(
             canCompleteTier2: tiers.canCompleteTier2,
             hasIncompleteBuyFlow: hasIncompleteBuyFlow,
             action: { [weak self] in
@@ -222,7 +216,7 @@ extension AnnouncementPresenter {
 
     // Computes Wallet Intro card announcement
     private func walletIntro(reappearanceTimeInterval: TimeInterval) -> Announcement {
-        return WalletIntroAnnouncement(
+        WalletIntroAnnouncement(
             reappearanceTimeInterval: reappearanceTimeInterval,
             action: { [weak self] in
                guard let self = self else { return }
@@ -238,7 +232,7 @@ extension AnnouncementPresenter {
                             tiers: KYC.UserTiers,
                             isKycSupported: Bool,
                             reappearanceTimeInterval: TimeInterval) -> Announcement {
-        return KycAirdropAnnouncement(
+        KycAirdropAnnouncement(
             canCompleteTier2: tiers.canCompleteTier2,
             isKycSupported: isKycSupported,
             reappearanceTimeInterval: reappearanceTimeInterval,
@@ -253,7 +247,7 @@ extension AnnouncementPresenter {
     
     // Computes transfer in bitcoin announcement
     private func transferBitcoin(isKycSupported: Bool, reappearanceTimeInterval: TimeInterval) -> Announcement {
-        return TransferInCryptoAnnouncement(
+        TransferInCryptoAnnouncement(
             isKycSupported: isKycSupported,
             reappearanceTimeInterval: reappearanceTimeInterval,
             dismiss: hideAnnouncement,
@@ -267,7 +261,7 @@ extension AnnouncementPresenter {
     
     /// Computes identity verification card announcement
     private func verifyIdentity(using user: NabuUser) -> Announcement {
-        return VerifyIdentityAnnouncement(
+        VerifyIdentityAnnouncement(
             user: user,
             isCompletingKyc: kycSettings.isCompletingKyc,
             dismiss: hideAnnouncement,
@@ -281,7 +275,7 @@ extension AnnouncementPresenter {
     
     /// Computes Bitpay announcement
     private var bitpay: Announcement {
-        return BitpayAnnouncement(dismiss: hideAnnouncement)
+        BitpayAnnouncement(dismiss: hideAnnouncement)
     }
     
     /// Computes Wallet-Exchange linking announcement
@@ -295,30 +289,9 @@ extension AnnouncementPresenter {
         )
     }
         
-    /// Computes an airdrop received card announcement
-    private func receivedBlockstackAirdrop(hasReceivedBlockstackAirdrop: Bool) -> Announcement {
-        return BlockstackAirdropReceivedAnnouncement(
-            hasReceivedBlockstackAirdrop: hasReceivedBlockstackAirdrop,
-            dismiss: hideAnnouncement,
-            action: { [weak self] in
-                self?.airdropRouter.presentAirdropStatusScreen(
-                    for: .blockstack,
-                    presentationType: .modalOverTopMost
-                )
-            }
-        )
-    }
-    
-    private func airdropRegisterd(user: NabuUser) -> Announcement {
-        return AirdropRegisteredAnnouncementMini(
-            router: airdropRouter,
-            airdropRegistered: user.isBlockstackAirdropRegistered
-        )
-    }
-    
     /// Computes PAX card announcement
     private func pax(hasPaxTransactions: Bool) -> Announcement {
-        return PAXAnnouncement(
+        PAXAnnouncement(
             hasTransactions: hasPaxTransactions,
             dismiss: hideAnnouncement,
             action: appCoordinator.switchTabToSwap
@@ -376,7 +349,7 @@ extension AnnouncementPresenter {
 
     /// Computes Upload Documents card announcement
     private func resubmitDocuments(user: NabuUser) -> Announcement {
-        return ResubmitDocumentsAnnouncement(
+        ResubmitDocumentsAnnouncement(
             user: user,
             dismiss: hideAnnouncement,
             action: { [weak self] in

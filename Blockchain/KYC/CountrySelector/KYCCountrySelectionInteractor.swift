@@ -24,7 +24,7 @@ class KYCCountrySelectionInteractor {
         self.walletNabuSynchronizer = walletNabuSynchronizer
     }
 
-    func selected(country: KYCCountry, shouldBeNotifiedWhenAvailable: Bool? = nil) -> Disposable {
+    func selected(country: CountryData, shouldBeNotifiedWhenAvailable: Bool? = nil) -> Disposable {
         return sendSelection(countryCode: country.code, shouldBeNotifiedWhenAvailable: shouldBeNotifiedWhenAvailable)
     }
 

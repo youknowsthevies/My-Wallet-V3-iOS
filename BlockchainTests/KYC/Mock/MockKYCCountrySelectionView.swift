@@ -8,6 +8,7 @@
 
 import XCTest
 
+@testable import PlatformKit
 @testable import Blockchain
 
 class MockKYCCountrySelectionView: KYCCountrySelectionView {
@@ -15,15 +16,15 @@ class MockKYCCountrySelectionView: KYCCountrySelectionView {
     var didCallStartPartnerExchangeFlow: XCTestExpectation?
     var didCallShowExchangeNotAvailable: XCTestExpectation?
 
-    func continueKycFlow(country: KYCCountry) {
+    func continueKycFlow(country: CountryData) {
         didCallContinueKycFlow?.fulfill()
     }
 
-    func startPartnerExchangeFlow(country: KYCCountry) {
+    func startPartnerExchangeFlow(country: CountryData) {
         didCallStartPartnerExchangeFlow?.fulfill()
     }
 
-    func showExchangeNotAvailable(country: KYCCountry) {
+    func showExchangeNotAvailable(country: CountryData) {
         didCallShowExchangeNotAvailable?.fulfill()
     }
 }

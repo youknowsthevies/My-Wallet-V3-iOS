@@ -1,0 +1,23 @@
+//
+//  Country.swift
+//  Blockchain
+//
+//  Created by Daniel Huri on 15/05/2020.
+//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+public struct CountryData: Decodable {
+    public let code: String
+    public let name: String
+    public let regions: [String]
+    public let scopes: [String]?
+    public let states: [String]
+    
+    public init(code: String, name: String, regions: [String], scopes: [String]?, states: [String]) {
+        self.code = code
+        self.name = name
+        self.regions = regions
+        self.scopes = scopes
+        self.states = states
+    }
+}

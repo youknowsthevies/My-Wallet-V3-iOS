@@ -147,14 +147,7 @@ public final class AnnouncementCardViewModel {
     
     // MARK: - Properties
     
-    public var priority: Priority {
-        switch type {
-        case .blockstackAirdropRegisteredMini:
-            return .low
-        default:
-            return .high
-        }
-    }
+    public var priority: Priority { .high }
     
     public let presentation: Presentation
     

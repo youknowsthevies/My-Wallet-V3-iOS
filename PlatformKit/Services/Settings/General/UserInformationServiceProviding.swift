@@ -19,4 +19,5 @@ public protocol UserInformationServiceProviding: class {
                   SMSTwoFactorSettingsServiceAPI { get }
     
     var emailVerification: EmailVerificationServiceAPI { get }
+    var general: GeneralInformationService { get }
 }

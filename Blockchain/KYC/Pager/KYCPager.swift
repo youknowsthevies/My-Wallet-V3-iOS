@@ -28,7 +28,7 @@ class KYCPager: KYCPagerAPI {
     func nextPage(from page: KYCPageType, payload: KYCPagePayload?) -> Maybe<KYCPageType> {
 
         // Get country from payload if present
-        var kycCountry: KYCCountry?
+        var kycCountry: CountryData?
         if let payload = payload {
             switch payload {
             case .countrySelected(let country):
@@ -142,7 +142,7 @@ extension KYCPageType {
     func nextPage(
         forTier tier: KYC.Tier,
         user: NabuUser?,
-        country: KYCCountry?,
+        country: CountryData?,
         tiersResponse: KYC.UserTiers
         ) -> KYCPageType? {
         switch tier {
@@ -154,7 +154,7 @@ extension KYCPageType {
         }
     }
 
-    private func nextPageTier1(user: NabuUser?, country: KYCCountry?, tiersResponse: KYC.UserTiers) -> KYCPageType? {
+    private func nextPageTier1(user: NabuUser?, country: CountryData?, tiersResponse: KYC.UserTiers) -> KYCPageType? {
         switch self {
         case .welcome:
             if let user = user {
@@ -192,7 +192,7 @@ extension KYCPageType {
         }
     }
 
-    private func nextPageTier2(user: NabuUser?, country: KYCCountry?, tiersResponse: KYC.UserTiers) -> KYCPageType? {
+    private func nextPageTier2(user: NabuUser?, country: CountryData?, tiersResponse: KYC.UserTiers) -> KYCPageType? {
         switch self {
         case .address,
              .tier1ForcedTier2:

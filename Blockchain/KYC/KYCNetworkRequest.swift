@@ -27,7 +27,6 @@ final class KYCNetworkRequest {
             case credentials
             case credentiasForVeriff
             case healthCheck
-            case listOfCountries
             case nextKYCMethod
             case currentUser
             case listOfStates
@@ -41,8 +40,6 @@ final class KYCNetworkRequest {
                     return ["kyc", "credentials", "veriff"]
                 case .healthCheck:
                     return ["healthz"]
-                case .listOfCountries:
-                    return ["countries"]
                 case .nextKYCMethod:
                     return ["kyc", "next-method"]
                 case .currentUser:
@@ -59,7 +56,6 @@ final class KYCNetworkRequest {
                 case .credentials,
                      .credentiasForVeriff,
                      .healthCheck,
-                     .listOfCountries,
                      .nextKYCMethod,
                      .listOfStates,
                      .currentUser,
@@ -70,23 +66,13 @@ final class KYCNetworkRequest {
         }
 
         enum POST {
-            
-            enum UserType {
-                case regular
-                case simpleBuy(fiatCurrency: String)
-            }
-            
-            case createUser(UserType)
             case country
-            case sessionToken(userId: String)
             case verifications
             case submitVerification
 
             var path: String {
                 switch self {
-                case .createUser: return "/users"
                 case .country: return "/users/current/country"
-                case .sessionToken: return "/auth"
                 case .verifications: return "/verifications"
                 case .submitVerification: return "/kyc/verifications"
                 }
@@ -94,16 +80,6 @@ final class KYCNetworkRequest {
 
             var queryParameters: [String: String]? {
                 switch self {
-                case .sessionToken(let userId):
-                    return ["userId": userId]
-                case .createUser(let userType):
-                    guard case .simpleBuy(let fiatCurrency) = userType else {
-                        return nil
-                    }
-                    return [
-                        "fiatCurrency": fiatCurrency,
-                        "action": "simplebuy"
-                    ]
                 case .country,
                      .verifications,
                      .submitVerification:

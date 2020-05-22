@@ -6,17 +6,9 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
-struct KYCCountry: Codable, SearchableItem {
-    let code: String
-    let name: String
-    let regions: [String]
-    let scopes: [String]?
-    let states: [String]
-}
-
-extension KYCCountry {
+extension CountryData: SearchableItem {
 
     /// Returns a boolean indicating if this country is supported by Blockchain's native KYC
     var isKycSupported: Bool {

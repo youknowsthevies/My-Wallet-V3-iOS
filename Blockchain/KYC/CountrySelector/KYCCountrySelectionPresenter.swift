@@ -14,11 +14,11 @@ import PlatformKit
 protocol KYCCountrySelectionView: class {
 
     /// Method invoked once the user selects a native KYC-supported country
-    func continueKycFlow(country: KYCCountry)
+    func continueKycFlow(country: CountryData)
 
     /// Method invoked when the user selects a country that is not supported
     /// for exchanging crypto-to-crypto
-    func showExchangeNotAvailable(country: KYCCountry)
+    func showExchangeNotAvailable(country: CountryData)
 }
 
 class KYCCountrySelectionPresenter {
@@ -48,7 +48,7 @@ class KYCCountrySelectionPresenter {
 
     // MARK: - Public Methods
 
-    func selected(country: KYCCountry) {
+    func selected(country: CountryData) {
 
         // Notify server of user's selection
         let interactorDisposable = interactor.selected(country: country)

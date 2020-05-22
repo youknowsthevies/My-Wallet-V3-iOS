@@ -8,6 +8,7 @@
 
 import XCTest
 
+@testable import PlatformKit
 @testable import Blockchain
 
 class KYCCountrySelectionControllerTests: XCTestCase {
@@ -51,7 +52,7 @@ class KYCCountrySelectionControllerTests: XCTestCase {
 
     func testDecodeSampleResponse() {
         let responseData = sampleResponse.data(using: .utf8)
-        let data = try? JSONDecoder().decode([KYCCountry].self, from: responseData!)
+        let data = try? JSONDecoder().decode([CountryData].self, from: responseData!)
         XCTAssertNoThrow(data, "Expected data not to throw")
         XCTAssertNotNil(data, "Expected data not to be nil")
     }
@@ -62,19 +63,19 @@ class KYCCountrySelectionControllerTests: XCTestCase {
                 XCTFail("Failed to load the JSON file containing the sample countries")
                 return
         }
-        let data = try? JSONDecoder().decode([KYCCountry].self, from: jsonData)
+        let data = try? JSONDecoder().decode([CountryData].self, from: jsonData)
         XCTAssertNoThrow(data, "Expected data not to throw")
         XCTAssertNotNil(data, "Expected data not to be nil")
     }
 
     func testDecodeBadResponse() {
         let responseData = badResponse.data(using: .utf8)!
-        XCTAssertThrowsError(try JSONDecoder().decode([KYCCountry].self, from: responseData))
+        XCTAssertThrowsError(try JSONDecoder().decode([CountryData].self, from: responseData))
     }
 
     func testDecodeEmptyResponse() {
         let responseData = emptyResponse.data(using: .utf8)
-        let data = try? JSONDecoder().decode([KYCCountry].self, from: responseData!)
+        let data = try? JSONDecoder().decode([CountryData].self, from: responseData!)
         XCTAssertNoThrow(data, "Expected data not to throw")
         XCTAssertNotNil(data, "Expected data not to be nil")
         XCTAssertEqual(data?.count, 0, "Expected empty response to result in an empty array")

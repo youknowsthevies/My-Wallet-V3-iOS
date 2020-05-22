@@ -25,7 +25,7 @@ class KYCStateSelectionController: KYCBaseViewController, ProgressableView {
 
     // MARK: - Public Properties
 
-    var country: KYCCountry?
+    var country: CountryData?
 
     // MARK: - Private Properties
 

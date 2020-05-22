@@ -40,7 +40,7 @@ class KYCStateSelectionPresenter {
         self.interactor = interactor
     }
 
-    func fetchStates(for country: KYCCountry) {
+    func fetchStates(for country: CountryData) {
         disposable = interactor.fetchState(for: country)
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)

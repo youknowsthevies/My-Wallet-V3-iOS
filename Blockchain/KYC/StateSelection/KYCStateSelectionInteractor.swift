@@ -7,10 +7,11 @@
 //
 
 import RxSwift
+import PlatformKit
 
 class KYCStateSelectionInteractor {
 
-    func fetchState(for country: KYCCountry) -> Single<[KYCState]> {
+    func fetchState(for country: CountryData) -> Single<[KYCState]> {
         return KYCNetworkRequest.request(
             get: .listOfStates,
             pathComponents: country.urlPathComponentsForState,

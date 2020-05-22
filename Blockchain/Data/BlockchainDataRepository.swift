@@ -19,6 +19,7 @@ class BlockchainDataRepository: DataRepositoryAPI {
 
     static let shared = BlockchainDataRepository()
 
+    private let disposeBag = DisposeBag()
     private let kycTiersService: KYCTiersServiceAPI
     private let authenticationService: NabuAuthenticationService
     private let communicator: NetworkCommunicatorAPI
@@ -54,20 +55,6 @@ class BlockchainDataRepository: DataRepositoryAPI {
         nabuUser.take(1).asSingle()
     }
 
-    var countries: Single<Countries> {
-        let countriesFetchedOverNetwork = KYCNetworkRequest.request(
-            get: .listOfCountries,
-            type: Countries.self
-        ).map { countries -> Countries in
-            countries.sorted(by: { $0.name.uppercased() < $1.name.uppercased() })
-        }
-
-        return fetchData(
-            cachedValue: cachedCountries,
-            networkValue: countriesFetchedOverNetwork
-        )
-    }
-
     /// An Observable emitting the KYC Tiers for the current user. This Observable will
     /// first emit a value from the cache, if available, followed by the value over the network.
     var tiers: Observable<KYC.UserTiers> {
@@ -81,32 +68,27 @@ class BlockchainDataRepository: DataRepositoryAPI {
     ///
     /// - Returns: the fetched KYC Tiers
     func fetchTiers() -> Single<KYC.UserTiers> {
-        return kycTiersService.fetchTiers()
+        kycTiersService.fetchTiers()
     }
 
     // MARK: - Private Properties
 
-    private var cachedCountries = BehaviorRelay<Countries?>(value: nil)
-
     private var cachedUser = BehaviorRelay<NabuUser?>(value: nil)
-
     private var cachedTiers = BehaviorRelay<KYC.UserTiers?>(value: nil)
 
     // MARK: - Public Methods
 
     /// Prefetches data so that it can be cached
     func prefetchData() {
-        _ = Observable.zip(
-            nabuUser,
-            countries.asObservable(),
-            tiers
-        ).subscribe()
+        Observable
+            .zip(nabuUser, tiers)
+            .subscribe()
+            .disposed(by: disposeBag)
     }
 
     /// Clears cached data in this repository
     func clearCache() {
         cachedUser = BehaviorRelay<NabuUser?>(value: nil)
-        cachedCountries = BehaviorRelay<Countries?>(value: nil)
     }
 
     /// Fetches the NabuUser over the network and updates the cached NabuUser if successful

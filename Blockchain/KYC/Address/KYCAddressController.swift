@@ -81,7 +81,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     fileprivate var locationCoordinator: LocationSuggestionCoordinator!
     fileprivate var dataProvider: LocationDataProvider!
     private var user: NabuUser?
-    private var country: KYCCountry?
+    private var country: CountryData?
 
     // MARK: KYCCoordinatorDelegate
 

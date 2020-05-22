@@ -170,7 +170,7 @@ protocol SwapCoordinatorAPI {
         }
     }
 
-    private func showExchange(country: KYCCountry? = nil) {
+    private func showExchange(country: CountryData? = nil) {
         guard let viewController = rootViewController else {
             Logger.shared.error("View controller to present on is nil")
             return
@@ -183,7 +183,7 @@ protocol SwapCoordinatorAPI {
         viewController.present(navigationController!, animated: true)
     }
 
-    private func showCreateExchange(animated: Bool, country: KYCCountry? = nil) {
+    private func showCreateExchange(animated: Bool, country: CountryData? = nil) {
         let exchangeCreateViewController = ExchangeCreateViewController.makeFromStoryboard()
         if navigationController == nil {
             guard let viewController = rootViewController else {

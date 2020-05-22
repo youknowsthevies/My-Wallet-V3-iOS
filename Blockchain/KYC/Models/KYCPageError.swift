@@ -6,9 +6,9 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 enum KYCPageError {
-    case countryNotSupported(KYCCountry)
+    case countryNotSupported(CountryData)
     case stateNotSupported(KYCState)
 }

@@ -22,7 +22,7 @@ struct AnnouncementPreliminaryData {
     
     let hasPaxTransactions: Bool
     
-    let country: KYCCountry?
+    let country: CountryData?
             
     /// The authentication type (2FA / standard)
     let authenticatorType: AuthenticatorType
@@ -39,13 +39,6 @@ struct AnnouncementPreliminaryData {
         authenticatorType != .standard
     }
 
-    var hasReceivedBlockstackAirdrop: Bool {
-        guard let campaign = airdropCampaigns.campaign(by: .blockstack) else {
-            return false
-        }
-        return campaign.currentState == .received
-    }
-
     var hasIncompleteBuyFlow: Bool {
         simpleBuyEventCache[.hasShownBuyScreen] && isSimpleBuyAvailable
     }
@@ -53,12 +46,10 @@ struct AnnouncementPreliminaryData {
     let pendingOrderDetails: SimpleBuyOrderDetails?
 
     private let isSimpleBuyAvailable: Bool
-    private let airdropCampaigns: AirdropCampaigns
     private let simpleBuyEventCache: SimpleBuyEventCache
     
     init(user: NabuUser,
          tiers: KYC.UserTiers,
-         airdropCampaigns: AirdropCampaigns,
          hasTrades: Bool,
          hasPaxTransactions: Bool,
          countries: Countries,
@@ -66,7 +57,6 @@ struct AnnouncementPreliminaryData {
          authenticatorType: AuthenticatorType,
          pendingOrderDetails: SimpleBuyOrderDetails?,
          isSimpleBuyAvailable: Bool) {
-        self.airdropCampaigns = airdropCampaigns
         self.user = user
         self.tiers = tiers
         self.hasTrades = hasTrades

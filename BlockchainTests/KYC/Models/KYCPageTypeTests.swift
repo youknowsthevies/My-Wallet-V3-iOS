@@ -7,7 +7,8 @@
 //
 
 import XCTest
-import PlatformKit
+
+@testable import PlatformKit
 @testable import Blockchain
 
 class KYCPageTypeTests: XCTestCase {
@@ -124,9 +125,9 @@ class KYCPageTypeTests: XCTestCase {
         )
     }
 
-    private func createKycCountry(hasStates: Bool = false) -> KYCCountry {
+    private func createKycCountry(hasStates: Bool = false) -> CountryData {
         let states = hasStates ? ["state"] : []
-        return KYCCountry(code: "test", name: "Test Country", regions: [], scopes: nil, states: states)
+        return CountryData(code: "test", name: "Test Country", regions: [], scopes: nil, states: states)
     }
 
     private func createNabuUser(isMobileVerified: Bool = false, isEmailVerified: Bool = false, hasAddress: Bool = false) -> NabuUser {

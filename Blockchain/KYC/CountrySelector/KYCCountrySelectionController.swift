@@ -11,7 +11,7 @@ import RxSwift
 import ToolKit
 import PlatformKit
 
-typealias Countries = [KYCCountry]
+typealias Countries = [CountryData]
 
 /// Country selection screen in KYC flow
 final class KYCCountrySelectionController: KYCBaseViewController, ProgressableView {
@@ -29,15 +29,16 @@ final class KYCCountrySelectionController: KYCBaseViewController, ProgressableVi
 
     // MARK: - Private Properties
 
-    private var countriesMap = SearchableMap<KYCCountry>()
+    private var countriesMap = SearchableMap<CountryData>()
 
     private lazy var presenter: KYCCountrySelectionPresenter = {
         return KYCCountrySelectionPresenter(view: self)
     }()
     
     private let analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
-
-    private var disposable: Disposable?
+    private let informationService = UserInformationServiceProvider.default.general
+    
+    private let disposeBag = DisposeBag()
 
     // MARK: - Factory
 
@@ -49,11 +50,6 @@ final class KYCCountrySelectionController: KYCBaseViewController, ProgressableVi
     }
 
     // MARK: - View Controller Lifecycle
-
-    deinit {
-        disposable?.dispose()
-        disposable = nil
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,15 +63,13 @@ final class KYCCountrySelectionController: KYCBaseViewController, ProgressableVi
     // MARK: - Private Methods
 
     private func fetchListOfCountries() {
-        disposable = BlockchainDataRepository.shared.countries
-            .subscribeOn(MainScheduler.asyncInstance)
+        informationService.countries
             .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: { [weak self] countries in
                 self?.countriesMap.setAllItems(countries)
                 self?.tableView.reloadData()
-            }, onError: { error in
-                Logger.shared.error("Failed to fetch countries. Error: \(error.localizedDescription)")
             })
+            .disposed(by: disposeBag)
     }
 }
 
@@ -144,11 +138,11 @@ extension KYCCountrySelectionController: UITableViewDataSource, UITableViewDeleg
 }
 
 extension KYCCountrySelectionController: KYCCountrySelectionView {
-    func continueKycFlow(country: KYCCountry) {
+    func continueKycFlow(country: CountryData) {
         let payload = KYCPagePayload.countrySelected(country: country)
         coordinator.handle(event: .nextPageFromPageType(pageType, payload))
     }
-    func showExchangeNotAvailable(country: KYCCountry) {
+    func showExchangeNotAvailable(country: CountryData) {
         coordinator.handle(event: .failurePageForPageType(pageType, .countryNotSupported(country)))
     }
 }

@@ -62,7 +62,7 @@ protocol KYCRouterAPI: class {
 
     private(set) var user: NabuUser?
 
-    private(set) var country: KYCCountry?
+    private(set) var country: CountryData?
 
     private var pager: KYCPagerAPI!
 
