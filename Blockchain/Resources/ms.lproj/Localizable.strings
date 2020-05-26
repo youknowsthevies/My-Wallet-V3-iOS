@@ -37,7 +37,7 @@
         " = "\
  Anda kini mempunyai pemberitahuan e-mel yang dibolehkan. Menukar e-mel anda akan melumpuhkan pemberitahuan e-mel. \
 ";
-" %@ (%@ %@)" = "%@ ( %@ %@ )";
+" %@ (%@ %@)" = "%1$@ ( %2$@ %3$@ )";
 " & " = "&";
 " and " = "dan";
 " buy." = "beli.";
@@ -48,7 +48,7 @@
 "%@ Confirmations" = "%@ Pengesahan";
 "%@ copied to clipboard" = "%@ disalin ke papan keratan";
 "%@ needed to exchange" = "%@ diperlukan untuk bertukar";
-"%@ of %@" = "%@ dari %@";
+"%@ of %@" = "%1$@ dari %2$@";
 "%@ payment request" = "permintaan %@ pembayaran.";
 "%@ payment request." = "permintaan %@ pembayaran.";
 "%@ Received" = "%@ Diterima";
@@ -58,7 +58,7 @@
 "%d address" = "%d alamat";
 "%d addresses" = "%d alamat";
 "%d Confirmations" = "%d pengesahan";
-"%d login attempts left. Please enter your %@ 2FA code" = "%d percubaan login %d . Sila masukkan kod %@ 2FA anda";
+"%d login attempts left. Please enter your %@ 2FA code" = "%1$d percubaan login %1$d . Sila masukkan kod %2$@ 2FA anda";
 "%d Transactions" = "%d urus niaga";
 "%lld hours ago" = "% lld jam yang lalu";
 "%lld minutes ago" = "% lld minit yang lalu";
@@ -126,7 +126,7 @@
 "An Error Occurred" = "Ralat Berlaku";
 "An error occurred due to interruptions during PIN verification. Please close the app and try again." = "Ralat berlaku disebabkan gangguan semasa pengesahan PIN. Sila tutup aplikasi dan cuba lagi.";
 "An error occurred when getting an approximate quote. Please try again later. Details: %@" = "Ralat berlaku semasa mendapat sebut harga anggaran. Sila cuba sebentar lagi. Butiran: %@";
-"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "Ralat berlaku semasa mendapat baki %@ . Sila cuba sebentar lagi. Butiran: %@";
+"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "Ralat berlaku semasa mendapat baki %1$@ . Sila cuba sebentar lagi. Butiran: %2$@";
 "An error occurred when selecting your tier. Please try again later." = "Ralat berlaku semasa memilih peringkat anda. Sila cuba sebentar lagi.";
 "An error occurred while changing 2-Step verification." = "Ralat berlaku semasa menukar pengesahan 2 langkah.";
 "An error occurred while copying your address to the clipboard. Please re-select the destination address or restart the app and try again." = "Ralat berlaku semasa menyalin alamat anda ke papan keratan. Sila pilih semula alamat destinasi atau mulakan semula aplikasi dan cuba lagi.";
@@ -217,10 +217,10 @@
 "By creating a wallet you agree to Blockchain’s " = "Dengan membuat dompet anda bersetuju dengan Blockchain";
 "By creating a wallet you agree to Blockchain’s Terms of Services & Privacy Policy" = "Dengan membuat dompet anda bersetuju dengan Syarat Perkhidmatan & Dasar Privasi Blockchain";
 "By depositing funds to this account, you agree to " = "Dengan mendepositkan dana ke akaun ini, anda bersetuju";
-"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "Dengan menekan \"Begin Now\", anda bersetuju dengan Blockchain's %@ & %@";
+"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "Dengan menekan \"Begin Now\", anda bersetuju dengan Blockchain's %1$@ & %2$@";
 "By tapping Begin Now, you agree to Coinify's Terms of Service & Privacy Policy" = "Dengan mengetuk Begin Now, anda bersetuju dengan Syarat Perkhidmatan & Dasar Privasi Coinify";
-"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Dengan mengetuk Hantar, anda bersetuju dengan Blockchain's %@ & %@";
-"Calculating: Address %@ of %@" = "Mengira: Alamat %@ dari %@";
+"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Dengan mengetuk Hantar, anda bersetuju dengan Blockchain's %1$@ & %2$@";
+"Calculating: Address %@ of %@" = "Mengira: Alamat %1$@ dari %2$@";
 "Camera Access Denied" = "Akses Kamera Ditolak";
 "Canadian Dollar" = "Dolar Kanada";
 "Cancel" = "Batalkan";
@@ -241,7 +241,7 @@
 "Check out Swap" = "Semak Swap";
 "Check Your Inbox" = "Semak peti masuk anda";
 "Check your inbox." = "Semak peti masuk anda.";
-"Checking for more: Step %d of %d" = "Memeriksa lebih banyak: Langkah %d daripada %d";
+"Checking for more: Step %d of %d" = "Memeriksa lebih banyak: Langkah %1$d daripada %2$d";
 "Checking for Wallet updates" = "Menyemak untuk pengemaskinian Wallet";
 "Checkout" = "Checkout";
 "Checkout the Exchange" = "Semak Exchange";
@@ -401,12 +401,12 @@
 "Ether Price" = "Harga Eter";
 "Euro" = "Euro";
 "Even better, since you need ETH to make USD PAX trades, we just airdropped enough ETH into your Wallet to cover your first 3 transactions 🙌🏻" = "Lebih baik lagi, kerana anda memerlukan ETH untuk membuat perdagangan PAX USD, kami hanya cukup berpaut ETH ke dalam Wallet anda untuk menutup transaksi 3 pertama anda";
-"Every country has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Setiap negara mempunyai peraturan yang berbeza mengenai cara membeli dan menjual kriptografi. Pastikan mata anda dikupas, dan kami akan memberitahu anda sebaik sahaja kami melancarkan %s !";
+"Every country has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Setiap negara mempunyai peraturan yang berbeza mengenai cara membeli dan menjual kriptografi. Pastikan mata anda dikupas, dan kami akan memberitahu anda sebaik sahaja kami melancarkan %1$s !";
 "Every state has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Setiap negeri mempunyai peraturan yang berbeza mengenai bagaimana untuk membeli dan menjual kriptografi. Pastikan mata anda dikupas, kami akan memberitahu anda sebaik sahaja kami melancarkan %@ !";
 "Everything you need to store, spend and receive BTC, ETH and BCH." = "Semua yang anda perlukan untuk menyimpan, membelanjakan dan menerima BTC, ETH dan BCH.";
 "Exchange" = "Pertukaran";
 "Exchange %@ Address" = "Pertukaran %@ Alamat";
-"Exchange %@ for %@" = "Pertukaran %@ untuk %@";
+"Exchange %@ for %@" = "Pertukaran %1$@ untuk %2$@";
 "Exchange %@ Wallet" = "Exchange %@ Wallet";
 "Exchange Completed" = "Pertukaran Selesai";
 "Exchange In Progress" = "Pertukaran Dalam Kemajuan";
@@ -444,7 +444,7 @@
 "Forget" = "Lupakan";
 "Forget Wallet" = "Lupa Wallet";
 "Forgot Password?" = "Lupa kata laluan?\"";
-"Found %d, with %@" = "Dijumpai %d , dengan %@";
+"Found %d, with %@" = "Dijumpai %1$d , dengan %2$@";
 "fourth" = "keempat";
 "fourth word" = "kata keempat";
 "From" = "Dari";
@@ -519,7 +519,7 @@
 "Introducing the Exchange" = "Memperkenalkan Bursa";
 "Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX = 1 USD." = "Memperkenalkan USD PAX, aset crypto yang selamat dan stabil yang boleh anda gunakan untuk menyimpan nilai. 1 PAX = 1 USD.";
 "Invalid %@ Address" = "%@ Alamat tidak sah";
-"Invalid %@ address: %@" = "Alamat %@ tidak sah: %@";
+"Invalid %@ address: %@" = "Alamat %1$@ tidak sah: %2$@";
 "Invalid Bitcoin address: %@" = "Alamat Bitcoin tidak sah: %@";
 "Invalid destination address" = "Alamat destinasi tidak sah";
 "Invalid email address." = "Alamat e-mel tidak sah.";
@@ -580,7 +580,7 @@
 "Log In" = "Log masuk";
 "Log in to refresh addresses" = "Log masuk untuk menyegarkan alamat";
 "Log in to Web Wallet" = "Masuk ke Wallet Web";
-"Log in to your Blockchain Wallet via your PC or Mac at " = "Log masuk ke Wallet Blockchain anda melalui PC atau Mac anda pada %s .";
+"Log in to your Blockchain Wallet via your PC or Mac at " = "Log masuk ke Wallet Blockchain anda melalui PC atau Mac anda pada %1$s .";
 "Log Out" = "Log keluar";
 "Login existing Wallet" = "Log masuk Wallet sedia ada";
 "login.blockchain.com" = "login.blockchain.com";
@@ -673,7 +673,7 @@
 "OK" = "okey";
 "Once an order starts, we are unable to stop it." = "Sebaik sahaja pesanan dimulakan, kami tidak dapat menghentikannya.";
 "Once we receive your bank transfer, your %@ buy order will complete." = "Sebaik sahaja kami menerima pemindahan bank anda, pesanan pembelian anda akan lengkap.";
-"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "Sebaik sahaja kami menerima dana anda, kami akan memulakan pesanan beli %s . Perhatikan, jumlah akhir anda mungkin berubah kepada aktiviti pasaran yang wajar. Bayaran mungkin dikenakan.";
+"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "Sebaik sahaja kami menerima dana anda, kami akan memulakan pesanan beli %1$s . Perhatikan, jumlah akhir anda mungkin berubah kepada aktiviti pasaran yang wajar. Bayaran mungkin dikenakan.";
 "Once your verification is confirmed, you’ll automatically secure a spot in the Airdrop for Stacks." = "Sebaik sahaja pengesahan anda disahkan, anda secara automatik akan mendapat tempat dalam Airdrop for Stacks.";
 "Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected." = "Hanya hantar dana dari akaun bank dalam nama anda. Jika tidak, deposit anda boleh ditangguhkan atau ditolak.";
 "Ooops! Something went wrong." = "Ooops! Ada yang salah.";
@@ -746,12 +746,12 @@
 "Please review and confirm your " = "Sila semak dan sahkan anda";
 "Please select a different address to send from." = "Sila pilih alamat yang berbeza untuk dihantar dari.";
 "Please send %@ to" = "Sila hantar %@ ke";
-"Please send %@ to bitcoin address.\n%@" = "Sila hantar %@ ke alamat bitcoin. \
- %@";
+"Please send %@ to bitcoin address.\n%@" = "Sila hantar %1$@ ke alamat bitcoin. \
+ %2$@";
 "Please send BCH to the Bitcoin Cash address\n%@" = "Sila hantar BCH ke alamat Tunai Bitcoin \
  %@";
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "Sila hantar pembayaran ke alamat bitcoin ( <a href=\"https://blockchain.info/wallet/bitcoin-faq\"> bantuan? </a> ): %@";
-"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Sila pindahkan %s dari akaun bank anda ke Blockchain.com. Apabila kami menerima dana, kami akan membuat pesanan membeli %s .";
+"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Sila pindahkan %1$s dari akaun bank anda ke Blockchain.com. Apabila kami menerima dana, kami akan membuat pesanan membeli %2$s .";
 "Please try again" = "Sila cuba lagi";
 "Please verify your email address first." = "Sila sahkan alamat e-mel anda terlebih dahulu.";
 "Please verify your mobile number first." = "Sila sahkan nombor telefon bimbit anda terlebih dahulu.";
@@ -894,7 +894,7 @@
 "Stellar is an open-source, decentralized payment protocol that allows for fast and cheap cross-border transactions between any pair of currencies." = "Stellar adalah protokol pembayaran terbuka dan terbuka yang membolehkan transaksi transit sempadan yang cepat dan murah antara mana-mana pasangan mata wang.";
 "Stellar Price" = "Harga Stellar";
 "Stellar requires that all Stellar accounts hold a minimum balance of lumens, or XLM. This means you cannot send a balance out of your Stellar Wallet that would leave your Stellar Wallet with less than the minimum balance. This also means that in order to send XLM to a new Stellar account, you must send enough XLM to meet the minimum balance requirement." = "Stellar menghendaki semua akaun Stellar memegang baki minimum lumens, atau XLM. Ini bermakna anda tidak boleh menghantar baki daripada Dompet Anda yang akan meninggalkan Dompet Anda dengan kurang daripada baki minimum. Ini juga bermakna bahawa untuk menghantar XLM ke akaun Stellar baru, anda mesti menghantar XLM yang mencukupi untuk memenuhi keperluan baki minimum.";
-"Step %d of %d" = "Langkah %d daripada %d";
+"Step %d of %d" = "Langkah %1$d daripada %2$d";
 "store" = "kedai";
 "Stored" = "Disimpan";
 "Street line" = "Garis jalanan";
@@ -1031,9 +1031,9 @@
 "Transfer imported addresses?" = "Pindahkan alamat yang diimport?";
 "Transfer In Crypto" = "Pemindahan Dalam Crypto";
 "Transferred" = "Dipindahkan";
-"Transferred funds from %d %@" = "Dana yang dipindah dari %d %@";
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Dana yang dipindah dari %d %@ . Output untuk %d %@ terlalu kecil.";
-"Transferring all funds: Address %i of %i" = "Memindahkan semua dana: Alamat %i %i";
+"Transferred funds from %d %@" = "Dana yang dipindah dari %1$d %2$@";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Dana yang dipindah dari %1$d %2$@ . Output untuk %3$d %4$@ terlalu kecil.";
+"Transferring all funds: Address %i of %i" = "Memindahkan semua dana: Alamat %1$i %2$i";
 "Try again" = "Cuba lagi";
 "Try Again" = "Cuba lagi";
 "twelfth" = "kedua belas";
@@ -1184,7 +1184,7 @@
 "With Blockchain Airdrops, get free crypto sent right to your Blockchain Wallet." = "Dengan Blockchain Airdrops, dapatkan crypto percuma yang dihantar terus ke Wallet Blockchain anda.";
 "With Swap your crypto is safe, secure, and your keys are always intact." = "Dengan Swap crypto anda selamat, terjamin, dan kunci anda sentiasa utuh.";
 "word" = "perkataan";
-"Word %@ of %@" = "Word %@ of %@";
+"Word %@ of %@" = "Word %1$@ of %2$@";
 "Would you like to add the bitcoin address %@ to your address book?" = "Adakah anda ingin menambah alamat bitcoin %@ ke buku alamat anda?";
 "Would you like to archive the addresses used?" = "Adakah anda ingin mengarkibkan alamat yang digunakan?";
 "Would you like to tell us about your experience with Blockchain?" = "Adakah anda ingin memberitahu kami tentang pengalaman anda dengan Blockchain?";
@@ -1195,7 +1195,7 @@
 "XLM is a token that enables quick, low cost global transactions. Send, receive, and trade XLM in the wallet today." = "XLM adalah tanda yang membolehkan transaksi global yang cepat dan rendah. Hantar, terima, dan uruskan XLM dalam dompet hari ini.";
 "XLM Reserve Requirement" = "Keperluan Rizab XLM";
 "xxx" = "xxx";
-"xxx %@ (%@ %@)" = "xxx %@ ( %@ %@ )";
+"xxx %@ (%@ %@)" = "xxx %1$@ ( %2$@ %3$@ )";
 "year" = "tahun";
 "Year" = "Tahun";
 "years" = "tahun";
@@ -1232,13 +1232,13 @@
 "You must leave at least one active address" = "Anda mesti meninggalkan sekurang-kurangnya satu alamat aktif";
 "You need to confirm your email address so that we can keep you informed about your wallet." = "Anda perlu mengesahkan alamat e-mel anda supaya kami dapat memaklumkan anda tentang dompet anda.";
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "Anda sentiasa perlu berpasangan atau login jika anda mempunyai akses kepada Wallet ID dan kata laluan anda. Memungut dana anda akan mencipta ID yang baru Wallet. Adakah anda ingin meneruskan?";
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Anda menetapkan yuran transaksi yang sangat kecil %s . \
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Anda menetapkan yuran transaksi yang sangat kecil %1$s . \
 \
- Transaksi anda mungkin terjebak dan mungkin tidak pernah mengesahkan. Untuk meningkatkan kemungkinan transaksi anda untuk mengesahkan dalam masa kira-kira sejam (6 blok), kami amat mengesyorkan bayaran tidak kurang dari %s .";
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Anda menetapkan yuran transaksi yang sangat kecil %@ . Transaksi anda mungkin terjebak dan mungkin tidak dapat mengesahkannya. Untuk meningkatkan kemungkinan transaksi anda untuk mengesahkan dalam masa kira-kira sejam (enam blok), kami sangat mengesyorkan bayaran tidak kurang daripada %@ . Oleh kerana anda tidak mempunyai dana yang mencukupi, itu bermakna jumlah Kirim juga perlu diturunkan kepada %@ .";
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Anda menetapkan yuran transaksi yang luar biasa sebanyak %s . \
+ Transaksi anda mungkin terjebak dan mungkin tidak pernah mengesahkan. Untuk meningkatkan kemungkinan transaksi anda untuk mengesahkan dalam masa kira-kira sejam (6 blok), kami amat mengesyorkan bayaran tidak kurang dari %2$s .";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Anda menetapkan yuran transaksi yang sangat kecil %1$@ . Transaksi anda mungkin terjebak dan mungkin tidak dapat mengesahkannya. Untuk meningkatkan kemungkinan transaksi anda untuk mengesahkan dalam masa kira-kira sejam (enam blok), kami sangat mengesyorkan bayaran tidak kurang daripada %2$@ . Oleh kerana anda tidak mempunyai dana yang mencukupi, itu bermakna jumlah Kirim juga perlu diturunkan kepada %3$@ .";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Anda menetapkan yuran transaksi yang luar biasa sebanyak %1$s . \
 \
- Walaupun anda menurunkan yuran ke %s , anda boleh mengharapkan transaksi untuk mengesahkan dalam masa ~ 10 minit seterusnya (1 blok).";
+ Walaupun anda menurunkan yuran ke %2$s , anda boleh mengharapkan transaksi untuk mengesahkan dalam masa ~ 10 minit seterusnya (1 blok).";
 "You will be leaving the app." = "Anda akan meninggalkan aplikasinya.";
 "You will be redirected to\n%@." = "Anda akan diarahkan semula \
  %@ .";
@@ -1483,3 +1483,9 @@
 "This card has already been saved" = "Kad ini telah disimpan";
 "Waiting on Funds" = "Menunggu Dana";
 "Your final amount may change due to market activity" = "Jumlah akhir anda mungkin berubah kerana aktiviti pasaran";
+"% APY" = "% APY";
+"Code" = "Kod";
+"Earn" = "Perolehi";
+"Interest" = "Minat";
+"Trading" = "Berniaga";
+"Wallet Balance" = "Baki Dompet";
