@@ -36,7 +36,7 @@
         " = "\
         В данный момент у вас активированы уведомления по электронной почте. При изменении адреса электронной почты эти уведомления будут отключены.\
         ";
-" %@ (%@ %@)" = "%@ ( %@ %@ )";
+" %@ (%@ %@)" = "%1$@ ( %2$@ %3$@ )";
 " & " = "&";
 " and " = "и";
 " buy." = "купить.";
@@ -47,7 +47,7 @@
 "%@ Confirmations" = "%@ Подтверждения";
 "%@ copied to clipboard" = "%@ скопировано в буфер обмена";
 "%@ needed to exchange" = "%@ необходимо обменять";
-"%@ of %@" = "%@ из %@";
+"%@ of %@" = "%1$@ из %2$@";
 "%@ payment request" = "%@ запрос на оплату";
 "%@ payment request." = "%@ запрос на оплату.";
 "%@ Received" = "%@ Получено";
@@ -57,7 +57,7 @@
 "%d address" = "%d адрес";
 "%d addresses" = "%d адресов";
 "%d Confirmations" = "%d подтверждений";
-"%d login attempts left. Please enter your %@ 2FA code" = "%d попыток входа в систему осталось. Пожалуйста, введите ваш код %@ 2FA";
+"%d login attempts left. Please enter your %@ 2FA code" = "%1$d попыток входа в систему осталось. Пожалуйста, введите ваш код %2$@ 2FA";
 "%d Transactions" = "%d транзакций";
 "%lld hours ago" = "%lld часов назад";
 "%lld minutes ago" = "%lld минут назад";
@@ -125,7 +125,7 @@
 "An Error Occurred" = "Произошла ошибка";
 "An error occurred due to interruptions during PIN verification. Please close the app and try again." = "Произошла ошибка из-за прерываний во время проверки PIN-кода. Пожалуйста, закройте приложение и попробуйте снова.";
 "An error occurred when getting an approximate quote. Please try again later. Details: %@" = "Произошла ошибка при получении приблизительного предложения. Пожалуйста, попробуйте позже. Подробности: %@";
-"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "Произошла ошибка при получении баланса %@ . Пожалуйста, попробуйте позже. Подробности: %@";
+"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "Произошла ошибка при получении баланса %1$@ . Пожалуйста, попробуйте позже. Подробности: %2$@";
 "An error occurred when selecting your tier. Please try again later." = "При выборе вашего уровня возникла ошибка. Повторите попытку позже.";
 "An error occurred while changing 2-Step verification." = "Произошла ошибка при изменении двухэтапной проверки.";
 "An error occurred while copying your address to the clipboard. Please re-select the destination address or restart the app and try again." = "Произошла ошибка при копировании вашего адреса в буфер обмена. Пожалуйста, повторно выберите адрес назначения или перезапустите приложение и попробуйте снова.";
@@ -216,10 +216,10 @@
 "By creating a wallet you agree to Blockchain’s " = "Создавая кошелек, вы соглашаетесь с документами Blockchain";
 "By creating a wallet you agree to Blockchain’s Terms of Services & Privacy Policy" = "Создавая кошелек, вы соглашаетесь с Условиями предоставления услуг и Политикой конфиденциальности Blockchain.";
 "By depositing funds to this account, you agree to " = "Внося средства на этот счет, вы соглашаетесь";
-"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "Нажимая «Начать сейчас», вы соглашаетесь с %@ и %@ Blockchain";
+"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "Нажимая «Начать сейчас», вы соглашаетесь с %1$@ и %2$@ Blockchain";
 "By tapping Begin Now, you agree to Coinify's Terms of Service & Privacy Policy" = "Нажимая «Начать сейчас», вы соглашаетесь с Условиями обслуживания и Политикой конфиденциальности Coinify.";
-"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Нажимая «Отправить», вы соглашаетесь с %@ и %@ Blockchain";
-"Calculating: Address %@ of %@" = "Расчет: адрес %@ из %@";
+"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Нажимая «Отправить», вы соглашаетесь с %1$@ и %2$@ Blockchain";
+"Calculating: Address %@ of %@" = "Расчет: адрес %1$@ из %2$@";
 "Camera Access Denied" = "Доступ к камере запрещен";
 "Canadian Dollar" = "Канадский доллар";
 "Cancel" = "Отмена";
@@ -240,7 +240,7 @@
 "Check out Swap" = "Проверить Swap";
 "Check Your Inbox" = "Проверь свои входящие";
 "Check your inbox." = "Проверь свои входящие.";
-"Checking for more: Step %d of %d" = "Дополнительная проверка: шаг %d из %d";
+"Checking for more: Step %d of %d" = "Дополнительная проверка: шаг %1$d из %2$d";
 "Checking for Wallet updates" = "Идет проверка обновлений кошелька";
 "Checkout" = "Проверять, выписываться";
 "Checkout the Exchange" = "Оформить заказ на бирже";
@@ -403,7 +403,7 @@
 "Everything you need to store, spend and receive BTC, ETH and BCH." = "Все, что вам требуется, для хранения, отправки и получения BTC, ETH и BCH.";
 "Exchange" = "обмен";
 "Exchange %@ Address" = "Обмен %@ Адрес";
-"Exchange %@ for %@" = "Обменять %@ на %@";
+"Exchange %@ for %@" = "Обменять %1$@ на %2$@";
 "Exchange %@ Wallet" = "Обмен %@ Кошелек";
 "Exchange Completed" = "Обмен завершен";
 "Exchange In Progress" = "Обмен в процессе";
@@ -441,7 +441,7 @@
 "Forget" = "забывать";
 "Forget Wallet" = "Забыть кошелек";
 "Forgot Password?" = "Забыл пароль?\"";
-"Found %d, with %@" = "Найдено %d , с %@";
+"Found %d, with %@" = "Найдено %1$d , с %2$@";
 "fourth" = "четвертый";
 "fourth word" = "четвертое слово";
 "From" = "Из";
@@ -516,7 +516,7 @@
 "Introducing the Exchange" = "Представляем биржу";
 "Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX = 1 USD." = "Представляем USD PAX, безопасный и стабильный крипто-актив, который вы можете использовать для хранения стоимости. 1 PAX = 1 USD.";
 "Invalid %@ Address" = "Недействительный адрес %@";
-"Invalid %@ address: %@" = "Неверный %@ адрес: %@";
+"Invalid %@ address: %@" = "Неверный %1$@ адрес: %2$@";
 "Invalid Bitcoin address: %@" = "Недействительный адрес Bitcoin: %@";
 "Invalid destination address" = "Недействительный адрес назначения";
 "Invalid email address." = "Недопустимый адрес электронной почты.";
@@ -577,7 +577,7 @@
 "Log In" = "Войти";
 "Log in to refresh addresses" = "Войдите, чтобы обновить адреса";
 "Log in to Web Wallet" = "Войдите в веб-кошелек";
-"Log in to your Blockchain Wallet via your PC or Mac at " = "Войдите в свой кошелек Blockchain через ПК или Mac по адресу %s .";
+"Log in to your Blockchain Wallet via your PC or Mac at " = "Войдите в свой кошелек Blockchain через ПК или Mac по адресу %1$s .";
 "Log Out" = "Выйти";
 "Login existing Wallet" = "Войти в существующий кошелек";
 "login.blockchain.com" = "login.blockchain.com";
@@ -670,7 +670,7 @@
 "OK" = "Ok";
 "Once an order starts, we are unable to stop it." = "После начала заказа мы не можем его остановить.";
 "Once we receive your bank transfer, your %@ buy order will complete." = "Как только мы получим ваш банковский перевод, ваш заказ на покупку будет выполнен.";
-"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "Как только мы получим ваши средства, мы начнем ваш заказ на покупку %s . Обратите внимание, что ваша окончательная сумма может измениться в зависимости от рыночной активности. Может взиматься плата.";
+"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "Как только мы получим ваши средства, мы начнем ваш заказ на покупку %1$s . Обратите внимание, что ваша окончательная сумма может измениться в зависимости от рыночной активности. Может взиматься плата.";
 "Once your verification is confirmed, you’ll automatically secure a spot in the Airdrop for Stacks." = "Как только ваша проверка будет подтверждена, вы автоматически обеспечите себе место в Airdrop для стеков.";
 "Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected." = "Отправляйте средства только с банковского счета на ваше имя. Если нет, ваш депозит может быть отложен или отклонен.";
 "Ooops! Something went wrong." = "Ой! Что-то пошло не так.";
@@ -743,12 +743,12 @@
 "Please review and confirm your " = "Пожалуйста, просмотрите и подтвердите ваш";
 "Please select a different address to send from." = "Пожалуйста, выберите другой адрес для отправки.";
 "Please send %@ to" = "Отправьте %@ на";
-"Please send %@ to bitcoin address.\n%@" = "Отправьте %@ на адрес биткойна. \
- %@";
+"Please send %@ to bitcoin address.\n%@" = "Отправьте %1$@ на адрес биткойна. \
+ %2$@";
 "Please send BCH to the Bitcoin Cash address\n%@" = "Пожалуйста, отправьте BCH на денежный адрес Биткойн \
  %@";
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "Отправьте платеж на адрес биткойн ( <a href=\"https://blockchain.info/wallet/bitcoin-faq\"> справка? </a> ): %@";
-"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Переведите %s со своего банковского счета на Blockchain.com. Как только мы получим средства, мы создадим ваш заказ на покупку %s .";
+"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Переведите %1$s со своего банковского счета на Blockchain.com. Как только мы получим средства, мы создадим ваш заказ на покупку %2$s .";
 "Please try again" = "Попробуйте еще раз";
 "Please verify your email address first." = "Сначала верифицируйте свой адрес электронной почты.";
 "Please verify your mobile number first." = "Пожалуйста, подтвердите свой номер мобильного телефона в первую очередь.";
@@ -891,7 +891,7 @@
 "Stellar is an open-source, decentralized payment protocol that allows for fast and cheap cross-border transactions between any pair of currencies." = "Stellar - это децентрализованный протокол платежей с открытым исходным кодом, который позволяет осуществлять быстрые и дешевые трансграничные транзакции между любыми парами валют.";
 "Stellar Price" = "Цена Stellar";
 "Stellar requires that all Stellar accounts hold a minimum balance of lumens, or XLM. This means you cannot send a balance out of your Stellar Wallet that would leave your Stellar Wallet with less than the minimum balance. This also means that in order to send XLM to a new Stellar account, you must send enough XLM to meet the minimum balance requirement." = "Stellar требует, чтобы все учетные записи Stellar имели минимальный баланс люменов, или XLM. Это означает, что вы не можете отправлять средства со своего кошелька Stellar, в результате чего на вашем кошельке останется минимальный баланс. Это также означает, что для отправки XLM в новую учетную запись Stellar вы должны отправить достаточное количество XLM для удовлетворения требования к минимальному балансу.";
-"Step %d of %d" = "Шаг %d из %d";
+"Step %d of %d" = "Шаг %1$d из %2$d";
 "store" = "хранить";
 "Stored" = "Сохранено";
 "Street line" = "Строка улицы";
@@ -1028,9 +1028,9 @@
 "Transfer imported addresses?" = "Передача импортированных адресов?";
 "Transfer In Crypto" = "Перевод в крипто";
 "Transferred" = "Переданы";
-"Transferred funds from %d %@" = "Переведенные средства от %d %@";
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Перечислены средства от %d %@ . Выходы для %d %@ были слишком малы.";
-"Transferring all funds: Address %i of %i" = "Перевод всех средств: Адрес %i из %i";
+"Transferred funds from %d %@" = "Переведенные средства от %1$d %2$@";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Перечислены средства от %1$d %2$@ . Выходы для %3$d %4$@ были слишком малы.";
+"Transferring all funds: Address %i of %i" = "Перевод всех средств: Адрес %1$i из %2$i";
 "Try again" = "Попробуйте еще раз";
 "Try Again" = "Попробуйте еще раз";
 "twelfth" = "двенадцатый";
@@ -1181,7 +1181,7 @@
 "With Blockchain Airdrops, get free crypto sent right to your Blockchain Wallet." = "С Blockchain Airdrops получите бесплатную криптографию, отправленную прямо на ваш Blockchain Wallet.";
 "With Swap your crypto is safe, secure, and your keys are always intact." = "Со Swap ваши криптовалюты в безопасности, а ключи всегда в целости и сохранности.";
 "word" = "слово";
-"Word %@ of %@" = "Слово %@ из %@";
+"Word %@ of %@" = "Слово %1$@ из %2$@";
 "Would you like to add the bitcoin address %@ to your address book?" = "Вы хотите добавить этот bitcoin-адрес %@ в свою адресную книгу?";
 "Would you like to archive the addresses used?" = "Вы хотите заархивировать используемые адреса?";
 "Would you like to tell us about your experience with Blockchain?" = "Хотите рассказать нам о своем опыте работы с Blockchain?";
@@ -1192,7 +1192,7 @@
 "XLM is a token that enables quick, low cost global transactions. Send, receive, and trade XLM in the wallet today." = "XLM - это токен, который позволяет быстро и недорого совершать глобальные транзакции. Отправляйте, получайте и торгуйте XLM с помощью кошелька уже сегодня.";
 "XLM Reserve Requirement" = "Требование резервирования XLM";
 "xxx" = "ххх";
-"xxx %@ (%@ %@)" = "ххх %@ ( %@ %@ )";
+"xxx %@ (%@ %@)" = "ххх %1$@ ( %2$@ %3$@ )";
 "year" = "год";
 "Year" = "Год";
 "years" = "лет";
@@ -1229,13 +1229,13 @@
 "You must leave at least one active address" = "Вы должны оставить по крайней мере один активный адрес";
 "You need to confirm your email address so that we can keep you informed about your wallet." = "Вам необходимо подтвердить свой адрес электронной почты, чтобы мы могли предоставлять Вам информацию о вашем кошельке.";
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "Если у вас есть доступ к ID кошелька и паролю, вы должны всегда выполнять сопряжение или входить в систему. Восстановление ваших средств создаст новый ID кошелька. Вы хотите продолжить?";
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Вы указали очень низкую сумму комиссии в размере %s.\
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Вы указали очень низкую сумму комиссии в размере %1$s.\
 \
-Ваша транзакция может быть задержана и никогда не получить подтверждения. Для увеличения вероятности подтверждения транзакции в течение приблизительно одного часа (6 блоков) мы рекомендуем указать сумму комиссии не менее %s.";
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Вы указали исключительно небольшую комиссию за транзакцию в размере %@ . Ваша транзакция может застрять и, возможно, никогда не подтвердить. Чтобы повысить вероятность подтверждения вашей транзакции в течение примерно одного часа (шесть блоков), мы настоятельно рекомендуем комиссию не менее %@ . Поскольку у вас недостаточно средств, это означает, что сумму отправления также придется снизить до %@ .";
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Вы указали необычно высокую сумму комиссии в размере %s.\
+Ваша транзакция может быть задержана и никогда не получить подтверждения. Для увеличения вероятности подтверждения транзакции в течение приблизительно одного часа (6 блоков) мы рекомендуем указать сумму комиссии не менее %2$s.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Вы указали исключительно небольшую комиссию за транзакцию в размере %1$@ . Ваша транзакция может застрять и, возможно, никогда не подтвердить. Чтобы повысить вероятность подтверждения вашей транзакции в течение примерно одного часа (шесть блоков), мы настоятельно рекомендуем комиссию не менее %2$@ . Поскольку у вас недостаточно средств, это означает, что сумму отправления также придется снизить до %3$@ .";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Вы указали необычно высокую сумму комиссии в размере %1$s.\
 \
-Даже если вы снизите ее до%s, вы можете ожидать подтверждения транзакции в течение примерно 10 минут (1 блок).";
+Даже если вы снизите ее до%2$s, вы можете ожидать подтверждения транзакции в течение примерно 10 минут (1 блок).";
 "You will be leaving the app." = "Вы будете выходить из приложения.";
 "You will be redirected to\n%@." = "Вы будете перенаправлены на \
  %@ .";
@@ -1480,3 +1480,9 @@
 "This card has already been saved" = "Эта карта уже была сохранена";
 "Waiting on Funds" = "Ожидание на средства";
 "Your final amount may change due to market activity" = "Ваша итоговая сумма может измениться из-за активности на рынке";
+"% APY" = "% APY";
+"Code" = "Код";
+"Earn" = "зарабатывать";
+"Interest" = "Интерес";
+"Trading" = "торговый";
+"Wallet Balance" = "Кошелек баланс";
