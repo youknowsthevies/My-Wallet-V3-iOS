@@ -62,7 +62,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions
                      launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-
+        
+        /// `User-Agent` uses `UIDevice` which, given that it is a
+        /// `UIKit` class should not be in any of our frameworks other than `PlatformUIKit`
+        Network.shared.apply(userAgent: userAgent)
+        
         if ProcessInfo.processInfo.environmentBoolean(for: "automation_erase_data") == true {
             // If ProcessInfo environment contains "automation_erase_data": true, erase wallet and settings.
             // This behaviour happens even on non-debug builds, this is necessary because our UI tests
@@ -346,6 +350,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             message: LocalizationConstants.DeepLink.deepLinkUpdateMessage,
             actions: actions
         )
+    }
+    
+    private var userAgent: String? {
+        let systemVersion = UIDevice.current.systemVersion
+        let modelName = UIDevice.current.model
+        guard
+            let version = Bundle.applicationVersion,
+            let build = Bundle.applicationBuildVersion else {
+                return nil
+        }
+        let versionAndBuild = String(format: "%@ b%@", version, build)
+        return String(format: "Blockchain-iOS/%@ (iOS/%@; %@)", versionAndBuild, systemVersion, modelName)
     }
 }
 

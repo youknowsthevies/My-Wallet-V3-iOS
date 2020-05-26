@@ -22,7 +22,15 @@ import UIKit
     }
 }
 
-public struct Network {
+public class Network {
+    
+    public static let shared = Network()
+    
+    public var userAgent: String?
+    
+    public func apply(userAgent: String?) {
+        self.userAgent = userAgent
+    }
     
     public struct Config {
                 
@@ -75,7 +83,7 @@ public struct Network {
         public static let `default`: Dependencies = {
             let blockchainAPIConfig = Config.defaultConfig
             let sessionConfiguration = URLSessionConfiguration.default
-            if let userAgent = Network.userAgent {
+            if let userAgent = Network.shared.userAgent {
                 sessionConfiguration.httpAdditionalHeaders = [HttpHeaderField.userAgent: userAgent]
             }
             sessionConfiguration.waitsForConnectivity = true
@@ -96,7 +104,7 @@ public struct Network {
         public static let wallet: Dependencies = {
             let blockchainAPIConfig = Config.walletConfig
             let sessionConfiguration = URLSessionConfiguration.default
-            if let userAgent = Network.userAgent {
+            if let userAgent = Network.shared.userAgent {
                 sessionConfiguration.httpAdditionalHeaders = [HttpHeaderField.userAgent: userAgent]
             }
             sessionConfiguration.waitsForConnectivity = true
@@ -117,7 +125,7 @@ public struct Network {
         public static let retail: Dependencies = {
             let blockchainAPIConfig = Config.retailConfig
             let sessionConfiguration = URLSessionConfiguration.default
-            if let userAgent = Network.userAgent {
+            if let userAgent = Network.shared.userAgent {
                 sessionConfiguration.httpAdditionalHeaders = [HttpHeaderField.userAgent: userAgent]
             }
             sessionConfiguration.waitsForConnectivity = true
@@ -163,18 +171,6 @@ public struct Network {
                 communicator: communicator
             )
         }()
-    }
-    
-    static var userAgent: String? {
-        let systemVersion = UIDevice.current.systemVersion
-        let modelName = UIDevice.current.model
-        guard
-            let version = Bundle.applicationVersion,
-            let build = Bundle.applicationBuildVersion else {
-                return nil
-        }
-        let versionAndBuild = String(format: "%@ b%@", version, build)
-        return String(format: "Blockchain-iOS/%@ (iOS/%@; %@)", versionAndBuild, systemVersion, modelName)
     }
 }
 
