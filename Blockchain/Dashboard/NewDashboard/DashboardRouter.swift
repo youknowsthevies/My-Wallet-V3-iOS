@@ -57,7 +57,7 @@ final class DashboardRouter {
     
     func showDetailsScreen(for currency: CryptoCurrency) {
         // TODO: Move away from the routing layer - phase II of savings
-        let savingsRatesService = SavingAccountService(authenticationService: NabuAuthenticationService.shared)
+        let savingsRatesService = SavingAccountService(authenticationService: NabuAuthenticationService.shared, featureFetching: AppFeatureConfigurator.shared)
         let balanceFetcher = dataProvider.balance[currency]
         let detailsInteractor = DashboardDetailsScreenInteractor(
             currency: currency,

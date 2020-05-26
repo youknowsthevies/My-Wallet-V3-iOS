@@ -30,7 +30,8 @@ final class DataProvider: DataProviding {
     /// Balance service for any asset
     let balance: BalanceProviding
     
-    init(tradingAccountClient: TradingBalanceClientAPI = TradingBalanceClient(),
+    init(featureFetching: FeatureFetching = AppFeatureConfigurator.shared,
+         tradingAccountClient: TradingBalanceClientAPI = TradingBalanceClient(),
          savingsAccountClient: SavingsAccountClientAPI = SavingsAccountClient(),
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared) {
@@ -98,7 +99,8 @@ final class DataProvider: DataProviding {
         
         let savingsAccountService = SavingAccountService(
             client: savingsAccountClient,
-            authenticationService: authenticationService
+            authenticationService: authenticationService,
+            featureFetching: featureFetching
         )
                 
         let etherBalanceFetcher = AssetBalanceFetcher(
