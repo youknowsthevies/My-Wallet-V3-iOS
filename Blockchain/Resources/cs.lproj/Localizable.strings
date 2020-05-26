@@ -37,7 +37,7 @@
         " = "\
  Momentálně máte povoleno e-mailové oznámení. Změna e-mailu zakáže e-mailová oznámení. \
 ";
-" %@ (%@ %@)" = "%@ ( %@ %@ )";
+" %@ (%@ %@)" = "%1$@ ( %2$@ %3$@ )";
 " & " = "&";
 " and " = "a";
 " buy." = "Koupit.";
@@ -48,7 +48,7 @@
 "%@ Confirmations" = "%@ Potvrzení";
 "%@ copied to clipboard" = "%@ zkopírováno do schránky";
 "%@ needed to exchange" = "Pro výměnu je potřeba %@";
-"%@ of %@" = "%@ z %@";
+"%@ of %@" = "%1$@ z %2$@";
 "%@ payment request" = "Žádost o platbu %@";
 "%@ payment request." = "Žádost o platbu: %@ .";
 "%@ Received" = "%@ Přijato";
@@ -58,7 +58,7 @@
 "%d address" = "%d adresa";
 "%d addresses" = "%d adresy";
 "%d Confirmations" = "Potvrzení: %d";
-"%d login attempts left. Please enter your %@ 2FA code" = "Zbývá pokusů o přihlášení %d . Zadejte svůj kód %@ 2FA";
+"%d login attempts left. Please enter your %@ 2FA code" = "Zbývá pokusů o přihlášení %1$d . Zadejte svůj kód %2$@ 2FA";
 "%d Transactions" = "Transakce: %d";
 "%lld hours ago" = "Před %lld hod";
 "%lld minutes ago" = "Před %lld min";
@@ -126,7 +126,7 @@
 "An Error Occurred" = "Vyskytla se chyba";
 "An error occurred due to interruptions during PIN verification. Please close the app and try again." = "Došlo k chybě v důsledku přerušení při ověřování PIN. Ukončete aplikaci a akci opakujte.";
 "An error occurred when getting an approximate quote. Please try again later. Details: %@" = "Při získávání přibližné nabídky došlo k chybě. Prosím zkuste to znovu později. Podrobnosti: %@";
-"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "Při získávání zůstatku %@ došlo k chybě. Prosím zkuste to znovu později. Podrobnosti: %@";
+"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "Při získávání zůstatku %1$@ došlo k chybě. Prosím zkuste to znovu později. Podrobnosti: %2$@";
 "An error occurred when selecting your tier. Please try again later." = "Při výběru vrstvy došlo k chybě. Prosím zkuste to znovu později.";
 "An error occurred while changing 2-Step verification." = "Při změně verifikace ve dvou krocích došlo k chybě.";
 "An error occurred while copying your address to the clipboard. Please re-select the destination address or restart the app and try again." = "Při kopírování adresy do schránky došlo k chybě. Znovu vyberte cílovou adresu nebo restartujte aplikaci a akci opakujte.";
@@ -217,10 +217,10 @@
 "By creating a wallet you agree to Blockchain’s " = "Vytvořením peněženky souhlasíte s Blockchainem";
 "By creating a wallet you agree to Blockchain’s Terms of Services & Privacy Policy" = "Vytvořením peněženky souhlasíte s podmínkami a zásadami ochrany osobních údajů společnosti Blockchain";
 "By depositing funds to this account, you agree to " = "Vložením prostředků na tento účet souhlasíte";
-"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "Tím, že stisknete \"Začněte hned\", souhlasíte s %@ & %@ Blockchainem";
+"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "Tím, že stisknete \"Začněte hned\", souhlasíte s %1$@ & %2$@ Blockchainem";
 "By tapping Begin Now, you agree to Coinify's Terms of Service & Privacy Policy" = "Klepnutím na tlačítko Spustit nyní souhlasíte s podmínkami služby Coinify a zásadami ochrany osobních údajů";
-"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Klepnutím na tlačítko Submit (Odeslat) vyjadřujete souhlas s blokováním %@ & %@";
-"Calculating: Address %@ of %@" = "Výpočet: Adresa %@ z %@";
+"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Klepnutím na tlačítko Submit (Odeslat) vyjadřujete souhlas s blokováním %1$@ & %2$@";
+"Calculating: Address %@ of %@" = "Výpočet: Adresa %1$@ z %2$@";
 "Camera Access Denied" = "Přístup k fotoaparátu zamítnut";
 "Canadian Dollar" = "Kanadský dolar";
 "Cancel" = "zrušení";
@@ -241,7 +241,7 @@
 "Check out Swap" = "Podívejte se na swap";
 "Check Your Inbox" = "Zkontrolujte svou doručenou poštu";
 "Check your inbox." = "Zkontrolujte doručenou poštu.";
-"Checking for more: Step %d of %d" = "Další informace: Krok %d z %d";
+"Checking for more: Step %d of %d" = "Další informace: Krok %1$d z %2$d";
 "Checking for Wallet updates" = "Ověřování aktualizací peněženky";
 "Checkout" = "Překontrolovat";
 "Checkout the Exchange" = "Pokladna burzy";
@@ -399,12 +399,12 @@
 "Ether Price" = "Cena etheru";
 "Euro" = "Euro";
 "Even better, since you need ETH to make USD PAX trades, we just airdropped enough ETH into your Wallet to cover your first 3 transactions 🙌🏻" = "Ještě lépe, protože potřebujete, aby ETH učinil obchody s USD PAX, jsme do vašeho Peněženky právě vyslali dostatek ETH, abychom pokryli vaše první 3 transakce 🙌🏻";
-"Every country has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Každá země má jiná pravidla, jak nakupovat a prodávat kryptoměny. Mějte oči oloupané a dáme vám vědět, jakmile začneme v %s !";
+"Every country has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Každá země má jiná pravidla, jak nakupovat a prodávat kryptoměny. Mějte oči oloupané a dáme vám vědět, jakmile začneme v %1$s !";
 "Every state has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Každý stát má jiná pravidla, jak nakupovat a prodávat kryptoměny. Mějte oči oloupané, dáme vám vědět, jakmile začneme v %@ !";
 "Everything you need to store, spend and receive BTC, ETH and BCH." = "Vše, co potřebujete k uložení, utrácení a přijetí BTC, ETH a BCH.";
 "Exchange" = "Výměna";
 "Exchange %@ Address" = "Výměna %@ Address";
-"Exchange %@ for %@" = "Vyměňte %@ za %@";
+"Exchange %@ for %@" = "Vyměňte %1$@ za %2$@";
 "Exchange %@ Wallet" = "Výměna %@ Peněženka";
 "Exchange Completed" = "Výměna dokončena";
 "Exchange In Progress" = "Výměna probíhá";
@@ -442,7 +442,7 @@
 "Forget" = "Zapomenout";
 "Forget Wallet" = "Zapomenout peněženku";
 "Forgot Password?" = "Zapomenuté heslo?\"";
-"Found %d, with %@" = "Nalezeno %d s %@";
+"Found %d, with %@" = "Nalezeno %1$d s %2$@";
 "fourth" = "Čtvrtý";
 "fourth word" = "čtvrté slovo";
 "From" = "Z";
@@ -517,7 +517,7 @@
 "Introducing the Exchange" = "Představujeme burzu";
 "Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX = 1 USD." = "Představujeme USD PAX, bezpečné a stabilní krypto aktivum, které můžete použít k uložení hodnoty. 1 PAX = 1 USD.";
 "Invalid %@ Address" = "Neplatná adresa %@ Adresa";
-"Invalid %@ address: %@" = "Neplatná adresa %@ : %@";
+"Invalid %@ address: %@" = "Neplatná adresa %1$@ : %2$@";
 "Invalid Bitcoin address: %@" = "Neplatná bitcoinová adresa: %@";
 "Invalid destination address" = "Neplatná cílová adresa";
 "Invalid email address." = "Neplatná e-mailová adresa.";
@@ -578,7 +578,7 @@
 "Log In" = "Přihlásit se";
 "Log in to refresh addresses" = "Chcete-li obnovit adresy, přihlaste se";
 "Log in to Web Wallet" = "Přihlaste se do webové peněženky";
-"Log in to your Blockchain Wallet via your PC or Mac at " = "Přihlaste se do své peněženky Blockchain prostřednictvím počítače PC nebo Mac za %s .";
+"Log in to your Blockchain Wallet via your PC or Mac at " = "Přihlaste se do své peněženky Blockchain prostřednictvím počítače PC nebo Mac za %1$s .";
 "Log Out" = "Odhlásit se";
 "Login existing Wallet" = "Přihlásit existující peněženky";
 "login.blockchain.com" = "login.blockchain.com";
@@ -671,7 +671,7 @@
 "OK" = "OK";
 "Once an order starts, we are unable to stop it." = "Jakmile objednávka začne, nemůžeme ji zastavit.";
 "Once we receive your bank transfer, your %@ buy order will complete." = "Jakmile obdržíme bankovní převod, bude vaše objednávka dokončena.";
-"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "Jakmile dostaneme vaše prostředky, zahájíme vaši objednávku nákupu %s . Vaše konečná částka se může změnit na řádnou tržní aktivitu. Mohou být účtovány poplatky.";
+"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "Jakmile dostaneme vaše prostředky, zahájíme vaši objednávku nákupu %1$s . Vaše konečná částka se může změnit na řádnou tržní aktivitu. Mohou být účtovány poplatky.";
 "Once your verification is confirmed, you’ll automatically secure a spot in the Airdrop for Stacks." = "Jakmile bude vaše ověření potvrzeno, automaticky zajistíte místo v Airdrop for Stacks.";
 "Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected." = "Prostředky zasílejte pouze z vašeho bankovního účtu. Pokud ne, váš vklad může být zpožděn nebo odmítnut.";
 "Ooops! Something went wrong." = "Ooops! Něco se pokazilo.";
@@ -744,12 +744,12 @@
 "Please review and confirm your " = "Zkontrolujte a potvrďte";
 "Please select a different address to send from." = "Vyberte jinou adresu, ze které chcete odeslat.";
 "Please send %@ to" = "Prosím odešlete %@ to";
-"Please send %@ to bitcoin address.\n%@" = "Zašlete prosím %@ na bitcoinovou adresu. \
- %@";
+"Please send %@ to bitcoin address.\n%@" = "Zašlete prosím %1$@ na bitcoinovou adresu. \
+ %2$@";
 "Please send BCH to the Bitcoin Cash address\n%@" = "Zašlete prosím BCH na bitcoinovou hotovostní adresu \
  %@";
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "Zašlete platbu na bitcoinovou adresu ( <a href=\"https://blockchain.info/wallet/bitcoin-faq\"> nápověda? </a> ): %@";
-"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Převeďte %s z vašeho bankovního účtu na Blockchain.com. Jakmile dostaneme prostředky, vytvoříme vaši objednávku %s .";
+"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Převeďte %1$s z vašeho bankovního účtu na Blockchain.com. Jakmile dostaneme prostředky, vytvoříme vaši objednávku %2$s .";
 "Please try again" = "Zkuste to prosím znovu";
 "Please verify your email address first." = "Nejdříve ověřte svou e-mailovou adresu.";
 "Please verify your mobile number first." = "Nejprve prosím ověřte své mobilní číslo.";
@@ -892,7 +892,7 @@
 "Stellar is an open-source, decentralized payment protocol that allows for fast and cheap cross-border transactions between any pair of currencies." = "Hvězdný je open-source, decentralizovaný platební protokol, který umožňuje rychlé a levné přeshraniční transakce mezi jakoukoli dvojicí měn.";
 "Stellar Price" = "Hvězdná cena";
 "Stellar requires that all Stellar accounts hold a minimum balance of lumens, or XLM. This means you cannot send a balance out of your Stellar Wallet that would leave your Stellar Wallet with less than the minimum balance. This also means that in order to send XLM to a new Stellar account, you must send enough XLM to meet the minimum balance requirement." = "Stellar vyžaduje, aby všechny hvězdné účty měly minimální rovnováhu lumenů nebo XLM. To znamená, že nemůžete odeslat vyvážení z Hvězdné peněženky, které by zanechalo vaši hvězdnou peněženku méně než minimální zůstatek. To také znamená, že za účelem odeslání XLM na nový hvězdný účet musíte poslat dostatek XLM, abyste splnili požadavek na minimální zůstatek.";
-"Step %d of %d" = "Krok %d z %d";
+"Step %d of %d" = "Krok %1$d z %2$d";
 "store" = "obchod";
 "Stored" = "Uloženo";
 "Street line" = "Pouliční linka";
@@ -1029,9 +1029,9 @@
 "Transfer imported addresses?" = "Přenést importované adresy?";
 "Transfer In Crypto" = "Transfer In Crypto";
 "Transferred" = "Přestoupil";
-"Transferred funds from %d %@" = "Převedené prostředky od %d %@";
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Převedené prostředky z %d %@ . Výstupy pro %d %@ byly příliš malé.";
-"Transferring all funds: Address %i of %i" = "Převod všech prostředků: Adresa %i z %i";
+"Transferred funds from %d %@" = "Převedené prostředky od %1$d %2$@";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Převedené prostředky z %1$d %2$@ . Výstupy pro %3$d %4$@ byly příliš malé.";
+"Transferring all funds: Address %i of %i" = "Převod všech prostředků: Adresa %1$i z %2$i";
 "Try again" = "Zkus to znovu";
 "Try Again" = "Zkus to znovu";
 "twelfth" = "dvanáctý";
@@ -1182,7 +1182,7 @@
 "With Blockchain Airdrops, get free crypto sent right to your Blockchain Wallet." = "S Blockchain Airdrops získáte zdarma kryptogram odeslaný přímo do vaší Peněženky Blockchain.";
 "With Swap your crypto is safe, secure, and your keys are always intact." = "S Swapem je vaše krypto bezpečné, bezpečné a vaše klíče jsou vždy neporušené.";
 "word" = "slovo";
-"Word %@ of %@" = "Slovo %@ z %@";
+"Word %@ of %@" = "Slovo %1$@ z %2$@";
 "Would you like to add the bitcoin address %@ to your address book?" = "Chcete přidat bitcoinovou adresu %@ do Vašeho adresáře?";
 "Would you like to archive the addresses used?" = "Chcete archivovat použité adresy?";
 "Would you like to tell us about your experience with Blockchain?" = "Chtěli byste nám sdělit své zkušenosti s Blockchainem?";
@@ -1193,7 +1193,7 @@
 "XLM is a token that enables quick, low cost global transactions. Send, receive, and trade XLM in the wallet today." = "XLM je token, který umožňuje rychlé a levné globální transakce. Poslat, přijmout a obchodovat XLM v peněžence dnes.";
 "XLM Reserve Requirement" = "XLM Požadavek na rezervu";
 "xxx" = "xxx";
-"xxx %@ (%@ %@)" = "xxx %@ ( %@ %@ )";
+"xxx %@ (%@ %@)" = "xxx %1$@ ( %2$@ %3$@ )";
 "year" = "rok";
 "Year" = "Rok";
 "years" = "let";
@@ -1230,13 +1230,13 @@
 "You must leave at least one active address" = "Musíte opustit alespoň jednu aktivní adresu";
 "You need to confirm your email address so that we can keep you informed about your wallet." = "Musíte potvrdit svou e-mailovou adresu, abychom vás mohli informovat o vaší peněžence.";
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "Vždy byste měli provést spárování nebo se přihlásit, pokud máte přístup k ID a heslu peněženky. Obnovením prostředků vytvoříte nové ID peněženky. Chcete pokračovat?";
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Zadalli jste neobvykle nízký poplatek za transakci %s.\
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Zadalli jste neobvykle nízký poplatek za transakci %1$s.\
 \
-Může dojít k zablokování transakce a nemusí být nikdy nepotvrzena. Chcete-li zvýšit pravděpodobnost potvrzení transakce během asi jedné hodiny (6 bloků), důrazně doporučujeme poplatek minimálně %s.";
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Zadali jste výjimečně malý transakční poplatek %@ . Vaše transakce může uvíznout a možná se nikdy nepotvrdí. Chcete-li zvýšit pravděpodobnost, že vaše transakce bude potvrzena do přibližně jedné hodiny (šest bloků), důrazně doporučujeme poplatek ve výši nejméně %@ . Protože nemáte dostatek prostředků, znamená to, že částku Odeslat bude třeba také snížit na %@ .";
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Zadali jste neobvykle vysoký poplatek za transakci %s.\
+Může dojít k zablokování transakce a nemusí být nikdy nepotvrzena. Chcete-li zvýšit pravděpodobnost potvrzení transakce během asi jedné hodiny (6 bloků), důrazně doporučujeme poplatek minimálně %2$s.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Zadali jste výjimečně malý transakční poplatek %1$@ . Vaše transakce může uvíznout a možná se nikdy nepotvrdí. Chcete-li zvýšit pravděpodobnost, že vaše transakce bude potvrzena do přibližně jedné hodiny (šest bloků), důrazně doporučujeme poplatek ve výši nejméně %2$@ . Protože nemáte dostatek prostředků, znamená to, že částku Odeslat bude třeba také snížit na %3$@ .";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Zadali jste neobvykle vysoký poplatek za transakci %1$s.\
 \
-I když poplatek snížíte na %s, bude transakce potvrzena během příštích ~10 minut (1 bloku).";
+I když poplatek snížíte na %2$s, bude transakce potvrzena během příštích ~10 minut (1 bloku).";
 "You will be leaving the app." = "Opustíte aplikaci.";
 "You will be redirected to\n%@." = "Budete přesměrováni na \
  %@ .";
@@ -1481,3 +1481,9 @@ I když poplatek snížíte na %s, bude transakce potvrzena během příštích 
 "This card has already been saved" = "Tato karta již byla uložena";
 "Waiting on Funds" = "Čekání na fondy";
 "Your final amount may change due to market activity" = "Vaše konečná částka se může v důsledku tržní aktivity změnit";
+"% APY" = "% APY";
+"Code" = "Kód";
+"Earn" = "Vydělat";
+"Interest" = "Zájem";
+"Trading" = "Obchodování";
+"Wallet Balance" = "Zůstatek v peněžence";
