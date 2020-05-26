@@ -37,7 +37,7 @@
         " = "\
  Şu anda etkin e-posta bildirimleriniz var. E-postanızı değiştirmek e-posta bildirimlerini devre dışı bırakır. \
 ";
-" %@ (%@ %@)" = "%@ ( %@ %@ )";
+" %@ (%@ %@)" = "%1$@ ( %2$@ %3$@ )";
 " & " = "&";
 " and " = "ve";
 " buy." = "satın.";
@@ -48,7 +48,7 @@
 "%@ Confirmations" = "%@ Onaylar";
 "%@ copied to clipboard" = "%@ panoya kopyalandı";
 "%@ needed to exchange" = "%@ değişim için gerekli";
-"%@ of %@" = "%@ dan %@";
+"%@ of %@" = "%1$@ dan %2$@";
 "%@ payment request" = "%@ ödeme talebi.";
 "%@ payment request." = "%@ ödeme talebi.";
 "%@ Received" = "%@ Alındı";
@@ -58,7 +58,7 @@
 "%d address" = "%d adres";
 "%d addresses" = "%d adres";
 "%d Confirmations" = "%d Onay";
-"%d login attempts left. Please enter your %@ 2FA code" = "%d giriş denemesi kaldı. Lütfen %@ 2FA kodunuzu girin";
+"%d login attempts left. Please enter your %@ 2FA code" = "%1$d giriş denemesi kaldı. Lütfen %2$@ 2FA kodunuzu girin";
 "%d Transactions" = "%d İşlem";
 "%lld hours ago" = "%lld saat önce";
 "%lld minutes ago" = "%lld dakika önce";
@@ -126,7 +126,7 @@
 "An Error Occurred" = "Bir hata oluştu";
 "An error occurred due to interruptions during PIN verification. Please close the app and try again." = "PIN doğrulaması sırasında kesintiler nedeniyle bir hata oluştu. Lütfen uygulamayı kapatın ve tekrar deneyin.";
 "An error occurred when getting an approximate quote. Please try again later. Details: %@" = "Yaklaşık teklif alınırken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz. Ayrıntılar: %@";
-"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "%@ bakiyeniz alınırken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz. Ayrıntılar: %@";
+"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "%1$@ bakiyeniz alınırken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz. Ayrıntılar: %2$@";
 "An error occurred when selecting your tier. Please try again later." = "Seviyenizi seçerken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.";
 "An error occurred while changing 2-Step verification." = "2 Adımlı doğrulama değiştirilirken bir hata oluştu.";
 "An error occurred while copying your address to the clipboard. Please re-select the destination address or restart the app and try again." = "Adresiniz panoya kopyalanırken bir hata oluştu. Lütfen hedef adresi tekrar seçin veya uygulamayı yeniden başlatın ve tekrar deneyin.";
@@ -217,10 +217,10 @@
 "By creating a wallet you agree to Blockchain’s " = "Bir cüzdan oluşturarak Blockchain'in";
 "By creating a wallet you agree to Blockchain’s Terms of Services & Privacy Policy" = "Bir cüzdan oluşturarak Blockchain'in Hizmet Şartları ve Gizlilik Politikası'nı kabul etmiş olursunuz.";
 "By depositing funds to this account, you agree to " = "Bu hesaba para yatırarak,";
-"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "\"Şimdi Başla\" ya basarak, Blockchain'in %@ & %@";
+"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "\"Şimdi Başla\" ya basarak, Blockchain'in %1$@ & %2$@";
 "By tapping Begin Now, you agree to Coinify's Terms of Service & Privacy Policy" = "Şimdi Başla öğesine dokunarak Coinify'ın Hizmet Koşullarını ve Gizlilik İlkelerini kabul edersiniz.";
-"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Gönder'e dokunarak, Blockchain'in %@ & %@ değerini kabul etmiş olursunuz.";
-"Calculating: Address %@ of %@" = "Hesaplanıyor: %@ / %@ adresi";
+"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Gönder'e dokunarak, Blockchain'in %1$@ & %2$@ değerini kabul etmiş olursunuz.";
+"Calculating: Address %@ of %@" = "Hesaplanıyor: %1$@ / %2$@ adresi";
 "Camera Access Denied" = "Kamera Erişimi Engellendi";
 "Canadian Dollar" = "Kanada Doları";
 "Cancel" = "İptal etmek";
@@ -241,7 +241,7 @@
 "Check out Swap" = "Swap'a Göz Atın";
 "Check Your Inbox" = "Gelen kutunu kontrol et";
 "Check your inbox." = "Gelen kutunu kontrol et.";
-"Checking for more: Step %d of %d" = "Daha fazlasını kontrol etme: Adım %d / %d";
+"Checking for more: Step %d of %d" = "Daha fazlasını kontrol etme: Adım %1$d / %2$d";
 "Checking for Wallet updates" = "Cüzdan güncellemeleri kontrol ediliyor";
 "Checkout" = "Çıkış yapmak";
 "Checkout the Exchange" = "Borsa Ödeme";
@@ -399,12 +399,12 @@
 "Ether Price" = "Eter Fiyatı";
 "Euro" = "Euro";
 "Even better, since you need ETH to make USD PAX trades, we just airdropped enough ETH into your Wallet to cover your first 3 transactions 🙌🏻" = "Daha da iyisi USD PAX ticareti yapmak için ETH'ye ihtiyacınız olduğundan ilk 3 işleminize yetecek miktarda ETH'yi cüzdanınıza gönderdik 🙌🏻";
-"Every country has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Her ülkenin kripto para alım ve satımı konusunda farklı kuralları vardır. Gözlerinizi soyun ve %s içinde başlar başlamaz size haber vereceğiz!";
+"Every country has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Her ülkenin kripto para alım ve satımı konusunda farklı kuralları vardır. Gözlerinizi soyun ve %1$s içinde başlar başlamaz size haber vereceğiz!";
 "Every state has different rules on how to buy and sell cryptocurrencies. Keep your eyes peeled, we’ll let you know as soon as we launch in %@!" = "Her devletin kripto para alım ve satımı konusunda farklı kuralları vardır. Gözlerinizi soyun, %@ da başlar başlamaz size haber vereceğiz!";
 "Everything you need to store, spend and receive BTC, ETH and BCH." = "BTC, ETH ve BCH'yi saklamak, harcamak ve almak için ihtiyacınız olan her şey.";
 "Exchange" = "Değiş tokuş";
 "Exchange %@ Address" = "Değişim %@ Adresi";
-"Exchange %@ for %@" = "%@ için %@";
+"Exchange %@ for %@" = "%1$@ için %2$@";
 "Exchange %@ Wallet" = "Exchange %@ Cüzdan";
 "Exchange Completed" = "Takas Tamamlandı";
 "Exchange In Progress" = "Takas Sürüyor";
@@ -442,7 +442,7 @@
 "Forget" = "Unutmak";
 "Forget Wallet" = "Cüzdanı Unut";
 "Forgot Password?" = "Parolanızı mı unuttunuz?\"";
-"Found %d, with %@" = "%@ ile %d bulundu";
+"Found %d, with %@" = "%2$@ ile %1$d bulundu";
 "fourth" = "dördüncü";
 "fourth word" = "dördüncü kelime";
 "From" = "itibaren";
@@ -517,7 +517,7 @@ Stellar airdrop için uzun bir bekleme listesi olduğunu ve ücretsiz XLM talepl
 "Introducing the Exchange" = "Borsaya Giriş";
 "Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX = 1 USD." = "Varlıklarınızı saklamak için kullanacağınız güvenli ve dengeli bir kripto değer USD PAX ile tanışın. 1 PAX, 1USD'ye eşittir.";
 "Invalid %@ Address" = "Geçersiz %@ Adresi";
-"Invalid %@ address: %@" = "Geçersiz %@ adres: %@";
+"Invalid %@ address: %@" = "Geçersiz %1$@ adres: %2$@";
 "Invalid Bitcoin address: %@" = "Geçersiz Bitcoin adresi: %@";
 "Invalid destination address" = "Geçersiz hedef adresi";
 "Invalid email address." = "Geçersiz e-posta adresi";
@@ -578,7 +578,7 @@ Stellar airdrop için uzun bir bekleme listesi olduğunu ve ücretsiz XLM talepl
 "Log In" = "Oturum Aç";
 "Log in to refresh addresses" = "Adresleri yenilemek için giriş yapın";
 "Log in to Web Wallet" = "Web Cüzdanına giriş yapın";
-"Log in to your Blockchain Wallet via your PC or Mac at " = "%s adresinden PC veya Mac'inizle Blockchain Cüzdanınıza giriş yapın.";
+"Log in to your Blockchain Wallet via your PC or Mac at " = "%1$s adresinden PC veya Mac'inizle Blockchain Cüzdanınıza giriş yapın.";
 "Log Out" = "Çıkış Yap";
 "Login existing Wallet" = "Mevcut cüzdana giriş yapılıyor";
 "login.blockchain.com" = "login.blockchain.com";
@@ -671,7 +671,7 @@ Stellar airdrop için uzun bir bekleme listesi olduğunu ve ücretsiz XLM talepl
 "OK" = "tamam";
 "Once an order starts, we are unable to stop it." = "Bir sipariş başladıktan sonra durduramayız.";
 "Once we receive your bank transfer, your %@ buy order will complete." = "Banka havalenizi aldıktan sonra, satın alma siparişiniz tamamlanacaktır.";
-"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "Paranızı aldıktan sonra, %s satın alma siparişinize başlayacağız. Nihai tutarınızın vadesi gelmiş piyasa etkinliğine göre değişebileceğini unutmayın. Ücret uygulanabilir.";
+"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "Paranızı aldıktan sonra, %1$s satın alma siparişinize başlayacağız. Nihai tutarınızın vadesi gelmiş piyasa etkinliğine göre değişebileceğini unutmayın. Ücret uygulanabilir.";
 "Once your verification is confirmed, you’ll automatically secure a spot in the Airdrop for Stacks." = "Doğrulamanız onaylandıktan sonra, Yığınlar için Airdrop'ta bir noktayı otomatik olarak güvenceye alacaksınız.";
 "Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected." = "Yalnızca adınızdaki bir banka hesabından para gönderin. Aksi takdirde, depozitonuz ertelenebilir veya reddedilebilir.";
 "Ooops! Something went wrong." = "Posta ile gönder Bir şeyler yanlış gitti.";
@@ -744,12 +744,12 @@ Stellar airdrop için uzun bir bekleme listesi olduğunu ve ücretsiz XLM talepl
 "Please review and confirm your " = "Lütfen ürününüzü inceleyin ve onaylayın";
 "Please select a different address to send from." = "Lütfen gönderilecek farklı bir adres seçin.";
 "Please send %@ to" = "%@'e gönderin";
-"Please send %@ to bitcoin address.\n%@" = "Lütfen bitcoin adresine %@ gönderin. \
- %@";
+"Please send %@ to bitcoin address.\n%@" = "Lütfen bitcoin adresine %1$@ gönderin. \
+ %2$@";
 "Please send BCH to the Bitcoin Cash address\n%@" = "Lütfen BCH'yi Bitcoin Cash adresine gönderin \
  %@";
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "Lütfen ödemeyi bitcoin adresine gönderin ( <a href=\"https://blockchain.info/wallet/bitcoin-faq\"> yardım? </a> ): %@";
-"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Lütfen %s banka hesabınızdan Blockchain.com'a aktarın. Parayı aldıktan sonra, %s satın alma siparişinizi yaratacağız.";
+"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Lütfen %1$s banka hesabınızdan Blockchain.com'a aktarın. Parayı aldıktan sonra, %2$s satın alma siparişinizi yaratacağız.";
 "Please try again" = "Lütfen tekrar deneyin";
 "Please verify your email address first." = "Lütfen önce e-posta adresinizi doğrulayın.";
 "Please verify your mobile number first." = "Lütfen önce cep telefonu numaranızı doğrulayın.";
@@ -892,7 +892,7 @@ Stellar airdrop için uzun bir bekleme listesi olduğunu ve ücretsiz XLM talepl
 "Stellar is an open-source, decentralized payment protocol that allows for fast and cheap cross-border transactions between any pair of currencies." = "Stellar, herhangi bir para birimi çifti arasında hızlı ve ucuz sınır ötesi işlemlere izin veren açık kaynaklı, merkezi olmayan bir ödeme protokolüdür.";
 "Stellar Price" = "Yıldız Fiyatı";
 "Stellar requires that all Stellar accounts hold a minimum balance of lumens, or XLM. This means you cannot send a balance out of your Stellar Wallet that would leave your Stellar Wallet with less than the minimum balance. This also means that in order to send XLM to a new Stellar account, you must send enough XLM to meet the minimum balance requirement." = "Stellar, tüm Stellar hesaplarının minimum bakiye veya XLM bakiyesine sahip olmasını gerektirir. Bu, Stellar Cüzdanınızdan, Bakiye Cüzdanınızı minimum bakiyeden daha az bir süre bırakacak bir denge gönderemediğiniz anlamına gelir. Bu ayrıca yeni bir Stellar hesabına XLM göndermek için minimum bakiye gereksinimini karşılamak için yeterli XLM göndermeniz gerektiği anlamına gelir.";
-"Step %d of %d" = "%d / %d adımı";
+"Step %d of %d" = "%1$d / %2$d adımı";
 "store" = "saklamanın";
 "Stored" = "Kaydedildi";
 "Street line" = "Sokak çizgisi";
@@ -1029,9 +1029,9 @@ Stellar airdrop için uzun bir bekleme listesi olduğunu ve ücretsiz XLM talepl
 "Transfer imported addresses?" = "İçe aktarılan adresler aktarılsın mı?";
 "Transfer In Crypto" = "Kripto'ya Aktar";
 "Transferred" = "aktarılan";
-"Transferred funds from %d %@" = "%d %@ den aktarılan fonlar";
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "%d %@ den aktarılan fonlar. %d %@ için çıktılar çok küçüktü.";
-"Transferring all funds: Address %i of %i" = "Tüm fonları aktarma: %i / %i adresini %i";
+"Transferred funds from %d %@" = "%1$d %2$@ den aktarılan fonlar";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "%1$d %2$@ den aktarılan fonlar. %3$d %4$@ için çıktılar çok küçüktü.";
+"Transferring all funds: Address %i of %i" = "Tüm fonları aktarma: %1$i / %2$i adresini %2$i";
 "Try again" = "Tekrar deneyin";
 "Try Again" = "Tekrar deneyin";
 "twelfth" = "onikinci";
@@ -1182,7 +1182,7 @@ Stellar airdrop için uzun bir bekleme listesi olduğunu ve ücretsiz XLM talepl
 "With Blockchain Airdrops, get free crypto sent right to your Blockchain Wallet." = "Blockchain Airdrops ile doğrudan Blockchain Cüzdanınıza gönderilen ücretsiz kripto alın.";
 "With Swap your crypto is safe, secure, and your keys are always intact." = "Swap ile kriptonuz daima güvende olur, cüzdanınızın anahtarları gizli kalır. ";
 "word" = "sözcük";
-"Word %@ of %@" = "%@ kelimesinin %@ %@";
+"Word %@ of %@" = "%1$@ kelimesinin %1$@ %2$@";
 "Would you like to add the bitcoin address %@ to your address book?" = "%@ bitcoin adresini adres defterinize kaydetmek ister misiniz?";
 "Would you like to archive the addresses used?" = "Kullanılan adresleri arşivlemek ister misiniz?";
 "Would you like to tell us about your experience with Blockchain?" = "Bize Blockchain ile olan deneyiminizi anlatmak ister misiniz?";
@@ -1193,7 +1193,7 @@ Stellar airdrop için uzun bir bekleme listesi olduğunu ve ücretsiz XLM talepl
 "XLM is a token that enables quick, low cost global transactions. Send, receive, and trade XLM in the wallet today." = "XLM, hızlı, düşük maliyetli küresel işlemlere olanak veren bir belirteçtir. Bugün cüzdanınızı XLM ile gönderin, alın ve takas edin.";
 "XLM Reserve Requirement" = "XLM Rezerv Gereksinimi";
 "xxx" = "xxx";
-"xxx %@ (%@ %@)" = "xxx %@ ( %@ %@ )";
+"xxx %@ (%@ %@)" = "xxx %1$@ ( %2$@ %3$@ )";
 "year" = "yıl";
 "Year" = "Yıl";
 "years" = "yıl";
@@ -1230,13 +1230,13 @@ Stellar airdrop için uzun bir bekleme listesi olduğunu ve ücretsiz XLM talepl
 "You must leave at least one active address" = "En az bir aktif adres bırakmalısınız";
 "You need to confirm your email address so that we can keep you informed about your wallet." = "Cüzdanınız hakkında sizi bilgilendirebilmemiz için e-posta adresinizi onaylamanız gerekir.";
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "Cüzdan Kimliğinize ve şifrenize erişiminiz varsa daima eşleme yapmanız veya oturum açmanız gerekir. Paranızı geri almak yeni bir Cüzdan Kimliği oluşturacaktır. Devam etmek ister misiniz?";
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Sıradışı şekilde düşük olan %s tutarında işlem ücreti belirlediniz.\
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Sıradışı şekilde düşük olan %1$s tutarında işlem ücreti belirlediniz.\
 \
-İşleminiz takılı kalabilir ve muhtemelen asla onaylanmayabilir. Önümüzdeki yaklaşık bir saatte (6 blok) işleminizin onaylanma ihtimalini yükseltmek için şiddetli şekilde %s tutarından düşük olmayan bir ücret tavsiye ediyoruz.";
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "%@ çok küçük bir işlem ücreti belirttiniz. İşleminiz takılabilir ve muhtemelen hiçbir zaman onaylamaz. İşleminizin yaklaşık bir saat içinde onaylama olasılığını artırmak için (altı blok), %@ dan az olmayan bir ücret öneriyoruz. Yeterli paranız olmadığı için, Gönderme tutarının da %@ değerine düşürülmesi gerektiği anlamına gelir.";
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "%s tutarında olağanüstü yüksek işlem ücretini belirlediniz.\
+İşleminiz takılı kalabilir ve muhtemelen asla onaylanmayabilir. Önümüzdeki yaklaşık bir saatte (6 blok) işleminizin onaylanma ihtimalini yükseltmek için şiddetli şekilde %2$s tutarından düşük olmayan bir ücret tavsiye ediyoruz.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "%1$@ çok küçük bir işlem ücreti belirttiniz. İşleminiz takılabilir ve muhtemelen hiçbir zaman onaylamaz. İşleminizin yaklaşık bir saat içinde onaylama olasılığını artırmak için (altı blok), %2$@ dan az olmayan bir ücret öneriyoruz. Yeterli paranız olmadığı için, Gönderme tutarının da %3$@ değerine düşürülmesi gerektiği anlamına gelir.";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "%1$s tutarında olağanüstü yüksek işlem ücretini belirlediniz.\
 \
- Ücreti %s tutarına düşürseniz de, işlemin önümüzdeki ~10 dakika (1 blok) içinde onaylanmasını bekleyebilirsiniz.";
+ Ücreti %2$s tutarına düşürseniz de, işlemin önümüzdeki ~10 dakika (1 blok) içinde onaylanmasını bekleyebilirsiniz.";
 "You will be leaving the app." = "Uygulamadan çıkacaksınız.";
 "You will be redirected to\n%@." = "Adresine yönlendirileceksiniz \
  %@ .";
@@ -1481,3 +1481,9 @@ Stellar airdrop için uzun bir bekleme listesi olduğunu ve ücretsiz XLM talepl
 "This card has already been saved" = "Bu kart zaten kaydedildi";
 "Waiting on Funds" = "Fonlarda Bekleme";
 "Your final amount may change due to market activity" = "Nihai tutarınız piyasa etkinliği nedeniyle değişebilir";
+"% APY" = "% APY";
+"Code" = "kod";
+"Earn" = "kazanmak";
+"Interest" = "Faiz";
+"Trading" = "ticari";
+"Wallet Balance" = "Cüzdan Bakiyesi";
