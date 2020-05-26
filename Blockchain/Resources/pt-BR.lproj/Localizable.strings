@@ -491,7 +491,7 @@
 "Forget Wallet" = "Descartar Carteira";
 
 /* (No Commment) */
-"Found %d, with %@" = "Encontrado %d, com 2%$@";
+"Found %d, with %@" = "Encontrado %d, com %@";
 
 /* (No Commment) */
 "From" = "De";
