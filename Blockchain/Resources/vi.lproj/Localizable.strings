@@ -39,7 +39,7 @@
         " = "\
         Hiện tại bạn đang bật thông báo qua email. Việc thay đổi email của bạn sẽ tắt thông báo qua email.\
         ";
-" %@ (%@ %@)" = "%@ ( %@ %@ )";
+" %@ (%@ %@)" = "%1$@ ( %2$@ %3$@ )";
 " & " = "&";
 " and " = "và";
 " buy." = "mua.";
@@ -50,7 +50,7 @@
 "%@ Confirmations" = "%@ Xác nhận";
 "%@ copied to clipboard" = "%@ được sao chép vào bộ nhớ tạm";
 "%@ needed to exchange" = "%@ cần thiết để trao đổi";
-"%@ of %@" = "%@ trong số %@";
+"%@ of %@" = "%1$@ trong số %2$@";
 "%@ payment request" = "Yêu cầu thanh toán %@.";
 "%@ payment request." = "Yêu cầu thanh toán %@.";
 "%@ Received" = "Đã nhận %@";
@@ -60,7 +60,7 @@
 "%d address" = "địa chỉ %d";
 "%d addresses" = "địa chỉ %d";
 "%d Confirmations" = "%d xác nhận";
-"%d login attempts left. Please enter your %@ 2FA code" = "%d cố gắng đăng nhập còn lại. Vui lòng nhập mã %@ 2FA của bạn";
+"%d login attempts left. Please enter your %@ 2FA code" = "%1$d cố gắng đăng nhập còn lại. Vui lòng nhập mã %2$@ 2FA của bạn";
 "%d Transactions" = "%d giao dịch";
 "%lld hours ago" = "%lld giờ trước";
 "%lld minutes ago" = "%lld phút trước";
@@ -128,7 +128,7 @@
 "An Error Occurred" = "Đã xảy ra lỗi";
 "An error occurred due to interruptions during PIN verification. Please close the app and try again." = "Đã xảy ra lỗi do gián đoạn trong quá trình xác minh mã PIN. Vui lòng đóng ứng dụng và thử lại.";
 "An error occurred when getting an approximate quote. Please try again later. Details: %@" = "Đã xảy ra lỗi khi nhận được báo giá gần đúng. Vui lòng thử lại sau. Chi tiết: %@";
-"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "Đã xảy ra lỗi khi nhận số dư %@ . Vui lòng thử lại sau. Chi tiết: %@";
+"An error occurred when getting your %@ balance. Please try again later. Details: %@" = "Đã xảy ra lỗi khi nhận số dư %1$@ . Vui lòng thử lại sau. Chi tiết: %2$@";
 "An error occurred when selecting your tier. Please try again later." = "Đã xảy ra lỗi khi chọn cấp của bạn. Vui lòng thử lại sau.";
 "An error occurred while changing 2-Step verification." = "Đã xảy ra lỗi khi thay đổi xác minh 2 bước.";
 "An error occurred while copying your address to the clipboard. Please re-select the destination address or restart the app and try again." = "Đã xảy ra lỗi trong khi sao chép địa chỉ của bạn vào clipboard. Vui lòng chọn lại địa chỉ đích hoặc khởi động lại ứng dụng và thử lại.";
@@ -219,10 +219,10 @@
 "By creating a wallet you agree to Blockchain’s " = "Bằng cách tạo ví, bạn đồng ý với";
 "By creating a wallet you agree to Blockchain’s Terms of Services & Privacy Policy" = "Bằng cách tạo ví, bạn đồng ý với Điều khoản dịch vụ & Chính sách bảo mật của Blockchain";
 "By depositing funds to this account, you agree to " = "Bằng cách gửi tiền vào tài khoản này, bạn đồng ý";
-"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "Bằng cách nhấp vào \"Bắt đầu ngay\", bạn đồng ý với %@ & %@ của Blockchain";
+"By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@" = "Bằng cách nhấp vào \"Bắt đầu ngay\", bạn đồng ý với %1$@ & %2$@ của Blockchain";
 "By tapping Begin Now, you agree to Coinify's Terms of Service & Privacy Policy" = "Bằng cách nhấn vào Bắt đầu ngay, bạn đồng ý với Điều khoản Dịch vụ & Chính sách Quyền riêng tư của Coinify";
-"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Bằng cách nhấp vào Gửi, bạn đồng ý với %@ & %@ của Blockchain";
-"Calculating: Address %@ of %@" = "Tính toán: Địa chỉ %@ trong số %@";
+"By tapping Submit, you agree to Blockchain’s %@ & %@" = "Bằng cách nhấp vào Gửi, bạn đồng ý với %1$@ & %2$@ của Blockchain";
+"Calculating: Address %@ of %@" = "Tính toán: Địa chỉ %1$@ trong số %2$@";
 "Camera Access Denied" = "Truy cập camera bị từ chối";
 "Canadian Dollar" = "Đô la Canada";
 "Cancel" = "Hủy bỏ";
@@ -243,7 +243,7 @@
 "Check out Swap" = "Kiểm tra Trao đổi";
 "Check Your Inbox" = "Kiểm tra hộp thư của bạn";
 "Check your inbox." = "Kiểm tra hộp thư của bạn.";
-"Checking for more: Step %d of %d" = "Kiểm tra thêm: Bước %d của %d";
+"Checking for more: Step %d of %d" = "Kiểm tra thêm: Bước %1$d của %2$d";
 "Checking for Wallet updates" = "Kiểm tra cập nhật Ví";
 "Checkout" = "Thủ tục thanh toán";
 "Checkout the Exchange" = "Kiểm tra trao đổi";
@@ -255,7 +255,7 @@
 "Click Show Pairing Code to reveal a QR Code, a square black & white barcode. Scan the code with your camera." = "Nhấn hiển thị mã kết nối để hiện mã QR, mã vạch gồm các hình vuông đen & trắng. Quét mã bằng camera.";
 "Close" = "Đóng";
 "Close App" = "Đóng ứng dụng";
-"Coming soon to %@!" = "Sẽ sớm ra mắt %s!";
+"Coming soon to %@!" = "Sẽ sớm ra mắt %1$s!";
 "Complete" = "Hoàn thành";
 "Complete My Profile" = "Hoàn thành hồ sơ của tôi";
 "Complete your profile to start instantly trading crypto from the security of your wallet and become eligible for our Airdrop Program." = "Hoàn thành hồ sơ của bạn để nhanh chóng bắt đầu giao dịch tiền kỹ thuật số từ ví bảo mật của bạn và đủ điều kiện tham gia Chương trình Airdrop của chúng tôi.";
@@ -406,7 +406,7 @@
 "Everything you need to store, spend and receive BTC, ETH and BCH." = "Mọi thứ bạn cần để lưu trữ, chi tiêu và nhận BTC, ETH và BCH.";
 "Exchange" = "Đổi";
 "Exchange %@ Address" = "Trao đổi %@ Địa chỉ";
-"Exchange %@ for %@" = "Chuyển đổi %@ để lấy %@";
+"Exchange %@ for %@" = "Chuyển đổi %1$@ để lấy %2$@";
 "Exchange %@ Wallet" = "Trao đổi %@ Ví";
 "Exchange Completed" = "Chuyển đổi Hoàn tất";
 "Exchange In Progress" = "Đang tiến hành Chuyển đổi";
@@ -444,7 +444,7 @@
 "Forget" = "Quên";
 "Forget Wallet" = "Quên ví";
 "Forgot Password?" = "Quên mật khẩu?\"";
-"Found %d, with %@" = "Đã tìm thấy %d , với %@";
+"Found %d, with %@" = "Đã tìm thấy %1$d , với %2$@";
 "fourth" = "thứ tư";
 "fourth word" = "từ thứ tư";
 "From" = "Từ";
@@ -519,7 +519,7 @@ Xin lưu ý rằng có một danh sách rất dài đang chờ để nhận aird
 "Introducing the Exchange" = "Giới thiệu Sàn giao dịch";
 "Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX = 1 USD." = "Giới thiệu USD PAX, tài sản tiền kỹ thuật số an toàn và ổn định mà bạn có thể sử dụng để lưu trữ giá trị. 1 PAX = 1 USD.";
 "Invalid %@ Address" = "Địa chỉ %@ không hợp lệ";
-"Invalid %@ address: %@" = "Địa chỉ %@ không hợp lệ: %@";
+"Invalid %@ address: %@" = "Địa chỉ %1$@ không hợp lệ: %2$@";
 "Invalid Bitcoin address: %@" = "Địa chỉ Bitcoin không hợp lệ: %@";
 "Invalid destination address" = "Địa chỉ đích không hợp lệ";
 "Invalid email address." = "Địa chỉ email không hợp lệ.";
@@ -580,7 +580,7 @@ Xin lưu ý rằng có một danh sách rất dài đang chờ để nhận aird
 "Log In" = "Đăng nhập";
 "Log in to refresh addresses" = "Đăng nhập để làm mới địa chỉ";
 "Log in to Web Wallet" = "Đăng nhập vào ví Web";
-"Log in to your Blockchain Wallet via your PC or Mac at " = "Đăng nhập vào Ví Blockchain của bạn thông qua PC hoặc Mac với %s .";
+"Log in to your Blockchain Wallet via your PC or Mac at " = "Đăng nhập vào Ví Blockchain của bạn thông qua PC hoặc Mac với %1$s .";
 "Log Out" = "Đăng xuất";
 "Login existing Wallet" = "Đăng nhập Ví hiện tại";
 "login.blockchain.com" = "login.blockchain.com";
@@ -673,7 +673,7 @@ Xin lưu ý rằng có một danh sách rất dài đang chờ để nhận aird
 "OK" = "đồng ý";
 "Once an order starts, we are unable to stop it." = "Chúng tôi không thể dừng lệnh sau khi lệnh bắt đầu.";
 "Once we receive your bank transfer, your %@ buy order will complete." = "Khi chúng tôi nhận được chuyển khoản ngân hàng của bạn, lệnh mua của bạn sẽ hoàn tất.";
-"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "Khi chúng tôi nhận được tiền của bạn, chúng tôi sẽ bắt đầu đơn đặt hàng mua %s . Lưu ý, số tiền cuối cùng của bạn có thể thay đổi thành hoạt động thị trường do. Lệ phí có thể áp dụng.";
+"Once we receive your funds, we’ll start your %@ buy order. Note, your final amount might change to due market activity. Fees may apply." = "Khi chúng tôi nhận được tiền của bạn, chúng tôi sẽ bắt đầu đơn đặt hàng mua %1$s . Lưu ý, số tiền cuối cùng của bạn có thể thay đổi thành hoạt động thị trường do. Lệ phí có thể áp dụng.";
 "Once your verification is confirmed, you’ll automatically secure a spot in the Airdrop for Stacks." = "Khi xác minh của bạn được xác nhận, bạn sẽ tự động bảo đảm một vị trí trong Airdrop for Stacks.";
 "Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected." = "Chỉ gửi tiền từ tài khoản ngân hàng dưới tên của bạn. Nếu không, tiền gửi của bạn có thể bị trì hoãn hoặc từ chối.";
 "Ooops! Something went wrong." = "Rất tiếc! Đã xảy ra lỗi.";
@@ -746,12 +746,12 @@ Xin lưu ý rằng có một danh sách rất dài đang chờ để nhận aird
 "Please review and confirm your " = "Vui lòng xem lại và xác nhận";
 "Please select a different address to send from." = "Vui lòng chọn một địa chỉ khác để gửi từ.";
 "Please send %@ to" = "Vui lòng gửi %@ đến";
-"Please send %@ to bitcoin address.\n%@" = "Vui lòng gửi %@ đến địa chỉ bitcoin.\
-%@";
+"Please send %@ to bitcoin address.\n%@" = "Vui lòng gửi %1$@ đến địa chỉ bitcoin.\
+%2$@";
 "Please send BCH to the Bitcoin Cash address\n%@" = "Vui lòng gửi BCH đến địa chỉ Bitcoin Cash \
  %@";
 "Please send payment to bitcoin address (<a href=\"https://blockchain.info/wallet/bitcoin-faq\">help?</a>): %@" = "Vui lòng gửi thanh toán đến địa chỉ bitcoin ( <a href=\"https://blockchain.info/wallet/bitcoin-faq\"> trợ giúp? </a> ): %@";
-"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Vui lòng chuyển %s từ tài khoản ngân hàng của bạn sang Blockchain.com. Khi chúng tôi nhận được tiền, chúng tôi sẽ tạo đơn đặt hàng %s .";
+"Please transfer %@ from your bank account to Blockchain.com. Once we receive the funds, we’ll create your %@ buy order." = "Vui lòng chuyển %1$s từ tài khoản ngân hàng của bạn sang Blockchain.com. Khi chúng tôi nhận được tiền, chúng tôi sẽ tạo đơn đặt hàng %2$s .";
 "Please try again" = "Vui lòng thử lại";
 "Please verify your email address first." = "Vui lòng xác minh địa chỉ email của bạn trước.";
 "Please verify your mobile number first." = "Vui lòng xác minh số điện thoại di động của bạn đầu tiên.";
@@ -894,7 +894,7 @@ Xin lưu ý rằng có một danh sách rất dài đang chờ để nhận aird
 "Stellar is an open-source, decentralized payment protocol that allows for fast and cheap cross-border transactions between any pair of currencies." = "Stellar là một giao thức thanh toán phi tập trung nguồn mở, cho phép giao dịch xuyên biên giới nhanh và rẻ giữa bất kỳ cặp tiền tệ nào.";
 "Stellar Price" = "Giá Stellar";
 "Stellar requires that all Stellar accounts hold a minimum balance of lumens, or XLM. This means you cannot send a balance out of your Stellar Wallet that would leave your Stellar Wallet with less than the minimum balance. This also means that in order to send XLM to a new Stellar account, you must send enough XLM to meet the minimum balance requirement." = "Stellar yêu cầu tất cả tài khoản Stellar phải có số dư lumen hoặc XLM tối thiểu. Điều này nghĩa là bạn không thể gửi số dư ra khỏi Ví Stellar nếu việc đó khiến Ví Stellar của bạn không có đủ số dư tối thiểu. Điều này cũng có nghĩa là để gửi XLM sang tài khoản Stellar mới, bạn phải gửi đủ XLM để đáp ứng yêu cầu số dư tối thiểu.";
-"Step %d of %d" = "Bước %d của %d";
+"Step %d of %d" = "Bước %1$d của %2$d";
 "store" = "lưu trữ";
 "Stored" = "Đã lưu trữ";
 "Street line" = "Dòng đường phố";
@@ -1031,9 +1031,9 @@ Chúng tôi không thể đọc hình ảnh bạn đã gửi do chất lượng 
 "Transfer imported addresses?" = "Chuyển địa chỉ nhập khẩu?";
 "Transfer In Crypto" = "Chuyển tiền điện tử";
 "Transferred" = "Chuyển nhượng";
-"Transferred funds from %d %@" = "Đã chuyển tiền từ %d %@";
-"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Đã chuyển tiền từ %d %@ . Đầu ra cho %d %@ quá nhỏ.";
-"Transferring all funds: Address %i of %i" = "Chuyển tất cả tiền: Địa chỉ %i của %i";
+"Transferred funds from %d %@" = "Đã chuyển tiền từ %1$d %2$@";
+"Transferred funds from %d %@. Outputs for %d %@ were too small." = "Đã chuyển tiền từ %1$d %2$@ . Đầu ra cho %3$d %4$@ quá nhỏ.";
+"Transferring all funds: Address %i of %i" = "Chuyển tất cả tiền: Địa chỉ %1$i của %2$i";
 "Try again" = "Thử lại";
 "Try Again" = "Thử lại";
 "twelfth" = "thứ mười hai";
@@ -1184,7 +1184,7 @@ Chúng tôi không thể đọc hình ảnh bạn đã gửi do chất lượng 
 "With Blockchain Airdrops, get free crypto sent right to your Blockchain Wallet." = "Với Blockchain Airdrops, nhận tiền điện tử miễn phí được gửi ngay đến Ví Blockchain của bạn.";
 "With Swap your crypto is safe, secure, and your keys are always intact." = "Với Trao đổi, tiền kỹ thuật số của bạn được đảm bảo an toàn, bảo mật và khóa của bạn luôn nguyên vẹn.";
 "word" = "từ";
-"Word %@ of %@" = "Từ %@ trong số %@";
+"Word %@ of %@" = "Từ %1$@ trong số %2$@";
 "Would you like to add the bitcoin address %@ to your address book?" = "Bạn có muốn thêm địa chỉ bitcoin %@ vào sổ địa chỉ?";
 "Would you like to archive the addresses used?" = "Bạn có muốn lưu trữ các địa chỉ được sử dụng?";
 "Would you like to tell us about your experience with Blockchain?" = "Bạn có muốn nói với chúng tôi về trải nghiệm của bạn với Blockchain không?";
@@ -1195,7 +1195,7 @@ Chúng tôi không thể đọc hình ảnh bạn đã gửi do chất lượng 
 "XLM is a token that enables quick, low cost global transactions. Send, receive, and trade XLM in the wallet today." = "XLM là mã thông báo cho phép giao dịch nhanh chóng, chi phí thấp trên toàn thế giới. Hãy gửi, nhận và giao dịch XLM trong ví ngay hôm nay.";
 "XLM Reserve Requirement" = "Yêu cầu về Dự trữ của XLM";
 "xxx" = "xxx";
-"xxx %@ (%@ %@)" = "xxx %@ ( %@ %@ )";
+"xxx %@ (%@ %@)" = "xxx %1$@ ( %2$@ %3$@ )";
 "year" = "năm";
 "Year" = "Năm";
 "years" = "năm";
@@ -1232,13 +1232,13 @@ Chúng tôi không thể đọc hình ảnh bạn đã gửi do chất lượng 
 "You must leave at least one active address" = "Bạn phải có ít nhất 1 địa chỉ hoạt động";
 "You need to confirm your email address so that we can keep you informed about your wallet." = "Bạn cần xác nhận địa chỉ email của bạn để chúng tôi có thể thông báo cho bạn về ví của bạn.";
 "You should always pair or login if you have access to your Wallet ID and password. Recovering your funds will create a new Wallet ID. Would you like to continue?" = "Bạn cần thường xuyên kết nối hoặc đăng nhập nếu bạn có quyền truy cập ID và mật khẩu Ví của mình. Khôi phục các khoản tiền sẽ tạo một ID ví mới. Bạn có muốn tiếp tục?";
-"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Bạn đã xác định rõ khoản phí giao dịch nhỏ đặc biệt của %s.\
+"You specified an exceptionally small transaction fee of %@. Your transaction may be stuck and possibly never be confirmed. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@." = "Bạn đã xác định rõ khoản phí giao dịch nhỏ đặc biệt của %1$s.\
 \
-Giao dịch của bạn có thể bị kẹt và không bao giờ được xác nhận. Để gia tăng khả năng giao dịch được xác nhận trong vòng một giờ (6 khối), chúng tôi khuyên bạn không sử dụng phí thấp hơn %s.";
-"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Bạn đã chỉ định một khoản phí giao dịch đặc biệt nhỏ là %@ . Giao dịch của bạn có thể bị kẹt và có thể không bao giờ xác nhận. Để tăng khả năng giao dịch của bạn được xác nhận trong khoảng một giờ (sáu khối), chúng tôi thực sự khuyên bạn nên trả một khoản phí không dưới %@ . Vì bạn không có đủ tiền, điều đó có nghĩa là số tiền Gửi cũng sẽ phải giảm xuống %@ .";
-"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Bạn đã xác định rõ khoản phí giao dịch cao đặc biệt của %s.\
+Giao dịch của bạn có thể bị kẹt và không bao giờ được xác nhận. Để gia tăng khả năng giao dịch được xác nhận trong vòng một giờ (6 khối), chúng tôi khuyên bạn không sử dụng phí thấp hơn %2$s.";
+"You specified an exceptionally small transaction fee of %@. Your transaction may become stuck and possibly never confirm. To increase the likelihood for your transaction to confirm within approximately one hour (six blocks), we strongly recommend a fee of no less than %@. Since you don’t have sufficient funds, that means the Send amount will also have to be lowered to %@." = "Bạn đã chỉ định một khoản phí giao dịch đặc biệt nhỏ là %1$@ . Giao dịch của bạn có thể bị kẹt và có thể không bao giờ xác nhận. Để tăng khả năng giao dịch của bạn được xác nhận trong khoảng một giờ (sáu khối), chúng tôi thực sự khuyên bạn nên trả một khoản phí không dưới %2$@ . Vì bạn không có đủ tiền, điều đó có nghĩa là số tiền Gửi cũng sẽ phải giảm xuống %3$@ .";
+"You specified an unusually high transaction fee of %@. Even if you lower the fee to %@, you can expect the transaction to confirm within the next 10 minutes (one block)." = "Bạn đã xác định rõ khoản phí giao dịch cao đặc biệt của %1$s.\
 \
-Thậm chí nếu bạn hạ thấp phí đến %s, bạn vẫn có thể kỳ vọng giao dịch được xác nhận trong khoảng 10 phút (1 khối) tiếp theo.";
+Thậm chí nếu bạn hạ thấp phí đến %2$s, bạn vẫn có thể kỳ vọng giao dịch được xác nhận trong khoảng 10 phút (1 khối) tiếp theo.";
 "You will be leaving the app." = "Bạn sẽ rời khỏi ứng dụng.";
 "You will be redirected to\n%@." = "Bạn sẽ được chuyển hướng đến \
  %@ .";
@@ -1483,3 +1483,9 @@ Thậm chí nếu bạn hạ thấp phí đến %s, bạn vẫn có thể kỳ v
 "This card has already been saved" = "Thẻ này đã được lưu";
 "Waiting on Funds" = "Chờ đợi trên quỹ";
 "Your final amount may change due to market activity" = "Số tiền cuối cùng của bạn có thể thay đổi do hoạt động thị trường";
+"% APY" = "% APY";
+"Code" = "Mã";
+"Earn" = "Kiếm";
+"Interest" = "Quan tâm";
+"Trading" = "Thương mại";
+"Wallet Balance" = "Số dư ví";
