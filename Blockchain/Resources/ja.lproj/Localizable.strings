@@ -1480,3 +1480,9 @@
 "This card has already been saved" = "このカードはすでに保存されています";
 "Waiting on Funds" = "資金待ち";
 "Your final amount may change due to market activity" = "あなたの最終的な量は市場の活動のために変わるかもしれません";
+"% APY" = "％APY";
+"Code" = "コード";
+"Earn" = "稼ぐ";
+"Interest" = "興味";
+"Trading" = "取引";
+"Wallet Balance" = "ウォレットの残高";

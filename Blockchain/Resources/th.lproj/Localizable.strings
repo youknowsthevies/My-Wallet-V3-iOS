@@ -1481,3 +1481,9 @@
 "This card has already been saved" = "บันทึกการ์ดนี้แล้ว";
 "Waiting on Funds" = "รอกองทุน";
 "Your final amount may change due to market activity" = "จำนวนเงินสุดท้ายของคุณอาจเปลี่ยนแปลงได้เนื่องจากกิจกรรมการตลาด";
+"% APY" = "% APY";
+"Code" = "รหัส";
+"Earn" = "ได้รับ";
+"Interest" = "น่าสนใจ";
+"Trading" = "การค้าขาย";
+"Wallet Balance" = "ยอดคงเหลือใน Wallet";

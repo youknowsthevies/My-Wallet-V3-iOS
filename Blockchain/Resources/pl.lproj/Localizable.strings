@@ -1481,3 +1481,9 @@ Nawet jeśli obniżysz ją do %s, możesz spodziewać się potwierdzenia transak
 "This card has already been saved" = "Ta karta została już zapisana";
 "Waiting on Funds" = "Oczekiwanie na fundusze";
 "Your final amount may change due to market activity" = "Ostateczna kwota może ulec zmianie z powodu aktywności na rynku";
+"% APY" = "% APY";
+"Code" = "Kod";
+"Earn" = "Zarabiać";
+"Interest" = "Zainteresowanie";
+"Trading" = "Handlowy";
+"Wallet Balance" = "Saldo portfela";
