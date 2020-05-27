@@ -9,7 +9,6 @@
 import Foundation
 import RxSwift
 import ToolKit
-import UIKit
 
 @available(*, deprecated, message: "Don't use this. If you're reaching for this you're doing something wrong.")
 @objc public class NetworkDependenciesObjc: NSObject {
