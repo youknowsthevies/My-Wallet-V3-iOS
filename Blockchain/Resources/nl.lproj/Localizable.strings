@@ -1481,3 +1481,9 @@ Zelfs als u het tarief verlaagt naar %s, kunt u verwachten dat de transactie zal
 "This card has already been saved" = "Deze kaart is al opgeslagen";
 "Waiting on Funds" = "Wachten op fondsen";
 "Your final amount may change due to market activity" = "Uw uiteindelijke bedrag kan veranderen als gevolg van marktactiviteit";
+"% APY" = "APY";
+"Code" = "Code";
+"Earn" = "Verdienen";
+"Interest" = "Interesseren";
+"Trading" = "Handel";
+"Wallet Balance" = "Wallet-saldo";

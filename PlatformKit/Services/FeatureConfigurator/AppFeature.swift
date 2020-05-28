@@ -32,9 +32,12 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Is simple buy enabled
     case simpleBuyEnabled
-    
+
     /// Is simple buy card payment method enabled
     case simpleBuyCardsEnabled
+
+    /// Is interest account enabled
+    case interestAccountEnabled
 }
 
 extension AppFeature {
@@ -57,6 +60,8 @@ extension AppFeature {
             return "simple_buy_enabled"
         case .simpleBuyCardsEnabled:
             return "simple_buy_method_card_enabled"
+        case .interestAccountEnabled:
+            return "interest_account_enabled"
         case .biometry,
              .stellar,
              .swipeToReceive,

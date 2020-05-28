@@ -19,18 +19,32 @@ public class SavingAccountService: SavingAccountServiceAPI {
 
     private let authenticationService: NabuAuthenticationServiceAPI
     private let client: SavingsAccountClientAPI
+    private let featureFetching: FeatureFetching
 
     // MARK: - Setup
 
     public init(client: SavingsAccountClientAPI = SavingsAccountClient(),
-                authenticationService: NabuAuthenticationServiceAPI) {
+                authenticationService: NabuAuthenticationServiceAPI,
+                featureFetching: FeatureFetching) {
         self.client = client
         self.authenticationService = authenticationService
+        self.featureFetching = featureFetching
     }
 
     // MARK: - Public Methods
 
     public func balance(for currency: CryptoCurrency) -> Single<SavingsAccountBalanceState> {
+        featureFetching
+            .fetchBool(for: .interestAccountEnabled)
+            .flatMap(weak: self) { (self, interestAccountEnabled) -> Single<SavingsAccountBalanceState> in
+                guard interestAccountEnabled else {
+                    return .just(.absent)
+                }
+                return self.fetchBalance(for: currency)
+            }
+    }
+
+    private func fetchBalance(for currency: CryptoCurrency) -> Single<SavingsAccountBalanceState> {
         authenticationService.tokenString
             .flatMap(weak: self) { (self, token) in
                 self.client.balance(for: currency.rawValue, token: token)

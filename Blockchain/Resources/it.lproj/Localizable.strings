@@ -1481,3 +1481,9 @@ Se abbassi il costo a %s, puoi aspettarti che la transazione sia confermata entr
 "This card has already been saved" = "Questa carta è già stata salvata";
 "Waiting on Funds" = "In attesa di fondi";
 "Your final amount may change due to market activity" = "L'importo finale può variare a causa dell'attività di mercato";
+"% APY" = "% APY";
+"Code" = "Codice";
+"Earn" = "Guadagnare";
+"Interest" = "Interesse";
+"Trading" = "Trading";
+"Wallet Balance" = "Saldo del portafoglio";

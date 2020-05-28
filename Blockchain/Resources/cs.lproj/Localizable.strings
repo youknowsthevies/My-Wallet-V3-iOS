@@ -1481,3 +1481,9 @@ I když poplatek snížíte na %s, bude transakce potvrzena během příštích 
 "This card has already been saved" = "Tato karta již byla uložena";
 "Waiting on Funds" = "Čekání na fondy";
 "Your final amount may change due to market activity" = "Vaše konečná částka se může v důsledku tržní aktivity změnit";
+"% APY" = "% APY";
+"Code" = "Kód";
+"Earn" = "Vydělat";
+"Interest" = "Zájem";
+"Trading" = "Obchodování";
+"Wallet Balance" = "Zůstatek v peněžence";
