@@ -109,18 +109,19 @@ class ExchangeCoordinator {
             .compactMap { $0.string?.removingPercentEncoding }
             .compactMap { URL(string: $0) }
             .subscribe(onNext: { [weak self] url in
-                guard let self = self else { return }
+                // Guard against this action beign executed after navController was dealloc.
+                guard let navController = self?.navController else { return }
                 let controller = SFSafariViewController(url: url)
                 controller.modalPresentationStyle = .overCurrentContext
-                self.navController.present(controller, animated: true, completion: nil)
+                navController.present(controller, animated: true, completion: nil)
             })
             .disposed(by: bag)
         navController = presentInNavigationController(connect, in: root)
     }
     
     private func userRequiresEmailVerification() -> Observable<Bool> {
-        return BlockchainDataRepository.shared.fetchNabuUser().asObservable().take(1).flatMap {
-            return Observable.just($0.email.verified == false)
+        BlockchainDataRepository.shared.fetchNabuUser().asObservable().take(1).flatMap {
+            Observable.just($0.email.verified == false)
         }
     }
     

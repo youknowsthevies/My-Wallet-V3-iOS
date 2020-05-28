@@ -82,50 +82,37 @@ class ExchangeConnectViewController: UIViewController, NavigatableView {
         
         shareYourStatus.attributedText = NSAttributedString(
             string: LocalizationConstants.Exchange.ConnectionPage.Features.shareStatus,
-            attributes: [.font: copyFont()
-            ]
+            attributes: [ .font: copyFont]
         ).asBulletPoint()
         exchangeAddresses.attributedText = NSAttributedString(
             string: LocalizationConstants.Exchange.ConnectionPage.Features.shareAddresses,
-            attributes: [.font: copyFont()
-            ]
+            attributes: [ .font: copyFont ]
         ).asBulletPoint()
         viewWalletPassword.attributedText = NSAttributedString(
             string: LocalizationConstants.Exchange.ConnectionPage.Features.viewYourPassword,
-            attributes: [.font: copyFont()
-            ]
+            attributes: [ .font: copyFont ]
         ).asBulletPoint()
         
         learnMoreButton.setTitle(LocalizationConstants.Exchange.ConnectionPage.Actions.learnMore, for: .normal)
         connectNowButton.setTitle(LocalizationConstants.Exchange.ConnectionPage.Actions.connectNow, for: .normal)
         
         connectNowButton.rx.tap
-            .subscribe(onNext: { _ in
+            .bind(weak: self) { (self, _) in
                 self.connectRelay.accept(())
                 self.analyticsRecorder.record(event: AnalyticsEvents.Exchange.exchangeConnectNowTapped)
-            })
+            }
             .disposed(by: bag)
         
         learnMoreButton.rx.tap
-            .subscribe(onNext: { _ in
+            .bind(weak: self) { (self, _) in
                 self.learnMoreRelay.accept(())
                 self.analyticsRecorder.record(event: AnalyticsEvents.Exchange.exchangeLearnMoreTapped)
-            })
+            }
             .disposed(by: bag)
     }
     
-    private func copyFont() -> UIFont {
-        return Font(.branded(.interMedium), size: .custom(14.0)).result
-    }
-    
-    // MARK: Actions
-    
-    @IBAction private func learnMoreTapped(_ sender: UIButton) {
-        // TODO:
-    }
-    
-    @IBAction private func connectNowTapped(_ sender: UIButton) {
-        // TODO:
+    private var copyFont: UIFont {
+        .main(.medium, 14)
     }
 }
 
@@ -139,10 +126,10 @@ extension ExchangeConnectViewController {
     }
     
     var rightNavControllerCTAType: NavigationCTAType {
-        return .dismiss
+        .dismiss
     }
     
     var leftNavControllerCTAType: NavigationCTAType {
-        return .none
+        .none
     }
 }
