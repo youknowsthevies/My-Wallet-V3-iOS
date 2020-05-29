@@ -113,27 +113,41 @@ final class BitpayService: BitpayServiceProtocol {
         let request = NetworkRequest(endpoint: url, method: .post, body: try? JSONEncoder().encode(payload), headers: headers)
         return self.network.perform(request: request)
     }
-    
-    private func UTCToLocal(date: String) -> Date {
-        let dateFormatter = DateFormatter.sessionDateFormat
-        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
-        
-        guard let dt = dateFormatter.date(from: date) else {
-            let debugMessage = "Failed to format date. date: \(date). Locale: \(Locale.current.description)"
-            CrashlyticsRecorder().error(debugMessage)
-            fatalError(debugMessage)
+
+    private enum UTCToLocalDateConverterError: Error {
+        case failedToCreateDateFromUTCString(String, on: Locale)
+        case failedToCreateDateFromLocalString(String, on: Locale)
+
+        var localizedDescription: String {
+            switch self {
+            case .failedToCreateDateFromUTCString(let dateString, on: let locale):
+                return "Failed to create UTC date. date: \(dateString). Locale: \(locale.description)"
+            case .failedToCreateDateFromLocalString(let dateString, on: let locale):
+                return "Failed to create Local date. date: \(dateString). Locale: \(locale.description)"
+            }
         }
-        dateFormatter.timeZone = TimeZone.current
-        
-        let dateLocalString = dateFormatter.string(from: dt)
-        
-        guard let date = dateFormatter.date(from: dateLocalString) else {
-            let debugMessage = "Failed to format date. dateLocalString: \(dateLocalString). Locale: \(Locale.current.description)"
-            CrashlyticsRecorder().error(debugMessage)
-            fatalError(debugMessage)
+    }
+
+    private func convertUTCToLocal(date dateString: String) throws -> Date {
+        let fromDateFormatter: DateFormatter = .utcSessionDateFormat
+        let toDateFormatter: DateFormatter = .sessionDateFormat
+        guard let fromDate: Date = fromDateFormatter.date(from: dateString) else {
+            throw UTCToLocalDateConverterError.failedToCreateDateFromUTCString(dateString, on: Locale.current)
         }
-        
-        return date
+        let toDateString = toDateFormatter.string(from: fromDate)
+        guard let toDate = toDateFormatter.date(from: toDateString) else {
+            throw UTCToLocalDateConverterError.failedToCreateDateFromLocalString(toDateString, on: Locale.current)
+        }
+        return toDate
+    }
+
+    func UTCToLocal(date dateString: String) -> Date {
+        do {
+            return try convertUTCToLocal(date: dateString)
+        } catch {
+            CrashlyticsRecorder().error(error)
+            fatalError(error.localizedDescription)
+        }
     }
     
     func getRawPaymentRequest(for invoiceId: String) -> Single<ObjcCompatibleBitpayObject> {

@@ -41,6 +41,15 @@ extension DateFormatter {
     }
 
     /// The format that the server sends down the expiration date for session tokens
+    public static let utcSessionDateFormat: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(abbreviation: "UTC")
+        return formatter
+    }()
+
+    /// The format that the server sends down the expiration date for session tokens
     public static let sessionDateFormat: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
