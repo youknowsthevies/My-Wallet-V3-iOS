@@ -65,7 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         /// `User-Agent` uses `UIDevice` which, given that it is a
         /// `UIKit` class should not be in any of our frameworks other than `PlatformUIKit`
-        Network.shared.apply(userAgent: userAgent)
+        UserAgentProvider.shared.apply(deviceInfo: UIDevice.current)
         
         if ProcessInfo.processInfo.environmentBoolean(for: "automation_erase_data") == true {
             // If ProcessInfo environment contains "automation_erase_data": true, erase wallet and settings.
@@ -351,18 +351,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             actions: actions
         )
     }
-    
-    private var userAgent: String? {
-        let systemVersion = UIDevice.current.systemVersion
-        let modelName = UIDevice.current.model
-        guard
-            let version = Bundle.applicationVersion,
-            let build = Bundle.applicationBuildVersion else {
-                return nil
-        }
-        let versionAndBuild = String(format: "%@ b%@", version, build)
-        return String(format: "Blockchain-iOS/%@ (iOS/%@; %@)", versionAndBuild, systemVersion, modelName)
-    }
 }
 
 // MARK: - Remote Notification Registration
@@ -382,3 +370,5 @@ extension AppDelegate {
 fileprivate func convertFromCATransitionType(_ input: CATransitionType) -> String {
 	return input.rawValue
 }
+
+extension UIDevice: DeviceInfo {}

@@ -21,15 +21,7 @@ import ToolKit
     }
 }
 
-public class Network {
-    
-    public static let shared = Network()
-    
-    public var userAgent: String?
-    
-    public func apply(userAgent: String?) {
-        self.userAgent = userAgent
-    }
+public struct Network {
     
     public struct Config {
                 
@@ -82,7 +74,7 @@ public class Network {
         public static let `default`: Dependencies = {
             let blockchainAPIConfig = Config.defaultConfig
             let sessionConfiguration = URLSessionConfiguration.default
-            if let userAgent = Network.shared.userAgent {
+            if let userAgent = UserAgentProvider.shared.userAgent {
                 sessionConfiguration.httpAdditionalHeaders = [HttpHeaderField.userAgent: userAgent]
             }
             sessionConfiguration.waitsForConnectivity = true
@@ -103,7 +95,7 @@ public class Network {
         public static let wallet: Dependencies = {
             let blockchainAPIConfig = Config.walletConfig
             let sessionConfiguration = URLSessionConfiguration.default
-            if let userAgent = Network.shared.userAgent {
+            if let userAgent = UserAgentProvider.shared.userAgent {
                 sessionConfiguration.httpAdditionalHeaders = [HttpHeaderField.userAgent: userAgent]
             }
             sessionConfiguration.waitsForConnectivity = true
@@ -124,7 +116,7 @@ public class Network {
         public static let retail: Dependencies = {
             let blockchainAPIConfig = Config.retailConfig
             let sessionConfiguration = URLSessionConfiguration.default
-            if let userAgent = Network.shared.userAgent {
+            if let userAgent = UserAgentProvider.shared.userAgent {
                 sessionConfiguration.httpAdditionalHeaders = [HttpHeaderField.userAgent: userAgent]
             }
             sessionConfiguration.waitsForConnectivity = true
@@ -170,6 +162,35 @@ public class Network {
                 communicator: communicator
             )
         }()
+    }
+}
+
+public protocol DeviceInfo {
+    var systemVersion: String { get }
+    var model: String { get }
+}
+
+public class UserAgentProvider {
+    
+    public static let shared = UserAgentProvider()
+    
+    private var deviceInfo: DeviceInfo?
+    
+    var userAgent: String? {
+        guard
+            let systemVersion = deviceInfo?.systemVersion,
+            let modelName = deviceInfo?.model,
+            let version = Bundle.applicationVersion,
+            let build = Bundle.applicationBuildVersion
+        else {
+            return nil
+        }
+        let versionAndBuild = String(format: "%@ b%@", version, build)
+        return String(format: "Blockchain-iOS/%@ (iOS/%@; %@)", versionAndBuild, systemVersion, modelName)
+    }
+    
+    public func apply(deviceInfo: DeviceInfo) {
+        self.deviceInfo = deviceInfo
     }
 }
 
