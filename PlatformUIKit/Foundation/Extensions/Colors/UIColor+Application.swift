@@ -22,7 +22,8 @@ public extension UIColor {
     static let tertiary = blue400
 
     // Navigation
-    
+
+    static let sideMenuNavigationBarBackground = grey900
     static let navigationBarBackground = blue900
     
     // Backgrounds & Borders

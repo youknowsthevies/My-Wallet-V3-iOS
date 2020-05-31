@@ -44,7 +44,7 @@ extension VersionUpdateAlertDisplaying {
             body: LocalizationConstants.VersionUpdate.description,
             topNote: "\(LocalizationConstants.VersionUpdate.versionPrefix) \(currentVersion)",
             actions: [updateNowAction],
-            image: UIImage(named: "logo_framed"),
+            image: UIImage(named: "logo_small"),
             style: .sheet
         )
         let alertView = AlertView.make(with: alert) { action in

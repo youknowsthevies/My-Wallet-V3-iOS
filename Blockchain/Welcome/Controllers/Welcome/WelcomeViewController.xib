@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15400" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15404"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -29,10 +30,10 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="2t7-6c-fP2" userLabel="Logo Image View">
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_large" translatesAutoresizingMaskIntoConstraints="NO" id="2t7-6c-fP2" userLabel="Logo Image View">
                     <rect key="frame" x="175" y="179.33333333333334" width="64" height="64"/>
                     <constraints>
-                        <constraint firstAttribute="width" secondItem="2t7-6c-fP2" secondAttribute="height" multiplier="1:1" id="BYt-ap-tX8"/>
+                        <constraint firstAttribute="height" constant="64" id="VMA-up-nFf"/>
                         <constraint firstAttribute="width" constant="64" id="b45-Jp-MqV"/>
                     </constraints>
                 </imageView>
@@ -85,10 +86,10 @@
                 <constraint firstItem="8YT-ad-dhv" firstAttribute="leading" secondItem="uj6-xZ-PTe" secondAttribute="leading" id="4iN-Wp-KsU"/>
                 <constraint firstItem="uj6-xZ-PTe" firstAttribute="leading" secondItem="bWa-Df-2mF" secondAttribute="leading" constant="34" id="CzJ-ez-x0x"/>
                 <constraint firstItem="6nR-9e-I4e" firstAttribute="leading" secondItem="bWa-Df-2mF" secondAttribute="leading" constant="16" id="D5j-oh-2v0"/>
+                <constraint firstItem="2t7-6c-fP2" firstAttribute="centerX" secondItem="83Q-P2-6Ie" secondAttribute="centerX" id="Iq2-6C-AGD"/>
                 <constraint firstItem="bWa-Df-2mF" firstAttribute="bottom" secondItem="6nR-9e-I4e" secondAttribute="bottom" constant="16" id="JC7-4s-59v"/>
                 <constraint firstItem="8YT-ad-dhv" firstAttribute="top" secondItem="uj6-xZ-PTe" secondAttribute="bottom" constant="18" id="dCF-S9-m0C"/>
                 <constraint firstItem="bWa-Df-2mF" firstAttribute="trailing" secondItem="uj6-xZ-PTe" secondAttribute="trailing" constant="34" id="ej1-iD-2zL"/>
-                <constraint firstItem="2t7-6c-fP2" firstAttribute="centerX" secondItem="bWa-Df-2mF" secondAttribute="centerX" id="glU-nn-OSY"/>
                 <constraint firstItem="bWa-Df-2mF" firstAttribute="trailing" secondItem="6nR-9e-I4e" secondAttribute="trailing" constant="16" id="oKu-Xe-Env"/>
                 <constraint firstItem="8YT-ad-dhv" firstAttribute="trailing" secondItem="uj6-xZ-PTe" secondAttribute="trailing" id="vCX-gb-njC"/>
                 <constraint firstItem="uj6-xZ-PTe" firstAttribute="top" secondItem="2t7-6c-fP2" secondAttribute="bottom" constant="45" id="x32-nK-8Ac"/>
@@ -98,6 +99,6 @@
         </view>
     </objects>
     <resources>
-        <image name="logo" width="45" height="45"/>
+        <image name="logo_large" width="80" height="80"/>
     </resources>
 </document>

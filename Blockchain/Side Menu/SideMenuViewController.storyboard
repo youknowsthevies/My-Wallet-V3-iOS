@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="3cd-eN-tWk">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="3cd-eN-tWk">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -24,10 +24,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo-blockchain" translatesAutoresizingMaskIntoConstraints="NO" id="OrS-f1-zpW">
-                                            <rect key="frame" x="16" y="14" width="202.66666666666666" height="16"/>
+                                            <rect key="frame" x="16" y="14" width="144" height="16"/>
                                         </imageView>
                                     </subviews>
-                                    <color key="backgroundColor" red="0.0" green="0.29019607843137252" blue="0.48627450980392156" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="backgroundColor" systemColor="systemGrayColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <constraints>
                                         <constraint firstItem="OrS-f1-zpW" firstAttribute="centerY" secondItem="0df-tG-myy" secondAttribute="centerY" id="Jg6-41-c4C"/>
                                         <constraint firstItem="OrS-f1-zpW" firstAttribute="leading" secondItem="0df-tG-myy" secondAttribute="leading" constant="16" id="xvR-61-rq8"/>
@@ -42,7 +42,7 @@
                                 </constraints>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" red="0.0" green="0.29019607843137252" blue="0.48627450980392156" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" systemColor="systemGrayColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="TjN-eE-cF5" firstAttribute="leading" secondItem="GGv-dh-Njx" secondAttribute="leading" id="KQ0-47-8J2"/>
                             <constraint firstItem="leQ-0O-1gI" firstAttribute="bottom" secondItem="xiS-mB-oad" secondAttribute="bottomMargin" id="Q35-yX-AVk"/>
@@ -68,6 +68,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="logo-blockchain" width="202.66667175292969" height="16"/>
+        <image name="logo-blockchain" width="144" height="16"/>
     </resources>
 </document>

@@ -41,7 +41,6 @@ final class AboutView: UIView {
     
     func setup() {
         fromNib(named: AboutView.objectName)
-        logoImageView.image = #imageLiteral(resourceName: "logo-blockchain").withRenderingMode(.alwaysTemplate)
         logoImageView.tintColor = .textFieldText
         versionLabel.content = .init(
             text: LocalizationIDs.version + " " + "\(Bundle.applicationVersion ?? "")",

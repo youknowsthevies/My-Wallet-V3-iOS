@@ -34,38 +34,35 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="owK-eY-NTX">
-                                        <rect key="frame" x="16" y="16" width="343" height="673.5"/>
+                                        <rect key="frame" x="16" y="16" width="343" height="690.5"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nUf-co-zbX">
-                                        <rect key="frame" x="16" y="16" width="343" height="673.5"/>
+                                        <rect key="frame" x="16" y="16" width="343" height="690.5"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="center" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="q9I-uv-y8Z" userLabel="Outer Stack View">
-                                                <rect key="frame" x="0.0" y="0.0" width="343" height="649.5"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="343" height="666.5"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="wuF-yM-qLJ" userLabel="Top Gravity Stack View">
-                                                        <rect key="frame" x="0.0" y="0.0" width="343" height="527.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="343" height="544.5"/>
                                                         <subviews>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sJH-c9-t5O" customClass="GradientView" customModule="PlatformUIKit">
-                                                                <rect key="frame" x="0.0" y="0.0" width="343" height="327"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="343" height="344"/>
                                                                 <subviews>
                                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="Q1b-yt-l68">
-                                                                        <rect key="frame" x="0.0" y="32" width="343" height="255"/>
+                                                                        <rect key="frame" x="0.0" y="32" width="343" height="272"/>
                                                                         <subviews>
                                                                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="exchange-logo" translatesAutoresizingMaskIntoConstraints="NO" id="P6b-EN-TAh">
-                                                                                <rect key="frame" x="59.5" y="0.0" width="224" height="60"/>
-                                                                                <constraints>
-                                                                                    <constraint firstAttribute="height" constant="60" id="SJx-Uv-UPK"/>
-                                                                                </constraints>
+                                                                                <rect key="frame" x="16" y="0.0" width="311" height="50.5"/>
                                                                             </imageView>
                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The only Exchange that  connects to your Wallet." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Q8-wJ-jWS">
-                                                                                <rect key="frame" x="16" y="76" width="311" height="39"/>
+                                                                                <rect key="frame" x="16" y="66.5" width="311" height="39"/>
                                                                                 <fontDescription key="fontDescription" name="Inter-Medium" family="Inter" pointSize="16"/>
                                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <nil key="highlightedColor"/>
                                                                             </label>
                                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="ORL-iT-AdY">
-                                                                                <rect key="frame" x="0.0" y="131" width="343" height="124"/>
+                                                                                <rect key="frame" x="0.0" y="121.5" width="343" height="150.5"/>
                                                                                 <subviews>
                                                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="owv-0x-6hK" userLabel="Icon Container">
                                                                                         <rect key="frame" x="0.0" y="0.0" width="343" height="50"/>
@@ -119,13 +116,13 @@
                                                                                         </constraints>
                                                                                     </view>
                                                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ShN-VL-wr8" userLabel="Icon Container">
-                                                                                        <rect key="frame" x="0.0" y="74" width="343" height="50"/>
+                                                                                        <rect key="frame" x="0.0" y="74" width="343" height="76.5"/>
                                                                                         <subviews>
                                                                                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="Wvy-di-crl">
-                                                                                                <rect key="frame" x="0.0" y="0.0" width="343" height="50"/>
+                                                                                                <rect key="frame" x="0.0" y="0.0" width="343" height="76.5"/>
                                                                                                 <subviews>
                                                                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="zyO-pA-uQ9">
-                                                                                                        <rect key="frame" x="0.0" y="0.5" width="163.5" height="49"/>
+                                                                                                        <rect key="frame" x="0.0" y="14" width="163.5" height="49"/>
                                                                                                         <subviews>
                                                                                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="lightning" translatesAutoresizingMaskIntoConstraints="NO" id="5sp-fG-lGp">
                                                                                                                 <rect key="frame" x="74.5" y="0.0" width="15" height="24"/>
@@ -142,7 +139,7 @@
                                                                                                         </subviews>
                                                                                                     </stackView>
                                                                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="xKk-1C-PbR">
-                                                                                                        <rect key="frame" x="179.5" y="0.5" width="163.5" height="49"/>
+                                                                                                        <rect key="frame" x="179.5" y="14" width="163.5" height="49"/>
                                                                                                         <subviews>
                                                                                                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="group-of-people" translatesAutoresizingMaskIntoConstraints="NO" id="1LE-fB-Zic">
                                                                                                                 <rect key="frame" x="70" y="0.0" width="24" height="24"/>
@@ -174,7 +171,9 @@
                                                                         </subviews>
                                                                         <constraints>
                                                                             <constraint firstAttribute="trailing" secondItem="7Q8-wJ-jWS" secondAttribute="trailing" constant="16" id="AO1-Ko-edv"/>
+                                                                            <constraint firstItem="P6b-EN-TAh" firstAttribute="leading" secondItem="Q1b-yt-l68" secondAttribute="leading" constant="16" id="Ajh-LP-YTZ"/>
                                                                             <constraint firstItem="7Q8-wJ-jWS" firstAttribute="leading" secondItem="Q1b-yt-l68" secondAttribute="leading" constant="16" id="NjF-nZ-lqx"/>
+                                                                            <constraint firstAttribute="trailing" secondItem="P6b-EN-TAh" secondAttribute="trailing" constant="16" id="tMo-pm-tm0"/>
                                                                         </constraints>
                                                                     </stackView>
                                                                 </subviews>
@@ -198,7 +197,7 @@
                                                                 </userDefinedRuntimeAttributes>
                                                             </view>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hp5-83-0EV">
-                                                                <rect key="frame" x="0.0" y="327" width="343" height="200.5"/>
+                                                                <rect key="frame" x="0.0" y="344" width="343" height="200.5"/>
                                                                 <subviews>
                                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="alg-GY-1O2">
                                                                         <rect key="frame" x="16" y="24" width="327" height="160.5"/>
@@ -262,7 +261,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="mFc-yI-Vjf">
-                                                        <rect key="frame" x="0.0" y="529.5" width="343" height="120"/>
+                                                        <rect key="frame" x="0.0" y="546.5" width="343" height="120"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="giL-gE-QMt">
                                                                 <rect key="frame" x="16" y="0.0" width="311" height="56"/>
@@ -357,7 +356,7 @@
     </scenes>
     <resources>
         <image name="access-more-cryptos" width="24" height="24"/>
-        <image name="exchange-logo" width="224" height="60"/>
+        <image name="exchange-logo" width="448" height="50.5"/>
         <image name="group-of-people" width="24" height="17"/>
         <image name="lightning" width="15" height="24"/>
         <image name="withdraw-dollars" width="26.5" height="16"/>
