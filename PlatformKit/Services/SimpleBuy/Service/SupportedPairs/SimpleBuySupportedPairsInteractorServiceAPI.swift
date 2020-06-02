@@ -12,15 +12,9 @@ import ToolKit
 /// The calculation state of Simple Buy supported pairs
 public typealias BuyCryptoSupportedPairsCalculationState = ValueCalculationState<SimpleBuySupportedPairs>
 
-/// A simple buy possible pairs API
+/// A Simple Buy Service that provides the supported pairs for the current Fiat Currency.
 public protocol SimpleBuySupportedPairsInteractorServiceAPI: class {
     var valueObservable: Observable<SimpleBuySupportedPairs> { get }
     var valueSingle: Single<SimpleBuySupportedPairs> { get }
     func fetch() -> Observable<SimpleBuySupportedPairs>
-}
-
-public protocol SimpleBuySupportedPairsServiceAPI: class {
-    
-    /// Fetches `pairs` using the specified filter
-    func fetchPairs(for option: SupportedPairsFilterOption) -> Single<SimpleBuySupportedPairs>
 }

@@ -59,7 +59,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     private let stellarServiceProvider: StellarServiceProvider
     private let walletManager: WalletManager
     private let fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
-    private lazy var simpleBuyAvailabilityService: SimpleBuyAvailabilityServiceAPI = SimpleBuyServiceProvider.default.availability
+    private lazy var supportedPairsInteractor: SimpleBuySupportedPairsInteractorServiceAPI = SimpleBuyServiceProvider.default.supportedPairsInteractor
 
     private let deepLinkRouter: DeepLinkRouter
     private let exchangeRepository: ExchangeAccountRepositoryAPI
@@ -181,7 +181,10 @@ extension AuthenticationCoordinator: PairingWalletFetching {
             fiatCurrencySettingsService
                 .update(currency: .locale, context: .walletCreation)
                 .flatMapSingle(weak: self) { (self) -> Single<Bool> in
-                    self.simpleBuyAvailabilityService.valueSingle
+                    self.supportedPairsInteractor.fetch()
+                        .map { !$0.pairs.isEmpty }
+                        .take(1)
+                        .asSingle()
                 }
                 .subscribe(onSuccess: { isAvailable in
                     guard isAvailable else { return }

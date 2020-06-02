@@ -58,14 +58,9 @@ final class SimpleBuyServiceProviderAPIMock: SimpleBuyServiceProviderAPI {
         return underlyingSettings
     }
 
-    var underlyingFlowAvailability: SimpleBuyFlowAvailabilityServiceAPI!
-    var flowAvailability: SimpleBuyFlowAvailabilityServiceAPI {
-        return underlyingFlowAvailability
-    }
-
-    var underlyingAvailability: SimpleBuyAvailabilityServiceAPI!
-    var availability: SimpleBuyAvailabilityServiceAPI {
-        underlyingAvailability
+    var underlyingSupportedCurrencies: SimpleBuySupportedCurrenciesServiceAPI!
+    var supportedCurrencies: SimpleBuySupportedCurrenciesServiceAPI {
+        return underlyingSupportedCurrencies
     }
     
     var underlyingEligibility: SimpleBuyEligibilityServiceAPI!

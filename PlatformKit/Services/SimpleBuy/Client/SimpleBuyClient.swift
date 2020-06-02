@@ -110,9 +110,6 @@ public final class SimpleBuyClient: SimpleBuyClientAPI {
             headers: [HttpHeaderField.authorization: token]
         )!
         return communicator.perform(request: request)
-            .flatMap { (rawResponse: [[String: [String]]]) in
-                .just(SimpleBuySuggestedAmountsResponse(rawResponse: rawResponse))
-            }
     }
     
     // MARK: - SimpleBuySupportedPairsClientAPI

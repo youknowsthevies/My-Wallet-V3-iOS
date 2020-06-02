@@ -140,7 +140,7 @@ final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
     let cache: SimpleBuyEventCache
     
     private let userInformationProviding: UserInformationServiceProviding
-    private let availabilityService: SimpleBuyFlowAvailabilityServiceAPI
+    private let supportedPairsInteractor: SimpleBuySupportedPairsInteractorServiceAPI
     private let alertPresenter: AlertViewPresenter
     private let loadingViewPresenter: LoadingViewPresenting
     private let pendingOrderDetailsService: SimpleBuyPendingOrderDetailsServiceAPI
@@ -154,10 +154,10 @@ final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
     init(alertPresenter: AlertViewPresenter = .shared,
          loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
          pendingOrderDetailsService: SimpleBuyPendingOrderDetailsServiceAPI = SimpleBuyServiceProvider.default.pendingOrderDetails,
-         flowAvailabilityService: SimpleBuyFlowAvailabilityServiceAPI = SimpleBuyServiceProvider.default.flowAvailability,
+         supportedPairsInteractor: SimpleBuySupportedPairsInteractorServiceAPI = SimpleBuyServiceProvider.default.supportedPairsInteractor,
          cache: SimpleBuyEventCache = SimpleBuyServiceProvider.default.cache,
          serviceProviding: UserInformationServiceProviding = UserInformationServiceProvider.default) {
-        self.availabilityService = flowAvailabilityService
+        self.supportedPairsInteractor = supportedPairsInteractor
         self.userInformationProviding = serviceProviding
         self.alertPresenter = alertPresenter
         self.loadingViewPresenter = loadingViewPresenter
@@ -258,12 +258,8 @@ final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
         
     private func startFlow() {
         let cache = self.cache
-        let isFiatCurrencySupported = userInformationProviding
-            .settings
-            .fiatCurrency
-            .flatMap(weak: self) { (self, currency) -> Single<Bool> in
-                self.availabilityService.isFiatCurrencySupportedLocal(currency: currency)
-            }
+        let isFiatCurrencySupported: Single<Bool> = supportedPairsInteractor.valueSingle
+            .map { !$0.pairs.isEmpty }
         Single
             .zip(
                 pendingOrderDetailsService.checkoutData,

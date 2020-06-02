@@ -8,50 +8,6 @@
 
 import RxSwift
 import RxRelay
-import ToolKit
-
-public final class SimpleBuySupportedPairsInteractorService: SimpleBuySupportedPairsInteractorServiceAPI {
-    
-    // MARK: - Public properties
-    
-    public var valueObservable: Observable<SimpleBuySupportedPairs> {
-        cachedValue.valueObservable
-    }
-    
-    public var valueSingle: Single<SimpleBuySupportedPairs> {
-        cachedValue.valueSingle
-    }
-    
-    // MARK: - Private properties
-    
-    private let cachedValue: CachedValue<SimpleBuySupportedPairs>
-    
-    // MARK: - Setup
-    
-    public init(pairsService: SimpleBuySupportedPairsServiceAPI,
-                fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI) {
-        
-        cachedValue = .init(
-            configuration: .init(
-                identifier: "simple-buy-supported-pairs",
-                refreshType: .periodic(seconds: 2),
-                fetchPriority: .fetchAll,
-                flushNotificationName: .logout,
-                fetchNotificationName: .login)
-        )
-        
-        cachedValue
-            .setFetch { () -> Observable<SimpleBuySupportedPairs> in
-                fiatCurrencySettingsService.fiatCurrencyObservable
-                    .map { .only(fiatCurrency: $0) }
-                    .flatMapLatest { pairsService.fetchPairs(for: $0).asObservable() }
-            }
-    }
-    
-    public func fetch() -> Observable<SimpleBuySupportedPairs> {
-        cachedValue.fetchValueObservable
-    }
-}
 
 public final class SimpleBuySupportedPairsService: SimpleBuySupportedPairsServiceAPI {
     

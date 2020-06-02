@@ -28,7 +28,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     private let paxTransactionService: AnyERC20HistoricalTransactionService<PaxToken>
     private let repository: AuthenticatorRepositoryAPI
     private let simpleBuyServiceProvider: SimpleBuyServiceProviderAPI
-    
+
     /// Returns announcement preliminary data, according to which the relevant
     /// announcement will be displayed
     var preliminaryData: Single<AnnouncementPreliminaryData> {
@@ -49,7 +49,10 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             .pendingOrderDetails
             .pendingActionOrderDetails
 
-        let isSimpleBuyAvailable = simpleBuyServiceProvider.availability.valueSingle
+        let isSimpleBuyAvailable = simpleBuyServiceProvider
+            .supportedPairsInteractor
+            .valueSingle
+            .map { !$0.pairs.isEmpty }
 
         return Single
             .zip(nabuUser,

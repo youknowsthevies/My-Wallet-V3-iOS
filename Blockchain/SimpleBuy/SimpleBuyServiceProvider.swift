@@ -10,29 +10,28 @@ import ToolKit
 import PlatformKit
 
 final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
-    
+
     static let `default`: SimpleBuyServiceProviderAPI = SimpleBuyServiceProvider()
     
     // MARK: - Properties
 
-    let supportedPairsInteractor: SimpleBuySupportedPairsInteractorServiceAPI
-    let supportedPairs: SimpleBuySupportedPairsServiceAPI
-    let suggestedAmounts: SimpleBuySuggestedAmountsServiceAPI
-    let ordersDetails: SimpleBuyOrdersServiceAPI
-    let pendingOrderDetails: SimpleBuyPendingOrderDetailsServiceAPI
-    let availability: SimpleBuyAvailabilityServiceAPI
-    let flowAvailability: SimpleBuyFlowAvailabilityServiceAPI
     let eligibility: SimpleBuyEligibilityServiceAPI
     let orderCancellation: SimpleBuyOrderCancellationServiceAPI
-    let orderConfirmation: SimpleBuyOrderConfirmationServiceAPI
-    var paymentMethods: SimpleBuyPaymentMethodsServiceAPI
-    let paymentMethodTypes: SimpleBuyPaymentMethodTypesService
-    let cache: SimpleBuyEventCache
-    
     var orderCompletion: SimpleBuyPendingOrderCompletionServiceAPI {
         SimpleBuyPendingOrderCompletionService(ordersService: ordersDetails)
     }
-    
+    let orderConfirmation: SimpleBuyOrderConfirmationServiceAPI
+    let ordersDetails: SimpleBuyOrdersServiceAPI
+    let paymentMethodTypes: SimpleBuyPaymentMethodTypesService
+    let pendingOrderDetails: SimpleBuyPendingOrderDetailsServiceAPI
+    let suggestedAmounts: SimpleBuySuggestedAmountsServiceAPI
+    let supportedCurrencies: SimpleBuySupportedCurrenciesServiceAPI
+    let supportedPairs: SimpleBuySupportedPairsServiceAPI
+    let supportedPairsInteractor: SimpleBuySupportedPairsInteractorServiceAPI
+    let paymentMethods: SimpleBuyPaymentMethodsServiceAPI
+
+    let cache: SimpleBuyEventCache
+
     private let orderCreation: SimpleBuyOrderCreationServiceAPI
     private let orderQuote: SimpleBuyOrderQuoteServiceAPI
     private let paymentAccount: SimpleBuyPaymentAccountServiceAPI
@@ -57,6 +56,7 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
         supportedPairs = SimpleBuySupportedPairsService(client: simpleBuyClient)
         
         supportedPairsInteractor = SimpleBuySupportedPairsInteractorService(
+            featureFetcher: featureFetcher,
             pairsService: supportedPairs,
             fiatCurrencySettingsService: settings
         )
@@ -71,10 +71,6 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
             client: simpleBuyClient,
             reactiveWallet: wallet,
             authenticationService: authenticationService
-        )
-        availability = SimpleBuyAvailabilityService(
-            pairsService: supportedPairsInteractor,
-            featureFetcher: featureFetcher
         )
         eligibility = SimpleBuyEligibilityService(
             client: simpleBuyClient,
@@ -126,7 +122,11 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
             paymentMethodsService: paymentMethods,
             cardListService: cardServiceProvider.cardList
         )
-        flowAvailability = SimpleBuyFlowAvailabilityService()
+        supportedCurrencies = SimpleBuySupportedCurrenciesService(
+            featureFetcher: featureFetcher,
+            pairsService: supportedPairs,
+            fiatCurrencySettingsService: settings
+        )
 
         self.dataRepository = dataRepository
         self.settings = settings

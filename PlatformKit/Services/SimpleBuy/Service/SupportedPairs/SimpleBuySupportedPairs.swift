@@ -8,6 +8,7 @@
 
 /// Simple-Buy supported pairs
 public struct SimpleBuySupportedPairs {
+    static let empty: SimpleBuySupportedPairs = .init(pairs: [])
     
     /// A possible tradable pair supported by Simple-Buy feature
     public struct Pair {

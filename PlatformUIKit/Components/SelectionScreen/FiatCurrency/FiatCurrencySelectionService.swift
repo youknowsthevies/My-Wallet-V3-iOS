@@ -17,7 +17,7 @@ extension Notification.Name {
 public final class FiatCurrencySelectionService: SelectionServiceAPI {
     
     public var dataSource: Observable<[SelectionItemViewModel]> {
-        .just(availableCurrencies.map { $0.selectionItem })
+        provider.currencies.map { $0.map { $0.selectionItem } }
     }
     
     public let selectedDataRelay: BehaviorRelay<SelectionItemViewModel>
@@ -25,12 +25,12 @@ public final class FiatCurrencySelectionService: SelectionServiceAPI {
     public var selectedData: Observable<SelectionItemViewModel> {
         selectedDataRelay.distinctUntilChanged()
     }
-    
-    private let availableCurrencies: [FiatCurrency]
+
+    private let provider: FiatCurrencySelectionProvider
     
     public init(defaultSelectedData: FiatCurrency = .locale,
-                availableCurrencies: [FiatCurrency] = FiatCurrency.supported) {
-        self.availableCurrencies = availableCurrencies
+                provider: FiatCurrencySelectionProvider = DefaultFiatCurrencySelectionProvider()) {
+        self.provider = provider
         self.selectedDataRelay = BehaviorRelay(value: defaultSelectedData.selectionItem)
     }
 }

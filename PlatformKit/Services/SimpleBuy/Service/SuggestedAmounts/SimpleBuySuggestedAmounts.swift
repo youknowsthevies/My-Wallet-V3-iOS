@@ -11,18 +11,16 @@ import Foundation
 public struct SimpleBuySuggestedAmounts {
     
     public subscript(currency: FiatCurrency) -> [FiatValue] {
-        return amountsPerCurrency[currency] ?? []
+        amountsPerCurrency[currency] ?? []
     }
     
-    private var amountsPerCurrency: [FiatCurrency: [FiatValue]] = [:]
-    
+    private let amountsPerCurrency: [FiatCurrency: [FiatValue]]
+
     init(response: SimpleBuySuggestedAmountsResponse) {
-        append(amounts: response.eurAmounts, for: .EUR)
-        append(amounts: response.gbpAmounts, for: .GBP)
-    }
-    
-    private mutating func append(amounts: [String], for currency: FiatCurrency) {
-        amountsPerCurrency[currency] = amounts
-            .map { FiatValue(minor: $0, currency: currency) }
+        amountsPerCurrency = response.amounts
+            .reduce(into: [FiatCurrency: [FiatValue]]()) { result, element in
+                guard let currency = FiatCurrency(code: element.key) else { return }
+                result[currency] = element.value.map { FiatValue(minor: $0, currency: currency) }
+            }
     }
 }

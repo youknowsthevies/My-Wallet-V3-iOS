@@ -184,7 +184,7 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     private func showFiatCurrencyChangeScreen(selectedCurrency: FiatCurrency) {
         let selectionService = FiatCurrencySelectionService(
             defaultSelectedData: selectedCurrency,
-            availableCurrencies: SimpleBuyLocallySupportedCurrencies.fiatCurrencies
+            provider: SimpleBuyFiatCurrencySelectionProvider(supportedCurrencies: serviceProvider.supportedCurrencies)
         )
         let interactor = SelectionScreenInteractor(service: selectionService)
         let presenter = SelectionScreenPresenter(
@@ -259,15 +259,22 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
         interactor.selectedIdOnDismissal
             .map { FiatCurrency(code: $0)! }
             .flatMap(weak: self, { (self, currency) -> Single<(FiatCurrency, Bool)> in
+
+                let isCurrencySupported = self.serviceProvider.supportedPairsInteractor
+                    .fetch()
+                    .map { !$0.pairs.isEmpty }
+                    .take(1)
+                    .asSingle()
+
                 // TICKET: IOS-3144
-                self.serviceProvider.settings
+                return self.serviceProvider.settings
                     .update(
                         currency: currency,
                         context: .simpleBuy
                     )
                     .andThen(Single.zip(
                         Single.just(currency),
-                        self.serviceProvider.flowAvailability.isFiatCurrencySupportedLocal(currency: currency)
+                        isCurrencySupported
                     ))
             })
             .observeOn(MainScheduler.instance)

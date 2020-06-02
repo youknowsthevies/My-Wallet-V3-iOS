@@ -80,6 +80,20 @@ public final class SimpleBuyPaymentMethodsService: SimpleBuyPaymentMethodsServic
                             .asObservable()
                     }
                     .map { Array<SimpleBuyPaymentMethod>.init(response: $0) }
+                    .map {
+                        $0.filter {
+                            switch $0.type {
+                            case .card:
+                                return true
+                            case .bankTransfer:
+                                // Filter out bank transfer details from currencies we do not
+                                //  have local support/UI.
+                                return SimpleBuyBankLocallySupportedCurrencies
+                                    .fiatCurrencies
+                                    .contains($0.min.currency)
+                            }
+                        }
+                    }
                     .flatMap { methods -> Observable<[SimpleBuyPaymentMethod]> in
                         featureFetcher.fetchBool(for: .simpleBuyCardsEnabled)
                             .map { isEnabled in

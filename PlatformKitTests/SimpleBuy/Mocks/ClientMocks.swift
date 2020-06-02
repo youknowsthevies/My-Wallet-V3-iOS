@@ -104,12 +104,6 @@ extension SimpleBuyClient {
         )
     }
 
-    static func mockSuggestedAmounts(currency: FiatCurrency) -> SimpleBuySuggestedAmountsResponse {
-        return SimpleBuySuggestedAmountsResponse(
-            rawResponse: [[currency.code : ["1000", "2000"]]]
-        )
-    }
-
     static var mockOrdersDetails: [SimpleBuyOrderPayload.Response] {
         [
             SimpleBuyOrderPayload.Response(
