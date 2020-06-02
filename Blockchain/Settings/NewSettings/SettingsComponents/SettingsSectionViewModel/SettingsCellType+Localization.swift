@@ -10,7 +10,7 @@ import PlatformUIKit
 
 extension SettingsSectionType.CellType.PlainCellType {
     
-    private typealias AccessibilityIDs = Accessibility.Identifier.Settings.SettingsCell
+    private typealias AccessibilityIDs = Accessibility.Identifier.Settings.SettingsCell.Plain
     
     var title: String {
         switch self {
@@ -38,7 +38,8 @@ extension SettingsSectionType.CellType.PlainCellType {
     var viewModel: PlainCellViewModel {
         return .init(
             title: title,
-            accessibilityID: "\(AccessibilityIDs.titleLabelFormat)\(accessibilityID)"
+            accessibilityID: "\(AccessibilityIDs.titleLabelFormat)\(accessibilityID)",
+            titleAccessibilityID: "\(AccessibilityIDs.title).\(accessibilityID)"
         )
     }
 }

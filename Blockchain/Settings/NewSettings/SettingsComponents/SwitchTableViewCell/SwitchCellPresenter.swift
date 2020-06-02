@@ -11,12 +11,16 @@ import PlatformUIKit
 import RxSwift
 
 protocol SwitchCellPresenting {
+    var accessibility: Accessibility { get }
     var labelContentPresenting: LabelContentPresenting { get }
     var switchViewPresenting: SwitchViewPresenting { get }
 }
 
 class EmailNotificationsSwitchCellPresenter: SwitchCellPresenting {
     
+    private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell
+    
+    let accessibility: Accessibility = .id(AccessibilityId.EmailNotifications.title)
     let labelContentPresenting: LabelContentPresenting
     let switchViewPresenting: SwitchViewPresenting
     
@@ -30,6 +34,10 @@ class EmailNotificationsSwitchCellPresenter: SwitchCellPresenting {
 }
 
 class SMSTwoFactorSwitchCellPresenter: SwitchCellPresenting {
+    
+    private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell
+    
+    let accessibility: Accessibility = .id(AccessibilityId.TwoStepVerification.title)
     let labelContentPresenting: LabelContentPresenting
     let switchViewPresenting: SwitchViewPresenting
     
@@ -44,6 +52,9 @@ class SMSTwoFactorSwitchCellPresenter: SwitchCellPresenting {
 
 class BioAuthenticationSwitchCellPresenter: SwitchCellPresenting {
     
+    private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell
+    
+    let accessibility: Accessibility = .id(AccessibilityId.BioAuthentication.title)
     let labelContentPresenting: LabelContentPresenting
     let switchViewPresenting: SwitchViewPresenting
     
@@ -59,6 +70,9 @@ class BioAuthenticationSwitchCellPresenter: SwitchCellPresenting {
 
 class SwipeReceiveSwitchCellPresenter: SwitchCellPresenting {
     
+    private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell
+    
+    let accessibility: Accessibility = .id(AccessibilityId.SwipeToReceive.title)
     let labelContentPresenting: LabelContentPresenting
     let switchViewPresenting: SwitchViewPresenting
     

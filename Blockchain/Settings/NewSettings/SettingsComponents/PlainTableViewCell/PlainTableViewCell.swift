@@ -10,11 +10,15 @@ import PlatformUIKit
 
 struct PlainCellViewModel {
     let title: String
-    let accessibilityID: String?
+    let accessibilityID: String
+    let titleAccessibilityID: String
     
-    init(title: String, accessibilityID: String? = nil) {
+    init(title: String,
+         accessibilityID: String,
+         titleAccessibilityID: String) {
         self.title = title
         self.accessibilityID = accessibilityID
+        self.titleAccessibilityID = titleAccessibilityID
     }
 }
 
@@ -27,7 +31,8 @@ final class PlainTableViewCell: UITableViewCell {
     var viewModel: ViewModel! {
         didSet {
             titleLabel.text = viewModel.title
-            titleLabel.accessibilityIdentifier = viewModel.accessibilityID
+            titleLabel.accessibilityIdentifier = viewModel.titleAccessibilityID
+            accessibility = .id(viewModel.accessibilityID)
         }
     }
     

@@ -13,8 +13,11 @@ import RxSwift
 /// A `BadgeCellPresenting` class for showing the user's recovery phrase status
 final class RecoveryStatusCellPresenter: BadgeCellPresenting {
     
+    private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell
+    
     // MARK: - Properties
     
+    let accessibility: Accessibility = .id(AccessibilityId.BackupPhrase.title)
     let labelContentPresenting: LabelContentPresenting
     let badgeAssetPresenting: BadgeAssetPresenting
     var isLoading: Bool {

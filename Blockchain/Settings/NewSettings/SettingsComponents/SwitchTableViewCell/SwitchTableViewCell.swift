@@ -24,6 +24,8 @@ final class SwitchTableViewCell: UITableViewCell {
                 .compactMap { $0 }
                 .bind(to: rx.content)
                 .disposed(by: disposeBag)
+            
+            accessibility = presenter.accessibility
         }
     }
     

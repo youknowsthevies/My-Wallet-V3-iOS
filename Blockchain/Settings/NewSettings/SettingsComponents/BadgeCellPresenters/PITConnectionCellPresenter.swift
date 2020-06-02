@@ -12,9 +12,12 @@ import RxSwift
 
 /// A `BadgeCellPresenting` class for showing the user's PIT connection status
 final class PITConnectionCellPresenter: BadgeCellPresenting {
+    
+    private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell
 
     // MARK: - Properties
 
+    let accessibility: Accessibility = .id(AccessibilityId.ExchangeConnect.title)
     let labelContentPresenting: LabelContentPresenting
     let badgeAssetPresenting: BadgeAssetPresenting
     var isLoading: Bool {

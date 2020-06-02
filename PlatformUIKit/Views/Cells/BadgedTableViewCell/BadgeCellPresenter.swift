@@ -16,6 +16,13 @@ import RxCocoa
 /// verification status, etc). Each of these cells need their own implementation of
 /// `LabelContentPresenting` and `BadgeAssetPresenting`
 public protocol BadgeCellPresenting: AsyncPresenting {
+    var accessibility: Accessibility { get }
     var labelContentPresenting: LabelContentPresenting { get }
     var badgeAssetPresenting: BadgeAssetPresenting { get }
+}
+
+extension BadgeCellPresenting {
+    var accessibility: Accessibility {
+        .none
+    }
 }

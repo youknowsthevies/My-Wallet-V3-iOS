@@ -16,6 +16,51 @@ extension Accessibility.Identifier {
             private static let prefix = "\(Settings.prefix)SettingsCell."
             public static let titleLabelFormat = "\(prefix)titleLabel."
             public static let badgeView = "\(prefix)badgeView."
+            
+            public enum Plain {
+                public static let title = "\(SettingsCell.prefix)Plain"
+                public static let titleLabelFormat = ".\(title)titleLabel."
+            }
+            
+            public enum Email {
+                public static let title = "\(SettingsCell.prefix)Email"
+            }
+            
+            public enum BackupPhrase {
+                public static let title = "\(SettingsCell.prefix)BackupPhrase"
+            }
+            
+            public enum BioAuthentication {
+                public static let title = "\(SettingsCell.prefix)BioAuthentication"
+            }
+            
+            public enum SwipeToReceive {
+                public static let title = "\(SettingsCell.prefix)SwipeToReceive"
+            }
+            
+            public enum AccountLimits {
+                public static let title = "\(SettingsCell.prefix)AccountLimits"
+            }
+            
+            public enum Mobile {
+                public static let title = "\(SettingsCell.prefix)Mobile"
+            }
+            
+            public enum EmailNotifications {
+                public static let title = "\(SettingsCell.prefix)EmailNotifications"
+            }
+            
+            public enum ExchangeConnect {
+                public static let title = "\(SettingsCell.prefix)ExchangeConnect"
+            }
+            
+            public enum Currency {
+                public static let title = "\(SettingsCell.prefix)PreferredCurrency"
+            }
+            
+            public enum TwoStepVerification {
+                public static let title = "\(SettingsCell.prefix)TwoStepVerification"
+            }
         }
 
         public enum LinkedCardCell {
