@@ -20,12 +20,7 @@ final class SimpleBuyServiceProviderAPIMock: SimpleBuyServiceProviderAPI {
     var orderConfirmation: SimpleBuyOrderConfirmationServiceAPI {
         underlyingOrderConfirmation
     }
-    
-    var underlyingPendingOrderCreation: SimpleBuyPendingOrderCreationServiceAPI!
-    func orderCreation(for paymentMethod: SimpleBuyPaymentMethod.MethodType) -> SimpleBuyPendingOrderCreationServiceAPI {
-        underlyingPendingOrderCreation
-    }
-    
+        
     var cache: SimpleBuyEventCache = .init(cacheSuite: UserDefaults.standard)
     
     var underlyingRepository: DataRepositoryAPI!

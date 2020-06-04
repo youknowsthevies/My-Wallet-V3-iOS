@@ -135,6 +135,7 @@ final class BuyCryptoScreenInteractor {
     private let cryptoCurrencySelectionService: SelectionServiceAPI
     private let eligibilityService: SimpleBuyEligibilityServiceAPI
     private let paymentMethodTypesService: SimpleBuyPaymentMethodTypesService
+    private let orderCreationService: SimpleBuyOrderCreationServiceAPI
 
     // MARK: - Accessors
     
@@ -164,6 +165,7 @@ final class BuyCryptoScreenInteractor {
          eligibilityService: SimpleBuyEligibilityServiceAPI,
          paymentMethodTypesService: SimpleBuyPaymentMethodTypesService,
          cryptoCurrencySelectionService: SelectionServiceAPI,
+         orderCreationService: SimpleBuyOrderCreationServiceAPI,
          suggestedAmountsService: SimpleBuySuggestedAmountsServiceAPI) {
         self.kycTiersService = kycTiersService
         self.fiatCurrencyService = fiatCurrencyService
@@ -172,6 +174,7 @@ final class BuyCryptoScreenInteractor {
         self.cryptoCurrencySelectionService = cryptoCurrencySelectionService
         self.eligibilityService = eligibilityService
         self.paymentMethodTypesService = paymentMethodTypesService
+        self.orderCreationService = orderCreationService
         self.exchangeProvider = exchangeProvider
         
         suggestedAmountsService.calculationState
@@ -275,6 +278,10 @@ final class BuyCryptoScreenInteractor {
     /// Triggers a refresh
     func refresh() {
         suggestedAmountsService.refresh()
+    }
+    
+    func createOrder(from checkoutData: SimpleBuyCheckoutData) -> Single<SimpleBuyCheckoutData> {
+        orderCreationService.create(using: checkoutData)
     }
 }
 

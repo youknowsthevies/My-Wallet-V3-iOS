@@ -6,12 +6,12 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import RxSwift
+import RxRelay
+import RxCocoa
+import ToolKit
 import PlatformKit
 import PlatformUIKit
-import RxCocoa
-import RxRelay
-import RxSwift
-import ToolKit
 
 final class CheckoutScreenContentReducer {
 
@@ -114,7 +114,7 @@ final class CheckoutScreenContentReducer {
 
     // MARK: - Accessors
 
-    func setupDidSucceed(with data: CheckoutScreenInteractor.InteractionData) {
+    func setupDidSucceed(with data: SimpleBuyCheckoutInteractionData) {
         var formattedTime = ""
         if let time = data.time {
             formattedTime = DateFormatter.elegantDateFormatter.string(from: time)
