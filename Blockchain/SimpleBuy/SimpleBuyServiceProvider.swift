@@ -17,25 +17,24 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
 
     let eligibility: SimpleBuyEligibilityServiceAPI
     let orderCancellation: SimpleBuyOrderCancellationServiceAPI
-
+    var orderCompletion: SimpleBuyPendingOrderCompletionServiceAPI {
+        SimpleBuyPendingOrderCompletionService(ordersService: ordersDetails)
+    }
     let orderConfirmation: SimpleBuyOrderConfirmationServiceAPI
-    var paymentMethods: SimpleBuyPaymentMethodsServiceAPI
-    let paymentMethodTypes: SimpleBuyPaymentMethodTypesService
-    let orderCreation: SimpleBuyOrderCreationServiceAPI
-    let orderQuote: SimpleBuyOrderQuoteServiceAPI
-    let paymentAccount: SimpleBuyPaymentAccountServiceAPI
     let ordersDetails: SimpleBuyOrdersServiceAPI
+    let paymentMethodTypes: SimpleBuyPaymentMethodTypesService
     let pendingOrderDetails: SimpleBuyPendingOrderDetailsServiceAPI
     let suggestedAmounts: SimpleBuySuggestedAmountsServiceAPI
     let supportedCurrencies: SimpleBuySupportedCurrenciesServiceAPI
     let supportedPairs: SimpleBuySupportedPairsServiceAPI
     let supportedPairsInteractor: SimpleBuySupportedPairsInteractorServiceAPI
-    
-    var orderCompletion: SimpleBuyPendingOrderCompletionServiceAPI {
-        SimpleBuyPendingOrderCompletionService(ordersService: ordersDetails)
-    }
-    
+    let paymentMethods: SimpleBuyPaymentMethodsServiceAPI
+
     let cache: SimpleBuyEventCache
+
+    private let orderCreation: SimpleBuyOrderCreationServiceAPI
+    private let orderQuote: SimpleBuyOrderQuoteServiceAPI
+    private let paymentAccount: SimpleBuyPaymentAccountServiceAPI
     
     let settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI
     let dataRepository: DataRepositoryAPI
@@ -101,6 +100,7 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
             authenticationService: authenticationService
         )
         pendingOrderDetails = SimpleBuyPendingOrderDetailsService(
+            paymentAccountService: paymentAccount,
             ordersService: ordersDetails,
             cancallationService: orderCancellation
         )
@@ -130,5 +130,21 @@ final class SimpleBuyServiceProvider: SimpleBuyServiceProviderAPI {
 
         self.dataRepository = dataRepository
         self.settings = settings
+    }
+    
+    public func orderCreation(for paymentMethod: SimpleBuyPaymentMethod.MethodType) -> SimpleBuyPendingOrderCreationServiceAPI {
+        switch paymentMethod {
+        case .bankTransfer:
+            return SimpleBuyBankOrderCreationService(
+                paymentAccountService: paymentAccount,
+                orderQuoteService: orderQuote,
+                orderCreationService: orderCreation
+            )
+        case .card:
+            return SimpleBuyCardOrderCreationService(
+                orderQuoteService: orderQuote,
+                orderCreationService: orderCreation
+            )
+        }
     }
 }

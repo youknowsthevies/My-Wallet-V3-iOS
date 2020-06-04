@@ -144,7 +144,6 @@ final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
     private let alertPresenter: AlertViewPresenter
     private let loadingViewPresenter: LoadingViewPresenting
     private let pendingOrderDetailsService: SimpleBuyPendingOrderDetailsServiceAPI
-    private let kycTiersService: KYCTiersServiceAPI
     private let statesRelay = BehaviorRelay<States>(value: .inactive)
     private let actionRelay = PublishRelay<Action>()
     
@@ -156,12 +155,9 @@ final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
          loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
          pendingOrderDetailsService: SimpleBuyPendingOrderDetailsServiceAPI = SimpleBuyServiceProvider.default.pendingOrderDetails,
          supportedPairsInteractor: SimpleBuySupportedPairsInteractorServiceAPI = SimpleBuyServiceProvider.default.supportedPairsInteractor,
-         kycTiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
          cache: SimpleBuyEventCache = SimpleBuyServiceProvider.default.cache,
          serviceProviding: UserInformationServiceProviding = UserInformationServiceProvider.default) {
         self.supportedPairsInteractor = supportedPairsInteractor
-
-        self.kycTiersService = kycTiersService
         self.userInformationProviding = serviceProviding
         self.alertPresenter = alertPresenter
         self.loadingViewPresenter = loadingViewPresenter
@@ -264,54 +260,44 @@ final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
         let cache = self.cache
         let isFiatCurrencySupported: Single<Bool> = supportedPairsInteractor.valueSingle
             .map { !$0.pairs.isEmpty }
-
-        let isTier2Approved = kycTiersService
-            .fetchTiers()
-            .map { $0.isTier2Approved }
-        
         Single
             .zip(
-                pendingOrderDetailsService.pendingOrderDetails,
+                pendingOrderDetailsService.checkoutData,
                 isFiatCurrencySupported
             )
             .handleLoaderForLifecycle(
                 loader: loadingViewPresenter,
                 style: .circle
             )
-            .flatMap { data -> Single<State> in
+            .map { data -> State in
                 let isFiatCurrencySupported = data.1
-                if let orderDetails = data.0 {
-                    let checkoutData = SimpleBuyCheckoutData(orderDetails: orderDetails)
-                    switch orderDetails.state {
-                    /// If the order is in `pendingConfirmation` check if the user is tier two approved.
-                    /// In case the user is KYCed: send the user to checkout to complete the order
-                    /// In case the user has not KYCed yet: Go to the main buy screen to re-enter amount,
-                    /// recreate the order, and then to KYC.
-                    case .pendingConfirmation:
-                        return isTier2Approved.map { $0 ? .checkout(checkoutData) : .buy }
-                    default:
-                        switch orderDetails.paymentMethod {
+                if let data = data.0 {
+                    switch data.detailType {
+                    case .order(let details):
+                        switch data.detailType.paymentMethod {
                         case .card:
-                            if orderDetails.is3DSConfirmedCardOrder {
-                                return .just(
-                                    .pendingOrderCompleted(
-                                        amount: orderDetails.cryptoValue,
-                                        orderId: orderDetails.identifier
-                                    )
+                            if details.is3DSConfirmedCardOrder {
+                                return .pendingOrderCompleted(
+                                    amount: details.cryptoValue,
+                                    orderId: details.identifier
                                 )
                             } else {
-                                return .just(.checkout(checkoutData))
+                                return .checkout(data)
                             }
                         case .bankTransfer:
-                            return .just(.pendingOrderDetails(checkoutData))
+                            switch details.state {
+                            case .pendingConfirmation:
+                                return .checkout(data)
+                            default:
+                                return .pendingOrderDetails(data)
+                            }
                         }
+
+                    case .candidate:
+                        fatalError("Impossible case to reach")
                     }
                 } else {
-                    if cache[.hasShownIntroScreen] {
-                        return .just(isFiatCurrencySupported ? .buy : .selectFiat)
-                    } else {
-                        return .just(.intro)
-                    }
+                    return cache[.hasShownIntroScreen] ? (isFiatCurrencySupported ? .buy : .selectFiat) : .intro
                 }
             }
             .subscribe(

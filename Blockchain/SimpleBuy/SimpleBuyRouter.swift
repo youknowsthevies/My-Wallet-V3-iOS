@@ -367,25 +367,11 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     
     /// Shows the checkout screen
     private func showCheckoutScreen(with data: SimpleBuyCheckoutData) {
-        
-        let orderInteractor = SimpleBuyOrderCheckoutInteractor(
-            bankInteractor: .init(
-                paymentAccountService: serviceProvider.paymentAccount,
-                orderQuoteService: serviceProvider.orderQuote,
-                orderCreationService: serviceProvider.orderCreation
-            ),
-            cardInteractor: .init(
-                cardListService: cardServiceProvider.cardList,
-                orderQuoteService: serviceProvider.orderQuote,
-                orderCreationService: serviceProvider.orderCreation
-            )
-        )
-        
         let interactor = CheckoutScreenInteractor(
             cardListService: cardServiceProvider.cardList,
+            creationService: serviceProvider.orderCreation(for: data.detailType.paymentMethod),
             confirmationService: serviceProvider.orderConfirmation,
             cancellationService: serviceProvider.orderCancellation,
-            orderCheckoutInterator: orderInteractor,
             checkoutData: data
         )
         let presenter = CheckoutScreenPresenter(
@@ -473,7 +459,6 @@ final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
             eligibilityService: serviceProvider.eligibility,
             paymentMethodTypesService: serviceProvider.paymentMethodTypes,
             cryptoCurrencySelectionService: cryptoSelectionService,
-            orderCreationService: serviceProvider.orderCreation,
             suggestedAmountsService: serviceProvider.suggestedAmounts
         )
 

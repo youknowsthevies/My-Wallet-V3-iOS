@@ -166,8 +166,8 @@ final class BuyCryptoScreenPresenter {
                         case (.failure(let error), .failure):
                             return .failure(error)
                         }
-                    }
-            }
+                }
+        }
         
         ctaObservable
             .compactMap { result -> SimpleBuyCheckoutData? in
@@ -197,23 +197,17 @@ final class BuyCryptoScreenPresenter {
         
         ctaObservable
             .observeOn(MainScheduler.instance)
+            .hide(loader: loadingViewPresenter)
             .bind(weak: self) { (self, result) in
                 switch result {
                 case .success(let data):
                     switch (data.kycState, data.isSimpleBuyEligible) {
-                    case (.completed, false):
-                        self.loadingViewPresenter.hide()
-                        self.stateService.ineligible(with: data.checkoutData)
                     case (.completed, true):
-                        self.createOrder(from: data.checkoutData) { [weak self] checkoutData in
-                            self?.loadingViewPresenter.hide()
-                            self?.stateService.nextFromBuyCrypto(with: checkoutData)
-                        }
+                        self.stateService.nextFromBuyCrypto(with: data.checkoutData)
+                    case (.completed, false):
+                        self.stateService.ineligible(with: data.checkoutData)
                     case (.shouldComplete, _):
-                        self.createOrder(from: data.checkoutData) { [weak self] checkoutData in
-                            self?.loadingViewPresenter.hide()
-                            self?.stateService.kyc(with: checkoutData)
-                        }
+                        self.stateService.kyc(with: data.checkoutData)
                     }
                 case .failure:
                     self.handleError()
@@ -398,19 +392,6 @@ final class BuyCryptoScreenPresenter {
     
     // MARK: - Private methods
 
-    private func createOrder(from checkoutData: SimpleBuyCheckoutData,
-                             with completion: @escaping (SimpleBuyCheckoutData) -> Void) {
-        interactor.createOrder(from: checkoutData)
-            .observeOn(MainScheduler.instance)
-            .subscribe(
-                onSuccess: completion,
-                onError: { [weak self] error in
-                    self?.handleError()
-                }
-            )
-            .disposed(by: disposeBag)
-    }
-    
     private func setup(preferredPaymentMethodType: SimpleBuyPaymentMethodType?, methodCount: Int) {
         guard let type = preferredPaymentMethodType else { return }
         
@@ -443,7 +424,6 @@ final class BuyCryptoScreenPresenter {
     
     private func handleError() {
         analyticsRecorder.record(event: AnalyticsEvent.sbBuyFormConfirmFailure)
-        loadingViewPresenter.hide()
         alertPresenter.error()
     }
 
