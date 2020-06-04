@@ -26,18 +26,7 @@ import ToolKit
 
 final class WalletFiatAtTime: NSObject, WalletFiatAtTimeAPI {
 
-    @objc static let shared: WalletFiatAtTimeAPI = WalletFiatAtTime()
-
-    private let priceService: PriceService
-    private let errorRecorder: ErrorRecording
-    private let disposeBag = DisposeBag()
-
-    @objc weak var delegate: WalletFiatAtTimeDelegate?
-
-    private init(priceService: PriceService = PriceService(), errorRecorder: ErrorRecording = CrashlyticsRecorder()) {
-        self.priceService = priceService
-        self.errorRecorder = errorRecorder
-    }
+    // MARK: Types
 
     private enum WalletFiatAtTimeError: Error {
         case invalidCurrencyCode(String?)
@@ -50,20 +39,28 @@ final class WalletFiatAtTime: NSObject, WalletFiatAtTimeAPI {
         }
     }
 
-    private func getFiat(at date: Date, value: NSDecimalNumber, fiatCurrency: FiatCurrency, cryptoCurrency: CryptoCurrency) {
-        priceService
-            .price(for: cryptoCurrency, in: fiatCurrency, at: date)
-            .subscribe(
-                onSuccess: { [weak self] priceInFiatValue in
-                    let resultValue = NSDecimalNumber(decimal: priceInFiatValue.priceInFiat.amount).multiplying(by: value)
-                    self?.delegate?.didGetFiatAtTime(fiatAmount: resultValue, currencyCode: fiatCurrency.code, assetType: cryptoCurrency.legacy)
-                },
-                onError: { [weak self] error in
-                    self?.delegate?.didErrorWhenGettingFiatAtTime(error: error.localizedDescription)
-                }
-        )
-            .disposed(by: disposeBag)
+    // MARK: Static Properties
+
+    @objc static let shared: WalletFiatAtTimeAPI = WalletFiatAtTime()
+
+    // MARK: Public Properties
+
+    @objc weak var delegate: WalletFiatAtTimeDelegate?
+
+    // MARK: Private Properties
+
+    private let priceService: PriceService
+    private let errorRecorder: ErrorRecording
+    private let disposeBag = DisposeBag()
+
+    // MARK: Private Init
+
+    private init(priceService: PriceService = PriceService(), errorRecorder: ErrorRecording = CrashlyticsRecorder()) {
+        self.priceService = priceService
+        self.errorRecorder = errorRecorder
     }
+
+    // MARK: Public Methods (WalletFiatAtTimeAPI)
 
     @objc func getFiatAtTime(_ timestamp: UInt64, value: NSDecimalNumber, currencyCode: String?, assetType: LegacyAssetType) {
         guard
@@ -79,5 +76,22 @@ final class WalletFiatAtTime: NSObject, WalletFiatAtTimeAPI {
             fiatCurrency: fiatCurrency,
             cryptoCurrency: CryptoCurrency(legacyAssetType: assetType)
         )
+    }
+
+    // MARK: Private Methods
+
+    private func getFiat(at date: Date, value: NSDecimalNumber, fiatCurrency: FiatCurrency, cryptoCurrency: CryptoCurrency) {
+        priceService
+            .price(for: cryptoCurrency, in: fiatCurrency, at: date)
+            .subscribe(
+                onSuccess: { [weak self] priceInFiatValue in
+                    let resultValue = NSDecimalNumber(decimal: priceInFiatValue.priceInFiat.amount).multiplying(by: value)
+                    self?.delegate?.didGetFiatAtTime(fiatAmount: resultValue, currencyCode: fiatCurrency.code, assetType: cryptoCurrency.legacy)
+                },
+                onError: { [weak self] error in
+                    self?.delegate?.didErrorWhenGettingFiatAtTime(error: error.localizedDescription)
+                }
+            )
+            .disposed(by: disposeBag)
     }
 }
