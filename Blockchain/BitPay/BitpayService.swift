@@ -6,13 +6,18 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import ToolKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 final class BitpayService: BitpayServiceProtocol {
+    
+    // MARK: Public Properties
+    
+    let contentRelay = BehaviorRelay<URL?>(value: nil)
     
     // MARK: Models
     
@@ -40,6 +45,8 @@ final class BitpayService: BitpayServiceProtocol {
     private let announcementRecorder: AnnouncementRecorder
     
     // MARK: Init
+    
+    static let shared = BitpayService()
     
     init(recorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),

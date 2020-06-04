@@ -605,13 +605,24 @@
     }
 }
 
+- (void)setupBitpayPaymentFromURL:(NSURL *)bitpayURL
+{
+    if (!self.sendBitcoinViewController) {
+        // really no reason to lazyload anymore...
+        _sendBitcoinViewController = [[SendBitcoinViewController alloc] initWithNibName:NIB_NAME_SEND_COINS bundle:[NSBundle mainBundle]];
+    }
+    
+    [self showSend:LegacyAssetTypeBitcoin];
+    [_sendBitcoinViewController setAmountStringFromBitPayURL:bitpayURL];
+}
+
 - (void)setupBitcoinPaymentFromURLHandlerWithAmountString:(NSString *)amountString address:(NSString *)address
 {
     if (!self.sendBitcoinViewController) {
         // really no reason to lazyload anymore...
         _sendBitcoinViewController = [[SendBitcoinViewController alloc] initWithNibName:NIB_NAME_SEND_COINS bundle:[NSBundle mainBundle]];
     }
-
+    
     [_sendBitcoinViewController setAmountStringFromUrlHandler:amountString withToAddress:address];
     [_sendBitcoinViewController reload];
 }

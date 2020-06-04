@@ -71,6 +71,7 @@
 - (void)reloadSendController;
 - (void)clearSendToAddressAndAmountFields;
 - (BOOL)isSendViewControllerTransferringAll;
+- (void)setupBitpayPaymentFromURL:(NSURL *)bitpayURL;
 - (void)setupBitcoinPaymentFromURLHandlerWithAmountString:(NSString *)amountString address:(NSString *)address;
 - (void)transferFundsToDefaultAccountFromAddress:(NSString *)address;
 - (void)sendFromWatchOnlyAddress;

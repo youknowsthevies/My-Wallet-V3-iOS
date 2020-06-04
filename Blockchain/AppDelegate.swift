@@ -56,6 +56,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private let disposeBag = DisposeBag()
     private weak var appCoordinator: AppCoordinator!
+    private let bitpayRouter = BitPayLinkRouter()
     
     // MARK: - Lifecycle Methods
 
@@ -241,6 +242,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if urlScheme == Constants.Schemes.blockchain {
             ModalPresenter.shared.closeModal(withTransition: convertFromCATransitionType(CATransitionType.fade))
             return true
+        }
+        
+        if BitPayLinkRouter.isBitPayURL(url) {
+            ModalPresenter.shared.closeModal(withTransition: convertFromCATransitionType(CATransitionType.fade))
+            BitpayService.shared.contentRelay.accept(url)
+            guard WalletManager.shared.wallet.isInitialized() else { return true }
+            guard BlockchainSettings.App.shared.guid != nil else { return true }
+            guard BlockchainSettings.App.shared.sharedKey != nil else { return true }
+            return bitpayRouter.routeIfNeeded()
         }
 
         // Handle "bitcoin://" scheme

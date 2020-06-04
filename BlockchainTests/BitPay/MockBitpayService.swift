@@ -6,20 +6,22 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import PlatformKit
-import RxSwift
-
 @testable import Blockchain
+
+import PlatformKit
+import RxRelay
+import RxSwift
 
 class MockBitpayService: BitpayServiceProtocol {
     
+    let contentRelay = BehaviorRelay<URL?>(value: nil)
+    
     func verifySignedTransaction(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Single<BitPayMemo> {
-        return Single.just(BitPayMemo(memo: "Test"))
+        Single.just(BitPayMemo(memo: "Test"))
     }
     
     func postPayment(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Single<BitPayMemo> {
-        return Single.just(BitPayMemo(memo: "Test"))
+        Single.just(BitPayMemo(memo: "Test"))
     }
 
     func bitpayPaymentRequest(invoiceID: String, currency: CryptoCurrency) -> Single<ObjcCompatibleBitpayObject> {

@@ -1279,6 +1279,15 @@ BOOL displayingLocalSymbolSend;
     [self highlightInvalidAmounts];
 }
 
+- (void)setAmountStringFromBitPayURL:(NSURL *)bitpayURL
+{
+    if ([self isBitpayURL:bitpayURL] && self.assetType == LegacyAssetTypeBitcoin)
+    {
+        NSString *bitpayInvoiceID = [self invoiceIDFromBitPayURL:bitpayURL];
+        [self handleBitpayInvoiceID:bitpayInvoiceID event:[BitpayUrlPasted createWithLegacyAssetType:self.assetType]];
+    }
+}
+
 - (void)setAmountStringFromUrlHandler:(NSString*)amountString withToAddress:(NSString*)addressString
 {
     self.addressFromURLHandler = addressString;
