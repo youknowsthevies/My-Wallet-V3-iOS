@@ -9,6 +9,7 @@
 import RxSwift
 
 public protocol SimpleBuyPendingOrderDetailsServiceAPI: class {
+    var checkoutData: Single<SimpleBuyCheckoutData?> { get }
     var pendingOrderDetails: Single<SimpleBuyOrderDetails?> { get }
     var pendingActionOrderDetails: Single<SimpleBuyOrderDetails?> { get }
     func cancel() -> Completable

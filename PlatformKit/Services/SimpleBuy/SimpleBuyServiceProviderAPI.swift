@@ -16,19 +16,16 @@ public protocol SimpleBuyServiceProviderAPI: class {
     var ordersDetails: SimpleBuyOrdersServiceAPI { get }
     var paymentMethods: SimpleBuyPaymentMethodsServiceAPI { get }
     var paymentMethodTypes: SimpleBuyPaymentMethodTypesService { get }
-
     var pendingOrderDetails: SimpleBuyPendingOrderDetailsServiceAPI { get }
     var suggestedAmounts: SimpleBuySuggestedAmountsServiceAPI { get }
     var supportedCurrencies: SimpleBuySupportedCurrenciesServiceAPI { get }
     var supportedPairs: SimpleBuySupportedPairsServiceAPI { get }
     var supportedPairsInteractor: SimpleBuySupportedPairsInteractorServiceAPI { get }
-
-    var orderCreation: SimpleBuyOrderCreationServiceAPI { get }
-    var orderQuote: SimpleBuyOrderQuoteServiceAPI { get }
-    var paymentAccount: SimpleBuyPaymentAccountServiceAPI { get }
     
     var cache: SimpleBuyEventCache { get }
     
     var settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI { get }
     var dataRepository: DataRepositoryAPI { get }
+    
+    func orderCreation(for paymentMethod: SimpleBuyPaymentMethod.MethodType) -> SimpleBuyPendingOrderCreationServiceAPI
 }

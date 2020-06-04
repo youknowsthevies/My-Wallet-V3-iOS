@@ -158,7 +158,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
                         }
                         self.stateService.previousRelay.accept(())
                     }
-                )
+            )
                 .disposed(by: disposeBag)
         }
     }

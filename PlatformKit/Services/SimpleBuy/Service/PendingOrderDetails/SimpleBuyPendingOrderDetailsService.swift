@@ -10,7 +10,23 @@ import RxSwift
 import ToolKit
 
 public final class SimpleBuyPendingOrderDetailsService: SimpleBuyPendingOrderDetailsServiceAPI {
-        
+    
+    public var checkoutData: Single<SimpleBuyCheckoutData?> {
+        pendingOrderDetails
+            .flatMap(weak: self) { (self, pendingOrder) in
+                guard let pendingOrder = pendingOrder else {
+                    return .just(nil)
+                }
+                let checkoutData = SimpleBuyCheckoutData(orderDetails: pendingOrder)
+                if pendingOrder.isBankWire {
+                    return self.paymentAccountService.paymentAccount(for: pendingOrder.fiatValue.currency)
+                        .map { checkoutData.checkoutData(byAppending: $0) }
+                } else {
+                    return .just(checkoutData)
+                }
+            }
+    }
+    
     public var pendingOrderDetails: Single<SimpleBuyOrderDetails?> {
         ordersService.fetchOrders()
             .map { orders in
@@ -33,13 +49,16 @@ public final class SimpleBuyPendingOrderDetailsService: SimpleBuyPendingOrderDet
     
     // MARK: - Injected
     
+    private let paymentAccountService: SimpleBuyPaymentAccountServiceAPI
     private let ordersService: SimpleBuyOrdersServiceAPI
     private let cancallationService: SimpleBuyOrderCancellationServiceAPI
     
     // MARK: - Setup
     
-    public init(ordersService: SimpleBuyOrdersServiceAPI,
+    public init(paymentAccountService: SimpleBuyPaymentAccountServiceAPI,
+                ordersService: SimpleBuyOrdersServiceAPI,
                 cancallationService: SimpleBuyOrderCancellationServiceAPI) {
+        self.paymentAccountService = paymentAccountService
         self.ordersService = ordersService
         self.cancallationService = cancallationService
     }
