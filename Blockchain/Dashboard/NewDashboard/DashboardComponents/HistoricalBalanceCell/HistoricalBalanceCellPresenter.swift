@@ -56,7 +56,10 @@ final class HistoricalBalanceCellPresenter {
             descriptors: .assetPrice(accessibilityIdSuffix: interactor.cryptoCurrency.displayCode)
         )
         balancePresenter = AssetBalanceViewPresenter(
-            interactor: interactor.balanceInteractor
+            interactor: interactor.balanceInteractor,
+            descriptors: .default(
+                cryptoAccessiblitySuffix: "\(AccessibilityId.cryptoBalanceLabelFormat).\(interactor.cryptoCurrency.displayCode)",
+                fiatAccessiblitySuffix: "\(AccessibilityId.fiatBalanceLabelFormat).\(interactor.cryptoCurrency.displayCode)")
         )
     }
 }

@@ -27,6 +27,10 @@ public struct BadgeViewModel {
             self.text = text
         }
     }
+
+    public enum Accessory {
+        case progress(BadgeCircleViewModel)
+    }
     
     // MARK: - Properties
     
@@ -38,9 +42,9 @@ public struct BadgeViewModel {
             textRelay.accept(newValue.text)
         }
         get {
-            return Theme(backgroundColor: backgroundColorRelay.value,
-                         contentColor: contentColorRelay.value,
-                         text: textRelay.value)
+            Theme(backgroundColor: backgroundColorRelay.value,
+                  contentColor: contentColorRelay.value,
+                  text: textRelay.value)
         }
     }
     
@@ -52,13 +56,15 @@ public struct BadgeViewModel {
     
     /// The font of the label
     public let font: UIFont
+
+    public let accessory: Accessory?
     
     /// The background color relay
     public let backgroundColorRelay = BehaviorRelay<UIColor>(value: .clear)
     
     /// The background color of the badge
     public var backgroundColor: Driver<UIColor> {
-        return backgroundColorRelay.asDriver()
+        backgroundColorRelay.asDriver()
     }
     
     /// The content color relay
@@ -66,7 +72,7 @@ public struct BadgeViewModel {
     
     /// The content color of the title
     public var contentColor: Driver<UIColor> {
-        return contentColorRelay.asDriver()
+        contentColorRelay.asDriver()
     }
     
     /// The text relay
@@ -74,15 +80,16 @@ public struct BadgeViewModel {
     
     /// Text to be displayed on the badge
     public var text: Driver<String> {
-        return textRelay.asDriver()
+        textRelay.asDriver()
     }
     
     /// - parameter cornerRadius: corner radius of the component
     /// - parameter accessibility: accessibility for the view
-    public init(font: UIFont = .main(.medium, 12), cornerRadius: CGFloat = 4, accessibility: Accessibility) {
+    public init(font: UIFont = .main(.semibold, 14), cornerRadius: CGFloat = 4, accessory: Accessory? = nil, accessibility: Accessibility) {
         self.font = font
         self.cornerRadius = cornerRadius
         self.accessibility = accessibility
+        self.accessory = accessory
     }
 }
 
@@ -103,7 +110,7 @@ extension BadgeViewModel {
         )
         return viewModel
     }
-    
+
     /// Returns a affirmative badge with text
     public static func affirmative(
         with text: String,
@@ -115,6 +122,24 @@ extension BadgeViewModel {
         viewModel.theme = Theme(
             backgroundColor: .affirmativeBackground,
             contentColor: .affirmativeBadgeText,
+            text: text
+        )
+        return viewModel
+    }
+
+    /// Returns a affirmative badge with text
+    public static func progress(
+        with text: String,
+        model: BadgeCircleViewModel,
+        accessibilityId: String = Accessibility.Identifier.General.affirmativeBadgeView
+        ) -> BadgeViewModel {
+        var viewModel = BadgeViewModel(
+            accessory: .progress(model),
+            accessibility: .init(id: .value(accessibilityId))
+        )
+        viewModel.theme = Theme(
+            backgroundColor: .white,
+            contentColor: .defaultBadge,
             text: text
         )
         return viewModel

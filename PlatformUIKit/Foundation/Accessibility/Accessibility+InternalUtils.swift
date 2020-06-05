@@ -90,6 +90,7 @@ extension Accessibility.Identifier {
         static let newPassword = "\(prefix)newPassword"
         static let confirmNewPassword = "\(prefix)confirmNewPassword"
         static let password = "\(prefix)password"
+        static let description = "\(prefix)description"
         static let walletIdentifier = "\(prefix)walletIdentifier"
         static let recoveryPhrase = "\(prefix)recoveryPhrase"
         static let backupVerification = "\(prefix)backupVerification"
@@ -113,15 +114,5 @@ extension Accessibility.Identifier {
     struct MnemonicTextView {
         static let prefix = "MnemonicTextView."
         static let recoveryPhrase = "\(prefix)recoveryPhrase"
-    }
-}
-
-extension Accessibility.Identifier {
-    public enum LineItem {
-        private static let prefix = "LineItem."
-        public static let titleLabel = "\(prefix)titleLabel"
-        public static let descriptionLabel = "\(prefix)descriptionLabel"
-        public static let disclaimerLabel = "\(prefix)disclaimerLabel"
-        public static let disclaimerImage = "\(prefix)disclaimerImage"
     }
 }

@@ -1,16 +1,16 @@
 //
 //  LocalizationConstants.swift
 //  Localization
-
+//
 //  Created by AlexM on 1/6/20.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//
 
 // swiftlint:disable all
 
 import Foundation
 
-//: Onboarding
-public struct LocalizationConstants {
+public enum LocalizationConstants {
     public struct ObjCStrings {
         public static let  BC_STRING_ALL_WALLETS = NSLocalizedString("All Wallets", comment: "")
         public static let  BC_STRING_WALLETS = NSLocalizedString("Wallets", comment: "")
@@ -90,8 +90,6 @@ public struct LocalizationConstants {
         public static let  BC_STRING_PASSWORD_STRENGTH_NORMAL = NSLocalizedString("Normal", comment: "")
         public static let  BC_STRING_PASSWORD_STRENGTH_STRONG = NSLocalizedString("Strong", comment: "")
         public static let  BC_STRING_UNCONFIRMED = NSLocalizedString("Unconfirmed", comment: "")
-        public static let  BC_STRING_COUNT_CONFIRMATIONS = NSLocalizedString("%d Confirmations", comment: "")
-        public static let  BC_STRING_ARGUMENT_CONFIRMATIONS = NSLocalizedString("%@ Confirmations", comment: "")
         public static let  BC_STRING_TRANSFERRED = NSLocalizedString("Transferred", comment: "")
         public static let  BC_STRING_RECEIVED = NSLocalizedString("Received", comment: "")
         public static let  BC_STRING_SENT = NSLocalizedString("Sent", comment: "")
@@ -363,7 +361,6 @@ public struct LocalizationConstants {
         public static let  BC_STRING_FEE_INFORMATION_MESSAGE_ETHER = NSLocalizedString("Miners receive this fee to process this transaction.", comment: "")
         public static let  BC_STRING_TRANSACTION_DESCRIPTION_PLACEHOLDER = NSLocalizedString("What's this for?", comment: "")
         public static let  BC_STRING_NO_DESCRIPTION = NSLocalizedString("No description", comment: "")
-        public static let  BC_STRING_WHATS_THIS = NSLocalizedString("What's this?", comment: "")
         public static let  BC_STRING_BLOCKCHAIN_ALL_RIGHTS_RESERVED = NSLocalizedString("All rights reserved.", comment: "")
         public static let  BC_STRING_RATE_US = NSLocalizedString("Rate us", comment: "")
         public static let  BC_STRING_ERROR_SAVING_WALLET_CHECK_FOR_OTHER_DEVICES = NSLocalizedString("An error occurred while saving your changes. Please make sure you are not logged into your wallet on another device.", comment: "")
@@ -1355,7 +1352,7 @@ public struct LocalizationConstants {
             comment: "Tab item: request"
         )
     }
-    
+
     public enum ErrorScreen {
         public static let title = NSLocalizedString(
             "Oops! Something Went Wrong.",
@@ -1370,7 +1367,7 @@ public struct LocalizationConstants {
             comment: "Pending active card error screen: ok button"
         )
     }
-    
+
     public struct DashboardScreen {
         public static let title = NSLocalizedString(
             "Home",
@@ -1944,14 +1941,9 @@ public struct LocalizationConstants {
         public static let waitingForPaymentToFinishTitle = NSLocalizedString("Waiting for payment", comment: "")
         public static let waitingForPaymentToFinishMessage = NSLocalizedString("Please wait until your previous transaction confirms", comment: "")
     }
-    
-    public struct Activity {
-        public struct Pax {
-            public static let emptyStateTitle = NSLocalizedString("USD Digital", comment: "")
-            public static let emptyStateMessage = NSLocalizedString("Your USD Digital transactions will show up here once you make your first transaction.", comment: "")
-            public static let emptyStateLinkText = NSLocalizedString("Learn more about USD Digital", comment: "")
-            public static let emptyStateCTATitle = NSLocalizedString("Swap for USD Digital Now", comment: "")
-        }
+
+    public struct WalletPicker {
+        public static let title = NSLocalizedString("Select a Wallet", comment: "Select a Wallet")
     }
 
     public struct Settings {

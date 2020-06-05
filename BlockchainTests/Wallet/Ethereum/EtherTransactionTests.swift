@@ -20,17 +20,16 @@ class EtherTransactionTests: XCTestCase {
             fromAddress: fromAddress,
             toAddress: toAddress,
             direction: .credit,
-            amount: "0.09888244",
+            amount: CryptoValue.etherFromMajor(string: "0.09888244")!,
             transactionHash: "transactionHash",
             createdAt: Date(),
             fee: CryptoValue.etherFromGwei(string: "231000"),
             memo: "memo",
             confirmations: 12,
+            data: nil,
             state: .confirmed
         )
-        
-        XCTAssertTrue(transaction.isConfirmed)
-        
+    
         let etherTransaction = transaction.legacyTransaction!
         
         XCTAssertEqual(etherTransaction.amount!, "0.09888244")

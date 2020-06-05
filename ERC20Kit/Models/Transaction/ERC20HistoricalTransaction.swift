@@ -29,21 +29,18 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
     public var fromAddress: EthereumAddress
     public var toAddress: EthereumAddress
     public var direction: Direction
-    public var amount: String
+    public var amount: CryptoValue
     public var transactionHash: String
     public var createdAt: Date
     public var fee: CryptoValue?
     public var historicalFiatValue: FiatValue?
     public var memo: String?
-    public var cryptoAmount: CryptoValue {
-        CryptoValue.createFromMinorValue(BigInt(stringLiteral: amount), assetType: Token.assetType)
-    }
     
     public init(
         fromAddress: EthereumAddress,
         toAddress: EthereumAddress,
         direction: Direction,
-        amount: String,
+        amount: CryptoValue,
         transactionHash: String,
         createdAt: Date,
         fee: CryptoValue? = nil,
@@ -88,7 +85,8 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
         let to = try values.decode(String.self, forKey: .to)
         let timestampString = try values.decode(String.self, forKey: .timestamp)
         transactionHash = try values.decode(String.self, forKey: .transactionHash)
-        amount = try values.decode(String.self, forKey: .value)
+        let amountString = try values.decode(String.self, forKey: .value)
+        self.amount = CryptoValue.createFromMinorValue(amountString, assetType: Token.assetType) ?? CryptoValue.zero(assetType: Token.assetType)
         fromAddress = EthereumAddress(stringLiteral: from)
         toAddress = EthereumAddress(stringLiteral: to)
         if let timeSinceEpoch = Double(timestampString) {
@@ -118,7 +116,7 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
             )
             .map {
                 var output = self.make(from: self.direction, fee: $0.0.fee, memo: nil)
-                output.historicalFiatValue = self.cryptoAmount.convertToFiatValue(exchangeRate: $0.1.priceInFiat)
+                output.historicalFiatValue = self.amount.convertToFiatValue(exchangeRate: $0.1.priceInFiat)
                 return output
             }
     }

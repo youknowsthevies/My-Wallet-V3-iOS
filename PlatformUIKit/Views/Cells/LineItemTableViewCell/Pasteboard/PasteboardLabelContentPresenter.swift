@@ -17,12 +17,12 @@ public final class PasteboardLabelContentPresenter: LabelContentPresenting {
     
     public let stateRelay = BehaviorRelay<PresentationState>(value: .loading)
     public var state: Observable<PresentationState> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
     }
     
     // MARK: - Private Accessors
     
-    private let interactor: PasteboardLabelContentInteracting
+    public let interactor: LabelContentInteracting
     private let disposeBag = DisposeBag()
     
     init(interactor: PasteboardLabelContentInteracting,

@@ -31,7 +31,7 @@ public final class ShimmeringView: UIView {
     }()
     
     public var isShimmering: Bool {
-        return animatingView.isShimmering
+        animatingView.isShimmering
     }
     
     public init(in superview: UIView,
@@ -42,15 +42,13 @@ public final class ShimmeringView: UIView {
         self.anchorView = anchorView
         self.light = light
         self.dark = dark
-        super.init(frame: .zero)
+        super.init(frame: .init(origin: .zero, size: size))
         superview.addSubview(self)
         layout(to: .leading, of: anchorView)
         layout(to: .top, of: anchorView)
         layout(to: .height, of: anchorView, priority: .defaultHigh)
         layout(dimension: .width, to: size.width)
-        
-        let height = heightAnchor.constraint(equalToConstant: size.height)
-        height.isActive = true
+        layout(dimension: .height, to: size.height, priority: .defaultLow)
         
         backgroundView.fillSuperview()
         animatingView.fillSuperview()
@@ -61,6 +59,7 @@ public final class ShimmeringView: UIView {
     public init(in superview: UIView,
                 centeredIn anchorView: UIView,
                 size: CGSize,
+                cornerRadius: CGFloat = 0,
                 light: UIColor = .lightShimmering,
                 dark: UIColor = .darkShimmering) {
         self.anchorView = anchorView
@@ -81,6 +80,8 @@ public final class ShimmeringView: UIView {
         
         backgroundView.fillSuperview()
         animatingView.fillSuperview()
+        backgroundView.layer.cornerRadius = cornerRadius
+        animatingView.layer.cornerRadius = cornerRadius
         layoutIfNeeded()
         start()
     }

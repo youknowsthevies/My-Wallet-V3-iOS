@@ -100,8 +100,6 @@
 #define BC_STRING_PASSWORD_STRENGTH_STRONG NSLocalizedString(@"Strong", nil)
 
 #define BC_STRING_UNCONFIRMED NSLocalizedString(@"Unconfirmed", nil)
-#define BC_STRING_COUNT_CONFIRMATIONS NSLocalizedString(@"%d Confirmations", nil)
-#define BC_STRING_ARGUMENT_CONFIRMATIONS NSLocalizedString(@"%@ Confirmations", nil)
 
 #define BC_STRING_TRANSFERRED NSLocalizedString(@"Transferred", nil)
 #define BC_STRING_RECEIVED NSLocalizedString(@"Received", nil)
@@ -403,8 +401,6 @@
 
 #define BC_STRING_TRANSACTION_DESCRIPTION_PLACEHOLDER NSLocalizedString(@"What's this for?", nil)
 #define BC_STRING_NO_DESCRIPTION NSLocalizedString(@"No description", nil)
-
-#define BC_STRING_WHATS_THIS NSLocalizedString(@"What's this?", nil)
 
 #define BC_STRING_BLOCKCHAIN_ALL_RIGHTS_RESERVED NSLocalizedString(@"All rights reserved.", nil)
 

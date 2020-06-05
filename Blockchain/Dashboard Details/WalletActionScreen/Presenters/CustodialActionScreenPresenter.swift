@@ -15,7 +15,8 @@ import ToolKit
 final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
     
     // MARK: - Types
-    
+
+    private typealias AccessibilityId = Accessibility.Identifier.DashboardDetails.WalletActionSheet.CustodialAction
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     typealias CellType = WalletActionCellType
     
@@ -80,11 +81,14 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
         }
         
         assetBalanceViewPresenter = CurrentBalanceCellPresenter(
-            balanceFetcher: interactor.balanceFetching,
+            interactor: interactor.balanceCellInteractor,
             descriptionValue: descriptionValue,
             currency: interactor.currency,
-            balanceType: interactor.balanceType,
-            alignment: .trailing
+            alignment: .trailing,
+            descriptors: .default(
+                cryptoAccessiblitySuffix: "\(AccessibilityId.cryptoValue)",
+                fiatAccessiblitySuffix: "\(AccessibilityId.fiatValue)"
+            )
         )
         
         activityButtonVisibilityRelay.accept(!interactor.balanceType.isCustodial ? .visible : .hidden)

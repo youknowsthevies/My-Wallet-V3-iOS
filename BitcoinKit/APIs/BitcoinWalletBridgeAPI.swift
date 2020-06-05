@@ -47,5 +47,9 @@ public protocol BitcoinWalletBridgeAPI: class {
     var wallets: Single<[BitcoinWalletAccount]> { get }
     
     var hdWallet: Single<PayloadBitcoinHDWallet> { get }
+
+    func memo(for transactionHash: String) -> Single<String?>
+
+    func updateMemo(for transactionHash: String, memo: String?) -> Completable
 }
 

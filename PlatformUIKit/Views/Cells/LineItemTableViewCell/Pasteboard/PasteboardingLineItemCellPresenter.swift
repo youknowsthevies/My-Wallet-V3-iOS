@@ -44,7 +44,7 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
     }
     
     // MARK: - Properties
-    
+
     public let titleLabelContentPresenter: LabelContentPresenting
     public let descriptionLabelContentPresenter: LabelContentPresenting
     
@@ -73,7 +73,9 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
     
     private let disposeBag = DisposeBag()
     private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
-    
+
+    public var interactor: LineItemCellInteracting
+
     // MARK: - Init
     
     public init(input: Input,
@@ -94,6 +96,8 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
             interactionText: input.descriptionInteractionText,
             interactionDuration: input.interactionDuration
         )
+
+        interactor = DefaultLineItemCellInteractor(title: titleInteractor, description: descriptionInteractor)
         
         titleLabelContentPresenter = PasteboardLabelContentPresenter(
             interactor: titleInteractor,

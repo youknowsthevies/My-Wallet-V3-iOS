@@ -39,7 +39,7 @@ public extension UIColor {
     static let lightBorder = grey000
     static let mediumBorder = grey100
     static let destructiveBackground = red100
-    static let affirmativeBackground = green100
+    static let affirmativeBackground = green000
     static let defaultBadgeBackground = blue100
     static let lightBadgeBackground = blue000
 
@@ -54,7 +54,7 @@ public extension UIColor {
     // MARK: Texts
     
     static let defaultBadge = blue600
-    static let affirmativeBadgeText = green600
+    static let affirmativeBadgeText = green500
     
     static let normalPassword = green600
     static let strongPassword = blue600

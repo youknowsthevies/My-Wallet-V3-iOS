@@ -15,10 +15,45 @@ public protocol LegacyBitcoinWalletProtocol: class {
     func bitcoinWallets(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void)
     
     func hdWallet(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void)
+
+    func getBitcoinMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void)
+
+    func saveBitcoinMemo(for transaction: String, memo: String?)
 }
 
 extension Wallet: LegacyBitcoinWalletProtocol {
-    
+
+    public func saveBitcoinMemo(for transaction: String, memo: String?) {
+        guard isInitialized() else {
+            return
+        }
+        let function: String
+        if let memo = memo, !memo.isEmpty {
+            function = "MyWallet.wallet.setNote(\"\(transaction.escapedForJS())\", \"\(memo.escapedForJS())\")"
+        } else {
+            function = "MyWallet.wallet.deleteNote(\"\(transaction.escapedForJS())\")"
+        }
+        context.evaluateScript(function)
+    }
+
+    public func getBitcoinMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void) {
+        guard isInitialized() else {
+            error("Wallet is not yet initialized.")
+            return
+        }
+        let function: String = "MyWalletPhone.getBitcoinNote(\"\(transaction.escapedForJS())\")"
+        guard
+            let result: String = context.evaluateScript(function)?.toString(),
+            !result.isEmpty,
+            result != "null",
+            result != "undefined"
+            else {
+                success(nil)
+                return
+        }
+        success(result)
+    }
+
     public func bitcoinDefaultWalletIndex(with secondPassword: String?, success: @escaping (Int) -> Void, error: @escaping (String) -> Void) {
         guard isInitialized() else {
             error("Wallet is not yet initialized.")

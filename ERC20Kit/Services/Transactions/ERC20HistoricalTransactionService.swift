@@ -13,7 +13,7 @@ import RxSwift
 
 public protocol ERC20WalletTranscationsBridgeAPI: class {
     associatedtype Token
-    var transactions: Single<[EthereumTransaction]> { get }
+    var transactions: Single<[EthereumHistoricalTransaction]> { get }
 }
 
 public class AnyERC20HistoricalTransactionService<Token: ERC20Token>: TokenizedHistoricalTransactionAPI {
@@ -33,7 +33,7 @@ public class AnyERC20HistoricalTransactionService<Token: ERC20Token>: TokenizedH
         self.bridge = bridge
         self.accountClient = accountClient
     }
-    
+
     public func fetchTransactions(token: String?, size: Int) -> Single<PageModel> {
         bridge.address
             .flatMap(weak: self) { (self, address) in
@@ -51,10 +51,10 @@ public class AnyERC20HistoricalTransactionService<Token: ERC20Token>: TokenizedH
 
     private func fetchTransactions(from address: EthereumAddress, page: String) -> Single<[ERC20HistoricalTransaction<Token>]> {
         accountClient
-            .fetchWalletAccount(from: address.rawValue, page: page)
+            .fetchTransactions(from: address.publicKey, page: page)
             .map {
                 $0.transactions.map {
-                    let direction: Direction = $0.fromAddress == address ? .debit : .credit
+                    let direction: Direction = $0.fromAddress == address ? .credit : .debit
                     return $0.make(from: direction)
                 }
             }

@@ -5,24 +5,25 @@
 //  Created by Daniel Huri on 30/03/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
-import RxSwift
+
 import RxCocoa
+import RxSwift
 
 open class BaseTableViewController: BaseScreenViewController {
 
     // MARK: - Public UI Elements
     
-    @IBOutlet public var tableView: SelfSizingTableView!
+    @IBOutlet private(set) public var tableView: SelfSizingTableView!
 
     // MARK: - Private UI Elements
 
     @IBOutlet private var buttonStackView: UIStackView!
     @IBOutlet private var bottomContainerView: UIView!
-    @IBOutlet private var scrollView: UIScrollView!
+    @IBOutlet private(set) public var scrollView: UIScrollView!
 
     // MARK: - Public UI Constraints
     
-    @IBOutlet public var tableViewBottomConstraint: NSLayoutConstraint!
+    @IBOutlet private(set) public var tableViewBottomConstraint: NSLayoutConstraint!
 
     // MARK: - Setup
     

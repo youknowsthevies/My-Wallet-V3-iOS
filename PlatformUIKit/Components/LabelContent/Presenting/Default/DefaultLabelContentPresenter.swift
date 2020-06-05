@@ -41,9 +41,15 @@ public final class DefaultLabelContentPresenter: LabelContentPresenting {
     }
 
     public convenience init(knownValue: String, descriptors: Descriptors) {
-        let interactor = DefaultLabelContentInteractor(knownValue: knownValue)
         self.init(
-            interactor: interactor,
+            interactor: DefaultLabelContentInteractor(knownValue: knownValue),
+            descriptors: descriptors
+        )
+    }
+
+    public convenience init(descriptors: Descriptors) {
+        self.init(
+            interactor: DefaultLabelContentInteractor(),
             descriptors: descriptors
         )
     }

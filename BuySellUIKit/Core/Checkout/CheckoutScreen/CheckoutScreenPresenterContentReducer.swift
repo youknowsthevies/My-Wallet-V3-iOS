@@ -20,10 +20,11 @@ final class CheckoutScreenContentReducer {
     // MARK: - Types
 
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.Checkout
+    private typealias LocalizedLineItem = LocalizationConstants.LineItem.Transactional
     private typealias LocalizedSummary = LocalizedString.Summary
     private typealias AccessibilityLineItem = Accessibility.Identifier.LineItem
     private typealias AccessibilitySimpleBuy = Accessibility.Identifier.SimpleBuy
-    private typealias LineItem = CheckoutCellType.LineItemType
+    private typealias LineItem = TransactionalLineItem
 
     // MARK: - Properties
 
@@ -38,21 +39,21 @@ final class CheckoutScreenContentReducer {
 
     // MARK: - Cell Presenters
 
-    private let orderIdLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.orderId(nil).defaultPresenter()
-    private let dateLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.date(nil).defaultPresenter()
-    private let totalCostLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.totalCost(nil).defaultPresenter()
-    private let buyingFeeLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.buyingFee(nil).defaultPresenter()
-    private let paymentMethodLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.paymentMethod(nil).defaultPresenter()
-    private let exchangeRateLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.exchangeRate(nil).defaultPresenter()
-    private let statusLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.status(LocalizedString.LineItem.pending).defaultPresenter()
+    private let orderIdLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.orderId().defaultPresenter()
+    private let dateLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.date().defaultPresenter()
+    private let totalCostLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.totalCost().defaultPresenter()
+    private let buyingFeeLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.buyingFee().defaultPresenter()
+    private let paymentMethodLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.paymentMethod().defaultPresenter()
+    private let exchangeRateLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.exchangeRate().defaultPresenter()
+    private let statusLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.status(LocalizedLineItem.pending).defaultPresenter()
 
     private let cryptoAmountLabelPresenter: DefaultLabelContentPresenter = .init(
         knownValue: " ",
-        descriptors: .h1(accessibilityIdPrefix: AccessibilitySimpleBuy.LineItem.cryptoAmount)
+        descriptors: .h1(accessibilityIdPrefix: AccessibilityLineItem.Transactional.cryptoAmount)
     )
     private let fiatAmountLabelPresenter: DefaultLabelContentPresenter = .init(
         knownValue: " ",
-        descriptors: .h1(accessibilityIdPrefix: AccessibilitySimpleBuy.LineItem.fiatAmount)
+        descriptors: .h1(accessibilityIdPrefix: AccessibilityLineItem.Transactional.fiatAmount)
     )
 
     private let statusBadge: DefaultBadgeAssetPresenter = .init()
@@ -62,7 +63,7 @@ final class CheckoutScreenContentReducer {
             text: data.detailType.paymentMethod.checkoutNotice(cryptoCurrency: data.cryptoCurrency),
             font: .main(.medium, 12),
             color: .descriptionText,
-            accessibility: .id(AccessibilityLineItem.disclaimerLabel)
+            accessibility: .id(AccessibilityLineItem.Base.disclaimerLabel)
         )
     }
 
@@ -143,7 +144,7 @@ final class CheckoutScreenContentReducer {
         if let card = data.card {
             localizedPaymentMethod = "\(card.label) \(card.displaySuffix)"
         } else {
-            localizedPaymentMethod = LocalizationConstants.SimpleBuy.Checkout.LineItem.bankTransfer
+            localizedPaymentMethod = LocalizedLineItem.bankTransfer
         }
         paymentMethodLineItemCellPresenter.interactor.description.stateRelay.accept(
             .loaded(next: .init(text: localizedPaymentMethod))
@@ -176,14 +177,17 @@ final class CheckoutScreenContentReducer {
 
         continueButtonViewModel = CheckoutScreenContentReducer.continueButton(data: data)
         cancelButtonViewModel = CheckoutScreenContentReducer.cancelButton(data: data)
+        let badgesModel = MultiBadgeCellModel()
+        badgesModel.badgesRelay.accept([statusBadge])
 
         switch (data.detailType.paymentMethod, data.hasCardCheckoutMade, data.isPendingDepositBankWire) {
         case (.card, true, _):
+
             // MARK: Cells Setup
 
             cells = [
                 .label(cryptoAmountLabelPresenter),
-                .badges([statusBadge]),
+                .badges(badgesModel),
                 .separator,
                 .lineItem(orderIdLineItemCellPresenter),
                 .separator,
@@ -207,7 +211,7 @@ final class CheckoutScreenContentReducer {
 
             cells = [
                 .label(cryptoAmountLabelPresenter),
-                .badges([statusBadge]),
+                .badges(badgesModel),
                 .separator,
                 .lineItem(orderIdLineItemCellPresenter),
                 .separator,
@@ -233,7 +237,7 @@ final class CheckoutScreenContentReducer {
 
             cells = [
                 .label(fiatAmountLabelPresenter),
-                .badges([statusBadge]),
+                .badges(badgesModel),
                 .buttons([transferDetailsButtonViewModel!]),
                 .separator,
                 .lineItem(orderIdLineItemCellPresenter),

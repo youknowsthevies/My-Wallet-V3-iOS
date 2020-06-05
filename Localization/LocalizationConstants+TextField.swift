@@ -6,6 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+// swiftlint:disable all
+
 import Foundation
 
 public extension LocalizationConstants {
@@ -41,6 +43,10 @@ public extension LocalizationConstants {
             )
         }
         public struct Placeholder {
+            public static let noDescription = NSLocalizedString(
+                "No description",
+                comment: "Description placeholder"
+            )
             public static let cvv = NSLocalizedString(
                 "123",
                 comment: "CVV placeholder"
@@ -73,6 +79,10 @@ public extension LocalizationConstants {
                     comment: "Placeholder for card cvv text field"
                 )
             }
+            public static let description = NSLocalizedString(
+                "Description",
+                comment: "Placeholder for Description text field"
+            )
             public static let email = NSLocalizedString(
                 "Your Email",
                 comment: "Placeholder for email text field"

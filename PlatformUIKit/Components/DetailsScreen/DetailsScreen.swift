@@ -6,7 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import RxSwift
+import RxRelay
 
 public enum DetailsScreen {
 
@@ -18,12 +19,13 @@ public enum DetailsScreen {
     }
 
     public enum CellType {
-        case badges([BadgeAssetPresenting])
+        case badges(MultiBadgeCellModel)
         case buttons([ButtonViewModel])
         case label(LabelContentPresenting)
         case staticLabel(LabelContent)
         case notice(NoticeViewModel)
         case lineItem(LineItemCellPresenting)
+        case textField(TextFieldViewModel)
         case separator
         case interactableTextCell(InteractableTextViewModel)
     }

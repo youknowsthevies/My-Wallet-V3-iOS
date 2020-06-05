@@ -22,13 +22,14 @@ final class TierLimitsLabelContentPresenter: LabelContentPresenting {
     
     // MARK: - Private Accessors
     
-    private let interactor: TierLimitsLabelContentInteractor
+    let interactor: LabelContentInteracting
     private let disposeBag = DisposeBag()
     
     init(provider: TierLimitsProviding,
          descriptors: LabelContent.Value.Presentation.Content.Descriptors) {
         interactor = TierLimitsLabelContentInteractor(limitsProviding: provider)
-        interactor.state.map { PresentationState(with: $0, descriptors: descriptors) }
+        interactor.state
+            .map { PresentationState(with: $0, descriptors: descriptors) }
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
 

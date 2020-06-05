@@ -6,6 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+// swiftlint:disable all
+
 import Foundation
 
 public extension LocalizationConstants {

@@ -284,7 +284,7 @@
 // Transaction Details
 - (void)saveNote:(NSString *)note forTransaction:(NSString *)hash;
 - (void)saveEtherNote:(NSString *)note forTransaction:(NSString *)hash;
-- (NSString *)getNotePlaceholderForTransactionHash:(NSString *)myHash;
+- (NSString *)getBitcoinNotePlaceholderForTransactionHash:(NSString *)myHash;
 
 - (JSValue *)executeJSSynchronous:(NSString *)command;
 
@@ -298,6 +298,7 @@
 - (BOOL)hasEthAccount;
 
 // Bitcoin Cash
+- (NSDictionary * _Nullable)fetchDefaultBCHAccount;
 - (NSString *)fromBitcoinCash:(NSString *)address;
 - (NSString *)toBitcoinCash:(NSString *)address includePrefix:(BOOL)includePrefix;
 - (void)getBitcoinCashHistoryAndRates;

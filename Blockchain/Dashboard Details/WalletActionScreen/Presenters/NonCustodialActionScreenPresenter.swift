@@ -15,6 +15,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
     
     // MARK: - Types
     
+    typealias AccessibilityId = Accessibility.Identifier.DashboardDetails.WalletActionSheet
     typealias LocalizationIds = LocalizationConstants.DashboardDetails
     typealias CellType = WalletActionCellType
     
@@ -70,11 +71,14 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
         }
         
         assetBalanceViewPresenter = CurrentBalanceCellPresenter(
-            balanceFetcher: interactor.balanceFetching,
+            interactor: interactor.balanceCellInteractor,
             descriptionValue: descriptionValue,
             currency: interactor.currency,
-            balanceType: interactor.balanceType,
-            alignment: .trailing
+            alignment: .trailing,
+            descriptors: .default(
+                cryptoAccessiblitySuffix: "\(AccessibilityId.NonCustodial.cryptoValue)",
+                fiatAccessiblitySuffix: "\(AccessibilityId.NonCustodial.fiatValue)"
+            )
         )
         
         activityButtonVisibilityRelay.accept(!interactor.balanceType.isCustodial ? .visible : .hidden)

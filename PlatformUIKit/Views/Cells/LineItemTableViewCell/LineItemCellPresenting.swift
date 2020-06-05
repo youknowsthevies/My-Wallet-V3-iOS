@@ -14,6 +14,8 @@ import PlatformKit
 
 public protocol LineItemCellPresenting: AnyObject {
 
+    var interactor: LineItemCellInteracting { get }
+
     /// The `LabelContentPresenting` for the title of the `LineItem`
     var titleLabelContentPresenter: LabelContentPresenting { get }
 
@@ -31,7 +33,7 @@ public protocol LineItemCellPresenting: AnyObject {
     var tapRelay: PublishRelay<Void> { get }
 }
 
-public protocol LineItemCellInteracting: class {
+public protocol LineItemCellInteracting: AnyObject {
 
     var title: LabelContentInteracting { get }
 

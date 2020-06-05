@@ -86,6 +86,7 @@
     [self setSelectedIndex:newIndex];
     
     switch (newIndex) {
+        case 0:
         case 1:
         case 2:
             [self.assetContainerView setHidden:YES];
@@ -110,7 +111,7 @@
         [[contentView.subviews firstObject] removeFromSuperview];
     }
     
-    BOOL noOffset = (self.selectedIndex == [ConstantsObjcBridge tabDashboard] || [ConstantsObjcBridge tabSwap]);
+    BOOL noOffset = (self.selectedIndex == [ConstantsObjcBridge tabDashboard] || [ConstantsObjcBridge tabSwap] || [ConstantsObjcBridge tabTransactions]);
     
     CGFloat offsetForAssetSelector = (noOffset) ? 0 : [ConstantsObjcBridge assetTypeCellHeight];
     activeViewController.view.frame = CGRectMake(0,

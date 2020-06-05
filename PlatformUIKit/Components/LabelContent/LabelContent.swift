@@ -10,10 +10,8 @@ import RxSwift
 import RxCocoa
 
 public struct LabelContent: Equatable {
-
-    public static var empty: LabelContent {
-        LabelContent()
-    }
+    
+    public static let empty: LabelContent = .init()
 
     public var isEmpty: Bool {
         text.isEmpty

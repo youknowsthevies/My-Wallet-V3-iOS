@@ -155,7 +155,7 @@ class EthereumWalletTests: XCTestCase {
         // Arrange
         let paxTokenAccount = ERC20TokenAccount(
             label: "My PAX Wallet",
-            contractAddress: PaxToken.contractAddress.rawValue,
+            contractAddress: PaxToken.contractAddress.publicKey,
             hasSeen: false,
             transactionNotes: [
                 "transaction_hash": "memo"
@@ -187,7 +187,7 @@ class EthereumWalletTests: XCTestCase {
         // Arrange
         let paxTokenAccount = ERC20TokenAccount(
             label: "My PAX Wallet",
-            contractAddress: PaxToken.contractAddress.rawValue,
+            contractAddress: PaxToken.contractAddress.publicKey,
             hasSeen: false,
             transactionNotes: [
                 "transaction_hash": "memo"

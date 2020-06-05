@@ -23,7 +23,8 @@ enum DashboadDetailsAction {
 }
 
 final class DashboardDetailsScreenPresenter {
-        
+    
+    private typealias AccessilbityId = Accessibility.Identifier.DashboardDetails
     private typealias LocalizedString = LocalizationConstants.DashboardDetails.BalanceCell
     
     enum BalancePresentationState {
@@ -294,11 +295,16 @@ final class DashboardDetailsScreenPresenter {
         }
     
         return CurrentBalanceCellPresenter(
-            balanceFetcher: interactor.balanceFetcher,
+            interactor: .init(
+                balanceFetching: interactor.balanceFetcher,
+                balanceType: balanceType
+            ),
             descriptionValue: descriptionValue,
             currency: currency,
-            balanceType: balanceType,
-            alignment: .trailing
+            alignment: .trailing,
+            descriptors: .default(
+                cryptoAccessiblitySuffix: "\(AccessilbityId.CurrentBalanceCell.cryptoValue).\(currency.code)",
+                fiatAccessiblitySuffix: "\(AccessilbityId.CurrentBalanceCell.fiatValue).\(currency.code)")
         )
     }
     

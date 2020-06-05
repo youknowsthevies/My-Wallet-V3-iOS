@@ -6,6 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+// swiftlint:disable all
+
 public extension LocalizationConstants {
     struct Biometry {
         public static let touchIDEnableInstructions = NSLocalizedString(

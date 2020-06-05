@@ -48,17 +48,17 @@
                                             </constraints>
                                         </view>
                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="oTl-7w-dRh">
-                                            <rect key="frame" x="16" y="17" width="382" height="0.0"/>
+                                            <rect key="frame" x="24" y="17" width="366" height="0.0"/>
                                         </stackView>
                                     </subviews>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                     <constraints>
                                         <constraint firstItem="oTl-7w-dRh" firstAttribute="top" secondItem="G7c-BJ-ebB" secondAttribute="bottom" priority="750" constant="16" id="386-UZ-haH"/>
                                         <constraint firstAttribute="trailing" secondItem="G7c-BJ-ebB" secondAttribute="trailing" id="5OJ-uK-IQ6"/>
-                                        <constraint firstAttribute="trailing" secondItem="oTl-7w-dRh" secondAttribute="trailing" constant="16" id="AqR-Jq-KPf"/>
+                                        <constraint firstAttribute="trailing" secondItem="oTl-7w-dRh" secondAttribute="trailing" constant="24" id="AqR-Jq-KPf"/>
                                         <constraint firstItem="G7c-BJ-ebB" firstAttribute="top" secondItem="FXt-LH-FaD" secondAttribute="top" id="HeA-Ql-sPA"/>
                                         <constraint firstItem="G7c-BJ-ebB" firstAttribute="leading" secondItem="FXt-LH-FaD" secondAttribute="leading" id="PpQ-dR-T0r"/>
-                                        <constraint firstItem="oTl-7w-dRh" firstAttribute="leading" secondItem="FXt-LH-FaD" secondAttribute="leading" constant="16" id="btj-5U-A3J"/>
+                                        <constraint firstItem="oTl-7w-dRh" firstAttribute="leading" secondItem="FXt-LH-FaD" secondAttribute="leading" constant="24" id="btj-5U-A3J"/>
                                         <constraint firstAttribute="bottom" secondItem="oTl-7w-dRh" secondAttribute="bottom" constant="16" id="elO-YR-hsK"/>
                                     </constraints>
                                 </view>

@@ -15,11 +15,6 @@ struct EthereumAccountTransactionsResponse: Codable {
 }
 
 public struct EthereumHistoricalTransactionResponse: Codable {
-    public enum State: String, CaseIterable, Codable {
-        case confirmed = "CONFIRMED"
-        case pending = "PENDING"
-        case replaced = "REPLACED"
-    }
 
     public var createdAt: Date {
         guard let timeInterval = timestamp.flatMap({ TimeInterval($0) }) else {
@@ -33,8 +28,9 @@ public struct EthereumHistoricalTransactionResponse: Codable {
     public let gasPrice: String
     public let gasUsed: String?
     public let hash: String
-    public let state: State
+    public let state: EthereumTransactionState
     public let to: String
     public let value: String
+    public let data: String?
     private let timestamp: String?
 }

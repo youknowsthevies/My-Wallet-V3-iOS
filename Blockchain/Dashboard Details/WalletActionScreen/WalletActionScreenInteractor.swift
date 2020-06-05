@@ -9,16 +9,15 @@
 import PlatformKit
 
 protocol WalletActionScreenInteracting: class {
-    var balanceType: BalanceType { get }
     var currency: CryptoCurrency { get }
-    var balanceFetching: AssetBalanceFetching { get }
-    func refresh()
+    var balanceType: BalanceType { get }
+    var balanceCellInteractor: CurrentBalanceCellInteractor { get }
 }
 
 final class WalletActionScreenInteractor: WalletActionScreenInteracting {
     let balanceType: BalanceType
     let currency: CryptoCurrency
-    let balanceFetching: AssetBalanceFetching
+    let balanceCellInteractor: CurrentBalanceCellInteractor
     
     // MARK: - Init
     
@@ -26,11 +25,10 @@ final class WalletActionScreenInteractor: WalletActionScreenInteracting {
          currency: CryptoCurrency,
          service: AssetBalanceFetching) {
         self.currency = currency
-        self.balanceFetching = service
         self.balanceType = balanceType
-    }
-    
-    func refresh() {
-        balanceFetching.refresh()
+        self.balanceCellInteractor = .init(
+            balanceFetching: service,
+            balanceType: balanceType
+        )
     }
 }

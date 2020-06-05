@@ -3,7 +3,7 @@
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
@@ -25,64 +25,73 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="59g-7R-mlM">
-                        <rect key="frame" x="16" y="16" width="32" height="32"/>
+                        <rect key="frame" x="16" y="21" width="32" height="32"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="32" id="4df-Yg-Mvk"/>
                             <constraint firstAttribute="height" constant="32" id="ZJc-ZT-Gj4"/>
                         </constraints>
                     </imageView>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_custody_lock" translatesAutoresizingMaskIntoConstraints="NO" id="Rtr-vJ-wJL">
-                        <rect key="frame" x="40" y="40" width="16" height="16"/>
+                        <rect key="frame" x="40" y="45" width="16" height="16"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="16" id="VQP-P4-NQU"/>
                             <constraint firstAttribute="width" constant="16" id="dsP-56-qVW"/>
                         </constraints>
                     </imageView>
-                    <stackView opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" axis="vertical" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="OMZ-H4-1mp">
-                        <rect key="frame" x="64" y="16" width="222" height="43"/>
+                    <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" axis="vertical" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="OMZ-H4-1mp">
+                        <rect key="frame" x="64" y="16" width="222" height="42"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bitcoin" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Ev-2b-3yY">
-                                <rect key="frame" x="0.0" y="0.0" width="67" height="23"/>
-                                <fontDescription key="fontDescription" name="Inter-SemiBold" family="Inter" pointSize="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Bitcoin" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Ev-2b-3yY">
+                                <rect key="frame" x="0.0" y="0.0" width="54" height="19.5"/>
+                                <fontDescription key="fontDescription" name="Inter-SemiBold" family="Inter" pointSize="16"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="Your BTC Balance" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1N8-q1-yzt">
-                                <rect key="frame" x="0.0" y="27" width="119.5" height="16"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="16" id="hYZ-GB-E85"/>
-                                </constraints>
+                                <rect key="frame" x="0.0" y="23.5" width="119.5" height="18.5"/>
                                 <fontDescription key="fontDescription" name="Inter-Medium" family="Inter" pointSize="14"/>
-                                <color key="textColor" red="0.59599999999999997" green="0.63100000000000001" blue="0.69799999999999995" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.40000000000000002" green="0.44" blue="0.52000000000000002" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                     </stackView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="s9X-t0-Jrx" customClass="AssetBalanceView" customModule="PlatformUIKit">
-                        <rect key="frame" x="286" y="19" width="140" height="37"/>
+                        <rect key="frame" x="286" y="18.5" width="140" height="37"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstAttribute="width" priority="250" constant="140" placeholder="YES" id="3Uo-Ka-NtR"/>
-                            <constraint firstAttribute="height" priority="750" constant="37" id="8Ry-r5-USF"/>
+                            <constraint firstAttribute="height" priority="750" constant="37" placeholder="YES" id="8Ry-r5-USF"/>
+                        </constraints>
+                    </view>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Wbi-Wz-8j3">
+                        <rect key="frame" x="0.0" y="74" width="442" height="1"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="1G2-Pb-zqr"/>
                         </constraints>
                     </view>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="59g-7R-mlM" firstAttribute="top" secondItem="bPF-ao-Awj" secondAttribute="top" constant="16" id="1QE-OZ-0sT"/>
                     <constraint firstItem="OMZ-H4-1mp" firstAttribute="top" secondItem="bPF-ao-Awj" secondAttribute="top" constant="16" id="6CD-ZY-5th"/>
+                    <constraint firstItem="59g-7R-mlM" firstAttribute="centerY" secondItem="OMZ-H4-1mp" secondAttribute="centerY" id="Bfc-wP-uS4"/>
                     <constraint firstItem="Rtr-vJ-wJL" firstAttribute="centerY" secondItem="59g-7R-mlM" secondAttribute="bottom" id="TkC-LJ-VU9"/>
                     <constraint firstItem="Rtr-vJ-wJL" firstAttribute="centerX" secondItem="59g-7R-mlM" secondAttribute="trailing" id="XVb-ZU-4Yw"/>
                     <constraint firstAttribute="trailing" secondItem="s9X-t0-Jrx" secondAttribute="trailing" constant="16" id="Zbt-tf-ZIy"/>
                     <constraint firstItem="OMZ-H4-1mp" firstAttribute="leading" secondItem="59g-7R-mlM" secondAttribute="trailing" constant="16" id="bNR-L3-mZy"/>
                     <constraint firstItem="s9X-t0-Jrx" firstAttribute="centerY" secondItem="OMZ-H4-1mp" secondAttribute="centerY" id="ehS-Ev-ItU"/>
                     <constraint firstItem="59g-7R-mlM" firstAttribute="leading" secondItem="bPF-ao-Awj" secondAttribute="leading" constant="16" id="fsJ-nj-bak"/>
+                    <constraint firstItem="Wbi-Wz-8j3" firstAttribute="leading" secondItem="bPF-ao-Awj" secondAttribute="leading" id="iT7-K2-NdR"/>
+                    <constraint firstAttribute="bottom" secondItem="Wbi-Wz-8j3" secondAttribute="bottom" id="lMp-U2-NS1"/>
+                    <constraint firstAttribute="trailing" secondItem="Wbi-Wz-8j3" secondAttribute="trailing" id="mRp-bD-KEO"/>
                     <constraint firstItem="s9X-t0-Jrx" firstAttribute="leading" secondItem="OMZ-H4-1mp" secondAttribute="trailing" id="n9U-kX-xl9"/>
-                    <constraint firstAttribute="bottom" secondItem="OMZ-H4-1mp" secondAttribute="bottom" constant="16" id="smt-cI-EnA"/>
+                    <constraint firstItem="Wbi-Wz-8j3" firstAttribute="top" secondItem="OMZ-H4-1mp" secondAttribute="bottom" constant="16" id="qKD-sP-UOX"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
                 <outlet property="assetBalanceView" destination="s9X-t0-Jrx" id="mpz-Gp-2ZP"/>
                 <outlet property="descriptionLabel" destination="1N8-q1-yzt" id="8Jk-KT-4DA"/>
+                <outlet property="separatorHeightConstraint" destination="1G2-Pb-zqr" id="bx7-AL-8f2"/>
+                <outlet property="separatorView" destination="Wbi-Wz-8j3" id="uxS-fH-YNi"/>
                 <outlet property="thumbImageView" destination="59g-7R-mlM" id="Ftu-0P-qUf"/>
                 <outlet property="thumbSideImageView" destination="Rtr-vJ-wJL" id="QnL-Fe-p6Q"/>
                 <outlet property="titleLabel" destination="2Ev-2b-3yY" id="nxK-dD-JsH"/>

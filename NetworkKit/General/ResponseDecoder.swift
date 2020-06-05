@@ -157,6 +157,7 @@ public class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         do {
             decodedErrorResponse = try self.jsonDecoder.decode(ErrorResponseType.self, from: payload)
         } catch let decodingError {
+            Logger.shared.error(errorResponse.response.url!.absoluteString)
             Logger.shared.debug("Error payload decoding 'ErrorResponseType'. Error: \(decodingError)")
             let message = String(data: payload, encoding: .utf8) ?? ""
             Logger.shared.debug("Message: \(message)")
@@ -188,6 +189,7 @@ public class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         do {
             decodedResponse = try self.jsonDecoder.decode(ResponseType.self, from: payload)
         } catch let decodingError {
+            Logger.shared.error(response.response.url!.absoluteString)
             Logger.shared.debug("Payload decoding error '\(String(describing: ResponseType.self))': \(decodingError)")
             let message = String(data: payload, encoding: .utf8) ?? ""
             Logger.shared.debug("Message: \(message)")

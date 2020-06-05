@@ -32,11 +32,12 @@ extension EtherTransaction {
         self.init()
         
         guard let transaction = transaction else { return }
-        
-        self.amount = transaction.amount
-        self.amountTruncated = EtherTransaction.truncated(amount: transaction.amount)
-        let transactionFee = transaction.fee ?? CryptoValue.etherFromGwei(string: "0")
-        self.fee = transactionFee?.toDisplayString(includeSymbol: false)
+
+        let stringAmount = transaction.amount.toDisplayString(includeSymbol: false)
+        self.amount = stringAmount
+        self.amountTruncated = EtherTransaction.truncated(amount: stringAmount)
+        let transactionFee = transaction.fee ?? CryptoValue.etherZero
+        self.fee = transactionFee.toDisplayString(includeSymbol: false)
         self.from = transaction.fromAddress.publicKey
         self.to = transaction.toAddress.publicKey
         self.myHash = transaction.transactionHash

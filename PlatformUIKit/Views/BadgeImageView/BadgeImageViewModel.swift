@@ -87,12 +87,11 @@ public struct BadgeImageViewModel {
 extension BadgeImageViewModel {
     
     private typealias AccessibilityId = Accessibility.Identifier.BadgeImageView
-    
+
     public static var empty: BadgeImageViewModel {
-        let viewModel = BadgeImageViewModel()
-        return viewModel
+        BadgeImageViewModel()
     }
-    
+
     /// Returns a default badge with an image. It uses the standard
     /// `background` color and does not apply a tintColor to the image.
     /// It has rounded corners.
@@ -108,6 +107,27 @@ extension BadgeImageViewModel {
                     imageName: imageName,
                     accessibility: .id("\(AccessibilityId.prefix)\(accessibilityIdSuffix)"),
                     renderingMode: .normal,
+                    bundle: .platformUIKit
+                )
+            )
+        )
+        return viewModel
+    }
+    
+    public static func template(
+        with imageName: String,
+        templateColor: UIColor,
+        backgroundColor: UIColor,
+        cornerRadius: CornerRadius = .round,
+        accessibilityIdSuffix: String) -> BadgeImageViewModel {
+        let viewModel = BadgeImageViewModel(cornerRadius: cornerRadius)
+        viewModel.set(
+            theme: Theme(
+                backgroundColor: backgroundColor,
+                imageViewContent: ImageViewContent(
+                    imageName: imageName,
+                    accessibility: .id("\(AccessibilityId.prefix)\(accessibilityIdSuffix)"),
+                    renderingMode: .template(templateColor),
                     bundle: .platformUIKit
                 )
             )

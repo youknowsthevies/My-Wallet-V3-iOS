@@ -11,20 +11,22 @@ import BigInt
 import NetworkKit
 import PlatformKit
 
-public protocol APIClientProtocol: class {
+public protocol EthereumClientAPI: class {
 
     var latestBlock: Single<LatestBlockResponse> { get }
 
     func push(transaction: EthereumTransactionFinalised) -> Single<EthereumPushTxResponse>
     func transactions(for account: String) -> Single<[EthereumHistoricalTransactionResponse]>
+    func transaction(with hash: String) -> Single<EthereumHistoricalTransactionResponse>
     func balanceDetails(from address: String) -> Single<BalanceDetailsResponse>
 }
 
-public final class APIClient: APIClientProtocol {
+final class APIClient: EthereumClientAPI {
+
     // MARK: - Types
 
     /// Potential errors
-    public enum ClientError: Error {
+    enum ClientError: Error {
 
         /// Error building the request
         case buildingRequest
@@ -42,8 +44,6 @@ public final class APIClient: APIClientProtocol {
 
         static let pushTx: [String] = base + [ "pushtx" ]
 
-        static let latestBlock: [String] = base + [ "latestblock" ]
-
         static func balance(for address: String) -> [String] {
             base + [ "account", address, "balance" ]
         }
@@ -55,18 +55,25 @@ public final class APIClient: APIClientProtocol {
 
     /// Privately used endpoint data
     private struct EndpointV2 {
-        private static let account: [String] = [ "v2", "eth", "data", "account"]
+        private static let base: [String] = [ "v2", "eth", "data" ]
+        private static let account: [String] = base + [ "account" ]
+
+        static let latestBlock: [String] = base + [ "block", "latest", "number" ]
 
         static func transactions(for address: String) -> [String] {
             account + [ address, "transactions" ]
         }
+
+        static func transaction(with hash: String) -> [String] {
+            base + [ "transaction", hash ]
+        }
     }
 
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     /// Streams the latest block
-    public var latestBlock: Single<LatestBlockResponse> {
-        let path = Endpoint.latestBlock
+    var latestBlock: Single<LatestBlockResponse> {
+        let path = EndpointV2.latestBlock
         guard let request = requestBuilder.get(path: path) else {
             return .error(ClientError.buildingRequest)
         }
@@ -81,20 +88,18 @@ public final class APIClient: APIClientProtocol {
 
     // MARK: - Setup
 
-    public init(communicator: NetworkCommunicatorAPI, config: Network.Config) {
+    init(communicator: NetworkCommunicatorAPI, config: Network.Config) {
         self.communicator = communicator
         self.config = config
         self.requestBuilder = RequestBuilder(networkConfig: config)
     }
 
-    public init(dependencies: Network.Dependencies = .default) {
-        self.communicator = dependencies.communicator
-        self.config = dependencies.blockchainAPIConfig
-        self.requestBuilder = RequestBuilder(networkConfig: dependencies.blockchainAPIConfig)
+    convenience init(dependencies: Network.Dependencies = .default) {
+        self.init(communicator: dependencies.communicator, config: dependencies.blockchainAPIConfig)
     }
 
     /// Pushes a transaction
-    public func push(transaction: EthereumTransactionFinalised) -> Single<EthereumPushTxResponse> {
+    func push(transaction: EthereumTransactionFinalised) -> Single<EthereumPushTxResponse> {
         let pushTxRequest = PushTxRequest(
             rawTx: transaction.rawTx,
             api_code: config.apiCode
@@ -110,8 +115,19 @@ public final class APIClient: APIClientProtocol {
         return communicator.perform(request: request)
     }
 
+    func transaction(with hash: String) -> Single<EthereumHistoricalTransactionResponse> {
+        let path = EndpointV2.transaction(with: hash)
+        guard let request = requestBuilder.get(path: path) else {
+            return .error(ClientError.buildingRequest)
+        }
+        return communicator.perform(
+                request: request,
+                responseType: EthereumHistoricalTransactionResponse.self
+            )
+    }
+
     /// Fetches transactions for an address - returns an array of transactions
-    public func transactions(for account: String) -> Single<[EthereumHistoricalTransactionResponse]> {
+    func transactions(for account: String) -> Single<[EthereumHistoricalTransactionResponse]> {
         let path = EndpointV2.transactions(for: account)
         guard let request = requestBuilder.get(path: path) else {
             return .error(ClientError.buildingRequest)
@@ -124,7 +140,7 @@ public final class APIClient: APIClientProtocol {
     }
 
     /// Fetches the balance for an address
-    public func balanceDetails(from address: String) -> Single<BalanceDetailsResponse> {
+    func balanceDetails(from address: String) -> Single<BalanceDetailsResponse> {
         let path = Endpoint.balance(for: address)
         guard let request = requestBuilder.get(path: path) else {
             return .error(ClientError.buildingRequest)

@@ -9,8 +9,14 @@
 import Foundation
 
 public enum Direction: String {
+    /// A `credit` is an **increase** in liabilities (decrease in cash)
+    /// relative to the account
     case credit
+    
+    /// A `debit` is an **increase** in cash relative to the account
     case debit
+    
+    /// `ETH` specific
     case transfer
 }
 
@@ -21,7 +27,7 @@ public protocol HistoricalTransaction {
     var fromAddress: Address { get }
     var toAddress: Address { get }
     var direction: Direction { get }
-    var amount: String { get }
+    var amount: CryptoValue { get }
     var transactionHash: String { get }
     var createdAt: Date { get }
     var fee: CryptoValue? { get }

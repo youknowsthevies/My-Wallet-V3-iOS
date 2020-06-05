@@ -44,6 +44,13 @@ public struct Network {
             pathComponents: ["nabu-gateway"]
         )
         
+        public static let explorerConfig: Config = Config(
+            apiScheme: "https",
+            apiHost: BlockchainAPI.shared.explorerHost,
+            apiCode: BlockchainAPI.Parameters.apiCode,
+            pathComponents: []
+        )
+        
         public static let walletConfig: Config = Config(
             apiScheme: "https",
             apiHost: BlockchainAPI.shared.walletHost,
@@ -73,6 +80,27 @@ public struct Network {
         
         public static let `default`: Dependencies = {
             let blockchainAPIConfig = Config.defaultConfig
+            let sessionConfiguration = URLSessionConfiguration.default
+            if let userAgent = UserAgentProvider.shared.userAgent {
+                sessionConfiguration.httpAdditionalHeaders = [HttpHeaderField.userAgent: userAgent]
+            }
+            sessionConfiguration.waitsForConnectivity = true
+            let sessionDelegate = SessionDelegate()
+            let session = URLSession(configuration: sessionConfiguration, delegate: sessionDelegate, delegateQueue: nil)
+            let communicator = NetworkCommunicator(session: session, sessionDelegate: sessionDelegate)
+            let requestBuilder = RequestBuilder(networkConfig: blockchainAPIConfig)
+            return Dependencies(
+                blockchainAPIConfig: blockchainAPIConfig,
+                session: session,
+                requestBuilder: requestBuilder,
+                sessionConfiguration: sessionConfiguration,
+                sessionDelegate: sessionDelegate,
+                communicator: communicator
+            )
+        }()
+        
+        public static let explorer: Dependencies = {
+            let blockchainAPIConfig = Config.explorerConfig
             let sessionConfiguration = URLSessionConfiguration.default
             if let userAgent = UserAgentProvider.shared.userAgent {
                 sessionConfiguration.httpAdditionalHeaders = [HttpHeaderField.userAgent: userAgent]

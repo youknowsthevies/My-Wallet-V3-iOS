@@ -175,7 +175,7 @@ public class ERC20Service<Token: ERC20Token>: ERC20API, ERC20TransactionEvaluati
                 let (fee, transaction) = tuple
                 
                 let transactionCandidate = EthereumTransactionCandidate(
-                    to: EthereumAddress(rawValue: transaction.to.address)!,
+                    to: EthereumAddress(stringLiteral: transaction.to.address),
                     gasPrice: BigUInt(fee.priority.amount),
                     gasLimit: BigUInt(fee.gasLimitContract),
                     value: BigUInt(0),
@@ -245,12 +245,12 @@ public class ERC20Service<Token: ERC20Token>: ERC20API, ERC20TransactionEvaluati
         let transaction: web3swift.EthereumTransaction
         do {
             let contractAddress: web3swift.Address = web3swift.Address(
-                Token.contractAddress.rawValue
+                Token.contractAddress.publicKey
             )
             let contract = try ContractV2(Web3Utils.erc20ABI, at: contractAddress)
             let method: ERC20ContractMethod = .transfer
             let options = Web3Options()
-            let toAddress: web3swift.Address = web3swift.Address(to.rawValue)
+            let toAddress: web3swift.Address = web3swift.Address(to.publicKey)
             let parameters: [Any] = [ toAddress, amount ]
             transaction = try contract.method(
                 method.rawValue,

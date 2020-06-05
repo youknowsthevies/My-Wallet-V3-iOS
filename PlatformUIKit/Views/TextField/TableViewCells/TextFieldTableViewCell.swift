@@ -19,21 +19,26 @@ public final class TextFieldTableViewCell: UITableViewCell {
         }
     }
     
-    private let textFieldView = TextFieldView()
+    private let textFieldView: TextFieldView = .init()
     
     // MARK: - Lifecycle
     
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setup()
+    }
+    
+    public required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+    }
+
+    private func setup() {
         selectionStyle = .none
         contentView.addSubview(textFieldView)
         textFieldView.layoutToSuperview(axis: .horizontal, offset: 24)
         textFieldView.layoutToSuperview(axis: .vertical)
         textFieldView.layout(dimension: .height, to: 80, priority: .defaultLow)
-    }
-    
-    public required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
         
     public func setup(viewModel: TextFieldViewModel,

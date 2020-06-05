@@ -10,9 +10,7 @@ import PlatformKit
 import PlatformUIKit
 
 enum TradeStatus {
-    case noDeposits
     case complete
-    case resolved
     case inProgress
     case pendingRefund
     case delayed
@@ -55,11 +53,9 @@ extension TradeStatus {
         switch self {
         case .complete,
              .refunded,
-             .resolved,
              .cancelled:
             return .green
         case .inProgress,
-             .noDeposits,
              .delayed:
             return #colorLiteral(red: 0.96, green: 0.65, blue: 0.14, alpha: 1)
         case .pendingRefund:
@@ -74,8 +70,7 @@ extension TradeStatus {
     
     var displayValue: String {
         switch self {
-        case .complete,
-             .resolved:
+        case .complete:
             return LocalizationConstants.Swap.complete
         case .delayed:
             return LocalizationConstants.Swap.delayed
@@ -89,7 +84,6 @@ extension TradeStatus {
         case .expired:
             return LocalizationConstants.Swap.expired
         case .inProgress,
-             .noDeposits,
              .none:
             return LocalizationConstants.Swap.inProgress
         }

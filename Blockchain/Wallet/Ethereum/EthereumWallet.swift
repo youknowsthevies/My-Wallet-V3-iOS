@@ -14,27 +14,27 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-public class EthereumWallet: NSObject {
+class EthereumWallet: NSObject {
     
     typealias Dispatcher = EthereumJSInteropDispatcherAPI & EthereumJSInteropDelegateAPI
     
-    typealias WalletAPI = LegacyEthereumWalletAPI & LegacyWalletAPI & MnemonicAccessAPI
+    typealias WalletAPI = LegacyEthereumWalletAPI & LegacyWalletAPI & MnemonicAccessAPI & ReactiveWalletAPI
     
-    public var balanceObservable: Observable<CryptoValue> {
+    var balanceObservable: Observable<CryptoValue> {
         balanceRelay.asObservable()
     }
     
-    public let balanceFetchTriggerRelay = PublishRelay<Void>()
-        
+    let balanceFetchTriggerRelay = PublishRelay<Void>()
+
     private let balanceRelay = PublishRelay<CryptoValue>()
     private let disposeBag = DisposeBag()
     
-    @objc public var delegate: EthereumJSInteropDelegateAPI {
+    var delegate: EthereumJSInteropDelegateAPI {
         dispatcher
     }
     
-    @available(*, deprecated, message: "making this public so tests will compile")
-    public var interopDispatcher: EthereumJSInteropDispatcherAPI {
+    @available(*, deprecated, message: "making this  so tests will compile")
+    var interopDispatcher: EthereumJSInteropDispatcherAPI {
         dispatcher
     }
     
@@ -56,21 +56,20 @@ public class EthereumWallet: NSObject {
     
     private static let defaultPAXAccount = ERC20TokenAccount(
         label: LocalizationConstants.SendAsset.myPaxWallet,
-        contractAddress: PaxToken.contractAddress.rawValue,
+        contractAddress: PaxToken.contractAddress.publicKey,
         hasSeen: false,
         transactionNotes: [String: String]()
     )
-            
+
     private var ethereumAccountExists: Bool?
-        
+
     private let dispatcher: Dispatcher
     
-    @objc
-    convenience public init(legacyWallet: Wallet) {
+    @objc convenience init(legacyWallet: Wallet) {
         self.init(schedulerType: MainScheduler.instance, wallet: legacyWallet)
     }
     
-    convenience public init(schedulerType: SchedulerType, legacyWallet: Wallet) {
+    convenience init(schedulerType: SchedulerType, legacyWallet: Wallet) {
         self.init(schedulerType: schedulerType, wallet: legacyWallet)
     }
     
@@ -95,7 +94,7 @@ public class EthereumWallet: NSObject {
             .disposed(by: disposeBag)
     }
     
-    @objc public func setup(with context: JSContext) {
+    @objc func setup(with context: JSContext) {
         context.setJsFunction(named: "objc_on_didGetERC20TokensAsync" as NSString) { [weak self] erc20TokenAccounts in
             self?.delegate.didGetERC20Tokens(erc20TokenAccounts)
         }
@@ -116,7 +115,7 @@ public class EthereumWallet: NSObject {
         context.setJsFunction(named: "objc_on_get_ether_address_error" as NSString) { [weak self] errorMessage in
             self?.delegate.didFailToGetAddress(errorMessage: errorMessage)
         }
-                
+
         context.setJsFunction(named: "objc_on_didGetEtherAccountsAsync" as NSString) { [weak self] accounts in
             self?.delegate.didGetAccounts(accounts)
         }
@@ -132,7 +131,7 @@ public class EthereumWallet: NSObject {
         }
     }
     
-    @objc public func walletDidLoad() {
+    @objc func walletDidLoad() {
         walletLoaded()
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
@@ -140,7 +139,7 @@ public class EthereumWallet: NSObject {
             .disposed(by: disposeBag)
     }
     
-    public func walletLoaded() -> Completable {
+    func walletLoaded() -> Completable {
         guard let wallet = wallet else {
             return Completable.empty()
         }
@@ -155,7 +154,7 @@ public class EthereumWallet: NSObject {
                     return Completable.empty()
                 }
                 return self.saveDefaultPAXAccount().asCompletable()
-            }
+        }
     }
     
     private func saveDefaultPAXAccount() -> Single<ERC20TokenAccount> {
@@ -167,17 +166,24 @@ public class EthereumWallet: NSObject {
             }
             .asSingle()
     }
+
+    var waitUntilInitialized: Observable<Void> {
+        guard let wallet = wallet else {
+            return .error(WalletError.unknown)
+        }
+        return wallet.waitUntilInitialized
+    }
 }
 
 extension EthereumWallet: ERC20BridgeAPI { 
-    public func tokenAccount(for key: String) -> Single<ERC20TokenAccount?> {
+    func tokenAccount(for key: String) -> Single<ERC20TokenAccount?> {
         erc20TokenAccounts
             .flatMap { tokenAccounts -> Single<ERC20TokenAccount?> in
                 Single.just(tokenAccounts[key])
             }
     }
     
-    public func save(erc20TokenAccounts: [String: ERC20TokenAccount]) -> Completable {
+    func save(erc20TokenAccounts: [String: ERC20TokenAccount]) -> Completable {
         secondPasswordIfAccountCreationNeeded
             .asObservable()
             .flatMap(weak: self) { (self, secondPassword) -> Observable<Never> in
@@ -190,14 +196,14 @@ extension EthereumWallet: ERC20BridgeAPI {
             .asCompletable()
     }
     
-    public var erc20TokenAccounts: Single<[String: ERC20TokenAccount]> {
+    var erc20TokenAccounts: Single<[String: ERC20TokenAccount]> {
         secondPasswordIfAccountCreationNeeded
             .flatMap(weak: self) { (self, secondPassword) -> Single<[String: ERC20TokenAccount]> in
                 self.erc20TokenAccounts(secondPassword: secondPassword)
-            }
+        }
     }
-    
-    public func memo(for transactionHash: String, tokenKey: String) -> Single<String?> {
+
+    func memo(for transactionHash: String, tokenKey: String) -> Single<String?> {
         erc20TokenAccounts
             .map { tokenAccounts -> ERC20TokenAccount? in
                 tokenAccounts[tokenKey]
@@ -207,7 +213,7 @@ extension EthereumWallet: ERC20BridgeAPI {
             }
     }
     
-    public func save(transactionMemo: String, for transactionHash: String, tokenKey: String) -> Completable {
+    func save(transactionMemo: String, for transactionHash: String, tokenKey: String) -> Completable {
         erc20TokenAccounts
             .flatMap { tokenAccounts -> Single<([String: ERC20TokenAccount], ERC20TokenAccount)> in
                 guard let tokenAccount = tokenAccounts[tokenKey] else {
@@ -266,30 +272,60 @@ extension EthereumWallet: ERC20BridgeAPI {
 }
 
 extension EthereumWallet: EthereumWalletBridgeAPI {
-    
-    public var balanceType: BalanceType {
+
+    func updateMemo(for transactionHash: String, memo: String?) -> Completable {
+        let saveMemo: Completable = Completable.create { completable in
+            self.wallet?.setEthereumMemo(for: transactionHash, memo: memo)
+            completable(.completed)
+            return Disposables.create()
+        }
+        return waitUntilInitialized
+            .flatMap { saveMemo.asObservable() }
+            .asCompletable()
+    }
+
+    func memo(for transactionHash: String) -> Single<String?> {
+        Single
+            .create(weak: self) { (self, observer) -> Disposable in
+                guard let wallet = self.wallet else {
+                    return Disposables.create()
+                }
+                wallet.getEthereumMemo(
+                    for: transactionHash,
+                    success: { (memo) in
+                        observer(.success(memo))
+                    },
+                    error: { (error) in
+                        observer(.error(WalletError.notInitialized))
+                    }
+                )
+                return Disposables.create()
+            }
+    }
+
+    var balanceType: BalanceType {
         .nonCustodial
     }
     
-    public var history: Single<Void> {
+    var history: Single<Void> {
         fetchHistory(fromCache: false)
     }
     
-    public var balance: Single<CryptoValue> {
+    var balance: Single<CryptoValue> {
         secondPasswordIfAccountCreationNeeded
             .flatMap(weak: self) { (self, secondPassword) -> Single<CryptoValue> in
                 self.fetchBalance(secondPassword: secondPassword)
-            }
+        }
     }
     
-    public var name: Single<String> {
+    var name: Single<String> {
         secondPasswordIfAccountCreationNeeded
             .flatMap(weak: self) { (self, secondPassword) -> Single<String> in
                 self.label(secondPassword: secondPassword)
             }
     }
 
-    public var address: Single<EthereumKit.EthereumAddress> {
+    var address: Single<EthereumKit.EthereumAddress> {
         secondPasswordIfAccountCreationNeeded
             .flatMap(weak: self) { (self, secondPassword) -> Single<String> in
                 self.address(secondPassword: secondPassword)
@@ -299,7 +335,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
 
     // TODO: IOS-2289 add test cases to it
     /** Fetch ether transactions using an injected service */
-    public func fetchEthereumTransactions(using service: EthereumHistoricalTransactionService) -> Single<[EtherTransaction]> {
+    func fetchEthereumTransactions(using service: EthereumHistoricalTransactionService) -> Single<[EtherTransaction]> {
         service.fetchTransactions()
             .map { [weak self] transactions in
                 let result = transactions
@@ -310,7 +346,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
             }
     }
     
-    public var account: Single<EthereumAssetAccount> {
+    var account: Single<EthereumAssetAccount> {
         wallets
             .flatMap { accounts -> Single<EthereumAssetAccount> in
                 guard let defaultAccount = accounts.first else {
@@ -326,7 +362,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
     }
     
     /// Streams the nonce of the address
-    public var nonce: Single<BigUInt> {
+    var nonce: Single<BigUInt> {
         dependencies
             .assetAccountRepository
             .assetAccountDetails
@@ -334,13 +370,13 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
     }
     
     /// Streams `true` if there is a prending transaction
-    public var isWaitingOnTransaction: Single<Bool> {
+    var isWaitingOnTransaction: Single<Bool> {
         dependencies.transactionService
             .fetchTransactions()
             .map { $0.contains(where: { $0.state == .pending }) }
     }
-        
-    public func recordLast(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished> {
+
+    func recordLast(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished> {
         Single
             .create(weak: self) { (self, observer) -> Disposable in
                 guard let wallet = self.wallet else {
@@ -361,7 +397,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
             .subscribeOn(MainScheduler.instance)
     }
 
-    public func fetchHistory() -> Single<Void> {
+    func fetchHistory() -> Single<Void> {
         fetchHistory(fromCache: false)
     }
 
@@ -421,7 +457,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
             }
             .subscribeOn(schedulerType)
     }
-                
+
     private func fetchHistory(fromCache: Bool) -> Single<Void> {
         let transactions: Single<[EthereumHistoricalTransaction]>
         if fromCache {
@@ -434,21 +470,21 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
 }
 
 extension EthereumWallet: MnemonicAccessAPI {
-    public var mnemonic: Maybe<String> {
+    var mnemonic: Maybe<String> {
         guard let wallet = wallet else {
             return Maybe.empty()
         }
         return wallet.mnemonic
     }
     
-    public var mnemonicForcePrompt: Maybe<String> {
+    var mnemonicForcePrompt: Maybe<String> {
         guard let wallet = wallet else {
             return Maybe.empty()
         }
         return wallet.mnemonicForcePrompt
     }
     
-    public var mnemonicPromptingIfNeeded: Maybe<String> {
+    var mnemonicPromptingIfNeeded: Maybe<String> {
         guard let wallet = wallet else {
             return Maybe.empty()
         }
@@ -457,7 +493,7 @@ extension EthereumWallet: MnemonicAccessAPI {
 }
 
 extension EthereumWallet: PasswordAccessAPI {
-    public var password: Maybe<String> {
+    var password: Maybe<String> {
         guard let password = credentialsProvider.legacyPassword else {
             return Maybe.empty()
         }
@@ -466,7 +502,7 @@ extension EthereumWallet: PasswordAccessAPI {
 }
 
 extension EthereumWallet: EthereumWalletAccountBridgeAPI {
-    public func save(keyPair: EthereumKeyPair, label: String) -> Completable {
+    func save(keyPair: EthereumKeyPair, label: String) -> Completable {
         guard let base58PrivateKey = keyPair.privateKey.base58EncodedString else {
             return Completable.error(WalletError.failedToSaveKeyPair("Invalid private key"))
         }
@@ -484,7 +520,7 @@ extension EthereumWallet: EthereumWalletAccountBridgeAPI {
         })
     }
     
-    public var wallets: Single<[EthereumWalletAccount]> {
+    var wallets: Single<[EthereumWalletAccount]> {
         secondPasswordIfAccountCreationNeeded
             .flatMap(weak: self) { (self, secondPassword) -> Single<[EthereumWalletAccount]> in
                 self.ethereumWallets(secondPassword: secondPassword)
@@ -492,32 +528,33 @@ extension EthereumWallet: EthereumWalletAccountBridgeAPI {
     }
     
     private func ethereumWallets(secondPassword: String?) -> Single<[EthereumWalletAccount]> {
-        Single<[[String: Any]]>.create(subscribe: { [weak self] observer -> Disposable in
-            guard let wallet = self?.wallet else {
-                observer(.error(WalletError.notInitialized))
-                return Disposables.create()
-            }
-            wallet.ethereumAccounts(with: secondPassword, success: { accounts in
-                observer(.success(accounts))
-            }, error: { errorMessage in
-                observer(.error(WalletError.unknown))
-            })
-            return Disposables.create()
-        })
-        .flatMap(weak: self) { (self, legacyAccounts) -> Single<[EthereumWalletAccount]> in
-            let accounts = legacyAccounts
-                .decodeJSONObjects(type: LegacyEthereumWalletAccount.self)
-                .enumerated()
-                .map { index, account -> EthereumWalletAccount in
-                    EthereumWalletAccount(
-                        index: index,
-                        publicKey: account.addr,
-                        label: account.label,
-                        archived: false
-                    )
+        Single<[[String: Any]]>
+            .create(subscribe: { [weak self] observer -> Disposable in
+                guard let wallet = self?.wallet else {
+                    observer(.error(WalletError.notInitialized))
+                    return Disposables.create()
                 }
-            return Single.just(accounts)
-        }
+                wallet.ethereumAccounts(with: secondPassword, success: { accounts in
+                    observer(.success(accounts))
+                }, error: { errorMessage in
+                    observer(.error(WalletError.unknown))
+                })
+                return Disposables.create()
+            })
+            .flatMap(weak: self) { (self, legacyAccounts) -> Single<[EthereumWalletAccount]> in
+                let accounts = legacyAccounts
+                    .decodeJSONObjects(type: LegacyEthereumWalletAccount.self)
+                    .enumerated()
+                    .map { index, account -> EthereumWalletAccount in
+                        EthereumWalletAccount(
+                            index: index,
+                            publicKey: account.addr,
+                            label: account.label,
+                            archived: false
+                        )
+                }
+                return Single.just(accounts)
+            }
     }
 
 }

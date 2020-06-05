@@ -9,22 +9,15 @@
 import PlatformKit
 import web3swift
 
-public struct EthereumContractAddress: EthereumAddressProtocols {
+public struct EthereumContractAddress: EthereumAddressProtocols, AssetAddress {
 
-    public var ethereumAddress: EthereumAddress {
-        return EthereumAddress(rawValue: rawValue)!
+    public let ethereumAddress: EthereumAddress
+
+    public var publicKey: String {
+        ethereumAddress.publicKey
     }
-
-    public let rawValue: String
 
     public init(stringLiteral value: String) {
-        self.rawValue = Address.toChecksumAddress(value)!
-    }
-
-    public init?(rawValue value: String) {
-        guard let eip55Address = Address.toChecksumAddress(value) else {
-            return nil
-        }
-        self.rawValue = eip55Address
+        ethereumAddress = EthereumAddress(stringLiteral: value)
     }
 }

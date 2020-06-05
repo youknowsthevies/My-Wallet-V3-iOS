@@ -18,6 +18,7 @@ final class CustodyWithdrawalScreenPresenter {
     
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias LocalizationID = LocalizationConstants.SimpleBuy.Withdrawal
+    private typealias AccessibilityId = Accessibility.Identifier.DashboardDetails.WalletActionSheet.Withdrawal
     
     // MARK: - Navigation Properties
     
@@ -96,10 +97,14 @@ final class CustodyWithdrawalScreenPresenter {
         self.assetBalanceViewPresenter = AssetBalanceViewPresenter(
             alignment: .center,
             interactor: interactor.assetBalanceInteractor,
-            descriptors: .init(fiatFont: .main(.medium, 48.0),
-                               fiatTextColor: .textFieldText,
-                               cryptoFont: .main(.medium, 14.0),
-                               cryptoTextColor: .textFieldText)
+            descriptors: .init(
+                fiatFont: .main(.medium, 48.0),
+                fiatTextColor: .textFieldText,
+                fiatAccessibility: .id(AccessibilityId.fiatValue),
+                cryptoFont: .main(.medium, 14.0),
+                cryptoTextColor: .textFieldText,
+                cryptoAccessibility: .id(AccessibilityId.cryptoValue)
+            )
         )
         
         self.sendButtonViewModel = .primary(with: LocalizationID.action)

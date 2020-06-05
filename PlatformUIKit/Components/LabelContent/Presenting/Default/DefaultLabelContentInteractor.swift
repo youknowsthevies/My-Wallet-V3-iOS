@@ -22,7 +22,7 @@ public final class DefaultLabelContentInteractor: LabelContentInteracting {
     public var state: Observable<InteractionState> {
         stateRelay.asObservable()
     }
-    
+
     public init(knownValue: String) {
         stateRelay.accept(.loaded(next: .init(text: knownValue)))
     }

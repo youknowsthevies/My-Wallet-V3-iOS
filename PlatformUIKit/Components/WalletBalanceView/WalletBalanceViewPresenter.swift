@@ -1,0 +1,129 @@
+//
+//  WalletBalanceViewPresenter.swift
+//  PlatformUIKit
+//
+//  Created by Alex McGregor on 5/14/20.
+//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+import PlatformKit
+import RxCocoa
+import RxRelay
+import RxSwift
+
+public final class WalletBalanceViewPresenter {
+    
+    typealias AccessibilityId = Accessibility.Identifier.Activity.WalletBalance
+    typealias PresentationState = LoadingState<WalletBalance>
+    
+    public struct WalletBalance {
+        /// The balance in fiat
+        let fiatBalance: LabelContent
+        
+        /// The fiat currency code
+        let currencyCode: LabelContent
+        
+        /// Descriptors that allows customized content and style
+        public struct Descriptors {
+            let fiatFont: UIFont
+            let fiatTextColor: UIColor
+            let descriptionFont: UIFont
+            let descriptionTextColor: UIColor
+            
+            public init(fiatFont: UIFont,
+                        fiatTextColor: UIColor,
+                        descriptionFont: UIFont,
+                        descriptionTextColor: UIColor) {
+                self.fiatFont = fiatFont
+                self.fiatTextColor = fiatTextColor
+                self.descriptionFont = descriptionFont
+                self.descriptionTextColor = descriptionTextColor
+            }
+        }
+        
+        // MARK: - Setup
+        
+        public init(with value: WalletBalanceViewInteractor.WalletBalance,
+                    descriptors: Descriptors = .default) {
+            fiatBalance = LabelContent(
+                text: value.fiatValue.toDisplayString(includeSymbol: true, locale: .current),
+                font: descriptors.fiatFont,
+                color: descriptors.fiatTextColor,
+                accessibility: .id(AccessibilityId.fiatBalance)
+            )
+            
+            currencyCode = LabelContent(
+                text: value.fiatCurrency.code,
+                font: descriptors.descriptionFont,
+                color: descriptors.descriptionTextColor,
+                accessibility: .id(AccessibilityId.currencyCode)
+            )
+        }
+    }
+        
+    // MARK: - Exposed Properties
+    
+    let accessibility: Accessibility = .id(AccessibilityId.view)
+    
+    var state: Observable<PresentationState> {
+        stateRelay
+            .observeOn(MainScheduler.instance)
+    }
+    
+    var alignment: Driver<UIStackView.Alignment> {
+        alignmentRelay.asDriver()
+    }
+    
+    // MARK: - Injected
+    
+    private let interactor: WalletBalanceViewInteractor
+    
+    // MARK: - Private Accessors
+    
+    private let alignmentRelay = BehaviorRelay<UIStackView.Alignment>(value: .fill)
+    private let stateRelay = BehaviorRelay<PresentationState>(value: .loading)
+    private let disposeBag = DisposeBag()
+    
+    // MARK: - Setup
+    
+    public init(alignment: UIStackView.Alignment = .trailing,
+                interactor: WalletBalanceViewInteractor,
+                descriptors: WalletBalanceViewPresenter.WalletBalance.Descriptors = .default) {
+        self.interactor = interactor
+        self.alignmentRelay.accept(alignment)
+        
+        /// Map interaction state into presnetation state
+        /// and bind it to `stateRelay`
+        interactor.state
+            .map { .init(with: $0, descriptors: descriptors) }
+            .bind(to: stateRelay)
+            .disposed(by: disposeBag)
+    }
+}
+
+public extension WalletBalanceViewPresenter.WalletBalance.Descriptors {
+    typealias Descriptors = WalletBalanceViewPresenter.WalletBalance.Descriptors
+    static let `default` = Descriptors(
+        fiatFont: .main(.semibold, 16.0),
+        fiatTextColor: .textFieldText,
+        descriptionFont: .main(.medium, 14.0),
+        descriptionTextColor: .descriptionText
+    )
+}
+
+extension LoadingState where Content == WalletBalanceViewPresenter.WalletBalance {
+    init(with state: LoadingState<WalletBalanceViewInteractor.WalletBalance>,
+         descriptors: WalletBalanceViewPresenter.WalletBalance.Descriptors) {
+        switch state {
+        case .loading:
+            self = .loading
+        case .loaded(next: let content):
+            self = .loaded(
+                next: .init(
+                    with: content,
+                    descriptors: descriptors
+                )
+            )
+        }
+    }
+}

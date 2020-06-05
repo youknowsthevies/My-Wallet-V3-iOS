@@ -36,7 +36,7 @@ extension SettingsSectionType.CellType.PlainCellType {
     }
     
     var viewModel: PlainCellViewModel {
-        return .init(
+        .init(
             title: title,
             accessibilityID: "\(AccessibilityIDs.titleLabelFormat)\(accessibilityID)",
             titleAccessibilityID: "\(AccessibilityIDs.title).\(accessibilityID)"

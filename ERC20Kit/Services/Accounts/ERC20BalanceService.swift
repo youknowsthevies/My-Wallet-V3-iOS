@@ -18,6 +18,15 @@ public protocol ERC20BalanceServiceAPI {
 }
 
 public class AnyERC20BalanceService<Token: ERC20Token>: ERC20BalanceServiceAPI {
+    private let bridge: EthereumWalletBridgeAPI
+    private let accountClient: AnyERC20AccountAPIClient<Token>
+
+    init<APIClient: ERC20AccountAPIClientAPI>(
+        with bridge: EthereumWalletBridgeAPI,
+        accountClient: APIClient) where APIClient.Token == Token {
+        self.bridge = bridge
+        self.accountClient = AnyERC20AccountAPIClient(accountAPIClient: accountClient)
+    }
 
     public var balanceForDefaultAccount: Single<ERC20TokenValue<Token>> {
         bridge.address
@@ -26,17 +35,10 @@ public class AnyERC20BalanceService<Token: ERC20Token>: ERC20BalanceServiceAPI {
             }
     }
 
-    private let bridge: EthereumWalletBridgeAPI
-    private let accountClient: AnyERC20AccountAPIClient<Token>
-
-    init<C: ERC20AccountAPIClientAPI>(with bridge: EthereumWalletBridgeAPI, accountClient: C) where C.Token == Token {
-        self.bridge = bridge
-        self.accountClient = AnyERC20AccountAPIClient(accountAPIClient: accountClient)
-    }
-
     public func balance(for address: EthereumAddress) -> Single<ERC20TokenValue<Token>> {
         accountClient
-            .fetchWalletAccount(from: address.rawValue, page: "0")
-            .map { Token.cryptoValueFrom(minorValue: $0.balance) ?? Token.zeroValue }
+            .fetchAccountSummary(from: address.publicKey)
+            .map { $0.balance }
+            .map { Token.cryptoValueFrom(minorValue: $0) ?? Token.zeroValue}
     }
 }

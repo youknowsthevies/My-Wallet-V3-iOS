@@ -12,32 +12,6 @@ extension Accessibility.Identifier {
     
     enum SimpleBuy {
 
-        enum LineItem {
-            private static let prefix = "SimpleBuy.LineItem."
-            static let themeBackgroundImageView = "\(prefix)themeBackgroundImageView."
-            static let bankName = "\(prefix)bankName."
-            static let iban = "\(prefix)iban."
-            static let bankCountry = "\(prefix)bankCountry."
-            static let accountNumber = "\(prefix)accountNumber."
-            static let sortCode = "\(prefix)sortCode."
-            static let bankCode = "\(prefix)bankCode."
-            static let recipient = "\(prefix)recipient."
-            static let amountToSend = "\(prefix)amountToSend."
-            static let date = "\(prefix)date."
-            static let totalCost = "\(prefix)totalCost."
-            static let estimatedAmount = "\(prefix)estimatedAmount."
-            static let amount = "\(prefix)amount."
-            static let buyingFee = "\(prefix)buyingFee."
-            static let exchangeRate = "\(prefix)exchangeRate."
-            static let paymentMethod = "\(prefix)paymentMethod."
-            static let orderId = "\(prefix)orderId."
-            static let status = "\(prefix)status."
-            static let bankTransfer = "\(prefix)bankTransfer."
-            static let pending = "\(prefix)pending."
-            static let cryptoAmount = "\(prefix)cryptoAmount."
-            static let fiatAmount = "\(prefix)fiatAmount."
-        }
-
         enum IntroScreen {
             private static let prefix = "Intro."
             static let themeBackgroundImageView = "\(prefix)themeBackgroundImageView"

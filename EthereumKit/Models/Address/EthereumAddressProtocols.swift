@@ -8,4 +8,4 @@
 
 import Foundation
 
-typealias EthereumAddressProtocols = Hashable & RawRepresentable & ExpressibleByStringLiteral
+typealias EthereumAddressProtocols = Hashable & ExpressibleByStringLiteral

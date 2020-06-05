@@ -34,7 +34,18 @@ public protocol HistoricalTransactionAPI {
     var hasTransactions: Single<Bool> { get }
 }
 
-/// `HistoricalTransactionAPI` is used for fetching transactions that the user has already submitted.
+/// `HistoricalTransactionDetailsAPI` is used for fetching details of a single transaction that the user has already submitted.
+public protocol HistoricalTransactionDetailsAPI {
+
+    associatedtype Model: HistoricalTransaction
+
+    /// Fetch details for transaction with given identifier.
+    /// - returns: A Observable that emits a `<HistoricalTransaction>`. More than one model may be emitted,
+    /// for example when a cached value is available.
+    func transaction(identifier: String) -> Observable<Model>
+}
+
+/// `TokenizedHistoricalTransactionAPI` is used for fetching transactions that the user has already submitted.
 /// It returns a `PageResult<HistoricalTransaction & Tokenized>`. Depending on what asset type you are requesting
 /// the page size may vary. 
 public protocol TokenizedHistoricalTransactionAPI {

@@ -17,6 +17,14 @@ enum EthereumWalletBridgeMockError: Error {
 }
 
 class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBridgeAPI, MnemonicAccessAPI, PasswordAccessAPI {
+    func updateMemo(for transactionHash: String, memo: String?) -> Completable {
+        .empty()
+    }
+
+
+    func memo(for transactionHash: String) -> Single<String?> {
+        .just(nil)
+    }
 
     public var balanceType: BalanceType {
         return .nonCustodial

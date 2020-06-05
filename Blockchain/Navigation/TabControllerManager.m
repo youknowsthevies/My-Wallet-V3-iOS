@@ -23,6 +23,7 @@
 @property (strong, nonatomic) PaxActivityViewController *paxActivityViewController;
 
 @property (strong, nonatomic) SendPaxViewController *sendPaxViewController;
+@property (strong, nonatomic) UINavigationController *activityNavigationController;
 
 @property (strong, nonatomic) UINavigationController *dashboardNavigationController;
 
@@ -240,7 +241,7 @@
         }
         case LegacyAssetTypeStellar: {
             if (!_sendLumensViewController) {
-                _sendLumensViewController = [SendLumensViewController makeWith:StellarServiceProvider.sharedInstance];
+                _sendLumensViewController = [SendLumensViewController makeWith:StellarServiceProvider.shared];
             }
             
             [_tabViewController setActiveViewController:_sendLumensViewController animated:animated index:tabIndex];
@@ -556,53 +557,19 @@
     [_tabViewController setActiveViewController:self.dashboardNavigationController animated:true index:[ConstantsObjcBridge tabDashboard]];
 }
 
+- (void)showActivity {
+    if (self.activityNavigationController == nil) {
+        ActivityScreenViewController *viewController = [[ActivityScreenViewController alloc] init];
+        self.activityNavigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+    }
+    [_tabViewController setActiveViewController:self.activityNavigationController animated:true index:[ConstantsObjcBridge tabTransactions]];
+}
+
 #pragma mark - Transactions
 
 - (void)showTransactionsAnimated:(BOOL)animated
 {
-    int tabIndex = (int)[ConstantsObjcBridge tabTransactions];
-    
-    switch (self.assetType) {
-        case LegacyAssetTypeBitcoin: {
-            if (!_transactionsBitcoinViewController) {
-                _transactionsBitcoinViewController = [[[NSBundle mainBundle] loadNibNamed:NIB_NAME_TRANSACTIONS owner:self options:nil] firstObject];
-            }
-            
-            [_tabViewController setActiveViewController:_transactionsBitcoinViewController animated:animated index:tabIndex];
-            break;
-        }
-        case LegacyAssetTypeEther: {
-            if (!_transactionsEtherViewController) {
-                _transactionsEtherViewController = [[TransactionsEthereumViewController alloc] init];
-            }
-            
-            [_tabViewController setActiveViewController:_transactionsEtherViewController animated:animated index:tabIndex];
-            break;
-        }
-        case LegacyAssetTypeBitcoinCash: {
-            if (!_transactionsBitcoinCashViewController) {
-                _transactionsBitcoinCashViewController = [[TransactionsBitcoinCashViewController alloc] init];
-            }
-            
-            [_tabViewController setActiveViewController:_transactionsBitcoinCashViewController animated:animated index:tabIndex];
-            break;
-        }
-        case LegacyAssetTypeStellar: {
-            if (!_transactionsStellarViewController) {
-                _transactionsStellarViewController = [TransactionsXlmViewController makeWith:StellarServiceProvider.sharedInstance];
-            }
-            [_transactionsStellarViewController reload];
-            [_tabViewController setActiveViewController:_transactionsStellarViewController animated:animated index:tabIndex];
-            break;
-        }
-        case LegacyAssetTypePax: {
-            if (!_paxActivityViewController) {
-                _paxActivityViewController = [PaxActivityViewController make];
-            }
-            [_tabViewController setActiveViewController:_paxActivityViewController animated:animated index:tabIndex];
-            break;
-        }
-    }
+    [self showActivity];
 }
 
 - (void)setupBitpayPaymentFromURL:(NSURL *)bitpayURL
@@ -928,7 +895,7 @@
             // Always creating a new SendLumensViewController for stellar. This is because there is a layout issue
             // when reusing an existing SendLumensViewController wherein after you scan the QR code, the view occupies
             // the full frame, and not the adjusted frame.
-            _sendLumensViewController = [SendLumensViewController makeWith:StellarServiceProvider.sharedInstance];
+            _sendLumensViewController = [SendLumensViewController makeWith:StellarServiceProvider.shared];
             [_sendLumensViewController scanQrCodeForDestinationAddress];
             viewControllerToPresent = _sendLumensViewController;
             break;

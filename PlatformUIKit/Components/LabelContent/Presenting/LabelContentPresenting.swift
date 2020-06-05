@@ -11,6 +11,8 @@ import RxSwift
 import RxRelay
 
 public protocol LabelContentPresenting {
+    var interactor: LabelContentInteracting { get }
+
     var stateRelay: BehaviorRelay<LabelContent.State.Presentation> { get }
     var state: Observable<LabelContent.State.Presentation> { get }
 }

@@ -15,6 +15,7 @@ import PlatformKit
 import PlatformUIKit
 
 final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
+
     typealias StateService = SimpleBuyConfirmCheckoutServiceAPI &
                              SimpleBuyTransferDetailsServiceAPI &
                              SimpleBuyCancelTransferServiceAPI
@@ -22,15 +23,14 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
     
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.Checkout
-    private typealias AccessibilityId = Accessibility.Identifier.LineItem
 
     // MARK: - Navigation Properties
 
+    let reloadRelay: PublishRelay<Void> = .init()
+
     var navigationBarAppearance: DetailsScreen.NavigationBarAppearance = .defaultDark
 
-    var titleView: Screen.Style.TitleView {
-        .text(value: contentReducer.title)
-    }
+    let titleViewRelay: BehaviorRelay<Screen.Style.TitleView> = .init(value: .none)
 
     // MARK: - Screen Properties
 
@@ -66,6 +66,10 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
         // MARK: Content Reducer
 
         contentReducer = CheckoutScreenContentReducer(data: interactor.checkoutData)
+
+        // MARK: Nav Bar
+
+        titleViewRelay.accept(.text(value: contentReducer.title))
 
         // MARK: Buttons Setup
 

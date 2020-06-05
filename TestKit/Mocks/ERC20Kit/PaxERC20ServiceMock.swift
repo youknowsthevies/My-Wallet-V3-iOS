@@ -15,7 +15,7 @@ import ERC20Kit
 class PaxERC20ServiceMock: ERC20ServiceAPI {
     func evaluate(amount cryptoValue: ERC20TokenValue<PaxToken>) -> Single<ERC20TransactionEvaluationResult<PaxToken>> {
         let addressString = MockEthereumWalletTestData.account
-        let address = EthereumKit.EthereumAddress(rawValue: addressString)!
+        let address = EthereumKit.EthereumAddress(stringLiteral: addressString)
         let gasPrice = MockEthereumWalletTestData.Transaction.gasPrice
         let gasLimit = MockEthereumWalletTestData.Transaction.gasLimit
         // swiftlint:disable:next force_try

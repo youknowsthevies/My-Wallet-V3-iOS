@@ -86,8 +86,9 @@ extension ObservableType {
 // MARK: - Catch Error Op
 
 extension ObservableType {
-    public func catchError<A: AnyObject>(weak object: A, _ selector: @escaping (A, Swift.Error) throws -> Observable<Element>) -> Observable<Element> {
-        return catchError { [weak object] error -> Observable<Element> in
+    public func catchError<A: AnyObject>(weak object: A,
+                                         _ selector: @escaping (A, Swift.Error) throws -> Observable<Element>) -> Observable<Element> {
+        catchError { [weak object] error -> Observable<Element> in
             guard let object = object else { throw ToolKitError.nullReference(A.self) }
             return try selector(object, error)
         }

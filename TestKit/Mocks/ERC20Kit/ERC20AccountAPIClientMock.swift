@@ -15,8 +15,13 @@ import RxSwift
 class ERC20AccountAPIClientMock: ERC20AccountAPIClientAPI {
     typealias Token = PaxToken
 
-    var fetchWalletAccountResponse = Single<ERC20AccountResponse<PaxToken>>.just(ERC20AccountResponse<PaxToken>.accountResponseMock)
-    func fetchWalletAccount(from address: String, page: String) -> Single<ERC20AccountResponse<PaxToken>> {
-        fetchWalletAccountResponse
+    var fetchTransactionsResponse: Single<ERC20TransfersResponse<PaxToken>> = .just(.transfersResponse)
+    func fetchTransactions(from address: String, page: String) -> Single<ERC20TransfersResponse<PaxToken>> {
+        fetchTransactionsResponse
+    }
+
+    var fetchAccountSummaryResponse: Single<ERC20AccountSummaryResponse<PaxToken>> = .just(.accountResponseMock)
+    func fetchAccountSummary(from address: String) -> Single<ERC20AccountSummaryResponse<PaxToken>> {
+        fetchAccountSummaryResponse
     }
 }

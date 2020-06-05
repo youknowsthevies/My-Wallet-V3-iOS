@@ -189,10 +189,8 @@ class EthereumWalletServiceTests: XCTestCase {
         // Arrange
         let cryptoValue = CryptoValue.etherFromMajor(string: "1.0")!
         let ethereumValue = try EthereumValue(crypto: cryptoValue)
-        let toAddress = EthereumAddress(
-            rawValue: MockEthereumWalletTestData.Transaction.to
-        )!
-        
+        let toAddress = EthereumKit.EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to)
+
         client.balanceDetailsValue = .just(BalanceDetailsResponse(balance: "0.1", nonce: 1))
 
         let buildObservable: Observable<EthereumTransactionCandidate> = subject
@@ -215,10 +213,7 @@ class EthereumWalletServiceTests: XCTestCase {
         // Arrange
         let cryptoValue = CryptoValue.etherFromMajor(string: "0.01")!
         let ethereumValue = try EthereumValue(crypto: cryptoValue)
-        let toAddress = EthereumAddress(
-            rawValue: MockEthereumWalletTestData.Transaction.to
-        )!
-        
+        let toAddress = EthereumKit.EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to)
         let limits = TransactionFeeLimits(
             min: 100,
             max: 1_100
@@ -369,9 +364,7 @@ class EthereumWalletServiceTests: XCTestCase {
         // Arrange
         let cryptoValue = CryptoValue.etherFromMajor(string: "1.0")!
         let ethereumValue = try EthereumValue(crypto: cryptoValue)
-        let toAddress = EthereumAddress(
-            rawValue: MockEthereumWalletTestData.Transaction.to
-        )!
+        let toAddress = EthereumKit.EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to)
         
         client.balanceDetailsValue = Single.error(EthereumWalletBridgeMockError.mockError)
 

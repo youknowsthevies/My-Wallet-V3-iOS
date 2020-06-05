@@ -34,7 +34,8 @@ public class TextFieldViewModel {
     public enum Focus: Equatable {
         public enum OffSource: Equatable {
             case returnTapped
-            case unknown
+            case endEditing
+            case setup
         }
         
         case on
@@ -94,7 +95,7 @@ public class TextFieldViewModel {
     }
     
     /// Should text field gain / drop focus 
-    public let focusRelay = BehaviorRelay<Focus>(value: .off(.unknown))
+    public let focusRelay = BehaviorRelay<Focus>(value: .off(.setup))
     public var focus: Driver<Focus> {
         focusRelay
             .asDriver()
@@ -167,7 +168,15 @@ public class TextFieldViewModel {
         accessoryContentTypeRelay
             .distinctUntilChanged()
     }
-    
+
+    /// The original (initial) content of the text field
+    public let originalTextRelay = BehaviorRelay<String?>(value: nil)
+    var originalText: Observable<String?> {
+        originalTextRelay
+            .map { $0?.trimmingCharacters(in: .whitespaces) }
+            .distinctUntilChanged()
+    }
+
     /// The content of the text field
     public let textRelay = BehaviorRelay<String>(value: "")
     var text: Observable<String> {
@@ -232,7 +241,12 @@ public class TextFieldViewModel {
         isSecureRelay.accept(type.isSecure)
         accessibility = type.accessibility
         self.returnKeyType = returnKeyType
-    
+
+        originalText
+            .compactMap { $0 }
+            .bind(to: textRelay)
+            .disposed(by: disposeBag)
+
         text
             .bind(to: validator.valueRelay)
             .disposed(by: disposeBag)
@@ -275,7 +289,7 @@ public class TextFieldViewModel {
     }
     
     func textFieldDidEndEditing() {
-        focusRelay.accept(.off(.unknown))
+        focusRelay.accept(.off(.endEditing))
         showHintIfNeededRelay.accept(true)
     }
     

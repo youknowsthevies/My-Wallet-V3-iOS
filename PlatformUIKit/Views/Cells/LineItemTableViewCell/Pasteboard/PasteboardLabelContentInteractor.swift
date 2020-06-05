@@ -17,11 +17,11 @@ public protocol PasteboardLabelContentInteracting: LabelContentInteracting {
 }
 
 public final class PasteboardLabelContentInteractor: PasteboardLabelContentInteracting {
-    
+
     // MARK: - Types
-    
+
     public typealias InteractionState = LabelContent.State.Interaction
-    
+
     /// A `PublishRelay` that triggers the applying of the `interactionText`.
     /// After the `interactionDuration` has passed (in seconds) the original
     /// text will be shown.
@@ -31,11 +31,17 @@ public final class PasteboardLabelContentInteractor: PasteboardLabelContentInter
     /// Effect lasts as long as the `interactionDuration` provided.
     public var isPasteboarding = BehaviorRelay(value: false)
     
-    public let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
+    public let stateRelay: BehaviorRelay<InteractionState>
     public var state: Observable<InteractionState> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
     }
-    
+
+    // Relay for holding the actual values that populates the label.
+    private let originalValueStateRelay: BehaviorRelay<InteractionState>
+    private var originalValueState: Observable<InteractionState> {
+        originalValueStateRelay.asObservable()
+    }
+
     // MARK: - Private Accessors
     
     private let disposeBag = DisposeBag()
@@ -43,22 +49,30 @@ public final class PasteboardLabelContentInteractor: PasteboardLabelContentInter
     // MARK: - Setup
     
     init(text: String, interactionText: String, interactionDuration: Int) {
-        stateRelay.accept(.loaded(next: .init(text: text)))
-        
+
+        let originalValue: InteractionState = .loaded(next: .init(text: text))
+        stateRelay = .init(value: originalValue)
+        originalValueStateRelay = .init(value: originalValue)
+
+        stateRelay
+            .filter { $0.value?.text != interactionText }
+            .bind(to: originalValueStateRelay)
+            .disposed(by: disposeBag)
+
         pasteboardTriggerRelay
             .map { .loaded(next: .init(text: interactionText)) }
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
-        
+
         pasteboardTriggerRelay
             .debounce(
                 .seconds(interactionDuration),
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .userInitiated)
             )
-            .map { .loaded(next: .init(text: text)) }
+            .withLatestFrom(originalValueState)
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
-        
+
         stateRelay
             .compactMap { $0.value?.text }
             .map { $0 == interactionText }

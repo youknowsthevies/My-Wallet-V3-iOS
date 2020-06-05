@@ -2038,7 +2038,14 @@ MyWalletPhone.isEthAddress = function(address) {
 
 MyWalletPhone.saveEtherNote = function(txHash, note) {
     MyWallet.wallet.eth.setTxNote(txHash, note);
-    MyWalletPhone.getEthHistory();
+}
+
+MyWalletPhone.getEtherNote = function(txHash) {
+    return MyWallet.wallet.eth.getTxNote(txHash);
+}
+
+MyWalletPhone.getBitcoinNote = function(txHash) {
+    return MyWallet.wallet._tx_notes[txHash];
 }
 
 MyWalletPhone.didReceiveEthSocketMessage = function(msg) {
@@ -2316,6 +2323,16 @@ MyWalletPhone.bch = {
 
     getLabelForDefaultAccount : function() {
         return MyWallet.wallet.bch.defaultAccount.label;
+    },
+        
+    getDefaultBCHAccount : function() {
+        var label = MyWallet.wallet.bch.defaultAccount.label;
+        var account = {
+            "label": label,
+            "xpub": MyWallet.wallet.bch.defaultAccount.xpub,
+            "index": MyWallet.wallet.bch.defaultAccountIdx
+        }
+        return JSON.stringify(account)
     },
 
     getDefaultAccountIndex : function() {

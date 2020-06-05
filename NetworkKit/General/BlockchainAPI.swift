@@ -61,35 +61,35 @@ final public class BlockchainAPI: NSObject {
 
     // TODO: Remove these once migration is complete
     @objc public func blockchainDotInfo() -> String {
-        return Hosts.blockchainDotInfo.rawValue
+        Hosts.blockchainDotInfo.rawValue
     }
     @objc public func blockchainDotCom() -> String {
-        return Hosts.blockchainDotCom.rawValue
+        Hosts.blockchainDotCom.rawValue
     }
     @objc public func etherExplorer() -> String {
-        return etherExplorerUrl
+        etherExplorerUrl
     }
 
     // MARK: URI
     
     @objc public var webSocketUri: String? {
-        return InfoDictionaryHelper.value(for: .websocketServerBTC, prefix: "wss://")
+        InfoDictionaryHelper.value(for: .websocketServerBTC, prefix: "wss://")
     }
     @objc public var ethereumWebSocketUri: String? {
-        return InfoDictionaryHelper.value(for: .websocketServerETH, prefix: "wss://")
+        InfoDictionaryHelper.value(for: .websocketServerETH, prefix: "wss://")
     }
     @objc public var bitcoinCashWebSocketUri: String? {
-        return InfoDictionaryHelper.value(for: .websocketServerBCH, prefix: "wss://")
+        InfoDictionaryHelper.value(for: .websocketServerBCH, prefix: "wss://")
     }
     
     // MARK: URL
     
     public var apiHost: String {
-        return InfoDictionaryHelper.value(for: .apiURL)
+        InfoDictionaryHelper.value(for: .apiURL)
     }
     
     public var walletHost: String {
-        return InfoDictionaryHelper.value(for: .walletServer)
+        InfoDictionaryHelper.value(for: .walletServer)
     }
     
     public var everyPayHost: String {
@@ -97,104 +97,108 @@ final public class BlockchainAPI: NSObject {
     }
     
     public var retailCoreHost: String {
-        return InfoDictionaryHelper.value(for: .retailCoreURL)
+        InfoDictionaryHelper.value(for: .retailCoreURL)
+    }
+    
+    public var explorerHost: String {
+        InfoDictionaryHelper.value(for: .explorerServer)
     }
     
     @objc public var apiUrl: String {
-        return "https://\(apiHost)"
+        "https://\(apiHost)"
     }
     
     @objc public var walletUrl: String {
-        return "https://\(walletHost)"
+        "https://\(walletHost)"
     }
     
     @objc public var explorerUrl: String {
-        return InfoDictionaryHelper.value(for: .explorerServer, prefix: "https://")
+        InfoDictionaryHelper.value(for: .explorerServer, prefix: "https://")
     }
     
     @objc public var retailCoreUrl: String {
-        return "https://\(retailCoreHost)"
+        "https://\(retailCoreHost)"
     }
     
     @objc public var retailCoreSocketUrl: String {
-        return InfoDictionaryHelper.value(for: .retailCoreSocketURL, prefix: "wss://")
+        InfoDictionaryHelper.value(for: .retailCoreSocketURL, prefix: "wss://")
     }
     
     @objc public var exchangeURL: String {
-        return InfoDictionaryHelper.value(for: .exchangeURL, prefix: "https://")
+        InfoDictionaryHelper.value(for: .exchangeURL, prefix: "https://")
     }
     
     @objc public var walletOptionsUrl: String {
-        return "\(walletUrl)/Resources/wallet-options.json"
+        "\(walletUrl)/Resources/wallet-options.json"
     }
     
     @objc public var buyWebViewUrl: String? {
-        return InfoDictionaryHelper.value(for: .buyWebviewURL, prefix: "https://")
+        InfoDictionaryHelper.value(for: .buyWebviewURL, prefix: "https://")
     }
     
     @objc public var bitcoinExplorerUrl: String {
-        return "\(explorerUrl)/btc"
+        "\(explorerUrl)/btc"
     }
     
     @objc public var bitcoinCashExplorerUrl: String {
-        return "\(explorerUrl)/bch"
+        "\(explorerUrl)/bch"
     }
     
     @objc public var etherExplorerUrl: String {
-        return "\(explorerUrl)/eth"
+        "\(explorerUrl)/eth"
     }
     
     public var bitpayUrl: String {
-        return "https://\(PartnerHosts.bitpay.rawValue)"
+        "https://\(PartnerHosts.bitpay.rawValue)"
     }
     
     public var stellarchainUrl: String {
-        return "https://\(PartnerHosts.stellarchain.rawValue)"
+        "https://\(PartnerHosts.stellarchain.rawValue)"
     }
     
     public var pushNotificationsUrl: String {
-        return "\(walletUrl)/wallet?method=update-firebase"
+        "\(walletUrl)/wallet?method=update-firebase"
     }
     
     public var servicePriceUrl: String {
-        return "\(apiUrl)/price"
+        "\(apiUrl)/price"
     }
     
     // MARK: - API Endpoints
     
     public var walletSettingsUrl: String {
-        return "\(walletUrl)/wallet"
+        "\(walletUrl)/wallet"
     }
     
     public var signedRetailTokenUrl: String {
-        return "\(walletUrl)/wallet/signed-retail-token"
+        "\(walletUrl)/wallet/signed-retail-token"
     }
     
     public var pinStore: String {
-        return "\(walletUrl)/pin-store"
+        "\(walletUrl)/pin-store"
     }
     
     public var sessionGuid: String {
-        return "\(walletUrl)/wallet/poll-for-session-guid"
+        "\(walletUrl)/wallet/poll-for-session-guid"
     }
     
     public func wallet(with guid: String) -> String {
-        return "\(walletUrl)/wallet/\(guid)"
+        "\(walletUrl)/wallet/\(guid)"
     }
     
     public var walletSession: String {
-        return "\(walletUrl)/wallet/sessions"
+        "\(walletUrl)/wallet/sessions"
     }
     
     public enum KYC {
         static var countries: String {
-            return BlockchainAPI.shared.apiUrl + "/kyc/config/countries"
+            BlockchainAPI.shared.apiUrl + "/kyc/config/countries"
         }
     }
     
     public enum Nabu {
         static var quotes: String {
-            return BlockchainAPI.shared.retailCoreUrl + "/markets/quotes"
+            BlockchainAPI.shared.retailCoreUrl + "/markets/quotes"
         }
     }
 
@@ -230,7 +234,7 @@ fileprivate struct InfoDictionaryHelper {
     private static let infoDictionary = Bundle(for: BlockchainAPI.self).infoDictionary
 
     static func value(for key: Key) -> String! {
-        return infoDictionary?[key.rawValue] as? String
+        infoDictionary?[key.rawValue] as? String
     }
 
     static func value(for key: Key, prefix: String) -> String! {

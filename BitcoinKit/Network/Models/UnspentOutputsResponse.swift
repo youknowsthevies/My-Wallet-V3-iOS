@@ -6,14 +6,14 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-struct UnspentOutputsResponse: Codable {
+public struct UnspentOutputsResponse: Codable {
     
     let unspent_outputs: [UnspentOutputResponse]
 }
 
-struct UnspentOutputResponse: Codable {
+public struct UnspentOutputResponse: Codable {
     
-    struct XPub: Codable {
+    public struct XPub: Codable {
         let m: String
         let path: String
     }

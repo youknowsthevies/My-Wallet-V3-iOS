@@ -127,7 +127,7 @@ const CGFloat rowHeightValueReceived = 80;
 - (NSString *)getNotePlaceholder
 {
     if (self.transactionModel.assetType == LegacyAssetTypeBitcoin) {
-        NSString *label = [WalletManager.sharedInstance.wallet getNotePlaceholderForTransactionHash:self.transactionModel.myHash];
+        NSString *label = [WalletManager.sharedInstance.wallet getBitcoinNotePlaceholderForTransactionHash:self.transactionModel.myHash];
         return label.length > 0 ? label : nil;
     } else {
         return nil;

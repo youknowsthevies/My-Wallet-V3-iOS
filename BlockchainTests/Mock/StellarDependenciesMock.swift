@@ -11,6 +11,8 @@ import PlatformKit
 import StellarKit
 
 class StellarDependenciesMock: StellarDependenciesAPI {
+    var activity: ActivityItemEventFetcherAPI = ActivityItemEventFetcherMock()
+    var activityDetails: AnyActivityItemEventDetailsFetcher<StellarActivityItemEventDetails> = .init(api: StellarActivityItemEventDetailsFetcherAPIMock())
     var accounts: StellarAccountAPI = StellarAccountMock()
     var ledger: StellarLedgerAPI = StellarLedgerMock()
     var operation: StellarOperationsAPI = StellarOperationMock()

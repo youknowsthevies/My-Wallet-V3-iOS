@@ -9,6 +9,12 @@
 extension Accessibility.Identifier {
     public struct Dashboard {
         private static let prefix = "Dashboard."
+        public struct CurrentBalanceCell {
+            public static let prefix = "\(Dashboard.prefix)CurrentBalance."
+            public static let view = "\(prefix)view"
+            public static let title = "\(prefix)title"
+            public static let description = "\(prefix)description"
+        }
         public struct Notice {
             private static let prefix = "\(Dashboard.prefix)Notice."
             public static let label = "\(prefix)label"
@@ -37,6 +43,32 @@ extension Accessibility.Identifier {
             static let imageView = "\(prefix)thumbImageView"
             static let dismissButton = "\(prefix)dismissButton"
             static let backgroundButton = "\(prefix)backgroundButton"
+        }
+    }
+    public struct DashboardDetails {
+        private static let prefix = "DashboardDetails."
+        public struct CurrentBalanceCell {
+            public static let prefix = "\(DashboardDetails.prefix)CurrentBalance."
+            public static let cryptoValue = "\(prefix)cryptoValue"
+            public static let fiatValue = "\(prefix)fiatValue"
+        }
+        public struct WalletActionSheet {
+            public static let prefix = "\(DashboardDetails.prefix)WalletActionSheet."
+            public enum NonCustodial {
+                public static let prefix = "\(WalletActionSheet.prefix)NonCustodial"
+                public static let cryptoValue = "\(prefix)cryptoValue"
+                public static let fiatValue = "\(prefix)fiatValue"
+            }
+            public enum Withdrawal {
+                private static let prefix = "Withdrawal."
+                public static let cryptoValue = "\(prefix)AssetBalanceView.cryptoBalanceValue"
+                public static let fiatValue = "\(prefix)AssetBalanceView.fiatBalanceValue"
+            }
+            public enum CustodialAction {
+                private static let prefix = "CustodialAction."
+                public static let cryptoValue = "\(prefix)AssetBalanceView.cryptoBalanceValue"
+                public static let fiatValue = "\(prefix)AssetBalanceView.fiatBalanceValue"
+            }
         }
     }
 }

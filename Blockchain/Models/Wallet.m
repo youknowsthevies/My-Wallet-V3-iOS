@@ -2095,7 +2095,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 }
 
-- (NSString *)getNotePlaceholderForTransactionHash:(NSString *)myHash
+- (NSString *)getBitcoinNotePlaceholderForTransactionHash:(NSString *)myHash
 {
     return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getNotePlaceholder(\"%@\")", myHash]] toString];
 }
@@ -2374,6 +2374,15 @@ NSString * const kLockboxInvitation = @"lockbox";
 }
 
 # pragma mark - Bitcoin cash
+
+- (NSDictionary * _Nullable)fetchDefaultBCHAccount
+{
+    if ([self isInitialized] && [self hasBchAccount]) {
+        NSString *value = [[self.context evaluateScript:@"MyWalletPhone.bch.getDefaultBCHAccount()"] toString];
+        return [value getJSONObject];
+    }
+    return nil;
+}
 
 - (NSString *)fromBitcoinCash:(NSString *)address
 {

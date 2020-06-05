@@ -37,7 +37,7 @@ public class ERC20AssetAccountDetailsService<Token: ERC20Token>: AssetAccountDet
                 ERC20AssetAccountDetails(
                     account: ERC20AssetAccountDetails.Account(
                         walletIndex: 0,
-                        accountAddress: tuple.address.rawValue,
+                        accountAddress: tuple.address.publicKey,
                         name: "My \(Token.assetType.name) Wallet"
                     ),
                     balance: tuple.balance

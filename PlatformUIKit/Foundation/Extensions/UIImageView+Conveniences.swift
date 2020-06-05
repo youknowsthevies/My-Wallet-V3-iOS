@@ -10,11 +10,11 @@ import RxSwift
 import RxCocoa
 
 public struct ImageViewContent {
-    
+
     public enum RenderingMode {
         case template(Color)
         case normal
-        
+
         var templateColor: Color? {
             switch self {
             case .template(let color):
@@ -24,18 +24,22 @@ public struct ImageViewContent {
             }
         }
     }
-    
+
     public static var empty: ImageViewContent {
         return .init()
     }
-    
+
     public var isEmpty: Bool {
-        return imageName == nil
+        imageName == nil
     }
     
+    var templateColor: UIColor? {
+        renderingMode.templateColor
+    }
+
     var image: UIImage? {
         guard let imageName = imageName else { return nil }
-        
+
         switch renderingMode {
         case .normal:
             return UIImage(named: imageName, in: bundle, compatibleWith: .none)
@@ -44,13 +48,13 @@ public struct ImageViewContent {
             return image?.withRenderingMode(.alwaysTemplate)
         }
     }
-    
+
     let imageName: String?
     let accessibility: Accessibility
-    
+
     private let renderingMode: RenderingMode
     private let bundle: Bundle
-    
+
     public init(imageName: String? = nil,
                 accessibility: Accessibility = .none,
                 renderingMode: RenderingMode = .normal,
@@ -73,6 +77,7 @@ extension ImageViewContent: Equatable {
 extension UIImageView {
     public func set(_ content: ImageViewContent) {
         image = content.image
+        tintColor = content.templateColor
         accessibility = content.accessibility
     }
 }

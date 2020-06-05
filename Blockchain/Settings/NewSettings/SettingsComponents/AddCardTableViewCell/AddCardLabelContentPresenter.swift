@@ -23,19 +23,20 @@ final class AddCardLabelContentPresenter: LabelContentPresenting {
     
     // MARK: - Private Accessors
     
-    private let interactor: AddCardLabelContentInteractor
+    let interactor: LabelContentInteracting
     private let disposeBag = DisposeBag()
     
     init(paymentMethodTypesService: SimpleBuyPaymentMethodTypesService,
          tierLimitsProviding: TierLimitsProviding,
          featureFeatcher: FeatureFetching) {
         
-        interactor = AddCardLabelContentInteractor(
+        let interactor = AddCardLabelContentInteractor(
             paymentMethodTypesService: paymentMethodTypesService,
             tierLimitsProviding: tierLimitsProviding,
             featureFetcher: featureFeatcher
         )
-        
+        self.interactor = interactor
+
         Observable
             .combineLatest(
                 interactor.state,

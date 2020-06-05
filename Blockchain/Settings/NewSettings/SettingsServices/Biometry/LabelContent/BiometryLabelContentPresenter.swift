@@ -26,7 +26,7 @@ class BiometryLabelContentPresenter: LabelContentPresenting {
     
     // MARK: - Private Accessors
     
-    private let interactor: BiometryLabelContentInteractor
+    let interactor: LabelContentInteracting
     private let disposeBag = DisposeBag()
     
     init(provider: BiometryProviding,

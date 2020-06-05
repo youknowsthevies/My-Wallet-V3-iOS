@@ -12,7 +12,7 @@ import web3swift
 public struct EthereumAccountAddress: EthereumAddressProtocols {
 
     public var ethereumAddress: EthereumAddress {
-        return EthereumAddress(rawValue: rawValue)!
+        EthereumAddress(stringLiteral: rawValue)
     }
 
     public let rawValue: String

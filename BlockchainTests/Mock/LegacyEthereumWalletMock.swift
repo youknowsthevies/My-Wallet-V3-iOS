@@ -14,7 +14,24 @@ import EthereumKit
 import PlatformUIKit
 @testable import Blockchain
 
-class MockLegacyEthereumWallet: LegacyEthereumWalletAPI & LegacyWalletAPI & MnemonicAccessAPI {
+class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, MnemonicAccessAPI, ReactiveWalletAPI {
+    var waitUntilInitializedSingle: Single<Void> = .just(())
+
+    var waitUntilInitialized: Observable<Void> = .just(())
+
+    var initializationState: Single<WalletSetup.State> = .never()
+
+    func setEthereumMemo(for transaction: String, memo: String?) {
+
+    }
+
+    func getEthereumMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void) {
+        error("Not implemented")
+    }
+
+    func setEthereumMemo(for transaction: String, memo: String?, error: @escaping (String) -> Void) {
+        error("Not implemented")
+    }
     
     // MARK: - LegacyWalletAPI
     

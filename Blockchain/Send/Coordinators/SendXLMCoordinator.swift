@@ -18,8 +18,8 @@ class SendXLMCoordinator {
     fileprivate let interface: SendXLMInterface
     fileprivate let modelInterface: SendXLMModelInterface
     fileprivate let disposables = CompositeDisposable()
-    fileprivate var services: StellarServices {
-        return serviceProvider.services
+    fileprivate var services: StellarDependenciesAPI {
+        serviceProvider.services
     }
     private let analyticsRecorder: AnalyticsEventRecording
     

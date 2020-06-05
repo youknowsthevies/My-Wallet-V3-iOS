@@ -25,6 +25,8 @@ final class SimpleBuyTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Screen Properties
 
+    let reloadRelay: PublishRelay<Void> = .init()
+
     private(set) var buttons: [ButtonViewModel] = []
 
     private(set) var cells: [DetailsScreen.CellType] = []
@@ -38,9 +40,7 @@ final class SimpleBuyTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
         .custom(leading: .none, trailing: .none, barStyle: .darkContent(ignoresStatusBar: false, background: .white))
     }
 
-    var titleView: Screen.Style.TitleView {
-        .text(value: contentReducer.title)
-    }
+    let titleViewRelay: BehaviorRelay<Screen.Style.TitleView> = .init(value: .none)
 
     // MARK: - Private Properties
 
@@ -69,6 +69,10 @@ final class SimpleBuyTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
             data: interactor.checkoutData,
             analyticsRecorder: analyticsRecorder
         )
+
+        // MARK: Nav Bar
+
+        titleViewRelay.accept(.text(value: contentReducer.title))
 
         // MARK: Continue Button Setup
 
@@ -110,9 +114,10 @@ final class SimpleBuyTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
             verticalAlignment: .top
         )
 
-        let totalCost = CheckoutCellType.LineItemType
+        let totalCost = TransactionalLineItem
             .totalCost(interactor.checkoutData.fiatValue.toDisplayString())
-            .presenter(analyticsRecorder: analyticsRecorder)
+            .defaultPresenter()
+//            .presenter(analyticsRecorder: analyticsRecorder)
 
         cells.append(.staticLabel(summary))
         cells.append(.separator)
@@ -166,9 +171,7 @@ extension SimpleBuyTransferDetailScreenPresenter {
             }
 
             let account = data.paymentAccount!
-            lineItems = account.fields
-                .map { CheckoutCellType.LineItemType.paymentAccountField($0) }
-                .map { $0.presenter(analyticsRecorder: analyticsRecorder) }
+            lineItems = account.fields.transferDetailsCellsPresenting(analyticsRecorder: analyticsRecorder)
 
             switch currency {
             case .GBP:
@@ -187,5 +190,42 @@ extension SimpleBuyTransferDetailScreenPresenter {
                 termsTextViewModel = nil
             }
         }
+    }
+}
+
+fileprivate extension Array where Element == SimpleBuyPaymentAccountProperty.Field {
+    func transferDetailsCellsPresenting(analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording) -> [LineItemCellPresenting] {
+
+        func isCopyable(field: TransactionalLineItem) -> Bool {
+            switch field {
+            case .paymentAccountField(.accountNumber),
+                 .paymentAccountField(.iban),
+                 .paymentAccountField(.bankCode),
+                 .paymentAccountField(.sortCode):
+                return true
+            default:
+                return false
+            }
+        }
+
+        func analyticsEvent(field: TransactionalLineItem) -> AnalyticsEvents.SimpleBuy? {
+            switch field {
+            case .paymentAccountField(.bankCode):
+                return .sbBankDetailsCopied(bankName: field.content ?? "")
+            default:
+                return nil
+            }
+        }
+        return map { TransactionalLineItem.paymentAccountField($0) }
+            .map { field in
+                if isCopyable(field: field) {
+                    return field.defaultCopyablePresenter(
+                        analyticsEvent: analyticsEvent(field: field),
+                        analyticsRecorder: analyticsRecorder
+                    )
+                } else {
+                    return field.defaultPresenter()
+                }
+            }
     }
 }

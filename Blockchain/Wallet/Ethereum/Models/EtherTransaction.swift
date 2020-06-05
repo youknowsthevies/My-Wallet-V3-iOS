@@ -31,7 +31,7 @@ import Foundation
     @objc public var note: String?
     @objc public var txType: String?
     @objc public var time: UInt64
-    @objc public var confirmations: UInt
+    @objc public var confirmations: Int
     @objc public var fiatAmountsAtTime: NSMutableDictionary?
     
     @objc public override init() {
@@ -78,7 +78,7 @@ import Foundation
             transaction.time = time
         }
         
-        if let confirmations = dict[Keys.confirmations.rawValue] as? UInt {
+        if let confirmations = dict[Keys.confirmations.rawValue] as? Int {
             transaction.confirmations = confirmations
         }
         

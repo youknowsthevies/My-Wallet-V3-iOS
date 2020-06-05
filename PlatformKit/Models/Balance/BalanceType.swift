@@ -9,13 +9,22 @@
 import Foundation
 
 public enum BalanceType: Hashable {
-    public enum CustodialType: Hashable {
+    public enum CustodialType: String, Hashable {
         case trading
         case savings
     }
     
     case nonCustodial
     case custodial(CustodialType)
+    
+    public var description: String {
+        switch self {
+        case .custodial(let type):
+            return "custodial" + type.rawValue
+        case .nonCustodial:
+            return "nonCustodial"
+        }
+    }
     
     public var isCustodial: Bool {
         switch self {

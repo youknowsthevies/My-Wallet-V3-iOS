@@ -20,6 +20,10 @@ import ERC20Kit
 /// A repository for `AssetAccount` objects
 class AssetAccountRepository: AssetAccountRepositoryAPI {
 
+    enum AssetAccountRepositoryError: Error {
+        case unknown
+    }
+
     static let shared: AssetAccountRepositoryAPI = AssetAccountRepository()
 
     private let wallet: Wallet
@@ -90,7 +94,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         return accounts
             .flatMap { output -> Single<String> in
                 guard let result = output.first(where: { $0.address.address == address && $0.balance.currencyType == currencyType }) else {
-                    return .error(NSError())
+                    return .error(AssetAccountRepositoryError.unknown)
                 }
                 return .just(result.name)
             }

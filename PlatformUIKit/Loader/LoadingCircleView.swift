@@ -13,14 +13,14 @@ public class LoadingCircleView: UIView {
     // MARK: - Properties
 
     /// The width of the stroke line
-    let strokeWidth: CGFloat
+    private let strokeWidth: CGFloat
 
     override public var layer: CAShapeLayer {
-        return super.layer as! CAShapeLayer
+        super.layer as! CAShapeLayer
     }
 
     override public class var layerClass: AnyClass {
-        return CAShapeLayer.self
+        CAShapeLayer.self
     }
 
     // MARK: - Setup

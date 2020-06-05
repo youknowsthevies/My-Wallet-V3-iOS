@@ -18,11 +18,11 @@ import ERC20Kit
 
 protocol TradeExecutionServiceDependenciesAPI {
     var assetAccountRepository: AssetAccountRepositoryAPI { get }
+    var erc20AccountRepository: AnyERC20AssetAccountRepository<PaxToken> { get }
+    var erc20Service: AnyERC20Service<PaxToken> { get }
+    var ethereumWalletService: EthereumWalletServiceAPI { get }
     var feeService: FeeServiceAPI { get }
     var stellar: StellarDependenciesAPI { get }
-    var erc20Service: AnyERC20Service<PaxToken> { get }
-    var erc20AccountRepository: AnyERC20AssetAccountRepository<PaxToken> { get }
-    var ethereumWalletService: EthereumWalletServiceAPI { get }
 }
 
 class TradeExecutionService: TradeExecutionAPI {

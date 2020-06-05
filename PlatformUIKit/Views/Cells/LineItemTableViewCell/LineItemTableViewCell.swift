@@ -57,10 +57,20 @@ public final class LineItemTableViewCell: UITableViewCell {
     @IBOutlet private var imageWidthConstraint: NSLayoutConstraint!
     @IBOutlet fileprivate var titleLabel: UILabel!
     @IBOutlet fileprivate var descriptionLabel: UILabel!
+    fileprivate var descriptionShimmeringView: ShimmeringView!
 
     public override func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil
+    }
+
+    public override func awakeFromNib() {
+        super.awakeFromNib()
+        descriptionShimmeringView = ShimmeringView(
+            in: contentView,
+            anchorView: descriptionLabel,
+            size: .init(width: 150, height: 24)
+        )
     }
 }
 
@@ -83,9 +93,20 @@ fileprivate extension Reactive where Base: LineItemTableViewCell {
         Binder(base) { view, state in
             switch state {
             case .loading:
-                break
+                UIView.animate(
+                    withDuration: 0.5,
+                    animations: { view.descriptionShimmeringView.start() }
+                )
             case .loaded(next: let value):
-                view.descriptionLabel.content = value.labelContent
+                UIView.animate(
+                    withDuration: 0.2,
+                    delay: 0.0,
+                    options: .transitionCrossDissolve,
+                    animations: {
+                        view.descriptionLabel.content = value.labelContent
+                        view.descriptionShimmeringView.stop()
+                    }
+                )
             }
         }
     }

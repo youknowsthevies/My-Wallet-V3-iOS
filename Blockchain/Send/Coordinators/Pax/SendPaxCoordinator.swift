@@ -19,8 +19,8 @@ class SendPaxCoordinator {
     
     private let interface: SendPAXInterface
     private let serviceProvider: PAXServiceProvider
-    private var services: PAXServices {
-        return serviceProvider.services
+    private var services: PAXDependencies {
+        serviceProvider.services
     }
     
     private let analyticsRecorder: AnalyticsEventRecording

@@ -46,8 +46,13 @@ enum EthereumAPIClientMockError: Error {
     case mockError
 }
 
-class EthereumAPIClientMock: EthereumKit.APIClientProtocol {
-    
+class EthereumAPIClientMock: EthereumClientAPI {
+
+    var transaction = Single<EthereumHistoricalTransactionResponse>.error(EthereumAPIClientMockError.mockError)
+    func transaction(with hash: String) -> Single<EthereumHistoricalTransactionResponse> {
+        transaction
+    }
+
     var balanceDetailsValue = Single<BalanceDetailsResponse>.error(EthereumAPIClientMockError.mockError)
     func balanceDetails(from address: String) -> Single<BalanceDetailsResponse> {
         return balanceDetailsValue

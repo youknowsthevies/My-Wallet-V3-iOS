@@ -10,22 +10,11 @@ import PlatformKit
 import web3swift
 
 public struct EthereumAddress: EthereumAddressProtocols, AssetAddress {
-    
-    public let rawValue: String
 
-    public var publicKey: String {
-        rawValue
-    }
+    public let publicKey: String
 
     public init(stringLiteral value: String) {
-        rawValue = Address.toChecksumAddress(value)!
-    }
-
-    public init?(rawValue value: String) {
-        guard let eip55Address = Address.toChecksumAddress(value) else {
-            return nil
-        }
-        rawValue = eip55Address
+        publicKey = Address.toChecksumAddress(value)!
     }
 
     public var isValid: Bool {
@@ -33,10 +22,6 @@ public struct EthereumAddress: EthereumAddressProtocols, AssetAddress {
     }
 
     var web3swiftAddress: web3swift.Address {
-        web3swift.Address(rawValue)
-    }
-
-    public static func ==(lhs: EthereumAddress, rhs: EthereumAddress) -> Bool {
-        lhs.rawValue == rhs.rawValue
+        web3swift.Address(publicKey)
     }
 }

@@ -64,6 +64,9 @@ public enum TextFieldType: Hashable {
     
     /// One time code entry
     case oneTimeCode
+
+    /// A description of a event
+    case description
 }
 
 // MARK: - Debug
@@ -73,6 +76,8 @@ extension TextFieldType: CustomDebugStringConvertible {
         switch self {
         case .walletIdentifier:
             return "wallet-identifier"
+        case .description:
+            return "description"
         case .email:
             return "email"
         case .newPassword:
@@ -133,6 +138,7 @@ extension TextFieldType {
              .addressLine,
              .postcode,
              .cardholderName,
+             .description,
              .expirationDate:
             return false
         }
@@ -146,6 +152,8 @@ extension TextFieldType {
     var accessibility: Accessibility {
         typealias AccessibilityId = Accessibility.Identifier.TextFieldView
         switch self {
+        case .description:
+            return .id(AccessibilityId.description)
         case .cardNumber:
             return .id(AccessibilityId.Card.number)
         case .cardCVV:
@@ -197,7 +205,8 @@ extension TextFieldType {
              .cardCVV,
              .expirationDate,
              .cardholderName,
-             .cardNumber:
+             .cardNumber,
+             .description:
              return false
         case .password,
              .newPassword,
@@ -218,6 +227,8 @@ extension TextFieldType {
             return LocalizedString.expirationDate
         case .oneTimeCode:
             return LocalizedString.oneTimeCode
+        case .description:
+            return LocalizedString.noDescription
         case .password,
              .newPassword,
              .confirmNewPassword,
@@ -240,6 +251,8 @@ extension TextFieldType {
     var title: String {
         typealias LocalizedString = LocalizationConstants.TextField.Title
         switch self {
+        case .description:
+            return LocalizedString.description
         case .cardholderName:
             return LocalizedString.Card.name
         case .expirationDate:
@@ -285,7 +298,8 @@ extension TextFieldType {
              .confirmNewPassword,
              .password,
              .backupVerification,
-             .oneTimeCode:
+             .oneTimeCode,
+             .description:
             return .default
         case .mobile:
             return .phonePad
@@ -321,7 +335,8 @@ extension TextFieldType {
              .cardCVV,
              .expirationDate,
              .cardNumber,
-             .postcode:
+             .postcode,
+             .description:
             return .none
         }
     }
@@ -342,7 +357,8 @@ extension TextFieldType {
              .city,
              .state,
              .postcode,
-             .personFullName:
+             .personFullName,
+             .description:
             return false
         case .newPassword, .confirmNewPassword, .password:
             return true
@@ -364,7 +380,8 @@ extension TextFieldType {
             return .name
         case .expirationDate,
              .cardCVV,
-             .backupVerification:
+             .backupVerification,
+             .description:
             return nil
         case .walletIdentifier:
             return .username

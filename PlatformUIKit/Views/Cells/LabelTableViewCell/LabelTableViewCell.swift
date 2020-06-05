@@ -20,6 +20,7 @@ public final class LabelTableViewCell: UITableViewCell {
         didSet {
             guard content != nil else { return }
             titleLabel.content = content
+            titleShimmeringView.stop()
         }
     }
 
@@ -41,11 +42,39 @@ public final class LabelTableViewCell: UITableViewCell {
 
     // MARK: - IBOutlets
     
-    @IBOutlet fileprivate var titleLabel: UILabel!
+    fileprivate let titleLabel: UILabel = .init()
+    fileprivate var titleShimmeringView: ShimmeringView!
 
     public override func prepareForReuse() {
         super.prepareForReuse()
         content = .empty
+    }
+
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        build()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        build()
+    }
+
+    private func build() {
+        selectionStyle = .none
+        titleLabel.numberOfLines = 0
+        contentView.addSubview(titleLabel)
+        titleLabel.layoutToSuperview(axis: .horizontal, offset: 24)
+        titleLabel.layoutToSuperview(axis: .vertical, offset: 16)
+        let height = titleLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 16)
+        height.priority = .penultimateHigh
+        height.isActive = true
+
+        titleShimmeringView = ShimmeringView(
+            in: contentView,
+            anchorView: titleLabel,
+            size: .init(width: 150, height: 24)
+        )
     }
 }
 
@@ -55,9 +84,20 @@ fileprivate extension Reactive where Base: LabelTableViewCell {
         Binder(base) { view, state in
             switch state {
             case .loading:
-                break
+                UIView.animate(
+                    withDuration: 0.5,
+                    animations: { view.titleShimmeringView.start() }
+                )
             case .loaded(next: let value):
-                view.titleLabel.content = value.labelContent
+                UIView.animate(
+                    withDuration: 0.2,
+                    delay: 0.0,
+                    options: .transitionCrossDissolve,
+                    animations: {
+                        view.titleLabel.content = value.labelContent
+                        view.titleShimmeringView.stop()
+                    }
+                )
             }
         }
     }

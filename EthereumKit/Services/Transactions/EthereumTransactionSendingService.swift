@@ -29,19 +29,34 @@ public final class EthereumTransactionSendingService: EthereumTransactionSending
     public typealias Bridge = EthereumWalletBridgeAPI
     
     private let bridge: Bridge
-    private let client: APIClientProtocol
+    private let client: EthereumClientAPI
     private let feeService: EthereumFeeServiceAPI
     private let transactionBuilder: EthereumTransactionBuilderAPI
     private let transactionSigner: EthereumTransactionSignerAPI
     private let transactionEncoder: EthereumTransactionEncoderAPI
-    
+
+    public convenience init(
+        with bridge: Bridge,
+        feeService: EthereumFeeServiceAPI,
+        transactionBuilder: EthereumTransactionBuilderAPI,
+        transactionSigner: EthereumTransactionSignerAPI,
+        transactionEncoder: EthereumTransactionEncoderAPI) {
+        self.init(
+            with: bridge,
+            client: APIClient(),
+            feeService: feeService,
+            transactionBuilder: transactionBuilder,
+            transactionSigner: transactionSigner,
+            transactionEncoder: transactionEncoder)
+    }
+
     public init(
         with bridge: Bridge,
-        client: APIClientProtocol,
+        client: EthereumClientAPI,
         feeService: EthereumFeeServiceAPI,
-        transactionBuilder: EthereumTransactionBuilderAPI = EthereumTransactionBuilder.shared,
-        transactionSigner: EthereumTransactionSignerAPI = EthereumTransactionSigner.shared,
-        transactionEncoder: EthereumTransactionEncoderAPI = EthereumTransactionEncoder.shared) {
+        transactionBuilder: EthereumTransactionBuilderAPI,
+        transactionSigner: EthereumTransactionSignerAPI,
+        transactionEncoder: EthereumTransactionEncoderAPI) {
         self.bridge = bridge
         self.client = client
         self.feeService = feeService

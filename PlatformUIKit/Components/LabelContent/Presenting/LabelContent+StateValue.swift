@@ -7,6 +7,7 @@
 //
 
 import PlatformKit
+import RxSwift
 
 extension LabelContent {
     public enum State {
@@ -17,6 +18,19 @@ extension LabelContent {
     public enum Value {
         public enum Interaction { }
         public enum Presentation { }
+    }
+}
+
+
+extension ObservableType where Element == String? {
+
+    public func mapToLabelContentStateInteraction() -> Observable<LabelContent.State.Interaction> {
+        map {
+            guard let element = $0 else {
+                return .loading
+            }
+            return .loaded(next: .init(text: element))
+        }
     }
 }
 
@@ -123,4 +137,3 @@ public extension LoadingState where Content == LabelContent.Value.Presentation.C
         }
     }
 }
-

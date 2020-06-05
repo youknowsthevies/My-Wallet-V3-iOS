@@ -46,16 +46,20 @@ public final class EthereumHistoricalTransactionService: HistoricalTransactionAP
     private let cachedLatestBlock: CachedValue<Int>
     
     private let bridge: Bridge
-    private let client: APIClientProtocol
+    private let client: EthereumClientAPI
 
     // MARK: - Init
+
+    convenience public init(with bridge: Bridge) {
+        self.init(with: bridge, client: APIClient())
+    }
     
-    public init(with bridge: Bridge, client: APIClientProtocol) {
+    public init(with bridge: Bridge, client: EthereumClientAPI) {
         self.bridge = bridge
         self.client = client
         self.cachedAccount = CachedValue<EthereumAssetAccount>(configuration: .onSubscriptionAndLogin)
         self.cachedTransactions = CachedValue<[EthereumHistoricalTransaction]>(configuration: .periodicAndLogin(60))
-        self.cachedLatestBlock = CachedValue<Int>(configuration: .periodicAndLogin(60))
+        self.cachedLatestBlock = CachedValue<Int>(configuration: .periodicAndLogin(5))
         
         cachedAccount.setFetch { [weak self] () -> Single<EthereumAssetAccount> in
             guard let self = self else {
@@ -117,7 +121,7 @@ public final class EthereumHistoricalTransactionService: HistoricalTransactionAP
     private func fetchLatestBlock() -> Single<Int> {
         client.latestBlock.map { $0.number }
     }
-    
+
     private func transactions(from address: String,
                               latestBlock: Int,
                               response: [EthereumHistoricalTransactionResponse]) -> [EthereumHistoricalTransaction] {
@@ -131,5 +135,46 @@ public final class EthereumHistoricalTransactionService: HistoricalTransactionAP
             }
             // Sort backwards
             .sorted(by: >)
+    }
+}
+
+extension EthereumHistoricalTransactionService: HistoricalTransactionDetailsAPI {
+
+    // MARK: HistoricalTransactionDetailsAPI
+
+    public func transaction(identifier: String) -> Observable<EthereumHistoricalTransaction> {
+        cachedTransaction(identifier: identifier)
+            .asObservable()
+            .flatMap(weak: self) { (self, transaction) in
+                let fetch = self.fetchTransaction(identifier: identifier)
+                    .asObservable()
+                if let transaction = transaction {
+                    return fetch.startWith(transaction)
+                }
+                return fetch
+            }
+    }
+
+    /// Fetch transaction details from endpoint
+    private func fetchTransaction(identifier: String) -> Single<EthereumHistoricalTransaction> {
+        Single
+            .zip(account, latestBlock)
+            .flatMap(weak: self) { (self, tuple) -> Single<EthereumHistoricalTransaction> in
+                self.client
+                    .transaction(with: identifier)
+                    .map { response in
+                        EthereumHistoricalTransaction(
+                            response: response,
+                            accountAddress: tuple.0.accountAddress,
+                            latestBlock: tuple.1
+                        )
+                }
+            }
+    }
+
+    /// Returns transaction details from local cache if available.
+    private func cachedTransaction(identifier: String) -> Single<EthereumHistoricalTransaction?> {
+        transactions
+            .map { $0.first(where: { $0.identifier == identifier }) }
     }
 }

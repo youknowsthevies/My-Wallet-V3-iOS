@@ -14,19 +14,18 @@ import BitcoinKit
 final class BitcoinWallet: NSObject {
     
     typealias Dispatcher = BitcoinJSInteropDispatcherAPI & BitcoinJSInteropDelegateAPI
-    typealias WalletAPI = LegacyBitcoinWalletProtocol & LegacyWalletAPI & MnemonicAccessAPI
+    typealias WalletAPI = LegacyBitcoinWalletProtocol & LegacyWalletAPI & MnemonicAccessAPI & ReactiveWalletAPI
     
     @objc public var delegate: BitcoinJSInteropDelegateAPI {
-        return dispatcher
+        dispatcher
     }
     
     var interopDispatcher: BitcoinJSInteropDispatcherAPI {
-        return dispatcher
+        dispatcher
     }
     
     private lazy var credentialsProvider: WalletCredentialsProviding = WalletManager.shared.legacyRepository
     private weak var wallet: WalletAPI?
-    
     private let dispatcher: Dispatcher
     
     @objc convenience public init(legacyWallet: Wallet) {
@@ -61,20 +60,69 @@ final class BitcoinWallet: NSObject {
         context.setJsFunction(named: "objc_on_error_gettingHDWalletAsync" as NSString) { [weak self] errorMessage in
             self?.delegate.didFailToGetHDWallet(errorMessage: errorMessage)
         }
-        
     }
-    
+
     @objc public func walletDidLoad() {
         // TODO: This will be used once we implement native send
     }
-    
 }
 
 extension BitcoinWallet: BitcoinWalletBridgeAPI {
+
+    func updateMemo(for transactionHash: String, memo: String?) -> Completable {
+        let saveMemo: Completable = Completable.create { completable in
+            self.wallet?.saveBitcoinMemo(for: transactionHash, memo: memo)
+            completable(.completed)
+            return Disposables.create()
+        }
+        return waitUntilInitialized
+            .flatMap { saveMemo.asObservable() }
+            .asCompletable()
+    }
+
+    func memo(for transactionHash: String) -> Single<String?> {
+        let memo: Single<String?> = Single
+            .create(weak: self) { (self, observer) -> Disposable in
+                guard let wallet = self.wallet else {
+                    return Disposables.create()
+                }
+                wallet.getBitcoinMemo(
+                    for: transactionHash,
+                    success: { (memo) in
+                        observer(.success(memo))
+                    },
+                    error: { (error) in
+                        observer(.error(WalletError.notInitialized))
+                    }
+                )
+                return Disposables.create()
+            }
+
+        return waitUntilInitializedSingle
+            .flatMap { memo }
+    }
+
+    var waitUntilInitializedSingle: Single<Void> {
+        guard let wallet = wallet else {
+            return Single.error(WalletError.unknown)
+        }
+        return wallet.waitUntilInitializedSingle
+    }
+
+    var waitUntilInitialized: Observable<Void> {
+        guard let wallet = wallet else {
+            return .error(WalletError.unknown)
+        }
+        return wallet.waitUntilInitialized
+    }
+
     var hdWallet: Single<PayloadBitcoinHDWallet> {
-        return secondPasswordIfAccountCreationNeeded
+        waitUntilInitializedSingle
+            .flatMap(weak: self) { (self, _) -> Single<String?> in
+                self.secondPasswordIfAccountCreationNeeded
+            }
             .flatMap(weak: self) { (self, secondPassword) -> Single<String> in
-                return self.hdWallet(secondPassword: secondPassword)
+                self.hdWallet(secondPassword: secondPassword)
             }
             .do(onNext: { hdWalletString in
                 print(hdWalletString)
@@ -98,7 +146,10 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
     }
     
     var defaultWallet: Single<BitcoinWalletAccount> {
-        return secondPasswordIfAccountCreationNeeded
+        waitUntilInitializedSingle
+            .flatMap(weak: self) { (self, _) -> Single<String?> in
+                self.secondPasswordIfAccountCreationNeeded
+            }
             .flatMap(weak: self) { (self, secondPassword) -> Single<BitcoinWalletAccount> in
                 self.bitcoinWallets(secondPassword: secondPassword)
                     .flatMap { wallets -> Single<BitcoinWalletAccount> in
@@ -117,7 +168,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
     var wallets: Single<[BitcoinWalletAccount]> {
         return secondPasswordIfAccountCreationNeeded
             .flatMap(weak: self) { (self, secondPassword) -> Single<[BitcoinWalletAccount]> in
-                return self.bitcoinWallets(secondPassword: secondPassword)
+                self.bitcoinWallets(secondPassword: secondPassword)
             }
     }
     

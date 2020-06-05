@@ -30,11 +30,35 @@ final class CurrentBalanceTableViewCell: UITableViewCell {
                 .disposed(by: disposeBag)
             
             presenter.title
-                .drive(titleLabel.rx.text)
+                .map {
+                    .init(text: $0,
+                          font: .main(.semibold, 16.0),
+                          color: .titleText,
+                          alignment: .left,
+                          accessibility: .none)
+                }
+                .drive(titleLabel.rx.content)
                 .disposed(by: disposeBag)
             
             presenter.description
-                .drive(descriptionLabel.rx.text)
+                .map {
+                    .init(text: $0,
+                          font: .main(.medium, 14.0),
+                          color: .descriptionText,
+                          alignment: .left,
+                          accessibility: .none)
+                }
+                .drive(descriptionLabel.rx.content)
+                .disposed(by: disposeBag)
+            
+            presenter.separatorVisibility
+                .map { $0.defaultAlpha }
+                .drive(separatorView.rx.alpha)
+                .disposed(by: disposeBag)
+            
+            presenter.separatorVisibility
+                .map { $0.isHidden ? 0 : 1 }
+                .drive(separatorHeightConstraint.rx.constant)
                 .disposed(by: disposeBag)
         }
     }
@@ -51,12 +75,15 @@ final class CurrentBalanceTableViewCell: UITableViewCell {
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var descriptionLabel: UILabel!
 
+    @IBOutlet private var separatorHeightConstraint: NSLayoutConstraint!
+    @IBOutlet private var separatorView: UIView!
     @IBOutlet private var assetBalanceView: AssetBalanceView!
     
     // MARK: - Lifecycle
        
     override func awakeFromNib() {
         super.awakeFromNib()
+        separatorView.backgroundColor = .lightBorder
         assetBalanceView.shimmer(
             estimatedFiatLabelSize: CGSize(width: 90, height: 16),
             estimatedCryptoLabelSize: CGSize(width: 100, height: 14)

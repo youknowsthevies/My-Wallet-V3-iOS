@@ -36,6 +36,9 @@ public protocol EthereumWalletBridgeAPI: AccountBalanceFetching {
     /// Fetches the history (expected to make a network call to do so).
     /// Always returns the updated history
     func fetchHistory() -> Single<Void>
+
+    func memo(for transactionHash: String) -> Single<String?>
+    func updateMemo(for transactionHash: String, memo: String?) -> Completable
     
     func recordLast(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished>
 }

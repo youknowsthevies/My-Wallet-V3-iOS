@@ -30,11 +30,30 @@ final class DataProvider: DataProviding {
     /// Balance service for any asset
     let balance: BalanceProviding
     
+    /// Activity service for any asset
+    let activity: ActivityProviding
+    
     init(featureFetching: FeatureFetching = AppFeatureConfigurator.shared,
          tradingAccountClient: TradingBalanceClientAPI = TradingBalanceClient(),
          savingsAccountClient: SavingsAccountClientAPI = SavingsAccountClient(),
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared) {
+         authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
+         paxServiceProvider: PAXServiceProvider = PAXServiceProvider.shared,
+         ethereumServiceProvider: ETHServiceProvider = ETHServiceProvider.shared,
+         stellarServiceProvider: StellarServiceProvider = StellarServiceProvider.shared,
+         bitcoinServiceProvider: BitcoinServiceProvider = BitcoinServiceProvider.shared,
+         bitcoinCashServiceProvider: BitcoinCashServiceProvider = BitcoinCashServiceProvider.shared) {
+        
+        self.activity = ActivityProvider(
+            ether: ActivityItemEventService(fetcher: ethereumServiceProvider.services.activity),
+            pax: ActivityItemEventService(fetcher: paxServiceProvider.services.activity),
+            stellar: ActivityItemEventService(fetcher: stellarServiceProvider.services.activity),
+            bitcoin: ActivityItemEventService(fetcher: bitcoinServiceProvider.services.activity),
+            bitcoinCash: ActivityItemEventService(fetcher: bitcoinCashServiceProvider.services.activity),
+            authenticationService: authenticationService,
+            fiatCurrencyService: fiatCurrencyService
+        )
+        
         self.exchange = ExchangeProvider(
             ether: PairExchangeService(
                 cryptoCurrency: .ethereum,

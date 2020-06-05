@@ -16,6 +16,6 @@ protocol LoadingViewProtocol {
 
 extension LoadingViewProtocol where Self: UIView {
     var viewRepresentation: UIView {
-        return self as UIView
+        self
     }
 }

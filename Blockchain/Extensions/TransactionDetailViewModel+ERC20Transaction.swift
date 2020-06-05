@@ -32,7 +32,7 @@ extension TransactionDetailViewModel {
             feeString = fee.toDisplayString(includeSymbol: true)
         }
         
-        amountString = transaction.cryptoAmount.toDisplayString(includeSymbol: true)
+        amountString = transaction.amount.toDisplayString(includeSymbol: true)
         decimalAmount = NSDecimalNumber(string: amountString)
         if let priceInFiat = transaction.historicalFiatValue {
             fiatAmountsAtTime = [BlockchainSettings.App.shared.fiatCurrencyCode.lowercased() : priceInFiat.toDisplayString(includeSymbol: false, locale: Locale.current)]
@@ -44,6 +44,6 @@ extension TransactionDetailViewModel {
         confirmed = true
         dateString = DateFormatter.verboseString(from: transaction.createdAt)
         detailButtonTitle = String(format: LocalizationConstants.Stellar.viewOnArgument, BlockchainAPI.Hosts.blockchainDotCom.rawValue).uppercased()
-        detailButtonLink = BlockchainAPI.shared.transactionDetailURL(for: myHash, assetType: .pax)
+        detailButtonLink = BlockchainAPI.shared.transactionDetailURL(for: myHash, cryptoCurrency: .pax)
     }
 }

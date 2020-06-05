@@ -7,22 +7,37 @@
 //
 
 import Foundation
-import RxSwift
 import PlatformKit
-
-@available(*, deprecated, message: "Used for JS integration only - should be removed when pending transaction logic is native")
-public class LegacyLastTransactionDetails {
-    let hash: String
-    let date: Date
-    
-    init(hash: String, date: Date) {
-        self.hash = hash
-        self.date = date
-    }
-}
+import RxSwift
 
 extension Wallet: LegacyEthereumWalletAPI {
-    
+    public func getEthereumMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void) {
+        guard isInitialized() else {
+            error("Wallet is not yet initialized.")
+            return
+        }
+        let function: String = "MyWalletPhone.getEtherNote(\"\(transaction.escapedForJS())\")"
+        guard
+            let result: String = context.evaluateScript(function)?.toString(),
+            !result.isEmpty,
+            result != "null"
+            else {
+                success(nil)
+                return
+        }
+        success(result)
+    }
+
+    public func setEthereumMemo(for transaction: String, memo: String?) {
+        guard isInitialized() else {
+            return
+        }
+        let memo: String = memo?.escapedForJS() ?? ""
+        let transaction = transaction.escapedForJS()
+        let function: String = "MyWalletPhone.saveEtherNote(\"\(transaction)\", \"\(memo)\")"
+        context.evaluateScript(function)
+    }
+
     public func ethereumAccounts(with secondPassword: String?, success: @escaping ([[String: Any]]) -> Void, error: @escaping (String) -> Void) {
         guard isInitialized() else {
             error("Wallet is not yet initialized.")

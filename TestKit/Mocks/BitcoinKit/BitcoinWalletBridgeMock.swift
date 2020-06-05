@@ -6,28 +6,36 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+@testable import BitcoinKit
 import Foundation
 import RxSwift
-@testable import BitcoinKit
 
 class BitcoinWalletBridgeMock: BitcoinWalletBridgeAPI {
-    
+    func updateMemo(for transactionHash: String, memo: String?) -> Completable {
+        .empty()
+    }
+
     enum MockError: Error {
         case error
     }
-    
+
+    var memoValue: Single<String?> = .just(nil)
+    func memo(for transactionHash: String) -> Single<String?> {
+        memoValue
+    }
+
     var hdWalletValue: Single<PayloadBitcoinHDWallet> = Single.error(MockError.error)
     var hdWallet: Single<PayloadBitcoinHDWallet> {
-        return hdWalletValue
+        hdWalletValue
     }
-    
+
     var defaultWalletValue: Single<BitcoinWalletAccount> = Single.error(MockError.error)
     var defaultWallet: Single<BitcoinWalletAccount> {
-        return defaultWalletValue
+        defaultWalletValue
     }
-    
+
     var walletsValue: Single<[BitcoinWalletAccount]> = Single.just([])
     var wallets: Single<[BitcoinWalletAccount]> {
-        return walletsValue
+        walletsValue
     }
 }

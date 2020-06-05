@@ -32,33 +32,44 @@ final class CurrentBalanceCellPresenter {
     var description: Driver<String> {
         descriptionRelay.asDriver()
     }
+    
+    var separatorVisibility: Driver<Visibility> {
+        separatorVisibilityRelay.asDriver()
+    }
         
+    let currency: CryptoCurrency
+    var balanceType: BalanceType {
+        interactor.balanceType
+    }
     let assetBalanceViewPresenter: AssetBalanceViewPresenter
         
     // MARK: - Private Properties
     
+    private let separatorVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let imageViewContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
     private let iconImageViewContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
     private let titleRelay = BehaviorRelay<String>(value: "")
     private let descriptionRelay = BehaviorRelay<String>(value: "")
+    private let interactor: CurrentBalanceCellInteractor
     
     private let disposeBag = DisposeBag()
     
-    init(balanceFetcher: AssetBalanceFetching,
+    init(interactor: CurrentBalanceCellInteractor,
          descriptionValue: () -> Observable<String>,
          currency: CryptoCurrency,
-         balanceType: BalanceType,
-         alignment: UIStackView.Alignment) {
+         alignment: UIStackView.Alignment,
+         separatorVisibility: Visibility = .hidden,
+         descriptors: DashboardAsset.Value.Presentation.AssetBalance.Descriptors) {
+        separatorVisibilityRelay.accept(separatorVisibility)
+        self.interactor = interactor
         self.assetBalanceViewPresenter = AssetBalanceViewPresenter(
             alignment: alignment,
-            interactor: AssetBalanceTypeViewInteractor(
-                assetBalanceFetching: balanceFetcher,
-                balanceType: balanceType
-            )
+            interactor: interactor.assetBalanceViewInteractor,
+            descriptors: descriptors
         )
-        
+        self.currency = currency
         imageViewContentRelay.accept(ImageViewContent(imageName: currency.logoImageName))
-        switch balanceType {
+        switch interactor.balanceType {
         case .nonCustodial:
             iconImageViewContentRelay.accept(.empty)
             titleRelay.accept(currency.name)

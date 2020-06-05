@@ -1,0 +1,69 @@
+//
+//  SimpleBuyPaymentAccountProperty.swift
+//  PlatformKit
+//
+//  Created by Paulo on 03/02/2020.
+//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+import Localization
+
+public enum SimpleBuyPaymentAccountProperty {
+
+    /// States in which a `SimpleBuyPaymentAccount` can be.
+    public enum State: String, Codable {
+        case pending = "PENDING"
+        case active = "ACTIVE"
+        case blocked = "BLOCKED"
+    }
+
+    /// Fields that can be part of a `SimpleBuyPaymentAccount`.
+    public enum Field: Hashable {
+        case accountNumber(String)
+        case sortCode(String)
+        case recipientName(String)
+        case bankName(String)
+        case bankCountry(String)
+        case iban(String)
+        case bankCode(String)
+
+        public var content: String {
+            switch self {
+            case .accountNumber(let value):
+                return value
+            case .sortCode(let value):
+                return value
+            case .recipientName(let value):
+                return value
+            case .bankName(let value):
+                return value
+            case .bankCountry(let value):
+                return value
+            case .iban(let value):
+                return value
+            case .bankCode(let value):
+                return value
+            }
+        }
+
+        public var title: String {
+            typealias LocalizedString = LocalizationConstants.LineItem.Transactional
+            switch self {
+            case .accountNumber:
+                return LocalizedString.accountNumber
+            case .sortCode:
+                return LocalizedString.sortCode
+            case .recipientName:
+                return LocalizedString.recipient
+            case .bankName:
+                return LocalizedString.bankName
+            case .bankCountry:
+                return LocalizedString.bankCountry
+            case .iban:
+                return LocalizedString.iban
+            case .bankCode:
+                return LocalizedString.bankCode
+            }
+        }
+    }
+}

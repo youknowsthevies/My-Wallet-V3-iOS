@@ -15,20 +15,25 @@ public class EthereumAssetAccountDetailsService: AssetAccountDetailsAPI {
     // MARK: - Properties
 
     private var balanceDetails: Single<BalanceDetailsResponse> {
-        return bridge.address
+        return bridge
+            .address
             .flatMap(weak: self) { (self, address) -> Single<BalanceDetailsResponse> in
-                self.client.balanceDetails(from: address.rawValue)
+                self.client.balanceDetails(from: address.publicKey)
             }
     }
 
     // MARK: - Injected
 
     private let bridge: EthereumWalletBridgeAPI
-    private let client: APIClientProtocol
+    private let client: EthereumClientAPI
 
     // MARK: - Setup
 
-    public init(with bridge: EthereumWalletBridgeAPI, client: APIClientProtocol) {
+    public convenience init(with bridge: EthereumWalletBridgeAPI) {
+        self.init(with: bridge, client: APIClient())
+    }
+
+    public init(with bridge: EthereumWalletBridgeAPI, client: EthereumClientAPI) {
         self.bridge = bridge
         self.client = client
     }

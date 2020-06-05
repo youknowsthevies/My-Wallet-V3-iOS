@@ -10,7 +10,8 @@ import Foundation
 import NetworkKit
 import PlatformKit
 
-@objc extension BlockchainAPI {
+extension BlockchainAPI {
+
     /// Returns the URL for the specified address's asset information (number of transactions,
     /// total sent/received, etc.)
     ///
@@ -27,25 +28,19 @@ import PlatformKit
         }
     }
 
-    /// Returns the URL for retrieving chart related information.
-    ///
-    /// - Parameters:
-    ///   - base: base currency (btc, eth, bch, xlm)
-    ///   - quote: the fiat currency symbol
-    ///   - startDate: unix timestamp of the starting date
-    ///   - scale: the scale in seconds
-    /// - Returns: the URL for retrieving chart related information
-    func chartsURL(for base: String, quote: String, startDate: Int, scale: String) -> String {
-        return "\(apiUrl)/price/index-series?base=\(base)&quote=\(quote)&start=\(String(startDate))&scale=\(scale)&omitnull=true"
+    // TODO: Activity: Can be removed with old activity.
+    @available(swift, obsoleted: 1.0, message: "Use transactionDetailURL(for:cryptoCurrency:) instead")
+    @objc func transactionDetailURL(for transactionHash: String, assetType: LegacyCryptoCurrency) -> String {
+        transactionDetailURL(for: transactionHash, cryptoCurrency: assetType.value)
     }
 
     /// Returns the URL for the specified address's transaction detail.
     ///
     /// - Parameter transactionHash: the hash of the transaction
-    /// - Parameter assetType: the `AssetType`
+    /// - Parameter cryptoCurrency: the `CryptoCurrency`
     /// - Returns: the URL for the transaction detail
-    func transactionDetailURL(for transactionHash: String, assetType: LegacyCryptoCurrency) -> String? {
-        switch assetType.value {
+    func transactionDetailURL(for transactionHash: String, cryptoCurrency: CryptoCurrency) -> String {
+        switch cryptoCurrency {
         case .bitcoin:
             return "\(bitcoinExplorerUrl)/tx/\(transactionHash)"
         case .ethereum:

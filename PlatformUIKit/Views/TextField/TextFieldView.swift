@@ -155,13 +155,19 @@ public class TextFieldView: UIView {
             .drive(textField.rx.textColor)
             .disposed(by: disposeBag)
         
-        // Take only the first value emitted
+        // Take only the first value emitted by `text`
         viewModel.text
             .asObservable()
             .take(1)
             .bind(to: textField.rx.text)
             .disposed(by: disposeBag)
-        
+
+        // Take all values emitted by `originalText`
+        viewModel.originalText
+            .compactMap { $0 }
+            .bind(to: textField.rx.text)
+            .disposed(by: disposeBag)
+
         viewModel.mode
             .drive(rx.mode)
             .disposed(by: disposeBag)

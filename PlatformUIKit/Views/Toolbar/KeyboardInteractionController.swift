@@ -72,6 +72,7 @@ public final class KeyboardInteractionController {
     private func setupTapGestureRecognizer() {
         guard let view = parent.value else { return }
         let tapGestureRecognizer = UITapGestureRecognizer()
+        tapGestureRecognizer.cancelsTouchesInView = false
         view.addGestureRecognizer(tapGestureRecognizer)
         tapGestureRecognizer.rx.event
             .bind { [unowned self] _ in

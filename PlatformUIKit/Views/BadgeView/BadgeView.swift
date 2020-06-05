@@ -9,6 +9,7 @@
 import UIKit
 import RxCocoa
 import RxSwift
+import ToolKit
 
 /// A small view that typically sits in a `UITableViewCell` showing
 /// a state such as verified, rejected, or a flag indicating the
@@ -19,7 +20,11 @@ public final class BadgeView: UIView {
     
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var containerView: UIView!
-    
+    @IBOutlet private var accessoryContainer: UIView!
+    @IBOutlet private var accessoryContainerWidth: NSLayoutConstraint!
+    @IBOutlet private var accessoryContainerAspectRatio: NSLayoutConstraint!
+    @IBOutlet private var accessoryContainerTrailing: NSLayoutConstraint!
+
     // MARK: - Rx
     
     private var disposeBag = DisposeBag()
@@ -29,6 +34,8 @@ public final class BadgeView: UIView {
     public var viewModel: BadgeViewModel! {
         willSet {
             disposeBag = DisposeBag()
+            accessoryContainer.removeSubviews()
+            updateAccessoryView(visibility: .hidden)
         }
         didSet {
             guard viewModel != nil else { return }
@@ -53,6 +60,36 @@ public final class BadgeView: UIView {
             viewModel.text
                 .drive(titleLabel.rx.text)
                 .disposed(by: disposeBag)
+
+            switch viewModel.accessory {
+            case .none:
+                updateAccessoryView(visibility: .hidden)
+            case .progress(let model):
+                updateAccessoryView(visibility: .visible)
+                let backgroundCircle = BadgeCircleView(
+                    strokeColor: .defaultBadge,
+                    strokeBackgroundColor: .lightBadgeBackground,
+                    fillColor: .white,
+                    strokeWidth: 6
+                )
+                backgroundCircle.translatesAutoresizingMaskIntoConstraints = false
+                self.accessoryContainer.addSubview(backgroundCircle)
+                accessoryContainer.layout(edges: .leading, .trailing, .top, .bottom, to: backgroundCircle)
+                backgroundCircle.model = model
+            }
+        }
+    }
+
+    private func updateAccessoryView(visibility: Visibility) {
+        switch visibility {
+        case .hidden:
+            accessoryContainerTrailing.constant = 0
+            accessoryContainerAspectRatio.priority = .defaultLow
+            accessoryContainerWidth.priority = .penultimateHigh
+        case .visible:
+            accessoryContainerTrailing.constant = 8
+            accessoryContainerAspectRatio.priority = .penultimateHigh
+            accessoryContainerWidth.priority = .defaultLow
         }
     }
     
