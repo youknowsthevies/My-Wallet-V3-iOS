@@ -9,7 +9,7 @@
 import XCTest
 import web3swift
 import BigInt
-import PlatformKit
+@testable import PlatformKit
 @testable import EthereumKit
 
 class EthereumTransactionEncoderTests: XCTestCase {

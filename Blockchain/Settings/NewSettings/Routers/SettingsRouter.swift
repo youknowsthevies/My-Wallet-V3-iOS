@@ -6,13 +6,15 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
-import PlatformUIKit
+import SafariServices
 import RxCocoa
 import RxRelay
 import RxSwift
-import SafariServices
 import ToolKit
+import PlatformKit
+import PlatformUIKit
+import BuySellKit
+import BuySellUIKit
 
 final class SettingsRouter: SettingsRouterAPI {
     
@@ -137,6 +139,9 @@ final class SettingsRouter: SettingsRouterAPI {
             
             addCardRouter = AddCardRouter(
                 stateService: stateService,
+                cardServiceProvider: CardServiceProvider.default,
+                simpleBuyServiceProvider: SimpleBuyServiceProvider.default,
+                recordingProvider: RecordingProvider.default,
                 routingType: .modal
             )
             addCardRouter.setup()

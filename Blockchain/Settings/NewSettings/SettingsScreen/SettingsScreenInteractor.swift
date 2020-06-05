@@ -9,6 +9,7 @@
 import RxSwift
 import PlatformKit
 import PlatformUIKit
+import BuySellKit
 
 final class SettingsScreenInteractor {
     

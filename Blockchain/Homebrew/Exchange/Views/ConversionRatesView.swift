@@ -6,6 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformUIKit
+
 class ConversionRatesView: NibBasedView {
     
     @IBOutlet fileprivate var baseToCounterLabel: UILabel!

@@ -6,10 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
-import PlatformUIKit
 import RxSwift
 import RxCocoa
+import PlatformKit
+import PlatformUIKit
+import BuySellKit
 
 final class AddCardBadgePresenter: BadgeImageAssetPresenting {
     

@@ -31,23 +31,11 @@ protocol KYCCoordinatorDelegate: class {
     func apply(model: KYCPageModel)
 }
 
-protocol KYCRouterAPI: class {
-    var tier1Finished: Observable<Void> { get }
-    var tier2Finished: Observable<Void> { get }
-    var kycStopped: Observable<KYC.Tier> { get }
-    func start(from viewController: UIViewController, tier: KYC.Tier, parentFlow: KYCCoordinator.ParentFlow)
-}
-
 /// Coordinates the KYC flow. This component can be used to start a new KYC flow, or if
 /// the user drops off mid-KYC and decides to continue through it again, the coordinator
 /// will handle recovering where they left off.
 @objc class KYCCoordinator: NSObject, Coordinator, KYCRouterAPI {
 
-    enum ParentFlow {
-        case simpleBuy
-        case none
-    }
-    
     // MARK: - Public Properties
 
     weak var delegate: KYCCoordinatorDelegate?
@@ -91,7 +79,7 @@ protocol KYCRouterAPI: class {
     private let kycStoppedRelay = PublishRelay<Void>()
     private let kycFinishedRelay = PublishRelay<KYC.Tier>()
     
-    private var parentFlow = ParentFlow.none
+    private var parentFlow = KYCParentFlow.none
     
     /// KYC finsihed with `tier1` in-progress / approved
     var tier1Finished: Observable<Void> {
@@ -155,7 +143,7 @@ protocol KYCRouterAPI: class {
         start(from: rootViewController, tier: tier)
     }
                 
-    func start(from viewController: UIViewController, tier: KYC.Tier = .tier1, parentFlow: ParentFlow = .none) {
+    func start(from viewController: UIViewController, tier: KYC.Tier = .tier1, parentFlow: KYCParentFlow = .none) {
         self.parentFlow = parentFlow
         rootViewController = viewController
         AnalyticsService.shared.trackEvent(title: tier.startAnalyticsKey)

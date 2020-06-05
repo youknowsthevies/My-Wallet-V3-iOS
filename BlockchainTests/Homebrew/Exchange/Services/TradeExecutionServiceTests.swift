@@ -12,7 +12,6 @@ import PlatformKit
 import BitcoinKit
 import StellarKit
 import EthereumKit
-import TestKit
 
 @testable import Blockchain
 

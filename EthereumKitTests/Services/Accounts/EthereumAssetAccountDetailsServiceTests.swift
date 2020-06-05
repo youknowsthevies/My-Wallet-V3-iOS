@@ -9,7 +9,7 @@
 import XCTest
 import RxSwift
 import RxTest
-import PlatformKit
+@testable import PlatformKit
 @testable import EthereumKit
 
 class EthereumAssetAccountDetailsServiceTests: XCTestCase {

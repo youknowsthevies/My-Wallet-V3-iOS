@@ -1,0 +1,179 @@
+//
+//  CardUpdateService.swift
+//  PlatformKit
+//
+//  Created by Daniel Huri on 06/04/2020.
+//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+import RxSwift
+import ToolKit
+import PlatformKit
+
+/// A service API that aggregates card addition logic
+public protocol CardUpdateServiceAPI: class {
+    func add(card: CardData) -> Single<PartnerAuthorizationData>
+}
+
+public final class CardUpdateService: CardUpdateServiceAPI {
+    
+    // MARK: - Types
+    
+    public enum ServiceError: Error {
+        case unknownPartner
+    }
+    
+    private enum CardUpdateEvent: AnalyticsEvent {
+        case sbAddCardFailure
+        case sbCardActivationFailure
+        case sbCardEverypayFailure(data: String)
+        
+        var name: String {
+            switch self {
+            case .sbAddCardFailure:
+                return "sb_add_card_failure"
+            case .sbCardActivationFailure:
+                return "sb_card_activation_failure"
+            case .sbCardEverypayFailure:
+                return "sb_card_everypay_failure"
+            }
+        }
+        
+        var params: [String : String]? {
+            switch self {
+            case .sbCardEverypayFailure(data: let data):
+                return ["data": data]
+            default:
+                return nil
+            }
+        }
+    }
+    
+    // MARK: - Injected
+    
+    private let cardClient: CardClientAPI
+    private let everyPayClient: EveryPayClientAPI
+    private let dataRepository: DataRepositoryAPI
+    private let authenticationService: NabuAuthenticationServiceAPI
+    private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
+    private let analyticsRecorder: AnalyticsEventRecording
+    
+    // MARK: - Setup
+    
+    public init(dataRepository: DataRepositoryAPI,
+                cardClient: CardClientAPI,
+                everyPayClient: EveryPayClientAPI,
+                fiatCurrencyService: FiatCurrencySettingsServiceAPI,
+                analyticsRecorder: AnalyticsEventRecording,
+                authenticationService: NabuAuthenticationServiceAPI) {
+        self.dataRepository = dataRepository
+        self.cardClient = cardClient
+        self.everyPayClient = everyPayClient
+        self.analyticsRecorder = analyticsRecorder
+        self.authenticationService = authenticationService
+        self.fiatCurrencyService = fiatCurrencyService
+    }
+    
+    public func add(card: CardData) -> Single<PartnerAuthorizationData> {
+        
+        // Get the user email
+        let email = dataRepository.userSingle
+            .map { $0.email.address }
+        
+        return Single
+            .zip(
+                authenticationService.tokenString,
+                fiatCurrencyService.fiatCurrency,
+                email
+            )
+            .map { (token: $0.0, currency: $0.1, email: $0.2) }
+            // 1. Add the card details via BE
+            .flatMap(weak: self) { (self, payload) -> Single<(response: CardPayload, token: String)> in
+                self.cardClient
+                    .add(
+                        for: payload.currency.code,
+                        email: payload.email,
+                        billingAddress: card.billingAddress.requestPayload,
+                        token: payload.token
+                    )
+                    .map { response -> (response: CardPayload, token: String) in
+                        return (response, payload.token)
+                    }
+                    .do(onError: { error in
+                        self.analyticsRecorder.record(event: CardUpdateEvent.sbAddCardFailure)
+                    })
+            }
+            // 2. Make sure the card partner is supported
+            .map { payload -> (response: CardPayload, token: String) in
+                guard payload.response.partner.isKnown else {
+                    throw ServiceError.unknownPartner
+                }
+                return payload
+            }
+            // 3. Activate the card
+            .flatMap(weak: self) { (self, payload) -> Single<(cardId: String, partner: ActivateCardResponse.Partner)> in
+                self.cardClient.activateCard(
+                    by: payload.response.identifier,
+                    url: PartnerAuthorizationData.exitLink,
+                    token: payload.token
+                )
+                .map {
+                    (cardId: payload.response.identifier, partner: $0)
+                }
+                .do(onError: { error in
+                    self.analyticsRecorder.record(event: CardUpdateEvent.sbCardActivationFailure)
+                })
+            }
+            // 4. Partner
+            .flatMap(weak: self) { (self, payload) -> Single<PartnerAuthorizationData> in
+                self
+                    .add(
+                        card: card,
+                        via: payload.partner
+                    )
+                    .map {
+                        PartnerAuthorizationData(
+                            state: $0,
+                            paymentMethodId: payload.cardId
+                        )
+                    }
+            }
+    }
+    
+    // MARK: - Partner Integration
+    
+    private func add(card: CardData,
+                     via partner: ActivateCardResponse.Partner) -> Single<PartnerAuthorizationData.State> {
+        switch partner {
+        case .everypay(let data):
+            return add(card: card, with: data)
+        case .unknown:
+            return .error(ServiceError.unknownPartner)
+        }
+    }
+    
+    /// Add via every pay
+    private func add(card: CardData,
+                     with everyPayData: ActivateCardResponse.Partner.EveryPayData) -> Single<PartnerAuthorizationData.State> {
+        everyPayClient
+            .send(
+                cardDetails: card.everyPayCardDetails,
+                apiUserName: everyPayData.apiUsername,
+                token: everyPayData.mobileToken
+            )
+            .map { response -> PartnerAuthorizationData.State in
+                switch response.status {
+                case .waitingFor3DResponse:
+                    let url = URL(string: everyPayData.paymentLink)!
+                    return .required(.init(paymentLink: url))
+                case .failed, .authorized, .settled, .waitingForBav:
+                    return .none
+                }
+            }
+            .do(onError: { [weak self] error in
+                self?.analyticsRecorder.record(
+                    event: CardUpdateEvent.sbCardEverypayFailure(data: error.localizedDescription)
+                )
+            })
+    }
+}

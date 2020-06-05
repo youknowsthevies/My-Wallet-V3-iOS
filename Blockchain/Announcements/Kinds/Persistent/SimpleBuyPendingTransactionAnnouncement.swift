@@ -11,6 +11,7 @@ import RxCocoa
 import ToolKit
 import PlatformKit
 import PlatformUIKit
+import BuySellKit
 
 final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & ActionableAnnouncement {
 

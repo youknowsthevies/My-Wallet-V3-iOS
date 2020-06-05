@@ -170,7 +170,7 @@ extension CryptoValue {
         return CryptoValue(currencyType: assetType, amount: 0)
     }
 
-    init?(minor: String, cryptoCurreny: CryptoCurrency) {
+    public init?(minor: String, cryptoCurreny: CryptoCurrency) {
         guard let value = BigInt(minor) else {
             return nil
         }
@@ -302,8 +302,8 @@ extension CryptoValue {
 // MARK: - Number Extensions
 
 extension BigInt {
-    func decimalDivision(divisor: BigInt) -> Decimal {
-        let (quotient, remainder) =  quotientAndRemainder(dividingBy: divisor)
+    public func decimalDivision(divisor: BigInt) -> Decimal {
+        let (quotient, remainder) = quotientAndRemainder(dividingBy: divisor)
         return Decimal(string: String(quotient))!
             + (Decimal(string: String(remainder))! / Decimal(string: String(divisor))!)
     }

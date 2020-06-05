@@ -6,8 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import PlatformKit
+import PlatformUIKit
 
 /// This view model is used in `KYCTiersPageModel`. It dictates what
 /// type of header this screen has and what information should be displayed

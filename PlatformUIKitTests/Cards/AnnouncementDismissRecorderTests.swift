@@ -12,12 +12,6 @@ import XCTest
 @testable import PlatformUIKit
 @testable import PlatformKit
 
-class MockErrorRecorder: ErrorRecording {
-    func error(_ error: Error) {}
-    func error(_ errorMessage: String) {}
-    func error() {}
-}
-
 extension AnnouncementRecord.DisplayState {
     var isHidden: Bool {
         switch self {

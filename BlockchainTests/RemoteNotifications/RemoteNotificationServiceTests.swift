@@ -32,7 +32,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
         let tokenFetcher = MockFirebaseInstanceID(expectedResult: .success(token))
         let credentialsProvider = MockWalletCredentialsProvider.validFake
         let communicator = MockNetworkCommunicator()
-        communicator.perfomRequestResponseFixture = "remote-notification-registration-success"
+        communicator.response = (filename: "remote-notification-registration-success", bundle: Bundle(for: RemoteNotificationServiceTests.self))
         
         // Instantiate all the sub services
         

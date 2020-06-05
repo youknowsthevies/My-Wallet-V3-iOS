@@ -6,6 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformUIKit
+
 /// This is all the ViewModels used in all the cells
 /// that are seen in the `ExchangeDetailViewController`
 /// The models are nested given that it's possible models

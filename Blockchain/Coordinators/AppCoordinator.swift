@@ -7,8 +7,9 @@
 //
 
 import RxSwift
-import PlatformUIKit
 import PlatformKit
+import PlatformUIKit
+import BuySellUIKit
 
 /// TODO: This class should be refactored so any view would load
 /// as late as possible and also would be deallocated when is no longer in use
@@ -362,13 +363,13 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
 
     /// Starts Simple Buy flow.
     @objc func handleBuyCrypto() {
-        let stateService = SimpleBuyStateService()
+        let stateService = SimpleBuyStateService.make()
         simpleBuyRouter = SimpleBuyRouter(stateService: stateService)
         simpleBuyRouter.start()
     }
     
     func startSimpleBuyAtLogin() {
-        let stateService = SimpleBuyStateService()
+        let stateService = SimpleBuyStateService.make()
         guard !stateService.cache[.hasShownIntroScreen] else {
             return
         }

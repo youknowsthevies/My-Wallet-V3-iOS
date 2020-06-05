@@ -11,6 +11,7 @@ import RxSwift
 import RxCocoa
 import RxDataSources
 import ToolKit
+import BuySellUIKit
 
 final class SettingsViewController: BaseScreenViewController {
     

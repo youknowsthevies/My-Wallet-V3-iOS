@@ -12,6 +12,7 @@ import ToolKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import BuySellKit
 
 protocol PairingWalletFetching: class {
     func authenticate(using password: String)

@@ -11,6 +11,7 @@ import PlatformKit
 import RxSwift
 import ERC20Kit
 import EthereumKit
+import BuySellKit
 
 /// The announcement interactor cross all the preliminary data
 /// that is required to display announcements to the user

@@ -9,7 +9,6 @@
 import XCTest
 import PlatformKit
 import ERC20Kit
-import TestKit
 @testable import Blockchain
 
 class ExchangeRatesTests: XCTestCase {

@@ -9,7 +9,6 @@
 import XCTest
 import RxSwift
 import RxTest
-import TestKit
 import HDWalletKit
 @testable import BitcoinKit
 

@@ -6,6 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformUIKit
+
 protocol LocationSuggestionInterface: class {
     func updateActivityIndicator(_ visibility: Visibility)
     func suggestionsList(_ visibility: Visibility)

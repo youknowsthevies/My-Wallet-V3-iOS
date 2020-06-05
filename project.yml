@@ -58,6 +58,12 @@ schemeTemplates:
       - name: PlatformUIKitTests
         parallelizable: true
         randomExecutionOrder: true
+      - name: BuySellKitTests
+        parallelizable: true
+        randomExecutionOrder: true
+      - name: BuySellUIKitTests
+        parallelizable: true
+        randomExecutionOrder: true
       - name: StellarKitTests
         parallelizable: true
         randomExecutionOrder: true
@@ -121,13 +127,14 @@ targetTemplates:
     type: framework
   FrameworkTest:
     dependencies:
-    - target: TestKit
     - carthage: RxSwift
     - carthage: RxBlocking
     - carthage: RxTest
     platform: iOS
     sources:
-    - ${target_name}
+    - path: ${target_name}
+    - group: ${target_name}/TestKit
+      path: TestKit/Utilities
     type: bundle.unit-test
 targets:
   BitcoinKit:
@@ -146,6 +153,15 @@ targets:
   BitcoinKitTests:
     dependencies:
     - target: BitcoinKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/BitcoinKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
     templates:
     - FrameworkTest
   Blockchain:
@@ -181,6 +197,8 @@ targets:
       framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
     - target: PlatformUIKit
     - target: PlatformKit
+    - target: BuySellKit
+    - target: BuySellUIKit
     - target: ToolKit
     - target: NetworkKit
     - target: StellarKit
@@ -322,8 +340,86 @@ targets:
     - carthage: RxTest
     platform: iOS
     sources:
-    - BlockchainTests
+    - path: BlockchainTests
+    - group: BlockchainTests/TestKit
+      path: TestKit/Utilities
+    - group: BlockchainTests/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: BlockchainTests/TestKit
+      path: TestKit/Mocks/NetworkKit
+    - group: BlockchainTests/TestKit
+      path: TestKit/Mocks/EthereumKit
+    - group: BlockchainTests/TestKit
+      path: TestKit/Mocks/ERC20Kit
+    - group: BlockchainTests/TestKit
+      path: TestKit/Mocks/PlatformKit
+    - group: BlockchainTests/TestKit
+      path: TestKit/Mocks/PlatformUIKit
+    - group: BlockchainTests/TestKit
+      path: TestKit/Mocks/BuySellKit
+    - group: BlockchainTests/TestKit
+      path: TestKit/Mocks/StellarKit
     type: bundle.unit-test
+  BuySellKit:
+    dependencies:
+    - target: PlatformKit
+    - target: CommonCryptoKit
+    - target: NetworkKit
+    - target: ToolKit
+    - carthage: RxSwift
+    - carthage: RxRelay
+    - carthage: RxCocoa
+    scheme:
+      testTargets:
+      - BuySellKitTests
+    templates:
+    - Framework
+  BuySellKitTests:
+    dependencies:
+    - target: BuySellKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/BuySellKit
+    templates:
+    - FrameworkTest
+  BuySellUIKit:
+    dependencies:
+    - target: BuySellKit
+    - target: PlatformUIKit
+    - target: PlatformKit
+    - target: CommonCryptoKit
+    - target: NetworkKit
+    - target: ToolKit
+    - carthage: RxSwift
+    - carthage: RxRelay
+    - carthage: RxCocoa
+    scheme:
+      testTargets:
+      - BuySellUIKitTests
+    templates:
+    - Framework
+  BuySellUIKitTests:
+    dependencies:
+    - target: BuySellUIKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformUIKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/BuySellKit
+    templates:
+    - FrameworkTest
   CommonCryptoKit:
     scheme:
       testTargets:
@@ -353,6 +449,17 @@ targets:
   ERC20KitTests:
     dependencies:
     - target: ERC20Kit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/EthereumKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ERC20Kit
     templates:
     - FrameworkTest
   EthereumKit:
@@ -375,6 +482,15 @@ targets:
   EthereumKitTests:
     dependencies:
     - target: EthereumKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/EthereumKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
     templates:
     - FrameworkTest
   HDWalletKit:
@@ -409,6 +525,7 @@ targets:
       properties:
         API_URL: $(API_URL)
         BUY_WEBVIEW_URL: $(BUY_WEBVIEW_URL)
+        EVERYPAY_API_URL: $(EVERYPAY_API_URL)
         EXCHANGE_URL: $(EXCHANGE_URL)
         EXPLORER_SERVER: $(EXPLORER_SERVER)
         PIN_CERTIFICATE: $(PIN_CERTIFICATE)
@@ -418,7 +535,6 @@ targets:
         WEBSOCKET_SERVER: $(WEBSOCKET_SERVER)
         WEBSOCKET_SERVER_BCH: $(WEBSOCKET_SERVER_BCH)
         WEBSOCKET_SERVER_ETH: $(WEBSOCKET_SERVER_ETH)
-        EVERYPAY_API_URL: $(EVERYPAY_API_URL)
     platform: iOS
     postCompileScripts:
     - name: Get SSL Certificate
@@ -441,6 +557,11 @@ targets:
   NetworkKitTests:
     dependencies:
     - target: NetworkKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
     templates:
     - FrameworkTest
   PlatformKit:
@@ -461,6 +582,13 @@ targets:
   PlatformKitTests:
     dependencies:
     - target: PlatformKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
     templates:
     - FrameworkTest
   PlatformUIKit:
@@ -485,6 +613,13 @@ targets:
   PlatformUIKitTests:
     dependencies:
     - target: PlatformUIKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformUIKit
     templates:
     - FrameworkTest
   StellarKit:
@@ -501,11 +636,21 @@ targets:
   StellarKitTests:
     dependencies:
     - target: StellarKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/StellarKit
     templates:
     - FrameworkTest
   TestKit:
-    templates:
-    - Framework
+    platform: iOS
+    sources:
+    - path: TestKit
+      type: folder
+    type: bundle
   ToolKit:
     dependencies:
     - carthage: BigInt
@@ -519,5 +664,8 @@ targets:
   ToolKitTests:
     dependencies:
     - target: ToolKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
     templates:
     - FrameworkTest

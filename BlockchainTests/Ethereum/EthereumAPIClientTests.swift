@@ -58,7 +58,7 @@ class EthereumAPIClientTests: XCTestCase {
         let expectedResponse: EthereumKit.EthereumPushTxResponse
             = EthereumPushTxResponse(txHash: transaction.transactionHash)
         
-        communicator.perfomRequestResponseFixture = "push_tx_response"
+        communicator.response = (filename: "push_tx_response", bundle: Bundle(for: EthereumAPIClientTests.self))
 
         let pushObservable: Observable<EthereumKit.EthereumPushTxResponse> = subject
             .push(transaction: transaction)

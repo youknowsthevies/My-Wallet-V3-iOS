@@ -9,6 +9,7 @@
 import UIKit
 import ToolKit
 import PlatformKit
+import PlatformUIKit
 
 /// Personal details entry screen in KYC flow
 final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormView, ProgressableView {

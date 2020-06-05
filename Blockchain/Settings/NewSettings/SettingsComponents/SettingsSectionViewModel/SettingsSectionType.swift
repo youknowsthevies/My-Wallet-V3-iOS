@@ -8,6 +8,8 @@
 
 import RxDataSources
 import PlatformUIKit
+import BuySellKit
+import BuySellUIKit
 
 enum SettingsSectionType: String, Equatable {
     case profile

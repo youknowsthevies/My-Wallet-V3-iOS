@@ -6,11 +6,13 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
-import PlatformUIKit
+import RxSwift
 import RxRelay
 import RxCocoa
-import RxSwift
+import PlatformKit
+import PlatformUIKit
+import BuySellKit
+import BuySellUIKit
 
 final class SettingsScreenPresenter {
     

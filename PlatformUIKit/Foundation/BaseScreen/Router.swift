@@ -8,6 +8,21 @@
 
 import RxRelay
 
+/// Emits a command to return to the previous state
+public protocol RoutingPreviousStateEmitterAPI: class {
+    /// Move to the previous state
+    var previousRelay: PublishRelay<Void> { get }
+}
+
+/// Emits a command to move forward to the next state
+public protocol RoutingNextStateEmitterAPI: class {
+    /// Move to the next state
+    var nextRelay: PublishRelay<Void> { get }
+}
+
+/// Emits both previus and next state commands. Exposes a simple navigation API
+public typealias RoutingStateEmitterAPI = RoutingPreviousStateEmitterAPI & RoutingNextStateEmitterAPI
+
 public protocol Router: class {
     var navigationControllerAPI: NavigationControllerAPI? { get set }
     var topMostViewControllerProvider: TopMostViewControllerProviding! { get }

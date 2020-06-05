@@ -6,9 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import RxSwift
 import RxRelay
+import PlatformKit
+import BuySellKit
 
 final class CardSettingsSectionInteractor {
     

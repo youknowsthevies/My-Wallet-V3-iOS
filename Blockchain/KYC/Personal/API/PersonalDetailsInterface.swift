@@ -7,6 +7,7 @@
 //
 
 import PlatformKit
+import PlatformUIKit
 
 protocol PersonalDetailsInterface: class {
     func primaryButtonActivityIndicator(_ visibility: Visibility)

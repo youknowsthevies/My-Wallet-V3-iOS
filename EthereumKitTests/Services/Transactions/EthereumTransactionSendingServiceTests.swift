@@ -10,7 +10,7 @@ import XCTest
 import RxSwift
 import RxTest
 import BigInt
-import PlatformKit
+@testable import PlatformKit
 @testable import EthereumKit
 
 class EthereumTransactionSendingServiceTests: XCTestCase {

@@ -6,19 +6,18 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-@testable import PlatformKit
+import XCTest
 import RxSwift
 import RxRelay
 import RxBlocking
 import RxTest
-import XCTest
+@testable import PlatformKit
 
 class CustodialCryptoBalanceFetcherTests: XCTestCase {
 
     let currency: CryptoCurrency = .bitcoin
     var api: TradingBalanceServiceAPIMock!
     var sut: CustodialAccountBalanceFetching!
-    var provider: SimpleBuyServiceProviderAPIMock!
     var disposeBag: DisposeBag!
     var scheduler: TestScheduler!
 
@@ -26,14 +25,12 @@ class CustodialCryptoBalanceFetcherTests: XCTestCase {
         disposeBag = DisposeBag()
         /// TestScheduler with `0.001` resolution (milliseconds)
         scheduler = TestScheduler(initialClock: 0, resolution: 0.001, simulateProcessingDelay: false)
-        provider = SimpleBuyServiceProviderAPIMock()
         api = TradingBalanceServiceAPIMock()
         sut = CustodialCryptoBalanceFetcher(currencyType: currency, service: api, scheduler: scheduler)
     }
 
     override func tearDown() {
         disposeBag = nil
-        provider = nil
         api = nil
         sut = nil
         scheduler = nil
@@ -125,7 +122,6 @@ class CustodialCryptoBalanceFetcherTests: XCTestCase {
         ]
         XCTAssertEqual(events, expectedEvents)
     }
-
 
     func testZeroedResponse() {
         api.underlyingCustodialBalance = .absent

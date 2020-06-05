@@ -8,6 +8,7 @@
 
 import RxSwift
 import RxRelay
+import PlatformUIKit
 
 protocol UpdateMobileStateReceiverServiceAPI: class {
         

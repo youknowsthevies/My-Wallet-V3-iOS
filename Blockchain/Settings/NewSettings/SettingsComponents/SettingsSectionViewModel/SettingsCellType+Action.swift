@@ -6,7 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import BuySellKit
+import BuySellUIKit
 
 extension SettingsSectionType.CellType {
     var action: SettingsScreenAction {

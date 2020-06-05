@@ -8,6 +8,7 @@
 
 import Charts
 import PlatformKit
+import PlatformUIKit
 
 /// Any util / data related to the pie chart presentation / interaction layers
 struct AssetLineChart {

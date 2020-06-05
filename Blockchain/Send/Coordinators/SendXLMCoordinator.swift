@@ -10,6 +10,7 @@ import Foundation
 import RxSwift
 import ToolKit
 import PlatformKit
+import PlatformUIKit
 import StellarKit
 
 class SendXLMCoordinator {
