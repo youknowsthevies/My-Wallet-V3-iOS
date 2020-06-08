@@ -12,24 +12,26 @@ import PlatformUIKit
 import RxSwift
 import RxRelay
 
-final class DashboardRouter {
-    
-    // MARK: - Private Properties
-    
+final class DashboardRouter: Router {
+
+    // MARK: Public Properties (Router)
+
+    var navigationControllerAPI: NavigationControllerAPI?
+    weak var topMostViewControllerProvider: TopMostViewControllerProviding!
+
+    // MARK: Private Properties
+
     private let disposeBag = DisposeBag()
     private let currencyRouting: CurrencyRouting
     private let tabSwapping: TabSwapping
-    private let rootViewController: TabViewController!
     private let recoveryVerifyingAPI: RecoveryPhraseVerifyingServiceAPI
     private let backupRouterAPI: BackupRouterAPI
     private let custodyActionRouterAPI: CustodyActionRouterAPI
     private let nonCustodialActionRouterAPI: NonCustodialActionRouterAPI
-    private weak var topMostViewControllerProvider: TopMostViewControllerProviding?
     private let dataProvider: DataProvider
     private let userInformationServiceProvider: UserInformationServiceProviding
     
-    init(rootViewController: TabViewController,
-         currencyRouting: CurrencyRouting,
+    init(currencyRouting: CurrencyRouting,
          topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
          userInformationServiceProvider: UserInformationServiceProviding = UserInformationServiceProvider.default,
          tabSwapping: TabSwapping,
@@ -39,7 +41,6 @@ final class DashboardRouter {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.recoveryVerifyingAPI = RecoveryPhraseVerifyingService(wallet: wallet)
         self.userInformationServiceProvider = userInformationServiceProvider
-        self.rootViewController = rootViewController
         self.dataProvider = dataProvider
         self.currencyRouting = currencyRouting
         self.tabSwapping = tabSwapping
@@ -85,8 +86,7 @@ final class DashboardRouter {
             .disposed(by: disposeBag)
         
         let controller = DashboardDetailsViewController(using: detailsPresenter)
-        let navController = NavigationController(rootViewController: controller)
-        rootViewController.present(navController, animated: true, completion: nil)
+        present(viewController: controller, using: .modalOverTopMost)
     }
     
     private func handle(action: DashboadDetailsAction) {

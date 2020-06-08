@@ -59,26 +59,26 @@ extension Router {
     public func present(viewController: UIViewController) {
         present(viewController: viewController, using: defaultPresentationType)
     }
+
+    private func presentModal(viewController: UIViewController, in parent: ViewControllerAPI) {
+        let navigationController = UINavigationController(rootViewController: viewController)
+        DispatchQueue.main.async { [weak self] in
+            parent.present(navigationController, animated: true, completion: nil)
+            self?.navigationControllerAPI = navigationController
+        }
+    }
     
     public func present(viewController: UIViewController, using presentationType: PresentationType) {
-        // Present the screen
-        
-        let presentModal = { [unowned self] (parent: ViewControllerAPI) in
-            let navigationController = UINavigationController(rootViewController: viewController)
-            parent.present(navigationController, animated: true, completion: nil)
-            self.navigationControllerAPI = navigationController
-        }
-        
         switch presentationType {
         case .modal(from: let parentViewController):
-            presentModal(parentViewController)
+            presentModal(viewController: viewController, in: parentViewController)
         case .navigation(from: let originViewController):
             originViewController.navigationControllerAPI?.pushViewController(viewController, animated: true)
         case .navigationFromCurrent:
             navigationControllerAPI?.pushViewController(viewController, animated: true)
         case .modalOverTopMost:
             if let parentViewController = topMostViewControllerProvider.topMostViewController {
-                presentModal(parentViewController)
+                presentModal(viewController: viewController, in: parentViewController)
             }
         }
     }

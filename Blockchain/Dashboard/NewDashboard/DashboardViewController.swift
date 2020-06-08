@@ -27,16 +27,11 @@ final class DashboardViewController: BaseScreenViewController {
     // MARK: - Accessors
     
     private let disposeBag = DisposeBag()
-        
+
     // MARK: - Lazy Properties
-    
+
     private lazy var router: DashboardRouter = {
-        /// Note: In order to prevent the `UITabBar` from shifting, the router must
-        /// take a `TabViewController`. This is due to our legacy implementation of
-        /// a `UITabBar`.
-        let root = AppCoordinator.shared.tabControllerManager.tabViewController!
-        return DashboardRouter(
-            rootViewController: root,
+        .init(
             currencyRouting: AppCoordinator.shared,
             tabSwapping: AppCoordinator.shared
         )
