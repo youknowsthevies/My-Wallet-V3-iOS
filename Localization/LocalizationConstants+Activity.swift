@@ -68,6 +68,7 @@ extension LocalizationConstants.Activity.Details {
     public static let replaced = NSLocalizedString("Replaced", comment: "Replaced")
 
     public enum Title {
+        public static let buy = NSLocalizedString("Buy", comment: "Buy")
         public static let gas = NSLocalizedString("Gas", comment: "'Gas' title")
         public static let receive = NSLocalizedString("Receive", comment: "'Receive' title")
         public static let send = NSLocalizedString("Send", comment: "'Send' title")

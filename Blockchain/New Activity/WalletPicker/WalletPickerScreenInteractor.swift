@@ -10,46 +10,97 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-final class WalletPickerScreenInteractor {
+enum WalletPickerCellInteractor {
+    case total(WalletBalanceCellInteractor)
+    case balance(CurrentBalanceCellInteractor, CryptoCurrency)
+}
+
+final class WalletPickerCellInteractorProvider {
     
-    enum CellInteractor {
-        case total(WalletBalanceCellInteractor)
-        case balance(CurrentBalanceCellInteractor, CryptoCurrency)
+    var interactors: Observable<[WalletPickerCellInteractor]> {
+        interactorsRelay.asObservable()
     }
     
-    var interactors: Observable<[CellInteractor]> {
-        interactorsRelay
-            .asObservable()
+    private let interactorsRelay = BehaviorRelay<[WalletPickerCellInteractor]>(value: [])
+    private let disposeBag = DisposeBag()
+    
+    init(balanceFetcher: AssetBalanceFetching, currency: CryptoCurrency) {
+        interactors(for: currency, balanceFetching: balanceFetcher)
+            .bind(to: interactorsRelay)
+            .disposed(by: disposeBag)
+    }
+    
+    private func interactors(for currency: CryptoCurrency,
+                        balanceFetching: AssetBalanceFetching) -> Observable<[WalletPickerCellInteractor]> {
+           balanceFetching
+               .trading
+               .isFunded
+               .map { isFunded -> [CurrentBalanceCellInteractor] in
+                   let custodial = CurrentBalanceCellInteractor(
+                       balanceFetching: balanceFetching,
+                       balanceType: .custodial(.trading)
+                   )
+                   let nonCustodial = CurrentBalanceCellInteractor(
+                       balanceFetching: balanceFetching,
+                       balanceType: .nonCustodial
+                   )
+                   return isFunded ? [nonCustodial, custodial] : [nonCustodial]
+               }
+               .map { interactors in
+                   interactors.map { .balance($0, currency) }
+               }
+       }
+}
+
+final class WalletPickerScreenInteractor {
+    
+    var interactors: Observable<[WalletPickerCellInteractor]> {
+        Observable.combineLatest(
+                totalWalletBalanceInteractor,
+                balanceCellInteractors
+            )
+            .map { $0.0 + $0.1 }
+    }
+    
+    private var balanceCellInteractors: Observable<[WalletPickerCellInteractor]> {
+        Observable.combineLatest(
+            providers[.ethereum]!.interactors,
+            providers[.bitcoin]!.interactors,
+            providers[.bitcoinCash]!.interactors,
+            providers[.pax]!.interactors,
+            providers[.stellar]!.interactors
+        )
+        .map { $0.0 + $0.1 + $0.2 + $0.3 + $0.4 }
+    }
+    
+    private var totalWalletBalanceInteractor: Observable<[WalletPickerCellInteractor]> {
+        Observable.just(
+            .init(balanceViewInteractor: .init(balanceProviding: balanceProviding))
+            )
+            .map { [.total($0)] }
     }
     
     let balanceProviding: BalanceProviding
     
-    private let interactorsRelay = BehaviorRelay<[CellInteractor]>(value: [])
+    private var providers: [CryptoCurrency: WalletPickerCellInteractorProvider] = [:]
+    private let interactorsRelay = BehaviorRelay<[WalletPickerCellInteractor]>(value: [])
     private let selectionService: WalletPickerSelectionServiceAPI
-    private let currencies = Observable.just(CryptoCurrency.all)
     private let disposeBag = DisposeBag()
     
     init(balanceProviding: BalanceProviding,
+         ether: WalletPickerCellInteractorProvider,
+         pax: WalletPickerCellInteractorProvider,
+         stellar: WalletPickerCellInteractorProvider,
+         bitcoin: WalletPickerCellInteractorProvider,
+         bitcoinCash: WalletPickerCellInteractorProvider,
          selectionService: WalletPickerSelectionServiceAPI) {
         self.balanceProviding = balanceProviding
         self.selectionService = selectionService
-        
-        let wallet = WalletBalanceCellInteractor.init(
-            balanceViewInteractor: .init(
-                balanceProviding: balanceProviding
-            )
-        )
-        
-        let noncustodial: [CellInteractor] = CryptoCurrency.all
-            .map { (balanceProviding[$0], $0) }
-            .map {
-                (CurrentBalanceCellInteractor(balanceFetching: $0.0, balanceType: .nonCustodial), $0.1)
-            }
-            .map { .balance($0.0, $0.1) }
-        
-        let presenters = [.total(wallet)] + noncustodial
-        
-        interactorsRelay.accept(presenters)
+        providers[.ethereum] = ether
+        providers[.pax] = pax
+        providers[.stellar] = stellar
+        providers[.bitcoin] = bitcoin
+        providers[.bitcoinCash] = bitcoinCash
     }
     
     func record(selection: WalletPickerSelection) {

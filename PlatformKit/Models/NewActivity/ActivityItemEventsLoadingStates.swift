@@ -49,3 +49,12 @@ public struct ActivityItemEventsLoadingStates {
     }
 }
 
+extension Array where Element == ActivityItemEventsLoadingState {
+    public func reduce() -> ActivityItemEventsLoadingState {
+        guard !self.contains(where: { $0.isLoading }) else { return .loading }
+        let items = self.compactMap { $0.value }
+        guard items.count == count else { return .loading }
+        let values = items.flatMap { $0 }
+        return .loaded(next: values)
+    }
+}

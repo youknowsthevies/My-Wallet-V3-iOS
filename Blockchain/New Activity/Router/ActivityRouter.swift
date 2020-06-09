@@ -28,12 +28,19 @@ final class ActivityRouter: ActivityRouterAPI {
     }
     
     func showWalletSelectionScreen() {
-        let presenter = WalletPickerScreenPresenter(
-            interactor: .init(
-                balanceProviding: serviceContainer.balanceProviding,
-                selectionService: serviceContainer.selectionServiceAPI
-            )
+        let balanceProviding = serviceContainer.balanceProviding
+        
+        let interactor = WalletPickerScreenInteractor(
+            balanceProviding: balanceProviding,
+            ether: .init(balanceFetcher: balanceProviding[.ethereum], currency: .ethereum),
+            pax: .init(balanceFetcher: balanceProviding[.pax], currency: .pax),
+            stellar: .init(balanceFetcher: balanceProviding[.stellar], currency: .stellar),
+            bitcoin: .init(balanceFetcher: balanceProviding[.bitcoin], currency: .bitcoin),
+            bitcoinCash: .init(balanceFetcher: balanceProviding[.bitcoinCash], currency: .bitcoinCash),
+            selectionService: serviceContainer.selectionServiceAPI
         )
+        
+        let presenter = WalletPickerScreenPresenter(interactor: interactor)
         let controller = WalletPickerScreenViewController(presenter: presenter)
         present(viewController: controller)
     }

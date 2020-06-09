@@ -13,64 +13,68 @@ import RxSwift
 final class ActivityItemEventService: ActivityItemEventServiceAPI {
     
     var activityEvents: Single<[ActivityItemEvent]> {
-        fetcher
-            .activityEvents
+        let transactions: Single<[ActivityItemEvent]> = transactional
+            .transactionActivityEvents
+            .map { items in items.map { .transactional($0) } }
             .catchErrorJustReturn([])
+        
+        let buys: Single<[ActivityItemEvent]> = buy
+            .buyActivityEvents
+            .map { items in items.map { .buy($0) } }
+            .catchErrorJustReturn([])
+        
+        let swaps: Single<[ActivityItemEvent]> = swap
+            .swapActivityEvents
+            .map { items in items.map { .swap($0) } }
+            .catchErrorJustReturn([])
+        
+        return Single.zip(transactions, buys, swaps).map { $0.0 + $0.1 + $0.2 }
     }
     
     var activityObservable: Observable<[ActivityItemEvent]> {
-        let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
-        return fetchTriggerRelay
-            .throttle(.milliseconds(100), scheduler: scheduler)
-            .flatMapLatest(weak: self) { (self, _) in
-                self.activityEvents.asObservable()
-            }
+        activityEvents
+            .asObservable()
     }
     
     var activityLoadingStateObservable: Observable<ActivityItemEventsLoadingState> {
-        activityObservable
-            .map { .loaded(next: $0) }
-            .startWith(.loading)
+        activityLoadingStateRelay
+            .asObservable()
     }
     
-    var transactionActivityEvents: Single<[TransactionalActivityItemEvent]> {
-        activityEvents
-            .map { events -> [TransactionalActivityItemEvent] in
-                events.compactMap {
-                    guard case let .transactional(model) = $0 else { return nil }
-                    return model
-                }
-            }
-    }
-    
-    var transactionActivityObservable: Observable<ActivityItemEventsLoadingState> {
-        activityObservable
-            .map { events -> [ActivityItemEvent] in
-                events.compactMap {
-                    guard case .transactional = $0 else { return nil }
-                    return $0
-                }
-            }
-            .map { .loaded(next: $0) }
-            .startWith(.loading)
-    }
-    
-    /// A trigger for a fetch
-    let fetchTriggerRelay = PublishRelay<Void>()
+    let transactional: TransactionalActivityItemEventServiceAPI
+    let buy: BuyActivityItemEventServiceAPI
+    let swap: SwapActivityItemEventServiceAPI
     
     // MARK: - Private Properties
     
-    private let fetcher: ActivityItemEventFetcherAPI
-    private let authenticationService: NabuAuthenticationServiceAPI
-    private let fiatCurrencySettingsAPI: FiatCurrencySettingsServiceAPI
+    private let activityLoadingStateRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
+    private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
-    init(fetcher: ActivityItemEventFetcherAPI,
-         authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings) {
-        self.fetcher = fetcher
-        self.authenticationService = authenticationService
-        self.fiatCurrencySettingsAPI = fiatCurrencyService
+    init(transactional: TransactionalActivityItemEventServiceAPI,
+         buy: BuyActivityItemEventServiceAPI,
+         swap: SwapActivityItemEventServiceAPI) {
+        self.transactional = transactional
+        self.buy = buy
+        self.swap = swap
+        
+        Observable.combineLatest(
+                transactional.state,
+                buy.state,
+                swap.state
+            )
+            .map(weak: self) { (self, values) -> ActivityItemEventsLoadingState in
+                [values.0, values.1, values.2].reduce()
+            }
+            .catchErrorJustReturn(.loading)
+            .bind(to: activityLoadingStateRelay)
+            .disposed(by: disposeBag)
+    }
+    
+    func refresh() {
+        transactional.fetchTriggerRelay.accept(())
+        buy.fetchTriggerRelay.accept(())
+        swap.fetchTriggerRelay.accept(())
     }
 }

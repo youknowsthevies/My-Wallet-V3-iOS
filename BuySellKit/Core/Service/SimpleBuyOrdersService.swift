@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import ToolKit
 import PlatformKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 public protocol SimpleBuyOrdersServiceAPI: class {
 
@@ -64,7 +64,7 @@ public final class SimpleBuyOrdersService: SimpleBuyOrdersServiceAPI {
                 .flatMap { _ in
                     authenticationService
                         .tokenString
-                        .flatMap { client.orderDetails(token: $0) }
+                        .flatMap { client.orderDetails(token: $0, pendingOnly: false) }
                         .map { rawOrders in
                             rawOrders.compactMap {
                                 SimpleBuyOrderDetails(recorder: analyticsRecorder, response: $0)

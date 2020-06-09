@@ -7,22 +7,25 @@
 //
 
 import BitcoinKit
+import BuySellKit
 import PlatformKit
 
 protocol BitcoinDependencies {
     var transactions: BitcoinHistoricalTransactionService { get }
-    var activity: BitcoinActivityItemEventFetcher { get }
+    var activity: ActivityItemEventServiceAPI { get }
     var activityDetails: AnyActivityItemEventDetailsFetcher<BitcoinActivityItemEventDetails> { get }
 }
 
 struct BitcoinServices: BitcoinDependencies {
     let transactions: BitcoinHistoricalTransactionService
-    let activity: BitcoinActivityItemEventFetcher
+    let activity: ActivityItemEventServiceAPI
     let activityDetails: AnyActivityItemEventDetailsFetcher<BitcoinActivityItemEventDetails>
 
     init(bridge: BitcoinWalletBridgeAPI = WalletManager.shared.wallet.bitcoin,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
+         simpleBuyOrdersAPI: SimpleBuyOrdersServiceAPI = SimpleBuyServiceProvider.default.ordersDetails,
+         swapActivityAPI: SwapActivityServiceAPI = SwapServiceProvider.default.activity,
          client: BitcoinKit.APIClient = BitcoinKit.APIClient()) {
         transactions = .init(
             with: client,
@@ -31,17 +34,15 @@ struct BitcoinServices: BitcoinDependencies {
         activityDetails = .init(
             api: BitcoinActivityItemEventDetailsFetcher(transactionService: transactions)
         )
-        self.activity = .init(
-            swapActivityEventService: .init(
-                service: SwapActivityService(
-                    authenticationService: authenticationService,
-                    fiatCurrencyProvider: fiatCurrencyService
-                )
+        activity = ActivityItemEventService(
+            transactional: TransactionalActivityItemEventService(
+                fetcher: BitcoinTransactionalActivityItemEventsService(transactionsService: transactions)
             ),
-            transactionalActivityEventService: .init(
-                transactionsService: transactions
-            ),
-            fiatCurrencyProvider: fiatCurrencyService
+            buy: BuyActivityItemEventService(currency: .bitcoin, service: simpleBuyOrdersAPI),
+            swap: SwapActivityItemEventService(
+                fetcher: BitcoinSwapActivityItemEventsService(service: swapActivityAPI),
+                fiatCurrencyProvider: fiatCurrencyService
+            )
         )
     }
 }
@@ -60,7 +61,7 @@ final class BitcoinServiceProvider {
         self.services = services
     }
     
-    var activity: BitcoinActivityItemEventFetcher {
+    var activity: ActivityItemEventServiceAPI {
         services.activity
     }
     

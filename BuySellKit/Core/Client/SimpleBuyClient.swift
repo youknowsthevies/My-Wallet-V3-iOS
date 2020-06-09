@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import NetworkKit
 import PlatformKit
+import NetworkKit
+import RxSwift
 
 public typealias SimpleBuyClientAPI = SimpleBuyEligibilityClientAPI &
                                       SimpleBuySupportedPairsClientAPI &
@@ -34,10 +34,12 @@ public final class SimpleBuyClient: SimpleBuyClientAPI {
         static let currency = "currency"
         static let fiatCurrency = "fiatCurrency"
         static let currencyPair = "currencyPair"
+        static let pendingOnly = "pendingOnly"
         static let action = "action"
         static let amount = "amount"
         static let methods = "methods"
         static let checkEligibility = "checkEligibility"
+        static let states = "states"
     }
         
     private enum Path {
@@ -138,11 +140,22 @@ public final class SimpleBuyClient: SimpleBuyClientAPI {
     
     // MARK: - SimpleBuyOrderDetailsClientAPI
 
-    public func orderDetails(token: String) -> Single<[SimpleBuyOrderPayload.Response]> {
+    public func orderDetails(token: String, pendingOnly: Bool) -> Single<[SimpleBuyOrderPayload.Response]> {
         let path = Path.trades
+        let parameters = [
+            URLQueryItem(
+                name: Parameter.pendingOnly,
+                value: pendingOnly ? "true" : "false"
+            ),
+            URLQueryItem(
+                name: Parameter.states,
+                value: "CANCELED"
+            )
+        ]
         let headers = [HttpHeaderField.authorization: token]
         let request = requestBuilder.get(
             path: path,
+            parameters: parameters,
             headers: headers
         )!
         return communicator.perform(request: request)

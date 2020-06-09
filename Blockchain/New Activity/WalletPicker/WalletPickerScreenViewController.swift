@@ -69,8 +69,8 @@ final class WalletPickerScreenViewController: BaseScreenViewController {
             guard let self = self else { return UITableViewCell() }
             let cell: UITableViewCell
             switch item {
-            case .balance(let presenter):
-                cell = self.balanceCell(for: indexPath, presenter: presenter)
+            case .balance(let balanceType):
+                cell = self.balanceCell(for: indexPath, presenter: balanceType.presenter)
             case .total(let presenter):
                 cell = self.totalBalanceCell(for: indexPath, presenter: presenter)
             }
@@ -87,8 +87,13 @@ final class WalletPickerScreenViewController: BaseScreenViewController {
                 switch model {
                 case .total:
                     self.presenter.record(selection: .all)
-                case .balance(let presenter):
-                    self.presenter.record(selection: .nonCustodial(presenter.currency))
+                case .balance(let balanceType):
+                    switch balanceType {
+                    case .custodial(let presenter):
+                        self.presenter.record(selection: .custodial(presenter.currency))
+                    case .nonCustodial(let presenter):
+                        self.presenter.record(selection: .nonCustodial(presenter.currency))
+                    }
                 }
                 self.dismiss(animated: true, completion: nil)
             }

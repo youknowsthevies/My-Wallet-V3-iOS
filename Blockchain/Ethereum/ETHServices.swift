@@ -6,11 +6,12 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BuySellKit
 import EthereumKit
 import PlatformKit
 
 struct ETHServices: ETHDependencies {
-    let activity: ActivityItemEventFetcherAPI
+    let activity: ActivityItemEventServiceAPI
     let activityDetails: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails>
     let assetAccountRepository: EthereumAssetAccountRepository
     let qrMetadataFactory: EthereumQRMetadataFactory
@@ -19,21 +20,21 @@ struct ETHServices: ETHDependencies {
 
     init(wallet: Wallet = WalletManager.shared.wallet,
          authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings) {
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
+         simpleBuyOrdersAPI: SimpleBuyOrdersServiceAPI = SimpleBuyServiceProvider.default.ordersDetails,
+         swapActivityAPI: SwapActivityServiceAPI = SwapServiceProvider.default.activity) {
         transactionService = EthereumHistoricalTransactionService(
             with: wallet.ethereum
         )
-        activity = EthereumActivityItemEventFetcher(
-            swapActivityEventService: .init(
-                service: SwapActivityService(
-                    authenticationService: authenticationService,
-                    fiatCurrencyProvider: fiatCurrencyService
-                )
+        activity = ActivityItemEventService(
+            transactional: TransactionalActivityItemEventService(
+                fetcher: EthereumTransactionalActivityItemEventsService(transactionsService: transactionService)
             ),
-            transactionalActivityEventService: .init(
-                transactionsService: transactionService
-            ),
-            fiatCurrencyProvider: fiatCurrencyService
+            buy: BuyActivityItemEventService(currency: .ethereum, service: simpleBuyOrdersAPI),
+            swap: SwapActivityItemEventService(
+                fetcher: EthereumSwapActivityItemEventsService(service: swapActivityAPI),
+                fiatCurrencyProvider: fiatCurrencyService
+            )
         )
         activityDetails = .init(
             api: EthereumActivityItemEventDetailsFetcher(transactionService: transactionService)

@@ -32,7 +32,7 @@ public final class StellarTransactionalActivityItemEventsService: TransactionalA
                     hasNextPage: items.count == limit,
                     items: items
                 )
-        }
+            }
     }
 }
 

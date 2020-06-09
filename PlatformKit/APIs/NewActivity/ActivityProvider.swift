@@ -12,7 +12,8 @@ public protocol ActivityProviding: class {
     /// Returns the activity service
     subscript(currency: CryptoCurrency) -> ActivityItemEventServiceAPI { get }
     
-    var swapActivityItems: Observable<LoadingState<[SwapActivityItemEvent]>> { get }
+    var buyActivityItems: Observable<ActivityItemEventsLoadingStates> { get }
+    var swapActivityItems: Observable<ActivityItemEventsLoadingStates> { get }
     var activityItems: Observable<ActivityItemEventsLoadingState> { get }
     var transactionalActivityItems: Observable<ActivityItemEventsLoadingStates> { get }
     
@@ -27,22 +28,75 @@ public final class ActivityProvider: ActivityProviding {
         services[currency]!
     }
     
-    public var swapActivityItems: Observable<LoadingState<[SwapActivityItemEvent]>> {
-        swapActivityAPI
-            .fetchActivity(from: Date())
-            .asObservable()
-            .catchErrorJustReturn([])
-            .map { .loaded(next: $0) }
-            .startWith(.loading)
+    // MARK: - Services
+    
+    private var services: [CryptoCurrency: ActivityItemEventServiceAPI] = [:]
+    
+    // MARK: - Setup
+    
+    public init(ether: ActivityItemEventServiceAPI,
+                pax: ActivityItemEventServiceAPI,
+                stellar: ActivityItemEventServiceAPI,
+                bitcoin: ActivityItemEventServiceAPI,
+                bitcoinCash: ActivityItemEventServiceAPI) {
+        services[.ethereum] = ether
+        services[.pax] = pax
+        services[.stellar] = stellar
+        services[.bitcoin] = bitcoin
+        services[.bitcoinCash] = bitcoinCash
+    }
+    
+    public var buyActivityItems: Observable<ActivityItemEventsLoadingStates> {
+        Observable.combineLatest(
+            services[.ethereum]!.buy.state,
+            services[.pax]!.buy.state,
+            services[.stellar]!.buy.state,
+            services[.bitcoin]!.buy.state,
+            services[.bitcoinCash]!.buy.state
+        )
+        .map {
+            ActivityItemEventsLoadingStates(
+                statePerCurrency: [
+                    .ethereum: $0.0,
+                    .pax: $0.1,
+                    .stellar: $0.2,
+                    .bitcoin: $0.3,
+                    .bitcoinCash: $0.4
+                ]
+            )
+        }
+        .share()
+    }
+    
+    public var swapActivityItems: Observable<ActivityItemEventsLoadingStates> {
+        Observable.combineLatest(
+            services[.ethereum]!.swap.state,
+            services[.pax]!.swap.state,
+            services[.stellar]!.swap.state,
+            services[.bitcoin]!.swap.state,
+            services[.bitcoinCash]!.swap.state
+        )
+        .map {
+            ActivityItemEventsLoadingStates(
+                statePerCurrency: [
+                    .ethereum: $0.0,
+                    .pax: $0.1,
+                    .stellar: $0.2,
+                    .bitcoin: $0.3,
+                    .bitcoinCash: $0.4
+                ]
+            )
+        }
+        .share()
     }
     
     public var transactionalActivityItems: Observable<ActivityItemEventsLoadingStates> {
         Observable.combineLatest(
-            services[.ethereum]!.transactionActivityObservable,
-            services[.pax]!.transactionActivityObservable,
-            services[.stellar]!.transactionActivityObservable,
-            services[.bitcoin]!.transactionActivityObservable,
-            services[.bitcoinCash]!.transactionActivityObservable
+            services[.ethereum]!.transactional.state,
+            services[.pax]!.transactional.state,
+            services[.stellar]!.transactional.state,
+            services[.bitcoin]!.transactional.state,
+            services[.bitcoinCash]!.transactional.state
         )
         .map {
             ActivityItemEventsLoadingStates(
@@ -59,17 +113,12 @@ public final class ActivityProvider: ActivityProviding {
     }
     
     public var activityItems: Observable<ActivityItemEventsLoadingState> {
-        let transactions = transactionalActivityItems.map { $0.allActivity }
-        return Observable.combineLatest(
-            transactions,
-            swapActivityItems
-        )
-        .map(weak: self) { (self, states) -> ActivityItemEventsLoadingState in
-            self.reduce(swapsState: states.1, transactionsState: states.0)
-        }
+        activityItemsLoadingStates.map { $0.allActivity }
     }
     
-    // MARK: - Private Properties
+    public func refresh() {
+        services.values.forEach { $0.refresh() }
+    }
     
     private var activityItemsLoadingStates: Observable<ActivityItemEventsLoadingStates> {
         Observable.combineLatest(
@@ -91,53 +140,5 @@ public final class ActivityProvider: ActivityProviding {
             )
         }
         .share()
-    }
-    
-    // MARK: - Services
-    
-    private var services: [CryptoCurrency: ActivityItemEventServiceAPI] = [:]
-    private let swapActivityAPI: SwapActivityServiceAPI
-    
-    // MARK: - Setup
-    
-    public init(ether: ActivityItemEventServiceAPI,
-                pax: ActivityItemEventServiceAPI,
-                stellar: ActivityItemEventServiceAPI,
-                bitcoin: ActivityItemEventServiceAPI,
-                bitcoinCash: ActivityItemEventServiceAPI,
-                authenticationService: NabuAuthenticationServiceAPI,
-                fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
-        services[.ethereum] = ether
-        services[.pax] = pax
-        services[.stellar] = stellar
-        services[.bitcoin] = bitcoin
-        services[.bitcoinCash] = bitcoinCash
-        swapActivityAPI = SwapActivityService(
-            authenticationService: authenticationService,
-            fiatCurrencyProvider: fiatCurrencyService
-        )
-    }
-    
-    // MARK: - Public Functions
-    
-    public func refresh() {
-        services.values.forEach { $0.fetchTriggerRelay.accept(()) }
-    }
-    
-    // MARK: - Private Functions
-    
-    private func reduce(swapsState: LoadingState<[SwapActivityItemEvent]>,
-                        transactionsState: LoadingState<[ActivityItemEvent]>) -> ActivityItemEventsLoadingState {
-        guard !swapsState.isLoading && !transactionsState.isLoading else {
-            return .loading
-        }
-        guard
-            let swaps = swapsState.value,
-            let transactions = transactionsState.value
-            else {
-                return .loading
-            }
-        let values: [ActivityItemEvent] = swaps.map { .swap($0) } + transactions
-        return .loaded(next: values)
     }
 }

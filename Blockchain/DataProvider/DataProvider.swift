@@ -45,13 +45,11 @@ final class DataProvider: DataProviding {
          bitcoinCashServiceProvider: BitcoinCashServiceProvider = BitcoinCashServiceProvider.shared) {
         
         self.activity = ActivityProvider(
-            ether: ActivityItemEventService(fetcher: ethereumServiceProvider.services.activity),
-            pax: ActivityItemEventService(fetcher: paxServiceProvider.services.activity),
-            stellar: ActivityItemEventService(fetcher: stellarServiceProvider.services.activity),
-            bitcoin: ActivityItemEventService(fetcher: bitcoinServiceProvider.services.activity),
-            bitcoinCash: ActivityItemEventService(fetcher: bitcoinCashServiceProvider.services.activity),
-            authenticationService: authenticationService,
-            fiatCurrencyService: fiatCurrencyService
+            ether: ethereumServiceProvider.services.activity,
+            pax: paxServiceProvider.services.activity,
+            stellar: stellarServiceProvider.services.activity,
+            bitcoin: bitcoinServiceProvider.services.activity,
+            bitcoinCash: bitcoinCashServiceProvider.services.activity
         )
         
         self.exchange = ExchangeProvider(

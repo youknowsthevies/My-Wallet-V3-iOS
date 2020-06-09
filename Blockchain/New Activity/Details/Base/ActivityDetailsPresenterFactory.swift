@@ -17,6 +17,8 @@ final class ActivityDetailsPresenterFactory {
                           router: ActivityRouterAPI,
                           paxServiceProvider: PAXServiceProvider = PAXServiceProvider.shared) -> DetailsScreenPresenterAPI {
         switch event {
+        case .buy(let orderDetails):
+            fatalError()
         case .swap(let swap):
             return SwapActivityDetailsPresenter(event: swap)
         case .transactional(let transactional):

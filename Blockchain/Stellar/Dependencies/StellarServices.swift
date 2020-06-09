@@ -6,13 +6,14 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BuySellKit
 import PlatformKit
 import RxSwift
 import StellarKit
 
 struct StellarServices: StellarDependenciesAPI {
     let accounts: StellarAccountAPI
-    let activity: ActivityItemEventFetcherAPI
+    let activity: ActivityItemEventServiceAPI
     let activityDetails: AnyActivityItemEventDetailsFetcher<StellarActivityItemEventDetails>
     let feeService: StellarFeeServiceAPI
     let ledger: StellarLedgerAPI
@@ -29,7 +30,9 @@ struct StellarServices: StellarDependenciesAPI {
         eventBus: WalletActionEventBus = WalletActionEventBus.shared,
         xlmFeeService: StellarFeeServiceAPI = StellarFeeService.shared,
         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-        authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared
+        authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
+        simpleBuyOrdersAPI: SimpleBuyOrdersServiceAPI = SimpleBuyServiceProvider.default.ordersDetails,
+        swapActivityAPI: SwapActivityServiceAPI = SwapServiceProvider.default.activity
     ) {
         walletActionEventBus = eventBus
         repository = StellarWalletAccountRepository(with: wallet)
@@ -51,15 +54,15 @@ struct StellarServices: StellarDependenciesAPI {
             configurationService: configurationService,
             repository: repository
         )
-        activity = StellarActivityItemEventFetcher(
-            swapActivityEventService: .init(
-                service: SwapActivityService.init(
-                    authenticationService: authenticationService,
-                    fiatCurrencyProvider: fiatCurrencyService
-                )
+        activity = ActivityItemEventService(
+            transactional: TransactionalActivityItemEventService(
+                fetcher: StellarTransactionalActivityItemEventsService(repository: repository)
             ),
-            transactionalActivityEventService: .init(repository: repository),
-            fiatCurrencyProvider: fiatCurrencyService
+            buy: BuyActivityItemEventService(currency: .stellar, service: simpleBuyOrdersAPI),
+            swap: SwapActivityItemEventService(
+                fetcher: StellarSwapActivityItemEventsService(service: swapActivityAPI),
+                fiatCurrencyProvider: fiatCurrencyService
+            )
         )
         activityDetails = .init(
             api: StellarActivityItemEventDetailsFetcher(repository: repository)

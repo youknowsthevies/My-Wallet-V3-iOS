@@ -12,7 +12,7 @@ import StellarKit
 
 protocol StellarDependenciesAPI {
     var accounts: StellarAccountAPI { get }
-    var activity: ActivityItemEventFetcherAPI { get }
+    var activity: ActivityItemEventServiceAPI { get }
     var activityDetails: AnyActivityItemEventDetailsFetcher<StellarActivityItemEventDetails> { get }
     var feeService: StellarFeeServiceAPI { get }
     var ledger: StellarLedgerAPI { get }

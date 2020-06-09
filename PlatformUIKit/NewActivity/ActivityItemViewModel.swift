@@ -49,6 +49,8 @@ public final class ActivityItemViewModel: IdentifiableType {
     public var titleLabelContent: LabelContent {
         var text = ""
         switch event {
+        case .buy(let orderDetails):
+            text = "\(LocalizationStrings.buy) \(orderDetails.cryptoValue.currencyType.name)"
         case .swap(let event):
             let pair = event.pair
             text = "\(LocalizationStrings.swap) \(pair.from.displayCode) -> \(pair.to.displayCode)"
@@ -87,12 +89,11 @@ public final class ActivityItemViewModel: IdentifiableType {
                 alignment: .left,
                 accessibility: .id(AccessibilityId.ActivityCell.descriptionLabel)
             )
-        case .product:
+        case .product(let status):
             // TODO: Should swap event status be accounted for here?
-            // TODO: Handle other products (Buy/Sell)
-            guard case let .swap(event) = event else { return .empty }
+            // TODO: Should `Buy` event status be accounted for here?
             return .init(
-                text: DateFormatter.medium.string(from: event.date),
+                text: DateFormatter.medium.string(from: event.creationDate),
                 font: descriptors.cryptoFont,
                 color: descriptors.cryptoTextColor,
                 alignment: .left,
@@ -104,8 +105,10 @@ public final class ActivityItemViewModel: IdentifiableType {
     /// The color of the `EventType` image.
     public var eventColor: UIColor {
         switch event {
+        case .buy(let orderDetails):
+            return orderDetails.cryptoValue.currencyType.brandColor
         case .swap(let event):
-            return event.pair.to.brandColor
+            return event.pair.from.brandColor
         case .transactional(let event):
             switch event.status {
             case .complete:
@@ -124,6 +127,8 @@ public final class ActivityItemViewModel: IdentifiableType {
     /// The `imageName` for the `BadgeImageViewModel`
     public var imageName: String {
         switch event {
+        case .buy:
+            return "plus-icon"
         case .swap:
             return "swap-icon"
         case .transactional(let event):

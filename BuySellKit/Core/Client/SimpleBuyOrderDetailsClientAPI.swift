@@ -11,7 +11,7 @@ import RxSwift
 public protocol SimpleBuyOrderDetailsClientAPI: class {
 
     /// Fetch all Buy orders
-    func orderDetails(token: String) -> Single<[SimpleBuyOrderPayload.Response]>
+    func orderDetails(token: String, pendingOnly: Bool) -> Single<[SimpleBuyOrderPayload.Response]>
     
     /// Fetch a single Buy order
     func orderDetails(with identifer: String, token: String) -> Single<SimpleBuyOrderPayload.Response>

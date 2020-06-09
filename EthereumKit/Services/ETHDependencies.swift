@@ -9,7 +9,7 @@
 import PlatformKit
 
 public protocol ETHDependencies {
-    var activity: ActivityItemEventFetcherAPI { get }
+    var activity: ActivityItemEventServiceAPI { get }
     var activityDetails: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> { get }
     var assetAccountRepository: EthereumAssetAccountRepository { get }
     var qrMetadataFactory: EthereumQRMetadataFactory { get }

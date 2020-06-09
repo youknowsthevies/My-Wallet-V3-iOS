@@ -19,7 +19,7 @@ protocol ActivityServiceContaining {
     var selectionServiceAPI: WalletPickerSelectionServiceAPI { get }
 }
 
-struct ActivityServiceContainer: ActivityServiceContaining {
+final class ActivityServiceContainer: ActivityServiceContaining {
     var asset: Observable<CryptoCurrency> {
         selectionServiceAPI
             .selectedData
@@ -64,9 +64,17 @@ struct ActivityServiceContainer: ActivityServiceContaining {
                 case .all:
                     return activityProviding.activityItems
                 case .nonCustodial(let currency):
-                    return activityProviding[currency].activityLoadingStateObservable
-                case .custodial:
-                    return Observable.just(.loading)
+                    let transactional = activityProviding[currency].transactional
+                    let swap = activityProviding[currency].swap
+                    return Observable.combineLatest(
+                            transactional.state,
+                            swap.state
+                        )
+                        .map(weak: self) { (self, states) -> ActivityItemEventsLoadingState in
+                            [states.1, states.0].reduce()
+                        }
+                case .custodial(let currency):
+                    return activityProviding[currency].buy.state
                 }
             }
             .bind(to: eventsRelay)
