@@ -36,6 +36,9 @@ final class CurrentBalanceCellPresenter {
     var separatorVisibility: Driver<Visibility> {
         separatorVisibilityRelay.asDriver()
     }
+    
+    let titleAccessibilitySuffix: String
+    let descriptionAccessibilitySuffix: String
         
     let currency: CryptoCurrency
     var balanceType: BalanceType {
@@ -59,7 +62,11 @@ final class CurrentBalanceCellPresenter {
          currency: CryptoCurrency,
          alignment: UIStackView.Alignment,
          separatorVisibility: Visibility = .hidden,
+         titleAccessibilitySuffix: String,
+         descriptionAccessibilitySuffix: String,
          descriptors: DashboardAsset.Value.Presentation.AssetBalance.Descriptors) {
+        self.titleAccessibilitySuffix = titleAccessibilitySuffix
+        self.descriptionAccessibilitySuffix = descriptionAccessibilitySuffix
         separatorVisibilityRelay.accept(separatorVisibility)
         self.interactor = interactor
         self.assetBalanceViewPresenter = AssetBalanceViewPresenter(

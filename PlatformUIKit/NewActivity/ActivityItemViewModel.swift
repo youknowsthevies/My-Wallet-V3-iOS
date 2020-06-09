@@ -29,19 +29,19 @@ public final class ActivityItemViewModel: IdentifiableType {
         switch event.status {
         case .pending:
             return .muted(
-                cryptoAccessiblitySuffix: "\(accessibility.cryptoValue).\(event.amount.currencyType.code)",
-                fiatAccessiblitySuffix: "\(accessibility.fiatValue).\(event.amount.currencyType.code)"
+                cryptoAccessiblitySuffix: "\(accessibility.cryptoValue)",
+                fiatAccessiblitySuffix: "\(accessibility.fiatValue)"
             )
         case .complete:
             return .activity(
-                cryptoAccessiblitySuffix: "\(accessibility.cryptoValue).\(event.amount.currencyType.code)",
-                fiatAccessiblitySuffix: "\(accessibility.fiatValue).\(event.amount.currencyType.code)"
+                cryptoAccessiblitySuffix: "\(accessibility.cryptoValue)",
+                fiatAccessiblitySuffix: "\(accessibility.fiatValue)"
             )
         case .product(let status):
             // TODO: Handle Product Status
             return .activity(
-                cryptoAccessiblitySuffix: "\(accessibility.cryptoValue).\(event.amount.currencyType.code)",
-                fiatAccessiblitySuffix: "\(accessibility.fiatValue).\(event.amount.currencyType.code)"
+                cryptoAccessiblitySuffix: "\(accessibility.cryptoValue)",
+                fiatAccessiblitySuffix: "\(accessibility.fiatValue)"
             )
         }
     }

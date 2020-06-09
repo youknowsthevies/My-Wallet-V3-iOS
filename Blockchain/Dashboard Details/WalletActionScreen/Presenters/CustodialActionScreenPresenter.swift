@@ -16,7 +16,7 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
     
     // MARK: - Types
 
-    private typealias AccessibilityId = Accessibility.Identifier.DashboardDetails.WalletActionSheet.CustodialAction
+    private typealias AccessibilityId = Accessibility.Identifier.DashboardDetails
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     typealias CellType = WalletActionCellType
     
@@ -85,9 +85,11 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
             descriptionValue: descriptionValue,
             currency: interactor.currency,
             alignment: .trailing,
+            titleAccessibilitySuffix: "\(AccessibilityId.CurrentBalanceCell.titleValue)",
+            descriptionAccessibilitySuffix: "\(AccessibilityId.CurrentBalanceCell.descriptionValue)",
             descriptors: .default(
-                cryptoAccessiblitySuffix: "\(AccessibilityId.cryptoValue)",
-                fiatAccessiblitySuffix: "\(AccessibilityId.fiatValue)"
+                cryptoAccessiblitySuffix: "\(AccessibilityId.WalletActionSheet.CustodialAction.cryptoValue)",
+                fiatAccessiblitySuffix: "\(AccessibilityId.WalletActionSheet.CustodialAction.fiatValue)"
             )
         )
         

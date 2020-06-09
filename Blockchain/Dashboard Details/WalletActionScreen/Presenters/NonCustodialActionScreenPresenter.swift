@@ -75,6 +75,8 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
             descriptionValue: descriptionValue,
             currency: interactor.currency,
             alignment: .trailing,
+            titleAccessibilitySuffix: "\(Accessibility.Identifier.DashboardDetails.CurrentBalanceCell.titleValue)",
+            descriptionAccessibilitySuffix: "\(Accessibility.Identifier.DashboardDetails.CurrentBalanceCell.descriptionValue)",
             descriptors: .default(
                 cryptoAccessiblitySuffix: "\(AccessibilityId.NonCustodial.cryptoValue)",
                 fiatAccessiblitySuffix: "\(AccessibilityId.NonCustodial.fiatValue)"

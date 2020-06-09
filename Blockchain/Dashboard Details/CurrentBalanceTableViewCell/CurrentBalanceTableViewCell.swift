@@ -35,7 +35,7 @@ final class CurrentBalanceTableViewCell: UITableViewCell {
                           font: .main(.semibold, 16.0),
                           color: .titleText,
                           alignment: .left,
-                          accessibility: .none)
+                          accessibility: .id(presenter.titleAccessibilitySuffix))
                 }
                 .drive(titleLabel.rx.content)
                 .disposed(by: disposeBag)
@@ -46,7 +46,7 @@ final class CurrentBalanceTableViewCell: UITableViewCell {
                           font: .main(.medium, 14.0),
                           color: .descriptionText,
                           alignment: .left,
-                          accessibility: .none)
+                          accessibility: .id(presenter.descriptionAccessibilitySuffix))
                 }
                 .drive(descriptionLabel.rx.content)
                 .disposed(by: disposeBag)

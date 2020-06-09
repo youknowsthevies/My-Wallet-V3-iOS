@@ -63,6 +63,8 @@ enum WalletPickerCellItem: IdentifiableType {
                     currency: currency,
                     alignment: .trailing,
                     separatorVisibility: .visible,
+                    titleAccessibilitySuffix: "\(AccessibilityId.WalletCellItem.titleValue)",
+                    descriptionAccessibilitySuffix: "\(AccessibilityId.WalletCellItem.descriptionValue)",
                     descriptors: .activity(
                         cryptoAccessiblitySuffix: "\(AccessibilityId.WalletCellItem.cryptoValue)",
                         fiatAccessiblitySuffix: "\(AccessibilityId.WalletCellItem.fiatValue)"
@@ -79,6 +81,8 @@ enum WalletPickerCellItem: IdentifiableType {
                     currency: currency,
                     alignment: .trailing,
                     separatorVisibility: .visible,
+                    titleAccessibilitySuffix: "\(AccessibilityId.WalletCellItem.titleValue)",
+                    descriptionAccessibilitySuffix: "\(AccessibilityId.WalletCellItem.descriptionValue)",
                     descriptors: .activity(
                         cryptoAccessiblitySuffix: "\(AccessibilityId.WalletCellItem.cryptoValue)",
                         fiatAccessiblitySuffix: "\(AccessibilityId.WalletCellItem.fiatValue)"

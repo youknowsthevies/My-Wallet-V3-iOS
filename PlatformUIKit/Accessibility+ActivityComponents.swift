@@ -16,6 +16,8 @@ extension Accessibility.Identifier {
                 private static let prefix = "\(WalletPickerView.prefix).WalletPickerCellItem"
                 public static let cryptoValue = "\(prefix).cryptoValue"
                 public static let fiatValue = "\(prefix).fiatValue"
+                public static let titleValue = "\(prefix).titleValue"
+                public static let descriptionValue = "\(prefix).descriptionValue"
             }
         }
         public enum WalletBalance {

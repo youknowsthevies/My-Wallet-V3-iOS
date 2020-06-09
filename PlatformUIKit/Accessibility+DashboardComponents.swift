@@ -49,6 +49,8 @@ extension Accessibility.Identifier {
         private static let prefix = "DashboardDetails."
         public struct CurrentBalanceCell {
             public static let prefix = "\(DashboardDetails.prefix)CurrentBalance."
+            public static let titleValue = "\(prefix)titleValue"
+            public static let descriptionValue = "\(prefix)descriptionValue"
             public static let cryptoValue = "\(prefix)cryptoValue"
             public static let fiatValue = "\(prefix)fiatValue"
         }
