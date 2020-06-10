@@ -124,6 +124,10 @@ extension LocalizationConstants.LineItem.Transactional {
         "Bank Transfer",
         comment: "Bank Transfer"
     )
+    public static let creditOrDebitCard = NSLocalizedString(
+        "Credit or Debit Card",
+        comment: "Simple Buy: Payment method"
+    )
     public static let pending = NSLocalizedString(
         "Pending",
         comment: "Pending"

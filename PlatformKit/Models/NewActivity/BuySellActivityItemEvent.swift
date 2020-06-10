@@ -9,7 +9,7 @@
 import Localization
 
 public struct BuyActivityItemEvent: Tokenized {
-    
+
     public enum EventStatus {
         case pending
         case cancelled
@@ -17,7 +17,12 @@ public struct BuyActivityItemEvent: Tokenized {
         case expired
         case finished
     }
-    
+
+    public enum PaymentMethod {
+        case card(paymentMethodId: String?)
+        case bankTransfer
+    }
+
     public var token: String {
         identifier
     }
@@ -27,6 +32,7 @@ public struct BuyActivityItemEvent: Tokenized {
     }
     
     public let status: EventStatus
+    public let paymentMethod: PaymentMethod
     
     public let identifier: String
     
@@ -35,7 +41,7 @@ public struct BuyActivityItemEvent: Tokenized {
 
     public let fiatValue: FiatValue
     public let cryptoValue: CryptoValue
-    public var fee: FiatValue?
+    public var fee: FiatValue
     
     public init(identifier: String,
                 creationDate: Date,
@@ -43,7 +49,8 @@ public struct BuyActivityItemEvent: Tokenized {
                 status: EventStatus,
                 fiatValue: FiatValue,
                 cryptoValue: CryptoValue,
-                fee: FiatValue? = nil) {
+                fee: FiatValue,
+                paymentMethod: PaymentMethod) {
         self.creationDate = creationDate
         self.expirationDate = expirationDate
         self.identifier = identifier
@@ -51,5 +58,6 @@ public struct BuyActivityItemEvent: Tokenized {
         self.fiatValue = fiatValue
         self.cryptoValue = cryptoValue
         self.fee = fee
+        self.paymentMethod = paymentMethod
     }
 }

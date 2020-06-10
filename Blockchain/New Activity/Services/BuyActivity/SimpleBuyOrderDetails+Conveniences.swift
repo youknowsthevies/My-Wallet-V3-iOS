@@ -11,17 +11,18 @@ import PlatformKit
 
 extension BuyActivityItemEvent {
     init(with orderDetails: SimpleBuyOrderDetails) {
-        self = BuyActivityItemEvent(
+        self.init(
             identifier: orderDetails.identifier,
             creationDate: orderDetails.creationDate ?? Date(),
             expirationDate: orderDetails.expirationDate,
             status: orderDetails.eventStatus,
             fiatValue: orderDetails.fiatValue,
-            cryptoValue: orderDetails.cryptoValue
+            cryptoValue: orderDetails.cryptoValue,
+            fee: orderDetails.fee ?? FiatValue.zero(currency: orderDetails.fiatValue.currency),
+            paymentMethod: orderDetails.isBankWire ? .bankTransfer : .card(paymentMethodId: orderDetails.paymentMethodId)
         )
     }
 }
-
 extension SimpleBuyOrderDetails {
     fileprivate var eventStatus: BuyActivityItemEvent.EventStatus {
         switch state {

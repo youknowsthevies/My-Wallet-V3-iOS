@@ -17,8 +17,8 @@ final class ActivityDetailsPresenterFactory {
                           router: ActivityRouterAPI,
                           paxServiceProvider: PAXServiceProvider = PAXServiceProvider.shared) -> DetailsScreenPresenterAPI {
         switch event {
-        case .buy(let orderDetails):
-            fatalError()
+        case .buy(let buy):
+            return BuyActivityDetailsPresenter(event: buy)
         case .swap(let swap):
             return SwapActivityDetailsPresenter(event: swap)
         case .transactional(let transactional):
@@ -28,7 +28,7 @@ final class ActivityDetailsPresenterFactory {
             case .bitcoinCash:
                 return BitcoinCashActivityDetailsPresenter(event: transactional, router: router)
             case .pax:
-                let interactor = ERC20ActivityDetailsInteractor(cryptoCurrency: .pax)
+                let interactor = ERC20ActivityDetailsInteractor(cryptoCurrency: transactional.currency)
                 return ERC20ActivityDetailsPresenter(event: transactional, router: router, interactor: interactor)
             case .stellar:
                 return StellarActivityDetailsPresenter(event: transactional, router: router)
