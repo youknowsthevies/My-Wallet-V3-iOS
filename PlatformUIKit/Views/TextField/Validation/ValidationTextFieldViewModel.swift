@@ -31,11 +31,13 @@ public final class ValidationTextFieldViewModel: TextFieldViewModel {
     
     public init(with type: TextFieldType,
                 validator: TextValidating,
+                accessibilitySuffix: String? = nil,
                 formatter: TextFormatting = TextFormatterFactory.alwaysCorrect,
                 textMatcher: CollectionTextMatchValidator? = nil,
                 messageRecorder: MessageRecording) {
         super.init(
             with: type,
+            accessibilitySuffix: accessibilitySuffix,
             validator: validator,
             formatter: formatter,
             textMatcher: textMatcher,

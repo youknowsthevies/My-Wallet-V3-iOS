@@ -214,6 +214,7 @@ public class TextFieldViewModel {
     // MARK: - Setup
     
     public init(with type: TextFieldType,
+                accessibilitySuffix: String? = nil,
                 returnKeyType: UIReturnKeyType = .done,
                 validator: TextValidating,
                 formatter: TextFormatting = TextFormatterFactory.alwaysCorrect,
@@ -239,7 +240,13 @@ public class TextFieldViewModel {
         contentTypeRelay = BehaviorRelay(value: type.contentType)
         keyboardTypeRelay = BehaviorRelay(value: type.keyboardType)
         isSecureRelay.accept(type.isSecure)
-        accessibility = type.accessibility
+        
+        if let suffix = accessibilitySuffix {
+            accessibility = .id("\(type.accessibility).\(suffix)")
+        } else {
+            accessibility = type.accessibility
+        }
+        
         self.returnKeyType = returnKeyType
 
         originalText
