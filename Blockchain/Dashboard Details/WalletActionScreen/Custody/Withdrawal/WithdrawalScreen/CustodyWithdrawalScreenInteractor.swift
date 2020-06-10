@@ -30,6 +30,9 @@ final class CustodyWithdrawalScreenInteractor {
         /// There was an error submitting the withdrawal
         case error
         
+        /// The user has a zero balance
+        case insufficientFunds
+        
         var isReady: Bool {
             return self == .loaded
         }
@@ -75,12 +78,17 @@ final class CustodyWithdrawalScreenInteractor {
         
         Observable
             .combineLatest(
+                balanceFetching.trading.balanceObservable,
                 setupInteractor.state,
                 submissionInteractor.state
             )
             .map { payload -> InteractionState in
-                let setupState = payload.0
-                let submissionState = payload.1
+                let amount = payload.0
+                let setupState = payload.1
+                let submissionState = payload.2
+                guard !amount.isZero else {
+                    return .insufficientFunds
+                }
                 switch (setupState, submissionState) {
                 case (.loading, .ready):
                     return .settingUp

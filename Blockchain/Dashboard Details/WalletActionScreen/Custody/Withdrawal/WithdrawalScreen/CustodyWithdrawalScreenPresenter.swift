@@ -147,7 +147,7 @@ final class CustodyWithdrawalScreenPresenter {
                     self.analyticsRecorder.record(event: AnalyticsEvent.sbWithdrawalScreenSuccess)
                 case .error:
                     self.analyticsRecorder.record(event: AnalyticsEvent.sbWithdrawalScreenFailure)
-                case .loaded, .settingUp, .submitting:
+                case .loaded, .settingUp, .submitting, .insufficientFunds:
                     break
                 }
             })
@@ -157,7 +157,7 @@ final class CustodyWithdrawalScreenPresenter {
                     return .successful
                 case .error:
                     return .failed
-                case .loaded, .settingUp, .submitting:
+                case .loaded, .settingUp, .submitting, .insufficientFunds:
                     return .unknown
                 }
             }
