@@ -63,8 +63,7 @@ public struct SimpleBuyOrderDetails {
     public var paymentMethod: SimpleBuyPaymentMethod.MethodType {
         paymentMethodId == nil ? .bankTransfer : .card([])
     }
-    
-    public let expirationDate: Date
+
     public let creationDate: Date?
 
     public let fiatValue: FiatValue
@@ -148,8 +147,7 @@ public struct SimpleBuyOrderDetails {
             self.fee = FiatValue(minor: fee, currency: fiatCurrency)
         }
 
-        expirationDate = DateFormatter.sessionDateFormat.date(from: response.expiresAt)!
-        creationDate = DateFormatter.sessionDateFormat.date(from: response.updatedAt)
+        creationDate = DateFormatter.utcSessionDateFormat.date(from: response.updatedAt)
         if creationDate == nil {
             recorder.record(event: AnalyticsEvents.DebugEvent.updatedAtParsingError(date: response.updatedAt))
         }

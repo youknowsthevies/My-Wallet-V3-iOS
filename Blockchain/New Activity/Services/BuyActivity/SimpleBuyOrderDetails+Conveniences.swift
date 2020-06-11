@@ -14,7 +14,6 @@ extension BuyActivityItemEvent {
         self.init(
             identifier: orderDetails.identifier,
             creationDate: orderDetails.creationDate ?? Date(),
-            expirationDate: orderDetails.expirationDate,
             status: orderDetails.eventStatus,
             fiatValue: orderDetails.fiatValue,
             cryptoValue: orderDetails.cryptoValue,
