@@ -42,6 +42,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private lazy var deepLinkHandler: DeepLinkHandler = {
         return DeepLinkHandler()
     }()
+    
+    private let deepLinkRouter: DeepLinkRouter = DeepLinkRouter()
 
     /// A service that provides remote notification registration logic,
     /// thus taking responsibility off `AppDelegate` instance.
@@ -242,12 +244,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return true
         }
         
+        let isInitialized = WalletManager.shared.wallet.isInitialized()
+        let hasGuid = BlockchainSettings.App.shared.guid != nil
+        let hasSharedKey = BlockchainSettings.App.shared.sharedKey != nil
+        let authenticated = isInitialized && hasGuid && hasSharedKey
+        
         if BitPayLinkRouter.isBitPayURL(url) {
             ModalPresenter.shared.closeModal(withTransition: convertFromCATransitionType(CATransitionType.fade))
             BitpayService.shared.contentRelay.accept(url)
-            guard WalletManager.shared.wallet.isInitialized() else { return true }
-            guard BlockchainSettings.App.shared.guid != nil else { return true }
-            guard BlockchainSettings.App.shared.sharedKey != nil else { return true }
+            guard authenticated else { return true }
             return bitpayRouter.routeIfNeeded()
         }
 
@@ -265,6 +270,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
             return true
         }
+        
+        if authenticated {
+            ModalPresenter.shared.closeModal(withTransition: convertFromCATransitionType(CATransitionType.fade))
+            deepLinkRouter.routeIfNeeded()
+            return true
+        }
+        
 
         return true
     }
