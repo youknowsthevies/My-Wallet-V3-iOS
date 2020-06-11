@@ -9,7 +9,8 @@
 import PlatformKit
 import RxSwift
 
-open class BitcoinWalletAccountRepository: WalletAccountRepositoryAPI {
+public final class BitcoinWalletAccountRepository: WalletAccountRepositoryAPI {
+    
     public typealias Account = BitcoinWalletAccount
 
     public typealias Bridge = BitcoinWalletBridgeAPI
@@ -33,6 +34,16 @@ open class BitcoinWalletAccountRepository: WalletAccountRepositoryAPI {
     public var accounts: Single<[BitcoinWalletAccount]> {
         bridge.wallets
     }
+    
+    public var watchOnlyAddresses: Single<[String]> {
+        bridge.watchOnlyAddreses
+    }
+    
+    public var activeAccounts: Single<[BitcoinWalletAccount]> {
+        accounts.map { accounts in
+            accounts.filter(\.isActive)
+        }
+    }
 
     private let bridge: Bridge
 
@@ -40,5 +51,11 @@ open class BitcoinWalletAccountRepository: WalletAccountRepositoryAPI {
     
     public init(with bridge: Bridge) {
         self.bridge = bridge
+    }
+}
+
+extension BitcoinWalletAccount {
+    var isActive: Bool {
+        !archived
     }
 }

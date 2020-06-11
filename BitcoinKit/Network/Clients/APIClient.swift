@@ -14,25 +14,27 @@ enum APIClientError: Error {
     case unknown
 }
 
-public protocol APIClientAPI {
+protocol APIClientAPI {
     func unspentOutputs(addresses: [String]) -> Single<UnspentOutputsResponse>
     func bitcoinMultiAddress(for address: String) -> Single<BitcoinMultiAddressResponse>
     func bitcoinCashMultiAddress(for address: String) -> Single<BitcoinCashMultiAddressResponse>
+    func balances(for addresses: [String]) -> Single<BitcoinBalanceResponse>
 }
 
-public final class APIClient: APIClientAPI {
+final class APIClient: APIClientAPI {
     
     private struct Endpoint {
         
         struct Bitcoin {
-            static let base: [String] = [ "btc" ]
-            static let multiaddress: [String] = base + [ "multiaddr" ]
-            static let unspentOutputs: [String] = base + [ "unspent" ]
+            static let base = [ "btc" ]
+            static let multiaddress = base + [ "multiaddr" ]
+            static let unspentOutputs = base + [ "unspent" ]
+            static let balance = base + [ "balance" ]
         }
         
         struct BitcoinCash {
-            static let base: [String] = [ "bch" ]
-            static let multiaddress: [String] = base + [ "multiaddr" ]
+            static let base = [ "bch" ]
+            static let multiaddress = base + [ "multiaddr" ]
         }
     }
 
@@ -42,7 +44,7 @@ public final class APIClient: APIClientAPI {
     
     // MARK: - Init
 
-    public init(communicator: NetworkCommunicatorAPI = Network.Dependencies.default.communicator,
+    init(communicator: NetworkCommunicatorAPI = Network.Dependencies.default.communicator,
                 config: Network.Config = Network.Dependencies.default.blockchainAPIConfig) {
         self.communicator = communicator
         self.config = config
@@ -51,7 +53,7 @@ public final class APIClient: APIClientAPI {
     
     // MARK: - APIClientAPI
     
-    public func unspentOutputs(addresses: [String]) -> Single<UnspentOutputsResponse> {
+    func unspentOutputs(addresses: [String]) -> Single<UnspentOutputsResponse> {
         let parameters = [
             URLQueryItem(
                 name: "active",
@@ -68,7 +70,7 @@ public final class APIClient: APIClientAPI {
         return communicator.perform(request: request)
     }
     
-    public func bitcoinCashMultiAddress(for address: String) -> Single<BitcoinCashMultiAddressResponse> {
+    func bitcoinCashMultiAddress(for address: String) -> Single<BitcoinCashMultiAddressResponse> {
         let parameters = [
             URLQueryItem(
                 name: "active",
@@ -86,7 +88,7 @@ public final class APIClient: APIClientAPI {
         return communicator.perform(request: request)
     }
     
-    public func bitcoinMultiAddress(for address: String) -> Single<BitcoinMultiAddressResponse> {
+    func bitcoinMultiAddress(for address: String) -> Single<BitcoinMultiAddressResponse> {
         let parameters = [
             URLQueryItem(
                 name: "active",
@@ -101,6 +103,22 @@ public final class APIClient: APIClientAPI {
         ) else {
             return Single.error(RequestBuilder.Error.buildingRequest)
         }
+        return communicator.perform(request: request)
+    }
+    
+    func balances(for addresses: [String]) -> Single<BitcoinBalanceResponse> {
+        let addresses = addresses.joined(separator: "|")
+        let parameters = [
+            URLQueryItem(
+                name: "active",
+                value: "\(addresses)"
+            )
+        ]
+        let request = requestBuilder.get(
+            path: Endpoint.Bitcoin.balance,
+            parameters: parameters,
+            recordErrors: true
+        )!
         return communicator.perform(request: request)
     }
 }

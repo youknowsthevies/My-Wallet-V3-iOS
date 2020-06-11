@@ -11,6 +11,12 @@ import Foundation
 import RxSwift
 
 class APIClientMock: APIClientAPI {
+    
+    var balancesValue: Single<BitcoinBalanceResponse> = Single.error(NSError())
+    func balances(for addresses: [String]) -> Single<BitcoinBalanceResponse> {
+        balancesValue
+    }
+    
     func bitcoinMultiAddress(for address: String) -> Single<BitcoinMultiAddressResponse> {
         Single.error(APIClientError.unknown)
     }

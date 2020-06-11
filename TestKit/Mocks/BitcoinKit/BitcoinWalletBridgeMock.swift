@@ -11,6 +11,12 @@ import Foundation
 import RxSwift
 
 class BitcoinWalletBridgeMock: BitcoinWalletBridgeAPI {
+    
+    var watchOnlyAddresesValue: Single<[String]> = .just([])
+    var watchOnlyAddreses: Single<[String]> {
+        watchOnlyAddresesValue
+    }
+    
     func updateMemo(for transactionHash: String, memo: String?) -> Completable {
         .empty()
     }
