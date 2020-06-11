@@ -21,10 +21,11 @@
                 <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iH2-h5-Fmo" customClass="BadgeView" customModule="PlatformUIKit">
+                    <view contentMode="scaleToFill" verticalCompressionResistancePriority="999" translatesAutoresizingMaskIntoConstraints="NO" id="iH2-h5-Fmo" customClass="BadgeView" customModule="PlatformUIKit">
                         <rect key="frame" x="323" y="12" width="75" height="32"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
+                            <constraint firstAttribute="height" priority="250" constant="32" id="Mya-fr-MG2"/>
                             <constraint firstAttribute="width" priority="750" constant="75" id="O54-HK-FLc"/>
                         </constraints>
                     </view>
@@ -36,12 +37,11 @@
                     </label>
                 </subviews>
                 <constraints>
+                    <constraint firstItem="iH2-h5-Fmo" firstAttribute="centerY" secondItem="p3S-2w-zx1" secondAttribute="centerY" id="8o7-EQ-J8Q"/>
                     <constraint firstItem="p3S-2w-zx1" firstAttribute="leading" secondItem="7C3-dh-j36" secondAttribute="leading" constant="16" id="GCn-Qi-veH"/>
                     <constraint firstItem="iH2-h5-Fmo" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="p3S-2w-zx1" secondAttribute="trailing" constant="4" id="J6b-DD-U1Z"/>
-                    <constraint firstItem="iH2-h5-Fmo" firstAttribute="top" secondItem="7C3-dh-j36" secondAttribute="top" constant="12" id="J7w-oH-dOO"/>
                     <constraint firstItem="p3S-2w-zx1" firstAttribute="top" secondItem="7C3-dh-j36" secondAttribute="top" constant="12" id="YC4-t3-DyU"/>
                     <constraint firstAttribute="bottom" secondItem="p3S-2w-zx1" secondAttribute="bottom" constant="12" id="YtT-Ca-TzX"/>
-                    <constraint firstAttribute="bottom" secondItem="iH2-h5-Fmo" secondAttribute="bottom" constant="12" id="iB9-FF-VId"/>
                     <constraint firstAttribute="trailing" secondItem="iH2-h5-Fmo" secondAttribute="trailing" constant="16" id="vxF-2P-Ig9"/>
                 </constraints>
             </tableViewCellContentView>

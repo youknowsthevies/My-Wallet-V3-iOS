@@ -63,7 +63,7 @@ public final class BadgeTableViewCell: UITableViewCell {
     private func shimmer() {
         badgeShimmeringView = ShimmeringView(
             in: self,
-            anchorView: badgeView,
+            centeredIn: badgeView,
             size: .init(width: 75, height: 24)
         )
         titleShimmeringView = ShimmeringView(
