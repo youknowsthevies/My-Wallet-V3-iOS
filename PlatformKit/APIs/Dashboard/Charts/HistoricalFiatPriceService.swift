@@ -119,7 +119,6 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
             }
             .startWith(.calculating)
             .catchErrorJustReturn(.calculating)
-            .debug("ErrorHappened", trimOutput: false)
             .bind(to: calculationStateRelay)
             .disposed(by: bag)
     }
