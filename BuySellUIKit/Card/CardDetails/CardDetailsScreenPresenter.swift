@@ -113,13 +113,14 @@ final class CardDetailsScreenPresenter {
             cardTypeSource: cardNumberValidator,
             invalidReason: LocalizationConstants.TextField.Gesture.invalidCVV
         )
-        
+
         let cardNumberTextFieldViewModel = CardTextFieldViewModel(
             validator: cardNumberValidator,
             messageRecorder: messageRecorder
         )
         let cardCVVTextFieldViewModel = CardCVVTextFieldViewModel(
             validator: cardCVVValidator,
+            cardTypeSource: cardNumberValidator,
             matchValidator: cvvToCardNumberMatcher,
             messageRecorder: messageRecorder
         )

@@ -78,6 +78,10 @@ public extension LocalizationConstants {
                     "CVV",
                     comment: "Placeholder for card cvv text field"
                 )
+                public static let cvc = NSLocalizedString(
+                    "CVC",
+                    comment: "Placeholder for card cvc text field"
+                )
             }
             public static let description = NSLocalizedString(
                 "Description",

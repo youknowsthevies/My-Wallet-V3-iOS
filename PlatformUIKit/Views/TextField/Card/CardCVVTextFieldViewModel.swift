@@ -6,13 +6,21 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import RxSwift
+import RxRelay
+import Localization
 import ToolKit
 
 public final class CardCVVTextFieldViewModel: TextFieldViewModel {
-            
+    
+    // MARK: - Properties
+    
+    private let disposeBag = DisposeBag()
+    
     // MARK: - Setup
     
     public init(validator: TextValidating,
+                cardTypeSource: CardTypeSource,
                 matchValidator: CVVToCreditCardMatchValidator,
                 messageRecorder: MessageRecording) {
         super.init(
@@ -22,5 +30,17 @@ public final class CardCVVTextFieldViewModel: TextFieldViewModel {
             textMatcher: matchValidator,
             messageRecorder: messageRecorder
         )
+        
+        cardTypeSource.cardType
+            .map { type in
+                switch type {
+                case .mastercard:
+                    return LocalizationConstants.TextField.Title.Card.cvc
+                case .amex, .diners, .discover, .jcb, .unknown, .visa:
+                    return LocalizationConstants.TextField.Title.Card.cvv
+                }
+            }
+            .bind(to: titleRelay)
+            .disposed(by: disposeBag)
     }
 }

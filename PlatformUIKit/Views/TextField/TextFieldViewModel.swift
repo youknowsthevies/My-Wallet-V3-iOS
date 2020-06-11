@@ -189,13 +189,13 @@ public class TextFieldViewModel {
     
     let titleFont = UIFont.main(.medium, 14)
     let textFont = UIFont.main(.medium, 16)
-    
+    let titleRelay: BehaviorRelay<String>
+
     private let autocapitalizationTypeRelay: BehaviorRelay<UITextAutocapitalizationType>
     private let keyboardTypeRelay: BehaviorRelay<UIKeyboardType>
     private let contentTypeRelay: BehaviorRelay<UITextContentType?>
     private let isSecureRelay = BehaviorRelay(value: false)
     private let placeholderRelay: BehaviorRelay<NSAttributedString>
-    private let titleRelay: BehaviorRelay<String>
     private let textColorRelay = BehaviorRelay<UIColor>(value: .textFieldText)
     private let hintRelay = BehaviorRelay<String>(value: "")
     private let stateRelay = BehaviorRelay<State>(value: .empty)
