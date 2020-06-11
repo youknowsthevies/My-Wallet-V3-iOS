@@ -46,6 +46,7 @@ extension Wallet: MnemonicAccessAPI {
             )
             return Disposables.create()
         })
+        .subscribeOn(MainScheduler.asyncInstance)
     }
 }
 
