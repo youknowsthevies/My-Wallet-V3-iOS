@@ -53,6 +53,7 @@ public final class AssetPriceViewInteractor: AssetPriceViewInteracting {
                     )
                 }
             }
+            .catchErrorJustReturn(.loading)
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
     }
