@@ -6,7 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-public struct SelectionItemViewModel: Identifiable {
+public struct SelectionItemViewModel {
     
     public enum Thumb {
         case name(String)

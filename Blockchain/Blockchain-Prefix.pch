@@ -48,8 +48,6 @@
 
 #define URL_SUFFIX_WALLET_OPTIONS @"/Resources/wallet-options.json"
 
-#define DATE_SURVEY_END @"June 30, 2017"
-
 // DEBUG MENU STRINGS
 #define DEBUG_STRING_DEBUG NSLocalizedString(@"Debug", nil)
 #define DEBUG_STRING_WALLET_JSON NSLocalizedString(@"Wallet JSON", nil)
@@ -175,8 +173,6 @@
 #define URL_MERCHANT PRODUCTION_MERCHANT_URL
 
 #define TRANSACTION_RESULT_URL_SUFFIX_HASH_ARGUMENT_ADDRESS_ARGUMENT @"/q/txresult/%@/%@"
-
-#define URL_SURVEY @"https://blockchain.co1.qualtrics.com/SE/?SID=SV_8c6uSMW5eBV9nal"
 
 #define WEBKIT_HANDLER_BUY_COMPLETED @"buyCompleted"
 #define WEBKIT_HANDLER_FRONTEND_INITIALIZED @"frontendInitialized"

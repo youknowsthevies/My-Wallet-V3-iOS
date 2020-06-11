@@ -12,7 +12,6 @@
 #import "TabViewController.h"
 #import "UIViewController+AutoDismiss.h"
 #import "LocalizationConstants.h"
-#import "TransactionsBitcoinViewController.h"
 #import "UIView+ChangeFrameAttribute.h"
 #import "TransferAllFundsBuilder.h"
 #import "BCNavigationController.h"
@@ -675,14 +674,11 @@ BOOL displayingLocalSymbolSend;
             
             [[ModalPresenter sharedInstance] closeModalWithTransition:kCATransitionFade];
             TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
-            [tabControllerManager.transactionsBitcoinViewController didReceiveTransactionMessage];
+            // TODO: IOS-3395
+            // This selects Activity screen. Then it was instructing transactionsBitcoinViewController to display the new transaction.
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [tabControllerManager transactionsClicked:nil];
             });
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * ANIMATION_DURATION * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [tabControllerManager.transactionsBitcoinViewController.tableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
-            });
-            
             [self reload];
         }
         /// The transaction was not successful
@@ -783,19 +779,15 @@ BOOL displayingLocalSymbolSend;
                  [self.bitpayTimer invalidate];
              }
              [[ModalPresenter sharedInstance] closeModalWithTransition:kCATransitionFade];
+             // TODO: IOS-3395
+             // This selects Activity screen. Then it was instructing transactionsBitcoinViewController to display the new transaction.
              TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
-             [tabControllerManager.transactionsBitcoinViewController didReceiveTransactionMessage];
              dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                  [tabControllerManager transactionsClicked:nil];
              });
-             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * ANIMATION_DURATION * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                 [tabControllerManager.transactionsBitcoinViewController.tableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
-             });
-             
              if (self.noteToSet) {
                  [WalletManager.sharedInstance.wallet saveNote:self.noteToSet forTransaction:transactionHash];
              }
-             
              [self reload];
          };
          
@@ -943,12 +935,10 @@ BOOL displayingLocalSymbolSend;
     
     // Close transaction modal, go to transactions view, scroll to top and animate new transaction
     [[ModalPresenter sharedInstance] closeAllModals];
-    [tabControllerManager.transactionsBitcoinViewController didReceiveTransactionMessage];
+    // TODO: IOS-3395
+    // This selects Activity screen. Then it was instructing transactionsBitcoinViewController to display the new transaction.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [tabControllerManager transactionsClicked:nil];
-    });
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * ANIMATION_DURATION * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [tabControllerManager.transactionsBitcoinViewController.tableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
     });
     
     [self reload];

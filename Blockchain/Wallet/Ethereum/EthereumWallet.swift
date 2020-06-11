@@ -51,9 +51,7 @@ class EthereumWallet: NSObject {
     /// This is lazy because we got a massive retain cycle, and injecting using `EthereumWallet` initializer
     /// overflows the function stack with initializers that call one another
     private lazy var dependencies: ETHDependencies = ETHServiceProvider.shared.services
-    
-    @objc private(set) var etherTransactions: [EtherTransaction] = []
-    
+
     private static let defaultPAXAccount = ERC20TokenAccount(
         label: LocalizationConstants.SendAsset.myPaxWallet,
         contractAddress: PaxToken.contractAddress.publicKey,
@@ -331,19 +329,6 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
                 self.address(secondPassword: secondPassword)
             }
             .map { EthereumKit.EthereumAddress(stringLiteral: $0) }
-    }
-
-    // TODO: IOS-2289 add test cases to it
-    /** Fetch ether transactions using an injected service */
-    func fetchEthereumTransactions(using service: EthereumHistoricalTransactionService) -> Single<[EtherTransaction]> {
-        service.fetchTransactions()
-            .map { [weak self] transactions in
-                let result = transactions
-                    .map { $0.legacyTransaction }
-                    .compactMap { $0 }
-                self?.etherTransactions = result
-                return result
-            }
     }
     
     var account: Single<EthereumAssetAccount> {

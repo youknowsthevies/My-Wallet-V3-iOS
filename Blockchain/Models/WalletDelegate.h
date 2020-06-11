@@ -15,7 +15,6 @@
 @protocol WalletDelegate <NSObject>
 
 @optional
-- (void)didSetLatestBlock:(LatestBlock*)block;
 - (void)didGetMultiAddressResponse:(MultiAddressResponse*)response;
 - (void)didFilterTransactions:(NSArray *)transactions;
 - (void)walletDidDecrypt;
@@ -57,7 +56,6 @@
 - (void)showSummaryForTransferAll;
 - (void)sendDuringTransferAll:(NSString *_Nullable)secondPassword;
 - (void)didErrorDuringTransferAll:(NSString *)error secondPassword:(NSString *_Nullable)secondPassword;
-- (void)updateLoadedAllTransactions:(BOOL)loadedAll;
 - (void)receivedTransactionMessage;
 - (void)paymentReceivedOnPINScreen:(NSString *)amount assetType:(LegacyAssetType)assetType address:(NSString *)address;
 - (void)didReceivePaymentNotice:(NSString *_Nullable)notice;
@@ -72,7 +70,6 @@
 - (void)didAcceptRelation:(NSString *)invitation name:(NSString *)name;
 - (void)didFetchExtendedPublicKey;
 - (void)didGetNewMessages:(NSArray *)newMessages;
-- (void)didGetMessagesOnFirstLoad;
 - (void)didSendPaymentRequest:(NSDictionary *)info amount:(uint64_t)amount name:(NSString *)name requestId:(NSString *)requestId;
 - (void)didRequestPaymentRequest:(NSDictionary *)info name:(NSString *)name;
 - (void)didSendPaymentRequestResponse;

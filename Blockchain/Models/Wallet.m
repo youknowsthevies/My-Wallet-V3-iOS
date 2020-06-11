@@ -13,7 +13,6 @@
 #import "NSString+JSONParser_NSString.h"
 #import "crypto_scrypt.h"
 #import "NSData+Hex.h"
-#import "TransactionsBitcoinViewController.h"
 #import "NSArray+EncodedJSONString.h"
 #import <JavaScriptCore/JavaScriptCore.h>
 #import "ModuleXMLHttpRequest.h"
@@ -330,10 +329,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 #pragma mark Multiaddress
 
-    self.context[@"objc_did_set_latest_block"] = ^(){
-        [weakSelf did_set_latest_block];
-    };
-
     self.context[@"objc_did_multiaddr"] = ^(){
         [weakSelf did_multiaddr];
     };
@@ -348,10 +343,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     self.context[@"objc_on_error_get_history"] = ^(NSString *error) {
         [weakSelf on_error_get_history:error];
-    };
-
-    self.context[@"objc_update_loaded_all_transactions"] = ^(NSNumber *index) {
-        [weakSelf update_loaded_all_transactions:index];
     };
 
 #pragma mark Send Screen
@@ -1083,18 +1074,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     return isInitialized;
 }
 
-- (void)setEncryptedWalletData {
-    [self.context evaluateScript:@"MyWalletPhone.setEncryptedWalletData()"];
-}
-
-- (BOOL)hasEncryptedWalletData
-{
-    if ([self isInitialized])
-    return [[self.context evaluateScript:@"MyWalletPhone.hasEncryptedWalletData()"] toBool];
-    else
-    return NO;
-}
-
 - (float)getStrengthForPassword:(NSString *)passwordString
 {
     return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getPasswordStrength(\"%@\")", [passwordString escapedForJS]]] toDouble];
@@ -1147,14 +1126,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 }
 
-- (void)fetchMoreTransactions
-{
-    if ([self isInitialized]) {
-        self.isFetchingTransactions = YES;
-        [self.context evaluateScript:@"MyWalletPhone.fetchMoreTransactions()"];
-    }
-}
-
 - (int)getAllTransactionsCount
 {
     if (![self isInitialized]) {
@@ -1162,11 +1133,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     return [[[self.context evaluateScript:@"MyWalletPhone.getAllTransactionsCount()"] toNumber] intValue];
-}
-
-- (void)getBtcExchangeRates
-{
-    [self.context evaluateScript:@"JSON.stringify(MyWalletPhone.getBtcExchangeRates())"];
 }
 
 - (void)changeLocalCurrency:(NSString *)currencyCode
@@ -1244,15 +1210,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     return [[self.context evaluateScript:@"MyWalletPhone.getSMSVerifiedStatus()"] toBool];
-}
-
-- (NSDictionary *)getFiatCurrencies
-{
-    if (![self isInitialized]) {
-        return nil;
-    }
-
-    return [CurrencySymbol currencyNames];
 }
 
 - (BOOL)getEmailVerifiedStatus
@@ -1431,24 +1388,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWallet.wallet.validateSecondPassword(\"%@\")", [secondPassword escapedForJS]]] toBool];
-}
-
-- (void)getFinalBalance
-{
-    if (![self isInitialized]) {
-        return;
-    }
-
-    self.final_balance = [[[self.context evaluateScript:@"MyWallet.wallet.finalBalance"] toNumber] longLongValue];
-}
-
-- (void)getTotalSent
-{
-    if (![self isInitialized]) {
-        return;
-    }
-
-    self.total_sent = [[[self.context evaluateScript:@"MyWallet.wallet.totalSent"] toNumber] longLongValue];
 }
 
 - (BOOL)isWatchOnlyLegacyAddress:(NSString*)address
@@ -2413,8 +2352,7 @@ NSString * const kLockboxInvitation = @"lockbox";
             Transaction *transaction = [Transaction fromJSONDict:data];
             [transactions addObject:transaction];
         }
-        self.bitcoinCashTransactions = transactions;
-        return self.bitcoinCashTransactions;
+        return transactions;
     }
     return nil;
 }
@@ -2661,48 +2599,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     DLog(@"ws_on_close");
 }
 
-- (void)did_set_latest_block
-{
-    if (![self isInitialized]) {
-        return;
-    }
-
-    DLog(@"did_set_latest_block");
-
-    [self parseLatestBlockJSON:[[self.context evaluateScript:@"MyWalletPhone.didSetLatestBlock()"] toString]];
-}
-
-- (void)parseLatestBlockJSON:(NSString*)latestBlockJSON
-{
-    if ([latestBlockJSON isEqualToString:@""]) {
-        return;
-    }
-
-    id dict = [latestBlockJSON getJSONObject];
-
-    if (dict && [dict isKindOfClass:[NSDictionary class]]) {
-        LatestBlock *latestBlock = [[LatestBlock alloc] init];
-
-        latestBlock.height = [[dict objectForKey:@"height"] intValue];
-        latestBlock.time = [[dict objectForKey:@"time"] longLongValue];
-        latestBlock.blockIndex = [[dict objectForKey:@"block_index"] intValue];
-
-        if ([delegate respondsToSelector:@selector(didSetLatestBlock:)]) {
-            [delegate didSetLatestBlock:latestBlock];
-        } else {
-            DLog(@"Error: delegate of class %@ does not respond to selector didSetLatestBlock:!", [delegate class]);
-        }
-    } else {
-        DLog(@"Error: could not get JSON object from latest block JSON");
-    }
-}
-
-- (void)reloadFilter
-{
-    self.isFilteringTransactions = YES;
-    [self did_multiaddr];
-}
-
 - (void)did_multiaddr
 {
     if (![self isInitialized]) {
@@ -2711,22 +2607,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     DLog(@"did_multiaddr");
 
-    [self getFinalBalance];
-
     NSString *filter = @"";
-
-    TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
-    TransactionsBitcoinViewController *transactionsBitcoinViewController = tabControllerManager.transactionsBitcoinViewController;
-
-    int filterIndex = transactionsBitcoinViewController ? (int)transactionsBitcoinViewController.filterIndex : [ConstantsObjcBridge filterIndexAll];
-
-    if (filterIndex == [ConstantsObjcBridge filterIndexAll]) {
-        filter = @"";
-    } else if (filterIndex == [ConstantsObjcBridge filterIndexImportedAddresses]) {
-        filter = TRANSACTION_FILTER_IMPORTED;
-    } else {
-        filter = [NSString stringWithFormat:@"%d", filterIndex];
-    }
 
     NSString *multiAddrJSON = [[self.context evaluateScript:[NSString stringWithFormat:@"JSON.stringify(MyWalletPhone.getMultiAddrResponse(\"%@\"))", filter]] toString];
 
@@ -3418,15 +3299,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     DLog(@"send_transfer_all");
     if ([self.delegate respondsToSelector:@selector(sendDuringTransferAll:)]) {
         [self.delegate sendDuringTransferAll:secondPassword];
-    }
-}
-
-- (void)update_loaded_all_transactions:(NSNumber *)loadedAll
-{
-    DLog(@"loaded_all_transactions");
-
-    if ([self.delegate respondsToSelector:@selector(updateLoadedAllTransactions:)]) {
-        [self.delegate updateLoadedAllTransactions:[loadedAll boolValue]];
     }
 }
 

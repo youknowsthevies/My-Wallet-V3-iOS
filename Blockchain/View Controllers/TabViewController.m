@@ -194,11 +194,6 @@
     [self updateTopBarForIndex:self.selectedIndex];
 }
 
-- (void)selectorButtonClicked
-{
-    [self.assetDelegate selectorButtonClicked];
-}
-
 - (IBAction)qrCodeButtonClicked:(UIButton *)sender
 {
     [self.assetDelegate qrCodeButtonClicked];

@@ -42,10 +42,6 @@
 
 @property(nonatomic, strong) id<WalletDelegate> delegate;
 
-@property(nonatomic) uint64_t final_balance;
-@property(nonatomic) uint64_t total_sent;
-@property(nonatomic) uint64_t total_received;
-
 @property(nonatomic, strong) NSMutableDictionary *transactionProgressListeners;
 
 @property(nonatomic) NSDictionary *accountInfo;
@@ -62,8 +58,6 @@
 @property int emptyAccountIndex;
 @property int recoveredAccountIndex;
 
-@property BOOL isFilteringTransactions;
-@property BOOL isFetchingTransactions;
 @property BOOL isSyncing;
 @property BOOL isNew;
 @property NSString *twoFactorInput;
@@ -80,8 +74,6 @@
 @property (nonatomic) NSString *bchSwipeAddressToSubscribe;
 
 @property (nonatomic) int lastLabelledAddressesCount;
-
-@property (nonatomic) NSArray *bitcoinCashTransactions;
 
 @property (readonly, nonatomic) BitcoinWallet * _Nonnull bitcoin;
 @property (readonly, nonatomic) EthereumWallet * _Nonnull ethereum;
@@ -136,7 +128,6 @@
 - (NSArray *)archivedLegacyAddresses;
 
 - (BOOL)isInitialized;
-- (BOOL)hasEncryptedWalletData;
 
 - (float)getStrengthForPassword:(NSString *)password;
 
@@ -162,9 +153,6 @@
 - (BOOL)isAddressAvailable:(NSString *)address;
 - (BOOL)isAccountAvailable:(int)account;
 - (int)getIndexOfActiveAccount:(int)account assetType:(LegacyAssetType)assetType;
-
-- (void)fetchMoreTransactions;
-- (void)reloadFilter;
 
 - (int)getAllTransactionsCount;
 
@@ -211,10 +199,7 @@
 
 - (void)setPbkdf2Iterations:(int)iterations;
 
-- (void)loading_start_get_history;
-- (void)loading_start_recover_wallet;
 - (void)loading_stop;
-- (void)upgrade_success;
 
 - (BOOL)checkIfWalletHasAddress:(NSString *)address;
 
@@ -229,14 +214,13 @@
 - (NSString *_Nullable)getEmail;
 - (NSString *)getSMSNumber;
 - (BOOL)getSMSVerifiedStatus;
-- (NSDictionary *)getFiatCurrencies;
 - (BOOL)getEmailVerifiedStatus;
 
 - (void)getAccountInfoAndExchangeRates;
 
 - (void)changeEmail:(NSString *)newEmail;
 - (void)resendVerificationEmail:(NSString *)email;
-- (void)getBtcExchangeRates;
+
 - (void)changeMobileNumber:(NSString *)newMobileNumber success:(void (^ _Nonnull)(void))success error: (void (^ _Nonnull)(void))error;
 - (void)verifyMobileNumber:(NSString *)code success:(void (^ _Nonnull)(void))success error: (void (^ _Nonnull)(void))error;
 - (void)enableTwoStepVerificationForSMS;

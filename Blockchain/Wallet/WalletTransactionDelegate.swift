@@ -17,7 +17,4 @@ import Foundation
 
     /// Method invoked after pushing a transaction to the network
     func didPushTransaction()
-
-    /// Method invoked after transactions have been fetched
-    func updateLoadedAllTransactions(loadedAll: Bool)
 }

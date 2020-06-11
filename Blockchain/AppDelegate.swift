@@ -154,8 +154,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         NotificationCenter.default.post(name: Constants.NotificationKeys.appEnteredBackground, object: nil)
 
-        wallet.isFetchingTransactions = false
-        wallet.isFilteringTransactions = false
         wallet.didReceiveMessageForLastTransaction = false
 
         WalletManager.shared.closeWebSockets(withCloseCode: .backgroundedApp)

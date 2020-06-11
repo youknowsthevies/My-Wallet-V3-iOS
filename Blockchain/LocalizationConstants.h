@@ -228,9 +228,6 @@
 
 #define BC_STRING_LOGOUT_AND_FORGET_WALLET NSLocalizedString(@"Logout and forget wallet", nil)
 
-#define BC_STRING_SURVEY_ALERT_TITLE NSLocalizedString(@"Would you like to tell us about your experience with Blockchain?", nil)
-#define BC_STRING_SURVEY_ALERT_MESSAGE NSLocalizedString(@"You will be leaving the app.", nil)
-
 #define BC_STRING_INVALID_BITCOIN_ADDRESS_ARGUMENT NSLocalizedString(@"Invalid Bitcoin address: %@", nil)
 
 #define BC_STRING_UPDATE NSLocalizedString(@"Update", nil)
