@@ -30,6 +30,12 @@ extension Result {
 }
 
 extension Result {
+    public var successData: Success? {
+        try? self.get()
+    }
+}
+
+extension Result {
     public var single: Single<Success> {
         switch self {
         case .success(let value):

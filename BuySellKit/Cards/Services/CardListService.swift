@@ -65,7 +65,7 @@ public final class CardListService: CardListServiceAPI {
                         featureFetcher.fetchBool(for: .simpleBuyCardsEnabled)
                             .map { $0 ? cards : [] }
                             .asObservable()
-                    }
+                }
             }
     }
     
