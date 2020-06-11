@@ -35,8 +35,7 @@ public struct BuyActivityItemEvent: Tokenized {
     public let paymentMethod: PaymentMethod
     
     public let identifier: String
-    
-    public let expirationDate: Date
+
     public let creationDate: Date
 
     public let fiatValue: FiatValue
@@ -45,14 +44,12 @@ public struct BuyActivityItemEvent: Tokenized {
     
     public init(identifier: String,
                 creationDate: Date,
-                expirationDate: Date,
                 status: EventStatus,
                 fiatValue: FiatValue,
                 cryptoValue: CryptoValue,
                 fee: FiatValue,
                 paymentMethod: PaymentMethod) {
         self.creationDate = creationDate
-        self.expirationDate = expirationDate
         self.identifier = identifier
         self.status = status
         self.fiatValue = fiatValue
