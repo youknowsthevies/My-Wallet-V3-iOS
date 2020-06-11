@@ -35,7 +35,11 @@ final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
     
     public init(historicalPriceProvider: HistoricalFiatPriceServiceAPI,
                 chartUserInteracting: AssetLineChartUserInteracting) {
-        Observable.combineLatest(historicalPriceProvider.calculationState, chartUserInteracting.state)
+        Observable
+            .combineLatest(
+                historicalPriceProvider.calculationState,
+                chartUserInteracting.state
+            )
             .map { tuple -> InteractionState in
                 let calculationState = tuple.0
                 let userInteractionState = tuple.1
@@ -85,6 +89,7 @@ final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                     )
                 }
         }
+        .catchErrorJustReturn(.loading)
         .bind(to: stateRelay)
         .disposed(by: disposeBag)
     }
