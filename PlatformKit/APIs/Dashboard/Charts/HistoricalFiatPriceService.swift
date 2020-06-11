@@ -118,6 +118,7 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
                 .value(HistoricalFiatPriceResponse(prices: $0.1.0, fiatValue: $0.0, priceWindow: $0.1.1))
             }
             .startWith(.calculating)
+            .catchErrorJustReturn(.calculating)
             .bind(to: calculationStateRelay)
             .disposed(by: bag)
     }

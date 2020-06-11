@@ -61,6 +61,7 @@ final class AssetLineChartInteractor: AssetLineChartInteracting {
             .map { .init(delta: $0.delta, currency: cryptoCurrency, prices: $0.prices) }
             .map { .loaded(next: $0) }
             .startWith(.loading)
+            .catchErrorJustReturn(.loading)
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
     }
