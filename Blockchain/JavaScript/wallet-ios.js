@@ -81,7 +81,7 @@ var walletOptions = new WalletOptions(BlockchainAPI);
 // Register for JS event handlers and forward to Obj-C handlers
 
 WalletStore.addEventListener(function (event, obj) {
-    var eventsWithObjCHandlers = ["did_fail_set_guid", "did_multiaddr", "did_set_latest_block", "error_restoring_wallet", "logging_out", "on_backup_wallet_start", "on_backup_wallet_error", "on_backup_wallet_success", "on_tx_received", "ws_on_close", "ws_on_open", "did_load_wallet"];
+    var eventsWithObjCHandlers = ["did_multiaddr", "did_fail_set_guid", "error_restoring_wallet", "logging_out", "on_backup_wallet_start", "on_backup_wallet_error", "on_backup_wallet_success", "on_tx_received", "ws_on_close", "ws_on_open", "did_load_wallet"];
 
     if (event == 'msg') {
         if (obj.type == 'error') {
@@ -269,6 +269,13 @@ MyWalletPhone.totalActiveBalance = function() {
     }
 
     return MyWallet.wallet.hdwallet.balanceActiveAccounts + MyWallet.wallet.balanceSpendableActiveLegacy;
+}
+
+MyWalletPhone.watchOnlyAddresses = function() {
+    var addresses = MyWallet.wallet.activeKeys
+        .filter(function (k) { return k.isWatchOnly; })
+        .map(function (k) { return k.address; });
+    return JSON.stringify(addresses);
 }
 
 MyWalletPhone.watchOnlyBalance = function() {
@@ -1129,12 +1136,6 @@ MyWalletPhone.setEncryptedWalletData = function(payload) {
     MyWallet.setEncryptedWalletData(payload);
 };
 
-MyWalletPhone.hasEncryptedWalletData = function() {
-    var data = MyWallet.getEncryptedWalletData();
-
-    return data && data.length > 0;
-};
-
 MyWalletPhone.get_history = function(hideBusyView) {
     var success = function () {
         console.log('Got wallet history');
@@ -1184,14 +1185,6 @@ MyWalletPhone.getMultiAddrResponse = function(txFilter) {
 
     return obj;
 };
-
-MyWalletPhone.fetchMoreTransactions = function() {
-    objc_loading_start_get_history();
-    MyWallet.wallet.fetchTransactions().then(function(numFetched) {
-      var loadedAll = numFetched < MyWallet.wallet.txList.loadNumber;
-      objc_update_loaded_all_transactions(loadedAll);
-    });
-}
 
 MyWalletPhone.addKey = function(keyString) {
     var success = function(address) {
@@ -1853,11 +1846,6 @@ MyWalletPhone.filteredWalletJSON = function() {
         }
     }
     return walletJSON;
-}
-
-MyWalletPhone.didSetLatestBlock = function() {
-    var latestBlock = JSON.stringify(MyWallet.wallet.latestBlock);
-    return latestBlock == null ? '' : latestBlock;
 }
 
 MyWalletPhone.dust = function() {

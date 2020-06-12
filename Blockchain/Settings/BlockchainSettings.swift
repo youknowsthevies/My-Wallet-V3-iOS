@@ -308,12 +308,10 @@ final class BlockchainSettings: NSObject {
 
         /**
          Determines the number of labeled addresses for the default account.
-
          - Note:
          This value is set when the wallet has gotten its latest multi-address response.
-
          This setting is currently only used in the `didGet(_ response: MultiAddressResponse)` function of the wallet manager.
-        */
+         */
         @objc var defaultAccountLabelledAddressesCount: Int {
             get {
                 return defaults.integer(forKey: UserDefaults.Keys.defaultAccountLabelledAddressesCount.rawValue)

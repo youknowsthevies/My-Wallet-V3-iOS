@@ -9,12 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "TabViewController.h"
 #import "Assets.h"
-#import "TransactionsBitcoinViewController.h"
 #import "SendBitcoinViewController.h"
 #import "ReceiveBitcoinViewController.h"
-#import "TransactionsBitcoinCashViewController.h"
-
-@class TransactionsEthereumViewController;
 
 @interface TabControllerManager : UIViewController <AssetDelegate>
 
@@ -23,21 +19,14 @@
 @property (nonatomic) LegacyAssetType assetType;
 @property (nonatomic) NSDecimalNumber *latestEthExchangeRate;
 
-@property (strong, nonatomic) TransactionsBitcoinViewController *transactionsBitcoinViewController;
 @property (strong, nonatomic) ReceiveBitcoinViewController *receiveBitcoinViewController;
 @property (strong, nonatomic) ReceiveBitcoinViewController *receiveBitcoinCashViewController;
 @property (strong, nonatomic) SendBitcoinViewController *sendBitcoinViewController;
 @property (strong, nonatomic) SendBitcoinViewController *sendBitcoinCashViewController;
 
-@property (strong, nonatomic) TransactionsEthereumViewController *transactionsEtherViewController;
-
-@property (strong, nonatomic) TransactionsBitcoinCashViewController *transactionsBitcoinCashViewController;
-
 - (void)reload;
 - (void)reloadAfterMultiAddressResponse;
 - (void)reloadMessageViews;
-- (void)didSetLatestBlock:(LatestBlock *)block;
-- (void)didGetMessagesOnFirstLoad;
 
 - (void)logout;
 - (void)forgetWallet;
@@ -89,14 +78,6 @@
 - (void)clearReceiveAmounts;
 - (void)didSetDefaultAccount;
 - (void)paymentReceived:(uint64_t)amount;
-
-// Transactions View Controller
-- (void)updateTransactionsViewControllerData:(MultiAddressResponse *)data;
-- (void)filterTransactionsByAccount:(int)accountIndex filterLabel:(NSString *)filterLabel assetType:(LegacyAssetType)assetType;
-- (void)filterTransactionsByImportedAddresses;
-- (void)selectPayment:(NSString *)payment;
-- (void)showTransactionDetailForHash:(NSString *)hash;
-- (void)setTransactionsViewControllerMessageIdentifier:(NSString *)identifier;
 
 - (void)removeTransactionsFilter;
 - (void)reloadSymbols;

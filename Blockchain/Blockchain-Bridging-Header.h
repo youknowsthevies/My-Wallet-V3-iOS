@@ -5,9 +5,6 @@
 #import <Localization/Localization-Swift.h>
 #import "AccountsAndAddressesNavigationController.h"
 #import "SendBitcoinViewController.h"
-#import "TransactionsViewController.h"
-#import "TransactionsBitcoinViewController.h"
-#import "TransactionsBitcoinCashViewController.h"
 #import "AssetSelectorView.h"
 #import "Assets.h"
 #import "BCConfirmPaymentViewModel.h"
@@ -20,7 +17,7 @@
 #import "KeychainItemWrapper+SwipeAddresses.h"
 #import "KeychainItemWrapper.h"
 #import "ModuleXMLHttpRequest.h"
-#import "MultiAddressResponse.h"
+
 #import "NSData+Hex.h"
 #import "NSNumberFormatter+Currencies.h"
 #import "Reachability.h"
@@ -31,13 +28,7 @@
 #import "UIDevice+Hardware.h"
 #import "UIViewController+AutoDismiss.h"
 #import "Wallet.h"
-#import "TransactionEtherTableViewCell.h"
-#import "BCInsetLabel.h"
-#import "TransactionTableCell.h"
-#import "TransactionDetailViewModel.h"
-#import "TransactionDetailNavigationController.h"
-#import "TransactionDetailViewController.h"
-#import "NSDateFormatter+VerboseString.h"
+
 // Settings
 #import "SettingsWebViewController.h"
 #import "KeychainItemWrapper+SwipeAddresses.h"

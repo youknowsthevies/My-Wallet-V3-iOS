@@ -113,13 +113,14 @@ final class CardDetailsScreenPresenter {
             cardTypeSource: cardNumberValidator,
             invalidReason: LocalizationConstants.TextField.Gesture.invalidCVV
         )
-        
+
         let cardNumberTextFieldViewModel = CardTextFieldViewModel(
             validator: cardNumberValidator,
             messageRecorder: messageRecorder
         )
         let cardCVVTextFieldViewModel = CardCVVTextFieldViewModel(
             validator: cardCVVValidator,
+            cardTypeSource: cardNumberValidator,
             matchValidator: cvvToCardNumberMatcher,
             messageRecorder: messageRecorder
         )
@@ -206,7 +207,7 @@ final class CardDetailsScreenPresenter {
             .drive(buttonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
-        buttonViewModel.tapRelay
+        let buttonTapped = buttonViewModel.tapRelay
             .withLatestFrom(dataRelay)
             .compactMap { $0 }
             .flatMap(weak: self) { (self, cardData) in
@@ -219,6 +220,18 @@ final class CardDetailsScreenPresenter {
                     .map { (isExist: $0, data: cardData) }
                     .asObservable()
             }
+            .mapToResult()
+            .share(replay: 1)
+        
+        buttonTapped
+            .filter { $0.isFailure }
+            .mapToVoid()
+            .map { .generic }
+            .bind(to: errorRelay)
+            .disposed(by: disposeBag)
+        
+        buttonTapped
+            .compactMap { $0.successData }
             .bind(weak: self) { (self, payload) in
                 if payload.isExist {
                     self.errorRelay.accept(.cardAlreadySaved)

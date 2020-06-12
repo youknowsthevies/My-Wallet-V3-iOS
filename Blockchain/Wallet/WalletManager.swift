@@ -367,34 +367,23 @@ extension WalletManager: WalletDelegate {
         }
     }
 
-    // MARK: - BTC Multiaddress
-    func didSetLatestBlock(_ block: LatestBlock!) {
-        AppCoordinator.shared.tabControllerManager.didSetLatestBlock(block)
+    // MARK: ETH Exchange Rate
+
+    func didFetchEthExchangeRate(_ rate: NSNumber!) {
+        AppCoordinator.shared.tabControllerManager.didFetchEthExchangeRate(rate)
     }
+
+    // MARK: - BTC Multiaddress
 
     func didGet(_ response: MultiAddressResponse) {
         latestMultiAddressResponse = response
-        AppCoordinator.shared.tabControllerManager.updateTransactionsViewControllerData(response)
-        if self.wallet.isFilteringTransactions {
-            self.wallet.isFilteringTransactions = false
-            updateSymbols()
-            reloadAfterMultiaddressResponse()
-        } else {
-            self.wallet.getAccountInfoAndExchangeRates()
-        }
-
+        wallet.getAccountInfoAndExchangeRates()
         let newDefaultAccountLabeledAddressesCount = self.wallet.getDefaultAccountLabelledAddressesCount()
         if BlockchainSettings.App.shared.defaultAccountLabelledAddressesCount != newDefaultAccountLabeledAddressesCount {
             AssetAddressRepository.shared.removeAllSwipeAddresses(for: .bitcoin)
         }
         let newCount = newDefaultAccountLabeledAddressesCount
         BlockchainSettings.App.shared.defaultAccountLabelledAddressesCount = Int(newCount)
-    }
-
-    // MARK: ETH Exchange Rate
-
-    func didFetchEthExchangeRate(_ rate: NSNumber!) {
-        AppCoordinator.shared.tabControllerManager.didFetchEthExchangeRate(rate)
     }
 
     // MARK: - Backup
@@ -488,12 +477,6 @@ extension WalletManager: WalletDelegate {
                                              asset: .init(legacyAssetType: assetType),
                                              address: address)
         paymentReceivedRelay.accept(details)
-    }
-
-    func updateLoadedAllTransactions(_ loadedAll: Bool) {
-        DispatchQueue.main.async { [unowned self] in
-            self.transactionDelegate?.updateLoadedAllTransactions(loadedAll: loadedAll)
-        }
     }
 
     // MARK: - Transfer all

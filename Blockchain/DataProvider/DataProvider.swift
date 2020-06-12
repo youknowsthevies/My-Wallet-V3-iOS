@@ -8,6 +8,7 @@
 
 import PlatformKit
 import RxSwift
+import BitcoinKit
 
 /// A container for common crypto services.
 /// Rule of thumb: If a service may be used by multiple clients,
@@ -157,7 +158,7 @@ final class DataProvider: DataProviding {
             exchange: exchange[.stellar]
         )
         let bitcoinBalanceFetcher = AssetBalanceFetcher(
-            wallet: BitcoinAssetBalanceFetcher(),
+            wallet: BitcoinAssetBalanceFetcher(bridge: WalletManager.shared.wallet.bitcoin),
             trading: CustodialCryptoBalanceFetcher(
                 currencyType: .bitcoin,
                 service: tradingBalanceService

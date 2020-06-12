@@ -14,7 +14,6 @@
 
 @protocol AssetDelegate
 - (void)didSetAssetType:(LegacyAssetType)assetType;
-- (void)selectorButtonClicked;
 - (void)qrCodeButtonClicked;
 @end
 

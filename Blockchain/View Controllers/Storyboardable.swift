@@ -14,7 +14,7 @@ protocol Storyboardable: class {
 
 extension Storyboardable where Self: UIViewController {
     static var defaultStoryboardName: String {
-        return String(describing: self)
+        String(describing: self)
     }
 
     static func makeFromStoryboard() -> Self {

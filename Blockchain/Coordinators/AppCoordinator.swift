@@ -195,8 +195,6 @@ import BuySellUIKit
             return
         }
         tabControllerManager.hideSendAndReceiveKeyboards()
-        tabControllerManager.transactionsBitcoinViewController?.loadedAllTransactions = false
-        tabControllerManager.transactionsBitcoinViewController?.messageIdentifier = nil
         tabControllerManager.dashBoardClicked(nil)
         closeSideMenu()
     }
@@ -397,7 +395,6 @@ extension AppCoordinator: DrawerRouting {
         } else {
             slidingViewController.resetTopView(animated: true)
         }
-        walletManager.wallet.isFetchingTransactions = false
     }
 }
 

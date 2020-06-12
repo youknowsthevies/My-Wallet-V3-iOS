@@ -1,5 +1,5 @@
 //
-//  NSNumberFormatter+Currencies.swift
+//  NumberFormatter+Currencies.swift
 //  Blockchain
 //
 //  Created by Paulo on 14/02/2020.

@@ -10,14 +10,10 @@ import Foundation
 import ToolKit
 import PlatformKit
 
-enum StellarOperation: Identifiable {
-    
+enum StellarOperation {
+
     var identifier: String {
         return token
-    }
-    
-    func cellType() -> TransactionTableCell.Type {
-        return TransactionTableCell.self
     }
     
     enum Direction {

@@ -23,12 +23,10 @@ struct BitcoinCashServices: BitcoinCashDependencies {
 
     init(bridge: BitcoinCashWalletBridgeAPI = BitcoinCashWallet(),
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         client: BitcoinKit.APIClient = BitcoinKit.APIClient(),
          authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
          simpleBuyOrdersAPI: SimpleBuyOrdersServiceAPI = SimpleBuyServiceProvider.default.ordersDetails,
          swapActivityAPI: SwapActivityServiceAPI = SwapServiceProvider.default.activity) {
         transactions = .init(
-            with: client,
             bridge: bridge
         )
         activityDetails = .init(

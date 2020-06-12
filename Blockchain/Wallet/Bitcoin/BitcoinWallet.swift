@@ -155,10 +155,25 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
     }
     
     var wallets: Single<[BitcoinWalletAccount]> {
-        return secondPasswordIfAccountCreationNeeded
+        secondPasswordIfAccountCreationNeeded
             .flatMap(weak: self) { (self, secondPassword) -> Single<[BitcoinWalletAccount]> in
                 self.bitcoinWallets(secondPassword: secondPassword)
             }
+            .subscribeOn(MainScheduler.asyncInstance)
+            .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
+    }
+    
+    var watchOnlyAddreses: Single<[String]> {
+        Single.create(weak: self) { (self, observer) -> Disposable in
+            guard let wallet = self.wallet else {
+                observer(.error(WalletError.notInitialized))
+                return Disposables.create()
+            }
+            observer(.success(wallet.getWatchOnlyAddresses()))
+            return Disposables.create()
+        }
+        .subscribeOn(MainScheduler.asyncInstance)
+        .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
     }
     
     private func bitcoinWallets(secondPassword: String?) -> Single<[BitcoinWalletAccount]> {
@@ -271,6 +286,4 @@ extension BitcoinWallet: MnemonicAccessAPI {
         }
         return wallet.mnemonicPromptingIfNeeded
     }
-    
-    
 }
