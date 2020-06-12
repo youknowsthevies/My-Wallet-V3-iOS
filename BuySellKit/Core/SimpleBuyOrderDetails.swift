@@ -15,7 +15,7 @@ public struct SimpleBuyOrderDetails {
     typealias LocalizedString = LocalizationConstants.SimpleBuy.OrderState
     // MARK: - Types
 
-    public enum State: String {
+    public enum State: String, CaseIterable {
         
         /// Waiting for deposit to be matched
         case pendingDeposit = "PENDING_DEPOSIT"

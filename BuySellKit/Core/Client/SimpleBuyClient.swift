@@ -142,6 +142,7 @@ public final class SimpleBuyClient: SimpleBuyClientAPI {
 
     public func orderDetails(token: String, pendingOnly: Bool) -> Single<[SimpleBuyOrderPayload.Response]> {
         let path = Path.trades
+        let states: [SimpleBuyOrderDetails.State] = SimpleBuyOrderDetails.State.allCases.filter { $0 != .cancelled }
         let parameters = [
             URLQueryItem(
                 name: Parameter.pendingOnly,
@@ -149,7 +150,7 @@ public final class SimpleBuyClient: SimpleBuyClientAPI {
             ),
             URLQueryItem(
                 name: Parameter.states,
-                value: "CANCELED"
+                value: states.map({ $0.rawValue }).joined(separator: ",")
             )
         ]
         let headers = [HttpHeaderField.authorization: token]
