@@ -1486,3 +1486,16 @@
 "Interest" = "Интерес";
 "Trading" = "торговый";
 "Wallet Balance" = "Кошелек баланс";
+"All your transactions will show up here." = "Все ваши транзакции будут отображаться здесь.";
+"Completed" = "Завершенный";
+"Confirmations" = "Подтверждения";
+"For" = "За";
+"Gas" = "газ";
+"Gas for" = "Газ для";
+"Replaced" = "Заменены";
+"Select a Wallet" = "Выберите кошелек";
+"Sell" = "Продам";
+"Trade" = "Сделка";
+"View on Blockchain Explorer" = "Посмотреть на Blockchain Explorer";
+"View on StellarChain.io" = "Посмотреть на StellarChain.io";
+"You Have No Activity" = "У вас нет активности";

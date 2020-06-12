@@ -1487,3 +1487,16 @@
 "Interest" = "관심";
 "Trading" = "거래";
 "Wallet Balance" = "월렛 잔액";
+"All your transactions will show up here." = "모든 거래가 여기에 표시됩니다.";
+"Completed" = "완료";
+"Confirmations" = "확인";
+"For" = "에 대한";
+"Gas" = "가스";
+"Gas for" = "가스";
+"Replaced" = "교체";
+"Select a Wallet" = "월렛을 선택하십시오";
+"Sell" = "팔다";
+"Trade" = "무역";
+"View on Blockchain Explorer" = "블록 체인 탐색기에서보기";
+"View on StellarChain.io" = "StellarChain.io에서보기";
+"You Have No Activity" = "활동이 없습니다";

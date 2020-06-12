@@ -1491,3 +1491,16 @@
 "Interest" = "Interes";
 "Trading" = "Comercial";
 "Wallet Balance" = "Soldul portofelului";
+"All your transactions will show up here." = "Toate tranzacțiile dvs. vor apărea aici.";
+"Completed" = "Efectuat";
+"Confirmations" = "Confirmări";
+"For" = "Pentru";
+"Gas" = "Gaz";
+"Gas for" = "Gaz pentru";
+"Replaced" = "înlocuit";
+"Select a Wallet" = "Selectați un portofel";
+"Sell" = "Vinde";
+"Trade" = "comerț";
+"View on Blockchain Explorer" = "Vizualizați în Blockchain Explorer";
+"View on StellarChain.io" = "Vizualizare pe StellarChain.io";
+"You Have No Activity" = "Nu aveți nicio activitate";

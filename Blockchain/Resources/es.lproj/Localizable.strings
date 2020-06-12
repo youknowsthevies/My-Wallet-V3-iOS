@@ -1486,3 +1486,16 @@ Incluso si la reduces a %s, puedes esperar que la transacción se confirme en lo
 "Interest" = "Interesar";
 "Trading" = "Comercio";
 "Wallet Balance" = "Saldo de billetera";
+"All your transactions will show up here." = "Todas sus transacciones aparecerán aquí.";
+"Completed" = "Terminado";
+"Confirmations" = "Confirmaciones";
+"For" = "por";
+"Gas" = "Gas";
+"Gas for" = "Gas para";
+"Replaced" = "Reemplazado";
+"Select a Wallet" = "Selecciona una billetera";
+"Sell" = "Vender";
+"Trade" = "Comercio";
+"View on Blockchain Explorer" = "Ver en Blockchain Explorer";
+"View on StellarChain.io" = "Ver en StellarChain.io";
+"You Have No Activity" = "No tienes actividad";

@@ -1487,3 +1487,16 @@
 "Interest" = "น่าสนใจ";
 "Trading" = "การค้าขาย";
 "Wallet Balance" = "ยอดคงเหลือใน Wallet";
+"All your transactions will show up here." = "ธุรกรรมทั้งหมดของคุณจะปรากฏที่นี่";
+"Completed" = "เสร็จ";
+"Confirmations" = "การยืนยัน";
+"For" = "สำหรับ";
+"Gas" = "ก๊าซ";
+"Gas for" = "แก๊สสำหรับ";
+"Replaced" = "แทนที่";
+"Select a Wallet" = "เลือกกระเป๋าเงิน";
+"Sell" = "ขาย";
+"Trade" = "ค้า";
+"View on Blockchain Explorer" = "ดูบน Blockchain Explorer";
+"View on StellarChain.io" = "ดูบน StellarChain.io";
+"You Have No Activity" = "คุณไม่มีกิจกรรม";

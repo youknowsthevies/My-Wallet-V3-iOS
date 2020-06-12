@@ -1489,3 +1489,16 @@
 "Interest" = "Minat";
 "Trading" = "Berniaga";
 "Wallet Balance" = "Baki Dompet";
+"All your transactions will show up here." = "Semua urus niaga anda akan dipaparkan di sini.";
+"Completed" = "Selesai";
+"Confirmations" = "Pengesahan";
+"For" = "Untuk";
+"Gas" = "Gas";
+"Gas for" = "Gas untuk";
+"Replaced" = "Diganti";
+"Select a Wallet" = "Pilih Dompet";
+"Sell" = "Jual";
+"Trade" = "Perdagangan";
+"View on Blockchain Explorer" = "Lihat di Blockchain Explorer";
+"View on StellarChain.io" = "Lihat di StellarChain.io";
+"You Have No Activity" = "Anda Tidak Mempunyai Aktiviti";
