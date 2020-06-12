@@ -25,6 +25,7 @@ class AddressInteractorTests: XCTestCase {
                                                         addresses: addresses)
         let interactor = AddressInteractor(asset: .bitcoin,
                                            addressType: .swipeToReceive,
+                                           addressFetcherProvider: { addressFetcher },
                                            transactionObserver: transactionObserver,
                                            addressSubscriber: AddressSubscriberMock())
         do {
@@ -34,7 +35,7 @@ class AddressInteractorTests: XCTestCase {
             // The address must not be there
             XCTAssert(!addressFetcher.addresses.contains(receivingAddress))
         } catch {
-            XCTFail("expected success. got \(error) instead")
+            XCTFail("expected success. got \(error.localizedDescription) instead")
         }
     }
     
@@ -49,6 +50,7 @@ class AddressInteractorTests: XCTestCase {
                                                         addresses: addresses)
         let interactor = AddressInteractor(asset: .bitcoinCash,
                                            addressType: .swipeToReceive,
+                                           addressFetcherProvider: { addressFetcher },
                                            transactionObserver: transactionObserver,
                                            addressSubscriber: AddressSubscriberMock())
         do {
@@ -71,6 +73,7 @@ class AddressInteractorTests: XCTestCase {
                                                         addresses: addresses)
         let interactor = AddressInteractor(asset: .stellar,
                                            addressType: .swipeToReceive,
+                                           addressFetcherProvider: { addressFetcher },
                                            transactionObserver: transactionObserver,
                                            addressSubscriber: AddressSubscriberMock())
         do {
