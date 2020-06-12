@@ -1487,3 +1487,16 @@ Zelfs als u het tarief verlaagt naar %s, kunt u verwachten dat de transactie zal
 "Interest" = "Interesseren";
 "Trading" = "Handel";
 "Wallet Balance" = "Wallet-saldo";
+"All your transactions will show up here." = "Al uw transacties worden hier weergegeven.";
+"Completed" = "Voltooid";
+"Confirmations" = "Bevestigingen";
+"For" = "Voor";
+"Gas" = "Gas";
+"Gas for" = "Gas voor";
+"Replaced" = "Vervangen";
+"Select a Wallet" = "Selecteer een portemonnee";
+"Sell" = "Verkopen";
+"Trade" = "Handel";
+"View on Blockchain Explorer" = "Bekijk op Blockchain Explorer";
+"View on StellarChain.io" = "Bekijk op StellarChain.io";
+"You Have No Activity" = "Je hebt geen activiteit";

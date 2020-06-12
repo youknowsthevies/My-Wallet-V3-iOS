@@ -1487,3 +1487,16 @@ I když poplatek snížíte na %s, bude transakce potvrzena během příštích 
 "Interest" = "Zájem";
 "Trading" = "Obchodování";
 "Wallet Balance" = "Zůstatek v peněžence";
+"All your transactions will show up here." = "Zde se zobrazí všechny vaše transakce.";
+"Completed" = "Dokončeno";
+"Confirmations" = "Potvrzení";
+"For" = "Pro";
+"Gas" = "Plyn";
+"Gas for" = "Plyn pro";
+"Replaced" = "Nahrazeno";
+"Select a Wallet" = "Vyberte peněženku";
+"Sell" = "Prodat";
+"Trade" = "Obchod";
+"View on Blockchain Explorer" = "Zobrazit v Průzkumníku Blockchain";
+"View on StellarChain.io" = "Zobrazit na StellarChain.io";
+"You Have No Activity" = "Nemáte žádnou aktivitu";

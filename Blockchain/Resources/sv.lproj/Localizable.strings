@@ -1491,3 +1491,16 @@
 "Interest" = "Intressera";
 "Trading" = "Handel";
 "Wallet Balance" = "Plånbokbalans";
+"All your transactions will show up here." = "Alla dina transaktioner dyker upp här.";
+"Completed" = "Avslutad";
+"Confirmations" = "bekräftelser";
+"For" = "För";
+"Gas" = "Gas";
+"Gas for" = "Gas för";
+"Replaced" = "Ersatt";
+"Select a Wallet" = "Välj en plånbok";
+"Sell" = "Sälja";
+"Trade" = "Handel";
+"View on Blockchain Explorer" = "Visa på Blockchain Explorer";
+"View on StellarChain.io" = "Visa på StellarChain.io";
+"You Have No Activity" = "Du har ingen aktivitet";

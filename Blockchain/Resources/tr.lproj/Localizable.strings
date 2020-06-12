@@ -1487,3 +1487,16 @@ Stellar airdrop için uzun bir bekleme listesi olduğunu ve ücretsiz XLM talepl
 "Interest" = "Faiz";
 "Trading" = "ticari";
 "Wallet Balance" = "Cüzdan Bakiyesi";
+"All your transactions will show up here." = "Tüm işlemleriniz burada görünecek.";
+"Completed" = "Tamamlandı";
+"Confirmations" = "Onaylar";
+"For" = "İçin";
+"Gas" = "Gaz";
+"Gas for" = "İçin gaz";
+"Replaced" = "Değiştirilen";
+"Select a Wallet" = "Bir Cüzdan Seçin";
+"Sell" = "Satmak";
+"Trade" = "Ticaret";
+"View on Blockchain Explorer" = "Blockchain Explorer'da görüntüle";
+"View on StellarChain.io" = "StellarChain.io'da görüntüle";
+"You Have No Activity" = "Etkinliğiniz Yok";

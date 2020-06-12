@@ -1487,3 +1487,16 @@ Nawet jeśli obniżysz ją do %s, możesz spodziewać się potwierdzenia transak
 "Interest" = "Zainteresowanie";
 "Trading" = "Handlowy";
 "Wallet Balance" = "Saldo portfela";
+"All your transactions will show up here." = "Wszystkie Twoje transakcje pojawią się tutaj.";
+"Completed" = "Zakończony";
+"Confirmations" = "Potwierdzenia";
+"For" = "Dla";
+"Gas" = "Gaz";
+"Gas for" = "Gas dla";
+"Replaced" = "Zastąpiony";
+"Select a Wallet" = "Wybierz portfel";
+"Sell" = "Sprzedać";
+"Trade" = "Handel";
+"View on Blockchain Explorer" = "Zobacz w Blockchain Explorer";
+"View on StellarChain.io" = "Zobacz na StellarChain.io";
+"You Have No Activity" = "Nie masz aktywności";

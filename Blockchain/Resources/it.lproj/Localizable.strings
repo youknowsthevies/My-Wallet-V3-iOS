@@ -1487,3 +1487,16 @@ Se abbassi il costo a %s, puoi aspettarti che la transazione sia confermata entr
 "Interest" = "Interesse";
 "Trading" = "Trading";
 "Wallet Balance" = "Saldo del portafoglio";
+"All your transactions will show up here." = "Tutte le tue transazioni verranno visualizzate qui.";
+"Completed" = "Completato";
+"Confirmations" = "conferme";
+"For" = "Per";
+"Gas" = "Gas";
+"Gas for" = "Gas per";
+"Replaced" = "sostituito";
+"Select a Wallet" = "Seleziona un portafoglio";
+"Sell" = "Vendere";
+"Trade" = "Commercio";
+"View on Blockchain Explorer" = "Visualizza su Blockchain Explorer";
+"View on StellarChain.io" = "Visualizza su StellarChain.io";
+"You Have No Activity" = "Non hai attività";

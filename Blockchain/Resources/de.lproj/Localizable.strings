@@ -1489,3 +1489,16 @@ Auch bei einer niedrigeren Gebühr von %s können Sie von einer Bestätigung der
 "Interest" = "Interesse";
 "Trading" = "Handel";
 "Wallet Balance" = "Brieftaschenguthaben";
+"All your transactions will show up here." = "Alle Ihre Transaktionen werden hier angezeigt.";
+"Completed" = "Abgeschlossen";
+"Confirmations" = "Bestätigungen";
+"For" = "Zum";
+"Gas" = "Gas";
+"Gas for" = "Gas für";
+"Replaced" = "Ersetzt";
+"Select a Wallet" = "Wählen Sie eine Brieftasche";
+"Sell" = "Verkaufen";
+"Trade" = "Handel";
+"View on Blockchain Explorer" = "Ansicht im Blockchain Explorer";
+"View on StellarChain.io" = "Ansicht auf StellarChain.io";
+"You Have No Activity" = "Sie haben keine Aktivität";

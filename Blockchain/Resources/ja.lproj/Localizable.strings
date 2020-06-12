@@ -1486,3 +1486,16 @@
 "Interest" = "興味";
 "Trading" = "取引";
 "Wallet Balance" = "ウォレットの残高";
+"All your transactions will show up here." = "すべての取引がここに表示されます。";
+"Completed" = "完了しました";
+"Confirmations" = "確認";
+"For" = "ために";
+"Gas" = "ガス";
+"Gas for" = "ガス";
+"Replaced" = "交換済み";
+"Select a Wallet" = "ウォレットを選択";
+"Sell" = "売る";
+"Trade" = "トレード";
+"View on Blockchain Explorer" = "ブロックチェーンエクスプローラーで表示";
+"View on StellarChain.io" = "StellarChain.ioで表示";
+"You Have No Activity" = "アクティビティがありません";

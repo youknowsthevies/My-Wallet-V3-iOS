@@ -1489,3 +1489,16 @@ Même si vous diminuez les frais à %s, vous pouvez vous attendre à la confirma
 "Interest" = "L'intérêt";
 "Trading" = "Commerce";
 "Wallet Balance" = "Solde Google Wallet";
+"All your transactions will show up here." = "Toutes vos transactions s'afficheront ici.";
+"Completed" = "Terminé";
+"Confirmations" = "Confirmations";
+"For" = "Pour";
+"Gas" = "Gaz";
+"Gas for" = "Gaz pour";
+"Replaced" = "Remplacé";
+"Select a Wallet" = "Sélectionnez un portefeuille";
+"Sell" = "Vendre";
+"Trade" = "Commerce";
+"View on Blockchain Explorer" = "Afficher sur Blockchain Explorer";
+"View on StellarChain.io" = "Vue sur StellarChain.io";
+"You Have No Activity" = "Vous n'avez aucune activité";

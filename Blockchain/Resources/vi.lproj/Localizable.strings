@@ -1489,3 +1489,16 @@ Thậm chí nếu bạn hạ thấp phí đến %s, bạn vẫn có thể kỳ v
 "Interest" = "Quan tâm";
 "Trading" = "Thương mại";
 "Wallet Balance" = "Số dư ví";
+"All your transactions will show up here." = "Tất cả các giao dịch của bạn sẽ hiển thị ở đây.";
+"Completed" = "Đã hoàn thành";
+"Confirmations" = "Xác nhận";
+"For" = "Dành cho";
+"Gas" = "Khí ga";
+"Gas for" = "Gas cho";
+"Replaced" = "Đã thay thế";
+"Select a Wallet" = "Chọn một ví";
+"Sell" = "Bán";
+"Trade" = "Buôn bán";
+"View on Blockchain Explorer" = "Xem trên Blockchain Explorer";
+"View on StellarChain.io" = "Xem trên StellarChain.io";
+"You Have No Activity" = "Bạn không có hoạt động";

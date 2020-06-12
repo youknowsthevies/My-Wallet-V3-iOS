@@ -1487,3 +1487,16 @@ Bahkan jika Anda menurunkan biaya tersebut menjadi %s, Anda dapat mengharapkan t
 "Interest" = "Bunga";
 "Trading" = "Perdagangan";
 "Wallet Balance" = "Saldo Dompet";
+"All your transactions will show up here." = "Semua transaksi Anda akan muncul di sini.";
+"Completed" = "Lengkap";
+"Confirmations" = "Konfirmasi";
+"For" = "Untuk";
+"Gas" = "Gas";
+"Gas for" = "Gas untuk";
+"Replaced" = "Diganti";
+"Select a Wallet" = "Pilih Dompet";
+"Sell" = "Menjual";
+"Trade" = "Perdagangan";
+"View on Blockchain Explorer" = "Lihat di Blockchain Explorer";
+"View on StellarChain.io" = "Lihat di StellarChain.io";
+"You Have No Activity" = "Anda Tidak Memiliki Aktivitas";
