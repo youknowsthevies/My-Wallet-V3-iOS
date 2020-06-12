@@ -22,7 +22,9 @@ final class AddressInteractor: AddressInteracting {
     
     // MARK: - Services
     
-    private let addressFetcher: AssetAddressFetching
+    /// PATCH: Don't change until ReactiveWallet is fixed. This is here because `ReactiveWallet` keeps checking if
+    /// the wallet is initialized during the wallet creation - which generate a crash.
+    private lazy var addressFetcher: AssetAddressFetching = AssetAddressRepository.shared
     private let addressSubscriber: AssetAddressSubscribing
     private let qrCodeGenerator: QRCodeGenerator
     private let recorder: ErrorRecording
@@ -125,14 +127,12 @@ final class AddressInteractor: AddressInteracting {
     
     init(asset: CryptoCurrency,
          addressType: AssetAddressType,
-         addressFetcher: AssetAddressFetching = AssetAddressRepository.shared,
          transactionObserver: TransactionObserving = WalletManager.shared,
          addressSubscriber: AssetAddressSubscribing = WalletManager.shared.wallet,
          qrCodeGenerator: QRCodeGenerator = QRCodeGenerator(),
          recorder: ErrorRecording = CrashlyticsRecorder()) {
         self.asset = asset
         self.addressType = addressType
-        self.addressFetcher = addressFetcher
         self.addressSubscriber = addressSubscriber
         self.qrCodeGenerator = qrCodeGenerator
         self.recorder = recorder

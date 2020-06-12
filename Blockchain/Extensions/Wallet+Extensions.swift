@@ -50,45 +50,6 @@ extension Wallet: MnemonicAccessAPI {
     }
 }
 
-extension Wallet: ReactiveWalletAPI {
-    public var waitUntilInitialized: Observable<Void> {
-        initializationState
-            .asObservable()
-            .map { state -> Void in
-                if state == .uninitialized {
-                    throw WalletSetup.StateError.walletUnitinialized
-                }
-                return ()
-            }
-            .retry(
-                .delayed(maxCount: .max, time: 0.5),
-                scheduler: MainScheduler.instance,
-                shouldRetry: { error -> Bool in
-                    true
-                }
-            )
-    }
-    
-    public var waitUntilInitializedSingle: Single<Void> {
-        waitUntilInitialized.take(1).asSingle()
-    }
-    
-    /// A `Single` that streams a boolean element indicating
-    /// whether the wallet is initialized
-    public var initializationState: Single<WalletSetup.State> {
-        Single
-            .create(weak: self) { (self, observer) -> Disposable in
-                if self.isInitialized() {
-                    observer(.success(.initialized))
-                } else {
-                    observer(.success(.uninitialized))
-                }
-                return Disposables.create()
-            }
-            .subscribeOn(MainScheduler.instance)
-    }
-}
-
 /// `StellarWalletBridgeAPI` is part of the `bridge` that is used when injecting the `wallet` into
 /// a `WalletAccountRepository`. This is how we save the users `StellarKeyPair`
 extension Wallet: StellarWalletBridgeAPI {

@@ -57,14 +57,16 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     private let alertPresenter: AlertViewPresenter
     private let loadingViewPresenter: LoadingViewPresenting
     private let dataRepository: BlockchainDataRepository
-    private let stellarServiceProvider: StellarServiceProvider
     private let walletManager: WalletManager
     private let fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
-    private lazy var supportedPairsInteractor: SimpleBuySupportedPairsInteractorServiceAPI = SimpleBuyServiceProvider.default.supportedPairsInteractor
 
     private let deepLinkRouter: DeepLinkRouter
-    private let exchangeRepository: ExchangeAccountRepositoryAPI
-        
+    
+    /// PATCH: Don't change until ReactiveWallet is fixed. This is here because `ReactiveWallet` keeps checking if
+    /// the wallet is initialized during the wallet creation - which generate a crash.
+    private lazy var exchangeRepository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository()
+    private lazy var supportedPairsInteractor: SimpleBuySupportedPairsInteractorServiceAPI = SimpleBuyServiceProvider.default.supportedPairsInteractor
+
     /// TODO: Delete when `AuthenticationCoordinator` is removed
     /// Temporary handler since `AuthenticationManager` was refactored.
     var temporaryAuthHandler: WalletAuthHandler!
@@ -88,10 +90,8 @@ extension AuthenticationCoordinator: PairingWalletFetching {
          walletManager: WalletManager = WalletManager.shared,
          loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
          dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
-         stellarServiceProvider: StellarServiceProvider = StellarServiceProvider.shared,
          deepLinkRouter: DeepLinkRouter = DeepLinkRouter(),
-         remoteNotificationServiceContainer: RemoteNotificationServiceContainer = .default,
-         exchangeRepository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository()) {
+         remoteNotificationServiceContainer: RemoteNotificationServiceContainer = .default) {
        self.fiatCurrencySettingsService = fiatCurrencySettingsService
        self.appSettings = appSettings
        self.onboardingSettings = onboardingSettings
@@ -99,12 +99,10 @@ extension AuthenticationCoordinator: PairingWalletFetching {
        self.alertPresenter = alertPresenter
        self.walletManager = walletManager
        self.dataRepository = dataRepository
-       self.stellarServiceProvider = stellarServiceProvider
        self.deepLinkRouter = deepLinkRouter
        self.loadingViewPresenter = loadingViewPresenter
        remoteNotificationAuthorizer = remoteNotificationServiceContainer.authorizer
        remoteNotificationTokenSender = remoteNotificationServiceContainer.tokenSender
-       self.exchangeRepository = exchangeRepository
        super.init()
        self.walletManager.secondPasswordDelegate = self
        self.walletManager.authDelegate = self
@@ -144,7 +142,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         tabControllerManager.sendBitcoinCashViewController?.reload()
 
         dataRepository.prefetchData()
-        stellarServiceProvider.services.accounts.prefetch()
+        StellarServiceProvider.shared.services.accounts.prefetch()
         
         // Make user set up a pin if none is set. They can also optionally enable touch ID and link their email.
         guard appSettings.isPinSet else {

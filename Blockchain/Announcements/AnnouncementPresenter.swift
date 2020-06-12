@@ -28,7 +28,7 @@ final class AnnouncementPresenter {
     private let exchangeCoordinator: ExchangeCoordinator
     private let wallet: Wallet
     private let kycSettings: KYCSettingsAPI
-    private let reactiveWallet: ReactiveWallet
+    private let reactiveWallet: ReactiveWalletAPI
     
     private let interactor: AnnouncementInteracting
     
@@ -56,7 +56,7 @@ final class AnnouncementPresenter {
          appCoordinator: AppCoordinator = .shared,
          exchangeCoordinator: ExchangeCoordinator = .shared,
          kycCoordinator: KYCCoordinator = .shared,
-         reactiveWallet: ReactiveWallet = ReactiveWallet(),
+         reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
          kycSettings: KYCSettingsAPI = KYCSettings.shared,
          wallet: Wallet = WalletManager.shared.wallet) {
         self.interactor = interactor

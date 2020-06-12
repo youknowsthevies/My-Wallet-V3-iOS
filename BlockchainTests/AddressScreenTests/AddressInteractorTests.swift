@@ -25,7 +25,6 @@ class AddressInteractorTests: XCTestCase {
                                                         addresses: addresses)
         let interactor = AddressInteractor(asset: .bitcoin,
                                            addressType: .swipeToReceive,
-                                           addressFetcher: addressFetcher,
                                            transactionObserver: transactionObserver,
                                            addressSubscriber: AddressSubscriberMock())
         do {
@@ -50,7 +49,6 @@ class AddressInteractorTests: XCTestCase {
                                                         addresses: addresses)
         let interactor = AddressInteractor(asset: .bitcoinCash,
                                            addressType: .swipeToReceive,
-                                           addressFetcher: addressFetcher,
                                            transactionObserver: transactionObserver,
                                            addressSubscriber: AddressSubscriberMock())
         do {
@@ -73,7 +71,6 @@ class AddressInteractorTests: XCTestCase {
                                                         addresses: addresses)
         let interactor = AddressInteractor(asset: .stellar,
                                            addressType: .swipeToReceive,
-                                           addressFetcher: addressFetcher,
                                            transactionObserver: transactionObserver,
                                            addressSubscriber: AddressSubscriberMock())
         do {

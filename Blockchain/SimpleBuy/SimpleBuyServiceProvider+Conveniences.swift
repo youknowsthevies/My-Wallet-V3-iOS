@@ -18,7 +18,7 @@ extension SimpleBuyServiceProvider {
         self.init(
             cardServiceProvider: CardServiceProvider.default,
             recordingProvider: RecordingProvider.default,
-            wallet: ReactiveWallet(),
+            wallet: WalletManager.shared.reactiveWallet,
             authenticationService: NabuAuthenticationService.shared,
             simpleBuyClient: SimpleBuyClient(),
             cacheSuite: UserDefaults.standard,

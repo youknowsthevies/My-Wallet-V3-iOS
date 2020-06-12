@@ -28,7 +28,7 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
     private let reactiveWallet: ReactiveWalletAPI
     private let wallet: Wallet
     
-    init(reactiveWallet: ReactiveWalletAPI = ReactiveWallet(),
+    init(reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
          wallet: Wallet = WalletManager.shared.wallet) {
         self.reactiveWallet = reactiveWallet
         self.wallet = wallet

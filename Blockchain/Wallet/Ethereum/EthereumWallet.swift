@@ -18,7 +18,7 @@ class EthereumWallet: NSObject {
     
     typealias Dispatcher = EthereumJSInteropDispatcherAPI & EthereumJSInteropDelegateAPI
     
-    typealias WalletAPI = LegacyEthereumWalletAPI & LegacyWalletAPI & MnemonicAccessAPI & ReactiveWalletAPI
+    typealias WalletAPI = LegacyEthereumWalletAPI & LegacyWalletAPI & MnemonicAccessAPI
     
     var balanceObservable: Observable<CryptoValue> {
         balanceRelay.asObservable()
@@ -166,13 +166,6 @@ class EthereumWallet: NSObject {
             }
             .asSingle()
     }
-
-    var waitUntilInitialized: Observable<Void> {
-        guard let wallet = wallet else {
-            return .error(WalletError.unknown)
-        }
-        return wallet.waitUntilInitialized
-    }
 }
 
 extension EthereumWallet: ERC20BridgeAPI { 
@@ -279,7 +272,8 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
             completable(.completed)
             return Disposables.create()
         }
-        return waitUntilInitialized
+        return WalletManager.shared.reactiveWallet
+            .waitUntilInitialized
             .flatMap { saveMemo.asObservable() }
             .asCompletable()
     }
