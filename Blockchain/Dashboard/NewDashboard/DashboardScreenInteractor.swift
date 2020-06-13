@@ -16,7 +16,7 @@ final class DashboardScreenInteractor {
     let balanceProvider: BalanceProviding
     let historicalProvider: HistoricalFiatPriceProviding
     let balanceChangeProvider: BalanceChangeProviding
-    let reactiveWallet: ReactiveWallet
+    let reactiveWallet: ReactiveWalletAPI
     let lockboxRepository: LockboxRepositoryAPI
     let userPropertyInteractor: AnalyticsUserPropertyInteractor
     
@@ -30,7 +30,7 @@ final class DashboardScreenInteractor {
          historicalProvider: HistoricalFiatPriceProviding = DataProvider.default.historicalPrices,
          balanceChangeProvider: BalanceChangeProviding = DataProvider.default.balanceChange,
          lockboxRepository: LockboxRepositoryAPI = LockboxRepository(),
-         reactiveWallet: ReactiveWallet = ReactiveWallet(),
+         reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
          userPropertyInteractor: AnalyticsUserPropertyInteractor = AnalyticsUserPropertyInteractor()) {
         self.historicalProvider = historicalProvider
         self.balanceProvider = balanceProvider

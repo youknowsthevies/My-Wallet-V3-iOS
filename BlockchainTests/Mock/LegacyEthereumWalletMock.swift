@@ -14,10 +14,7 @@ import EthereumKit
 import PlatformUIKit
 @testable import Blockchain
 
-class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, MnemonicAccessAPI, ReactiveWalletAPI {
-    var waitUntilInitializedSingle: Single<Void> = .just(())
-
-    var waitUntilInitialized: Observable<Void> = .just(())
+class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, MnemonicAccessAPI {
 
     var initializationState: Single<WalletSetup.State> = .never()
 

@@ -14,7 +14,7 @@ import BitcoinKit
 final class BitcoinWallet: NSObject {
     
     typealias Dispatcher = BitcoinJSInteropDispatcherAPI & BitcoinJSInteropDelegateAPI
-    typealias WalletAPI = LegacyBitcoinWalletProtocol & LegacyWalletAPI & MnemonicAccessAPI & ReactiveWalletAPI
+    typealias WalletAPI = LegacyBitcoinWalletProtocol & LegacyWalletAPI & MnemonicAccessAPI
     
     @objc public var delegate: BitcoinJSInteropDelegateAPI {
         dispatcher
@@ -75,7 +75,8 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             completable(.completed)
             return Disposables.create()
         }
-        return waitUntilInitialized
+        return WalletManager.shared.reactiveWallet
+            .waitUntilInitialized
             .flatMap { saveMemo.asObservable() }
             .asCompletable()
     }
@@ -92,32 +93,19 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
                         observer(.success(memo))
                     },
                     error: { (error) in
-                        observer(.error(WalletError.notInitialized))
+                        observer(.error(WalletError.unknown))
                     }
                 )
                 return Disposables.create()
             }
 
-        return waitUntilInitializedSingle
+        return WalletManager.shared.reactiveWallet
+            .waitUntilInitializedSingle
             .flatMap { memo }
     }
-
-    var waitUntilInitializedSingle: Single<Void> {
-        guard let wallet = wallet else {
-            return Single.error(WalletError.unknown)
-        }
-        return wallet.waitUntilInitializedSingle
-    }
-
-    var waitUntilInitialized: Observable<Void> {
-        guard let wallet = wallet else {
-            return .error(WalletError.unknown)
-        }
-        return wallet.waitUntilInitialized
-    }
-
     var hdWallet: Single<PayloadBitcoinHDWallet> {
-        waitUntilInitializedSingle
+        WalletManager.shared.reactiveWallet
+            .waitUntilInitializedSingle
             .flatMap(weak: self) { (self, _) -> Single<String?> in
                 self.secondPasswordIfAccountCreationNeeded
             }
@@ -146,7 +134,8 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
     }
     
     var defaultWallet: Single<BitcoinWalletAccount> {
-        waitUntilInitializedSingle
+        WalletManager.shared.reactiveWallet
+            .waitUntilInitializedSingle
             .flatMap(weak: self) { (self, _) -> Single<String?> in
                 self.secondPasswordIfAccountCreationNeeded
             }

@@ -12,10 +12,9 @@ import PlatformKit
 
 /// An extension to `Wallet` which makes wallet fuctionality Rx friendly.
 final class ReactiveWallet: ReactiveWalletAPI {
-            
+
     var waitUntilInitialized: Observable<Void> {
-        return initializationState
-            .asObservable()
+        initializationState
             .map { state -> Void in
                 if state == .uninitialized {
                     throw WalletSetup.StateError.walletUnitinialized
@@ -23,36 +22,44 @@ final class ReactiveWallet: ReactiveWalletAPI {
                 return ()
             }
             .retry(
-                .delayed(maxCount: .max, time: 0.5),
+                .delayed(maxCount: .max, time: 1),
                 scheduler: MainScheduler.instance,
                 shouldRetry: { error -> Bool in
-                    return true
+                    switch error {
+                    case WalletSetup.StateError.walletUnitinialized:
+                        return true
+                    default:
+                        return false
+                    }
                 }
             )
+            .share()
     }
-    
+
     var waitUntilInitializedSingle: Single<Void> {
-        return waitUntilInitialized.take(1).asSingle()
+        waitUntilInitialized
+            .take(1)
+            .asSingle()
     }
-    
-    /// A `Single` that streams a boolean element indicating
-    /// whether the wallet is initialized
-    var initializationState: Single<WalletSetup.State> {
-        return Single
+
+    /// A `Single` that streams a boolean element indicating whether the wallet is initialized
+    private var initializationState: Observable<WalletSetup.State> {
+        Observable
             .create(weak: self) { (self, observer) -> Disposable in
                 if self.wallet.isInitialized() {
-                    observer(.success(.initialized))
+                    observer.on(.next(.initialized))
                 } else {
-                    observer(.success(.uninitialized))
+                    observer.on(.next(.uninitialized))
                 }
                 return Disposables.create()
             }
             .subscribeOn(MainScheduler.instance)
+
     }
-    
+
     private let wallet: Wallet
-    
-    init(wallet: Wallet = WalletManager.shared.wallet) {
+
+    init(wallet: Wallet) {
         self.wallet = wallet
     }
 }

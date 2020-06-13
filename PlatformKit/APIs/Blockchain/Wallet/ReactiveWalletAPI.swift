@@ -22,5 +22,4 @@ public struct WalletSetup {
 public protocol ReactiveWalletAPI: class {
     var waitUntilInitializedSingle: Single<Void> { get }
     var waitUntilInitialized: Observable<Void> { get }
-    var initializationState: Single<WalletSetup.State> { get }
 }

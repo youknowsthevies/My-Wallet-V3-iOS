@@ -18,7 +18,7 @@ extension CardServiceProvider {
         self.init(
             cardClient: CardClient(),
             everyPayClient: EveryPayClient(),
-            wallet: ReactiveWallet(),
+            wallet: WalletManager.shared.reactiveWallet,
             authenticationService: NabuAuthenticationService.shared,
             dataRepository: BlockchainDataRepository.shared,
             featureFetcher: AppFeatureConfigurator.shared,

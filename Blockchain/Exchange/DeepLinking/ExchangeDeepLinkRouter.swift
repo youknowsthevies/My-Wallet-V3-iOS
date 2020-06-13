@@ -11,11 +11,8 @@ import Foundation
 class ExchangeDeepLinkRouter: DeepLinkRouting {
     
     private let appSettings: BlockchainSettings.App
-    private let coordinator: ExchangeCoordinator
-    init(appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
-         coordinator: ExchangeCoordinator = .shared) {
+    init(appSettings: BlockchainSettings.App = BlockchainSettings.App.shared) {
         self.appSettings = appSettings
-        self.coordinator = coordinator
     }
     
     func routeIfNeeded() -> Bool {

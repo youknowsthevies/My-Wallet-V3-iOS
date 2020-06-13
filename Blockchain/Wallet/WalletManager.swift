@@ -27,6 +27,7 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI {
 
     // TODO: Replace this with asset-specific wallet architecture
     @objc let wallet: Wallet
+    let reactiveWallet: ReactiveWalletAPI
     private let appSettings: BlockchainSettings.App
     
     // TODO: make this private(set) once other methods in RootService have been migrated in here
@@ -68,6 +69,7 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI {
          appSettings: BlockchainSettings.App = .shared) {
         self.appSettings = appSettings
         self.wallet = wallet
+        self.reactiveWallet = ReactiveWallet(wallet: wallet)
         super.init()
         let repository = WalletRepository(jsContextProvider: self, settings: appSettings)
         self.legacyRepository = repository

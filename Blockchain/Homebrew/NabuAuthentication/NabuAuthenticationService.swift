@@ -39,7 +39,7 @@ final class NabuAuthenticationService: NabuAuthenticationServiceAPI {
          userCreationClient: UserCreationClientAPI = UserCreationClient(),
          settingsService: SettingsServiceAPI = UserInformationServiceProvider.default.settings,
          wallet: Wallet = WalletManager.shared.wallet,
-         reactiveWallet: ReactiveWalletAPI = ReactiveWallet(),
+         reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
          walletRepository: WalletRepositoryAPI = WalletManager.shared.repository,
          walletNabuSynchronizer: WalletNabuSynchronizerAPI = WalletNabuSynchronizerService()) {
         self.authenticationClient = authenticationClient
