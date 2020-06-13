@@ -17,7 +17,7 @@ public enum SimpleBuyPaymentMethodType: Equatable {
     case card(CardData)
     
     /// Suggested payment methods (e.g bank-wire / card)
-    case suggested(SimpleBuyPaymentMethod)
+    case suggested(PaymentMethod)
     
     var methodId: String? {
         switch self {
@@ -28,7 +28,7 @@ public enum SimpleBuyPaymentMethodType: Equatable {
         }
     }
     
-    var method: SimpleBuyPaymentMethod.MethodType {
+    var method: PaymentMethod.MethodType {
         switch self {
         case .card(let data):
             return .card([data.type])
@@ -38,8 +38,21 @@ public enum SimpleBuyPaymentMethodType: Equatable {
     }
 }
 
+public protocol SimpleBuyPaymentMethodTypesServiceAPI {
+    
+    var methodTypes: Observable<[SimpleBuyPaymentMethodType]> { get }
+    
+    var cards: Observable<[CardData]> { get }
+    
+    var preferredPaymentMethodTypeRelay: BehaviorRelay<SimpleBuyPaymentMethodType?> { get }
+    
+    var preferredPaymentMethodType: Observable<SimpleBuyPaymentMethodType?> { get }
+    
+    func fetchCards(andPrefer cardId: String) -> Completable
+}
+
 /// A service that aggregates all the payment method types and possible methods.
-public final class SimpleBuyPaymentMethodTypesService {
+final class SimpleBuyPaymentMethodTypesService: SimpleBuyPaymentMethodTypesServiceAPI {
 
     // MARK: - Exposed
     
@@ -98,8 +111,8 @@ public final class SimpleBuyPaymentMethodTypesService {
     
     // MARK: - Setup
     
-    public init(paymentMethodsService: SimpleBuyPaymentMethodsServiceAPI,
-                cardListService: CardListServiceAPI) {
+    init(paymentMethodsService: SimpleBuyPaymentMethodsServiceAPI,
+         cardListService: CardListServiceAPI) {
         self.paymentMethodsService = paymentMethodsService
         self.cardListService = cardListService
     }
@@ -130,7 +143,7 @@ public final class SimpleBuyPaymentMethodTypesService {
             .asCompletable()
     }
     
-    private func merge(paymentMethods: [SimpleBuyPaymentMethod],
+    private func merge(paymentMethods: [PaymentMethod],
                        with cards: [CardData]) -> [SimpleBuyPaymentMethodType] {
         let topLimit = (paymentMethods.first { $0.type.isCard })?.max
         let cardTypes = cards

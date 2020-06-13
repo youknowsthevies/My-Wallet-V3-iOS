@@ -21,7 +21,7 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
     var buyActivityEvents: Single<[BuyActivityItemEvent]> {
         service
             .orders
-            .map(weak: self) { (self, orders) -> [SimpleBuyOrderDetails] in
+            .map(weak: self) { (self, orders) -> [OrderDetails] in
                 orders.filter {
                     $0.cryptoValue.currencyType == self.currency
                 }

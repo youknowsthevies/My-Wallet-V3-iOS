@@ -33,14 +33,14 @@ public final class AddCardRouter: Router {
 
     private let routingType: RoutingType
     private let cardServiceProvider: CardServiceProviderAPI
-    private let simpleBuyServiceProvider: SimpleBuyServiceProviderAPI
+    private let simpleBuyServiceProvider: ServiceProviderAPI
     private let utilityProvider: UIUtilityProviderAPI
     private let recordingProvider: RecordingProviderAPI
     private let disposeBag = DisposeBag()
     
     public init(stateService: AddCardStateService,
                 cardServiceProvider: CardServiceProviderAPI,
-                simpleBuyServiceProvider: SimpleBuyServiceProviderAPI,
+                simpleBuyServiceProvider: ServiceProviderAPI,
                 recordingProvider: RecordingProviderAPI,
                 utilityProvider: UIUtilityProviderAPI = UIUtilityProvider.default,
                 routingType: RoutingType = .modal,

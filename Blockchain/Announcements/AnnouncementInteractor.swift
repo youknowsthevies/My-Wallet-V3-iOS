@@ -28,7 +28,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     private let exchangeService: ExchangeService
     private let paxTransactionService: AnyERC20HistoricalTransactionService<PaxToken>
     private let repository: AuthenticatorRepositoryAPI
-    private let simpleBuyServiceProvider: SimpleBuyServiceProviderAPI
+    private let simpleBuyServiceProvider: ServiceProviderAPI
 
     /// Returns announcement preliminary data, according to which the relevant
     /// announcement will be displayed
@@ -89,7 +89,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
          exchangeService: ExchangeService = .shared,
          infoService: GeneralInformationService = UserInformationServiceProvider.default.general,
          paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = PAXServiceProvider.shared.services.assetAccountRepository,
-         simpleBuyServiceProvider: SimpleBuyServiceProviderAPI = SimpleBuyServiceProvider.default) {
+         simpleBuyServiceProvider: ServiceProviderAPI = ServiceProvider.default) {
         self.repository = repository
         self.wallet = wallet
         self.dataRepository = dataRepository

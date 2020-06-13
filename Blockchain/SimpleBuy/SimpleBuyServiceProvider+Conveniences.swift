@@ -10,9 +10,9 @@ import ToolKit
 import PlatformKit
 import BuySellKit
 
-extension SimpleBuyServiceProvider {
+extension ServiceProvider {
     
-    static let `default`: SimpleBuyServiceProviderAPI = SimpleBuyServiceProvider()
+    static let `default`: ServiceProviderAPI = ServiceProvider()
     
     convenience init() {
         self.init(
@@ -20,7 +20,6 @@ extension SimpleBuyServiceProvider {
             recordingProvider: RecordingProvider.default,
             wallet: WalletManager.shared.reactiveWallet,
             authenticationService: NabuAuthenticationService.shared,
-            simpleBuyClient: SimpleBuyClient(),
             cacheSuite: UserDefaults.standard,
             settings: UserInformationServiceProvider.default.settings,
             dataRepository: BlockchainDataRepository.shared,

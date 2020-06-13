@@ -20,7 +20,7 @@ final class AddCardBadgePresenter: BadgeImageAssetPresenting {
         stateRelay.asObservable()
     }
     
-    private let paymentMethodTypesService: SimpleBuyPaymentMethodTypesService
+    private let paymentMethodTypesService: SimpleBuyPaymentMethodTypesServiceAPI
     private let tiersLimitsProviding: TierLimitsProviding
     private let featureFetcher: FeatureFetching
     
@@ -39,7 +39,7 @@ final class AddCardBadgePresenter: BadgeImageAssetPresenting {
             .catchErrorJustReturn([])
     }
     
-    init(paymentMethodTypesService: SimpleBuyPaymentMethodTypesService,
+    init(paymentMethodTypesService: SimpleBuyPaymentMethodTypesServiceAPI,
          tierLimitsProviding: TierLimitsProviding,
          featureFetcher: FeatureFetching) {
         self.tiersLimitsProviding = tierLimitsProviding

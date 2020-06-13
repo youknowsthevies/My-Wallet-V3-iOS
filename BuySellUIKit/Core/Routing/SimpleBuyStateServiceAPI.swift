@@ -23,10 +23,10 @@ public protocol SimpleBuyStateReceiverServiceAPI: class {
 /// A checkout service API
 public protocol SimpleBuyCheckoutServiceAPI: RoutingPreviousStateEmitterAPI {
     var previousRelay: PublishRelay<Void> { get }
-    func nextFromBuyCrypto(with checkoutData: SimpleBuyCheckoutData)
-    func ineligible(with checkoutData: SimpleBuyCheckoutData)
-    func kyc(with checkoutData: SimpleBuyCheckoutData)
-    func addCardStateService(with checkoutData: SimpleBuyCheckoutData) -> AddCardStateService
+    func nextFromBuyCrypto(with checkoutData: CheckoutData)
+    func ineligible(with checkoutData: CheckoutData)
+    func kyc(with checkoutData: CheckoutData)
+    func addCardStateService(with checkoutData: CheckoutData) -> AddCardStateService
     func paymentMethods()
     func changeCurrency()
     func currencySelected()
@@ -39,19 +39,19 @@ public protocol SimpleBuyElibilityRelayAPI: RoutingPreviousStateEmitterAPI {
 
 /// A confirm-checkout service API
 public protocol SimpleBuyTransferDetailsServiceAPI: RoutingPreviousStateEmitterAPI {
-    func transferDetails(with checkoutData: SimpleBuyCheckoutData)
+    func transferDetails(with checkoutData: CheckoutData)
 }
 
 /// A confirm-checkout service API
 public protocol SimpleBuyConfirmCheckoutServiceAPI: RoutingPreviousStateEmitterAPI {
     /// - parameter isOrderNew: Bool flag representing if the given `SimpleBuyCheckoutData` is from a newly created order
     /// or if it is from an existing order.
-    func confirmCheckout(with checkoutData: SimpleBuyCheckoutData, isOrderNew: Bool)
+    func confirmCheckout(with checkoutData: CheckoutData, isOrderNew: Bool)
 }
 
 /// A cancellation service API
 public protocol SimpleBuyCancelTransferServiceAPI: RoutingPreviousStateEmitterAPI {
-    func cancelTransfer(with checkoutData: SimpleBuyCheckoutData)
+    func cancelTransfer(with checkoutData: CheckoutData)
 }
 
 public protocol SimpleBuyCurrencySelectionServiceAPI {
@@ -60,11 +60,11 @@ public protocol SimpleBuyCurrencySelectionServiceAPI {
 }
 
 public protocol SimpleBuyStateCacheProviderAPI: class {
-    var cache: SimpleBuyEventCache { get }
+    var cache: EventCache { get }
 }
 
 public protocol PendingOrderCompletionStateServiceAPI: class {
-    func orderPending(with orderDetails: SimpleBuyOrderDetails)
+    func orderPending(with orderDetails: OrderDetails)
     func orderCompleted()
 }
 

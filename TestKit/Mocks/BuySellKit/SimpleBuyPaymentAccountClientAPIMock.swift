@@ -10,9 +10,9 @@ import RxSwift
 @testable import PlatformKit
 @testable import BuySellKit
 
-class SimpleBuyPaymentAccountClientAPIMock: SimpleBuyPaymentAccountClientAPI {
-    var mockResponse: SimpleBuyPaymentAccountResponse! = SimpleBuyPaymentAccountResponse.mock(with: .GBP, agent: .fullMock)
-    func paymentAccount(for currency: FiatCurrency, token: String) -> Single<SimpleBuyPaymentAccountResponse> {
+class SimpleBuyPaymentAccountClientAPIMock: PaymentAccountClientAPI {
+    var mockResponse: PaymentAccountResponse! = PaymentAccountResponse.mock(with: .GBP, agent: .fullMock)
+    func paymentAccount(for currency: FiatCurrency, token: String) -> Single<PaymentAccountResponse> {
         return Single.just(mockResponse)
     }
 }

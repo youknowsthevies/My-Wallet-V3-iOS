@@ -31,7 +31,7 @@ final class CheckoutScreenInteractor {
     
     // MARK: - Properties
     
-    private(set) var checkoutData: SimpleBuyCheckoutData
+    private(set) var checkoutData: CheckoutData
         
     // MARK: - Services
     
@@ -46,7 +46,7 @@ final class CheckoutScreenInteractor {
          creationService: SimpleBuyPendingOrderCreationServiceAPI,
          confirmationService: SimpleBuyOrderConfirmationServiceAPI,
          cancellationService: SimpleBuyOrderCancellationServiceAPI,
-         checkoutData: SimpleBuyCheckoutData) {
+         checkoutData: CheckoutData) {
         self.cardListService = cardListService
         self.creationService = creationService
         self.confirmationService = confirmationService
@@ -67,7 +67,7 @@ final class CheckoutScreenInteractor {
         }
     }
 
-    private func bankTransferSetup(_ order: SimpleBuyOrderDetails) -> Single<InteractionData> {
+    private func bankTransferSetup(_ order: OrderDetails) -> Single<InteractionData> {
         // Pending confirmation
         if order.isPendingConfirmation {
             return recreateOrder()
@@ -88,7 +88,7 @@ final class CheckoutScreenInteractor {
         }
     }
 
-    private func cardSetup(_ order: SimpleBuyOrderDetails) -> Single<InteractionData> {
+    private func cardSetup(_ order: OrderDetails) -> Single<InteractionData> {
         // Pending 3DS on card for this order
         if order.isPendingConfirmation {
             return recreateOrder()
@@ -117,7 +117,7 @@ final class CheckoutScreenInteractor {
     /// Confirms the order if needed and then continue
     /// - returns: Observable<(SimpleBuyCheckoutData, Bool)> that emits pairs composed of a  SimpleBuyCheckoutData
     ///  and a `Bool` flag informing if the order needed confirmation.
-    func `continue`() -> Observable<(SimpleBuyCheckoutData, Bool)> {
+    func `continue`() -> Observable<(CheckoutData, Bool)> {
         guard let order = checkoutData.detailType.order else {
             return .error(InteractionError.missingOrder)
         }
@@ -125,7 +125,7 @@ final class CheckoutScreenInteractor {
         if order.isPendingConfirmation {
             return confirmationService
                 .confirm(checkoutData: checkoutData)
-                .flatMap(weak: self) { (self, data) -> Single<SimpleBuyCheckoutData> in
+                .flatMap(weak: self) { (self, data) -> Single<CheckoutData> in
                     self.set(data: data)
                 }
                 .map { ($0, true) }
@@ -174,7 +174,7 @@ final class CheckoutScreenInteractor {
             }
     }
 
-    private func set(data: SimpleBuyCheckoutData) -> Single<SimpleBuyCheckoutData> {
+    private func set(data: CheckoutData) -> Single<CheckoutData> {
         Single
             .create(weak: self) { (self, observer) -> Disposable in
                 self.checkoutData = data

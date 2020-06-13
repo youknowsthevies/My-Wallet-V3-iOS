@@ -58,7 +58,7 @@ final class CheckoutScreenContentReducer {
 
     private let statusBadge: DefaultBadgeAssetPresenter = .init()
 
-    private static func notice(data: SimpleBuyCheckoutData) -> LabelContent {
+    private static func notice(data: CheckoutData) -> LabelContent {
         LabelContent(
             text: data.detailType.paymentMethod.checkoutNotice(cryptoCurrency: data.cryptoCurrency),
             font: .main(.medium, 12),
@@ -67,7 +67,7 @@ final class CheckoutScreenContentReducer {
         )
     }
 
-    private static func title(data: SimpleBuyCheckoutData) -> String {
+    private static func title(data: CheckoutData) -> String {
         switch data.detailType.paymentMethod {
         case .card:
             if data.hasCardCheckoutMade {
@@ -85,7 +85,7 @@ final class CheckoutScreenContentReducer {
         }
     }
 
-    private static func continueButton(data: SimpleBuyCheckoutData) -> ButtonViewModel {
+    private static func continueButton(data: CheckoutData) -> ButtonViewModel {
         let title: String
         switch data.detailType.paymentMethod {
         case .card:
@@ -105,7 +105,7 @@ final class CheckoutScreenContentReducer {
         return .primary(with: title)
     }
 
-    private static func cancelButton(data: SimpleBuyCheckoutData) -> ButtonViewModel? {
+    private static func cancelButton(data: CheckoutData) -> ButtonViewModel? {
         switch (data.detailType.paymentMethod, data.hasCardCheckoutMade) {
         case (.card, true):
             return nil
@@ -151,7 +151,7 @@ final class CheckoutScreenContentReducer {
         )
     }
 
-    init(data: SimpleBuyCheckoutData) {
+    init(data: CheckoutData) {
 
         // MARK: Presenters Setup
 
@@ -257,7 +257,7 @@ final class CheckoutScreenContentReducer {
     }
 }
 
-extension BuySellKit.SimpleBuyPaymentMethod.MethodType {
+extension BuySellKit.PaymentMethod.MethodType {
     fileprivate func checkoutNotice(cryptoCurrency: CryptoCurrency) -> String {
         typealias LocalizedString = LocalizationConstants.SimpleBuy.Checkout
         switch self {

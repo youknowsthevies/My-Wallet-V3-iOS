@@ -134,9 +134,9 @@ final class BuyCryptoScreenPresenter {
         /// Additional binding
         
         struct CTAData {
-            let kycState: SimpleBuyKycState
+            let kycState: KycState
             let isSimpleBuyEligible: Bool
-            let checkoutData: SimpleBuyCheckoutData
+            let checkoutData: CheckoutData
         }
         
         let ctaObservable = continueButtonViewModel.tapRelay
@@ -169,7 +169,7 @@ final class BuyCryptoScreenPresenter {
         }
         
         ctaObservable
-            .compactMap { result -> SimpleBuyCheckoutData? in
+            .compactMap { result -> CheckoutData? in
                 guard case let .success(state) = result else { return nil }
                 return state.checkoutData
             }

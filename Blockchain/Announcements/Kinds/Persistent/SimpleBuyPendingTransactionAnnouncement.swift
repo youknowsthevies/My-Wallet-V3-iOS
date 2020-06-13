@@ -82,14 +82,14 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
 
     let action: CardAnnouncementAction
 
-    private let order: SimpleBuyOrderDetails?
+    private let order: OrderDetails?
 
     private let disposeBag = DisposeBag()
     private let errorRecorder: ErrorRecording
 
     // MARK: - Setup
 
-    init(order: SimpleBuyOrderDetails?,
+    init(order: OrderDetails?,
          analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          action: @escaping CardAnnouncementAction) {

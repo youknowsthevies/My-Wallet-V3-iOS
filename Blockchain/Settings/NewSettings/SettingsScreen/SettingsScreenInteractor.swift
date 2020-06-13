@@ -29,7 +29,7 @@ final class SettingsScreenInteractor {
     
     let settingsService: SettingsServiceAPI
     let cardsService: CardServiceProviderAPI
-    let simpleBuyService: SimpleBuyServiceProviderAPI
+    let simpleBuyService: ServiceProviderAPI
     let smsTwoFactorService: SMSTwoFactorSettingsServiceAPI
     let emailNotificationsService: SettingsServiceAPI & EmailNotificationSettingsServiceAPI
     
@@ -57,7 +57,7 @@ final class SettingsScreenInteractor {
          settingsAuthenticating: AppSettingsAuthenticating = BlockchainSettings.App.shared,
          wallet: Wallet = WalletManager.shared.wallet,
          cardsService: CardServiceProviderAPI = CardServiceProvider.default,
-         simpleBuyService: SimpleBuyServiceProviderAPI = SimpleBuyServiceProvider.default) {
+         simpleBuyService: ServiceProviderAPI = ServiceProvider.default) {
         self.simpleBuyService = simpleBuyService
         self.cardsService = cardsService
         self.smsTwoFactorService = smsTwoFactorService

@@ -26,7 +26,7 @@ final class AddCardLabelContentPresenter: LabelContentPresenting {
     let interactor: LabelContentInteracting
     private let disposeBag = DisposeBag()
     
-    init(paymentMethodTypesService: SimpleBuyPaymentMethodTypesService,
+    init(paymentMethodTypesService: SimpleBuyPaymentMethodTypesServiceAPI,
          tierLimitsProviding: TierLimitsProviding,
          featureFeatcher: FeatureFetching) {
         

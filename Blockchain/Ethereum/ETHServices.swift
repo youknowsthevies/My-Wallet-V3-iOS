@@ -21,7 +21,7 @@ struct ETHServices: ETHDependencies {
     init(wallet: Wallet = WalletManager.shared.wallet,
          authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         simpleBuyOrdersAPI: SimpleBuyOrdersServiceAPI = SimpleBuyServiceProvider.default.ordersDetails,
+         simpleBuyOrdersAPI: SimpleBuyOrdersServiceAPI = ServiceProvider.default.ordersDetails,
          swapActivityAPI: SwapActivityServiceAPI = SwapServiceProvider.default.activity) {
         transactionService = EthereumHistoricalTransactionService(
             with: wallet.ethereum

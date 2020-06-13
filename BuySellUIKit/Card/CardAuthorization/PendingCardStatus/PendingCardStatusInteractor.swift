@@ -24,13 +24,13 @@ final class PendingCardStatusInteractor {
         
     private let cardId: String
     private let activationService: CardActivationServiceAPI
-    private let paymentMethodTypesService: SimpleBuyPaymentMethodTypesService
+    private let paymentMethodTypesService: SimpleBuyPaymentMethodTypesServiceAPI
 
     // MARK: - Setup
     
     init(cardId: String,
          activationService: CardActivationServiceAPI,
-         paymentMethodTypesService: SimpleBuyPaymentMethodTypesService) {
+         paymentMethodTypesService: SimpleBuyPaymentMethodTypesServiceAPI) {
         self.cardId = cardId
         self.activationService = activationService
         self.paymentMethodTypesService = paymentMethodTypesService

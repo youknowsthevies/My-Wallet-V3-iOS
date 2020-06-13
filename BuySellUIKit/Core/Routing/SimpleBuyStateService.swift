@@ -75,28 +75,28 @@ public final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
         case paymentMethods
         
         /// The user would enter add-card flow before checking out
-        case addCard(SimpleBuyCheckoutData)
+        case addCard(CheckoutData)
         
         /// During KYC process
-        case kyc(SimpleBuyCheckoutData)
+        case kyc(CheckoutData)
         
         /// Pending KYC approval
-        case pendingKycApproval(SimpleBuyCheckoutData)
+        case pendingKycApproval(CheckoutData)
         
         /// The user is checking-out
-        case checkout(SimpleBuyCheckoutData)
+        case checkout(CheckoutData)
         
         /// The user authorized his bank wire
-        case transferDetails(SimpleBuyCheckoutData)
+        case transferDetails(CheckoutData)
         
         /// The user authorized his card payment and should now be referred to partner
-        case authorizeCard(order: SimpleBuyOrderDetails)
+        case authorizeCard(order: OrderDetails)
 
         /// The user may cancel their transfer
-        case transferCancellation(SimpleBuyCheckoutData)
+        case transferCancellation(CheckoutData)
 
         /// The user has a pending order
-        case pendingOrderDetails(SimpleBuyCheckoutData)
+        case pendingOrderDetails(CheckoutData)
 
         /// Purchase completed
         case pendingOrderCompleted(amount: CryptoValue, orderId: String)
@@ -138,7 +138,7 @@ public final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
     public let nextRelay = PublishRelay<Void>()
     public let previousRelay = PublishRelay<Void>()
 
-    public let cache: SimpleBuyEventCache
+    public let cache: EventCache
     
     private let supportedPairsInteractor: SimpleBuySupportedPairsInteractorServiceAPI
     private let uiUtilityProvider: UIUtilityProviderAPI
@@ -153,7 +153,7 @@ public final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
     public init(uiUtilityProvider: UIUtilityProviderAPI,
                 pendingOrderDetailsService: SimpleBuyPendingOrderDetailsServiceAPI,
                 supportedPairsInteractor: SimpleBuySupportedPairsInteractorServiceAPI,
-                cache: SimpleBuyEventCache) {
+                cache: EventCache) {
         self.supportedPairsInteractor = supportedPairsInteractor
         self.uiUtilityProvider = uiUtilityProvider
         self.pendingOrderDetailsService = pendingOrderDetailsService
@@ -170,7 +170,7 @@ public final class SimpleBuyStateService: SimpleBuyStateServiceAPI {
             .disposed(by: disposeBag)
     }
     
-    public func addCardStateService(with checkoutData: SimpleBuyCheckoutData) -> AddCardStateService {
+    public func addCardStateService(with checkoutData: CheckoutData) -> AddCardStateService {
         let addCardStateService = AddCardStateService()
         addCardStateService.completionCardData
             .bind { [weak self] cardData in
@@ -351,7 +351,7 @@ extension SimpleBuyStateService {
 
 extension SimpleBuyStateService {
     
-    public func nextFromBuyCrypto(with checkoutData: SimpleBuyCheckoutData) {
+    public func nextFromBuyCrypto(with checkoutData: CheckoutData) {
         let state: State
         if checkoutData.isSuggestedCard {
             state = .addCard(checkoutData)
@@ -362,12 +362,12 @@ extension SimpleBuyStateService {
         apply(action: .next(to: states.current), states: states)
     }
     
-    public func kyc(with checkoutData: SimpleBuyCheckoutData) {
+    public func kyc(with checkoutData: CheckoutData) {
         let states = statesRelay.value.states(byAppending: .kyc(checkoutData))
         apply(action: .next(to: states.current), states: states)
     }
 
-    public func ineligible(with checkoutData: SimpleBuyCheckoutData) {
+    public func ineligible(with checkoutData: CheckoutData) {
         let states = statesRelay.value.states(byAppending: .pendingKycApproval(checkoutData))
         apply(action: .next(to: states.current), states: states)
     }
@@ -382,7 +382,7 @@ extension SimpleBuyStateService {
         apply(action: .next(to: states.current), states: states)
     }
 
-    public func transferDetails(with checkoutData: SimpleBuyCheckoutData) {
+    public func transferDetails(with checkoutData: CheckoutData) {
         let states = statesRelay.value.states(byAppending: .transferDetails(checkoutData))
         apply(action: .next(to: states.current), states: states)
     }
@@ -406,7 +406,7 @@ extension SimpleBuyStateService {
 // MARK: - SimpleBuyConfirmCheckoutServiceAPI
 
 extension SimpleBuyStateService {
-    public func confirmCheckout(with checkoutData: SimpleBuyCheckoutData, isOrderNew: Bool) {
+    public func confirmCheckout(with checkoutData: CheckoutData, isOrderNew: Bool) {
         let state: State
         let data = (checkoutData.detailType, checkoutData.detailType.paymentMethod, isOrderNew)
         switch data {
@@ -429,7 +429,7 @@ extension SimpleBuyStateService {
 }
 
 extension SimpleBuyStateService {
-    public func cancelTransfer(with checkoutData: SimpleBuyCheckoutData) {
+    public func cancelTransfer(with checkoutData: CheckoutData) {
         let states = statesRelay.value.states(byAppending: .transferCancellation(checkoutData))
         apply(action: .next(to: states.current), states: states)
     }
@@ -456,8 +456,8 @@ extension SimpleBuyStateService {
         apply(action: .next(to: states.current), states: states)
     }
     
-    public func orderPending(with orderDetails: SimpleBuyOrderDetails) {
-        let checkoutData = SimpleBuyCheckoutData(orderDetails: orderDetails)
+    public func orderPending(with orderDetails: OrderDetails) {
+        let checkoutData = CheckoutData(orderDetails: orderDetails)
         let state = State.checkout(checkoutData)
         self.apply(
             action: .next(to: state),

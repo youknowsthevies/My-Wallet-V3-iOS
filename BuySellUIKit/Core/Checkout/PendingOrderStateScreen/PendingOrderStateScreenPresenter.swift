@@ -97,7 +97,7 @@ final class PendingOrderStateScreenPresenter: PendingStatePresenterAPI {
         viewModelRelay.accept(viewModel)
     }
     
-    private func handleTimeout(order: SimpleBuyOrderDetails) {
+    private func handleTimeout(order: OrderDetails) {
         let button = ButtonViewModel.primary(with: LocalizedString.button)
         button.tapRelay
             .bind(weak: self) { (self) in

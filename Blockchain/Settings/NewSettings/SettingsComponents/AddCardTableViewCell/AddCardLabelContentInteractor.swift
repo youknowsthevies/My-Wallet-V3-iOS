@@ -38,7 +38,7 @@ final class AddCardLabelContentInteractor: LabelContentInteracting {
     private let disposeBag = DisposeBag()
     private let tierLimitsProviding: TierLimitsProviding
     private let featureFetcher: FeatureFetching
-    private let paymentMethodTypesService: SimpleBuyPaymentMethodTypesService
+    private let paymentMethodTypesService: SimpleBuyPaymentMethodTypesServiceAPI
     private var isKYCVerified: Observable<Bool> {
         tierLimitsProviding
             .tiers
@@ -54,7 +54,7 @@ final class AddCardLabelContentInteractor: LabelContentInteracting {
     
     // MARK: - Setup
     
-    init(paymentMethodTypesService: SimpleBuyPaymentMethodTypesService,
+    init(paymentMethodTypesService: SimpleBuyPaymentMethodTypesServiceAPI,
          tierLimitsProviding: TierLimitsProviding,
          featureFetcher: FeatureFetching) {
         self.paymentMethodTypesService = paymentMethodTypesService

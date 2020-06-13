@@ -58,7 +58,7 @@ public struct PartnerAuthorizationData {
 }
 
 extension PartnerAuthorizationData {
-    init?(orderPayloadResponse: SimpleBuyOrderPayload.Response) {
+    init?(orderPayloadResponse: OrderPayload.Response) {
         guard let paymentMethodId = orderPayloadResponse.paymentMethodId else {
             return nil
         }

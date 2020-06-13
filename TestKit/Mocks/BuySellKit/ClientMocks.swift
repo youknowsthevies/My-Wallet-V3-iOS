@@ -9,10 +9,10 @@
 @testable import PlatformKit
 @testable import BuySellKit
 
-extension SimpleBuyClient {
+extension APIClient {
 
-    static func mockPaymentAccountResponse(for currency: FiatCurrency = .GBP) -> SimpleBuyPaymentAccountResponse {
-        let mockAgent = SimpleBuyPaymentAccountResponse.Agent(
+    static func mockPaymentAccountResponse(for currency: FiatCurrency = .GBP) -> PaymentAccountResponse {
+        let mockAgent = PaymentAccountResponse.Agent(
             account: "123456987",
             address: "4250 Executive Square, La Jolla, California, 92037",
             code: "LHVBEE22",
@@ -21,7 +21,7 @@ extension SimpleBuyClient {
             recipient: "Fred Wilson",
             routingNumber: "123456987"
         )
-        return SimpleBuyPaymentAccountResponse(
+        return PaymentAccountResponse(
             id: "12-34-56-78",
             address: "4250 Executive Square, La Jolla, California, 92037",
             agent: mockAgent,
@@ -30,8 +30,8 @@ extension SimpleBuyClient {
         )
     }
 
-    static var paymentMethods: SimpleBuyPaymentMethodsResponse {
-        SimpleBuyPaymentMethodsResponse(
+    static var paymentMethods: PaymentMethodsResponse {
+        PaymentMethodsResponse(
             currency: "GBP",
             methods: [
                 .init(
@@ -75,10 +75,10 @@ extension SimpleBuyClient {
         ]
     }
     
-    static func mockQuote(for action: SimpleBuyOrder.Action,
+    static func mockQuote(for action: Order.Action,
                           to cryptoCurrency: CryptoCurrency,
-                          amount: FiatValue) -> SimpleBuyQuoteResponse {
-        return SimpleBuyQuoteResponse(
+                          amount: FiatValue) -> QuoteResponse {
+        return QuoteResponse(
             time: "2020-01-15T22:09:45.600Z",
             rate: "1000000",
             rateWithoutFee: "995000",
@@ -86,7 +86,7 @@ extension SimpleBuyClient {
         )
     }
 
-    static func mockOrderCreation(order: SimpleBuyOrderPayload.Request) -> SimpleBuyOrderPayload.Response {
+    static func mockOrderCreation(order: OrderPayload.Request) -> OrderPayload.Response {
         return .init(
             state: "PENDING_DEPOSIT",
             id: UUID().uuidString,
@@ -103,10 +103,10 @@ extension SimpleBuyClient {
         )
     }
 
-    static var mockOrdersDetails: [SimpleBuyOrderPayload.Response] {
+    static var mockOrdersDetails: [OrderPayload.Response] {
         [
-            SimpleBuyOrderPayload.Response(
-                state: SimpleBuyOrderDetails.State.pendingDeposit.rawValue,
+            OrderPayload.Response(
+                state: OrderDetails.State.pendingDeposit.rawValue,
                 id: "111111-aaaaaaaa-111111",
                 inputCurrency: FiatCurrency.GBP.code,
                 inputQuantity: "10000",
@@ -122,25 +122,25 @@ extension SimpleBuyClient {
         ]
     }
 
-    static func mockSupportedPairs(currency: FiatCurrency) -> SimpleBuySupportedPairsResponse {
-        SimpleBuySupportedPairsResponse(
+    static func mockSupportedPairs(currency: FiatCurrency) -> SupportedPairsResponse {
+        SupportedPairsResponse(
             pairs: [
-                SimpleBuySupportedPairsResponse.Pair(
+                SupportedPairsResponse.Pair(
                     pair: "BTC-\(currency.code)",
                     buyMin: "1000",
                     buyMax: "100000"
                 ),
-                SimpleBuySupportedPairsResponse.Pair(
+                SupportedPairsResponse.Pair(
                     pair: "BTC-\(currency.code)",
                     buyMin: "1000",
                     buyMax: "100000"
                 ),
-                SimpleBuySupportedPairsResponse.Pair(
+                SupportedPairsResponse.Pair(
                     pair: "BCH-\(currency.code)",
                     buyMin: "1000",
                     buyMax: "100000"
                 ),
-                SimpleBuySupportedPairsResponse.Pair(
+                SupportedPairsResponse.Pair(
                     pair: "ETH-\(currency.code)",
                     buyMin: "100",
                     buyMax: "10000"

@@ -15,9 +15,9 @@ extension SimpleBuyStateService {
     static func make() -> SimpleBuyStateServiceAPI {
         SimpleBuyStateService(
             uiUtilityProvider: UIUtilityProvider.default,
-            pendingOrderDetailsService: SimpleBuyServiceProvider.default.pendingOrderDetails,
-            supportedPairsInteractor: SimpleBuyServiceProvider.default.supportedPairsInteractor,
-            cache: SimpleBuyServiceProvider.default.cache
+            pendingOrderDetailsService: ServiceProvider.default.pendingOrderDetails,
+            supportedPairsInteractor: ServiceProvider.default.supportedPairsInteractor,
+            cache: ServiceProvider.default.cache
         )
     }
 }

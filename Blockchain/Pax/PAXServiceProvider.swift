@@ -34,7 +34,7 @@ struct PAXServices: PAXDependencies {
          walletService: EthereumWalletServiceAPI = EthereumWalletService.shared,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
-         simpleBuyOrdersAPI: SimpleBuyOrdersServiceAPI = SimpleBuyServiceProvider.default.ordersDetails,
+         simpleBuyOrdersAPI: SimpleBuyOrdersServiceAPI = ServiceProvider.default.ordersDetails,
          swapActivityAPI: SwapActivityServiceAPI = SwapServiceProvider.default.activity) {
         self.feeService = feeService
         let service = ERC20AssetAccountDetailsService<PaxToken>(with: wallet.ethereum, accountClient: ERC20AccountAPIClient<PaxToken>())

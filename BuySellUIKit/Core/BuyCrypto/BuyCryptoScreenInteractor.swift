@@ -17,7 +17,7 @@ final class BuyCryptoScreenInteractor {
     // MARK: - Types
 
     enum State {
-        case inBounds(data: SimpleBuyCheckoutData, upperLimit: FiatValue)
+        case inBounds(data: CheckoutData, upperLimit: FiatValue)
         case tooLow(min: FiatValue)
         case tooHigh(max: FiatValue)
         case empty(currency: FiatCurrency)
@@ -64,7 +64,7 @@ final class BuyCryptoScreenInteractor {
     
     /// The (optional) data, in case the state's value is `inBounds`.
     /// `nil` otherwise.
-    var data: Observable<SimpleBuyCheckoutData?> {
+    var data: Observable<CheckoutData?> {
         state
             .map { state in
                 switch state {
@@ -94,7 +94,7 @@ final class BuyCryptoScreenInteractor {
     }
 
     /// Streams a `SimpleBuyKycState` indicating whether the user should complete KYC
-    var currentKycState: Single<Result<SimpleBuyKycState, Error>> {
+    var currentKycState: Single<Result<KycState, Error>> {
         kycTiersService.fetchTiers()
             .map { $0.isTier2Approved }
             .mapToResult(successMap: { $0 ? .completed : .shouldComplete })
@@ -125,7 +125,7 @@ final class BuyCryptoScreenInteractor {
     private let pairsService: SimpleBuySupportedPairsInteractorServiceAPI
     private let cryptoCurrencySelectionService: SelectionServiceAPI
     private let eligibilityService: SimpleBuyEligibilityServiceAPI
-    private let paymentMethodTypesService: SimpleBuyPaymentMethodTypesService
+    private let paymentMethodTypesService: SimpleBuyPaymentMethodTypesServiceAPI
 
     // MARK: - Accessors
     
@@ -153,7 +153,7 @@ final class BuyCryptoScreenInteractor {
          fiatCurrencyService: FiatCurrencySettingsServiceAPI,
          pairsService: SimpleBuySupportedPairsInteractorServiceAPI,
          eligibilityService: SimpleBuyEligibilityServiceAPI,
-         paymentMethodTypesService: SimpleBuyPaymentMethodTypesService,
+         paymentMethodTypesService: SimpleBuyPaymentMethodTypesServiceAPI,
          cryptoCurrencySelectionService: SelectionServiceAPI,
          suggestedAmountsService: SimpleBuySuggestedAmountsServiceAPI) {
         self.kycTiersService = kycTiersService
@@ -199,7 +199,7 @@ final class BuyCryptoScreenInteractor {
                 pairs,
                 cryptoCurrencySelectionService.selectedData
             )
-            .map { (pairs, item) -> SimpleBuySupportedPairs.Pair? in
+            .map { (pairs, item) -> SupportedPairs.Pair? in
                 pairs.pairs(per: item.cryptoCurrency).first
             }
         
@@ -244,7 +244,7 @@ final class BuyCryptoScreenInteractor {
                 } else if try amount < minFiatValue {
                     return .tooLow(min: minFiatValue)
                 }
-                let data = SimpleBuyCheckoutData(
+                let data = CheckoutData(
                     fiatValue: amount,
                     cryptoCurrency: pair.cryptoCurrency,
                     paymentMethod: preferredPaymentMethod

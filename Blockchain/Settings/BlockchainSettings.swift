@@ -461,7 +461,7 @@ final class BlockchainSettings: NSObject {
 
             KYCSettings.shared.reset()
             AnnouncementRecorder.reset()
-            SimpleBuyServiceProvider.default.cache.reset()
+            ServiceProvider.default.cache.reset()
             
             Logger.shared.info("Application settings have been reset.")
         }

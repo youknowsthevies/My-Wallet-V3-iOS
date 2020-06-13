@@ -10,14 +10,14 @@ import Localization
 
 public enum SimpleBuyPaymentAccountProperty {
 
-    /// States in which a `SimpleBuyPaymentAccount` can be.
+    /// States in which a `PaymentAccount` can be.
     public enum State: String, Codable {
         case pending = "PENDING"
         case active = "ACTIVE"
         case blocked = "BLOCKED"
     }
 
-    /// Fields that can be part of a `SimpleBuyPaymentAccount`.
+    /// Fields that can be part of a `PaymentAccount`.
     public enum Field: Hashable {
         case accountNumber(String)
         case sortCode(String)

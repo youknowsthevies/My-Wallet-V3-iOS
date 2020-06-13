@@ -1,5 +1,5 @@
 //
-//  SimpleBuyOrderDetails+Conveniences.swift
+//  OrderDetails+Conveniences.swift
 //  Blockchain
 //
 //  Created by Alex McGregor on 6/8/20.
@@ -10,7 +10,7 @@ import BuySellKit
 import PlatformKit
 
 extension BuyActivityItemEvent {
-    init(with orderDetails: SimpleBuyOrderDetails) {
+    init(with orderDetails: OrderDetails) {
         self.init(
             identifier: orderDetails.identifier,
             creationDate: orderDetails.creationDate ?? Date(),
@@ -22,7 +22,7 @@ extension BuyActivityItemEvent {
         )
     }
 }
-extension SimpleBuyOrderDetails {
+extension OrderDetails {
     fileprivate var eventStatus: BuyActivityItemEvent.EventStatus {
         switch state {
         case .pendingDeposit,

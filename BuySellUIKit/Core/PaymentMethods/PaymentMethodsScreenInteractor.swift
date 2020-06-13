@@ -34,11 +34,11 @@ final class PaymentMethodsScreenInteractor {
     
     // MARK: - Injected
     
-    private let service: SimpleBuyPaymentMethodTypesService
+    private let service: SimpleBuyPaymentMethodTypesServiceAPI
     
     // MARK: - Setup
     
-    init(service: SimpleBuyPaymentMethodTypesService) {
+    init(service: SimpleBuyPaymentMethodTypesServiceAPI) {
         self.service = service
     }
     

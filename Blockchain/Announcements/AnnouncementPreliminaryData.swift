@@ -44,19 +44,19 @@ struct AnnouncementPreliminaryData {
         simpleBuyEventCache[.hasShownBuyScreen] && isSimpleBuyAvailable
     }
     
-    let pendingOrderDetails: SimpleBuyOrderDetails?
+    let pendingOrderDetails: OrderDetails?
 
     private let isSimpleBuyAvailable: Bool
-    private let simpleBuyEventCache: SimpleBuyEventCache
+    private let simpleBuyEventCache: EventCache
     
     init(user: NabuUser,
          tiers: KYC.UserTiers,
          hasTrades: Bool,
          hasPaxTransactions: Bool,
          countries: Countries,
-         simpleBuyEventCache: SimpleBuyEventCache = SimpleBuyServiceProvider.default.cache,
+         simpleBuyEventCache: EventCache = ServiceProvider.default.cache,
          authenticatorType: AuthenticatorType,
-         pendingOrderDetails: SimpleBuyOrderDetails?,
+         pendingOrderDetails: OrderDetails?,
          isSimpleBuyAvailable: Bool) {
         self.user = user
         self.tiers = tiers

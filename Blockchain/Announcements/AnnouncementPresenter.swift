@@ -190,7 +190,7 @@ extension AnnouncementPresenter {
     }
 
     /// Computes Simple Buy Pending Transaction Announcement
-    private func simpleBuyPendingTransaction(for order: SimpleBuyOrderDetails?) -> Announcement {
+    private func simpleBuyPendingTransaction(for order: OrderDetails?) -> Announcement {
         SimpleBuyPendingTransactionAnnouncement(
             order: order,
             action: { [weak self] in

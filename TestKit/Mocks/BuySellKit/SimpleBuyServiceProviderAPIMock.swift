@@ -10,7 +10,7 @@ import RxSwift
 @testable import PlatformKit
 @testable import BuySellKit
 
-final class SimpleBuyServiceProviderAPIMock: SimpleBuyServiceProviderAPI {
+final class SimpleBuyServiceProviderAPIMock: ServiceProviderAPI {
     
     var underlyingOrderCompletion: SimpleBuyPendingOrderCompletionServiceAPI!
     var orderCompletion: SimpleBuyPendingOrderCompletionServiceAPI {
@@ -23,11 +23,11 @@ final class SimpleBuyServiceProviderAPIMock: SimpleBuyServiceProviderAPI {
     }
     
     var underlyingPendingOrderCreation: SimpleBuyPendingOrderCreationServiceAPI!
-    func orderCreation(for paymentMethod: SimpleBuyPaymentMethod.MethodType) -> SimpleBuyPendingOrderCreationServiceAPI {
+    func orderCreation(for paymentMethod: PaymentMethod.MethodType) -> SimpleBuyPendingOrderCreationServiceAPI {
         underlyingPendingOrderCreation
     }
     
-    var cache: SimpleBuyEventCache = .init(cacheSuite: UserDefaults.standard)
+    var cache: EventCache = .init(cacheSuite: UserDefaults.standard)
     
     var underlyingRepository: DataRepositoryAPI!
     var dataRepository: DataRepositoryAPI {
@@ -99,8 +99,8 @@ final class SimpleBuyServiceProviderAPIMock: SimpleBuyServiceProviderAPI {
         underlyingPaymentMethods
     }
     
-    var underlyingPaymentMethodTypes: SimpleBuyPaymentMethodTypesService!
-    var paymentMethodTypes: SimpleBuyPaymentMethodTypesService {
+    var underlyingPaymentMethodTypes: SimpleBuyPaymentMethodTypesServiceAPI!
+    var paymentMethodTypes: SimpleBuyPaymentMethodTypesServiceAPI {
         underlyingPaymentMethodTypes
     }
 }

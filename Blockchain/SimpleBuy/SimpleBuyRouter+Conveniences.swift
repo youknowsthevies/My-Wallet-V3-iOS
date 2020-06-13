@@ -14,7 +14,7 @@ extension SimpleBuyRouter {
     
     convenience init(stateService: SimpleBuyStateServiceAPI) {
         self.init(
-            serviceProvider: SimpleBuyServiceProvider.default,
+            serviceProvider: ServiceProvider.default,
             cardServiceProvider: CardServiceProvider.default,
             userInformationProvider: UserInformationServiceProvider.default,
             stateService: stateService,

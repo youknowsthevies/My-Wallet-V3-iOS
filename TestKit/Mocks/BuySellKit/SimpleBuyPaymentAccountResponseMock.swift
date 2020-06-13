@@ -9,9 +9,9 @@
 @testable import PlatformKit
 @testable import BuySellKit
 
-extension SimpleBuyPaymentAccountResponse {
-    static func mock(with currency: FiatCurrency, agent: SimpleBuyPaymentAccountResponse.Agent) -> SimpleBuyPaymentAccountResponse {
-        return SimpleBuyPaymentAccountResponse(
+extension PaymentAccountResponse {
+    static func mock(with currency: FiatCurrency, agent: PaymentAccountResponse.Agent) -> PaymentAccountResponse {
+        return PaymentAccountResponse(
             id: "response id",
             address: "response bank account",
             agent: agent,
@@ -31,9 +31,9 @@ extension CustodialBalanceResponse {
     )
 }
 
-extension SimpleBuyPaymentAccountResponse.Agent {
+extension PaymentAccountResponse.Agent {
 
-    static let fullMock = SimpleBuyPaymentAccountResponse.Agent(
+    static let fullMock = PaymentAccountResponse.Agent(
         account: "agent account",
         address: "agent address",
         code: "agent code",
@@ -43,7 +43,7 @@ extension SimpleBuyPaymentAccountResponse.Agent {
         routingNumber: "agent routingNumber"
     )
 
-    static let emptyMock = SimpleBuyPaymentAccountResponse.Agent(
+    static let emptyMock = PaymentAccountResponse.Agent(
         account: nil,
         address: nil,
         code: nil,
@@ -53,7 +53,7 @@ extension SimpleBuyPaymentAccountResponse.Agent {
         routingNumber: nil
     )
 
-    static let minimumGBPMock = SimpleBuyPaymentAccountResponse.Agent(
+    static let minimumGBPMock = PaymentAccountResponse.Agent(
         account: "agent account",
         address: nil,
         code: "agent code",
@@ -63,7 +63,7 @@ extension SimpleBuyPaymentAccountResponse.Agent {
         routingNumber: nil
     )
 
-    static let minimumEURMock = SimpleBuyPaymentAccountResponse.Agent(
+    static let minimumEURMock = PaymentAccountResponse.Agent(
         account: "agent account",
         address: nil,
         code: "agent code",
@@ -73,7 +73,7 @@ extension SimpleBuyPaymentAccountResponse.Agent {
         routingNumber: nil
     )
 
-    static let idealEURMock = SimpleBuyPaymentAccountResponse.Agent(
+    static let idealEURMock = PaymentAccountResponse.Agent(
         account: "agent account",
         address: nil,
         code: "agent code",

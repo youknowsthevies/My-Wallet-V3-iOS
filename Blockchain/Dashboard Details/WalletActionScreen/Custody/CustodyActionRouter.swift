@@ -29,7 +29,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
     let completionRelay = PublishRelay<Void>()
     
     private var stateService: CustodyActionStateServiceAPI!
-    private let simpleBuyAPI: SimpleBuyServiceProviderAPI
+    private let simpleBuyAPI: ServiceProviderAPI
     private let appSettings: BlockchainSettings.App
     private let backupRouterAPI: BackupRouterAPI
     private let custodyWithdrawalRouter: CustodyWithdrawalRouterAPI
@@ -40,7 +40,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
     init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
          appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
          dataProviding: DataProviding = DataProvider.default,
-         simpleBuyAPI: SimpleBuyServiceProviderAPI = SimpleBuyServiceProvider.default,
+         simpleBuyAPI: ServiceProviderAPI = ServiceProvider.default,
          custodyWithdrawalRouter: CustodyWithdrawalRouterAPI = CustodyWithdrawalRouter(),
          backupRouterAPI: BackupRouterAPI) {
         self.custodyWithdrawalRouter = custodyWithdrawalRouter

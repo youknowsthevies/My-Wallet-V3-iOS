@@ -26,10 +26,10 @@ public final class FiatCurrencySelectionService: SelectionServiceAPI {
         selectedDataRelay.distinctUntilChanged()
     }
 
-    private let provider: FiatCurrencySelectionProvider
+    private let provider: FiatCurrencySelectionProviderAPI
     
     public init(defaultSelectedData: FiatCurrency = .locale,
-                provider: FiatCurrencySelectionProvider = DefaultFiatCurrencySelectionProvider()) {
+                provider: FiatCurrencySelectionProviderAPI = DefaultFiatCurrencySelectionProvider()) {
         self.provider = provider
         self.selectedDataRelay = BehaviorRelay(value: defaultSelectedData.selectionItem)
     }
