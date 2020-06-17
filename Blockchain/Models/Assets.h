@@ -9,7 +9,7 @@
 #ifndef Assets_h
 #define Assets_h
 
-typedef NS_ENUM(NSInteger, LegacyAssetType) {
+typedef NS_CLOSED_ENUM(NSInteger, LegacyAssetType) {
     LegacyAssetTypeBitcoin,
     LegacyAssetTypeEther,
     LegacyAssetTypeBitcoinCash,

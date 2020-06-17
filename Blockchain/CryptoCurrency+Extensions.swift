@@ -72,10 +72,6 @@ extension CryptoCurrency {
             self = .stellar
         case .pax:
             self = .pax
-        @unknown default:
-            let message = "Trying to initialize with non-existing asset type: \(legacyAssetType)"
-            CrashlyticsRecorder().error(message)
-            fatalError(message)
         }
     }
 }

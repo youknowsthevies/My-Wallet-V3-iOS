@@ -213,7 +213,7 @@ extension PinRouter {
                     navigationController.modalPresentationStyle = .fullScreen
                     parent.present(navigationController, animated: true)
                 } else {
-                    recorder.error("Parent view controller must not be `nil` for foreground authentication")
+                    recorder.error(PinRouting.FlowError.parentViewControllerNilOnForegroundAuthentication)
                 }
             }
             self.navigationController = navigationController

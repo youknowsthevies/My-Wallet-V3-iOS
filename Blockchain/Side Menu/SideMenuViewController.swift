@@ -19,7 +19,14 @@ protocol SideMenuViewControllerDelegate: class {
 /// View controller displaying the side menu (hamburger menu) of the app
 class SideMenuViewController: UIViewController {
 
+    // MARK: - Types
+
+    private enum SideMenuError: Error {
+        case menuSwipeRecognizerViewNil
+    }
+
     // MARK: - Public Properties
+
     weak var delegate: SideMenuViewControllerDelegate?
 
     // MARK: - Private Properties
@@ -126,7 +133,7 @@ class SideMenuViewController: UIViewController {
         if let menuSwipeRecognizerView = tabViewController.menuSwipeRecognizerView {
             menuSwipeRecognizerView.isUserInteractionEnabled = false
         } else { // Record an error but continue - suspected crash
-            recorder.error("menuSwipeRecognizerView is nil unexpectedly")
+            recorder.error(SideMenuError.menuSwipeRecognizerViewNil)
         }
         
         // Enable Pan gesture and tap gesture to close sideMenu

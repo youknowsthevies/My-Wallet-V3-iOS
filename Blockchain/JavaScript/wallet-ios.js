@@ -728,15 +728,14 @@ MyWalletPhone.login = function(user_guid, shared_key, resend_code, inputedPasswo
 
     var success = function() {
         logTime('wallet login');
-        var getHistory = MyWalletPhone.getHistoryForAllAssets().catch(history_error);
         var fetchAccount = MyWallet.wallet.fetchAccountInfo().catch(other_error);
-        Promise.all([getHistory, fetchAccount]).then(login_success);
+        Promise.all([fetchAccount]).then(login_success);
     };
 
     var other_error = function(e) {
         console.log('login: other error: ' + e);
         objc_loading_stop();
-        objc_error_other_decrypting_wallet(e);
+        objc_error_other_decrypting_wallet(e, e.stack);
         return Promise.reject(e);
     };
 
@@ -793,7 +792,7 @@ MyWalletPhone.loginAfterPairing = function(password) {
 
     var other_error = function(e) {
         objc_loading_stop();
-        objc_error_other_decrypting_wallet(e);
+        objc_error_other_decrypting_wallet(e, e.stack);
         return Promise.reject(e);
     };
 
@@ -819,9 +818,8 @@ MyWalletPhone.loginAfterPairing = function(password) {
 
     var success = function() {
         var getOptions = walletOptions.fetch();
-        var getHistory = MyWalletPhone.getHistoryForAllAssets().catch(history_error);
         var fetchAccount = MyWallet.wallet.fetchAccountInfo();
-        Promise.all([getOptions, getHistory, fetchAccount]).then(login_success);
+        Promise.all([getOptions, fetchAccount]).then(login_success);
     };
 
     return MyWallet.initializeWallet(password, decrypt_success, build_hd_success).then(success).catch(other_error);

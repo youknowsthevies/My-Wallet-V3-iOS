@@ -66,7 +66,6 @@ final class BuyIntroScreenPresenter {
             image: .init(name: "card-icon-cart", size: .init(edge: 48)),
             title: LocalizedString.BuyCard.title,
             description: LocalizedString.BuyCard.description,
-            recorder: recordingProvider.error,
             dismissState: .undismissible
         )
          

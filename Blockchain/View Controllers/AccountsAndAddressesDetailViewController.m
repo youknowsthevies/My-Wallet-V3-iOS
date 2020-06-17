@@ -447,7 +447,7 @@ typedef enum {
                     if (self.address) {
                         if ([WalletManager.sharedInstance.wallet isWatchOnlyLegacyAddress:self.address]) {
                             [[KeyImportCoordinator sharedInstance] initialize];
-                            [[WalletManager sharedInstance] scanPrivateKeyForWatchOnlyAddress:self.address];
+                            [WalletManager.sharedInstance scanPrivateKeyForWatchOnlyAddress:self.address];
                         } else {
                             [self toggleArchive];
                         }

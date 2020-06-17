@@ -10,7 +10,5 @@ import XCTest
 import ToolKit
 
 class MockErrorRecorder: ErrorRecording {
-    func error(_ error: Error) {}
-    func error(_ errorMessage: String) {}
-    func error() {}
+    func error(_ error: Error) { }
 }

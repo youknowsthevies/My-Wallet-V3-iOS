@@ -20,9 +20,9 @@ import PlatformKit
 class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI {
     
     static let shared = WalletManager()
-
-    @objc class func sharedInstance() -> WalletManager {
-        return shared
+    
+    @objc static var sharedInstance: WalletManager {
+        shared
     }
 
     // TODO: Replace this with asset-specific wallet architecture
@@ -76,6 +76,8 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI {
         self.repository = repository
         self.wallet.repository = repository
         self.wallet.delegate = self
+        self.wallet.ethereum.reactiveWallet = reactiveWallet
+        self.wallet.bitcoin.reactiveWallet = reactiveWallet
     }
     
     /// Returns the context. Should be invoked on the main queue always.

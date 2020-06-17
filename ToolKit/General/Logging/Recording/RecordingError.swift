@@ -8,15 +8,14 @@
 
 import Foundation
 
-/// Any recorded error should be added here
-public enum RecordingError: Error {
-    
-    /// Breadcrumb (no information
+public enum BreadcrumbError: Error {
+
+    /// Breadcrumb (no information)
     case breadcrumb
-    
+}
+
+public enum UIOperationError: Error {
+
     /// Changing the UI on a background thread
     case changingUIOnBackgroundThread
-    
-    /// Custom error message
-    case message(String)
 }

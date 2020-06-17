@@ -36,7 +36,6 @@ final class BackupFundsAnnouncement: PeriodicAnnouncement & ActionableAnnounceme
             title: LocalizationConstants.AnnouncementCards.BackupFunds.title,
             description: LocalizationConstants.AnnouncementCards.BackupFunds.description,
             buttons: [button],
-            recorder: errorRecorder,
             dismissState: .dismissible {
                 self.analyticsRecorder.record(event: self.dismissAnalyticsEvent)
                 self.markDismissed()
@@ -68,8 +67,6 @@ final class BackupFundsAnnouncement: PeriodicAnnouncement & ActionableAnnounceme
     private let shouldBackupFunds: Bool
 
     private let disposeBag = DisposeBag()
-    private let errorRecorder: ErrorRecording
-
     // MARK: - Setup
     
     init(shouldBackupFunds: Bool,
@@ -80,7 +77,6 @@ final class BackupFundsAnnouncement: PeriodicAnnouncement & ActionableAnnounceme
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {
         self.shouldBackupFunds = shouldBackupFunds
-        self.errorRecorder = errorRecorder
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)
         self.analyticsRecorder = analyticsRecorder

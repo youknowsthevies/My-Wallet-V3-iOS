@@ -26,7 +26,7 @@ final class ERC20AssetBalanceFetcher: AccountBalanceFetching {
             .asObservable()
             .asSingle()
             .map { details -> CryptoValue in
-                return details.balance
+                details.balance
             }
     }
 
@@ -35,28 +35,41 @@ final class ERC20AssetBalanceFetcher: AccountBalanceFetching {
     }
 
     let balanceFetchTriggerRelay = PublishRelay<Void>()
-
+    
     // MARK: - Private Properties
 
     private let balanceRelay = PublishRelay<CryptoValue>()
     private let disposeBag = DisposeBag()
     private let assetAccountRepository: ERC20AssetAccountRepository<PaxToken>
 
+    private unowned let reactiveWallet: ReactiveWalletAPI
+    
     // MARK: - Setup
 
-    init(wallet: EthereumWalletBridgeAPI = WalletManager.shared.wallet.ethereum) {
+    init(wallet: EthereumWalletBridgeAPI = WalletManager.shared.wallet.ethereum,
+         reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet) {
+
         let service = ERC20AssetAccountDetailsService<PaxToken>(
             with: wallet,
             accountClient: ERC20AccountAPIClient<PaxToken>()
         )
+        self.reactiveWallet = reactiveWallet
         assetAccountRepository = ERC20AssetAccountRepository(service: service)
-        balanceFetchTriggerRelay
+        Observable
+            .combineLatest(
+                reactiveWallet.waitUntilInitialized,
+                balanceFetchTriggerRelay
+            )
             .throttle(
                 .milliseconds(100),
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
             )
             .flatMapLatest(weak: self) { (self, _) in
-                return self.balance.asObservable()
+                self.balance
+                    .asObservable()
+                    .materialize()
+                    .filter { !$0.isStopEvent }
+                    .dematerialize()
             }
             .bind(to: balanceRelay)
             .disposed(by: disposeBag)

@@ -32,6 +32,8 @@ class EthereumWallet: NSObject {
     var delegate: EthereumJSInteropDelegateAPI {
         dispatcher
     }
+
+    weak var reactiveWallet: ReactiveWalletAPI!
     
     @available(*, deprecated, message: "making this  so tests will compile")
     var interopDispatcher: EthereumJSInteropDispatcherAPI {
@@ -80,16 +82,6 @@ class EthereumWallet: NSObject {
         self.wallet = wallet
         self.dispatcher = dispatcher
         super.init()
-        balanceFetchTriggerRelay
-            .throttle(
-                .milliseconds(100),
-                scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
-            )
-            .flatMapLatest(weak: self) { (self, _) in
-                self.balance.asObservable()
-            }
-            .bind(to: balanceRelay)
-            .disposed(by: disposeBag)
     }
     
     @objc func setup(with context: JSContext) {
@@ -130,19 +122,36 @@ class EthereumWallet: NSObject {
     }
     
     @objc func walletDidLoad() {
-        walletLoaded()
-            .subscribeOn(MainScheduler.asyncInstance)
-            .observeOn(MainScheduler.instance)
-            .subscribe()
+        Observable
+            .combineLatest(
+                reactiveWallet.waitUntilInitialized,
+                balanceFetchTriggerRelay
+            )
+            .throttle(
+                .milliseconds(100),
+                scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
+            )
+            .flatMap(weak: self) { (self, _) in
+                self.walletLoaded().andThen(Observable.just(()))
+            }
+            .flatMapLatest(weak: self) { (self, _) in
+                self.balance
+                    .asObservable()
+                    .materialize()
+                    .filter { !$0.isStopEvent }
+                    .dematerialize()
+            }
+            .bind(to: balanceRelay)
             .disposed(by: disposeBag)
     }
-    
+
     func walletLoaded() -> Completable {
         guard let wallet = wallet else {
             return Completable.empty()
         }
         ethereumAccountExists = wallet.checkIfEthereumAccountExists()
         return saveDefaultPAXAccountIfNeeded()
+            .subscribeOn(MainScheduler.asyncInstance)
     }
     
     private func saveDefaultPAXAccountIfNeeded() -> Completable {
@@ -152,7 +161,7 @@ class EthereumWallet: NSObject {
                     return Completable.empty()
                 }
                 return self.saveDefaultPAXAccount().asCompletable()
-        }
+            }
     }
     
     private func saveDefaultPAXAccount() -> Single<ERC20TokenAccount> {
@@ -270,7 +279,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
             completable(.completed)
             return Disposables.create()
         }
-        return WalletManager.shared.reactiveWallet
+        return reactiveWallet
             .waitUntilInitialized
             .flatMap { saveMemo.asObservable() }
             .asCompletable()

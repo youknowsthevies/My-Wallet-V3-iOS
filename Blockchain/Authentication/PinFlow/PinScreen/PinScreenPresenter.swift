@@ -6,16 +6,22 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
-import ToolKit
+import LocalAuthentication
 import PlatformKit
 import PlatformUIKit
-import LocalAuthentication
+import RxCocoa
+import RxSwift
+import ToolKit
 
 /// Presenter for PIN screen
 final class PinScreenPresenter {
-    
+
+    // MARK: - Types
+
+    private enum PinScreenPresenterError: Error {
+        case absentPinValueWhenAuthenticateUsingBiometrics
+    }
+
     // MARK: - Properties
     
     var trailingButton: Screen.Style.TrailingButton {
@@ -269,13 +275,13 @@ extension PinScreenPresenter {
         guard biometryProvider.configurationStatus.isConfigured else {
             return
         }
-        
+
         /*
          At this point, the PIN is assumed to have been kept on
          keychain so it MUST have value, otherwise, report a non-fatal
          */
         guard let pin = appSettings.pin else {
-            recorder.error("Expected a valid pin value. Got `nil` instead!. flow: \(flow.debugDescription)")
+            recorder.error(PinScreenPresenterError.absentPinValueWhenAuthenticateUsingBiometrics)
             return
         }
 

@@ -38,7 +38,6 @@ final class SimpleBuyFinishSignupAnnouncement: PersistentAnnouncement & Actionab
             title: LocalizedString.title,
             description: LocalizedString.description,
             buttons: [button],
-            recorder: errorRecorder,
             dismissState: .undismissible,
             didAppear: { [weak self] in
                 guard let self = self else { return }
@@ -60,8 +59,6 @@ final class SimpleBuyFinishSignupAnnouncement: PersistentAnnouncement & Actionab
     private let canCompleteTier2: Bool
 
     private let disposeBag = DisposeBag()
-    private let errorRecorder: ErrorRecording
-
     // MARK: - Setup
 
     init(canCompleteTier2: Bool,
@@ -71,7 +68,6 @@ final class SimpleBuyFinishSignupAnnouncement: PersistentAnnouncement & Actionab
          action: @escaping CardAnnouncementAction) {
         self.canCompleteTier2 = canCompleteTier2
         self.hasIncompleteBuyFlow = hasIncompleteBuyFlow
-        self.errorRecorder = errorRecorder
         self.action = action
         self.analyticsRecorder = analyticsRecorder
     }

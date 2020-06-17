@@ -36,7 +36,6 @@ final class VerifyEmailAnnouncement: PersistentAnnouncement & ActionableAnnounce
             title: LocalizationConstants.AnnouncementCards.VerifyEmail.title,
             description: LocalizationConstants.AnnouncementCards.VerifyEmail.description,
             buttons: [button],
-            recorder: errorRecorder,
             dismissState: .undismissible,
             didAppear: { [weak self] in
                 guard let self = self else { return }
@@ -57,8 +56,6 @@ final class VerifyEmailAnnouncement: PersistentAnnouncement & ActionableAnnounce
     private let isEmailVerified: Bool
     
     private let disposeBag = DisposeBag()
-    private let errorRecorder: ErrorRecording
-
     // MARK: - Setup
     
     init(isEmailVerified: Bool,
@@ -66,7 +63,6 @@ final class VerifyEmailAnnouncement: PersistentAnnouncement & ActionableAnnounce
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          action: @escaping CardAnnouncementAction) {
         self.isEmailVerified = isEmailVerified
-        self.errorRecorder = errorRecorder
         self.action = action
         self.analyticsRecorder = analyticsRecorder
     }

@@ -38,7 +38,6 @@ final class PAXAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
             title: LocalizationConstants.AnnouncementCards.Pax.title,
             description: LocalizationConstants.AnnouncementCards.Pax.description,
             buttons: [button],
-            recorder: errorRecorder,
             dismissState: .dismissible { [weak self] in
                 guard let self = self else { return }
                 self.analyticsRecorder.record(event: self.dismissAnalyticsEvent)
@@ -70,7 +69,6 @@ final class PAXAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
     private let hasTransactions: Bool
     
     private let disposeBag = DisposeBag()
-    private let errorRecorder: ErrorRecording
     
     // MARK: - Setup
 
@@ -81,7 +79,6 @@ final class PAXAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {
         self.hasTransactions = hasTransactions
-        self.errorRecorder = errorRecorder
         self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss

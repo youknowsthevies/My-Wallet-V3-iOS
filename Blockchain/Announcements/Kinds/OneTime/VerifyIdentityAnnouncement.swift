@@ -37,7 +37,6 @@ final class VerifyIdentityAnnouncement: OneTimeAnnouncement & ActionableAnnounce
             title: LocalizationConstants.AnnouncementCards.IdentityVerification.title,
             description: LocalizationConstants.AnnouncementCards.IdentityVerification.description,
             buttons: [button],
-            recorder: errorRecorder,
             dismissState: .dismissible { [weak self] in
                 guard let self = self else { return }
                 self.analyticsRecorder.record(event: self.dismissAnalyticsEvent)
@@ -73,8 +72,6 @@ final class VerifyIdentityAnnouncement: OneTimeAnnouncement & ActionableAnnounce
     private let isCompletingKyc: Bool
     
     private let disposeBag = DisposeBag()
-    private let errorRecorder: ErrorRecording
-
     // MARK: - Setup
     
     init(user: NabuUserSunriverAirdropRegistering,
@@ -84,7 +81,6 @@ final class VerifyIdentityAnnouncement: OneTimeAnnouncement & ActionableAnnounce
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {
-        self.errorRecorder = errorRecorder
         self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss

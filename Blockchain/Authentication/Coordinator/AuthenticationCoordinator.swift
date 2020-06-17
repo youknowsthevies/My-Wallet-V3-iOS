@@ -199,7 +199,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
             }
             postAuthenticationRoute = nil
         }
-
+        
         // Handle airdrop routing
         deepLinkRouter.routeIfNeeded()
     

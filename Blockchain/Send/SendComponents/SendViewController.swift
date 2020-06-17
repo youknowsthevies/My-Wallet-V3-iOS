@@ -20,7 +20,7 @@ import PlatformUIKit
 final class SendViewController: UIViewController {
 
     // MARK: - Types
-    
+
     typealias CellIndex = SendPresenter.TableViewDataSource.CellIndex
     
     // MARK: - UI Properties
@@ -230,7 +230,6 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
             cell.presenter = presenter.feePresenter
             return cell
         default: // Must not arrive here
-            recorder.error("unexpected row \(indexPath.row)")
             return UITableViewCell()
         }
     }

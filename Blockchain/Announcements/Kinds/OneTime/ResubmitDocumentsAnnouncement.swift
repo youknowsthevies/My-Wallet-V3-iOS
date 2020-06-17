@@ -37,7 +37,6 @@ final class ResubmitDocumentsAnnouncement: OneTimeAnnouncement & ActionableAnnou
             title: LocalizationConstants.AnnouncementCards.ResubmitDocuments.title,
             description: LocalizationConstants.AnnouncementCards.ResubmitDocuments.description,
             buttons: [button],
-            recorder: errorRecorder,
             dismissState: .dismissible { [weak self] in
                 guard let self = self else { return }
                 self.analyticsRecorder.record(event: self.dismissAnalyticsEvent)
@@ -69,8 +68,6 @@ final class ResubmitDocumentsAnnouncement: OneTimeAnnouncement & ActionableAnnou
     private let user: NabuUser
 
     private let disposeBag = DisposeBag()
-    private let errorRecorder: ErrorRecording
-
     // MARK: - Setup
 
     init(user: NabuUser,
@@ -80,7 +77,6 @@ final class ResubmitDocumentsAnnouncement: OneTimeAnnouncement & ActionableAnnou
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {
         self.user = user
-        self.errorRecorder = errorRecorder
         self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss

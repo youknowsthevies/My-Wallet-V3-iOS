@@ -133,6 +133,7 @@ final class DataProvider: DataProviding {
             ),
             exchange: exchange[.ethereum]
         )
+        
         let paxBalanceFetcher = AssetBalanceFetcher(
             wallet: ERC20AssetBalanceFetcher(),
             trading: CustodialCryptoBalanceFetcher(

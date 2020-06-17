@@ -37,11 +37,7 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
     public var fetchHistoryIfNeeded: Single<Void> {
         return bridge.history
     }
-    
-    public var fetchHistory: Single<Void> {
-        return bridge.fetchHistory()
-    }
-    
+
     public var handlePendingTransaction: Single<Void> {
         return bridge.isWaitingOnTransaction
             .flatMap { isWaiting -> Single<Void> in
@@ -146,7 +142,7 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
     private func updateAfterSending(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished> {
         return bridge.recordLast(transaction: transaction)
             .flatMap(weak: self) { (self, transaction) -> Single<EthereumTransactionPublished> in
-                return self.fetchHistory.map { _ -> EthereumTransactionPublished in
+                return self.bridge.fetchHistory().map { _ -> EthereumTransactionPublished in
                     transaction
                 }
             }

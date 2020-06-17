@@ -37,7 +37,6 @@ final class KycAirdropAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
             title: LocalizationConstants.AnnouncementCards.KycAirdrop.title,
             description: LocalizationConstants.AnnouncementCards.KycAirdrop.description,
             buttons: [button],
-            recorder: errorRecorder,
             dismissState: .dismissible { [weak self] in
                 guard let self = self else { return }
                 self.analyticsRecorder.record(event: self.dismissAnalyticsEvent)
@@ -75,8 +74,6 @@ final class KycAirdropAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
     private let isKycSupported: Bool
 
     private let disposeBag = DisposeBag()
-    private let errorRecorder: ErrorRecording
-
     // MARK: - Setup
     
     init(canCompleteTier2: Bool,
@@ -89,7 +86,6 @@ final class KycAirdropAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
          action: @escaping CardAnnouncementAction) {
         self.canCompleteTier2 = canCompleteTier2
         self.isKycSupported = isKycSupported
-        self.errorRecorder = errorRecorder
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)
         self.analyticsRecorder = analyticsRecorder

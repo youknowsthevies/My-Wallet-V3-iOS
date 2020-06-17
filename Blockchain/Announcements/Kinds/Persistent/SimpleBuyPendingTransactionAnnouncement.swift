@@ -60,7 +60,6 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
             title: title,
             description: description,
             buttons: [button],
-            recorder: errorRecorder,
             dismissState: .undismissible,
             didAppear: { [weak self] in
                 guard let self = self else { return }
@@ -85,8 +84,6 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
     private let order: OrderDetails?
 
     private let disposeBag = DisposeBag()
-    private let errorRecorder: ErrorRecording
-
     // MARK: - Setup
 
     init(order: OrderDetails?,
@@ -94,7 +91,6 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          action: @escaping CardAnnouncementAction) {
         self.order = order
-        self.errorRecorder = errorRecorder
         self.action = action
         self.analyticsRecorder = analyticsRecorder
     }

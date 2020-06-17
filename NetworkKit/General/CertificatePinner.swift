@@ -12,6 +12,13 @@ import ToolKit
 @objc
 final public class CertificatePinner: NSObject {
 
+    // MARK: - Types
+
+    private enum CertificatePinnerError: Error {
+        case failedPreValidation
+        case certificatesNotEqual
+    }
+
     // MARK: - Properties
 
     /// The instance variable used to access functions of the `CertificatePinner` class.
@@ -74,7 +81,7 @@ final public class CertificatePinner: NSObject {
             let localCertificate = SecCertificateCreateWithData(kCFAllocatorDefault, certificateData),
             SecTrustCreateWithCertificates(localCertificate, policy, &localTrust) == errSecSuccess
         else {
-            Logger.shared.error("Failed Certificate Validation")
+            Logger.shared.error(CertificatePinnerError.failedPreValidation)
             completion(.cancelAuthenticationChallenge, nil)
             return
         }
@@ -85,7 +92,7 @@ final public class CertificatePinner: NSObject {
             let credential = URLCredential(trust: serverTrust)
             completion(.useCredential, credential)
         } else {
-            Logger.shared.error("Failed Certificate Validation")
+            Logger.shared.error(CertificatePinnerError.certificatesNotEqual)
             completion(.cancelAuthenticationChallenge, nil)
         }
     }

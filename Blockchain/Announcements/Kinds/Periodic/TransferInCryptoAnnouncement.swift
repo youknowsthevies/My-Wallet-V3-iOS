@@ -37,7 +37,6 @@ final class TransferInCryptoAnnouncement: PeriodicAnnouncement & ActionableAnnou
             title: LocalizationConstants.AnnouncementCards.TransferInCrypto.title,
             description: LocalizationConstants.AnnouncementCards.TransferInCrypto.description,
             buttons: [button],
-            recorder: errorRecorder,
             dismissState: .dismissible { [weak self] in
                 guard let self = self else { return }
                 self.analyticsRecorder.record(event: self.dismissAnalyticsEvent)
@@ -69,8 +68,6 @@ final class TransferInCryptoAnnouncement: PeriodicAnnouncement & ActionableAnnou
     let appearanceRules: PeriodicAnnouncementAppearanceRules
         
     private let disposeBag = DisposeBag()
-    private let errorRecorder: ErrorRecording
-
     private let isKycSupported: Bool
     
     // MARK: - Setup
@@ -83,7 +80,6 @@ final class TransferInCryptoAnnouncement: PeriodicAnnouncement & ActionableAnnou
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {
         self.isKycSupported = isKycSupported
-        self.errorRecorder = errorRecorder
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)
         self.analyticsRecorder = analyticsRecorder

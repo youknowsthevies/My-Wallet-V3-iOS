@@ -23,7 +23,9 @@ final class BitcoinWallet: NSObject {
     var interopDispatcher: BitcoinJSInteropDispatcherAPI {
         dispatcher
     }
-    
+
+    weak var reactiveWallet: ReactiveWalletAPI!
+
     private lazy var credentialsProvider: WalletCredentialsProviding = WalletManager.shared.legacyRepository
     private weak var wallet: WalletAPI?
     private let dispatcher: Dispatcher
@@ -61,10 +63,6 @@ final class BitcoinWallet: NSObject {
             self?.delegate.didFailToGetHDWallet(errorMessage: errorMessage)
         }
     }
-
-    @objc public func walletDidLoad() {
-        // TODO: This will be used once we implement native send
-    }
 }
 
 extension BitcoinWallet: BitcoinWalletBridgeAPI {
@@ -75,7 +73,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             completable(.completed)
             return Disposables.create()
         }
-        return WalletManager.shared.reactiveWallet
+        return reactiveWallet
             .waitUntilInitialized
             .flatMap { saveMemo.asObservable() }
             .asCompletable()
@@ -99,12 +97,12 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
                 return Disposables.create()
             }
 
-        return WalletManager.shared.reactiveWallet
+        return reactiveWallet
             .waitUntilInitializedSingle
             .flatMap { memo }
     }
     var hdWallet: Single<PayloadBitcoinHDWallet> {
-        WalletManager.shared.reactiveWallet
+        reactiveWallet
             .waitUntilInitializedSingle
             .flatMap(weak: self) { (self, _) -> Single<String?> in
                 self.secondPasswordIfAccountCreationNeeded
@@ -134,7 +132,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
     }
     
     var defaultWallet: Single<BitcoinWalletAccount> {
-        WalletManager.shared.reactiveWallet
+        reactiveWallet
             .waitUntilInitializedSingle
             .flatMap(weak: self) { (self, _) -> Single<String?> in
                 self.secondPasswordIfAccountCreationNeeded

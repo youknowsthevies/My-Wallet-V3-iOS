@@ -40,7 +40,7 @@
 // Core Wallet Init Properties
 @property (readonly, nonatomic) JSContext *context;
 
-@property(nonatomic, strong) id<WalletDelegate> delegate;
+@property(nonatomic, weak) id<WalletDelegate> delegate;
 
 @property(nonatomic, strong) NSMutableDictionary *transactionProgressListeners;
 

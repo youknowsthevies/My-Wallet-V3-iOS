@@ -173,19 +173,16 @@ public final class AnnouncementCardViewModel {
     }
     
     /// The action associated with the announcement dismissal.
-    /// Must be accessed ONLY if `dismissState` value is `.dismissible`
-    var dismissAction: DismissState.Action! {
+    var dismissAction: DismissState.Action? {
         switch dismissState {
         case .dismissible(let action):
             return action
         case .undismissible:
-            recorder.error("dismiss action was accessed but not defined")
             return nil
         }
     }
         
     private let dismissState: DismissState
-    private let recorder: ErrorRecording
     
     /// Upon receiving events triggers dismissal.
     /// This comes in handy when the user has performed an indirect
@@ -213,7 +210,6 @@ public final class AnnouncementCardViewModel {
                 title: String? = nil,
                 description: String? = nil,
                 buttons: [ButtonViewModel] = [],
-                recorder: ErrorRecording,
                 dismissState: DismissState,
                 didAppear: DidAppear? = nil) {
         self.type = type
@@ -227,7 +223,6 @@ public final class AnnouncementCardViewModel {
         self.description = description
         self.dismissState = dismissState
         self.buttons = buttons
-        self.recorder = recorder
         self.didAppear = didAppear
         
         if let dismissAction = dismissAction {
@@ -239,7 +234,7 @@ public final class AnnouncementCardViewModel {
 }
 
 extension AnnouncementCardViewModel: Equatable {
-    public static func == (lhs: AnnouncementCardViewModel, rhs: AnnouncementCardViewModel) -> Bool {
-        return lhs.type == rhs.type
+    public static func ==(lhs: AnnouncementCardViewModel, rhs: AnnouncementCardViewModel) -> Bool {
+        lhs.type == rhs.type
     }
 }

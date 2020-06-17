@@ -37,7 +37,6 @@ final class SwapAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {
             title: LocalizationConstants.AnnouncementCards.Swap.title,
             description: LocalizationConstants.AnnouncementCards.Swap.description,
             buttons: [button],
-            recorder: errorRecorder,
             dismissState: .dismissible { [weak self] in
                 guard let self = self else { return }
                 self.analyticsRecorder.record(event: self.dismissAnalyticsEvent)
@@ -71,8 +70,6 @@ final class SwapAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {
     private let hasTrades: Bool
     
     private let disposeBag = DisposeBag()
-    private let errorRecorder: ErrorRecording
-
     // MARK: - Setup
     
     init(hasTrades: Bool,
@@ -83,7 +80,6 @@ final class SwapAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {
         self.hasTrades = hasTrades
-        self.errorRecorder = errorRecorder
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)
         self.analyticsRecorder = analyticsRecorder

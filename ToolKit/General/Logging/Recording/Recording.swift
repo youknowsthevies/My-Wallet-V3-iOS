@@ -19,14 +19,11 @@ public typealias Recording = MessageRecording & ErrorRecording & UIOperationReco
 /// Can be used to record any `String` message
 public protocol MessageRecording {
     func record(_ message: String)
-    func record()
 }
 
 /// Can be used to record any `Error` message
 public protocol ErrorRecording {
     func error(_ error: Error)
-    func error(_ errorMessage: String)
-    func error()
 }
 
 /// Records any illegal UI operation

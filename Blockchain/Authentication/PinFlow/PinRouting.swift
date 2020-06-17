@@ -16,6 +16,9 @@ struct PinRouting {
     enum FlowError: Error {
         /// Navigation controller is not initialized for some reason
         case navigationControllerIsNotInitialized
+
+        /// Parent view controller must not be `nil` for foreground authentication
+        case parentViewControllerNilOnForegroundAuthentication
     }
     
     /// The flow of the pin

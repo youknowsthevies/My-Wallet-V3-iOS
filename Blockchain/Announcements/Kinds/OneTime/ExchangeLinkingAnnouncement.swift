@@ -39,7 +39,6 @@ final class ExchangeLinkingAnnouncement: OneTimeAnnouncement & ActionableAnnounc
             title: LocalizationConstants.AnnouncementCards.Exchange.title,
             description: LocalizationConstants.AnnouncementCards.Exchange.description,
             buttons: [button],
-            recorder: errorRecorder,
             dismissState: .dismissible { [weak self] in
                 guard let self = self else { return }
                 self.analyticsRecorder.record(event: self.dismissAnalyticsEvent)
@@ -71,7 +70,6 @@ final class ExchangeLinkingAnnouncement: OneTimeAnnouncement & ActionableAnnounc
     private let disposeBag = DisposeBag()
 
     private let shouldShowExchangeAnnouncement: Bool
-    private let errorRecorder: ErrorRecording
     
     // MARK: - Setup
     
@@ -82,7 +80,6 @@ final class ExchangeLinkingAnnouncement: OneTimeAnnouncement & ActionableAnnounc
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {
         self.shouldShowExchangeAnnouncement = shouldShowExchangeAnnouncement
-        self.errorRecorder = errorRecorder
         self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss
