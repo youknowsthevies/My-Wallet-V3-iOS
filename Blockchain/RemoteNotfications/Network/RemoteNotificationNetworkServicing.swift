@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 import RxSwift
 
 protocol RemoteNotificationNetworkServicing: class {
     func register(with deviceToken: String,
-                  using credentialsProvider: WalletCredentialsProviding) -> Single<Void>
+                  using credentialsProvider: SharedKeyRepositoryAPI & GuidRepositoryAPI) -> Single<Void>
 }

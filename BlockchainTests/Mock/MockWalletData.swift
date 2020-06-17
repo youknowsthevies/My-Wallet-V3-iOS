@@ -35,7 +35,7 @@ class MockWalletData: WalletProtocol {
     
     /// When called, invokes the delegate's walletDidDecrypt and walletDidFinishLoad methods
     @objc func load(withGuid guid: String!, sharedKey: String!, password: String!) {
-        delegate?.walletDidDecrypt!()
+        delegate?.walletDidDecrypt!(withSharedKey: sharedKey, guid: guid)
         delegate?.walletDidFinishLoad!()
     }
 }

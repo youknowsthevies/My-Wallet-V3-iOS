@@ -20,7 +20,7 @@ class MockWallet: Wallet {
 
     /// When called, invokes the delegate's walletDidDecrypt and walletDidFinishLoad methods
     override func load(withGuid guid: String, sharedKey: String?, password: String?) {
-        self.delegate?.walletDidDecrypt?()
+        self.delegate?.walletDidDecrypt?(withSharedKey: sharedKey, guid: guid)
         self.delegate?.walletDidFinishLoad?()
     }
 }

@@ -8,11 +8,11 @@
 
 import Foundation
 
-public protocol WalletRepositoryAPI: SessionTokenRepositoryAPI,
-                                     SharedKeyRepositoryAPI,
-                                     PasswordRepositoryAPI,
-                                     GuidRepositoryAPI,
-                                     SyncPubKeysRepositoryAPI,
-                                     LanguageRepositoryAPI,
-                                     AuthenticatorRepositoryAPI,
-                                     PayloadRepositoryAPI {}
+public typealias WalletRepositoryAPI = SessionTokenRepositoryAPI
+                                     & SharedKeyRepositoryAPI
+                                     & PasswordRepositoryAPI
+                                     & GuidRepositoryAPI
+                                     & SyncPubKeysRepositoryAPI
+                                     & LanguageRepositoryAPI
+                                     & AuthenticatorRepositoryAPI
+                                     & PayloadRepositoryAPI

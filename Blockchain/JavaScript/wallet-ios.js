@@ -2229,14 +2229,6 @@ MyWalletPhone.getLabelForEthAccount = function() {
     return MyWallet.wallet.eth.defaultAccount.label;
 }
 
-MyWalletPhone.isDepositTransaction = function(txHash) {
-    return MyWallet.wallet.shapeshift.isDepositTx(txHash);
-}
-
-MyWalletPhone.isWithdrawalTransaction = function(txHash) {
-    return MyWallet.wallet.shapeshift.isWithdrawalTx(txHash);
-}
-
 MyWalletPhone.bch = {
     getHistory : function() {
         var success = function(promise) {

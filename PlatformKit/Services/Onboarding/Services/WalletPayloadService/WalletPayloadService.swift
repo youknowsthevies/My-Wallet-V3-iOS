@@ -65,7 +65,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
         return client
             .payload(guid: guid, identifier: .sharedKey(sharedKey))
             .flatMap(weak: self) { (self, response) -> Single<WalletPayloadClient.ClientResponse> in
-                return self.cacheWalletData(from: response)
+                self.cacheWalletData(from: response)
             }
             .asCompletable()
     }
