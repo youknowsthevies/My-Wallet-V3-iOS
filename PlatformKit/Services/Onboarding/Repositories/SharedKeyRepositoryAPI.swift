@@ -21,7 +21,7 @@ public protocol SharedKeyRepositoryAPI: class {
 
 public extension SharedKeyRepositoryAPI {
     var hasSharedKey: Single<Bool> {
-        return sharedKey
+        sharedKey
             .map { sharedKey in
                 guard let sharedKey = sharedKey else { return false }
                 return !sharedKey.isEmpty

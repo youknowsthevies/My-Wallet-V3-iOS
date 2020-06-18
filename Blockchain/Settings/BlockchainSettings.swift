@@ -226,9 +226,8 @@ final class BlockchainSettings: NSObject {
 
         @objc var sharedKey: String? {
             get {
-                return KeychainItemWrapper.sharedKey()
+                KeychainItemWrapper.sharedKey()
             }
-
             set {
                 guard let sharedKey = newValue else {
                     KeychainItemWrapper.removeSharedKeyFromKeychain()

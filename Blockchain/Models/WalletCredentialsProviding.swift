@@ -9,7 +9,5 @@
 import Foundation
 
 protocol WalletCredentialsProviding: class {
-    var legacyGuid: String? { get }
     var legacyPassword: String? { get }
-    var legacySharedKey: String? { get }
 }

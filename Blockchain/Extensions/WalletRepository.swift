@@ -38,52 +38,50 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     
     private let authenticatorTypeRelay = BehaviorRelay<AuthenticatorType>(value: .standard)
     private let sessionTokenRelay = BehaviorRelay<String?>(value: nil)
-    private let guidRelay = BehaviorRelay<String?>(value: nil)
-    private let sharedKeyRelay = BehaviorRelay<String?>(value: nil)
     private let passwordRelay = BehaviorRelay<String?>(value: nil)
 
     // MARK: - Properties
     
     /// Streams the session token if exists
     var sessionToken: Single<String?> {
-        return sessionTokenRelay
+        sessionTokenRelay
             .take(1)
             .asSingle()
     }
     
     /// Streams the GUID if exists
     var guid: Single<String?> {
-        return Single
-            .create(weak: self) { (self, observer) -> Disposable in
-                let guid = self.settings.guid ?? self.guidRelay.value
-                observer(.success(guid))
-                return Disposables.create()
+        Single.deferred { [weak self] in
+            guard let self = self else {
+                return .error(ToolKitError.nullReference(Self.self))
             }
+            return .just(self.settings.guid)
+        }
     }
-    
+
     /// Streams the shared key if exists
     var sharedKey: Single<String?> {
-        return Single
-            .create(weak: self) { (self, observer) -> Disposable in
-                let sharedKey = self.settings.sharedKey ?? self.sharedKeyRelay.value
-                observer(.success(sharedKey))
-                return Disposables.create()
+        Single.deferred { [weak self] in
+            guard let self = self else {
+                return .error(ToolKitError.nullReference(Self.self))
             }
+            return .just(self.settings.sharedKey)
+        }
     }
-    
+
     /// Streams the password if exists
     var password: Single<String?> {
-        return passwordRelay
+        passwordRelay
             .take(1)
             .asSingle()
     }
-    
+
     var authenticatorType: Single<AuthenticatorType> {
-        return authenticatorTypeRelay
+        authenticatorTypeRelay
             .take(1)
             .asSingle()
     }
-    
+
     private let jsScheduler = MainScheduler.instance
     private let settings: AppSettingsAPI
 
@@ -94,47 +92,48 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     init(jsContextProvider: JSContextProviderAPI, settings: AppSettingsAPI) {
         self.jsContextProvider = jsContextProvider
         self.settings = settings
+        super.init()
     }
     
     // MARK: - Wallet Setters
     
     /// Sets GUID
     func set(guid: String) -> Completable {
-        return perform { [weak guidRelay] in
-            guidRelay?.accept(guid)
+        perform { [weak self] in
+            self?.settings.guid = guid
         }
     }
-    
+
     /// Sets the session token
     func set(sessionToken: String) -> Completable {
-        return perform { [weak sessionTokenRelay] in
+        perform { [weak sessionTokenRelay] in
             sessionTokenRelay?.accept(sessionToken)
         }
     }
     
     /// Cleans the session token
     func cleanSessionToken() -> Completable {
-        return perform { [weak sessionTokenRelay] in
+        perform { [weak sessionTokenRelay] in
             sessionTokenRelay?.accept(nil)
         }
     }
     
     /// Sets Shared-Key
     func set(sharedKey: String) -> Completable {
-        return perform { [weak sharedKeyRelay] in
-            sharedKeyRelay?.accept(sharedKey)
+        perform { [weak self] in
+            self?.settings.sharedKey = sharedKey
         }
     }
     
     /// Sets Password
     func set(password: String) -> Completable {
-        return perform { [weak passwordRelay] in
+        perform { [weak passwordRelay] in
             passwordRelay?.accept(password)
         }
     }
     
     func sync() -> Completable {
-        return Completable
+        Completable
             .create { [weak self] observer -> Disposable in
                 guard let self = self else {
                     observer(.error(PasswordRepositoryError.syncFailed))
@@ -161,7 +160,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     
     /// Sets Authenticator Type
     func set(authenticatorType: AuthenticatorType) -> Completable {
-        return perform { [weak authenticatorTypeRelay] in
+        perform { [weak authenticatorTypeRelay] in
             authenticatorTypeRelay?.accept(authenticatorType)
         }
     }
@@ -170,7 +169,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     
     /// Sets a boolean indicating whether the public keys should sync to the wallet
     func set(syncPubKeys: Bool) -> Completable {
-        return perform { [weak jsContextProvider] in
+        perform { [weak jsContextProvider] in
             let value = syncPubKeys ? "true" : "false"
             let script = String(format: JSSetter.syncPubKeys, value)
             jsContextProvider?.jsContext.evaluateScript(script)
@@ -179,7 +178,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     
     /// Sets the language
     func set(language: String) -> Completable {
-        return perform { [weak jsContextProvider] in
+        perform { [weak jsContextProvider] in
             let escaped = language.escapedForJS()
             let script = String(format: JSSetter.language, escaped)
             jsContextProvider?.jsContext.evaluateScript(script)
@@ -188,7 +187,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     
     /// Sets the wallet payload
     func set(payload: String) -> Completable {
-        return perform { [weak jsContextProvider] in
+        perform { [weak jsContextProvider] in
             let escaped = payload.escapedForJS()
             let script = String(format: JSSetter.payload, escaped)
             jsContextProvider?.jsContext.evaluateScript(script)
@@ -198,7 +197,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     // MARK: - Accessors
     
     private func perform(_ operation: @escaping () -> Void) -> Completable {
-        return Completable
+        Completable
             .create { observer -> Disposable in
                 operation()
                 observer(.completed)
@@ -210,34 +209,13 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     // MARK: - Legacy: PLEASE DONT USE THESE UNLESS YOU MUST HOOK LEGACY OBJ-C CODE
 
     @available(*, deprecated, message: "Please do not use this unless you absolutely need direct access")
-    var legacyAuthentocatorType: AuthenticatorType {
-        set {
-            authenticatorTypeRelay.accept(newValue)
-        }
-        get {
-            return authenticatorTypeRelay.value
-        }
-    }
-    
-    @available(*, deprecated, message: "Please do not use this unless you absolutely need direct access")
     @objc
     var legacySessionToken: String? {
         set {
             sessionTokenRelay.accept(newValue)
         }
         get {
-            return sessionTokenRelay.value
-        }
-    }
-    
-    @available(*, deprecated, message: "Please do not use this unless you absolutely need direct access")
-    @objc
-    var legacyGuid: String? {
-        set {
-            guidRelay.accept(newValue)
-        }
-        get {
-            return guidRelay.value
+            sessionTokenRelay.value
         }
     }
 
@@ -248,18 +226,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
             passwordRelay.accept(newValue)
         }
         get {
-            return passwordRelay.value
-        }
-    }
-    
-    @available(*, deprecated, message: "Please do not use this unless you absolutely need direct access")
-    @objc
-    var legacySharedKey: String? {
-        set {
-            sharedKeyRelay.accept(newValue)
-        }
-        get {
-            return sharedKeyRelay.value
+            passwordRelay.value
         }
     }
 }

@@ -14,7 +14,7 @@ public final class PinLoginService: PinLoginServiceAPI {
     // MARK: - Types
     
     public typealias PasscodeRepositoryAPI = SharedKeyRepositoryAPI & GuidRepositoryAPI & PasswordRepositoryAPI
-    
+
     /// Potential errors
     public enum ServiceError: Error {
         case missingEncryptedPassword
@@ -47,24 +47,34 @@ public final class PinLoginService: PinLoginServiceAPI {
         return service
             .requestUsingSharedKey()
             .flatMapSingle(weak: self) { (self) -> Single<PasscodePayload> in
-                return Single
-                    .zip(
-                        self.walletRepository.guid,
-                        self.decrypt(pinDecryptionKey: pinDecryptionKey),
-                        self.walletRepository.sharedKey
-                    )
-                    .map { payload -> PasscodePayload in
-                        // All the values must be present at the moment of invocation
-                        return PasscodePayload(
-                            guid: payload.0!,
-                            password: payload.1,
-                            sharedKey: payload.2!
-                        )
-                    }
+                self.passcodePayload(from: pinDecryptionKey)
             }
             .flatMap(weak: self) { (self, payload) -> Single<String> in
-                return self.cache(passcodePayload: payload)
+                return self
+                    .cache(passcodePayload: payload)
                     .andThen(Single.just(payload.password))
+            }
+    }
+
+    private func passcodePayload(from pinDecryptionKey: String) -> Single<PasscodePayload> {
+        Single
+            .zip(
+                self.walletRepository.guid,
+                self.walletRepository.sharedKey,
+                self.decrypt(pinDecryptionKey: pinDecryptionKey)
+            )
+            .map { payload -> PasscodePayload in
+                guard let guid = payload.0, !guid.isEmpty else {
+                    throw ServiceError.missingGuid
+                }
+                guard let sharedKey = payload.1, !sharedKey.isEmpty else {
+                    throw ServiceError.missingSharedKey
+                }
+                return PasscodePayload(
+                    guid: guid,
+                    password: payload.2,
+                    sharedKey: sharedKey
+                )
             }
     }
     

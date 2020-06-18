@@ -19,7 +19,7 @@ final class MockRemoteNotificationNetworkService: RemoteNotificationNetworkServi
     }
     
     func register(with token: String,
-                  using credentialsProvider: WalletCredentialsProviding) -> Single<Void> {
+                  using credentialsProvider: SharedKeyRepositoryAPI & GuidRepositoryAPI) -> Single<Void> {
         return expectedResult.single
     }
 }

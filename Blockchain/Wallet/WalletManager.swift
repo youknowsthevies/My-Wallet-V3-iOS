@@ -119,8 +119,6 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI {
         HTTPCookieStorage.shared.deleteAllCookies()
         
         legacyRepository.legacySessionToken = nil
-        legacyRepository.legacyGuid = nil
-        legacyRepository.legacySharedKey = nil
         legacyRepository.legacyPassword = nil
         
         AssetAddressRepository.shared.removeAllSwipeAddresses()
@@ -204,13 +202,13 @@ extension WalletManager: WalletDelegate {
         endBackgroundUpdateTask()
     }
 
-    func walletDidDecrypt() {
+    func walletDidDecrypt(withSharedKey sharedKey: String?, guid: String?) {
         Logger.shared.info("walletDidDecrypt()")
 
         DispatchQueue.main.async { [unowned self] in
             self.authDelegate?.didDecryptWallet(
-                guid: self.legacyRepository.legacyGuid,
-                sharedKey: self.legacyRepository.legacySharedKey,
+                guid: guid,
+                sharedKey: sharedKey,
                 password: self.legacyRepository.legacyPassword
             )
         }

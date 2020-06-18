@@ -41,38 +41,51 @@ final class RemoteNotificationNetworkService {
 // MARK: - RemoteNotificationNetworkServicing
 
 extension RemoteNotificationNetworkService: RemoteNotificationNetworkServicing {
-    func register(with token: String,
-                  using credentialsProvider: WalletCredentialsProviding) -> Single<Void> {
-        let body: Data
-        do {
-            guard let guid = credentialsProvider.legacyGuid, let sharedKey = credentialsProvider.legacySharedKey else {
-                throw PushNotificationError.missingCredentials
-            }
-            guard !guid.isEmpty && !sharedKey.isEmpty else {
-                throw PushNotificationError.emptyCredentials
-            }
-            
-            let builder = try RemoteNotificationTokenQueryParametersBuilder(guid: guid, sharedKey: sharedKey, token: token)
-            guard let parameters = builder.parameters else {
-                throw PushNotificationError.couldNotBuildRequestBody
-            }
-            body = parameters
-        } catch {
-            return .error(error)
-        }
-        
-        let url = URL(string: self.url)!
 
-        let request = NetworkRequest(
-            endpoint: url,
-            method: .post,
-            body: body,
-            contentType: .formUrlEncoded
-        )
-        return communicator.perform(request: request)
-            .flatMap { (payload: RegistrationResponseData) -> Single<Void> in
-                guard payload.success else { throw PushNotificationError.registrationFailure }
-                return .just(())
+    func register(with token: String,
+                  using credentialsProvider: SharedKeyRepositoryAPI & GuidRepositoryAPI) -> Single<Void> {
+        registrationRequest(with: token, using: credentialsProvider)
+            .flatMap(weak: self) { (self, request) -> Single<RegistrationResponseData> in
+                self.communicator.perform(request: request)
+            }
+            .map { response -> Void in
+                guard response.success
+                    else { throw PushNotificationError.registrationFailure }
+                return ()
+            }
+    }
+
+    private func registrationRequest(with token: String,
+                                     using credentialsProvider: SharedKeyRepositoryAPI & GuidRepositoryAPI) -> Single<NetworkRequest> {
+        Single
+            .zip(
+                credentialsProvider.sharedKey,
+                credentialsProvider.guid
+            )
+            .map { credentials -> RemoteNotificationTokenQueryParametersBuilder in
+                guard let guid: String = credentials.1, let sharedKey: String = credentials.0 else {
+                    throw PushNotificationError.missingCredentials
+                }
+                guard !guid.isEmpty, !sharedKey.isEmpty else {
+                    throw PushNotificationError.emptyCredentials
+                }
+                let builder = try RemoteNotificationTokenQueryParametersBuilder(guid: guid, sharedKey: sharedKey, token: token)
+                return builder
+            }
+            .map { builder -> Data in
+                guard let parameters = builder.parameters else {
+                    throw PushNotificationError.couldNotBuildRequestBody
+                }
+                return parameters
+            }
+            .map(weak: self) { (self, body) -> NetworkRequest in
+                let url = URL(string: self.url)!
+                return NetworkRequest(
+                    endpoint: url,
+                    method: .post,
+                    body: body,
+                    contentType: .formUrlEncoded
+                )
             }
     }
 }

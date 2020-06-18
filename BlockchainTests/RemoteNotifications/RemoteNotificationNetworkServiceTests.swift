@@ -24,7 +24,7 @@ final class RemoteNotificationNetworkServiceTests: XCTestCase {
     
     func testHttpCodeOkWithSuccess() {
         let token = "remote-notification-token"
-        let credentialsProvider = MockWalletCredentialsProvider.validFake
+        let credentialsProvider = GuidSharedKeyRepositoryAPIMock()
         let service = prepareServiceForHttpCodeOk(with: .success)
         let observable = service.register(with: token, using: credentialsProvider).toBlocking()
         
@@ -37,7 +37,7 @@ final class RemoteNotificationNetworkServiceTests: XCTestCase {
     
     func testHttpCodeOkWithFailure() {
         let token = "remote-notification-token"
-        let credentialsProvider = MockWalletCredentialsProvider.validFake
+        let credentialsProvider = GuidSharedKeyRepositoryAPIMock()
         let service = prepareServiceForHttpCodeOk(with: .failure)
         let observable = service.register(with: token, using: credentialsProvider).toBlocking()
         

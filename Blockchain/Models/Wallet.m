@@ -866,12 +866,10 @@ NSString * const kLockboxInvitation = @"lockbox";
     [self subscribeToAddress:address assetType:assetType];
 }
 
+/// Called after recovering wallet with mnemonic
 - (void)loadWalletWithGuid:(NSString*)guid sharedKey:(NSString*)sharedKey password:(NSString*)password {
-    
     [self loadJSIfNeeded];
 
-    self.repository.legacyGuid = guid;
-    self.repository.legacySharedKey = sharedKey;
     self.repository.legacyPassword = password;
     
     DLog(@"Fetch Wallet");
@@ -889,9 +887,9 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (void)fetchWalletWith:(nonnull NSString *)password {
     DLog(@"Fetching wallet");
-    
+
     self.repository.legacyPassword = password;
-    
+
     [self loadJSIfNeeded];
 
     NSString *escapedPassword = [password escapedForJS];
@@ -2080,26 +2078,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     return nil;
 }
 
-#pragma mark - Exchange
-
-- (BOOL)isDepositTransaction:(NSString *)txHash
-{
-    if ([self isInitialized]) {
-        return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.isDepositTransaction(\"%@\")", [txHash escapedForJS]]] toBool];
-    }
-
-    return NO;
-}
-
-- (BOOL)isWithdrawalTransaction:(NSString *)txHash
-{
-    if ([self isInitialized]) {
-        return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.isWithdrawalTransaction(\"%@\")", [txHash escapedForJS]]] toBool];
-    }
-
-    return NO;
-}
-
 # pragma mark - Lockbox
 
 - (NSArray *_Nonnull)getLockboxDevices
@@ -2804,11 +2782,11 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     [self setupEthSocket];
 
-    self.repository.legacySharedKey = [[self.context evaluateScript:@"MyWallet.wallet.sharedKey"] toString];
-    self.repository.legacyGuid = [[self.context evaluateScript:@"MyWallet.wallet.guid"] toString];
+    NSString *sharedKey = [[self.context evaluateScript:@"MyWallet.wallet.sharedKey"] toString];
+    NSString *guid = [[self.context evaluateScript:@"MyWallet.wallet.guid"] toString];
 
-    if ([delegate respondsToSelector:@selector(walletDidDecrypt)]) {
-        [delegate walletDidDecrypt];
+    if ([delegate respondsToSelector:@selector(walletDidDecryptWithSharedKey:guid:)]) {
+        [delegate walletDidDecryptWithSharedKey:sharedKey guid:guid];
     } else {
         DLog(@"Error: delegate of class %@ does not respond to selector walletDidDecrypt!", [delegate class]);
     }

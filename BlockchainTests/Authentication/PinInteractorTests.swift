@@ -34,7 +34,7 @@ class PinInteractorTests: XCTestCase {
     }
     
     var credentialsProvider: WalletCredentialsProviding {
-        return MockWalletCredentialsProvider.validFake
+        return MockWalletCredentialsProvider.valid
     }
     
     // MARK: - Test success cases

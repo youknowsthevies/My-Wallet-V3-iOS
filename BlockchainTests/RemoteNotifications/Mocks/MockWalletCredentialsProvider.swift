@@ -7,23 +7,41 @@
 //
 
 @testable import Blockchain
+import PlatformKit
+import RxSwift
 
 class MockWalletCredentialsProvider: WalletCredentialsProviding {
-    static var validFake: MockWalletCredentialsProvider {
-        return MockWalletCredentialsProvider(
-            legacyGuid: "123-abc-456-def-789-ghi",
-            legacySharedKey: "0123456789",
+    static var valid: WalletCredentialsProviding {
+        MockWalletCredentialsProvider(
             legacyPassword: "blockchain"
         )
     }
-    
-    let legacyGuid: String?
-    let legacySharedKey: String?
     let legacyPassword: String?
-    
-    init(legacyGuid: String?, legacySharedKey: String?, legacyPassword: String?) {
-        self.legacyGuid = legacyGuid
-        self.legacySharedKey = legacySharedKey
+    init(legacyPassword: String?) {
         self.legacyPassword = legacyPassword
+    }
+}
+
+class GuidSharedKeyRepositoryAPIMock: GuidRepositoryAPI, SharedKeyRepositoryAPI {
+
+    var expectedGuid: String? = "123-abc-456-def-789-ghi"
+    var expectedSharedKey: String? = "0123456789"
+
+    var guid: Single<String?> {
+        .just(expectedGuid)
+    }
+
+    func set(guid: String) -> Completable {
+        expectedGuid = guid
+        return .empty()
+    }
+
+    var sharedKey: Single<String?> {
+        .just(expectedSharedKey)
+    }
+
+    func set(sharedKey: String) -> Completable {
+        expectedSharedKey = sharedKey
+        return .empty()
     }
 }

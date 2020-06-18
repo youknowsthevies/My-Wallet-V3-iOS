@@ -299,8 +299,6 @@
 
 // Exchange
 - (void)createEthAccountForExchange:(NSString *)secondPassword;
-- (BOOL)isDepositTransaction:(NSString *)txHash;
-- (BOOL)isWithdrawalTransaction:(NSString *)txHash;
 
 // Retail Core
 - (void)updateKYCUserCredentialsWithUserId:(NSString *)userId lifetimeToken:(NSString *)lifetimeToken success:(void (^ _Nonnull)(NSString *_Nonnull))success error: (void (^ _Nonnull)(NSString *_Nullable))error;

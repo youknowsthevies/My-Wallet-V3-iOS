@@ -14,7 +14,7 @@ import PlatformKit
 
 /// A service that coordinates
 final class RemoteNotificationService: RemoteNotificationServicing {
-    
+
     // MARK: - ServiceError
     
     private enum ServiceError: Error {
@@ -30,7 +30,7 @@ final class RemoteNotificationService: RemoteNotificationServicing {
     
     private let externalService: ExternalNotificationProviding
     private let networkService: RemoteNotificationNetworkServicing
-    private let credentialsProvider: WalletCredentialsProviding
+    private let walletRepository: SharedKeyRepositoryAPI & GuidRepositoryAPI
     
     private let disposeBag = DisposeBag()
     
@@ -40,12 +40,12 @@ final class RemoteNotificationService: RemoteNotificationServicing {
          relay: RemoteNotificationEmitting = RemoteNotificationRelay(),
          externalService: ExternalNotificationProviding = ExternalNotificationServiceProvider(),
          networkService: RemoteNotificationNetworkServicing = RemoteNotificationNetworkService(),
-         credentialsProvider: WalletCredentialsProviding = WalletManager.shared.legacyRepository) {
+         walletRepository: SharedKeyRepositoryAPI & GuidRepositoryAPI = WalletManager.shared.repository) {
         self.authorizer = authorizer
         self.relay = relay
         self.externalService = externalService
         self.networkService = networkService
-        self.credentialsProvider = credentialsProvider
+        self.walletRepository = walletRepository
     }
 }
 
@@ -68,7 +68,7 @@ extension RemoteNotificationService: RemoteNotificationTokenSending {
                 return self.externalService.token
             }
             .flatMap(weak: self, { (self, token) -> Single<Void> in
-                return self.networkService.register(with: token, using: self.credentialsProvider)
+                return self.networkService.register(with: token, using: self.walletRepository)
             })
     }
 }

@@ -20,11 +20,3 @@ public struct PasscodePayload {
         self.sharedKey = sharedKey
     }
 }
-
-public extension PasscodePayload {
-    init(dictionary: [AnyHashable: Any]) {
-        self.guid = dictionary["guid"] as! String
-        self.sharedKey = dictionary["sharedKey"] as! String
-        self.password = dictionary["password"] as! String
-    }
-}

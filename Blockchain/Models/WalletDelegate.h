@@ -15,9 +15,9 @@
 @protocol WalletDelegate <NSObject>
 
 @optional
-- (void)didGetMultiAddressResponse:(MultiAddressResponse*)response;
+- (void)didGetMultiAddressResponse:(MultiAddressResponse *)response;
 - (void)didFilterTransactions:(NSArray *)transactions;
-- (void)walletDidDecrypt;
+- (void)walletDidDecryptWithSharedKey:(nullable NSString *)sharedKey guid:(nullable NSString *)guid;
 - (void)walletFailedToDecrypt;
 - (void)walletDidLoad;
 - (void)walletFailedToLoad;
