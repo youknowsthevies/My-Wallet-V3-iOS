@@ -73,7 +73,7 @@ class StellarTransactionService: StellarTransactionAPI {
                         transactionHash: details.transactionHash,
                         createdAt: details.createdAt,
                         sourceAccount: details.sourceAccount,
-                        feePaid: details.feePaid ?? 0,
+                        feePaid: Int(details.feeCharged ?? "0") ?? 0,
                         memo: memo
                     )
                     DispatchQueue.main.async {
@@ -184,7 +184,6 @@ class StellarTransactionService: StellarTransactionAPI {
                     let transaction = try StellarTransaction(
                         sourceAccount: accountResponse,
                         operations: [payment],
-                        baseFee: UInt32(baseFeeInStroops),
                         memo: memo,
                         timeBounds: timebounds
                     )
@@ -200,6 +199,8 @@ class StellarTransactionService: StellarTransactionAPI {
                                 event(.success(()))
                             case .failure(let error):
                                 event(.error(error.toStellarServiceError()))
+                            case .destinationRequiresMemo:
+                                event(.error(HorizonRequestError.requestFailed(message: "Requires Memo").toStellarServiceError()))
                             }
                         })
                 } catch {
