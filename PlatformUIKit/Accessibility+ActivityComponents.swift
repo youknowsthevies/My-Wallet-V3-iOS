@@ -39,6 +39,11 @@ extension Accessibility.Identifier {
             public static let cryptoValue = "\(prefix)cryptoValue"
             public static let fiatValue = "\(prefix)fiatValue"
         }
+        public enum WalletSelectorView {
+            private static let prefix = "\(Activity.prefix)WalletSelectorView."
+            public static let titleLabel = "\(prefix)titleLabel"
+            public static let subtitleLabel = "\(prefix)subtitleLabel"
+        }
         public enum EmptyState {
             private static let prefix = "\(Activity.prefix)EmptyState."
             public static let titleLabel = "\(prefix)titleLabel"

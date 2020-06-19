@@ -22,7 +22,6 @@ final class ActivityItemTableViewCell: UITableViewCell {
         didSet {
             guard let presenter = presenter else { return }
             assetBalanceView.presenter = presenter.assetBalanceViewPresenter
-            accessibility = presenter.accessibility
             badgeImageView.viewModel = presenter.badgeImageViewModel
             
             presenter.titleLabelContent

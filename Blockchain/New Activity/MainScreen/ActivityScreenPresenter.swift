@@ -16,6 +16,7 @@ final class ActivityScreenPresenter {
     
     // MARK: - Types
     
+    private typealias AccessibilityId = Accessibility.Identifier.Activity
     private typealias LocalizedString = LocalizationConstants.Activity.MainScreen
     
     // MARK: - Public Properties
@@ -129,7 +130,7 @@ final class ActivityScreenPresenter {
             .bind(to: selectionButtonViewModel.leadingContentTypeRelay)
             .disposed(by: disposeBag)
         
-        interactor
+        let titleObservable: Observable<String> = interactor
             .selectedData
             .map { selection in
                 switch selection {
@@ -141,7 +142,14 @@ final class ActivityScreenPresenter {
                     return currency.displayCode + " " + LocalizedString.Item.wallet
                 }
             }
+        
+        titleObservable
             .bind(to: selectionButtonViewModel.titleRelay)
+            .disposed(by: disposeBag)
+        
+        titleObservable
+            .map { value in .id("\(AccessibilityId.WalletSelectorView.titleLabel).\(value)") }
+            .bind(to: selectionButtonViewModel.titleAccessibilityRelay)
             .disposed(by: disposeBag)
         
         interactor
@@ -165,16 +173,23 @@ final class ActivityScreenPresenter {
             .bind(to: selectionButtonViewModel.trailingImageViewContentRelay)
             .disposed(by: disposeBag)
         
-        Observable.combineLatest(
-                interactor.activityBalance,
-                interactor.fiatCurrency
-            )
-            .map { values in
-                let amount = values.0
-                let code = values.1.code
-                return amount.toDisplayString(includeSymbol: true) + " \(code)"
-            }
+        let subtitleObservable: Observable<String> = Observable.combineLatest(
+            interactor.activityBalance,
+            interactor.fiatCurrency
+        )
+        .map { values in
+            let amount = values.0
+            let code = values.1.code
+            return amount.toDisplayString(includeSymbol: true) + " \(code)"
+        }
+        
+        subtitleObservable
             .bind(to: selectionButtonViewModel.subtitleRelay)
+            .disposed(by: disposeBag)
+        
+        subtitleObservable
+            .map { value in .id("\(AccessibilityId.WalletSelectorView.subtitleLabel).\(value)") }
+            .bind(to: selectionButtonViewModel.subtitleAccessibilityRelay)
             .disposed(by: disposeBag)
 
         selectedModelRelay

@@ -98,6 +98,12 @@ public final class SelectionButtonViewModel {
             }
     }
     
+    /// Accessibility for the title
+    public let titleAccessibilityRelay = BehaviorRelay<Accessibility>(value: .none)
+    
+    /// Accessibility for the subtitle
+    public let subtitleAccessibilityRelay = BehaviorRelay<Accessibility>(value: .none)
+    
     /// Accessibility content relay
     public let accessibilityContentRelay = BehaviorRelay<AccessibilityContent>(value: .empty)
     
@@ -151,13 +157,19 @@ public final class SelectionButtonViewModel {
 
     /// Streams the title
     var title: Driver<LabelContent> {
-        titleRelay
+        Observable
+            .combineLatest(
+                titleRelay.asObservable(),
+                titleAccessibilityRelay.asObservable()
+            )
             .map {
-                LabelContent(
-                    text: $0,
+                let title = $0.0
+                let accessibility = $0.1
+                return LabelContent(
+                    text: title,
                     font: .main(.semibold, 16),
                     color: .titleText,
-                    accessibility: .id(AccessibilityId.label)
+                    accessibility: accessibility
                 )
             }
             .asDriver(onErrorJustReturn: .empty)
@@ -165,15 +177,20 @@ public final class SelectionButtonViewModel {
 
     /// Streams the title
     var subtitle: Driver<LabelContent?> {
-        subtitleRelay
+        Observable
+            .combineLatest(
+                subtitleRelay.asObservable(),
+                subtitleAccessibilityRelay.asObservable()
+            )
             .map {
-                guard let subtitle = $0
+                guard let subtitle = $0.0
                     else { return nil }
+                let accessibility = $0.1
                 return LabelContent(
                     text: subtitle,
                     font: .main(.medium, 14),
                     color: .descriptionText,
-                    accessibility: .id(AccessibilityId.label)
+                    accessibility: accessibility
                 )
             }
             .asDriver(onErrorJustReturn: LabelContent.empty)
