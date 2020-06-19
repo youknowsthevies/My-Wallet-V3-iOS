@@ -26,7 +26,11 @@ public protocol LedgerResponseProtocol: Decodable {
     var baseReserveInStroops: Int? { get }
 }
 
-extension LedgerResponse: LedgerResponseProtocol {}
+extension LedgerResponse: LedgerResponseProtocol {
+    public var successfulTransactionCount: Int? {
+        nil
+    }
+}
 
 public protocol PageResponseProtocol: Decodable {
     var allRecords: [LedgerResponseProtocol] { get }
