@@ -10,21 +10,21 @@ import RxSwift
 import ToolKit
 import PlatformKit
 
-public protocol SimpleBuySupportedCurrenciesServiceAPI: class {
+public protocol SupportedCurrenciesServiceAPI: class {
     var valueObservable: Observable<Set<FiatCurrency>> { get }
     var valueSingle: Single<Set<FiatCurrency>> { get }
     func fetch() -> Observable<Set<FiatCurrency>>
 }
 
-final class SupportedCurrenciesService: SimpleBuySupportedCurrenciesServiceAPI {
+final class SupportedCurrenciesService: SupportedCurrenciesServiceAPI {
 
     // MARK: - Public properties
 
-    public var valueObservable: Observable<Set<FiatCurrency>> {
+    var valueObservable: Observable<Set<FiatCurrency>> {
         cachedValue.valueObservable
     }
 
-    public var valueSingle: Single<Set<FiatCurrency>> {
+    var valueSingle: Single<Set<FiatCurrency>> {
         cachedValue.valueSingle
     }
 
@@ -35,7 +35,7 @@ final class SupportedCurrenciesService: SimpleBuySupportedCurrenciesServiceAPI {
     // MARK: - Setup
 
     init(featureFetcher: FeatureFetching,
-         pairsService: SimpleBuySupportedPairsServiceAPI,
+         pairsService: SupportedPairsServiceAPI,
          fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI) {
 
         cachedValue = .init(
@@ -62,7 +62,7 @@ final class SupportedCurrenciesService: SimpleBuySupportedCurrenciesServiceAPI {
             }
     }
 
-    public func fetch() -> Observable<Set<FiatCurrency>> {
+    func fetch() -> Observable<Set<FiatCurrency>> {
         cachedValue.fetchValueObservable
     }
 }

@@ -12,26 +12,26 @@ import ToolKit
 import PlatformKit
 
 /// Fetches the available payment methods
-public protocol SimpleBuyPaymentMethodsServiceAPI: class {
+public protocol PaymentMethodsServiceAPI: class {
     var paymentMethods: Observable<[PaymentMethod]> { get }
     var paymentMethodsSingle: Single<[PaymentMethod]> { get }
     var supportedCardTypes: Single<Set<CardType>> { get }
     func fetch() -> Observable<[PaymentMethod]>
 }
 
-final class PaymentMethodsService: SimpleBuyPaymentMethodsServiceAPI {
+final class PaymentMethodsService: PaymentMethodsServiceAPI {
     
     // MARK: - Public properties
         
-    public var paymentMethods: Observable<[PaymentMethod]> {
+    var paymentMethods: Observable<[PaymentMethod]> {
         cachedValue.valueObservable
     }
     
-    public var paymentMethodsSingle: Single<[PaymentMethod]> {
+    var paymentMethodsSingle: Single<[PaymentMethod]> {
         cachedValue.valueSingle
     }
     
-    public var supportedCardTypes: Single<Set<CardType>> {
+    var supportedCardTypes: Single<Set<CardType>> {
         cachedValue.valueSingle.map { paymentMethods in
             guard let card = paymentMethods.first(where: { $0.type.isCard }) else {
                 return []
@@ -114,7 +114,7 @@ final class PaymentMethodsService: SimpleBuyPaymentMethodsServiceAPI {
             }
     }
     
-    public func fetch() -> Observable<[PaymentMethod]> {
+    func fetch() -> Observable<[PaymentMethod]> {
         cachedValue.fetchValueObservable
     }
 }

@@ -35,11 +35,11 @@ final class TransferCancellationScreenPresenter {
     
     private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
     private let uiUtilityProvider: UIUtilityProviderAPI
-    private let stateService: SimpleBuyStateServiceAPI
+    private let stateService: StateServiceAPI
     private let interactor: TransferCancellationInteractor
     private let disposeBag = DisposeBag()
     
-    init(stateService: SimpleBuyStateServiceAPI,
+    init(stateService: StateServiceAPI,
          currency: CryptoCurrency,
          uiUtilityProvider: UIUtilityProviderAPI = UIUtilityProvider.default,
          analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording,

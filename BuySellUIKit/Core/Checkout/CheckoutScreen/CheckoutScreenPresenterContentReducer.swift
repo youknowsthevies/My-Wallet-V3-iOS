@@ -60,7 +60,7 @@ final class CheckoutScreenContentReducer {
 
     private static func notice(data: CheckoutData) -> LabelContent {
         LabelContent(
-            text: data.detailType.paymentMethod.checkoutNotice(cryptoCurrency: data.cryptoCurrency),
+            text: data.order.paymentMethod.checkoutNotice(cryptoCurrency: data.cryptoCurrency),
             font: .main(.medium, 12),
             color: .descriptionText,
             accessibility: .id(AccessibilityLineItem.Base.disclaimerLabel)
@@ -68,7 +68,7 @@ final class CheckoutScreenContentReducer {
     }
 
     private static func title(data: CheckoutData) -> String {
-        switch data.detailType.paymentMethod {
+        switch data.order.paymentMethod {
         case .card:
             if data.hasCardCheckoutMade {
                 return LocalizedString.Title.orderDetails
@@ -76,8 +76,7 @@ final class CheckoutScreenContentReducer {
                 return LocalizedString.Title.checkout
             }
         case .bankTransfer:
-            if let order = data.detailType.order,
-                order.isPendingConfirmation {
+            if data.order.isPendingConfirmation {
                 return LocalizedString.Title.checkout
             } else {
                 return LocalizedString.Title.orderDetails
@@ -87,7 +86,7 @@ final class CheckoutScreenContentReducer {
 
     private static func continueButton(data: CheckoutData) -> ButtonViewModel {
         let title: String
-        switch data.detailType.paymentMethod {
+        switch data.order.paymentMethod {
         case .card:
             if data.hasCardCheckoutMade {
                 title = data.isPending3DS ? LocalizedSummary.completePaymentButton : LocalizedSummary.continueButtonPrefix
@@ -95,8 +94,7 @@ final class CheckoutScreenContentReducer {
                 title = "\(LocalizedSummary.buyButtonPrefix)\(data.cryptoCurrency.displayCode)"
             }
         case .bankTransfer:
-            if let order = data.detailType.order,
-                order.isPendingConfirmation {
+            if data.order.isPendingConfirmation {
                 title = "\(LocalizedSummary.buyButtonPrefix)\(data.cryptoCurrency.displayCode)"
             } else {
                 title = LocalizedSummary.continueButtonPrefix
@@ -106,7 +104,7 @@ final class CheckoutScreenContentReducer {
     }
 
     private static func cancelButton(data: CheckoutData) -> ButtonViewModel? {
-        switch (data.detailType.paymentMethod, data.hasCardCheckoutMade) {
+        switch (data.order.paymentMethod, data.hasCardCheckoutMade) {
         case (.card, true):
             return nil
         case (.card, false),
@@ -117,7 +115,7 @@ final class CheckoutScreenContentReducer {
 
     // MARK: - Accessors
 
-    func setupDidSucceed(with data: CheckoutScreenInteractor.InteractionData) {
+    func setupDidSucceed(with data: CheckoutInteractionData) {
         var formattedTime = ""
         if let time = data.time {
             formattedTime = DateFormatter.elegantDateFormatter.string(from: time)
@@ -155,7 +153,7 @@ final class CheckoutScreenContentReducer {
 
         // MARK: Presenters Setup
 
-        let totalCost = data.fiatValue.toDisplayString()
+        let totalCost = data.order.fiatValue.toDisplayString()
         totalCostLineItemCellPresenter.interactor.description.stateRelay.accept(
             .loaded(next: .init(text: totalCost))
         )
@@ -164,9 +162,8 @@ final class CheckoutScreenContentReducer {
             .loaded(next: .init(text: "\(totalCost) \(LocalizedSummary.of) \(data.cryptoCurrency.displayCode)"))
         )
 
-        let statusTitle = data.detailType.order?.state.localizedDescription ?? LocalizationConstants.SimpleBuy.OrderState.pending
         statusBadge.interactor.stateRelay.accept(
-            .loaded(next: .init(type: .default, description: statusTitle))
+            .loaded(next: .init(type: .default, description: data.order.state.localizedDescription))
         )
 
         // MARK: Title Setup
@@ -180,7 +177,7 @@ final class CheckoutScreenContentReducer {
         let badgesModel = MultiBadgeCellModel()
         badgesModel.badgesRelay.accept([statusBadge])
 
-        switch (data.detailType.paymentMethod, data.hasCardCheckoutMade, data.isPendingDepositBankWire) {
+        switch (data.order.paymentMethod, data.hasCardCheckoutMade, data.isPendingDepositBankWire) {
         case (.card, true, _):
 
             // MARK: Cells Setup

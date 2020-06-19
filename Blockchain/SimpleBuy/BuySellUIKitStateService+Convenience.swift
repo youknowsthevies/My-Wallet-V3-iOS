@@ -6,18 +6,21 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformKit
 import PlatformUIKit
 import BuySellKit
 import BuySellUIKit
 
-extension SimpleBuyStateService {
+extension BuySellUIKit.StateService {
     
-    static func make() -> SimpleBuyStateServiceAPI {
-        SimpleBuyStateService(
+    static func make() -> BuySellUIKit.StateServiceAPI {
+        BuySellUIKit.StateService(
             uiUtilityProvider: UIUtilityProvider.default,
             pendingOrderDetailsService: ServiceProvider.default.pendingOrderDetails,
             supportedPairsInteractor: ServiceProvider.default.supportedPairsInteractor,
-            cache: ServiceProvider.default.cache
+            kycTiersService: KYCServiceProvider.default.tiers,
+            cache: ServiceProvider.default.cache,
+            userInformationServiceProvider: UserInformationServiceProvider.default
         )
     }
 }

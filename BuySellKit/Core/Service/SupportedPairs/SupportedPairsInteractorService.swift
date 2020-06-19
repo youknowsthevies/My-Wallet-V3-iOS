@@ -15,13 +15,13 @@ import PlatformKit
 public typealias BuyCryptoSupportedPairsCalculationState = ValueCalculationState<SupportedPairs>
 
 /// A Simple Buy Service that provides the supported pairs for the current Fiat Currency.
-public protocol SimpleBuySupportedPairsInteractorServiceAPI: class {
+public protocol SupportedPairsInteractorServiceAPI: class {
     var valueObservable: Observable<SupportedPairs> { get }
     var valueSingle: Single<SupportedPairs> { get }
     func fetch() -> Observable<SupportedPairs>
 }
 
-final class SupportedPairsInteractorService: SimpleBuySupportedPairsInteractorServiceAPI {
+final class SupportedPairsInteractorService: SupportedPairsInteractorServiceAPI {
 
     // MARK: - Public properties
 
@@ -39,9 +39,9 @@ final class SupportedPairsInteractorService: SimpleBuySupportedPairsInteractorSe
 
     // MARK: - Setup
 
-    public init(featureFetcher: FeatureFetching,
-                pairsService: SimpleBuySupportedPairsServiceAPI,
-                fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI) {
+    init(featureFetcher: FeatureFetching,
+         pairsService: SupportedPairsServiceAPI,
+         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI) {
 
         cachedValue = .init(
             configuration: .init(
@@ -68,7 +68,7 @@ final class SupportedPairsInteractorService: SimpleBuySupportedPairsInteractorSe
             }
     }
 
-    public func fetch() -> Observable<SupportedPairs> {
+    func fetch() -> Observable<SupportedPairs> {
         cachedValue.fetchValueObservable
     }
 }

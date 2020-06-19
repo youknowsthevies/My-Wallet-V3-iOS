@@ -10,18 +10,18 @@ import RxSwift
 import ToolKit
 import PlatformKit
 
-public protocol SimpleBuyEligibilityServiceAPI: class {
+public protocol EligibilityServiceAPI: class {
 
-    /// Feature is enabled and SimpleBuyEligibilityClientAPI returns eligible for current fiat currency.
+    /// Feature is enabled and EligibilityClientAPI returns eligible for current fiat currency.
     var isEligible: Observable<Bool> { get }
     func fetch() -> Observable<Bool>
 }
 
-final class EligibilityService: SimpleBuyEligibilityServiceAPI {
+final class EligibilityService: EligibilityServiceAPI {
     
     // MARK: - Properties
     
-    public var isEligible: Observable<Bool> {
+    var isEligible: Observable<Bool> {
         isEligibleCachedValue.valueObservable
     }
     
@@ -75,7 +75,7 @@ final class EligibilityService: SimpleBuyEligibilityServiceAPI {
         }
     }
     
-    public func fetch() -> Observable<Bool> {
+    func fetch() -> Observable<Bool> {
         isEligibleCachedValue.fetchValueObservable
     }
 }

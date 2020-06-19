@@ -36,11 +36,11 @@ final class IneligibleCurrencyScreenPresenter {
     
     // MARK: - Private Properties
     
-    private let stateService: SimpleBuyStateServiceAPI
+    private let stateService: StateServiceAPI
     private let disposeBag = DisposeBag()
     
     init(currency: FiatCurrency,
-         stateService: SimpleBuyStateServiceAPI,
+         stateService: StateServiceAPI,
          analyticsRecording: AnalyticsEventRecording) {
         self.stateService = stateService
         titleLabelContent = .init(

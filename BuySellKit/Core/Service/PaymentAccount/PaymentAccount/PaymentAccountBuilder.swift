@@ -8,12 +8,12 @@
 
 import Foundation
 
-/// Builds the correct `PaymentAccount` for a given `SimpleBuyPaymentAccountResponse`.
+/// Builds the correct `PaymentAccount` for a given `PaymentAccountResponse`.
 enum PaymentAccountBuilder {
 
     // MARK: - Private Properties
 
-    /// An array of possible `SimpleBuyPaymentAccount.Type`s
+    /// An array of possible `PaymentAccount.Type`s
     private static let builders: [PaymentAccount.Type] = [
         PaymentAccountGBP.self,
         PaymentAccountEUR.self,
@@ -24,8 +24,8 @@ enum PaymentAccountBuilder {
     // MARK: - Methods
 
     /// Builds, if possible, a valid `Payment Account` for the given `Payment Account Response`
-    /// - Parameter response: A `SimpleBuyPaymentAccountResponse` object.
-    /// - Returns: A `SimpleBuyPaymentAccount` object if there was a `SimpleBuyPaymentAccount.Type`  that succesfully built a valid object
+    /// - Parameter response: A `PaymentAccountResponse` object.
+    /// - Returns: A `PaymentAccount` object if there was a `PaymentAccount.Type`  that succesfully built a valid object
     /// or `nil` if no builder succeeded.
     static func build(response: PaymentAccountResponse) -> PaymentAccount? {
         for builder in builders {

@@ -52,7 +52,7 @@ final class AddCardCellPresenter: AsyncPresenting {
     
     // MARK: - Private Properties
     
-    private let paymentMethodTypesService: SimpleBuyPaymentMethodTypesServiceAPI
+    private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private let tierLimitsProviding: TierLimitsProviding
     private let featureFetcher: FeatureFetching
     
@@ -74,7 +74,7 @@ final class AddCardCellPresenter: AsyncPresenting {
             .catchErrorJustReturn([])
     }
     
-    init(paymentMethodTypesService: SimpleBuyPaymentMethodTypesServiceAPI,
+    init(paymentMethodTypesService: BuySellKit.PaymentMethodTypesServiceAPI,
          tierLimitsProviding: TierLimitsProviding,
          featureFetcher: FeatureFetching) {
         

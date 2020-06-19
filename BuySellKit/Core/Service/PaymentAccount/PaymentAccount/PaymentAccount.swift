@@ -15,15 +15,15 @@ public protocol PaymentAccount {
     /// - Returns: A `Payment Account` if the response matches the requiriments, `nil` otherwise.
     init?(response: PaymentAccountResponse)
     
-    /// A identifier for this SimpleBuyPaymentAccount.
+    /// A identifier for this PaymentAccount.
     var identifier: String { get }
     
-    /// The state in which this SimpleBuyPaymentAccount is.
-    var state: SimpleBuyPaymentAccountProperty.State { get }
+    /// The state in which this PaymentAccount is.
+    var state: PaymentAccountProperty.State { get }
     
-    /// The currency for this SimpleBuyPaymentAccount.
+    /// The currency for this PaymentAccount.
     var currency: FiatCurrency { get }
     
     /// An array of fields that fully represent this Payment Account for a human consumer.
-    var fields: [SimpleBuyPaymentAccountProperty.Field] { get }
+    var fields: [PaymentAccountProperty.Field] { get }
 }

@@ -9,13 +9,13 @@
 import RxSwift
 import ToolKit
 
-public typealias SimpleBuyPolledOrder = PollResult<OrderDetails>
+public typealias PolledOrder = PollResult<OrderDetails>
 
-public protocol SimpleBuyPendingOrderCompletionServiceAPI {
-    func waitForFinalizedState(of orderId: String) -> Single<SimpleBuyPolledOrder>
+public protocol PendingOrderCompletionServiceAPI {
+    func waitForFinalizedState(of orderId: String) -> Single<PolledOrder>
 }
 
-final class PendingOrderCompletionService: SimpleBuyPendingOrderCompletionServiceAPI {
+final class PendingOrderCompletionService: PendingOrderCompletionServiceAPI {
     
     // MARK: - Types
     
@@ -25,16 +25,16 @@ final class PendingOrderCompletionService: SimpleBuyPendingOrderCompletionServic
     }
     
     private let pollService: PollService<OrderDetails>
-    private let ordersService: SimpleBuyOrdersServiceAPI
+    private let ordersService: OrdersServiceAPI
     
     // MARK: - Setup
     
-    init(ordersService: SimpleBuyOrdersServiceAPI) {
+    init(ordersService: OrdersServiceAPI) {
         self.ordersService = ordersService
         pollService = .init(matcher: { $0.isFinal })
     }
     
-    public func waitForFinalizedState(of orderId: String) -> Single<SimpleBuyPolledOrder> {
+    func waitForFinalizedState(of orderId: String) -> Single<PolledOrder> {
         pollService.setFetch(weak: self) { (self) in
             self.ordersService
                 .fetchOrder(with: orderId)

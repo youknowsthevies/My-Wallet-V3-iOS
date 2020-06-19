@@ -51,7 +51,7 @@ final class TransferDetailScreenPresenter: DetailsScreenPresenterAPI {
 
     private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
     private let webViewRouter: WebViewRouterAPI
-    private let stateService: SimpleBuyStateServiceAPI
+    private let stateService: StateServiceAPI
     private let interactor: TransferDetailScreenInteractor
 
     // MARK: - Setup
@@ -59,7 +59,7 @@ final class TransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     init(webViewRouter: WebViewRouterAPI,
          analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording,
          interactor: TransferDetailScreenInteractor,
-         stateService: SimpleBuyStateServiceAPI) {
+         stateService: StateServiceAPI) {
         self.analyticsRecorder = analyticsRecorder
         self.webViewRouter = webViewRouter
         self.interactor = interactor
@@ -115,7 +115,7 @@ final class TransferDetailScreenPresenter: DetailsScreenPresenterAPI {
         )
 
         let totalCost = TransactionalLineItem
-            .totalCost(interactor.checkoutData.fiatValue.toDisplayString())
+            .totalCost(interactor.checkoutData.order.fiatValue.toDisplayString())
             .defaultPresenter()
 //            .presenter(analyticsRecorder: analyticsRecorder)
 
@@ -139,7 +139,7 @@ final class TransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     // MARK: - View Life Cycle
 
     func viewDidLoad() {
-        let currencyCode = interactor.checkoutData.fiatValue.currencyCode
+        let currencyCode = interactor.checkoutData.order.fiatValue.currencyCode
         analyticsRecorder.record(event: AnalyticsEvent.sbBankDetailsShown(currencyCode: currencyCode))
     }
 }
@@ -159,11 +159,11 @@ extension TransferDetailScreenPresenter {
              analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording) {
             typealias SummaryString = LocalizedString.Summary
             typealias TitleString = LocalizedString.Title
-            let currency = data.fiatValue.currency
+            let currency = data.order.fiatValue.currency
             let currencyString = "\(currency.name) (\(currency.symbol))"
 
             title = TitleString.checkout
-            switch data.fiatValue.currency {
+            switch data.order.fiatValue.currency {
             case .USD, .GBP:
                 summary = "\(SummaryString.GbpAndUsd.prefix) \(currencyString) \(SummaryString.GbpAndUsd.suffix)"
             default:
@@ -193,7 +193,7 @@ extension TransferDetailScreenPresenter {
     }
 }
 
-fileprivate extension Array where Element == SimpleBuyPaymentAccountProperty.Field {
+fileprivate extension Array where Element == PaymentAccountProperty.Field {
     func transferDetailsCellsPresenting(analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording) -> [LineItemCellPresenting] {
 
         func isCopyable(field: TransactionalLineItem) -> Bool {

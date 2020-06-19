@@ -11,7 +11,7 @@ import RxRelay
 import ToolKit
 
 /// The type of payment method
-public enum SimpleBuyPaymentMethodType: Equatable {
+public enum PaymentMethodType: Equatable {
 
     /// A card payment method (from the user's buy data)
     case card(CardData)
@@ -38,25 +38,25 @@ public enum SimpleBuyPaymentMethodType: Equatable {
     }
 }
 
-public protocol SimpleBuyPaymentMethodTypesServiceAPI {
+public protocol PaymentMethodTypesServiceAPI {
     
-    var methodTypes: Observable<[SimpleBuyPaymentMethodType]> { get }
+    var methodTypes: Observable<[PaymentMethodType]> { get }
     
     var cards: Observable<[CardData]> { get }
     
-    var preferredPaymentMethodTypeRelay: BehaviorRelay<SimpleBuyPaymentMethodType?> { get }
+    var preferredPaymentMethodTypeRelay: BehaviorRelay<PaymentMethodType?> { get }
     
-    var preferredPaymentMethodType: Observable<SimpleBuyPaymentMethodType?> { get }
+    var preferredPaymentMethodType: Observable<PaymentMethodType?> { get }
     
     func fetchCards(andPrefer cardId: String) -> Completable
 }
 
 /// A service that aggregates all the payment method types and possible methods.
-final class SimpleBuyPaymentMethodTypesService: SimpleBuyPaymentMethodTypesServiceAPI {
+final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
 
     // MARK: - Exposed
     
-    public var methodTypes: Observable<[SimpleBuyPaymentMethodType]> {
+    var methodTypes: Observable<[PaymentMethodType]> {
         Observable
             .combineLatest(
                 paymentMethodsService.fetch(),
@@ -74,20 +74,20 @@ final class SimpleBuyPaymentMethodTypesService: SimpleBuyPaymentMethodTypesServi
             })
     }
     
-    public var cards: Observable<[CardData]> {
+    var cards: Observable<[CardData]> {
         methodTypes.map { $0.cards }
     }
     
     /// Preferred payment method
-    public let preferredPaymentMethodTypeRelay = BehaviorRelay<SimpleBuyPaymentMethodType?>(value: nil)
-    public var preferredPaymentMethodType: Observable<SimpleBuyPaymentMethodType?> {
+    let preferredPaymentMethodTypeRelay = BehaviorRelay<PaymentMethodType?>(value: nil)
+    var preferredPaymentMethodType: Observable<PaymentMethodType?> {
         preferredPaymentMethodTypeRelay
             .flatMap(weak: self) { (self, preferredMethod) in
                 if let preferredMethod = preferredMethod {
                     return .just(preferredMethod)
                 } else {
                     return self.methodTypes.take(1)
-                        .map { (types: [SimpleBuyPaymentMethodType]) -> [SimpleBuyPaymentMethodType] in
+                        .map { (types: [PaymentMethodType]) -> [PaymentMethodType] in
                             types.filter { type in
                                 switch type {
                                 case .card(let card):
@@ -106,18 +106,18 @@ final class SimpleBuyPaymentMethodTypesService: SimpleBuyPaymentMethodTypesServi
     
     // MARK: - Injected
     
-    private let paymentMethodsService: SimpleBuyPaymentMethodsServiceAPI
+    private let paymentMethodsService: PaymentMethodsServiceAPI
     private let cardListService: CardListServiceAPI
     
     // MARK: - Setup
     
-    init(paymentMethodsService: SimpleBuyPaymentMethodsServiceAPI,
+    init(paymentMethodsService: PaymentMethodsServiceAPI,
          cardListService: CardListServiceAPI) {
         self.paymentMethodsService = paymentMethodsService
         self.cardListService = cardListService
     }
     
-    public func fetchCards(andPrefer cardId: String) -> Completable {
+    func fetchCards(andPrefer cardId: String) -> Completable {
         Single
             .zip(
                 paymentMethodsService.paymentMethodsSingle,
@@ -144,7 +144,7 @@ final class SimpleBuyPaymentMethodTypesService: SimpleBuyPaymentMethodTypesServi
     }
     
     private func merge(paymentMethods: [PaymentMethod],
-                       with cards: [CardData]) -> [SimpleBuyPaymentMethodType] {
+                       with cards: [CardData]) -> [PaymentMethodType] {
         let topLimit = (paymentMethods.first { $0.type.isCard })?.max
         let cardTypes = cards
             .filter { $0.state.isUsable }
@@ -155,13 +155,13 @@ final class SimpleBuyPaymentMethodTypesService: SimpleBuyPaymentMethodTypesServi
                 }
                 return card
             }
-            .map { SimpleBuyPaymentMethodType.card($0) }
-        let suggestedMethods = paymentMethods.map { SimpleBuyPaymentMethodType.suggested($0) }
+            .map { PaymentMethodType.card($0) }
+        let suggestedMethods = paymentMethods.map { PaymentMethodType.suggested($0) }
         return cardTypes + suggestedMethods
     }
 }
 
-private extension Array where Element == SimpleBuyPaymentMethodType {
+private extension Array where Element == PaymentMethodType {
     var cards: [CardData] {
         compactMap { paymentMethod in
             switch paymentMethod {

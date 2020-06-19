@@ -1,5 +1,5 @@
 //
-//  SimpleBuyClient.swift
+//  APIClient.swift
 //  PlatformKit
 //
 //  Created by Daniel Huri on 23/01/2020.
@@ -214,14 +214,16 @@ final class APIClient: SimpleBuyClientAPI {
         return communicator.perform(request: request)
     }
     
-    // MARK: - SimpleBuyCardOrderConfirmationClientAPI
+    // MARK: - CardOrderConfirmationClientAPI
     
     func confirmOrder(with identifier: String,
                       partner: OrderPayload.ConfirmOrder.Partner,
+                      paymentMethodId: String?,
                       token: String) -> Single<OrderPayload.Response> {
         let payload = OrderPayload.ConfirmOrder(
             partner: partner,
-            action: .confirm
+            action: .confirm,
+            paymentMethodId: paymentMethodId
         )
         let path = Path.trades + [identifier]
         let headers = [HttpHeaderField.authorization: token]

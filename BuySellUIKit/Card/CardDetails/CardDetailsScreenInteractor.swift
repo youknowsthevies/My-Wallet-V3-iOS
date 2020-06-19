@@ -18,12 +18,12 @@ final class CardDetailsScreenInteractor {
         paymentMethodsService.supportedCardTypes
     }
     
-    private let paymentMethodsService: SimpleBuyPaymentMethodsServiceAPI
+    private let paymentMethodsService: PaymentMethodsServiceAPI
     private let cardListService: CardListServiceAPI
     
     // MARK: - Setup
     
-    init(paymentMethodsService: SimpleBuyPaymentMethodsServiceAPI,
+    init(paymentMethodsService: PaymentMethodsServiceAPI,
          cardListService: CardListServiceAPI) {
         self.paymentMethodsService = paymentMethodsService
         self.cardListService = cardListService

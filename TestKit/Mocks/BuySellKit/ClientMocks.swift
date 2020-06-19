@@ -98,6 +98,7 @@ extension APIClient {
             expiresAt: "2020-01-01T12:20:42.849Z",
             price: "0",
             fee: "0",
+            paymentType: "BANK",
             paymentMethodId: nil,
             attributes: nil
         )
@@ -116,6 +117,7 @@ extension APIClient {
                 expiresAt: "2020-01-01T12:20:42.849Z",
                 price: "0",
                 fee: "0",
+                paymentType: "BANK",
                 paymentMethodId: nil,
                 attributes: nil
             )

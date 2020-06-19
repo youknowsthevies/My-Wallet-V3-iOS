@@ -38,11 +38,11 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
     private let stateRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
     private let buyActivityRelay = BehaviorRelay<[BuyActivityItemEvent]>(value: [])
     private let currency: CryptoCurrency
-    private let service: SimpleBuyOrdersServiceAPI
+    private let service: BuySellKit.OrdersServiceAPI
     private let disposeBag = DisposeBag()
     
     init(currency: CryptoCurrency,
-         service: SimpleBuyOrdersServiceAPI) {
+         service: BuySellKit.OrdersServiceAPI) {
         self.currency = currency
         self.service = service
         

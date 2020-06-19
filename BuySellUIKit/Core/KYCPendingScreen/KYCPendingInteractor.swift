@@ -21,7 +21,7 @@ final class KYCPendingInteractor {
         verificationStateRelay.asObservable()
     }
     
-    private let eligibilityService: SimpleBuyEligibilityServiceAPI
+    private let eligibilityService: EligibilityServiceAPI
     private let kycTiersService: KYCTierUpdatePollingService
     private let disposeBag = DisposeBag()
 
@@ -30,7 +30,7 @@ final class KYCPendingInteractor {
     // MARK: - Setup
     
     init(kycTiersService: KYCTierUpdatePollingService,
-         eligibilityService: SimpleBuyEligibilityServiceAPI) {
+         eligibilityService: EligibilityServiceAPI) {
         self.kycTiersService = kycTiersService
         self.eligibilityService = eligibilityService
     }

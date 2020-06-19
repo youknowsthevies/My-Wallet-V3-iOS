@@ -9,32 +9,15 @@
 import RxSwift
 import ToolKit
 
-public protocol SimpleBuyPendingOrderDetailsServiceAPI: class {
-    var checkoutData: Single<CheckoutData?> { get }
+public protocol PendingOrderDetailsServiceAPI: class {
     var pendingOrderDetails: Single<OrderDetails?> { get }
     var pendingActionOrderDetails: Single<OrderDetails?> { get }
     func cancel() -> Completable
 }
 
-final class PendingOrderDetailsService: SimpleBuyPendingOrderDetailsServiceAPI {
-    
-    public var checkoutData: Single<CheckoutData?> {
-        pendingOrderDetails
-            .flatMap(weak: self) { (self, pendingOrder) in
-                guard let pendingOrder = pendingOrder else {
-                    return .just(nil)
-                }
-                let checkoutData = CheckoutData(orderDetails: pendingOrder)
-                if pendingOrder.isBankWire {
-                    return self.paymentAccountService.paymentAccount(for: pendingOrder.fiatValue.currency)
-                        .map { checkoutData.checkoutData(byAppending: $0) }
-                } else {
-                    return .just(checkoutData)
-                }
-            }
-    }
-    
-    public var pendingOrderDetails: Single<OrderDetails?> {
+final class PendingOrderDetailsService: PendingOrderDetailsServiceAPI {
+        
+    var pendingOrderDetails: Single<OrderDetails?> {
         ordersService.fetchOrders()
             .map { orders in
                 orders
@@ -44,7 +27,7 @@ final class PendingOrderDetailsService: SimpleBuyPendingOrderDetailsServiceAPI {
             .map { $0.first }
     }
     
-    public var pendingActionOrderDetails: Single<OrderDetails?> {
+    var pendingActionOrderDetails: Single<OrderDetails?> {
         ordersService.fetchOrders()
             .map { orders in
                 orders
@@ -56,21 +39,18 @@ final class PendingOrderDetailsService: SimpleBuyPendingOrderDetailsServiceAPI {
     
     // MARK: - Injected
     
-    private let paymentAccountService: SimpleBuyPaymentAccountServiceAPI
-    private let ordersService: SimpleBuyOrdersServiceAPI
-    private let cancallationService: SimpleBuyOrderCancellationServiceAPI
+    private let ordersService: OrdersServiceAPI
+    private let cancallationService: OrderCancellationServiceAPI
     
     // MARK: - Setup
     
-    init(paymentAccountService: SimpleBuyPaymentAccountServiceAPI,
-         ordersService: SimpleBuyOrdersServiceAPI,
-         cancallationService: SimpleBuyOrderCancellationServiceAPI) {
-        self.paymentAccountService = paymentAccountService
+    init(ordersService: OrdersServiceAPI,
+         cancallationService: OrderCancellationServiceAPI) {
         self.ordersService = ordersService
         self.cancallationService = cancallationService
     }
     
-    public func cancel() -> Completable {
+    func cancel() -> Completable {
         pendingOrderDetails
             .flatMapCompletable(weak: self) { (self, details) -> Completable in
                 guard let details = details else { return .empty() }

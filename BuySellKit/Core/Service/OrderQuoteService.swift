@@ -9,12 +9,13 @@
 import RxSwift
 import PlatformKit
 
-protocol SimpleBuyOrderQuoteServiceAPI: class {
+public protocol OrderQuoteServiceAPI: class {
     func getQuote(for action: Order.Action,
-                  using checkoutData: CheckoutData) -> Single<SimpleBuyQuote>
+                  cryptoCurrency: CryptoCurrency,
+                  fiatValue: FiatValue) -> Single<Quote>
 }
 
-final class OrderQuoteService: SimpleBuyOrderQuoteServiceAPI {
+final class OrderQuoteService: OrderQuoteServiceAPI {
     
     // MARK: - Properties
     
@@ -31,21 +32,22 @@ final class OrderQuoteService: SimpleBuyOrderQuoteServiceAPI {
     
     // MARK: - API
     
-    public func getQuote(for action: Order.Action,
-                         using checkoutData: CheckoutData) -> Single<SimpleBuyQuote> {
-        return authenticationService
+    func getQuote(for action: Order.Action,
+                  cryptoCurrency: CryptoCurrency,
+                  fiatValue: FiatValue) -> Single<Quote> {
+        authenticationService
             .tokenString
             .flatMap(weak: self) { (self, token) -> Single<QuoteResponse> in
                 self.client.getQuote(
                     for: action,
-                    to: checkoutData.cryptoCurrency,
-                    amount: checkoutData.fiatValue,
+                    to: cryptoCurrency,
+                    amount: fiatValue,
                     token: token)
             }
             .map {
-                try SimpleBuyQuote(
-                    to: checkoutData.cryptoCurrency,
-                    amount: checkoutData.fiatValue,
+                try Quote(
+                    to: cryptoCurrency,
+                    amount: fiatValue,
                     response: $0
                 )
             }

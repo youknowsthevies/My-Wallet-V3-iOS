@@ -57,6 +57,17 @@ public struct PaymentMethod: Equatable {
             }
         }
         
+        public init?(rawValue: String) {
+            switch rawValue {
+            case RawValue.card:
+                self = .card([])
+            case RawValue.bankTransfer:
+                self = .bankTransfer
+            default:
+                return nil
+            }
+        }
+        
         public static func == (lhs: Self, rhs: Self) -> Bool {
             lhs.rawValue == rhs.rawValue
         }

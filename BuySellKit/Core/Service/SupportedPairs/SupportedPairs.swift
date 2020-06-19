@@ -1,5 +1,5 @@
 //
-//  SimpleBuySupportedPairs.swift
+//  SupportedPairs.swift
 //  PlatformKit
 //
 //  Created by Daniel Huri on 23/01/2020.

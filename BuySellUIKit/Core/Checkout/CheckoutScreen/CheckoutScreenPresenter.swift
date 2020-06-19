@@ -16,9 +16,9 @@ import PlatformUIKit
 
 final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
 
-    typealias StateService = SimpleBuyConfirmCheckoutServiceAPI &
-                             SimpleBuyTransferDetailsServiceAPI &
-                             SimpleBuyCancelTransferServiceAPI
+    typealias StateService = ConfirmCheckoutServiceAPI &
+                             TransferDetailsServiceAPI &
+                             CancelTransferServiceAPI
     // MARK: - Types
     
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
@@ -160,7 +160,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
                         }
                         self.stateService.previousRelay.accept(())
                     }
-            )
+                )
                 .disposed(by: disposeBag)
         }
     }

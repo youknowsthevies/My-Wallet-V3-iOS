@@ -9,23 +9,27 @@
 import PlatformKit
 
 public protocol ServiceProviderAPI: class {
-    var eligibility: SimpleBuyEligibilityServiceAPI { get }
-    var orderCancellation: SimpleBuyOrderCancellationServiceAPI { get }
-    var orderCompletion: SimpleBuyPendingOrderCompletionServiceAPI { get }
-    var orderConfirmation: SimpleBuyOrderConfirmationServiceAPI { get }
-    var ordersDetails: SimpleBuyOrdersServiceAPI { get }
-    var paymentMethods: SimpleBuyPaymentMethodsServiceAPI { get }
-    var paymentMethodTypes: SimpleBuyPaymentMethodTypesServiceAPI { get }
-    var pendingOrderDetails: SimpleBuyPendingOrderDetailsServiceAPI { get }
-    var suggestedAmounts: SimpleBuySuggestedAmountsServiceAPI { get }
-    var supportedCurrencies: SimpleBuySupportedCurrenciesServiceAPI { get }
-    var supportedPairs: SimpleBuySupportedPairsServiceAPI { get }
-    var supportedPairsInteractor: SimpleBuySupportedPairsInteractorServiceAPI { get }
+    var eligibility: EligibilityServiceAPI { get }
+    var orderCancellation: OrderCancellationServiceAPI { get }
+    var orderCompletion: PendingOrderCompletionServiceAPI { get }
+    var orderConfirmation: OrderConfirmationServiceAPI { get }
+    var ordersDetails: OrdersServiceAPI { get }
+    var paymentMethods: PaymentMethodsServiceAPI { get }
+    var paymentMethodTypes: PaymentMethodTypesServiceAPI { get }
+    var pendingOrderDetails: PendingOrderDetailsServiceAPI { get }
+    var suggestedAmounts: SuggestedAmountsServiceAPI { get }
+    var supportedCurrencies: SupportedCurrenciesServiceAPI { get }
+    var supportedPairs: SupportedPairsServiceAPI { get }
+    var supportedPairsInteractor: SupportedPairsInteractorServiceAPI { get }
+
+    var orderCreation: OrderCreationServiceAPI { get }
+    var orderQuote: OrderQuoteServiceAPI { get }
+    var paymentAccount: PaymentAccountServiceAPI { get }
     
     var cache: EventCache { get }
     
     var settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI { get }
     var dataRepository: DataRepositoryAPI { get }
     
-    func orderCreation(for paymentMethod: PaymentMethod.MethodType) -> SimpleBuyPendingOrderCreationServiceAPI
+    func orderCreation(for paymentMethod: PaymentMethod.MethodType) -> PendingOrderCreationServiceAPI
 }

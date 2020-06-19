@@ -81,7 +81,7 @@ public extension ObservableType {
     func handleLoaderForLifecycle(loader: LoadingViewPresenting,
                                   style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
                                   text: String? = nil) -> Observable<Element> {
-        return self.do(onSubscribe: {
+        self.do(onSubscribe: {
             loader.show(with: style, text: text)
         }, onDispose: {
             loader.hide()
@@ -91,14 +91,14 @@ public extension ObservableType {
     /// Shows the loader upon subscription
     func showLoaderOnSubscription(loader: LoadingViewPresenting,
                                   text: String? = nil) -> Observable<Element> {
-        return self.do(onSubscribe: {
+        self.do(onSubscribe: {
             loader.show(with: text)
         })
     }
     
     /// Hides the loader upon disposal
     func hideLoaderOnDisposal(loader: LoadingViewPresenting) -> Observable<Element> {
-        return self.do(onDispose: {
+        self.do(onDispose: {
             loader.hide()
         })
     }

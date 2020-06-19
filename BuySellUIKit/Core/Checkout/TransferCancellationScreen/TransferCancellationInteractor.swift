@@ -24,12 +24,12 @@ final class TransferCancellationInteractor {
     
     // MARK: - Private Properties
     
-    private let cancellationService: SimpleBuyOrderCancellationServiceAPI
+    private let cancellationService: OrderCancellationServiceAPI
     
     // MARK: - Setup
     
     init(checkoutData: CheckoutData,
-         cancellationService: SimpleBuyOrderCancellationServiceAPI) {
+         cancellationService: OrderCancellationServiceAPI) {
         self.checkoutData = checkoutData
         self.cancellationService = cancellationService
     }
@@ -37,13 +37,8 @@ final class TransferCancellationInteractor {
     // MARK: - Exposed Methods
     
     func cancel() -> Observable<Void> {
-        switch checkoutData.detailType {
-        case .candidate: // Cannot cancel an unsent order
-            return .error(InteractionError.uncancellable)
-        case .order(let order):
-            return cancellationService
-                .cancel(order: order.identifier)
-                .andThen(.just(()))
-        }
+        cancellationService
+            .cancel(order: checkoutData.order.identifier)
+            .andThen(.just(()))
     }
 }

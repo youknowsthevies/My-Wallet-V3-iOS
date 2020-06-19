@@ -35,11 +35,12 @@ struct OrderPayload {
             }
             let everypay: EveryPay?
         }
-                
+         
+        let paymentMethodId: String?
         let action: CreateActionType
         let attributes: Attributes?
         
-        init(partner: Partner, action: CreateActionType) {
+        init(partner: Partner, action: CreateActionType, paymentMethodId: String?) {
             switch partner {
             case .everyPay(customerUrl: let url):
                 attributes = Attributes(everypay: .init(customerUrl: url))
@@ -47,6 +48,7 @@ struct OrderPayload {
                 attributes = nil
             }
             self.action = action
+            self.paymentMethodId = paymentMethodId
         }
     }
     
@@ -64,14 +66,17 @@ struct OrderPayload {
         let action: Order.Action
         let input: Input
         let output: Output
+        let paymentType: String
         let paymentMethodId: String?
-        
+
         init(action: Order.Action,
              fiatValue: FiatValue,
              for cryptoCurrency: CryptoCurrency,
+             paymentType: PaymentMethod.MethodType,
              paymentMethodId: String? = nil) {
             self.action = action
             self.paymentMethodId = paymentMethodId
+            self.paymentType = paymentType.rawValue
             input = .init(
                 symbol: fiatValue.currencyCode,
                 amount: fiatValue.string
@@ -112,6 +117,8 @@ struct OrderPayload {
         
         let price: String?
         let fee: String?
+        
+        let paymentType: String
         let paymentMethodId: String?
         let attributes: Attributes?
     }

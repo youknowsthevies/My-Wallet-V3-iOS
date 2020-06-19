@@ -65,8 +65,8 @@ final class BuyCryptoScreenPresenter {
     private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
     private let uiUtilityProvider: UIUtilityProviderAPI
     private let interactor: BuyCryptoScreenInteractor
-    private unowned let stateService: SimpleBuyCheckoutServiceAPI
-    private unowned let router: SimpleBuyRouterAPI
+    private unowned let stateService: CheckoutServiceAPI
+    private unowned let router: RouterAPI
     
     // MARK: - Accessors
     
@@ -76,8 +76,8 @@ final class BuyCryptoScreenPresenter {
     
     init(uiUtilityProvider: UIUtilityProviderAPI = UIUtilityProvider.default,
          analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording,
-         router: SimpleBuyRouterAPI,
-         stateService: SimpleBuyCheckoutServiceAPI,
+         router: RouterAPI,
+         stateService: CheckoutServiceAPI,
          interactor: BuyCryptoScreenInteractor) {
         self.analyticsRecorder = analyticsRecorder
         self.uiUtilityProvider = uiUtilityProvider
@@ -136,14 +136,14 @@ final class BuyCryptoScreenPresenter {
         struct CTAData {
             let kycState: KycState
             let isSimpleBuyEligible: Bool
-            let checkoutData: CheckoutData
+            let candidateOrderDetails: CandidateOrderDetails
         }
         
         let ctaObservable = continueButtonViewModel.tapRelay
-            .withLatestFrom(interactor.data)
+            .withLatestFrom(interactor.candidateOrderDetails)
             .compactMap { $0 }
             .show(loader: uiUtilityProvider.loader, style: .circle)
-            .flatMap(weak: interactor) { (interactor, data) in
+            .flatMap(weak: interactor) { (interactor, candidateOrderDetails) in
                 Observable
                     .zip(
                         interactor.currentKycState.asObservable(),
@@ -155,7 +155,7 @@ final class BuyCryptoScreenPresenter {
                             let ctaData = CTAData(
                                 kycState: kycState,
                                 isSimpleBuyEligible: isSimpleBuyEligible,
-                                checkoutData: data
+                                candidateOrderDetails: candidateOrderDetails
                             )
                             return .success(ctaData)
                         case (.failure(let error), .success):
@@ -165,13 +165,13 @@ final class BuyCryptoScreenPresenter {
                         case (.failure(let error), .failure):
                             return .failure(error)
                         }
-                }
-        }
+                    }
+            }
         
         ctaObservable
-            .compactMap { result -> CheckoutData? in
-                guard case let .success(state) = result else { return nil }
-                return state.checkoutData
+            .compactMap { result -> CandidateOrderDetails? in
+                guard case let .success(data) = result else { return nil }
+                return data.candidateOrderDetails
             }
             .map {
                 AnalyticsEvent.sbBuyFormConfirmClick(
@@ -196,17 +196,23 @@ final class BuyCryptoScreenPresenter {
         
         ctaObservable
             .observeOn(MainScheduler.instance)
-            .hide(loader: uiUtilityProvider.loader)
             .bind(weak: self) { (self, result) in
                 switch result {
                 case .success(let data):
                     switch (data.kycState, data.isSimpleBuyEligible) {
-                    case (.completed, true):
-                        self.stateService.nextFromBuyCrypto(with: data.checkoutData)
                     case (.completed, false):
-                        self.stateService.ineligible(with: data.checkoutData)
+                        self.uiUtilityProvider.loader.hide()
+                        self.stateService.ineligible()
+                    case (.completed, true):
+                        self.createOrder(from: data.candidateOrderDetails) { [weak self] checkoutData in
+                            self?.uiUtilityProvider.loader.hide()
+                            self?.stateService.nextFromBuyCrypto(with: checkoutData)
+                        }
                     case (.shouldComplete, _):
-                        self.stateService.kyc(with: data.checkoutData)
+                        self.createOrder(from: data.candidateOrderDetails) { [weak self] checkoutData in
+                            self?.uiUtilityProvider.loader.hide()
+                            self?.stateService.kyc(with: checkoutData)
+                        }
                     }
                 case .failure:
                     self.handleError()
@@ -391,7 +397,20 @@ final class BuyCryptoScreenPresenter {
     
     // MARK: - Private methods
 
-    private func setup(preferredPaymentMethodType: SimpleBuyPaymentMethodType?, methodCount: Int) {
+    private func createOrder(from candidateOrderDetails: CandidateOrderDetails,
+                             with completion: @escaping (CheckoutData) -> Void) {
+        interactor.createOrder(from: candidateOrderDetails)
+            .observeOn(MainScheduler.instance)
+            .subscribe(
+                onSuccess: completion,
+                onError: { [weak self] error in
+                    self?.handleError()
+                }
+            )
+            .disposed(by: disposeBag)
+    }
+    
+    private func setup(preferredPaymentMethodType: PaymentMethodType?, methodCount: Int) {
         guard let type = preferredPaymentMethodType else { return }
         
         let viewModel = SelectionButtonViewModel(with: type)
@@ -423,6 +442,7 @@ final class BuyCryptoScreenPresenter {
     
     private func handleError() {
         analyticsRecorder.record(event: AnalyticsEvent.sbBuyFormConfirmFailure)
+        uiUtilityProvider.loader.hide()
         uiUtilityProvider.alert.error(in: nil, action: nil)
     }
 

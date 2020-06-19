@@ -61,7 +61,7 @@ final class PaymentMethodsScreenPresenter {
         
         interactor.methods
             .handleLoaderForLifecycle(loader: loadingViewPresenter, style: .circle)
-            .map { (methods: [SimpleBuyPaymentMethodType]) -> [CellViewModelType] in
+            .map { (methods: [PaymentMethodType]) -> [CellViewModelType] in
                 methods
                     .compactMap { [weak self] type in
                         self?.generateCellType(by: type) ?? nil
@@ -87,7 +87,7 @@ final class PaymentMethodsScreenPresenter {
     
     // MARK: - Private
     
-    private func generateCellType(by paymentMethodType: SimpleBuyPaymentMethodType) -> CellViewModelType? {
+    private func generateCellType(by paymentMethodType: PaymentMethodType) -> CellViewModelType? {
         let cellType: CellViewModelType
         switch paymentMethodType {
         case .suggested(let method):

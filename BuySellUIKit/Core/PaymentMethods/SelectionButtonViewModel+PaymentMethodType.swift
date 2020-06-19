@@ -1,5 +1,5 @@
 //
-//  SelectionButtonViewModel+SimpleBuyPaymentMethodType.swift
+//  SelectionButtonViewModel+PaymentMethodType.swift
 //  Blockchain
 //
 //  Created by Daniel Huri on 08/04/2020.
@@ -19,7 +19,7 @@ extension SelectionButtonViewModel {
     
     // MARK: - Setup
     
-    convenience init(with paymentMethodType: SimpleBuyPaymentMethodType) {
+    convenience init(with paymentMethodType: PaymentMethodType) {
         self.init()
         let leadingContent: SelectionButtonViewModel.LeadingContentType?
         let title: String
@@ -86,7 +86,7 @@ extension SelectionButtonViewModel {
 // MARK: - Array extension
 
 extension Array where Element == SelectionButtonViewModel {
-    init(with paymentMethods: [SimpleBuyPaymentMethodType]) {
+    init(with paymentMethods: [PaymentMethodType]) {
         self.init()
         append(contentsOf: paymentMethods.map { SelectionButtonViewModel(with: $0) })
     }

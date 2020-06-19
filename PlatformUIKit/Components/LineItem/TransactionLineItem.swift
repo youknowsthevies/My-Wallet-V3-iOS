@@ -23,7 +23,7 @@ public enum TransactionalLineItem: Hashable {
     case estimatedAmount(_ content: String? = nil)
     case exchangeRate(_ content: String? = nil)
     case orderId(_ content: String? = nil)
-    case paymentAccountField(SimpleBuyPaymentAccountProperty.Field)
+    case paymentAccountField(PaymentAccountProperty.Field)
     case paymentMethod(_ content: String? = nil)
     case status(_ content: String? = nil)
     case totalCost(_ content: String? = nil)
@@ -173,7 +173,7 @@ public enum TransactionalLineItem: Hashable {
     }
 }
 
-extension SimpleBuyPaymentAccountProperty.Field {
+extension PaymentAccountProperty.Field {
     public var accessibilityID: String {
         typealias AccessibilityID = Accessibility.Identifier.LineItem.Transactional
         switch self {

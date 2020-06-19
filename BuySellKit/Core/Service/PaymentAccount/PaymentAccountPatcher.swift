@@ -22,9 +22,9 @@ final class PaymentAccountPatcher {
         return account
     }
 
-    /// Patch an SimpleBuyPaymentAccountEUR if needed
+    /// Patch an PaymentAccountEUR if needed
     private func patchEuroPaymentAccount(_ account: PaymentAccount, recipientName: String) -> PaymentAccount {
-        /// Account must be a SimpleBuyPaymentAccountEUR. If not, don't patch it.
+        /// Account must be a PaymentAccountEUR. If not, don't patch it.
         guard let eurAccount = account as? PaymentAccountEUR else {
             return account
         }

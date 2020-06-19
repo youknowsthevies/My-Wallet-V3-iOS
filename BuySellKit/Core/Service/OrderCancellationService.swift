@@ -9,24 +9,24 @@
 import RxSwift
 import PlatformKit
 
-public protocol SimpleBuyOrderCancellationServiceAPI: class {
+public protocol OrderCancellationServiceAPI: class {
     
     /// Cancels an order associated with the given id
     func cancel(order id: String) -> Completable
 }
 
-final class OrderCancellationService: SimpleBuyOrderCancellationServiceAPI {
+final class OrderCancellationService: OrderCancellationServiceAPI {
     
     // MARK: - Injected
     
     private let client: OrderCancellationClientAPI
-    private let orderDetailsService: SimpleBuyOrdersServiceAPI
+    private let orderDetailsService: OrdersServiceAPI
     private let authenticationService: NabuAuthenticationServiceAPI
 
     // MARK: - Setup
     
     init(client: OrderCancellationClientAPI,
-         orderDetailsService: SimpleBuyOrdersServiceAPI,
+         orderDetailsService: OrdersServiceAPI,
          authenticationService: NabuAuthenticationServiceAPI) {
         self.client = client
         self.orderDetailsService = orderDetailsService

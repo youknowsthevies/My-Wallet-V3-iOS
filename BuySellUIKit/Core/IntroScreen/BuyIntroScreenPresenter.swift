@@ -36,12 +36,12 @@ final class BuyIntroScreenPresenter {
     
     // MARK: - Injected
     
-    private unowned let stateService: SimpleBuyStateServiceAPI
+    private unowned let stateService: StateServiceAPI
     private let recordingProvider: RecordingProviderAPI
 
     // MARK: - Setup
     
-    init(stateService: SimpleBuyStateServiceAPI, recordingProvider: RecordingProviderAPI) {
+    init(stateService: StateServiceAPI, recordingProvider: RecordingProviderAPI) {
         self.recordingProvider = recordingProvider
         self.stateService = stateService
         

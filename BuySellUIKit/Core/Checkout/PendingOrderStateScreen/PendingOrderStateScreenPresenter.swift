@@ -135,7 +135,7 @@ final class PendingOrderStateScreenPresenter: PendingStatePresenterAPI {
         self.viewModelRelay.accept(viewModel)
     }
         
-    private func handle(state: SimpleBuyPolledOrder) {
+    private func handle(state: PolledOrder) {
         switch state {
         case .final(let order):
             switch order.state {

@@ -13,7 +13,7 @@ import PlatformKit
 import PlatformUIKit
 import BuySellKit
 
-public final class AddCardRouter: Router {
+public final class AddCardRouter: PlatformUIKit.Router {
     
     // MARK: - Types
     

@@ -9,7 +9,7 @@
 import RxSwift
 import PlatformKit
 
-protocol SimpleBuyPaymentAccountServiceAPI: class {
+public protocol PaymentAccountServiceAPI: class {
 
     /// Fetch the Payment Account information for thr currency wallet's fiat currency
     var paymentAccount: Single<PaymentAccount> { get }
@@ -18,7 +18,7 @@ protocol SimpleBuyPaymentAccountServiceAPI: class {
     func paymentAccount(for currency: FiatCurrency) -> Single<PaymentAccount>
 }
 
-final class PaymentAccountService: SimpleBuyPaymentAccountServiceAPI {
+final class PaymentAccountService: PaymentAccountServiceAPI {
 
     // MARK: - Types
 
@@ -62,7 +62,7 @@ final class PaymentAccountService: SimpleBuyPaymentAccountServiceAPI {
     // MARK: - Public Methods
 
     func paymentAccount(for currency: FiatCurrency) -> Single<PaymentAccount> {
-        return authenticationService
+        authenticationService
             .tokenString
             .flatMap(weak: self) { (self, token) -> Single<PaymentAccount> in
                 self.fetchPaymentAccount(for: currency, with: token, patcher: self.patcher)
@@ -71,9 +71,9 @@ final class PaymentAccountService: SimpleBuyPaymentAccountServiceAPI {
 
     // MARK: - Private Methods
 
-    private func fetchPaymentAccount(for currency: FiatCurrency,
-                                     with token: String,
-                                     patcher: PaymentAccountPatcher) -> Single<PaymentAccount> {
+    func fetchPaymentAccount(for currency: FiatCurrency,
+                             with token: String,
+                             patcher: PaymentAccountPatcher) -> Single<PaymentAccount> {
         Single
             .zip(
                 client.paymentAccount(for: currency, token: token),

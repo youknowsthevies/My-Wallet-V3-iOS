@@ -1,5 +1,5 @@
 //
-//  SimpleBuyOrderConfirmationClientAPI.swift
+//  CardOrderConfirmationClientAPI.swift
 //  PlatformKit
 //
 //  Created by Daniel Huri on 22/04/2020.
@@ -13,6 +13,7 @@ protocol CardOrderConfirmationClientAPI: class {
     /// Confirm an order
     func confirmOrder(with identifier: String,
                       partner: OrderPayload.ConfirmOrder.Partner,
+                      paymentMethodId: String?,
                       token: String) -> Single<OrderPayload.Response>
 }
 

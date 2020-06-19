@@ -14,7 +14,7 @@ import PlatformUIKit
 import BuySellKit
 
 /// This object is used as a router for Simple-Buy flow
-public final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
+public final class Router: RouterAPI, PlatformUIKit.Router {
     
     // MARK: - Types
     
@@ -28,7 +28,7 @@ public final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     // MARK: - Private Properties
     
     private let recordingProvider: RecordingProviderAPI
-    private let stateService: SimpleBuyStateServiceAPI
+    private let stateService: StateServiceAPI
     private let kycRouter: KYCRouterAPI
     private let kycServiceProvider: KYCServiceProviderAPI
     private let serviceProvider: ServiceProviderAPI
@@ -51,7 +51,7 @@ public final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     public init(serviceProvider: ServiceProviderAPI,
                 cardServiceProvider: CardServiceProviderAPI,
                 userInformationProvider: UserInformationServiceProviding,
-                stateService: SimpleBuyStateServiceAPI,
+                stateService: StateServiceAPI,
                 kycServiceProvider: KYCServiceProviderAPI,
                 recordingProvider: RecordingProviderAPI,
                 topMostViewControllerProvider: TopMostViewControllerProviding,
@@ -105,7 +105,7 @@ public final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
         stateService.nextRelay.accept(())
     }
     
-    public func next(to state: SimpleBuyStateService.State) {
+    public func next(to state: StateService.State) {
         switch state {
         case .intro:
             showIntroScreen()
@@ -147,7 +147,9 @@ public final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
             showTransferCancellation(with: data)
         case .kyc:
             showKYC()
-        case .pendingKycApproval:
+        case .pendingKycApproval, .ineligible:
+            /// Show pending KYC approval for `ineligible` state as well, since the expected poll result would be
+            /// ineligible anyway
             showPendingKycApprovalScreen()
         case .addCard(let data):
             startCardAdditionFlow(with: data)
@@ -156,7 +158,7 @@ public final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
         }
     }
     
-    public func previous(from state: SimpleBuyStateService.State) {
+    public func previous(from state: StateService.State) {
         switch state {
         // Some independent flows which dismiss themselves.
         // Therefore, do nothing.
@@ -372,11 +374,25 @@ public final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
     
     /// Shows the checkout screen
     private func showCheckoutScreen(with data: CheckoutData) {
+        
+        let orderInteractor = OrderCheckoutInteractor(
+            bankInteractor: .init(
+                paymentAccountService: serviceProvider.paymentAccount,
+                orderQuoteService: serviceProvider.orderQuote,
+                orderCreationService: serviceProvider.orderCreation
+            ),
+            cardInteractor: .init(
+                cardListService: cardServiceProvider.cardList,
+                orderQuoteService: serviceProvider.orderQuote,
+                orderCreationService: serviceProvider.orderCreation
+            )
+        )
+
         let interactor = CheckoutScreenInteractor(
             cardListService: cardServiceProvider.cardList,
-            creationService: serviceProvider.orderCreation(for: data.detailType.paymentMethod),
             confirmationService: serviceProvider.orderConfirmation,
             cancellationService: serviceProvider.orderCancellation,
+            orderCheckoutInterator: orderInteractor,
             checkoutData: data
         )
         let presenter = CheckoutScreenPresenter(
@@ -468,6 +484,7 @@ public final class SimpleBuyRouter: SimpleBuyRouterAPI, Router {
             eligibilityService: serviceProvider.eligibility,
             paymentMethodTypesService: serviceProvider.paymentMethodTypes,
             cryptoCurrencySelectionService: cryptoSelectionService,
+            orderCreationService: serviceProvider.orderCreation,
             suggestedAmountsService: serviceProvider.suggestedAmounts
         )
 

@@ -22,5 +22,5 @@ public struct PaymentAccountResponse: Decodable {
     let address: String?
     let agent: Agent
     let currency: FiatCurrency
-    let state: SimpleBuyPaymentAccountProperty.State
+    let state: PaymentAccountProperty.State
 }

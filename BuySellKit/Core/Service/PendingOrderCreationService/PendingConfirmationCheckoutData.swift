@@ -7,14 +7,14 @@
 //
 
 public struct PendingConfirmationCheckoutData {
-    public let quote: SimpleBuyQuote
+    public let quote: Quote
     public let checkoutData: CheckoutData
     
     func data(byAppending checkoutData: CheckoutData) -> PendingConfirmationCheckoutData {
         .init(quote: quote, checkoutData: checkoutData)
     }
     
-    init(quote: SimpleBuyQuote, checkoutData: CheckoutData) {
+    init(quote: Quote, checkoutData: CheckoutData) {
         self.quote = quote
         self.checkoutData = checkoutData
     }

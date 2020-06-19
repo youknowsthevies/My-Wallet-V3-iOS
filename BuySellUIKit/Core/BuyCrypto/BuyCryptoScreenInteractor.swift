@@ -17,7 +17,7 @@ final class BuyCryptoScreenInteractor {
     // MARK: - Types
 
     enum State {
-        case inBounds(data: CheckoutData, upperLimit: FiatValue)
+        case inBounds(data: CandidateOrderDetails, upperLimit: FiatValue)
         case tooLow(min: FiatValue)
         case tooHigh(max: FiatValue)
         case empty(currency: FiatCurrency)
@@ -64,7 +64,7 @@ final class BuyCryptoScreenInteractor {
     
     /// The (optional) data, in case the state's value is `inBounds`.
     /// `nil` otherwise.
-    var data: Observable<CheckoutData?> {
+    var candidateOrderDetails: Observable<CandidateOrderDetails?> {
         state
             .map { state in
                 switch state {
@@ -93,7 +93,7 @@ final class BuyCryptoScreenInteractor {
         suggestedAmountsRelay.asObservable()
     }
 
-    /// Streams a `SimpleBuyKycState` indicating whether the user should complete KYC
+    /// Streams a `KycState` indicating whether the user should complete KYC
     var currentKycState: Single<Result<KycState, Error>> {
         kycTiersService.fetchTiers()
             .map { $0.isTier2Approved }
@@ -107,11 +107,11 @@ final class BuyCryptoScreenInteractor {
             .mapToResult()
     }
 
-    var paymentMethodTypes: Observable<[SimpleBuyPaymentMethodType]> {
+    var paymentMethodTypes: Observable<[PaymentMethodType]> {
         paymentMethodTypesService.methodTypes
     }
     
-    var preferredPaymentMethodType: Observable<SimpleBuyPaymentMethodType?> {
+    var preferredPaymentMethodType: Observable<PaymentMethodType?> {
         paymentMethodTypesService.preferredPaymentMethodType
     }
     
@@ -121,11 +121,12 @@ final class BuyCryptoScreenInteractor {
     let exchangeProvider: ExchangeProviding
     
     private let kycTiersService: KYCTiersServiceAPI
-    private let suggestedAmountsService: SimpleBuySuggestedAmountsServiceAPI
-    private let pairsService: SimpleBuySupportedPairsInteractorServiceAPI
+    private let suggestedAmountsService: SuggestedAmountsServiceAPI
+    private let pairsService: SupportedPairsInteractorServiceAPI
     private let cryptoCurrencySelectionService: SelectionServiceAPI
-    private let eligibilityService: SimpleBuyEligibilityServiceAPI
-    private let paymentMethodTypesService: SimpleBuyPaymentMethodTypesServiceAPI
+    private let eligibilityService: EligibilityServiceAPI
+    private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
+    private let orderCreationService: OrderCreationServiceAPI
 
     // MARK: - Accessors
     
@@ -151,11 +152,12 @@ final class BuyCryptoScreenInteractor {
     init(kycTiersService: KYCTiersServiceAPI,
          exchangeProvider: ExchangeProviding,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI,
-         pairsService: SimpleBuySupportedPairsInteractorServiceAPI,
-         eligibilityService: SimpleBuyEligibilityServiceAPI,
-         paymentMethodTypesService: SimpleBuyPaymentMethodTypesServiceAPI,
+         pairsService: SupportedPairsInteractorServiceAPI,
+         eligibilityService: EligibilityServiceAPI,
+         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
          cryptoCurrencySelectionService: SelectionServiceAPI,
-         suggestedAmountsService: SimpleBuySuggestedAmountsServiceAPI) {
+         orderCreationService: OrderCreationServiceAPI,
+         suggestedAmountsService: SuggestedAmountsServiceAPI) {
         self.kycTiersService = kycTiersService
         self.fiatCurrencyService = fiatCurrencyService
         self.pairsService = pairsService
@@ -163,6 +165,7 @@ final class BuyCryptoScreenInteractor {
         self.cryptoCurrencySelectionService = cryptoCurrencySelectionService
         self.eligibilityService = eligibilityService
         self.paymentMethodTypesService = paymentMethodTypesService
+        self.orderCreationService = orderCreationService
         self.exchangeProvider = exchangeProvider
         
         suggestedAmountsService.calculationState
@@ -222,15 +225,18 @@ final class BuyCryptoScreenInteractor {
                 
                 let minFiatValue = pair.minFiatValue
                 let maxFiatValue: FiatValue
+                let paymentMethodId: String?
                 
                 switch preferredPaymentMethod {
                 case .card(let cardData):
                     maxFiatValue = cardData.topLimit
+                    paymentMethodId = cardData.identifier
                 case .suggested(let method):
                     guard method.max.currency == pair.maxFiatValue.currency else {
                         return .empty(currency: currency)
                     }
                     maxFiatValue = try FiatValue.min(pair.maxFiatValue, method.max)
+                    paymentMethodId = nil
                 }
                 
                 guard minFiatValue.currency == amount.currency && maxFiatValue.currency == amount.currency else {
@@ -244,10 +250,11 @@ final class BuyCryptoScreenInteractor {
                 } else if try amount < minFiatValue {
                     return .tooLow(min: minFiatValue)
                 }
-                let data = CheckoutData(
+                let data = CandidateOrderDetails(
+                    paymentMethod: preferredPaymentMethod,
                     fiatValue: amount,
                     cryptoCurrency: pair.cryptoCurrency,
-                    paymentMethod: preferredPaymentMethod
+                    paymentMethodId: paymentMethodId
                 )
                 
                 return .inBounds(data: data, upperLimit: pair.maxFiatValue)
@@ -266,6 +273,10 @@ final class BuyCryptoScreenInteractor {
     /// Triggers a refresh
     func refresh() {
         suggestedAmountsService.refresh()
+    }
+    
+    func createOrder(from candidate: CandidateOrderDetails) -> Single<CheckoutData> {
+        orderCreationService.create(using: candidate)
     }
 }
 

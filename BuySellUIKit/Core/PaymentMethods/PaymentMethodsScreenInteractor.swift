@@ -15,7 +15,7 @@ final class PaymentMethodsScreenInteractor {
     // MARK: - Properties
     
     /// Streams the available payment methods
-    var methods: Single<[SimpleBuyPaymentMethodType]> {
+    var methods: Single<[PaymentMethodType]> {
         service.methodTypes
             .map { types in
                 types
@@ -34,15 +34,15 @@ final class PaymentMethodsScreenInteractor {
     
     // MARK: - Injected
     
-    private let service: SimpleBuyPaymentMethodTypesServiceAPI
+    private let service: PaymentMethodTypesServiceAPI
     
     // MARK: - Setup
     
-    init(service: SimpleBuyPaymentMethodTypesServiceAPI) {
+    init(service: PaymentMethodTypesServiceAPI) {
         self.service = service
     }
     
-    func select(method: SimpleBuyPaymentMethodType) {
+    func select(method: PaymentMethodType) {
         service.preferredPaymentMethodTypeRelay.accept(method)
     }
 }

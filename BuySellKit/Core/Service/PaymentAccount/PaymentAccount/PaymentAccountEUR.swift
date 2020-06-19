@@ -9,7 +9,7 @@
 import PlatformKit
 
 struct PaymentAccountEUR: PaymentAccount, Equatable {
-    var fields: [SimpleBuyPaymentAccountProperty.Field] {
+    var fields: [PaymentAccountProperty.Field] {
         [
             .bankName(bankName),
             .bankCountry(bankCountry),
@@ -21,7 +21,7 @@ struct PaymentAccountEUR: PaymentAccount, Equatable {
 
     static let currency: FiatCurrency = .EUR
     let identifier: String
-    let state: SimpleBuyPaymentAccountProperty.State
+    let state: PaymentAccountProperty.State
     let currency: FiatCurrency = Self.currency
     let bankName: String
     let bankCountry: String
@@ -48,7 +48,7 @@ struct PaymentAccountEUR: PaymentAccount, Equatable {
     }
 
     init(identifier: String,
-         state: SimpleBuyPaymentAccountProperty.State,
+         state: PaymentAccountProperty.State,
          bankName: String,
          bankCountry: String,
          iban: String,

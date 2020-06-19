@@ -10,11 +10,11 @@ import RxSwift
 import ToolKit
 import PlatformKit
 
-public protocol SimpleBuyOrderConfirmationServiceAPI: class {
+public protocol OrderConfirmationServiceAPI: class {
     func confirm(checkoutData: CheckoutData) -> Single<CheckoutData>
 }
 
-final class OrderConfirmationService: SimpleBuyOrderConfirmationServiceAPI {
+final class OrderConfirmationService: OrderConfirmationServiceAPI {
     
     // MARK: - Service Error
     
@@ -39,28 +39,23 @@ final class OrderConfirmationService: SimpleBuyOrderConfirmationServiceAPI {
     }
     
     public func confirm(checkoutData: CheckoutData) -> Single<CheckoutData> {
-        
-        let orderId: String
+        let orderId = checkoutData.order.identifier
+        let paymentMethodId = checkoutData.order.paymentMethodId
         let partner: OrderPayload.ConfirmOrder.Partner
-        
-        switch checkoutData.detailType {
-        case .order(let details):
-            orderId = details.identifier
-            if details.paymentMethodId == nil {
-                partner = .bank
-            } else {
-                partner = .everyPay(customerUrl: PartnerAuthorizationData.exitLink)
-            }
-        case .candidate:
-            fatalError("Cannot confirm a candidate order - the detail type value must equal `order`")
+        switch checkoutData.order.paymentMethod {
+        case .bankTransfer:
+            partner = .bank
+        case .card:
+            partner = .everyPay(customerUrl: PartnerAuthorizationData.exitLink)
         }
-        
+                
         return authenticationService
             .tokenString
             .flatMap(weak: self) { (self, token) in
                 self.client.confirmOrder(
                     with: orderId,
                     partner: partner,
+                    paymentMethodId: paymentMethodId,
                     token: token
                 )
             }

@@ -9,13 +9,13 @@
 import RxSwift
 import RxRelay
 
-public protocol SimpleBuySupportedPairsServiceAPI: class {
+public protocol SupportedPairsServiceAPI: class {
 
     /// Fetches `pairs` using the specified filter
     func fetchPairs(for option: SupportedPairsFilterOption) -> Single<SupportedPairs>
 }
 
-final class SupportedPairsService: SimpleBuySupportedPairsServiceAPI {
+final class SupportedPairsService: SupportedPairsServiceAPI {
     
     // MARK: - Injected
     
@@ -27,9 +27,9 @@ final class SupportedPairsService: SimpleBuySupportedPairsServiceAPI {
         self.client = client
     }
     
-    // MARK: - SimpleBuySupportedPairsServiceAPI
+    // MARK: - SupportedPairsServiceAPI
     
-    public func fetchPairs(for option: SupportedPairsFilterOption) -> Single<SupportedPairs> {
+    func fetchPairs(for option: SupportedPairsFilterOption) -> Single<SupportedPairs> {
         client.supportedPairs(with: option)
             .map { SupportedPairs(response: $0, filterOption: option) }
     }

@@ -1,5 +1,5 @@
 //
-//  SimpleBuyRouter+Conveniences.swift
+//  BuySellUIKit+Conveniences.swift
 //  Blockchain
 //
 //  Created by Daniel Huri on 04/06/2020.
@@ -10,9 +10,9 @@ import PlatformKit
 import BuySellKit
 import BuySellUIKit
 
-extension SimpleBuyRouter {
+extension BuySellUIKit.Router {
     
-    convenience init(stateService: SimpleBuyStateServiceAPI) {
+    convenience init(stateService: BuySellUIKit.StateServiceAPI) {
         self.init(
             serviceProvider: ServiceProvider.default,
             cardServiceProvider: CardServiceProvider.default,

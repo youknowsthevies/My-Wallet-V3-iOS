@@ -17,19 +17,19 @@ final class PendingOrderStateScreenInteractor {
     let amount: CryptoValue
     
     private let orderId: String
-    private let service: SimpleBuyPendingOrderCompletionServiceAPI
+    private let service: PendingOrderCompletionServiceAPI
 
     // MARK: - Setup
     
     init(orderId: String,
          amount: CryptoValue,
-         service: SimpleBuyPendingOrderCompletionServiceAPI) {
+         service: PendingOrderCompletionServiceAPI) {
         self.orderId = orderId
         self.amount = amount
         self.service = service
     }
     
-    func startPolling() -> Single<SimpleBuyPolledOrder> {
+    func startPolling() -> Single<PolledOrder> {
         service.waitForFinalizedState(of: orderId)
     }
 }

@@ -10,11 +10,11 @@ import RxSwift
 import ToolKit
 import PlatformKit
 
-public protocol SimpleBuyOrderCreationServiceAPI: class {
-    func create(using checkoutData: CheckoutData) -> Single<CheckoutData>
+public protocol OrderCreationServiceAPI: class {
+    func create(using candidateOrderDetails: CandidateOrderDetails) -> Single<CheckoutData>
 }
 
-final class OrderCreationService: SimpleBuyOrderCreationServiceAPI {
+final class OrderCreationService: OrderCreationServiceAPI {
     
     // MARK: - Service Error
     
@@ -26,14 +26,14 @@ final class OrderCreationService: SimpleBuyOrderCreationServiceAPI {
     
     private let analyticsRecorder: AnalyticsEventRecording
     private let client: OrderCreationClientAPI
-    private let pendingOrderDetailsService: SimpleBuyPendingOrderDetailsServiceAPI
+    private let pendingOrderDetailsService: PendingOrderDetailsServiceAPI
     private let authenticationService: NabuAuthenticationServiceAPI
 
     // MARK: - Setup
     
     init(analyticsRecorder: AnalyticsEventRecording,
          client: OrderCreationClientAPI,
-         pendingOrderDetailsService: SimpleBuyPendingOrderDetailsServiceAPI,
+         pendingOrderDetailsService: PendingOrderDetailsServiceAPI,
          authenticationService: NabuAuthenticationServiceAPI) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client
@@ -43,14 +43,15 @@ final class OrderCreationService: SimpleBuyOrderCreationServiceAPI {
     
     // MARK: - API
     
-    public func create(using checkoutData: CheckoutData) -> Single<CheckoutData> {
+    func create(using candidateOrderDetails: CandidateOrderDetails) -> Single<CheckoutData> {
         let creation = authenticationService.tokenString
             .flatMap(weak: self) { (self, token) -> Single<OrderPayload.Response> in
                 let data = OrderPayload.Request(
                     action: .buy,
-                    fiatValue: checkoutData.fiatValue,
-                    for: checkoutData.cryptoCurrency,
-                    paymentMethodId: checkoutData.detailType.paymentMethodId
+                    fiatValue: candidateOrderDetails.fiatValue,
+                    for: candidateOrderDetails.cryptoCurrency,
+                    paymentType: candidateOrderDetails.paymentMethod.method,
+                    paymentMethodId: candidateOrderDetails.paymentMethodId
                 )
                 return self.client
                     .create(
@@ -68,7 +69,7 @@ final class OrderCreationService: SimpleBuyOrderCreationServiceAPI {
                 }
                 return details
             }
-            .map { checkoutData.checkoutData(byAppending: $0) }
+            .map { CheckoutData(order: $0) }
         
         return pendingOrderDetailsService
             .cancel()

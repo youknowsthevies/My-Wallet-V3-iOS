@@ -42,7 +42,7 @@ import BuySellUIKit
 
     let airdropRouter: AirdropRouterAPI
     private var settingsRouterAPI: SettingsRouterAPI?
-    private var simpleBuyRouter: SimpleBuyRouterAPI!
+    private var simpleBuyRouter: BuySellUIKit.RouterAPI!
     private var backupRouter: BackupRouterAPI?
     
     // MARK: - UIViewController Properties
@@ -361,17 +361,17 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
 
     /// Starts Simple Buy flow.
     @objc func handleBuyCrypto() {
-        let stateService = SimpleBuyStateService.make()
-        simpleBuyRouter = SimpleBuyRouter(stateService: stateService)
+        let stateService = BuySellUIKit.StateService.make()
+        simpleBuyRouter = BuySellUIKit.Router(stateService: stateService)
         simpleBuyRouter.start()
     }
     
     func startSimpleBuyAtLogin() {
-        let stateService = SimpleBuyStateService.make()
+        let stateService = BuySellUIKit.StateService.make()
         guard !stateService.cache[.hasShownIntroScreen] else {
             return
         }
-        simpleBuyRouter = SimpleBuyRouter(stateService: stateService)
+        simpleBuyRouter = BuySellUIKit.Router(stateService: stateService)
         simpleBuyRouter.start()
     }
 }

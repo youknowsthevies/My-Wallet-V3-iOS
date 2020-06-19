@@ -9,7 +9,7 @@
 import PlatformKit
 
 struct PaymentAccountGBP: PaymentAccount, Equatable {
-    var fields: [SimpleBuyPaymentAccountProperty.Field] {
+    var fields: [PaymentAccountProperty.Field] {
         [
             .accountNumber(accountNumber),
             .sortCode(sortCode),
@@ -19,7 +19,7 @@ struct PaymentAccountGBP: PaymentAccount, Equatable {
 
     static let currency: FiatCurrency = .GBP
     let identifier: String
-    let state: SimpleBuyPaymentAccountProperty.State
+    let state: PaymentAccountProperty.State
     let currency: FiatCurrency = Self.currency
     let accountNumber: String
     let sortCode: String

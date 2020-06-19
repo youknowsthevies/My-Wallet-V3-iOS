@@ -28,9 +28,9 @@ final class CryptoCurrencySelectionService: SelectionServiceAPI {
         selectedDataRelay.distinctUntilChanged()
     }
     
-    private let service: SimpleBuySupportedPairsInteractorServiceAPI
+    private let service: SupportedPairsInteractorServiceAPI
     
-    init(service: SimpleBuySupportedPairsInteractorServiceAPI, defaultSelectedData: CryptoCurrency) {
+    init(service: SupportedPairsInteractorServiceAPI, defaultSelectedData: CryptoCurrency) {
         self.service = service
         self.selectedDataRelay = BehaviorRelay(value: defaultSelectedData.selectionItem)
     }

@@ -60,9 +60,7 @@ public struct OrderDetails {
     
     // MARK: - Properties
 
-    public var paymentMethod: PaymentMethod.MethodType {
-        paymentMethodId == nil ? .bankTransfer : .card([])
-    }
+    public var paymentMethod: PaymentMethod.MethodType
 
     public let creationDate: Date?
 
@@ -73,7 +71,8 @@ public struct OrderDetails {
     public var fee: FiatValue?
     
     public let identifier: String
-    public let paymentMethodId: String?
+    
+    public internal(set) var paymentMethodId: String?
     
     public let authorizationData: PartnerAuthorizationData?
     public let state: State
@@ -132,10 +131,14 @@ public struct OrderDetails {
         guard let cryptoValue = CryptoValue(minor: response.outputQuantity, cryptoCurreny: cryptoCurrency) else {
             return nil
         }
+        guard let paymentMethod = PaymentMethod.MethodType(rawValue: response.paymentType) else {
+            return nil
+        }
         identifier = response.id
         fiatValue = FiatValue(minor: response.inputQuantity, currency: fiatCurrency)
         self.cryptoValue = cryptoValue
         self.state = state
+        self.paymentMethod = paymentMethod
         self.paymentMethodId = response.paymentMethodId
         authorizationData = PartnerAuthorizationData(orderPayloadResponse: response)
         

@@ -10,29 +10,29 @@ import ToolKit
 import PlatformKit
 
 public final class ServiceProvider: ServiceProviderAPI {
-
+    
     // MARK: - Properties
 
-    public let eligibility: SimpleBuyEligibilityServiceAPI
-    public let orderCancellation: SimpleBuyOrderCancellationServiceAPI
-    public var orderCompletion: SimpleBuyPendingOrderCompletionServiceAPI {
+    public let eligibility: EligibilityServiceAPI
+    public let orderCancellation: OrderCancellationServiceAPI
+    public var orderCompletion: PendingOrderCompletionServiceAPI {
         PendingOrderCompletionService(ordersService: ordersDetails)
     }
-    public let orderConfirmation: SimpleBuyOrderConfirmationServiceAPI
-    public let ordersDetails: SimpleBuyOrdersServiceAPI
-    public let paymentMethodTypes: SimpleBuyPaymentMethodTypesServiceAPI
-    public let pendingOrderDetails: SimpleBuyPendingOrderDetailsServiceAPI
-    public let suggestedAmounts: SimpleBuySuggestedAmountsServiceAPI
-    public let supportedCurrencies: SimpleBuySupportedCurrenciesServiceAPI
-    public let supportedPairs: SimpleBuySupportedPairsServiceAPI
-    public let supportedPairsInteractor: SimpleBuySupportedPairsInteractorServiceAPI
-    public let paymentMethods: SimpleBuyPaymentMethodsServiceAPI
+    public let orderConfirmation: OrderConfirmationServiceAPI
+    public let ordersDetails: OrdersServiceAPI
+    public let paymentMethodTypes: PaymentMethodTypesServiceAPI
+    public let pendingOrderDetails: PendingOrderDetailsServiceAPI
+    public let suggestedAmounts: SuggestedAmountsServiceAPI
+    public let supportedCurrencies: SupportedCurrenciesServiceAPI
+    public let supportedPairs: SupportedPairsServiceAPI
+    public let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
+    public let paymentMethods: PaymentMethodsServiceAPI
 
     public let cache: EventCache
 
-    private let orderCreation: SimpleBuyOrderCreationServiceAPI
-    private let orderQuote: SimpleBuyOrderQuoteServiceAPI
-    private let paymentAccount: SimpleBuyPaymentAccountServiceAPI
+    public let orderCreation: OrderCreationServiceAPI
+    public let orderQuote: OrderQuoteServiceAPI
+    public let paymentAccount: PaymentAccountServiceAPI
     
     public let settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI
     public let dataRepository: DataRepositoryAPI
@@ -121,7 +121,6 @@ public final class ServiceProvider: ServiceProviderAPI {
             authenticationService: authenticationService
         )
         pendingOrderDetails = PendingOrderDetailsService(
-            paymentAccountService: paymentAccount,
             ordersService: ordersDetails,
             cancallationService: orderCancellation
         )
@@ -139,7 +138,7 @@ public final class ServiceProvider: ServiceProviderAPI {
             authenticationService: authenticationService,
             fiatCurrencyService: settings
         )
-        paymentMethodTypes = SimpleBuyPaymentMethodTypesService(
+        paymentMethodTypes = PaymentMethodTypesService(
             paymentMethodsService: paymentMethods,
             cardListService: cardServiceProvider.cardList
         )
@@ -153,7 +152,7 @@ public final class ServiceProvider: ServiceProviderAPI {
         self.settings = settings
     }
     
-    public func orderCreation(for paymentMethod: PaymentMethod.MethodType) -> SimpleBuyPendingOrderCreationServiceAPI {
+    public func orderCreation(for paymentMethod: PaymentMethod.MethodType) -> PendingOrderCreationServiceAPI {
         switch paymentMethod {
         case .bankTransfer:
             return BankOrderCreationService(

@@ -19,7 +19,7 @@ struct QuoteResponse: Decodable {
     let fee: String
 }
 
-public struct SimpleBuyQuote {
+public struct Quote {
 
     // MARK: - Types
 

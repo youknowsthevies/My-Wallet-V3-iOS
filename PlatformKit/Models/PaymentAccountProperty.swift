@@ -1,5 +1,5 @@
 //
-//  SimpleBuyPaymentAccountProperty.swift
+//  PaymentAccountProperty.swift
 //  PlatformKit
 //
 //  Created by Paulo on 03/02/2020.
@@ -8,7 +8,7 @@
 
 import Localization
 
-public enum SimpleBuyPaymentAccountProperty {
+public enum PaymentAccountProperty {
 
     /// States in which a `PaymentAccount` can be.
     public enum State: String, Codable {

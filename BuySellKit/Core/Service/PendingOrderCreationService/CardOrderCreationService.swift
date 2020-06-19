@@ -8,27 +8,24 @@
 
 import RxSwift
 
-final class CardOrderCreationService: SimpleBuyPendingOrderCreationServiceAPI {
+final class CardOrderCreationService: PendingOrderCreationServiceAPI {
     
-    private let orderQuoteService: SimpleBuyOrderQuoteServiceAPI
-    private let orderCreationService: SimpleBuyOrderCreationServiceAPI
+    private let orderQuoteService: OrderQuoteServiceAPI
+    private let orderCreationService: OrderCreationServiceAPI
     
-    init(orderQuoteService: SimpleBuyOrderQuoteServiceAPI,
-         orderCreationService: SimpleBuyOrderCreationServiceAPI) {
+    init(orderQuoteService: OrderQuoteServiceAPI,
+         orderCreationService: OrderCreationServiceAPI) {
         self.orderQuoteService = orderQuoteService
         self.orderCreationService = orderCreationService
     }
     
-    func create(using checkoutData: CheckoutData) -> Single<PendingConfirmationCheckoutData> {
+    func create(using candidateOrderDetails: CandidateOrderDetails) -> Single<PendingConfirmationCheckoutData> {
         let quote = orderQuoteService.getQuote(
             for: .buy,
-            using: checkoutData
+            cryptoCurrency: candidateOrderDetails.cryptoCurrency,
+            fiatValue: candidateOrderDetails.fiatValue
         )
-        
-        let creation = orderCreationService.create(
-            using: checkoutData
-        )
-        
+        let creation = orderCreationService.create(using: candidateOrderDetails)
         return Single
             .zip(quote, creation)
             .map { (quote, checkoutData) in

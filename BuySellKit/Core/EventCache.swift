@@ -1,5 +1,5 @@
 //
-//  SimpleBuyStateCache.swift
+//  EventCache.swift
 //  Blockchain
 //
 //  Created by Daniel Huri on 11/02/2020.

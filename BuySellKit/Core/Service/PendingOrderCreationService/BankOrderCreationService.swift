@@ -8,43 +8,41 @@
 
 import RxSwift
 
-final class BankOrderCreationService: SimpleBuyPendingOrderCreationServiceAPI {
+final class BankOrderCreationService: PendingOrderCreationServiceAPI {
     
-    private let paymentAccountService: SimpleBuyPaymentAccountServiceAPI
-    private let orderQuoteService: SimpleBuyOrderQuoteServiceAPI
-    private let orderCreationService: SimpleBuyOrderCreationServiceAPI
+    private let paymentAccountService: PaymentAccountServiceAPI
+    private let orderQuoteService: OrderQuoteServiceAPI
+    private let orderCreationService: OrderCreationServiceAPI
 
-    init(paymentAccountService: SimpleBuyPaymentAccountServiceAPI,
-         orderQuoteService: SimpleBuyOrderQuoteServiceAPI,
-         orderCreationService: SimpleBuyOrderCreationServiceAPI) {
+    init(paymentAccountService: PaymentAccountServiceAPI,
+         orderQuoteService: OrderQuoteServiceAPI,
+         orderCreationService: OrderCreationServiceAPI) {
         self.paymentAccountService = paymentAccountService
         self.orderQuoteService = orderQuoteService
         self.orderCreationService = orderCreationService
     }
     
-    func create(using checkoutData: CheckoutData) -> Single<PendingConfirmationCheckoutData> {
-        paymentAccountService
-            .paymentAccount(for: checkoutData.fiatValue.currency)
-            .map { account -> CheckoutData in
-                checkoutData.checkoutData(byAppending: account)
-            }
-            .flatMap(weak: self) { (self, checkoutData) -> Single<PendingConfirmationCheckoutData> in
-                self.orderQuoteService
-                    .getQuote(
-                        for: .buy,
-                        using: checkoutData
-                    )
-                    .map { quote -> PendingConfirmationCheckoutData in
-                        .init(quote: quote, checkoutData: checkoutData)
-                    }
-            }
-            .flatMap(weak: self) { (self, data) in
-                self.orderCreationService
-                    .create(
-                        using: data.checkoutData
-                    )
+    func create(using candidateOrderDetails: CandidateOrderDetails) -> Single<PendingConfirmationCheckoutData> {
+        let quote = orderQuoteService
+            .getQuote(
+                for: .buy,
+                cryptoCurrency: candidateOrderDetails.cryptoCurrency,
+                fiatValue: candidateOrderDetails.fiatValue
+            )
+        
+        let paymentAccount = paymentAccountService
+            .paymentAccount(for: candidateOrderDetails.fiatValue.currency)
+        
+        return Single
+            .zip(quote, paymentAccount)
+            .map { (quote: $0.0, account: $0.1) }
+            .flatMap(weak: self) { (self, payload) in
+                self.orderCreationService.create(using: candidateOrderDetails)
                     .map { checkoutData in
-                        data.data(byAppending: checkoutData)
+                        PendingConfirmationCheckoutData(
+                            quote: payload.quote,
+                            checkoutData: checkoutData.checkoutData(byAppending: payload.account)
+                        )
                     }
             }
     }

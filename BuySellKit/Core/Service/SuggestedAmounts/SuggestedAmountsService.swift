@@ -13,24 +13,24 @@ import PlatformKit
 
 // TODO: Handle `CryptoValue`
 /// The calculation state of Simple Buy suggested fiat amounts to buy
-public typealias SimpleBuySuggestedAmountsCalculationState = ValueCalculationState<[FiatValue]>
+public typealias SuggestedAmountsCalculationState = ValueCalculationState<[FiatValue]>
 
 /// A simple buy suggested amounts API
-public protocol SimpleBuySuggestedAmountsServiceAPI: class {
+public protocol SuggestedAmountsServiceAPI: class {
     
     /// Streams the suggested amounts
-    var calculationState: Observable<SimpleBuySuggestedAmountsCalculationState> { get }
+    var calculationState: Observable<SuggestedAmountsCalculationState> { get }
     
-    /// Refresh, triggering a re-fetch of `SimpleBuySuggestedAmountsCalculationState`.
+    /// Refresh, triggering a re-fetch of `SuggestedAmountsCalculationState`.
     /// Makes `calculationState` to stream an updated value
     func refresh()
 }
 
-final class SuggestedAmountsService: SimpleBuySuggestedAmountsServiceAPI {
+final class SuggestedAmountsService: SuggestedAmountsServiceAPI {
     
     // MARK: - Exposed
     
-    public var calculationState: Observable<SimpleBuySuggestedAmountsCalculationState> {
+    var calculationState: Observable<SuggestedAmountsCalculationState> {
         calculationStateRelay.asObservable()
     }
         
@@ -41,7 +41,7 @@ final class SuggestedAmountsService: SimpleBuySuggestedAmountsServiceAPI {
     
     // MARK: - Accessors
     
-    private let calculationStateRelay = BehaviorRelay<SimpleBuySuggestedAmountsCalculationState>(value: .invalid(.empty))
+    private let calculationStateRelay = BehaviorRelay<SuggestedAmountsCalculationState>(value: .invalid(.empty))
     private let fetchTriggerRelay = PublishRelay<Void>()
     private let reactiveWallet: ReactiveWalletAPI
     private let fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
@@ -67,19 +67,19 @@ final class SuggestedAmountsService: SimpleBuySuggestedAmountsServiceAPI {
             .flatMapLatest(weak: self) { (self, currency) -> Observable<[FiatValue]> in
                 self.fetchSuggestedAmounts(for: currency).asObservable()
             }
-            .map { SimpleBuySuggestedAmountsCalculationState.value($0) }
+            .map { SuggestedAmountsCalculationState.value($0) }
             .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
             .bind(to: calculationStateRelay)
             .disposed(by: disposeBag)
     }
     
     /// Refreshes the cached data set
-    public func refresh() {
+    func refresh() {
         fetchTriggerRelay.accept(())
     }
     
     private func fetchSuggestedAmounts(for currency: FiatCurrency) -> Single<[FiatValue]> {
-        return authenticationService
+        authenticationService
             .tokenString
             .flatMap(weak: self) { (self, token) -> Single<SuggestedAmountsResponse> in
                 self.client.suggestedAmounts(for: currency, using: token)

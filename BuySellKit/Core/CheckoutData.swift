@@ -8,169 +8,79 @@
 
 import PlatformKit
 
-public struct CheckoutData {
+public struct CandidateOrderDetails {
     
-    // MARK: - Types
+    /// The payment method
+    public let paymentMethod: PaymentMethodType
     
-    public enum DetailType {
-        
-        /// The candidate order details
-        public struct CandidateOrderDetails {
-            
-            /// The payment method
-            public let paymentMethod: SimpleBuyPaymentMethodType
-            
-            /// Fiat value
-            let fiatValue: FiatValue
-            
-            /// The currency type
-            let cryptoCurrency: CryptoCurrency
-        }
-        
-        /// An order detail or an already existing order
-        case order(OrderDetails)
-        
-        /// Suggested candidate for a buy order
-        case candidate(CandidateOrderDetails)
-        
-        public var paymentMethod: PaymentMethod.MethodType {
-            switch self {
-            case .candidate(let details):
-                return details.paymentMethod.method
-            case .order(let details):
-                return details.paymentMethod
-            }
-        }
-        
-        public var order: OrderDetails? {
-            switch self {
-            case .order(let details):
-                return details
-            case .candidate:
-                return nil
-            }
-        }
-        
-        var paymentMethodId: String? {
-            switch self {
-            case .candidate(let details):
-                return details.paymentMethod.methodId
-            case .order(let details):
-                return details.paymentMethodId
-            }
-        }
+    /// Fiat value
+    public let fiatValue: FiatValue
+    
+    /// The currency type
+    public let cryptoCurrency: CryptoCurrency
+    
+    public let paymentMethodId: String?
+    
+    public init(paymentMethod: PaymentMethodType,
+                fiatValue: FiatValue,
+                cryptoCurrency: CryptoCurrency,
+                paymentMethodId: String?) {
+        self.paymentMethod = paymentMethod
+        self.fiatValue = fiatValue
+        self.cryptoCurrency = cryptoCurrency
+        self.paymentMethodId = paymentMethodId
     }
+}
+
+public struct CheckoutData {
+        
+    public let order: OrderDetails
+    public let paymentAccount: PaymentAccount!
     
     // MARK: - Properties
 
     public var hasCardCheckoutMade: Bool {
-        switch detailType {
-        case .candidate:
-            return false
-        case .order(let details):
-            return details.is3DSConfirmedCardOrder || details.isPending3DSCardOrder
-        }
+        order.is3DSConfirmedCardOrder || order.isPending3DSCardOrder
     }
 
     public var isPendingDepositBankWire: Bool {
-        switch detailType {
-        case .candidate:
-            return false
-        case .order(let details):
-            return details.isPendingDepositBankWire
-        }
+        order.isPendingDepositBankWire
     }
     
     public var isPending3DS: Bool {
-        switch detailType {
-        case .candidate:
-            return false
-        case .order(let details):
-            return details.isPending3DSCardOrder
-        }
+        order.isPending3DSCardOrder
     }
-    
-    public var fiatValue: FiatValue {
-        switch detailType {
-        case .candidate(let details):
-            return details.fiatValue
-        case .order(let details):
-            return details.fiatValue
-        }
-    }
-    
+        
     public var cryptoCurrency: CryptoCurrency {
-        switch detailType {
-        case .candidate(let details):
-            return details.cryptoCurrency
-        case .order(let details):
-            return details.cryptoValue.currencyType
-        }
+        order.cryptoValue.currencyType
     }
     
-    /// Computes to `true` if the payment method is a suggested card
-    public var isSuggestedCard: Bool {
-        switch detailType {
-        case .candidate(let details):
-            switch details.paymentMethod {
-            case .suggested(let method):
-                return method.type.isCard
-            default:
-                return false
-            }
-        default:
-            return false
-        }
+    /// `true` if the order is card but is undetermined
+    public var isUnknownCardType: Bool {
+        order.paymentMethod.isCard && order.paymentMethodId == nil
     }
-    
-    public let paymentAccount: PaymentAccount!
-    public let detailType: DetailType
-    
-    public init(fiatValue: FiatValue,
-                cryptoCurrency: CryptoCurrency,
-                paymentMethod: SimpleBuyPaymentMethodType) {
-        let candidateDetails = DetailType.CandidateOrderDetails(
-            paymentMethod: paymentMethod,
-            fiatValue: fiatValue,
-            cryptoCurrency: cryptoCurrency
-        )
-        detailType = .candidate(candidateDetails)
-        paymentAccount = nil
-    }
-    
-    public init(orderDetails: OrderDetails, paymentAccount: PaymentAccount? = nil) {
-        self.detailType = .order(orderDetails)
+                
+    public init(order: OrderDetails, paymentAccount: PaymentAccount? = nil) {
+        self.order = order
         self.paymentAccount = paymentAccount
     }
-    
-    private init(detailType: DetailType, paymentAccount: PaymentAccount) {
-        self.detailType = detailType
-        self.paymentAccount = paymentAccount
-    }
-    
+
     public func checkoutData(byAppending cardData: CardData) -> CheckoutData {
-        switch detailType {
-        case .candidate(let candidate):
-            return CheckoutData(
-                fiatValue: candidate.fiatValue,
-                cryptoCurrency: candidate.cryptoCurrency,
-                paymentMethod: .card(cardData)
-            )
-        case .order:
-            fatalError("\(#function) should not be used with prepared order, only with candidate data")
-        }
+        var order = self.order
+        order.paymentMethodId = cardData.identifier
+        return CheckoutData(order: order)
     }
     
     func checkoutData(byAppending paymentAccount: PaymentAccount) -> CheckoutData {
         CheckoutData(
-            detailType: detailType,
+            order: order,
             paymentAccount: paymentAccount
         )
     }
     
     func checkoutData(byAppending orderDetails: OrderDetails) -> CheckoutData {
         CheckoutData(
-            orderDetails: orderDetails,
+            order: orderDetails,
             paymentAccount: paymentAccount
         )
     }

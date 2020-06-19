@@ -21,7 +21,7 @@ final class CardSettingsSectionInteractor {
     
     private let stateRelay = BehaviorRelay<State>(value: .loading)
     private let disposeBag = DisposeBag()
-    private let service: SimpleBuyPaymentMethodTypesServiceAPI
+    private let service: BuySellKit.PaymentMethodTypesServiceAPI
     
     private var cards: Observable<[CardData]> {
         service.cards
@@ -31,7 +31,7 @@ final class CardSettingsSectionInteractor {
 
     // MARK: - Setup
     
-    init(service: SimpleBuyPaymentMethodTypesServiceAPI) {
+    init(service: BuySellKit.PaymentMethodTypesServiceAPI) {
         self.service = service
         cards
             .map { .loaded(next: $0) }

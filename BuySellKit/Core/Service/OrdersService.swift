@@ -11,7 +11,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-public protocol SimpleBuyOrdersServiceAPI: class {
+public protocol OrdersServiceAPI: class {
 
     /// Streams all cached Simple Buy orders from cache, or fetch from
     /// remote if they are not cached
@@ -24,7 +24,7 @@ public protocol SimpleBuyOrdersServiceAPI: class {
     func fetchOrder(with identifier: String) -> Single<OrderDetails>
 }
 
-final class OrdersService: SimpleBuyOrdersServiceAPI {
+final class OrdersService: OrdersServiceAPI {
     
     // MARK: - Service Error
     
@@ -34,7 +34,7 @@ final class OrdersService: SimpleBuyOrdersServiceAPI {
     
     // MARK: - Exposed
     
-    public var orders: Single<[OrderDetails]> {
+    var orders: Single<[OrderDetails]> {
         ordersCachedValue.valueSingle
     }
     
@@ -74,11 +74,11 @@ final class OrdersService: SimpleBuyOrdersServiceAPI {
         }
     }
     
-    public func fetchOrders() -> Single<[OrderDetails]> {
+    func fetchOrders() -> Single<[OrderDetails]> {
         ordersCachedValue.fetchValue
     }
     
-    public func fetchOrder(with identifier: String) -> Single<OrderDetails> {
+    func fetchOrder(with identifier: String) -> Single<OrderDetails> {
         authenticationService
             .tokenString
             .flatMap(weak: self) { (self, token) in

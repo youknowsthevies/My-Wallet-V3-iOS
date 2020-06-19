@@ -16,9 +16,9 @@ public final class FiatCurrencySelectionProvider: FiatCurrencySelectionProviderA
         supportedCurrencies.valueObservable.map { Array($0) }
     }
 
-    private let supportedCurrencies: SimpleBuySupportedCurrenciesServiceAPI
+    private let supportedCurrencies: SupportedCurrenciesServiceAPI
 
-    public init(supportedCurrencies: SimpleBuySupportedCurrenciesServiceAPI) {
+    public init(supportedCurrencies: SupportedCurrenciesServiceAPI) {
         self.supportedCurrencies = supportedCurrencies
     }
 }
