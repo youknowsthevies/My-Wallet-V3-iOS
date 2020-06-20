@@ -139,7 +139,7 @@ fileprivate extension OperationResponse {
                 return nil
             }
             let data = self.accountCreated(accountID: accountID,
-                                           feeCharged: transaction.feeCharged,
+                                           feeCharged: Int(transaction.feeCharged ?? "0"),
                                            memo: transaction.memo?.textMemo)
             return .accountCreated(data)
 
@@ -148,7 +148,7 @@ fileprivate extension OperationResponse {
                 return nil
             }
             let data = self.payment(accountID: accountID,
-                                    feeCharged: transaction.feeCharged,
+                                    feeCharged: Int(transaction.feeCharged ?? "0"),
                                     memo: transaction.memo?.textMemo)
             return .payment(data)
 

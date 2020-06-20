@@ -244,6 +244,8 @@ class StellarAccountService: StellarAccountAPI {
                                 event(.success(()))
                             case .failure(let error):
                                 event(.error(error))
+                            case .destinationRequiresMemo:
+                                event(.error(HorizonRequestError.requestFailed(message: "Requires Memo")))
                             }
                         })
                 } catch {
