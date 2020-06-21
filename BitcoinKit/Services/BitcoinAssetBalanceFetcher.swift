@@ -21,8 +21,7 @@ public final class BitcoinAssetBalanceFetcher: AccountBalanceFetching {
     }
     
     public var balance: Single<CryptoValue> {
-        Single.zip(activeAccountAddresses, watchOnlyAddresses)
-            .map { $0 + $1 }
+        activeAccountAddresses
             .flatMap(weak: self) { (self, activeAccounts) -> Single<BitcoinBalanceResponse> in
                 self.client.balances(for: activeAccounts)
             }
@@ -38,10 +37,6 @@ public final class BitcoinAssetBalanceFetcher: AccountBalanceFetching {
     public let balanceFetchTriggerRelay = PublishRelay<Void>()
     
     // MARK: - Private Properties
-    
-    private var watchOnlyAddresses: Single<[String]> {
-        repository.watchOnlyAddresses
-    }
     
     private var activeAccountAddresses: Single<[String]> {
         repository.activeAccounts

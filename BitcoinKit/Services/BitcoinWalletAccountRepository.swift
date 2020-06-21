@@ -35,10 +35,6 @@ public final class BitcoinWalletAccountRepository: WalletAccountRepositoryAPI {
         bridge.wallets
     }
     
-    public var watchOnlyAddresses: Single<[String]> {
-        bridge.watchOnlyAddreses
-    }
-    
     public var activeAccounts: Single<[BitcoinWalletAccount]> {
         accounts.map { accounts in
             accounts.filter(\.isActive)

@@ -271,13 +271,6 @@ MyWalletPhone.totalActiveBalance = function() {
     return MyWallet.wallet.hdwallet.balanceActiveAccounts + MyWallet.wallet.balanceSpendableActiveLegacy;
 }
 
-MyWalletPhone.watchOnlyAddresses = function() {
-    var addresses = MyWallet.wallet.activeKeys
-        .filter(function (k) { return k.isWatchOnly; })
-        .map(function (k) { return k.address; });
-    return JSON.stringify(addresses);
-}
-
 MyWalletPhone.watchOnlyBalance = function() {
     return MyWallet.wallet.activeKeys
     .filter(function (k) { return k.isWatchOnly; })
