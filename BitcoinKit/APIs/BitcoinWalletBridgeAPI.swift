@@ -46,8 +46,6 @@ public protocol BitcoinWalletBridgeAPI: class {
 
     var wallets: Single<[BitcoinWalletAccount]> { get }
     
-    var watchOnlyAddreses: Single<[String]> { get }
-    
     var hdWallet: Single<PayloadBitcoinHDWallet> { get }
 
     func memo(for transactionHash: String) -> Single<String?>

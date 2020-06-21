@@ -19,8 +19,6 @@ public protocol LegacyBitcoinWalletProtocol: class {
     func getBitcoinMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void)
 
     func saveBitcoinMemo(for transaction: String, memo: String?)
-    
-    func getWatchOnlyAddresses() -> [String]
 }
 
 extension Wallet: LegacyBitcoinWalletProtocol {
@@ -123,16 +121,5 @@ extension Wallet: LegacyBitcoinWalletProtocol {
             script = "\(function)()"
         }
         context.evaluateScript(script)
-    }
-    
-    public func getWatchOnlyAddresses() -> [String] {
-        guard isInitialized() else {
-            return []
-        }
-        let script = "MyWalletPhone.watchOnlyAddresses"
-        guard let addresses = context.evaluateScript(script).toArray() as? [String] else {
-            return []
-        }
-        return addresses
     }
 }
