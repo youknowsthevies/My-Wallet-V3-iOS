@@ -31,7 +31,7 @@ public class RequestBuilder {
     // MARK: - GET
     
     public func get(path components: [String] = [],
-                    parameters: [URLQueryItem] = [],
+                    parameters: [URLQueryItem]? = nil,
                     headers: HTTPHeaders? = nil,
                     contentType: NetworkRequest.ContentType = .json,
                     decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
@@ -47,7 +47,7 @@ public class RequestBuilder {
     }
     
     public func get(path: String,
-                    parameters: [URLQueryItem] = [],
+                    parameters: [URLQueryItem]? = nil,
                     headers: HTTPHeaders? = nil,
                     contentType: NetworkRequest.ContentType = .json,
                     decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
@@ -66,7 +66,7 @@ public class RequestBuilder {
     // MARK: - PUT
     
     public func put(path components: [String] = [],
-                    parameters: [URLQueryItem] = [],
+                    parameters: [URLQueryItem]? = nil,
                     body: Data? = nil,
                     headers: HTTPHeaders? = nil,
                     contentType: NetworkRequest.ContentType = .json,
@@ -84,7 +84,7 @@ public class RequestBuilder {
     }
     
     public func put(path: String,
-                    parameters: [URLQueryItem] = [],
+                    parameters: [URLQueryItem]? = nil,
                     body: Data? = nil,
                     headers: HTTPHeaders? = nil,
                     contentType: NetworkRequest.ContentType = .json,
@@ -105,7 +105,7 @@ public class RequestBuilder {
     // MARK: - POST
     
     public func post(path components: [String] = [],
-                     parameters: [URLQueryItem] = [],
+                     parameters: [URLQueryItem]? = nil,
                      body: Data? = nil,
                      headers: HTTPHeaders? = nil,
                      contentType: NetworkRequest.ContentType = .json,
@@ -123,7 +123,7 @@ public class RequestBuilder {
     }
     
     public func post(path: String,
-                     parameters: [URLQueryItem] = [],
+                     parameters: [URLQueryItem]? = nil,
                      body: Data? = nil,
                      headers: HTTPHeaders? = nil,
                      contentType: NetworkRequest.ContentType = .json,
@@ -144,7 +144,7 @@ public class RequestBuilder {
     // MARK: - Delete
     
     public func delete(path components: [String] = [],
-                       parameters: [URLQueryItem] = [],
+                       parameters: [URLQueryItem]? = nil,
                        headers: HTTPHeaders? = nil,
                        contentType: NetworkRequest.ContentType = .json,
                        decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
@@ -170,7 +170,7 @@ public class RequestBuilder {
     
     private func buildRequest(method: NetworkRequest.NetworkMethod,
                               path: String,
-                              parameters: [URLQueryItem] = [],
+                              parameters: [URLQueryItem]? = nil,
                               body: Data? = nil,
                               headers: HTTPHeaders? = nil,
                               contentType: NetworkRequest.ContentType = .json,
@@ -190,10 +190,12 @@ public class RequestBuilder {
         )
     }
     
-    private func buildURL(path: String, parameters: [URLQueryItem] = []) -> URL? {
+    private func buildURL(path: String, parameters: [URLQueryItem]? = nil) -> URL? {
         var components = defaultComponents
         components.path += path
-        components.queryItems = parameters
+        if let parameters = parameters {
+            components.queryItems = parameters
+        }
         return components.url
     }
 }
