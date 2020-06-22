@@ -13,15 +13,14 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
+fileprivate enum PinScreenPresenterError: Error {
+    case absentPinValueWhenAuthenticateUsingBiometrics
+}
+
 /// Presenter for PIN screen
 final class PinScreenPresenter {
 
     // MARK: - Types
-
-    private enum PinScreenPresenterError: Error {
-        case absentPinValueWhenAuthenticateUsingBiometrics
-    }
-
     // MARK: - Properties
     
     var trailingButton: Screen.Style.TrailingButton {
