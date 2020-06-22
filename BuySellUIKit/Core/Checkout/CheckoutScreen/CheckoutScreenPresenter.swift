@@ -181,8 +181,8 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
     
     /// Is called as the interaction setup fails
     private func setupDidFail() {
-        uiUtilityProvider.alert.error(in: nil) { [weak stateService] in
-            stateService?.previousRelay.accept(())
+        uiUtilityProvider.alert.error(in: nil) { [weak self] in
+            self?.cancel()
         }
     }
 }
