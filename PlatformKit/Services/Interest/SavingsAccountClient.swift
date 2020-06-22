@@ -10,7 +10,7 @@ import RxSwift
 import NetworkKit
 
 public protocol SavingsAccountClientAPI: AnyObject {
-    func balance(for currency: String, token: String) -> Single<SavingsAccountBalanceResponse.CurrencyBalance>
+    func balance(token: String) -> Single<SavingsAccountBalanceResponse>
     func rate(for currency: String, token: String) -> Single<SavingsAccountInterestRateResponse>
 }
 
@@ -39,16 +39,9 @@ public final class SavingsAccountClient: SavingsAccountClientAPI {
 
     // MARK: - SavingsAccountClientAPI
 
-    public func balance(for currency: String, token: String) -> Single<SavingsAccountBalanceResponse.CurrencyBalance> {
-        let parameters = [
-            URLQueryItem(
-                name: Parameter.ccy,
-                value: currency
-            )
-        ]
+    public func balance(token: String) -> Single<SavingsAccountBalanceResponse> {
         let request = requestBuilder.get(
             path: Path.balance,
-            parameters: parameters,
             headers: [HttpHeaderField.authorization: token]
         )!
         return communicator.perform(request: request)

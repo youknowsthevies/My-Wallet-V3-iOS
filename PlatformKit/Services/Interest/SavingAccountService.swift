@@ -7,6 +7,7 @@
 //
 
 import RxSwift
+import ToolKit
 
 public protocol SavingAccountServiceAPI: AnyObject {
     func balance(for currency: CryptoCurrency) -> Single<SavingsAccountBalanceState>
@@ -20,6 +21,7 @@ public class SavingAccountService: SavingAccountServiceAPI {
     private let authenticationService: NabuAuthenticationServiceAPI
     private let client: SavingsAccountClientAPI
     private let featureFetching: FeatureFetching
+    private let cachedSavingsAccountBalance: CachedValue<SavingsAccountBalanceResponse>
 
     // MARK: - Setup
 
@@ -29,35 +31,40 @@ public class SavingAccountService: SavingAccountServiceAPI {
         self.client = client
         self.authenticationService = authenticationService
         self.featureFetching = featureFetching
+        self.cachedSavingsAccountBalance = CachedValue<SavingsAccountBalanceResponse>(configuration: .periodicAndLogin(10))
+        cachedSavingsAccountBalance.setFetch(weak: self) { (self) in
+            self.fetchBalances()
+        }
     }
 
     // MARK: - Public Methods
 
     public func balance(for currency: CryptoCurrency) -> Single<SavingsAccountBalanceState> {
-        featureFetching
-            .fetchBool(for: .interestAccountEnabled)
-            .flatMap(weak: self) { (self, interestAccountEnabled) -> Single<SavingsAccountBalanceState> in
-                guard interestAccountEnabled else {
-                    return .just(.absent)
+        cachedSavingsAccountBalance
+            .valueSingle
+            .map { $0[currency] }
+            .map { response in
+                guard let response = response,
+                    let accountBalance = SavingsAccountBalance(currency: currency, response: response) else {
+                        return .absent
                 }
-                return self.fetchBalance(for: currency)
+                return .present(accountBalance)
             }
     }
 
-    private func fetchBalance(for currency: CryptoCurrency) -> Single<SavingsAccountBalanceState> {
-        authenticationService.tokenString
-            .flatMap(weak: self) { (self, token) in
-                self.client.balance(for: currency.rawValue, token: token)
-                    .map { balance in
-                        guard let accountBalance = SavingsAccountBalance(currency: currency, response: balance) else {
-                            return .absent
-                        }
-                        return .present(accountBalance)
+    private func fetchBalances() -> Single<SavingsAccountBalanceResponse> {
+        featureFetching
+            .fetchBool(for: .interestAccountEnabled)
+            .flatMap(weak: self) { (self, _) in
+                self.authenticationService
+                    .tokenString
+                    .flatMap(weak: self) { (self, token) in
+                        self.client.balance(token: token)
                     }
             }
-            .catchErrorJustReturn(.absent)
+            .catchErrorJustReturn(.empty)
     }
-    
+
     public func rate(for currency: CryptoCurrency) -> Single<Double> {
         authenticationService.tokenString
             .flatMap(weak: self) { (self, token) in

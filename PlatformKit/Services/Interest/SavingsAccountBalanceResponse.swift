@@ -10,57 +10,33 @@ import Foundation
 
 public struct SavingsAccountBalanceResponse: Decodable {
 
+    public static let empty = SavingsAccountBalanceResponse()
+
     // MARK: - Types
 
-    public struct CurrencyBalance: Decodable {
+    public struct Details: Decodable {
         let balance: String?
-    }
-
-    enum CodingKeys: String, CodingKey {
-        case btc = "BTC"
-        case bch = "BCH"
-        case eth = "ETH"
-        case pax = "PAX"
-        case xlm = "XLM"
     }
 
     // MARK: - Properties
 
-    let btc: CurrencyBalance?
-    let bch: CurrencyBalance?
-    let eth: CurrencyBalance?
-    let pax: CurrencyBalance?
-    let xlm: CurrencyBalance?
+    private let balances: [String: Details]
 
     // MARK: - Init
 
-    init(btc: CurrencyBalance?,
-         bch: CurrencyBalance?,
-         eth: CurrencyBalance?,
-         pax: CurrencyBalance?,
-         xlm: CurrencyBalance?) {
-        self.btc = btc
-        self.bch = bch
-        self.eth = eth
-        self.pax = pax
-        self.xlm = xlm
+    private init() {
+        balances = [:]
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        balances = try container.decode([String: Details].self)
     }
 
     // MARK: - Subscript
 
-    subscript(currency: CryptoCurrency) -> CurrencyBalance? {
-        switch currency {
-        case .bitcoin:
-            return btc
-        case .bitcoinCash:
-            return bch
-        case .ethereum:
-            return eth
-        case .pax:
-            return pax
-        case .stellar:
-            return xlm
-        }
+    subscript(currency: CryptoCurrency) -> Details? {
+        balances[currency.rawValue]
     }
 }
 

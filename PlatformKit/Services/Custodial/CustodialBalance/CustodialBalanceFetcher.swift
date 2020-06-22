@@ -61,9 +61,10 @@ public final class CustodialCryptoBalanceFetcher: CustodialAccountBalanceFetchin
                 scheduler: scheduler
             )
             .flatMapLatest {
-                fetch(currencyType).asObservable()
+                fetch(currencyType)
+                    .catchErrorJustReturn(nil)
+                    .asObservable()
             }
-            .catchErrorJustReturn(nil)
             .bind(to: balanceRelay)
             .disposed(by: disposeBag)
     }

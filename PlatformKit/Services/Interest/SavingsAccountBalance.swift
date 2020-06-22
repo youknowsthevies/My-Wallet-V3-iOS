@@ -9,11 +9,11 @@
 import Foundation
 
 public struct SavingsAccountBalance {
-    
+
     let available: CryptoValue
 
     init?(currency: CryptoCurrency,
-          response: SavingsAccountBalanceResponse.CurrencyBalance) {
+          response: SavingsAccountBalanceResponse.Details) {
         guard let balance = response.balance else { return nil }
         available = CryptoValue(
             minor: balance,
