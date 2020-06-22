@@ -274,11 +274,11 @@ class ERC20ServiceTests: XCTestCase {
             .asObservable()
         
         // Act
-        let result: TestableObserver<Never> = scheduler
+        let result: TestableObserver<Void> = scheduler
             .start { saveMemoObservable }
         
         // Assert
-        guard result.events.count == 1, let value = result.events.first?.value, value.isCompleted else {
+        guard result.events.count == 2, result.events.first?.value != nil, result.events.last!.value.isCompleted else {
             XCTFail("Saving should complete successfully")
             return
         }

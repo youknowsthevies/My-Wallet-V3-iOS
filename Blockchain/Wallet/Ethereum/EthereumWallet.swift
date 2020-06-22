@@ -183,17 +183,14 @@ extension EthereumWallet: ERC20BridgeAPI {
             }
     }
     
-    func save(erc20TokenAccounts: [String: ERC20TokenAccount]) -> Completable {
+    func save(erc20TokenAccounts: [String: ERC20TokenAccount]) -> Single<Void> {
         secondPasswordIfAccountCreationNeeded
-            .asObservable()
-            .flatMap(weak: self) { (self, secondPassword) -> Observable<Never> in
+            .flatMap(weak: self) { (self, secondPassword) -> Single<Void> in
                 self.save(
                     erc20TokenAccounts: erc20TokenAccounts,
                     secondPassword: secondPassword
                 )
-                .asObservable()
             }
-            .asCompletable()
     }
     
     var erc20TokenAccounts: Single<[String: ERC20TokenAccount]> {
@@ -213,7 +210,7 @@ extension EthereumWallet: ERC20BridgeAPI {
             }
     }
     
-    func save(transactionMemo: String, for transactionHash: String, tokenKey: String) -> Completable {
+    func save(transactionMemo: String, for transactionHash: String, tokenKey: String) -> Single<Void> {
         erc20TokenAccounts
             .flatMap { tokenAccounts -> Single<([String: ERC20TokenAccount], ERC20TokenAccount)> in
                 guard let tokenAccount = tokenAccounts[tokenKey] else {
@@ -221,19 +218,17 @@ extension EthereumWallet: ERC20BridgeAPI {
                 }
                 return Single.just((tokenAccounts, tokenAccount))
             }
-            .asObservable()
-            .flatMap(weak: self) { (self, tuple) -> Observable<Never> in
+            .flatMap(weak: self) { (self, tuple) -> Single<Void> in
                 var (tokenAccounts, tokenAccount) = tuple
                 _ = tokenAccounts.removeValue(forKey: tokenKey)
                 tokenAccount.update(memo: transactionMemo, for: transactionHash)
                 tokenAccounts[tokenKey] = tokenAccount
-                return self.save(erc20TokenAccounts: tokenAccounts).asObservable()
+                return self.save(erc20TokenAccounts: tokenAccounts)
             }
-            .asCompletable()
     }
     
-    private func save(erc20TokenAccounts: [String: ERC20TokenAccount], secondPassword: String?) -> Completable {
-        Completable.create(subscribe: { [weak self] observer -> Disposable in
+    private func save(erc20TokenAccounts: [String: ERC20TokenAccount], secondPassword: String?) -> Single<Void> {
+        Single.create(subscribe: { [weak self] observer -> Disposable in
             guard let wallet = self?.wallet else {
                 observer(.error(WalletError.notInitialized))
                 return Disposables.create()
@@ -243,7 +238,7 @@ extension EthereumWallet: ERC20BridgeAPI {
                 return Disposables.create()
             }
             wallet.saveERC20Tokens(with: nil, tokensJSONString: jsonData.string, success: {
-                observer(.completed)
+                observer(.success(()))
             }, error: { errorMessage in
                 observer(.error(WalletError.unknown))
             })

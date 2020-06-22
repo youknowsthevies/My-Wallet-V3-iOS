@@ -195,16 +195,16 @@ class EthereumWalletTests: XCTestCase {
         )
         let tokenAccounts: [String: ERC20TokenAccount] = [ PaxToken.metadataKey: paxTokenAccount ]
         
-        let saveTokenAccountsObservable: Observable<Never> = subject
+        let saveTokenAccountsObservable = subject
             .save(erc20TokenAccounts: tokenAccounts)
             .asObservable()
         
         // Act
-        let result: TestableObserver<Never> = scheduler
+        let result: TestableObserver<Void> = scheduler
             .start { saveTokenAccountsObservable }
         
         // Assert
-        guard result.events.count == 1, let value = result.events.first?.value, value.isCompleted else {
+        guard result.events.count == 2, result.events.first?.value != nil, result.events.last!.value.isCompleted else {
             XCTFail("Saving should complete successfully")
             return
         }
@@ -246,7 +246,7 @@ class EthereumWalletTests: XCTestCase {
         let transactionHash = "transactionHash"
         let tokenKey = PaxToken.metadataKey
         
-        let saveTokenAccountsObservable: Observable<Never> = subject
+        let saveTokenAccountsObservable = subject
             .save(
                 transactionMemo: memo,
                 for: transactionHash,
@@ -255,11 +255,11 @@ class EthereumWalletTests: XCTestCase {
             .asObservable()
         
         // Act
-        let result: TestableObserver<Never> = scheduler
+        let result: TestableObserver<Void> = scheduler
             .start { saveTokenAccountsObservable }
         
         // Assert
-        guard result.events.count == 1, let value = result.events.first?.value, value.isCompleted else {
+        guard result.events.count == 2, result.events.first?.value != nil, result.events.last!.value.isCompleted else {
             XCTFail("Saving should complete successfully")
             return
         }

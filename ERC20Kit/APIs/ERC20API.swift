@@ -33,7 +33,7 @@ public protocol ERC20TransactionMemoAPI {
     associatedtype Token: ERC20Token
     
     func memo(for transactionHash: String) -> Single<String?>
-    func save(transactionMemo: String, for transactionHash: String) -> Completable
+    func save(transactionMemo: String, for transactionHash: String) -> Single<Void>
 }
 
 public protocol ERC20WalletAPI {

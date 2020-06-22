@@ -29,8 +29,8 @@ class ERC20BridgeMock: ERC20BridgeAPI {
         return erc20TokenAccountsValue
     }
     
-    var saveERC20TokenAccountsValue: Completable = Completable.empty()
-    func save(erc20TokenAccounts: [String: ERC20TokenAccount]) -> Completable {
+    var saveERC20TokenAccountsValue: Single<Void> = Single.just(())
+    func save(erc20TokenAccounts: [String: ERC20TokenAccount]) -> Single<Void> {
         return saveERC20TokenAccountsValue
     }
     
@@ -46,8 +46,8 @@ class ERC20BridgeMock: ERC20BridgeAPI {
     var lastTransactionMemoSaved: String?
     var lastTransactionHashSaved: String?
     var lastTokenKeySaved: String?
-    var saveTransactionMemoForTransactionHashValue: Completable = Completable.empty()
-    func save(transactionMemo: String, for transactionHash: String, tokenKey: String) -> Completable {
+    var saveTransactionMemoForTransactionHashValue: Single<Void> = Single.just(())
+    func save(transactionMemo: String, for transactionHash: String, tokenKey: String) -> Single<Void> {
         lastTransactionMemoSaved = transactionMemo
         lastTransactionHashSaved = transactionHash
         lastTokenKeySaved = tokenKey

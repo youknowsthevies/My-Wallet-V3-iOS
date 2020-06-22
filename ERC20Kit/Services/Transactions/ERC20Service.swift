@@ -312,7 +312,7 @@ extension ERC20Service: ERC20TransactionMemoAPI {
         )
     }
     
-    public func save(transactionMemo: String, for transactionHash: String) -> Completable {
+    public func save(transactionMemo: String, for transactionHash: String) -> Single<Void> {
         return bridge.save(
             transactionMemo: transactionMemo,
             for: transactionHash,
