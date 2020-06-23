@@ -70,7 +70,6 @@ public final class SettingsService: SettingsServiceAPI {
                     milliseconds: 1000,
                     scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
                 ),
-                flushNotificationName: .logout,
                 fetchNotificationName: .login
             )
         )

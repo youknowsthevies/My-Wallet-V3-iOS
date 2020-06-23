@@ -37,18 +37,27 @@ public struct CachedValueConfiguration {
     let flushNotificationName: Notification.Name?
     let fetchNotificationName: Notification.Name?
     let refreshType: RefreshType
+    let scheduler: SchedulerType
     let fetchPriority: FetchPriority
     let identifier: String?
 
     public init(identifier: String? = nil,
                 refreshType: RefreshType,
+                scheduler: SchedulerType = generateScheduler(),
                 fetchPriority: FetchPriority = .fetchAll,
                 flushNotificationName: Notification.Name? = nil,
                 fetchNotificationName: Notification.Name? = nil) {
         self.identifier = identifier
+        self.scheduler = scheduler
         self.refreshType = refreshType
         self.fetchPriority = fetchPriority
         self.flushNotificationName = flushNotificationName
         self.fetchNotificationName = fetchNotificationName
+    }
+}
+
+extension CachedValueConfiguration {
+    public static func generateScheduler() -> SchedulerType {
+        SerialDispatchQueueScheduler(internalSerialQueueName: "internal-\(UUID().uuidString)")
     }
 }

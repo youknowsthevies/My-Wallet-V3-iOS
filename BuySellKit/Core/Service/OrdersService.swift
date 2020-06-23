@@ -38,7 +38,7 @@ final class OrdersService: OrdersServiceAPI {
         ordersCachedValue.valueSingle
     }
     
-    private let ordersCachedValue = CachedValue<[OrderDetails]>(configuration: .onSubscriptionAndLogin)
+    private let ordersCachedValue = CachedValue<[OrderDetails]>(configuration: .onSubscriptionAndLogin())
 
     // MARK: - Injected
     

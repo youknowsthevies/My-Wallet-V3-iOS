@@ -37,11 +37,13 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
     
     // MARK: - Init
     
-    init(with bridge: Bridge, client: APIClientAPI = APIClient()) {
+    init(with bridge: Bridge, client: APIClientAPI = APIClient(), scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()) {
         self.bridge = bridge
         self.client = client
         
-        self.cachedUnspentOutputs = CachedValue<UnspentOutputs>(configuration: .periodicAndLogin(10))
+        self.cachedUnspentOutputs = CachedValue<UnspentOutputs>(
+            configuration: .periodicAndLogin(10, scheduler: scheduler)
+        )
         
         cachedUnspentOutputs.setFetch { [weak self] () -> Single<UnspentOutputs> in
             guard let self = self else {

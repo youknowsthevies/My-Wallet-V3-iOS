@@ -19,7 +19,7 @@ public final class KYCTiersService: KYCTiersServiceAPI {
         
     // MARK: - Private Properties
     
-    private let cachedTiers = CachedValue<KYC.UserTiers>(configuration: .onSubscriptionAndLogin)
+    private let cachedTiers = CachedValue<KYC.UserTiers>(configuration: .onSubscriptionAndLogin())
     
     // MARK: - Setup
     

@@ -26,7 +26,7 @@ public class CachedValue<Value> {
         case single(() -> Single<Value>)
     }
     
-    private enum StreamState: CustomDebugStringConvertible {
+    enum StreamState: CustomDebugStringConvertible {
                         
         /// The data has not been calculated yet
         case empty
@@ -72,22 +72,22 @@ public class CachedValue<Value> {
             case .flush:
                 return "flush"
             case .invalid(shouldFetch: let shouldFetch):
-                return "invalid(shouldFetch: \(shouldFetch)"
+                return "invalid(shouldFetch: \(shouldFetch))"
             case .stream(let type):
                 switch type {
                 case .none:
                     return "stream: none"
-                case .private:
-                    return "stream: value"
-                case .public:
-                    return "stream: value"
+                case .private(let value):
+                    return "private stream: \(value)"
+                case .public(let value):
+                    return "public stream: \(value)"
                 }
             }
         }
     }
     
     /// The type of the stream - only public streams' values are exposed to external subscribers
-    private enum StreamType {
+    enum StreamType {
         
         /// Stream the value publicly
         case `public`(Value)
@@ -164,6 +164,7 @@ public class CachedValue<Value> {
     /// Streams a value upon each refresh.
     public var valueObservable: Observable<Value> {
         stateRelay
+            .observeOn(configuration.scheduler)
             .do(onSubscribe: { [weak stateRelay] in
                 guard let stateRelay = stateRelay else { return }
                 switch stateRelay.value {
@@ -179,10 +180,16 @@ public class CachedValue<Value> {
                     switch fetch {
                     case .observable:
                         return self.fetchAsObservable()
+                            .catchError { error in
+                                throw error
+                            }
                             .map { _ in StreamType.none }
                     case .single:
                         return self.fetchAsSingle()
                             .asObservable()
+                            .catchError { error in
+                                throw error
+                            }
                             .map { _ in StreamType.none }
                     }
                 }
@@ -199,7 +206,7 @@ public class CachedValue<Value> {
                     if shouldFetch {
                         return fetch()
                     } else {
-                        throw CacheError.fetchFailed
+                        return .just(.none)
                     }
                 case .stream(.private(let value)):
                     return self.refreshControl.shouldRefresh
@@ -229,7 +236,7 @@ public class CachedValue<Value> {
                     /// or `CacheError.fetchFailed` is thrown, make sure to
                     /// stream an invalid element w/o a fetch
                     self.stateRelay.accept(.invalid(shouldFetch: false))
-                    return .just(.none)
+                    throw CacheError.fetchFailed
                 }
             }
             .filter { $0.isPublic }
@@ -243,6 +250,10 @@ public class CachedValue<Value> {
     
     public var fetchValueObservable: Observable<Value> {
         fetchAsObservable()
+    }
+    
+    var innerState: Observable<StreamState> {
+        stateRelay.asObservable()
     }
     
     // MARK: - Private properties
@@ -267,6 +278,7 @@ public class CachedValue<Value> {
         self.configuration = configuration
         refreshControl = CachedValueRefreshControl(configuration: configuration)
         refreshControl.action
+            .observeOn(configuration.scheduler)
             .map { action in
                 switch action {
                 case .fetch:
@@ -284,8 +296,10 @@ public class CachedValue<Value> {
     /// Performs the fetch action and streams the values.
     /// This method is expected to keep streaming values until a termination / disposal event occurs.
     /// Suitable for complex streams throughout the app.
-    public func fetchObservableValue(_ fetch: () -> Observable<Value>) -> Observable<Value> {
+    private func fetchObservableValue(_ fetch: () -> Observable<Value>) -> Observable<Value> {
         fetch()
+            .subscribeOn(configuration.scheduler)
+            .observeOn(configuration.scheduler)
             .do(
                 /// On successful fetch make the relay accept a privately distributed value
                 onNext: { [weak self] value in
@@ -307,8 +321,10 @@ public class CachedValue<Value> {
     /// Performs the fetch action and streams a single value.
     /// This method is expected to stream a single value per subscription.
     /// Suitable simple use streams and use cases.
-    public func fetchSingleValue(_ fetch: () -> Single<Value>) -> Single<Value> {
+    private func fetchSingleValue(_ fetch: () -> Single<Value>) -> Single<Value> {
         fetch()
+            .subscribeOn(configuration.scheduler)
+            .observeOn(configuration.scheduler)
             .do(
                 /// On successful fetch make the relay accept a privately distributed value
                 onSuccess: { [weak self] value in
@@ -396,6 +412,38 @@ private extension ObservableType {
                     weak: object,
                     selector: selector
                 )
+        }
+    }
+}
+
+extension CachedValue.StreamType where Value: Equatable {
+    
+    var debugState: String {
+        switch self {
+        case .none:
+            return "none"
+        case .private(let element):
+            return "private \(element)"
+        case .public(let element):
+            return "public \(element)"
+        }
+    }
+}
+
+extension CachedValue.StreamState where Value: Equatable {
+    
+    var debugState: String {
+        switch self {
+        case .calculating:
+            return "calculating"
+        case .empty:
+            return "empty"
+        case .flush:
+            return "flush"
+        case .invalid(shouldFetch: let shouldFetch):
+            return "invalid(shouldFetch: \(shouldFetch))"
+        case .stream(let type):
+            return type.debugState
         }
     }
 }

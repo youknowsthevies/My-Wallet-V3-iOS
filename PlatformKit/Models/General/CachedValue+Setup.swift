@@ -6,20 +6,23 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import RxSwift
 import ToolKit
 
 extension CachedValueConfiguration {
-    public static var onSubscriptionAndLogin: CachedValueConfiguration {
+    public static func onSubscriptionAndLogin(scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()) -> CachedValueConfiguration {
         .init(
             refreshType: .onSubscription,
+            scheduler: scheduler,
             flushNotificationName: .logout,
             fetchNotificationName: .login
         )
     }
     
-    public static func periodicAndLogin(_ time: TimeInterval) -> CachedValueConfiguration {
+    public static func periodicAndLogin(_ time: TimeInterval, scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()) -> CachedValueConfiguration {
         .init(
             refreshType: .periodic(seconds: time),
+            scheduler: scheduler,
             flushNotificationName: .logout,
             fetchNotificationName: .login
         )

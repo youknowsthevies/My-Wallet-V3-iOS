@@ -17,10 +17,10 @@ import RxTest
 final class CachedValueTests: XCTestCase {
     
     private var disposeBag = DisposeBag()
-    private var scheduler: TestScheduler!
+    private var testScheduler: TestScheduler!
 
     override func setUp() {
-        scheduler = TestScheduler(initialClock: 0)
+        testScheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
     }
     
@@ -113,12 +113,17 @@ final class CachedValueTests: XCTestCase {
     }
 
     func testMixtureOfSubscriptions() {
+        
+        // Arrange
+        
         let expectedResults: [String] = ["expected_result1", "expected_result2", "expected_result3"]
         var index = 0
 
         let configuration = CachedValueConfiguration(
-            refreshType: .onSubscription
+            refreshType: .onSubscription,
+            scheduler: testScheduler
         )
+        
         let cachedValue = CachedValue<String>(configuration: configuration)
 
         cachedValue.setFetch { () -> Single<String> in
@@ -126,55 +131,61 @@ final class CachedValueTests: XCTestCase {
             index += 1
             return Single.just(current)
         }
-
-        var result: [String] = []
-
-        // one time
-        cachedValue.valueObservable
-            .subscribe(
-                onNext: { current in
-                    result.append(current)
-                })
-                .disposed(by: disposeBag)
-
-        // 4 times
-        for index in 1..<expectedResults.count {
-            XCTAssertEqual(
-                try? cachedValue.fetchValue.toBlocking().first(),
-                expectedResults[index]
-            )
-        }
-
-        XCTAssertEqual(result, expectedResults)
-    }
-    
-    func testRecoveryFromError() {
         
+        // Act
+                
+        let observer = testScheduler.createObserver(String.self)
+        
+        cachedValue.valueObservable
+            .subscribe(onNext: { element in
+                observer.onNext(element)
+            })
+            .disposed(by: disposeBag)
+        
+        for _ in 1..<expectedResults.count {
+            cachedValue.fetchValue
+                .subscribe()
+                .disposed(by: disposeBag)
+        }
+        
+        testScheduler.start()
+                    
+        // Assert
+        
+        XCTAssertEqual(observer.events.map { $0.value.element! }, expectedResults)
+    }
+
+    func testRecoveryFromError() {
+
         let expectedValue = "result"
         let expectedError = NSError(domain: "test-error", code: 0, userInfo: nil)
-        var result: Result<String, NSError>!
-        
-        let configuration = CachedValueConfiguration(refreshType: .onSubscription)
+
+        let configuration = CachedValueConfiguration(
+            refreshType: .onSubscription,
+            scheduler: MainScheduler.instance
+        )
         let cachedValue = CachedValue<String>(configuration: configuration)
 
-        result = .failure(expectedError)
+        var result: Result<String, NSError> = .failure(expectedError)
 
         cachedValue.setFetch { () -> Observable<String> in
-            switch result! {
+            switch result {
             case .failure(let error):
                 return Observable.error(error)
             case .success(let element):
                 return Observable.just(element)
             }
         }
+
+        let element = cachedValue.valueObservable.toBlocking().materialize()
         
-        do {
-            let element = try cachedValue.valueObservable.toBlocking().first()!
-            XCTFail("Expected an error to be thrown. Received an element: \(element) instead")
-        } catch {
-            // Okay - an error is expected here
+        switch element {
+        case .completed(elements: let elements):
+            XCTFail("Expected an error to be thrown. Received an element: \(elements) instead")
+        case .failed(elements: _, error: let error):
+            XCTAssertEqual(error as NSError, CachedValue<String>.CacheError.fetchFailed as NSError)
         }
-        
+
         result = .success(expectedValue)
         do {
             let element = try cachedValue.valueObservable.toBlocking().first()!
@@ -182,6 +193,59 @@ final class CachedValueTests: XCTestCase {
         } catch {
             XCTFail("Expected a value to be sent - received an error instead")
         }
+    }
+    
+    // MARK: - State Relay Tests (TODO: Add more tests)
+
+    func testStateRelayOnInitialSubscription() throws {
+        
+        // Arrange
+        
+        typealias StreamState = CachedValue<String>.StreamState
+        
+        let configuration = CachedValueConfiguration(
+            refreshType: .onSubscription,
+            scheduler: testScheduler
+        )
+        
+        let cachedValue = CachedValue<String>(configuration: configuration)
+        
+        let expectedValue = "expected_value"
+        cachedValue.setFetch { Single.just(expectedValue) }
+                
+        // Act
+                
+        let observer = testScheduler.createObserver(StreamState.self)
+        
+        cachedValue.innerState
+            .subscribe(onNext: { state in
+                observer.onNext(state)
+            })
+            .disposed(by: disposeBag)
+        
+        cachedValue.fetchValue
+            .subscribe()
+            .disposed(by: disposeBag)
+                
+        testScheduler.start()
+                
+        // Assert
+
+        let elements = observer.events
+            .map { $0.value.element! }
+            .map { $0.debugState }
+        
+        let expectedElements = [
+                StreamState.empty,
+                StreamState.calculating,
+                StreamState.stream(.private(expectedValue))
+            ]
+            .map { $0.debugState }
+        
+        XCTAssertEqual(
+            elements,
+            expectedElements
+        )
     }
 }
 

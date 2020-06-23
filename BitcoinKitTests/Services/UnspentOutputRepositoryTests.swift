@@ -23,12 +23,12 @@ class UnspentOutputRepositoryTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        scheduler = TestScheduler(initialClock: 0)
+        scheduler = TestScheduler(initialClock: 0, resolution: 0.001, simulateProcessingDelay: false)
         disposeBag = DisposeBag()
         
         bridge = BitcoinWalletBridgeMock()
         client = APIClientMock()
-        subject = UnspentOutputRepository(with: bridge, client: client)
+        subject = UnspentOutputRepository(with: bridge, client: client, scheduler: scheduler)
     }
 
     override func tearDown() {
