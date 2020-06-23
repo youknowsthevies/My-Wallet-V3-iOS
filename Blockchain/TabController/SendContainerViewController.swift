@@ -27,6 +27,8 @@ final class SendContainerViewController: UIViewController {
     func set(asset: CryptoCurrency) {
         currentVC?.remove()
         switch asset {
+        case .algorand:
+            fatalError("Algorand not supported")
         case .bitcoin:
             currentVC = bitcoinVC
             bitcoinVC.assetType = .bitcoin

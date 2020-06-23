@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -11,6 +11,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="WalletActionScreenViewController" customModule="Blockchain" customModuleProvider="target">
             <connections>
                 <outlet property="sendToWallet" destination="FvS-Pq-H4M" id="0Uj-dj-qHh"/>
+                <outlet property="spacerView" destination="fPb-nA-cbi" id="3Uf-Hd-HK7"/>
                 <outlet property="swapButtonView" destination="AL8-1T-uFe" id="525-06-WIo"/>
                 <outlet property="tableView" destination="nww-PH-GTW" id="Y34-4P-e74"/>
                 <outlet property="view" destination="iN0-l3-epB" id="Kun-j3-zEa"/>
@@ -29,10 +30,10 @@
                             <rect key="frame" x="0.0" y="0.0" width="414" height="818"/>
                             <subviews>
                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="dsa-Ed-Qzl">
-                                    <rect key="frame" x="10" y="0.0" width="394" height="632"/>
+                                    <rect key="frame" x="10" y="0.0" width="394" height="624"/>
                                     <subviews>
                                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="nww-PH-GTW" customClass="SelfSizingTableView" customModule="PlatformUIKit">
-                                            <rect key="frame" x="0.0" y="0.0" width="394" height="632"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="394" height="624"/>
                                             <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                             <connections>
                                                 <outlet property="dataSource" destination="-1" id="IJb-IK-ibP"/>
@@ -42,7 +43,7 @@
                                     </subviews>
                                 </stackView>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="b0B-Ru-1El">
-                                    <rect key="frame" x="0.0" y="632" width="414" height="186"/>
+                                    <rect key="frame" x="0.0" y="624" width="414" height="194"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7ZT-qV-IC3">
                                             <rect key="frame" x="0.0" y="1" width="414" height="1"/>
@@ -52,24 +53,31 @@
                                             </constraints>
                                         </view>
                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="jQS-lB-rMe">
-                                            <rect key="frame" x="16" y="10" width="382" height="160"/>
+                                            <rect key="frame" x="16" y="10" width="382" height="168"/>
                                             <subviews>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fPb-nA-cbi">
+                                                    <rect key="frame" x="0.0" y="0.0" width="382" height="0.0"/>
+                                                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" id="tn2-2H-Pv7"/>
+                                                    </constraints>
+                                                </view>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dyP-D6-yib" customClass="ButtonView" customModule="PlatformUIKit">
-                                                    <rect key="frame" x="0.0" y="0.0" width="382" height="48"/>
+                                                    <rect key="frame" x="0.0" y="8" width="382" height="48"/>
                                                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="48" id="gcw-B6-UFb"/>
                                                     </constraints>
                                                 </view>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AL8-1T-uFe" customClass="ButtonView" customModule="PlatformUIKit">
-                                                    <rect key="frame" x="0.0" y="56" width="382" height="48"/>
+                                                    <rect key="frame" x="0.0" y="64" width="382" height="48"/>
                                                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="48" id="HDH-Tv-Qgl"/>
                                                     </constraints>
                                                 </view>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FvS-Pq-H4M" customClass="ButtonView" customModule="PlatformUIKit">
-                                                    <rect key="frame" x="0.0" y="112" width="382" height="48"/>
+                                                    <rect key="frame" x="0.0" y="120" width="382" height="48"/>
                                                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="48" id="kBi-gB-UDF"/>

@@ -31,7 +31,7 @@ extension AnnouncementRecord {
         
         case blockstackAirdropReceived = "announcement-cache-kyc-stx-airdrop-received"
         case identityVerification = "announcement-cache-identity-verification"
-        case pax = "announcement-cache-pax"
+        case algorand = "announcement-cache-algorand"
         case exchange = "announcement-cache-pit"
         case bitpay = "announcement-cache-bitpay"
         case resubmitDocuments = "announcement-cache-resubmit-documents"
@@ -41,12 +41,9 @@ extension AnnouncementRecord {
     enum LegacyKey: String {
         
         case shouldHidePITLinkingCard
-        case hasSeenPAXCard
         
         var key: Key? {
             switch self {
-            case .hasSeenPAXCard:
-                return .pax
             case .shouldHidePITLinkingCard:
                 return .exchange
             }

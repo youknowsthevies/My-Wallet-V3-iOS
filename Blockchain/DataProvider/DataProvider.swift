@@ -7,6 +7,7 @@
 //
 
 import PlatformKit
+import RxRelay
 import RxSwift
 import BitcoinKit
 
@@ -40,12 +41,14 @@ final class DataProvider: DataProviding {
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
          paxServiceProvider: PAXServiceProvider = PAXServiceProvider.shared,
+         algorandServiceProvider: AlgorandServiceProvider = .shared,
          ethereumServiceProvider: ETHServiceProvider = ETHServiceProvider.shared,
          stellarServiceProvider: StellarServiceProvider = StellarServiceProvider.shared,
          bitcoinServiceProvider: BitcoinServiceProvider = BitcoinServiceProvider.shared,
          bitcoinCashServiceProvider: BitcoinCashServiceProvider = BitcoinCashServiceProvider.shared) {
         
         self.activity = ActivityProvider(
+            algorand: algorandServiceProvider.services.activity,
             ether: ethereumServiceProvider.services.activity,
             pax: paxServiceProvider.services.activity,
             stellar: stellarServiceProvider.services.activity,
@@ -54,6 +57,10 @@ final class DataProvider: DataProviding {
         )
         
         self.exchange = ExchangeProvider(
+            algorand: PairExchangeService(
+                cryptoCurrency: .algorand,
+                fiatCurrencyService: fiatCurrencyService
+            ),
             ether: PairExchangeService(
                 cryptoCurrency: .ethereum,
                 fiatCurrencyService: fiatCurrencyService
@@ -75,7 +82,12 @@ final class DataProvider: DataProviding {
                 fiatCurrencyService: fiatCurrencyService
             )
         )
-        
+
+        let algorandHistoricalFiatService = HistoricalFiatPriceService(
+            cryptoCurrency: .algorand,
+            exchangeAPI: exchange[.algorand],
+            fiatCurrencyService: fiatCurrencyService
+        )
         let etherHistoricalFiatService = HistoricalFiatPriceService(
             cryptoCurrency: .ethereum,
             exchangeAPI: exchange[.ethereum],
@@ -103,6 +115,7 @@ final class DataProvider: DataProviding {
         )
         
         self.historicalPrices = HistoricalFiatPriceProvider(
+            algorand: algorandHistoricalFiatService,
             ether: etherHistoricalFiatService,
             pax: paxHistoricalFiatService,
             stellar: stellarHistoricalFiatService,
@@ -120,7 +133,19 @@ final class DataProvider: DataProviding {
             authenticationService: authenticationService,
             featureFetching: featureFetching
         )
-                
+
+        let algorandBalanceFetcher = AssetBalanceFetcher(
+            wallet: AbsentAccountBalanceFetching(cryptoCurrency: .algorand),
+            trading: CustodialCryptoBalanceFetcher(
+                currencyType: .algorand,
+                service: tradingBalanceService
+            ),
+            savings: CustodialCryptoBalanceFetcher(
+                currencyType: .algorand,
+                service: savingsAccountService
+            ),
+            exchange: exchange[.algorand]
+        )
         let etherBalanceFetcher = AssetBalanceFetcher(
             wallet: WalletManager.shared.wallet.ethereum,
             trading: CustodialCryptoBalanceFetcher(
@@ -184,6 +209,7 @@ final class DataProvider: DataProviding {
         )
         
         balance = BalanceProvider(
+            algorand: algorandBalanceFetcher,
             ether: etherBalanceFetcher,
             pax: paxBalanceFetcher,
             stellar: stellarBalanceFetcher,

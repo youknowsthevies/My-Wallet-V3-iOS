@@ -21,8 +21,6 @@ struct AnnouncementPreliminaryData {
     /// Whether the wallet has trades or not
     let hasTrades: Bool
     
-    let hasPaxTransactions: Bool
-    
     let country: CountryData?
             
     /// The authentication type (2FA / standard)
@@ -52,7 +50,6 @@ struct AnnouncementPreliminaryData {
     init(user: NabuUser,
          tiers: KYC.UserTiers,
          hasTrades: Bool,
-         hasPaxTransactions: Bool,
          countries: Countries,
          simpleBuyEventCache: EventCache = ServiceProvider.default.cache,
          authenticatorType: AuthenticatorType,
@@ -61,7 +58,6 @@ struct AnnouncementPreliminaryData {
         self.user = user
         self.tiers = tiers
         self.hasTrades = hasTrades
-        self.hasPaxTransactions = hasPaxTransactions
         self.simpleBuyEventCache = simpleBuyEventCache
         self.authenticatorType = authenticatorType
         self.pendingOrderDetails = pendingOrderDetails

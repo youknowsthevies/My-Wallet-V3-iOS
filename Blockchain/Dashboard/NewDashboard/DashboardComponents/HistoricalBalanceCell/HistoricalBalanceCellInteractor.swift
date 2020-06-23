@@ -21,8 +21,6 @@ final class HistoricalBalanceCellInteractor {
     let balanceInteractor: AssetBalanceViewInteracting
     let cryptoCurrency: CryptoCurrency
     
-    private let disposeBag = DisposeBag()
-    
     // MARK: - Setup
     
     init(cryptoCurrency: CryptoCurrency,
@@ -33,7 +31,6 @@ final class HistoricalBalanceCellInteractor {
             priceService: historicalFiatPriceService,
             cryptoCurrency: cryptoCurrency
         )
-        
         priceInteractor = AssetPriceViewInteractor(
             historicalPriceProvider: historicalFiatPriceService
         )

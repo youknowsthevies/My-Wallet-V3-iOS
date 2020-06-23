@@ -45,7 +45,8 @@ public final class BalanceProvider: BalanceProviding {
                 services[.pax]!.calculationState,
                 services[.stellar]!.calculationState,
                 services[.bitcoin]!.calculationState,
-                services[.bitcoinCash]!.calculationState
+                services[.bitcoinCash]!.calculationState,
+                services[.algorand]!.calculationState
             )
             .map {
                 AssetFiatCryptoBalanceCalculationStates(
@@ -54,7 +55,8 @@ public final class BalanceProvider: BalanceProviding {
                         .pax: $0.1,
                         .stellar: $0.2,
                         .bitcoin: $0.3,
-                        .bitcoinCash: $0.4
+                        .bitcoinCash: $0.4,
+                        .algorand: $0.5
                     ]
                 )
             }
@@ -62,7 +64,7 @@ public final class BalanceProvider: BalanceProviding {
     }
     
     public subscript(currency: CryptoCurrency) -> AssetBalanceFetching {
-        return services[currency]!
+        services[currency]!
     }
     
     // MARK: - Services
@@ -71,11 +73,13 @@ public final class BalanceProvider: BalanceProviding {
     
     // MARK: - Setup
     
-    public init(ether: AssetBalanceFetching,
+    public init(algorand: AssetBalanceFetching,
+                ether: AssetBalanceFetching,
                 pax: AssetBalanceFetching,
                 stellar: AssetBalanceFetching,
                 bitcoin: AssetBalanceFetching,
                 bitcoinCash: AssetBalanceFetching) {
+        services[.algorand] = algorand
         services[.ethereum] = ether
         services[.pax] = pax
         services[.stellar] = stellar

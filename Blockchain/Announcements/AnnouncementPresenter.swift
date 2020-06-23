@@ -141,8 +141,8 @@ final class AnnouncementPresenter {
                 announcement = exchangeLinking(user: preliminaryData.user)
             case .bitpay:
                 announcement = bitpay
-            case .pax:
-                announcement = pax(hasPaxTransactions: preliminaryData.hasPaxTransactions)
+            case .algorand:
+                announcement = algorand
             case .resubmitDocuments:
                 announcement = resubmitDocuments(user: preliminaryData.user)
             case .simpleBuyPendingTransaction:
@@ -290,12 +290,13 @@ extension AnnouncementPresenter {
         )
     }
         
-    /// Computes PAX card announcement
-    private func pax(hasPaxTransactions: Bool) -> Announcement {
-        PAXAnnouncement(
-            hasTransactions: hasPaxTransactions,
+    /// Computes Algorand card announcement
+    private var algorand: Announcement {
+        AlgorandAnnouncement(
             dismiss: hideAnnouncement,
-            action: appCoordinator.switchTabToSwap
+            action: { [weak appCoordinator] in
+                appCoordinator?.handleBuyCrypto()
+            }
         )
     }
     

@@ -17,7 +17,7 @@ final class HistoricalBalanceCellPresenter {
     private typealias AccessibilityId = Accessibility.Identifier.Dashboard.AssetCell
     
     var thumbnail: Driver<ImageViewContent> {
-        return .just(
+        .just(
             .init(
                 imageName: interactor.cryptoCurrency.logoImageName,
                 accessibility: .id("\(AccessibilityId.assetImageView)\(interactor.cryptoCurrency.displayCode)")
@@ -26,7 +26,7 @@ final class HistoricalBalanceCellPresenter {
     }
     
     var name: Driver<LabelContent> {
-        return .just(
+        .just(
             .init(
                 text: interactor.cryptoCurrency.name,
                 font: .main(.semibold, 20),
@@ -41,7 +41,7 @@ final class HistoricalBalanceCellPresenter {
     let balancePresenter: AssetBalanceViewPresenter
     
     var cryptoCurrency: CryptoCurrency {
-        return interactor.cryptoCurrency
+        interactor.cryptoCurrency
     }
     
     private let interactor: HistoricalBalanceCellInteractor

@@ -142,6 +142,8 @@ enum AssetAddressType {
         
         // TODO: In `BlockchainSettings.App`, create a method that receives an enum and returns a swipe address
         switch asset {
+        case .algorand:
+            return []
         case .ethereum:
             guard let swipeAddressForEther = appSettings.swipeAddressForEther else {
                 return []

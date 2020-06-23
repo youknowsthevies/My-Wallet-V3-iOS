@@ -14,16 +14,18 @@ extension CryptoCurrency {
     /// The legacy representation of `CryptoCurrency`
     var legacy: LegacyAssetType {
         switch self {
+        case .algorand:
+            return .algorand
         case .bitcoin:
-            return LegacyAssetType.bitcoin
+            return .bitcoin
         case .bitcoinCash:
-            return LegacyAssetType.bitcoinCash
+            return .bitcoinCash
         case .ethereum:
-            return LegacyAssetType.ether
-        case .stellar:
-            return LegacyAssetType.stellar
+            return .ether
         case .pax:
-            return LegacyAssetType.pax
+            return .pax
+        case .stellar:
+            return .stellar
         }
     }
     
@@ -46,22 +48,15 @@ extension CryptoCurrency {
         switch self {
         case .pax:
             return true
-        case .bitcoin, .bitcoinCash, .ethereum, .stellar:
+        case .algorand, .bitcoin, .bitcoinCash, .ethereum, .stellar:
             return false
         }
     }
 
-    static let all: [CryptoCurrency] = {
-        var allAssets: [CryptoCurrency] = [.bitcoin, .ethereum, .bitcoinCash]
-        if AppFeatureConfigurator.shared.configuration(for: .stellar).isEnabled {
-            allAssets.append(.stellar)
-        }
-        allAssets.append(.pax)
-        return allAssets
-    }()
-    
     init(legacyAssetType: LegacyAssetType) {
         switch legacyAssetType {
+        case .algorand:
+            self = .algorand
         case .bitcoin:
             self = .bitcoin
         case .bitcoinCash:

@@ -229,9 +229,24 @@ final class DashboardDetailsScreenPresenter {
     }
     
     private func setupWalletBalancePresenter() {
-        let walletBalancePresenter = balanceCellPresenter(for: .nonCustodial)
-        walletBalanceStateRelay.accept(.visible(walletBalancePresenter))
-        presentationActionRelay.accept(.show(.nonCustodial))
+        interactor.walletBalanceInteractor.exists
+            .filter { $0 }
+            .take(1) // This to ensure the cell shows only once
+            .map(weak: self) { (self, exists) in
+                guard exists else { return .hidden }
+                return .visible(
+                    self.balanceCellPresenter(for: .nonCustodial)
+                )
+            }
+            .bind(to: walletBalanceStateRelay)
+            .disposed(by: disposeBag)
+
+        walletBalanceStateRelay
+            .filter { $0.isVisible }
+            .mapToVoid()
+            .map { .show(.nonCustodial) }
+            .bind(to: presentationActionRelay)
+            .disposed(by: disposeBag)
     }
         
     private func setupSavingsBalancePresenter() {

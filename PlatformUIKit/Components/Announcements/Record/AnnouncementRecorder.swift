@@ -48,8 +48,7 @@ extension AnnouncementRecorder {
             let category: AnnouncementRecord.Category
         }
         
-        [KeyCategoryPair(legacyKey: .shouldHidePITLinkingCard, category: .oneTime),
-         KeyCategoryPair(legacyKey: .hasSeenPAXCard, category: .oneTime)]
+        [KeyCategoryPair(legacyKey: .shouldHidePITLinkingCard, category: .oneTime)]
             .filter { return userDefaults.value(forKey: $0.legacyKey.rawValue) as? Bool ?? false }
             .filter { $0.legacyKey.key != nil }
             .forEach {

@@ -25,11 +25,13 @@ public final class HistoricalFiatPriceProvider: HistoricalFiatPriceProviding {
     
     // MARK: - Setup
     
-    public init(ether: HistoricalFiatPriceServiceAPI,
+    public init(algorand: HistoricalFiatPriceServiceAPI,
+                ether: HistoricalFiatPriceServiceAPI,
                 pax: HistoricalFiatPriceServiceAPI,
                 stellar: HistoricalFiatPriceServiceAPI,
                 bitcoin: HistoricalFiatPriceServiceAPI,
                 bitcoinCash: HistoricalFiatPriceServiceAPI) {
+        services[.algorand] = algorand
         services[.ethereum] = ether
         services[.pax] = pax
         services[.stellar] = stellar

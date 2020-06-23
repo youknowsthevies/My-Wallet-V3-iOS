@@ -18,6 +18,8 @@ class AssetAddressFactory {
     /// - Returns: the concrete AssetAddress
     static func create(fromAddressString address: String, assetType: CryptoCurrency) -> AssetAddress {
         switch assetType {
+        case .algorand:
+            fatalError("Algorand not supported")
         case .bitcoin:
             return BitcoinAddress(string: address)
         case .bitcoinCash:

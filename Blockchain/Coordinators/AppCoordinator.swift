@@ -453,6 +453,8 @@ extension AppCoordinator: TabSwapping {
     
     func switchToActivity(currency: CryptoCurrency) {
         switch currency {
+        case .algorand:
+            tabControllerManager.showTransactionsAlgorand()
         case .bitcoin:
             tabControllerManager.showTransactionsBitcoin()
         case .bitcoinCash:

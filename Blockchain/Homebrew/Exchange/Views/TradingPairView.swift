@@ -183,39 +183,7 @@ class TradingPairView: NibBasedView {
 }
 
 extension TradingPairView {
-    
-    static func exchangeLockedModel(for trade: Trade) -> Model {
-        let fromAsset = trade.pair.from
-        let toAsset = trade.pair.to
 
-        // TODO: Some of the data below is placeholder data
-        // and will be adjusted once this is hooked up with a live
-        // API. In the mean time, this demonstrates how the Model
-        // is built and how it is to be used for the exchangeLocked screen
-        let transitionUpdate = TradingTransitionUpdate(
-            transitions: [.swapImage(#imageLiteral(resourceName: "trading-pair-arrow")),
-                          .images(left: fromAsset.whiteImageSmall, right: toAsset.whiteImageSmall),
-                          .titles(left: "123 BTC", right: "123 ETH")
-            ],
-            transition: .none
-        )
-        
-        let presentationUpdate = TradingPresentationUpdate(
-            animations: [
-                .backgroundColors(left: fromAsset.brandColor, right: toAsset.brandColor),
-                .swapTintColor(#colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)),
-                .titleColor(#colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0))
-            ],
-            animation: .none
-        )
-        
-        let model = Model(
-            transitionUpdate: transitionUpdate,
-            presentationUpdate: presentationUpdate
-        )
-        return model
-    }
-    
     static func confirmationModel(for conversion: Conversion) -> Model {
         guard let pair = TradingPair(string: conversion.quote.pair) else {
             Logger.shared.error("Couldn't create trading pair from conversion")

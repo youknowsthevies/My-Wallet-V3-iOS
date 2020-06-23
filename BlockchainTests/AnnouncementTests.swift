@@ -17,10 +17,9 @@ final class AnnouncementTests: XCTestCase {
 
     // MARK: PAX
     
-    func testPaxAnnouncementShows() {
+    func testAlgorandAnnouncementShows() {
         let cache = MemoryCacheSuite()
-        let announcement = PAXAnnouncement(
-            hasTransactions: false,
+        let announcement = AlgorandAnnouncement(
             cacheSuite: cache,
             dismiss: {},
             action: {}

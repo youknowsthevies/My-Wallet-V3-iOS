@@ -35,6 +35,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
     private let custodyWithdrawalRouter: CustodyWithdrawalRouterAPI
     private let dataProviding: DataProviding
     private var currency: CryptoCurrency!
+    private let tabSwapping: TabSwapping
     private let disposeBag = DisposeBag()
     
     init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
@@ -42,13 +43,15 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
          dataProviding: DataProviding = DataProvider.default,
          simpleBuyAPI: ServiceProviderAPI = ServiceProvider.default,
          custodyWithdrawalRouter: CustodyWithdrawalRouterAPI = CustodyWithdrawalRouter(),
-         backupRouterAPI: BackupRouterAPI) {
+         backupRouterAPI: BackupRouterAPI,
+         tabSwapping: TabSwapping) {
         self.custodyWithdrawalRouter = custodyWithdrawalRouter
         self.appSettings = appSettings
         self.dataProviding = dataProviding
         self.backupRouterAPI = backupRouterAPI
         self.simpleBuyAPI = simpleBuyAPI
         self.topMostViewControllerProvider = topMostViewControllerProvider
+        self.tabSwapping = tabSwapping
         
         self.backupRouterAPI
             .completionRelay
@@ -102,6 +105,8 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
             }
         case .send:
             showSendCustody()
+        case .activity:
+            showActivityScreen()
         case .withdrawalAfterBackup:
             /// `Backup` has already been dismissed as `Backup`
             /// has ended. `CustodyActionScreen` has been dismissed
@@ -131,7 +136,15 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
         controller.modalPresentationStyle = .custom
         topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
     }
-    
+
+    private func showActivityScreen() {
+        dismissTopMost { [weak self] in
+            guard let self = self else { return }
+            self.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
+            self.tabSwapping.switchToActivity(currency: self.currency)
+        }
+    }
+
     private func showIntroductionScreen() {
         let presenter = CustodyInformationScreenPresenter(stateService: stateService)
         let controller = CustodyInformationViewController(presenter: presenter)

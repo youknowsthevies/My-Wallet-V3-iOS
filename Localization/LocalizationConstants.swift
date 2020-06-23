@@ -1518,18 +1518,18 @@ public enum LocalizationConstants {
                 comment: "Finish identity verification announcement card CTA button title"
             )
         }
-        public struct Pax {
+        public struct Algorand {
             public static let title = NSLocalizedString(
-                "Digital US Dollar",
-                comment: "USD-D announcement card title"
+                "Say Hello to Algorand!",
+                comment: "Algorand announcement card title"
             )
             public static let description = NSLocalizedString(
-                "Introducing USD Digital, a safe and stable crypto asset you can use to store value. 1 USD-D = 1 USD.",
-                comment: "USD-D announcement card description"
+                "Algorand is a scalable, secure and decentralized digital currency and transactions platform.",
+                comment: "Algorand announcement card description"
             )
             public static let ctaButton = NSLocalizedString(
-                "Get USD Digital",
-                comment: "USD-D announcement card CTA button title"
+                "Buy Algorand",
+                comment: "Algorand announcement card CTA button title"
             )
         }
         public struct Exchange {

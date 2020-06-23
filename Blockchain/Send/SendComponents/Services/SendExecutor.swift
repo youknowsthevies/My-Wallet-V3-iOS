@@ -41,7 +41,7 @@ final class SendExecutor: SendExecuting {
             ethereumService.fetchHistoryIfNeeded
                 .subscribe()
                 .disposed(by: disposeBag)
-        case .bitcoin, .bitcoinCash, .stellar:
+        case .algorand, .bitcoin, .bitcoinCash, .stellar:
             fatalError("assets do not support the new send logic")
         }
     }
@@ -50,7 +50,7 @@ final class SendExecutor: SendExecuting {
         switch asset {
         case .ethereum:
             return send(ether: value, to: address)
-        case .bitcoin, .bitcoinCash, .pax, .stellar:
+        case .algorand, .bitcoin, .bitcoinCash, .pax, .stellar:
             fatalError("assets do not support the new send logic")
         }
     }

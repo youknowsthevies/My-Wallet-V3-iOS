@@ -30,7 +30,7 @@ extension BlockchainAPI {
 
     // TODO: Activity: Can be removed with old activity.
     @available(swift, obsoleted: 1.0, message: "Use transactionDetailURL(for:cryptoCurrency:) instead")
-    @objc func transactionDetailURL(for transactionHash: String, assetType: LegacyCryptoCurrency) -> String {
+    @objc func transactionDetailURL(for transactionHash: String, assetType: LegacyCryptoCurrency) -> String? {
         transactionDetailURL(for: transactionHash, cryptoCurrency: assetType.value)
     }
 
@@ -39,8 +39,10 @@ extension BlockchainAPI {
     /// - Parameter transactionHash: the hash of the transaction
     /// - Parameter cryptoCurrency: the `CryptoCurrency`
     /// - Returns: the URL for the transaction detail
-    func transactionDetailURL(for transactionHash: String, cryptoCurrency: CryptoCurrency) -> String {
+    func transactionDetailURL(for transactionHash: String, cryptoCurrency: CryptoCurrency) -> String? {
         switch cryptoCurrency {
+        case .algorand:
+            return nil
         case .bitcoin:
             return "\(bitcoinExplorerUrl)/tx/\(transactionHash)"
         case .ethereum:

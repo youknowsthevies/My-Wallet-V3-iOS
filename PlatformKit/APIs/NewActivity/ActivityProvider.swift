@@ -34,11 +34,13 @@ public final class ActivityProvider: ActivityProviding {
     
     // MARK: - Setup
     
-    public init(ether: ActivityItemEventServiceAPI,
+    public init(algorand: ActivityItemEventServiceAPI,
+                ether: ActivityItemEventServiceAPI,
                 pax: ActivityItemEventServiceAPI,
                 stellar: ActivityItemEventServiceAPI,
                 bitcoin: ActivityItemEventServiceAPI,
                 bitcoinCash: ActivityItemEventServiceAPI) {
+        services[.algorand] = algorand
         services[.ethereum] = ether
         services[.pax] = pax
         services[.stellar] = stellar
@@ -52,7 +54,8 @@ public final class ActivityProvider: ActivityProviding {
             services[.pax]!.buy.state,
             services[.stellar]!.buy.state,
             services[.bitcoin]!.buy.state,
-            services[.bitcoinCash]!.buy.state
+            services[.bitcoinCash]!.buy.state,
+            services[.algorand]!.buy.state
         )
         .map {
             ActivityItemEventsLoadingStates(
@@ -61,7 +64,8 @@ public final class ActivityProvider: ActivityProviding {
                     .pax: $0.1,
                     .stellar: $0.2,
                     .bitcoin: $0.3,
-                    .bitcoinCash: $0.4
+                    .bitcoinCash: $0.4,
+                    .algorand: $0.5
                 ]
             )
         }

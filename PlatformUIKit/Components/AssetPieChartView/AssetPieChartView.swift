@@ -21,8 +21,8 @@ public final class AssetPieChartView: UIView {
     /// because the view should be compatible with queueing
     /// mechanism.
     public var presenter: AssetPieChartPresenter! {
+        willSet { disposeBag = DisposeBag() }
         didSet {
-            disposeBag = DisposeBag()
             guard let presenter = presenter else { return }
             presenter.state
                 .compactMap { $0.value }

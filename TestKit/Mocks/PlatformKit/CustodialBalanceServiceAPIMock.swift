@@ -10,8 +10,8 @@ import PlatformKit
 import RxSwift
 
 class TradingBalanceServiceAPIMock: TradingBalanceServiceAPI {
-    var underlyingCustodialBalance: CustodialAccountBalanceState<TradingAccountBalance> = .absent
-    func balance(for crypto: CryptoCurrency) -> Single<CustodialAccountBalanceState<TradingAccountBalance>> {
+    var underlyingCustodialBalance: AccountBalanceState<TradingAccountBalance> = .absent
+    func balance(for crypto: CryptoCurrency) -> Single<AccountBalanceState<TradingAccountBalance>> {
         return .just(underlyingCustodialBalance)
     }
 }

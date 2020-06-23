@@ -15,8 +15,8 @@ final class HistoricalBalanceTableViewCell: UITableViewCell {
     
     /// Presenter should be injected
     var presenter: HistoricalBalanceCellPresenter! {
+        willSet { disposeBag = DisposeBag() }
         didSet {
-            disposeBag = DisposeBag()
             if let presenter = presenter {
                 assetSparklineView.presenter = presenter.sparklinePresenter
                 assetPriceView.presenter = presenter.pricePresenter

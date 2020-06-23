@@ -65,7 +65,7 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
     // MARK: - Setup
     
     init(using interactor: WalletActionScreenInteracting,
-         stateService: RoutingNextStateEmitterAPI,
+         stateService: CustodyActionStateServiceAPI,
          analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
         self.analyticsRecorder = analyticsRecorder
         self.interactor = interactor
@@ -93,22 +93,28 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
             )
         )
         
-        activityButtonVisibilityRelay.accept(!interactor.balanceType.isCustodial ? .visible : .hidden)
-        swapButtonVisibilityRelay.accept(!interactor.balanceType.isCustodial ? .visible : .hidden)
-        sendToWalletVisibilityRelay.accept(interactor.balanceType.isTrading ? .visible : .hidden)
-        
         swapButtonViewModel = .primary(with: "")
-        activityButtonViewModel = .secondary(with: "")
-        
+        activityButtonViewModel = .secondary(with: LocalizationConstants.DashboardDetails.viewActivity)
         sendToWalletViewModel = .primary(with: LocalizationConstants.DashboardDetails.sendToWallet)
+
         sendToWalletViewModel.tapRelay
             .bind(to: stateService.nextRelay)
             .disposed(by: disposeBag)
-        
         sendToWalletViewModel.tapRelay
             .map { _ in AnalyticsEvent.sbTradingWalletClicked(asset: interactor.currency) }
             .bind(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
+
+        activityButtonViewModel.tapRelay
+            .bind(to: stateService.activityRelay)
+            .disposed(by: disposeBag)
+
+        let isCustodial = interactor.balanceType.isCustodial
+        let isTrading = interactor.balanceType.isTrading
+        let isSavings = interactor.balanceType.isSavings
+        activityButtonVisibilityRelay.accept(!isSavings ? .visible : .hidden)
+        swapButtonVisibilityRelay.accept(!isCustodial ? .visible : .hidden)
+        sendToWalletVisibilityRelay.accept(isTrading && currency.hasNonCustodialSupport ? .visible : .hidden)
     }
 }
 

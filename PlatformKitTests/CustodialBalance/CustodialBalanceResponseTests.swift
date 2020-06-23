@@ -14,8 +14,8 @@ class CustodialBalanceResponseTests: XCTestCase {
     func testDecodable() {
         let result: CustodialBalanceResponse! = CustodialBalanceResponse.mock(json: CustodialBalanceResponse.mockJson)
         XCTAssertNotNil(result, "CustodialBalanceResponse should exist")
-        XCTAssertNotNil(result.eth, "CustodialBalanceResponse.eth should exist")
-        XCTAssertNotNil(result.btc, "CustodialBalanceResponse.btc should exist")
+        XCTAssertNotNil(result[CryptoCurrency.ethereum], "CustodialBalanceResponse.eth should exist")
+        XCTAssertNotNil(result[CryptoCurrency.bitcoin], "CustodialBalanceResponse.btc should exist")
     }
 }
 

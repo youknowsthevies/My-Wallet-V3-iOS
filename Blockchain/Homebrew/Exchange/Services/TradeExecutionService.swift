@@ -140,6 +140,8 @@ class TradeExecutionService: TradeExecutionAPI {
     
     func validateVolume(_ volume: CryptoValue, for assetType: CryptoCurrency) -> Single<TransactionValidationResult> {
         switch assetType {
+        case .algorand:
+            fatalError("Algorand not supported")
         case .stellar:
             return validateXLM(volume: volume)
         case .pax:
@@ -379,7 +381,7 @@ class TradeExecutionService: TradeExecutionAPI {
                     case .ethereum:
                         orderTransactionLegacy.fees = ethereumFee.priorityGweiValue
                         orderTransactionLegacy.gasLimit = String(ethereumFee.gasLimit)
-                    case .stellar, .pax:
+                    case .stellar, .pax, .algorand:
                         break
                     }
                     
@@ -697,7 +699,7 @@ fileprivate extension TradeExecutionService {
                 case .ethereum:
                     orderTransactionLegacy.fees = ethereumFee.priorityGweiValue
                     orderTransactionLegacy.gasLimit = String(ethereumFee.gasLimit)
-                case .stellar, .pax:
+                case .stellar, .pax, .algorand:
                     break
                 }
                 

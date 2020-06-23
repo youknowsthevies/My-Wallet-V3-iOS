@@ -66,7 +66,8 @@ final class ReceiveCryptoViewModelProvider {
 
     func provide(for cryptoCurrency: CryptoCurrency) -> ReceiveCryptoViewModelProtocol? {
         switch cryptoCurrency {
-        case .bitcoin,
+        case .algorand,
+             .bitcoin,
              .bitcoinCash:
             Logger.shared.warning("Not supported for \(cryptoCurrency)")
             return nil
@@ -106,7 +107,7 @@ final class ReceiveCryptoViewModelProvider {
 extension ReceiveCryptoViewController {
     @objc class func make(for legacyAssetType: LegacyAssetType) -> ReceiveCryptoViewController {
         let receiveViewController = ReceiveCryptoViewController.makeFromStoryboard()
-        let crypto = CryptoCurrency(from: legacyAssetType)
+        let crypto = CryptoCurrency(legacyAssetType: legacyAssetType)
         receiveViewController.viewModel = ReceiveCryptoViewModelProvider.shared.provide(for: crypto)
         receiveViewController.use(eventRecorder: AnalyticsEventRecorder.shared)
         return receiveViewController
@@ -115,22 +116,5 @@ extension ReceiveCryptoViewController {
     @objc func legacyAssetType() -> LegacyAssetType {
         // Can't return an optional LegacyAssetType in Objective-C
         return viewModel?.cryptoCurrency.legacy ?? LegacyAssetType.bitcoin
-    }
-}
-
-extension CryptoCurrency {
-    init(from legacyAssetType: LegacyAssetType) {
-        switch legacyAssetType {
-        case .bitcoin:
-            self = CryptoCurrency.bitcoin
-        case .bitcoinCash:
-            self = CryptoCurrency.bitcoinCash
-        case .ether:
-            self = CryptoCurrency.ethereum
-        case .stellar:
-            self = CryptoCurrency.stellar
-        case .pax:
-            self = CryptoCurrency.pax
-        }
     }
 }

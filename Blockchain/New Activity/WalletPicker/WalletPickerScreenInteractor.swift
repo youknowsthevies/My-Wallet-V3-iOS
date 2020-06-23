@@ -31,25 +31,34 @@ final class WalletPickerCellInteractorProvider {
     }
     
     private func interactors(for currency: CryptoCurrency,
-                        balanceFetching: AssetBalanceFetching) -> Observable<[WalletPickerCellInteractor]> {
-           balanceFetching
-               .trading
-               .isFunded
-               .map { isFunded -> [CurrentBalanceCellInteractor] in
-                   let custodial = CurrentBalanceCellInteractor(
-                       balanceFetching: balanceFetching,
-                       balanceType: .custodial(.trading)
-                   )
-                   let nonCustodial = CurrentBalanceCellInteractor(
-                       balanceFetching: balanceFetching,
-                       balanceType: .nonCustodial
-                   )
-                   return isFunded ? [nonCustodial, custodial] : [nonCustodial]
-               }
-               .map { interactors in
-                   interactors.map { .balance($0, currency) }
-               }
-       }
+                             balanceFetching: AssetBalanceFetching) -> Observable<[WalletPickerCellInteractor]> {
+        balanceFetching
+            .trading
+            .isFunded
+            .map { isFunded -> [CurrentBalanceCellInteractor] in
+                var result: [CurrentBalanceCellInteractor] = []
+                if currency.hasNonCustodialSupport {
+                    result.append(
+                        CurrentBalanceCellInteractor(
+                            balanceFetching: balanceFetching,
+                            balanceType: .nonCustodial
+                        )
+                    )
+                }
+                if isFunded {
+                    result.append(
+                        CurrentBalanceCellInteractor(
+                            balanceFetching: balanceFetching,
+                            balanceType: .custodial(.trading)
+                        )
+                    )
+                }
+                return result
+            }
+            .map { interactors in
+                interactors.map { .balance($0, currency) }
+            }
+    }
 }
 
 final class WalletPickerScreenInteractor {
@@ -63,14 +72,19 @@ final class WalletPickerScreenInteractor {
     }
     
     private var balanceCellInteractors: Observable<[WalletPickerCellInteractor]> {
-        Observable.combineLatest(
-            providers[.ethereum]!.interactors,
-            providers[.bitcoin]!.interactors,
-            providers[.bitcoinCash]!.interactors,
-            providers[.pax]!.interactors,
-            providers[.stellar]!.interactors
-        )
-        .map { $0.0 + $0.1 + $0.2 + $0.3 + $0.4 }
+        Observable
+            .combineLatest(
+                providers[.ethereum]!.interactors,
+                providers[.bitcoin]!.interactors,
+                providers[.bitcoinCash]!.interactors,
+                providers[.pax]!.interactors,
+                providers[.stellar]!.interactors,
+                providers[.algorand]!.interactors
+            )
+            .map { arg in
+                let (ethereum, bitcoin, bitcoinCash, pax, stellar, algorand) = arg
+                return ethereum + bitcoin + bitcoinCash + pax + stellar + algorand
+            }
     }
     
     private var totalWalletBalanceInteractor: Observable<[WalletPickerCellInteractor]> {
@@ -88,6 +102,7 @@ final class WalletPickerScreenInteractor {
     private let disposeBag = DisposeBag()
     
     init(balanceProviding: BalanceProviding,
+         algorand: WalletPickerCellInteractorProvider,
          ether: WalletPickerCellInteractorProvider,
          pax: WalletPickerCellInteractorProvider,
          stellar: WalletPickerCellInteractorProvider,
@@ -96,6 +111,7 @@ final class WalletPickerScreenInteractor {
          selectionService: WalletPickerSelectionServiceAPI) {
         self.balanceProviding = balanceProviding
         self.selectionService = selectionService
+        providers[.algorand] = algorand
         providers[.ethereum] = ether
         providers[.pax] = pax
         providers[.stellar] = stellar

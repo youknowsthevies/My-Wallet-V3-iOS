@@ -97,6 +97,8 @@ public extension CryptoCurrency {
             return 1555060318
         case .stellar:
             return 1525716000
+        case .algorand:
+            return 1560211225
         }
     }
 }

@@ -26,12 +26,16 @@ protocol CustodyActionStateReceiverServiceAPI: class {
     var action: Observable<RoutingAction<CustodyActionState>> { get }
 }
 
+protocol CustodyActivityEmitterAPI: class {
+    var activityRelay: PublishRelay<Void> { get }
+}
+
 typealias CustodyActionStateServiceAPI = CustodyActionStateReceiverServiceAPI &
                                          RoutingNextStateEmitterAPI &
+                                         CustodyActivityEmitterAPI &
                                          RoutingPreviousStateEmitterAPI
 
 final class CustodyActionStateService: CustodyActionStateServiceAPI {
-    
     typealias State = CustodyActionState
     typealias Action = RoutingAction<State>
 
@@ -90,12 +94,13 @@ final class CustodyActionStateService: CustodyActionStateServiceAPI {
     }
     
     var action: Observable<Action> {
-        return actionRelay
+        actionRelay
             .observeOn(MainScheduler.instance)
     }
     
     let nextRelay = PublishRelay<Void>()
     let previousRelay = PublishRelay<Void>()
+    let activityRelay = PublishRelay<Void>()
     
     private let statesRelay = BehaviorRelay<States>(value: .start)
     private let actionRelay = PublishRelay<Action>()
@@ -120,6 +125,14 @@ final class CustodyActionStateService: CustodyActionStateServiceAPI {
             .observeOn(MainScheduler.instance)
             .bind(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
+
+        activityRelay
+            .observeOn(MainScheduler.instance)
+            .bind(weak: self) { (self) in
+                let nextStates = self.statesRelay.value.states(byAppending: .activity)
+                self.apply(action: .next(.activity), states: nextStates)
+            }
+            .disposed(by: disposeBag)
     }
     
     private func next() {
@@ -136,6 +149,9 @@ final class CustodyActionStateService: CustodyActionStateServiceAPI {
             action = .next(state)
         case .backupAfterIntroduction, .backup:
             state = wallet.isRecoveryPhraseVerified() ? .withdrawalAfterBackup : .end
+            action = .next(state)
+        case .activity:
+            state = .end
             action = .next(state)
         case .send:
             state = hasShownCustodyIntroductionScreen ? .backup : .introduction

@@ -19,7 +19,8 @@ extension UIColor {
     static let blockstackBackground = #colorLiteral(red: 0.957, green: 0.957, blue: 0.996, alpha: 1)
 
     // Crypto
-    
+
+    static let algo = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1.0)
     static let btc = #colorLiteral(red: 1.00, green: 0.61, blue: 0.13, alpha: 1.0)
     static let eth = #colorLiteral(red: 0.28, green: 0.23, blue: 0.80, alpha: 1.0)
     static let bch = #colorLiteral(red: 0.55, green: 0.76, blue: 0.32, alpha: 1.0)

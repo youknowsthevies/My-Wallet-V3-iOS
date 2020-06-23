@@ -26,6 +26,9 @@ enum CustodyActionState {
     
     /// The recovery phrase screen
     case send
+
+    /// Route to activity
+    case activity
     
     /// The withdrawal custodial funds screen
     case withdrawal

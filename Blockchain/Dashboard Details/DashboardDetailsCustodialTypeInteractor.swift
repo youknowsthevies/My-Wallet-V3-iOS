@@ -1,15 +1,14 @@
 //
-//  DashboardDetailsCellTypePresenter.swift
+//  DashboardDetailsCustodialTypeInteractor.swift
 //  Blockchain
 //
 //  Created by AlexM on 2/14/20.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import PlatformKit
-import PlatformUIKit
+import RxRelay
+import RxSwift
 
 final class DashboardDetailsCustodialTypeInteractor {
 

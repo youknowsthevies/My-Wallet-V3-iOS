@@ -26,7 +26,6 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     private let dataRepository: BlockchainDataRepository
     private let infoService: GeneralInformationService
     private let exchangeService: ExchangeService
-    private let paxTransactionService: AnyERC20HistoricalTransactionService<PaxToken>
     private let repository: AuthenticatorRepositoryAPI
     private let simpleBuyServiceProvider: ServiceProviderAPI
 
@@ -44,7 +43,6 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             .take(1)
             .asSingle()
         let countries = infoService.countries
-        let hasPaxTransactions = paxTransactionService.hasTransactions
         let hasTrades = exchangeService.hasExecutedTrades()
         let simpleBuyOrderDetails = simpleBuyServiceProvider
             .pendingOrderDetails
@@ -59,19 +57,17 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             .zip(nabuUser,
                  tiers,
                  hasTrades,
-                 hasPaxTransactions,
                  countries,
                  repository.authenticatorType,
                  Single.zip(isSimpleBuyAvailable, simpleBuyOrderDetails))
             .subscribeOn(SerialDispatchQueueScheduler(internalSerialQueueName: dispatchQueueName))
             .observeOn(MainScheduler.instance)
             .map { (arg) -> AnnouncementPreliminaryData in
-                let (user, tiers, hasTrades, hasPaxTransactions, countries, authenticatorType, (isSimpleBuyAvailable, pendingOrderDetails)) = arg
+                let (user, tiers, hasTrades, countries, authenticatorType, (isSimpleBuyAvailable, pendingOrderDetails)) = arg
                 return AnnouncementPreliminaryData(
                     user: user,
                     tiers: tiers,
                     hasTrades: hasTrades,
-                    hasPaxTransactions: hasPaxTransactions,
                     countries: countries,
                     authenticatorType: authenticatorType,
                     pendingOrderDetails: pendingOrderDetails,
@@ -84,7 +80,6 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     
     init(repository: AuthenticatorRepositoryAPI = WalletManager.shared.repository,
          wallet: WalletProtocol = WalletManager.shared.wallet,
-         ethereumWallet: EthereumWalletBridgeAPI = WalletManager.shared.wallet.ethereum,
          dataRepository: BlockchainDataRepository = .shared,
          exchangeService: ExchangeService = .shared,
          infoService: GeneralInformationService = UserInformationServiceProvider.default.general,
@@ -96,8 +91,5 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         self.infoService = infoService
         self.exchangeService = exchangeService
         self.simpleBuyServiceProvider = simpleBuyServiceProvider
-        // TODO: Move this into a difference service that aggregates this logic
-        // for all assets and utilize it in other flows (dashboard, send, swap, activity).
-        self.paxTransactionService = AnyERC20HistoricalTransactionService<PaxToken>(bridge: ethereumWallet)
     }
 }

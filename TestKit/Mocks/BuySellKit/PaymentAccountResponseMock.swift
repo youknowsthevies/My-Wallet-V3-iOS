@@ -23,11 +23,14 @@ extension PaymentAccountResponse {
 
 extension CustodialBalanceResponse {
     static let fullMock = CustodialBalanceResponse(
-        btc: Balance(available: "0", pending: "0"),
-        bch: Balance(available: "0", pending: "0"),
-        eth: Balance(available: "200000", pending: "20000"),
-        pax: Balance(available: "0", pending: "0"),
-        xlm: Balance(available: "0", pending: "0")
+        balances: [
+            "BTC": Balance(available: "0", pending: "0"),
+            "BCH": Balance(available: "0", pending: "0"),
+            "ETH": Balance(available: "200000", pending: "20000"),
+            "PAX": Balance(available: "0", pending: "0"),
+            "XLM": Balance(available: "0", pending: "0"),
+            "ALGO": Balance(available: "0", pending: "0")
+        ]
     )
 }
 

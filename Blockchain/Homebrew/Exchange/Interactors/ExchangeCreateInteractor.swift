@@ -420,6 +420,8 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
     
     private func estimatedFeeForCurrency(_ cryptoCurrency: CryptoCurrency) -> Observable<CryptoValue> {
         switch cryptoCurrency {
+        case .algorand:
+            return .just(.zero(assetType: .algorand))
         case .bitcoin:
             return feeServiceAPI.bitcoin.asObservable().map { return $0.priority }
         case .bitcoinCash:

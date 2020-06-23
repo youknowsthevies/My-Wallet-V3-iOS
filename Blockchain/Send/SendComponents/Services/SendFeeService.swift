@@ -33,7 +33,7 @@ final class SendFeeService: SendFeeServicing {
         switch asset {
         case .ethereum:
             fee = etherFee
-        case .bitcoin, .bitcoinCash, .pax, .stellar:
+        case .algorand, .bitcoin, .bitcoinCash, .pax, .stellar:
             fatalError("\(#function) does not support \(asset.name)")
         }
         return Observable

@@ -19,7 +19,7 @@ public protocol ExchangeProviding: class {
 public final class ExchangeProvider: ExchangeProviding {
     
     public subscript(currency: CryptoCurrency) -> PairExchangeServiceAPI {
-        return services[currency]!
+        services[currency]!
     }
     
     // MARK: - Services
@@ -28,11 +28,13 @@ public final class ExchangeProvider: ExchangeProviding {
     
     // MARK: - Setup
     
-    public init(ether: PairExchangeServiceAPI,
+    public init(algorand: PairExchangeServiceAPI,
+                ether: PairExchangeServiceAPI,
                 pax: PairExchangeServiceAPI,
                 stellar: PairExchangeServiceAPI,
                 bitcoin: PairExchangeServiceAPI,
                 bitcoinCash: PairExchangeServiceAPI) {
+        services[.algorand] = algorand
         services[.ethereum] = ether
         services[.pax] = pax
         services[.stellar] = stellar

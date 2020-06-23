@@ -43,12 +43,10 @@ struct MockSendServiceContainer: SendServiceContaining {
         case .ethereum, .pax:
             sourceAccountProvider = EtherSendSourceAccountProvider()
             self.balance = MockAccountBalanceFetcher(expectedBalance: balance)
-        case .bitcoin, .bitcoinCash, .stellar:
+        case .algorand, .bitcoin, .bitcoinCash, .stellar:
             fatalError("\(#function) is not implemented for \(asset)")
         }
     }
     
-    func clean() {
-        // TODO:
-    }
+    func clean() { }
 }

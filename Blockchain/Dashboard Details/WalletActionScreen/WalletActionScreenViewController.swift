@@ -7,6 +7,7 @@
 //
 
 import PlatformUIKit
+import RxCocoa
 import RxSwift
 
 final class WalletActionScreenViewController: UIViewController {
@@ -21,7 +22,8 @@ final class WalletActionScreenViewController: UIViewController {
     @IBOutlet private var viewActivityButtonView: ButtonView!
     @IBOutlet private var sendToWallet: ButtonView!
     @IBOutlet private var tableView: SelfSizingTableView!
-    
+    @IBOutlet private var spacerView: UIView!
+
     // MARK: - Injected
     
     private let presenter: WalletActionScreenPresenting
@@ -33,9 +35,8 @@ final class WalletActionScreenViewController: UIViewController {
         super.init(nibName: WalletActionScreenViewController.objectName, bundle: nil)
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { nil }
 
     // MARK: - Lifecycle
     
@@ -45,7 +46,18 @@ final class WalletActionScreenViewController: UIViewController {
         sendToWallet.viewModel = presenter.sendToWalletViewModel
         viewActivityButtonView.viewModel = presenter.activityButtonViewModel
         swapButtonView.viewModel = presenter.swapButtonViewModel
-        
+
+        Driver
+            .combineLatest(
+                presenter.sendToWalletVisibility,
+                presenter.activityButtonVisibility,
+                presenter.swapButtonVisibility
+            )
+            .map { $0.isHidden && $1.isHidden && $2.isHidden }
+            .map { !$0 }
+            .drive(spacerView.rx.isHidden)
+            .disposed(by: disposeBag)
+
         presenter.sendToWalletVisibility
             .map { $0.isHidden }
             .drive(sendToWallet.rx.isHidden)
@@ -78,7 +90,7 @@ final class WalletActionScreenViewController: UIViewController {
 extension WalletActionScreenViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
-        return presenter.cellCount
+        presenter.cellCount
     }
     
     func tableView(_ tableView: UITableView,

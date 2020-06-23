@@ -34,11 +34,20 @@ public enum BalanceType: Hashable {
             return false
         }
     }
-    
+
     public var isTrading: Bool {
         switch self {
         case .custodial(let type):
             return type == .trading
+        case .nonCustodial:
+            return false
+        }
+    }
+
+    public var isSavings: Bool {
+        switch self {
+        case .custodial(let type):
+            return type == .savings
         case .nonCustodial:
             return false
         }

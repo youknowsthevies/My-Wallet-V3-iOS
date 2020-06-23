@@ -18,7 +18,7 @@ public class SparklineInteractor: SparklineInteracting {
     public let cryptoCurrency: CryptoCurrency
     
     public var calculationState: Observable<SparklineCalculationState> {
-        return calculationStateRelay.asObservable()
+        calculationStateRelay.asObservable()
     }
     
     private let priceService: HistoricalFiatPriceServiceAPI

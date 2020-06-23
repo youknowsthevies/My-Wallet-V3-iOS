@@ -94,6 +94,7 @@ public extension UIColor {
     static let bitcoinCash = bch
     static let stellar = xlm
     static let usdd = pax
+    static let algorand = algo
     
     // Tiers
     

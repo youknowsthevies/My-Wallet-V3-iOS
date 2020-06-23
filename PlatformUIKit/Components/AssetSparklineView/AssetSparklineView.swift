@@ -25,34 +25,29 @@ public final class AssetSparklineView: UIView {
     // MARK: - Private Properties
     
     private var path: Driver<UIBezierPath?> {
-        return pathRelay.asDriver()
+        pathRelay.asDriver()
     }
     
     private var lineColor: Driver<UIColor> {
-        return Driver.just(presenter.lineColor)
+        Driver.just(presenter.lineColor)
     }
     
     private var fillColor: Driver<UIColor> {
-        return Driver.just(.clear)
+        Driver.just(.clear)
     }
     
     private var lineWidth: Driver<CGFloat> {
-        return Driver.just(attributes.lineWidth)
+        Driver.just(attributes.lineWidth)
     }
     
     private let pathRelay: BehaviorRelay<UIBezierPath?> = BehaviorRelay(value: nil)
     private let shape: CAShapeLayer = CAShapeLayer()
     private var disposeBag = DisposeBag()
     
-    private lazy var attributes: SparklineAttributes = {
-        return .init(size: .init(width: frame.width, height: frame.height))
-    }()
-    
-    private lazy var calculator: SparklineCalculator = {
-        let calculator = SparklineCalculator(attributes: attributes)
-        return calculator
-    }()
-    
+    private var attributes: SparklineAttributes {
+        .init(size: frame.size)
+    }
+
     // MARK: - Init
     
     public override init(frame: CGRect) {
@@ -66,12 +61,15 @@ public final class AssetSparklineView: UIView {
     }
     
     private func calculate() {
-        let calculator = SparklineCalculator(attributes: .init(size: frame.size))
+        let calculator = SparklineCalculator(attributes: attributes)
         presenter.state
             .compactMap { state -> UIBezierPath? in
-                guard case let .valid(prices: prices) = state else { return nil }
-                let path = calculator.sparkline(with: prices)
-                return path
+                switch state {
+                case .valid(prices: let prices):
+                    return calculator.sparkline(with: prices)
+                case .empty, .invalid, .loading:
+                    return nil
+                }
             }
             .bind(to: pathRelay)
             .disposed(by: disposeBag)

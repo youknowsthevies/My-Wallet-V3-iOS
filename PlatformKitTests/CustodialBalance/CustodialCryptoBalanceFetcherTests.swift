@@ -160,9 +160,8 @@ class CustodialCryptoBalanceFetcherTests: XCTestCase {
         ]
         XCTAssertEqual(events, expectedEvents)
     }
-    
-    private func obervedBalanceEvents(data: [(refresh: Int, state: CustodialAccountBalanceState<TradingAccountBalance>)])  -> [Recorded<Event<CryptoValue>>] {
-        
+
+    private func obervedBalanceEvents(data: [(refresh: Int, state: AccountBalanceState<TradingAccountBalance>)])  -> [Recorded<Event<CryptoValue>>] {
         let observer = scheduler.createObserver(CryptoValue.self)
     
         for item in data {

@@ -16,7 +16,6 @@ public enum AppFeature: Int, CaseIterable {
     case transferFundsFromImportedAddress
 
     /// Sunriver
-    case stellar
     case stellarAirdrop
     case stellarAirdropPopup
     case stellarLargeBacklog
@@ -63,7 +62,6 @@ extension AppFeature {
         case .interestAccountEnabled:
             return "interest_account_enabled"
         case .biometry,
-             .stellar,
              .swipeToReceive,
              .transferFundsFromImportedAddress:
             return nil

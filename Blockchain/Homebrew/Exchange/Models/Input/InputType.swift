@@ -42,15 +42,7 @@ extension InputType {
         case .fiat:
             return NumberFormatter.localCurrencyFractionDigits
         case .nonfiat(let asset):
-            switch asset {
-            case .stellar:
-                return NumberFormatter.stellarFractionDigits
-            case .bitcoin,
-                 .bitcoinCash,
-                 .ethereum,
-                 .pax:
-                return NumberFormatter.assetFractionDigits
-            }
+            return asset.maxDisplayableDecimalPlaces
         }
     }
 }

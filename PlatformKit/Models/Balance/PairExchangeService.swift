@@ -52,9 +52,9 @@ public final class PairExchangeService: PairExchangeServiceAPI {
         self.cryptoCurrency = cryptoCurrency
         self.priceService = priceService
         self.currencyService = currencyService
-        
+
         let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
-        
+
         fiatPrice = Observable
             .combineLatest(currencyService.fiatCurrencyObservable, fetchTriggerRelay)
             .throttle(.milliseconds(100), scheduler: scheduler)

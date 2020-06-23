@@ -32,6 +32,7 @@ final class ActivityRouter: ActivityRouterAPI {
         
         let interactor = WalletPickerScreenInteractor(
             balanceProviding: balanceProviding,
+            algorand: .init(balanceFetcher: balanceProviding[.algorand], currency: .algorand),
             ether: .init(balanceFetcher: balanceProviding[.ethereum], currency: .ethereum),
             pax: .init(balanceFetcher: balanceProviding[.pax], currency: .pax),
             stellar: .init(balanceFetcher: balanceProviding[.stellar], currency: .stellar),
@@ -53,7 +54,9 @@ final class ActivityRouter: ActivityRouterAPI {
     }
     
     func showBlockchainExplorer(for event: TransactionalActivityItemEvent) {
-        guard let url = URL(string: blockchainAPI.transactionDetailURL(for: event.identifier, cryptoCurrency: event.currency))
+        guard
+            let urlString = blockchainAPI.transactionDetailURL(for: event.identifier, cryptoCurrency: event.currency),
+            let url = URL(string: urlString)
             else { return }
         let controller = SFSafariViewController(url: url)
         controller.modalPresentationStyle = .overFullScreen

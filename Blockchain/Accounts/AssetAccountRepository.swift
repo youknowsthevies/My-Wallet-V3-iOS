@@ -78,6 +78,8 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         }
 
         switch assetType {
+        case .algorand:
+            return .just([])
         case .pax:
             return paxAccount(fromCache: fromCache)
         case .ethereum:
@@ -101,7 +103,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     }
 
     func fetchAccounts() -> Single<[AssetAccount]> {
-        let observables: [Observable<[AssetAccount]>] = CryptoCurrency.all.map {
+        let observables: [Observable<[AssetAccount]>] = CryptoCurrency.allCases.map {
             accounts(for: $0, fromCache: false).asObservable()
         }
         return Single.create { observer -> Disposable in
@@ -120,6 +122,8 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
 
     func defaultAccount(for assetType: CryptoCurrency) -> Single<AssetAccount?> {
         switch assetType {
+        case .algorand:
+            return .just(nil)
         case .ethereum:
             return accounts(for: assetType, fromCache: false).map { $0.first }
         case .stellar:

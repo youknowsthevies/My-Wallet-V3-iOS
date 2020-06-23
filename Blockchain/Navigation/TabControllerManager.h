@@ -46,6 +46,7 @@
 - (void)showReceive:(LegacyAssetType)assetType;
 - (void)showSend:(LegacyAssetType)assetType;
 
+- (void)showTransactionsAlgorand;
 - (void)showTransactionsBitcoin;
 - (void)showTransactionsEther;
 - (void)showTransactionsBitcoinCash;

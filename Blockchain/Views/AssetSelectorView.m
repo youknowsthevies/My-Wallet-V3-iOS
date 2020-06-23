@@ -15,7 +15,7 @@
 @interface AssetSelectorView () <UITableViewDataSource, UITableViewDelegate, AssetTypeCellDelegate>
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic, readwrite) BOOL isOpen;
-@property (nonatomic, readwrite) NSArray *assets;
+@property (nonatomic, readwrite) NSArray<NSNumber *> *assets;
 
 @property (nonatomic, strong) NSLayoutConstraint *heightConstraint;
 
@@ -51,15 +51,13 @@
 - (void)setupInParent:(UIView *)parentView
 {
     if (self.tableView == nil) {
-        NSMutableArray *allAssets = [
-                                     @[[NSNumber numberWithInteger:LegacyAssetTypeBitcoin],
-                                       [NSNumber numberWithInteger:LegacyAssetTypeEther],
-                                       [NSNumber numberWithInteger:LegacyAssetTypeBitcoinCash]] mutableCopy];
-        if ([AppFeatureConfigurator.sharedInstance configurationFor:AppFeatureStellar].isEnabled) {
-            [allAssets addObject:[NSNumber numberWithInteger:LegacyAssetTypeStellar]];
-        }
-        [allAssets addObject:[NSNumber numberWithInteger:LegacyAssetTypePax]];
-        self.assets = [allAssets copy];
+        self.assets = @[
+            [NSNumber numberWithInteger:LegacyAssetTypeBitcoin],
+            [NSNumber numberWithInteger:LegacyAssetTypeEther],
+            [NSNumber numberWithInteger:LegacyAssetTypeBitcoinCash],
+            [NSNumber numberWithInteger:LegacyAssetTypeStellar],
+            [NSNumber numberWithInteger:LegacyAssetTypePax]
+        ];
         
         self.clipsToBounds = YES;
         

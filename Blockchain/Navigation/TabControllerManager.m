@@ -652,6 +652,11 @@
     [self showSendCoinsAnimated:YES];
 }
 
+- (void)showTransactionsAlgorand
+{
+    [self showTransactionsAnimated:YES];
+}
+
 - (void)showTransactionsBitcoin
 {
     [self changeAssetSelectorAsset:LegacyAssetTypeBitcoin];

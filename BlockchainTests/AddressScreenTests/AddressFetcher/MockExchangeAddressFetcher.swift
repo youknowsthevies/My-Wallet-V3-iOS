@@ -26,6 +26,8 @@ class FakeAddress {
             return "0x4058a004DD718bABAb47e14dd0d744742E5B9903"
         case .stellar:
             return "GAJBG6YTIVCJ62PYTFDMKIF3RFDRVWEOTX62OKWKNPN7NHBAWLEWKEFI"
+        case .algorand:
+            return "fake_algorand_address"
         }
     }
 }

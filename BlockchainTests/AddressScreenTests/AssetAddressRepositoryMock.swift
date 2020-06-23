@@ -39,6 +39,8 @@ class AssetAddressRepositoryMock: AssetAddressFetching {
         var result: [Blockchain.AssetAddress] = []
         for address in addresses {
             switch asset {
+            case .algorand:
+                break
             case .bitcoin:
                 result += [BitcoinAddress(string: address)]
             case .bitcoinCash:

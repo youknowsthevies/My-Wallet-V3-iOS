@@ -125,7 +125,7 @@ extension SendInputState.StateError {
             case .default: // Should not reach here
                 return LocalizationConstants.Errors.error
             }
-        case .bitcoin, .bitcoinCash, .pax, .stellar:
+        case .algorand, .bitcoin, .bitcoinCash, .pax, .stellar:
             fatalError("\(#function) does not support \(asset.name) yet")
         }
     }
@@ -144,7 +144,7 @@ extension SendInputState.StateError {
             case .default: // Should not reach here
                 return nil
             }
-        case .bitcoin, .bitcoinCash, .pax, .stellar:
+        case .algorand, .bitcoin, .bitcoinCash, .pax, .stellar:
             fatalError("\(#function) does not support \(asset.name) yet")
         }
     }

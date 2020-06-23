@@ -1,5 +1,5 @@
 //
-//  PAXAnnouncement.swift
+//  AlgorandAnnouncement.swift
 //  Blockchain
 //
 //  Created by Chris Arriola on 6/12/19.
@@ -12,15 +12,15 @@ import ToolKit
 import PlatformKit
 import PlatformUIKit
 
-/// Announcement that introduces PAX asset
-final class PAXAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
+/// Announcement that introduces Algorand asset
+final class AlgorandAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
     
     // MARK: - Properties
     
     var viewModel: AnnouncementCardViewModel {
         let button = ButtonViewModel.primary(
-            with: LocalizationConstants.AnnouncementCards.Pax.ctaButton,
-            background: .usdd
+            with: LocalizationConstants.AnnouncementCards.Algorand.ctaButton,
+            background: .algorand
         )
         button.tapRelay
             .bind { [weak self] in
@@ -34,9 +34,9 @@ final class PAXAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
 
         return AnnouncementCardViewModel(
             type: type,
-            image: AnnouncementCardViewModel.Image(name: "filled_pax_small"),
-            title: LocalizationConstants.AnnouncementCards.Pax.title,
-            description: LocalizationConstants.AnnouncementCards.Pax.description,
+            image: AnnouncementCardViewModel.Image(name: CryptoCurrency.algorand.filledImageSmallName),
+            title: LocalizationConstants.AnnouncementCards.Algorand.title,
+            description: LocalizationConstants.AnnouncementCards.Algorand.description,
             buttons: [button],
             dismissState: .dismissible { [weak self] in
                 guard let self = self else { return }
@@ -52,33 +52,26 @@ final class PAXAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
     }
     
     var shouldShow: Bool {
-        guard !hasTransactions else {
-            return false
-        }
         return !isDismissed
     }
     
-    let type = AnnouncementType.pax
+    let type = AnnouncementType.algorand
     let analyticsRecorder: AnalyticsEventRecording
     
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
     
     let action: CardAnnouncementAction
-    
-    private let hasTransactions: Bool
-    
+
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
 
-    init(hasTransactions: Bool,
-         cacheSuite: CacheSuite = UserDefaults.standard,
+    init(cacheSuite: CacheSuite = UserDefaults.standard,
          analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {
-        self.hasTransactions = hasTransactions
         self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss

@@ -17,46 +17,24 @@ public struct CustodialBalanceResponse: Decodable {
         let pending: String
     }
 
-    enum CodingKeys: String, CodingKey {
-        case btc = "BTC"
-        case bch = "BCH"
-        case eth = "ETH"
-        case pax = "PAX"
-        case xlm = "XLM"
-    }
-
     // MARK: - Properties
 
-    let btc: Balance?
-    let bch: Balance?
-    let eth: Balance?
-    let pax: Balance?
-    let xlm: Balance?
+    private let balances: [String: Balance]
 
     // MARK: - Init
 
-    init(btc: Balance?, bch: Balance?, eth: Balance?, pax: Balance?, xlm: Balance?) {
-        self.btc = btc
-        self.bch = bch
-        self.eth = eth
-        self.pax = pax
-        self.xlm = xlm
+    init(balances: [String: Balance]) {
+        self.balances = balances
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        balances = try container.decode([String: Balance].self)
     }
 
     // MARK: - Subscript
 
     subscript(currency: CryptoCurrency) -> Balance? {
-        switch currency {
-        case .bitcoin:
-            return btc
-        case .bitcoinCash:
-            return bch
-        case .ethereum:
-            return eth
-        case .pax:
-            return pax
-        case .stellar:
-            return xlm
-        }
+        balances[currency.rawValue]
     }
 }

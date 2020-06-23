@@ -52,6 +52,8 @@ final class SendSourceAccountStateService: SendSourceAccountStateServicing {
     /// Recalculates the state of the source account
     func recalculateState() {
         switch asset {
+        case .algorand:
+            stateRelay.accept(.available)
         case .ethereum, .pax:
             recalculateStateForEtherBasedAssets()
         case .bitcoin, .bitcoinCash, .stellar:

@@ -45,7 +45,7 @@ final class DashboardRouter: Router {
         self.currencyRouting = currencyRouting
         self.tabSwapping = tabSwapping
         self.backupRouterAPI = backupRouterAPI
-        self.custodyActionRouterAPI = CustodyActionRouter(backupRouterAPI: backupRouterAPI)
+        self.custodyActionRouterAPI = CustodyActionRouter(backupRouterAPI: backupRouterAPI, tabSwapping: tabSwapping)
         self.nonCustodialActionRouterAPI = NonCustodialActionRouter(tabSwapping: tabSwapping)
         
         self.custodyActionRouterAPI

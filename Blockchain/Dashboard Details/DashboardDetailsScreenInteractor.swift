@@ -16,7 +16,8 @@ final class DashboardDetailsScreenInteractor {
     let balanceFetcher: AssetBalanceFetching
 
     let savingsAccountService: SavingAccountServiceAPI
-    
+
+    let walletBalanceInteractor: DashboardDetailsNonCustodialTypeInteractor
     let savingsBalanceInteractor: DashboardDetailsCustodialTypeInteractor
     let tradingBalanceInteractor: DashboardDetailsCustodialTypeInteractor
 
@@ -40,7 +41,10 @@ final class DashboardDetailsScreenInteractor {
         self.recoveryPhraseStatus = RecoveryPhraseStatusProvider(wallet: wallet)
         self.fiatCurrencyService = fiatCurrencyService
         self.balanceFetcher = balanceFetcher
-        
+
+        walletBalanceInteractor = DashboardDetailsNonCustodialTypeInteractor(
+            currency: currency
+        )
         tradingBalanceInteractor = DashboardDetailsCustodialTypeInteractor(
             balanceFetcher: balanceFetcher.trading
         )

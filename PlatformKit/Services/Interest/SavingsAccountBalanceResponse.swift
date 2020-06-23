@@ -39,4 +39,3 @@ public struct SavingsAccountBalanceResponse: Decodable {
         balances[currency.rawValue]
     }
 }
-
