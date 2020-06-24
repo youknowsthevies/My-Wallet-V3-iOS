@@ -454,11 +454,7 @@ extension StateService {
         case (.bankTransfer, false):
             state = .inactive
         case (.card, _):
-            if checkoutData.order.isPending3DSCardOrder {
-                state = .authorizeCard(order: checkoutData.order)
-            } else {
-                state = .inactive
-            }
+            state = .authorizeCard(order: checkoutData.order)
         }
         
         let states = statesRelay.value.states(byAppending: state)
