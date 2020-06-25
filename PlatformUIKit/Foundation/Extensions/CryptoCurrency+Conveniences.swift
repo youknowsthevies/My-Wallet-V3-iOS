@@ -96,7 +96,7 @@ extension CryptoCurrency {
     public var whiteImageName: String {
         switch self {
         case .algorand:
-            return "filled_algo_small" // TICKET: IOS-3363 Algorand: Use correct asset
+            return "white_alg_small"
         case .bitcoin:
             return "white_btc_small"
         case .bitcoinCash:
@@ -113,7 +113,7 @@ extension CryptoCurrency {
     public var symbolImageTemplate: UIImage {
         switch self {
         case .algorand:
-            return .init() // TICKET: IOS-3363 Algorand: Use correct asset
+            return .init() // TICKET: IOS-3492 Algorand: Use correct asset
         case .bitcoin:
             return #imageLiteral(resourceName: "symbol-btc")
         case .bitcoinCash:
@@ -130,7 +130,7 @@ extension CryptoCurrency {
     public var errorImage: UIImage {
         switch self {
         case .algorand:
-            return .init() // TICKET: IOS-3363 Algorand: Use correct asset
+            return #imageLiteral(resourceName: "alg_bad")
         case .bitcoin:
             return #imageLiteral(resourceName: "btc_bad")
         case .bitcoinCash:
@@ -147,7 +147,7 @@ extension CryptoCurrency {
     public var successImage: UIImage {
         switch self {
         case .algorand:
-            return .init() // TICKET: IOS-3363 Algorand: Use correct asset
+            return #imageLiteral(resourceName: "alg_good")
         case .bitcoin:
             return #imageLiteral(resourceName: "btc_good")
         case .bitcoinCash:
