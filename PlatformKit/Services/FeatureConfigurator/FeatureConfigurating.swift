@@ -15,6 +15,7 @@ public protocol FeatureConfiguring: class {
     @objc func configuration(for feature: AppFeature) -> AppFeatureConfiguration
 }
 
+/// - Tag: FeatureFetching
 public protocol FeatureFetching: class {
     func fetch<Feature: Decodable>(for key: AppFeature) -> Single<Feature>
     func fetchInteger(for key: AppFeature) -> Single<Int>

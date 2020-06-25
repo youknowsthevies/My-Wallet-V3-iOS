@@ -36,6 +36,7 @@ final class DataProvider: DataProviding {
     let activity: ActivityProviding
     
     init(featureFetching: FeatureFetching = AppFeatureConfigurator.shared,
+         kycTierService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
          tradingAccountClient: TradingBalanceClientAPI = TradingBalanceClient(),
          savingsAccountClient: SavingsAccountClientAPI = SavingsAccountClient(),
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
@@ -131,7 +132,7 @@ final class DataProvider: DataProviding {
         let savingsAccountService = SavingAccountService(
             client: savingsAccountClient,
             authenticationService: authenticationService,
-            featureFetching: featureFetching
+            custodialFeatureFetching: CustodialFeatureFetcher(tiersService: kycTierService, featureFetching: featureFetching)
         )
 
         let algorandBalanceFetcher = AssetBalanceFetcher(

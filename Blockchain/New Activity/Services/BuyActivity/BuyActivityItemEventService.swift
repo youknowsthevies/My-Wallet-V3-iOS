@@ -19,15 +19,14 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
     }
     
     var buyActivityEvents: Single<[BuyActivityItemEvent]> {
-        service
-            .orders
-            .map(weak: self) { (self, orders) -> [OrderDetails] in
-                orders.filter {
-                    $0.cryptoValue.currencyType == self.currency
+        custodialFeatureFetching
+            .featureEnabled(for: .simpleBuyEnabled)
+            .flatMap(weak: self) { (self, simpleBuyEnabled) in
+                guard simpleBuyEnabled else {
+                    return Single.just([])
                 }
+                return self.fetchBuyActivityEvents
             }
-            .map { items in items.filter { $0.cryptoValue.currencyType == self.currency } }
-            .map { items in items.map { BuyActivityItemEvent.init(with: $0) } }
     }
     
     var buyActivityObservable: Observable<[BuyActivityItemEvent]> {
@@ -40,11 +39,27 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
     private let currency: CryptoCurrency
     private let service: BuySellKit.OrdersServiceAPI
     private let disposeBag = DisposeBag()
-    
+    private let custodialFeatureFetching: CustodialFeatureFetching
+
+    private var fetchBuyActivityEvents: Single<[BuyActivityItemEvent]> {
+        service
+            .orders
+            .map(weak: self) { (self, orders) -> [OrderDetails] in
+                orders.filter {
+                    $0.cryptoValue.currencyType == self.currency
+                }
+            }
+            .map { items in items.filter { $0.cryptoValue.currencyType == self.currency } }
+            .map { items in items.map { BuyActivityItemEvent.init(with: $0) } }
+    }
+
     init(currency: CryptoCurrency,
-         service: BuySellKit.OrdersServiceAPI) {
+         service: BuySellKit.OrdersServiceAPI,
+         tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
+         featureFetching: FeatureFetching = AppFeatureConfigurator.shared) {
         self.currency = currency
         self.service = service
+        custodialFeatureFetching = CustodialFeatureFetcher(tiersService: tiersService, featureFetching: featureFetching)
         
         Observable.combineLatest(
                 buyActivityObservable,
@@ -57,5 +72,4 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
     }
-    
 }

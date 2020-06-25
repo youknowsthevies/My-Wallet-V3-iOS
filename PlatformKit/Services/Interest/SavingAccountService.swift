@@ -20,17 +20,17 @@ public class SavingAccountService: SavingAccountServiceAPI {
 
     private let authenticationService: NabuAuthenticationServiceAPI
     private let client: SavingsAccountClientAPI
-    private let featureFetching: FeatureFetching
+    private let custodialFeatureFetching: CustodialFeatureFetching
     private let cachedSavingsAccountBalance: CachedValue<SavingsAccountBalanceResponse>
 
     // MARK: - Setup
 
     public init(client: SavingsAccountClientAPI = SavingsAccountClient(),
                 authenticationService: NabuAuthenticationServiceAPI,
-                featureFetching: FeatureFetching) {
+                custodialFeatureFetching: CustodialFeatureFetching) {
         self.client = client
         self.authenticationService = authenticationService
-        self.featureFetching = featureFetching
+        self.custodialFeatureFetching = custodialFeatureFetching
         self.cachedSavingsAccountBalance = CachedValue<SavingsAccountBalanceResponse>(configuration: .periodicAndLogin(10))
         cachedSavingsAccountBalance.setFetch(weak: self) { (self) in
             self.fetchBalances()
@@ -53,10 +53,13 @@ public class SavingAccountService: SavingAccountServiceAPI {
     }
 
     private func fetchBalances() -> Single<SavingsAccountBalanceResponse> {
-        featureFetching
-            .fetchBool(for: .interestAccountEnabled)
-            .flatMap(weak: self) { (self, _) in
-                self.authenticationService
+        custodialFeatureFetching
+            .featureEnabled(for: .interestAccountEnabled)
+            .flatMap(weak: self) { (self, interestAccountEnabled) in
+                guard interestAccountEnabled else {
+                    return Single.just(.empty)
+                }
+                return self.authenticationService
                     .tokenString
                     .flatMap(weak: self) { (self, token) in
                         self.client.balance(token: token)
