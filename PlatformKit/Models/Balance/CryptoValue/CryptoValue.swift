@@ -69,7 +69,7 @@ extension CryptoValue {
 
     public func convertToFiatValue(exchangeRate: FiatValue) -> FiatValue {
         let conversionAmount = majorValue * exchangeRate.amount
-        return FiatValue.create(amount: conversionAmount, currency: exchangeRate.currency)
+        return FiatValue.create(amount: conversionAmount, currency: exchangeRate.currencyType)
     }
 }
 

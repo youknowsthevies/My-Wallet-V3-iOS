@@ -48,7 +48,7 @@ public final class BankOrderCheckoutInteractor {
             )
 
         let checkoutDataWithPaymentAccount = paymentAccountService
-            .paymentAccount(for: checkoutData.order.fiatValue.currency)
+            .paymentAccount(for: checkoutData.order.fiatValue.currencyType)
             .map { checkoutData.checkoutData(byAppending: $0) }
         
         return Single

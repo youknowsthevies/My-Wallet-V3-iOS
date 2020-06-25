@@ -58,8 +58,8 @@ public struct Quote {
         self.estimatedAmount = estimatedAmount
         let feeAmountMinor = feeRateMinor * estimatedAmount.majorValue
         /// Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
-        self.fee = FiatValue(minor: "\(feeAmountMinor)", currency: amount.currency, locale: .US)
+        self.fee = FiatValue(minor: "\(feeAmountMinor)", currency: amount.currencyType, locale: .US)
         self.time = time
-        self.rate = FiatValue(minor: response.rate, currency: amount.currency)
+        self.rate = FiatValue(minor: response.rate, currency: amount.currencyType)
     }
 }

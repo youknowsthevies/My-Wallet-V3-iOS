@@ -20,7 +20,7 @@ public struct SupportedPairs {
         
         /// The fiat currency type
         public var fiatCurrency: FiatCurrency {
-            minFiatValue.currency
+            minFiatValue.currencyType
         }
         
         /// The minimum fiat value to buy
@@ -39,7 +39,7 @@ public struct SupportedPairs {
     }
     
     var fiatCurrencySet: Set<FiatCurrency> {
-        Set(pairs.map { $0.minFiatValue.currency })
+        Set(pairs.map { $0.minFiatValue.currencyType })
     }
     
     var cryptoCurrencySet: Set<CryptoCurrency> {
@@ -75,7 +75,7 @@ extension SupportedPairs {
         case .all:
             self.pairs = pairs
         case .only(fiatCurrency: let currency):
-            self.pairs = pairs.filter { $0.maxFiatValue.currency == currency }
+            self.pairs = pairs.filter { $0.maxFiatValue.currencyType == currency }
         }
     }
 }

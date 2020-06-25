@@ -17,7 +17,7 @@ extension BuyActivityItemEvent {
             status: orderDetails.eventStatus,
             fiatValue: orderDetails.fiatValue,
             cryptoValue: orderDetails.cryptoValue,
-            fee: orderDetails.fee ?? FiatValue.zero(currency: orderDetails.fiatValue.currency),
+            fee: orderDetails.fee ?? FiatValue.zero(currency: orderDetails.fiatValue.currencyType),
             paymentMethod: orderDetails.isBankWire ? .bankTransfer : .card(paymentMethodId: orderDetails.paymentMethodId)
         )
     }

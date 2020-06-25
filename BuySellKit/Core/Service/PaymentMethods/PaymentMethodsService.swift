@@ -99,7 +99,7 @@ final class PaymentMethodsService: PaymentMethodsServiceAPI {
                                 //  have local support/UI.
                                 return BankLocallySupportedCurrencies
                                     .fiatCurrencies
-                                    .contains($0.min.currency)
+                                    .contains($0.min.currencyType)
                             }
                         }
                     }
