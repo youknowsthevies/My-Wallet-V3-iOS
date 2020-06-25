@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import ToolKit
 import PlatformKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 /// TODO: `AmountLabelViewModel` currency supports fiat values but should be able to
 /// support crypto values as well.
@@ -44,7 +44,7 @@ public final class AmountLabelViewModel {
     
     /// Streams the content of the currency code label
     var currencyCodeLabelContent: Observable<LabelContent> {
-        return Observable
+        Observable
             .combineLatest(
                 fiatCurrencyService.fiatCurrencyObservable,
                 state
@@ -68,7 +68,7 @@ public final class AmountLabelViewModel {
     
     /// Streams the amount label content
     var amount: Observable<(amount: NSAttributedString, accessibility: Accessibility)> {
-        return Observable
+        Observable
             .combineLatest(
                 fiatCurrencyService.fiatCurrencyObservable,
                 inputRelay

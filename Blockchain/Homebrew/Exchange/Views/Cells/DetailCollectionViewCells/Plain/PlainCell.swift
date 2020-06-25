@@ -67,7 +67,7 @@ class PlainCell: ExchangeDetailCell {
     }
     
     static func mediumFont() -> UIFont {
-        return UIFont(
+        UIFont(
             name: Constants.FontNames.montserratMedium,
             size: 16.0
             ) ?? UIFont.systemFont(
@@ -77,7 +77,7 @@ class PlainCell: ExchangeDetailCell {
     }
     
     static func standardFont() -> UIFont {
-        return UIFont(
+        UIFont(
             name: Constants.FontNames.montserratRegular,
             size: 16.0
             ) ?? UIFont.systemFont(

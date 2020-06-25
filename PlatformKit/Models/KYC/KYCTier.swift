@@ -26,7 +26,7 @@ extension KYC {
         // It's best to use comparison to compare tiers instead of using `==` directly
         // since additional values are likely to be added in future
         public static func < (lhs: Tier, rhs: Tier) -> Bool {
-            return lhs.rawValue < rhs.rawValue
+            lhs.rawValue < rhs.rawValue
         }
     }
 }

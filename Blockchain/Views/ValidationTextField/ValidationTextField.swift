@@ -136,7 +136,7 @@ class ValidationTextField: NibBasedView {
             textField.text = newValue
         }
         get {
-            return textField.text
+            textField.text
         }
     }
 
@@ -148,7 +148,7 @@ class ValidationTextField: NibBasedView {
 
     var isEnabled: Bool {
         get {
-            return textField.isEnabled
+            textField.isEnabled
         }
         set {
             textField.isEnabled = newValue
@@ -188,7 +188,7 @@ class ValidationTextField: NibBasedView {
     // MARK: Public Functions
 
     func isFocused() -> Bool {
-        return textField.isFirstResponder
+        textField.isFirstResponder
     }
 
     func becomeFocused() {

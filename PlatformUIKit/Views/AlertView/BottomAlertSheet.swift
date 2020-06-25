@@ -25,7 +25,7 @@ public struct LoadingBottomAlert: BottomAlertModel {
     public var subtitle: String
     public var gradient: Gradient
     public var dismissable: Bool {
-        return false
+        false
     }
     
     public init(title: String, subtitle: String, gradient: Gradient) {

@@ -7,8 +7,8 @@
 //
 
 import FirebaseAnalytics
-import ToolKit
 import PlatformKit
+import ToolKit
 
 /// Records user properties using external analytics client
 final class AnalyticsUserPropertyRecorder: UserPropertyRecording {

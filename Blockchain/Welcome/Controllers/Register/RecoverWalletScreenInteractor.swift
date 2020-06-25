@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import ToolKit
 import PlatformKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 final class RecoverWalletScreenInteractor {
     
@@ -17,12 +17,12 @@ final class RecoverWalletScreenInteractor {
     
     let contentStateRelay = BehaviorRelay(value: WalletRegistrationContent())
     var content: Observable<WalletRegistrationContent> {
-        return contentStateRelay.asObservable()
+        contentStateRelay.asObservable()
     }
     
     /// Reflects errors received from the JS layer
     var error: Observable<String> {
-        return errorRelay.asObservable()
+        errorRelay.asObservable()
     }
     
     // MARK: - Injected

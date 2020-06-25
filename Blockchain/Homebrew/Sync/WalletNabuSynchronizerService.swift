@@ -6,9 +6,9 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import NetworkKit
 import PlatformKit
+import RxSwift
 
 class WalletNabuSynchronizerService: WalletNabuSynchronizerAPI {
 
@@ -22,7 +22,7 @@ class WalletNabuSynchronizerService: WalletNabuSynchronizerAPI {
     }
 
     func sync(token: String) -> Single<NabuUser> {
-        return getSignedRetailToken().flatMap { signedRetailToken -> Single<NabuUser> in
+        getSignedRetailToken().flatMap { signedRetailToken -> Single<NabuUser> in
 
             // Error checking
             guard signedRetailToken.success else {

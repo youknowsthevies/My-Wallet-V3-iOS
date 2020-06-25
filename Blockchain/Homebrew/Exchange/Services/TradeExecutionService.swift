@@ -6,15 +6,15 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import RxSwift
-import ToolKit
-import NetworkKit
-import PlatformKit
-import StellarKit
-import EthereumKit
 import BitcoinKit
 import ERC20Kit
+import EthereumKit
+import Foundation
+import NetworkKit
+import PlatformKit
+import RxSwift
+import StellarKit
+import ToolKit
 
 protocol TradeExecutionServiceDependenciesAPI {
     var assetAccountRepository: AssetAccountRepositoryAPI { get }
@@ -36,15 +36,15 @@ class TradeExecutionService: TradeExecutionAPI {
         private let paxServiceProvider: PAXServiceProvider
         
         var erc20Service: AnyERC20Service<PaxToken> {
-            return AnyERC20Service<PaxToken>(paxServiceProvider.services.paxService)
+            AnyERC20Service<PaxToken>(paxServiceProvider.services.paxService)
         }
         
         var erc20AccountRepository: AnyERC20AssetAccountRepository<PaxToken> {
-            return AnyERC20AssetAccountRepository<PaxToken>(paxServiceProvider.services.assetAccountRepository)
+            AnyERC20AssetAccountRepository<PaxToken>(paxServiceProvider.services.assetAccountRepository)
         }
         
         var ethereumWalletService: EthereumWalletServiceAPI {
-            return paxServiceProvider.services.walletService
+            paxServiceProvider.services.walletService
         }
         
         init(
@@ -87,19 +87,19 @@ class TradeExecutionService: TradeExecutionAPI {
     private var ethereumTransactionCandidate: EthereumTransactionCandidate?
     
     private var bitcoinTransactionFee: Single<BitcoinTransactionFee> {
-        return dependencies.feeService.bitcoin
+        dependencies.feeService.bitcoin
     }
     
     private var bitcoinCashTransactionFee: Single<BitcoinCashTransactionFee> {
-        return dependencies.feeService.bitcoinCash
+        dependencies.feeService.bitcoinCash
     }
     
     private var ethereumTransactionFee: Single<EthereumTransactionFee> {
-        return dependencies.feeService.ethereum
+        dependencies.feeService.ethereum
     }
     
     private var stellarTransactionFee: Single<StellarTransactionFee> {
-        return dependencies.feeService.stellar
+        dependencies.feeService.stellar
     }
     
     private let communicator: NetworkCommunicatorAPI
@@ -235,7 +235,7 @@ class TradeExecutionService: TradeExecutionAPI {
         
         authentication.tokenString
             .flatMapCompletable(weak: self) { (self, token) -> Completable in
-                return self.communicator.perform(
+                self.communicator.perform(
                     request: NetworkRequest(
                         endpoint: endpoint,
                         method: .put,
@@ -318,7 +318,7 @@ class TradeExecutionService: TradeExecutionAPI {
                 .subscribeOn(MainScheduler.instance)
                 .observeOn(MainScheduler.asyncInstance)
                 .flatMap(weak: self, { (self, _) -> Single<EthereumTransactionCandidate> in
-                    return self.dependencies.erc20Service.transfer(to: address, amount: tokenValue)
+                    self.dependencies.erc20Service.transfer(to: address, amount: tokenValue)
                 })
                 .observeOn(MainScheduler.instance)
                 .subscribe(onSuccess: { [weak self] candidate in
@@ -455,7 +455,7 @@ class TradeExecutionService: TradeExecutionAPI {
             let transaction = dependencies.stellar.transaction
             let disposable = Single.just(pair)
                 .asObservable().flatMap { keyPair -> Completable in
-                    return transaction.send(paymentOperation, sourceKeyPair: keyPair)
+                    transaction.send(paymentOperation, sourceKeyPair: keyPair)
                 }.subscribeOn(MainScheduler.asyncInstance)
                 .observeOn(MainScheduler.instance)
                 .subscribe(onError: { paymentError in
@@ -553,7 +553,7 @@ class TradeExecutionService: TradeExecutionAPI {
     }
     
     private func validateXLM(volume: CryptoValue) -> Single<TransactionValidationResult> {
-        return dependencies.stellar.limits.validateCryptoAmount(amount: volume)
+        dependencies.stellar.limits.validateCryptoAmount(amount: volume)
     }
 }
 
@@ -609,7 +609,7 @@ fileprivate extension TradeExecutionService {
                 ))
             })
             .flatMap { order -> Single<OrderResult> in
-                return self.process(order: order)
+                self.process(order: order)
             }
             .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: { [weak self] payload in
@@ -812,7 +812,7 @@ private extension TradeExecutionService {
             return dependencies.erc20AccountRepository.assetAccountDetails
                 .asMaybe()
                 .flatMap { details -> Maybe<String> in
-                    return Maybe.just(details.account.accountAddress)
+                    Maybe.just(details.account.accountAddress)
                 }
         }
         guard let receiveAddress = wallet.getReceiveAddress(forAccount: account, assetType: assetType.legacy) else {

@@ -6,9 +6,9 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
-import ToolKit
 import PlatformKit
+import ToolKit
+import UIKit
 
 @objc extension NSMutableAttributedString {
 
@@ -34,7 +34,7 @@ import PlatformKit
 extension NSAttributedString {
 
     public var height: CGFloat {
-        return heightForWidth(width: CGFloat.greatestFiniteMagnitude)
+        heightForWidth(width: CGFloat.greatestFiniteMagnitude)
     }
 
     public var width: CGFloat {
@@ -63,18 +63,18 @@ extension NSAttributedString {
     public func withFont(_ font: UIFont) -> NSAttributedString {
         if fontAttribute() == .none {
             let copy = NSMutableAttributedString(attributedString: self)
-            copy.addAttribute(NSAttributedString.Key.font, value: font, range: NSMakeRange(0, copy.length))
+            copy.addAttribute(NSAttributedString.Key.font, value: font, range: NSRange(location: 0, length: copy.length))
             return copy
         }
         return copy() as! NSAttributedString
     }
     
     public static func lineBreak() -> NSAttributedString {
-        return NSAttributedString(string: "\n")
+        NSAttributedString(string: "\n")
     }
     
     public static func space() -> NSAttributedString {
-        return NSAttributedString(string: " ")
+        NSAttributedString(string: " ")
     }
 }
 

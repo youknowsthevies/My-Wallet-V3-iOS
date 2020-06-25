@@ -30,7 +30,7 @@ public final class BalanceChangeProvider: BalanceChangeProviding {
     public let bitcoinCash: AssetBalanceChangeProviding
     
     public var change: Observable<AssetFiatCryptoBalanceCalculationStates> {
-        return Observable
+        Observable
             .combineLatest(
                 ether.calculationState,
                 pax.calculationState,

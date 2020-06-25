@@ -7,10 +7,10 @@
 //
 
 import Foundation
-import SafariServices
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import SafariServices
+import ToolKit
 
 protocol ExchangeDetailDelegate: class {
     func onViewLoaded()

@@ -8,8 +8,8 @@
 
 import PlatformKit
 import PlatformUIKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 final class UpdateMobileRouter: Router {
     

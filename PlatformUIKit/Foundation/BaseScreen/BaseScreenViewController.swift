@@ -113,11 +113,11 @@ open class BaseScreenViewController: UIViewController {
     }
     
     private var currentViewController: UIViewController? {
-        return baseNavigationController?.topViewController
+        baseNavigationController?.topViewController
     }
     
     private var currentNavigationItem: UINavigationItem? {
-        return currentViewController?.navigationItem
+        currentViewController?.navigationItem
     }
     
     override open var preferredStatusBarStyle: UIStatusBarStyle {

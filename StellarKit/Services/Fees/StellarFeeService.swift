@@ -15,7 +15,7 @@ public class StellarFeeService: StellarFeeServiceAPI {
     // MARK: Public Properties
     
     public var fees: Single<StellarTransactionFee> {
-        return cryptoFeeService.fees
+        cryptoFeeService.fees
     }
     
     private let cryptoFeeService: CryptoFeeService<StellarTransactionFee>

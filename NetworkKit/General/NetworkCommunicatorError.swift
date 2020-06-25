@@ -68,7 +68,7 @@ enum NetworkErrorEvent: AnalyticsEvent {
     }
     
     var name: String {
-        return "network_error"
+        "network_error"
     }
     
     var params: [String : String]? {
@@ -81,7 +81,7 @@ enum NetworkErrorEvent: AnalyticsEvent {
     }
 }
 
-fileprivate enum APIErrorEvent: AnalyticsEvent {
+private enum APIErrorEvent: AnalyticsEvent {
     case payloadError(ErrorDetails?)
     case serverError(ErrorDetails?)
     
@@ -133,7 +133,7 @@ fileprivate enum APIErrorEvent: AnalyticsEvent {
     }
     
     var name: String {
-        return "api_error"
+        "api_error"
     }
     
     var params: [String : String]? {

@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformKit
+import ToolKit
 import UserNotifications
 
 /// `PermissionsRequestor` is for requesting access to the user's camera
@@ -159,24 +159,24 @@ class PermissionsRequestor {
     // MARK: Public Static Functions
     
     static func shouldDisplayCameraPermissionsRequest() -> Bool {
-        return !BlockchainSettings.App.shared.didRequestCameraPermissions
+        !BlockchainSettings.App.shared.didRequestCameraPermissions
     }
     
     static func shouldDisplayNotificationsPermissionsRequest() -> Bool {
-        return !BlockchainSettings.App.shared.didRequestNotificationPermissions
+        !BlockchainSettings.App.shared.didRequestNotificationPermissions
     }
     
     static func shouldDisplayMicrophonePermissionsRequest() -> Bool {
-        return !BlockchainSettings.App.shared.didRequestMicrophonePermissions
+        !BlockchainSettings.App.shared.didRequestMicrophonePermissions
     }
     
     /// This is when the system hasn't asked the user for camera permissions
     static func cameraPermissionsUndetermined() -> Bool {
-        return AVCaptureDevice.authorizationStatus(for: .video) == .notDetermined
+        AVCaptureDevice.authorizationStatus(for: .video) == .notDetermined
     }
     
     static func cameraEnabled() -> Bool {
-        return AVCaptureDevice.authorizationStatus(for: .video) == .authorized
+        AVCaptureDevice.authorizationStatus(for: .video) == .authorized
     }
     
     static func cameraRefused() -> Bool {
@@ -185,28 +185,28 @@ class PermissionsRequestor {
     }
     
     static func microphonePermissionsUndetermined() -> Bool {
-        return AVAudioSession.sharedInstance().microphonePermissionsUndetermined()
+        AVAudioSession.sharedInstance().microphonePermissionsUndetermined()
     }
     
     static func microphoneEnabled() -> Bool {
-        return AVAudioSession.sharedInstance().microphoneEnabled()
+        AVAudioSession.sharedInstance().microphoneEnabled()
     }
     
     static func microphoneRefused() -> Bool {
-        return AVAudioSession.sharedInstance().microphoneRefused()
+        AVAudioSession.sharedInstance().microphoneRefused()
     }
 }
 
 extension AVAudioSession {
     func microphoneEnabled() -> Bool {
-        return recordPermission == .granted
+        recordPermission == .granted
     }
     
     func microphonePermissionsUndetermined() -> Bool {
-        return recordPermission == .undetermined
+        recordPermission == .undetermined
     }
     
     func microphoneRefused() -> Bool {
-        return recordPermission == .denied
+        recordPermission == .denied
     }
 }

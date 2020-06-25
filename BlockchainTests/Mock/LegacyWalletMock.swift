@@ -25,10 +25,10 @@ class LegacyWalletMock: LegacyWalletAPI {
     }
     
     func needsSecondPassword() -> Bool {
-        return false
+        false
     }
     
     func getReceiveAddress(forAccount account: Int32, assetType: LegacyAssetType) -> String! {
-        return ""
+        ""
     }
 }

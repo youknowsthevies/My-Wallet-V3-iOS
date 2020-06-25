@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import XCTest
 import RxSwift
+import XCTest
 
 @testable import Blockchain
 

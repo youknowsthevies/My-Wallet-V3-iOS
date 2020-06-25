@@ -7,10 +7,10 @@
 //
 
 import Foundation
-import RxSwift
-import RxRelay
-import RxCocoa
 import PlatformKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 /// The interaction layer for sent amount on the send screen
 final class SendAmountInteractor: SendAmountInteracting {
@@ -20,7 +20,7 @@ final class SendAmountInteractor: SendAmountInteracting {
     /// The amount calculation state.
     /// This state may being indicating of `.calculating`, `.invalid`, `.value`
     var calculationState: Observable<FiatCryptoPairCalculationState> {
-        return calculationStateRelay.asObservable()
+        calculationStateRelay.asObservable()
     }
     
     /// Streams `.withinSpendableBalance` if the amount + fee is within the spendable balance.
@@ -57,7 +57,7 @@ final class SendAmountInteractor: SendAmountInteracting {
         return Observable
             .combineLatest(amount, fee)
             .map { amount, fee -> FiatCryptoPair in
-                return try amount + fee
+                try amount + fee
             }
     }
     

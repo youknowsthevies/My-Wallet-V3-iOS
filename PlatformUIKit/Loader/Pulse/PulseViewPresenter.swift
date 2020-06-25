@@ -7,9 +7,9 @@
 //
 
 import Foundation
+import PlatformKit
 import RxSwift
 import ToolKit
-import PlatformKit
 
 /// Presenter in charge of displaying a `PulseAnimationView`.
 /// Note that though this API is very similar to that of the Loader, this
@@ -42,16 +42,16 @@ import PlatformKit
     
     /// sharedInstance function declared so that the LoadingViewPresenter singleton can be accessed
     /// from Obj-C. Should deprecate this once all Obj-c references have been removed.
-    @objc public class func sharedInstance() -> PulseViewPresenter { return shared }
+    @objc public class func sharedInstance() -> PulseViewPresenter { shared }
     
     // Returns `.visible` if the `PulseAnimationView` is currently visible and animating
     public var visibility: Visibility {
-        return state.isAnimating ? .visible : .hidden
+        state.isAnimating ? .visible : .hidden
     }
     
     /// Returns `true` if the `PulseAnimationView` is currently visible and animating
     @objc public var isVisible: Bool {
-        return state.isAnimating
+        state.isAnimating
     }
     
     /// Controls the availability of the `PulseAnimationView` from outside.

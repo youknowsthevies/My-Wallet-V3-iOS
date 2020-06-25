@@ -14,7 +14,7 @@ public protocol OneTimeAnnouncement: RemovableAnnouncement {}
 extension OneTimeAnnouncement {
     
     /// Returns the category for the announcement
-    public var category: AnnouncementRecord.Category { return .oneTime }
+    public var category: AnnouncementRecord.Category { .oneTime }
     
     /// Resolves the category and the state into a simple boolean that
     /// Says whether the announcement is dismissed or not

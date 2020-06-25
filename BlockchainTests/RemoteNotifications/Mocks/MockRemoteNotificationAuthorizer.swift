@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UserNotifications
 import RxSwift
+import UserNotifications
 
 @testable import Blockchain
 
@@ -26,7 +26,7 @@ final class MockRemoteNotificationAuthorizer {
 
 extension MockRemoteNotificationAuthorizer: RemoteNotificationAuthorizationStatusProviding {
     var status: Single<UNAuthorizationStatus> {
-        return .just(expectedAuthorizationStatus)
+        .just(expectedAuthorizationStatus)
     }
 }
 
@@ -46,6 +46,6 @@ extension MockRemoteNotificationAuthorizer: RemoteNotificationRegistering {
 
 extension MockRemoteNotificationAuthorizer: RemoteNotificationAuthorizationRequesting {
     func requestAuthorizationIfNeeded() -> Single<Void> {
-        return authorizationRequestExpectedStatus.single
+        authorizationRequestExpectedStatus.single
     }
 }

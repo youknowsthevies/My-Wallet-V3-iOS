@@ -9,8 +9,8 @@
 import Firebase
 import FirebaseInstanceID
 import FirebaseMessaging
-import RxSwift
 import PlatformKit
+import RxSwift
 
 /// A class that is a gateway to external notification service functionality
 final class ExternalNotificationServiceProvider: ExternalNotificationProviding {
@@ -20,7 +20,7 @@ final class ExternalNotificationServiceProvider: ExternalNotificationProviding {
     /// A `Single` that streams the token value if exist and not empty or `nil`.
     /// Throws an error (`RemoteNotificationTokenFetchError`) in case the service has failed or if the token came out empty.
     var token: Single<String> {
-        return Single
+        Single
             .create(weak: self) { (self, observer) -> Disposable in
                 self.tokenFetcher.instanceID { result in
                     observer(result.singleEvent)
@@ -47,7 +47,7 @@ final class ExternalNotificationServiceProvider: ExternalNotificationProviding {
     /// - Parameter topic: the topic that the client should subscribe to.
     /// - Returns: A `Single` acknowledges the subscription.
     func subscribe(to topic: RemoteNotification.Topic) -> Single<Void> {
-        return Single
+        Single
             .create(weak: self) { (self, observer) -> Disposable in
                 self.messagingService.subscribe(toTopic: topic.rawValue) { error in
                     if let error = error {

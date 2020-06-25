@@ -6,18 +6,18 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
+import Charts
+import PlatformKit
 import PlatformUIKit
 import RxCocoa
-import PlatformKit
-import Charts
+import RxSwift
 
 final class AssetLineChartTableViewCellPresenter: AssetLineChartTableViewCellPresenting {
     
     // MARK: - AssetLineChartTableViewCellPresenting
     
     var priceWindowPresenter: MultiActionViewPresenting {
-        return DefaultActionViewPresenter(using: priceWindowItems)
+        DefaultActionViewPresenter(using: priceWindowItems)
     }
     
     let presenterContainer: AssetLineChartPresenterContainer
@@ -25,11 +25,11 @@ final class AssetLineChartTableViewCellPresenter: AssetLineChartTableViewCellPre
     let lineChartView: LineChartView
     
     var isScrollEnabled: Driver<Bool> {
-        return scrollingEnabledRelay.asDriver()
+        scrollingEnabledRelay.asDriver()
     }
     
     var window: Signal<PriceWindow> {
-        return windowRelay.asSignal()
+        windowRelay.asSignal()
     }
     
     // MARK: - Private Properties

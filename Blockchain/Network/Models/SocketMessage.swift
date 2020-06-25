@@ -6,8 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 import NetworkKit
 import PlatformKit
 
@@ -151,7 +151,7 @@ extension ExchangeRates {
     }
 
     func pairRate(fromCurrency: String, toCurrency: String) -> CurrencyPairRate? {
-        return rates.first(where: { $0.interactionPair == "\(fromCurrency)-\(toCurrency)" })
+        rates.first(where: { $0.interactionPair == "\(fromCurrency)-\(toCurrency)" })
     }
 }
 
@@ -188,17 +188,17 @@ struct Conversion: SocketMessageCodable {
 extension Conversion {
         
     var baseFiatValue: String {
-        return quote.currencyRatio.base.fiat.value
+        quote.currencyRatio.base.fiat.value
     }
         
     var baseCryptoValue: String {
-        return quote.currencyRatio.base.crypto.value
+        quote.currencyRatio.base.crypto.value
     }
 }
 
 extension Conversion: Equatable {
     static func == (lhs: Conversion, rhs: Conversion) -> Bool {
-        return lhs.channel == rhs.channel &&
+        lhs.channel == rhs.channel &&
         lhs.event == rhs.event &&
         lhs.quote == rhs.quote
     }
@@ -322,11 +322,11 @@ struct CurrencyPairRate: Codable {
     }
     
     var presentationPair: String {
-        return "\(left.displayCode)-\(right.displayCode)"
+        "\(left.displayCode)-\(right.displayCode)"
     }
     
     var interactionPair: String {
-        return "\(left.code)-\(right.code)"
+        "\(left.code)-\(right.code)"
     }
 
     private let left: Currency
@@ -379,7 +379,7 @@ struct Quote: Codable {
 
 extension Quote: Equatable {
     static func == (lhs: Quote, rhs: Quote) -> Bool {
-        return lhs.pair == rhs.pair &&
+        lhs.pair == rhs.pair &&
         lhs.fiatCurrency == rhs.fiatCurrency &&
         lhs.fix == rhs.fix &&
         lhs.volume == rhs.volume &&
@@ -398,7 +398,7 @@ struct CurrencyRatio: Codable {
 
 extension CurrencyRatio: Equatable {
     static func == (lhs: CurrencyRatio, rhs: CurrencyRatio) -> Bool {
-        return lhs.base == rhs.base &&
+        lhs.base == rhs.base &&
         lhs.counter == rhs.counter &&
         lhs.baseToFiatRate == rhs.baseToFiatRate &&
         lhs.counterToBaseRate == rhs.counterToBaseRate &&
@@ -413,7 +413,7 @@ struct FiatCrypto: Codable {
 
 extension FiatCrypto: Equatable {
     static func == (lhs: FiatCrypto, rhs: FiatCrypto) -> Bool {
-        return lhs.fiat.symbol == rhs.fiat.symbol &&
+        lhs.fiat.symbol == rhs.fiat.symbol &&
             lhs.fiat.value == rhs.fiat.value &&
             lhs.crypto.value == rhs.crypto.value &&
             lhs.crypto.symbol == rhs.crypto.symbol

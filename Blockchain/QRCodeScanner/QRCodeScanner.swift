@@ -39,7 +39,7 @@ protocol CaptureInputProtocol {
 
 extension AVCaptureInput: CaptureInputProtocol {
     var current: AVCaptureInput? {
-        return self
+        self
     }
 }
 
@@ -49,7 +49,7 @@ protocol CaptureOutputProtocol: class {
 
 extension AVCaptureOutput: CaptureOutputProtocol {
     var current: AVCaptureOutput? {
-        return self
+        self
     }
 }
 
@@ -66,7 +66,7 @@ protocol CaptureSessionProtocol: class {
 
 extension AVCaptureSession: CaptureSessionProtocol {
     var current: AVCaptureSession? {
-        return self
+        self
     }
     
     func add(input: CaptureInputProtocol) {
@@ -148,7 +148,7 @@ extension AVCaptureMetadataOutput: CaptureMetadataOutputProtocol {}
             }
             return
         }
-        stopReadingQRCode() { [weak self] in
+        stopReadingQRCode { [weak self] in
             self?.delegate?.scanComplete(with: .success(stringValue))
         }
     }

@@ -31,13 +31,13 @@ extension SecondPasswordPromptable {
     
     @available(*, deprecated, message: "The implementation of second password prompting will be deprecated soon")
     var secondPasswordIfNeeded: Single<String?> {
-        return secondPasswordNeeded
+        secondPasswordNeeded
             .flatMap { [weak self] needed -> Single<String?> in
                 guard let self = self else { throw WalletError.unknown }
                 guard !needed else {
                     return self.promptForSecondPassword
                         .map { password -> String? in
-                            return password
+                            password
                         }
                 }
                 return Single.just(nil)
@@ -46,7 +46,7 @@ extension SecondPasswordPromptable {
     
     @available(*, deprecated, message: "The implementation of second password prompting will be deprecated soon")
     var promptForSecondPassword: Single<String> {
-        return Single.create(subscribe: { observer -> Disposable in
+        Single.create(subscribe: { observer -> Disposable in
             AuthenticationCoordinator.shared.showPasswordScreen(
                 type: .actionRequiresPassword,
                 confirmHandler: { password in
@@ -63,7 +63,7 @@ extension SecondPasswordPromptable {
     
     @available(*, deprecated, message: "The implementation of second password prompting will be deprecated soon")
     var secondPasswordIfAccountCreationNeeded: Single<String?> {
-        return accountExists
+        accountExists
             .flatMap(weak: self) { (self, accountExists) -> Single<String?> in
                 guard accountExists else {
                     return self.secondPasswordIfNeeded

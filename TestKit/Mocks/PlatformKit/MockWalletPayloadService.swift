@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import RxSwift
 @testable import PlatformKit
+import RxSwift
 
 final class MockWalletPayloadClient: WalletPayloadClientAPI {
     

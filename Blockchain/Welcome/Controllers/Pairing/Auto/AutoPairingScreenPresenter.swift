@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
 import PlatformKit
-import RxSwift
-import RxRelay
+import PlatformUIKit
 import RxCocoa
+import RxRelay
+import RxSwift
 
 /// A presenter for auto pairing screen
 final class AutoPairingScreenPresenter {
@@ -41,7 +41,7 @@ final class AutoPairingScreenPresenter {
     
     /// Streams a fallback action that should take place in case of failure
     var fallbackAction: Signal<FallbackAction> {
-        return fallbackActionRelay.asSignal()
+        fallbackActionRelay.asSignal()
     }
     
     private let fallbackActionRelay = PublishRelay<FallbackAction>()

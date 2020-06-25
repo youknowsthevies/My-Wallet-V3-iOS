@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import ToolKit
 import PlatformKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 final class SelectionItemViewPresenter {
     
@@ -118,7 +118,7 @@ final class SelectionItemViewPresenter {
 
     /// An accessor for text pattern search
     func contains(text: String) -> Bool {
-        return title.text.lowercased().contains(text) || description.text.lowercased().contains(text)
+        title.text.lowercased().contains(text) || description.text.lowercased().contains(text)
     }
     
     func deselect() {

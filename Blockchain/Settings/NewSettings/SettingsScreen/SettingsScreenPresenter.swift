@@ -6,13 +6,13 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
-import PlatformKit
-import PlatformUIKit
 import BuySellKit
 import BuySellUIKit
+import PlatformKit
+import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 final class SettingsScreenPresenter {
     
@@ -29,7 +29,7 @@ final class SettingsScreenPresenter {
     }
     
     var barStyle: Screen.Style.Bar {
-        return .lightContent(ignoresStatusBar: false, background: .navigationBarBackground)
+        .lightContent(ignoresStatusBar: false, background: .navigationBarBackground)
     }
     
     // MARK: - Types
@@ -57,7 +57,7 @@ final class SettingsScreenPresenter {
     }
     
     var sectionArrangement: [Section] {
-        return sections(exchangeEnabled: interactor.pitLinkingConfiguration.isEnabled)
+        sections(exchangeEnabled: interactor.pitLinkingConfiguration.isEnabled)
     }
     
     // MARK: - Cell Presenters

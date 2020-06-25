@@ -20,19 +20,19 @@ final class CustodyInformationScreenPresenter {
     // MARK: - Navigation Properties
     
     var trailingButton: Screen.Style.TrailingButton {
-        return .content(.init(title: nil, image: #imageLiteral(resourceName: "cancel_icon"), accessibility: .id(AccessibilityId.backButton)))
+        .content(.init(title: nil, image: #imageLiteral(resourceName: "cancel_icon"), accessibility: .id(AccessibilityId.backButton)))
     }
     
     var leadingButton: Screen.Style.LeadingButton {
-        return .none
+        .none
     }
     
     var titleView: Screen.Style.TitleView {
-        return .text(value: LocalizationID.title)
+        .text(value: LocalizationID.title)
     }
     
     var barStyle: Screen.Style.Bar {
-        return .darkContent(ignoresStatusBar: false, background: .white)
+        .darkContent(ignoresStatusBar: false, background: .white)
     }
     
     private typealias LocalizationID = LocalizationConstants.CustodyWalletInformation
@@ -40,7 +40,7 @@ final class CustodyInformationScreenPresenter {
     // MARK: - Public Properites
     
     var description: LabelContent {
-        return .init(
+        .init(
             text: LocalizationID.Description.partOne,
             font: .main(.medium, 14.0),
             color: .textFieldText,
@@ -50,7 +50,7 @@ final class CustodyInformationScreenPresenter {
     }
     
     var subDescription: LabelContent {
-        return .init(
+        .init(
             text: LocalizationID.Description.partTwo,
             font: .main(.medium, 14.0),
             color: .textFieldText,

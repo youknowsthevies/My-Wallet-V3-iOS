@@ -46,7 +46,7 @@ public protocol PeriodicAnnouncement: DismissibleAnnouncement {
 extension PeriodicAnnouncement {
     
     /// Default the category to periodic
-    public var category: AnnouncementRecord.Category { return .periodic }
+    public var category: AnnouncementRecord.Category { .periodic }
     
     /// Returns a boolean indicating whether the announcement
     /// is in a `dismissed` state.

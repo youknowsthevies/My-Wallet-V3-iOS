@@ -8,9 +8,9 @@
 
 import Charts
 import PlatformKit
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 /// An Rx driven pie-chart view
 public final class AssetPieChartView: UIView {
@@ -76,7 +76,7 @@ public final class AssetPieChartView: UIView {
 
 fileprivate extension Reactive where Base: AssetPieChartView {
     var chartData: Binder<PieChartData> {
-        return Binder(base) { view, data in
+        Binder(base) { view, data in
             view.chartView.data = data
             view.chartView.setNeedsDisplay()
         }

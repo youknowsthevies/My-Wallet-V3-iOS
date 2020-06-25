@@ -17,6 +17,6 @@ public class StellarQRMetadataFactory: CryptoAssetQRMetadataFactory {
     }
 
     public func create(from account: StellarWalletAccount) -> StellarQRMetadata? {
-        return StellarQRMetadata(address: account.publicKey, amount: nil)
+        StellarQRMetadata(address: account.publicKey, amount: nil)
     }
 }

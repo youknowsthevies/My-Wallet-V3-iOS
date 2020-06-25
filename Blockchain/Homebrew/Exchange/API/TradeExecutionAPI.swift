@@ -6,12 +6,12 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BitcoinKit
 import ERC20Kit
-import RxSwift
+import EthereumKit
 import NetworkKit
 import PlatformKit
-import BitcoinKit
-import EthereumKit
+import RxSwift
 import StellarKit
 
 enum TradeExecutionAPIError: Error {

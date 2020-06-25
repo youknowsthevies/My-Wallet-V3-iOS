@@ -63,7 +63,7 @@ extension ObservableType {
     */
 
     public func retry(_ behavior: RepeatBehavior, scheduler: SchedulerType = MainScheduler.instance, shouldRetry: RetryPredicate? = nil) -> Observable<Element> {
-        return retry(1, behavior: behavior, scheduler: scheduler, shouldRetry: shouldRetry)
+        retry(1, behavior: behavior, scheduler: scheduler, shouldRetry: shouldRetry)
     }
 
     /**

@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxSwift
+import ToolKit
 
 class KYCConfirmEmailController: KYCBaseViewController, BottomButtonContainerView, ProgressableView {
 
@@ -36,7 +36,7 @@ class KYCConfirmEmailController: KYCBaseViewController, BottomButtonContainerVie
     // MARK: Private Properties
 
     private lazy var presenter: VerifyEmailPresenter = {
-        return VerifyEmailPresenter(view: self)
+        VerifyEmailPresenter(view: self)
     }()
 
     // MARK: Properties

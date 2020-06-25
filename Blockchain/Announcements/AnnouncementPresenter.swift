@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
+import BuySellKit
 import PlatformKit
 import PlatformUIKit
-import BuySellKit
+import RxCocoa
+import RxSwift
 
 // TODO: Tests - Create a protocol for tests, and inject protocol dependencies.
 
@@ -37,7 +37,7 @@ final class AnnouncementPresenter {
     /// Returns a driver with `.none` as default value for announcement action
     /// Scheduled on be executed on main scheduler, its resources are shared and it remembers the last value.
     var announcement: Driver<AnnouncementDisplayAction> {
-        return announcementRelay
+        announcementRelay
             .asDriver()
             .distinctUntilChanged()
     }

@@ -6,14 +6,14 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
+@testable import Blockchain
+import ERC20Kit
+import EthereumKit
+import PlatformKit
+import PlatformUIKit
 import RxSwift
 import RxTest
-import PlatformKit
-import EthereumKit
-import ERC20Kit
-import PlatformUIKit
-@testable import Blockchain
+import XCTest
 
 class EthereumWalletTests: XCTestCase {
     
@@ -270,7 +270,7 @@ class EthereumWalletTests: XCTestCase {
 
 extension ERC20TokenAccount: Equatable {
     public static func == (lhs: ERC20TokenAccount, rhs: ERC20TokenAccount) -> Bool {
-        return lhs.label == rhs.label
+        lhs.label == rhs.label
             && lhs.contractAddress == rhs.contractAddress
             && lhs.hasSeen == rhs.hasSeen
             && lhs.transactionNotes == rhs.transactionNotes
@@ -279,7 +279,7 @@ extension ERC20TokenAccount: Equatable {
 
 extension EthereumHistoricalTransaction: Equatable {
     public static func == (lhs: EthereumHistoricalTransaction, rhs: EthereumHistoricalTransaction) -> Bool {
-        return lhs.amount == rhs.amount
+        lhs.amount == rhs.amount
             && lhs.confirmations == rhs.confirmations
             && Calendar(identifier: .gregorian).compare(lhs.createdAt, to: rhs.createdAt, toGranularity: Calendar.Component.nanosecond) == .orderedSame
             && lhs.direction == rhs.direction

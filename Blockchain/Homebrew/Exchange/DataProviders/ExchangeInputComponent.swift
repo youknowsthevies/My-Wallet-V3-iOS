@@ -82,7 +82,7 @@ class ExchangeInputViewModel {
     }
     
     func canAppendDelimiter() -> Bool {
-        return canAppend(component: .delimiter)
+        canAppend(component: .delimiter)
     }
     
     func append(character: Character) {
@@ -104,7 +104,7 @@ class ExchangeInputViewModel {
     }
     
     func canDrop() -> Bool {
-        return components.canDrop
+        components.canDrop
     }
     
     // MARK: Private Functions
@@ -139,7 +139,7 @@ class ExchangeInputViewModel {
                 return false
             }
             guard first.type == .whole else { return false }
-            guard components.contains(where: {$0 == .delimiter }) == true else {
+            guard components.contains(where: { $0 == .delimiter }) == true else {
                 assertionFailure("A delimiter type must be added prior to adding fractionals")
                 return false }
             let fractionals = components.filter({ $0.type == .fractional })

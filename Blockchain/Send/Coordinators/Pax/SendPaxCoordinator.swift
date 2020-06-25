@@ -6,14 +6,14 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import RxSwift
-import RxCocoa
 import BigInt
-import ToolKit
-import PlatformKit
-import EthereumKit
 import ERC20Kit
+import EthereumKit
+import Foundation
+import PlatformKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 class SendPaxCoordinator {
     
@@ -41,7 +41,7 @@ class SendPaxCoordinator {
     private var exchangeAddressViewModel = ExchangeAddressViewModel(assetType: .pax)
 
     private var fees: Single<EthereumTransactionFee> {
-        return services.feeService.fees
+        services.feeService.fees
     }
     
     init(
@@ -78,11 +78,11 @@ extension SendPaxCoordinator {
         let balance: CryptoValue?
 
         var fiatFee: FiatValue? {
-            return etherFee?.convertToFiatValue(exchangeRate: etherInFiat)
+            etherFee?.convertToFiatValue(exchangeRate: etherInFiat)
         }
         
         var paxFee: CryptoValue? {
-            return fiatFee?.convertToCryptoValue(exchangeRate: paxInFiat, cryptoCurrency: .pax)
+            fiatFee?.convertToCryptoValue(exchangeRate: paxInFiat, cryptoCurrency: .pax)
         }
         
         init(etherInFiat: FiatValue, paxInFiat: FiatValue, etherFee: EthereumTransactionFee, balance: CryptoValue) {
@@ -140,7 +140,7 @@ extension SendPaxCoordinator {
         var totalCryptoIncludingFee: String
         
         var totalAmount: String {
-            return "\(cryptoAmount) (\(fiatAmount))"
+            "\(cryptoAmount) (\(fiatAmount))"
         }
     }
     
@@ -148,7 +148,7 @@ extension SendPaxCoordinator {
     private var metadata: Single<Metadata> {
         let balance = services.assetAccountRepository.assetAccountDetails
             .map { details -> CryptoValue in
-                return details.balance
+                details.balance
             }
             .subscribeOn(MainScheduler.asyncInstance)
             .asObservable()
@@ -162,7 +162,7 @@ extension SendPaxCoordinator {
             balance
         )
         .map { (ethPrice, paxPrice, etherTransactionFee, balance) -> Metadata in
-            return Metadata(etherInFiat: ethPrice.priceInFiat,
+            Metadata(etherInFiat: ethPrice.priceInFiat,
                             paxInFiat: paxPrice.priceInFiat,
                             etherFee: etherTransactionFee,
                             balance: balance)
@@ -171,9 +171,9 @@ extension SendPaxCoordinator {
     
     /// Fetches updated transaction and fee amounts for display purpose
     private var displayData: Single<DisplayData?> {
-        return metadata
+        metadata
             .map { [weak self] data in
-                return data.displayData(using: self?.output?.model.proposal?.value.value)
+                data.displayData(using: self?.output?.model.proposal?.value.value)
             }
             .observeOn(MainScheduler.asyncInstance)
     }
@@ -247,7 +247,7 @@ extension SendPaxCoordinator: SendPaxViewControllerDelegate {
             .do(onSuccess: { [weak self] data in
                 self?.interface.apply(updates: [.maxAvailable(data.balance)])
             })
-            .map { return $0.displayData() }
+            .map { $0.displayData() }
             .subscribe(onSuccess: { [weak self] data in
                 self?.interface.apply(updates: [.feeValueLabel(data.fee)])
             }, onError: { error in
@@ -341,7 +341,7 @@ extension SendPaxCoordinator: SendPaxViewControllerDelegate {
                 self?.interface.apply(updates: [.loadingIndicatorVisibility(.visible)])
             })
             .flatMap(weak: self) { (self, candidate) -> Single<EthereumTransactionPublished> in
-                return self.services.walletService.send(transaction: candidate)
+                self.services.walletService.send(transaction: candidate)
             }
             .observeOn(MainScheduler.instance)
             .do(onDispose: { [weak self] in

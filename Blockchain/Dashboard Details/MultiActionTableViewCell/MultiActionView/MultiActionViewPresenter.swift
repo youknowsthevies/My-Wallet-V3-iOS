@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import RxSwift
 import PlatformUIKit
+import RxSwift
 
 /// `MultiActionViewPresenting` represents a `MultiActionView`.
 /// There are two types, `primary` as well as `default`.

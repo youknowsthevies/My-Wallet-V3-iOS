@@ -103,7 +103,7 @@ final class KYCInformationController: KYCBaseViewController {
     }
     
     override func navControllerCTAType() -> NavigationCTA {
-        return .dismiss
+        .dismiss
     }
     
     override func navControllerRightBarButtonTapped(_ navController: KYCOnboardingNavigationController) {

@@ -32,7 +32,7 @@ class SwapIntroductionViewController: UIViewController {
     private let feedback: UISelectionFeedbackGenerator = UISelectionFeedbackGenerator()
     private let layoutAttributes: LayoutAttributes = .outer
     private lazy var items: [Item] = {
-        return Item.tutorial
+        Item.tutorial
     }()
     
     override func viewDidLoad() {
@@ -87,7 +87,7 @@ extension SwapIntroductionViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return items.count
+        items.count
     }
 }
 
@@ -100,7 +100,7 @@ extension SwapIntroductionViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
         ) -> CGSize {
-        return collectionView.bounds.size
+        collectionView.bounds.size
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -144,11 +144,11 @@ extension SwapIntroductionViewController {
 extension SwapIntroductionViewController: NavigatableView {
     
     var rightNavControllerCTAType: NavigationCTAType {
-        return .none
+        .none
     }
     
     var leftNavControllerCTAType: NavigationCTAType {
-        return .menu
+        .menu
     }
     
     func navControllerLeftBarButtonTapped(_ navController: UINavigationController) {

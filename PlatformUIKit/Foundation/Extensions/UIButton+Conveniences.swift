@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxCocoa
+import RxSwift
 
 public struct ButtonContent: Equatable {
 
@@ -20,7 +20,7 @@ public struct ButtonContent: Equatable {
     public static let defaultColor: UIColor = .clear
 
     public static var empty: ButtonContent {
-        return ButtonContent()
+        ButtonContent()
     }
     
     let text: String
@@ -48,7 +48,7 @@ public struct ButtonContent: Equatable {
     }
     
     public static func == (lhs: ButtonContent, rhs: ButtonContent) -> Bool {
-        return lhs.text == rhs.text
+        lhs.text == rhs.text
     }
     
     var isEmpty: Bool {
@@ -98,7 +98,7 @@ extension UIButton {
 
 extension Reactive where Base: UIButton {
     public var content: Binder<ButtonContent> {
-        return Binder(base) { button, content in
+        Binder(base) { button, content in
             button.content = content
         }
     }

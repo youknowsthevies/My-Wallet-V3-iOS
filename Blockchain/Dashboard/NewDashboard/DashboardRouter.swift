@@ -9,8 +9,8 @@
 import Foundation
 import PlatformKit
 import PlatformUIKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 final class DashboardRouter: Router {
 

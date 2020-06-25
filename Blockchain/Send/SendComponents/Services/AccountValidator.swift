@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import EthereumKit
+import PlatformKit
 
 final class AccountValidator {
     func validate(address: String, as asset: CryptoCurrency) -> Bool {

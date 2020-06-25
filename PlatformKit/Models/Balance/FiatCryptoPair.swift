@@ -20,7 +20,7 @@ public struct FiatCryptoPair: Equatable {
     
     /// Returns `true` if the value is 0
     public var isZero: Bool {
-        return fiat.isZero || crypto.isZero
+        fiat.isZero || crypto.isZero
     }
     
     public init(crypto: CryptoValue, fiat: FiatValue) {
@@ -58,7 +58,7 @@ public struct FiatCryptoPair: Equatable {
     
     /// Calculates the value before percentage increase / decrease
     public func value(before percentageChange: Double) throws -> FiatCryptoPair {
-        return FiatCryptoPair(
+        FiatCryptoPair(
             crypto: try crypto.value(before: percentageChange),
             fiat: fiat.value(before: percentageChange)
         )

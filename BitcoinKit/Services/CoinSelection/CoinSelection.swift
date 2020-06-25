@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import BigInt
+import PlatformKit
 
 struct Fee {
     // FIXME: Should this be a BitcoinValue?

@@ -6,20 +6,20 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
-import ToolKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
+import ToolKit
 
 final class SMSSwitchViewInteractor: SwitchViewInteracting {
     
     typealias InteractionState = LoadingState<SwitchInteractionAsset>
     
     var state: Observable<InteractionState> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
     }
     
     let switchTriggerRelay = PublishRelay<Bool>()

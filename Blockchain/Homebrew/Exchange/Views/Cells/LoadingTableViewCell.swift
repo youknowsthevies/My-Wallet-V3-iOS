@@ -19,7 +19,7 @@ class LoadingTableViewCell: UITableViewCell {
     // MARK: Static Functions
     
     static func height() -> CGFloat {
-        return standardHeight
+        standardHeight
     }
     
     // MARK: Lifecycle

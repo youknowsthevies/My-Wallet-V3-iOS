@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
 import PlatformKit
-import RxSwift
+import PlatformUIKit
 import RxCocoa
 import RxRelay
+import RxSwift
 
 /// The status of the withdrawal after submission
 enum CustodyWithdrawalStatus {
@@ -52,7 +52,7 @@ final class CustodyWithdrawalSummaryPresenter {
     }
     
     var titleView: Screen.Style.TitleView {
-        return .text(value: "\(LocalizationConstants.SimpleBuy.Withdrawal.title) \(currency.name) \(LocalizationConstants.wallet)")
+        .text(value: "\(LocalizationConstants.SimpleBuy.Withdrawal.title) \(currency.name) \(LocalizationConstants.wallet)")
     }
     
     var barStyle: Screen.Style.Bar {

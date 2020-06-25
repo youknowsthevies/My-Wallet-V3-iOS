@@ -24,7 +24,7 @@ class LocationSuggestionService: NSObject, LocationSuggestionAPI {
     // MARK: LocationSuggestionAPI
 
     var isExecuting: Bool {
-        get { return completer.isSearching }
+        get { completer.isSearching }
     }
 
     func search(for query: String, with completion: @escaping LocationSuggestionCompletion) {
@@ -38,7 +38,7 @@ class LocationSuggestionService: NSObject, LocationSuggestionAPI {
     }
 
     func fetchAddress(from suggestion: LocationSuggestion, with block: @escaping PostalAddressCompletion) {
-        let completion = completer.results.first(where: {$0.title == suggestion.title && $0.subtitle == suggestion.subtitle})
+        let completion = completer.results.first(where: { $0.title == suggestion.title && $0.subtitle == suggestion.subtitle })
         guard let selection = completion else { return }
 
         let request = MKLocalSearch.Request(completion: selection)
@@ -72,11 +72,11 @@ class LocationSuggestionService: NSObject, LocationSuggestionAPI {
 extension LocationSuggestionService: MKLocalSearchCompleterDelegate {
     func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
         guard let block = completionHandler else { return }
-        let result = completer.results.map({ return LocationSuggestion(
+        let result = completer.results.map({ LocationSuggestion(
             title: $0.title,
             subtitle: $0.subtitle,
-            titleHighlights: $0.titleHighlightRanges.map({ return $0.rangeValue }),
-            subtitleHighlights: $0.subtitleHighlightRanges.map({ return $0.rangeValue })
+            titleHighlights: $0.titleHighlightRanges.map({ $0.rangeValue }),
+            subtitleHighlights: $0.subtitleHighlightRanges.map({ $0.rangeValue })
             )
         })
         block(result, nil)

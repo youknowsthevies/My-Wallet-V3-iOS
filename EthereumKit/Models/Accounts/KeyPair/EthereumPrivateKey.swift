@@ -22,10 +22,10 @@ public struct EthereumPrivateKey: Equatable {
 
 extension EthereumPrivateKey {
     public var base58Encoded: Data? {
-        return data.string.base58DecodedData
+        data.string.base58DecodedData
     }
     
     public var base58EncodedString: String? {
-        return data.string.base58EncodedString
+        data.string.base58EncodedString
     }
 }

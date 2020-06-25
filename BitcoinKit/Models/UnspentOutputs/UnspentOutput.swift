@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import BigInt
+import PlatformKit
 
 struct UnspentOutput: Equatable {
     
@@ -17,7 +17,7 @@ struct UnspentOutput: Equatable {
     }
     
     var magnitude: BigUInt {
-        return value.amount.magnitude
+        value.amount.magnitude
     }
 
     let hash: String
@@ -105,7 +105,7 @@ extension Array where Element == UnspentOutput {
     }
     
     func effective(for fee: Fee) -> [UnspentOutput] {
-        return filter { $0.isForceInclude || $0.effectiveValue(for: fee) > BigUInt.zero }
+        filter { $0.isForceInclude || $0.effectiveValue(for: fee) > BigUInt.zero }
     }
     
     func balance(for fee: Fee, outputs: Int, calculator: TransactionSizeCalculating) -> BigUInt {

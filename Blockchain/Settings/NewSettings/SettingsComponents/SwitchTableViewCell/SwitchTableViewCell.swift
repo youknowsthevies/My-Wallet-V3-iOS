@@ -8,8 +8,8 @@
 
 import PlatformKit
 import PlatformUIKit
-import RxSwift
 import RxCocoa
+import RxSwift
 
 final class SwitchTableViewCell: UITableViewCell {
     
@@ -51,7 +51,7 @@ final class SwitchTableViewCell: UITableViewCell {
 extension Reactive where Base: SwitchTableViewCell {
     
     var content: Binder<LabelContent.State.Presentation> {
-        return Binder(base) { view, state in
+        Binder(base) { view, state in
             switch state {
             case .loading:
                 break

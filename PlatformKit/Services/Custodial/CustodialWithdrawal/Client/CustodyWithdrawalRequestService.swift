@@ -33,7 +33,7 @@ public final class CustodyWithdrawalRequestService: CustodyWithdrawalServiceAPI 
     // MARK: - SimpleBuyWithdrawalServiceAPI
     
     public func makeWithdrawal(amount: CryptoValue, destination: String) -> Single<CustodialWithdrawalResponse> {
-        return authenticationService
+        authenticationService
             .tokenString
             .flatMap(weak: self) { (self, authToken) -> Single<CustodialWithdrawalResponse> in
                 self.client.withdraw(cryptoValue: amount, destination: destination, authToken: authToken)

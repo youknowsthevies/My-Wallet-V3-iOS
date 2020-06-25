@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
+import BuySellKit
 import PlatformKit
 import PlatformUIKit
-import BuySellKit
+import RxRelay
+import RxSwift
 
 final class BuyCryptoScreenInteractor {
 

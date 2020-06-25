@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
 @testable import Blockchain
+import XCTest
 
 class QRCodeScannerTests: XCTestCase {
     
@@ -15,7 +15,7 @@ class QRCodeScannerTests: XCTestCase {
     var deviceInputMock: DeviceInputMock!
     var captureSession: CaptureSessionMock!
     var captureMetadataOutput: CaptureMetadataOutputMock!
-    var delegate: QRCodeScannerDelegateMock!
+    weak var delegate: QRCodeScannerDelegateMock!
 
     override func setUp() {
         super.setUp()
@@ -44,7 +44,6 @@ class QRCodeScannerTests: XCTestCase {
         
         super.tearDown()
     }
-
     
     // TODO:
     // * Fix these tests

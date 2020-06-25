@@ -8,8 +8,8 @@
 
 import PlatformKit
 import PlatformUIKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 protocol NonCustodialActionRouterAPI: class {
     func next(to state: NonCustodialActionState)
@@ -102,7 +102,7 @@ final class NonCustodialActionRouter: NonCustodialActionRouterAPI, Router {
     }
     
     private lazy var sheetPresenter: BottomSheetPresenting = {
-        return BottomSheetPresenting(ignoresBackroundTouches: false)
+        BottomSheetPresenting(ignoresBackroundTouches: false)
     }()
 }
 

@@ -22,7 +22,7 @@ public struct ActionableTrigger: Equatable {
 
 extension ActionableTrigger {
     public static func == (lhs: ActionableTrigger, rhs: ActionableTrigger) -> Bool {
-        return lhs.primaryString == rhs.primaryString &&
+        lhs.primaryString == rhs.primaryString &&
             lhs.secondaryString == rhs.secondaryString &&
             lhs.callToAction == rhs.callToAction
     }

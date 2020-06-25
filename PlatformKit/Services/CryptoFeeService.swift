@@ -7,13 +7,13 @@
 //
 
 import Foundation
+import NetworkKit
 import RxSwift
 import ToolKit
-import NetworkKit
 
 public final class CryptoFeeService<T: TransactionFee & Decodable>: CryptoFeeServiceAPI {
     public var fees: Single<T> {
-        return getFees().do(onError: { error in
+        getFees().do(onError: { error in
             Logger.shared.error(error)
         })
         .catchErrorJustReturn(T.default)

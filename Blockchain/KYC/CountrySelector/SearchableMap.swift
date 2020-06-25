@@ -34,15 +34,15 @@ class SearchableMap<Item: SearchableItem> {
     }
 
     var firstLetters: [String] {
-        return Array(backingMap.keys).sorted(by: { $0 < $1 })
+        Array(backingMap.keys).sorted(by: { $0 < $1 })
     }
 
     var keys: Dictionary<String, [Item]>.Keys {
-        return backingMap.keys
+        backingMap.keys
     }
 
     func items(firstLetter: String) -> [Item]? {
-        return backingMap[firstLetter]
+        backingMap[firstLetter]
     }
 
     func setAllItems(_ items: [Item]) {

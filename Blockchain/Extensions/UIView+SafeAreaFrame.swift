@@ -47,10 +47,10 @@ extension UIView {
     }
 
     class func rootViewSafeAreaInsets() -> UIEdgeInsets {
-        return rootViewController()?.view.safeAreaInsets ?? .zero
+        rootViewController()?.view.safeAreaInsets ?? .zero
     }
 
     private class func rootViewController() -> UIViewController? {
-        return UIApplication.shared.keyWindow?.rootViewController
+        UIApplication.shared.keyWindow?.rootViewController
     }
 }

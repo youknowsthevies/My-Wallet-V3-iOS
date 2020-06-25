@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BigInt
+import EthereumKit
 import NetworkKit
 import PlatformKit
-import EthereumKit
-import BigInt
 import RxSwift
 
 public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable, HistoricalTransaction, Tokenized {

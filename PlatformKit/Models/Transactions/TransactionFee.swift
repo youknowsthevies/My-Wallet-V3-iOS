@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 public struct TransactionFeeLimits: Decodable {
     public let min: Int
@@ -25,7 +25,7 @@ public protocol HasPathComponent {
 
 extension CryptoCurrency: HasPathComponent {
     public var pathComponent: String {
-        return code.lowercased()
+        code.lowercased()
     }
 }
 

@@ -7,8 +7,8 @@
 //
 
 import BigInt
-import PlatformKit
 import EthereumKit
+import PlatformKit
 
 public struct PaxToken: ERC20Token {
     //swiftlint:disable:next force_try
@@ -34,6 +34,6 @@ public struct PaxToken: ERC20Token {
     }
     
     public static func cryptoValueFrom(minorValue: BigInt) -> ERC20TokenValue<PaxToken>? {
-        return try? ERC20TokenValue<PaxToken>(crypto: CryptoValue.createFromMinorValue(minorValue, assetType: assetType))
+        try? ERC20TokenValue<PaxToken>(crypto: CryptoValue.createFromMinorValue(minorValue, assetType: assetType))
     }
 }

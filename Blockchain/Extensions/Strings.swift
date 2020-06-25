@@ -6,13 +6,13 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import CommonCryptoKit
+import PlatformKit
 
 extension String {
     
     func capitalizingFirstLetter() -> String {
-        return prefix(1).uppercased() + dropFirst()
+        prefix(1).uppercased() + dropFirst()
     }
     
     mutating func capitalizeFirstLetter() {
@@ -29,7 +29,7 @@ extension String {
     /// Provided a URL query string such as "field1=value1&field2=value2", this computed property
     /// will return a dictionary in the format ["field1": "value1": "field2": "value2"]
     var urlQueryKeyPairDictionary: [String: String] {
-        return [:]
+        [:]
     }
 
     /// Returns query arguments from a string in URL format
@@ -50,7 +50,7 @@ extension String {
     }
     // Returns a localized string from Localizable.strings
     func localized(bundle: Bundle = .main, tableName: String = "Localizable") -> String {
-        return NSLocalizedString(self, tableName: tableName, value: self, comment: "")
+        NSLocalizedString(self, tableName: tableName, value: self, comment: "")
     }
 }
 
@@ -70,10 +70,10 @@ extension NSString {
 // MARK: - Symbol formatting
 extension String {
     func appendAssetSymbol(for assetType: CryptoCurrency) -> String {
-        return self + " " + assetType.displayCode
+        self + " " + assetType.displayCode
     }
 
     func appendCurrencySymbol() -> String {
-        return BlockchainSettings.sharedAppInstance().fiatCurrencySymbol + self
+        BlockchainSettings.sharedAppInstance().fiatCurrencySymbol + self
     }
 }

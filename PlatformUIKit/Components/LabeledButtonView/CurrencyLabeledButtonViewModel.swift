@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
 import PlatformKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 /// TODO: Handle `CryptoValue` as well
 public final class CurrencyLabeledButtonViewModel: NSObject, LabeledButtonViewModelAPI {
@@ -33,7 +33,7 @@ public final class CurrencyLabeledButtonViewModel: NSObject, LabeledButtonViewMo
 
     /// Streams the content of the relay
     public var content: Driver<ButtonContent> {
-        return contentRelay.asDriver()
+        contentRelay.asDriver()
     }
 
     /// Determines the background color of the view

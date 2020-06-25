@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxRelay
+import RxSwift
 
 /// Generalized version of text matcher, resolves a stream from multiple text sources into a boolean
 /// that is `true` if and only if all the values are equal

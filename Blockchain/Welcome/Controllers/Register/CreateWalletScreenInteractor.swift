@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import ToolKit
 import PlatformKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 // TODO: Refactor this when the coordinators are refactored
 /// The interaction layer for wallet creation
@@ -19,7 +19,7 @@ final class CreateWalletScreenInteractor: NSObject {
     
     let contentStateRelay = BehaviorRelay(value: WalletRegistrationContent())
     var content: Observable<WalletRegistrationContent> {
-        return contentStateRelay.asObservable()
+        contentStateRelay.asObservable()
     }
     
     /// Any error related to the interaction should be reflected to the presenter
@@ -27,7 +27,7 @@ final class CreateWalletScreenInteractor: NSObject {
     /// want to use a relay to let the presentation layer
     /// know about errors
     var error: Observable<String> {
-        return errorRelay.asObservable()
+        errorRelay.asObservable()
     }
     
     // MARK: - Injected

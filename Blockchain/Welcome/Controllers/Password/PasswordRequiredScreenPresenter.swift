@@ -8,9 +8,9 @@
 
 import PlatformKit
 import PlatformUIKit
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 final class PasswordRequiredScreenPresenter {
     
@@ -41,7 +41,7 @@ final class PasswordRequiredScreenPresenter {
     
     /// The total state of the presentation
     var state: Driver<FormPresentationState> {
-        return stateRelay.asDriver()
+        stateRelay.asDriver()
     }
     
     // MARK: - Injected
@@ -74,7 +74,7 @@ final class PasswordRequiredScreenPresenter {
                     
         let stateObservable = passwordTextFieldViewModel.state
             .map(weak: self) { (self, payload) -> FormPresentationState in
-                return try self.stateReducer.reduce(states: [payload])
+                try self.stateReducer.reduce(states: [payload])
             }
             /// Should never get to `catchErrorJustReturn`.
             .catchErrorJustReturn(.invalid(.invalidTextField))

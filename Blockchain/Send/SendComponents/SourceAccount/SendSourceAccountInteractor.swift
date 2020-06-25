@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import RxSwift
 import RxRelay
+import RxSwift
 
 /// Deals with the source account interaction on the send flow.
 final class SendSourceAccountInteractor: SendSourceAccountInteracting {
@@ -17,12 +17,12 @@ final class SendSourceAccountInteractor: SendSourceAccountInteracting {
     
     /// Streams the *selected* source account to send crypto from
     var account: Observable<SendSourceAccount> {
-        return accountRelay.asObservable()
+        accountRelay.asObservable()
     }
     
     /// Streams the state of the account
     var state: Observable<SendSourceAccountState> {
-        return stateService.state
+        stateService.state
     }
     
     // MARK: - Private Properties

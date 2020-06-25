@@ -15,7 +15,7 @@ import PlatformUIKit
 
     // class function declared so that the TransferAllCoordinator singleton can be accessed from obj-C
     @objc class func sharedInstance() -> TransferAllCoordinator {
-        return TransferAllCoordinator.shared
+        TransferAllCoordinator.shared
     }
     
     private let loadingViewPresenter: LoadingViewPresenting

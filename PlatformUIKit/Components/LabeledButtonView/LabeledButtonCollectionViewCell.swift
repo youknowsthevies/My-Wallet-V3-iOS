@@ -27,7 +27,7 @@ final class LabeledButtonCollectionViewCell<ViewModel: LabeledButtonViewModelAPI
         labeledButtonView.fillSuperview()
     }
     @available(*, unavailable)
-    required init?(coder: NSCoder) { return nil }
+    required init?(coder: NSCoder) { nil }
 
     override func prepareForReuse() {
         super.prepareForReuse()

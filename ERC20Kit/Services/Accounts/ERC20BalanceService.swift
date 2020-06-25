@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import PlatformKit
 import EthereumKit
+import PlatformKit
+import RxSwift
 
 public protocol ERC20BalanceServiceAPI {
     associatedtype Token: ERC20Token
@@ -39,6 +39,6 @@ public class AnyERC20BalanceService<Token: ERC20Token>: ERC20BalanceServiceAPI {
         accountClient
             .fetchAccountSummary(from: address.publicKey)
             .map { $0.balance }
-            .map { Token.cryptoValueFrom(minorValue: $0) ?? Token.zeroValue}
+            .map { Token.cryptoValueFrom(minorValue: $0) ?? Token.zeroValue }
     }
 }

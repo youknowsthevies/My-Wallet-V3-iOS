@@ -32,6 +32,6 @@ public protocol CryptoAssetQRMetadata {
 
 extension CryptoAssetQRMetadata {
     public var includeScheme: Bool {
-        return false
+        false
     }
 }

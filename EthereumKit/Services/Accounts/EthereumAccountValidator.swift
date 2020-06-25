@@ -12,6 +12,6 @@ import web3swift
 
 public struct EthereumAccountValidator: AccountValidationAPI {
     public static func validate(accountID: AccountID) -> Single<Bool> {
-        return Single.just(web3swift.Address(accountID).isValid)
+        Single.just(web3swift.Address(accountID).isValid)
     }
 }

@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformUIKit
 import RxCocoa
 import RxSwift
-import PlatformUIKit
 
 // The presenter of the address screen
 final class AddressPresenter {
@@ -21,7 +21,7 @@ final class AddressPresenter {
     
     /// The asset name label accessibility
     var titleAccessibility: Accessibility {
-        return Accessibility(id: .value(AccessibilityIdentifiers.Address.assetNameLabel),
+        Accessibility(id: .value(AccessibilityIdentifiers.Address.assetNameLabel),
                             traits: .value(.header))
     }
     
@@ -30,7 +30,7 @@ final class AddressPresenter {
     
     /// The status of the address. Streams values on the `MainScheduler` by default
     var status: Observable<DisplayAddressStatus> {
-        return statusRelay
+        statusRelay
             .distinctUntilChanged()
             .observeOn(MainScheduler.instance)
     }
@@ -60,7 +60,7 @@ final class AddressPresenter {
     
     /// Computed variable that returns the asset image.
     var assetImage: UIImage {
-        return UIImage(named: assetImageName)!
+        UIImage(named: assetImageName)!
     }
     
     /// Accepts and streams the raw address in order to share it
@@ -68,7 +68,7 @@ final class AddressPresenter {
     
     /// Observes the address for sharing purpose
     var addressShare: Observable<String> {
-        return addressShareRelay
+        addressShareRelay
             .map { $0.string }
             .observeOn(MainScheduler.instance)
             .asObservable()
@@ -143,7 +143,7 @@ final class AddressPresenter {
         // Bind any received payment to `statusRelay`
         interactor.receivedPayment
             .map { _ -> DisplayAddressStatus in
-                return .awaitingFetch
+                .awaitingFetch
             }
             .asDriver(onErrorJustReturn: .awaitingFetch)
             .drive(statusRelay)
@@ -160,7 +160,7 @@ final class AddressPresenter {
         // Get the next address
         interactor.address
             .map { content -> DisplayAddressStatus in
-                return .readyForDisplay(content: content)
+                .readyForDisplay(content: content)
             }
             .catchError { error -> Single<DisplayAddressStatus> in
                 switch error {

@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import UserNotifications
-import ToolKit
 import PlatformKit
+import RxSwift
+import ToolKit
+import UserNotifications
 
 final class RemoteNotificationAuthorizer {
     
@@ -55,7 +55,7 @@ final class RemoteNotificationAuthorizer {
     // MARK: - Private Accessors
     
     private func requestAuthorization() -> Single<Void> {
-        return Single
+        Single
             .create(weak: self) { (self, observer) -> Disposable in
                 self.analyticsRecorder.record(event: AnalyticsEvents.Permission.permissionSysNotifRequest)
                 self.userNotificationCenter.requestAuthorization(options: self.options) { [weak self] isGranted, error in
@@ -77,7 +77,7 @@ final class RemoteNotificationAuthorizer {
     }
     
     private var isNotDetermined: Single<Bool> {
-        return status.map { $0 == .notDetermined }
+        status.map { $0 == .notDetermined }
     }
 }
 
@@ -86,7 +86,7 @@ final class RemoteNotificationAuthorizer {
 extension RemoteNotificationAuthorizer: RemoteNotificationAuthorizationStatusProviding {
     /// A `Single` that streams the authorization status of the notifications, on demand.
     var status: Single<UNAuthorizationStatus> {
-        return Single<UNAuthorizationStatus>
+        Single<UNAuthorizationStatus>
             .create(weak: self) { (self, observer) -> Disposable in
                 self.userNotificationCenter.getAuthorizationStatus(completionHandler: { status in
                     observer(.success(status))
@@ -102,7 +102,7 @@ extension RemoteNotificationAuthorizer: RemoteNotificationRegistering {
     /// Registers for remote notifications ONLY if the authorization status is `.authorized`.
     /// Should be called at the application startup after first initializing Firebase Messaging.
     func registerForRemoteNotificationsIfAuthorized() -> Single<Void> {
-        return isAuthorized
+        isAuthorized
             .map { isAuthorized -> Void in
                 guard isAuthorized else {
                     throw ServiceError.unauthorizedStatus
@@ -127,7 +127,7 @@ extension RemoteNotificationAuthorizer: RemoteNotificationAuthorizationRequestin
     // TODO: Handle a `.denied` case
     /// Request authorization for remote notifications if the status is not yet determined.
     func requestAuthorizationIfNeeded() -> Single<Void> {
-        return isNotDetermined
+        isNotDetermined
             .map { isNotDetermined -> Void in
                 guard isNotDetermined else {
                     throw ServiceError.statusWasAlreadyDetermined
@@ -136,7 +136,7 @@ extension RemoteNotificationAuthorizer: RemoteNotificationAuthorizationRequestin
             }
             .observeOn(MainScheduler.instance)
             .flatMap(weak: self) { (self, status) -> Single<Void> in
-                return self.requestAuthorization()
+                self.requestAuthorization()
             }
             .observeOn(MainScheduler.instance)
             .do(

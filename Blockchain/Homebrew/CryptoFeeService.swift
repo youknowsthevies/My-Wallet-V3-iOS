@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import BitcoinKit
 import EthereumKit
-import StellarKit
+import PlatformKit
 import RxSwift
+import StellarKit
 
 public protocol FeeServiceAPI {
     /// This pulls from a Blockchain.info endpoint that serves up
@@ -40,19 +40,19 @@ public final class FeeService: FeeServiceAPI {
     // MARK: - FeeServiceAPI
 
     public var bitcoin: Single<BitcoinTransactionFee> {
-        return bitcoinFeeService.fees
+        bitcoinFeeService.fees
     }
     
     public var bitcoinCash: Single<BitcoinCashTransactionFee> {
-        return bitcoinCashFeeService.fees
+        bitcoinCashFeeService.fees
     }
 
     public var ethereum: Single<EthereumTransactionFee> {
-        return ethereumFeeService.fees
+        ethereumFeeService.fees
     }
 
     public var stellar: Single<StellarTransactionFee> {
-        return stellarFeeService.fees
+        stellarFeeService.fees
     }
 
     // MARK: - Private properties
@@ -88,7 +88,7 @@ class EthereumFeeService: EthereumFeeServiceAPI {
     // MARK: Public Properties
     
     var fees: Single<EthereumTransactionFee> {
-        return cryptoFeeService.fees
+        cryptoFeeService.fees
     }
     
     private let cryptoFeeService: CryptoFeeService<EthereumTransactionFee>

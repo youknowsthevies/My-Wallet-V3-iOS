@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import XCTest
-import RxSwift
 import PlatformKit
+import RxSwift
+import XCTest
 
 @testable import Blockchain
 
@@ -22,19 +22,19 @@ class PinInteractorTests: XCTestCase {
     }
     
     var maintenanceService: MaintenanceServicing {
-        return MockWalletService()
+        MockWalletService()
     }
     
     var wallet: WalletProtocol {
-        return MockWalletData(initialized: true, delegate: nil)
+        MockWalletData(initialized: true, delegate: nil)
     }
     
     var appSettings: MockAppSettings {
-        return MockAppSettings()
+        MockAppSettings()
     }
     
     var credentialsProvider: WalletCredentialsProviding {
-        return MockWalletCredentialsProvider.valid
+        MockWalletCredentialsProvider.valid
     }
     
     // MARK: - Test success cases

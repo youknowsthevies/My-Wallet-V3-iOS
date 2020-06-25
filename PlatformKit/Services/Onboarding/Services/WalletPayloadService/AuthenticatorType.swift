@@ -32,6 +32,6 @@ public enum AuthenticatorType: Int, CaseIterable, Codable {
     
     /// Returns `true` if self is a two factor auth type
     public var isTwoFactor: Bool {
-        return self != .standard
+        self != .standard
     }
 }

@@ -7,8 +7,8 @@
 //
 
 import PlatformKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 /// The interaction layer implementation for fee calculation during the send flow.
 final class SendFeeInteractor: SendFeeInteracting {
@@ -17,7 +17,7 @@ final class SendFeeInteractor: SendFeeInteracting {
     
     /// Streams the calculation state for the fee
     var calculationState: Observable<FiatCryptoPairCalculationState> {
-        return calculationStateRelay.asObservable()
+        calculationStateRelay.asObservable()
     }
     
     // MARK: - Private Properties
@@ -44,7 +44,7 @@ final class SendFeeInteractor: SendFeeInteracting {
         Observable
             .combineLatest(feeService.fee, exchangeService.fiatPrice)
             .map { (fee, rate) -> FiatCryptoPairCalculationState in
-                return .value(FiatCryptoPair(crypto: fee, exchangeRate: rate))
+                .value(FiatCryptoPair(crypto: fee, exchangeRate: rate))
             }
             .startWith(.calculating)
             .bind(to: calculationStateRelay)

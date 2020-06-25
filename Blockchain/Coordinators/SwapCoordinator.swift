@@ -7,12 +7,12 @@
 //
 
 import Foundation
-import RxSwift
-import ToolKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import RxSwift
 import StellarKit
+import ToolKit
 
 enum SwapCoordinatorEvent {
     case confirmExchange(orderTransaction: OrderTransaction, conversion: Conversion)
@@ -37,7 +37,7 @@ protocol SwapCoordinatorAPI {
 
     // class function declared so that the SwapCoordinator singleton can be accessed from obj-C
     @objc class func sharedInstance() -> SwapCoordinator {
-        return SwapCoordinator.shared
+        SwapCoordinator.shared
     }
     
     // MARK: - Private Properties
@@ -88,7 +88,7 @@ protocol SwapCoordinatorAPI {
                 .subscribe(onSuccess: { payload in
                     let tiersResponse = payload.1
                     let approved = tiersResponse.tiers.contains(where: {
-                        return $0.tier != .tier0 && $0.state == .verified
+                        $0.tier != .tier0 && $0.state == .verified
                     })
                     guard approved == true else {
                         observer(.success(false))
@@ -110,7 +110,7 @@ protocol SwapCoordinatorAPI {
     func initXlmAccountIfNeeded(completion: @escaping (() -> ())) {
         disposable = stellarAccountRepository.initializeMetadataMaybe()
             .flatMap({ [unowned self] _ in
-                return self.stellarAccountService.currentStellarAccount(fromCache: true)
+                self.stellarAccountService.currentStellarAccount(fromCache: true)
             })
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)

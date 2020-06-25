@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import NetworkKit
 import PlatformKit
+import RxSwift
 
 /// Remote notification network service
 final class RemoteNotificationNetworkService {

@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
 import RxCocoa
 import RxSwift
+import UIKit
 
 /// A container for a `UISwitch`. Mainly this is for making
 /// `UISwitch` a bit more Rx friendly so that you can apply a
@@ -44,7 +44,7 @@ public class SwitchView: UIView {
             
             // Bind enabled property
             viewModel.isEnabled
-                .map { return $0 }
+                .map { $0 }
                 .drive(switchView.rx.isEnabled)
                 .disposed(by: disposeBag)
             

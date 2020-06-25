@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import Localization
-import ToolKit
 import PlatformUIKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 /// A introductory screen for simple buy flow
 final class BuyIntroScreenViewController: BaseScreenViewController {

@@ -15,6 +15,6 @@ public protocol JSContextProviderAPI: class {
 
 extension JSContextProviderAPI {
     public var jsContext: JSContext {
-        return fetchJSContext()
+        fetchJSContext()
     }
 }

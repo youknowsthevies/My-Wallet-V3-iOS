@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import BigInt
+import PlatformKit
 
 public struct EthereumTransactionFee: TransactionFee, Decodable {
     public static var cryptoType: HasPathComponent = CryptoCurrency.ethereum
@@ -72,12 +72,12 @@ public struct EthereumTransactionFee: TransactionFee, Decodable {
 public extension EthereumTransactionFee {
     /// Fees must be provided in `gwei`.
     var priorityGweiValue: String {
-        return priority.gwei
+        priority.gwei
     }
 
     /// Fees must be provided in `gwei`.
     var regularGweiValue: String {
-        return regular.gwei
+        regular.gwei
     }
 }
 

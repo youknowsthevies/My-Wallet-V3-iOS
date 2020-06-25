@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import RxSwift
 import PlatformKit
+import RxSwift
 
 protocol ExchangeAddressFetching {
     

@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import NetworkKit
+import RxSwift
 
 enum CommunicatorMockError: Error {
     case decodingError
@@ -15,7 +15,7 @@ enum CommunicatorMockError: Error {
 
 class MockNetworkCommunicator: NetworkCommunicatorAPI {
 
-    var response: (filename: String, bundle: Bundle)? = nil
+    var response: (filename: String, bundle: Bundle)?
 
     func perform(request: NetworkRequest) -> Completable {
         .empty()

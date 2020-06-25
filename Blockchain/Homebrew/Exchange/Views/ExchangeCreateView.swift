@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import ToolKit
 import PlatformKit
+import ToolKit
 
 @objc protocol ExchangeCreateViewDelegate: AddressSelectionDelegate, UITextFieldDelegate {
     func assetToggleButtonTapped()
@@ -102,7 +102,7 @@ private extension ExchangeCreateView {
         setupErrorTextView(amountView: amountView)
     }
 
-    var windowWidth: CGFloat { return frame.size.width }
+    var windowWidth: CGFloat { frame.size.width }
 
     func setupFromToView() {
         guard let view = FromToView(frame: CGRect(x: 0, y: 16, width: windowWidth, height: 96), enableToTextField: false) else {
@@ -116,8 +116,8 @@ private extension ExchangeCreateView {
         fromToView = view
     }
 
-    var smallFont: UIFont { return UIFont(name: Constants.FontNames.montserratRegular, size: Constants.FontSizes.Small)! }
-    var topLeftLabelFrame: CGRect { return CGRect(x: 15, y: 0, width: 40, height: 30) }
+    var smallFont: UIFont { UIFont(name: Constants.FontNames.montserratRegular, size: Constants.FontSizes.Small)! }
+    var topLeftLabelFrame: CGRect { CGRect(x: 15, y: 0, width: 40, height: 30) }
 
     func setupTopLeftLabel(amountView: UIView) {
         let topLeftLabel = UILabel(frame: topLeftLabelFrame)
@@ -130,7 +130,7 @@ private extension ExchangeCreateView {
         amountView.addSubview(topLeftLabel)
     }
 
-    var toggleButtonFrame: CGRect { return CGRect(x: 0, y: 12, width: 30, height: 30) }
+    var toggleButtonFrame: CGRect { CGRect(x: 0, y: 12, width: 30, height: 30) }
 
     func setupToggleButtonWithSpinner(amountView: UIView) {
         let assetToggleButton = UIButton(frame: toggleButtonFrame)
@@ -148,7 +148,7 @@ private extension ExchangeCreateView {
         spinner!.isHidden = true
     }
 
-    var topRightLabelFrame: CGRect { return CGRect(
+    var topRightLabelFrame: CGRect { CGRect(
         x: self.assetToggleButton!.frame.origin.x + self.assetToggleButton!.frame.size.width + 15,
         y: 12,
         width: 40,
@@ -171,10 +171,10 @@ private extension ExchangeCreateView {
         continuePaymentAccessoryView = inputAccessoryView
     }
 
-    var leftFieldOriginX: CGFloat { return topLeftLabelFrame.origin.x + topLeftLabelFrame.size.width + 8 }
-    var rightFieldOriginX: CGFloat { return topRightLabelFrame.origin.x + topRightLabelFrame.size.width + 8 }
-    var leftFieldWidth: CGFloat { return self.assetToggleButton!.frame.origin.x - 8 - leftFieldOriginX }
-    var rightFieldWidth: CGFloat { return windowWidth - 8 - rightFieldOriginX }
+    var leftFieldOriginX: CGFloat { topLeftLabelFrame.origin.x + topLeftLabelFrame.size.width + 8 }
+    var rightFieldOriginX: CGFloat { topRightLabelFrame.origin.x + topRightLabelFrame.size.width + 8 }
+    var leftFieldWidth: CGFloat { self.assetToggleButton!.frame.origin.x - 8 - leftFieldOriginX }
+    var rightFieldWidth: CGFloat { windowWidth - 8 - rightFieldOriginX }
 
     func setupTopFields(amountView: UIView) {
         let leftField = inputTextField(frame: CGRect(x: leftFieldOriginX, y: 12, width: leftFieldWidth, height: 30))
@@ -237,7 +237,7 @@ private extension ExchangeCreateView {
         addSubview(lineAboveButtonsView)
     }
 
-    var minMaxButtonHeight: CGFloat { return 50 }
+    var minMaxButtonHeight: CGFloat { 50 }
 
     func setupMinAndMaxButtons(amountView: UIView) {
         let buttonsView = UIView(frame: CGRect(
@@ -365,11 +365,11 @@ private extension ExchangeCreateView {
 
 private extension ExchangeCreateView {
     var fiatPlaceholder: String {
-        return placeholder(decimalPlaces: 2)
+        placeholder(decimalPlaces: 2)
     }
 
     var assetPlaceholder: String {
-        return placeholder(decimalPlaces: 3)
+        placeholder(decimalPlaces: 3)
     }
 
     func placeholder(decimalPlaces: Int) -> String {

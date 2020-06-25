@@ -7,12 +7,12 @@
 //
 
 import Foundation
-import ToolKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
-import RxSwift
 import RxCocoa
+import RxSwift
+import ToolKit
 
 // A `Presentation` event that is built from a `WalletIntroductionEventType`
 // and consumed by a `UIViewController`
@@ -28,7 +28,7 @@ final class WalletIntroductionPresenter: NSObject {
     
     /// Returns a `WalletIntroductionPresentationEvent` that the `UIViewController` can respond to.
     var introductionEvent: Driver<WalletIntroductionPresentationEvent> {
-        return introductionRelay.map {
+        introductionRelay.map {
             switch $0 {
             case .pulse(let model):
                 return .showPulse(model)
@@ -67,7 +67,7 @@ final class WalletIntroductionPresenter: NSObject {
     func start() {
         interactor.startingLocation
             .map { [weak self] location -> [WalletIntroductionEvent] in
-                return self?.startingWithLocation(location) ?? []
+                self?.startingWithLocation(location) ?? []
             }
             .subscribe(onSuccess: { [weak self] events in
                 guard let self = self else { return }
@@ -113,25 +113,25 @@ final class WalletIntroductionPresenter: NSObject {
     // MARK: `[WalletIntroductionEvent]` 
     
     private func homeEvents() -> [WalletIntroductionEvent] {
-        return [home, homeDescription]
+        [home, homeDescription]
     }
     
     private func sendEvents() -> [WalletIntroductionEvent] {
-        return [send, sendDescription]
+        [send, sendDescription]
     }
     
     private func requestEvents() -> [WalletIntroductionEvent] {
-        return [request, requestDescription]
+        [request, requestDescription]
     }
     
     private func swapEvents() -> [WalletIntroductionEvent] {
-        return [swap, swapDescription]
+        [swap, swapDescription]
     }
 }
 
 extension WalletIntroductionPresenter {
     private var home: HomeWalletIntroductionEvent {
-        return HomeWalletIntroductionEvent(selection: { [weak self] in
+        HomeWalletIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
             AppCoordinator.shared.tabControllerManager.dashBoardClicked(nil)
             self.triggerNextStep()
@@ -139,11 +139,11 @@ extension WalletIntroductionPresenter {
     }
     
     private var homeDescription: HomeDescriptionWalletIntroductionEvent {
-        return HomeDescriptionWalletIntroductionEvent(selection: triggerNextStep)
+        HomeDescriptionWalletIntroductionEvent(selection: triggerNextStep)
     }
     
     private var send: SendWalletIntroductionEvent {
-        return SendWalletIntroductionEvent(selection: { [weak self] in
+        SendWalletIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
             AppCoordinator.shared.tabControllerManager.sendCoinsClicked(nil)
             self.triggerNextStep()
@@ -151,11 +151,11 @@ extension WalletIntroductionPresenter {
     }
     
     private var sendDescription: SendDescriptionIntroductionEvent {
-        return SendDescriptionIntroductionEvent(selection: triggerNextStep)
+        SendDescriptionIntroductionEvent(selection: triggerNextStep)
     }
     
     private var request: RequestWalletIntroductionEvent {
-        return RequestWalletIntroductionEvent(selection: { [weak self] in
+        RequestWalletIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
             AppCoordinator.shared.tabControllerManager.receiveCoinClicked(nil)
             self.triggerNextStep()
@@ -163,11 +163,11 @@ extension WalletIntroductionPresenter {
     }
     
     private var requestDescription: RequestDescriptionIntroductionEvent {
-        return RequestDescriptionIntroductionEvent(selection: triggerNextStep)
+        RequestDescriptionIntroductionEvent(selection: triggerNextStep)
     }
     
     private var swap: SwapWalletIntroductionEvent {
-        return SwapWalletIntroductionEvent(selection: { [weak self] in
+        SwapWalletIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
             AppCoordinator.shared.tabControllerManager.swapTapped(nil)
             self.triggerNextStep()

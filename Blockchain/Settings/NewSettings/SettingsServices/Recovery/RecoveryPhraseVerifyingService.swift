@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxRelay
+import RxSwift
 
 final class RecoveryPhraseVerifyingService: RecoveryPhraseVerifyingServiceAPI {
     
@@ -21,7 +21,7 @@ final class RecoveryPhraseVerifyingService: RecoveryPhraseVerifyingServiceAPI {
     }
     
     func markBackupVerified() -> Completable {
-        return verificationService.verifyMnemonicAndSync()
+        verificationService.verifyMnemonicAndSync()
     }
 }
 

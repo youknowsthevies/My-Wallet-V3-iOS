@@ -8,8 +8,8 @@
 
 import Foundation
 
-import PlatformKit
 @testable import Blockchain
+import PlatformKit
 
 class MockParser: QRCodeScannerParsing {
     
@@ -37,7 +37,7 @@ class MockParser: QRCodeScannerParsing {
 class MockScanner: QRCodeScannerProtocol {
     var videoPreviewLayer: CALayer = CALayer()
     
-    var delegate: QRCodeScannerDelegate? = nil
+    weak var delegate: QRCodeScannerDelegate?
     
     var startReadingQRCodeCalled: () -> Void = { }
     var startReadingQRCodeCallCount: Int = 0

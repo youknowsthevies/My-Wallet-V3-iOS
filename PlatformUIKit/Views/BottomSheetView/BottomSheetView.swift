@@ -40,7 +40,7 @@ public class BottomSheetView: UIView {
         guard let window = UIApplication.shared.keyWindow else { return 0.0 }
         
         let buttonsHeight = model.actions.map { _ -> CGFloat in
-            return actionHeight
+            actionHeight
         }.reduce(0, +)
         let interitemPadding = ((buttonsHeight / actionHeight) - 1) * actionInterItemSpacing
         
@@ -69,7 +69,7 @@ public class BottomSheetView: UIView {
     }
     
     fileprivate static func titleFont() -> UIFont {
-        return Font(.branded(.montserratSemiBold), size: .custom(16.0)).result
+        Font(.branded(.montserratSemiBold), size: .custom(16.0)).result
     }
     
     fileprivate func apply(model: BottomSheet) {

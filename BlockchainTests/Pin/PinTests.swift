@@ -6,9 +6,9 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
 @testable import Blockchain
 import PlatformKit
+import XCTest
 
 class PinTests: XCTestCase {
 

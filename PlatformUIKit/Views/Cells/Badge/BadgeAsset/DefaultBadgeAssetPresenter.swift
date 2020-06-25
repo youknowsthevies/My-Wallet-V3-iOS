@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxRelay
+import RxSwift
 
 public final class DefaultBadgeAssetPresenter: BadgeAssetPresenting {
     public typealias PresentationState = BadgeAsset.State.BadgeItem.Presentation

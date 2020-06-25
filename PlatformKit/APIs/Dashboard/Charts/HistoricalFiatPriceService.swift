@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import RxSwift
 import RxRelay
+import RxSwift
 import ToolKit
 
 /// This protocol defines a `Single<FiatValue>`. It's the
@@ -50,7 +50,7 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
     // MARK: LatestFiatPriceFetching
     
     public var latestPrice: Observable<FiatValue> {
-        return exchangeAPI.fiatPrice
+        exchangeAPI.fiatPrice
     }
     
     // MARK: HistoricalFiatPriceFetching
@@ -58,7 +58,7 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
     public var historicalPrices: Observable<(HistoricalPriceSeries, PriceWindow)>
     
     public var calculationState: Observable<CalculationState> {
-        return calculationStateRelay.asObservable()
+        calculationStateRelay.asObservable()
     }
     
     // MARK: Private Properties

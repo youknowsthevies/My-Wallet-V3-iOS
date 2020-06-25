@@ -9,10 +9,10 @@
 import Foundation
 import RxSwift
 
-import PlatformKit
-import EthereumKit
-import PlatformUIKit
 @testable import Blockchain
+import EthereumKit
+import PlatformKit
+import PlatformUIKit
 
 class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, MnemonicAccessAPI {
 
@@ -42,7 +42,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         
     var receiveAddress: String = "ReceiveAddress"
     func getReceiveAddress(forAccount account: Int32, assetType: LegacyAssetType) -> String! {
-        return receiveAddress
+        receiveAddress
     }
     
     // MARK: - LegacyEthereumWalletProtocol
@@ -56,7 +56,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
     
     var checkIfEthereumAccountExistsValue = true
     func checkIfEthereumAccountExists() -> Bool {
-        return checkIfEthereumAccountExistsValue
+        checkIfEthereumAccountExistsValue
     }
     
     func recordLastEthereumTransaction(transactionHash: String,
@@ -67,7 +67,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
     
     var needsSecondPasswordValue = false
     func needsSecondPassword() -> Bool {
-        return needsSecondPasswordValue
+        needsSecondPasswordValue
     }
     
     static let legacyAccount = LegacyEthereumWalletAccount(
@@ -224,16 +224,16 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
     
     var mnemonicMaybe = Maybe.just("")
     var mnemonic: Maybe<String> {
-        return mnemonicMaybe
+        mnemonicMaybe
     }
     
     var mnemonicForcePromptMaybe = Maybe.just("")
     var mnemonicForcePrompt: Maybe<String> {
-        return mnemonicForcePromptMaybe
+        mnemonicForcePromptMaybe
     }
     
     var mnemonicPromptingIfNeededMaybe = Maybe.just("")
     var mnemonicPromptingIfNeeded: Maybe<String> {
-        return mnemonicPromptingIfNeededMaybe
+        mnemonicPromptingIfNeededMaybe
     }
 }

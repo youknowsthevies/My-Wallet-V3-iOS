@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import BitcoinKit
+import Foundation
 import PlatformKit
 import PlatformUIKit
 
@@ -71,10 +71,10 @@ public protocol QRCodeWrapperAPI {
 
 class QRCodeWrapper: QRCodeWrapperAPI {
     func qrCode(from metadata: CryptoAssetQRMetadata) -> QRCodeAPI? {
-        return QRCode(metadata: metadata)
+        QRCode(metadata: metadata)
     }
     
     func qrCode(from string: String) -> QRCodeAPI? {
-        return QRCode(string: string)
+        QRCode(string: string)
     }
 }

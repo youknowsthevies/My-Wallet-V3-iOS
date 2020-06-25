@@ -8,8 +8,8 @@
 
 import PhoneNumberKit
 
-import RxSwift
 import RxRelay
+import RxSwift
 
 /// Mobile number validator. Uses `PhoneNumberKit`
 /// to validate the users phone number entry
@@ -19,7 +19,7 @@ final class MobileNumberValidator: TextValidating {
     
     let valueRelay = BehaviorRelay<String>(value: "")
     var validationState: Observable<TextValidationState> {
-        return validationStateRelay.asObservable()
+        validationStateRelay.asObservable()
     }
     
     // MARK: - Private Properties
@@ -42,7 +42,7 @@ final class MobileNumberValidator: TextValidating {
     }
     
     private func validate(value: String) -> Single<Bool> {
-        return Single.create(weak: self) { (self, observer) -> Disposable in
+        Single.create(weak: self) { (self, observer) -> Disposable in
             if value.isEmpty {
                 observer(.success(false))
             } else {

@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
 import PlatformKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 /// The interactor that deals with the different logic, at the moment it is ether specific,
 /// but in time we will add here all the supported assets logic.
@@ -53,7 +53,7 @@ final class SendInteractor: SendInteracting {
     
     /// Streams the input state
     var inputState: Observable<SendInputState> {
-        return inputStateRelay.asObservable()
+        inputStateRelay.asObservable()
     }
     
     // MARK: - Services
@@ -127,7 +127,7 @@ final class SendInteractor: SendInteracting {
                            destinationInteractor.accountState,
                            amountInteractor.amountBalanceRatio)
             .map { (amountCalculationState, feeCalculationState, sourceAccountState, destinationAccountState, amountBalanceRatio) -> SendInputState in
-                return SendInputState(amountCalculationState: amountCalculationState, feeCalculationState: feeCalculationState, sourceAccountState: sourceAccountState, destinationAccountState: destinationAccountState, amountBalanceRatio: amountBalanceRatio)
+                SendInputState(amountCalculationState: amountCalculationState, feeCalculationState: feeCalculationState, sourceAccountState: sourceAccountState, destinationAccountState: destinationAccountState, amountBalanceRatio: amountBalanceRatio)
             }
             .startWith(.empty)
             .bind(to: inputStateRelay)

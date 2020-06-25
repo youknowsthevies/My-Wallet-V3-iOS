@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import BuySellKit
+import PlatformKit
 
 /// Contains any needed remotely fetched data before displaying announcements.
 struct AnnouncementPreliminaryData {

@@ -38,7 +38,7 @@ public protocol PageResponseProtocol: Decodable {
 
 extension stellarsdk.PageResponse: PageResponseProtocol where Element: LedgerResponseProtocol {
     public var allRecords: [LedgerResponseProtocol] {
-        return records as [LedgerResponseProtocol]
+        records as [LedgerResponseProtocol]
     }
 }
 
@@ -65,8 +65,7 @@ extension StellarSDKLedgersServiceAPI {
         cursor: String?,
         order: stellarsdk.Order?,
         limit: Int?,
-        response: @escaping (Result<PageResponseProtocol, StellarLedgerServiceError>) -> Void)
-    {
+        response: @escaping (Result<PageResponseProtocol, StellarLedgerServiceError>) -> Void) {
         getLedgers(cursor: cursor, order: order, limit: limit) { result in
             switch result {
             case .success(let value as PageResponseProtocol):

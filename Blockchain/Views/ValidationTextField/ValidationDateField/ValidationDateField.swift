@@ -20,7 +20,7 @@ class ValidationDateField: ValidationTextField {
 
     var selectedDate: Date {
         get {
-            return pickerView.date
+            pickerView.date
         }
         set {
             pickerView.date = newValue
@@ -30,7 +30,7 @@ class ValidationDateField: ValidationTextField {
 
     var maximumDate: Date? {
         get {
-            return pickerView.maximumDate
+            pickerView.maximumDate
         }
         set {
             pickerView.maximumDate = newValue
@@ -60,6 +60,6 @@ class ValidationDateField: ValidationTextField {
     }
 
     override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        return false
+        false
     }
 }

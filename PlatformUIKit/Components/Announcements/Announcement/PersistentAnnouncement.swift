@@ -13,5 +13,5 @@ public protocol PersistentAnnouncement: Announcement {}
 extension PersistentAnnouncement {
     
     /// Default the category to persistent
-    public var category: AnnouncementRecord.Category { return .persistent }
+    public var category: AnnouncementRecord.Category { .persistent }
 }

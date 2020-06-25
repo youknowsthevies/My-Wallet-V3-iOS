@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
 import Localization
+import RxCocoa
+import RxRelay
+import RxSwift
 import ToolKit
 
 /// A view model that represents a password text field
@@ -19,7 +19,7 @@ public final class ValidationTextFieldViewModel: TextFieldViewModel {
     
     /// Visibility of the accessoryView
     var accessoryVisibility: Driver<Visibility> {
-        return visibilityRelay
+        visibilityRelay
             .asDriver()
             .distinctUntilChanged()
     }

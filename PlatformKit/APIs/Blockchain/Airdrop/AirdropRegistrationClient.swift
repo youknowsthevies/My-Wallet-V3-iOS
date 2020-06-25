@@ -7,9 +7,9 @@
 //
 
 import Foundation
+import NetworkKit
 import RxSwift
 import ToolKit
-import NetworkKit
 
 protocol AirdropRegistrationClientAPI {
 

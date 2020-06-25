@@ -68,15 +68,15 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
     var scanComplete: ((Result<String, QRScannerError>) -> Void)?
     
     var videoPreviewLayer: CALayer? {
-        return scanner.videoPreviewLayer
+        scanner.videoPreviewLayer
     }
     
     var loadingText: String? {
-        return textViewModel.loadingText
+        textViewModel.loadingText
     }
     
     var headerText: String {
-        return textViewModel.headerText
+        textViewModel.headerText
     }
     
     private let parser: AnyQRCodeScannerParsing<P.T, P.U>

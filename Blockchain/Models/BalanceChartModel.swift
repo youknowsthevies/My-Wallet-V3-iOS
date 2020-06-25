@@ -11,7 +11,7 @@ import Foundation
 @objc class BalanceChartModel: NSObject {
     private var _balance: String?
     @objc var balance: String? {
-        get { return _balance == nil ? "0" : _balance }
+        get { _balance == nil ? "0" : _balance }
         set { _balance = newValue }
     }
     @objc var fiatBalance: Double = 0

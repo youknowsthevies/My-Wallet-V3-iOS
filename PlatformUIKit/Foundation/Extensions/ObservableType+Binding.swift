@@ -6,13 +6,13 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxCocoa
+import RxSwift
 import ToolKit
 
 extension ObservableType {
     public func bind<A: AnyObject>(weak object: A, onNext: @escaping (A, Element) -> Void) -> Disposable {
-        return self
+        self
             .bind { [weak object] element in
                 guard let object = object else { return }
                 onNext(object, element)
@@ -20,7 +20,7 @@ extension ObservableType {
     }
     
     public func bind<A: AnyObject>(weak object: A, onNext: @escaping (A) -> Void) -> Disposable {
-        return self
+        self
             .bind { [weak object] element in
                 guard let object = object else { return }
                 onNext(object)

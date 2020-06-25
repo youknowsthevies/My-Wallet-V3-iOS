@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import NetworkKit
+import RxSwift
 
 public protocol SavingsAccountClientAPI: AnyObject {
     func balance(token: String) -> Single<SavingsAccountBalanceResponse>

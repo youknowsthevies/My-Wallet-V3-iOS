@@ -14,7 +14,7 @@ struct FiatCurrencyResponse: CustomStringConvertible {
     let buy: NSNumber
     let last: NSNumber
     let fifteenMin: NSNumber
-    var description: String { return "\(name) (\(symbol))" }
+    var description: String { "\(name) (\(symbol))" }
     
     init(dictionary: JSON) {
         self.name = dictionary["name"] as? String ?? ""

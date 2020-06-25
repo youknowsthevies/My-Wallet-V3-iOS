@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BigInt
+import PlatformKit
 import RxRelay
 import RxSwift
-import BigInt
 import ToolKit
-import PlatformKit
 
 public final class EthereumHistoricalTransactionService: HistoricalTransactionAPI {
     

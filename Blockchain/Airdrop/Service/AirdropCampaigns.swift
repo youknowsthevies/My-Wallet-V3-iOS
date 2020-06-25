@@ -7,8 +7,8 @@
 //
 
 import BigInt
-import ToolKit
 import PlatformKit
+import ToolKit
 
 struct AirdropCampaigns {
         
@@ -107,19 +107,19 @@ struct AirdropCampaigns {
             let withdrawalAt: String
             
             var fiat: FiatValue {
-                return FiatValue.create(amount: fiatValue / 100, currencyCode: fiatCurrency)
+                FiatValue.create(amount: fiatValue / 100, currencyCode: fiatCurrency)
             }
                     
             var withdrawalDate: Date! {
-                return AirdropCampaigns.dateFormatter.date(from: withdrawalAt)
+                AirdropCampaigns.dateFormatter.date(from: withdrawalAt)
             }
             
             var cryptoCurrency: TriageCryptoCurrency! {
-                return try? TriageCryptoCurrency(code: withdrawalCurrency)
+                try? TriageCryptoCurrency(code: withdrawalCurrency)
             }
             
             var isValid: Bool {
-                return cryptoCurrency != nil && withdrawalDate != nil
+                cryptoCurrency != nil && withdrawalDate != nil
             }
             
             var crypto: CryptoValue? {
@@ -163,7 +163,7 @@ struct AirdropCampaigns {
         /// Validates the campaign's values
         var isValid: Bool {
             guard !name.isEmpty else { return false }
-            guard state != .none else { return false}
+            guard state != .none else { return false }
             guard cryptoCurrency != nil else { return false }
             guard !(transactions.contains { !$0.isValid }) else { return false }
             return true
@@ -171,7 +171,7 @@ struct AirdropCampaigns {
         
         /// Returns the latest transaction
         var latestTransaction: Transaction? {
-            return transactions.first
+            transactions.first
         }
         
         /// Returns the crypto currency
@@ -302,15 +302,15 @@ struct AirdropCampaigns {
     let campaigns: Set<Campaign>
     
     var ended: Set<Campaign> {
-        return campaigns.filter { $0.state == .ended }
+        campaigns.filter { $0.state == .ended }
     }
     
     var started: Set<Campaign> {
-        return campaigns.filter { $0.state == .started }
+        campaigns.filter { $0.state == .started }
     }
     
     func campaign(by name: Campaign.Name) -> Campaign? {
-        return campaigns.first { $0.name == name.rawValue }
+        campaigns.first { $0.name == name.rawValue }
     }
 }
 
@@ -321,7 +321,7 @@ extension AirdropCampaigns.Campaign: Hashable {
     // MARK: - Equatable
     
     static func == (lhs: AirdropCampaigns.Campaign, rhs: AirdropCampaigns.Campaign) -> Bool {
-        return lhs.name == rhs.name
+        lhs.name == rhs.name
     }
     
     // MARK: - Hashable
@@ -390,7 +390,7 @@ extension AirdropCampaigns.Campaign.Attributes: Decodable {
     }
     
     static var empty: AirdropCampaigns.Campaign.Attributes {
-        return .init(address: "", code: "", email: "", rejectionReason: "")
+        .init(address: "", code: "", email: "", rejectionReason: "")
     }
     
     init(from decoder: Decoder) throws {

@@ -16,15 +16,15 @@ class ExchangeInputsService: ExchangeInputsAPI {
     var inputViewModel: ExchangeInputViewModel
     
     private var components: [InputComponent] {
-        return inputViewModel.components
+        inputViewModel.components
     }
     
     var fiatValue: FiatValue? {
-        return inputViewModel.fiatValue()
+        inputViewModel.fiatValue()
     }
     
     var cryptoValue: CryptoValue? {
-        return inputViewModel.cryptoValue()
+        inputViewModel.cryptoValue()
     }
     
     var inputType: InputType = .fiat {
@@ -34,7 +34,7 @@ class ExchangeInputsService: ExchangeInputsAPI {
     }
     
     var activeInputValue: String {
-        return inputViewModel.currentValue(includingSymbol: false)
+        inputViewModel.currentValue(includingSymbol: false)
     }
     
     init(inputType: InputType = .fiat) {
@@ -50,15 +50,15 @@ class ExchangeInputsService: ExchangeInputsAPI {
     }
     
     func canBackspace() -> Bool {
-        return components.canDrop
+        components.canDrop
     }
     
     func canAddDelimiter() -> Bool {
-        return inputViewModel.canAppendDelimiter()
+        inputViewModel.canAppendDelimiter()
     }
     
     func canAdd(character: Character) -> Bool {
-        return inputViewModel.canAppend(character: character)
+        inputViewModel.canAppend(character: character)
     }
     
     func addDelimiter() {

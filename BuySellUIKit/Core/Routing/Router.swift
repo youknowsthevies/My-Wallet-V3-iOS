@@ -6,12 +6,12 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
+import BuySellKit
 import Localization
-import ToolKit
 import PlatformKit
 import PlatformUIKit
-import BuySellKit
+import RxSwift
+import ToolKit
 
 /// This object is used as a router for Simple-Buy flow
 public final class Router: RouterAPI, PlatformUIKit.Router {

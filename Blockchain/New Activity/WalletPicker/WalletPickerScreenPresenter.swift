@@ -42,7 +42,7 @@ final class WalletPickerScreenPresenter {
         interactor
             .interactors
             .map { items -> [WalletPickerCellItem] in
-                return items.map { .init(cellInteractor: $0) }
+                items.map { .init(cellInteractor: $0) }
             }
             .bind(to: sectionRelay)
             .disposed(by: disposeBag)

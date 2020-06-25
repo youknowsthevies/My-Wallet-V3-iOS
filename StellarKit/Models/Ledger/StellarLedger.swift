@@ -38,7 +38,7 @@ public struct StellarLedger {
 
 extension StellarLedger: Equatable {
     public static func == (lhs: StellarLedger, rhs: StellarLedger) -> Bool {
-        return lhs.baseFeeInStroops == rhs.baseFeeInStroops &&
+        lhs.baseFeeInStroops == rhs.baseFeeInStroops &&
         lhs.baseReserveInStroops == rhs.baseReserveInStroops
     }
 }
@@ -57,7 +57,7 @@ public extension StellarLedger {
 
 public extension StellarLedger {
     func apply(baseFeeInStroops: Int) -> StellarLedger {
-        return StellarLedger(
+        StellarLedger(
             identifier: identifier,
             token: token,
             sequence: sequence,

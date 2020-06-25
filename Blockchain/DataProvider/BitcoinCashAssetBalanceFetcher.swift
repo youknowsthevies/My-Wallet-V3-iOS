@@ -15,15 +15,15 @@ final class BitcoinCashAssetBalanceFetcher: AccountBalanceFetching {
     // MARK: - Exposed Properties
     
     var balanceType: BalanceType {
-        return .nonCustodial
+        .nonCustodial
     }
     
     var balance: Single<CryptoValue> {
-        return .just(.bitcoinCashFromSatoshis(int: Int(wallet.getBchBalance())))
+        .just(.bitcoinCashFromSatoshis(int: Int(wallet.getBchBalance())))
     }
     
     var balanceObservable: Observable<CryptoValue> {
-        return balanceRelay.asObservable()
+        balanceRelay.asObservable()
     }
     
     let balanceFetchTriggerRelay = PublishRelay<Void>()
@@ -48,7 +48,7 @@ final class BitcoinCashAssetBalanceFetcher: AccountBalanceFetching {
             )
             .observeOn(MainScheduler.asyncInstance)
             .flatMapLatest(weak: self) { (self, _) in
-                return self.balance.asObservable()
+                self.balance.asObservable()
             }
             .bind(to: balanceRelay)
             .disposed(by: disposeBag)

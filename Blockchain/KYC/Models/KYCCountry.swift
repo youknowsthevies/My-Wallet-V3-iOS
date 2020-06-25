@@ -12,11 +12,11 @@ extension CountryData: SearchableItem {
 
     /// Returns a boolean indicating if this country is supported by Blockchain's native KYC
     var isKycSupported: Bool {
-        return scopes?.contains(where: { $0.lowercased() == "kyc" }) ?? false
+        scopes?.contains(where: { $0.lowercased() == "kyc" }) ?? false
     }
 
     /// The URL path components to get all the states for this country
     var urlPathComponentsForState: [String] {
-        return ["countries", self.code, "states"]
+        ["countries", self.code, "states"]
     }
 }

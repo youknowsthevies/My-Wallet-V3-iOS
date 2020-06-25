@@ -6,33 +6,33 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import RxSwift
 import EthereumKit
+import Foundation
 import PlatformKit
+import RxSwift
 
 class EthereumWalletServiceMock: EthereumWalletServiceAPI {
 
     var handlePendingTransaction: Single<Void> {
-        return .just(())
+        .just(())
     }
 
     var fetchHistoryIfNeededValue: Single<Void> = Single.just(())
     var fetchHistoryIfNeeded: Single<Void> {
-        return fetchHistoryIfNeededValue
+        fetchHistoryIfNeededValue
     }
 
     var buildTransactionValue: Single<EthereumTransactionCandidate> = Single.error(NSError())
     func buildTransaction(with value: EthereumKit.EthereumValue, to: EthereumKit.EthereumAddress) -> Single<EthereumTransactionCandidate> {
-        return buildTransactionValue
+        buildTransactionValue
     }
 
     var sendTransactionValue: Single<EthereumTransactionPublished> = Single.error(NSError())
     func send(transaction: EthereumTransactionCandidate) -> Single<EthereumTransactionPublished> {
-        return sendTransactionValue
+        sendTransactionValue
     }
     var transactionValidationResult: Single<TransactionValidationResult> = Single.error(NSError())
     func evaluate(amount: EthereumValue) -> Single<TransactionValidationResult> {
-        return transactionValidationResult
+        transactionValidationResult
     }
 }

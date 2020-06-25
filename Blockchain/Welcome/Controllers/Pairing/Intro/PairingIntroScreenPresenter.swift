@@ -7,8 +7,8 @@
 //
 
 import PlatformUIKit
-import RxSwift
 import RxCocoa
+import RxSwift
 
 /// A presenter for pairing intro screen
 struct PairingIntroScreenPresenter {

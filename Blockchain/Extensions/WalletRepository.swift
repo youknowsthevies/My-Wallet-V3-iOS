@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import ToolKit
 import PlatformKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 /// TODO: Remove `NSObject` when `Wallet` is killed
 /// A bridge to `Wallet` since it is an ObjC object.

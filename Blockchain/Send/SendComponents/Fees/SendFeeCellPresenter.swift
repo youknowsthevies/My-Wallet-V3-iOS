@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 /// The presnetation layer for the fee cell in the send screen
 final class SendFeeCellPresenter {
@@ -19,7 +19,7 @@ final class SendFeeCellPresenter {
     /// The visual reprentation for the fee
     /// Streams on the main thread and replay the latest value
     var fee: Driver<String> {
-        return feeRelay.asDriver()
+        feeRelay.asDriver()
     }
     
     // MARK: - Private Properties

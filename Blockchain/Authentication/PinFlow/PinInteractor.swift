@@ -7,9 +7,9 @@
 //
 
 import Foundation
+import PlatformKit
 import RxSwift
 import ToolKit
-import PlatformKit
 
 /// Interactor for the pin. This component interacts with the Blockchain API and the local
 /// pin data store. When the pin is updated, the pin is also stored on the keychain.
@@ -67,7 +67,7 @@ final class PinInteractor: PinInteracting {
     /// - Parameter payload: the pin payload
     /// - Returns: Completable indicating completion
     func create(using payload: PinPayload) -> Completable {
-        return maintenanceService.serverUnderMaintenanceMessage
+        maintenanceService.serverUnderMaintenanceMessage
             .flatMap(weak: self) { (self, message) -> Single<PinStoreResponse> in
                 if let message = message { throw PinError.serverMaintenance(message: message) }
                 return self.pinClient.create(pinPayload: payload)
@@ -88,7 +88,7 @@ final class PinInteractor: PinInteracting {
     /// - Parameter payload: the pin payload
     /// - Returns: Single warpping the pin decryption key
     func validate(using payload: PinPayload) -> Single<String> {
-        return maintenanceService.serverUnderMaintenanceMessage
+        maintenanceService.serverUnderMaintenanceMessage
             .flatMap(weak: self) { (self, message) -> Single<String> in
                 if let message = message { throw PinError.serverMaintenance(message: message) }
                 return self.pinClient.validate(pinPayload: payload)
@@ -107,7 +107,7 @@ final class PinInteractor: PinInteracting {
     }
     
     func password(from pinDecryptionKey: String) -> Single<String> {
-        return loginService.password(from: pinDecryptionKey)
+        loginService.password(from: pinDecryptionKey)
             .observeOn(MainScheduler.instance)
     }
     
@@ -160,7 +160,7 @@ final class PinInteractor: PinInteracting {
                 return Disposables.create()
             }
             .flatMap(weak: self) { (self, data) -> Single<(encryptedPinPassword: String, password: String)> in
-                return self.walletCryptoService
+                self.walletCryptoService
                     .encrypt(pair: KeyDataPair(key: data.pin, data: data.password),
                              pbkdf2Iterations: WalletCryptoPBKDF2Iterations.pinLogin)
                     .map { (encryptedPinPassword: $0, password: data.password) }

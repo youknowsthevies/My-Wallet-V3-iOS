@@ -64,7 +64,7 @@ struct PaymentAccountEUR: PaymentAccount, Equatable {
     }
 
     func with(bankCountry: String) -> PaymentAccountEUR {
-        return .init(identifier: identifier,
+        .init(identifier: identifier,
                      state: state,
                      bankName: bankName,
                      bankCountry: bankCountry,
@@ -74,7 +74,7 @@ struct PaymentAccountEUR: PaymentAccount, Equatable {
     }
 
     func with(recipientName: String) -> PaymentAccountEUR {
-        return .init(identifier: identifier,
+        .init(identifier: identifier,
                      state: state,
                      bankName: bankName,
                      bankCountry: bankCountry,

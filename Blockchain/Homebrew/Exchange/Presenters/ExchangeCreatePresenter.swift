@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 class ExchangeCreatePresenter {
     
@@ -206,7 +206,7 @@ extension ExchangeCreatePresenter: ExchangeCreateOutput {
     }
     
     var status: ExchangeInteractorStatus {
-        return interactor.status
+        interactor.status
     }
     
     func errorReceived() {

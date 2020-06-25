@@ -6,15 +6,15 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import PlatformKit
+import RxSwift
 
 class MockWalletService: WalletOptionsAPI {
     
     let message: String?
     
     var serverUnderMaintenanceMessage: Single<String?> {
-        return Single.just(message)
+        Single.just(message)
     }
 
     var mockWalletOptions: WalletOptions?

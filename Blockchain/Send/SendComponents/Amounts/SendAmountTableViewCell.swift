@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
-import RxSwift
-import RxCocoa
 import PlatformUIKit
+import RxCocoa
+import RxSwift
+import UIKit
 
 /// The cell displays the corresponding crypto-fiat amounts as per assets
 final class SendAmountTableViewCell: UITableViewCell {
@@ -78,7 +78,7 @@ final class SendAmountTableViewCell: UITableViewCell {
     
     /// Accessible only when `presenter` references a value
     private var spendableBalancePresenter: SendSpendableBalanceViewPresenter {
-        return presenter.spendableBalancePresenter
+        presenter.spendableBalancePresenter
     }
     
     // MARK: - Lifecycle

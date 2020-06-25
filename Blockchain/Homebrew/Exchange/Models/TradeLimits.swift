@@ -20,7 +20,7 @@ struct TradeLimits {
 
 extension TradeLimits {
     var maxTradableToday: Decimal {
-        return daily?.available ?? maxPossibleOrder
+        daily?.available ?? maxPossibleOrder
     }
 }
 

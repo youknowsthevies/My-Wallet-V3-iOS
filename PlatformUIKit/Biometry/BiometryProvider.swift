@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import LocalAuthentication
-import RxSwift
 import Localization
+import PlatformKit
+import RxSwift
 
 /// This objectp provides biometry authentication support
 public final class BiometryProvider: BiometryProviding {
@@ -97,7 +97,7 @@ public final class BiometryProvider: BiometryProviding {
     
     /// Performs authentication
     private func performAuthentication(with reason: Biometry.Reason) -> Single<Void> {
-        return Single.create { observer -> Disposable in
+        Single.create { observer -> Disposable in
             let context = LAContext()
             context.localizedFallbackTitle = LocalizationConstants.Biometry.usePasscode
             context.localizedCancelTitle = LocalizationConstants.Biometry.cancelButton

@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
 import PlatformKit
-import RxSwift
+import PlatformUIKit
 import RxRelay
+import RxSwift
 
 class BiometryLabelContentPresenter: LabelContentPresenting {
     
@@ -21,7 +21,7 @@ class BiometryLabelContentPresenter: LabelContentPresenting {
     
     let stateRelay = BehaviorRelay<PresentationState>(value: .loading)
     var state: Observable<PresentationState> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
     }
     
     // MARK: - Private Accessors

@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import web3swift
 import BigInt
 import PlatformKit
+import RxSwift
+import web3swift
 
 public protocol EthereumFeeServiceAPI {
     var fees: Single<EthereumTransactionFee> { get }
@@ -66,7 +66,7 @@ public final class EthereumTransactionSendingService: EthereumTransactionSending
     }
     
     public func send(transaction: EthereumTransactionCandidate, keyPair: EthereumKeyPair) -> Single<EthereumTransactionPublished> {
-        return finalise(transaction: transaction, keyPair: keyPair)
+        finalise(transaction: transaction, keyPair: keyPair)
             .flatMap(weak: self) { (self, transaction) -> Single<EthereumTransactionPublished> in
                 assert(transaction.web3swiftTransaction.intrinsicChainID == NetworkId.mainnet.rawValue)
                 return self.publish(transaction: transaction)
@@ -74,9 +74,9 @@ public final class EthereumTransactionSendingService: EthereumTransactionSending
     }
 
     private func finalise(transaction: EthereumTransactionCandidate, keyPair: EthereumKeyPair) -> Single<EthereumTransactionFinalised> {
-        return bridge.nonce
+        bridge.nonce
             .flatMap(weak: self) { (self, nonce) -> Single<(EthereumTransactionCandidateCosted, BigUInt)> in
-                return self.transactionBuilder.build(transaction: transaction).single
+                self.transactionBuilder.build(transaction: transaction).single
                     .map { tx -> (EthereumTransactionCandidateCosted, BigUInt) in
                         (tx, nonce)
                     }
@@ -91,7 +91,7 @@ public final class EthereumTransactionSendingService: EthereumTransactionSending
     }
 
     private func publish(transaction: EthereumTransactionFinalised) -> Single<EthereumTransactionPublished> {
-        return client.push(transaction: transaction)
+        client.push(transaction: transaction)
             .flatMap { response in
                 let publishedTransaction = try EthereumTransactionPublished(
                     finalisedTransaction: transaction,

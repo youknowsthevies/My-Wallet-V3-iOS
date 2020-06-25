@@ -6,16 +6,15 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
 import RxSwift
+import XCTest
 
-@testable import ToolKit
 @testable import PlatformKit
 @testable import PlatformUIKit
+@testable import ToolKit
 
-// TODO: Move to a lower target
-fileprivate class MockAnalyticsService: AnalyticsServiceAPI {
-    func trackEvent(title: String, parameters: [String: Any]?) {}
+class MockAnalyticsService: AnalyticsServiceAPI {
+    func trackEvent(title: String, parameters: [String: Any]?) { }
 }
 
 struct MockOneTimeAnnouncement: OneTimeAnnouncement {
@@ -25,7 +24,7 @@ struct MockOneTimeAnnouncement: OneTimeAnnouncement {
     }
     
     var shouldShow: Bool {
-        return !isDismissed
+        !isDismissed
     }
     
     let dismiss: CardAnnouncementAction

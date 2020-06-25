@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 import UIKit
 
 /// For more information, see [Wikipedia.](https://en.wikipedia.org/wiki/Sparkline)
@@ -21,7 +21,7 @@ public final class SparklineImageProvider {
     
     /// The `Sparkline` image which should be inserted into a `UIImageView`.
     public var image: Driver<UIImage?> {
-        return imageRelay.asDriver()
+        imageRelay.asDriver()
     }
     
     // MARK: - Private Properties

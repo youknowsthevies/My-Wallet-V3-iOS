@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-import RxSwift
-import PlatformKit
 @testable import Blockchain
+import PlatformKit
+import RxSwift
+import XCTest
 
 class ExchangeAddressFetchingTests: XCTestCase {
     

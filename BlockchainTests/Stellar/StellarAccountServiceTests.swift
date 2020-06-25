@@ -6,13 +6,13 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+@testable import Blockchain
 import RxBlocking
 import RxSwift
 import StellarKit
 import XCTest
-@testable import Blockchain
 
-fileprivate class MockLedgerService: StellarLedgerAPI {
+private class MockLedgerService: StellarLedgerAPI {
     
     var fallbackBaseReserve: Decimal = 0
     var fallbackBaseFee: Decimal = 0
@@ -66,7 +66,7 @@ class StellarAccountServiceTests: XCTestCase {
 
 fileprivate extension StellarLedger {
     static func create(baseReserveInStroops: Int? = nil) -> StellarLedger {
-        return StellarLedger(
+        StellarLedger(
             identifier: "",
             token: "",
             sequence: 0,

@@ -14,7 +14,7 @@ protocol Nibable: class {
 
 extension Nibable where Self: UIView {
     static var defaultNibName: String {
-        return String(describing: self)
+        String(describing: self)
     }
 
     static func makeFromNib() -> Self {

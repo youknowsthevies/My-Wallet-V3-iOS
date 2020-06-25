@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import RxSwift
 import RxRelay
+import RxSwift
 
 public class BottomSheetPresenter: UIPresentationController {
     
@@ -60,7 +60,7 @@ public class BottomSheetPresenter: UIPresentationController {
     }
     
     public override var presentedView: UIView? {
-        return roundingView
+        roundingView
     }
     
     public override func presentationTransitionWillBegin() {
@@ -169,7 +169,7 @@ public class BottomSheetPresenting: NSObject, UIViewControllerTransitioningDeleg
         forPresented presented: UIViewController,
         presenting: UIViewController?,
         source: UIViewController) -> UIPresentationController? {
-        return BottomSheetPresenter(
+        BottomSheetPresenter(
             presentedViewController: presented,
             presenting: presenting,
             ignoresBackroundTouches: ignoresBackroundTouches

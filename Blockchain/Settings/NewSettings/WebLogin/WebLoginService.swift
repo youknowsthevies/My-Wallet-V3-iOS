@@ -6,12 +6,12 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
-import ToolKit
+import CommonCryptoKit
 import NetworkKit
 import PlatformKit
-import CommonCryptoKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 protocol WebLoginQRCodeServiceAPI: class {
     var qrCode: Single<String> { get }

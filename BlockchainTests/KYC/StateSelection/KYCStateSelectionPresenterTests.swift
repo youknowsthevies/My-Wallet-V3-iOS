@@ -8,8 +8,8 @@
 
 import Foundation
 
-import XCTest
 @testable import Blockchain
+import XCTest
 
 class KYCStateSelectionPresenterTests: XCTestCase {
 

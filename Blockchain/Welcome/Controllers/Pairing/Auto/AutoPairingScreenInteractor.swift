@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import ToolKit
 import PlatformKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 final class AutoPairingScreenInteractor {
     
@@ -17,7 +17,7 @@ final class AutoPairingScreenInteractor {
     
     /// Streams potential parsing errors
     var error: Observable<Error> {
-        return errorRelay.asObservable()
+        errorRelay.asObservable()
     }
     
     let parser = PairingDataQRCodeParser()

@@ -18,7 +18,7 @@ final class LockboxRepository: LockboxRepositoryAPI {
 
     /// Returns `true` if the user has a linked lockbox
     var hasLockbox: Bool {
-        return !lockboxes().isEmpty
+        !lockboxes().isEmpty
     }
     
     private let wallet: Wallet

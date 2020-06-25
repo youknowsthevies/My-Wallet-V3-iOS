@@ -14,7 +14,7 @@ public final class KYCTiersService: KYCTiersServiceAPI {
     // MARK: - Exposed Properties
     
     public var tiers: Single<KYC.UserTiers> {
-        return cachedTiers.valueSingle
+        cachedTiers.valueSingle
     }
         
     // MARK: - Private Properties

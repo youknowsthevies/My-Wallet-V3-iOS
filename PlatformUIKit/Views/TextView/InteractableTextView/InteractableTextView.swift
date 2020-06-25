@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 /// This component implements an interactable text view that supports links.
 /// It can be used to display terms of use / provacy policy linkable text
@@ -106,7 +106,7 @@ public final class InteractableTextView: UITextView {
     
     /// Cannot become first responder its since content is predetermined by `viewModel`
     override public func becomeFirstResponder() -> Bool {
-        return false
+        false
     }
 
     /// Limits user interaction to links by identifying the closest position of touch,
@@ -124,7 +124,7 @@ public final class InteractableTextView: UITextView {
     
     /// Accepts only tap gestures
     public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return gestureRecognizer is UITapGestureRecognizer
+        gestureRecognizer is UITapGestureRecognizer
     }
 }
 

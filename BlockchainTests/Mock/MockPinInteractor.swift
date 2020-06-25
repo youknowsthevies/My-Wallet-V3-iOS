@@ -40,6 +40,6 @@ class MockPinInteractor: PinInteracting {
     func persist(pin: Pin) {}
     
     func password(from pinDecryptionKey: String) -> Single<String> {
-        return .just(expectedPassword)
+        .just(expectedPassword)
     }
 }

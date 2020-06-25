@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
 import ToolKit
 
 final class BiometrySwitchViewPresenter: SwitchViewPresenting {
@@ -71,7 +71,7 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
     }
     
     func toggleBiometry(_ biometryType: Biometry.BiometryType, biometryStatus: Biometry.Status, isOn: Bool) -> Observable<Bool> {
-        return Observable.create { observable -> Disposable in
+        Observable.create { observable -> Disposable in
             guard isOn else {
                 observable.onNext(false)
                 return Disposables.create()

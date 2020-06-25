@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
 import Charts
 import PlatformKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 /// A presentation layer for asset line chart
 final class AssetLineChartPresenter {
@@ -19,12 +19,12 @@ final class AssetLineChartPresenter {
     
     /// The size of the line chart as derivative of the edge
     var size: CGSize {
-        return CGSize(width: edge, height: edge)
+        CGSize(width: edge, height: edge)
     }
     
     /// Streams the state of pie-chart
     var state: Observable<AssetLineChart.State.Presentation> {
-        return stateRelay
+        stateRelay
             .observeOn(MainScheduler.instance)
     }
     

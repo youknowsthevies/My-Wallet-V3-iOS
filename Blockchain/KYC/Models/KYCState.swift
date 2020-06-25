@@ -20,6 +20,6 @@ extension KYCState {
 
     /// Returns a boolean indicating if this state is supported by Blockchain's native KYC
     var isKycSupported: Bool {
-        return scopes?.contains(where: { $0.lowercased() == "kyc" }) ?? false
+        scopes?.contains(where: { $0.lowercased() == "kyc" }) ?? false
     }
 }

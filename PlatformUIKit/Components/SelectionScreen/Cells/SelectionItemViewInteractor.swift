@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import PlatformKit
+import RxRelay
+import RxSwift
 
 final class SelectionItemViewInteractor {
     
@@ -34,7 +34,7 @@ final class SelectionItemViewInteractor {
 
 extension SelectionItemViewInteractor: Equatable, Hashable {
     public static func == (lhs: SelectionItemViewInteractor, rhs: SelectionItemViewInteractor) -> Bool {
-        return lhs.item == rhs.item
+        lhs.item == rhs.item
     }
     
     public func hash(into hasher: inout Hasher) {

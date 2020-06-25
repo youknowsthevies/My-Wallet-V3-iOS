@@ -34,6 +34,6 @@ public struct HDKeychain {
     }
     
     public func derivedKey(path: HDKeyPath) throws -> HDPrivateKey {
-        return try privateKey.derive(at: path)
+        try privateKey.derive(at: path)
     }
 }

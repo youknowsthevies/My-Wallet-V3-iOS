@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import CommonCryptoKit
+import ToolKit
 
 /// A shared key parsing service
 final class SharedKeyParsingService {

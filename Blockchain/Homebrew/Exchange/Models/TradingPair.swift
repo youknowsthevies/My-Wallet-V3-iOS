@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import ToolKit
 import PlatformKit
+import ToolKit
 
 struct TradingPair {
     private var internalFrom: CryptoCurrency
@@ -42,7 +42,7 @@ struct TradingPair {
 
     var from: CryptoCurrency {
         get {
-            return internalFrom
+            internalFrom
         }
         set {
             guard newValue != internalTo else {
@@ -55,7 +55,7 @@ struct TradingPair {
 
     var to: CryptoCurrency {
         get {
-            return internalTo
+            internalTo
         }
         set {
             guard newValue != internalFrom else {
@@ -67,20 +67,20 @@ struct TradingPair {
     }
     
     var stringRepresentation: String {
-        return internalFrom.code + "-" + internalTo.code
+        internalFrom.code + "-" + internalTo.code
     }
 }
 
 extension TradingPair: Equatable {
     static func ==(lhs: TradingPair, rhs: TradingPair) -> Bool {
-        return lhs.internalFrom == rhs.internalFrom &&
+        lhs.internalFrom == rhs.internalFrom &&
             lhs.internalTo == rhs.internalTo
     }
 }
 
 extension TradingPair: Hashable {
     var hashValue: Int {
-        return internalTo.hashValue ^
+        internalTo.hashValue ^
         internalFrom.hashValue
     }
 }

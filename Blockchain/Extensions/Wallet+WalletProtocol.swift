@@ -27,6 +27,6 @@ extension Wallet: WalletProtocol {
 
     /// Returns true if the BTC wallet is funded
     var isBitcoinWalletFunded: Bool {
-        return getTotalActiveBalance() > 0
+        getTotalActiveBalance() > 0
     }
 }

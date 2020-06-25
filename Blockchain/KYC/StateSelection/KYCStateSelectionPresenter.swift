@@ -6,9 +6,9 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformKit
 import RxSwift
 import ToolKit
-import PlatformKit
 
 /// Protocol definition for the state selection view during the KYC flow
 protocol KYCStateSelectionView: class {

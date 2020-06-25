@@ -25,14 +25,14 @@ public final class SessionTokenService: SessionTokenServiceAPI {
     /// Requests a session token for the wallet, if not available already
     /// and assign it to the repository.
     public func setupSessionToken() -> Completable {
-        return repository.hasSessionToken
+        repository.hasSessionToken
             .flatMapCompletable(weak: self) { (self, hasSessionToken) -> Completable in
                 guard !hasSessionToken else {
                     return .empty()
                 }
                 return self.client.token
                     .flatMapCompletable(weak: self) { (self, sessionToken) -> Completable in
-                        return self.repository.set(sessionToken: sessionToken)
+                        self.repository.set(sessionToken: sessionToken)
                     }
                 }
     }

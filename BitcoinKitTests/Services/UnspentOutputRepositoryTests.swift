@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
+@testable import BitcoinKit
 import RxSwift
 import RxTest
-@testable import BitcoinKit
+import XCTest
 
 class UnspentOutputRepositoryTests: XCTestCase {
     

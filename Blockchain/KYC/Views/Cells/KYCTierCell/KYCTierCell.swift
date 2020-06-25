@@ -45,7 +45,7 @@ class KYCTierCell: UICollectionViewCell {
     @IBOutlet fileprivate var shadowView: UIView!
     
     fileprivate var allLabels: [UILabel] {
-        return [headlineDescription,
+        [headlineDescription,
         tierDescription,
         limitAmountDescription,
         limitTimeframe,
@@ -56,7 +56,7 @@ class KYCTierCell: UICollectionViewCell {
     // MARK: Private Properties
     fileprivate var model: KYCTierCellModel!
     fileprivate var tier: KYC.Tier {
-        return model.tier
+        model.tier
     }
     
     // MARK: Actions
@@ -187,7 +187,7 @@ class KYCTierCell: UICollectionViewCell {
                              timeframeHeight,
                              durationEstimateHeight,
                              tierRequirementsHeight,
-                             statusHeight].filter({ $0 > 0.0}).count
+                             statusHeight].filter({ $0 > 0.0 }).count
         
         let stackviewPadding = CGFloat((numberVisible - 1)) * stackviewInteritemPadding
         

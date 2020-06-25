@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
-import RxSwift
-import RxCocoa
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxSwift
+import UIKit
 
 /// Destination account cell on send screen
 final class SendDestinationAccountTableViewCell: UITableViewCell {

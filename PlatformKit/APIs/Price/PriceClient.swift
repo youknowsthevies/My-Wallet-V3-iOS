@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import RxSwift
 import NetworkKit
+import RxSwift
 
 public protocol PriceClientAPI {
 

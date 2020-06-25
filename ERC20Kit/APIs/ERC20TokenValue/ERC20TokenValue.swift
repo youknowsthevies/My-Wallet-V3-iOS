@@ -7,9 +7,9 @@
 //
 
 import BigInt
-import web3swift
-import PlatformKit
 import EthereumKit
+import PlatformKit
+import web3swift
 
 public enum ERC20TokenValueError: Error {
     case invalidCryptoValue
@@ -17,7 +17,7 @@ public enum ERC20TokenValueError: Error {
 
 public struct ERC20TokenValue<Token: ERC20Token>: Crypto {
     public var value: CryptoValue {
-        return crypto.value
+        crypto.value
     }
     
     private let crypto: Crypto

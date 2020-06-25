@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 /// Verify email announcement is a persistent announcement that should persist
 /// as long as the user email is not verified.
@@ -45,7 +45,7 @@ final class VerifyEmailAnnouncement: PersistentAnnouncement & ActionableAnnounce
     }
     
     var shouldShow: Bool {
-        return !isEmailVerified
+        !isEmailVerified
     }
     
     let type = AnnouncementType.verifyEmail

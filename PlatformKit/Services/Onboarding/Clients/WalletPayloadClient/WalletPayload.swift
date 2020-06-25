@@ -27,7 +27,7 @@ public struct WalletPayload {
     
     /// Returns `self` as string (JS requirements)
     var stringRepresentation: String? {
-        return try? encodeToString(encoding: .utf8)
+        try? encodeToString(encoding: .utf8)
     }
 }
 

@@ -5,8 +5,8 @@
 //  Created by Paulo on 14/04/2020.
 //
 
-import XCTest
 import NetworkKit
+import XCTest
 
 class ConfigTests: XCTestCase {
 
@@ -43,6 +43,6 @@ class ConfigTests: XCTestCase {
     }
 
     private func getValue(for key: String) -> String? {
-        return configInfoDictionary?["RETAIL_CORE_URL"] as? String
+        configInfoDictionary?["RETAIL_CORE_URL"] as? String
     }
 }

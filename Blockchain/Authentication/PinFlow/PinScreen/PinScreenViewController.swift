@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxSwift
 
 final class PinScreenViewController: BaseScreenViewController {
     
@@ -372,7 +372,7 @@ extension PinScreenViewController: NavigationTransitionAnimating {
 #if DEBUG
 extension PinScreenViewController {
     override var canBecomeFirstResponder: Bool {
-        return true
+        true
     }
     
     override func motionBegan(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {

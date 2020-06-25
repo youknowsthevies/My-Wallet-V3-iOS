@@ -13,6 +13,6 @@ import Foundation
     let router = DeepLinkQRCodeRouter(supportedRoutes: [.exchangeLinking])
 
     @objc func handle(deepLink: String) -> Bool {
-        return router.routeIfNeeded(using: deepLink)
+        router.routeIfNeeded(using: deepLink)
     }
 }

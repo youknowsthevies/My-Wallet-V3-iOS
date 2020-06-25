@@ -6,12 +6,12 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-import RxSwift
-import RxRelay
-import RxBlocking
-import RxTest
 @testable import PlatformKit
+import RxBlocking
+import RxRelay
+import RxSwift
+import RxTest
+import XCTest
 
 class CustodialCryptoBalanceFetcherTests: XCTestCase {
 

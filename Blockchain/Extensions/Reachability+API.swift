@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import ToolKit
 import PlatformKit
+import ToolKit
 
 extension Reachability {
 
@@ -33,7 +33,7 @@ public final class InternetReachability: InternetReachabilityAPI {
     }
     
     var canConnect: Bool {
-        return Reachability.hasInternetConnection()
+        Reachability.hasInternetConnection()
     }
     public init() {}
 }

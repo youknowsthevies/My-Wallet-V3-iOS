@@ -50,7 +50,7 @@ public final class WalletCryptoService: WalletCryptoServiceAPI {
     /// Receives a `KeyDataPair` and decrypt `data` using `key`
     /// - Parameter pair: A pair of key and data used in the decription process.
     public func decrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String> {
-        return Single
+        Single
             .create(weak: self) { (self, observer) -> Disposable in
                 do {
                     let result = try self.crypto(
@@ -71,7 +71,7 @@ public final class WalletCryptoService: WalletCryptoServiceAPI {
     /// Receives a `KeyDataPair` and encrypt `data` using `key`.
     /// - Parameter pair: A pair of key and data used in the encription process.
     public func encrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String> {
-        return Single
+        Single
             .create(weak: self) { (self, observer) -> Disposable in
                 do {
                     let result = try self.crypto(

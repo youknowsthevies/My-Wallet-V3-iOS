@@ -7,16 +7,16 @@
 //
 
 import Foundation
-import XCTest
-import RxSwift
 @testable import PlatformUIKit
+import RxSwift
+import XCTest
 
 /// Testing `DigitPadViewModel`'s functionality
 class DigitPadViewModelTests: XCTestCase {
     
     // Legal inputs to go through in testing.
     private var legalLengthTestInputs: [String] {
-        return ["1", "31", "40", "123", "9999", "443", "001"]
+        ["1", "31", "40", "123", "9999", "443", "001"]
     }
     
     private let bag = DisposeBag()

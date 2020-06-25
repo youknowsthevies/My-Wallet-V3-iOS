@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import FirebaseCrashlytics
-import ToolKit
+import Foundation
 import PlatformKit
+import ToolKit
 
 /// Crashlytics implementation of `Recording`. Should be injected as a service.
 final class CrashlyticsRecorder: Recording {

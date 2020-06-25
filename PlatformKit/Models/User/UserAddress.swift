@@ -31,10 +31,9 @@ extension UserAddress {
     }
 }
 
-
 extension UserAddress: Equatable {
     public static func == (lhs: UserAddress, rhs: UserAddress) -> Bool {
-        return lhs.lineOne == rhs.lineOne &&
+        lhs.lineOne == rhs.lineOne &&
             lhs.lineTwo == rhs.lineTwo &&
             lhs.postalCode == rhs.postalCode &&
             lhs.city == rhs.city &&

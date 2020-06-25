@@ -8,8 +8,8 @@
 
 import XCTest
 
-@testable import PlatformKit
 @testable import Blockchain
+@testable import PlatformKit
 
 class KYCCountrySelectionPresenterTests: XCTestCase {
 

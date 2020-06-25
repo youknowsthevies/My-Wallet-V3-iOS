@@ -16,7 +16,7 @@ public protocol HistoricalFiatPriceProviding: class {
 public final class HistoricalFiatPriceProvider: HistoricalFiatPriceProviding {
     
     public subscript(currency: CryptoCurrency) -> HistoricalFiatPriceServiceAPI {
-        return services[currency]!
+        services[currency]!
     }
     
     // MARK: - Services

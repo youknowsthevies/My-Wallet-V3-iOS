@@ -16,13 +16,13 @@ public protocol OptionalType {
 
 extension Optional: OptionalType {
     public var value: Wrapped? {
-        return self
+        self
     }
 }
 
 extension ObservableType where Element: OptionalType {
     func onNil(error: Error) -> Observable<Element.Wrapped> {
-        return flatMap { element -> Observable<Element.Wrapped> in
+        flatMap { element -> Observable<Element.Wrapped> in
             guard let value = element.value else {
                 return Observable<Element.Wrapped>.error(error)
             }
@@ -33,7 +33,7 @@ extension ObservableType where Element: OptionalType {
 
 extension ObservableType {
     public func map<A: AnyObject, R>(weak object: A, _ selector: @escaping (A, Element) throws -> R) -> Observable<R> {
-        return map { [weak object] element -> R in
+        map { [weak object] element -> R in
             guard let object = object else { throw ToolKitError.nullReference(A.self) }
             return try selector(object, element)
         }
@@ -42,7 +42,7 @@ extension ObservableType {
 
 extension ObservableType {
     public func flatMap<A: AnyObject, R>(weak object: A, selector: @escaping (A, Self.Element) throws -> Observable<R>) -> Observable<R> {
-        return flatMap { [weak object] (value) -> Observable<R> in
+        flatMap { [weak object] (value) -> Observable<R> in
             guard let object = object else {
                 return Observable.error(ToolKitError.nullReference(A.self))
             }
@@ -51,7 +51,7 @@ extension ObservableType {
     }
 
     public func flatMapLatest<A: AnyObject, R>(weak object: A, selector: @escaping (A, Self.Element) throws -> Observable<R>) -> Observable<R> {
-        return flatMapLatest { [weak object] (value) -> Observable<R> in
+        flatMapLatest { [weak object] (value) -> Observable<R> in
             guard let object = object else {
                 return Observable.error(ToolKitError.nullReference(A.self))
             }
@@ -60,7 +60,7 @@ extension ObservableType {
     }
     
     public func flatMapFirst<A: AnyObject, R>(weak object: A, selector: @escaping (A, Self.Element) throws -> Observable<R>) -> Observable<R> {
-        return flatMapFirst { [weak object] (value) -> Observable<R> in
+        flatMapFirst { [weak object] (value) -> Observable<R> in
             guard let object = object else {
                 return Observable.error(ToolKitError.nullReference(A.self))
             }
@@ -73,7 +73,7 @@ extension ObservableType {
 
 extension ObservableType {
     public static func create<A: AnyObject>(weak object: A, subscribe: @escaping (A, (AnyObserver<Element>)) -> Disposable) -> Observable<Element> {
-        return Observable<Element>.create { [weak object] observer -> Disposable in
+        Observable<Element>.create { [weak object] observer -> Disposable in
             guard let object = object else {
                 observer.on(.error(ToolKitError.nullReference(A.self)))
                 return Disposables.create()

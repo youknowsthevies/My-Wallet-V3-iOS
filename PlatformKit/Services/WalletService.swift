@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import RxSwift
 import NetworkKit
+import RxSwift
 
 public class WalletService: WalletOptionsAPI {
     
@@ -39,7 +39,7 @@ public class WalletService: WalletOptionsAPI {
     /// A Single returning the WalletOptions which contains dynamic flags for configuring the app.
     /// If WalletOptions has already been fetched, this property will return the cached value
     public var walletOptions: Single<WalletOptions> {
-        return Single.deferred { [unowned self] in
+        Single.deferred { [unowned self] in
             guard let cachedValue = self.cachedWalletOptions.value else {
                 return self.networkFetchedWalletOptions
             }
@@ -48,7 +48,7 @@ public class WalletService: WalletOptionsAPI {
     }
     
     public var serverUnderMaintenanceMessage: Single<String?> {
-        return walletOptions.map { options in
+        walletOptions.map { options in
             if options.downForMaintenance {
                 // TODO
                 return options.mobileInfo?.message ?? ""

@@ -6,15 +6,15 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BitcoinKit
 import Firebase
 import FirebaseCrashlytics
 import FirebaseDynamicLinks
-import RxSwift
-import ToolKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
-import BitcoinKit
+import RxSwift
+import ToolKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -40,7 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     /// The overlay shown when the application resigns active state.
     private lazy var deepLinkHandler: DeepLinkHandler = {
-        return DeepLinkHandler()
+        DeepLinkHandler()
     }()
     
     private let deepLinkRouter: DeepLinkRouter = DeepLinkRouter()
@@ -48,12 +48,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     /// A service that provides remote notification registration logic,
     /// thus taking responsibility off `AppDelegate` instance.
     private lazy var remoteNotificationRegistrationService: RemoteNotificationRegistering = {
-        return RemoteNotificationServiceContainer.default.authorizer
+        RemoteNotificationServiceContainer.default.authorizer
     }()
     
     /// A receipient for device tokens
     private lazy var remoteNotificationTokenReceiver: RemoteNotificationDeviceTokenReceiving = {
-        return RemoteNotificationServiceContainer.default.tokenReceiver
+        RemoteNotificationServiceContainer.default.tokenReceiver
     }()
     
     private let disposeBag = DisposeBag()
@@ -240,7 +240,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         if urlScheme == Constants.Schemes.blockchain {
-            ModalPresenter.shared.closeModal(withTransition: convertFromCATransitionType(CATransitionType.fade))
+            ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
             return true
         }
         
@@ -250,7 +250,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let authenticated = isInitialized && hasGuid && hasSharedKey
         
         if BitPayLinkRouter.isBitPayURL(url) {
-            ModalPresenter.shared.closeModal(withTransition: convertFromCATransitionType(CATransitionType.fade))
+            ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
             BitpayService.shared.contentRelay.accept(url)
             guard authenticated else { return true }
             return bitpayRouter.routeIfNeeded()
@@ -259,7 +259,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Handle "bitcoin://" scheme
         if let bitcoinUrlPayload = BitcoinURLPayload(url: url) {
 
-            ModalPresenter.shared.closeModal(withTransition: convertFromCATransitionType(CATransitionType.fade))
+            ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
 
             AuthenticationCoordinator.shared.postAuthenticationRoute = .sendCoins
 
@@ -272,11 +272,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         if authenticated {
-            ModalPresenter.shared.closeModal(withTransition: convertFromCATransitionType(CATransitionType.fade))
+            ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
             deepLinkRouter.routeIfNeeded()
             return true
         }
-        
 
         return true
     }
@@ -384,11 +383,6 @@ extension AppDelegate {
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         remoteNotificationTokenReceiver.appDidRegisterForRemoteNotifications(with: deviceToken)
     }
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertFromCATransitionType(_ input: CATransitionType) -> String {
-	return input.rawValue
 }
 
 extension UIDevice: DeviceInfo {}

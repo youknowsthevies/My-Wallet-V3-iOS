@@ -21,7 +21,7 @@ protocol ExchangeNavigatableView {
 
 extension ExchangeNavigatableView where Self: UIViewController {
     var ctaTintColor: UIColor? {
-        return nil
+        nil
     }
 
     func navControllerRightBarButtonTapped(_ navController: UINavigationController) {

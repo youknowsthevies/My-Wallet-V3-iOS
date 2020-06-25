@@ -6,8 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import FirebaseRemoteConfig
+import PlatformKit
 import RxSwift
 
 @objc class AppFeatureConfigurator: NSObject, FeatureConfiguring {
@@ -20,7 +20,7 @@ import RxSwift
     static let shared = AppFeatureConfigurator()
 
     /// Class function to retrieve the AppFeatureConfigurator shared instance for obj-c compatibility.
-    @objc class func sharedInstance() -> AppFeatureConfigurator { return shared }
+    @objc class func sharedInstance() -> AppFeatureConfigurator { shared }
 
     private let remoteConfig: RemoteConfig
 
@@ -151,12 +151,12 @@ extension AppFeatureConfigurator: FeatureVariantFetching {
     /// - Throws: An `ConfigurationError.missingKeyRawValue` in case the key raw value
     /// is missing or `ConfigurationError.missingValue` if the value itself is missing.
     func fetchTestingVariant(for key: AppFeature) -> Single<FeatureTestingVariant> {
-        return fetchString(for: key)
+        fetchString(for: key)
             .map { FeatureTestingVariant(rawValue: $0) ?? .variantA }
     }
     
     func fetchTestingVariant(for key: AppFeature, onErrorReturn defaultVariant: FeatureTestingVariant) -> Single<FeatureTestingVariant> {
-        return fetchString(for: key)
+        fetchString(for: key)
             .map { FeatureTestingVariant(rawValue: $0) ?? defaultVariant }
             .catchErrorJustReturn(defaultVariant)
     }

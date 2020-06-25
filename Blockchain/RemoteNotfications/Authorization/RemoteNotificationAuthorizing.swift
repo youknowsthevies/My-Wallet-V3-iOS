@@ -34,6 +34,6 @@ extension RemoteNotificationAuthorizationStatusProviding {
     /// A `Single` that streams a boolean value indicating whether `status` is authorized
     /// A default implementation that depends on the status
     var isAuthorized: Single<Bool> {
-        return status.map { $0 == .authorized }
+        status.map { $0 == .authorized }
     }
 }

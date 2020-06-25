@@ -6,12 +6,12 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UserNotifications
 import FirebaseMessaging
-import RxSwift
-import RxRelay
-import ToolKit
 import PlatformKit
+import RxRelay
+import RxSwift
+import ToolKit
+import UserNotifications
 
 /// The class is responsible for receiving notifications and streaming to subscribers
 final class RemoteNotificationRelay: NSObject {
@@ -38,7 +38,7 @@ final class RemoteNotificationRelay: NSObject {
 
 extension RemoteNotificationRelay: RemoteNotificationEmitting {
     var notification: Observable<RemoteNotification.NotificationType> {
-        return relay.asObservable()
+        relay.asObservable()
     }
 }
 

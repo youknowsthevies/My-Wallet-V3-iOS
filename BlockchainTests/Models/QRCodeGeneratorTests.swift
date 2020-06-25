@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
 import BitcoinKit
+@testable import Blockchain
 import PlatformKit
 import PlatformUIKit
-@testable import Blockchain
+import XCTest
 
 class QRCodeWrapperMock: QRCodeWrapperAPI {
     var lastMetadata: CryptoAssetQRMetadata?

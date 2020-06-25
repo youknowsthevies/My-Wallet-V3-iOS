@@ -6,14 +6,14 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
 import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 final class DashboardNoticePresenter {
     
-    /// MARK: - Exposed Properties
+    // MARK: - Exposed Properties
     
     /// Streams only distinct actions
     var action: Driver<NoticeDisplayAction> {
@@ -22,7 +22,7 @@ final class DashboardNoticePresenter {
             .distinctUntilChanged()
     }
     
-    /// MARK: - Private Properties
+    // MARK: - Private Properties
     
     let actionRelay = BehaviorRelay<NoticeDisplayAction>(value: .hide)
     

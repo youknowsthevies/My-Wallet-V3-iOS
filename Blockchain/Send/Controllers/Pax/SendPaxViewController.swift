@@ -6,15 +6,15 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import ERC20Kit
+import EthereumKit
 import Foundation
-import SafariServices
-import RxSwift
-import RxCocoa
-import ToolKit
 import PlatformKit
 import PlatformUIKit
-import EthereumKit
-import ERC20Kit
+import RxCocoa
+import RxSwift
+import SafariServices
+import ToolKit
 
 protocol SendPaxViewControllerDelegate: class {
     func onLoad()
@@ -64,7 +64,7 @@ class SendPaxViewController: UIViewController {
     @IBOutlet private var exchangeAddressButton: UIButton!
     
     private var fields: [UITextField] {
-        return [
+        [
             destinationAddressTextField,
             cryptoAmountTextField,
             fiatAmountTextField
@@ -105,7 +105,7 @@ class SendPaxViewController: UIViewController {
     // MARK: Class Functions
     
     @objc class func make() -> SendPaxViewController {
-        return SendPaxViewController.makeFromStoryboard()
+        SendPaxViewController.makeFromStoryboard()
     }
     
     // MARK: Lifecycle
@@ -374,7 +374,7 @@ extension SendPaxViewController: NavigatableView {
     }
     
     var rightNavControllerCTAType: NavigationCTAType {
-        return delegate?.rightNavigationCTAType ?? .qrCode
+        delegate?.rightNavigationCTAType ?? .qrCode
     }
     
     var rightCTATintColor: UIColor {
@@ -484,7 +484,7 @@ extension SendPaxViewController {
 
 extension SendPaxViewController: ActionableLabelDelegate {
     func targetRange(_ label: ActionableLabel) -> NSRange? {
-        return maxAvailableTrigger?.actionRange()
+        maxAvailableTrigger?.actionRange()
     }
 
     func actionRequestingExecution(label: ActionableLabel) {

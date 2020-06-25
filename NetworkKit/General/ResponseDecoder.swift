@@ -22,13 +22,13 @@ public struct ServerErrorResponse: Error {
 
 extension PrimitiveSequence where Trait == SingleTrait, Element == Result<ServerResponse, ServerErrorResponse> {
     func decode<ResponseType: Decodable, ErrorResponseType: Error & Decodable>(with decoder: NetworkResponseDecoderAPI) -> Single<Result<ResponseType, ErrorResponseType>> {
-        return flatMap { result -> Single<Result<ResponseType, ErrorResponseType>> in
+        flatMap { result -> Single<Result<ResponseType, ErrorResponseType>> in
             decoder.decode(result: result)
         }
     }
     
     func decode<ResponseType: Decodable>(with decoder: NetworkResponseDecoderAPI) -> Single<ResponseType> {
-        return flatMap { result -> Single<ResponseType> in
+        flatMap { result -> Single<ResponseType> in
             decoder.decode(result: result)
         }
     }
@@ -36,7 +36,7 @@ extension PrimitiveSequence where Trait == SingleTrait, Element == Result<Server
 
 extension PrimitiveSequence where Trait == SingleTrait, Element == ServerResponse {
     func decode<ResponseType: Decodable>(with decoder: NetworkResponseDecoderAPI) -> Single<ResponseType> {
-        return flatMap { response -> Single<ResponseType> in
+        flatMap { response -> Single<ResponseType> in
             decoder.decode(response: response)
         }
     }
@@ -69,7 +69,7 @@ public class NetworkResponseDecoder: NetworkResponseDecoderAPI {
     // MARK: - NetworkResponseDecoderAPI
     
     public func decode<ResponseType: Decodable>(response: ServerResponse) -> Single<ResponseType> {
-        return decode(networkResponse: response).single
+        decode(networkResponse: response).single
     }
     
     public func decode<ResponseType: Decodable>(result: Result<ServerResponse, ServerErrorResponse>) -> Single<ResponseType> {
@@ -112,7 +112,7 @@ public class NetworkResponseDecoder: NetworkResponseDecoderAPI {
     // MARK: - Private methods
     
     private func decode<ResponseType: Decodable>(networkResponse: ServerResponse) -> Result<ResponseType, Error> {
-        return Result<Result<ResponseType, Never>, Error> {
+        Result<Result<ResponseType, Never>, Error> {
                try decodeSuccess(response: networkResponse, type: ResponseType.self)
             }
             .flatMap { result -> Result<ResponseType, Error> in
@@ -121,7 +121,7 @@ public class NetworkResponseDecoder: NetworkResponseDecoderAPI {
     }
     
     private func decode<ResponseType: Decodable, ErrorResponseType: Error & Decodable>(networkErrorResponse: ServerErrorResponse) throws -> Result<ResponseType, ErrorResponseType> {
-        return try decodeFailure(errorResponse: networkErrorResponse).map()
+        try decodeFailure(errorResponse: networkErrorResponse).map()
     }
     
     private func decodeWithDefaultDecoding<ResponseType: Decodable>(networkErrorResponse: ServerErrorResponse) -> Result<ResponseType, Error> {

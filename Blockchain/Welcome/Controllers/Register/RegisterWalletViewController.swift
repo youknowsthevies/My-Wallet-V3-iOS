@@ -7,8 +7,8 @@
 //
 
 import PlatformUIKit
-import RxSwift
 import RxCocoa
+import RxSwift
 
 /// This class represents the wallet creation form
 final class RegisterWalletViewController: BaseScreenViewController {

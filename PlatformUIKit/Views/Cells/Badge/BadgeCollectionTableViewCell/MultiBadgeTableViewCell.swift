@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
 import RxSwift
+import UIKit
 
 public final class StackSpacerView: UIView { }
 

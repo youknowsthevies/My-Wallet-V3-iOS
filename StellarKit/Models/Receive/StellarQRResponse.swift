@@ -25,7 +25,7 @@ struct StellarQRResponse: SEP7URI {
     var paymentRequestUrl: String?
     
     static var scheme: String {
-        return "web+stellar"
+        "web+stellar"
     }
     
     init?(url: URL) {

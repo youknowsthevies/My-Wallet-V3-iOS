@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import PlatformKit
+import RxSwift
 
 public protocol OrderQuoteServiceAPI: class {
     func getQuote(for action: Order.Action,

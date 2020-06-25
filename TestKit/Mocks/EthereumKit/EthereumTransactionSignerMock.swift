@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import BigInt
-import PlatformKit
 @testable import EthereumKit
+import Foundation
+import PlatformKit
 
 class EthereumTransactionSignerMock: EthereumTransactionSignerAPI {
     var lastTransactionForSignature: EthereumTransactionCandidateCosted?

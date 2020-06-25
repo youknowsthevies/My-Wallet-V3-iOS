@@ -20,7 +20,7 @@ class BitcoinCashAddress: NSObject & AssetAddress {
     let assetType = LegacyCryptoCurrency.bitcoinCash
 
     override var description: String {
-        return address
+        address
     }
 
     // MARK: - Initialization

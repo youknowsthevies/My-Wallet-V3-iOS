@@ -33,7 +33,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
     // MARK: - API
     
     public func requestUsingSessionToken() -> Single<AuthenticatorType> {
-        return Single
+        Single
             .zip(repository.guid, repository.sessionToken)
             .flatMap(weak: self) { (self, credentials) -> Single<AuthenticatorType> in
                 guard let guid = credentials.0 else {
@@ -47,7 +47,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
     }
     
     public func requestUsingSharedKey() -> Completable {
-        return Single
+        Single
             .zip(repository.guid, repository.sharedKey)
             .flatMapCompletable(weak: self) { (self, credentials) -> Completable in
                 guard let guid = credentials.0 else {
@@ -62,7 +62,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
     
     /// Performs the request using given parameters: guid and shared-key
     public func request(guid: String, sharedKey: String) -> Completable {
-        return client
+        client
             .payload(guid: guid, identifier: .sharedKey(sharedKey))
             .flatMap(weak: self) { (self, response) -> Single<WalletPayloadClient.ClientResponse> in
                 self.cacheWalletData(from: response)
@@ -72,10 +72,10 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
     
     /// Performs the request using cached GUID and session-token
     private func request(guid: String, sessionToken: String) -> Single<AuthenticatorType> {
-        return client
+        client
             .payload(guid: guid, identifier: .sessionToken(sessionToken))
             .flatMap(weak: self) { (self, response) -> Single<WalletPayloadClient.ClientResponse> in
-                return self.cacheWalletData(from: response)
+                self.cacheWalletData(from: response)
             }
             .map(weak: self) { (self, response) -> AuthenticatorType in
                 guard let type = AuthenticatorType(rawValue: response.authType) else {
@@ -99,7 +99,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
     
     /// Used to cache the client response
     private func cacheWalletData(from clientResponse: WalletPayloadClient.ClientResponse) -> Single<WalletPayloadClient.ClientResponse> {
-        return Completable
+        Completable
             .zip(
                 repository.set(guid: clientResponse.guid),
                 repository.set(language: clientResponse.language),

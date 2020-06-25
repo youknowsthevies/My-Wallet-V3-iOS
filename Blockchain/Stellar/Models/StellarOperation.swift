@@ -7,13 +7,13 @@
 //
 
 import Foundation
-import ToolKit
 import PlatformKit
+import ToolKit
 
 enum StellarOperation {
 
     var identifier: String {
-        return token
+        token
     }
     
     enum Direction {

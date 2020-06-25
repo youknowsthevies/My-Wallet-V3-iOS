@@ -9,8 +9,8 @@
 import ERC20Kit
 import EthereumKit
 import PlatformKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 final class ERC20AssetBalanceFetcher: AccountBalanceFetching {
 

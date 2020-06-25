@@ -7,14 +7,14 @@
 //
 
 import PlatformKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 open class EthereumAssetAccountRepository: AssetAccountRepositoryAPI {
     public typealias Details = EthereumAssetAccountDetails
     
     public var assetAccountDetails: Single<Details> {
-        return currentAssetAccountDetails(fromCache: true)
+        currentAssetAccountDetails(fromCache: true)
     }
     
     private var privateAccountDetails = BehaviorRelay<Details?>(value: nil)
@@ -33,7 +33,7 @@ open class EthereumAssetAccountRepository: AssetAccountRepositoryAPI {
     // MARK: Private Functions
     
     fileprivate func fetchAssetAccountDetails(for accountID: String) -> Single<Details> {
-        return service.accountDetails(for: accountID)
+        service.accountDetails(for: accountID)
             .do(onSuccess: { [weak self] account in
                 self?.privateAccountDetails.accept(account)
             }

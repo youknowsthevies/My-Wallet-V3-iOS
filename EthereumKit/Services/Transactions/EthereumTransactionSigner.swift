@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import web3swift
 import BigInt
 import PlatformKit
+import RxSwift
+import web3swift
 
 public enum EthereumTransactionSignerError: Error {
     case mnemonicsError(Error)

@@ -57,7 +57,7 @@ struct KYCUserTiersBadgeModel {
     }
 
     private static func badgeString(tier: KYC.UserTier, description: String) -> String {
-        return localisedName(for: tier) + " - " + description
+        localisedName(for: tier) + " - " + description
     }
 
     private static func localisedName(for tier: KYC.UserTier) -> String {

@@ -7,9 +7,9 @@
 //
 
 import PlatformUIKit
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 final class ChangePasswordScreenPresenter {
     
@@ -39,7 +39,7 @@ final class ChangePasswordScreenPresenter {
     
     /// The total state of the presentation
     var state: Driver<FormPresentationState> {
-        return stateRelay.asDriver()
+        stateRelay.asDriver()
     }
     
     // MARK: - Injected Properties
@@ -111,7 +111,7 @@ final class ChangePasswordScreenPresenter {
         
         let stateObservable = latestStatesObservable
             .map(weak: self) { (self, payload) -> FormPresentationState in
-                return try self.stateReducer.reduce(states: [payload.0, payload.1, payload.2])
+                try self.stateReducer.reduce(states: [payload.0, payload.1, payload.2])
             }
             /// Should never get to `catchErrorJustReturn`.
             .catchErrorJustReturn(.invalid(.invalidTextField))

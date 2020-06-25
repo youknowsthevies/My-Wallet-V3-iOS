@@ -109,8 +109,8 @@ struct NabuUser: Decodable {
 
         depositAddresses = (try values.decodeIfPresent([String: String].self, forKey: .depositAddresses))
             .flatMap({ data -> [DepositAddress] in
-                return data.compactMap { (key, value) -> DepositAddress? in
-                    return DepositAddress(stringType: key, address: value)
+                data.compactMap { (key, value) -> DepositAddress? in
+                    DepositAddress(stringType: key, address: value)
                 }
             }) ?? []
     }
@@ -120,7 +120,7 @@ extension NabuUser: User { }
 
 extension NabuUser {
     var hasLinkedExchangeAccount: Bool {
-        return settings != nil
+        settings != nil
     }
 }
 
@@ -133,13 +133,13 @@ extension NabuUser {
 
 extension NabuUser: NabuUserSunriverAirdropRegistering {
     var isSunriverAirdropRegistered: Bool {
-        return tags?.sunriver != nil
+        tags?.sunriver != nil
     }
 }
 
 extension NabuUser: NabuUserBlockstackAirdropRegistering {
     var isBlockstackAirdropRegistered: Bool {
-        return tags?.blockstack != nil
+        tags?.blockstack != nil
     }
 }
 

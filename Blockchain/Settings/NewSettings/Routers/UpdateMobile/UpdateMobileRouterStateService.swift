@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import PlatformUIKit
+import RxRelay
+import RxSwift
 
 final class UpdateMobileRouterStateService: UpdateMobileStateServiceAPI {
     
@@ -74,7 +74,7 @@ final class UpdateMobileRouterStateService: UpdateMobileStateServiceAPI {
     let previousRelay = PublishRelay<Void>()
     
     var action: Observable<Action> {
-        return actionRelay
+        actionRelay
             .observeOn(MainScheduler.instance)
     }
     

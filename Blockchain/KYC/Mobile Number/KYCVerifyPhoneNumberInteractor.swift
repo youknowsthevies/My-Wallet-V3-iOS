@@ -6,11 +6,11 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import NetworkKit
 import PhoneNumberKit
+import PlatformKit
 import RxSwift
 import ToolKit
-import NetworkKit
-import PlatformKit
 
 class KYCVerifyPhoneNumberInteractor {
 
@@ -56,7 +56,7 @@ class KYCVerifyPhoneNumberInteractor {
     /// - Returns: a Completable which completes if the verification process succeeds
     ///            otherwise, it will emit an error.
     func verifyNumber(with code: String) -> Completable {
-        return wallet.verifyMobileNumber(
+        wallet.verifyMobileNumber(
             code
         ).andThen(
             updateWalletInfo()
@@ -80,7 +80,7 @@ class KYCVerifyPhoneNumberInteractor {
 
 extension Wallet {
     func changeMobileNumber(_ number: String) -> Completable {
-        return Completable.create(subscribe: { [unowned self] observer -> Disposable in
+        Completable.create(subscribe: { [unowned self] observer -> Disposable in
             self.changeMobileNumber(number, success: {
                 observer(.completed)
             }, error: {
@@ -91,7 +91,7 @@ extension Wallet {
     }
 
     func verifyMobileNumber(_ code: String) -> Completable {
-        return Completable.create(subscribe: { [unowned self] observer -> Disposable in
+        Completable.create(subscribe: { [unowned self] observer -> Disposable in
             self.verifyMobileNumber(code, success: {
                 observer(.completed)
             }, error: {

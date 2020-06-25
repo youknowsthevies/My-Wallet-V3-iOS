@@ -7,8 +7,8 @@
 //
 
 import PlatformKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 final class ChangePasswordScreenInteractor {
     
@@ -66,7 +66,7 @@ final class ChangePasswordScreenInteractor {
         passwordRepository.hasPassword
             .observeOn(MainScheduler.instance)
             .map { hasPassword -> State in
-                return hasPassword ? .passwordUnknown : .ready
+                hasPassword ? .passwordUnknown : .ready
             }
             .subscribe(onSuccess: { [weak self] state in
                 guard let self = self else { return }
@@ -109,7 +109,7 @@ final class ChangePasswordScreenInteractor {
     }
     
     private func update(state: State) -> Completable {
-        return Completable.create { [weak self] (observer) -> Disposable in
+        Completable.create { [weak self] (observer) -> Disposable in
             self?.stateRelay.accept(state)
             observer(.completed)
             return Disposables.create()

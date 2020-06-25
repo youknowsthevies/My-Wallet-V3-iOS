@@ -6,25 +6,25 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxRelay
+import RxSwift
 
 import PlatformKit
 
 public final class MockAccountBalanceFetcher: AccountBalanceFetching {
 
     public var balanceType: BalanceType {
-        return .nonCustodial
+        .nonCustodial
     }
 
     // MARK: - PropertiesEthereumKitTests Group
 
     public var balance: Single<CryptoValue> {
-        return Single.just(expectedBalance)
+        Single.just(expectedBalance)
     }
 
     public var balanceObservable: Observable<CryptoValue> {
-        return balance.asObservable()
+        balance.asObservable()
     }
 
     public let balanceFetchTriggerRelay = PublishRelay<Void>()

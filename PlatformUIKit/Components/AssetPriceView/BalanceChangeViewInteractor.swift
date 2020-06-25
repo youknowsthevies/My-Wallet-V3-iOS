@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import PlatformKit
+import RxRelay
+import RxSwift
 
 public final class BalanceChangeViewInteractor: AssetPriceViewInteracting {
     
@@ -17,7 +17,7 @@ public final class BalanceChangeViewInteractor: AssetPriceViewInteracting {
     // MARK: - Exposed Properties
     
     public var state: Observable<InteractionState> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
     }
     
     // MARK: - Private Accessors

@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
+import BuySellKit
 import PlatformKit
 import PlatformUIKit
-import BuySellKit
+import RxRelay
+import RxSwift
 
 protocol CustodyActionRouterAPI: class {
     func next(to state: CustodyActionStateService.State)
@@ -163,7 +163,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
     }
     
     private lazy var sheetPresenter: BottomSheetPresenting = {
-        return BottomSheetPresenting(ignoresBackroundTouches: false)
+        BottomSheetPresenting(ignoresBackroundTouches: false)
     }()
 }
 

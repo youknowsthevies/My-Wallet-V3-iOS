@@ -7,8 +7,8 @@
 //
 
 import LocalAuthentication
-import PlatformKit
 import Localization
+import PlatformKit
 
 public struct Biometry {
     
@@ -192,7 +192,7 @@ public struct Biometry {
         }
         
         public var isValid: Bool {
-            return self != .none
+            self != .none
         }
     }
     

@@ -112,7 +112,7 @@ class ExchangeListDataProvider: NSObject {
 extension ExchangeListDataProvider: UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        1
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

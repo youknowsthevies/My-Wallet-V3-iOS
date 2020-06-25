@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxRelay
+import RxSwift
 
 /// A validato
 final class AlwaysValidValidator: TextValidating {
@@ -16,7 +16,7 @@ final class AlwaysValidValidator: TextValidating {
     
     let valueRelay = BehaviorRelay<String>(value: "")
     var validationState: Observable<TextValidationState> {
-        return .just(.valid)
+        .just(.valid)
     }
 }
 

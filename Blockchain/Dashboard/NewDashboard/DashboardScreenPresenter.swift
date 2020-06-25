@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 protocol QRScannerRouting: class {
     func routeToQrScanner()
@@ -71,12 +71,12 @@ final class DashboardScreenPresenter {
     
     /// The dashboard action
     var action: Signal<DashboardCollectionAction> {
-        return actionRelay.asSignal()
+        actionRelay.asSignal()
     }
     
     /// Returns the total count of cells
     var cellCount: Int {
-        return cellArrangement.count
+        cellArrangement.count
     }
     
     /// Returns the ordered cell types
@@ -87,7 +87,7 @@ final class DashboardScreenPresenter {
             cellTypes.append(.notice)
         }
         
-        let assetCells: [CellType] = CryptoCurrency.allCases.map { return .crypto($0) }
+        let assetCells: [CellType] = CryptoCurrency.allCases.map { .crypto($0) }
         assetCells.forEach { cellTypes.append($0) }
         
         switch announcementCardArrangement {
@@ -109,7 +109,7 @@ final class DashboardScreenPresenter {
     }
     
     var announcementCellIndex: Int? {
-        return indexByCellType[.announcement]
+        indexByCellType[.announcement]
     }
         
     var indexByCellType: [CellType: Int] {
@@ -147,7 +147,7 @@ final class DashboardScreenPresenter {
     
     /// Returns `true` if the notice cell should be visible
     var shouldShowNotice: Bool {
-        return noticeViewModel != nil
+        noticeViewModel != nil
     }
     
     /// Presenter for wallet notice
@@ -237,7 +237,7 @@ final class DashboardScreenPresenter {
     
     /// Given the cell index, returns the historical balance presenter
     func historicalBalancePresenter(by cellIndex: Int) -> HistoricalBalanceCellPresenter {
-        return historicalBalanceCellPresenters[cellIndex - firstAssetCellIndex]
+        historicalBalanceCellPresenters[cellIndex - firstAssetCellIndex]
     }
     
     // MARK: - Navigation

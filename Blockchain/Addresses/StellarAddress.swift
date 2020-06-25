@@ -20,7 +20,7 @@ class StellarAddress: NSObject & AssetAddress {
     let assetType = LegacyCryptoCurrency.stellar
 
     override public var description: String {
-        return address
+        address
     }
 
     // MARK: - Initialization

@@ -8,9 +8,9 @@
 
 import PlatformKit
 import PlatformUIKit
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 /// `InstantAssetPriceViewInteractor` is an `AssetPriceViewInteracting`
 /// that takes a `AssetLineChartUserInteracting`. This allows the view to be
@@ -22,7 +22,7 @@ final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
     // MARK: - Exposed Properties
     
     public var state: Observable<InteractionState> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
             .observeOn(MainScheduler.instance)
     }
             

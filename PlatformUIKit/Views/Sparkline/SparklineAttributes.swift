@@ -22,12 +22,12 @@ public struct SparklineAttributes {
     
     /// The width of the final `Sparkline`
     public var width: CGFloat {
-        return size.width + (lineWidth / 2)
+        size.width + (lineWidth / 2)
     }
     
     /// The height of the final `Sparkline`
     public var height: CGFloat {
-        return size.height + (lineWidth / 2)
+        size.height + (lineWidth / 2)
     }
     
     // MARK: - Init

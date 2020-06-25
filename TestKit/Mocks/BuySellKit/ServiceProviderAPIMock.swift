@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+@testable import BuySellKit
+@testable import PlatformKit
 import RxSwift
 @testable import ToolKit
-@testable import PlatformKit
-@testable import BuySellKit
 
 final class ServiceProviderAPIMock: ServiceProviderAPI {
     

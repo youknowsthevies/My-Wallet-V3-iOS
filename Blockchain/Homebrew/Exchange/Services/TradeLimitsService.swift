@@ -6,11 +6,11 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import NetworkKit
+import PlatformKit
 import RxCocoa
 import RxSwift
 import ToolKit
-import NetworkKit
-import PlatformKit
 
 class TradeLimitsService: TradeLimitsAPI {
 
@@ -75,7 +75,7 @@ class TradeLimitsService: TradeLimitsAPI {
     }
 
     func getTradeLimits(withFiatCurrency currency: String, ignoringCache: Bool) -> Single<TradeLimits> {
-        return Single.deferred { [unowned self] in
+        Single.deferred { [unowned self] in
             guard let cachedLimits = self.cachedLimits.value,
                 cachedLimits.currency == currency,
                 ignoringCache == false else {

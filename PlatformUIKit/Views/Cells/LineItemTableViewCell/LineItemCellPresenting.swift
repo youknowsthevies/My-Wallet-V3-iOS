@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformKit
+import RxCocoa
 import RxRelay
 import RxSwift
-import RxCocoa
 import ToolKit
-import PlatformKit
 
 public protocol LineItemCellPresenting: AnyObject {
 

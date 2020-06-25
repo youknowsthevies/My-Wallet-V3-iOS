@@ -17,11 +17,11 @@ protocol SendSourceAccountProviding {
 
 extension SendSourceAccountProviding {
     func account(by index: Int) -> SendSourceAccount {
-        return accounts[index]
+        accounts[index]
     }
     
     var `default`: SendSourceAccount {
-        return account(by: 0)
+        account(by: 0)
     }
 }
 

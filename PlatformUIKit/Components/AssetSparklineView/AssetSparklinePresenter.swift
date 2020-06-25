@@ -7,24 +7,24 @@
 //
 
 import PlatformKit
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 public final class AssetSparklinePresenter {
     
     // MARK: - Public Properties
     
     public var currency: CryptoCurrency {
-        return interactor.cryptoCurrency
+        interactor.cryptoCurrency
     }
     
     public var lineColor: UIColor {
-        return currency.brandColor
+        currency.brandColor
     }
     
     public var state: Observable<State> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
     }
     
     // MARK: - Private Properties

@@ -7,9 +7,9 @@
 //
 
 import PhoneNumberKit
+import PlatformKit
 import RxSwift
 import ToolKit
-import PlatformKit
 
 protocol KYCVerifyPhoneNumberView: class {
     func showLoadingView(with text: String)

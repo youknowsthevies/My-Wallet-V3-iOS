@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import RxSwift
-import RxRelay
 import PlatformKit
+import RxRelay
+import RxSwift
 
 /// The interaction layer implementation for spendable balance on the send screen
 final class SendSpendableBalanceInteractor: SendSpendableBalanceInteracting {
@@ -18,7 +18,7 @@ final class SendSpendableBalanceInteractor: SendSpendableBalanceInteracting {
     
     /// Streams the spendable balance
     var calculationState: Observable<FiatCryptoPairCalculationState> {
-        return calculationStateRelay.asObservable()
+        calculationStateRelay.asObservable()
     }
     
     // MARK: - Private Properties

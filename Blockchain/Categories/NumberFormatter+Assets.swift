@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import ToolKit
 import PlatformKit
+import ToolKit
 
 @objc
 extension NumberFormatter {
@@ -33,14 +33,14 @@ extension NumberFormatter {
 
     // Example: 1234.12
     static let localCurrencyFormatter: NumberFormatter = {
-        return decimalStyleFormatter(withMinfractionDigits: localCurrencyFractionDigits,
+        decimalStyleFormatter(withMinfractionDigits: localCurrencyFractionDigits,
                                      maxfractionDigits: localCurrencyFractionDigits,
                                      usesGroupingSeparator: false)
     }()
 
     // Example: 1,234.12
     static let localCurrencyFormatterWithGroupingSeparator: NumberFormatter = {
-        return decimalStyleFormatter(withMinfractionDigits: localCurrencyFractionDigits,
+        decimalStyleFormatter(withMinfractionDigits: localCurrencyFractionDigits,
                                      maxfractionDigits: localCurrencyFractionDigits,
                                      usesGroupingSeparator: true)
     }()
@@ -60,21 +60,21 @@ extension NumberFormatter {
 
     // Example: 1234.12345678
     static let assetFormatter: NumberFormatter = {
-        return decimalStyleFormatter(withMinfractionDigits: 0,
+        decimalStyleFormatter(withMinfractionDigits: 0,
                                      maxfractionDigits: assetFractionDigits,
                                      usesGroupingSeparator: false)
     }()
 
     // TODO: genericize
     static let stellarFormatter: NumberFormatter = {
-        return decimalStyleFormatter(withMinfractionDigits: 0,
+        decimalStyleFormatter(withMinfractionDigits: 0,
                                      maxfractionDigits: stellarFractionDigits,
                                      usesGroupingSeparator: false)
     }()
 
     // Example: 1,234.12345678
     static let assetFormatterWithGroupingSeparator: NumberFormatter = {
-        return decimalStyleFormatter(withMinfractionDigits: 0,
+        decimalStyleFormatter(withMinfractionDigits: 0,
                                      maxfractionDigits: assetFractionDigits,
                                      usesGroupingSeparator: true)
     }()

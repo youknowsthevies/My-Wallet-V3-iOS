@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
 import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 final class BillingAddressScreenViewController: BaseTableViewController {
 

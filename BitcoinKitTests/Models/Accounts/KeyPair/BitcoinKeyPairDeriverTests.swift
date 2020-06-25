@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
+@testable import BitcoinKit
+import HDWalletKit
 import RxSwift
 import RxTest
-import HDWalletKit
-@testable import BitcoinKit
+import XCTest
 
 class BitcoinKeyPairDeriverTests: XCTestCase {
 

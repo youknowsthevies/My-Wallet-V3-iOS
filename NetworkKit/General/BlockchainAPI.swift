@@ -215,7 +215,7 @@ final public class BlockchainAPI: NSObject {
     }
 }
 
-fileprivate struct InfoDictionaryHelper {
+private struct InfoDictionaryHelper {
     enum Key: String {
         case apiURL = "API_URL"
         case buyWebviewURL = "BUY_WEBVIEW_URL"

@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import stellarsdk
 import RxSwift
+import stellarsdk
 
 protocol StellarOperationsAPI {
     typealias AccountID = String

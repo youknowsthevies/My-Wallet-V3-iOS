@@ -8,10 +8,10 @@
 
 import Foundation
 import JavaScriptCore
-import RxSwift
-import RxCocoa
-import ToolKit
 import PlatformKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 /**
  Manager object for operations to the Blockchain Wallet.
@@ -62,7 +62,7 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI {
     /// Once a payment is recieved any subscriber is able to get an update
     private let paymentReceivedRelay = PublishRelay<ReceivedPaymentDetails>()
     var paymentReceived: Observable<ReceivedPaymentDetails> {
-        return paymentReceivedRelay.asObservable()
+        paymentReceivedRelay.asObservable()
     }
     
     init(wallet: Wallet = Wallet()!,

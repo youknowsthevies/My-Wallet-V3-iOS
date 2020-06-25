@@ -21,6 +21,6 @@ class StellarTransactionCache: Caching {
     }
     
     func itemWithKey(_ key: String) -> StellarOperation? {
-        return cache[key]
+        cache[key]
     }
 }

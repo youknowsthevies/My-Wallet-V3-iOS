@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import BigInt
 import NetworkKit
 import PlatformKit
+import RxSwift
 
 public protocol EthereumClientAPI: class {
 

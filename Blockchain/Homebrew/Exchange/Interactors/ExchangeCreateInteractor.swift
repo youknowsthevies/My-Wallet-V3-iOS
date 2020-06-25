@@ -6,15 +6,15 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import ERC20Kit
+import EthereumKit
 import Foundation
-import RxSwift
-import RxCocoa
-import ToolKit
 import NetworkKit
 import PlatformKit
-import ERC20Kit
+import RxCocoa
+import RxSwift
 import StellarKit
-import EthereumKit
+import ToolKit
 
 class ExchangeCreateInteractor {
 
@@ -47,10 +47,10 @@ class ExchangeCreateInteractor {
     private var accountBalanceDiposableKey: CompositeDisposable.DisposeKey?
     private var tradingLimitDisposable: Disposable?
     private var repository: AssetAccountRepositoryAPI = {
-       return AssetAccountRepository.shared
+       AssetAccountRepository.shared
     }()
     private var feeServiceAPI: FeeServiceAPI = {
-        return FeeService.shared
+        FeeService.shared
     }()
     fileprivate let inputs: ExchangeInputsAPI
     fileprivate let markets: ExchangeMarketsAPI
@@ -282,7 +282,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
                 
                 return Observable.combineLatest(fiatBalance, fiatFee, Observable.just(account.balance), Observable.just(cryptoFees))
             }
-            .distinctUntilChanged { return $0 == $1 }
+            .distinctUntilChanged { $0 == $1 }
             .observeOn(MainScheduler.instance)
             .subscribe(
                 onNext: { [weak self] fiatBalance, fiatFees, cryptoBalance, cryptoFees in
@@ -377,7 +377,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
     }
     
     func confirmationIsExecuting() -> Bool {
-        return tradeExecution.isExecuting
+        tradeExecution.isExecuting
     }
 
     func confirmConversion() {
@@ -423,13 +423,13 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
         case .algorand:
             return .just(.zero(assetType: .algorand))
         case .bitcoin:
-            return feeServiceAPI.bitcoin.asObservable().map { return $0.priority }
+            return feeServiceAPI.bitcoin.asObservable().map { $0.priority }
         case .bitcoinCash:
-            return feeServiceAPI.bitcoinCash.asObservable().map { return $0.priority }
+            return feeServiceAPI.bitcoinCash.asObservable().map { $0.priority }
         case .ethereum, .pax:
-            return feeServiceAPI.ethereum.asObservable().map { return $0.priority }
+            return feeServiceAPI.ethereum.asObservable().map { $0.priority }
         case .stellar:
-            return feeServiceAPI.stellar.asObservable().map { return $0.priority }
+            return feeServiceAPI.stellar.asObservable().map { $0.priority }
         }
     }
 
@@ -823,14 +823,14 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
     }
     
     private func minTradingLimit() -> Maybe<Decimal> {
-        return tradingLimitInfo(info: { tradingLimits -> Decimal in
-            return tradingLimits.minOrder
+        tradingLimitInfo(info: { tradingLimits -> Decimal in
+            tradingLimits.minOrder
         })
     }
     
     private func maxTradingLimit() -> Maybe<Decimal> {
-        return tradingLimitInfo(info: { tradingLimits -> Decimal in
-            return tradingLimits.maxPossibleOrder
+        tradingLimitInfo(info: { tradingLimits -> Decimal in
+            tradingLimits.maxPossibleOrder
         })
     }
 
@@ -841,7 +841,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
         return tradeLimitService.getTradeLimits(
             withFiatCurrency: model.fiatCurrencyCode,
             ignoringCache: false).asMaybe().map { limits -> Decimal? in
-            return limits.daily?.available
+            limits.daily?.available
         }
     }
 
@@ -852,7 +852,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
         return tradeLimitService.getTradeLimits(
             withFiatCurrency: model.fiatCurrencyCode,
             ignoringCache: false).asMaybe().map { limits -> Decimal? in
-            return limits.annual?.available
+            limits.annual?.available
         }
     }
 
@@ -864,7 +864,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
         return tradeLimitService.getTradeLimits(
             withFiatCurrency: model.fiatCurrencyCode,
             ignoringCache: false).map { tradingLimits -> Decimal in
-            return info(tradingLimits)
+            info(tradingLimits)
         }.asMaybe()
     }
 

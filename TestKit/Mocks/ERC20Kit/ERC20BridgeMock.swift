@@ -6,32 +6,32 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import RxSwift
 import BigInt
-import PlatformKit
-import EthereumKit
 @testable import ERC20Kit
+import EthereumKit
+import Foundation
+import PlatformKit
+import RxSwift
 
 class ERC20BridgeMock: ERC20BridgeAPI {
     
     var isWaitingOnTransactionValue: Single<Bool> = Single.just(false)
     var isWaitingOnTransaction: Single<Bool> {
-        return isWaitingOnTransactionValue
+        isWaitingOnTransactionValue
     }
     
     func tokenAccount(for key: String) -> Single<ERC20TokenAccount?> {
-        return Single.just(nil)
+        Single.just(nil)
     }
     
     var erc20TokenAccountsValue: Single<[String: ERC20TokenAccount]> = Single.just([:])
     var erc20TokenAccounts: Single<[String: ERC20TokenAccount]> {
-        return erc20TokenAccountsValue
+        erc20TokenAccountsValue
     }
     
     var saveERC20TokenAccountsValue: Single<Void> = Single.just(())
     func save(erc20TokenAccounts: [String: ERC20TokenAccount]) -> Single<Void> {
-        return saveERC20TokenAccountsValue
+        saveERC20TokenAccountsValue
     }
     
     var lastTransactionHashFetched: String?

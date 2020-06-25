@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-import StellarKit
 import PlatformKit
 import RxSwift
+import StellarKit
+import XCTest
 
 class MockStellarBridge: StellarWalletBridgeAPI, MnemonicAccessAPI {
     
@@ -23,21 +23,21 @@ class MockStellarBridge: StellarWalletBridgeAPI, MnemonicAccessAPI {
     }
 
     func stellarWallets() -> [StellarWalletAccount] {
-        return accounts
+        accounts
     }
     
     // MARK: MnemonicAccessAPI
     
     var mnemonic: Maybe<String> {
-        return Maybe.empty()
+        Maybe.empty()
     }
     
     var mnemonicForcePrompt: Maybe<String> {
-        return Maybe.empty()
+        Maybe.empty()
     }
     
     var mnemonicPromptingIfNeeded: Maybe<String> {
-        return Maybe.empty()
+        Maybe.empty()
     }
     
 }

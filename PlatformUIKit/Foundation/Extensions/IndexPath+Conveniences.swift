@@ -10,6 +10,6 @@ import Foundation
 
 extension IndexPath {
     public static var firstRowInFirstSection: IndexPath {
-        return IndexPath(row: 0, section: 0)
+        IndexPath(row: 0, section: 0)
     }
 }

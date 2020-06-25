@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
-import RxSwift
-import RxRelay
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
+import RxRelay
+import RxSwift
 
 /// A view controller that displays thr dashboard
 final class DashboardViewController: BaseScreenViewController {

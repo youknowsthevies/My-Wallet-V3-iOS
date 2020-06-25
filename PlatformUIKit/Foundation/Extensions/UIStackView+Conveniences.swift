@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 extension UIStackView {
     public func addBackgroundColor(_ color: UIColor) {
@@ -22,7 +22,7 @@ extension UIStackView {
 
 extension Reactive where Base: UIStackView {
     public var alignment: Binder<UIStackView.Alignment> {
-        return Binder(base) { stackView, alignment in
+        Binder(base) { stackView, alignment in
             stackView.alignment = alignment
         }
     }

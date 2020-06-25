@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformKit
 import PlatformUIKit
 import SafariServices
+import ToolKit
 import Veriff
 
 /// Account verification screen in KYC flow
@@ -155,12 +155,12 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
     }
 
     private func actionAttributes() -> [NSAttributedString.Key: Any] {
-        return [.font: Font(.branded(.montserratRegular), size: .custom(18.0)).result,
+        [.font: Font(.branded(.montserratRegular), size: .custom(18.0)).result,
                 .foregroundColor: UIColor.brandSecondary]
     }
 
     private func defaultAttributes() -> [NSAttributedString.Key: Any] {
-        return [.font: Font(.branded(.montserratRegular), size: .custom(18.0)).result,
+        [.font: Font(.branded(.montserratRegular), size: .custom(18.0)).result,
                 .foregroundColor: countrySupportedDescription.textColor]
     }
     
@@ -200,7 +200,7 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
 
 extension KYCVerifyIdentityController: ActionableLabelDelegate {
     func targetRange(_ label: ActionableLabel) -> NSRange? {
-        return countrySupportedTrigger.actionRange()
+        countrySupportedTrigger.actionRange()
     }
 
     func actionRequestingExecution(label: ActionableLabel) {

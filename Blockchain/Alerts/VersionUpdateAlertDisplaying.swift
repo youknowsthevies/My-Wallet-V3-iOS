@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import PlatformUIKit
 import PlatformKit
+import PlatformUIKit
 
 /// Responsible for showing an alert for recommended update and force update if needed.
 protocol VersionUpdateAlertDisplaying {

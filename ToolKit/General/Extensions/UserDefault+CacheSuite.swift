@@ -49,7 +49,7 @@ public class MemoryCacheSuite: CacheSuite {
     // MARK: - Boolean
     
     public func bool(forKey key: String) -> Bool {
-        return cache[key] as? Bool ?? false
+        cache[key] as? Bool ?? false
     }
     
     public func set(_ value: Bool, forKey key: String) {
@@ -59,7 +59,7 @@ public class MemoryCacheSuite: CacheSuite {
     // MARK: - Data
     
     public func data(forKey defaultName: String) -> Data? {
-        return cache[defaultName] as? Data
+        cache[defaultName] as? Data
     }
     
     public func set(_ value: Any?, forKey defaultName: String) {

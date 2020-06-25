@@ -23,7 +23,7 @@ public final class SMSService: SMSServiceAPI {
     // MARK: - API
     
     public func request() -> Completable {
-        return Single
+        Single
             .zip(repository.guid, repository.sessionToken)
             .map(weak: self) { (self, credentials) -> (guid: String, sessionToken: String) in
                 guard let guid = credentials.0 else {
@@ -35,7 +35,7 @@ public final class SMSService: SMSServiceAPI {
                 return (guid, sessionToken)
             }
             .flatMapCompletable(weak: self) { (self, credentials) -> Completable in
-                return self.client.requestOTP(
+                self.client.requestOTP(
                     sessionToken: credentials.sessionToken,
                     guid: credentials.guid
                 )

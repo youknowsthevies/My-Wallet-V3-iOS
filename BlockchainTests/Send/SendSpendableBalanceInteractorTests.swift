@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
 import RxSwift
+import XCTest
 
-import PlatformKit
 @testable import Blockchain
+import PlatformKit
 
 // Asset agnostic tests for spendable balance interaction layer
 final class SendSpendableBalanceInteractorTests: XCTestCase {

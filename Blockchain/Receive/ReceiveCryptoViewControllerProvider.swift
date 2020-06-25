@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
+import EthereumKit
 import PlatformKit
 import PlatformUIKit
-import EthereumKit
 import StellarKit
+import ToolKit
 
 final class ReceiveCryptoTextViewModel: ReceiveCryptoTextViewModelProtocol {
 
@@ -20,15 +20,15 @@ final class ReceiveCryptoTextViewModel: ReceiveCryptoTextViewModelProtocol {
     let tapToCopyThisAddress = LocalizationConstants.Receive.tapToCopyThisAddress
 
     var requestPaymentMessagePrefix: String {
-        return String(format: LocalizationConstants.Receive.pleaseSendXto, cryptoCurrency.displayCode)
+        String(format: LocalizationConstants.Receive.pleaseSendXto, cryptoCurrency.displayCode)
     }
 
     var requestPaymentSubject: String {
-        return String(format: LocalizationConstants.Receive.xPaymentRequest, cryptoCurrency.displayCode)
+        String(format: LocalizationConstants.Receive.xPaymentRequest, cryptoCurrency.displayCode)
     }
 
     var secondPasswordPrompt: String {
-        return String(format: LocalizationConstants.Receive.secondPasswordPromptX, cryptoCurrency.displayCode)
+        String(format: LocalizationConstants.Receive.secondPasswordPromptX, cryptoCurrency.displayCode)
     }
 
     private let cryptoCurrency: CryptoCurrency

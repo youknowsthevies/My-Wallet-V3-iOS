@@ -13,7 +13,7 @@ import RxSwift
 
 struct MockPinClient: PinClientAPI {
     private var response: PinStoreResponse {
-        return PinStoreResponse(statusCode: statusCode,
+        PinStoreResponse(statusCode: statusCode,
                                 error: error,
                                 pinDecryptionValue: "pin decryption value",
                                 key: "key",
@@ -30,10 +30,10 @@ struct MockPinClient: PinClientAPI {
     }
     
     func create(pinPayload: PinPayload) -> Single<PinStoreResponse> {
-        return .just(response)
+        .just(response)
     }
     
     func validate(pinPayload: PinPayload) -> Single<PinStoreResponse> {
-        return .just(response)
+        .just(response)
     }
 }

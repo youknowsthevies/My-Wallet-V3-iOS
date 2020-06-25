@@ -9,8 +9,8 @@
 import Foundation
 import RxSwift
 
-import PlatformKit
 @testable import Blockchain
+import PlatformKit
 
 final class MockSendFeeInteractor: SendFeeInteracting {
     
@@ -22,6 +22,6 @@ final class MockSendFeeInteractor: SendFeeInteracting {
     
     /// Stream of the updated balance in account
     var calculationState: Observable<FiatCryptoPairCalculationState> {
-        return Observable.just(expectedState)
+        Observable.just(expectedState)
     }
 }

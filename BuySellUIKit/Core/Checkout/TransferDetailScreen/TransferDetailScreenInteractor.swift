@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import PlatformKit
 import BuySellKit
+import PlatformKit
+import RxSwift
 
 enum TermsUrlLink {
     static let gbp = "https://exchange.blockchain.com/legal#modulr"

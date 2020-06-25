@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import stellarsdk
 import PlatformKit
-import RxSwift
 import RxCocoa
+import RxSwift
+import stellarsdk
 
 // TODO: This should be moved to `StellarKit`
 
@@ -19,20 +19,20 @@ public class StellarLedgerService: StellarLedgerAPI {
     public let fallbackBaseFee: Decimal = CryptoValue.lumensFromStroops(int: StellarTransactionFee.defaultLimits.min).majorValue
     
     public var current: Observable<StellarLedger> {
-        return fetchLedgerStartingWithCache(
+        fetchLedgerStartingWithCache(
             cachedValue: privateLedger,
             networkValue: fetchLedger
         )
     }
     
     public var currentLedger: StellarLedger? {
-        return privateLedger.value
+        privateLedger.value
     }
     
     private var privateLedger = BehaviorRelay<StellarLedger?>(value: nil)
     
     private var fetchLedger: Single<StellarLedger> {
-        return Single.zip(getLedgers, feeService.fees)
+        Single.zip(getLedgers, feeService.fees)
             .flatMap { value -> Single<StellarLedger> in
                 let (ledger, fees) = value
                 // Convert from Lumens to stroops
@@ -47,8 +47,8 @@ public class StellarLedgerService: StellarLedgerAPI {
     }
     
     private var getLedgers: Single<StellarLedger> {
-        return ledgersService.flatMap(weak: self) { (self, ledgersService) -> Single<StellarLedger> in
-            return Single<StellarLedger>.create { observer -> Disposable in
+        ledgersService.flatMap(weak: self) { (self, ledgersService) -> Single<StellarLedger> in
+            Single<StellarLedger>.create { observer -> Disposable in
                 ledgersService.ledgers(cursor: nil, order: .descending, limit: 1) { result in
                     switch result {
                     case .success(let value):
@@ -85,11 +85,11 @@ public class StellarLedgerService: StellarLedgerAPI {
     }
 
     private var sdk: Single<stellarsdk.StellarSDK> {
-        return configuration.map { $0.sdk }
+        configuration.map { $0.sdk }
     }
     
     private var configuration: Single<StellarConfiguration> {
-        return configurationService.configuration
+        configurationService.configuration
     }
     
     private let configurationService: StellarConfigurationAPI

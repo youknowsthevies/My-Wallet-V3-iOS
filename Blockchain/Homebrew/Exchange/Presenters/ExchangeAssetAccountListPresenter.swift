@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import RxSwift
 import Localization
+import RxSwift
 
 enum ExchangeAction {
     case exchanging

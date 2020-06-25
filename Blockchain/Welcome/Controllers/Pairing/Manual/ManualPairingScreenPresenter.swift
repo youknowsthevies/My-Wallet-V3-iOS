@@ -6,12 +6,12 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
+import ToolKit
 
 /// The view model for wallet pairing screen
 final class ManualPairingScreenPresenter {
@@ -32,7 +32,7 @@ final class ManualPairingScreenPresenter {
     
     /// The total state of the presentation
     var state: Driver<FormPresentationState> {
-        return stateRelay.asDriver()
+        stateRelay.asDriver()
     }
     
     /// Relay to the next route

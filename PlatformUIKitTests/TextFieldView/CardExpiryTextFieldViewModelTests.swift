@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-import RxSwift
-import RxBlocking
-import ToolKit
 @testable import PlatformUIKit
+import RxBlocking
+import RxSwift
+import ToolKit
+import XCTest
 
 final class CardExpiryTextFieldViewModelTests: XCTestCase {
     

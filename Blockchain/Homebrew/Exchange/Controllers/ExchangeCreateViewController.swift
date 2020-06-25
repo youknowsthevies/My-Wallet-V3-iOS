@@ -7,11 +7,11 @@
 //
 
 import Foundation
-import SafariServices
-import RxSwift
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxSwift
+import SafariServices
+import ToolKit
 
 protocol ExchangeCreateDelegate: NumberKeypadViewDelegate {
     func onViewDidLoad()
@@ -139,7 +139,7 @@ class ExchangeCreateViewController: UIViewController {
     // MARK: Private Properties
 
     private var analyticsRecorder: AnalyticsEventRecording {
-        return presenter.analyticsRecorder
+        presenter.analyticsRecorder
     }
     private var presenter: ExchangeCreatePresenter!
     private var dependencies: ExchangeDependencies = ExchangeServices()
@@ -246,7 +246,7 @@ class ExchangeCreateViewController: UIViewController {
     }
     
     private func isETHAirdropEligible() -> Single<Bool> {
-        return BlockchainDataRepository.shared.nabuUser.take(1).asSingle().flatMap { user -> Single<Bool> in
+        BlockchainDataRepository.shared.nabuUser.take(1).asSingle().flatMap { user -> Single<Bool> in
             guard let tiers = user.tiers else { return Single.just(false) }
             guard let tags = user.tags else { return Single.just(false) }
             let eligible = tiers.current == .tier2 && tags.powerPax == nil
@@ -255,7 +255,7 @@ class ExchangeCreateViewController: UIViewController {
     }
 
     fileprivate func dependenciesSetup() -> Completable {
-        return Completable.create(subscribe: { [weak self] observer -> Disposable in
+        Completable.create(subscribe: { [weak self] observer -> Disposable in
             guard let self = self else {
                 observer(.completed)
                 return Disposables.create()
@@ -334,7 +334,7 @@ class ExchangeCreateViewController: UIViewController {
     }
     
     private var exchangeHistoryAction: AlertAction {
-        return AlertAction(
+        AlertAction(
             style: .default(LocalizationConstants.Swap.viewOrderDetails),
             metadata: .block({ [weak self] in
                 guard let self = self else { return }
@@ -383,7 +383,7 @@ class ExchangeCreateViewController: UIViewController {
 // MARK: - Styling
 extension ExchangeCreateViewController {
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .default
+        .default
     }
 
     private func addStyleToView(_ viewToEdit: UIView) {
@@ -550,7 +550,7 @@ extension ExchangeCreateViewController: ExchangeCreateInterface {
     }
 
     func isExchangeButtonEnabled() -> Bool {
-        return exchangeButton.isEnabled
+        exchangeButton.isEnabled
     }
     
     func showSummary(orderTransaction: OrderTransaction, conversion: Conversion) {
@@ -629,17 +629,17 @@ extension ExchangeCreateViewController: ExchangeAssetAccountListView {
 extension ExchangeCreateViewController: UIViewControllerTransitioningDelegate {
     
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        return ModalAnimator(operation: .dismiss, duration: 0.4)
+        ModalAnimator(operation: .dismiss, duration: 0.4)
     }
     
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        return ModalAnimator(operation: .present, duration: 0.4)
+        ModalAnimator(operation: .present, duration: 0.4)
     }
 }
 
 extension ExchangeCreateViewController: ActionableLabelDelegate {
     func targetRange(_ label: ActionableLabel) -> NSRange? {
-        return trigger?.actionRange()
+        trigger?.actionRange()
     }
 
     func actionRequestingExecution(label: ActionableLabel) {
@@ -650,7 +650,7 @@ extension ExchangeCreateViewController: ActionableLabelDelegate {
 
 extension ExchangeCreateViewController: NavigatableView {
     var leftCTATintColor: UIColor {
-        return .white
+        .white
     }
     
     var rightCTATintColor: UIColor {
@@ -663,15 +663,15 @@ extension ExchangeCreateViewController: NavigatableView {
     }
     
     var leftNavControllerCTAType: NavigationCTAType {
-        return .menu
+        .menu
     }
     
     var rightNavControllerCTAType: NavigationCTAType {
-        return delegate?.rightNavigationCTAType ?? .help
+        delegate?.rightNavigationCTAType ?? .help
     }
     
     var navigationDisplayMode: NavigationBarDisplayMode {
-        return .dark
+        .dark
     }
     
     func navControllerRightBarButtonTapped(_ navController: UINavigationController) {

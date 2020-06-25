@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import RxSwift
 @testable import PlatformKit
+import RxSwift
 
 extension WalletPayloadClient.Response {
     static func fake(
@@ -19,7 +19,7 @@ extension WalletPayloadClient.Response {
         payload: String? = "{\"pbkdf2_iterations\":1,\"version\":3,\"payload\":\"payload-for-wallet\"}",
         shouldSyncPubkeys: Bool = false
     ) -> WalletPayloadClient.Response {
-        return WalletPayloadClient.Response(
+        WalletPayloadClient.Response(
             guid: guid,
             authType: authenticatorType.rawValue,
             language: language,

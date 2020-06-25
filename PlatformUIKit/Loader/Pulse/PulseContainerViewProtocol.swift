@@ -18,6 +18,6 @@ protocol PulseContainerViewProtocol {
 
 extension PulseContainerViewProtocol where Self: PassthroughView {
     var viewRepresentation: PassthroughView {
-        return self as PassthroughView
+        self as PassthroughView
     }
 }

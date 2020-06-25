@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
-import RxSwift
-import RxCocoa
 import PlatformUIKit
+import RxCocoa
+import RxSwift
+import UIKit
 
 /// The source account table view cell on the send screen.
 final class SendSourceAccountTableViewCell: UITableViewCell {

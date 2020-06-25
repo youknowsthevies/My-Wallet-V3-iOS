@@ -6,12 +6,12 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
+import ToolKit
 
 final class BackupRouterStateService: BackupRouterStateServiceAPI {
 
@@ -94,7 +94,7 @@ final class BackupRouterStateService: BackupRouterStateServiceAPI {
     }
     
     var action: Observable<Action> {
-        return actionRelay
+        actionRelay
             .observeOn(MainScheduler.instance)
     }
     

@@ -27,20 +27,20 @@ public struct LabeledButtonViewStyle {
 
 extension LabeledButtonViewStyle {
     public static var currency: LabeledButtonViewStyle {
-        return .init(
+        .init(
             backgroundColor: .lightBlueBackground,
             font: .main(.semibold, 14),
             textColor: .secondary
         )
     }
     public static var currencyTooLow: LabeledButtonViewStyle {
-        return .init(
+        .init(
             backgroundColor: .lightRedBackground,
             font: .main(.semibold, 14),
             textColor: .negativePrice
         )
     }
     public static var currencyTooHigh: LabeledButtonViewStyle {
-        return .currencyTooLow
+        .currencyTooLow
     }
 }

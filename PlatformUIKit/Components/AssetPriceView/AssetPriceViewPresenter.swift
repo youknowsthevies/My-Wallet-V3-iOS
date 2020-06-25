@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import PlatformKit
 import RxCocoa
+import RxRelay
+import RxSwift
 
 public final class AssetPriceViewPresenter {
     
@@ -18,12 +18,12 @@ public final class AssetPriceViewPresenter {
     // MARK: - Exposed Properties
     
     var state: Observable<PresentationState> {
-        return stateRelay
+        stateRelay
             .observeOn(MainScheduler.instance)
     }
     
     var alignment: Driver<UIStackView.Alignment> {
-        return alignmentRelay.asDriver()
+        alignmentRelay.asDriver()
     }
     
     // MARK: - Injected

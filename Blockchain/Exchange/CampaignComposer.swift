@@ -42,7 +42,7 @@ final class CampaignComposer {
     
     /// General query-value pairs that should be tracked for any campaign
     var generalQueryValuePairs: [Key: Campaign] {
-        return [.source: CampaignValue.General.source,
+        [.source: CampaignValue.General.source,
                 .medium: CampaignValue.Exchange.medium]
     }
 }

@@ -6,9 +6,9 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 protocol KYCVerifyIdentityView: class {
     func showDocumentTypes(_ types: [KYCDocumentType])
@@ -63,7 +63,7 @@ class KYCVerifyIdentityPresenter {
     weak var microphonePromptingDelegate: MicrophonePromptingDelegate?
 
     internal lazy var permissionsRequestor: PermissionsRequestor = {
-        return PermissionsRequestor()
+        PermissionsRequestor()
     }()
 }
 

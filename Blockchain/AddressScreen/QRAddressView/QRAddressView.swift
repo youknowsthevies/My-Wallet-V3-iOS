@@ -7,8 +7,8 @@
 //
 
 import PlatformUIKit
-import RxSwift
 import RxCocoa
+import RxSwift
 
 /// Crypto address represented as QR image and address text
 final class QRAddressView: UIView {

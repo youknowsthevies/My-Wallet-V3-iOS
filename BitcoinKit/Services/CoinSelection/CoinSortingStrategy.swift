@@ -13,17 +13,16 @@ protocol CoinSortingStrategy {
 /// Prioritizes smaller coins, better coin consolidation but a higher fee.
 struct AscentDrawSortingStrategy: CoinSortingStrategy {
     func sort(coins: [UnspentOutput]) -> [UnspentOutput] {
-        return coins.sorted(by: { (lhs, rhs) -> Bool in
+        coins.sorted(by: { (lhs, rhs) -> Bool in
             lhs.magnitude < rhs.magnitude
         })
     }
 }
 
-
 /// Prioritizes larger coins, worse coin consolidation but a lower fee.
 struct DescentDrawSortingStrategy: CoinSortingStrategy {
     func sort(coins: [UnspentOutput]) -> [UnspentOutput] {
-        return coins.sorted(by: { (lhs, rhs) -> Bool in
+        coins.sorted(by: { (lhs, rhs) -> Bool in
             lhs.magnitude > rhs.magnitude
         })
     }

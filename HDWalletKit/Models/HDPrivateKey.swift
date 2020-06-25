@@ -12,11 +12,11 @@ import LibWally
 public struct HDPrivateKey: Equatable {
     
     public var xpriv: String? {
-        return libWallyKey.xpriv
+        libWallyKey.xpriv
     }
     
     public var xpub: String {
-        return libWallyKey.xpub
+        libWallyKey.xpub
     }
     
     // FIXME: This is public for now but will eventually be private
@@ -40,7 +40,7 @@ public struct HDPrivateKey: Equatable {
     }
     
     public func publicKey() -> HDPublicKey {
-        return HDPublicKey(data: libWallyKey.pubKey.data)
+        HDPublicKey(data: libWallyKey.pubKey.data)
     }
     
     public func derive(at path: HDKeyPath) throws -> HDPrivateKey {
@@ -54,7 +54,7 @@ public struct HDPrivateKey: Equatable {
     }
     
     public static func == (lhs: HDPrivateKey, rhs: HDPrivateKey) -> Bool {
-        return lhs.xpriv == rhs.xpriv
+        lhs.xpriv == rhs.xpriv
             && lhs.xpub == rhs.xpub
     }
     

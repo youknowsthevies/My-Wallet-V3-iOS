@@ -7,9 +7,9 @@
 //
 
 import PlatformKit
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 public class MnemonicTextView: UIView {
         

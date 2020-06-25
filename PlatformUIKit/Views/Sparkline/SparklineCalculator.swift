@@ -16,11 +16,11 @@ public struct SparklineCalculator {
     let attributes: SparklineAttributes
     
     var size: CGSize {
-        return attributes.size
+        attributes.size
     }
     
     var lineWidth: CGFloat {
-        return attributes.lineWidth
+        attributes.lineWidth
     }
     
     public init(attributes: SparklineAttributes) {
@@ -70,15 +70,15 @@ public struct SparklineCalculator {
     }
 }
 
-fileprivate extension Array where Element == Decimal  {
+fileprivate extension Array where Element == Decimal {
     
     /// The largest value in the dataset.
     var max: CGFloat {
-        return CGFloat(self.max()?.doubleValue ?? 0)
+        CGFloat(self.max()?.doubleValue ?? 0)
     }
     
     /// The smallest value in the dataset.
     var min: CGFloat {
-        return CGFloat(self.min()?.doubleValue ?? 0)
+        CGFloat(self.min()?.doubleValue ?? 0)
     }
 }

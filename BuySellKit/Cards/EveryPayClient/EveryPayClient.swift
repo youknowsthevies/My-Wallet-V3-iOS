@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import NetworkKit
 import RxSwift
 import ToolKit
-import NetworkKit
 
 public final class EveryPayClient: EveryPayClientAPI {
     

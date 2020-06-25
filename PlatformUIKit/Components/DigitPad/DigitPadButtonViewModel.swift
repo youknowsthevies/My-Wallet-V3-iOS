@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
 import Localization
+import RxCocoa
+import RxSwift
 
 public struct DigitPadButtonViewModel {
     
@@ -101,7 +101,7 @@ public struct DigitPadButtonViewModel {
         
         /// Just a clear background
         public static var clear: Background {
-            return Background(cornerRadius: 0, highlightColor: .clear)
+            Background(cornerRadius: 0, highlightColor: .clear)
         }
         
         public init(cornerRadius: CGFloat = 4, highlightColor: UIColor) {
@@ -111,7 +111,7 @@ public struct DigitPadButtonViewModel {
     }
     
     public static var empty: DigitPadButtonViewModel {
-        return DigitPadButtonViewModel(content: .none, background: .clear)
+        DigitPadButtonViewModel(content: .none, background: .clear)
     }
     
     // MARK: - Properties
@@ -121,7 +121,7 @@ public struct DigitPadButtonViewModel {
     
     private let tapRelay = PublishRelay<Content>()
     var tapObservable: Observable<Content> {
-        return tapRelay.asObservable()
+        tapRelay.asObservable()
     }
     
     private let disposeBag = DisposeBag()

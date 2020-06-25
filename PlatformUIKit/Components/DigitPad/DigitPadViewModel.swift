@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxCocoa
+import RxSwift
 
 /// TODO: Modularize to play nicer with different flows.
 /// At the moment all the logic is centralized in the view model - there should be
@@ -35,19 +35,19 @@ public final class DigitPadViewModel {
     /// Relay for bottom leading button taps
     private let customButtonTapRelay = PublishRelay<Void>()
     public var customButtonTapObservable: Observable<Void> {
-        return customButtonTapRelay.asObservable()
+        customButtonTapRelay.asObservable()
     }
     
     /// Tap observable for the backspace button
     public var backspaceButtonTapObservable: Observable<Void> {
-        return backspaceButtonViewModel.tapObservable
-            .map { _ -> Void in return () }
+        backspaceButtonViewModel.tapObservable
+            .map { _ -> Void in () }
     }
     
     /// Relay for pin value. subscribe to it to get the pin stream
     public let valueRelay = BehaviorRelay<String>(value: "")
     public var valueObservable: Observable<String> {
-        return valueRelay.asObservable()
+        valueRelay.asObservable()
     }
     
     /// Observes the current length of the value
@@ -56,12 +56,12 @@ public final class DigitPadViewModel {
     /// Relay for tapping
     private let valueInsertedPublishRelay = PublishRelay<Void>()
     public var valueInsertedObservable: Observable<Void> {
-        return valueInsertedPublishRelay.asObservable()
+        valueInsertedPublishRelay.asObservable()
     }
     
     /// The raw `String` value
     public var value: String {
-        return valueRelay.value
+        valueRelay.value
     }
     
     private let disposeBag = DisposeBag()
@@ -77,7 +77,7 @@ public final class DigitPadViewModel {
         
         // Initialize all buttons
         digitButtonViewModelArray = (0...9).map {
-            return DigitPadButtonViewModel(content: .label(text: "\($0)", tint: contentTint), background: buttonBackground)
+            DigitPadButtonViewModel(content: .label(text: "\($0)", tint: contentTint), background: buttonBackground)
         }
 
         backspaceButtonViewModel = DigitPadButtonViewModel(

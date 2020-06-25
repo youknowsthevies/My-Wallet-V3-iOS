@@ -47,7 +47,7 @@ public final class ReceiveCryptoViewModel<Metadata: CryptoAssetQRMetadata, Accou
     }
 
     public func initializeWalletAccount() -> Maybe<WalletAccount> {
-        return walletInitializer.initializeMetadataMaybe()
+        walletInitializer.initializeMetadataMaybe()
             .map { $0 as WalletAccount }
     }
 

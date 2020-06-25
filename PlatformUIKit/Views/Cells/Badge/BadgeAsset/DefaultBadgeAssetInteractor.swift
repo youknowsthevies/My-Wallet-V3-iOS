@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxRelay
+import RxSwift
 
 open class DefaultBadgeAssetInteractor: BadgeAssetInteracting {
     public typealias InteractionState = BadgeAsset.State.BadgeItem.Interaction

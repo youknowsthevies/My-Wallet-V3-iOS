@@ -107,17 +107,17 @@ public struct NetworkRequest {
     
     @available(*, deprecated, message: "Don't use this, instance methods will _probably_ be added to NetworkCommunicator")
     public static func POST(url: URL, body: Data?) -> NetworkRequest {
-        return self.init(endpoint: url, method: .post, body: body)
+        self.init(endpoint: url, method: .post, body: body)
     }
     
     @available(*, deprecated, message: "Don't use this, instance methods will _probably_ be added to NetworkCommunicator")
     public static func PUT(url: URL, body: Data?) -> NetworkRequest {
-        return self.init(endpoint: url, method: .put, body: body)
+        self.init(endpoint: url, method: .put, body: body)
     }
     
     @available(*, deprecated, message: "Don't use this, instance methods will _probably_ be added to NetworkCommunicator")
     public static func DELETE(url: URL) -> NetworkRequest {
-        return self.init(endpoint: url, method: .delete, body: nil)
+        self.init(endpoint: url, method: .delete, body: nil)
     }
 }
 

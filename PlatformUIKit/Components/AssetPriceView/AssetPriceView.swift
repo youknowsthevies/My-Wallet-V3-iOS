@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxCocoa
+import RxSwift
 
 public final class AssetPriceView: UIView {
     
@@ -123,7 +123,7 @@ public final class AssetPriceView: UIView {
 
 extension Reactive where Base: AssetPriceView {
     var values: Binder<DashboardAsset.Value.Presentation.AssetPrice> {
-        return Binder(base) { view, values in
+        Binder(base) { view, values in
             view.priceLabel.content = values.price
             view.changeLabel.attributedText = values.change
             view.changeLabel.accessibility = values.changeAccessibility

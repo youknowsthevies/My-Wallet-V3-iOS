@@ -12,11 +12,11 @@ import PlatformKit
 @objc public class BitcoinURLPayload: NSObject, BIP21URI {
     
     public static var scheme: String {
-        return AssetConstants.URLSchemes.bitcoin
+        AssetConstants.URLSchemes.bitcoin
     }
     
     @objc public var schemeCompat: String {
-        return BitcoinURLPayload.scheme
+        BitcoinURLPayload.scheme
     }
     
     @objc public var absoluteString: String {
@@ -53,11 +53,11 @@ import PlatformKit
 @objc public class BitcoinCashURLPayload: NSObject, BIP21URI {
     
     public static var scheme: String {
-        return AssetConstants.URLSchemes.bitcoinCash
+        AssetConstants.URLSchemes.bitcoinCash
     }
     
     @objc public var schemeCompat: String {
-        return BitcoinCashURLPayload.scheme
+        BitcoinCashURLPayload.scheme
     }
     
     @objc public var absoluteString: String {

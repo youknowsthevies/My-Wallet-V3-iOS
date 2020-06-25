@@ -6,13 +6,13 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import ToolKit
+import BuySellKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
-import BuySellKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 protocol PairingWalletFetching: class {
     func authenticate(using password: String)
@@ -41,7 +41,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     @objc static let shared = AuthenticationCoordinator()
 
     @objc class func sharedInstance() -> AuthenticationCoordinator {
-        return shared
+        shared
     }
     
     var postAuthenticationRoute: PostAuthenticationRoute?
@@ -399,7 +399,7 @@ extension AuthenticationCoordinator {
 
     /// Returns `true` in case the login pin screen is displayed
     @objc var isDisplayingLoginAuthenticationFlow: Bool {
-        return pinRouter?.isDisplayingLoginAuthentication ?? false
+        pinRouter?.isDisplayingLoginAuthentication ?? false
     }
     
     /// Change existing pin code. Used from settings mostly.

@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 /// A view model for selection-view to use throughout the app
 public final class SelectionButtonViewModel {
@@ -20,7 +20,7 @@ public final class SelectionButtonViewModel {
         public let label: String
         
         fileprivate static var empty: AccessibilityContent {
-            return AccessibilityContent(id: "", label: "")
+            AccessibilityContent(id: "", label: "")
         }
 
         fileprivate var accessibility: Accessibility {

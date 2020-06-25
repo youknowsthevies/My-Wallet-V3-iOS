@@ -16,12 +16,12 @@ protocol TransactionSizeCalculating {
 
 struct TransactionSizeCalculator: TransactionSizeCalculating {
     func transactionBytes(inputs: Int, outputs: Int) -> BigUInt {
-        return CoinSelection.Constants.costBase
+        CoinSelection.Constants.costBase
             + CoinSelection.Constants.costPerInput.multiplied(by: BigUInt(inputs))
             + CoinSelection.Constants.costPerOutput.multiplied(by: BigUInt(outputs))
     }
     
     func dustThreshold(for fee: Fee) -> BigUInt {
-        return (CoinSelection.Constants.costPerInput + CoinSelection.Constants.costPerOutput) * fee.feePerByte
+        (CoinSelection.Constants.costPerInput + CoinSelection.Constants.costPerOutput) * fee.feePerByte
     }
 }

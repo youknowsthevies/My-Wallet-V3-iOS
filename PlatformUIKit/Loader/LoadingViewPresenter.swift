@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import UIKit
-import ToolKit
 import PlatformKit
+import ToolKit
+import UIKit
 
 /// Presenter in charge of displaying a loading overlay, that entirely covers the current context
 @objc final public class LoadingViewPresenter: NSObject, LoadingViewPresenting {
@@ -53,11 +53,11 @@ import PlatformKit
     
     /// sharedInstance function declared so that the LoadingViewPresenter singleton can be accessed
     /// from Obj-C. Should deprecate this once all Obj-c references have been removed.
-    @objc public class func sharedInstance() -> LoadingViewPresenter { return shared }
+    @objc public class func sharedInstance() -> LoadingViewPresenter { shared }
 
     /// Returns `true` if the loader is currently visible and animating
     @objc public var isVisible: Bool {
-        return state.isAnimating
+        state.isAnimating
     }
         
     /// Controls the availability of the loader from outside.

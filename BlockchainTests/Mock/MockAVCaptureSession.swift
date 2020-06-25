@@ -8,8 +8,8 @@
 
 import Foundation
 
-import PlatformKit
 @testable import Blockchain
+import PlatformKit
 
 class CaptureSessionMock: CaptureSessionProtocol {
     var sessionPreset = AVCaptureSession.Preset.high

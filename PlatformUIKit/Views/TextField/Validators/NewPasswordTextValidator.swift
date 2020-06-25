@@ -7,8 +7,8 @@
 //
 
 import PlatformKit
-import RxSwift
 import RxRelay
+import RxSwift
 import Zxcvbn
 
 /// Password text validator
@@ -25,7 +25,7 @@ final class NewPasswordTextValidator: NewPasswordValidating {
     // MARK: - NewPasswordValidating Properties
     
     var score: Observable<PasswordValidationScore> {
-        return scoreRelay.asObservable()
+        scoreRelay.asObservable()
     }
         
     // MARK: - Private Properties

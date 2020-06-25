@@ -56,7 +56,7 @@ class ERC20FunctionTests: XCTestCase {
             "0x123456",
             "0x1234567",
             "0x12345678",
-            "0x123456789",
+            "0x123456789"
         ]
         for option in options {
             XCTAssertNil(ERC20Function(data: option))

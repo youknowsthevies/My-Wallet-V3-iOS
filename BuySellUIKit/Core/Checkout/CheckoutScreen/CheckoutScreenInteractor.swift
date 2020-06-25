@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BuySellKit
+import PlatformKit
 import RxSwift
 import ToolKit
-import PlatformKit
-import BuySellKit
 
 final class CheckoutScreenInteractor {
     

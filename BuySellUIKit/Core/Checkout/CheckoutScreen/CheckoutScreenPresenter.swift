@@ -6,13 +6,13 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Localization
+import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
-import Localization
 import ToolKit
-import PlatformKit
-import PlatformUIKit
 
 final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
 

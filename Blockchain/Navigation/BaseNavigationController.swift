@@ -108,27 +108,27 @@ protocol NavigatableView: class {
 
 extension NavigatableView where Self: UIViewController {
     var leftCTATintColor: UIColor {
-        return .white
+        .white
     }
     
     var rightCTATintColor: UIColor {
-        return .white
+        .white
     }
     
     var leftNavControllerCTAType: NavigationCTAType {
-        return .menu
+        .menu
     }
     
     var rightNavControllerCTAType: NavigationCTAType {
-        return .qrCode
+        .qrCode
     }
     
     var navigationDisplayMode: NavigationBarDisplayMode {
-        return .dark
+        .dark
     }
     
     var navigationBarTintColor: UIColor? {
-        return navigationDisplayMode.tintColor
+        navigationDisplayMode.tintColor
     }
     
     func navControllerRightBarButtonTapped(_ navController: UINavigationController) {

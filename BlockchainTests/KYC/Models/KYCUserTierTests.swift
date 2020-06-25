@@ -6,9 +6,9 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-import PlatformKit
 @testable import Blockchain
+import PlatformKit
+import XCTest
 
 class KYCUserTierTests: XCTestCase {
     func testLockedState() {

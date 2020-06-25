@@ -7,9 +7,9 @@
 //
 
 import PlatformUIKit
-import UIKit
-import RxSwift
 import RxCocoa
+import RxSwift
+import UIKit
 
 final class RecoverFundsViewController: BaseScreenViewController {
     

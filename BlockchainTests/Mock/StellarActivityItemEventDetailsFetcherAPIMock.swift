@@ -7,8 +7,8 @@
 //
 
 import PlatformKit
-import StellarKit
 import RxSwift
+import StellarKit
 
 class StellarActivityItemEventDetailsFetcherAPIMock: ActivityItemEventDetailsFetcherAPI {
     typealias Model = StellarActivityItemEventDetails

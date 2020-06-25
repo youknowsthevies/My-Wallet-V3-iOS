@@ -8,12 +8,12 @@
 
 import XCTest
 
-import PlatformKit
 @testable import Blockchain
+import PlatformKit
 
 extension Locale {
     var safeDecimalSeparator: String {
-        return decimalSeparator ?? "."
+        decimalSeparator ?? "."
     }
 }
 

@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import PlatformKit
 import EthereumKit
+import PlatformKit
+import RxSwift
 
 public class ERC20AssetAccountDetailsService<Token: ERC20Token>: AssetAccountDetailsAPI {
 
@@ -31,7 +31,7 @@ public class ERC20AssetAccountDetailsService<Token: ERC20Token>: AssetAccountDet
     public func accountDetails(for accountID: String) -> Single<ERC20AssetAccountDetails> {
         bridge.address
             .flatMap(weak: self) { (self, address) -> Single<(address: EthereumAddress, balance: CryptoValue)> in
-                return self.service.balance(for: address).map { (address, $0.value) }
+                self.service.balance(for: address).map { (address, $0.value) }
             }
             .map { tuple -> ERC20AssetAccountDetails in
                 ERC20AssetAccountDetails(

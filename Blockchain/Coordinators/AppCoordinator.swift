@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
+import BuySellUIKit
 import PlatformKit
 import PlatformUIKit
-import BuySellUIKit
+import RxSwift
 
 /// TODO: This class should be refactored so any view would load
 /// as late as possible and also would be deallocated when is no longer in use
@@ -22,7 +22,7 @@ import BuySellUIKit
     
     // class function declared so that the AppCoordinator singleton can be accessed from obj-C
     @objc class func sharedInstance() -> AppCoordinator {
-        return AppCoordinator.shared
+        AppCoordinator.shared
     }
 
     // MARK: - Services

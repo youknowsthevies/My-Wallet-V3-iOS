@@ -59,11 +59,11 @@ extension Result {
 
 extension Result where Failure == Never {
     public func mapError<E: Error>(to type: E.Type) -> Result<Success, E> {
-        return mapError()
+        mapError()
     }
     
     public func mapError<E: Error>() -> Result<Success, E> {
-        return mapError { _ -> E in
+        mapError { _ -> E in
             fatalError("This can never be executed")
         }
     }
@@ -71,11 +71,11 @@ extension Result where Failure == Never {
 
 extension Result where Success == Never {
     public func map<T>(to type: T.Type) -> Result<T, Failure> {
-        return map()
+        map()
     }
     
     public func map<T>() -> Result<T, Failure> {
-        return map { _ in
+        map { _ in
             fatalError("This can never be executed")
         }
     }

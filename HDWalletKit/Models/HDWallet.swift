@@ -11,7 +11,7 @@ import LibWally
 public struct HDWallet {
     
     public var privateKey: HDPrivateKey {
-        return keychain.privateKey
+        keychain.privateKey
     }
     
     private let keychain: HDKeychain
@@ -31,15 +31,15 @@ public struct HDWallet {
     }
     
     public func privateKey(path: HDKeyPath) throws -> HDPrivateKey {
-        return try keychain.derivedKey(path: path)
+        try keychain.derivedKey(path: path)
     }
     
     public func publicKey() throws -> HDPublicKey {
-        return keychain.privateKey.publicKey()
+        keychain.privateKey.publicKey()
     }
     
     public func publicKey(at path: HDKeyPath) throws -> HDPublicKey {
-        return try privateKey(path: path).publicKey()
+        try privateKey(path: path).publicKey()
     }
     
 }

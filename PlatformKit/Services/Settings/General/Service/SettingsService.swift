@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxRelay
+import RxSwift
 import ToolKit
 
 public final class SettingsService: SettingsServiceAPI {
@@ -41,7 +41,7 @@ public final class SettingsService: SettingsServiceAPI {
     
     /// GUID and Shared-Key credentials are necessary to settings operations.
     private var credentials: Single<(guid: String, sharedKey: String)> {
-        return Single
+        Single
             // Make sure guid and shared key exist
             .zip(credentialsRepository.guid, credentialsRepository.sharedKey)
             .map { (guid, sharedKey) -> (guid: String, sharedKey: String) in
@@ -76,7 +76,7 @@ public final class SettingsService: SettingsServiceAPI {
         
         cachedValue
             .setFetch(weak: self) { (self) -> Single<WalletSettings> in
-                return self.credentials
+                self.credentials
                     .flatMap(weak: self) { (self, credentials) in
                         self.client.settings(
                             by: credentials.guid,

@@ -45,7 +45,7 @@ public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
     /// - Parameter pairingData: A pairing code comprises GUID and an encrypted shared key.
     /// - Returns: The wallet password - decrypted and ready for usage.
     public func pair(using pairingData: PairingData) -> Single<String> {
-        return walletPairingClient.request(guid: pairingData.guid)
+        walletPairingClient.request(guid: pairingData.guid)
             .map { KeyDataPair<String, String>(key: $0, data: pairingData.encryptedSharedKey) }
             .flatMap(weak: self) { (self, keyDataPair) -> Single<String> in
                 self.walletCryptoService.decrypt(pair: keyDataPair, pbkdf2Iterations: WalletCryptoPBKDF2Iterations.autoPair)

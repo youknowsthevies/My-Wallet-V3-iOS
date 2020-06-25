@@ -24,22 +24,22 @@ final class RemoteNotificationServiceContainer {
     
     /// Emitter of notification enums
     var emitter: RemoteNotificationEmitting {
-        return service.relay
+        service.relay
     }
     
     /// Authorizer of remote notifications
     var authorizer: RemoteNotificationAuthorizing {
-        return service.authorizer
+        service.authorizer
     }
     
     /// Token sender
     var tokenSender: RemoteNotificationTokenSending {
-        return service
+        service
     }
     
     /// Token receiver
     var tokenReceiver: RemoteNotificationDeviceTokenReceiving {
-        return service
+        service
     }
     
     /// Aggregates common remote notification logic

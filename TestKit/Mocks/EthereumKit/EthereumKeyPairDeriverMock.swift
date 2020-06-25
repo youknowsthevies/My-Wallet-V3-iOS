@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BigInt
+@testable import EthereumKit
+@testable import PlatformKit
 import RxSwift
 import web3swift
-import BigInt
-@testable import PlatformKit
-@testable import EthereumKit
 
 class EthereumKeyPairDeriverMock: KeyPairDeriverAPI {
     var deriveResult: Result<EthereumKeyPair, Error> = .success(

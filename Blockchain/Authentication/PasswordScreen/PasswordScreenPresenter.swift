@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import ToolKit
 import PlatformUIKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 final class PasswordScreenPresenter {
     
@@ -86,7 +86,7 @@ final class PasswordScreenPresenter {
         
         let stateObservable = textFieldViewModel.state
             .map(weak: self) { (self, payload) -> FormPresentationState in
-                return try self.stateReducer.reduce(states: [payload])
+                try self.stateReducer.reduce(states: [payload])
             }
             /// Should never get to `catchErrorJustReturn`.
             .catchErrorJustReturn(.invalid(.invalidTextField))

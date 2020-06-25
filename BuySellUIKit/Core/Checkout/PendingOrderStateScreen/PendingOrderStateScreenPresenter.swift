@@ -6,13 +6,13 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
+import BuySellKit
 import Localization
-import ToolKit
 import PlatformKit
 import PlatformUIKit
-import BuySellKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 final class PendingOrderStateScreenPresenter: PendingStatePresenterAPI {
     

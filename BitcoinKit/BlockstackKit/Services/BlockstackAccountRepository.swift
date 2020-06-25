@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import HDWalletKit
-import PlatformKit
 import LibWally
+import PlatformKit
+import RxSwift
 
 public enum BlockstackError: Error {
     case addressDerivationFailed
@@ -44,7 +44,7 @@ public final class BlockstackAccountRepository: BlockstackAccountAPI {
     // MARK: - Public properties
     
     public var accountAddress: Single<BlockstackAddress> {
-        return Maybe.zip(bridge.mnemonic, bridge.password)
+        Maybe.zip(bridge.mnemonic, bridge.password)
             .asObservable()
             .asSingle()
             .flatMap(weak: self) { (self, tuple) -> Single<BlockstackAddress> in

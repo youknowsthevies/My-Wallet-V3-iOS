@@ -8,20 +8,20 @@
 
 import Foundation
 import PlatformKit
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 public class SparklineImagePresenter {
     
     // MARK: - Public Properties
     
     public var state: Observable<State> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
     }
     
     public var image: Driver<UIImage?> {
-        return imageRelay.asDriver()
+        imageRelay.asDriver()
     }
     
     // MARK: - Private Properties

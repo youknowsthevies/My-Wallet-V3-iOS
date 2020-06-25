@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxRelay
+import RxSwift
 
 final class AirdropCenterScreenPresenter {
 
@@ -18,7 +18,7 @@ final class AirdropCenterScreenPresenter {
         case ended([AirdropTypeCellPresenter])
         
         var count: Int {
-            return items.count
+            items.count
         }
         
         var items: [AirdropTypeCellPresenter] {
@@ -90,7 +90,7 @@ final class AirdropCenterScreenPresenter {
         Observable
             .combineLatest(startedPresentersRelay, endedPresentersRelay)
             .map { started, ended in
-                return [.started(started), .ended(ended)]
+                [.started(started), .ended(ended)]
             }
             .bind(to: dataSourceRelay)
             .disposed(by: disposeBag)

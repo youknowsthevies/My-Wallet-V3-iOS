@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformKit
+import ToolKit
 
 // MARK: - Deprecate these once we SendBitcoinViewController is written in Swift
 
@@ -15,11 +15,11 @@ import PlatformKit
     private let asset: CryptoCurrency
 
     private var event: AnalyticsEvent {
-        return AnalyticsEvents.Bitpay.bitpayUrlScanned(asset: asset)
+        AnalyticsEvents.Bitpay.bitpayUrlScanned(asset: asset)
     }
 
     @objc class func create(legacyAssetType: LegacyAssetType) -> BitpayUrlScanned {
-        return BitpayUrlScanned(asset: legacyAssetType)
+        BitpayUrlScanned(asset: legacyAssetType)
     }
 
     init(asset: LegacyAssetType) {
@@ -27,11 +27,11 @@ import PlatformKit
     }
 
     var name: String {
-        return event.name
+        event.name
     }
 
     var params: [String : String]? {
-        return event.params
+        event.params
     }
 }
 
@@ -39,11 +39,11 @@ import PlatformKit
     private let asset: CryptoCurrency
 
     private var event: AnalyticsEvent {
-        return AnalyticsEvents.Bitpay.bitpayUrlPasted(asset: asset)
+        AnalyticsEvents.Bitpay.bitpayUrlPasted(asset: asset)
     }
 
     @objc class func create(legacyAssetType: LegacyAssetType) -> BitpayUrlPasted {
-        return BitpayUrlPasted(asset: legacyAssetType)
+        BitpayUrlPasted(asset: legacyAssetType)
     }
 
     init(asset: LegacyAssetType) {
@@ -51,20 +51,20 @@ import PlatformKit
     }
 
     var name: String {
-        return event.name
+        event.name
     }
 
     var params: [String : String]? {
-        return event.params
+        event.params
     }
 }
 
 @objc class BitpayPaymentExpired: NSObject, ObjcAnalyticsEvent {
     var name: String {
-        return AnalyticsEvents.Bitpay.bitpayPaymentExpired.name
+        AnalyticsEvents.Bitpay.bitpayPaymentExpired.name
     }
 
     var params: [String : String]? {
-        return AnalyticsEvents.Bitpay.bitpayPaymentExpired.params
+        AnalyticsEvents.Bitpay.bitpayPaymentExpired.params
     }
 }

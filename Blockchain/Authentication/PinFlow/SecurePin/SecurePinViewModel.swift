@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxCocoa
+import RxSwift
 
 struct SecurePinViewModel {
     
@@ -24,7 +24,7 @@ struct SecurePinViewModel {
     /// Observes count and streams it
     let fillCountRelay = BehaviorRelay<Int>(value: 0)
     var fillCount: Observable<Int> {
-        return fillCountRelay
+        fillCountRelay
             .observeOn(MainScheduler.instance)
             .asObservable()
     }

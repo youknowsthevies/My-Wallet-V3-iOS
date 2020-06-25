@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxCocoa
+import RxSwift
 
 public struct ImageViewContent {
 
@@ -26,7 +26,7 @@ public struct ImageViewContent {
     }
 
     public static var empty: ImageViewContent {
-        return .init()
+        .init()
     }
 
     public var isEmpty: Bool {
@@ -68,7 +68,7 @@ public struct ImageViewContent {
 
 extension ImageViewContent: Equatable {
     public static func == (lhs: ImageViewContent, rhs: ImageViewContent) -> Bool {
-        return lhs.imageName == rhs.imageName &&
+        lhs.imageName == rhs.imageName &&
                lhs.accessibility == rhs.accessibility &&
                lhs.bundle.bundleIdentifier == rhs.bundle.bundleIdentifier
     }
@@ -84,7 +84,7 @@ extension UIImageView {
 
 extension Reactive where Base: UIImageView {
     public var content: Binder<ImageViewContent> {
-        return Binder(base) { imageView, content in
+        Binder(base) { imageView, content in
             imageView.set(content)
         }
     }

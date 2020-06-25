@@ -6,8 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import PlatformKit
+import RxSwift
 
 public protocol StellarWalletAccountRepositoryAPI {
     var defaultAccount: StellarWalletAccount? { get }
@@ -30,24 +30,24 @@ open class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, Wa
     }
     
     public func initializeMetadataMaybe() -> Maybe<WalletAccount> {
-        return loadDefaultAccount().ifEmpty(
+        loadDefaultAccount().ifEmpty(
             switchTo: createAndSaveStellarAccount()
         )
     }
     
     /// The default `StellarWallet`, will be nil if it has not yet been initialized
     open var defaultAccount: WalletAccount? {
-        return accounts().first
+        accounts().first
     }
     
     open func accounts() -> [WalletAccount] {
-        return bridge.stellarWallets()
+        bridge.stellarWallets()
     }
     
     public func loadKeyPair() -> Maybe<Pair> {
-        return bridge.mnemonicPromptingIfNeeded
+        bridge.mnemonicPromptingIfNeeded
             .flatMap { [unowned self] mnemonic -> Maybe<Pair> in
-                return self.deriver.derive(input: StellarKeyDerivationInput(mnemonic: mnemonic)).maybe
+                self.deriver.derive(input: StellarKeyDerivationInput(mnemonic: mnemonic)).maybe
             }
     }
     
@@ -61,7 +61,7 @@ open class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, Wa
     }
     
     private func createAndSaveStellarAccount() -> Maybe<WalletAccount> {
-        return loadKeyPair().do(onNext: { [unowned self] stellarKeyPair in
+        loadKeyPair().do(onNext: { [unowned self] stellarKeyPair in
             self.save(keyPair: stellarKeyPair)
         })
         .map { keyPair -> Account in

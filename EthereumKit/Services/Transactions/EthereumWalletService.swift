@@ -35,11 +35,11 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
     public typealias Bridge = EthereumWalletBridgeAPI
     
     public var fetchHistoryIfNeeded: Single<Void> {
-        return bridge.history
+        bridge.history
     }
 
     public var handlePendingTransaction: Single<Void> {
-        return bridge.isWaitingOnTransaction
+        bridge.isWaitingOnTransaction
             .flatMap { isWaiting -> Single<Void> in
                 guard !isWaiting else {
                     throw EthereumKitValidationError.waitingOnPendingTransaction
@@ -49,8 +49,8 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
     }
     
     private var handlePendingTransactionResult: Single<TransactionValidationResult> {
-        return handlePendingTransaction
-            .map { _ in return .ok }
+        handlePendingTransaction
+            .map { _ in .ok }
             .catchError { error -> Single<TransactionValidationResult> in
                 switch error {
                 case EthereumKitValidationError.waitingOnPendingTransaction:
@@ -62,7 +62,7 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
     }
     
     private var loadKeyPair: Single<EthereumKeyPair> {
-        return walletAccountRepository.keyPair.asObservable().asSingle()
+        walletAccountRepository.keyPair.asObservable().asSingle()
     }
     
     private let bridge: Bridge
@@ -105,14 +105,14 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
     }
     
     public func evaluate(amount: EthereumValue) -> Single<TransactionValidationResult> {
-        return handlePendingTransactionResult.flatMap(weak: self) { (self, result) -> Single<TransactionValidationResult> in
+        handlePendingTransactionResult.flatMap(weak: self) { (self, result) -> Single<TransactionValidationResult> in
             guard result.isOk else { return .just(result) }
             return self.transactionValidationService.validateCryptoAmount(amount: amount)
         }
     }
     
     public func buildTransaction(with value: EthereumValue, to: EthereumAddress) -> Single<EthereumTransactionCandidate> {
-        return handlePendingTransactionResult.flatMap(weak: self) { (self, result) -> Single<EthereumTransactionCandidate> in
+        handlePendingTransactionResult.flatMap(weak: self) { (self, result) -> Single<EthereumTransactionCandidate> in
             // Throw error if received from earlier step
             if let error = result.error { throw error }
             return self.transactionBuildingService.buildTransaction(with: value, to: to)
@@ -120,7 +120,7 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
     }
     
     public func send(transaction: EthereumTransactionCandidate) -> Single<EthereumTransactionPublished> {
-        return handlePendingTransaction
+        handlePendingTransaction
             .flatMap(weak: self) { (self, _) -> Single<EthereumKeyPair> in
                 self.loadKeyPair
             }
@@ -133,16 +133,16 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
     }
     
     private func prepareAndPush(transaction: EthereumTransactionCandidate, keyPair: EthereumKeyPair) -> Single<EthereumTransactionPublished> {
-        return transactionSendingService.send(
+        transactionSendingService.send(
             transaction: transaction,
             keyPair: keyPair
         )
     }
     
     private func updateAfterSending(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished> {
-        return bridge.recordLast(transaction: transaction)
+        bridge.recordLast(transaction: transaction)
             .flatMap(weak: self) { (self, transaction) -> Single<EthereumTransactionPublished> in
-                return self.bridge.fetchHistory().map { _ -> EthereumTransactionPublished in
+                self.bridge.fetchHistory().map { _ -> EthereumTransactionPublished in
                     transaction
                 }
             }

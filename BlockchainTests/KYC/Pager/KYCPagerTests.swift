@@ -6,9 +6,9 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-import PlatformKit
 @testable import Blockchain
+import PlatformKit
+import XCTest
 
 class KYCPagerTests: XCTestCase {
 
@@ -61,7 +61,7 @@ class KYCPagerTests: XCTestCase {
     }
 
     private func createTestNabuUser(tiers: KYC.UserState? = nil) -> NabuUser {
-        return NabuUser(
+        NabuUser(
             personalDetails: PersonalDetails(id: "id", first: "John", last: "Smithy", birthday: nil),
             address: nil,
             email: Email(address: "email@test.com", verified: false),

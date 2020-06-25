@@ -44,7 +44,7 @@ class KYCTiersCoordinator {
                     suppressDismissCTA: suppressCTA
                 )
                 let filtered = response.tiers.filter({ $0.tier != .tier0 })
-                let cells = filtered.map({ return KYCTierCellModel.model(from: $0) }).compactMap({ return $0 })
+                let cells = filtered.map({ KYCTierCellModel.model(from: $0) }).compactMap({ $0 })
                 
                 let page = KYCTiersPageModel(header: header, cells: cells)
                 this.interface?.apply(page)

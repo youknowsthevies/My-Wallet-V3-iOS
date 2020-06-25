@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxRelay
+import RxSwift
 import ToolKit
 
 /// Service to poll for KYC Tiers updates
@@ -34,7 +34,7 @@ public final class KYCTierUpdatePollingService {
 
     /// Cancel polling
     public var cancel: Completable {
-        return Completable
+        Completable
             .create { [weak self] observer -> Disposable in
                 self?.isActiveRelay.accept(false)
                 observer(.completed)
@@ -58,7 +58,7 @@ public final class KYCTierUpdatePollingService {
     /// Start polling by triggering waitForCondition
     private func start(desiredTier: KYC.Tier,
                        shouldMatch desiredStatus: KYC.AccountStatus) -> Single<KYC.AccountStatus> {
-        return Single
+        Single
             .create(weak: self) { (self, observer) -> Disposable in
                 self.isActiveRelay.accept(true)
                 observer(.success(()))
@@ -71,7 +71,7 @@ public final class KYCTierUpdatePollingService {
 
     /// Stop polling if it has been cancelled.
     private var stopPollingIfNecessary: Single<Void> {
-        return isActiveRelay
+        isActiveRelay
             .take(1)
             .asSingle()
             .map { isActive in
@@ -86,9 +86,9 @@ public final class KYCTierUpdatePollingService {
     /// is reached or the service timeout.
     private func waitForCondition(tier desiredTier: KYC.Tier,
                                   shouldMatch desiredStatus: KYC.AccountStatus) -> Single<KYC.AccountStatus> {
-        return stopPollingIfNecessary
+        stopPollingIfNecessary
             .flatMap(weak: self) { (self, _) -> Single<KYC.AccountStatus> in
-                return self
+                self
                     .tiersService
                     .fetchTiers()
                     .map { $0.tierAccountStatus(for: desiredTier) }
@@ -105,7 +105,7 @@ public final class KYCTierUpdatePollingService {
     }
 
     private var retryScheduler: Single<Int> {
-        return Single<Int>
+        Single<Int>
             .timer(
                 .seconds(1),
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
@@ -122,7 +122,7 @@ public final class KYCTierUpdatePollingService {
         case ServiceError.conditionNotMet:
             return retryScheduler
                 .flatMap(weak: self) { (self, _) -> Single<KYC.AccountStatus> in
-                    return self.waitForCondition(tier: desiredTier, shouldMatch: desiredStatus)
+                    self.waitForCondition(tier: desiredTier, shouldMatch: desiredStatus)
                 }
         default:
             /// Other network errors

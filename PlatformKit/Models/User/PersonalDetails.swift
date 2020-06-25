@@ -21,14 +21,14 @@ public struct PersonalDetails: Decodable {
     /// 2. LastName exists and is not empty
     /// 3. Birthday exists
     public var isComplete: Bool {
-        return firstName?.isEmpty == false
+        firstName?.isEmpty == false
             && lastName?.isEmpty == false
             && birthday != nil
     }
 
     /// Full name is composed of firstName and lastName
     public var fullName: String {
-        return [firstName, lastName]
+        [firstName, lastName]
             .compactMap { $0 }
             .filter { !$0.isEmpty }
             .joined(separator: " ")
@@ -54,6 +54,6 @@ public struct PersonalDetails: Decodable {
         firstName = try values.decodeIfPresent(String.self, forKey: .firstName)
         lastName = try values.decodeIfPresent(String.self, forKey: .lastName)
         birthday = (try values.decodeIfPresent(String.self, forKey: .birthday))
-            .flatMap { return DateFormatter.birthday.date(from: $0) }
+            .flatMap { DateFormatter.birthday.date(from: $0) }
     }
 }

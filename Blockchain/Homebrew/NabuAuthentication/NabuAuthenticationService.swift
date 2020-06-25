@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import ToolKit
 import NetworkKit
 import PlatformKit
+import RxSwift
+import ToolKit
 
 /// Component in charge of authenticating the Nabu user.
 final class NabuAuthenticationService: NabuAuthenticationServiceAPI {
@@ -159,7 +159,7 @@ final class NabuAuthenticationService: NabuAuthenticationServiceAPI {
     /// Creates a KYC user ID and API token followed by updating the wallet metadata with
     /// the KYC user ID and API token.
     private func createAndSaveUserResponse() -> Single<CreateUserResponse> {
-        return walletNabuSynchronizer.getSignedRetailToken()
+        walletNabuSynchronizer.getSignedRetailToken()
             .flatMap(weak: self) { (self, tokenResponse) -> Single<CreateUserResponse> in
                 self.createNabuUser(tokenResponse: tokenResponse)
             }
@@ -176,7 +176,7 @@ final class NabuAuthenticationService: NabuAuthenticationServiceAPI {
     }
 
     private func saveToWalletMetadata(createUserResponse: CreateUserResponse) -> Single<CreateUserResponse> {
-        return Single.create(subscribe: { [unowned self] observer -> Disposable in
+        Single.create(subscribe: { [unowned self] observer -> Disposable in
             self.wallet.updateKYCUserCredentials(
                 withUserId: createUserResponse.userId,
                 lifetimeToken: createUserResponse.token,

@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 extension BigInt {
     public static let zero = BigInt(0)

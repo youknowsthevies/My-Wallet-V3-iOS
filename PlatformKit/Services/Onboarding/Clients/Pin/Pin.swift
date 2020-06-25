@@ -12,12 +12,12 @@ public struct Pin {
     
     /// Checks if this pin is a valid
     public var isValid: Bool {
-        return self != Pin.invalid
+        self != Pin.invalid
     }
 
     /// String representation of the underlying pin
     public var toString: String {
-        return pinCode.pinToString
+        pinCode.pinToString
     }
     
     private(set) var pinCode: UInt
@@ -43,20 +43,20 @@ public struct Pin {
 
  extension Pin: Hashable {
     public static func == (lhs: Pin, rhs: Pin) -> Bool {
-        return lhs.pinCode == rhs.pinCode
+        lhs.pinCode == rhs.pinCode
     }
 
     public func isEqual(_ object: Any?) -> Bool {
-        return self.pinCode == (object as? Pin)?.pinCode
+        self.pinCode == (object as? Pin)?.pinCode
     }
 
     public var hashValue: Int {
-        return Int(pinCode)
+        Int(pinCode)
     }
 }
 
 extension UInt {
     var pinToString: String {
-        return String(format: "%lu", CUnsignedLongLong(self))
+        String(format: "%lu", CUnsignedLongLong(self))
     }
 }

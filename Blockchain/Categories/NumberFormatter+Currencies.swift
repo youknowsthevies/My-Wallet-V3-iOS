@@ -95,9 +95,9 @@ extension NumberFormatter {
 
     /// - Returns: String by replacing occurrences of Arabic-Indic Unicode Digits with regular Unicode Digits
     fileprivate class func replaceArabicIndicUnicodeIndicDigitsWithUnicodeDigits(from value: String) -> String {
-        return arabicIndicDigitToDigitMap
+        arabicIndicDigitToDigitMap
             .reduce(value) { (result, tuple) -> String in
-                return result.replacingOccurrences(of: tuple.key, with: tuple.value)
+                result.replacingOccurrences(of: tuple.key, with: tuple.value)
         }
     }
 

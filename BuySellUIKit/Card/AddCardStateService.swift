@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
-import PlatformKit
 import BuySellKit
+import PlatformKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 public final class AddCardStateService: CardAuthorizationStateServiceAPI {
     

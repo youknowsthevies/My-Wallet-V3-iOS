@@ -7,8 +7,8 @@
 //
 
 import PlatformKit
-import web3swift
 import RxSwift
+import web3swift
 
 public class EthereumKeyPairDeriver: EthereumKeyPairDeriverAPI {
     static let shared = EthereumKeyPairDeriver()

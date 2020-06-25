@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
 import PlatformKit
+import UIKit
 
 /// Convenience extension that enables initialization of a `UIView` from inside the view itself.
 /// The nib is initialized as `contentView` of the owner view.

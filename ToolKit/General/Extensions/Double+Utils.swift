@@ -10,6 +10,6 @@ import Foundation
 
 extension Double {
     public func string(with decimalPrecision: Int) -> String {
-        return String(format: "%.\(decimalPrecision)f", self)
+        String(format: "%.\(decimalPrecision)f", self)
     }
 }

@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformKit
 import RxSwift
 import ToolKit
-import PlatformKit
 
 protocol UnspentOutputRepositoryAPI {
     var unspentOutputs: Single<UnspentOutputs> { get }
@@ -56,7 +56,7 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
     // MARK: - Private methods
     
     private func fetchAllUnspentOutputs() -> Single<UnspentOutputs> {
-        return bridge.wallets
+        bridge.wallets
             .map { wallets -> [String] in
                 wallets.map { $0.publicKey }
             }
@@ -66,7 +66,7 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
     }
     
     private func fetchUnspentOutputs(for addresses: [String]) -> Single<UnspentOutputs> {
-        return client.unspentOutputs(addresses: addresses)
+        client.unspentOutputs(addresses: addresses)
             .map { UnspentOutputs(networkResponse: $0) }
     }
 }

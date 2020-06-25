@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BitcoinKit
 import PlatformKit
 import RxRelay
 import RxSwift
-import BitcoinKit
 
 /// A container for common crypto services.
 /// Rule of thumb: If a service may be used by multiple clients,

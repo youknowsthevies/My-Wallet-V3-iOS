@@ -18,7 +18,7 @@ final class KYCWelcomeController: KYCBaseViewController {
     @IBOutlet private var labelTermsOfService: UILabel!
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+        .lightContent
     }
 
     // MARK: Factory

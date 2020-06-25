@@ -7,21 +7,21 @@
 //
 
 import PlatformKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 final class AirdropCenterScreenInteractor {
     
     // MARK: - Interactors
     
     var startedAirdropsInteractors: Observable<[AirdropTypeCellInteractor]> {
-        return startedAirdropsInteractorsRelay
+        startedAirdropsInteractorsRelay
             .asObservable()
             .distinctUntilChanged()
     }
     
     var endedAirdropsInteractors: Observable<[AirdropTypeCellInteractor]> {
-        return endedAirdropsInteractorsRelay
+        endedAirdropsInteractorsRelay
             .asObservable()
             .distinctUntilChanged()
     }
@@ -56,20 +56,20 @@ final class AirdropCenterScreenInteractor {
         
         allCampaigns
             .map { campaigns in
-                return campaigns.filter { $0.state == .started }
+                campaigns.filter { $0.state == .started }
             }
             .map { campaigns in
-                return campaigns.map { AirdropTypeCellInteractor(campaign: $0) }
+                campaigns.map { AirdropTypeCellInteractor(campaign: $0) }
             }
             .bind(to: startedAirdropsInteractorsRelay)
             .disposed(by: disposeBag)
         
         allCampaigns
             .map { campaigns in
-                return campaigns.filter { $0.state == .ended }
+                campaigns.filter { $0.state == .ended }
             }
             .map { campaigns in
-                return campaigns.map { AirdropTypeCellInteractor(campaign: $0) }
+                campaigns.map { AirdropTypeCellInteractor(campaign: $0) }
             }
             .bind(to: endedAirdropsInteractorsRelay)
             .disposed(by: disposeBag)

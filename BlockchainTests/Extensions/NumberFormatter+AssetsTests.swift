@@ -6,8 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
 @testable import Blockchain
+import XCTest
 
 class NumberFormatterAssetsTests: XCTestCase {
 
@@ -96,7 +96,7 @@ class NumberFormatterAssetsTests: XCTestCase {
                           decimalPlaces: decimalTuple)
         }
 
-        let decimals = { (expected: Int) -> ExpectDecimal in return self.expectDecimalPlaces(expected: expected, functionName: name)}
+        let decimals = { (expected: Int) -> ExpectDecimal in self.expectDecimalPlaces(expected: expected, functionName: name) }
 
         // Execute tests
         testStringFromNumber(1234.12345678, decimals(8))
@@ -118,7 +118,7 @@ class NumberFormatterAssetsTests: XCTestCase {
 
         let grouping = expectGrouping(expect: true, functionName: name)
         let noGrouping = expectGrouping(expect: false, functionName: name)
-        let decimals = { (expected: Int) -> ExpectDecimal in return self.expectDecimalPlaces(expected: expected, functionName: name)}
+        let decimals = { (expected: Int) -> ExpectDecimal in self.expectDecimalPlaces(expected: expected, functionName: name) }
 
         // Execute tests
         testStringFromNumber(1234.12345678, grouping, decimals(8))
@@ -198,11 +198,11 @@ class NumberFormatterAssetsTests: XCTestCase {
     }
 
     private func expectGrouping(expect: Bool, functionName: String) -> ExpectGrouping {
-        return (expect, String(format: expect ? self.groupingAssertFormat : self.noGroupingAssertFormat, functionName))
+        (expect, String(format: expect ? self.groupingAssertFormat : self.noGroupingAssertFormat, functionName))
     }
 
     private func expectDecimalPlaces(expected: Int, functionName: String) -> ExpectDecimal {
-        return (expected, String(format: self.decimalAssertFormat, functionName, expected))
+        (expected, String(format: self.decimalAssertFormat, functionName, expected))
     }
 
     private func testUSLocaleFormatter(formatter: NumberFormatter, input: NSNumber) {

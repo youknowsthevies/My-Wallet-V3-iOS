@@ -16,7 +16,7 @@ final class MockSendSourceAccountStateService: SendSourceAccountStateServicing {
     let stateRawValue: SendSourceAccountState
     
     var state: Observable<SendSourceAccountState> {
-        return Observable.just(stateRawValue)
+        Observable.just(stateRawValue)
     }
 
     func recalculateState() { }

@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
 @testable import EthereumKit
+import XCTest
 
 class EthereumAccountAddressTests: XCTestCase {
     

@@ -33,6 +33,6 @@ public final class AnyKeyPairDeriver<P: KeyPair, I: KeyDerivationInput>: KeyPair
     }
     
     public func derive(input: I) -> Result<P, Error> {
-        return derivingClosure(input)
+        derivingClosure(input)
     }
 }

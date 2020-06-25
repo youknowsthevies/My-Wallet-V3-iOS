@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
-import ToolKit
 import PlatformKit
+import RxCocoa
+import RxRelay
+import RxSwift
+import ToolKit
 
 /// An announcement card view model
 public final class AnnouncementCardViewModel {
@@ -30,7 +30,7 @@ public final class AnnouncementCardViewModel {
 
         /// A blank white background. a computed property.
         public static var white: Background {
-            return Background(color: .white)
+            Background(color: .white)
         }
         
         /// The background color
@@ -190,7 +190,7 @@ public final class AnnouncementCardViewModel {
     let dismissalRelay = PublishRelay<Void>()
     
     private var dismissal: Completable {
-        return dismissalRelay
+        dismissalRelay
             .take(1)
             .ignoreElements()
             .observeOn(MainScheduler.instance)

@@ -10,13 +10,13 @@ import Foundation
 
 extension NSData {
     public var hexValue: String {
-        return (self as Data).hexValue
+        (self as Data).hexValue
     }
 }
 
 extension Data {
     public var hexValue: String {
-        return map { String(format: "%02x", $0) }.reduce("", +)
+        map { String(format: "%02x", $0) }.reduce("", +)
     }
 
     public init(hex: String) {

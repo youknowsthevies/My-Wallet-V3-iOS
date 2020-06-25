@@ -7,10 +7,10 @@
 //
 
 import Foundation
-import RxSwift
-import stellarsdk
-import StellarKit
 import PlatformKit
+import RxSwift
+import StellarKit
+import stellarsdk
 
 class StellarTransactionService: StellarTransactionAPI {
     
@@ -19,13 +19,13 @@ class StellarTransactionService: StellarTransactionAPI {
     typealias StellarTransaction = stellarsdk.Transaction
     
     private var configuration: Single<StellarConfiguration> {
-        return configurationService.configuration
+        configurationService.configuration
     }
     
     private var service: Single<stellarsdk.TransactionsService> {
-        return configuration
+        configuration
             .flatMap { configuration -> Single<stellarsdk.TransactionsService> in
-                return Single.just(configuration.sdk.transactions)
+                Single.just(configuration.sdk.transactions)
             }
     }
     
@@ -115,8 +115,8 @@ class StellarTransactionService: StellarTransactionAPI {
     // MARK: - Private
 
     private func fundAccountIfEmpty(_ paymentOperation: StellarPaymentOperation, sourceKeyPair: StellarKit.StellarKeyPair) -> Single<Bool> {
-        return accounts.accountResponse(for: paymentOperation.destinationAccountId)
-            .map { _ in return false }
+        accounts.accountResponse(for: paymentOperation.destinationAccountId)
+            .map { _ in false }
             .catchError { [weak self] error -> Single<Bool> in
                 guard let strongSelf = self else {
                     throw error
@@ -140,8 +140,8 @@ class StellarTransactionService: StellarTransactionAPI {
         sourceKeyPair: StellarKit.StellarKeyPair,
         timeout: Int? = nil
     ) -> Completable {
-        return configuration.flatMap(weak: self) { (self, configuration) -> Single<Void> in
-            return Single.create(subscribe: { event -> Disposable in
+        configuration.flatMap(weak: self) { (self, configuration) -> Single<Void> in
+            Single.create(subscribe: { event -> Disposable in
                 do {
                     // Assemble objects
                     let source = try KeyPair(secretSeed: sourceKeyPair.secret)

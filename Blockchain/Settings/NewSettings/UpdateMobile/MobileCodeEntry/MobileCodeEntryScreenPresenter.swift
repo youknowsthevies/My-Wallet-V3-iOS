@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import PlatformKit
 import PlatformUIKit
+import RxRelay
+import RxSwift
 
 final class MobileCodeEntryScreenPresenter {
     

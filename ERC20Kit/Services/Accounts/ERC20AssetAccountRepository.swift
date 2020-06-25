@@ -7,8 +7,8 @@
 //
 
 import PlatformKit
-import RxSwift
 import RxCocoa
+import RxSwift
 
 public class AnyERC20AssetAccountRepository<Token: ERC20Token>: AssetAccountRepositoryAPI {
     public typealias Details = ERC20AssetAccountDetails
@@ -22,11 +22,11 @@ public class AnyERC20AssetAccountRepository<Token: ERC20Token>: AssetAccountRepo
     }
     
     public var assetAccountDetails: Single<Details> {
-        return assetAccountDetailsValue
+        assetAccountDetailsValue
     }
     
     public func currentAssetAccountDetails(fromCache: Bool) -> Single<Details> {
-        return currentAssetAccountDetailsClosure(fromCache)
+        currentAssetAccountDetailsClosure(fromCache)
     }
 }
 
@@ -34,7 +34,7 @@ open class ERC20AssetAccountRepository<Token: ERC20Token>: AssetAccountRepositor
     public typealias Details = ERC20AssetAccountDetails
     
     public var assetAccountDetails: Single<Details> {
-        return currentAssetAccountDetails(fromCache: true)
+        currentAssetAccountDetails(fromCache: true)
     }
     
     private var privateAccountDetails = BehaviorRelay<Details?>(value: nil)
@@ -53,7 +53,7 @@ open class ERC20AssetAccountRepository<Token: ERC20Token>: AssetAccountRepositor
     // MARK: Private Functions
     
     private func fetchAssetAccountDetails(for accountID: String) -> Single<Details> {
-        return service.accountDetails(for: accountID)
+        service.accountDetails(for: accountID)
             .do(onSuccess: { [weak self] account in
                 self?.privateAccountDetails.accept(account)
             }

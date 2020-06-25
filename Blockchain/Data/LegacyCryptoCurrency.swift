@@ -57,6 +57,6 @@ final class LegacyCryptoCurrency: NSObject {
     }
         
     @available(*, unavailable)
-    override var description: String { return value.name }
+    override var description: String { value.name }
 }
 

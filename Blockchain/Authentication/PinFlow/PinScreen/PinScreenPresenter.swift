@@ -13,7 +13,7 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-fileprivate enum PinScreenPresenterError: Error {
+private enum PinScreenPresenterError: Error {
     case absentPinValueWhenAuthenticateUsingBiometrics
 }
 
@@ -89,7 +89,7 @@ final class PinScreenPresenter {
     
     /// When `true`, the the presenter is pending for an update from the interactor
     var isProcessing: Observable<Bool> {
-        return isProcessingRelay
+        isProcessingRelay
             .observeOn(MainScheduler.instance)
     }
     
@@ -118,7 +118,7 @@ final class PinScreenPresenter {
     
     /// Returns `true` in case the flow should show swipe to receive button
     var showsSwipeToReceive: Bool {
-        return useCase.isAuthenticateOnLogin && appSettings.swipeToReceiveEnabled
+        useCase.isAuthenticateOnLogin && appSettings.swipeToReceiveEnabled
     }
     
     // MARK: - Setup
@@ -301,7 +301,7 @@ extension PinScreenPresenter {
     /// Validates that the 1st pin entered by the user during the change pin flow,
     /// or the first time the user is setting a pin, is valid.
     func validateFirstEntry() -> Completable {
-        return Completable.create { [unowned self] completable in
+        Completable.create { [unowned self] completable in
             
             // Check for validity
             guard let pin = self.pin.value, pin.isValid else {
@@ -329,7 +329,7 @@ extension PinScreenPresenter {
     /// Validates that the 2nd pin entered during the create/change pin flow matches the
     /// 1st pin entered, and if so, it will proceed to change the user's pin.
     func validateSecondEntry() -> Completable {
-        return Completable.create { [weak self] completable in
+        Completable.create { [weak self] completable in
             guard let self = self else { return Disposables.create() }
             
             // Extract both current and previous pins before comparing them. Both MUST NOT be nil at that point

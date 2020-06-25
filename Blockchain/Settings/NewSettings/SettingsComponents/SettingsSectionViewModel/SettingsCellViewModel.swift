@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxDataSources
+import RxSwift
 import ToolKit
 
 struct SettingsCellViewModel {
@@ -39,7 +39,7 @@ extension SettingsCellViewModel: IdentifiableType, Equatable {
     typealias Identity = String
     
     static func == (lhs: SettingsCellViewModel, rhs: SettingsCellViewModel) -> Bool {
-        return lhs.cellType == rhs.cellType
+        lhs.cellType == rhs.cellType
     }
 }
 

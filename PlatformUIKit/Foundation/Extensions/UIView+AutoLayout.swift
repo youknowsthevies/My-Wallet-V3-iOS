@@ -121,7 +121,7 @@ extension UIView {
             setContentHuggingPriority(newValue, for: .horizontal)
         }
         get {
-            return contentHuggingPriority(for: .horizontal)
+            contentHuggingPriority(for: .horizontal)
         }
     }
     
@@ -130,7 +130,7 @@ extension UIView {
             setContentHuggingPriority(newValue, for: .vertical)
         }
         get {
-            return contentHuggingPriority(for: .vertical)
+            contentHuggingPriority(for: .vertical)
         }
     }
 

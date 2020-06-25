@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 typealias OnModalDismissed = () -> Void
 
@@ -20,7 +20,7 @@ typealias OnModalResumed = () -> Void
     static let shared = ModalPresenter()
     // class function declared so that the ModalPresenter singleton can be accessed from obj-C
     @objc class func sharedInstance() -> ModalPresenter {
-        return ModalPresenter.shared
+        ModalPresenter.shared
     }
     
     @objc private(set) var modalView: BCModalView?
@@ -28,7 +28,7 @@ typealias OnModalResumed = () -> Void
     private var modalChain: [BCModalView] = []
 
     private var topMostView: UIView? {
-        return UIApplication.shared.keyWindow?.rootViewController?.topMostViewController?.view
+        UIApplication.shared.keyWindow?.rootViewController?.topMostViewController?.view
     }
     
     private let recorder: UIOperationRecording
@@ -93,11 +93,11 @@ typealias OnModalResumed = () -> Void
         // The movement based ones can have a subType to set which direction the movement is in.
         // In case the transition parameter is a direction, we use the MoveIn transition and the transition
         // parameter as the direction, otherwise we use the transition parameter as the transition type.
-        if transition != convertFromCATransitionType(CATransitionType.fade) {
+        if transition != CATransitionType.fade.rawValue {
             animation.type = CATransitionType.moveIn
-            animation.subtype = convertToOptionalCATransitionSubtype(transition)
+            animation.subtype = CATransitionSubtype(rawValue: transition)
         } else {
-            animation.type = convertToCATransitionType(transition)
+            animation.type = CATransitionType(rawValue: transition)
         }
         animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
         UIApplication.shared.keyWindow?.layer.add(animation, forKey: AnimationKeys.hideModal)
@@ -183,20 +183,4 @@ typealias OnModalResumed = () -> Void
         static let showModal = "ShowModal"
         static let hideModal = "HideModal"
     }
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertFromCATransitionType(_ input: CATransitionType) -> String {
-	return input.rawValue
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertToOptionalCATransitionSubtype(_ input: String?) -> CATransitionSubtype? {
-	guard let input = input else { return nil }
-	return CATransitionSubtype(rawValue: input)
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertToCATransitionType(_ input: String) -> CATransitionType {
-	return CATransitionType(rawValue: input)
 }

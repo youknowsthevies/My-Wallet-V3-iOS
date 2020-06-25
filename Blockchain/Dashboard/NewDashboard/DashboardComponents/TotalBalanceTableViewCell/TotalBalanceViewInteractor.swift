@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import PlatformUIKit
+import RxRelay
+import RxSwift
 
 final class TotalBalanceViewInteractor {
     
@@ -17,7 +17,7 @@ final class TotalBalanceViewInteractor {
     // MARK: - Exposed Properties
     
     var state: Observable<InteractionState> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
     }
     
     // MARK: - Injected

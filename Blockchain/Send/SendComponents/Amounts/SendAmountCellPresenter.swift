@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
 import PlatformKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 /// The presentation layer for the amount component on send screen
 final class SendAmountCellPresenter {
@@ -25,7 +25,7 @@ final class SendAmountCellPresenter {
     
     let cryptoName: String
     var fiatName: Driver<String> {
-        return fiatNameRelay.asDriver()
+        fiatNameRelay.asDriver()
     }
     
     let cryptoPlaceholder = "0.00"
@@ -33,23 +33,23 @@ final class SendAmountCellPresenter {
 
     /// The crypto value as string
     var cryptoValue: Driver<String> {
-        return cryptoValueRelay.asDriver()
+        cryptoValueRelay.asDriver()
     }
     
     /// The fiat value as string
     var fiatValue: Driver<String> {
-       return fiatValueRelay.asDriver()
+       fiatValueRelay.asDriver()
     }
     
     /// Total fiat: amount + fee
     var totalFiat: Observable<String> {
-        return interactor.total
+        interactor.total
             .map { $0.fiat.toDisplayString(includeSymbol: true) }
     }
     
     /// Total crypto: amount + fee
     var totalCrypto: Observable<String> {
-        return interactor.total
+        interactor.total
             .map { $0.crypto.toDisplayString(includeSymbol: true) }
     }
     
@@ -120,7 +120,7 @@ final class SendAmountCellPresenter {
 
         transferredValue
             .filter { [weak self] value -> Bool in
-                return self?.currentlyUpdatedField == .fiat
+                self?.currentlyUpdatedField == .fiat
             }
             .do(onNext: { [weak self] _ in
                 self?.currentlyUpdatedField = .none
@@ -132,7 +132,7 @@ final class SendAmountCellPresenter {
         
         transferredValue
             .filter { [weak self] value -> Bool in
-                return self?.currentlyUpdatedField == .crypto
+                self?.currentlyUpdatedField == .crypto
             }
             .do(onNext: { [weak self] _ in
                 self?.currentlyUpdatedField = .none

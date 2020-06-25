@@ -41,7 +41,7 @@ class ExchangeListInteractor: ExchangeListInput {
     }
     
     func canPage() -> Bool {
-        return service.canPage
+        service.canPage
     }
     
     func tradeSelectedWith(identifier: String) -> ExchangeTradeCellModel? {

@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 final class HomeWalletIntroductionEvent: CompletableWalletIntroductionEvent {
     
@@ -33,7 +33,7 @@ final class HomeWalletIntroductionEvent: CompletableWalletIntroductionEvent {
     let introductionRecorder: WalletIntroductionRecorder
     
     var introductionEntry: WalletIntroductionRecorder.Entry {
-        return introductionRecorder[UserDefaults.Keys.walletIntroLatestLocation.rawValue]
+        introductionRecorder[UserDefaults.Keys.walletIntroLatestLocation.rawValue]
     }
     
     var shouldShow: Bool {
@@ -68,11 +68,11 @@ final class HomeDescriptionWalletIntroductionEvent: WalletIntroductionEvent, Wal
     let selection: WalletIntroductionAction
     
     var eventType: AnalyticsEvents.WalletIntro {
-        return .walletIntroPortfolioViewed
+        .walletIntroPortfolioViewed
     }
     
     var shouldShow: Bool {
-        return true
+        true
     }
     
     init(selection: @escaping WalletIntroductionAction) {

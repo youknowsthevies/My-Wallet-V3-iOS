@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
 import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 final class AirdropCenterScreenViewController: BaseScreenViewController {
 
@@ -65,7 +65,7 @@ final class AirdropCenterScreenViewController: BaseScreenViewController {
 extension AirdropCenterScreenViewController: UITableViewDelegate, UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return presenter.dataSource.count
+        presenter.dataSource.count
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -75,7 +75,7 @@ extension AirdropCenterScreenViewController: UITableViewDelegate, UITableViewDat
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return presenter.dataSource[section].count
+        presenter.dataSource[section].count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -92,6 +92,6 @@ extension AirdropCenterScreenViewController: UITableViewDelegate, UITableViewDat
     // MARK: - TableView accessors
     
     private func cellPresenter(by indexPath: IndexPath) -> AirdropTypeCellPresenter {
-        return presenter.dataSource[indexPath.section].items[indexPath.row]
+        presenter.dataSource[indexPath.section].items[indexPath.row]
     }
 }

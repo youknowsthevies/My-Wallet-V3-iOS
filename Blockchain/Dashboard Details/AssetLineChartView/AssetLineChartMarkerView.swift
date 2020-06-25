@@ -26,11 +26,11 @@ class AssetLineChartMarkerView: MarkerView {
     private let strokeWidth: CGFloat = 2
     
     override var layer: CAShapeLayer {
-        return super.layer as! CAShapeLayer
+        super.layer as! CAShapeLayer
     }
     
     override class var layerClass: AnyClass {
-        return CAShapeLayer.self
+        CAShapeLayer.self
     }
     
     override func refreshContent(entry: ChartDataEntry, highlight: Highlight) {

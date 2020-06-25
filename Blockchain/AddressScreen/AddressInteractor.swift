@@ -7,10 +7,10 @@
 //
 
 import Foundation
+import PlatformKit
 import RxCocoa
 import RxSwift
 import ToolKit
-import PlatformKit
 
 final class AddressInteractor: AddressInteracting {
     
@@ -38,7 +38,7 @@ final class AddressInteractor: AddressInteracting {
     
     /// Streams any received payment that is coupled with the currently observed address
     var receivedPayment: Observable<ReceivedPaymentDetails> {
-        return receivedPaymentRelay.asObservable()
+        receivedPaymentRelay.asObservable()
     }
     
     /// Fetches a new address from repo (for the asset coupled with `Self` instance) ->
@@ -47,7 +47,7 @@ final class AddressInteractor: AddressInteracting {
     /// Converts the address into a displayable format (Text + QR Image)
     /// - For efficiency sake, subscribe only on background scheduler
     var address: Single<WalletAddressContent> {
-        return addressSubscribedToPayments
+        addressSubscribedToPayments
             .observeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
             .map { [weak self] address -> WalletAddressContent in
                 guard let self = self else {
@@ -75,7 +75,7 @@ final class AddressInteractor: AddressInteracting {
     
     // Subscribes address to incoming payments using the wallet
     private var addressSubscribedToPayments: Single<String> {
-        return unusedAddress
+        unusedAddress
             .observeOn(MainScheduler.instance)
             .do(onSuccess: { [weak self] address in
                 guard let self = self else { return }
@@ -87,11 +87,11 @@ final class AddressInteractor: AddressInteracting {
     
     // Retrive the status of the address (used, unused, unknown), validates it and map it to raw representation
     private var unusedAddress: Single<String> {
-        return fetchedAddress
+        fetchedAddress
             .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
             .observeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
             .flatMap(weak: self) { (self, address) -> Single<AddressUsageStatus> in
-                return self.addressFetcher.checkUsability(of: address, asset: self.asset)
+                self.addressFetcher.checkUsability(of: address, asset: self.asset)
             }
             .do(onSuccess: { [weak self] status in
                 guard status.isUnused else {
@@ -106,7 +106,7 @@ final class AddressInteractor: AddressInteracting {
     
     // Get the address from address-repo
     private var fetchedAddress: Single<String> {
-        return .create { [weak self] single in
+        .create { [weak self] single in
             guard let self = self else {
                 single(.error(AddressFetchingError.unretainedSelf))
                 return Disposables.create()

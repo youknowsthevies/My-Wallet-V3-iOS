@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import EthereumKit
 import Foundation
 import PlatformKit
-import EthereumKit
 
 protocol SendServiceContaining {
     var asset: CryptoCurrency { get }

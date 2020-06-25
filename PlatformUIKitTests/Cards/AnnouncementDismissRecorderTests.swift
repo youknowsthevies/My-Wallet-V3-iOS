@@ -8,9 +8,9 @@
 
 import XCTest
 
-@testable import ToolKit
-@testable import PlatformUIKit
 @testable import PlatformKit
+@testable import PlatformUIKit
+@testable import ToolKit
 
 extension AnnouncementRecord.DisplayState {
     var isHidden: Bool {

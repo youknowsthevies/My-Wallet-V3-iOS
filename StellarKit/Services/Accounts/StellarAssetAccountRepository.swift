@@ -7,14 +7,14 @@
 //
 
 import PlatformKit
-import RxSwift
 import RxCocoa
+import RxSwift
 
 open class StellarAssetAccountRepository: AssetAccountRepositoryAPI {
     public typealias Details = StellarAssetAccountDetails
     
     public var assetAccountDetails: Single<Details> {
-        return currentAssetAccountDetails(fromCache: true)
+        currentAssetAccountDetails(fromCache: true)
     }
     
     fileprivate let service: StellarAssetAccountDetailsService
@@ -48,7 +48,7 @@ open class StellarAssetAccountRepository: AssetAccountRepositoryAPI {
     // MARK: Private Functions
     
     fileprivate func fetchAssetAccountDetails(_ accountID: String) -> Single<Details> {
-        return service
+        service
             .accountDetails(for: accountID)
             .do(onSuccess: { [weak self] account in
                 self?.privateAccountDetails.accept(account)

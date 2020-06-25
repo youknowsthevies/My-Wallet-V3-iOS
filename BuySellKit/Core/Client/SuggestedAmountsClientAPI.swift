@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import PlatformKit
+import RxSwift
 
 protocol SuggestedAmountsClientAPI: class {
     func suggestedAmounts(for currency: FiatCurrency,

@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
 import PlatformKit
+import RxCocoa
+import RxSwift
 
 public final class LabeledButtonView<ViewModel: LabeledButtonViewModelAPI>: UIView {
 
@@ -44,7 +44,7 @@ public final class LabeledButtonView<ViewModel: LabeledButtonViewModelAPI>: UIVi
         setupButton()
     }
     @available(*, unavailable)
-    required init?(coder: NSCoder) { return nil }
+    required init?(coder: NSCoder) { nil }
     
     private func setupButton() {
         addSubview(button)

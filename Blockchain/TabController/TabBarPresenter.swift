@@ -11,7 +11,7 @@ import PlatformUIKit
 final class TabBarPresenter {
     
     let itemContentArray: [TabItemContent] = {
-        return [
+        [
             TabItemContent(
                 title: LocalizationConstants.TabItems.home,
                 image: "icon_home",

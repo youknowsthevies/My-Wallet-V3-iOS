@@ -10,6 +10,6 @@ import Foundation
 
 extension CharacterSet {
     public func contains(_ character: Character) -> Bool {
-        return !character.unicodeScalars.contains(where: { !contains($0) })
+        !character.unicodeScalars.contains(where: { !contains($0) })
     }
 }

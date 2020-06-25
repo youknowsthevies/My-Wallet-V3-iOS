@@ -6,11 +6,11 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import ToolKit
-import PlatformKit
 import BitcoinKit
 import EthereumKit
+import Foundation
+import PlatformKit
+import ToolKit
 
 @objc class AssetURLPayloadFactory: NSObject {
 
@@ -31,7 +31,7 @@ import EthereumKit
 
     @objc
     static func create(fromString string: String, asset: LegacyCryptoCurrency) -> AssetURLPayload? {
-        return AssetURLPayloadFactory.create(fromString: string, asset: asset.value)
+        AssetURLPayloadFactory.create(fromString: string, asset: asset.value)
     }
     
     static func create(fromString string: String, asset: CryptoCurrency) -> AssetURLPayload? {

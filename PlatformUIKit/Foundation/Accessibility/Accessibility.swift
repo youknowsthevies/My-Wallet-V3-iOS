@@ -32,7 +32,7 @@ public struct Accessibility {
     
     /// `.none` represents an inaccessible element
     public static var none: Accessibility {
-        return Accessibility(isAccessible: false)
+        Accessibility(isAccessible: false)
     }
     
     /// The accessibility identifier
@@ -64,16 +64,16 @@ public struct Accessibility {
     }
 }
 
-/// MARK: - Conveniences
+// MARK: - Conveniences
 
 extension Accessibility {
     public static func id(_ rawValue: String) -> Accessibility {
-        return .init(id: .value(rawValue))
+        .init(id: .value(rawValue))
     }
 }
 
 extension Accessibility: Equatable {
     public static func == (lhs: Accessibility, rhs: Accessibility) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 }

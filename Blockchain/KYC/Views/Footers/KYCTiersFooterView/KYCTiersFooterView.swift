@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import UIKit
 import PlatformUIKit
+import UIKit
 
 class KYCTiersFooterView: UICollectionReusableView {
     
@@ -77,19 +77,19 @@ extension KYCTiersFooterView {
     }
 
     private func actionAttributes() -> [NSAttributedString.Key: Any] {
-        return [.font: Font(.branded(.montserratRegular), size: .custom(12.0)).result,
+        [.font: Font(.branded(.montserratRegular), size: .custom(12.0)).result,
          .foregroundColor: UIColor.brandSecondary]
     }
 
     private func defaultAttributes() -> [NSAttributedString.Key: Any] {
-        return [.font: KYCTiersFooterView.disclaimerFont(),
+        [.font: KYCTiersFooterView.disclaimerFont(),
          .foregroundColor: disclaimerLabel.textColor]
     }
 }
 
 extension KYCTiersFooterView: ActionableLabelDelegate {
     func targetRange(_ label: ActionableLabel) -> NSRange? {
-        return trigger?.actionRange()
+        trigger?.actionRange()
     }
 
     func actionRequestingExecution(label: ActionableLabel) {

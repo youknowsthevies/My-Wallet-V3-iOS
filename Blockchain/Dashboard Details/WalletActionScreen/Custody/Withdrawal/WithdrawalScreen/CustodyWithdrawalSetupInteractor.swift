@@ -8,8 +8,8 @@
 
 import PlatformKit
 import PlatformUIKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 final class CustodyWithdrawalSetupInteractor {
     
@@ -28,7 +28,7 @@ final class CustodyWithdrawalSetupInteractor {
     // MARK: - Public Properties
     
     var state: Observable<InteractionState> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
             .observeOn(MainScheduler.instance)
     }
     

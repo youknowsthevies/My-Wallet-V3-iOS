@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-@testable import PlatformKit
 @testable import BuySellKit
+@testable import PlatformKit
 
 extension APIClient {
 
@@ -78,7 +78,7 @@ extension APIClient {
     static func mockQuote(for action: Order.Action,
                           to cryptoCurrency: CryptoCurrency,
                           amount: FiatValue) -> QuoteResponse {
-        return QuoteResponse(
+        QuoteResponse(
             time: "2020-01-15T22:09:45.600Z",
             rate: "1000000",
             rateWithoutFee: "995000",
@@ -87,7 +87,7 @@ extension APIClient {
     }
 
     static func mockOrderCreation(order: OrderPayload.Request) -> OrderPayload.Response {
-        return .init(
+        .init(
             state: "PENDING_DEPOSIT",
             id: UUID().uuidString,
             inputCurrency: order.input.symbol,

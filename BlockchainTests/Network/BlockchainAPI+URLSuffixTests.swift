@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
+@testable import Blockchain
 import NetworkKit
 import PlatformKit
-@testable import Blockchain
+import XCTest
 
 class BlockchainAPIURLSuffixTests: XCTestCase {
 

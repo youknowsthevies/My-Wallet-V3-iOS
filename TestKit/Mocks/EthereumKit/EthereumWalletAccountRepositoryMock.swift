@@ -6,17 +6,17 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BigInt
+@testable import EthereumKit
 import Foundation
+import PlatformKit
 import RxSwift
 import web3swift
-import BigInt
-import PlatformKit
-@testable import EthereumKit
 
 class EthereumWalletAccountRepositoryMock: EthereumWalletAccountRepositoryAPI {
     var keyPairValue = Maybe.just(MockEthereumWalletTestData.keyPair)
     var keyPair: PrimitiveSequence<MaybeTrait, EthereumKeyPair> {
-        return keyPairValue
+        keyPairValue
     }
     
     static let ethereumWalletAccount = EthereumWalletAccount(
@@ -28,17 +28,17 @@ class EthereumWalletAccountRepositoryMock: EthereumWalletAccountRepositoryAPI {
     
     var defaultAccountValue: EthereumWalletAccount? = ethereumWalletAccount
     var defaultAccount: EthereumWalletAccount? {
-        return defaultAccountValue
+        defaultAccountValue
     }
     
     var initializeMetadataMaybeValue = Maybe.just(ethereumWalletAccount)
     func initializeMetadataMaybe() -> Maybe<EthereumWalletAccount> {
-        return initializeMetadataMaybeValue
+        initializeMetadataMaybeValue
     }
     
     var accountsValue: [EthereumWalletAccount] = []
     func accounts() -> [EthereumWalletAccount] {
-        return accountsValue
+        accountsValue
     }
 }
 
@@ -55,12 +55,12 @@ class EthereumAPIClientMock: EthereumClientAPI {
 
     var balanceDetailsValue = Single<BalanceDetailsResponse>.error(EthereumAPIClientMockError.mockError)
     func balanceDetails(from address: String) -> Single<BalanceDetailsResponse> {
-        return balanceDetailsValue
+        balanceDetailsValue
     }
     
     var latestBlockValue: Single<LatestBlockResponse> = Single.error(EthereumAPIClientMockError.mockError)
     var latestBlock: Single<LatestBlockResponse> {
-        return latestBlockValue
+        latestBlockValue
     }
     
     var lastTransactionsForAccount: String?
@@ -82,6 +82,6 @@ class EthereumFeeServiceMock: EthereumFeeServiceAPI {
     
     var feesValue = Single.just(EthereumTransactionFee.default)
     var fees: Single<EthereumTransactionFee> {
-        return feesValue
+        feesValue
     }
 }

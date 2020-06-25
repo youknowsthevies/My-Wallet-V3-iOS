@@ -42,7 +42,7 @@ public struct CustodialWithdrawalResponse: Decodable {
         let amountContainer = try values.nestedContainer(keyedBy: CodingKeys.self, forKey: .amount)
         let symbol = try amountContainer.decode(String.self, forKey: .symbol)
         let value = try amountContainer.decode(String.self, forKey: .value)
-        guard let currency = CryptoCurrency(rawValue: symbol) else { throw PlatformKitError.default}
+        guard let currency = CryptoCurrency(rawValue: symbol) else { throw PlatformKitError.default }
         cryptoValue = CryptoValue.createFromMajorValue(string: value, assetType: currency) ?? CryptoValue.zero(assetType: currency)
     }
 }

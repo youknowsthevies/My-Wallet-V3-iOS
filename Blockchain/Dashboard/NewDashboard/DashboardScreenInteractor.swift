@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import PlatformKit
+import RxSwift
 
 final class DashboardScreenInteractor {
     
@@ -39,7 +39,7 @@ final class DashboardScreenInteractor {
         self.reactiveWallet = reactiveWallet
         self.userPropertyInteractor = userPropertyInteractor
         historicalBalanceInteractors = CryptoCurrency.allCases.map {
-            return HistoricalBalanceCellInteractor(
+            HistoricalBalanceCellInteractor(
                 cryptoCurrency: $0,
                 historicalFiatPriceService: historicalProvider[$0],
                 assetBalanceFetcher: balanceProvider[$0]

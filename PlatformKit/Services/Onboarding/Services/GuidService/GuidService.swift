@@ -20,7 +20,7 @@ public final class GuidService: GuidServiceAPI {
     
     /// Fetches the `GUID`
     public var guid: Single<String> {
-        return sessionTokenRepository
+        sessionTokenRepository
             .sessionToken
             .flatMap(weak: self) { (self, token) -> Single<String> in
                 guard let token = token else {

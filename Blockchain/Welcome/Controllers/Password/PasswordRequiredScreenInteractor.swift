@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import PlatformKit
+import RxRelay
+import RxSwift
 
 final class PasswordRequiredScreenInteractor {
     
@@ -16,7 +16,7 @@ final class PasswordRequiredScreenInteractor {
     
     /// Streams potential parsing errors
     var error: Observable<Error> {
-        return errorRelay.asObservable()
+        errorRelay.asObservable()
     }
     
     /// Relay that accepts and streams the payload content

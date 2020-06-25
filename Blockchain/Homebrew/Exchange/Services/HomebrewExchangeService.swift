@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import RxSwift
 import NetworkKit
 import PlatformKit
+import RxSwift
 
 typealias ExchangeCompletion = ((Result<[ExchangeTradeCellModel], Error>) -> Void)
 
@@ -43,7 +43,7 @@ class HomebrewExchangeService: HomebrewExchangeAPI {
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: { (payload) in
-                let result: [ExchangeTradeCellModel] = payload.filter { return $0.pair != nil }
+                let result: [ExchangeTradeCellModel] = payload.filter { $0.pair != nil }
                 completion(.success(result))
             }, onError: { error in
                 completion(.failure(error))

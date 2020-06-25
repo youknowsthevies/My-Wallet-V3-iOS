@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxRelay
+import RxSwift
 
 /// This class processes number input into a valid money value output.
 /// This class is money agnostic and therefore can scan crypto as well
@@ -57,12 +57,12 @@ public final class MoneyValueInputScanner {
         
         /// Emty input
         static var empty: Input {
-            return Input(string: "", caretIndex: 0)
+            Input(string: "", caretIndex: 0)
         }
         
         /// Zero input
         static var zero: Input {
-            return Input(string: Constant.zero, caretIndex: 0)
+            Input(string: Constant.zero, caretIndex: 0)
         }
         
         init(string: String, caretIndex: Int) {
@@ -98,7 +98,7 @@ public final class MoneyValueInputScanner {
     
     /// Streams the input
     public var input: Observable<Input> {
-        return inputRelay.asObservable()
+        inputRelay.asObservable()
     }
     
     public let inputRelay = BehaviorRelay(value: Input.empty)

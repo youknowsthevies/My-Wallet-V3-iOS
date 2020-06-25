@@ -12,11 +12,11 @@ import PlatformKit
 final class SendContainerViewController: UIViewController {
     
     private lazy var sendRouter: SendRouter = {
-        return SendRouter(using: self)
+        SendRouter(using: self)
     }()
     
     private lazy var bitcoinVC: SendBitcoinViewController = {
-        return SendBitcoinViewController(nibName: "SendCoins", bundle: nil)
+        SendBitcoinViewController(nibName: "SendCoins", bundle: nil)
     }()
     
     private lazy var stellarVC = SendLumensViewController.make(with: .shared)

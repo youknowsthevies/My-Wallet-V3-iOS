@@ -21,7 +21,7 @@ public struct FiatValue {
 
     // TODO: Reverse the logic. store the minor amount and compute the major amount
     public var minorAmount: BigInt {
-        return BigInt(stringLiteral: string)
+        BigInt(stringLiteral: string)
     }
     
     /// Returns the minor
@@ -63,12 +63,12 @@ extension FiatValue {
 
     @available(*, deprecated, message: "Superseded by `create(amount: Decimal, currency: FiatCurrency)`")
     public static func create(amount: Decimal, currencyCode: String) -> FiatValue {
-        return FiatValue(currencyCode: currencyCode, amount: amount)
+        FiatValue(currencyCode: currencyCode, amount: amount)
     }
     
     @available(*, deprecated, message: "Superseded by `zero(currency: FiatCurrency)`")
     public static func zero(currencyCode: String) -> FiatValue {
-        return FiatValue(currencyCode: currencyCode, amount: 0.0)
+        FiatValue(currencyCode: currencyCode, amount: 0.0)
     }
 
     /// Creates a FiatValue from a provided amount in String and currency code.
@@ -86,11 +86,11 @@ extension FiatValue {
     }
     
     public static func zero(currency: FiatCurrency) -> FiatValue {
-        return FiatValue(currency: currency, amount: 0.0)
+        FiatValue(currency: currency, amount: 0.0)
     }
     
     public static func create(amount: Decimal, currency: FiatCurrency) -> FiatValue {
-        return FiatValue(currency: currency, amount: amount)
+        FiatValue(currency: currency, amount: amount)
     }
 
     /// Converts this value into a corresponding CryptoValue given an exchange rate for a given currency
@@ -110,19 +110,19 @@ extension FiatValue {
 extension FiatValue: Money {
     
     public var currencyCode: String {
-        return currency.code
+        currency.code
     }
 
     public var isZero: Bool {
-        return amount == 0
+        amount == 0
     }
 
     public var isPositive: Bool {
-        return amount > 0
+        amount > 0
     }
     
     public var isNegative: Bool {
-        return amount < 0
+        amount < 0
     }
 
     public var symbol: String {
@@ -140,12 +140,12 @@ extension FiatValue: Money {
     }
 
     public var maxDisplayableDecimalPlaces: Int {
-        return maxDecimalPlaces
+        maxDecimalPlaces
     }
 
     public func toDisplayString(includeSymbol: Bool = true,
                                 locale: Locale = Locale.current) -> String {
-        return toDisplayString(
+        toDisplayString(
             includeSymbol: includeSymbol,
             format: .fullLength,
             locale: locale
@@ -288,6 +288,6 @@ private class FiatFormatterProvider {
     }
 
     private func key(locale: Locale, fiatValue: FiatValue) -> String {
-        return "\(locale.identifier)_\(fiatValue.currency.code)"
+        "\(locale.identifier)_\(fiatValue.currency.code)"
     }
 }

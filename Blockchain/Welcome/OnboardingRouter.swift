@@ -8,8 +8,8 @@
 
 import PlatformKit
 import PlatformUIKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 protocol OnboardingRouterStateProviding: class {
     var state: OnboardingRouter.State { get set }

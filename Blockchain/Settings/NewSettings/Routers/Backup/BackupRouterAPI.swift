@@ -8,8 +8,8 @@
 
 import PlatformKit
 import PlatformUIKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 protocol BackupRouterAPI: class {
     var completionRelay: PublishRelay<Void> { get }

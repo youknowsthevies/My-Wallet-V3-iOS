@@ -85,7 +85,7 @@ extension BigInt {
 
 extension Decimal {
     public var doubleValue: Double {
-        return (self as NSDecimalNumber).doubleValue
+        (self as NSDecimalNumber).doubleValue
     }
 
     func roundTo(places: Int) -> Decimal {

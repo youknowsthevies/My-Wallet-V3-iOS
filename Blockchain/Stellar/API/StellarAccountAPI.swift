@@ -7,10 +7,10 @@
 //
 
 import Foundation
-import stellarsdk
+import PlatformKit
 import RxSwift
 import StellarKit
-import PlatformKit
+import stellarsdk
 
 protocol StellarAccountAPI: AccountBalanceFetching {
     

@@ -7,8 +7,8 @@
 //
 
 import PlatformUIKit
-import RxSwift
 import RxCocoa
+import RxSwift
 
 struct TableHeaderViewModel {
     
@@ -17,7 +17,7 @@ struct TableHeaderViewModel {
     
     /// The content color of the title
     var contentColor: Driver<UIColor> {
-        return contentColorRelay.asDriver()
+        contentColorRelay.asDriver()
     }
     
     /// The text relay
@@ -25,7 +25,7 @@ struct TableHeaderViewModel {
     
     /// Text to be displayed on the badge
     var text: Driver<String> {
-        return textRelay.asDriver()
+        textRelay.asDriver()
     }
     
     let font: UIFont
@@ -40,6 +40,6 @@ struct TableHeaderViewModel {
 
 extension TableHeaderViewModel {
     static func settings(title: String) -> TableHeaderViewModel {
-        return .init(font: .main(.semibold, 20), title: title, textColor: .titleText)
+        .init(font: .main(.semibold, 20), title: title, textColor: .titleText)
     }
 }

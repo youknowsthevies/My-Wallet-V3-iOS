@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxRelay
+import RxSwift
 
 protocol RecoveryPhraseStatusProviding {
     var isRecoveryPhraseVerified: Observable<Bool> { get }
@@ -21,7 +21,7 @@ final class RecoveryPhraseStatusProvider: RecoveryPhraseStatusProviding {
     private let wallet: Wallet
     
     var isRecoveryPhraseVerified: Observable<Bool> {
-        return Observable.combineLatest(Observable.just(wallet.isRecoveryPhraseVerified()), fetchTriggerRelay).map { $0.0 }
+        Observable.combineLatest(Observable.just(wallet.isRecoveryPhraseVerified()), fetchTriggerRelay).map { $0.0 }
     }
     
     init(wallet: Wallet = WalletManager.shared.wallet) {

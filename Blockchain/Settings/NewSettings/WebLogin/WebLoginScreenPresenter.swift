@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
 import PlatformKit
+import PlatformUIKit
+import RxCocoa
 import RxRelay
 import RxSwift
-import RxCocoa
 
 final class WebLoginScreenPresenter {
 
@@ -49,7 +49,7 @@ final class WebLoginScreenPresenter {
     }
 
     var qrCodeVisibility: Driver<Visibility> {
-        return qrCodeVisibilityRelay.asDriver()
+        qrCodeVisibilityRelay.asDriver()
     }
 
     let instructionViewModels: [InstructionCellViewModel] = {
