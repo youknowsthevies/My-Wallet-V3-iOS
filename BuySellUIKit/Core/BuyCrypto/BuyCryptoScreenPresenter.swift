@@ -167,6 +167,7 @@ final class BuyCryptoScreenPresenter {
                         }
                     }
             }
+            .share()
         
         ctaObservable
             .compactMap { result -> CandidateOrderDetails? in
