@@ -31,7 +31,7 @@ final class BankOrderCreationService: PendingOrderCreationServiceAPI {
             )
         
         let paymentAccount = paymentAccountService
-            .paymentAccount(for: candidateOrderDetails.fiatValue.currency)
+            .paymentAccount(for: candidateOrderDetails.fiatValue.currencyType)
         
         return Single
             .zip(quote, paymentAccount)

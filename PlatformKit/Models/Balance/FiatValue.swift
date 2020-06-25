@@ -16,7 +16,7 @@ public struct FiatComparisonError: Error {
 
 public struct FiatValue {
     /// The currency
-    public let currency: FiatCurrency
+    public let currencyType: FiatCurrency
     public let amount: Decimal
 
     // TODO: Reverse the logic. store the minor amount and compute the major amount
@@ -32,15 +32,16 @@ public struct FiatValue {
 
     fileprivate init(currency: FiatCurrency, amount: Decimal) {
         self.amount = amount
-        self.currency = currency
+        self.currencyType = currency
     }
 }
 
 // MARK: - Setup
 
 extension FiatValue {
+    
     init(currencyCode: String, amount: Decimal) {
-        self.currency = FiatCurrency(rawValue: currencyCode)!
+        self.currencyType = FiatCurrency(rawValue: currencyCode)!
         self.amount = amount
     }
     
@@ -181,8 +182,8 @@ extension FiatValue: Money {
 
 extension FiatValue: Hashable, Equatable {
     private static func ensureComparable(value: FiatValue, other: FiatValue) throws {
-        if value.currency != other.currency {
-            throw FiatComparisonError(currencyCode1: value.currency, currencyCode2: other.currency)
+        if value.currencyType != other.currencyType {
+            throw FiatComparisonError(currencyCode1: value.currencyType, currencyCode2: other.currencyType)
         }
     }
     
@@ -205,25 +206,35 @@ extension FiatValue: Hashable, Equatable {
         try ensureComparable(value: lhs, other: rhs)
         return lhs.amount < rhs.amount
     }
+    
+    public static func >= (lhs: FiatValue, rhs: FiatValue) throws -> Bool {
+        try ensureComparable(value: lhs, other: rhs)
+        return lhs.amount >= rhs.amount
+    }
+
+    public static func <= (lhs: FiatValue, rhs: FiatValue) throws -> Bool {
+        try ensureComparable(value: lhs, other: rhs)
+        return lhs.amount <= rhs.amount
+    }
 
     public static func +(lhs: FiatValue, rhs: FiatValue) throws -> FiatValue {
         try ensureComparable(value: lhs, other: rhs)
-        return FiatValue(currency: lhs.currency, amount: lhs.amount + rhs.amount)
+        return FiatValue(currency: lhs.currencyType, amount: lhs.amount + rhs.amount)
     }
 
     public static func -(lhs: FiatValue, rhs: FiatValue) throws -> FiatValue {
         try ensureComparable(value: lhs, other: rhs)
-        return FiatValue(currency: lhs.currency, amount: lhs.amount - rhs.amount)
+        return FiatValue(currency: lhs.currencyType, amount: lhs.amount - rhs.amount)
     }
 
     public static func *(lhs: FiatValue, rhs: FiatValue) throws -> FiatValue {
         try ensureComparable(value: lhs, other: rhs)
-        return FiatValue(currency: lhs.currency, amount: lhs.amount * rhs.amount)
+        return FiatValue(currency: lhs.currencyType, amount: lhs.amount * rhs.amount)
     }
     
     public static func /(lhs: FiatValue, rhs: FiatValue) throws -> FiatValue {
         try ensureComparable(value: lhs, other: rhs)
-        return FiatValue(currency: lhs.currency, amount: lhs.amount / rhs.amount)
+        return FiatValue(currency: lhs.currencyType, amount: lhs.amount / rhs.amount)
     }
 
     public static func +=(lhs: inout FiatValue, rhs: FiatValue) throws {
@@ -248,11 +259,11 @@ extension FiatValue: Hashable, Equatable {
     public func value(before percentageChange: Double) -> FiatValue {
         let percentageChange = percentageChange + 1
         guard percentageChange > 0 else {
-            return .zero(currency: currency)
+            return .zero(currency: currencyType)
         }
         return .create(
             amount: amount / Decimal(percentageChange),
-            currency: currency
+            currency: currencyType
         )
     }
 }

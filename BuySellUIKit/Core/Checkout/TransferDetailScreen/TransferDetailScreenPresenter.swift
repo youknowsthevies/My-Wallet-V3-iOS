@@ -159,11 +159,11 @@ extension TransferDetailScreenPresenter {
              analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording) {
             typealias SummaryString = LocalizedString.Summary
             typealias TitleString = LocalizedString.Title
-            let currency = data.order.fiatValue.currency
+            let currency = data.order.fiatValue.currencyType
             let currencyString = "\(currency.name) (\(currency.symbol))"
 
             title = TitleString.checkout
-            switch data.order.fiatValue.currency {
+            switch data.order.fiatValue.currencyType {
             case .USD, .GBP:
                 summary = "\(SummaryString.GbpAndUsd.prefix) \(currencyString) \(SummaryString.GbpAndUsd.suffix)"
             default:
