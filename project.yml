@@ -32,43 +32,30 @@ schemeTemplates:
       config: ${debugConfig}
       targets:
       - name: BlockchainTests
-        parallelizable: true
         randomExecutionOrder: true
       - name: BitcoinKitTests
-        parallelizable: true
         randomExecutionOrder: true
       - name: CommonCryptoKitTests
-        parallelizable: true
         randomExecutionOrder: true
       - name: ERC20KitTests
-        parallelizable: true
         randomExecutionOrder: true
       - name: EthereumKitTests
-        parallelizable: true
         randomExecutionOrder: true
       - name: HDWalletKitTests
-        parallelizable: true
         randomExecutionOrder: true
       - name: NetworkKitTests
-        parallelizable: true
         randomExecutionOrder: true
       - name: PlatformKitTests
-        parallelizable: true
         randomExecutionOrder: true
       - name: PlatformUIKitTests
-        parallelizable: true
         randomExecutionOrder: true
       - name: BuySellKitTests
-        parallelizable: true
         randomExecutionOrder: true
       - name: BuySellUIKitTests
-        parallelizable: true
         randomExecutionOrder: true
       - name: StellarKitTests
-        parallelizable: true
         randomExecutionOrder: true
       - name: ToolKitTests
-        parallelizable: true
         randomExecutionOrder: true
 schemes:
   Blockchain:
