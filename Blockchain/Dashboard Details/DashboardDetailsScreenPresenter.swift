@@ -107,18 +107,6 @@ final class DashboardDetailsScreenPresenter {
         savingsBalanceStateRelay.value.presenter
     }
     
-    var shouldShowNonCustodialBalance: Bool {
-        walletBalancePresenter != nil
-    }
-    
-    var shouldShowTradingBalance: Bool {
-        tradingBalancePresenter != nil
-    }
-    
-    var shouldShowSavingsBalance: Bool {
-        savingsBalancePresenter != nil
-    }
-    
     /// The dashboard action
     var action: Signal<DashboadDetailsAction> {
         actionRelay.asSignal()
@@ -131,7 +119,12 @@ final class DashboardDetailsScreenPresenter {
     
     /// Returns the ordered cell types
     var cellArrangement: [CellType] {
-        var cellTypes: [CellType] = .default
+        var cellTypes: [CellType] = []
+        if shouldShowSendRequest {
+            cellTypes.append(.sendRequest)
+        }
+        cellTypes.append(.priceAlert)
+        cellTypes.append(.chart)
         if shouldShowNonCustodialBalance {
             cellTypes.append(.balance(.nonCustodial))
         }
@@ -143,7 +136,7 @@ final class DashboardDetailsScreenPresenter {
         }
         return cellTypes
     }
-    
+
     var indexByCellType: [CellType: Int] {
         var indexByCellType: [CellType: Int] = [:]
         for (index, cellType) in cellArrangement.enumerated() {
@@ -168,7 +161,23 @@ final class DashboardDetailsScreenPresenter {
     let presenterSelectionRelay = PublishRelay<CellType>()
     
     // MARK: - Private Properties
-    
+
+    private var shouldShowNonCustodialBalance: Bool {
+        walletBalancePresenter != nil
+    }
+
+    private var shouldShowSendRequest: Bool {
+        currency.hasNonCustodialSupport
+    }
+
+    private var shouldShowTradingBalance: Bool {
+        tradingBalancePresenter != nil
+    }
+
+    private var shouldShowSavingsBalance: Bool {
+        savingsBalancePresenter != nil
+    }
+
     private let presentationActionRelay = PublishRelay<PresentationAction>()
     private let walletBalanceStateRelay = BehaviorRelay<BalancePresentationState>(value: .hidden)
     private let tradingBalanceStateRelay = BehaviorRelay<BalancePresentationState>(value: .hidden)
@@ -329,7 +338,6 @@ final class DashboardDetailsScreenPresenter {
         typealias LocalizedString = LocalizationConstants.Dashboard
         let currency = self.currency
         let actionRelay = self.actionRelay
-        
         return [
             .text(
                 LocalizedString.send,
@@ -345,14 +353,4 @@ final class DashboardDetailsScreenPresenter {
             )
         ]
     }()
-}
-
-extension Array where Element == DashboardDetailsScreenPresenter.CellType {
-    static var `default`: [Element] {
-        [
-            .sendRequest,
-            .priceAlert,
-            .chart
-        ]
-    }
 }
