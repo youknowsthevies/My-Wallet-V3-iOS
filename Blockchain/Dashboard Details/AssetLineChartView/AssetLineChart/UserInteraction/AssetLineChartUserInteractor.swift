@@ -17,10 +17,23 @@ import RxSwift
 final class AssetLineChartUserInteractor: AssetLineChartUserInteracting, ChartViewDelegate {
     
     var state: Observable<AssetLineChartInteractionState> {
-        stateRelay
+        _ = setup
+        return stateRelay
             .observeOn(MainScheduler.instance)
             .asObservable()
     }
+    
+    private lazy var setup: Void = {
+        deselectedTrigger
+            .map { return .deselected }
+            .bindAndCatch(to: stateRelay)
+            .disposed(by: disposeBag)
+        
+        selectedIndexRelay
+            .map { return .selected($0) }
+            .bindAndCatch(to: stateRelay)
+            .disposed(by: disposeBag)
+    }()
     
     private let disposeBag = DisposeBag()
     private let stateRelay = BehaviorRelay<AssetLineChartInteractionState>(value: .deselected)
@@ -32,19 +45,6 @@ final class AssetLineChartUserInteractor: AssetLineChartUserInteracting, ChartVi
     
     init(chartView: LineChartView) {
         chartView.delegate = self
-        setup()
-    }
-    
-    private func setup() {
-        deselectedTrigger
-            .map { .deselected }
-            .bindAndCatch(to: stateRelay)
-            .disposed(by: disposeBag)
-        
-        selectedIndexRelay
-            .map { .selected($0) }
-            .bindAndCatch(to: stateRelay)
-            .disposed(by: disposeBag)
     }
     
     // MARK: - ChartViewDelegate

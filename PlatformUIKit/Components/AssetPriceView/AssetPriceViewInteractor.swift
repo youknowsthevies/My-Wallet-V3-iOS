@@ -17,18 +17,14 @@ public final class AssetPriceViewInteractor: AssetPriceViewInteracting {
     // MARK: - Exposed Properties
     
     public var state: Observable<InteractionState> {
-        stateRelay.asObservable()
+        _ = setup
+        return stateRelay.asObservable()
             .observeOn(MainScheduler.instance)
     }
             
     // MARK: - Private Accessors
     
-    private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
-    private let disposeBag = DisposeBag()
-    
-    // MARK: - Setup
-    
-    public init(historicalPriceProvider: HistoricalFiatPriceServiceAPI) {
+    private lazy var setup: Void = {
         historicalPriceProvider.calculationState
             .map { state -> InteractionState in
                 switch state {
@@ -56,5 +52,16 @@ public final class AssetPriceViewInteractor: AssetPriceViewInteracting {
             .catchErrorJustReturn(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
+    }()
+    
+    private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
+    private let disposeBag = DisposeBag()
+    
+    private let historicalPriceProvider: HistoricalFiatPriceServiceAPI
+    
+    // MARK: - Setup
+    
+    public init(historicalPriceProvider: HistoricalFiatPriceServiceAPI) {
+        self.historicalPriceProvider = historicalPriceProvider
     }
 }

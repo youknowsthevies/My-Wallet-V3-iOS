@@ -15,18 +15,14 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
     // MARK: - Properties
     
     public var state: Observable<AssetPieChart.State.Interaction> {
-        stateRelay
+        _ = setup
+        return stateRelay
             .asObservable()
     }
             
     // MARK: - Private Accessors
     
-    private let stateRelay = BehaviorRelay<AssetPieChart.State.Interaction>(value: .loading)
-    private let disposeBag = DisposeBag()
-
-    // MARK: - Setup
-    
-    public init(balanceProvider: BalanceProviding) {
+    private lazy var setup: Void = {
         Observable
             .combineLatest(balanceProvider.fiatBalances, balanceProvider.fiatBalance)
             .map { (balances, totalBalance) in
@@ -72,5 +68,16 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
             .catchErrorJustReturn(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
+    }()
+    
+    private let stateRelay = BehaviorRelay<AssetPieChart.State.Interaction>(value: .loading)
+    private let disposeBag = DisposeBag()
+    
+    private let balanceProvider: BalanceProviding
+
+    // MARK: - Setup
+    
+    public init(balanceProvider: BalanceProviding) {
+        self.balanceProvider = balanceProvider
     }    
 }
