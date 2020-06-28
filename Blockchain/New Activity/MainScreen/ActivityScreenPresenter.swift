@@ -127,7 +127,7 @@ final class ActivityScreenPresenter {
         interactor
             .selectedData
             .map { SelectionButtonViewModel.LeadingContent.content(from: $0) }
-            .bind(to: selectionButtonViewModel.leadingContentTypeRelay)
+            .bindAndCatch(to: selectionButtonViewModel.leadingContentTypeRelay)
             .disposed(by: disposeBag)
         
         let titleObservable: Observable<String> = interactor
@@ -144,12 +144,12 @@ final class ActivityScreenPresenter {
             }
         
         titleObservable
-            .bind(to: selectionButtonViewModel.titleRelay)
+            .bindAndCatch(to: selectionButtonViewModel.titleRelay)
             .disposed(by: disposeBag)
         
         titleObservable
             .map { value in .id("\(AccessibilityId.WalletSelectorView.titleLabel).\(value)") }
-            .bind(to: selectionButtonViewModel.titleAccessibilityRelay)
+            .bindAndCatch(to: selectionButtonViewModel.titleAccessibilityRelay)
             .disposed(by: disposeBag)
         
         interactor
@@ -170,7 +170,7 @@ final class ActivityScreenPresenter {
                     )
                 }
             }
-            .bind(to: selectionButtonViewModel.trailingImageViewContentRelay)
+            .bindAndCatch(to: selectionButtonViewModel.trailingImageViewContentRelay)
             .disposed(by: disposeBag)
         
         let subtitleObservable: Observable<String> = Observable.combineLatest(
@@ -184,12 +184,12 @@ final class ActivityScreenPresenter {
         }
         
         subtitleObservable
-            .bind(to: selectionButtonViewModel.subtitleRelay)
+            .bindAndCatch(to: selectionButtonViewModel.subtitleRelay)
             .disposed(by: disposeBag)
         
         subtitleObservable
             .map { value in .id("\(AccessibilityId.WalletSelectorView.subtitleLabel).\(value)") }
-            .bind(to: selectionButtonViewModel.subtitleAccessibilityRelay)
+            .bindAndCatch(to: selectionButtonViewModel.subtitleAccessibilityRelay)
             .disposed(by: disposeBag)
 
         selectedModelRelay

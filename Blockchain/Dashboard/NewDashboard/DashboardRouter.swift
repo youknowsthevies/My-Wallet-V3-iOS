@@ -50,7 +50,7 @@ final class DashboardRouter: Router {
         
         self.custodyActionRouterAPI
             .completionRelay
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.dataProvider.balance.refresh()
             }
             .disposed(by: disposeBag)

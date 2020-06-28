@@ -50,7 +50,7 @@ public final class AssetSparklinePresenter {
                     return .valid(prices: value)
                 }
             }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

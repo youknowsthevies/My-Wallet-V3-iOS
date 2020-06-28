@@ -25,7 +25,7 @@ final class SelectionItemViewInteractor {
         isSelectedRelay
             .filter { $0 }
             .map { _ in item }
-            .bind(to: service.selectedDataRelay)
+            .bindAndCatch(to: service.selectedDataRelay)
             .disposed(by: disposeBag)
     }
 }

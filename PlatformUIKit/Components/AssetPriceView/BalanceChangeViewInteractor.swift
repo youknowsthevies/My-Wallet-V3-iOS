@@ -62,7 +62,7 @@ public final class BalanceChangeViewInteractor: AssetPriceViewInteracting {
                 )
             }
             .catchErrorJustReturn(.loading)
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

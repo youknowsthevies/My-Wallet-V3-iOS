@@ -130,7 +130,7 @@ final class SendInteractor: SendInteracting {
                 return SendInputState(amountCalculationState: amountCalculationState, feeCalculationState: feeCalculationState, sourceAccountState: sourceAccountState, destinationAccountState: destinationAccountState, amountBalanceRatio: amountBalanceRatio)
             }
             .startWith(.empty)
-            .bind(to: inputStateRelay)
+            .bindAndCatch(to: inputStateRelay)
             .disposed(by: disposeBag)
     }
     

@@ -42,7 +42,7 @@ public final class AssetBalanceViewInteractor: AssetBalanceViewInteracting {
                     )
                 }
             }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }
@@ -82,7 +82,7 @@ public final class AssetBalanceTypeViewInteractor: AssetBalanceTypeViewInteracti
                     )
                 }
             }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

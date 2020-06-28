@@ -128,13 +128,13 @@ final class RegisterWalletScreenPresenter {
         
         // Bind state to relay
         stateObservable
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
         
         // Bind state to button state to decide if it's enabled
         stateObservable
             .map { $0.isValid }
-            .bind(to: buttonViewModel.isEnabledRelay)
+            .bindAndCatch(to: buttonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
         // Extract the latest valid values to the interaction layer
@@ -143,13 +143,13 @@ final class RegisterWalletScreenPresenter {
                 guard let email = emailState.value, let password = passwordState.value else { return nil }
                 return .init(email: email, password: password)
             }
-            .bind(to: interactor.contentStateRelay)
+            .bindAndCatch(to: interactor.contentStateRelay)
             .disposed(by: disposeBag)
         
         // Bind taps to the web view
         termsOfUseTextViewModel.tap
             .map { $0.url }
-            .bind(to: webViewLaunchRelay)
+            .bindAndCatch(to: webViewLaunchRelay)
             .disposed(by: disposeBag)
         
         // Bind taps on the main button to wallet creation

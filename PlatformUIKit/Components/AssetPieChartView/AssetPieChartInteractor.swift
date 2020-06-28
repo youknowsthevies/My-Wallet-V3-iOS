@@ -70,7 +70,7 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
                 return .loaded(next: next)
             }
             .catchErrorJustReturn(.loading)
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }    
 }

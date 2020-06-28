@@ -85,7 +85,7 @@ final class SelectionItemViewPresenter {
         )
         
         isSelectedRelay
-            .bind(to: interactor.isSelectedRelay)
+            .bindAndCatch(to: interactor.isSelectedRelay)
             .disposed(by: disposeBag)
         
         isSelected
@@ -97,14 +97,14 @@ final class SelectionItemViewPresenter {
                     accessibility: .id("\(AccessibilityId.selectionImageViewPrefix)\(item.accessibilityId)")
                 )
             }
-            .bind(to: selectionImageRelay)
+            .bindAndCatch(to: selectionImageRelay)
             .disposed(by: disposeBag)
         
         tapRelay
             .withLatestFrom(isSelectedRelay)
             .filter { !$0 }
             .map { !$0 }
-            .bind(to: isSelectedRelay)
+            .bindAndCatch(to: isSelectedRelay)
             .disposed(by: disposeBag)
     }
     

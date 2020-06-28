@@ -32,7 +32,7 @@ final class PreferredCurrencyBadgeInteractor: DefaultBadgeAssetInteractor {
                 return BadgeItem(type: .default, description: title)
             }
             .map { .loaded(next: $0) }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

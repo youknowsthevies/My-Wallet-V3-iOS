@@ -20,7 +20,7 @@ final class RecoveryPhraseView: UIView {
         }
         didSet {
             viewModel.words
-                .bind(to: rx.mnemonicContent)
+                .bindAndCatch(to: rx.mnemonicContent)
                 .disposed(by: disposeBag)
             
             clipboardButtonView.viewModel = viewModel.copyButtonViewModel

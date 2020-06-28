@@ -30,7 +30,7 @@ public final class WalletBalanceView: UIView {
             
             presenter.state
                 .compactMap { $0.value }
-                .bind(to: rx.values)
+                .bindAndCatch(to: rx.values)
                 .disposed(by: disposeBag)
             
             presenter.state

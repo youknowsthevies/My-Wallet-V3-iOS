@@ -92,11 +92,11 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
         sendToWalletViewModel = .primary(with: LocalizationIds.sendToWallet)
         
         swapButtonViewModel.tapRelay
-            .bind(to: stateService.swapRelay)
+            .bindAndCatch(to: stateService.swapRelay)
             .disposed(by: disposeBag)
         
         activityButtonViewModel.tapRelay
-            .bind(to: stateService.activityRelay)
+            .bindAndCatch(to: stateService.activityRelay)
             .disposed(by: disposeBag)
     }
 }

@@ -26,7 +26,7 @@ public final class AssetPieChartView: UIView {
             guard let presenter = presenter else { return }
             presenter.state
                 .compactMap { $0.value }
-                .bind(to: rx.chartData)
+                .bindAndCatch(to: rx.chartData)
                 .disposed(by: disposeBag)
         }
     }

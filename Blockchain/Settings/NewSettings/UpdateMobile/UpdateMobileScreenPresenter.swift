@@ -96,36 +96,36 @@ final class UpdateMobileScreenPresenter {
         
         textField.state
             .compactMap { $0.value }
-            .bind(to: submissionInteractor.contentRelay)
+            .bindAndCatch(to: submissionInteractor.contentRelay)
             .disposed(by: disposeBag)
         
         setupInteractor.state
             .compactMap { $0.value }
             .map { $0.isSMSVerified ? .visible : .hidden }
-            .bind(to: updateVisibilityRelay)
+            .bindAndCatch(to: updateVisibilityRelay)
             .disposed(by: disposeBag)
         
         setupInteractor.state
             .compactMap { $0.value }
             .map { $0.is2FAEnabled ? .visible : .hidden }
-            .bind(to: disable2FASMSVisibilityRelay)
+            .bindAndCatch(to: disable2FASMSVisibilityRelay)
             .disposed(by: disposeBag)
         
         setupInteractor.state
             .compactMap { $0.value }
             .map { !$0.is2FAEnabled }
-            .bind(to: textField.isEnabledRelay)
+            .bindAndCatch(to: textField.isEnabledRelay)
             .disposed(by: disposeBag)
         
         setupInteractor.state
             .compactMap { $0.value }
             .map { !$0.isSMSVerified ? .visible : .hidden }
-            .bind(to: continueVisibilityRelay)
+            .bindAndCatch(to: continueVisibilityRelay)
             .disposed(by: disposeBag)
             
         setupInteractor.state
             .map { !$0.isLoading }
-            .bind(to: textField.isEnabledRelay)
+            .bindAndCatch(to: textField.isEnabledRelay)
             .disposed(by: disposeBag)
         
         setupInteractor.state
@@ -138,12 +138,12 @@ final class UpdateMobileScreenPresenter {
         
         setupInteractor.state
             .compactMap { $0.value?.mobileNumber }
-            .bind(to: textField.textRelay)
+            .bindAndCatch(to: textField.textRelay)
             .disposed(by: disposeBag)
         
         setupInteractor.state
             .map { .init(with: $0) }
-            .bind(to: badgeRelay)
+            .bindAndCatch(to: badgeRelay)
             .disposed(by: disposeBag)
         
     Observable.combineLatest(textField.state, setupInteractor.state)
@@ -156,20 +156,20 @@ final class UpdateMobileScreenPresenter {
             .disposed(by: disposeBag)
         
         continueButtonViewModel.tapRelay
-            .bind(to: submissionInteractor.triggerRelay)
+            .bindAndCatch(to: submissionInteractor.triggerRelay)
             .disposed(by: disposeBag)
         
         updateButtonViewModel.tapRelay
-            .bind(to: submissionInteractor.triggerRelay)
+            .bindAndCatch(to: submissionInteractor.triggerRelay)
             .disposed(by: disposeBag)
         
         submissionInteractor.interactionState
             .map { $0 != .updating }
-            .bind(to: continueButtonViewModel.isEnabledRelay)
+            .bindAndCatch(to: continueButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
         submissionInteractor.interactionState
-            .bind(weak: self, onNext: { (self, state) in
+            .bindAndCatch(weak: self, onNext: { (self, state) in
                 switch state {
                 case .ready:
                     loadingViewPresenting.hide()

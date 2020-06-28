@@ -98,15 +98,15 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
         sendToWalletViewModel = .primary(with: LocalizationConstants.DashboardDetails.sendToWallet)
 
         sendToWalletViewModel.tapRelay
-            .bind(to: stateService.nextRelay)
+            .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: disposeBag)
         sendToWalletViewModel.tapRelay
             .map { _ in AnalyticsEvent.sbTradingWalletClicked(asset: interactor.currency) }
-            .bind(to: analyticsRecorder.recordRelay)
+            .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
 
         activityButtonViewModel.tapRelay
-            .bind(to: stateService.activityRelay)
+            .bindAndCatch(to: stateService.activityRelay)
             .disposed(by: disposeBag)
 
         let isCustodial = interactor.balanceType.isCustodial

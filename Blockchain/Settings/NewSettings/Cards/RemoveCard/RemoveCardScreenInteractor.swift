@@ -67,7 +67,7 @@ final class RemoveCardScreenInteractor {
             .flatMap(weak: self) { (self, cardId) -> Observable<State> in
                 self.delete(cardId: cardId)
             }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
     

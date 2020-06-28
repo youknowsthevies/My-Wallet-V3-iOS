@@ -52,7 +52,7 @@ final class DashboardDetailsCustodialTypePresenter {
         
         custodialFundedObservable
             .map { return $0 ? .show : .none }
-            .bind(to: actionRelay)
+            .bindAndCatch(to: actionRelay)
             .disposed(by: disposeBag)
     }
 }

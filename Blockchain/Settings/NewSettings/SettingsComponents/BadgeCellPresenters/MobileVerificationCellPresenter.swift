@@ -42,7 +42,7 @@ final class MobileVerificationCellPresenter: BadgeCellPresenting {
 
         badgeAssetPresenting.state
             .map { $0.isLoading }
-            .bind(to: isLoadingRelay)
+            .bindAndCatch(to: isLoadingRelay)
             .disposed(by: disposeBag)
     }
 }

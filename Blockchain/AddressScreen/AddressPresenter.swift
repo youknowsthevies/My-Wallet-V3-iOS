@@ -98,12 +98,12 @@ final class AddressPresenter {
         
         // Streams the status to the qr address view model
         status
-            .bind(to: qrAddressViewModel.statusRelay)
+            .bindAndCatch(to: qrAddressViewModel.statusRelay)
             .disposed(by: disposeBag)
         
         status
             .map { $0.isReady }
-            .bind(to: copyViewModel.isEnabledRelay,
+            .bindAndCatch(to: copyViewModel.isEnabledRelay,
                       shareViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
@@ -137,7 +137,7 @@ final class AddressPresenter {
             .withLatestFrom(status)
             .filter { $0.isReady }
             .map { $0.addressContent! }
-            .bind(to: addressShareRelay)
+            .bindAndCatch(to: addressShareRelay)
             .disposed(by: disposeBag)
         
         // Bind any received payment to `statusRelay`

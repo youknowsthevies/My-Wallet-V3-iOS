@@ -47,7 +47,7 @@ final class WebLoginScreenViewController: BaseScreenViewController {
         presenter
             .qrCodeImage
             .asObservable()
-            .bind(to: imageView.rx.image)
+            .bindAndCatch(to: imageView.rx.image)
             .disposed(by: disposeBag)
         presenter.qrCodeVisibility
             .map { $0.isHidden }

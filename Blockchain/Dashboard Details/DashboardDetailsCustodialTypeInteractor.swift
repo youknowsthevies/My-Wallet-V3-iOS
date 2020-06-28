@@ -22,7 +22,7 @@ final class DashboardDetailsCustodialTypeInteractor {
     init(balanceFetcher: CustodialAccountBalanceFetching) {
         balanceFetcher.isFunded
             .asObservable()
-            .bind(to: existanceRelay)
+            .bindAndCatch(to: existanceRelay)
             .disposed(by: disposeBag)
     }
 }

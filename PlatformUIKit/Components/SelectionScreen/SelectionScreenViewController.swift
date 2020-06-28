@@ -74,7 +74,7 @@ public final class SelectionScreenViewController: BaseScreenViewController {
         definesPresentationContext = true
         
         searchController.text
-            .bind(to: presenter.searchTextRelay)
+            .bindAndCatch(to: presenter.searchTextRelay)
             .disposed(by: disposeBag)
     }
     
@@ -118,7 +118,7 @@ public final class SelectionScreenViewController: BaseScreenViewController {
 
         presenter.preselection
             .take(1)
-            .bind(weak: tableView) { (tableView, index) in
+            .bindAndCatch(weak: tableView) { (tableView, index) in
                 tableView.scrollToRow(
                     at: IndexPath(row: index, section: 0),
                     at: .middle,

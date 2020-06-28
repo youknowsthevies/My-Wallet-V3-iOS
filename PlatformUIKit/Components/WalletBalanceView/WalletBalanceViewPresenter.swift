@@ -96,7 +96,7 @@ public final class WalletBalanceViewPresenter {
         /// and bind it to `stateRelay`
         interactor.state
             .map { .init(with: $0, descriptors: descriptors) }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

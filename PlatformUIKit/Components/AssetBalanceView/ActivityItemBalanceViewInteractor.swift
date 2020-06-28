@@ -41,7 +41,7 @@ public final class ActivityItemBalanceViewInteractor: AssetBalanceViewInteractin
                     )
                 }
             }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
     

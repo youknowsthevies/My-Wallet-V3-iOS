@@ -54,7 +54,7 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
             .map { items in items.map { .buy($0) } }
             .map { .loaded(next: $0) }
             .catchErrorJustReturn(.loading)
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
     

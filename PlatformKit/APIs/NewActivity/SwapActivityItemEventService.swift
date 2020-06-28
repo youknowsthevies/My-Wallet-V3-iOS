@@ -8,6 +8,7 @@
 
 import RxRelay
 import RxSwift
+import ToolKit
 
 public class SwapActivityItemEventService: SwapActivityItemEventServiceAPI {
     
@@ -65,7 +66,8 @@ public class SwapActivityItemEventService: SwapActivityItemEventServiceAPI {
             }
             .map { items in items.map { .swap($0) } }
             .map { .loaded(next: $0) }
-            .bind(to: stateRelay)
+            .catchErrorJustReturn(.loaded(next: []))
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()
     

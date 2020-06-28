@@ -43,7 +43,7 @@ public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
             .map { .value($0) }
             .startWith(.calculating)
             .catchErrorJustReturn(.calculating)
-            .bind(to: calculationStateRelay)
+            .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
     }
     

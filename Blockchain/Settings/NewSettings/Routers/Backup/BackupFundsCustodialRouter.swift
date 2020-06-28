@@ -36,7 +36,7 @@ final class BackupFundsCustodialRouter: BackupRouterAPI, Router {
     func start() {
         stateService = BackupRouterStateService(entry: entry)
         stateService.action
-            .bind(weak: self) { (self, action) in
+            .bindAndCatch(weak: self) { (self, action) in
                 switch action {
                 case .previous:
                     self.previous()

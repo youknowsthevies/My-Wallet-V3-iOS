@@ -61,13 +61,13 @@ public final class PasswordTextFieldView: TextFieldView {
         // Bind score color to score label
         self.viewModel.score
             .map { $0.color }
-            .bind(to: passwordStrengthIndicatorView.rx.fillColor)
+            .bindAndCatch(to: passwordStrengthIndicatorView.rx.fillColor)
             .disposed(by: disposeBag)
         
         // Bind score color to score label
         self.viewModel.score
             .map { Float($0.progress) }
-            .bind(to: passwordStrengthIndicatorView.rx.progress)
+            .bindAndCatch(to: passwordStrengthIndicatorView.rx.progress)
             .disposed(by: disposeBag)
     }
 }

@@ -34,7 +34,7 @@ struct SendSourceAccountCellPresenter {
         self.interactor = interactor
         interactor.account
             .map { $0.label }
-            .bind(to: accountRelay)
+            .bindAndCatch(to: accountRelay)
             .disposed(by: disposeBag)
     }
 }

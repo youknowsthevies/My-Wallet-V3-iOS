@@ -69,7 +69,7 @@ final class PendingCardStatusPresenter: PendingStatePresenterAPI {
         case .inactive:
             let button = ButtonViewModel.primary(with: LocalizationConstants.ErrorScreen.button)
             button.tapRelay
-                .bind(weak: self) { (self) in
+                .bindAndCatch(weak: self) { (self) in
                     self.stateService.dismiss()
                 }
                 .disposed(by: disposeBag)
@@ -83,7 +83,7 @@ final class PendingCardStatusPresenter: PendingStatePresenterAPI {
         case .timeout:
             let button = ButtonViewModel.primary(with: LocalizationConstants.ErrorScreen.button)
             button.tapRelay
-                .bind(weak: self) { (self) in
+                .bindAndCatch(weak: self) { (self) in
                     self.stateService.dismiss()
                 }
                 .disposed(by: disposeBag)

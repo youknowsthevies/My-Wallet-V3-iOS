@@ -61,7 +61,7 @@ public class SparklineImagePresenter {
                 return .valid(image: image)
             }
         })
-        .bind(to: stateRelay)
+        .bindAndCatch(to: stateRelay)
         .disposed(by: disposeBag)
         
         stateRelay.compactMap { [weak self] state -> UIImage? in
@@ -69,7 +69,7 @@ public class SparklineImagePresenter {
             guard case let .valid(image) = state else { return nil }
             return image
         }
-        .bind(to: imageRelay)
+        .bindAndCatch(to: imageRelay)
         .disposed(by: disposeBag)
     }
     

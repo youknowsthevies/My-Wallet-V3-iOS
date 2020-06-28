@@ -76,7 +76,7 @@ public final class SettingsService: SettingsServiceAPI {
         
         cachedValue
             .setFetch(weak: self) { (self) -> Single<WalletSettings> in
-                return self.credentials
+                self.credentials
                     .flatMap(weak: self) { (self, credentials) in
                         self.client.settings(
                             by: credentials.guid,

@@ -56,7 +56,7 @@ final class UpdateMobileScreenInteractor {
             })
             .map { _ in .complete }
             .catchErrorJustReturn(.failed)
-            .bind(to: interactionStateRelay)
+            .bindAndCatch(to: interactionStateRelay)
             .disposed(by: disposeBag)
     }
 }

@@ -21,12 +21,12 @@ public final class BadgeTableViewCell: UITableViewCell {
             guard let presenter = presenter else { return }
             presenter.badgeAssetPresenting.state
                 .compactMap { $0 }
-                .bind(to: rx.viewModel)
+                .bindAndCatch(to: rx.viewModel)
                 .disposed(by: disposeBag)
             
             presenter.labelContentPresenting.state
                 .compactMap { $0 }
-                .bind(to: rx.content)
+                .bindAndCatch(to: rx.content)
                 .disposed(by: disposeBag)
             
             accessibility = presenter.accessibility

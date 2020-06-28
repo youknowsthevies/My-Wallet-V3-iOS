@@ -251,7 +251,7 @@ public final class SelectionButtonViewModel: IdentifiableType {
                     return .none
                 }
             }
-            .bind(to: leadingContentRelay)
+            .bindAndCatch(to: leadingContentRelay)
             .disposed(by: disposeBag)
     }
 }

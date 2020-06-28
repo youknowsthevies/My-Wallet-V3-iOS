@@ -89,7 +89,7 @@ final class AssetLineChartTableViewCellPresenter: AssetLineChartTableViewCellPre
             .disposed(by: disposeBag)
         
         windowRelay
-            .bind(to: interactor.window)
+            .bindAndCatch(to: interactor.window)
             .disposed(by: disposeBag)
     }
     

@@ -26,7 +26,7 @@ final class WalletPickerCellInteractorProvider {
     
     init(balanceFetcher: AssetBalanceFetching, currency: CryptoCurrency) {
         interactors(for: currency, balanceFetching: balanceFetcher)
-            .bind(to: interactorsRelay)
+            .bindAndCatch(to: interactorsRelay)
             .disposed(by: disposeBag)
     }
     

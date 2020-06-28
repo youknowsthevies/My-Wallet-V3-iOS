@@ -44,7 +44,7 @@ final class RemoveCardViewController: UIViewController {
         
         presenter.dismissalRelay
             .observeOn(MainScheduler.instance)
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.dismiss(animated: true, completion: nil)
             }
             .disposed(by: disposeBag)

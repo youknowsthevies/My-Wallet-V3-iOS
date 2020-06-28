@@ -47,17 +47,17 @@ final class AssetLineChartTableViewCellInteractor: AssetLineChartTableViewCellIn
         lineChartUserInteractor
             .state
             .map { $0 == .deselected }
-            .bind(to: isDeselectedRelay)
+            .bindAndCatch(to: isDeselectedRelay)
             .disposed(by: disposeBag)
         
         /// Bind window relay to the `PublishRelay<PriceWindow>` on
         /// both the `AssetLineChartInteractor` and the `HistoricalFiatPriceService`.
         window
-            .bind(to: lineChartInteractor.priceWindowRelay)
+            .bindAndCatch(to: lineChartInteractor.priceWindowRelay)
             .disposed(by: disposeBag)
         
         window
-            .bind(to: historicalFiatPriceService.fetchTriggerRelay)
+            .bindAndCatch(to: historicalFiatPriceService.fetchTriggerRelay)
             .disposed(by: disposeBag)
     }
     

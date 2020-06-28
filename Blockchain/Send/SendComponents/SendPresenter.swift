@@ -171,7 +171,7 @@ final class SendPresenter {
         
         interactor.inputState
             .map { NavigationRightButtonUpdate(state: $0) }
-            .bind(to: navigationRightButtonRelay)
+            .bindAndCatch(to: navigationRightButtonRelay)
             .disposed(by: disposeBag)
         
         destinationPresenter.twoFAConfigurationAlertSignal
@@ -181,7 +181,7 @@ final class SendPresenter {
         navigationRightButton
             .filter { $0.indicator.isError }
             .map { _ in AnalyticsEvents.Send.sendFormErrorAppear(asset: interactor.asset) }
-            .bind(to: analyticsRecorder.recordRelay)
+            .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
     }
     

@@ -126,7 +126,7 @@ final class ActivityScreenViewController: BaseScreenViewController {
         })
         
         presenter.sectionsObservable
-            .bind(to: tableView.rx.items(dataSource: dataSource))
+            .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
         
         refreshControl = UIRefreshControl()
@@ -135,7 +135,7 @@ final class ActivityScreenViewController: BaseScreenViewController {
         
         tableView.rx
             .modelSelected(ActivityCellItem.self)
-            .bind(to: presenter.selectedModelRelay)
+            .bindAndCatch(to: presenter.selectedModelRelay)
             .disposed(by: disposeBag)
     }
     

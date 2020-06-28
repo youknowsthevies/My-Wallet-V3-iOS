@@ -73,7 +73,7 @@ public final class AssetBalanceFetcher: AssetBalanceFetching {
             .map { .value($0) }
             .startWith(.calculating)
             .catchErrorJustReturn(.calculating)
-            .bind(to: calculationStateRelay)
+            .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
     }
     

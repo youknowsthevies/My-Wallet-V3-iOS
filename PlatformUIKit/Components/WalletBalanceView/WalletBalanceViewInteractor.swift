@@ -55,7 +55,7 @@ public final class WalletBalanceViewInteractor {
                     )
                 }
             }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

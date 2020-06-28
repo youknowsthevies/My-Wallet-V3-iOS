@@ -109,11 +109,11 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
         )
         
         tapRelay
-            .bind(to: titleInteractor.pasteboardTriggerRelay)
+            .bindAndCatch(to: titleInteractor.pasteboardTriggerRelay)
             .disposed(by: disposeBag)
         
         tapRelay
-            .bind(to: descriptionInteractor.pasteboardTriggerRelay)
+            .bindAndCatch(to: descriptionInteractor.pasteboardTriggerRelay)
             .disposed(by: disposeBag)
         
         tapRelay
@@ -127,12 +127,12 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
         tapRelay
             .map { "green-checkmark-bottom-sheet" }
             .map { UIImage(named: $0) }
-            .bind(to: imageRelay)
+            .bindAndCatch(to: imageRelay)
             .disposed(by: disposeBag)
         
         tapRelay
             .map { .affirmativeBackground }
-            .bind(to: backgroundColorRelay)
+            .bindAndCatch(to: backgroundColorRelay)
             .disposed(by: disposeBag)
         
         tapRelay
@@ -141,7 +141,7 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
         
         tapRelay
             .compactMap { input.analyticsEvent }
-            .bind(to: analyticsRecorder.recordRelay)
+            .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
         
         let delay = tapRelay
@@ -154,12 +154,12 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
         delay
             .map { "clipboard" }
             .map { UIImage(named: $0) }
-            .bind(to: imageRelay)
+            .bindAndCatch(to: imageRelay)
             .disposed(by: disposeBag)
 
         delay
             .map { .clear }
-            .bind(to: backgroundColorRelay)
+            .bindAndCatch(to: backgroundColorRelay)
             .disposed(by: disposeBag)
     }
 }

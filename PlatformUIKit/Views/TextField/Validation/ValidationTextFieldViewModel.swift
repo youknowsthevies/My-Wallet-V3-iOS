@@ -54,7 +54,7 @@ public final class ValidationTextFieldViewModel: TextFieldViewModel {
                 guard !$0.value.isEmpty else { return .hidden }
                 return $0.isValid ? .hidden : .visible
             }
-            .bind(to: visibilityRelay)
+            .bindAndCatch(to: visibilityRelay)
             .disposed(by: disposeBag)
     }
 }

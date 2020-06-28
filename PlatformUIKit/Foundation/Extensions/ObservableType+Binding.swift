@@ -11,19 +11,52 @@ import RxCocoa
 import ToolKit
 
 extension ObservableType {
-    public func bind<A: AnyObject>(weak object: A, onNext: @escaping (A, Element) -> Void) -> Disposable {
-        return self
-            .bind { [weak object] element in
+    
+    public func bindAndCatch<A: AnyObject>(
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function,
+        weak object: A,
+        onNext: @escaping (A, Element) -> Void
+    ) -> Disposable {
+        _bind(
+            onNext: { [weak object] element in
                 guard let object = object else { return }
                 onNext(object, element)
-            }
+            },
+            file: file,
+            line: line,
+            function: function
+        )
     }
     
-    public func bind<A: AnyObject>(weak object: A, onNext: @escaping (A) -> Void) -> Disposable {
-        return self
-            .bind { [weak object] element in
+    public func bindAndCatch<A: AnyObject>(
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function,
+        weak object: A,
+        onNext: @escaping (A) -> Void
+    ) -> Disposable {
+        _bind(
+            onNext: { [weak object] element in
                 guard let object = object else { return }
                 onNext(object)
-            }
+            },
+            file: file,
+            line: line,
+            function: function
+        )
+    }
+    
+    private func _bind(
+        onNext: @escaping (Element) -> Void,
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) -> Disposable {
+        self.do(onError: { error in
+            fatalError("Binding error: \(error). file: \(file), line: \(line), function: \(function)")
+        })
+        .bind(onNext: onNext)
     }
 }

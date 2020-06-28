@@ -46,7 +46,7 @@ public final class CollectionTextMatchValidator: TextMatchValidatorAPI {
                 }
             }
             .map { $0 ? .valid : .invalid(reason: invalidReason) }
-            .bind(to: validationStateRelay)
+            .bindAndCatch(to: validationStateRelay)
             .disposed(by: disposeBag)
     }
 }

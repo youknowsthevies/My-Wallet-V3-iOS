@@ -57,7 +57,7 @@ final class UpdateEmailScreenViewController: BaseScreenViewController {
             .disposed(by: disposeBag)
         
         presenter.badgeState
-            .bind(to: rx.badgeViewModel)
+            .bindAndCatch(to: rx.badgeViewModel)
             .disposed(by: disposeBag)
     }
     

@@ -104,7 +104,7 @@ final class CustodyWithdrawalScreenInteractor {
                     return .settingUp
                 }
             }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
         
         let payloadObservable = setupInteractor.state.compactMap { $0.value }
@@ -114,7 +114,7 @@ final class CustodyWithdrawalScreenInteractor {
             .map { value -> (CryptoValue, String) in
                 (value.balance, value.destination)
             }
-            .bind(weak: self, onNext: { (self, values) in
+            .bindAndCatch(weak: self, onNext: { (self, values) in
                 self.submissionInteractor.submitWithdrawal(
                     cryptoValue: values.0,
                     destination: values.1

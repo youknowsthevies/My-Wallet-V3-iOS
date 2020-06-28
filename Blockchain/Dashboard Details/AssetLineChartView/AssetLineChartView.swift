@@ -38,7 +38,7 @@ final class AssetLineChartView: UIView {
             setupLineChartView(presenter.lineChartView)
             
             presenter.lineChartPresenter.state
-                .bind(to: rx.chartState)
+                .bindAndCatch(to: rx.chartState)
                 .disposed(by: disposeBag)
         }
     }

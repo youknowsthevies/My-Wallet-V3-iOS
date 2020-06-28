@@ -31,7 +31,7 @@ public final class LabelTableViewCell: UITableViewCell {
         didSet {
             guard presenter != nil else { return }
             presenter.state
-                .bind(to: rx.titleContent)
+                .bindAndCatch(to: rx.titleContent)
                 .disposed(by: disposeBag)
         }
     }
