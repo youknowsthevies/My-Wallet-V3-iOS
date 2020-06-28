@@ -10,7 +10,7 @@ import NetworkKit
 import RxSwift
 
 public protocol TradingBalanceClientAPI: class {
-    func balance(for currency: String, token: String) -> Single<CustodialBalanceResponse>
+    func balance(for currency: String, token: String) -> Single<CustodialBalanceResponse?>
 }
 
 public final class TradingBalanceClient: TradingBalanceClientAPI {
@@ -35,13 +35,13 @@ public final class TradingBalanceClient: TradingBalanceClientAPI {
 
     // MARK: - TradingBalanceClientAPI
 
-    public func balance(for currency: String, token: String) -> Single<CustodialBalanceResponse> {
+    public func balance(for currency: String, token: String) -> Single<CustodialBalanceResponse?> {
         let path = Path.balance
         let headers = [HttpHeaderField.authorization: token]
         let request = requestBuilder.get(
             path: path,
             headers: headers
         )!
-        return communicator.perform(request: request)
+        return communicator.performOptional(request: request, responseType: CustodialBalanceResponse.self)
     }
 }

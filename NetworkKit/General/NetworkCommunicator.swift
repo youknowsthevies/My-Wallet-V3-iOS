@@ -16,10 +16,8 @@ public protocol NetworkCommunicatorAPI {
     func perform<ResponseType: Decodable, ErrorResponseType: Error & Decodable>(request: NetworkRequest, responseType: ResponseType.Type, errorResponseType: ErrorResponseType.Type) -> Single<Result<ResponseType, ErrorResponseType>>
     func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType>
     func perform<ResponseType: Decodable>(request: NetworkRequest) -> Single<ResponseType>
+    func performOptional<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType?>
 }
-
-// TODO:
-// * Handle network reachability
 
 final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRecordable {
     
@@ -51,7 +49,7 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
     // MARK: - NetworkCommunicatorAPI
     
     public func perform(request: NetworkRequest) -> Completable {
-        return perform(request: request, responseType: EmptyNetworkResponse.self)
+        perform(request: request, responseType: EmptyNetworkResponse.self)
     }
     
     public func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Completable {
@@ -61,7 +59,7 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
     
     @available(*, deprecated, message: "Don't use this")
     public func perform<ResponseType: Decodable, ErrorResponseType: Error & Decodable>(request: NetworkRequest, responseType: ResponseType.Type, errorResponseType: ErrorResponseType.Type) -> Single<Result<ResponseType, ErrorResponseType>> {
-        return execute(request: request)
+        execute(request: request)
             .recordErrors(on: eventRecorder, request: request) { request, error -> AnalyticsEvent? in
                 error.analyticsEvent(for: request) { serverErrorResponse in
                     request.decoder.decodeFailureToString(errorResponse: serverErrorResponse)
@@ -72,11 +70,22 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
     }
     
     public func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType> {
-        return perform(request: request)
+        perform(request: request)
+    }
+    
+    public func performOptional<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType?> {
+        execute(request: request)
+            .recordErrors(on: eventRecorder, request: request) { request, error -> AnalyticsEvent? in
+                error.analyticsEvent(for: request) { serverErrorResponse in
+                    request.decoder.decodeFailureToString(errorResponse: serverErrorResponse)
+                }
+            }
+            .mapRawServerError()
+            .decodeOptional(with: request.decoder)
     }
     
     public func perform<ResponseType: Decodable>(request: NetworkRequest) -> Single<ResponseType> {
-        return execute(request: request)
+        execute(request: request)
             .recordErrors(on: eventRecorder, request: request) { request, error -> AnalyticsEvent? in
                 error.analyticsEvent(for: request) { serverErrorResponse in
                     request.decoder.decodeFailureToString(errorResponse: serverErrorResponse)
@@ -90,7 +99,7 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
     private func execute(request: NetworkRequest) -> Single<
         Result<ServerResponse, NetworkCommunicatorError>
     > {
-        return Single<Result<ServerResponse, NetworkCommunicatorError>>.create(weak: self) { (self, observer) -> Disposable in
+        Single<Result<ServerResponse, NetworkCommunicatorError>>.create(weak: self) { (self, observer) -> Disposable in
             let urlRequest = request.URLRequest
 
             Logger.shared.debug("URLRequest.URL: \(String(describing: urlRequest.url))")
@@ -109,6 +118,10 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
                 }
                 guard (200...299).contains(httpResponse.statusCode) else {
                     observer(.success(.failure(NetworkCommunicatorError.rawServerError(ServerErrorResponse(response: httpResponse, payload: payload)))))
+                    return
+                }
+                if httpResponse.statusCode == 204 {
+                    observer(.success(.success(ServerResponse(response: httpResponse, payload: nil))))
                     return
                 }
                 observer(.success(.success(ServerResponse(response: httpResponse, payload: payload))))
@@ -169,7 +182,7 @@ extension PrimitiveSequence where Trait == SingleTrait, Element == Result<Server
 
 extension PrimitiveSequence where Trait == SingleTrait, Element == Result<ServerResponse, NetworkCommunicatorError> {
     fileprivate func mapRawServerError() -> Single<Result<ServerResponse, ServerErrorResponse>> {
-        return map { result -> Result<ServerResponse, ServerErrorResponse> in
+        map { result -> Result<ServerResponse, ServerErrorResponse> in
             switch result {
             case .success(let networkResponse):
                 return .success(networkResponse)
