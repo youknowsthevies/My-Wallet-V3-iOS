@@ -31,7 +31,8 @@ final class SuggestedAmountsService: SuggestedAmountsServiceAPI {
     // MARK: - Exposed
     
     var calculationState: Observable<SuggestedAmountsCalculationState> {
-        calculationStateRelay.asObservable()
+        _ = setup
+        return calculationStateRelay.asObservable()
     }
         
     // MARK: - Injected
@@ -41,11 +42,28 @@ final class SuggestedAmountsService: SuggestedAmountsServiceAPI {
     
     // MARK: - Accessors
     
-    private let calculationStateRelay = BehaviorRelay<SuggestedAmountsCalculationState>(value: .invalid(.empty))
-    private let fetchTriggerRelay = PublishRelay<Void>()
+    private var calculationStateRelay = BehaviorRelay<SuggestedAmountsCalculationState>(value: .invalid(.empty))
+    private let fetchTriggerRelay: PublishRelay<Void>
     private let reactiveWallet: ReactiveWalletAPI
     private let fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
     private let disposeBag = DisposeBag()
+        
+    private lazy var setup: Void = {
+        Observable
+            .combineLatest(
+                fiatCurrencySettingsService.fiatCurrencyObservable,
+                fetchTriggerRelay.asObservable(),
+                reactiveWallet.waitUntilInitialized
+            )
+            .map { $0.0 }
+            .flatMapLatest(weak: self) { (self, currency) -> Observable<[FiatValue]> in
+                self.fetchSuggestedAmounts(for: currency).asObservable()
+            }
+            .map { SuggestedAmountsCalculationState.value($0) }
+            .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
+            .bind(to: calculationStateRelay)
+            .disposed(by: disposeBag)
+    }()
     
     // MARK: - Setup
     
@@ -57,20 +75,7 @@ final class SuggestedAmountsService: SuggestedAmountsServiceAPI {
         self.reactiveWallet = reactiveWallet
         self.authenticationService = authenticationService
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
-        
-        Observable
-            .combineLatest(
-                fiatCurrencySettingsService.fiatCurrencyObservable,
-                fetchTriggerRelay.asObservable(),
-                reactiveWallet.waitUntilInitialized)
-            .map { $0.0 }
-            .flatMapLatest(weak: self) { (self, currency) -> Observable<[FiatValue]> in
-                self.fetchSuggestedAmounts(for: currency).asObservable()
-            }
-            .map { SuggestedAmountsCalculationState.value($0) }
-            .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
-            .bind(to: calculationStateRelay)
-            .disposed(by: disposeBag)
+        self.fetchTriggerRelay = PublishRelay<Void>()
     }
     
     /// Refreshes the cached data set

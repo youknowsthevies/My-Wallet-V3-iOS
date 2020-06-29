@@ -32,7 +32,8 @@ public class SwapActivityItemEventService: SwapActivityItemEventServiceAPI {
     }
     
     public var state: Observable<ActivityItemEventsLoadingState> {
-        stateRelay.asObservable()
+        _ = setup
+        return stateRelay.asObservable()
     }
     
     public let fetchTriggerRelay = PublishRelay<Void>()
@@ -44,17 +45,12 @@ public class SwapActivityItemEventService: SwapActivityItemEventServiceAPI {
     private let stateRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
     private let disposeBag = DisposeBag()
     
-    // MARK: - Init
-    
-    public init(fetcher: SwapActivityItemEventFetcherAPI,
-                fiatCurrencyProvider: FiatCurrencySettingsServiceAPI) {
-        self.fetcher = fetcher
-        self.fiatCurrencyProvider = fiatCurrencyProvider
-        let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
-        
+    private lazy var setup: Void = {
         let fiatCurrencyCode = fiatCurrencyProvider
             .fiatCurrencyObservable
             .map { $0.code }
+        
+        let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
         
         Observable
             .combineLatest(
@@ -71,6 +67,14 @@ public class SwapActivityItemEventService: SwapActivityItemEventServiceAPI {
             .map { .loaded(next: $0) }
             .bind(to: stateRelay)
             .disposed(by: disposeBag)
+    }()
+    
+    // MARK: - Init
+    
+    public init(fetcher: SwapActivityItemEventFetcherAPI,
+                fiatCurrencyProvider: FiatCurrencySettingsServiceAPI) {
+        self.fetcher = fetcher
+        self.fiatCurrencyProvider = fiatCurrencyProvider
     }
 }
 
