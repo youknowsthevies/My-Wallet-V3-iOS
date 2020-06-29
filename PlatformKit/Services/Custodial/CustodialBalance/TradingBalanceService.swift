@@ -41,9 +41,13 @@ public class TradingBalanceService: TradingBalanceServiceAPI {
                          with token: String) -> Single<TradingAccountBalanceState> {
         client
             .balance(for: currency.code, token: token)
-            .map { $0[currency] }
-            .map { balance in
-                guard let balance = balance else { return .absent }
+            .map { response -> TradingAccountBalanceState in
+                guard let response = response else {
+                    return .absent
+                }
+                guard let balance = response[currency] else {
+                    return .absent
+                }
                 return .present(
                     TradingAccountBalance(
                         currency: currency,

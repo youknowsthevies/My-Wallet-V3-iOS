@@ -39,13 +39,13 @@ public final class CustodialClient: CustodialClientAPI {
     
     // MARK: - TradingBalanceClientAPI
 
-    public func balance(for currency: String, token: String) -> Single<CustodialBalanceResponse> {
+    public func balance(for currency: String, token: String) -> Single<CustodialBalanceResponse?> {
         let path = Path.custodialBalance
         let headers = [HttpHeaderField.authorization: token]
         guard let request = requestBuilder.get(path: path, headers: headers) else {
             return Single.error(ClientError.unknown)
         }
-        return communicator.perform(request: request)
+        return communicator.performOptional(request: request, responseType: CustodialBalanceResponse.self)
     }
     
     // MARK: - CustodyWithdrawalClientAPI
