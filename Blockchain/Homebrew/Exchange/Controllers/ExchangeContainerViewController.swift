@@ -60,6 +60,10 @@ class ExchangeContainerViewController: BaseNavigationController {
                 )
                 guard let rootViewController = storyboard.instantiateInitialViewController() else { return }
                 self.setViewControllers([rootViewController], animated: false)
+            },
+                       onError: { [weak self] error in
+                        guard let self = self else { return }
+                        self.setViewControllers([self.onboardingController], animated: false)
             })
         disposables.insertWithDiscardableResult(disposable)
     }
@@ -83,6 +87,9 @@ class ExchangeContainerViewController: BaseNavigationController {
                 }
                 }, onError: { [weak self] _ in
                     guard let self = self else { return }
+                    self.onboardingController.action = {
+                        KYCCoordinator.shared.start()
+                    }
                     self.setViewControllers([self.onboardingController], animated: false)
                 })
             .disposed(by: bag)
@@ -102,6 +109,9 @@ class ExchangeContainerViewController: BaseNavigationController {
                 self.setupTiersController(pageModel)
             }, onError: { [weak self] _ in
                 guard let self = self else { return }
+                self.onboardingController.action = {
+                    KYCCoordinator.shared.start()
+                }
                 self.setViewControllers([self.onboardingController], animated: false)
             })
             .disposed(by: bag)
@@ -119,6 +129,7 @@ class ExchangeContainerViewController: BaseNavigationController {
         let disposable = coordinator.canSwap()
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
+            .hideOnDisposal(loader: loadingViewPresenter)
             .subscribe(onSuccess: { [weak self] canSwap in
                 guard let this = self else { return }
                 switch canSwap {
@@ -133,9 +144,10 @@ class ExchangeContainerViewController: BaseNavigationController {
                 case false:
                     this.showWelcome()
                 }
-                }, onError: { error in
+                }, onError: { [weak self] error in
                     // TICKET: [IOS-1997] Handle failure state for `canSwap`
-                    Logger.shared.error("Failed to get user: \(error.localizedDescription)")
+                    guard let self = self else { return }
+                    self.setViewControllers([self.onboardingController], animated: false)
             })
         disposables.insertWithDiscardableResult(disposable)
     }
@@ -151,9 +163,6 @@ class ExchangeContainerViewController: BaseNavigationController {
     
     lazy var onboardingController: KYCOnboardingViewController = {
         let controller = KYCOnboardingViewController.makeFromStoryboard()
-        controller.action = {
-            KYCCoordinator.shared.start()
-        }
         return controller
     }()
     
