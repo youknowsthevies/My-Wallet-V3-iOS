@@ -109,11 +109,11 @@ final class SettingsViewController: BaseScreenViewController {
         })
         
         presenter.sectionObservable
-            .bind(to: tableView.rx.items(dataSource: dataSource))
+            .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
         
         tableView.rx.modelSelected(SettingsCellViewModel.self)
-            .bind(weak: self) { (self, model) in
+            .bindAndCatch(weak: self) { (self, model) in
                 model.recordSelection()
                 self.presenter.actionRelay.accept(model.action)
             }

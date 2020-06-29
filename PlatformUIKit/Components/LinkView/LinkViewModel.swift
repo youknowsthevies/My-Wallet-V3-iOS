@@ -74,12 +74,12 @@ public final class LinkViewModel {
                     .url(string: text.button, url: Constant.tapUrl)
                 ]
             }
-            .bind(to: textViewModel.inputsRelay)
+            .bindAndCatch(to: textViewModel.inputsRelay)
             .disposed(by: disposeBag)
         
         textViewModel.inputsRelay
             .mapToVoid()
-            .bind(to: textDidChangeRelay)
+            .bindAndCatch(to: textDidChangeRelay)
             .disposed(by: disposeBag)
     }
 }

@@ -29,7 +29,7 @@ final class PreferredCurrencyBadgePresenter: BadgeAssetPresenting {
         self.interactor = interactor
         interactor.state
             .map { .init(with: $0) }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

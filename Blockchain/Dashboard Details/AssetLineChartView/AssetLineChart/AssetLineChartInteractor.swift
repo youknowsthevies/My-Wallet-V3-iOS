@@ -62,7 +62,7 @@ final class AssetLineChartInteractor: AssetLineChartInteracting {
             .map { .loaded(next: $0) }
             .startWith(.loading)
             .catchErrorJustReturn(.loading)
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

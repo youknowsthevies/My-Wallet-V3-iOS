@@ -78,11 +78,11 @@ final class CustodyInformationScreenPresenter {
         
         okButtonViewModel.tapRelay
             .map { _ in AnalyticsEvent.sbCustodyWalletCardClicked }
-            .bind(to: analyticsRecorder.recordRelay)
+            .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
         
         okButtonViewModel.tapRelay
-            .bind(to: stateService.nextRelay)
+            .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: disposeBag)
     }
     

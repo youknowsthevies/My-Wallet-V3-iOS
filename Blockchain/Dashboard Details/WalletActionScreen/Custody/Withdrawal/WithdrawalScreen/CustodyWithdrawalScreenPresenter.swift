@@ -113,22 +113,22 @@ final class CustodyWithdrawalScreenPresenter {
         
         stateObservable
             .map { $0 == .settingUp ? .visible : .hidden }
-            .bind(to: activityIndicatorVisibilityRelay)
+            .bindAndCatch(to: activityIndicatorVisibilityRelay)
             .disposed(by: disposeBag)
         
         stateObservable
             .map { $0 != .settingUp ? .visible : .hidden }
-            .bind(to: balanceViewVisibilityRelay)
+            .bindAndCatch(to: balanceViewVisibilityRelay)
             .disposed(by: disposeBag)
         
         stateObservable
             .map { $0.isReady }
-            .bind(to: self.sendButtonViewModel.isEnabledRelay)
+            .bindAndCatch(to: self.sendButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
         stateObservable
             .map { $0.isSubmitting }
-            .bind(weak: self, onNext: { (self, value) in
+            .bindAndCatch(weak: self, onNext: { (self, value) in
                 switch value {
                 case true:
                     self.loadingPresenter.show(with: .circle, text: nil)
@@ -161,12 +161,12 @@ final class CustodyWithdrawalScreenPresenter {
                     return .unknown
                 }
             }
-            .bind(to: self.stateService.completionRelay)
+            .bindAndCatch(to: self.stateService.completionRelay)
             .disposed(by: disposeBag)
         
         self.sendButtonViewModel
             .tapRelay
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.analyticsRecorder.record(
                     event: AnalyticsEvent.sbWithdrawalScreenClicked(asset: self.currency)
                 )

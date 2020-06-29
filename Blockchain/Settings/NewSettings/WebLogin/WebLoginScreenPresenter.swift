@@ -115,7 +115,7 @@ final class WebLoginScreenPresenter {
             .tapRelay
             .withLatestFrom(qrCodeVisibilityRelay)
             .map { $0.inverted }
-            .bind(to: qrCodeVisibilityRelay)
+            .bindAndCatch(to: qrCodeVisibilityRelay)
             .disposed(by: disposeBag)
     }
 }

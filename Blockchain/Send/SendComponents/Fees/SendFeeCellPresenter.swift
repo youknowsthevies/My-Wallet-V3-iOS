@@ -40,7 +40,7 @@ final class SendFeeCellPresenter {
         interactor.calculationState
             .compactMap { $0.value }
             .map { $0.readableFormat }
-            .bind(to: feeRelay)
+            .bindAndCatch(to: feeRelay)
             .disposed(by: disposeBag)
     }
 }

@@ -8,6 +8,7 @@
 
 import RxSwift
 import RxRelay
+import ToolKit
 
 public final class CustodialCryptoBalanceFetcher: CustodialAccountBalanceFetching {
 
@@ -65,7 +66,7 @@ public final class CustodialCryptoBalanceFetcher: CustodialAccountBalanceFetchin
                     .catchErrorJustReturn(nil)
                     .asObservable()
             }
-            .bind(to: balanceRelay)
+            .bindAndCatch(to: balanceRelay)
             .disposed(by: disposeBag)
     }
 }

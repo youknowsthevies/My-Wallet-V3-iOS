@@ -47,7 +47,7 @@ final class SendFeeInteractor: SendFeeInteracting {
                 return .value(FiatCryptoPair(crypto: fee, exchangeRate: rate))
             }
             .startWith(.calculating)
-            .bind(to: calculationStateRelay)
+            .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
     }
 }

@@ -188,7 +188,7 @@ final class CardDetailsScreenPresenter {
                 )
             }
             .map { $0.isValid }
-            .bind(to: isValidRelay)
+            .bindAndCatch(to: isValidRelay)
             .disposed(by: disposeBag)
         
         latestStatesObservable
@@ -200,7 +200,7 @@ final class CardDetailsScreenPresenter {
                     cvv: $0.cvv.value
                 )
             }
-            .bind(to: dataRelay)
+            .bindAndCatch(to: dataRelay)
             .disposed(by: disposeBag)
         
         isValid
@@ -227,12 +227,12 @@ final class CardDetailsScreenPresenter {
             .filter { $0.isFailure }
             .mapToVoid()
             .map { .generic }
-            .bind(to: errorRelay)
+            .bindAndCatch(to: errorRelay)
             .disposed(by: disposeBag)
         
         buttonTapped
             .compactMap { $0.successData }
-            .bind(weak: self) { (self, payload) in
+            .bindAndCatch(weak: self) { (self, payload) in
                 if payload.isExist {
                     self.errorRelay.accept(.cardAlreadySaved)
                 } else {

@@ -115,7 +115,7 @@ public final class AddCardStateService: CardAuthorizationStateServiceAPI {
     public init() {
         previousRelay
             .observeOn(MainScheduler.instance)
-            .bind(weak: self) { (self) in self.previous() }
+            .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
     }
     

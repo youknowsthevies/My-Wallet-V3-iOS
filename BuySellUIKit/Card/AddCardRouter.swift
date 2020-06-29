@@ -62,7 +62,7 @@ public final class AddCardRouter: PlatformUIKit.Router {
             navigationControllerAPI = navigationController
         }
         stateService.action
-            .bind(weak: self) { (self, action) in
+            .bindAndCatch(weak: self) { (self, action) in
                 switch action {
                 case .previous(from: let state):
                     self.previous(from: state)

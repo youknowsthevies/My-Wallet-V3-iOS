@@ -55,13 +55,13 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
         
         self.backupRouterAPI
             .completionRelay
-            .bind(weak: self, onNext: { (self, _) in
+            .bindAndCatch(weak: self, onNext: { (self, _) in
                 self.stateService.nextRelay.accept(())
             })
             .disposed(by: disposeBag)
         
         self.custodyWithdrawalRouter.completionRelay
-            .bind(to: completionRelay)
+            .bindAndCatch(to: completionRelay)
             .disposed(by: disposeBag)
     }
     
@@ -72,7 +72,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
         self.stateService = CustodyActionStateService()
         
         stateService.action
-            .bind(weak: self) { (self, action) in
+            .bindAndCatch(weak: self) { (self, action) in
                 switch action {
                 case .previous:
                     self.previous()

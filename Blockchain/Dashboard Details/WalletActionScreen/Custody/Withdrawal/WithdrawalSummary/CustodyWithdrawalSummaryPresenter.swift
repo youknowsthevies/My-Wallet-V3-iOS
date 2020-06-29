@@ -143,7 +143,7 @@ final class CustodyWithdrawalSummaryPresenter {
         }
         
         actionViewModel.tapRelay
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.stateService.nextRelay.accept(())
             }
             .disposed(by: disposeBag)

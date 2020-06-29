@@ -33,7 +33,7 @@ final class UpdateMobileRouter: Router {
     func start() {
         stateService = UpdateMobileRouterStateService()
         stateService.action
-            .bind(weak: self) { (self, action) in
+            .bindAndCatch(weak: self) { (self, action) in
                 switch action {
                 case .previous:
                     self.previous()

@@ -127,7 +127,7 @@ public class TextFieldView: UIView {
         
         /// Bind `accessoryContentType`
         viewModel.accessoryContentType
-            .bind(to: rx.accessoryContentType)
+            .bindAndCatch(to: rx.accessoryContentType)
             .disposed(by: disposeBag)
 
         /// Bind `isSecure`
@@ -159,13 +159,13 @@ public class TextFieldView: UIView {
         viewModel.text
             .asObservable()
             .take(1)
-            .bind(to: textField.rx.text)
+            .bindAndCatch(to: textField.rx.text)
             .disposed(by: disposeBag)
 
         // Take all values emitted by `originalText`
         viewModel.originalText
             .compactMap { $0 }
-            .bind(to: textField.rx.text)
+            .bindAndCatch(to: textField.rx.text)
             .disposed(by: disposeBag)
 
         viewModel.mode
@@ -173,12 +173,12 @@ public class TextFieldView: UIView {
             .disposed(by: disposeBag)
 
         viewModel.isEnabled
-            .bind(to: textField.rx.isEnabled)
+            .bindAndCatch(to: textField.rx.isEnabled)
             .disposed(by: disposeBag)
         
         if viewModel.type == .newPassword || viewModel.type == .confirmNewPassword {
             textField.rx.text.orEmpty
-                .bind(weak: self) { [weak viewModel] (self, text) in
+                .bindAndCatch(weak: self) { [weak viewModel] (self, text) in
                     guard !self.textField.isFirstResponder else { return }
                     viewModel?.textFieldEdited(with: text)
                 }

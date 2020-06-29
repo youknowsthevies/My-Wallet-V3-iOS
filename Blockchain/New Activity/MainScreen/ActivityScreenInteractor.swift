@@ -100,7 +100,7 @@ final class ActivityScreenInteractor {
             .map { .init(with: $0, exchangeProviding: serviceContainer.exchangeProviding) }
             .startWith(.calculating)
             .catchErrorJustReturn(.invalid(.empty))
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
     

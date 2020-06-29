@@ -80,21 +80,21 @@ final class SendAmountCellPresenter {
         
         fiatCurrencyService.fiatCurrencyObservable
             .map { $0.code }
-            .bind(to: fiatNameRelay)
+            .bindAndCatch(to: fiatNameRelay)
             .disposed(by: disposeBag)
         
         // Bind taps on max spendable amount to crypto
         spendableBalancePresenter.spendableBalanceTap
             .map { $0.crypto }
             .map { $0.toDisplayString(includeSymbol: false) }
-            .bind(to: cryptoValueRelay)
+            .bindAndCatch(to: cryptoValueRelay)
             .disposed(by: disposeBag)
         
         // Bind taps on max spendable amount to fiat
         spendableBalancePresenter.spendableBalanceTap
             .map { $0.fiat }
             .map { $0.toDisplayString(includeSymbol: false) }
-            .bind(to: fiatValueRelay)
+            .bindAndCatch(to: fiatValueRelay)
             .disposed(by: disposeBag)
         
         let asset = interactor.asset
@@ -127,7 +127,7 @@ final class SendAmountCellPresenter {
             })
             .map { $0.crypto }
             .map { $0.amount > 0 ? $0.toDisplayString(includeSymbol: false) : "" }
-            .bind(to: cryptoValueRelay)
+            .bindAndCatch(to: cryptoValueRelay)
             .disposed(by: disposeBag)
         
         transferredValue
@@ -139,7 +139,7 @@ final class SendAmountCellPresenter {
             })
             .map { $0.fiat }
             .map { $0.amount > 0 ? $0.toDisplayString(includeSymbol: false) : "" }
-            .bind(to: fiatValueRelay)
+            .bindAndCatch(to: fiatValueRelay)
             .disposed(by: disposeBag)
     }
     

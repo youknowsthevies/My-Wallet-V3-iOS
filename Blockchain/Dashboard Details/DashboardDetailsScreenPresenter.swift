@@ -224,7 +224,7 @@ final class DashboardDetailsScreenPresenter {
                     return .savings(currency)
                 }
             }
-            .bind(to: actionRelay)
+            .bindAndCatch(to: actionRelay)
             .disposed(by: disposeBag)
     }
     
@@ -247,14 +247,14 @@ final class DashboardDetailsScreenPresenter {
                     self.balanceCellPresenter(for: .nonCustodial)
                 )
             }
-            .bind(to: walletBalanceStateRelay)
+            .bindAndCatch(to: walletBalanceStateRelay)
             .disposed(by: disposeBag)
 
         walletBalanceStateRelay
             .filter { $0.isVisible }
             .mapToVoid()
             .map { .show(.nonCustodial) }
-            .bind(to: presentationActionRelay)
+            .bindAndCatch(to: presentationActionRelay)
             .disposed(by: disposeBag)
     }
         
@@ -268,14 +268,14 @@ final class DashboardDetailsScreenPresenter {
                     self.balanceCellPresenter(for: .custodial(.savings))
                 )
             }
-            .bind(to: savingsBalanceStateRelay)
+            .bindAndCatch(to: savingsBalanceStateRelay)
             .disposed(by: disposeBag)
         
         savingsBalanceStateRelay
             .filter { $0.isVisible }
             .mapToVoid()
             .map { .show(.custodial(.savings)) }
-            .bind(to: presentationActionRelay)
+            .bindAndCatch(to: presentationActionRelay)
             .disposed(by: disposeBag)
     }
     
@@ -289,14 +289,14 @@ final class DashboardDetailsScreenPresenter {
                     self.balanceCellPresenter(for: .custodial(.trading))
                 )
             }
-            .bind(to: tradingBalanceStateRelay)
+            .bindAndCatch(to: tradingBalanceStateRelay)
             .disposed(by: disposeBag)
         
         tradingBalanceStateRelay
             .filter { $0.isVisible }
             .mapToVoid()
             .map { .show(.custodial(.trading)) }
-            .bind(to: presentationActionRelay)
+            .bindAndCatch(to: presentationActionRelay)
             .disposed(by: disposeBag)
     }
     

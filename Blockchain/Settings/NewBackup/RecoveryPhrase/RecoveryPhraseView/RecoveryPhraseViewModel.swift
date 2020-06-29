@@ -49,7 +49,7 @@ class RecoveryPhraseViewModel {
         
         mnemonicComponentsProviding
             .components
-            .bind(to: wordsRelay)
+            .bindAndCatch(to: wordsRelay)
             .disposed(by: disposeBag)
         
         self.mnemonicAPI = mnemonicAPI
@@ -58,7 +58,7 @@ class RecoveryPhraseViewModel {
         copyButtonViewModel.tapRelay
             .withLatestFrom(mnemonicAPI.mnemonic.asObservable())
             .observeOn(MainScheduler.instance)
-            .bind(weak: self) { (self, mnemonic) in
+            .bindAndCatch(weak: self) { (self, mnemonic) in
                 pasteboarding.string = mnemonic
                 
                 let theme = ButtonViewModel.Theme(
@@ -80,7 +80,7 @@ class RecoveryPhraseViewModel {
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
             )
             .observeOn(MainScheduler.instance)
-            .bind(weak: self) { (self, mnemonic) in
+            .bindAndCatch(weak: self) { (self, mnemonic) in
                 let theme = ButtonViewModel.Theme(
                     backgroundColor: .white,
                     contentColor: .primaryButton,

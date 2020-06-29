@@ -37,7 +37,7 @@ final class MobileNumberValidator: TextValidating {
                 self.validate(value: value).asObservable()
             }
             .map { $0 ? .valid : .invalid(reason: nil) }
-            .bind(to: validationStateRelay)
+            .bindAndCatch(to: validationStateRelay)
             .disposed(by: disposeBag)
     }
     

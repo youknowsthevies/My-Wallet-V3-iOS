@@ -113,7 +113,7 @@ public final class PasswordTextFieldViewModel: TextFieldViewModel {
         super.init(with: type, validator: passwordValidator, textMatcher: textMatchValidator, messageRecorder: messageRecorder)
         passwordValidator.score
             .map { Score(score: $0) }
-            .bind(to: scoreRelay)
+            .bindAndCatch(to: scoreRelay)
             .disposed(by: disposeBag)
         
         // Bind score title to score label
@@ -129,7 +129,7 @@ public final class PasswordTextFieldViewModel: TextFieldViewModel {
                 return viewModel
             }
             .map { .badgeLabel($0) }
-            .bind(to: accessoryContentTypeRelay)
+            .bindAndCatch(to: accessoryContentTypeRelay)
             .disposed(by: disposeBag)
     }
 }

@@ -118,7 +118,7 @@ public final class MoneyValueInputScanner {
         self.maxIntegerDigits = maxIntegerDigits
         actionRelay
             .map(scan)
-            .bind(to: inputRelay)
+            .bindAndCatch(to: inputRelay)
             .disposed(by: disposeBag)
         reset()
     }

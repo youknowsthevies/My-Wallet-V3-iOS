@@ -42,12 +42,12 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
             .flatMap(weak: self) { (self, values) -> Observable<Bool> in
                 self.toggleBiometry(values.2, biometryStatus: values.1, isOn: values.0)
             }
-            .bind(to: interactor.switchTriggerRelay)
+            .bindAndCatch(to: interactor.switchTriggerRelay)
             .disposed(by: disposeBag)
         
         viewModel
             .isSwitchedOnRelay
-            .bind(to: interactor.switchTriggerRelay)
+            .bindAndCatch(to: interactor.switchTriggerRelay)
             .disposed(by: disposeBag)
         
         viewModel
@@ -59,14 +59,14 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
             .state
             .compactMap { $0.value }
             .map { $0.isEnabled }
-            .bind(to: viewModel.isEnabledRelay)
+            .bindAndCatch(to: viewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
         interactor
             .state
             .compactMap { $0.value }
             .map { $0.isOn }
-            .bind(to: viewModel.isOnRelay)
+            .bindAndCatch(to: viewModel.isOnRelay)
             .disposed(by: disposeBag)
     }
     

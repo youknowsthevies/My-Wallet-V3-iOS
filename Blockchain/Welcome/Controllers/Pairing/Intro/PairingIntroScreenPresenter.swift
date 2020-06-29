@@ -54,10 +54,10 @@ struct PairingIntroScreenPresenter {
     
     init() {
         primaryButtonViewModel.tapRelay
-            .bind(to: autoPairingNavigationRelay)
+            .bindAndCatch(to: autoPairingNavigationRelay)
             .disposed(by: disposeBag)
         secondaryButtonViewModel.tapRelay
-            .bind(to: manualPairingNavigationRelay)
+            .bindAndCatch(to: manualPairingNavigationRelay)
             .disposed(by: disposeBag)
     }
 }

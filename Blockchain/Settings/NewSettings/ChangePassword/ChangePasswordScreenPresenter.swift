@@ -119,7 +119,7 @@ final class ChangePasswordScreenPresenter {
         
         stateObservable
             .map { $0.isValid }
-            .bind(to: buttonViewModel.isEnabledRelay)
+            .bindAndCatch(to: buttonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
         latestStatesObservable
@@ -128,16 +128,16 @@ final class ChangePasswordScreenPresenter {
                 guard let newPassword = newPasswordState.value else { return nil }
                 return .init(currentPassword: currentPassword, newPassword: newPassword)
             }
-            .bind(to: interactor.contentRelay)
+            .bindAndCatch(to: interactor.contentRelay)
             .disposed(by: disposeBag)
         
         buttonViewModel.tapRelay
-            .bind(to: interactor.triggerRelay)
+            .bindAndCatch(to: interactor.triggerRelay)
             .disposed(by: disposeBag)
         
         interactor.state
             .map { $0.isLoading }
-            .bind(weak: self, onNext: { (self, isLoading) in
+            .bindAndCatch(weak: self, onNext: { (self, isLoading) in
                 switch isLoading {
                 case true:
                     self.loadingViewPresenter.showCircular()
@@ -150,12 +150,12 @@ final class ChangePasswordScreenPresenter {
         interactor.state
             .filter { $0.isComplete }
             .mapToVoid()
-            .bind(to: previousAPI.previousRelay)
+            .bindAndCatch(to: previousAPI.previousRelay)
             .disposed(by: disposeBag)
         
         interactor.state
             .filter { $0 == .incorrectPassword }
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.handleInteraction(error: "Your password is incorrect.")
             }
             .disposed(by: disposeBag)

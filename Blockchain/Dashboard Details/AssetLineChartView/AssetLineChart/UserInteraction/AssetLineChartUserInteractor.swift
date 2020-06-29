@@ -38,12 +38,12 @@ final class AssetLineChartUserInteractor: AssetLineChartUserInteracting, ChartVi
     private func setup() {
         deselectedTrigger
             .map { return .deselected }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
         
         selectedIndexRelay
             .map { return .selected($0) }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
     

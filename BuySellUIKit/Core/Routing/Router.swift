@@ -91,7 +91,7 @@ public final class Router: RouterAPI, PlatformUIKit.Router {
     /// Should be called once
     public func start() {
         stateService.action
-            .bind(weak: self) { (self, action) in
+            .bindAndCatch(weak: self) { (self, action) in
                 switch action {
                 case .previous(let state):
                     self.previous(from: state)
@@ -462,13 +462,13 @@ public final class Router: RouterAPI, PlatformUIKit.Router {
         stopped
             .filter { $0 == .tier2 }
             .mapToVoid()
-            .bind(to: stateService.nextRelay)
+            .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: kycDisposeBag)
         
         stopped
             .filter { $0 != .tier2 }
             .mapToVoid()
-            .bind(to: stateService.previousRelay)
+            .bindAndCatch(to: stateService.previousRelay)
             .disposed(by: kycDisposeBag)
         
         kycRouter.start(from: kycRootViewController, tier: .tier2, parentFlow: .simpleBuy)

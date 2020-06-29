@@ -97,7 +97,7 @@ final class SendDestinationAccountInteractor: SendDestinationAccountInteracting 
         exchangeSelectedRelay
             .filter { !$0 }
             .map { _ in SendDestinationAccountState.invalid(.empty) }
-            .bind(to: accountRelay)
+            .bindAndCatch(to: accountRelay)
             .disposed(by: disposeBag)
     }
     

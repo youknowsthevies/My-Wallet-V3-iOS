@@ -170,14 +170,14 @@ final class BuyCryptoScreenInteractor {
         
         suggestedAmountsService.calculationState
             .compactMap { $0.value }
-            .bind(to: suggestedAmountsRelay)
+            .bindAndCatch(to: suggestedAmountsRelay)
             .disposed(by: disposeBag)
         
         pairsService.fetch()
             .map { .value($0) }
             .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
             .startWith(.invalid(.empty))
-            .bind(to: pairsCalculationStateRelay)
+            .bindAndCatch(to: pairsCalculationStateRelay)
             .disposed(by: disposeBag)
 
         Observable
@@ -191,7 +191,7 @@ final class BuyCryptoScreenInteractor {
                     currency: fiatCurrency
                 )
             }
-            .bind(to: currentAmountRelay)
+            .bindAndCatch(to: currentAmountRelay)
             .disposed(by: disposeBag)
         
         let pairs = pairsCalculationState
@@ -266,7 +266,7 @@ final class BuyCryptoScreenInteractor {
                     .take(1)
                     .map { .empty(currency: $0) }
             }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
     

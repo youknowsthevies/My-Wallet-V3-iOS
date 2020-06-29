@@ -87,7 +87,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
                     .mapToResult()
             }
             .hide(loader: uiUtilityProvider.loader)
-            .bind(weak: self) { (self, result) in
+            .bindAndCatch(weak: self) { (self, result) in
                 switch result {
                 case .success(let data):
                     self.stateService.confirmCheckout(with: data.0, isOrderNew: data.1)
@@ -100,12 +100,12 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
         contentReducer.continueButtonViewModel
             .tapRelay
             .map { _ in AnalyticsEvent.sbCheckoutConfirm }
-            .bind(to: analyticsRecorder.recordRelay)
+            .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
 
         contentReducer.cancelButtonViewModel?
             .tapRelay
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.cancel()
             }
             .disposed(by: disposeBag)
@@ -118,12 +118,12 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
                 }
                 return AnalyticsEvent.sbCheckoutCancel
             }
-            .bind(to: analyticsRecorder.recordRelay)
+            .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
 
         contentReducer.transferDetailsButtonViewModel?
             .tapRelay
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.stateService.transferDetails(with: self.interactor.checkoutData)
             }
             .disposed(by: disposeBag)

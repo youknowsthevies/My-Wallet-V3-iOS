@@ -81,17 +81,17 @@ final class PasswordRequiredScreenPresenter {
             .share(replay: 1)
             
         stateObservable
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
         
         stateObservable
             .map { $0.isValid }
-            .bind(to: continueButtonViewModel.isEnabledRelay)
+            .bindAndCatch(to: continueButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
         passwordTextFieldViewModel.state
             .compactMap { $0.value }
-            .bind(to: interactor.passwordRelay)
+            .bindAndCatch(to: interactor.passwordRelay)
             .disposed(by: disposeBag)
         
         forgetWalletButtonViewModel.tapRelay

@@ -66,7 +66,7 @@ final class IneligibleCurrencyScreenPresenter {
         
         viewHomeButtonViewModel.tapRelay
             .record(analyticsEvent: AnalyticsEvent.sbUnsupportedViewHome, using: analyticsRecording)
-            .bind(to: dismissalRelay)
+            .bindAndCatch(to: dismissalRelay)
             .disposed(by: disposeBag)
         
         changeCurrencyButtonViewModel = .primary(
@@ -76,7 +76,7 @@ final class IneligibleCurrencyScreenPresenter {
         
         changeCurrencyButtonViewModel.tapRelay
             .record(analyticsEvent: AnalyticsEvent.sbUnsupportedChangeCurrency, using: analyticsRecording)
-            .bind(to: restartRelay)
+            .bindAndCatch(to: restartRelay)
             .disposed(by: disposeBag)
     }
     

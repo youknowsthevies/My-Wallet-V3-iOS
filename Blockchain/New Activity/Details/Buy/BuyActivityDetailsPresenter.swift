@@ -93,7 +93,7 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .compactMap { $0 }
             .map { "\($0.label) \($0.displaySuffix)" }
             .map { .loaded(next: .init(text: $0)) }
-            .bind(to: paymentMethodPresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: paymentMethodPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         cells = [
@@ -119,7 +119,7 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
             interactor
                 .fetchCardDetails(for: paymentMethodId)
                 .asObservable()
-                .bind(to: cardDataRelay)
+                .bindAndCatch(to: cardDataRelay)
                 .disposed(by: disposeBag)
         }
     }

@@ -40,7 +40,7 @@ public final class CardCVVTextFieldViewModel: TextFieldViewModel {
                     return LocalizationConstants.TextField.Title.Card.cvv
                 }
             }
-            .bind(to: titleRelay)
+            .bindAndCatch(to: titleRelay)
             .disposed(by: disposeBag)
     }
 }

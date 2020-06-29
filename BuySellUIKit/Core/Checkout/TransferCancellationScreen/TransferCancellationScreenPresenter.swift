@@ -74,7 +74,7 @@ final class TransferCancellationScreenPresenter {
         )
         
         noButtonViewModel.tapRelay
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.analyticsRecorder.record(event: AnalyticsEvent.sbCancelOrderGoBack)
                 self.stateService.previousRelay.accept(())
             }
@@ -97,7 +97,7 @@ final class TransferCancellationScreenPresenter {
         cancellationResult
             .filter { $0.isSuccess }
             .mapToVoid()
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.analyticsRecorder.record(event: AnalyticsEvent.sbCancelOrderConfirmed)
                 self.stateService.nextRelay.accept(())
             }
@@ -105,13 +105,13 @@ final class TransferCancellationScreenPresenter {
 
         cancellationResult
             .mapToVoid()
-            .bind(to: dismissalRelay)
+            .bindAndCatch(to: dismissalRelay)
             .disposed(by: disposeBag)
             
         cancellationResult
             .filter { $0.isFailure }
             .mapToVoid()
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.cancellationDidFail()
             }
             .disposed(by: disposeBag)

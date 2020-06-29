@@ -77,7 +77,7 @@ final class ActivityServiceContainer: ActivityServiceContaining {
                     return activityProviding[currency].buy.state
                 }
             }
-            .bind(to: eventsRelay)
+            .bindAndCatch(to: eventsRelay)
             .disposed(by: disposeBag)
     }
 }

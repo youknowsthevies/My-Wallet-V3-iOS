@@ -22,7 +22,7 @@ final class SwitchTableViewCell: UITableViewCell {
             switchView.viewModel = presenter.switchViewPresenting.viewModel
             presenter.labelContentPresenting.state
                 .compactMap { $0 }
-                .bind(to: rx.content)
+                .bindAndCatch(to: rx.content)
                 .disposed(by: disposeBag)
             
             accessibility = presenter.accessibility

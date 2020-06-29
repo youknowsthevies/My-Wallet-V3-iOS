@@ -175,7 +175,7 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
         itemRelay
             .map { $0?.transactionHash }
             .mapToLabelContentStateInteraction()
-            .bind(to: orderIDPresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: orderIDPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
@@ -184,68 +184,68 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .map(weak: self) { (self, _) in
                 [self.statusBadge]
             }
-            .bind(to: badgesModel.badgesRelay)
+            .bindAndCatch(to: badgesModel.badgesRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .map { $0?.cryptoAmount }
             .mapToLabelContentStateInteraction()
-            .bind(to: cryptoAmountLabelPresenter.interactor.stateRelay)
+            .bindAndCatch(to: cryptoAmountLabelPresenter.interactor.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .map { $0?.dateCreated }
             .mapToLabelContentStateInteraction()
-            .bind(to: dateCreatedPresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: dateCreatedPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .map { $0?.amount }
             .mapToLabelContentStateInteraction()
-            .bind(to: amountPresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: amountPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .map { $0?.value }
             .mapToLabelContentStateInteraction()
-            .bind(to: valuePresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: valuePresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .map { $0?.from }
             .mapToLabelContentStateInteraction()
-            .bind(to: fromPresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: fromPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .map { $0?.to }
             .mapToLabelContentStateInteraction()
-            .bind(to: toPresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: toPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .compactMap { $0?.statusBadge }
             .distinctUntilChanged()
             .map { .loaded(next: $0) }
-            .bind(to: statusBadge.interactor.stateRelay)
+            .bindAndCatch(to: statusBadge.interactor.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .map { $0?.memo }
             .mapToLabelContentStateInteraction()
-            .bind(to: memoPresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: memoPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .map { $0?.fee }
             .mapToLabelContentStateInteraction()
-            .bind(to: feePresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: feePresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .distinctUntilChanged()
             .mapToVoid()
-            .bind(to: reloadRelay)
+            .bindAndCatch(to: reloadRelay)
             .disposed(by: disposeBag)
     }
 }

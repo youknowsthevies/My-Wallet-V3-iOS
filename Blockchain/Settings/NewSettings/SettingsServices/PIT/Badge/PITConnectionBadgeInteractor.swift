@@ -19,7 +19,7 @@ final class PITConnectionBadgeInteractor: DefaultBadgeAssetInteractor {
             .hasLinkedPITAccount
             .map { $0 == true ? .connected : .connect }
             .map { .loaded(next: $0) }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

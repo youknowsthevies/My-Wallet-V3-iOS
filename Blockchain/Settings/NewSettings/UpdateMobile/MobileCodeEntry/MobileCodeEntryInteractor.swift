@@ -125,11 +125,11 @@ final class MobileCodeEntryInteractor {
                     return .unknown
                 }
             }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
         
         actionRelay
-            .bind(weak: self) { (self, action) in
+            .bindAndCatch(weak: self) { (self, action) in
                 switch action {
                 case .resend:
                     self.resend()
@@ -140,12 +140,12 @@ final class MobileCodeEntryInteractor {
             .disposed(by: disposeBag)
         
         contentRelay
-            .bind(to: verificationInteractor.contentRelay)
+            .bindAndCatch(to: verificationInteractor.contentRelay)
             .disposed(by: disposeBag)
         
         service.valueObservable
             .compactMap { $0.smsNumber }
-            .bind(to: updateMobileInteractor.contentRelay)
+            .bindAndCatch(to: updateMobileInteractor.contentRelay)
             .disposed(by: disposeBag)
     }
     

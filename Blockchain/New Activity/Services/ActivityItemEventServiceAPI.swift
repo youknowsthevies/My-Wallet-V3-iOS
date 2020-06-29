@@ -61,7 +61,7 @@ final class ActivityItemEventService: ActivityItemEventServiceAPI {
                 [values.0, values.1, values.2].reduce()
             }
             .catchErrorJustReturn(.loading)
-            .bind(to: activityLoadingStateRelay)
+            .bindAndCatch(to: activityLoadingStateRelay)
             .disposed(by: disposeBag)
     }()
     

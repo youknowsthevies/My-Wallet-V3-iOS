@@ -8,6 +8,7 @@
 
 import RxRelay
 import RxSwift
+import ToolKit
 
 public class TransactionalActivityItemEventService: TransactionalActivityItemEventServiceAPI {
     
@@ -58,7 +59,7 @@ public class TransactionalActivityItemEventService: TransactionalActivityItemEve
             .map { items in items.map { ActivityItemEvent.transactional($0) } }
             .map { .loaded(next: $0) }
             .catchErrorJustReturn(.loading)
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

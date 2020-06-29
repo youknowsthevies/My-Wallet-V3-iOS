@@ -93,17 +93,17 @@ final class PasswordScreenPresenter {
             .share(replay: 1)
             
         stateObservable
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
         
         stateObservable
             .map { $0.isValid }
-            .bind(to: buttonViewModel.isEnabledRelay)
+            .bindAndCatch(to: buttonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
         textFieldViewModel.state
             .compactMap { $0.value }
-            .bind(to: interactor.passwordRelay)
+            .bindAndCatch(to: interactor.passwordRelay)
             .disposed(by: disposeBag)
         
         buttonViewModel.tapRelay

@@ -213,7 +213,7 @@ final class PinScreenPresenter {
         
         // Bind PIN length to fill count
         digitPadViewModel.valueLengthObservable
-            .bind(to: securePinViewModel.fillCountRelay)
+            .bindAndCatch(to: securePinViewModel.fillCountRelay)
             .disposed(by: disposeBag)
         
         // Get the pin string once it's filled, map it to `Pin`, unwrap it.
@@ -225,7 +225,7 @@ final class PinScreenPresenter {
         
         // Bind pin processing to pin relay
         pinProcessingObservable
-            .bind(to: pin)
+            .bindAndCatch(to: pin)
             .disposed(by: disposeBag)
         
         // Bind tapping on the biometrics button to authentication using biometrics

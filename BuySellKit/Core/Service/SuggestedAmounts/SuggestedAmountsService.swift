@@ -61,7 +61,7 @@ final class SuggestedAmountsService: SuggestedAmountsServiceAPI {
             }
             .map { SuggestedAmountsCalculationState.value($0) }
             .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
-            .bind(to: calculationStateRelay)
+            .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
     }()
     

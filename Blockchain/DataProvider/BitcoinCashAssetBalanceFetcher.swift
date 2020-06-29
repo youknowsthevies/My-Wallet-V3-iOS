@@ -50,7 +50,7 @@ final class BitcoinCashAssetBalanceFetcher: AccountBalanceFetching {
             .flatMapLatest(weak: self) { (self, _) in
                 return self.balance.asObservable()
             }
-            .bind(to: balanceRelay)
+            .bindAndCatch(to: balanceRelay)
             .disposed(by: disposeBag)
     }
 }

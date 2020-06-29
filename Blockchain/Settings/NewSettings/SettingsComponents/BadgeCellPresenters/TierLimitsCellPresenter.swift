@@ -38,7 +38,7 @@ final class TierLimitsCellPresenter: BadgeCellPresenting {
         )
         badgeAssetPresenting.state
             .map { $0.isLoading }
-            .bind(to: isLoadingRelay)
+            .bindAndCatch(to: isLoadingRelay)
             .disposed(by: disposeBag)
     }
 }
