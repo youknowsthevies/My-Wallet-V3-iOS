@@ -26,6 +26,11 @@ public final class StellarTransactionalActivityItemEventsService: TransactionalA
     public func fetchTransactionalActivityEvents(token: String?, limit: Int) -> Single<PageModel> {
         transactionService
             .fetchTransactions(token: token, size: limit)
+            .catchError { (error) -> Single<StellarHistoricalTransactionService.PageModel> in
+                guard let accountError = error as? StellarAccountError else { return Single.error(error) }
+                guard case .noDefaultAccount = accountError else { return Single.error(accountError) }
+                return Single.just(.init(hasNextPage: false, items: []))
+            }
             .map(weak: self) { (self, output) -> PageResult<TransactionalActivityItemEvent> in
                 let items = output.items.map { $0.activityItemEvent }
                 return PageResult(

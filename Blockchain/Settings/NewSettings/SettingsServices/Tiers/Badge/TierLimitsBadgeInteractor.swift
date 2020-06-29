@@ -19,6 +19,7 @@ final class TierLimitsBadgeInteractor: DefaultBadgeAssetInteractor {
         super.init()
         limitsProviding.tiers
             .map { $0.interactionModel }
+            .catchErrorJustReturn(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }

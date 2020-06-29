@@ -15,6 +15,7 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
     
     var state: Observable<ActivityItemEventsLoadingState> {
         stateRelay
+            .catchErrorJustReturn(.loaded(next: []))
             .asObservable()
     }
     
@@ -31,7 +32,9 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
     }
     
     var buyActivityObservable: Observable<[BuyActivityItemEvent]> {
-        buyActivityEvents.asObservable()
+        buyActivityEvents
+            .catchErrorJustReturn([])
+            .asObservable()
     }
     
     let fetchTriggerRelay = PublishRelay<Void>()
@@ -53,7 +56,7 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
             .map { $0.0 }
             .map { items in items.map { .buy($0) } }
             .map { .loaded(next: $0) }
-            .catchErrorJustReturn(.loading)
+            .catchErrorJustReturn(.loaded(next: []))
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }

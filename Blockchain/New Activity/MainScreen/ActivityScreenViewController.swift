@@ -60,6 +60,14 @@ final class ActivityScreenViewController: BaseScreenViewController {
         presenter.refresh()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
+            guard let self = self else { return }
+            self.presenter.refresh()
+        }
+    }
+    
     // MARK: - Setup
     
     private func setupNavigationBar() {

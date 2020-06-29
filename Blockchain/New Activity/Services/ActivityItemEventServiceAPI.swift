@@ -60,7 +60,7 @@ final class ActivityItemEventService: ActivityItemEventServiceAPI {
             .map(weak: self) { (self, values) -> ActivityItemEventsLoadingState in
                 [values.0, values.1, values.2].reduce()
             }
-            .catchErrorJustReturn(.loading)
+            .catchErrorJustReturn(.loaded(next: []))
             .bindAndCatch(to: activityLoadingStateRelay)
             .disposed(by: disposeBag)
     }()

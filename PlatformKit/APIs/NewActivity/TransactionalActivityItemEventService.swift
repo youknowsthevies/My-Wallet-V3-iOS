@@ -21,6 +21,7 @@ public class TransactionalActivityItemEventService: TransactionalActivityItemEve
                 limit: pageSize
             )
             .map { $0.items }
+            .catchErrorJustReturn([])
     }
     
     public var transactionActivityObservable: Observable<[TransactionalActivityItemEvent]> {
@@ -30,7 +31,7 @@ public class TransactionalActivityItemEventService: TransactionalActivityItemEve
     
     public var state: Observable<ActivityItemEventsLoadingState> {
         stateRelay
-            .catchErrorJustReturn(.loading)
+            .catchErrorJustReturn(.loaded(next: []))
             .asObservable()
     }
     
@@ -58,7 +59,7 @@ public class TransactionalActivityItemEventService: TransactionalActivityItemEve
             }
             .map { items in items.map { ActivityItemEvent.transactional($0) } }
             .map { .loaded(next: $0) }
-            .catchErrorJustReturn(.loading)
+            .catchErrorJustReturn(.loaded(next: []))
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }

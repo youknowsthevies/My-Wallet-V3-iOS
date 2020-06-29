@@ -62,6 +62,7 @@ public class SwapActivityItemEventService: SwapActivityItemEventServiceAPI {
             .flatMap(weak: self) { (self, values) -> Observable<[SwapActivityItemEvent]> in
                 self.fetcher.fetchSwapActivityEvents(date: Date(), fiatCurrency: values.0)
                     .asObservable()
+                    .catchErrorJustReturn(.init(hasNextPage: false, items: []))
                     .map { $0.items }
             }
             .map { items in items.map { .swap($0) } }
