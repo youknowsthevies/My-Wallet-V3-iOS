@@ -9,9 +9,10 @@
 import RxSwift
 import RxRelay
 import RxCocoa
+import RxDataSources
 
 /// A view model for selection-view to use throughout the app
-public final class SelectionButtonViewModel {
+public final class SelectionButtonViewModel: IdentifiableType {
 
     // MARK: - Types
 
@@ -20,7 +21,7 @@ public final class SelectionButtonViewModel {
         public let label: String
         
         fileprivate static var empty: AccessibilityContent {
-            return AccessibilityContent(id: "", label: "")
+            AccessibilityContent(id: "", label: "")
         }
 
         fileprivate var accessibility: Accessibility {
@@ -72,6 +73,10 @@ public final class SelectionButtonViewModel {
     private typealias AccessibilityId = Accessibility.Identifier.SelectionButtonView
 
     // MARK: - Public Properties
+
+    public var identity: AnyHashable {
+        titleRelay.value + (subtitleRelay.value ?? "")
+    }
 
     /// Title Relay: title describing the selection
     public let titleRelay = BehaviorRelay<String>(value: "")

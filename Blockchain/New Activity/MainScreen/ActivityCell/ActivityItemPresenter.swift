@@ -14,15 +14,13 @@ import RxRelay
 import RxSwift
 
 final class ActivityItemPresenter: IdentifiableType {
-    
+
     typealias AccessibilityId = Accessibility.Identifier.Activity
-    
-    typealias Identity = String
-    
-    var identity: String {
+
+    var identity: AnyHashable {
         viewModel.identity
     }
-    
+
     let accessibility: Accessibility = .id(AccessibilityId.ActivityCell.view)
     let viewModel: ActivityItemViewModel
     let badgeImageViewModel: BadgeImageViewModel

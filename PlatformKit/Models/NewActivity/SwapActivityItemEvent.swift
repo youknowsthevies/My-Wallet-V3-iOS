@@ -244,6 +244,12 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
     }
 }
 
+extension SwapActivityItemEvent: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(identifier)
+    }
+}
+
 extension SwapActivityItemEvent: Equatable {
     public static func == (lhs: SwapActivityItemEvent, rhs: SwapActivityItemEvent) -> Bool {
         lhs.identifier == rhs.identifier &&

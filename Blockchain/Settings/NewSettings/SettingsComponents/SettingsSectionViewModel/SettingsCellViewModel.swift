@@ -32,14 +32,13 @@ struct SettingsCellViewModel {
 }
 
 extension SettingsCellViewModel: IdentifiableType, Equatable {
-    var identity: String {
+
+    var identity: AnyHashable {
         cellType.identity
     }
     
-    typealias Identity = String
-    
     static func == (lhs: SettingsCellViewModel, rhs: SettingsCellViewModel) -> Bool {
-        return lhs.cellType == rhs.cellType
+        lhs.cellType == rhs.cellType
     }
 }
 

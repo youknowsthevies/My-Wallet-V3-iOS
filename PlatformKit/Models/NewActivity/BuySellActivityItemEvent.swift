@@ -58,3 +58,16 @@ public struct BuyActivityItemEvent: Tokenized {
         self.paymentMethod = paymentMethod
     }
 }
+
+extension BuyActivityItemEvent: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(identifier)
+    }
+}
+
+extension BuyActivityItemEvent: Equatable {
+    public static func == (lhs: BuyActivityItemEvent, rhs: BuyActivityItemEvent) -> Bool {
+        lhs.identifier == rhs.identifier &&
+            lhs.status == rhs.status
+    }
+}

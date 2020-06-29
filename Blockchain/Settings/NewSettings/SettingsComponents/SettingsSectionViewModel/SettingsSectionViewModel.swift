@@ -12,13 +12,12 @@ import ToolKit
 struct SettingsSectionViewModel {
     let sectionType: SettingsSectionType
     var items: [SettingsCellViewModel]
-    var identity: String {
+    var identity: AnyHashable {
         sectionType.rawValue
     }
 }
 
 extension SettingsSectionViewModel: AnimatableSectionModelType {
-    typealias Identity = String
     typealias Item = SettingsCellViewModel
     
     init(original: SettingsSectionViewModel, items: [SettingsCellViewModel]) {

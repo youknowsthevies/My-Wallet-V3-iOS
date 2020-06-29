@@ -7,13 +7,14 @@
 //
 
 public enum ActivityItemEvent: Tokenized {
+
     case swap(SwapActivityItemEvent)
     // Send/Receive
     case transactional(TransactionalActivityItemEvent)
     // Buy
     case buy(BuyActivityItemEvent)
     // TODO: Sell
-    
+
     /// The `Status` of an activity item.
     public enum EventStatus {
         
@@ -63,6 +64,22 @@ public enum ActivityItemEvent: Tokenized {
             return swap.date
         case .transactional(let transaction):
             return transaction.creationDate
+        }
+    }
+}
+
+extension ActivityItemEvent: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        switch self {
+        case .buy(let event):
+            hasher.combine("buy")
+            hasher.combine(event)
+        case .swap(let event):
+            hasher.combine("swap")
+            hasher.combine(event)
+        case .transactional(let event):
+            hasher.combine("transactional")
+            hasher.combine(event)
         }
     }
 }
@@ -118,6 +135,8 @@ extension ActivityItemEvent: Equatable {
         case (.swap(let left), .swap(let right)):
             return left == right
         case (.transactional(let left), .transactional(let right)):
+            return left == right
+        case (.buy(let left), .buy(let right)):
             return left == right
         default:
             return false

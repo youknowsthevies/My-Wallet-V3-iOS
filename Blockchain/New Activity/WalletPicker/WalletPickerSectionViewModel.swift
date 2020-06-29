@@ -10,13 +10,14 @@ import RxDataSources
 
 struct WalletPickerSectionViewModel {
     var items: [WalletPickerCellItem]
-    var identity: String {
-        items.map { $0.identity }.joined()
+    var identity: AnyHashable {
+        // There's only ever one `WalletPickerSectionViewModel`  section
+        // so it must be a static string for an identifier.
+        "WalletPickerSectionViewModel"
     }
 }
 
 extension WalletPickerSectionViewModel: SectionModelType {
-    typealias Identity = String
     typealias Item = WalletPickerCellItem
     
     init(original: WalletPickerSectionViewModel, items: [WalletPickerCellItem]) {

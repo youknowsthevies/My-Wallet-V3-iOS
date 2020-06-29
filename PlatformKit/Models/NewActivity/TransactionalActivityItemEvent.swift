@@ -64,3 +64,8 @@ public struct TransactionalActivityItemEvent: Tokenized {
     }
 }
 
+extension TransactionalActivityItemEvent: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(identifier)
+    }
+}
