@@ -14,7 +14,7 @@ enum CommunicatorMockError: Error {
 }
 
 class MockNetworkCommunicator: NetworkCommunicatorAPI {
-
+    
     var response: (filename: String, bundle: Bundle)? = nil
 
     func perform(request: NetworkRequest) -> Completable {
@@ -35,6 +35,10 @@ class MockNetworkCommunicator: NetworkCommunicatorAPI {
     }
 
     func perform<ResponseType>(request: NetworkRequest) -> Single<ResponseType> where ResponseType : Decodable {
+        decode()
+    }
+    
+    func performOptional<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType?> {
         decode()
     }
 
