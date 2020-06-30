@@ -29,7 +29,7 @@ final class UpdateMobileScreenPresenter {
     }
     
     var barStyle: Screen.Style.Bar {
-        .darkContent(ignoresStatusBar: false, background: .white)
+        .darkContent()
     }
     
     var badgeState: Observable<LoadingState<BadgeItem>> {

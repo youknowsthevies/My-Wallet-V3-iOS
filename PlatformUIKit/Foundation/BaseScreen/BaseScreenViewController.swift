@@ -20,12 +20,10 @@ open class BaseScreenViewController: UIViewController {
      The style of the navigation bar.
      Defines the background, and the content colors.
      */
-    public var barStyle = Screen.Style.Bar.lightContent(ignoresStatusBar: false, background: .clear) {
+    public var barStyle: Screen.Style.Bar = .lightContent() {
         didSet {
-            baseNavigationController?.navigationBar.titleTextAttributes = [
-                .font: UIFont.main(.medium, 16),
-                .foregroundColor: barStyle.contentColor.standardColor
-            ]
+            baseNavigationController?.navigationBar.titleTextAttributes = barStyle.titleTextAttributes
+            baseNavigationController?.navigationBar.isTranslucent = barStyle.isTranslucent
             setBackground(by: barStyle)
         }
     }
@@ -58,7 +56,7 @@ open class BaseScreenViewController: UIViewController {
             } else {
                 itemType = .none
             }
-            leadingBarButtonItem = NavigationBarButtonItem(type: itemType, color: barStyle.contentColor.standardColor)
+            leadingBarButtonItem = NavigationBarButtonItem(type: itemType, color: barStyle.tintColor)
         }
     }
     
@@ -72,7 +70,7 @@ open class BaseScreenViewController: UIViewController {
     public var trailingButtonStyle = Screen.Style.TrailingButton.none {
         didSet {
             let itemType: NavigationBarButtonItem.ItemType
-            var color = barStyle.contentColor.standardColor
+            var color = barStyle.tintColor
             switch trailingButtonStyle {
             case .content(let content):
                 
@@ -89,7 +87,7 @@ open class BaseScreenViewController: UIViewController {
                 itemType = .content(content: trailingButtonStyle.content!) { [weak self] in
                     self?.navigationBarTrailingButtonPressed()
                 }
-                color = .navigationBarCloseButton
+                color = UIColor.NavigationBar.closeButton
             case .none:
                 itemType = .none
             }
@@ -141,7 +139,6 @@ open class BaseScreenViewController: UIViewController {
     
     override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        baseNavigationController?.navigationBar.isTranslucent = true
         set(titleViewStyle: titleViewStyle)
         setBackground(by: barStyle)
         if !barStyle.ignoresStatusBar {
@@ -214,7 +211,7 @@ open class BaseScreenViewController: UIViewController {
     
     public func setStandardDarkContentStyle() {
         let (leading, trailing) = standardNavigationBarButtonStyles
-        set(barStyle: .darkContent(ignoresStatusBar: false, background: .white),
+        set(barStyle: .darkContent(),
             leadingButtonStyle: leading,
             trailingButtonStyle: trailing)
     }

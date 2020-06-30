@@ -70,10 +70,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
     }
     
     private func setupNavigationBar() {
-        set(barStyle: .darkContent(
-                ignoresStatusBar: false,
-                background: .white
-            ),
+        set(barStyle: .darkContent(),
             leadingButtonStyle: .back
         )
         titleViewStyle = .text(value: presenter.title)

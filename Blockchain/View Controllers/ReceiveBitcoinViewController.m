@@ -359,7 +359,7 @@ NSString *const BCFiatCurrencySelected = @"fiat_currency_selected";
     instructionsLabel.textAlignment = NSTextAlignmentCenter;
     instructionsLabel.textColor = UIColor.gray5;
     instructionsLabel.numberOfLines = 0;
-    instructionsLabel.font = [UIFont fontWithName:FONT_GILL_SANS_REGULAR size:FONT_SIZE_SMALL];
+    instructionsLabel.font = [UIFont fontWithName:FONT_MONTSERRAT_REGULAR size:FONT_SIZE_SMALL];
     instructionsLabel.text = [LocalizationConstantsObjcBridge tapToCopyThisAddress];
     [instructionsLabel sizeToFit];
     if (instructionsLabel.frame.size.height > 40) [instructionsLabel changeHeight:40];

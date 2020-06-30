@@ -31,7 +31,7 @@ import PlatformUIKit
     func start() {
         transferAllController = TransferAllFundsViewController()
         let navigationController = BCNavigationController(
-            rootViewController: transferAllController,
+            rootViewController: transferAllController!,
             title: LocalizationConstants.SendAsset.transferAllFunds
         )
         let tabViewController = AppCoordinator.shared.tabControllerManager.tabViewController

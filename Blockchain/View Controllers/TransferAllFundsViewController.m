@@ -10,7 +10,6 @@
 #import "TransferAllFundsBuilder.h"
 #import "TransferAmountTableCell.h"
 #import "BCAddressSelectionView.h"
-#import "BCNavigationController.h"
 #import "Blockchain-Swift.h"
 
 @interface TransferAllFundsViewController () <TransferAllFundsDelegate, UITableViewDataSource, UITableViewDelegate, AddressSelectionDelegate>
@@ -40,8 +39,6 @@
     __weak TransferAllFundsViewController *weakSelf = self;
     
     self.transferPaymentBuilder.on_before_send = ^() {
-        BCNavigationController *navigationController = (BCNavigationController *)weakSelf.navigationController;
-        navigationController.shouldHideBusyView = NO;
         NSString *text = [NSString stringWithFormat:BC_STRING_TRANSFER_ALL_FROM_ADDRESS_ARGUMENT_ARGUMENT, weakSelf.transferPaymentBuilder.transferAllAddressesInitialCount - [weakSelf.transferPaymentBuilder.transferAllAddressesToTransfer count] + 1, weakSelf.transferPaymentBuilder.transferAllAddressesInitialCount];
         LoadingViewPresenter *loadingViewPresenter = [LoadingViewPresenter sharedInstance];
         [loadingViewPresenter showWith:text];
@@ -100,9 +97,6 @@
 
 - (void)didFinishTransferFunds:(NSString *)summary
 {
-    BCNavigationController *navigationController = (BCNavigationController *)self.navigationController;
-    navigationController.shouldHideBusyView = YES;
-
     NSString *message = [self.transferPaymentBuilder.transferAllAddressesTransferred count] > 0 ? [NSString stringWithFormat:@"%@\n\n%@", summary, BC_STRING_PAYMENT_ASK_TO_ARCHIVE_TRANSFERRED_ADDRESSES] : summary;
     
     UIAlertController *alertForPaymentsSent = [UIAlertController alertControllerWithTitle:BC_STRING_PAYMENTS_SENT message:message preferredStyle:UIAlertControllerStyleAlert];

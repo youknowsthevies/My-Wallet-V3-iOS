@@ -27,7 +27,7 @@ final class ChangePasswordScreenPresenter {
         .text(value: LocalizationIDs.title)
     }
     
-    let barStyle = Screen.Style.Bar.lightContent(ignoresStatusBar: false, background: .primary)
+    let barStyle = Screen.Style.Bar.lightContent()
     let descriptionContent: LabelContent
     let currentPasswordTextFieldViewModel: TextFieldViewModel
     let passwordTextFieldViewModel: PasswordTextFieldViewModel

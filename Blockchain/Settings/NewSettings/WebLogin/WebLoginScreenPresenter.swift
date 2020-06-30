@@ -28,7 +28,7 @@ final class WebLoginScreenPresenter {
     }
 
     var barStyle: Screen.Style.Bar {
-        .darkContent(ignoresStatusBar: false, background: .white)
+        .darkContent()
     }
 
     var qrCodeImage: Single<UIImage?> {

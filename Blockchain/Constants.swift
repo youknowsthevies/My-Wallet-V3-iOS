@@ -79,11 +79,6 @@ struct Constants {
         static let montserratSemiBold = "Montserrat-SemiBold"
         static let montserratLight = "Montserrat-Light"
         static let montserratMedium = "Montserrat-Medium"
-        static let montserratSemiExtraLight = "Montserrat-ExtraLight"
-        static let gillSans = "GillSans"
-        static let gillSansLight = "GillSans-Light"
-        static let helveticaNueue = "Helvetica Neue"
-        static let helveticaNueueMedium = "HelveticaNeue-Medium"
     }
     struct Defaults {
         static let NumberOfRecoveryPhraseWords = 12

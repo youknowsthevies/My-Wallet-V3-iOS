@@ -92,7 +92,8 @@ class ExchangeDetailCoordinator: NSObject {
                     .subscribe(onNext: { [weak self] name in
                         guard let self = self else { return }
                         self.interface?.updateBackgroundColor(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1))
-                        self.interface?.updateNavigationBar(appearance: NavigationBarAppearanceLight, color: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1))
+                        self.interface?.updateNavigationBar(appearance: BCNavigationController.Appearance.light,
+                                                            color: UIColor.NavigationBar.DarkContent.background)
                         self.interface?.updateTitle(LocalizationConstants.Swap.confirmSwap)
                         
                         let pair = ExchangeCellModel.TradingPair(
@@ -176,7 +177,8 @@ class ExchangeDetailCoordinator: NSObject {
                     .subscribe(onNext: { [weak self] name in
                         guard let self = self else { return }
                         self.interface?.updateBackgroundColor(.brandPrimary)
-                        self.interface?.updateNavigationBar(appearance: NavigationBarAppearanceDark, color: .brandPrimary)
+                        self.interface?.updateNavigationBar(appearance: BCNavigationController.Appearance.dark,
+                                                            color: UIColor.NavigationBar.LightContent.background)
                         self.interface?.updateTitle(LocalizationConstants.Swap.swapLocked)
                         self.interface?.navigationBarVisibility(.hidden)
                         
@@ -255,8 +257,8 @@ class ExchangeDetailCoordinator: NSObject {
             case .overview(let trade):
                 interface?.updateBackgroundColor(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1))
                 interface?.updateNavigationBar(
-                    appearance: NavigationBarAppearanceDark,
-                    color: trade.alertModel != nil ? #colorLiteral(red: 0.41, green: 0.44, blue: 0.52, alpha: 1) : .brandPrimary
+                    appearance: BCNavigationController.Appearance.dark,
+                    color: trade.alertModel != nil ? #colorLiteral(red: 0.41, green: 0.44, blue: 0.52, alpha: 1) : UIColor.NavigationBar.DarkContent.background
                 )
                 interface?.updateTitle(LocalizationConstants.Swap.orderID + " " + trade.identifier)
                 interface?.navigationBarVisibility(.visible)
@@ -341,7 +343,7 @@ class ExchangeDetailCoordinator: NSObject {
                 delegate?.coordinator(self, updated: current)
                 if trade.alertModel != nil {
                     interface?.updateNavigationBar(
-                        appearance: NavigationBarAppearanceDark,
+                        appearance: BCNavigationController.Appearance.dark,
                         color: #colorLiteral(red: 0.41, green: 0.44, blue: 0.52, alpha: 1)
                     )
                 }

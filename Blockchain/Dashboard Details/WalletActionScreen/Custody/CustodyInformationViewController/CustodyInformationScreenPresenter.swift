@@ -32,7 +32,7 @@ final class CustodyInformationScreenPresenter {
     }
     
     var barStyle: Screen.Style.Bar {
-        .darkContent(ignoresStatusBar: false, background: .white)
+        .darkContent()
     }
     
     private typealias LocalizationID = LocalizationConstants.CustodyWalletInformation

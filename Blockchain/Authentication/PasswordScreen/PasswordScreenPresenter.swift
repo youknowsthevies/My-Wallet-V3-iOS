@@ -24,7 +24,6 @@ final class PasswordScreenPresenter {
     // MARK: - Exposed Properties
     
     let navBarStyle = Screen.Style.Bar.lightContent(
-        ignoresStatusBar: false,
         background: .primary
     )
     let titleStyle: Screen.Style.TitleView

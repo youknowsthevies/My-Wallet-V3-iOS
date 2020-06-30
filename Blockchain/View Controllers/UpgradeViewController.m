@@ -59,7 +59,7 @@
     style.lineHeightMultiple = 1.3;
     style.alignment = NSTextAlignmentCenter;
     
-    UIFont *font = [UIFont fontWithName:FONT_HELVETICA_NUEUE size:FONT_SIZE_MEDIUM];
+    UIFont *font = [UIFont fontWithName:FONT_MONTSERRAT_REGULAR size:FONT_SIZE_MEDIUM];
     
     NSDictionary *attributesDictionary = [NSDictionary dictionaryWithObjects:@[UIColor.brandPrimary, style, font] forKeys:@[NSForegroundColorAttributeName, NSParagraphStyleAttributeName, NSFontAttributeName]];
     

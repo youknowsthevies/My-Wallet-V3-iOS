@@ -77,7 +77,7 @@ final class CardAuthorizationScreenViewController: BaseScreenViewController {
     }
         
     private func setupNavigationBar() {
-        set(barStyle: .darkContent(ignoresStatusBar: false, background: .white))
+        set(barStyle: .darkContent())
         titleViewStyle = .text(value: presenter.title)
     }
 }

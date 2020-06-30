@@ -22,7 +22,7 @@ final class ManualPairingScreenPresenter {
     
     // MARK: - Properties
         
-    let navBarStyle = Screen.Style.Bar.lightContent(ignoresStatusBar: false, background: .primary)
+    let navBarStyle = Screen.Style.Bar.lightContent()
     let titleStyle = Screen.Style.TitleView.text(value: LocalizedString.title)
     let walletIdTextFieldViewModel: TextFieldViewModel
     let passwordTextFieldViewModel: TextFieldViewModel

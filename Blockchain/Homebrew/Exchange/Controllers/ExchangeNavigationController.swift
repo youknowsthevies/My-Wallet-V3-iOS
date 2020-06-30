@@ -8,10 +8,21 @@
 
 import Foundation
 
-class ExchangeNavigationController: BCActionNavigationController {
-    
+class ExchangeNavigationController: BCNavigationController {
+
+    var rightButton: UIButton!
+    var rightButtonTappedBlock: (() -> Void)?
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        rightButton = UIButton(frame: closeButton.frame)
+        rightButton.imageEdgeInsets = closeButton.imageEdgeInsets
+        rightButton.contentHorizontalAlignment = closeButton.contentHorizontalAlignment
+
+        rightButton.backgroundColor = UIColor.clear
+
+        view.addSubview(rightButton)
+        rightButton.addTarget(self, action: #selector(rightButtonTapped), for: .touchUpInside)
         updateNavBarIfNeeded()
     }
 
@@ -43,6 +54,10 @@ class ExchangeNavigationController: BCActionNavigationController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        backButton.isHidden = viewControllers.count == 1
+        rightButton.isHidden = rightButtonTappedBlock == nil
+    }
+
+    @objc func rightButtonTapped() {
+        rightButtonTappedBlock?()
     }
 }

@@ -37,7 +37,7 @@ final class TransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     let navigationBarLeadingButtonAction: DetailsScreen.BarButtonAction = .default
 
     var navigationBarAppearance: DetailsScreen.NavigationBarAppearance {
-        .custom(leading: .none, trailing: .none, barStyle: .darkContent(ignoresStatusBar: false, background: .white))
+        .custom(leading: .none, trailing: .none, barStyle: .darkContent())
     }
 
     let titleViewRelay: BehaviorRelay<Screen.Style.TitleView> = .init(value: .none)

@@ -27,7 +27,7 @@ final class MobileCodeEntryScreenPresenter {
     }
     
     var barStyle: Screen.Style.Bar {
-        .darkContent(ignoresStatusBar: false, background: .white)
+        .darkContent()
     }
     
     let descriptionContent: LabelContent

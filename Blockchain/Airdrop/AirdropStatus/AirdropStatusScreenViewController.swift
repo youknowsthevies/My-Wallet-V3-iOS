@@ -67,7 +67,7 @@ final class AirdropStatusScreenViewController: BaseScreenViewController {
 
     private func setupNavigationBar() {
         titleViewStyle = .text(value: LocalizationConstants.Airdrop.StatusScreen.title)
-        set(barStyle: .lightContent(ignoresStatusBar: false, background: .navigationBarBackground),
+        set(barStyle: .lightContent(),
             leadingButtonStyle: presenter.presentationType.leadingButton)
     }
 

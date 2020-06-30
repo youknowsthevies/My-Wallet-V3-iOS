@@ -43,12 +43,7 @@
 
     self.view.backgroundColor = UIColor.lightGray;
     self.accountsAndAddressesNavigationController = (AccountsAndAddressesNavigationController *)self.navigationController;
-    UILabel *navigationItemTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200, [ConstantsObjcBridge defaultNavigationBarHeight])];
-    navigationItemTitleLabel.font = [UIFont fontWithName:@"Montserrat-Regular" size:23];
-    navigationItemTitleLabel.textAlignment = NSTextAlignmentCenter;
-    navigationItemTitleLabel.textColor = UIColor.whiteColor;
-    navigationItemTitleLabel.text = BC_STRING_ADDRESSES;
-    self.navigationItem.titleView = navigationItemTitleLabel;
+    self.title = BC_STRING_ADDRESSES;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
                                     initWithImage:[UIImage imageNamed:@"close"]
                                     style:UIBarButtonItemStylePlain

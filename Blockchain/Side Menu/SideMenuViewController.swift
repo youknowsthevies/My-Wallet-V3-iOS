@@ -57,8 +57,8 @@ class SideMenuViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .sideMenuNavigationBarBackground
-        tableViewBackgroundView.backgroundColor = .sideMenuNavigationBarBackground
+        view.backgroundColor = UIColor.NavigationBar.LightContent.background
+        tableViewBackgroundView.backgroundColor = UIColor.NavigationBar.LightContent.background
         AppCoordinator.shared.slidingViewController.delegate = self
         tapToCloseGestureRecognizerTabBar = UITapGestureRecognizer(
             target: AppCoordinator.shared,

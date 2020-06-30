@@ -33,11 +33,12 @@ import ToolKit
     @IBOutlet private var label: UILabel!
 
     // Used to open and close the AssetSelectorView.
-    @IBOutlet var chevronButton: UIButton!
+    @IBOutlet private var chevronButton: UIButton!
 
     override func awakeFromNib() {
         super.awakeFromNib()
         chevronButton.accessibilityIdentifier = AccessibilityIdentifiers.AssetSelection.toggleButton
+        contentView.backgroundColor = UIColor.NavigationBar.LightContent.background
     }
     
     @objc func configure(with assetType: LegacyCryptoCurrency, showChevronButton: Bool) {

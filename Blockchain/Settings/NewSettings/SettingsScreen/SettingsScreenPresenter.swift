@@ -29,7 +29,7 @@ final class SettingsScreenPresenter {
     }
     
     var barStyle: Screen.Style.Bar {
-        .lightContent(ignoresStatusBar: false, background: .navigationBarBackground)
+        .lightContent()
     }
     
     // MARK: - Types

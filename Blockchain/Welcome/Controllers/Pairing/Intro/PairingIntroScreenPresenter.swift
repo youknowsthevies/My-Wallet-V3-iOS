@@ -19,7 +19,7 @@ struct PairingIntroScreenPresenter {
     
     // MARK: - Properties
     
-    let navBarStyle = Screen.Style.Bar.lightContent(ignoresStatusBar: false, background: .primary)
+    let navBarStyle = Screen.Style.Bar.lightContent()
     let titleStyle = Screen.Style.TitleView.text(value: LocalizedString.title)
     let instructionViewModels: [InstructionCellViewModel] = {
         let inputs: [[InteractableTextViewModel.Input]] = [

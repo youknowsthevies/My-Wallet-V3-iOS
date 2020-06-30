@@ -69,7 +69,7 @@ class KYCTiersViewController: UIViewController {
         pageModel.trackPresentation()
         
         if let navController = navigationController as? BCNavigationController {
-            navController.headerLabel.text = LocalizationConstants.KYC.accountLimits
+            navController.headerTitle = LocalizationConstants.KYC.accountLimits
         }
         view.backgroundColor = #colorLiteral(red: 0.9607843137, green: 0.968627451, blue: 0.9764705882, alpha: 1)
     }
@@ -376,9 +376,9 @@ extension KYCTiersViewController: NavigatableView {
     var rightNavControllerCTAType: NavigationCTAType {
         .none
     }
-    
-    var navigationDisplayMode: NavigationBarDisplayMode {
-        .dark
+
+    var barStyle: Screen.Style.Bar {
+        .lightContent()
     }
     
     func navControllerLeftBarButtonTapped(_ navController: UINavigationController) {

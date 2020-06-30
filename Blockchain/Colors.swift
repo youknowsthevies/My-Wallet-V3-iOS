@@ -22,8 +22,6 @@ extension UIColor {
 
     static let brandTertiary = #colorLiteral(red: 0.6980392157, green: 0.8352941176, blue: 0.8980392157, alpha: 1)
 
-    static let brandQuaternary = #colorLiteral(red: 0.8549019608, green: 0.9490196078, blue: 0.9843137255, alpha: 1)
-
     static let brandYellow = #colorLiteral(red: 1, green: 0.8117647059, blue: 0.3843137255, alpha: 1)
 
     static let error = #colorLiteral(red: 0.7921568627, green: 0.2274509804, blue: 0.2352941176, alpha: 1)
@@ -48,8 +46,6 @@ extension UIColor {
 
     static let red = #colorLiteral(red: 0.9490196078, green: 0.4235294118, blue: 0.3411764706, alpha: 1)
 
-    static let darkBlue = #colorLiteral(red: 0, green: 0.2588235294, blue: 0.4352941176, alpha: 1)
-
     // MARK: - App-specific Colors
 
     static let grayLine = #colorLiteral(red: 0.8039215686, green: 0.8039215686, blue: 0.8039215686, alpha: 1)
@@ -65,4 +61,6 @@ extension UIColor {
     static let unverified = #colorLiteral(red: 0.86, green: 0.16, blue: 0.16, alpha: 1)
 
     static let disabled = #colorLiteral(red: 0.88, green: 0.88, blue: 0.88, alpha: 1)
+
+    static let navigationBarBackground = UIColor.NavigationBar.LightContent.background
 }

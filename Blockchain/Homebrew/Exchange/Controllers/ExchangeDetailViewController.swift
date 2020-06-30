@@ -345,11 +345,11 @@ extension ExchangeDetailViewController: ExchangeDetailInterface {
         view.backgroundColor = color
     }
 
-    func updateNavigationBar(appearance: BCNavigationBarAppearance, color: UIColor) {
+    func updateNavigationBar(appearance: BCNavigationController.Appearance, color: UIColor) {
         guard let navigationController = self.navigationController as? BCNavigationController else {
             return
         }
-        navigationController.apply(appearance, withBackgroundColor:color)
+        navigationController.apply(appearance: appearance, backgroundColor: color)
     }
     
     func updateTitle(_ value: String) {

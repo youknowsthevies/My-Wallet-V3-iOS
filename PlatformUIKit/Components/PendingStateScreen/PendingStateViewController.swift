@@ -62,7 +62,7 @@ public final class PendingStateViewController: BaseScreenViewController {
 
     private func setupNavigationBar() {
         titleViewStyle = .text(value: presenter.title)
-        set(barStyle: .darkContent(ignoresStatusBar: false, background: .white))
+        set(barStyle: .darkContent())
     }
     
     private func setupCompositeStatusView() {

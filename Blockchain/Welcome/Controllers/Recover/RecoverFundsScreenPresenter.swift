@@ -50,7 +50,7 @@ final class RecoverFundsScreenPresenter {
     
     let continueTappedRelay = PublishRelay<String>()
     
-    let navBarStyle = Screen.Style.Bar.lightContent(ignoresStatusBar: false, background: .primary)
+    let navBarStyle = Screen.Style.Bar.lightContent()
     let titleStyle = Screen.Style.TitleView.text(value: LocalizationConstants.Onboarding.RecoverFunds.title)
     let description = LocalizationConstants.Onboarding.RecoverFunds.description
     let mnemonicTextViewModel = MnemonicTextViewViewModel(

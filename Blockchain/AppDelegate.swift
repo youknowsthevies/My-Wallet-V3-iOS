@@ -106,12 +106,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // MARK: - Global Appearance
         
         //: Navigation Bar
+        let defaultBarStyle = Screen.Style.Bar.lightContent()
         let navigationBarAppearance = UINavigationBar.appearance()
         navigationBarAppearance.shadowImage = UIImage()
         navigationBarAppearance.isTranslucent = false
-        navigationBarAppearance.titleTextAttributes = UINavigationBar.standardTitleTextAttributes
-        navigationBarAppearance.barTintColor = .brandPrimary
-        navigationBarAppearance.tintColor = .white
+        navigationBarAppearance.titleTextAttributes = defaultBarStyle.titleTextAttributes
+        navigationBarAppearance.barTintColor = defaultBarStyle.backgroundColor
+        navigationBarAppearance.tintColor = defaultBarStyle.tintColor
 
         if isDebug {
             let securityReminderKey = UserDefaults.DebugKeys.securityReminderTimer.rawValue

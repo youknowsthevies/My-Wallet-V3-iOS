@@ -8,7 +8,6 @@
 
 #import <PlatformUIKit/PlatformUIKit.h>
 #import "TabControllerManager.h"
-#import "BCNavigationController.h"
 #import "Transaction.h"
 #import "Blockchain-Swift.h"
 

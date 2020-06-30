@@ -42,7 +42,7 @@ final class BackupFundsScreenPresenter {
     }
     
     var barStyle: Screen.Style.Bar {
-        .lightContent(ignoresStatusBar: false, background: .navigationBarBackground)
+        .lightContent()
     }
     
     // MARK: - Public Properites

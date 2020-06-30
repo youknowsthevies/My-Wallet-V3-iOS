@@ -31,7 +31,7 @@ final class UpdateEmailScreenPresenter {
     }
     
     var barStyle: Screen.Style.Bar {
-        .darkContent(ignoresStatusBar: false, background: .white)
+        .darkContent()
     }
     
     var badgeState: Observable<LoadingState<BadgeItem>> {

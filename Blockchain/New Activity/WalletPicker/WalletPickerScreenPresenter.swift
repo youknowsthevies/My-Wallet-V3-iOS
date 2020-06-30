@@ -22,7 +22,7 @@ final class WalletPickerScreenPresenter {
     let titleViewStyle: Screen.Style.TitleView = .text(value: LocalizationConstants.WalletPicker.title)
     
     var barStyle: Screen.Style.Bar {
-        .darkContent(ignoresStatusBar: false, background: .white)
+        .darkContent()
     }
     
     var sectionObservable: Observable<[WalletPickerSectionViewModel]> {

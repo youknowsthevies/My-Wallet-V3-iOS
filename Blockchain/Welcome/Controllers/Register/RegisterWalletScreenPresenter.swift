@@ -30,7 +30,7 @@ final class RegisterWalletScreenPresenter {
         }
     }
     
-    let navBarStyle = Screen.Style.Bar.lightContent(ignoresStatusBar: false, background: .primary)
+    let navBarStyle = Screen.Style.Bar.lightContent()
     let emailTextFieldViewModel: TextFieldViewModel
     let passwordTextFieldViewModel: PasswordTextFieldViewModel
     let confirmPasswordTextFieldViewModel: PasswordTextFieldViewModel

@@ -57,9 +57,9 @@ final class CustodyWithdrawalSummaryPresenter {
     
     var barStyle: Screen.Style.Bar {
         if #available(iOS 13.0, *) {
-            return .darkContent(ignoresStatusBar: false, background: .white)
+            return .darkContent()
         } else {
-            return .lightContent(ignoresStatusBar: false, background: .navigationBarBackground)
+            return .lightContent()
         }
     }
     

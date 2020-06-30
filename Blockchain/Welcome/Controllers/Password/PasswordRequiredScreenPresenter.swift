@@ -19,7 +19,7 @@ final class PasswordRequiredScreenPresenter {
         
     // MARK: - Exposed Properties
     
-    let navBarStyle = Screen.Style.Bar.lightContent(ignoresStatusBar: false, background: .primary)
+    let navBarStyle = Screen.Style.Bar.lightContent()
     let titleStyle = Screen.Style.TitleView.text(value: LocalizedString.title)
     let description = LocalizedString.description
     let forgetDescription = LocalizedString.forgetWalletDescription

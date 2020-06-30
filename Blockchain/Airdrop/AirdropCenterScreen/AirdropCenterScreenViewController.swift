@@ -44,7 +44,7 @@ final class AirdropCenterScreenViewController: BaseScreenViewController {
     
     private func setupNavigationBar() {
         titleViewStyle = .text(value: LocalizationConstants.Airdrop.CenterScreen.title)
-        set(barStyle: .lightContent(ignoresStatusBar: false, background: .navigationBarBackground),
+        set(barStyle: .lightContent(),
             leadingButtonStyle: .close)
     }
     

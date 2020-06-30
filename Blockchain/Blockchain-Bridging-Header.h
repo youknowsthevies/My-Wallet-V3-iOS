@@ -9,8 +9,6 @@
 #import "Assets.h"
 #import "BCConfirmPaymentViewModel.h"
 #import "BCModalView.h"
-#import "BCNavigationController.h"
-#import "BCNavigationController.h"
 #import "DebugTableViewController.h"
 #import "ECSlidingViewController.h"
 #import "KeychainItemWrapper+Credentials.h"

@@ -63,9 +63,7 @@ final class ActivityScreenViewController: BaseScreenViewController {
     // MARK: - Setup
     
     private func setupNavigationBar() {
-        set(barStyle: .lightContent(
-                ignoresStatusBar: false,
-                background: .navigationBarBackground),
+        set(barStyle: .lightContent(),
             leadingButtonStyle: .drawer,
             trailingButtonStyle: .qrCode)
         titleViewStyle = .text(value: presenter.title)

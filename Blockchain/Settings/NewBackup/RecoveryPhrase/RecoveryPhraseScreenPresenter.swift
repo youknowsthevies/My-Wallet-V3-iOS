@@ -29,7 +29,7 @@ final class RecoveryPhraseScreenPresenter {
     }
     
     var barStyle: Screen.Style.Bar {
-        .darkContent(ignoresStatusBar: false, background: .white)
+        .darkContent()
     }
     
     // MARK: - View Models

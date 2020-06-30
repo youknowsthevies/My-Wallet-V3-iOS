@@ -669,9 +669,9 @@ extension ExchangeCreateViewController: NavigatableView {
     var rightNavControllerCTAType: NavigationCTAType {
         delegate?.rightNavigationCTAType ?? .help
     }
-    
-    var navigationDisplayMode: NavigationBarDisplayMode {
-        .dark
+
+    var barStyle: Screen.Style.Bar {
+        .lightContent()
     }
     
     func navControllerRightBarButtonTapped(_ navController: UINavigationController) {
