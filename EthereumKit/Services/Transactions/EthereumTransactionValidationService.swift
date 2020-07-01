@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BigInt
 import PlatformKit
 import RxSwift
-import BigInt
 
 public class EthereumTransactionValidationService: ValidateTransactionAPI {
     private let feeService: EthereumFeeServiceAPI
@@ -21,7 +21,7 @@ public class EthereumTransactionValidationService: ValidateTransactionAPI {
     }
     
     public func validateCryptoAmount(amount: Crypto) -> Single<TransactionValidationResult> {
-        return Single.zip(feeService.fees, balance)
+        Single.zip(feeService.fees, balance)
             .flatMap { tuple -> Single<TransactionValidationResult> in
                 let (fee, balanceSigned) = tuple
                 let value: BigUInt = BigUInt(amount.amount)
@@ -45,8 +45,8 @@ public class EthereumTransactionValidationService: ValidateTransactionAPI {
     }
     
     private var balance: Single<CryptoValue> {
-        return repository.currentAssetAccountDetails(fromCache: false).flatMap(weak: self, { (self, details) -> Single<CryptoValue> in
-            return Single.just(details.balance)
+        repository.currentAssetAccountDetails(fromCache: false).flatMap(weak: self, { (self, details) -> Single<CryptoValue> in
+            Single.just(details.balance)
         })
     }
 }

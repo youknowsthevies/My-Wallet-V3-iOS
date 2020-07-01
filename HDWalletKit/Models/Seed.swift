@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import LibWally
 import CommonCryptoKit
+import LibWally
 
 public struct Seed: HexRepresentable {
     

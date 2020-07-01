@@ -36,7 +36,7 @@ public class RequestBuilder {
                     contentType: NetworkRequest.ContentType = .json,
                     decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
                     recordErrors: Bool = false) -> NetworkRequest? {
-        return get(
+        get(
             path: RequestBuilder.path(from: components),
             parameters: parameters,
             headers: headers,
@@ -52,7 +52,7 @@ public class RequestBuilder {
                     contentType: NetworkRequest.ContentType = .json,
                     decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
                     recordErrors: Bool = false) -> NetworkRequest? {
-        return buildRequest(
+        buildRequest(
             method: .get,
             path: path,
             parameters: parameters,
@@ -72,7 +72,7 @@ public class RequestBuilder {
                     contentType: NetworkRequest.ContentType = .json,
                     decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
                     recordErrors: Bool = false) -> NetworkRequest? {
-        return put(
+        put(
             path: RequestBuilder.path(from: components),
             parameters: parameters,
             body: body,
@@ -90,7 +90,7 @@ public class RequestBuilder {
                     contentType: NetworkRequest.ContentType = .json,
                     decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
                     recordErrors: Bool = false) -> NetworkRequest? {
-        return buildRequest(
+        buildRequest(
             method: .put,
             path: path,
             parameters: parameters,
@@ -111,7 +111,7 @@ public class RequestBuilder {
                      contentType: NetworkRequest.ContentType = .json,
                      decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
                      recordErrors: Bool = false) -> NetworkRequest? {
-        return post(
+        post(
             path: RequestBuilder.path(from: components),
             parameters: parameters,
             body: body,
@@ -129,7 +129,7 @@ public class RequestBuilder {
                      contentType: NetworkRequest.ContentType = .json,
                      decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
                      recordErrors: Bool = false) -> NetworkRequest? {
-        return buildRequest(
+        buildRequest(
             method: .post,
             path: path,
             parameters: parameters,
@@ -149,7 +149,7 @@ public class RequestBuilder {
                        contentType: NetworkRequest.ContentType = .json,
                        decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
                        recordErrors: Bool = false) -> NetworkRequest? {
-        return buildRequest(
+        buildRequest(
             method: .delete,
             path: RequestBuilder.path(from: components),
             parameters: parameters,
@@ -161,7 +161,7 @@ public class RequestBuilder {
     }
     
     public static func path(from components: [String] = []) -> String {
-        return components.reduce(into: "") { path, component in
+        components.reduce(into: "") { path, component in
             path += "/\(component)"
         }
     }

@@ -16,6 +16,6 @@ public class BitcoinQRMetadataFactory: CryptoAssetQRMetadataFactory {
     public init() {}
     
     public func create(from account: Account) -> Metadata? {
-        return BitcoinQRMetadata(address: account.publicKey, amount: nil)
+        BitcoinQRMetadata(address: account.publicKey, amount: nil)
     }
 }

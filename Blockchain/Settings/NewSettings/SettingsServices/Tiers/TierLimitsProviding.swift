@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import RxSwift
-import RxRelay
 import PlatformKit
+import RxRelay
+import RxSwift
 
 protocol TierLimitsProviding {
     var tiers: Observable<KYC.UserTiers> { get }
@@ -23,7 +23,7 @@ final class TierLimitsProvider: TierLimitsProviding {
     private let repository: BlockchainDataRepository
     
     var tiers: Observable<KYC.UserTiers> {
-        return Observable.combineLatest(repository.tiers, fetchTriggerRelay).map { $0.0 }
+        Observable.combineLatest(repository.tiers, fetchTriggerRelay).map { $0.0 }
     }
     
     init(repository: BlockchainDataRepository = BlockchainDataRepository.shared) {

@@ -8,8 +8,8 @@
 
 import PlatformKit
 import PlatformUIKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 final class CustodyWithdrawalScreenInteractor {
     
@@ -34,11 +34,11 @@ final class CustodyWithdrawalScreenInteractor {
         case insufficientFunds
         
         var isReady: Bool {
-            return self == .loaded
+            self == .loaded
         }
         
         var isSubmitting: Bool {
-            return self == .submitting
+            self == .submitting
         }
     }
     

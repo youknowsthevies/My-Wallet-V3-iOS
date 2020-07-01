@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import PlatformKit
+import RxRelay
+import RxSwift
 
 /// An extension to `Wallet` which makes wallet fuctionality Rx friendly.
 final class ReactiveWallet: ReactiveWalletAPI {

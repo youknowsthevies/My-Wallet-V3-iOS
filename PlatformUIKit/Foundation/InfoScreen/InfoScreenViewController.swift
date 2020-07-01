@@ -33,7 +33,7 @@ public final class InfoScreenViewController: BaseScreenViewController {
         
     public override func viewDidLoad() {
         super.viewDidLoad()
-        set(barStyle: .darkContent(ignoresStatusBar: false, background: .clear),
+        set(barStyle: .darkContent(background: .clear),
             leadingButtonStyle: .close)
         thumbImageView.set(presenter.imageViewContent)
         titleLabel.content = presenter.titleLabelContent

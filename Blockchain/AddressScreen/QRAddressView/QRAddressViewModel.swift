@@ -7,8 +7,8 @@
 //
 
 import PlatformUIKit
-import RxSwift
 import RxCocoa
+import RxSwift
 
 final class QRAddressViewModel {
     
@@ -19,7 +19,7 @@ final class QRAddressViewModel {
     
     /// The status observable - streams events
     var status: Observable<DisplayAddressStatus> {
-        return statusRelay.asObservable()
+        statusRelay.asObservable()
     }
     
     /// Accepts tap from the view
@@ -32,19 +32,19 @@ final class QRAddressViewModel {
     
     // Address label accessibility
     var addressLabelAccessibility: Accessibility {
-        return Accessibility(id: .value(AccessibilityIdentifiers.Address.addressLabel),
+        Accessibility(id: .value(AccessibilityIdentifiers.Address.addressLabel),
                              hint: .value(LocalizationConstants.Address.Accessibility.addressLabel))
     }
     
     // Address QR image view accessibility
     var addressImageViewAccessibility: Accessibility {
-        return Accessibility(id: .value(AccessibilityIdentifiers.Address.qrImageView),
+        Accessibility(id: .value(AccessibilityIdentifiers.Address.qrImageView),
                              hint: .value(LocalizationConstants.Address.Accessibility.addressImageView))
     }
     
     // Copy button accessibility
     var copyButtonAcessibility: Accessibility {
-        return Accessibility(id: .value(AccessibilityIdentifiers.Address.copyButton),
+        Accessibility(id: .value(AccessibilityIdentifiers.Address.copyButton),
                              hint: .value(LocalizationConstants.Address.Accessibility.copyButton))
     }
     

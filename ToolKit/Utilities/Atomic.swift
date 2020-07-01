@@ -16,7 +16,7 @@ public final class Atomic<Value> {
     
     /// Atomic access to the wrapped value
     public var value: Value {
-        return queue.sync { self._value }
+        queue.sync { self._value }
     }
     
     // MARK: - Private properties

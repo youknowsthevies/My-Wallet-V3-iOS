@@ -6,8 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import stellarsdk
 import PlatformKit
+import stellarsdk
 
 /// We track error types that occur in Swap. This protocol makes getting the error type
 /// simpler regardless of the type of `StellarServiceError`.

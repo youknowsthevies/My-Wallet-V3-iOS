@@ -15,7 +15,7 @@ public protocol TopMostViewControllerProviding: class {
 
 extension UIApplication: TopMostViewControllerProviding {
     public var topMostViewController: UIViewController? {
-        return keyWindow?.topMostViewController
+        keyWindow?.topMostViewController
     }
 }
 
@@ -23,7 +23,7 @@ extension UIApplication: TopMostViewControllerProviding {
 
 extension UIWindow: TopMostViewControllerProviding {
     public var topMostViewController: UIViewController? {
-        return rootViewController?.topMostViewController
+        rootViewController?.topMostViewController
     }
 }
 
@@ -34,7 +34,7 @@ extension UIViewController: TopMostViewControllerProviding {
     /// Returns the top-most visibly presented UIViewController in this UIViewController's hierarchy
     @objc
     public var topMostViewController: UIViewController? {
-        return presentedViewController?.topMostViewController ?? self
+        presentedViewController?.topMostViewController ?? self
     }
 }
 
@@ -42,7 +42,7 @@ extension UIViewController: TopMostViewControllerProviding {
 
 extension UINavigationController {
     override public var topMostViewController: UIViewController? {
-        return self
+        self
     }
 }
 
@@ -52,6 +52,6 @@ extension UIAlertController {
 
     /// Overridden so that UIAlertControllers will never show up as the `topMostViewController`.
     override public var topMostViewController: UIViewController? {
-        return presentedViewController?.topMostViewController
+        presentedViewController?.topMostViewController
     }
 }

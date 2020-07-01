@@ -6,13 +6,13 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import PlatformKit
 @testable import Blockchain
+import PlatformKit
+import RxSwift
 
 class AssetAccountRepositoryMock: Blockchain.AssetAccountRepositoryAPI {
     var accounts: Single<[Blockchain.AssetAccount]> {
-        return .just([])
+        .just([])
     }
 
     var fetchETHHistoryIfNeeded: Single<Void> {
@@ -20,22 +20,22 @@ class AssetAccountRepositoryMock: Blockchain.AssetAccountRepositoryAPI {
     }
 
     func accounts(for assetType: CryptoCurrency) -> Single<[Blockchain.AssetAccount]> {
-        return .just([])
+        .just([])
     }
 
     func accounts(for assetType: CryptoCurrency, fromCache: Bool) -> Single<[Blockchain.AssetAccount]> {
-        return .just([])
+        .just([])
     }
 
     func nameOfAccountContaining(address: String, currencyType: CryptoCurrency) -> Single<String> {
-        return .just("")
+        .just("")
     }
 
     func defaultAccount(for assetType: CryptoCurrency) -> Single<Blockchain.AssetAccount?> {
-        return .just(nil)
+        .just(nil)
     }
 
     func fetchAccounts() -> Single<[Blockchain.AssetAccount]> {
-        return .just([])
+        .just([])
     }
 }

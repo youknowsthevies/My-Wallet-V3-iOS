@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxCocoa
-import RxSwift
 import NetworkKit
 import PlatformKit
+import RxCocoa
+import RxSwift
 
 /// TODO: Refactor and decompose into smaller services
 /// Repository for fetching Blockchain data. Accessing properties in this repository
@@ -35,7 +35,7 @@ class BlockchainDataRepository: DataRepositoryAPI {
     // MARK: - Public Properties
 
     var user: Observable<User> {
-        return nabuUser.map { $0 }
+        nabuUser.map { $0 }
     }
     
     var userSingle: Single<User> {
@@ -45,7 +45,7 @@ class BlockchainDataRepository: DataRepositoryAPI {
     /// An Observable emitting the authenticated NabuUser. This Observable will first emit a value
     /// from the cache, if available, followed by the value over the network.
     var nabuUser: Observable<NabuUser> {
-        return fetchDataStartingWithCache(
+        fetchDataStartingWithCache(
             cachedValue: cachedUser,
             networkValue: fetchNabuUser()
         )
@@ -58,7 +58,7 @@ class BlockchainDataRepository: DataRepositoryAPI {
     /// An Observable emitting the KYC Tiers for the current user. This Observable will
     /// first emit a value from the cache, if available, followed by the value over the network.
     var tiers: Observable<KYC.UserTiers> {
-        return fetchDataStartingWithCache(
+        fetchDataStartingWithCache(
             cachedValue: cachedTiers,
             networkValue: fetchTiers()
         )
@@ -95,7 +95,7 @@ class BlockchainDataRepository: DataRepositoryAPI {
     ///
     /// - Returns: the fetched NabuUser
     func fetchNabuUser() -> Single<NabuUser> {
-        return authenticationService.tokenString.flatMap { token in
+        authenticationService.tokenString.flatMap { token in
             let headers = [HttpHeaderField.authorization: token]
             return KYCNetworkRequest.request(get: .currentUser, headers: headers, type: NabuUser.self)
         }.do(onSuccess: { [weak self] response in
@@ -120,7 +120,7 @@ class BlockchainDataRepository: DataRepositoryAPI {
         cachedValue: BehaviorRelay<ResponseType?>,
         networkValue: Single<ResponseType>
     ) -> Single<ResponseType> {
-        return Single.deferred {
+        Single.deferred {
             guard let cachedValue = cachedValue.value else {
                 return networkValue
             }

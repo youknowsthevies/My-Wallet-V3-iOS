@@ -25,7 +25,7 @@ struct KYCInformationViewConfig {
 
 extension KYCInformationViewModel {
     static func createForUnsupportedCountry(_ country: CountryData) -> KYCInformationViewModel {
-        return KYCInformationViewModel(
+        KYCInformationViewModel(
             image: #imageLiteral(resourceName: "Welcome"),
             title: String(format: LocalizationConstants.KYC.comingSoonToX, country.name),
             subtitle: nil,
@@ -35,7 +35,7 @@ extension KYCInformationViewModel {
     }
 
     static func createForUnsupportedState(_ state: KYCState) -> KYCInformationViewModel {
-        return KYCInformationViewModel(
+        KYCInformationViewModel(
             image: #imageLiteral(resourceName: "Welcome"),
             title: String(format: LocalizationConstants.KYC.comingSoonToX, state.name),
             subtitle: nil,

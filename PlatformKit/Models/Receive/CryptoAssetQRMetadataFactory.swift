@@ -18,7 +18,7 @@ public final class AnyCryptoAssetQRMetadataFactory<M: CryptoAssetQRMetadata, A: 
     private let createClosure: (A) -> M?
 
     public func create(from account: A) -> M? {
-        return createClosure(account)
+        createClosure(account)
     }
 
     public init<F: CryptoAssetQRMetadataFactory>(factory: F) where F.Metadata == Metadata, F.Account == Account {

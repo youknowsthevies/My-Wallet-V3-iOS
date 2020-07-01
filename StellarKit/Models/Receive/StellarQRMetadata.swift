@@ -24,7 +24,7 @@ public struct StellarQRMetadata: CryptoAssetQRMetadata {
     public var includeScheme: Bool = false
     
     public static var scheme: String {
-        return "web+stellar"
+        "web+stellar"
     }
     
     public init(address: String, amount: String?) {

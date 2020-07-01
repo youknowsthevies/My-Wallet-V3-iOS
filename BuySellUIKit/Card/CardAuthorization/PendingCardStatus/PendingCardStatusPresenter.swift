@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
 import Localization
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxSwift
 
 final class PendingCardStatusPresenter: PendingStatePresenterAPI {
     

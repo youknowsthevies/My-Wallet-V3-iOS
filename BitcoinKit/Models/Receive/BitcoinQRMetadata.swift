@@ -27,7 +27,7 @@ public struct BitcoinQRMetadata: CryptoAssetQRMetadata {
     public var includeScheme: Bool = false
     
     public static var scheme: String {
-        return AssetConstants.URLSchemes.bitcoin
+        AssetConstants.URLSchemes.bitcoin
     }
     
     public init(address: String, includeScheme: Bool = false) {
@@ -62,7 +62,7 @@ public struct BitcoinCashQRMetadata: CryptoAssetQRMetadata {
     public var includeScheme: Bool = false
     
     public static var scheme: String {
-        return AssetConstants.URLSchemes.bitcoinCash
+        AssetConstants.URLSchemes.bitcoinCash
     }
     
     public init(address: String, includeScheme: Bool = false) {

@@ -6,8 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxSwift
 import ToolKit
@@ -89,7 +89,7 @@ class SideMenuPresenter {
     func loadSideMenu() {
         let startingLocation = introInterator.startingLocation
             .map { [weak self] location -> [WalletIntroductionEvent] in
-                return self?.startingWithLocation(location) ?? []
+                self?.startingWithLocation(location) ?? []
             }
             .catchErrorJustReturn([])
         

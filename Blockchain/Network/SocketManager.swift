@@ -7,10 +7,10 @@
 //
 
 import Foundation
-import Starscream
-import RxSwift
-import ToolKit
 import PlatformKit
+import RxSwift
+import Starscream
+import ToolKit
 
 class SocketManager {
     static let shared = SocketManager()
@@ -28,7 +28,7 @@ class SocketManager {
 
     /// Data providers should suscribe to this and filter (e.g., { $0 is ExchangeSocketMessage })
     var webSocketMessageObservable: Observable<SocketMessage> {
-        return webSocketMessageSubject.asObservable()
+        webSocketMessageSubject.asObservable()
     }
     private let webSocketMessageSubject: PublishSubject<SocketMessage>
     private var pendingSocketMessages = [SocketMessage]()
@@ -102,7 +102,7 @@ class SocketManager {
     }
 
     private func errorNeedsSocketSetup(socketType: SocketType) -> String {
-        return "\(socketType.rawValue) socket needs setup, call setupSocket first"
+        "\(socketType.rawValue) socket needs setup, call setupSocket first"
     }
 }
 

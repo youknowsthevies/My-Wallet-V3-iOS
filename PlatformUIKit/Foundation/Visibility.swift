@@ -23,14 +23,14 @@ public enum Visibility: Int {
     
     /// Returns the inverted alpha for visibility value
     public var invertedAlpha: CGFloat {
-        return 1 - defaultAlpha
+        1 - defaultAlpha
     }
 
     public var isHidden: Bool {
-        return self == .hidden ? true : false
+        self == .hidden ? true : false
     }
 
     public var inverted: Visibility {
-        return self == .hidden ? .visible : .hidden
+        self == .hidden ? .visible : .hidden
     }
 }

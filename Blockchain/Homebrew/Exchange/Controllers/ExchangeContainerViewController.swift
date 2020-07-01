@@ -7,12 +7,12 @@
 //
 
 import Foundation
-import SafariServices
-import RxSwift
-import ToolKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import RxSwift
+import SafariServices
+import ToolKit
 
 class ExchangeContainerViewController: BaseNavigationController {
     
@@ -96,7 +96,7 @@ class ExchangeContainerViewController: BaseNavigationController {
     }
     
     private func hasStartedKYC() -> Single<Bool> {
-        return Single.just(kycSettings.isCompletingKyc)
+        Single.just(kycSettings.isCompletingKyc)
     }
     
     private func introductionStartTapped() {

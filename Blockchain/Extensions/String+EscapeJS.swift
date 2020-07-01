@@ -10,6 +10,6 @@ import PlatformKit
 
 @objc extension NSString {
     func escapedForJS() -> String {
-        return (self as String).escapedForJS()
+        (self as String).escapedForJS()
     }
 }

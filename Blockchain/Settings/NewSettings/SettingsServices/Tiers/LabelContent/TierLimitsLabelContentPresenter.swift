@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
 import PlatformKit
-import RxSwift
+import PlatformUIKit
 import RxRelay
+import RxSwift
 
 final class TierLimitsLabelContentPresenter: LabelContentPresenting {
     

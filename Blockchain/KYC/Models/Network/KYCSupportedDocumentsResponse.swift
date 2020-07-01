@@ -23,7 +23,7 @@ struct KYCSupportedDocumentsResponse: Codable {
         self.countryCode = try values.decode(String.self, forKey: .countryCode)
         let documentTypesRaw = try values.decode([String].self, forKey: .documentTypes)
         self.documentTypes = documentTypesRaw.compactMap {
-            return KYCDocumentType(rawValue: $0)
+            KYCDocumentType(rawValue: $0)
         }
     }
 }

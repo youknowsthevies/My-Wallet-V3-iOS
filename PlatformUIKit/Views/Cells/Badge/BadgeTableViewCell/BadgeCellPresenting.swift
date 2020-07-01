@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import PlatformKit
 import RxCocoa
+import RxRelay
+import RxSwift
 
 /// This is used on `BadgeTableViewCell`. There are many
 /// types of `BadgeTableViewCell` (e.g. PIT connection status, KYC status, mobile

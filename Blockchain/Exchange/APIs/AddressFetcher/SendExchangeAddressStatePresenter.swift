@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformKit
 import RxSwift
 import ToolKit
-import PlatformKit
 
 @objc
 final class SendExchangeAddressStatePresenter: NSObject {
@@ -55,14 +55,14 @@ final class SendExchangeAddressStatePresenter: NSObject {
     }
     
     private var isExchangeLinked: Single<Bool> {
-        return blockchainRepository.fetchNabuUser().map {
-            return $0.hasLinkedExchangeAccount
+        blockchainRepository.fetchNabuUser().map {
+            $0.hasLinkedExchangeAccount
         }
     }
     
     private var destinationAddress: Single<ExchangeAddressResult> {
-        return exchangeAddressFetcher.fetchAddress(for: assetType)
-            .map { return .destination($0) }
+        exchangeAddressFetcher.fetchAddress(for: assetType)
+            .map { .destination($0) }
             .catchError { error -> Single<ExchangeAddressResult> in
                 switch error {
                 case ExchangeAddressFetcher.FetchingError.twoFactorRequired:
@@ -97,7 +97,7 @@ final class SendExchangeAddressStatePresenter: NSObject {
     
     @objc
     func fetchAddressViewModel(completion: @escaping (ExchangeAddressViewModel) -> Void) {
-        return viewModel.observeOn(MainScheduler.instance)
+        viewModel.observeOn(MainScheduler.instance)
             .subscribe(onSuccess: { model in
                 completion(model)
             }, onError: { error in

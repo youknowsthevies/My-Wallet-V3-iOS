@@ -7,26 +7,26 @@
 //
 
 import Foundation
-import ToolKit
 import PlatformKit
+import ToolKit
 
 /// Manager object for playing sounds in the app.
 @objc class SoundManager: NSObject {
     static let shared = SoundManager()
 
     @objc class func sharedInstance() -> SoundManager {
-        return shared
+        shared
     }
 
     override private init() {
     }
 
     private lazy var beepSoundID: SystemSoundID? = {
-        return systemSoundID(forSoundFileName: "beep")
+        systemSoundID(forSoundFileName: "beep")
     }()
 
     private lazy var alertSoundID: SystemSoundID? = {
-        return systemSoundID(forSoundFileName: "alert-received")
+        systemSoundID(forSoundFileName: "alert-received")
     }()
 
     @objc func playBeep() {

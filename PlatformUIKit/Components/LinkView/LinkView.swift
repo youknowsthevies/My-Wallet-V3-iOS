@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 /// A view model for `LinkView` that can display a link embedded in text,
 /// levaraging `InteractableTextView` to do so.

@@ -9,9 +9,9 @@
 import Charts
 import PlatformKit
 import PlatformUIKit
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 /// An Rx driven line-chart view
 final class AssetLineChartView: UIView {
@@ -95,7 +95,7 @@ final class AssetLineChartView: UIView {
 
 extension Reactive where Base: AssetLineChartView {
     var chartData: Binder<(AssetLineChartMarkerView.Theme, LineChartData)> {
-        return Binder(base) { view, payload in
+        Binder(base) { view, payload in
             let data = payload.1
             let theme = payload.0
             view.chartView.animate(yAxisDuration: 0.4)
@@ -118,7 +118,7 @@ extension Reactive where Base: AssetLineChartView {
 
 extension Reactive where Base: AssetLineChartView {
     var chartState: Binder<(AssetLineChart.State.Presentation)> {
-        return Binder(base) { view, payload in
+        Binder(base) { view, payload in
             view.chartView.delegate?.chartValueNothingSelected?(view.chartView)
             view.chartView.marker = nil
             

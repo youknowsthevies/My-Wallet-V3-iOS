@@ -60,7 +60,7 @@ final class BitpayService: BitpayServiceProtocol {
     // MARK: BitpayServiceProtocol
     
     func bitpayPaymentRequest(invoiceID: String, currency: CryptoCurrency) -> Single<ObjcCompatibleBitpayObject> {
-        return buildBitpayPaymentRequest(invoiceID: invoiceID, currency: currency).map {
+        buildBitpayPaymentRequest(invoiceID: invoiceID, currency: currency).map {
             let expiresLocalTime = self.UTCToLocal(date: $0.expires)
             return ObjcCompatibleBitpayObject(
                 memo: $0.memo,

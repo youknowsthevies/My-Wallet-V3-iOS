@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-import PlatformKit
 @testable import Blockchain
+import PlatformKit
+import XCTest
 
 class ExchangeInputTests: XCTestCase {
     let viewModel = ExchangeInputViewModel(inputType: .fiat)

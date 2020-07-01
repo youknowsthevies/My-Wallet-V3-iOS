@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 /// Presenter for the source account on the send screen
 struct SendSourceAccountCellPresenter {
@@ -18,7 +18,7 @@ struct SendSourceAccountCellPresenter {
         
     /// Returns the account
     var account: Driver<String> {
-        return accountRelay.asDriver()
+        accountRelay.asDriver()
     }
     
     private let interactor: SendSourceAccountInteracting

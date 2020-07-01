@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxSwift
 
 final class HistoricalBalanceTableViewCell: UITableViewCell {
     

@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BigInt
 import PlatformKit
 import RxSwift
-import BigInt
 
 ///// `Wallet.m` needs to be injected into much of the `WalletRepository` type classes.
 ///// The reason is we still heavily rely on `My-Wallet-V3`. We don't want to bring this into

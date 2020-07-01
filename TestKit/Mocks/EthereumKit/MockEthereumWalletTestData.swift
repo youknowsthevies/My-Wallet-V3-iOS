@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import BigInt
 @testable import EthereumKit
+import PlatformKit
 
 struct MockEthereumWalletTestData {
     static let walletId = MockWalletTestData.walletId

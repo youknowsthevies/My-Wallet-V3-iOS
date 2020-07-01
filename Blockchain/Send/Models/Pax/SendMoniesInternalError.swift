@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import ERC20Kit
+import PlatformKit
 
 enum SendMoniesInternalError: Error {
     /// `insufficientFeeCoverage` is also

@@ -6,26 +6,26 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 extension Reactive where Base: UISwitch {
     public var thumbFillColor: Binder<UIColor?> {
-        return Binder(base) { switchView, color in
+        Binder(base) { switchView, color in
             guard let color = color else { return }
             switchView.thumbTintColor = color
         }
     }
     
     public var fillColor: Binder<UIColor> {
-        return Binder(base) { switchView, fillColor in
+        Binder(base) { switchView, fillColor in
             switchView.onTintColor = fillColor
         }
     }
     
     public var isEnabled: Binder<Bool> {
-        return Binder(base) { switchView, isEnabled in
+        Binder(base) { switchView, isEnabled in
             switchView.isEnabled = isEnabled
         }
     }

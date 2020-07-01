@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import PlatformKit
+import RxRelay
+import RxSwift
 
 /// A protocol for `UILabels` whose content can be copied to the clipboard.
 public protocol PasteboardLabelContentInteracting: LabelContentInteracting {

@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 /// Wallet Intro announcement is a periodic announcement that can also be entirely removed
 final class WalletIntroAnnouncement: PeriodicAnnouncement & RemovableAnnouncement & ActionableAnnouncement {
@@ -59,7 +59,7 @@ final class WalletIntroAnnouncement: PeriodicAnnouncement & RemovableAnnouncemen
     }
     
     var shouldShow: Bool {
-        return !isDismissed
+        !isDismissed
     }
     
     let type = AnnouncementType.walletIntro

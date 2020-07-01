@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
-import ToolKit
 import PlatformKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 /// A `UIToolbar` provider that embeds toolbar setup.
 /// Typically used in screens that contain keyboard input.
@@ -91,7 +91,7 @@ public final class KeyboardInteractionController {
 
 public extension ObservableType {
     func dismissKeyboard(using controller: KeyboardInteractionController) -> Observable<Element> {
-        return self.do(onNext: { _ in
+        self.do(onNext: { _ in
             controller.dismissKeyboard()
         })
     }

@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import ToolKit
 import PlatformKit
+import ToolKit
 
 @objc
 class KYCSettings: NSObject, KYCSettingsAPI {
@@ -17,7 +17,7 @@ class KYCSettings: NSObject, KYCSettingsAPI {
     private let userDefaults: UserDefaults
 
     @objc class func sharedInstance() -> KYCSettings {
-        return shared
+        shared
     }
 
     init(userDefaults: UserDefaults = UserDefaults.standard) {
@@ -38,7 +38,7 @@ class KYCSettings: NSObject, KYCSettingsAPI {
      */
     @objc var isCompletingKyc: Bool {
         get {
-            return userDefaults.bool(forKey: UserDefaults.Keys.isCompletingKyc.rawValue)
+            userDefaults.bool(forKey: UserDefaults.Keys.isCompletingKyc.rawValue)
         }
         set {
             userDefaults.set(newValue, forKey: UserDefaults.Keys.isCompletingKyc.rawValue)

@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import NetworkKit
+import RxSwift
 
 public final class SMSClient: SMSClientAPI {
     

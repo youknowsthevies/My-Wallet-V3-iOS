@@ -20,7 +20,6 @@ extension ProcessInfo {
         return Bool(object.lowercased())
     }
 
-
     /// Checks for the presence of `XCTestConfigurationFilePath` in the environment dictionary,
     ///  this indicates we are running unit tests.
     public var isUnitTesting: Bool {

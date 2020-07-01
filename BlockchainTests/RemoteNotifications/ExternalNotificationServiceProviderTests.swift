@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-import RxSwift
-import RxBlocking
-import UserNotifications
 import PlatformKit
+import RxBlocking
+import RxSwift
+import UserNotifications
+import XCTest
 
 @testable import Blockchain
 

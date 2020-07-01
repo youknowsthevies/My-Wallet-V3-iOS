@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformKit
+import ToolKit
 
 public extension AnalyticsEvents {
     
@@ -33,7 +33,7 @@ public extension AnalyticsEvents {
         }
         
         public var params: [String : String]? {
-            return nil
+            nil
         }
     }
     

@@ -8,8 +8,8 @@
 
 import PlatformKit
 import PlatformUIKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 final class WelcomeScreenPresenter {
     
@@ -21,10 +21,7 @@ final class WelcomeScreenPresenter {
 
     // MARK: - Properties
     
-    let navBarStyle = Screen.Style.Bar.darkContent(
-        ignoresStatusBar: false,
-        background: .white
-    )
+    let navBarStyle = Screen.Style.Bar.darkContent()
     let title = LabelContent(
         text: LocalizedString.title,
         font: .main(.semibold, Constants.Booleans.isUsingScreenSizeEqualIphone5S ? 20 : 24),

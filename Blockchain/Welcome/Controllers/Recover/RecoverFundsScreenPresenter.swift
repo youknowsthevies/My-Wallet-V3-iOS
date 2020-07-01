@@ -6,12 +6,12 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import HDWalletKit
 import PlatformKit
 import PlatformUIKit
-import RxSwift
-import RxRelay
 import RxCocoa
-import HDWalletKit
+import RxRelay
+import RxSwift
 
 final class RecoverFundsScreenPresenter {
     
@@ -50,7 +50,7 @@ final class RecoverFundsScreenPresenter {
     
     let continueTappedRelay = PublishRelay<String>()
     
-    let navBarStyle = Screen.Style.Bar.lightContent(ignoresStatusBar: false, background: .primary)
+    let navBarStyle = Screen.Style.Bar.lightContent()
     let titleStyle = Screen.Style.TitleView.text(value: LocalizationConstants.Onboarding.RecoverFunds.title)
     let description = LocalizationConstants.Onboarding.RecoverFunds.description
     let mnemonicTextViewModel = MnemonicTextViewViewModel(
@@ -64,7 +64,7 @@ final class RecoverFundsScreenPresenter {
     
     /// The total state of the view model
     var state: Driver<State> {
-        return stateRelay.asDriver()
+        stateRelay.asDriver()
     }
     
     // MARK: - Private Properties

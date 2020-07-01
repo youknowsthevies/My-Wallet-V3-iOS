@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BigInt
 import PlatformKit
 import web3swift
-import BigInt
 
 public struct EthereumTransactionFinalised {
     

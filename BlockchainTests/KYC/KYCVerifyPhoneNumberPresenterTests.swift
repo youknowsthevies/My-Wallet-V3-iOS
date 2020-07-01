@@ -6,9 +6,9 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-import RxSwift
 @testable import Blockchain
+import RxSwift
+import XCTest
 
 class KYCVerifyPhoneNumberPresenterTests: XCTestCase {
 

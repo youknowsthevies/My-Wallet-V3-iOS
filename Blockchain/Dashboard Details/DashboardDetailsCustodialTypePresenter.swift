@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 enum CustodialCellTypeAction {
     /// Show the `CurrentBalanceTableViewCell`
@@ -51,7 +51,7 @@ final class DashboardDetailsCustodialTypePresenter {
         let custodialFundedObservable = balanceFetching.isFunded.asObservable()
         
         custodialFundedObservable
-            .map { return $0 ? .show : .none }
+            .map { $0 ? .show : .none }
             .bindAndCatch(to: actionRelay)
             .disposed(by: disposeBag)
     }

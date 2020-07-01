@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Localization
 import RxSwift
 import ToolKit
-import Localization
 
 @objc
 public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {

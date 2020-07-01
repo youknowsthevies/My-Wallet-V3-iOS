@@ -7,8 +7,8 @@
 //
 
 import PlatformKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 public protocol LabelContentPresenting {
     var interactor: LabelContentInteracting { get }

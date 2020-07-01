@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 final class KYCConfirmPhoneNumberController: KYCBaseViewController, BottomButtonContainerView, ProgressableView {
     
@@ -41,7 +41,7 @@ final class KYCConfirmPhoneNumberController: KYCBaseViewController, BottomButton
     @IBOutlet private var primaryButton: PrimaryButtonContainer!
 
     private lazy var presenter: KYCVerifyPhoneNumberPresenter = {
-        return KYCVerifyPhoneNumberPresenter(view: self)
+        KYCVerifyPhoneNumberPresenter(view: self)
     }()
 
     deinit {

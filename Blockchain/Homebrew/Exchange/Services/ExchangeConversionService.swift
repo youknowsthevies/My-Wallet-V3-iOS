@@ -76,11 +76,11 @@ class ExchangeConversionService: ExchangeConversionAPI {
 
 private extension ExchangeConversionService {
     func formatDecimalPlaces(fiatValue: String) -> String {
-        return NumberFormatter.localCurrencyFormatterWithUSLocale.string(from: NSDecimalNumber(string: fiatValue))!
+        NumberFormatter.localCurrencyFormatterWithUSLocale.string(from: NSDecimalNumber(string: fiatValue))!
     }
 
     func formatDecimalPlaces(cryptoValue: String) -> String {
-        return NumberFormatter.assetFormatterWithUSLocale.string(from: NSDecimalNumber(string: cryptoValue))!
+        NumberFormatter.assetFormatterWithUSLocale.string(from: NSDecimalNumber(string: cryptoValue))!
     }
 }
 

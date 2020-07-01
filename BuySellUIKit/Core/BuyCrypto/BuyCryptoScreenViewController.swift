@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 /// A screen that allows the end-user to specify the amount of crypto he wishes to buy
 final class BuyCryptoScreenViewController: BaseScreenViewController {

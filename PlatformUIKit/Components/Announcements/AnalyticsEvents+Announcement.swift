@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformKit
+import ToolKit
 
 extension AnalyticsEvents {
     public enum Announcement: AnalyticsEvent {
@@ -30,7 +30,7 @@ extension AnalyticsEvents {
         }
         
         public var params: [String : String]? {
-            return ["card_title": type.rawValue]
+            ["card_title": type.rawValue]
         }
         
         private var type: AnnouncementType {

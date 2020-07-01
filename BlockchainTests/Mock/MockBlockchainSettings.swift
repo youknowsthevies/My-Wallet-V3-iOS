@@ -22,7 +22,7 @@ class MockBlockchainSettingsApp: BlockchainSettings.App {
 
     override var guid: String? {
         get {
-            return mockGuid
+            mockGuid
         }
         set {
             mockGuid = newValue
@@ -31,7 +31,7 @@ class MockBlockchainSettingsApp: BlockchainSettings.App {
 
     override var sharedKey: String? {
         get {
-            return mockSharedKey
+            mockSharedKey
         }
         set {
             mockSharedKey = newValue
@@ -40,7 +40,7 @@ class MockBlockchainSettingsApp: BlockchainSettings.App {
 
     override var didTapOnAirdropDeepLink: Bool {
         get {
-            return mockDidTapOnAirdropDeepLink
+            mockDidTapOnAirdropDeepLink
         }
         set {
             mockDidTapOnAirdropDeepLink = newValue
@@ -49,7 +49,7 @@ class MockBlockchainSettingsApp: BlockchainSettings.App {
 
     override var didAttemptToRouteForAirdrop: Bool {
         get {
-            return mockDidAttemptToRouteForAirdrop
+            mockDidAttemptToRouteForAirdrop
         }
         set {
             mockDidAttemptToRouteForAirdrop = newValue

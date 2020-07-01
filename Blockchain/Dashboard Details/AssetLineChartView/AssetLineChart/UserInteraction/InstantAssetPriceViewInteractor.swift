@@ -8,9 +8,9 @@
 
 import PlatformKit
 import PlatformUIKit
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 /// `InstantAssetPriceViewInteractor` is an `AssetPriceViewInteracting`
 /// that takes a `AssetLineChartUserInteracting`. This allows the view to be
@@ -22,7 +22,7 @@ final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
     // MARK: - Exposed Properties
     
     public var state: Observable<InteractionState> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
             .observeOn(MainScheduler.instance)
     }
             
@@ -55,7 +55,7 @@ final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                     let currentPrice = result.currentFiatValue
                     let fiatChange = FiatValue.create(
                         amount: result.historicalPrices.fiatChange,
-                        currency: result.currentFiatValue.currency
+                        currency: result.currentFiatValue.currencyType
                     )
                     return .loaded(
                         next: .init(
@@ -69,7 +69,7 @@ final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                     let historicalPrices = result.historicalPrices
                     let currentFiatValue = result.currentFiatValue
                     let prices = Array(historicalPrices.prices[0...min(index, historicalPrices.prices.count - 1)])
-                    let fiatCurrency = currentFiatValue.currency
+                    let fiatCurrency = currentFiatValue.currencyType
                     guard let selected = prices.last else { return .loading }
                     let priceInFiatValue = selected.toPriceInFiatValue(fiatCurrency: fiatCurrency)
                     let adjusted = HistoricalPriceSeries(currency: historicalPrices.currency, prices: prices)

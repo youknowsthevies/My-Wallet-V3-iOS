@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-import RxSwift
-import RxBlocking
 @testable import PlatformUIKit
+import RxBlocking
+import RxSwift
+import XCTest
 
 final class MnemonicTextViewTests: XCTestCase {
 
@@ -82,7 +82,7 @@ final class MnemonicTextViewTests: XCTestCase {
 
 private enum WordList {
     public static var words: [String] {
-        return  "client cruel tiny sniff girl crawl snap spice forum talk evidence tourist possible"
+        "client cruel tiny sniff girl crawl snap spice forum talk evidence tourist possible"
         .components(separatedBy: " ")
     }
 }

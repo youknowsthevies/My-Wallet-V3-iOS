@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-import web3swift
 import BigInt
-import PlatformKit
 @testable import EthereumKit
+import PlatformKit
+import web3swift
+import XCTest
 
 class EthereumTransactionBuilderTests: XCTestCase {
 

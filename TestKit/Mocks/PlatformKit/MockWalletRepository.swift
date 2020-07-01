@@ -27,63 +27,63 @@ final class MockWalletRepository: WalletRepositoryAPI {
     var authenticatorType: Single<AuthenticatorType> { .just(expectedAuthenticatorType) }
     
     func set(sessionToken: String) -> Completable {
-        return perform { [weak self] in
+        perform { [weak self] in
             self?.expectedSessionToken = sessionToken
         }
     }
     
     func set(sharedKey: String) -> Completable {
-        return perform { [weak self] in
+        perform { [weak self] in
             self?.expectedSharedKey = sharedKey
         }
     }
     
     func set(password: String) -> Completable {
-        return perform { [weak self] in
+        perform { [weak self] in
             self?.expectedPassword = password
         }
     }
 
     func set(guid: String) -> Completable {
-        return perform { [weak self] in
+        perform { [weak self] in
             self?.expectedGuid = guid
         }
     }
     
     func set(syncPubKeys: Bool) -> Completable {
-        return perform { [weak self] in
+        perform { [weak self] in
             self?.expectedSyncPubKeys = syncPubKeys
         }
     }
     
     func set(language: String) -> Completable {
-        return .empty()
+        .empty()
     }
     
     func set(authenticatorType: AuthenticatorType) -> Completable {
-        return perform { [weak self] in
+        perform { [weak self] in
             self?.expectedAuthenticatorType = authenticatorType
         }
     }
     
     func set(payload: String) -> Completable {
-        return perform { [weak self] in
+        perform { [weak self] in
             self?.expectedPayload = payload
         }
     }
     
     func cleanSessionToken() -> Completable {
-        return perform { [weak self] in
+        perform { [weak self] in
             self?.expectedSessionToken = nil
         }
     }
 
     func sync() -> Completable {
-        return perform { }
+        perform { }
     }
 
     private func perform(_ operation: @escaping () -> Void) -> Completable {
-        return Completable
+        Completable
             .create { observer -> Disposable in
                 operation()
                 observer(.completed)

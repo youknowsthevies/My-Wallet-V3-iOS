@@ -23,7 +23,7 @@ class BitPayLinkRouter: DeepLinkRouting {
     // MARK: - Static Functions
     
     static func isBitPayURL(_ url: URL) -> Bool {
-        return url.absoluteString.contains("https://bitpay.com/")
+        url.absoluteString.contains("https://bitpay.com/")
     }
     
     // MARK: - DeepLinkRouting

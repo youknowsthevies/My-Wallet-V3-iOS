@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import RxSwift
 import NetworkKit
 import PlatformKit
+import RxSwift
 
 protocol ExchangeAccountRepositoryAPI {
     var hasLinkedExchangeAccount: Single<Bool> { get }
@@ -50,15 +50,15 @@ class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
     }
     
     var hasLinkedExchangeAccount: Single<Bool> {
-        return blockchainRepository
+        blockchainRepository
             .fetchNabuUser()
             .flatMap(weak: self, { (self, user) -> Single<Bool> in
-                return Single.just(user.hasLinkedExchangeAccount)
+                Single.just(user.hasLinkedExchangeAccount)
         })
     }
     
     func syncDepositAddressesIfLinked() -> Completable {
-        return hasLinkedExchangeAccount.flatMapCompletable(weak: self, { (self, linked) -> Completable in
+        hasLinkedExchangeAccount.flatMapCompletable(weak: self, { (self, linked) -> Completable in
             if linked {
                 return self.syncDepositAddresses()
             } else {
@@ -73,7 +73,7 @@ class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
             accountRepository.accounts
         )
         .flatMapCompletable(weak: self) { (self, payload) -> Completable in
-                let addresses = payload.1.map { return $0.address }
+                let addresses = payload.1.map { $0.address }
                 return self.clientAPI.syncDepositAddress(authenticationToken: payload.0, addresses)
             }
     }

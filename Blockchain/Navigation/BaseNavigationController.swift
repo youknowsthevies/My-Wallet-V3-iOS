@@ -65,39 +65,12 @@ extension NavigationCTAType {
     }
 }
 
-enum NavigationBarDisplayMode {
-    case light
-    case dark
-}
-
-extension NavigationBarDisplayMode {
-    var tintColor: UIColor {
-        switch self {
-        case .dark:
-            return .brandPrimary
-        case .light:
-            return .white
-        }
-    }
-    
-    var textColor: UIColor {
-        switch self {
-        case .dark:
-            return .white
-        case .light:
-            return .brandPrimary
-        }
-    }
-}
-
 protocol NavigatableView: class {
     
     var rightCTATintColor: UIColor { get }
     var leftCTATintColor: UIColor { get }
     
-    var navigationDisplayMode: NavigationBarDisplayMode { get }
-    
-    var navigationBarTintColor: UIColor? { get }
+    var barStyle: Screen.Style.Bar { get }
     
     var rightNavControllerCTAType: NavigationCTAType { get }
     var leftNavControllerCTAType: NavigationCTAType { get }
@@ -108,29 +81,25 @@ protocol NavigatableView: class {
 
 extension NavigatableView where Self: UIViewController {
     var leftCTATintColor: UIColor {
-        return .white
+        .white
     }
     
     var rightCTATintColor: UIColor {
-        return .white
+        .white
     }
     
     var leftNavControllerCTAType: NavigationCTAType {
-        return .menu
+        .menu
     }
     
     var rightNavControllerCTAType: NavigationCTAType {
-        return .qrCode
+        .qrCode
     }
-    
-    var navigationDisplayMode: NavigationBarDisplayMode {
-        return .dark
+
+    var barStyle: Screen.Style.Bar {
+        .lightContent()
     }
-    
-    var navigationBarTintColor: UIColor? {
-        return navigationDisplayMode.tintColor
-    }
-    
+
     func navControllerRightBarButtonTapped(_ navController: UINavigationController) {
         // no-op
     }
@@ -195,12 +164,9 @@ extension NavigatableView where Self: UIViewController {
         
         controller.navigationItem.rightBarButtonItem?.tintColor = navigatableView.rightCTATintColor
         controller.navigationItem.leftBarButtonItem?.tintColor = navigatableView.leftCTATintColor
-        navigationBar.backgroundColor = navigatableView.navigationBarTintColor ?? navigatableView.navigationDisplayMode.tintColor
-        navigationBar.barTintColor = navigatableView.navigationBarTintColor ?? navigatableView.navigationDisplayMode.tintColor
-        navigationBar.titleTextAttributes = [
-            .font: BaseNavigationController.titleFont(),
-            .foregroundColor: navigatableView.navigationDisplayMode.textColor
-        ]
+//        navigationBar.backgroundColor = navigatableView.barStyle.backgroundColor
+        navigationBar.barTintColor = navigatableView.barStyle.backgroundColor
+        navigationBar.titleTextAttributes = navigatableView.barStyle.titleTextAttributes
     }
     
     @objc func update() {
@@ -220,10 +186,5 @@ extension NavigatableView where Self: UIViewController {
             return
         }
         navigatableView.navControllerLeftBarButtonTapped(self)
-    }
-    
-    fileprivate static func titleFont() -> UIFont {
-        let font = Font(.branded(.interMedium), size: .custom(20.0))
-        return font.result
     }
 }

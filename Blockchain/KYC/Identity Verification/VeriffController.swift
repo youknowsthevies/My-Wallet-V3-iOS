@@ -30,7 +30,7 @@ protocol VeriffController: VeriffDelegate {
 
 extension VeriffController where Self: UIViewController {
     internal var veriff: Veriff {
-        return Veriff.shared
+        Veriff.shared
     }
 
     func launchVeriffController(credentials: VeriffCredentials, version: String) {

@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import web3swift
 import BigInt
 @testable import EthereumKit
+import Foundation
+import web3swift
 
 class EthereumTransactionPublishedBuilder {
 

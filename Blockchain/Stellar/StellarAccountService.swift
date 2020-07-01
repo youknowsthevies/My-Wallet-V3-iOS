@@ -7,11 +7,11 @@
 //
 
 import Foundation
-import stellarsdk
-import RxSwift
-import RxCocoa
 import PlatformKit
+import RxCocoa
+import RxSwift
 import StellarKit
+import stellarsdk
 
 class StellarAccountService: StellarAccountAPI {
 
@@ -20,13 +20,13 @@ class StellarAccountService: StellarAccountAPI {
     // MARK: AccountBalanceFetching
     
     var balanceType: BalanceType {
-        return .nonCustodial
+        .nonCustodial
     }
     
     var balance: Single<CryptoValue> {
-        return currentStellarAccount(fromCache: false)
+        currentStellarAccount(fromCache: false)
             .flatMap(weak: self) { (self, account) -> Single<CryptoValue> in
-                return Single.just(account.assetAccount.balance)
+                Single.just(account.assetAccount.balance)
             }
             .catchError { (error) -> Single<CryptoValue> in
                 guard error is StellarAccountError else { return Single.error(error) }
@@ -35,7 +35,7 @@ class StellarAccountService: StellarAccountAPI {
     }
     
     var balanceObservable: Observable<CryptoValue> {
-        return balanceRelay.asObservable()
+        balanceRelay.asObservable()
     }
     
     private let balanceRelay = PublishRelay<CryptoValue>()
@@ -45,15 +45,15 @@ class StellarAccountService: StellarAccountAPI {
     private var disposable: Disposable?
     
     private var service: Single<AccountService> {
-        return sdk.map { $0.accounts }
+        sdk.map { $0.accounts }
     }
 
     private var sdk: Single<stellarsdk.StellarSDK> {
-        return configuration.map { $0.sdk }
+        configuration.map { $0.sdk }
     }
     
     private var configuration: Single<StellarConfiguration> {
-        return configurationService.configuration
+        configurationService.configuration
     }
     
     private let configurationService: StellarConfigurationAPI
@@ -74,7 +74,7 @@ class StellarAccountService: StellarAccountAPI {
                 
         balanceFetchTriggerRelay
             .flatMapLatest(weak: self) { (self, _) in
-                return self.balance.asObservable()
+                self.balance.asObservable()
             }
             .catchErrorJustReturn(.lumensZero)
             .bindAndCatch(to: balanceRelay)
@@ -87,7 +87,7 @@ class StellarAccountService: StellarAccountAPI {
     }
     
     var currentAccount: StellarAccount? {
-        return privateAccount.value
+        privateAccount.value
     }
     
     fileprivate var privateAccount = BehaviorRelay<StellarAccount?>(value: nil)
@@ -95,7 +95,7 @@ class StellarAccountService: StellarAccountAPI {
     // MARK: Private Functions
     
     fileprivate func defaultXLMAccount() -> StellarWalletAccount? {
-        return repository.defaultAccount
+        repository.defaultAccount
     }
     
     // MARK: Public Functions
@@ -122,7 +122,7 @@ class StellarAccountService: StellarAccountAPI {
     }
     
     func currentStellarAccountAsSingle(fromCache: Bool) -> Single<StellarAccount?> {
-        return currentStellarAccount(fromCache: fromCache)
+        currentStellarAccount(fromCache: fromCache)
             .asObservable()
             .materialize()
             /// Map `completed` event into `.next(nil)` in order to convert later to `Single`.
@@ -144,8 +144,8 @@ class StellarAccountService: StellarAccountAPI {
     }
 
     func accountResponse(for accountID: AccountID) -> Single<AccountResponse> {
-        return service.flatMap(weak: self) { (self, service) -> Single<AccountResponse> in
-            return Single<AccountResponse>.create { event -> Disposable in
+        service.flatMap(weak: self) { (self, service) -> Single<AccountResponse> in
+            Single<AccountResponse>.create { event -> Disposable in
                 service.getAccountDetails(accountId: accountID, response: { response -> (Void) in
                     switch response {
                     case .success(details: let details):
@@ -160,8 +160,8 @@ class StellarAccountService: StellarAccountAPI {
     }
     
     func accountDetails(for accountID: AccountID) -> Maybe<StellarAccount> {
-        return accountResponse(for: accountID).map { details -> StellarAccount in
-            return details.toStellarAccount()
+        accountResponse(for: accountID).map { details -> StellarAccount in
+            details.toStellarAccount()
         }.catchError { error in
             // If the network call to Horizon fails due to there not being a default account (i.e. account is not yet
             // funded), catch that error and return a StellarAccount with 0 balance
@@ -177,7 +177,7 @@ class StellarAccountService: StellarAccountAPI {
         amount: Decimal,
         sourceKeyPair: StellarKit.StellarKeyPair
     ) -> Completable {
-        return ledgerService.current.take(1)
+        ledgerService.current.take(1)
             .asSingle()
             .flatMapCompletable { [weak self] ledger -> Completable in
                 guard let strongSelf = self else {
@@ -213,8 +213,8 @@ class StellarAccountService: StellarAccountAPI {
         sourceAccountResponse: AccountResponse,
         sourceKeyPair: StellarKit.StellarKeyPair
     ) -> Completable {
-        return configuration.flatMap(weak: self) { (self, configuration) -> Single<Void> in
-            return Single.create(subscribe: { event -> Disposable in
+        configuration.flatMap(weak: self) { (self, configuration) -> Single<Void> in
+            Single.create(subscribe: { event -> Disposable in
                 do {
                     // Build operation
                     let source = try KeyPair(secretSeed: sourceKeyPair.secret)
@@ -266,7 +266,7 @@ class StellarAccountService: StellarAccountAPI {
     }
     
     func isExchangeAddress(_ address: AccountID) -> Single<Bool> {
-        return walletOptionsAPI.walletOptions.map { walletOptions in
+        walletOptionsAPI.walletOptions.map { walletOptions in
             let result = walletOptions.xlmExchangeAddresses?.contains(where: { $0.uppercased() == address.uppercased() }) ?? false
             return result
         }

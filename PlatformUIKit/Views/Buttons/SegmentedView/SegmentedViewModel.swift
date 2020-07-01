@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
 import RxCocoa
 import RxSwift
+import UIKit
 
 /// The view model coupled with `SegmentedViewModel`.
 /// Rx driven: drives changes in the view: opacity, enable/disable, image and text can be assigned dynamically.
@@ -69,11 +69,11 @@ public struct SegmentedViewModel {
         }
         
         public static func image(named image: String, action: (() -> Void)? = nil) -> Item {
-            return .init(content: .imageName(image), action: action)
+            .init(content: .imageName(image), action: action)
         }
         
         public static func text(_ text: String, action: (() -> Void)? = nil) -> Item {
-            return .init(content: .title(text), action: action)
+            .init(content: .title(text), action: action)
         }
     }
     
@@ -91,7 +91,7 @@ public struct SegmentedViewModel {
             contentColorRelay.accept(newValue.contentColor)
         }
         get {
-            return Theme(
+            Theme(
                 font: .main(.medium, 14),
                 selectedFont: .main(.medium, 14),
                 backgroundColor: backgroundColorRelay.value,
@@ -116,12 +116,12 @@ public struct SegmentedViewModel {
     
     /// Is the button enabled
     public var isEnabled: Driver<Bool> {
-        return isEnabledRelay.asDriver()
+        isEnabledRelay.asDriver()
     }
     
     /// Retruns the opacity of the view
     public var alpha: Driver<CGFloat> {
-        return isEnabled.asDriver().map { CGFloat($0 ? 1 : 0.65) }
+        isEnabled.asDriver().map { CGFloat($0 ? 1 : 0.65) }
     }
     
     /// The background color relay
@@ -129,7 +129,7 @@ public struct SegmentedViewModel {
     
     /// The background color of the button
     public var backgroundColor: Driver<UIColor?> {
-        return backgroundColorRelay.asDriver()
+        backgroundColorRelay.asDriver()
     }
     
     /// The content color relay
@@ -137,21 +137,21 @@ public struct SegmentedViewModel {
     
     /// The content color of the button, that includes image's and label's
     public var contentColor: Driver<UIColor?> {
-        return contentColorRelay.asDriver()
+        contentColorRelay.asDriver()
     }
     
     public var selectedFontColor: Driver<UIColor?> {
-        return selectedFontColorRelay.asDriver()
+        selectedFontColorRelay.asDriver()
     }
     
     /// The font when the segment is not selected
     public var normalFont: Driver<UIFont> {
-        return normalFontRelay.asDriver()
+        normalFontRelay.asDriver()
     }
     
     /// The font when the segment is selected
     public var selectedFont: Driver<UIFont> {
-        return selectedFontRelay.asDriver()
+        selectedFontRelay.asDriver()
     }
     
     /// Border color relay
@@ -163,12 +163,12 @@ public struct SegmentedViewModel {
     
     /// The border color around the button
     public var borderColor: Driver<UIColor> {
-        return borderColorRelay.asDriver()
+        borderColorRelay.asDriver()
     }
     
     /// The color of the divider between segments.
     public var dividerColor: Driver<UIColor?> {
-        return dividerColorRelay.asDriver()
+        dividerColorRelay.asDriver()
     }
     
     /// The text relay
@@ -176,7 +176,7 @@ public struct SegmentedViewModel {
     
     /// Text to be displayed on the button
     public var text: Driver<String> {
-        return textRelay.asDriver()
+        textRelay.asDriver()
     }
     
     private let disposeBag = DisposeBag()

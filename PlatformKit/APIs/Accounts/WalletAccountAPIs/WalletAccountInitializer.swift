@@ -22,7 +22,7 @@ public final class AnyWalletAccountInitializer<Account: WalletAccount>: WalletAc
     private let initializerClosure: () -> Maybe<Account>
 
     public func initializeMetadataMaybe() -> Maybe<Account> {
-        return initializerClosure()
+        initializerClosure()
     }
 
     public init<I: WalletAccountInitializer>(initializer: I) where I.Account == Account {

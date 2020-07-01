@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-import RxSwift
-import RxRelay
 import RxBlocking
+import RxRelay
+import RxSwift
 import RxTest
+import XCTest
 
 @testable import ToolKit
 
@@ -59,7 +59,7 @@ final class CachedValueTests: XCTestCase {
         )
         let cachedValue = CachedValue<String>(configuration: configuration)
         cachedValue.setFetch {
-            return Single.just(expectedResult)
+            Single.just(expectedResult)
         }
 
         for _ in (0...4) {
@@ -101,7 +101,7 @@ final class CachedValueTests: XCTestCase {
         let cachedValue = CachedValue<String>(configuration: configuration)
 
         cachedValue.setFetch {
-            return Single.just(expectedResult)
+            Single.just(expectedResult)
         }
 
         for _ in (0...7) {

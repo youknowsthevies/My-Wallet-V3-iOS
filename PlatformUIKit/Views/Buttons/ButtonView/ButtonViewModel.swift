@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
 import RxCocoa
 import RxSwift
+import UIKit
 
 /// The view model coupled with `ButtonView`.
 /// 1. Rx driven: drives changes in the view: opacity, enable/disable, image and text can be assigned dynamically.

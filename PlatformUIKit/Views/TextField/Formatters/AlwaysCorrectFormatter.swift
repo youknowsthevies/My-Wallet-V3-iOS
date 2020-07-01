@@ -8,6 +8,6 @@
 
 public final class AlwaysCorrectFormatter: TextFormatting {
     public func format(_ string: String, operation: TextInputOperation) -> TextFormattingSource {
-        return .original(text: string)
+        .original(text: string)
     }
 }

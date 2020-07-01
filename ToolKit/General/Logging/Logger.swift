@@ -27,7 +27,7 @@ import Foundation
         return logger
     }()
 
-    @objc public class func sharedInstance() -> Logger { return shared }
+    @objc public class func sharedInstance() -> Logger { shared }
 
     // MARK: - Public
 

@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformKit
 import PlatformUIKit
-import RxSwift
 import RxCocoa
+import RxSwift
+import ToolKit
 
 /// Let the user know that something went wrong during KYC, and that he needs to send his docs once more
 final class ResubmitDocumentsAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {

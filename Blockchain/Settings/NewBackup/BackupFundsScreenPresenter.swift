@@ -38,11 +38,11 @@ final class BackupFundsScreenPresenter {
     }
     
     var titleView: Screen.Style.TitleView {
-        return .text(value: LocalizationConstants.BackupFundsScreen.title)
+        .text(value: LocalizationConstants.BackupFundsScreen.title)
     }
     
     var barStyle: Screen.Style.Bar {
-        return .lightContent(ignoresStatusBar: false, background: .navigationBarBackground)
+        .lightContent()
     }
     
     // MARK: - Public Properites

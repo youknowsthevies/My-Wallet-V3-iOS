@@ -30,12 +30,12 @@ public final class AnalyticsUserPropertyValidator {
     
     /// Returns the truncated user property name
     public func truncated(name: String) -> String {
-        return String(name.prefix(UserPropertyMaxLength.name))
+        String(name.prefix(UserPropertyMaxLength.name))
     }
     
     /// Returns the truncated user property value
     public func truncated(value: String) -> String {
-        return String(value.prefix(UserPropertyMaxLength.value))
+        String(value.prefix(UserPropertyMaxLength.value))
     }
     
     /// Enforce the name format using regular expression matching

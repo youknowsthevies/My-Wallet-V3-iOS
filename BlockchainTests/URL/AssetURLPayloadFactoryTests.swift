@@ -8,10 +8,10 @@
 
 import Foundation
 
-import XCTest
-import PlatformKit
 import BitcoinKit
 @testable import Blockchain
+import PlatformKit
+import XCTest
 
 class AssetURLPayloadFactoryTests: XCTestCase {
 

@@ -12,11 +12,11 @@ extension NSObject {
     
     /// Returns the object's class name. Particularly useful in saving raw strings usage in code.
     public var objectName: String {
-        return String(describing: type(of: self))
+        String(describing: type(of: self))
     }
     
     /// Returns the object's class name. Particularly useful in saving raw strings usage in code.
     public class var objectName: String {
-        return String(describing: self)
+        String(describing: self)
     }
 }

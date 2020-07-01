@@ -19,7 +19,7 @@ import Foundation
     let type: ErrorType
 
     var localizedDescription: String {
-        return _description ?? ""
+        _description ?? ""
     }
 
     private let _description: String?

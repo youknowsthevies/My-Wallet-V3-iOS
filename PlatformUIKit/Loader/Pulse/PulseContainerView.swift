@@ -14,7 +14,7 @@ final class PulseContainerView: PassthroughView {
     // MARK: Rx
     
     var selection: Signal<Void> {
-        return selectionRelay.asSignal()
+        selectionRelay.asSignal()
     }
     
     private let selectionRelay = PublishRelay<Void>()
@@ -31,7 +31,7 @@ final class PulseContainerView: PassthroughView {
     }()
     
     private lazy var feedbackGenerator: UIImpactFeedbackGenerator = {
-        return UIImpactFeedbackGenerator(style: .light)
+        UIImpactFeedbackGenerator(style: .light)
     }()
     
     private lazy var button: UIButton = {

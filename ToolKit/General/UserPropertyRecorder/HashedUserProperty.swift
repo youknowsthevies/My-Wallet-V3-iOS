@@ -24,7 +24,7 @@ public struct HashedUserProperty: UserProperty {
 
 extension HashedUserProperty: Hashable {
     public static func == (lhs: HashedUserProperty, rhs: HashedUserProperty) -> Bool {
-        return lhs.key.rawValue == rhs.key.rawValue
+        lhs.key.rawValue == rhs.key.rawValue
     }
     
     public func hash(into hasher: inout Hasher) {

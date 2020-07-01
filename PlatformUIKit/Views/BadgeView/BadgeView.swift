@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
 import RxCocoa
 import RxSwift
 import ToolKit
+import UIKit
 
 /// A small view that typically sits in a `UITableViewCell` showing
 /// a state such as verified, rejected, or a flag indicating the

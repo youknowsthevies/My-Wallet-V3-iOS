@@ -7,8 +7,8 @@
 //
 
 import PlatformUIKit
-import RxRelay
 import RxCocoa
+import RxRelay
 import RxSwift
 
 /// The screen responsible for auto pairing
@@ -67,7 +67,7 @@ final class AutoPairingViewController: BaseScreenViewController {
 /// Extension for rx that makes `UIView` properties reactive
 extension Reactive where Base: AutoPairingViewController {
     var fallbackAction: Binder<AutoPairingScreenPresenter.FallbackAction> {
-        return Binder(base) { viewController, action in
+        Binder(base) { viewController, action in
             switch action {
             case .stop:
                 viewController.stop()

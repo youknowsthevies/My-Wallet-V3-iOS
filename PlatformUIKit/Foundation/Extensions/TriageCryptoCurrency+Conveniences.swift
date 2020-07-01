@@ -20,6 +20,6 @@ public extension TriageCryptoCurrency {
     }
     
     var logoImage: UIImage {
-        return UIImage(named: logoImageName)!
+        UIImage(named: logoImageName)!
     }
 }

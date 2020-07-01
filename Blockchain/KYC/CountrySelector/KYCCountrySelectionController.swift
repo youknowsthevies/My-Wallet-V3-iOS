@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
+import PlatformKit
 import RxSwift
 import ToolKit
-import PlatformKit
+import UIKit
 
 typealias Countries = [CountryData]
 
@@ -32,7 +32,7 @@ final class KYCCountrySelectionController: KYCBaseViewController, ProgressableVi
     private var countriesMap = SearchableMap<CountryData>()
 
     private lazy var presenter: KYCCountrySelectionPresenter = {
-        return KYCCountrySelectionPresenter(view: self)
+        KYCCountrySelectionPresenter(view: self)
     }()
     
     private let analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
@@ -104,7 +104,7 @@ extension KYCCountrySelectionController: UITableViewDataSource, UITableViewDeleg
     }
 
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        return index
+        index
     }
 
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
@@ -115,7 +115,7 @@ extension KYCCountrySelectionController: UITableViewDataSource, UITableViewDeleg
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return countriesMap.keys.count
+        countriesMap.keys.count
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

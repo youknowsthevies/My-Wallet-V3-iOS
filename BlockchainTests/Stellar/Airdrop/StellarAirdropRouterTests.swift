@@ -6,11 +6,11 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+@testable import Blockchain
+import PlatformKit
 import RxSwift
 import StellarKit
 import XCTest
-import PlatformKit
-@testable import Blockchain
 
 class StellarAirdropRouterTests: XCTestCase {
 

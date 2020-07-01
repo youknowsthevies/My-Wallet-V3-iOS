@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 /// This announcement introduces Bitpay
 final class BitpayAnnouncement: OneTimeAnnouncement {
@@ -16,7 +16,7 @@ final class BitpayAnnouncement: OneTimeAnnouncement {
     // MARK: - Properties
     
     var viewModel: AnnouncementCardViewModel {
-        return AnnouncementCardViewModel(
+        AnnouncementCardViewModel(
             type: type,
             image: AnnouncementCardViewModel.Image(
                 name: "card-icon-bitpay",
@@ -37,7 +37,7 @@ final class BitpayAnnouncement: OneTimeAnnouncement {
     }
     
     var shouldShow: Bool {
-        return !isDismissed
+        !isDismissed
     }
     
     let type = AnnouncementType.bitpay

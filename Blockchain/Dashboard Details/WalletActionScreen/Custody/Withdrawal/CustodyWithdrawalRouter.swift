@@ -8,8 +8,8 @@
 
 import PlatformKit
 import PlatformUIKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 protocol CustodyWithdrawalRouterAPI: class {
     func next(to state: CustodyWithdrawalStateService.State)

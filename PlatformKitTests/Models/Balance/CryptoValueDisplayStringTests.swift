@@ -7,8 +7,8 @@
 //
 
 import BigInt
-import XCTest
 @testable import PlatformKit
+import XCTest
 
 class CryptoValueDisplayStringTests: XCTestCase {
     func testBTC() {

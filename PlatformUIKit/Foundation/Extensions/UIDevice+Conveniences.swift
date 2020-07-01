@@ -16,11 +16,11 @@ final public class DevicePresenter {
         case max = 4 // Max
 
         public static func < (lhs: DevicePresenter.DeviceType, rhs: DevicePresenter.DeviceType) -> Bool {
-            return lhs.rawValue < rhs.rawValue
+            lhs.rawValue < rhs.rawValue
         }
     }
     public static let type: DeviceType = {
-        return UIDevice.current.type
+        UIDevice.current.type
     }()
 }
 

@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import ToolKit
 import NetworkKit
 import PlatformKit
+import RxSwift
+import ToolKit
 
 class KYCCountrySelectionInteractor {
 
@@ -25,11 +25,11 @@ class KYCCountrySelectionInteractor {
     }
 
     func selected(country: CountryData, shouldBeNotifiedWhenAvailable: Bool? = nil) -> Disposable {
-        return sendSelection(countryCode: country.code, shouldBeNotifiedWhenAvailable: shouldBeNotifiedWhenAvailable)
+        sendSelection(countryCode: country.code, shouldBeNotifiedWhenAvailable: shouldBeNotifiedWhenAvailable)
     }
 
     func selected(state: KYCState, shouldBeNotifiedWhenAvailable: Bool? = nil) -> Disposable {
-        return sendSelection(
+        sendSelection(
             countryCode: state.countryCode,
             state: state.code,
             shouldBeNotifiedWhenAvailable: shouldBeNotifiedWhenAvailable
@@ -44,7 +44,7 @@ class KYCCountrySelectionInteractor {
         let sessionTokenSingle = authenticationService.tokenString
         let signedRetailToken = walletNabuSynchronizer.getSignedRetailToken()
         return Single.zip(sessionTokenSingle, signedRetailToken, resultSelector: {
-            return ($0, $1)
+            ($0, $1)
         }).flatMapCompletable { (sessionToken, signedRetailToken) -> Completable in
             var payload = [
                 "jwt": signedRetailToken.token ?? "",

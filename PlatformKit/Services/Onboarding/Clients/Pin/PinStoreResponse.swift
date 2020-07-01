@@ -44,7 +44,7 @@ extension PinStoreResponse {
     
     /// Is the response successful
     public var isSuccessful: Bool {
-        return statusCode == .success && error == nil
+        statusCode == .success && error == nil
     }
     
     public init(from decoder: Decoder) throws {

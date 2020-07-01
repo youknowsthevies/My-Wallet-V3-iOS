@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import UIKit
 import PlatformUIKit
+import UIKit
 
 /// NOTE: This class is not to be actually used by Buy-Sell.
 /// This is only to mimic Buy-Sell during the introduction flow.
@@ -46,18 +46,18 @@ class BuySellPlaceholderViewController: UIViewController {
     }
     
     private lazy var sheetPresenter: BottomSheetPresenting = {
-        return BottomSheetPresenting(ignoresBackroundTouches: false)
+        BottomSheetPresenting(ignoresBackroundTouches: false)
     }()
 }
 
 extension BuySellPlaceholderViewController: NavigatableView {
     
     var leftNavControllerCTAType: NavigationCTAType {
-        return .dismiss
+        .dismiss
     }
     
     var rightNavControllerCTAType: NavigationCTAType {
-        return .none
+        .none
     }
     
     func navControllerRightBarButtonTapped(_ navController: UINavigationController) {

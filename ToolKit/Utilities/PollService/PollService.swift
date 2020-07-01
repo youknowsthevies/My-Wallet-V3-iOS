@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxRelay
+import RxSwift
 
 /// The result of the poll
 public enum PollResult<Value> {
@@ -44,7 +44,7 @@ public class PollService<Value> {
 
     /// Cancel polling
     public var cancel: Completable {
-        return Completable
+        Completable
             .create { [weak self] observer -> Disposable in
                 self?.isActiveRelay.accept(false)
                 observer(.completed)
@@ -54,7 +54,7 @@ public class PollService<Value> {
     
     /// Stop polling if it has been cancelled.
     private var stopPollingIfNecessary: Single<Void> {
-        return isActiveRelay
+        isActiveRelay
             .take(1)
             .asSingle()
             .map { isActive in
@@ -66,7 +66,7 @@ public class PollService<Value> {
     }
 
     private var retryScheduler: Single<Int> {
-        return Single<Int>
+        Single<Int>
             .timer(
                 .seconds(1),
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
@@ -101,7 +101,7 @@ public class PollService<Value> {
 
     /// Start polling by triggering waitForCondition
     private func start() -> Single<PollResult<Value>> {
-        return Single
+        Single
             .create(weak: self) { (self, observer) -> Disposable in
                 self.isActiveRelay.accept(true)
                 observer(.success(()))
@@ -113,9 +113,9 @@ public class PollService<Value> {
     }
 
     private func waitForMatch() -> Single<PollResult<Value>> {
-        return stopPollingIfNecessary
+        stopPollingIfNecessary
             .flatMap(weak: self) { (self, _) -> Single<PollResult<Value>> in
-                return self.fetch()
+                self.fetch()
                     .map(weak: self) { (self, value) in
                         try self.checkForTimeout(lastValue: value)
                     }
@@ -139,7 +139,7 @@ public class PollService<Value> {
         case ServiceError.conditionNotMet:
             return retryScheduler
                 .flatMap(weak: self) { (self, _) -> Single<PollResult<Value>> in
-                    return self.waitForMatch()
+                    self.waitForMatch()
                 }
         default:
             /// Other network errors

@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 /// Provider of balance services and total balance in `FiatValue`
 public protocol BalanceProviding: class {
@@ -32,14 +32,14 @@ public final class BalanceProvider: BalanceProviding {
     
     /// Reduce cross asset fiat balance values into a single fiat value
     public var fiatBalance: Observable<FiatValueCalculationState> {
-        return fiatBalances
+        fiatBalances
             .map { $0.totalFiat }
             .share()
     }
         
     /// Calculates all balances in `WalletBalance`
     public var fiatBalances: Observable<AssetFiatCryptoBalanceCalculationStates> {
-        return Observable
+        Observable
             .combineLatest(
                 services[.ethereum]!.calculationState,
                 services[.pax]!.calculationState,

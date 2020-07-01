@@ -15,6 +15,6 @@ struct TransactionObserverMock: TransactionObserving {
     let paymentDetails: ReceivedPaymentDetails
     
     var paymentReceived: Observable<ReceivedPaymentDetails> {
-        return .just(paymentDetails)
+        .just(paymentDetails)
     }
 }

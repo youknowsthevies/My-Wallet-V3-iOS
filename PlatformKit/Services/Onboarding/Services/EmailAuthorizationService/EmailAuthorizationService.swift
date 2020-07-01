@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxRelay
+import RxSwift
 
 public final class EmailAuthorizationService {
     
@@ -31,7 +31,7 @@ public final class EmailAuthorizationService {
     /// Steams a `completed` event once, upon successful authorization.
     /// Keeps polling until completion event is received
     public var authorize: Completable {
-        return authorizeEmail()
+        authorizeEmail()
             .asCompletable()
     }
     

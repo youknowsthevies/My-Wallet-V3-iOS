@@ -7,12 +7,12 @@
 //
 
 import Foundation
-import RxSwift
-import RxRelay
-import RxCocoa
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
+import ToolKit
 
 /// Presentation layer for spendable balance cell on send screen
 final class SendSpendableBalanceViewPresenter {
@@ -22,7 +22,7 @@ final class SendSpendableBalanceViewPresenter {
     /// An attributed string that visualize the spendable balance
     /// Streams on the main thread and replays the latest value.
     var attributedString: Driver<NSAttributedString> {
-        return attributesStringRelay.asDriver()
+        attributesStringRelay.asDriver()
     }
     
     /// Tap receiver

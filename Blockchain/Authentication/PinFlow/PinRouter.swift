@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
 import PlatformKit
+import PlatformUIKit
 import ToolKit
 
 /// PIN creation / changing / authentication. Responsible for routing screens during flow.
@@ -20,7 +20,7 @@ final class PinRouter: NSObject {
     
     /// Returns `true` in case login authentication is currently being displayed
     var isDisplayingLoginAuthentication: Bool {
-        return isBeingDisplayed && flow.isLoginAuthentication
+        isBeingDisplayed && flow.isLoginAuthentication
     }
     
     /// Is being displayed right now

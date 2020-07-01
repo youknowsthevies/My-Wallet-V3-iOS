@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
 import RxCocoa
 import RxSwift
+import UIKit
 
 public struct BadgeViewModel {
     

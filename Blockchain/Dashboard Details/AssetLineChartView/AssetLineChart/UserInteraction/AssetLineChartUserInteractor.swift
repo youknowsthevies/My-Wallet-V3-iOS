@@ -6,18 +6,18 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import Charts
+import Foundation
 import PlatformKit
 import PlatformUIKit
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 final class AssetLineChartUserInteractor: AssetLineChartUserInteracting, ChartViewDelegate {
     
     var state: Observable<AssetLineChartInteractionState> {
-        return stateRelay
+        stateRelay
             .observeOn(MainScheduler.instance)
             .asObservable()
     }
@@ -26,7 +26,7 @@ final class AssetLineChartUserInteractor: AssetLineChartUserInteracting, ChartVi
     private let stateRelay = BehaviorRelay<AssetLineChartInteractionState>(value: .deselected)
     private let deselectedTrigger = PublishRelay<Void>()
     private var selectedIndex: Observable<Int> {
-        return selectedIndexRelay.asObservable()
+        selectedIndexRelay.asObservable()
     }
     private var selectedIndexRelay = PublishRelay<Int>()
     
@@ -37,12 +37,12 @@ final class AssetLineChartUserInteractor: AssetLineChartUserInteracting, ChartVi
     
     private func setup() {
         deselectedTrigger
-            .map { return .deselected }
+            .map { .deselected }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
         
         selectedIndexRelay
-            .map { return .selected($0) }
+            .map { .selected($0) }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }

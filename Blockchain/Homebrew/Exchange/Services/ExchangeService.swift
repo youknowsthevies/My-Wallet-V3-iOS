@@ -7,9 +7,9 @@
 //
 
 import Foundation
+import PlatformKit
 import RxSwift
 import ToolKit
-import PlatformKit
 
 typealias CompletionHandler = ((Result<[ExchangeTradeCellModel], Error>) -> Void)
 
@@ -37,7 +37,7 @@ class ExchangeService: NSObject {
     
     var tradeModels: [ExchangeTradeCellModel] {
         get {
-            return _tradeModels.value
+            _tradeModels.value
         }
         set {
             _tradeModels.mutate { $0 = newValue }
@@ -46,7 +46,7 @@ class ExchangeService: NSObject {
     
     var canPage: Bool {
         get {
-            return _canPage.value
+            _canPage.value
         }
         set {
             _canPage.mutate { $0 = newValue }
@@ -160,14 +160,13 @@ extension ExchangeService: ExchangeHistoryAPI {
         }
     }
     
-    
     func cancel() {
         queue.async { [weak self] in
             guard let self = self else { return }
             
             guard self.isExecuting() else { return }
             
-            self.tradeQueue.operations.forEach({$0.cancel()})
+            self.tradeQueue.operations.forEach({ $0.cancel() })
         }
     }
     

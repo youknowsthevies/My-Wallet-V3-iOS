@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
 import PlatformKit
-import RxSwift
+import PlatformUIKit
 import RxCocoa
+import RxSwift
 import ToolKit
 
 final class CustodyWithdrawalScreenPresenter {
@@ -39,23 +39,23 @@ final class CustodyWithdrawalScreenPresenter {
     }
     
     var titleView: Screen.Style.TitleView {
-        return .text(value: "\(LocalizationID.title) \(currency.name) \(LocalizationConstants.wallet)")
+        .text(value: "\(LocalizationID.title) \(currency.name) \(LocalizationConstants.wallet)")
     }
     
     var barStyle: Screen.Style.Bar {
         if #available(iOS 13.0, *) {
-            return .darkContent(ignoresStatusBar: false, background: .white)
+            return .darkContent()
         } else {
-            return .lightContent(ignoresStatusBar: false, background: .navigationBarBackground)
+            return .lightContent()
         }
     }
     
     var activityIndicatorVisibility: Driver<Visibility> {
-        return activityIndicatorVisibilityRelay.asDriver()
+        activityIndicatorVisibilityRelay.asDriver()
     }
     
     var balanceViewVisibility: Driver<Visibility> {
-        return balanceViewVisibilityRelay.asDriver()
+        balanceViewVisibilityRelay.asDriver()
     }
     
     let descriptionLabel: LabelContent

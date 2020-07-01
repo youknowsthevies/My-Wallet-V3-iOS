@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
+import PlatformKit
 import RxCocoa
 import RxRelay
+import RxSwift
 import ToolKit
-import PlatformKit
 
 /// A service that coordinates
 final class RemoteNotificationService: RemoteNotificationServicing {
@@ -57,7 +57,7 @@ extension RemoteNotificationService: RemoteNotificationTokenSending {
     /// Typically called after the user has identified himself with his PIN since the
     /// user credentials are known at that time
     func sendTokenIfNeeded() -> Single<Void> {
-        return authorizer.isAuthorized
+        authorizer.isAuthorized
             .filter { isAuthorized in
                 guard isAuthorized else {
                     throw ServiceError.unauthorizedRemoteNotificationsPermission
@@ -65,10 +65,10 @@ extension RemoteNotificationService: RemoteNotificationTokenSending {
                 return true
             }
             .flatMap(weak: self) { (self, _) -> Single<String> in
-                return self.externalService.token
+                self.externalService.token
             }
             .flatMap(weak: self, { (self, token) -> Single<Void> in
-                return self.networkService.register(with: token, using: self.walletRepository)
+                self.networkService.register(with: token, using: self.walletRepository)
             })
     }
 }

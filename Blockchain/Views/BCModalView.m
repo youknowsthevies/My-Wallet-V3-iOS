@@ -30,15 +30,11 @@
             myHolderViewFrame = [UIView rootViewSafeAreaFrameWithNavigationBar:YES tabBar:NO assetSelector:NO];
             CGFloat topBarHeight = [ConstantsObjcBridge defaultNavigationBarHeight] + safeAreaInsetTop;
             offsetY = topBarHeight;
-            UIView *topBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, window.frame.size.width, topBarHeight)];
-            topBarView.backgroundColor = UIColor.brandPrimary;
+            CGRect topBarFrame = CGRectMake(0, 0, window.frame.size.width, topBarHeight);
+            UIView *topBarView = [self createTopBarViewWithFrame:topBarFrame];
             [self addSubview:topBarView];
 
-            UILabel *headerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-            headerLabel.font = [UIFont fontWithName:FONT_MONTSERRAT_REGULAR size:FONT_SIZE_TOP_BAR_TEXT];
-            headerLabel.textColor = [UIColor whiteColor];
-            headerLabel.textAlignment = NSTextAlignmentCenter;
-            headerLabel.adjustsFontSizeToFitWidth = YES;
+            UILabel *headerLabel = [self createHeader];
             headerLabel.text = headerText;
             [headerLabel sizeToFit];
             CGFloat labelWidth = MIN(headerLabel.frame.size.width, topBarView.frame.size.width - 105);

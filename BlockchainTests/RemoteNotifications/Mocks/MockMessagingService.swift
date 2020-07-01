@@ -27,7 +27,7 @@ final class MockMessagingService: FCMServiceAPI {
     
     @discardableResult
     func appDidReceiveMessage(_ message: [AnyHashable: Any]) -> MessagingMessageInfo {
-        return MessagingMessageInfo()
+        MessagingMessageInfo()
     }
     
     func subscribe(toTopic topic: String, completion: FIRMessagingTopicOperationCompletion?) {

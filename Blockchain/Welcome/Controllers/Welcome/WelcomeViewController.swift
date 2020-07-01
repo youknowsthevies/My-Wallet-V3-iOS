@@ -75,7 +75,7 @@ final class WelcomeViewController: BaseScreenViewController {
 
 #if DEBUG
 extension WelcomeViewController {
-    override var canBecomeFirstResponder: Bool { return true }
+    override var canBecomeFirstResponder: Bool { true }
     override func motionBegan(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         switch motion {
         case .motionShake:

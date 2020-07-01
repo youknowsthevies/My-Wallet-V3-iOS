@@ -6,8 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import PlatformKit
+import RxSwift
 import stellarsdk
 
 public class StellarAssetAccountDetailsService: AssetAccountDetailsAPI {
@@ -23,9 +23,9 @@ public class StellarAssetAccountDetailsService: AssetAccountDetailsAPI {
     }
     
     public func accountDetails(for accountID: String) -> Single<AccountDetails> {
-        return accountResponse(for: accountID)
+        accountResponse(for: accountID)
             .map { response -> AccountDetails in
-                return response.toAssetAccountDetails()
+                response.toAssetAccountDetails()
             }
             .catchError { error in
                 // If the network call to Horizon fails due to there not being a default account (i.e. account is not yet
@@ -40,7 +40,7 @@ public class StellarAssetAccountDetailsService: AssetAccountDetailsAPI {
     // MARK: Private Functions
     
     fileprivate func accountResponse(for accountID: String) -> Single<AccountResponse> {
-        return Single<AccountResponse>.create { [weak self] event -> Disposable in
+        Single<AccountResponse>.create { [weak self] event -> Disposable in
             self?.service.getAccountDetails(accountId: accountID, response: { response -> (Void) in
                 switch response {
                 case .success(details: let details):

@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 /// Transfer in crypto announcement
 final class TransferInCryptoAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {

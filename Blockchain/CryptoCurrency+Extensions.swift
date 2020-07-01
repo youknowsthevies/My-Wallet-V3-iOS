@@ -31,7 +31,7 @@ extension CryptoCurrency {
     
     /// Returns `true` if an asset's addresses can be reused
     var shouldAddressesBeReused: Bool {
-        return Set<CryptoCurrency>([.ethereum, .stellar, .pax]).contains(self)
+        Set<CryptoCurrency>([.ethereum, .stellar, .pax]).contains(self)
     }
     
     /// Returns `true` for a bitcoin cash asset

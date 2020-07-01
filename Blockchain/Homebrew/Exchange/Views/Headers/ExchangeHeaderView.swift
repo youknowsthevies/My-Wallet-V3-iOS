@@ -10,7 +10,7 @@ import Foundation
 
 class ExchangeHeaderView: UICollectionReusableView {
     
-    static var identifier: String { return String(describing: self) }
+    static var identifier: String { String(describing: self) }
     
     func configure(with model: ExchangeHeader) {
         assertionFailure("Should be implemented by subclasses")
@@ -19,6 +19,6 @@ class ExchangeHeaderView: UICollectionReusableView {
     /// Subclasses should override this function to determine the height
     /// of the header view.
     class func heightForProposedWidth(_ width: CGFloat, model: ExchangeHeader) -> CGFloat {
-        return 0.0
+        0.0
     }
 }

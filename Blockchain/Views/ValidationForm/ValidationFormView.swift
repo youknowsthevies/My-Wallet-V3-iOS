@@ -48,11 +48,11 @@ extension ValidationFormView where Self: UIViewController {
 
     func checkFieldsValidity() -> Bool {
         var valid: Bool = true
-        validationFields.forEach({$0.resignFocus()})
+        validationFields.forEach({ $0.resignFocus() })
         for field in validationFields {
             guard case .valid = field.validate(withStyling: true) else {
                 valid = false
-                guard !validationFields.contains(where: {$0.isFocused() == true}) else { continue }
+                guard !validationFields.contains(where: { $0.isFocused() == true }) else { continue }
                 field.becomeFocused()
                 continue
             }

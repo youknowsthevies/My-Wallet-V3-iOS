@@ -6,12 +6,12 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-import RxTest
-import RxSwift
-import PlatformKit
-@testable import EthereumKit
 @testable import ERC20Kit
+@testable import EthereumKit
+import PlatformKit
+import RxSwift
+import RxTest
+import XCTest
 
 class ERC20AssetAccountDetailsServiceTests: XCTestCase {
 

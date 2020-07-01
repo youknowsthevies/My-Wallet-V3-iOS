@@ -6,8 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import PlatformKit
+import RxSwift
 
 /// Protocol definition for a component that can synchronize state between the wallet
 /// and Nabu.

@@ -7,8 +7,8 @@
 //
 
 import PlatformKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 /// Validates the users mnemonic or passphrase entry
 final class MnemonicValidator: MnemonicValidating {
@@ -24,7 +24,7 @@ final class MnemonicValidator: MnemonicValidating {
     // MARK: - MnemonicValidating Properties
     
     var score: Observable<MnemonicValidationScore> {
-        return scoreRelay.asObservable()
+        scoreRelay.asObservable()
     }
     
     // MARK: - Private Properties
@@ -53,7 +53,7 @@ final class MnemonicValidator: MnemonicValidating {
                 
                 /// The total number of duplicates entered
                 let duplicatesCount = duplicates.map { dupe in
-                    return components.filter { $0 == dupe }.count
+                    components.filter { $0 == dupe }.count
                 }.reduce(0, +)
                 
                 /// Make a set for all the individual entries
@@ -81,7 +81,7 @@ final class MnemonicValidator: MnemonicValidating {
                 /// Find the `NSRange` value for each word or incomplete word that is not
                 /// included in the `WordList`
                 let ranges = difference.map { delta -> [NSRange] in
-                    return phrase.ranges(of: delta)
+                    phrase.ranges(of: delta)
                 }.flatMap { $0 }
                 
                 return .invalid(ranges)

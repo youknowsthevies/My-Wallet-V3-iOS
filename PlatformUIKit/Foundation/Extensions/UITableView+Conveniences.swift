@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
 import PlatformKit
+import UIKit
 
 public extension UITableView {
     

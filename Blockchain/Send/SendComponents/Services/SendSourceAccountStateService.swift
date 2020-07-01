@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import RxSwift
-import RxRelay
 import EthereumKit
+import Foundation
 import PlatformKit
+import RxRelay
+import RxSwift
 
 /// A protocol that should check if the source account is valid for making a transaction
 protocol SendSourceAccountStateServicing: class {
@@ -29,7 +29,7 @@ final class SendSourceAccountStateService: SendSourceAccountStateServicing {
     
     /// Streams the source account state
     var state: Observable<SendSourceAccountState> {
-        return stateRelay
+        stateRelay
             .asObservable()
             .distinctUntilChanged()
     }

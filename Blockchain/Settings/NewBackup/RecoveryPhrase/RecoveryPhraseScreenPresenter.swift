@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import PlatformKit
 import PlatformUIKit
+import RxSwift
 
 final class RecoveryPhraseScreenPresenter {
     
@@ -29,7 +29,7 @@ final class RecoveryPhraseScreenPresenter {
     }
     
     var barStyle: Screen.Style.Bar {
-        .darkContent(ignoresStatusBar: false, background: .white)
+        .darkContent()
     }
     
     // MARK: - View Models

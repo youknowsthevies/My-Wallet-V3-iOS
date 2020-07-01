@@ -34,7 +34,7 @@ extension KYCTiersHeaderViewModel {
     /// This is a convenience function for showing the `unavailable` header state
     /// without any CTAs.
     fileprivate static func unavailable(suppressDismissCTA: Bool) -> KYCTiersHeaderViewModel {
-        return .unavailable(
+        .unavailable(
             actions: nil,
             suppressDismissCTA: suppressDismissCTA
         )
@@ -76,7 +76,7 @@ extension KYCTiersHeaderViewModel {
     }
     
     func estimatedHeight(for width: CGFloat, model: KYCTiersHeaderViewModel) -> CGFloat {
-        return headerType.estimatedHeight(
+        headerType.estimatedHeight(
             for: width,
             model: self
         )

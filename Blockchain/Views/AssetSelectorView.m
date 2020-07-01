@@ -68,9 +68,9 @@
         [self.tableView registerNib:[UINib nibWithNibName:@"AssetTypeCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:[AssetTypeCell identifier]];
         [self addSubview:self.tableView];
         
-        self.tableView.separatorColor = [UIColor darkBlue];
-        self.tableView.backgroundColor = [UIColor darkBlue];
-        self.backgroundColor = [UIColor darkBlue];
+        self.tableView.separatorColor = [UIColor navigationBarBackground];
+        self.tableView.backgroundColor = [UIColor navigationBarBackground];
+        self.backgroundColor = [UIColor navigationBarBackground];
                 
         self.tableView.translatesAutoresizingMaskIntoConstraints = false;
 

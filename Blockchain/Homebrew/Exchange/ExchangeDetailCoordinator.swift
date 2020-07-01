@@ -7,11 +7,11 @@
 //
 
 import Foundation
-import RxSwift
-import ToolKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import RxSwift
+import ToolKit
 
 protocol ExchangeDetailCoordinatorDelegate: class {
     func coordinator(_ detailCoordinator: ExchangeDetailCoordinator, updated model: ExchangeDetailPageModel)
@@ -40,17 +40,17 @@ class ExchangeDetailCoordinator: NSObject {
     
     fileprivate var accountRepository: AssetAccountRepositoryAPI {
         get {
-            return AssetAccountRepository.shared
+            AssetAccountRepository.shared
         }
     }
     fileprivate var fiatCurrencyCode: String = {
-        return BlockchainSettings.App.shared.fiatCurrencyCode
+        BlockchainSettings.App.shared.fiatCurrencyCode
     }()
     fileprivate var fiatCurrencySymbol: String = {
-        return BlockchainSettings.App.shared.fiatCurrencySymbol
+        BlockchainSettings.App.shared.fiatCurrencySymbol
     }()
     fileprivate var bus: WalletActionEventBus = {
-        return WalletActionEventBus()
+        WalletActionEventBus()
     }()
     fileprivate let disposables = CompositeDisposable()
 
@@ -92,7 +92,8 @@ class ExchangeDetailCoordinator: NSObject {
                     .subscribe(onNext: { [weak self] name in
                         guard let self = self else { return }
                         self.interface?.updateBackgroundColor(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1))
-                        self.interface?.updateNavigationBar(appearance: NavigationBarAppearanceLight, color: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1))
+                        self.interface?.updateNavigationBar(appearance: BCNavigationController.Appearance.light,
+                                                            color: UIColor.NavigationBar.DarkContent.background)
                         self.interface?.updateTitle(LocalizationConstants.Swap.confirmSwap)
                         
                         let pair = ExchangeCellModel.TradingPair(
@@ -176,7 +177,8 @@ class ExchangeDetailCoordinator: NSObject {
                     .subscribe(onNext: { [weak self] name in
                         guard let self = self else { return }
                         self.interface?.updateBackgroundColor(.brandPrimary)
-                        self.interface?.updateNavigationBar(appearance: NavigationBarAppearanceDark, color: .brandPrimary)
+                        self.interface?.updateNavigationBar(appearance: BCNavigationController.Appearance.dark,
+                                                            color: UIColor.NavigationBar.LightContent.background)
                         self.interface?.updateTitle(LocalizationConstants.Swap.swapLocked)
                         self.interface?.navigationBarVisibility(.hidden)
                         
@@ -255,8 +257,8 @@ class ExchangeDetailCoordinator: NSObject {
             case .overview(let trade):
                 interface?.updateBackgroundColor(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1))
                 interface?.updateNavigationBar(
-                    appearance: NavigationBarAppearanceDark,
-                    color: trade.alertModel != nil ? #colorLiteral(red: 0.41, green: 0.44, blue: 0.52, alpha: 1) : .brandPrimary
+                    appearance: BCNavigationController.Appearance.dark,
+                    color: trade.alertModel != nil ? #colorLiteral(red: 0.41, green: 0.44, blue: 0.52, alpha: 1) : UIColor.NavigationBar.DarkContent.background
                 )
                 interface?.updateTitle(LocalizationConstants.Swap.orderID + " " + trade.identifier)
                 interface?.navigationBarVisibility(.visible)
@@ -341,7 +343,7 @@ class ExchangeDetailCoordinator: NSObject {
                 delegate?.coordinator(self, updated: current)
                 if trade.alertModel != nil {
                     interface?.updateNavigationBar(
-                        appearance: NavigationBarAppearanceDark,
+                        appearance: BCNavigationController.Appearance.dark,
                         color: #colorLiteral(red: 0.41, green: 0.44, blue: 0.52, alpha: 1)
                     )
                 }
@@ -546,7 +548,7 @@ extension ExchangeDetailCoordinator {
     }
     
     fileprivate func aboveBalanceAlert(_ value: FiatValue) -> AlertModel {
-        return AlertModel(
+        AlertModel(
             headline: LocalizationConstants.Swap.marketsMoving,
             body: LocalizationConstants.Swap.marketMovementMaximum,
             actions: [updateOrderAction(), moreInfoAction()],
@@ -555,7 +557,7 @@ extension ExchangeDetailCoordinator {
     }
     
     fileprivate func albertErrorAlert() -> AlertModel {
-        return AlertModel(
+        AlertModel(
             headline: LocalizationConstants.Swap.oopsSomethingWentWrong,
             body: LocalizationConstants.Swap.oopsSwapDescription,
             actions: [tryAgainAction()],
@@ -566,7 +568,7 @@ extension ExchangeDetailCoordinator {
     // MARK: AlertActions
     
     fileprivate func updateOrderAction() -> AlertAction {
-        return AlertAction(
+        AlertAction(
             style: .confirm(LocalizationConstants.Swap.updateOrder),
             metadata: .pop
         )
@@ -581,7 +583,7 @@ extension ExchangeDetailCoordinator {
     }
     
     fileprivate func increaseLimitsAction() -> AlertAction {
-        return AlertAction(
+        AlertAction(
             style: .default(LocalizationConstants.Swap.increaseMyLimits),
             metadata: .block({ [weak self] in
                 guard let this = self else { return }
@@ -591,7 +593,7 @@ extension ExchangeDetailCoordinator {
     }
     
     fileprivate func tryAgainAction() -> AlertAction {
-        return AlertAction(
+        AlertAction(
             style: .confirm(LocalizationConstants.Swap.tryAgain),
             metadata: .block({ [weak self] in
                 guard let this = self else { return }
@@ -610,38 +612,38 @@ extension ExchangeDetailCoordinator {
 
 extension ExchangeDetailCoordinator {
     fileprivate func tradingLimitInfo(info: @escaping (TradeLimits) -> Decimal) -> Maybe<Decimal> {
-        return tradeLimitsService.getTradeLimits(
+        tradeLimitsService.getTradeLimits(
             withFiatCurrency: fiatCurrencyCode,
             ignoringCache: false).map { tradingLimits -> Decimal in
-                return info(tradingLimits)
+                info(tradingLimits)
             }.asMaybe()
     }
     
     fileprivate func minTradingLimit() -> Maybe<Decimal> {
-        return tradingLimitInfo(info: { tradingLimits -> Decimal in
-            return tradingLimits.minOrder
+        tradingLimitInfo(info: { tradingLimits -> Decimal in
+            tradingLimits.minOrder
         })
     }
     
     fileprivate func maxTradingLimit() -> Maybe<Decimal> {
-        return tradingLimitInfo(info: { tradingLimits -> Decimal in
-            return tradingLimits.maxPossibleOrder
+        tradingLimitInfo(info: { tradingLimits -> Decimal in
+            tradingLimits.maxPossibleOrder
         })
     }
     
     fileprivate func dailyAvailable() -> Maybe<Decimal?> {
-        return tradeLimitsService.getTradeLimits(
+        tradeLimitsService.getTradeLimits(
             withFiatCurrency: fiatCurrencyCode,
             ignoringCache: false).asMaybe().map { limits -> Decimal? in
-                return limits.daily?.available
+                limits.daily?.available
         }
     }
     
     fileprivate func annualAvailable() -> Maybe<Decimal?> {
-        return tradeLimitsService.getTradeLimits(
+        tradeLimitsService.getTradeLimits(
             withFiatCurrency: fiatCurrencyCode,
             ignoringCache: false).asMaybe().map { limits -> Decimal? in
-                return limits.annual?.available
+                limits.annual?.available
         }
     }
 }

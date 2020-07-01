@@ -6,12 +6,12 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import ToolKit
+import BuySellKit
 import PlatformKit
 import PlatformUIKit
-import BuySellKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 /**
  Settings for the current user.
@@ -23,11 +23,11 @@ final class BlockchainSettings: NSObject {
     // class function declared so that the BlockchainSettings singleton can be accessed from obj-C
     // TODO remove this once all Obj-C references of this file have been removed
     @objc class func sharedAppInstance() -> App {
-        return App.shared
+        App.shared
     }
 
     @objc class func sharedOnboardingInstance() -> Onboarding {
-        return Onboarding.shared
+        Onboarding.shared
     }
 
     // MARK: - App
@@ -38,12 +38,12 @@ final class BlockchainSettings: NSObject {
         static let shared = App()
 
         private lazy var defaults: UserDefaults = {
-            return UserDefaults.standard
+            UserDefaults.standard
         }()
 
         // class function declared so that the App singleton can be accessed from obj-C
         @objc class func sharedInstance() -> App {
-            return App.shared
+            App.shared
         }
 
         // MARK: - Properties
@@ -59,7 +59,7 @@ final class BlockchainSettings: NSObject {
          */
         @objc var appBecameActiveCount: Int {
             get {
-                return defaults.integer(forKey: UserDefaults.Keys.appBecameActiveCount.rawValue)
+                defaults.integer(forKey: UserDefaults.Keys.appBecameActiveCount.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.appBecameActiveCount.rawValue)
@@ -68,7 +68,7 @@ final class BlockchainSettings: NSObject {
         
         @objc var didRequestCameraPermissions: Bool {
             get {
-                return defaults.bool(forKey: UserDefaults.Keys.didRequestCameraPermissions.rawValue)
+                defaults.bool(forKey: UserDefaults.Keys.didRequestCameraPermissions.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.didRequestCameraPermissions.rawValue)
@@ -77,7 +77,7 @@ final class BlockchainSettings: NSObject {
         
         @objc var didRequestMicrophonePermissions: Bool {
             get {
-                return defaults.bool(forKey: UserDefaults.Keys.didRequestMicrophonePermissions.rawValue)
+                defaults.bool(forKey: UserDefaults.Keys.didRequestMicrophonePermissions.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.didRequestMicrophonePermissions.rawValue)
@@ -86,7 +86,7 @@ final class BlockchainSettings: NSObject {
         
         @objc var didRequestNotificationPermissions: Bool {
             get {
-                return defaults.bool(forKey: UserDefaults.Keys.didRequestNotificationPermissions.rawValue)
+                defaults.bool(forKey: UserDefaults.Keys.didRequestNotificationPermissions.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.didRequestNotificationPermissions.rawValue)
@@ -105,7 +105,7 @@ final class BlockchainSettings: NSObject {
         */
         var encryptedPinPassword: String? {
             get {
-                return defaults.string(forKey: UserDefaults.Keys.encryptedPinPassword.rawValue) ??
+                defaults.string(forKey: UserDefaults.Keys.encryptedPinPassword.rawValue) ??
                     defaults.string(forKey: UserDefaults.Keys.legacyEncryptedPinPassword.rawValue)
             }
             set {
@@ -116,7 +116,7 @@ final class BlockchainSettings: NSObject {
 
         @objc var hasEndedFirstSession: Bool {
             get {
-                return defaults.bool(forKey: UserDefaults.Keys.hasEndedFirstSession.rawValue)
+                defaults.bool(forKey: UserDefaults.Keys.hasEndedFirstSession.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.hasEndedFirstSession.rawValue)
@@ -125,7 +125,7 @@ final class BlockchainSettings: NSObject {
         
         @objc var pin: String? {
             get {
-                return KeychainItemWrapper.pinFromKeychain()
+                KeychainItemWrapper.pinFromKeychain()
             }
             set {
                 guard let pin = newValue else {
@@ -137,12 +137,12 @@ final class BlockchainSettings: NSObject {
         }
 
         @objc var isPinSet: Bool {
-            return pinKey != nil && encryptedPinPassword != nil
+            pinKey != nil && encryptedPinPassword != nil
         }
 
         @objc var pinKey: String? {
             get {
-                return defaults.string(forKey: UserDefaults.Keys.pinKey.rawValue)
+                defaults.string(forKey: UserDefaults.Keys.pinKey.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.pinKey.rawValue)
@@ -155,7 +155,7 @@ final class BlockchainSettings: NSObject {
         /// should be fiat, if set to true, or the asset-specific symbol, if false.
         @objc var symbolLocal: Bool {
             get {
-                return defaults.bool(forKey: UserDefaults.Keys.symbolLocal.rawValue)
+                defaults.bool(forKey: UserDefaults.Keys.symbolLocal.rawValue)
             }
             set {
                 let oldValue = symbolLocal
@@ -185,7 +185,7 @@ final class BlockchainSettings: NSObject {
         /// The first 5 characters of SHA256 hash of the user's password
         @objc var passwordPartHash: String? {
             get {
-                return defaults.string(forKey: UserDefaults.Keys.passwordPartHash.rawValue)
+                defaults.string(forKey: UserDefaults.Keys.passwordPartHash.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.passwordPartHash.rawValue)
@@ -204,7 +204,7 @@ final class BlockchainSettings: NSObject {
          */
         @objc var biometryEnabled: Bool {
             get {
-                return defaults.bool(forKey: UserDefaults.Keys.biometryEnabled.rawValue)
+                defaults.bool(forKey: UserDefaults.Keys.biometryEnabled.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.biometryEnabled.rawValue)
@@ -213,7 +213,7 @@ final class BlockchainSettings: NSObject {
 
         @objc var guid: String? {
             get {
-                return KeychainItemWrapper.guid()
+                KeychainItemWrapper.guid()
             }
             set {
                 guard let guid = newValue else {
@@ -247,7 +247,7 @@ final class BlockchainSettings: NSObject {
          */
         @objc var swipeToReceiveEnabled: Bool {
             get {
-                return defaults.bool(forKey: UserDefaults.Keys.swipeToReceiveEnabled.rawValue)
+                defaults.bool(forKey: UserDefaults.Keys.swipeToReceiveEnabled.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.swipeToReceiveEnabled.rawValue)
@@ -256,7 +256,7 @@ final class BlockchainSettings: NSObject {
 
         @objc var hideTransferAllFundsAlert: Bool {
             get {
-                return defaults.bool(forKey: UserDefaults.Keys.hideTransferAllFundsAlert.rawValue)
+                defaults.bool(forKey: UserDefaults.Keys.hideTransferAllFundsAlert.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.hideTransferAllFundsAlert.rawValue)
@@ -266,7 +266,7 @@ final class BlockchainSettings: NSObject {
         /// Ether address to be used for swipe to receive
         @objc var swipeAddressForEther: String? {
             get {
-                return KeychainItemWrapper.getSingleSwipeAddress(for: .ether)
+                KeychainItemWrapper.getSingleSwipeAddress(for: .ether)
             }
             set {
                 guard let etherAddress = newValue else {
@@ -280,7 +280,7 @@ final class BlockchainSettings: NSObject {
         /// XLM address to be used for swipe to receive
         @objc var swipeAddressForStellar: String? {
             get {
-                return KeychainItemWrapper.getSingleSwipeAddress(for: .stellar)
+                KeychainItemWrapper.getSingleSwipeAddress(for: .stellar)
             }
             set {
                 guard let xlmAddress = newValue else {
@@ -294,7 +294,7 @@ final class BlockchainSettings: NSObject {
         /// XLM address to be used for swipe to receive
         @objc var swipeAddressForPax: String? {
             get {
-                return KeychainItemWrapper.getSingleSwipeAddress(for: .pax)
+                KeychainItemWrapper.getSingleSwipeAddress(for: .pax)
             }
             set {
                 guard let paxAddress = newValue else {
@@ -313,7 +313,7 @@ final class BlockchainSettings: NSObject {
          */
         @objc var defaultAccountLabelledAddressesCount: Int {
             get {
-                return defaults.integer(forKey: UserDefaults.Keys.defaultAccountLabelledAddressesCount.rawValue)
+                defaults.integer(forKey: UserDefaults.Keys.defaultAccountLabelledAddressesCount.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.defaultAccountLabelledAddressesCount.rawValue)
@@ -328,7 +328,7 @@ final class BlockchainSettings: NSObject {
         */
         var dontAskUserToShowAppReviewPrompt: Bool {
             get {
-                return defaults.bool(forKey: UserDefaults.Keys.dontAskUserToShowAppReviewPrompt.rawValue)
+                defaults.bool(forKey: UserDefaults.Keys.dontAskUserToShowAppReviewPrompt.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.dontAskUserToShowAppReviewPrompt.rawValue)
@@ -345,7 +345,7 @@ final class BlockchainSettings: NSObject {
          */
         @objc var didTapOnAirdropDeepLink: Bool {
             get {
-                return defaults.bool(forKey: UserDefaults.Keys.didTapOnAirdropDeepLink.rawValue)
+                defaults.bool(forKey: UserDefaults.Keys.didTapOnAirdropDeepLink.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.didTapOnAirdropDeepLink.rawValue)
@@ -356,7 +356,7 @@ final class BlockchainSettings: NSObject {
         /// of tapping on a deep link
         var didAttemptToRouteForAirdrop: Bool {
             get {
-                return defaults.bool(forKey: UserDefaults.Keys.didAttemptToRouteForAirdrop.rawValue)
+                defaults.bool(forKey: UserDefaults.Keys.didAttemptToRouteForAirdrop.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.didAttemptToRouteForAirdrop.rawValue)
@@ -367,7 +367,7 @@ final class BlockchainSettings: NSObject {
         /// value is used to continue KYC'ing at the Verify Your Identity step.
         var didTapOnDocumentResubmissionDeepLink: Bool {
             get {
-                return defaults.bool(forKey: UserDefaults.Keys.didTapOnDocumentResubmissionDeepLink.rawValue)
+                defaults.bool(forKey: UserDefaults.Keys.didTapOnDocumentResubmissionDeepLink.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.didTapOnDocumentResubmissionDeepLink.rawValue)
@@ -378,7 +378,7 @@ final class BlockchainSettings: NSObject {
         /// value is used to continue KYC'ing at the Verify Email step.
         var didTapOnKycDeepLink: Bool {
             get {
-                return defaults.bool(forKey: UserDefaults.Keys.didTapOnKycDeepLink.rawValue)
+                defaults.bool(forKey: UserDefaults.Keys.didTapOnKycDeepLink.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.didTapOnKycDeepLink.rawValue)
@@ -390,7 +390,7 @@ final class BlockchainSettings: NSObject {
         /// Identity screen
         var documentResubmissionLinkReason: String? {
             get {
-                return defaults.string(forKey: UserDefaults.Keys.documentResubmissionLinkReason.rawValue)
+                defaults.string(forKey: UserDefaults.Keys.documentResubmissionLinkReason.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.documentResubmissionLinkReason.rawValue)
@@ -401,7 +401,7 @@ final class BlockchainSettings: NSObject {
         /// from the Exchange into the mobile app.
         var exchangeLinkIdentifier: String? {
             get {
-                return defaults.string(forKey: UserDefaults.Keys.exchangeLinkIdentifier.rawValue)
+                defaults.string(forKey: UserDefaults.Keys.exchangeLinkIdentifier.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.exchangeLinkIdentifier.rawValue)
@@ -410,7 +410,7 @@ final class BlockchainSettings: NSObject {
         
         var didTapOnExchangeDeepLink: Bool {
             get {
-                return defaults.bool(forKey: UserDefaults.Keys.didTapOnExchangeDeepLink.rawValue)
+                defaults.bool(forKey: UserDefaults.Keys.didTapOnExchangeDeepLink.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.didTapOnExchangeDeepLink.rawValue)
@@ -419,7 +419,7 @@ final class BlockchainSettings: NSObject {
         
         @objc var custodySendInterstitialViewed: Bool {
             get {
-                return defaults.bool(forKey: UserDefaults.Keys.custodySendInterstitialViewed.rawValue)
+                defaults.bool(forKey: UserDefaults.Keys.custodySendInterstitialViewed.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.custodySendInterstitialViewed.rawValue)
@@ -507,7 +507,7 @@ final class BlockchainSettings: NSObject {
         static let shared: Onboarding = Onboarding()
 
         private lazy var defaults: UserDefaults = {
-            return .standard
+            .standard
         }()
 
         var walletIntroLatestLocation: WalletIntroductionLocation? {
@@ -535,7 +535,7 @@ final class BlockchainSettings: NSObject {
         */
         var firstRun: Bool {
             get {
-                return defaults.bool(forKey: UserDefaults.Keys.firstRun.rawValue)
+                defaults.bool(forKey: UserDefaults.Keys.firstRun.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.firstRun.rawValue)

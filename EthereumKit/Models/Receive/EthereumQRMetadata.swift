@@ -17,7 +17,7 @@ public struct EthereumQRMetadata: CryptoAssetQRMetadata {
         return EthereumURLPayload(address: address)!.absoluteString
     }
     public static var scheme: String {
-        return "ethereum"
+        "ethereum"
     }
 
     public init(address: String, amount: String?) {

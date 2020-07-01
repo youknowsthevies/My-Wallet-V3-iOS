@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import web3swift
 @testable import EthereumKit
+import web3swift
 
 class EthereumTransactionCandidateSignedBuilder {
     var costed: EthereumTransactionCandidateCosted? {

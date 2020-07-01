@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
 import BigInt
-import PlatformKit
 @testable import BitcoinKit
+import PlatformKit
+import XCTest
 
 class TransactionSizeCalculatorTests: XCTestCase {
     

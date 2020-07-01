@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import RxSwift
 
 protocol KYCVerifyIdentityInput: class {
     func submitVerification(
@@ -67,7 +67,7 @@ class KYCVerifyIdentityInteractor {
             )
         }
         .map {
-            return $0.documentTypes
+            $0.documentTypes
         }
         .do(onSuccess: { [weak self] types in
             self?.cache[countryCode] = types

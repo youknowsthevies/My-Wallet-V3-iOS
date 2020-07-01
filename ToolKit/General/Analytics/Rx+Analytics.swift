@@ -13,7 +13,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
     /// Records analytics event using a given recorder on success
     public func recordOnSuccess(analyticsEvent: AnalyticsEvent,
                                 using recorder: AnalyticsEventRecording) -> Single<Element> {
-        return self.do(onSuccess: { _ in
+        self.do(onSuccess: { _ in
             recorder.record(event: analyticsEvent)
         })
     }
@@ -21,7 +21,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
     /// Records analytics event using a given recorder on error
     public func recordOnError(analyticsEvent: AnalyticsEvent,
                               using recorder: AnalyticsEventRecording) -> Single<Element> {
-        return self.do(onError: { error in
+        self.do(onError: { error in
               recorder.record(event: analyticsEvent)
         })
     }
@@ -30,7 +30,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
     public func recordOnResult(successEvent: AnalyticsEvent,
                                errorEvent: AnalyticsEvent,
                                using recorder: AnalyticsEventRecording) -> Single<Element> {
-        return self.do(
+        self.do(
             onSuccess: { _ in
                 recorder.record(event: successEvent)
             },
@@ -45,7 +45,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
                       successEvent: AnalyticsEvent,
                       errorEvent: AnalyticsEvent,
                       using recorder: AnalyticsEventRecording) -> Single<Element> {
-        return self.do(
+        self.do(
             onSuccess: { _ in
                 recorder.record(event: successEvent)
             },
@@ -65,7 +65,7 @@ extension ObservableType {
     /// Records analytics event using a given recorder
     public func record(analyticsEvent: AnalyticsEvent,
                        using recorder: AnalyticsEventRecording) -> Observable<Element> {
-        return self.do(onNext: { _ in
+        self.do(onNext: { _ in
             recorder.record(event: analyticsEvent)
         })
     }

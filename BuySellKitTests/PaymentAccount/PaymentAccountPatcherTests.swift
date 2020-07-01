@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
 @testable import BuySellKit
+import XCTest
 
 class PaymentAccountPatcherTests: XCTestCase {
     var sut: PaymentAccountPatcher!

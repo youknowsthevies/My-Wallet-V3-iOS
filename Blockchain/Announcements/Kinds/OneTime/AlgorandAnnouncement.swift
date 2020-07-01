@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 /// Announcement that introduces Algorand asset
 final class AlgorandAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
@@ -52,7 +52,7 @@ final class AlgorandAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
     }
     
     var shouldShow: Bool {
-        return !isDismissed
+        !isDismissed
     }
     
     let type = AnnouncementType.algorand

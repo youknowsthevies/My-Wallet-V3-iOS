@@ -6,13 +6,13 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import ERC20Kit
 import Foundation
-import RxSwift
-import ToolKit
 import NetworkKit
 import PlatformKit
+import RxSwift
 import StellarKit
-import ERC20Kit
+import ToolKit
 
 /// Address usage status
 enum AddressUsageStatus {
@@ -60,7 +60,7 @@ enum AssetAddressType {
     static let shared = AssetAddressRepository()
 
     /// Accessor for obj-c compatibility
-    @objc class func sharedInstance() -> AssetAddressRepository { return shared }
+    @objc class func sharedInstance() -> AssetAddressRepository { shared }
 
     private let walletManager: WalletManager
     private let stellarWalletAccountRepository: StellarWalletAccountRepository
@@ -224,7 +224,7 @@ extension AssetAddressRepository {
     ///   - asset: asset type for the address. Currently only supports BTC and BCH.
     /// - Returns: A single with the address usage status
     func checkUsability(of address: String, asset: CryptoCurrency) -> Single<AddressUsageStatus> {
-        return Single.create { [weak self] single in
+        Single.create { [weak self] single in
             guard let self = self else { return Disposables.create() }
             
             // Continue only if address reusability is not supported for the given asset type

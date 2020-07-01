@@ -123,7 +123,7 @@ public final class AssetBalanceView: UIView {
 
 extension Reactive where Base: AssetBalanceView {
     var values: Binder<DashboardAsset.Value.Presentation.AssetBalance> {
-        return Binder(base) { view, values in
+        Binder(base) { view, values in
             view.fiatBalanceLabel.content = values.fiatBalance
             view.cryptoBalanceLabel.content = values.cryptoBalance
         }

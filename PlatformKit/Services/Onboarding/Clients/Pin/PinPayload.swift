@@ -22,7 +22,7 @@ public struct PinPayload {
 
     /// Returns the pin
     public var pin: Pin? {
-        return Pin(string: pinCode)
+        Pin(string: pinCode)
     }
     
     /// The pin raw string value

@@ -6,22 +6,22 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import PlatformKit
 import RxCocoa
+import RxRelay
+import RxSwift
 
 final class AssetLineChartInteractor: AssetLineChartInteracting {
         
     // MARK: - Properties
     
     var state: Observable<AssetLineChart.State.Interaction> {
-        return stateRelay
+        stateRelay
             .asObservable()
     }
     
     private var window: Signal<PriceWindow> {
-        return priceWindowRelay.asSignal()
+        priceWindowRelay.asSignal()
     }
     
     public let priceWindowRelay = PublishRelay<PriceWindow>()

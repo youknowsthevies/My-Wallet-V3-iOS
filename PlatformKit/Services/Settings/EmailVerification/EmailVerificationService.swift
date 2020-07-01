@@ -6,8 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxRelay
+import RxSwift
 
 public final class EmailVerificationService: EmailVerificationServiceAPI {
 
@@ -33,7 +33,7 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
     }
 
     public func cancel() -> Completable {
-        return Completable
+        Completable
             .create { [weak self] observer -> Disposable in
                 self?.isActiveRelay.accept(false)
                 observer(.completed)
@@ -42,21 +42,21 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
     }
     
     public func verifyEmail() -> Completable {
-        return start()
+        start()
             .flatMapCompletable(weak: self) { (self, _) -> Completable in
-                return self.authenticationService.updateWalletInfo()
+                self.authenticationService.updateWalletInfo()
             }
     }
     
     public func requestVerificationEmail(to email: String, context: FlowContext?) -> Completable {
-        return settingsService
+        settingsService
             .update(email: email, context: context)
             .andThen(authenticationService.updateWalletInfo())
     }
     
     /// Start polling by triggering the wallet settings fetch
     private func start() -> Single<Void> {
-        return Single
+        Single
             .create(weak: self) { (self, observer) -> Disposable in
                 self.isActiveRelay.accept(true)
                 observer(.success(()))
@@ -67,7 +67,7 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
     
     /// Continues the polling only if it has not been cancelled
     private func `continue`() -> Single<Void> {
-        return isActiveRelay
+        isActiveRelay
             .take(1)
             .asSingle()
             .map { isActive in
@@ -82,9 +82,9 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
     /// Returns a Single that upon subscription waits until the email is verified.
     /// Only when it streams a value (`Void`) the email is considered `verified`.
     private func waitForVerification() -> Single<Void> {
-        return self.continue()
+        self.continue()
             .flatMap(weak: self) { (self, _) -> Single<Void> in
-                return self.settingsService
+                self.settingsService
                     /// Get the first value and make sure the stream terminates
                     /// by converting it to a `Single`
                     .valueSingle
@@ -105,7 +105,7 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
                                     scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
                                 )
                                 .flatMap(weak: self) { (self, _) -> Single<Void> in
-                                    return self.waitForVerification()
+                                    self.waitForVerification()
                                 }
                         default:
                             return self.cancel().andThen(Single.error(ServiceError.pollCancelled))

@@ -6,8 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import NetworkKit
+import RxSwift
 
 public final class SettingsClient: SettingsClientAPI {
         
@@ -46,7 +46,7 @@ public final class SettingsClient: SettingsClientAPI {
     /// - Parameter sharedKey: A shared key that must be valid.
     /// - Returns: a `Single` that wraps a `SettingsResponse`.
     public func settings(by guid: String, sharedKey: String) -> Single<SettingsResponse> {
-        return Single
+        Single
             .create(weak: self) { (self, observer) -> Disposable in
                 let url = URL(string: BlockchainAPI.shared.walletSettingsUrl)!
                 let payload = SettingsRequest(
@@ -66,7 +66,7 @@ public final class SettingsClient: SettingsClientAPI {
                 return Disposables.create()
             }
             .flatMap(weak: self) { (self, request) -> Single<SettingsResponse> in
-                return self.communicator.perform(request: request)
+                self.communicator.perform(request: request)
             }
     }
     
@@ -107,7 +107,7 @@ public final class SettingsClient: SettingsClientAPI {
                        context: FlowContext?,
                        guid: String,
                        sharedKey: String) -> Completable {
-        return update(
+        update(
             guid: guid,
             sharedKey: sharedKey,
             method: .updateEmail,
@@ -126,7 +126,7 @@ public final class SettingsClient: SettingsClientAPI {
                        context: FlowContext?,
                        guid: String,
                        sharedKey: String) -> Completable {
-        return update(
+        update(
             guid: guid,
             sharedKey: sharedKey,
             method: .updateSms,
@@ -136,7 +136,7 @@ public final class SettingsClient: SettingsClientAPI {
     }
     
     public func emailNotifications(enabled: Bool, guid: String, sharedKey: String) -> Completable {
-        return update(
+        update(
             guid: guid,
             sharedKey: sharedKey,
             method: .updateNotificationType,
@@ -152,7 +152,7 @@ public final class SettingsClient: SettingsClientAPI {
     }
     
     public func verifySMS(code: String, guid: String, sharedKey: String) -> Completable {
-        return update(
+        update(
             guid: guid,
             sharedKey: sharedKey,
             method: .verifySms,
@@ -161,7 +161,7 @@ public final class SettingsClient: SettingsClientAPI {
     }
     
     public func smsTwoFactorAuthentication(enabled: Bool, guid: String, sharedKey: String) -> Completable {
-        return update(
+        update(
             guid: guid,
             sharedKey: sharedKey,
             method: .updateAuthType,
@@ -181,7 +181,7 @@ public final class SettingsClient: SettingsClientAPI {
                         method: Method,
                         payload: String,
                         context: FlowContext? = nil) -> Completable {
-        return Single
+        Single
             .create(weak: self) { (self, observer) -> Disposable in
                 let url = URL(string: BlockchainAPI.shared.walletSettingsUrl)!
                 let requestPayload = SettingsRequest(
@@ -205,7 +205,7 @@ public final class SettingsClient: SettingsClientAPI {
                 return Disposables.create()
             }
             .flatMapCompletable(weak: self) { (self, request) -> Completable in
-                return self.communicator.perform(request: request)
+                self.communicator.perform(request: request)
             }
     }
 }

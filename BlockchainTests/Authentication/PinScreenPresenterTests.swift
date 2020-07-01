@@ -6,13 +6,13 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import XCTest
-import RxSwift
-import PlatformUIKit
-import ToolKit
-@testable import PlatformKit
 @testable import Blockchain
+import Foundation
+@testable import PlatformKit
+import PlatformUIKit
+import RxSwift
+import ToolKit
+import XCTest
 
 /// Tests the pin screen presenter
 class PinScreenPresenterTests: XCTestCase {

@@ -18,7 +18,7 @@ final class AnnouncementTableViewCell: UITableViewCell {
             bottomSpacingConstraint.constant = -newValue
         }
         get {
-            return -bottomSpacingConstraint.constant
+            -bottomSpacingConstraint.constant
         }
     }
     

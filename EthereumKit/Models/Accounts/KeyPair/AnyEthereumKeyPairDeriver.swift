@@ -7,8 +7,8 @@
 //
 
 import PlatformKit
-import web3swift
 import RxSwift
+import web3swift
 
 public protocol EthereumKeyPairDeriverAPI: KeyPairDeriverAPI where Input == EthereumKeyDerivationInput, Pair == EthereumKeyPair {
     func derive(input: Input) -> Result<Pair, Error>
@@ -30,6 +30,6 @@ public class AnyEthereumKeyPairDeriver: EthereumKeyPairDeriverAPI {
     }
     
     public func derive(input: EthereumKeyDerivationInput) -> Result<EthereumKeyPair, Error> {
-        return deriver.derive(input: input)
+        deriver.derive(input: input)
     }
 }

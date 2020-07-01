@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxSwift
+import ToolKit
 
 final class LaunchAnnouncementPresenter: VersionUpdateAlertDisplaying {
     

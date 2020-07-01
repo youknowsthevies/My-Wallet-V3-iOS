@@ -110,25 +110,25 @@ extension ExchangeRateMetadata {
     }
     
     var fromAssetRateDescriptor: String {
-        return "1 \(fromAsset.displayCode) ="
+        "1 \(fromAsset.displayCode) ="
     }
     
     var toAssetRateDescriptor: String {
-        return "1 \(toAsset.displayCode) ="
+        "1 \(toAsset.displayCode) ="
     }
     
     var fromAssetToFiatDescriptor: String? {
-        guard let rate = rates.last(where: { $0.presentationPair == "\(fromAsset.displayCode)-\(currencyCode)"}) else { return nil }
+        guard let rate = rates.last(where: { $0.presentationPair == "\(fromAsset.displayCode)-\(currencyCode)" }) else { return nil }
         return "\(rate.price) \(currencyCode)"
     }
     
     var toAssetToFiatDescriptor: String? {
-        guard let rate = rates.last(where: { $0.presentationPair == "\(toAsset.displayCode)-\(currencyCode)"}) else { return nil }
+        guard let rate = rates.last(where: { $0.presentationPair == "\(toAsset.displayCode)-\(currencyCode)" }) else { return nil }
         return "\(rate.price) \(currencyCode)"
     }
     
     var fromAssetToAssetDescriptor: String? {
-        guard let rate = rates.last(where: { $0.presentationPair == "\(fromAsset.displayCode)-\(toAsset.displayCode)"}) else { return nil }
+        guard let rate = rates.last(where: { $0.presentationPair == "\(fromAsset.displayCode)-\(toAsset.displayCode)" }) else { return nil }
         return "\(rate.price) \(toAsset.displayCode)"
     }
 }

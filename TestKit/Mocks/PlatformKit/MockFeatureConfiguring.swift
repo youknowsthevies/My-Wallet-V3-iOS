@@ -18,6 +18,6 @@ class MockFeatureConfigurator: FeatureConfiguring {
     }
     
     func configuration(for feature: AppFeature) -> AppFeatureConfiguration {
-        return AppFeatureConfiguration(isEnabled: isEnabled)
+        AppFeatureConfiguration(isEnabled: isEnabled)
     }
 }

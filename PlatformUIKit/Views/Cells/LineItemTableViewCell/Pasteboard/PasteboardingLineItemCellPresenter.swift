@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformKit
+import RxCocoa
 import RxRelay
 import RxSwift
-import RxCocoa
+import ToolKit
 
 public protocol PasteboardLineItemPresenting: class {
     var pasteboardValue: String { get }

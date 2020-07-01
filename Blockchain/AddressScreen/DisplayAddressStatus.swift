@@ -25,7 +25,7 @@ enum DisplayAddressStatus {
     
     /// Returns `true` if the status is `awaitingFetch`
     var isAwaitingFetch: Bool {
-        return self == .awaitingFetch
+        self == .awaitingFetch
     }
     
     /// Returns `true` if the status is `readyForDisplay`

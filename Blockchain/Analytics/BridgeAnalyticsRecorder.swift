@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformKit
+import ToolKit
 
 @objc protocol ObjcAnalyticsEvent {
     var name: String { get }

@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
-import ToolKit
 import PlatformKit
+import RxCocoa
+import RxRelay
+import RxSwift
+import ToolKit
 
 /// Interaction object for manual pairing flow
 final class ManualPairingInteractor {
@@ -55,11 +55,11 @@ final class ManualPairingInteractor {
     
     let contentStateRelay = BehaviorRelay<Content>(value: Content())
     var content: Observable<Content> {
-        return contentStateRelay.asObservable()
+        contentStateRelay.asObservable()
     }
     
     var authenticationAction: Observable<AuthenticationAction> {
-        return authenticationActionRelay.asObservable()
+        authenticationActionRelay.asObservable()
     }
         
     // MARK: - Properties
@@ -104,7 +104,7 @@ final class ManualPairingInteractor {
     
     /// Requests OTP via SMS
     func requestOTPMessage() -> Completable {
-        return dependencies.smsService.request()
+        dependencies.smsService.request()
     }
     
     // MARK: - Accessors

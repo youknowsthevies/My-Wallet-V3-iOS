@@ -19,7 +19,7 @@ extension Array {
     }
     
     public func pick(_ amount: Int) -> Array<Element> {
-        return Array(shuffled().prefix(amount))
+        Array(shuffled().prefix(amount))
     }
 }
 
@@ -44,7 +44,7 @@ extension Array where Element: Equatable {
     
     /// Returns `true` if if all elements are equal to a given value
     public func areAllElements(equal element: Element) -> Bool {
-        return !contains { $0 != element }
+        !contains { $0 != element }
     }
 }
 
@@ -52,7 +52,7 @@ extension Array where Element: Equatable {
 
 extension Array where Element == String {
     public var containsEmpty: Bool {
-        return contains("")
+        contains("")
     }
 }
 

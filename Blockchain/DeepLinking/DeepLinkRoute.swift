@@ -51,7 +51,7 @@ extension DeepLinkRoute {
     private static func route(path: String,
                               parameters: [String: String]?,
                               supportedRoutes: [DeepLinkRoute] = DeepLinkRoute.allCases) -> DeepLinkRoute? {
-        return supportedRoutes.first { route -> Bool in
+        supportedRoutes.first { route -> Bool in
             if route.supportedPath == path {
                 if let key = route.requiredKeyParam,
                     let value = route.requiredValueParam,

@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxCocoa
+import RxSwift
 
 public final class PendingStateViewController: BaseScreenViewController {
 
@@ -62,7 +62,7 @@ public final class PendingStateViewController: BaseScreenViewController {
 
     private func setupNavigationBar() {
         titleViewStyle = .text(value: presenter.title)
-        set(barStyle: .darkContent(ignoresStatusBar: false, background: .white))
+        set(barStyle: .darkContent())
     }
     
     private func setupCompositeStatusView() {

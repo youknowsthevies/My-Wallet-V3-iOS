@@ -24,7 +24,7 @@ public enum PresentationType {
     case navigationFromCurrent
     
     public var leadingButton: Screen.Style.LeadingButton {
-        return isModal ? .close : .back
+        isModal ? .close : .back
     }
     
     public var isModal: Bool {

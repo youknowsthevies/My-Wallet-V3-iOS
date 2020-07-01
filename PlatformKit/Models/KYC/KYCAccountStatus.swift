@@ -21,15 +21,15 @@ extension KYC {
         case expired = "EXPIRED"
 
         public var isInProgress: Bool {
-            return self == .pending || self == .underReview
+            self == .pending || self == .underReview
         }
         
         public var isApproved: Bool {
-            return self == .approved
+            self == .approved
         }
         
         public var isInProgressOrApproved: Bool {
-            return isInProgress || isApproved
+            isInProgress || isApproved
         }
     }
 }

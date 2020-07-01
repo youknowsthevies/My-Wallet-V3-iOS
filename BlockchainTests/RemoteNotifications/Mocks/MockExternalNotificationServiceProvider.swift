@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import PlatformKit
+import RxSwift
 
 @testable import Blockchain
 
@@ -19,7 +19,7 @@ final class MockExternalNotificationServiceProvider: ExternalNotificationProvidi
     }
     
     var token: Single<String> {
-        return expectedTokenResult.single
+        expectedTokenResult.single
     }
     
     private let expectedTokenResult: Result<String, FakeError>

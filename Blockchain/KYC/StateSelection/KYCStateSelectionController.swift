@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import UIKit
-import ToolKit
 import PlatformKit
+import RxSwift
+import ToolKit
+import UIKit
 
 class KYCStateSelectionController: KYCBaseViewController, ProgressableView {
 
@@ -114,7 +114,7 @@ extension KYCStateSelectionController: UITableViewDataSource, UITableViewDelegat
     }
 
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        return index
+        index
     }
 
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
@@ -125,7 +125,7 @@ extension KYCStateSelectionController: UITableViewDataSource, UITableViewDelegat
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return statesMap.keys.count
+        statesMap.keys.count
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

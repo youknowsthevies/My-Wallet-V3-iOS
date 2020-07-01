@@ -17,7 +17,7 @@ import ToolKit
     public static let shared = NetworkDependenciesObjc()
     
     @objc public class func sharedInstance() -> NetworkDependenciesObjc {
-        return NetworkDependenciesObjc.shared
+        NetworkDependenciesObjc.shared
     }
 }
 
@@ -267,6 +267,6 @@ extension HTTPMethod {
 
 extension Bool {
     var encoded: String {
-        return self ? "true" : "false"
+        self ? "true" : "false"
     }
 }

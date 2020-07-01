@@ -6,13 +6,13 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import PlatformKit
+import RxSwift
 
 class DataRepositoryMock: DataRepositoryAPI {
     var underlyingTiers = KYC.UserTiers(tiers: [])
     func fetchTiers() -> Single<KYC.UserTiers> {
-        return Single.just(underlyingTiers)
+        Single.just(underlyingTiers)
     }
     
     var userSingle: Single<User> {
@@ -21,6 +21,6 @@ class DataRepositoryMock: DataRepositoryAPI {
     
     var underlyingUser = UserMock()
     var user: Observable<User> {
-        return Observable.just(underlyingUser)
+        Observable.just(underlyingUser)
     }
 }

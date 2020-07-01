@@ -23,7 +23,7 @@ struct SignedRetailTokenRequest: Codable {
 
 extension SignedRetailTokenRequest {
     var toDictionary: [String: String] {
-        return [
+        [
             CodingKeys.apiCode.rawValue: apiCode,
             CodingKeys.sharedKey.rawValue: sharedKey,
             CodingKeys.walletGuid.rawValue: walletGuid

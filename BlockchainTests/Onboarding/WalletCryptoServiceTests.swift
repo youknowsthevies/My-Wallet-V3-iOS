@@ -6,12 +6,12 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-import RxSwift
-import RxBlocking
 @testable import Blockchain
-import ToolKit
 import PlatformKit
+import RxBlocking
+import RxSwift
+import ToolKit
+import XCTest
 
 class WalletCryptoServiceTests: XCTestCase {
 

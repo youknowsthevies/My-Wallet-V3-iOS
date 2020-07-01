@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
 import PlatformKit
-import RxSwift
-import RxRelay
+import PlatformUIKit
 import RxCocoa
+import RxRelay
+import RxSwift
 
 final class UpdateEmailScreenInteractor {
     
@@ -62,7 +62,7 @@ final class UpdateEmailScreenInteractor {
     var triggerRelay = PublishRelay<Void>()
     var contentRelay = BehaviorRelay<String>(value: "")
     var interactionState: Observable<InteractionState> {
-        return interactionModelRelay.asObservable()
+        interactionModelRelay.asObservable()
     }
     
     private let verificationService: EmailVerificationServiceAPI
@@ -151,7 +151,7 @@ final class UpdateEmailScreenInteractor {
     }
     
     private func update(state: State) -> Completable {
-        return Completable.create { [weak self] (observer) -> Disposable in
+        Completable.create { [weak self] (observer) -> Disposable in
             self?.interactionStateRelay.accept(state)
             observer(.completed)
             return Disposables.create()

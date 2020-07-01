@@ -20,13 +20,13 @@ public protocol HexRepresentable: DataRepresentable, LosslessStringConvertible, 
 
 extension HexRepresentable {
     public var description: String {
-        return data.hexValue
+        data.hexValue
     }
 }
 
 extension HexRepresentable {
     public var debugDescription: String {
-        return data.hexValue
+        data.hexValue
     }
 }
 
@@ -38,6 +38,6 @@ extension HexRepresentable {
 
 extension HexRepresentable {
     public var hexValue: String {
-        return description
+        description
     }
 }

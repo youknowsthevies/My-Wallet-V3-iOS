@@ -8,9 +8,9 @@
 
 import PlatformKit
 import PlatformUIKit
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 /// A presentation layer for wallet creation
 final class RegisterWalletScreenPresenter {
@@ -30,7 +30,7 @@ final class RegisterWalletScreenPresenter {
         }
     }
     
-    let navBarStyle = Screen.Style.Bar.lightContent(ignoresStatusBar: false, background: .primary)
+    let navBarStyle = Screen.Style.Bar.lightContent()
     let emailTextFieldViewModel: TextFieldViewModel
     let passwordTextFieldViewModel: PasswordTextFieldViewModel
     let confirmPasswordTextFieldViewModel: PasswordTextFieldViewModel
@@ -55,7 +55,7 @@ final class RegisterWalletScreenPresenter {
     
     /// The total state of the presentation
     var state: Driver<FormPresentationState> {
-        return stateRelay.asDriver()
+        stateRelay.asDriver()
     }
 
     let webViewLaunchRelay = PublishRelay<URL>()
@@ -120,7 +120,7 @@ final class RegisterWalletScreenPresenter {
         
         let stateObservable = latestStatesObservable
             .map(weak: self) { (self, payload) -> FormPresentationState in
-                return try self.stateReducer.reduce(states: [payload.0, payload.1, payload.2])
+                try self.stateReducer.reduce(states: [payload.0, payload.1, payload.2])
             }
             /// Should never get to `catchErrorJustReturn`.
             .catchErrorJustReturn(.invalid(.invalidTextField))

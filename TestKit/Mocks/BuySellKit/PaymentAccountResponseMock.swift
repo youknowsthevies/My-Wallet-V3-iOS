@@ -6,12 +6,12 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-@testable import PlatformKit
 @testable import BuySellKit
+@testable import PlatformKit
 
 extension PaymentAccountResponse {
     static func mock(with currency: FiatCurrency, agent: PaymentAccountResponse.Agent) -> PaymentAccountResponse {
-        return PaymentAccountResponse(
+        PaymentAccountResponse(
             id: "response id",
             address: "response bank account",
             agent: agent,

@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
 import Localization
+import RxCocoa
+import RxRelay
+import RxSwift
 import ToolKit
 
 /// A view model that represents a password text field

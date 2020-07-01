@@ -7,8 +7,8 @@
 //
 
 import PlatformKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 public protocol LabelContentInteracting {
     var stateRelay: BehaviorRelay<LabelContent.State.Interaction> { get }

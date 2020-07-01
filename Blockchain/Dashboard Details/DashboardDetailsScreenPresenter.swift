@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 /// This enum aggregates possible action types that can be done in the dashboard
 enum DashboadDetailsAction {
@@ -71,7 +71,7 @@ final class DashboardDetailsScreenPresenter {
     }
     
     var barStyle: Screen.Style.Bar {
-        .lightContent(ignoresStatusBar: false, background: .navigationBarBackground)
+        .lightContent()
     }
     
     // MARK: - Types

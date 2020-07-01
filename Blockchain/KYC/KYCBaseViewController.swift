@@ -7,10 +7,10 @@
 //
 
 import Foundation
-import SafariServices
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import SafariServices
+import ToolKit
 
 class KYCBaseViewController: UIViewController, KYCCoordinatorDelegate, KYCOnboardingNavigationControllerDelegate {
 

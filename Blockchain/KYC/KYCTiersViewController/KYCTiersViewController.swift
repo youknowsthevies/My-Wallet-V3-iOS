@@ -7,12 +7,12 @@
 //
 
 import Foundation
-import SafariServices
-import UIKit
-import RxSwift
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxSwift
+import SafariServices
+import ToolKit
+import UIKit
 
 protocol KYCTiersInterface: class {
     func apply(_ model: KYCTiersPageModel)
@@ -69,7 +69,7 @@ class KYCTiersViewController: UIViewController {
         pageModel.trackPresentation()
         
         if let navController = navigationController as? BCNavigationController {
-            navController.headerLabel.text = LocalizationConstants.KYC.accountLimits
+            navController.headerTitle = LocalizationConstants.KYC.accountLimits
         }
         view.backgroundColor = #colorLiteral(red: 0.9607843137, green: 0.968627451, blue: 0.9764705882, alpha: 1)
     }
@@ -139,11 +139,11 @@ extension KYCTiersViewController: KYCTiersHeaderViewDelegate {
 extension KYCTiersViewController: UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+        1
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return pageModel.cells.count
+        pageModel.cells.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -319,7 +319,7 @@ extension KYCTiersViewController {
                     suppressDismissCTA: true
                 )
                 let filtered = response.tiers.filter({ $0.tier != .tier0 })
-                let cells = filtered.map({ return KYCTierCellModel.model(from: $0) }).compactMap({ return $0 })
+                let cells = filtered.map({ KYCTierCellModel.model(from: $0) }).compactMap({ $0 })
                 
                 let page = KYCTiersPageModel(header: header, cells: cells)
                 return page
@@ -330,7 +330,7 @@ extension KYCTiersViewController {
         fromViewController: UIViewController,
         code: CurrencyCode = "USD"
     ) -> Disposable {
-        return tiersMetadata()
+        tiersMetadata()
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { model in
@@ -357,11 +357,11 @@ extension KYCTiersViewController {
 extension KYCTiersViewController: NavigatableView {
     
     var leftCTATintColor: UIColor {
-        return .white
+        .white
     }
     
     var rightCTATintColor: UIColor {
-        return .white
+        .white
     }
     
     var leftNavControllerCTAType: NavigationCTAType {
@@ -374,11 +374,11 @@ extension KYCTiersViewController: NavigatableView {
     }
     
     var rightNavControllerCTAType: NavigationCTAType {
-        return .none
+        .none
     }
-    
-    var navigationDisplayMode: NavigationBarDisplayMode {
-        return .dark
+
+    var barStyle: Screen.Style.Bar {
+        .lightContent()
     }
     
     func navControllerLeftBarButtonTapped(_ navController: UINavigationController) {

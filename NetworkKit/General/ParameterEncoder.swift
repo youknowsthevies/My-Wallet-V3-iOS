@@ -9,7 +9,7 @@
 import Foundation
 
 extension NSNumber {
-    fileprivate var isBool: Bool { return CFBooleanGetTypeID() == CFGetTypeID(self) }
+    fileprivate var isBool: Bool { CFBooleanGetTypeID() == CFGetTypeID(self) }
 }
 
 // TODO:
@@ -40,7 +40,7 @@ extension NSNumber {
 public class ParameterEncoder {
     
     public var encoded: Data? {
-        return encode(parameters)
+        encode(parameters)
     }
     
     private let parameters: [String: Any]

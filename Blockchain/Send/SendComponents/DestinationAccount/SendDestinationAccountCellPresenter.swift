@@ -7,12 +7,12 @@
 //
 
 import Foundation
-import RxSwift
-import RxRelay
-import RxCocoa
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
+import ToolKit
 
 /// The destination account presenter on the send screen
 final class SendDestinationAccountCellPresenter {
@@ -40,7 +40,7 @@ final class SendDestinationAccountCellPresenter {
         
         /// Returns `.input("")`
         static var empty: SelectionState {
-            return .input("")
+            .input("")
         }
         
         /// Returns `true` for empty state
@@ -61,38 +61,38 @@ final class SendDestinationAccountCellPresenter {
     
     /// Streams a boolean on whether the exchange button should be visible
     var isExchangeButtonVisible: Observable<Bool> {
-        return isExchangeButtonVisibleRelay
+        isExchangeButtonVisibleRelay
             .observeOn(MainScheduler.instance)
     }
     
     /// The image that represents the Exchange button.
     /// Streams on the main thread and replays the last element.
     var exchangeButtonImage: Driver<UIImage?> {
-        return exchangeButtonImageRelay.asDriver()
+        exchangeButtonImageRelay.asDriver()
     }
     
     /// Signals if the user has to configure 2FA in order to send to his PIT account
     var twoFAConfigurationAlertSignal: Signal<AlertViewContent> {
-        return twoFAConfigurationAlertRelay.asSignal()
+        twoFAConfigurationAlertRelay.asSignal()
     }
     
     /// Text field visibility.
     /// Streams on the main thread and replays the last element.
     var isTextFieldHidden: Driver<Bool> {
-        return isTextFieldHiddenRelay.asDriver()
+        isTextFieldHiddenRelay.asDriver()
     }
     
     /// Cover text visibility.
     /// Streams on the main thread and replays the last element.
     var isCoverTextHidden: Driver<Bool> {
-        return isCoverTextHiddenRelay.asDriver()
+        isCoverTextHiddenRelay.asDriver()
     }
     
     /// Streams the cover text for the label that covers the text field.
     /// Handy for accounts with value that shouldn't be displayed (e.g Exchange).
     /// Streams on the main thread and replays the last element.
     var coverText: Driver<String> {
-        return coverTextRelay.asDriver()
+        coverTextRelay.asDriver()
     }
     
     /// Publish relay for Exchange button taps.
@@ -102,14 +102,14 @@ final class SendDestinationAccountCellPresenter {
     /// Signals once the address is scanned.
     /// Streams on the main thread and doesn't not replay elements.
     var scannedAddress: Signal<String> {
-        return scannedAddressRelay.asSignal()
+        scannedAddressRelay.asSignal()
     }
     
     /// Streams the display destination address.
     /// 1. In case the selection state is `.input` it streams the address itself.
     /// 2. In case the selection state is output, it streams the cover text.
     var finalDisplayAddress: Observable<String> {
-        return Observable.combineLatest(selectionStateRelay, coverTextRelay)
+        Observable.combineLatest(selectionStateRelay, coverTextRelay)
             .map { (state, text) -> String in
                 switch state {
                 case .input(let string):
@@ -178,7 +178,7 @@ final class SendDestinationAccountCellPresenter {
         twoFAConditionalSelectionState
             .filter { $0.0 }
             .map { _ in
-                return AlertViewContent(
+                AlertViewContent(
                     title: LocalizationConstants.Errors.error,
                     message: LocalizationConstants.Exchange.twoFactorNotEnabled
                 )

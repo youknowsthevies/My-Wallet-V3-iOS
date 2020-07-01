@@ -13,7 +13,7 @@ public final class SimpleHeaderView: UITableViewHeaderFooterView {
             label.text = newValue
         }
         get {
-            return label.text ?? ""
+            label.text ?? ""
         }
     }
     

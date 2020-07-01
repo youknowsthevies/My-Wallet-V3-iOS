@@ -6,15 +6,15 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import RxSwift
-import RxCocoa
 import BigInt
-import ToolKit
-import PlatformKit
-import EthereumKit
-import StellarKit
 import ERC20Kit
+import EthereumKit
+import Foundation
+import PlatformKit
+import RxCocoa
+import RxSwift
+import StellarKit
+import ToolKit
 
 // TICKET: [IOS-2087] - Integrate PlatformKit Account Repositories and Deprecate AssetAccountRepository
 /// A repository for `AssetAccount` objects
@@ -63,13 +63,13 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     }
 
     var fetchETHHistoryIfNeeded: Single<Void> {
-        return ethereumWalletService.fetchHistoryIfNeeded
+        ethereumWalletService.fetchHistoryIfNeeded
     }
 
     // MARK: Public Methods
 
     func accounts(for assetType: CryptoCurrency) -> Single<[AssetAccount]> {
-        return accounts(for: assetType, fromCache: true)
+        accounts(for: assetType, fromCache: true)
     }
 
     func accounts(for assetType: CryptoCurrency, fromCache: Bool) -> Single<[AssetAccount]> {
@@ -93,7 +93,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     }
 
     func nameOfAccountContaining(address: String, currencyType: CryptoCurrency) -> Single<String> {
-        return accounts
+        accounts
             .flatMap { output -> Single<String> in
                 guard let result = output.first(where: { $0.address.address == address && $0.balance.currencyType == currencyType }) else {
                     return .error(AssetAccountRepositoryError.unknown)
@@ -109,7 +109,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         return Single.create { observer -> Disposable in
             let disposable = Observable.zip(observables)
                 .subscribeOn(MainScheduler.asyncInstance)
-                .map({ $0.flatMap({ return $0 })})
+                .map({ $0.flatMap({ $0 }) })
                 .subscribe(onNext: { [weak self] output in
                     guard let self = self else { return }
                     self.cachedAccounts.accept(output)
@@ -167,7 +167,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     }
 
     private func paxAccount(fromCache: Bool) -> Single<[AssetAccount]> {
-        return paxAccountRepository
+        paxAccountRepository
             .currentAssetAccountDetails(fromCache: fromCache)
             .flatMap {
                 let account = AssetAccount(
@@ -184,7 +184,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     }
 
     private func cachedAccount(assetType: CryptoCurrency) -> Single<[AssetAccount]> {
-        return accounts.flatMap { result -> Single<[AssetAccount]> in
+        accounts.flatMap { result -> Single<[AssetAccount]> in
             let cached = result.filter { $0.address.cryptoCurrency == assetType }
             return .just(cached)
         }

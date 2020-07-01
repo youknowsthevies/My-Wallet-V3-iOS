@@ -57,7 +57,7 @@ public class ScreenTransitioningAnimator: NSObject {
 
 extension ScreenTransitioningAnimator: UIViewControllerAnimatedTransitioning {
     public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return transition.duration
+        transition.duration
     }
     
     public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {

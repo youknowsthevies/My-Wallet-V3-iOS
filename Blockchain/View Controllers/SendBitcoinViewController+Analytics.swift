@@ -6,13 +6,13 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformKit
+import ToolKit
 
 extension SendBitcoinViewController {
     
     private var asset: CryptoCurrency {
-        return CryptoCurrency(legacyAssetType: assetType)
+        CryptoCurrency(legacyAssetType: assetType)
     }
     
     @objc

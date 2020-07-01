@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformKit
 import RxSwift
+import ToolKit
 
 /// A `CryptoCurrency` agnostic screen for receiving funds into a provided address.
 /// The view of this class can be configured by providing a `ReceiveCryptoViewModel`

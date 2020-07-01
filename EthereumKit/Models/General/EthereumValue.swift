@@ -14,7 +14,7 @@ enum EthereumValueError: Error {
 
 public struct EthereumValue: Crypto {
     public var value: CryptoValue {
-        return crypto.value
+        crypto.value
     }
     
     private let crypto: Crypto

@@ -6,11 +6,11 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import NetworkKit
+import PlatformKit
 import RxCocoa
 import RxSwift
 import ToolKit
-import NetworkKit
-import PlatformKit
 
 protocol ExchangeMarketsAPI {
     func setup()
@@ -60,7 +60,7 @@ class MarketsService {
     private let disposables = CompositeDisposable()
 
     private var socketMessageObservable: Observable<SocketMessage> {
-        return SocketManager.shared.webSocketMessageObservable
+        SocketManager.shared.webSocketMessageObservable
     }
 
     private var dataSource: DataSource = .socket
@@ -122,11 +122,11 @@ extension MarketsService: ExchangeMarketsAPI {
                 $0.type == .exchange &&
                     $0.JSONMessage is Conversion
             }.map { message in
-                return message.JSONMessage as! Conversion
+                message.JSONMessage as! Conversion
             }
         case .rest:
             return restMessageSubject.filter({ _ -> Bool in
-                return false
+                false
             })
         }
     }
@@ -138,7 +138,7 @@ extension MarketsService: ExchangeMarketsAPI {
             $0.type == .exchange &&
                 $0.JSONMessage is SocketError
             }.map { message in
-                return message.JSONMessage as! SocketError
+                message.JSONMessage as! SocketError
         }
     }
 
@@ -228,7 +228,7 @@ extension MarketsService: ExchangeMarketsAPI {
         }
 
         return bestExchangeRates().map { rates in
-            return rates.convert(
+            rates.convert(
                 balance: cryptoValue,
                 toCurrency: fiatCurrencyCode
             )
@@ -269,7 +269,7 @@ private extension MarketsService {
     func subscribeToHeartBeat(completion: @escaping () -> Void) {
         let heartBeatDisposable = socketMessageObservable
             .filter { socketMessage in
-                return socketMessage.JSONMessage is HeartBeat
+                socketMessage.JSONMessage is HeartBeat
             }
             .take(1)
             .asSingle()
@@ -288,7 +288,7 @@ private extension MarketsService {
                 let params = AuthSubscribeParams(type: "auth", token: tokenResponse.token)
                 return Subscription(channel: "auth", params: params)
             }.map { message in
-                return SocketMessage(type: .exchange, JSONMessage: message)
+                SocketMessage(type: .exchange, JSONMessage: message)
             }.subscribe(onSuccess: { socketMessage in
                 SocketManager.shared.send(message: socketMessage)
             })

@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import BigInt
-import PlatformKit
 @testable import EthereumKit
+import PlatformKit
+import RxRelay
+import RxSwift
 
 enum EthereumWalletBridgeMockError: Error {
     case mockError
@@ -21,23 +21,22 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
         .empty()
     }
 
-
     func memo(for transactionHash: String) -> Single<String?> {
         .just(nil)
     }
 
     public var balanceType: BalanceType {
-        return .nonCustodial
+        .nonCustodial
     }
 
     var isWaitingOnTransactionValue = Single.just(false)
     var isWaitingOnTransaction: Single<Bool> {
-        return isWaitingOnTransactionValue
+        isWaitingOnTransactionValue
     }
 
     var historyValue = Single.just(())
     var history: Single<Void> {
-        return historyValue
+        historyValue
     }
 
     func fetchHistory() -> Single<Void> {
@@ -46,23 +45,23 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
 
     var fetchBalanceValue: Single<CryptoValue> = Single.just(CryptoValue.etherFromMajor(string: "2.0")!)
     var fetchBalance: Single<CryptoValue> {
-        return fetchBalanceValue
+        fetchBalanceValue
     }
 
     var balanceValue: Single<CryptoValue> = Single.just(CryptoValue.etherFromMajor(string: "2.0")!)
     var balance: Single<CryptoValue> {
-        return balanceValue
+        balanceValue
     }
 
     var balanceObservable: Observable<CryptoValue> {
-        return balance.asObservable()
+        balance.asObservable()
     }
 
     let balanceFetchTriggerRelay = PublishRelay<Void>()
 
     var nameValue: Single<String> = Single.just("My Ether Wallet")
     var name: Single<String> {
-        return nameValue
+        nameValue
     }
 
     var addressValue: Single<EthereumAddress> = .just(EthereumAddress(stringLiteral: MockEthereumWalletTestData.account))
@@ -72,7 +71,7 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
 
     var transactionsValue: Single<[EthereumHistoricalTransaction]> = Single.just([])
     var transactions: Single<[EthereumHistoricalTransaction]> {
-        return transactionsValue
+        transactionsValue
     }
 
     var accountValue: Single<EthereumAssetAccount> = Single.just(
@@ -83,12 +82,12 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
         )
     )
     var account: Single<EthereumAssetAccount> {
-        return accountValue
+        accountValue
     }
 
     var nonceValue = Single.just(BigUInt(9))
     var nonce: Single<BigUInt> {
-        return nonceValue
+        nonceValue
     }
 
     var recordLastTransactionValue: Single<EthereumTransactionPublished> = Single<EthereumTransactionPublished>.error(EthereumKitError.unknown)
@@ -101,31 +100,31 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
     // MARK: - EthereumWalletAccountBridgeAPI
 
     var wallets: Single<[EthereumWalletAccount]> {
-        return Single.just([])
+        Single.just([])
     }
 
     func save(keyPair: EthereumKeyPair, label: String) -> Completable {
-        return Completable.empty()
+        Completable.empty()
     }
 
     // MARK: - MnemonicAccessAPI
 
     var mnemonic: Maybe<String> {
-        return Maybe.just("")
+        Maybe.just("")
     }
 
     var mnemonicForcePrompt: Maybe<String> {
-        return Maybe.just("")
+        Maybe.just("")
     }
 
     var mnemonicPromptingIfNeeded: Maybe<String> {
-        return Maybe.just("")
+        Maybe.just("")
     }
 
     // MARK: - PasswordAccessAPI
 
     var passwordMaybe = Maybe.just("password")
     var password: Maybe<String> {
-        return passwordMaybe
+        passwordMaybe
     }
 }

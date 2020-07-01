@@ -62,7 +62,7 @@ public final class TwoFAWalletService: TwoFAWalletServiceAPI {
                 return (guid, sessionToken)
             }
             .flatMap(weak: self) { (self, credentials) -> Single<WalletPayload> in
-                return self.client.payload(guid: credentials.guid, sessionToken: credentials.sessionToken, code: code)
+                self.client.payload(guid: credentials.guid, sessionToken: credentials.sessionToken, code: code)
             }
             .flatMapCompletable(weak: self) { (self, response) -> Completable in
                 guard let rawPayload = response.stringRepresentation, !rawPayload.isEmpty else {

@@ -6,14 +6,14 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxCocoa
+import RxSwift
 
 extension Reactive where Base: UIView {
     
     /// Bindable sink for `Accessibility`
     public var accessibility: Binder<Accessibility> {
-        return Binder(self.base) { view, accessibility in
+        Binder(self.base) { view, accessibility in
             view.accessibility = accessibility
         }
     }

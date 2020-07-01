@@ -50,21 +50,21 @@ class MarketsModel {
 
 extension MarketsModel {
     var pair: TradingPair {
-        return marketPair.pair
+        marketPair.pair
     }
     
     var cryptoValue: CryptoValue? {
-        return CryptoValue.createFromMajorValue(string: volume, assetType: pair.from)
+        CryptoValue.createFromMajorValue(string: volume, assetType: pair.from)
     }
 }
 
 extension MarketsModel {
     var isUsingFiat: Bool {
-        return fix == .baseInFiat || fix == .counterInFiat
+        fix == .baseInFiat || fix == .counterInFiat
     }
 
     var isUsingBase: Bool {
-        return fix == .base || fix == .baseInFiat
+        fix == .base || fix == .baseInFiat
     }
 
     func toggleFiatInput() {
@@ -88,7 +88,7 @@ extension MarketsModel {
 extension MarketsModel: Equatable {
     // Do not compare lastConversion
     static func == (lhs: MarketsModel, rhs: MarketsModel) -> Bool {
-        return lhs.pair == rhs.pair &&
+        lhs.pair == rhs.pair &&
         lhs.fiatCurrencyCode == rhs.fiatCurrencyCode &&
         lhs.fiatCurrencySymbol == rhs.fiatCurrencySymbol &&
         lhs.fix == rhs.fix &&

@@ -10,7 +10,7 @@ import Foundation
 
 extension Dictionary {
     public func compactMapValues<T>(_ transform: (Value) throws -> T?) rethrows -> Dictionary<Key, T> {
-        return try self.reduce(into: [Key: T](), { (result, x) in
+        try self.reduce(into: [Key: T](), { (result, x) in
             if let value = try transform(x.value) {
                 result[x.key] = value
             }
@@ -44,7 +44,7 @@ public func += <Key, Value> (lhs: inout Dictionary<Key, Value>,
 /// Convenience alternative to `merge`
 public func + <Key, Value> (lhs: Dictionary<Key, Value>,
                             rhs: Dictionary<Key, Value>) -> Dictionary<Key, Value> {
-    return lhs.merge(with: rhs)
+    lhs.merge(with: rhs)
 }
 
 extension Dictionary where Key == String, Value == [String: Any] {
@@ -71,7 +71,7 @@ extension Dictionary where Key == String, Value == [String: Any] {
     }
     
     public func decodeJSONValues<T: Codable>(type: T.Type) -> [T] {
-        return decodeJSONObjects(type: type)
+        decodeJSONObjects(type: type)
             .compactMap { (tuple) -> T? in
                 let (_, value) = tuple
                 return value

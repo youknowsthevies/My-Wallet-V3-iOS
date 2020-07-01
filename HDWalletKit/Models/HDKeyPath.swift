@@ -44,14 +44,14 @@ extension BIP32Derivation {
 
 extension BIP32Path {
     var derivationComponents: [DerivationComponent] {
-        return components.map { $0.component }
+        components.map { $0.component }
     }
 }
 
 public struct HDKeyPath: LosslessStringConvertible {
     
     public var description: String {
-        return libWallyPath.description
+        libWallyPath.description
     }
     
     public let components: [DerivationComponent]

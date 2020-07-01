@@ -140,15 +140,15 @@ extension ExchangeTradeCellModel {
     }
     
     var feeDisplayValue: String {
-        return withdrawalFee.value + " " + withdrawalFee.displayCode
+        withdrawalFee.value + " " + withdrawalFee.displayCode
     }
 
     var amountFiatValue: String {
-        return fiatValue.value
+        fiatValue.value
     }
     
     var amountFiatSymbol: String {
-        return fiatValue.displayCode
+        fiatValue.displayCode
     }
     
     var amountDepositedCrypto: String {
@@ -176,11 +176,11 @@ extension ExchangeTradeCellModel {
     }
     
     var transactionDate: Date {
-        return createdAt
+        createdAt
     }
     
     var formattedDate: String {
-        return DateFormatter.timeAgoString(from: createdAt)
+        DateFormatter.timeAgoString(from: createdAt)
     }
 }
 
@@ -276,7 +276,7 @@ struct ExchangeTradeCellModel: Decodable {
 
 extension ExchangeTradeCellModel: Equatable {
     static func ==(lhs: ExchangeTradeCellModel, rhs: ExchangeTradeCellModel) -> Bool {
-        return lhs.status == rhs.status &&
+        lhs.status == rhs.status &&
         lhs.createdAt == rhs.createdAt &&
         lhs.pair == rhs.pair
     }

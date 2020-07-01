@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import WebKit
 import PlatformUIKit
+import WebKit
 
 final class CardAuthorizationScreenViewController: BaseScreenViewController {
     
@@ -77,7 +77,7 @@ final class CardAuthorizationScreenViewController: BaseScreenViewController {
     }
         
     private func setupNavigationBar() {
-        set(barStyle: .darkContent(ignoresStatusBar: false, background: .white))
+        set(barStyle: .darkContent())
         titleViewStyle = .text(value: presenter.title)
     }
 }

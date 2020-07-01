@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import RxSwift
-import PlatformKit
 import BitcoinKit
+import Foundation
+import PlatformKit
+import RxSwift
 
 final class BitcoinWallet: NSObject {
     
@@ -162,7 +162,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
     }
     
     private func bitcoinWallets(secondPassword: String?) -> Single<[BitcoinWalletAccount]> {
-        return Single<String>.create(weak: self) { (self, observer) -> Disposable in
+        Single<String>.create(weak: self) { (self, observer) -> Disposable in
                 guard let wallet = self.wallet else {
                     observer(.error(WalletError.notInitialized))
                     return Disposables.create()
@@ -200,7 +200,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
     }
     
     private func hdWallet(secondPassword: String?) -> Single<String> {
-        return Single<String>.create(weak: self) { (self, observer) -> Disposable in
+        Single<String>.create(weak: self) { (self, observer) -> Disposable in
                 guard let wallet = self.wallet else {
                     observer(.error(WalletError.notInitialized))
                     return Disposables.create()
@@ -215,7 +215,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
     }
     
     private func defaultWalletIndex(secondPassword: String?) -> Single<Int> {
-        return Single<Int>.create(weak: self) { (self, observer) -> Disposable in
+        Single<Int>.create(weak: self) { (self, observer) -> Disposable in
             guard let wallet = self.wallet else {
                 observer(.error(WalletError.notInitialized))
                 return Disposables.create()
@@ -232,14 +232,13 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
 
 extension BitcoinWallet: SecondPasswordPromptable {
     var legacyWallet: LegacyWalletAPI? {
-        return wallet
+        wallet
     }
     
     var accountExists: Single<Bool> {
-        return Single.just(true)
+        Single.just(true)
     }
 }
-
 
 extension BitcoinWallet: PasswordAccessAPI {
     public var password: Maybe<String> {

@@ -21,7 +21,6 @@ extension LabelContent {
     }
 }
 
-
 extension ObservableType where Element == String? {
 
     public func mapToLabelContentStateInteraction() -> Observable<LabelContent.State.Interaction> {

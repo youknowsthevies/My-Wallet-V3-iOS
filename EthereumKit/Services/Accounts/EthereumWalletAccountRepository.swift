@@ -30,7 +30,7 @@ open class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI, 
     // MARK: - Properties
     
     public var keyPair: Maybe<KeyPair> {
-        return loadKeyPair()
+        loadKeyPair()
     }
 
     // For ETH, there is only one account which is the default account.
@@ -56,7 +56,7 @@ open class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI, 
     // MARK: - Public methods
     
     public func initializeMetadataMaybe() -> Maybe<WalletAccount> {
-        return loadDefaultAccount()
+        loadDefaultAccount()
     }
 
     public func accounts() -> [WalletAccount] {
@@ -69,7 +69,7 @@ open class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI, 
     // MARK: - Private methods
     
     private func loadDefaultAccount() -> Maybe<WalletAccount> {
-        return bridge.wallets.asMaybe()
+        bridge.wallets.asMaybe()
             .flatMap { accounts -> Maybe<WalletAccount> in
                 guard let first = accounts.first else {
                     return Maybe.empty()
@@ -84,7 +84,7 @@ open class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI, 
     // MARK: - KeyPairProviderAPI
     
     public func loadKeyPair() -> Maybe<KeyPair> {
-        return Maybe.zip(bridge.mnemonicPromptingIfNeeded, bridge.password)
+        Maybe.zip(bridge.mnemonicPromptingIfNeeded, bridge.password)
             .flatMap { [weak self] mnemonic, password -> Maybe<KeyPair> in
                 guard let self = self else { return Maybe.empty() }
                 return self.deriver.derive(input: EthereumKeyDerivationInput(mnemonic: mnemonic, password: password)).maybe

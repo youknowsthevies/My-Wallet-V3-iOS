@@ -13,7 +13,7 @@ class LockboxViewController: UIViewController {
     // MARK: Private Properties
 
     private var hasSyncedLockbox: Bool {
-        return LockboxRepository().lockboxes().count > 0
+        LockboxRepository().lockboxes().count > 0
     }
 
     // MARK: - IBOutlets

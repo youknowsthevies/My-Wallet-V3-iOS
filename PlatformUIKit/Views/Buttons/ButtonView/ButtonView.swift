@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
 import RxCocoa
 import RxSwift
+import UIKit
 
 /// The standard wallet button.
 /// Typically located at the bottom of a context, used as primary / secondary CTA buttons.

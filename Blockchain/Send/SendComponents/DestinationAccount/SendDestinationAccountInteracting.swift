@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import PlatformKit
+import RxRelay
+import RxSwift
 
 /// The interaction protocol for the destination accounto on the send screen
 protocol SendDestinationAccountInteracting {

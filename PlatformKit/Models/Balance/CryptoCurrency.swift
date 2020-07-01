@@ -63,6 +63,10 @@ extension CryptoCurrency {
     public var code: String {
         rawValue
     }
+    
+    public var symbol: String {
+        code
+    }
 
     public var displayCode: String {
         switch self {

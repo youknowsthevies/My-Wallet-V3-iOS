@@ -24,11 +24,11 @@ public protocol ShimmeringViewing: class {
 public extension ShimmeringViewing where Self: UIView {
         
     var shimmerDirection: ShimmerDirection {
-        return .leftToRight
+        .leftToRight
     }
     
     var isShimmering: Bool {
-        return layer.mask != nil
+        layer.mask != nil
     }
     
     /// Starts the shimmerring of the view's content

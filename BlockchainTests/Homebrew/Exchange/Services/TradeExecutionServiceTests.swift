@@ -6,12 +6,12 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-import RxSwift
-import PlatformKit
 import BitcoinKit
-import StellarKit
 import EthereumKit
+import PlatformKit
+import RxSwift
+import StellarKit
+import XCTest
 
 @testable import Blockchain
 
@@ -166,7 +166,7 @@ class TradeExecutionServiceTests: XCTestCase {
 
 extension OrderTransaction: Equatable {
     public static func == (lhs: OrderTransaction, rhs: OrderTransaction) -> Bool {
-        return lhs.amountToReceive == rhs.amountToReceive
+        lhs.amountToReceive == rhs.amountToReceive
             && lhs.amountToSend == rhs.amountToSend
             && lhs.destination == rhs.destination
             && lhs.fees == rhs.fees

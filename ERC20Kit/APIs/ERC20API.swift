@@ -7,9 +7,9 @@
 //
 
 import BigInt
-import RxSwift
-import PlatformKit
 import EthereumKit
+import PlatformKit
+import RxSwift
 
 public protocol ERC20API {
     associatedtype Token: ERC20Token

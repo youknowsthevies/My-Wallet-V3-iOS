@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import RxSwift
 import PlatformUIKit
+import RxSwift
 
 final class MultiActionView: UIView {
     

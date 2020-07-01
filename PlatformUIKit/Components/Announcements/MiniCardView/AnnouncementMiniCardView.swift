@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
-import RxSwift
 import PlatformKit
+import RxSwift
+import UIKit
 
 public final class AnnouncementMiniCardView: UIView, AnnouncementCardViewConforming {
     

@@ -6,12 +6,12 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
+import BuySellKit
 import PlatformKit
 import PlatformUIKit
-import BuySellKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 final class AddCardCellPresenter: AsyncPresenting {
     

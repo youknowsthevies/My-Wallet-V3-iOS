@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import Firebase
-import ToolKit
+import Foundation
 import PlatformKit
+import ToolKit
 
 class AnalyticsService: AnalyticsServiceAPI {
     
@@ -82,7 +82,7 @@ class AnalyticsService: AnalyticsServiceAPI {
     // MARK: Private methods
     
     private func isReservedKey(_ key: String) -> Bool {
-        return FirebaseConstants.reservedKeys.contains(key)
+        FirebaseConstants.reservedKeys.contains(key)
     }
 }
 

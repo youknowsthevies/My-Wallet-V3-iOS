@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import PlatformKit
 import ERC20Kit
+import PlatformKit
+import RxSwift
 
 class ERC20AssetAccountRepositoryMock: PlatformKit.AssetAccountRepositoryAPI {
 
@@ -17,6 +17,6 @@ class ERC20AssetAccountRepositoryMock: PlatformKit.AssetAccountRepositoryAPI {
     var assetAccountDetails: Single<ERC20AssetAccountDetails> = Single.error(NSError())
 
     func currentAssetAccountDetails(fromCache: Bool) -> Single<ERC20AssetAccountDetails> {
-        return .error(NSError())
+        .error(NSError())
     }
 }

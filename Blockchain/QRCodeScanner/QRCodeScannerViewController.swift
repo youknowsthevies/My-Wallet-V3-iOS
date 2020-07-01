@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
+import UIKit
 
 enum QRCodePresentationType {
     case modal(dismissWithAnimation: Bool)

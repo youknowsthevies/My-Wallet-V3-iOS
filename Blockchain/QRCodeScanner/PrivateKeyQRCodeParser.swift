@@ -19,7 +19,7 @@ final class PrivateKeyQRCodeParser: QRCodeScannerParsing {
         
         var privateKeyReaderError: PrivateKeyReaderError {
             switch self {
-            case .scanError(_):
+            case .scanError:
                 return PrivateKeyReaderError.badMetadataObject
             case .unknownKeyFormat:
                 return PrivateKeyReaderError.unknownKeyFormat

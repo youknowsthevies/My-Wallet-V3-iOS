@@ -6,13 +6,13 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import LibWally
 import CommonCryptoKit
+import LibWally
 
 public struct Passphrase: LosslessStringConvertible, RawRepresentable {
     
     public var description: String {
-        return rawValue
+        rawValue
     }
     
     public let rawValue: String
@@ -92,5 +92,4 @@ public struct Mnemonic {
     }
     
 }
-
 

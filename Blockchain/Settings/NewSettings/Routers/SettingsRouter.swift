@@ -6,15 +6,15 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import SafariServices
+import BuySellKit
+import BuySellUIKit
+import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
+import SafariServices
 import ToolKit
-import PlatformKit
-import PlatformUIKit
-import BuySellKit
-import BuySellUIKit
 
 final class SettingsRouter: SettingsRouterAPI {
     

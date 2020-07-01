@@ -14,7 +14,6 @@
 #import "LocalizationConstants.h"
 #import "UIView+ChangeFrameAttribute.h"
 #import "TransferAllFundsBuilder.h"
-#import "BCNavigationController.h"
 #import "BCFeeSelectionView.h"
 #import "BCConfirmPaymentViewModel.h"
 #import "Blockchain-Swift.h"
@@ -80,8 +79,6 @@ typedef enum {
 @property (nonatomic, copy) void (^onViewDidLoad)(void);
 
 @property (nonatomic) TransferAllFundsBuilder *transferAllPaymentBuilder;
-
-@property (nonatomic) BCNavigationController *contactRequestNavigationController;
 
 @property (nonatomic) SendExchangeAddressStatePresenter *exchangeAddressPresenter;
 @property (nonatomic) BridgeBitpayService *bitpayService;

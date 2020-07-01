@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
 import BigInt
-import PlatformKit
 @testable import BitcoinKit
+import PlatformKit
+import XCTest
 
 class CoinSelectionTests: XCTestCase {
     
@@ -161,7 +161,7 @@ class CoinSelectionTests: XCTestCase {
 }
 
 private func unspents(_ values: [Int]) -> [UnspentOutput] {
-    return values.compactMap { value in
+    values.compactMap { value in
         guard let bitcoinValue = try? BitcoinValue(crypto: CryptoValue.bitcoinFromSatoshis(int: abs(value))) else {
             return nil
         }
@@ -178,7 +178,7 @@ extension UnspentOutput {
                        xpub: XPub = XPub(m: "m", path: "path"),
                        isReplayable: Bool = true,
                        isForceInclude: Bool = false) -> UnspentOutput {
-        return UnspentOutput(
+        UnspentOutput(
             hash: hash,
             script: script,
             value: value,

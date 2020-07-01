@@ -17,7 +17,7 @@ public protocol PendingStatePresenterAPI: class {
 
 extension PendingStatePresenterAPI {
     public var title: String {
-        return ""
+        ""
     }
     public func viewDidLoad() {}
 }

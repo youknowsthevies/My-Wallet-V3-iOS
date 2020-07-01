@@ -7,8 +7,8 @@
 //
 
 import PlatformKit
-import stellarsdk
 import RxSwift
+import stellarsdk
 
 public class StellarKeyPairDeriver: KeyPairDeriverAPI {
     public typealias StellarWallet = stellarsdk.Wallet
@@ -30,6 +30,6 @@ public class StellarKeyPairDeriver: KeyPairDeriverAPI {
 
 private extension stellarsdk.KeyPair {
     func toStellarKeyPair() -> StellarKeyPair {
-        return StellarKeyPair(accountID: publicKey.accountId, secret: secretSeed)
+        StellarKeyPair(accountID: publicKey.accountId, secret: secretSeed)
     }
 }

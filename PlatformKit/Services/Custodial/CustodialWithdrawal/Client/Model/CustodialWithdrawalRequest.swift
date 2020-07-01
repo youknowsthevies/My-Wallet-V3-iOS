@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import BigInt
+import Foundation
 
 /// The `request` submitted for withdrawing custodial funds
 /// from your custodial wallet to your non-custodial. The `address`

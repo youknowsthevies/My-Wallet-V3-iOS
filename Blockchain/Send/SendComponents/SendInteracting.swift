@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import RxSwift
-import RxRelay
 import PlatformKit
+import RxRelay
+import RxSwift
 
 /// This protocol provides the inner components of a send
 protocol SendInteracting {

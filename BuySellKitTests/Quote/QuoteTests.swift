@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-@testable import PlatformKit
 @testable import BuySellKit
+@testable import PlatformKit
+import XCTest
 
 class SimpleBuyQuoteTests: XCTestCase {
 
@@ -19,7 +19,7 @@ class SimpleBuyQuoteTests: XCTestCase {
 
     }
     func createTestCases(locales: [Locale]) -> [QuoteTestCase] {
-        return locales.map { createTestCase(locale: $0) }
+        locales.map { createTestCase(locale: $0) }
     }
     func createTestCase(locale: Locale) -> QuoteTestCase {
         let response = QuoteResponse(time: "2020-03-26T11:04:35.144Z", rate: "577864", rateWithoutFee: "576864", fee: "1000")

@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import ToolKit
 import NetworkKit
 import PlatformKit
+import RxSwift
+import ToolKit
 
 /// Handles network requests for the KYC flow
 final class KYCNetworkRequest {
@@ -249,7 +249,7 @@ extension KYCNetworkRequest {
         parameters: RequestPayload,
         headers: [String: String]? = nil
     ) -> Completable {
-        return Completable.create(subscribe: { observer -> Disposable in
+        Completable.create(subscribe: { observer -> Disposable in
             KYCNetworkRequest(put: url, parameters: parameters, headers: headers, taskSuccess: { _ in
                 observer(.completed)
             }, taskFailure: {
@@ -265,7 +265,7 @@ extension KYCNetworkRequest {
         headers: [String: String]? = nil,
         type: ResponseType.Type
     ) -> Single<ResponseType> {
-        return Single.create(subscribe: { observer -> Disposable in
+        Single.create(subscribe: { observer -> Disposable in
             KYCNetworkRequest(put: url, parameters: parameters, headers: headers, taskSuccess: { responseData in
                 do {
                     let response = try JSONDecoder().decode(type.self, from: responseData)
@@ -285,7 +285,7 @@ extension KYCNetworkRequest {
         parameters: [String: String],
         headers: [String: String]? = nil
     ) -> Completable {
-        return Completable.create(subscribe: { observer -> Disposable in
+        Completable.create(subscribe: { observer -> Disposable in
             KYCNetworkRequest(post: url, parameters: parameters, headers: headers, taskSuccess: { _ in
                 observer(.completed)
             }, taskFailure: {
@@ -301,7 +301,7 @@ extension KYCNetworkRequest {
         headers: [String: String]? = nil,
         type: ResponseType.Type
     ) -> Single<ResponseType> {
-        return Single.create(subscribe: { observer -> Disposable in
+        Single.create(subscribe: { observer -> Disposable in
             KYCNetworkRequest(post: url, parameters: parameters, headers: headers, taskSuccess: { responseData in
                 do {
                     let response = try JSONDecoder().decode(type.self, from: responseData)
@@ -324,7 +324,7 @@ extension KYCNetworkRequest {
         headers: [String: String]? = nil,
         type: ResponseType.Type
     ) -> Single<ResponseType> {
-        return Single.create(subscribe: { observer -> Disposable in
+        Single.create(subscribe: { observer -> Disposable in
             KYCNetworkRequest(get: url, pathComponents: pathComponents, headers: headers, taskSuccess: { responseData in
                 do {
                     let response = try JSONDecoder().decode(type.self, from: responseData)

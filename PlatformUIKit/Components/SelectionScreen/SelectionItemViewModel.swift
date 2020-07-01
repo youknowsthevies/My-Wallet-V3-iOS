@@ -31,13 +31,13 @@ public struct SelectionItemViewModel {
 
 extension SelectionItemViewModel: Equatable {
     public static func == (lhs: SelectionItemViewModel, rhs: SelectionItemViewModel) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 }
 
 extension SelectionItemViewModel: Comparable {
     public static func < (lhs: Self, rhs: Self) -> Bool {
-        return lhs.title < rhs.title
+        lhs.title < rhs.title
     }
 }
 

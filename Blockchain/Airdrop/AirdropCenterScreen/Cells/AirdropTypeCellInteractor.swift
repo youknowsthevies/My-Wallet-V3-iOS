@@ -38,6 +38,6 @@ struct AirdropTypeCellInteractor {
 
 extension AirdropTypeCellInteractor: Equatable {
     static func == (lhs: AirdropTypeCellInteractor, rhs: AirdropTypeCellInteractor) -> Bool {
-        return lhs.campaignIdentifier == rhs.campaignIdentifier
+        lhs.campaignIdentifier == rhs.campaignIdentifier
     }
 }

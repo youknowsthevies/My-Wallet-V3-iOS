@@ -6,12 +6,12 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import ToolKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import RxSwift
 import StellarKit
+import ToolKit
 
 /// Router for handling the XLM airdrop flow
 class StellarAirdropRouter: DeepLinkRouting {
@@ -160,7 +160,7 @@ class StellarAirdropRouter: DeepLinkRouting {
         }
         .asObservable()
         .map { _ -> NabuUser in
-            return nabuUser
+            nabuUser
         }
     }
 }

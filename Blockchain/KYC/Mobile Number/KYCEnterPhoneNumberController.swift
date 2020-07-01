@@ -7,9 +7,9 @@
 //
 
 import PhoneNumberKit
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 final class KYCEnterPhoneNumberController: KYCBaseViewController, BottomButtonContainerView, ProgressableView {
     
@@ -37,11 +37,11 @@ final class KYCEnterPhoneNumberController: KYCBaseViewController, BottomButtonCo
     // MARK: Private Properties
 
     private lazy var presenter: KYCVerifyPhoneNumberPresenter = { [unowned self] in
-        return KYCVerifyPhoneNumberPresenter(view: self)
+        KYCVerifyPhoneNumberPresenter(view: self)
     }()
 
     private lazy var phoneNumberPartialFormatter: PartialFormatter = {
-        return PartialFormatter()
+        PartialFormatter()
     }()
 
     // MARK: Factory
@@ -74,7 +74,7 @@ final class KYCEnterPhoneNumberController: KYCBaseViewController, BottomButtonCo
         validationTextFieldMobileNumber.keyboardType = .numberPad
         validationTextFieldMobileNumber.contentType = .telephoneNumber
         validationTextFieldMobileNumber.textReplacementBlock = { [unowned self] in
-            return self.phoneNumberPartialFormatter.formatPartial($0)
+            self.phoneNumberPartialFormatter.formatPartial($0)
         }
         validationTextFieldMobileNumber.returnTappedBlock = { [unowned self] in
             self.validationTextFieldMobileNumber.resignFocus()

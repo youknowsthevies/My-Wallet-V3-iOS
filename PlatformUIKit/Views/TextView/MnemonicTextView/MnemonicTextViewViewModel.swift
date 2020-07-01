@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
 import Localization
+import RxCocoa
+import RxRelay
+import RxSwift
 
 /// A view model for `MnemonicTextViewViewModel`
 public struct MnemonicTextViewViewModel {
@@ -80,11 +80,11 @@ public struct MnemonicTextViewViewModel {
 
     /// The state of the text field
     public var state: Observable<State> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
     }
     
     var borderColor: Driver<UIColor> {
-        return borderColorRelay.asDriver()
+        borderColorRelay.asDriver()
     }
     
     let accessibility: Accessibility = .init(id: .value(Accessibility.Identifier.MnemonicTextView.recoveryPhrase))
@@ -96,14 +96,14 @@ public struct MnemonicTextViewViewModel {
     
     let attributedTextRelay = BehaviorRelay<NSAttributedString>(value: .init(string: ""))
     var attributedText: Driver<NSAttributedString> {
-        return attributedTextRelay
+        attributedTextRelay
         .asDriver()
     }
     
     /// The content of the text field
     let textRelay = BehaviorRelay<String>(value: "")
     var text: Observable<String> {
-        return textRelay.asObservable()
+        textRelay.asObservable()
     }
     
     /// Each input is formatted according to its nature
@@ -132,13 +132,13 @@ public struct MnemonicTextViewViewModel {
         
         Observable.zip(validator.valueRelay, validator.score)
             .map { (value, score) -> State in
-                return State(input: value, score: score)
+                State(input: value, score: score)
         }
         .bindAndCatch(to: stateRelay)
         .disposed(by: disposeBag)
         
         validator.score.map {
-            return $0.tintColor
+            $0.tintColor
         }
         .bindAndCatch(to: borderColorRelay)
         .disposed(by: disposeBag)

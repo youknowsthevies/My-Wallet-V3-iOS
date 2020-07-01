@@ -38,7 +38,7 @@ public protocol ReactiveAppSettingsAuthenticating: AppSettingsAuthenticating {
 
 extension ReactiveAppSettingsAuthenticating {
     public var encryptedPinPasswordSingle: Single<String> {
-        return Single
+        Single
             .create(weak: self) { (self, observer) in
                 guard let encryptedPinPassword = self.encryptedPinPassword else {
                     observer(.error(AppSettingsCacheError.missingEncryptedPinPassword))

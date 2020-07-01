@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import NetworkKit
 import PlatformKit
+import RxSwift
 
 class VeriffService {
     
@@ -22,7 +22,7 @@ class VeriffService {
     
     /// Creates VeriffCredentials
     func createCredentials() -> Single<(VeriffCredentials)> {
-        return authService.tokenString.flatMap { token in
+        authService.tokenString.flatMap { token in
             let headers = [HttpHeaderField.authorization: token]
             return KYCNetworkRequest.request(
                 get: .credentiasForVeriff,
@@ -38,7 +38,7 @@ class VeriffService {
     /// - Parameter applicantId: applicantId derived from `VeriffCredentials`
     /// - Returns: a Completable
     func submitVerification(applicantId: String) -> Completable {
-        return authService.tokenString.flatMapCompletable { token in
+        authService.tokenString.flatMapCompletable { token in
             let headers = [HttpHeaderField.authorization: token]
             let payload = [
                 "applicantId": applicantId,

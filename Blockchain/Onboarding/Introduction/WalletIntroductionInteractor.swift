@@ -42,9 +42,9 @@ class WalletIntroductionInteractor: WalletIntroductionInteracting {
     }
     
     var isIntroductionComplete: Single<Bool> {
-        return lastLocation.ifEmpty(default: .starter).flatMap(weak: self, { (self, step) -> Single<Bool> in
-            return self.next(step).map { _ -> Bool in
-                return false
+        lastLocation.ifEmpty(default: .starter).flatMap(weak: self, { (self, step) -> Single<Bool> in
+            self.next(step).map { _ -> Bool in
+                false
             }.catchErrorJustReturn(true)
         })
     }
@@ -63,7 +63,7 @@ class WalletIntroductionInteractor: WalletIntroductionInteracting {
     }
     
     func next(_ location: WalletIntroductionLocation) -> Single<WalletIntroductionLocation> {
-        return stepperAPI.nextLocation(from: location)
+        stepperAPI.nextLocation(from: location)
     }
     
     private var defaultStartLocation: Single<WalletIntroductionLocation> {

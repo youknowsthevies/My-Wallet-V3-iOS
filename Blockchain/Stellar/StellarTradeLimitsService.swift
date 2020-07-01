@@ -6,9 +6,9 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import BigInt
 import PlatformKit
+import RxSwift
 import StellarKit
 
 class StellarTradeLimitsService: StellarTradeLimitsAPI {
@@ -22,8 +22,8 @@ class StellarTradeLimitsService: StellarTradeLimitsAPI {
     }
     
     func validateCryptoAmount(amount: Crypto) -> Single<TransactionValidationResult> {
-        return accountsService.currentStellarAccount(fromCache: true).flatMap(weak: self, { (self, account) -> Single<TransactionValidationResult> in
-            return self.maxSpendableAmount(for: account.identifier).map {
+        accountsService.currentStellarAccount(fromCache: true).flatMap(weak: self, { (self, account) -> Single<TransactionValidationResult> in
+            self.maxSpendableAmount(for: account.identifier).map {
                 let spendable = amount.amount <= $0.amount && amount.amount > 0
                 return spendable ? .ok : .invalid(StellarFundsError.insufficientFunds)
             }
@@ -62,7 +62,7 @@ class StellarTradeLimitsService: StellarTradeLimitsAPI {
     }
 
     func isSpendable(amount: CryptoValue, for accountId: AccountID) -> Single<Bool> {
-        return maxSpendableAmount(for: accountId)
+        maxSpendableAmount(for: accountId)
             .map { maxSpendableAmount -> Bool in
                 amount.amount <= maxSpendableAmount.amount && amount.amount > 0
             }

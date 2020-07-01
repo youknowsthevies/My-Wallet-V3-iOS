@@ -50,7 +50,7 @@ final class BackupFundsViewController: BaseScreenViewController {
     
     private func setupNavigationBar() {
         titleViewStyle = .text(value: LocalizationConstants.BackupFundsScreen.title)
-        set(barStyle: .darkContent(ignoresStatusBar: false, background: .white),
+        set(barStyle: .darkContent(),
             leadingButtonStyle: presenter.leadingButton,
             trailingButtonStyle: presenter.trailingButton)
     }

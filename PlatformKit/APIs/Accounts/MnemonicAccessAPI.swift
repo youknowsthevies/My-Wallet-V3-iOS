@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import RxSwift
 import RxRelay
+import RxSwift
 
 public typealias Mnemonic = String
 
@@ -35,7 +35,7 @@ public protocol MnemonicComponentsProviding {
 public final class MnemonicComponentsProvider: MnemonicComponentsProviding {
     
     public var components: Observable<[String]> {
-        return mnemonicAccessAPI.mnemonic.map {
+        mnemonicAccessAPI.mnemonic.map {
             $0.components(separatedBy: " ")
         }.asObservable()
     }

@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
+import UIKit
 
 class KYCAddressController: KYCBaseViewController, ValidationFormView, ProgressableView {
     
@@ -36,7 +36,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     @IBOutlet fileprivate var primaryButtonContainer: PrimaryButtonContainer!
     
     private var textFields: [ValidationTextField] {
-        return [addressTextField,
+        [addressTextField,
                 apartmentTextField,
                 cityTextField,
                 stateTextField,
@@ -66,7 +66,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     /// This is just for convenience purposes when iterating over the fields
     /// and checking validation etc.
     var validationFields: [ValidationTextField] {
-        return [addressTextField,
+        [addressTextField,
                 apartmentTextField,
                 cityTextField,
                 stateTextField,
@@ -280,7 +280,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
 
         analyticsRecorder.record(event: AnalyticsEvents.KYC.kycAddressDetailSet)
         
-        validationFields.forEach({$0.resignFocus()})
+        validationFields.forEach({ $0.resignFocus() })
 
         let address = UserAddress(
             lineOne: addressTextField.text ?? "",
@@ -414,6 +414,6 @@ extension KYCAddressController: UISearchBarDelegate {
 
 extension KYCAddressController: UIScrollViewDelegate {
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        validationFields.forEach({$0.resignFocus()})
+        validationFields.forEach({ $0.resignFocus() })
     }
 }

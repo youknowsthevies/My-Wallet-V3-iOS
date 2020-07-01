@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import web3swift
 import BigInt
 import PlatformKit
+import RxSwift
+import web3swift
 
 public protocol EthereumTransactionBuildingServiceAPI {
     func buildTransaction(with amount: EthereumValue, to: EthereumAddress) -> Single<EthereumTransactionCandidate>
@@ -26,7 +26,7 @@ public class EthereumTransactionBuildingService: EthereumTransactionBuildingServ
     }
     
     public func buildTransaction(with amount: EthereumValue, to: EthereumAddress) -> Single<EthereumTransactionCandidate> {
-        return Single.zip(feeService.fees, balance)
+        Single.zip(feeService.fees, balance)
             .flatMap { tuple -> Single<EthereumTransactionCandidate> in
                 let (fee, balanceSigned) = tuple
                 let value: BigUInt = BigUInt(amount.amount)
@@ -57,8 +57,8 @@ public class EthereumTransactionBuildingService: EthereumTransactionBuildingServ
     }
     
     private var balance: Single<CryptoValue> {
-        return repository.currentAssetAccountDetails(fromCache: false).flatMap(weak: self, { (self, details) -> Single<CryptoValue> in
-            return Single.just(details.balance)
+        repository.currentAssetAccountDetails(fromCache: false).flatMap(weak: self, { (self, details) -> Single<CryptoValue> in
+            Single.just(details.balance)
         })
     }
 }

@@ -14,7 +14,7 @@ final class DashboardNoticeInteractor {
         
     /// A `Single` that streams a boolean value indicating ifthe user has a lockbox linked
     var lockbox: Single<Bool> {
-        return Single
+        Single
             .just(lockboxRepository.hasLockbox)
             // Subscribe on the main queue because of the JS layer
             .subscribeOn(MainScheduler.instance)

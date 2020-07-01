@@ -7,11 +7,11 @@
 //
 
 import Foundation
-import RxSwift
-import RxCocoa
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 /// A class the is responsible for the send flow
 final class SendPresenter {
@@ -89,19 +89,19 @@ final class SendPresenter {
     
     /// Returns the asset
     var asset: CryptoCurrency {
-        return interactor.asset
+        interactor.asset
     }
     
     /// Streams `true` when the continue button should be enabled
     var isContinueButtonEnabled: Driver<Bool> {
-        return interactor.inputState
+        interactor.inputState
             .map { $0.isValid }
             .asDriver(onErrorJustReturn: false)
     }
     
     /// Signals for error in case there is any
     var error: Signal<SendInputState.StateError> {
-        return errorRelay.asSignal()
+        errorRelay.asSignal()
     }
     
     /// Signals for alert notification
@@ -111,13 +111,13 @@ final class SendPresenter {
     
     /// Streams the right button type
     var navigationRightButton: Observable<NavigationRightButtonUpdate> {
-        return navigationRightButtonRelay
+        navigationRightButtonRelay
             .observeOn(MainScheduler.instance)
     }
     
     // TODO: Change this once we make the navigation mechanism Rx friendly
     var navigationRightButtonValue: NavigationRightButtonUpdate {
-        return navigationRightButtonRelay.value
+        navigationRightButtonRelay.value
     }
     
     // MARK: - Sub-Presenters
@@ -248,7 +248,7 @@ final class SendPresenter {
             )
             .flatMap { confirmationData }
             .map { (source, destination, totalCrypto, totalFiat, fee) -> BCConfirmPaymentViewModel in
-                return BCConfirmPaymentViewModel(
+                BCConfirmPaymentViewModel(
                     from: source,
                     destinationDisplayAddress: destination,
                     destinationRawAddress: "", // TODO: Remove `destinationRawAddress`
@@ -294,7 +294,7 @@ extension SendPresenter {
 
     /// CTA for the send button. Once invoked, the transaction will be initiated
     func sendButtonTapped() -> Single<Void> {
-        return interactor.send()
+        interactor.send()
             .record(
                 subscribeEvent: AnalyticsEvents.Send.sendSummaryConfirmClick(asset: asset),
                 successEvent: AnalyticsEvents.Send.sendSummaryConfirmSuccess(asset: asset),
@@ -310,7 +310,7 @@ extension SendPresenter {
 
 extension SendPresenter: Hashable {
     static func == (lhs: SendPresenter, rhs: SendPresenter) -> Bool {
-        return lhs.asset == rhs.asset
+        lhs.asset == rhs.asset
     }
     
     func hash(into hasher: inout Hasher) {

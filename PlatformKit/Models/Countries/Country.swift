@@ -818,7 +818,7 @@ extension Country {
     
     /// The code of the country
     public var code: String {
-        return rawValue
+        rawValue
     }
     
     /// Initializer with country code

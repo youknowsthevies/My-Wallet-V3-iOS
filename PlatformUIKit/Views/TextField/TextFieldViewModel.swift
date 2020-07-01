@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
-import ToolKit
 import Localization
+import RxCocoa
+import RxRelay
+import RxSwift
+import ToolKit
 
 /// A view model for text field
 public class TextFieldViewModel {

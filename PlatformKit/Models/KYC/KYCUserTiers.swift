@@ -14,7 +14,7 @@ extension KYC {
 
         /// `true` in case the user has a verified GOLD tier.
         public var isTier2Approved: Bool {
-            return latestApprovedTier == .tier2
+            latestApprovedTier == .tier2
         }
         
         public init(tiers: [KYC.UserTier]) {
@@ -23,7 +23,7 @@ extension KYC {
 
         /// Returns the KYC.AccountStatus for the given KYC.Tier
         public func tierAccountStatus(for tier: KYC.Tier) -> KYC.AccountStatus {
-            return tiers
+            tiers
                 .first(where: { $0.tier == tier })
                 .flatMap { $0.state.accountStatus } ?? .none
         }
@@ -52,7 +52,7 @@ extension KYC {
 
         /// Returns `true` if the user is not tier2 verified, rejected or pending
         public var canCompleteTier2: Bool {
-            return tiers.contains(where: {
+            tiers.contains(where: {
                 $0.tier == .tier2 &&
                     ($0.state != .pending && $0.state != .rejected && $0.state != .verified)
             })

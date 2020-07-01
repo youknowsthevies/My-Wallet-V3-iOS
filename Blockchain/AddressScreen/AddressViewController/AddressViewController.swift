@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
+import PlatformUIKit
 import RxCocoa
 import RxSwift
-import PlatformUIKit
+import UIKit
 
 /// This component presents to the user an address QR for a given asset.
 /// Allows the user to conveniently copy or share the address.

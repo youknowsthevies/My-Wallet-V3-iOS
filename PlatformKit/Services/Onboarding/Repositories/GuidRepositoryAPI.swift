@@ -22,7 +22,7 @@ public protocol GuidRepositoryAPI: class {
 
 public extension GuidRepositoryAPI {
     var hasGuid: Single<Bool> {
-        return guid
+        guid
             .map { guid in
                 guard let guid = guid else { return false }
                 return !guid.isEmpty

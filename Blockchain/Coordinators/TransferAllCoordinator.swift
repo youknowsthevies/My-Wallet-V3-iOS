@@ -15,7 +15,7 @@ import PlatformUIKit
 
     // class function declared so that the TransferAllCoordinator singleton can be accessed from obj-C
     @objc class func sharedInstance() -> TransferAllCoordinator {
-        return TransferAllCoordinator.shared
+        TransferAllCoordinator.shared
     }
     
     private let loadingViewPresenter: LoadingViewPresenting
@@ -31,7 +31,7 @@ import PlatformUIKit
     func start() {
         transferAllController = TransferAllFundsViewController()
         let navigationController = BCNavigationController(
-            rootViewController: transferAllController,
+            rootViewController: transferAllController!,
             title: LocalizationConstants.SendAsset.transferAllFunds
         )
         let tabViewController = AppCoordinator.shared.tabControllerManager.tabViewController

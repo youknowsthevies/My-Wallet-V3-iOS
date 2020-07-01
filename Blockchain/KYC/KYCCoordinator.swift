@@ -6,12 +6,12 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import ToolKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 enum KYCEvent {
 
@@ -43,7 +43,7 @@ protocol KYCCoordinatorDelegate: class {
     static let shared = KYCCoordinator()
 
     @objc class func sharedInstance() -> KYCCoordinator {
-        return KYCCoordinator.shared
+        KYCCoordinator.shared
     }
 
     // MARK: - Private Properties

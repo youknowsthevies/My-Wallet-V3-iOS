@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
+import UIKit
 
 /// Personal details entry screen in KYC flow
 final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormView, ProgressableView {
@@ -33,7 +33,7 @@ final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormV
     @IBOutlet var scrollView: UIScrollView!
 
     var validationFields: [ValidationTextField] {
-        return [firstNameField, lastNameField, birthdayField]
+        [firstNameField, lastNameField, birthdayField]
     }
 
     // MARK: Public Properties
@@ -154,14 +154,14 @@ final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormV
 
     fileprivate func progression() -> Float {
         let newProgression: Float = validationFields.map({
-            return $0.validate() == .valid ? 0.14 : 0.0
+            $0.validate() == .valid ? 0.14 : 0.0
         }).reduce(startingValue, +)
         return max(newProgression, startingValue)
     }
 
     fileprivate func primaryButtonTapped() {
         guard checkFieldsValidity() else { return }
-        validationFields.forEach({$0.resignFocus()})
+        validationFields.forEach({ $0.resignFocus() })
 
         let details = KYCUpdatePersonalDetailsRequest(
             firstName: firstNameField.text,

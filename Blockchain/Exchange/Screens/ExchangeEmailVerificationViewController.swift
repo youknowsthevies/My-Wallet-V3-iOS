@@ -8,33 +8,33 @@
 
 import Foundation
 import PlatformKit
-import RxSwift
-import RxCocoa
 import PlatformUIKit
+import RxCocoa
+import RxSwift
 
 class ExchangeEmailVerificationViewController: UIViewController, BottomButtonContainerView {
     
     // MARK: Public Properties (Rx)
     var verificationObserver: Observable<Void> {
-        return verificationRelay.asObservable().take(1)
+        verificationRelay.asObservable().take(1)
     }
     
     // MARK: Private Lazy Properties
     
     private lazy var presenter: VerifyEmailPresenter = {
-        return VerifyEmailPresenter(view: self)
+        VerifyEmailPresenter(view: self)
     }()
     
     private lazy var primaryFont: UIFont = {
-        return Font(.branded(.montserratMedium), size: .custom(14.0)).result
+        Font(.branded(.montserratMedium), size: .custom(14.0)).result
     }()
     
     private lazy var primaryFontColor: UIColor = {
-        return #colorLiteral(red: 0.21, green: 0.25, blue: 0.32, alpha: 1)
+        #colorLiteral(red: 0.21, green: 0.25, blue: 0.32, alpha: 1)
     }()
     
     private lazy var loadingAttributedText: NSAttributedString = {
-        return NSAttributedString(
+        NSAttributedString(
             string: LocalizationConstants.Exchange.EmailVerification.justAMoment,
             attributes: [
                 .font: primaryFont,
@@ -43,7 +43,7 @@ class ExchangeEmailVerificationViewController: UIViewController, BottomButtonCon
     }()
     
     private lazy var emailSentAttributedText: NSAttributedString = {
-        return NSAttributedString(
+        NSAttributedString(
             string: LocalizationConstants.KYC.emailSent,
             attributes: [
                 .font: primaryFont,
@@ -52,14 +52,14 @@ class ExchangeEmailVerificationViewController: UIViewController, BottomButtonCon
     }()
     
     private lazy var primaryAttributes: [NSAttributedString.Key: Any] = {
-        return [
+        [
             .font: primaryFont,
             .foregroundColor: primaryFontColor
         ]
     }()
     
     private lazy var secondaryAttributes: [NSAttributedString.Key: Any] = {
-        return [
+        [
             .font: primaryFont,
             .foregroundColor: #colorLiteral(red: 0.05, green: 0.42, blue: 0.95, alpha: 1)
         ]
@@ -182,7 +182,7 @@ extension ExchangeEmailVerificationViewController: EmailConfirmationInterface {
 
 extension ExchangeEmailVerificationViewController: ActionableLabelDelegate {
     func targetRange(_ label: ActionableLabel) -> NSRange? {
-        return trigger?.actionRange()
+        trigger?.actionRange()
     }
     
     func actionRequestingExecution(label: ActionableLabel) {
@@ -193,11 +193,11 @@ extension ExchangeEmailVerificationViewController: ActionableLabelDelegate {
 
 extension ExchangeEmailVerificationViewController: NavigatableView {
     var leftNavControllerCTAType: NavigationCTAType {
-        return .none
+        .none
     }
     
     var rightNavControllerCTAType: NavigationCTAType {
-        return .dismiss
+        .dismiss
     }
     
     func navControllerRightBarButtonTapped(_ navController: UINavigationController) {

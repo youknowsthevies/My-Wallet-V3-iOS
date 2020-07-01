@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import PlatformKit
+import RxSwift
 
 /// This is temporary as the `SendBitcoinViewController` will likely be deprecated soon.
 @objc
@@ -34,6 +34,6 @@ final class ExchangeAddressViewModel: NSObject {
     }
     
     @objc var legacyAssetType: LegacyAssetType {
-        return asset.legacy
+        asset.legacy
     }
 }

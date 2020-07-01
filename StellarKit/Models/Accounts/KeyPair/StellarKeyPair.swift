@@ -10,7 +10,7 @@ import PlatformKit
 
 public struct StellarKeyPair: KeyPair {
     public var secret: String {
-        return privateKey.secret
+        privateKey.secret
     }
     
     public var accountID: String

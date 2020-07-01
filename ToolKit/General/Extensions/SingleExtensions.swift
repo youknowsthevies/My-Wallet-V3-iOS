@@ -17,7 +17,7 @@ public extension Single where Element: OptionalType {
 
 extension Single {
     public static func from<T, U: Error>(block: @escaping (@escaping (Swift.Result<T, U>) -> Void) -> Void) -> Single<T> {
-        return Single.create(subscribe: { observer -> Disposable in
+        Single.create(subscribe: { observer -> Disposable in
             block { result in
                 switch result {
                 case .success(let value):
@@ -33,7 +33,7 @@ extension Single {
 
 extension Single {
     public func flatMap<A: AnyObject, R>(weak object: A, _ selector: @escaping (A, Element) throws -> Single<R>) -> Single<R> {
-        return asObservable()
+        asObservable()
             .flatMap(weak: object) { object, value in
                 try selector(object, value).asObservable()
             }
@@ -43,7 +43,7 @@ extension Single {
 
 extension PrimitiveSequence where Trait == SingleTrait {
     public func map<A: AnyObject, R>(weak object: A, _ selector: @escaping (A, Element) throws -> R) -> PrimitiveSequence<SingleTrait, R> {
-        return map { [weak object] element -> R in
+        map { [weak object] element -> R in
             guard let object = object else { throw ToolKitError.nullReference(A.self) }
             return try selector(object, element)
         }
@@ -72,7 +72,7 @@ extension PrimitiveSequence where Trait == CompletableTrait {
 extension PrimitiveSequence where Trait == SingleTrait {
     public func flatMapCompletable<A: AnyObject>(weak object: A, _ selector: @escaping (A, Element) throws -> Completable)
         -> Completable {
-        return asObservable()
+        asObservable()
             .flatMap(weak: object) { object, value in
                 try selector(object, value).asObservable()
             }
@@ -80,7 +80,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
     }
     
     public static func create<A: AnyObject>(weak object: A, subscribe: @escaping (A, @escaping SingleObserver) -> Disposable) -> Single<Element> {
-        return Single<Element>.create { [weak object] observer -> Disposable in
+        Single<Element>.create { [weak object] observer -> Disposable in
             guard let object = object else {
                 observer(.error(ToolKitError.nullReference(A.self)))
                 return Disposables.create()
@@ -101,7 +101,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
 
 extension PrimitiveSequence where Trait == SingleTrait {
     public func catchError<A: AnyObject>(weak object: A, _ selector: @escaping (A, Swift.Error) throws -> Single<Element>) -> Single<Element> {
-        return catchError { [weak object] error -> Single<Element> in
+        catchError { [weak object] error -> Single<Element> in
             guard let object = object else { throw ToolKitError.nullReference(A.self) }
             return try selector(object, error)
         }

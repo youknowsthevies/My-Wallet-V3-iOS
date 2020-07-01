@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import EthereumKit
 import PlatformKit
 import PlatformUIKit
-import EthereumKit
 
 /// The state of the input
 enum SendInputState {

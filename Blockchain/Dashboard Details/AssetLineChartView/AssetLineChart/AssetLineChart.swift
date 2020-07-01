@@ -50,7 +50,7 @@ struct AssetLineChart {
                 debugDescription = value.currency.displayCode
                 color = value.delta >= 0 ? .positivePrice : .negativePrice
                 points = value.prices.enumerated().map {
-                    return CGPoint(x: Double($0.offset), y: $0.element.price.doubleValue)
+                    CGPoint(x: Double($0.offset), y: $0.element.price.doubleValue)
                 }
             }
         }

@@ -7,12 +7,12 @@
 //
 
 import Foundation
-import RxSwift
-import SafariServices
-import ToolKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import RxSwift
+import SafariServices
+import ToolKit
 
 class ExchangeCoordinator {
     
@@ -197,7 +197,7 @@ class ExchangeCoordinator {
         repository.syncDepositAddresses()
             .andThen(hasLinkedExchangeAccount())
             .flatMap(weak: self, { (self, hasLinkedExchangeAccount) -> Single<URL> in
-                return hasLinkedExchangeAccount ? Single.just(exchangeURL) : self.authenticator.exchangeURL
+                hasLinkedExchangeAccount ? Single.just(exchangeURL) : self.authenticator.exchangeURL
             })
             .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
             .observeOn(MainScheduler.instance)
@@ -215,7 +215,7 @@ class ExchangeCoordinator {
     private func syncAddressesAndLinkExchangeToWallet() {
         authenticator.exchangeLinkID
             .flatMapCompletable(weak: self) { (self, linkID) -> Completable in
-                return self.authenticator.linkToExistingExchangeUser(linkID: linkID)
+                self.authenticator.linkToExistingExchangeUser(linkID: linkID)
             }
             .andThen(repository.syncDepositAddresses())
             .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
@@ -235,11 +235,11 @@ class ExchangeCoordinator {
     }
     
     private func hasLinkedExchangeAccount() -> Single<Bool> {
-        return repository.hasLinkedExchangeAccount
+        repository.hasLinkedExchangeAccount
     }
     
     private func isLinkingToExistingExchangeUser() -> Bool {
-        return appSettings.exchangeLinkIdentifier != nil
+        appSettings.exchangeLinkIdentifier != nil
     }
     
     // MARK: Lazy Private Properties
@@ -277,7 +277,7 @@ class ExchangeCoordinator {
 fileprivate extension ObservableType {
     
     func dismissNavControllerOnDisposal(navController: BaseNavigationController) -> Observable<Element> {
-        return self.do(onDispose: {
+        self.do(onDispose: {
             navController.popToRootViewController(animated: true)
             navController.dismiss(animated: true, completion: nil)
             AppCoordinator.shared.closeSideMenu()
@@ -289,7 +289,7 @@ fileprivate extension ObservableType {
 private extension PrimitiveSequenceType where Trait == CompletableTrait, Element == Never {
     
     func dismissNavControllerOnDisposal(navController: BaseNavigationController?) -> Completable {
-        return self.do(onDispose: {
+        self.do(onDispose: {
             navController?.popToRootViewController(animated: true)
             navController?.dismiss(animated: true, completion: nil)
             AppCoordinator.shared.closeSideMenu()
@@ -297,7 +297,7 @@ private extension PrimitiveSequenceType where Trait == CompletableTrait, Element
     }
     
     func dismissNavControllerOnSubscription(navController: BaseNavigationController?) -> Completable {
-        return self.do(onSubscribed: {
+        self.do(onSubscribed: {
             navController?.popToRootViewController(animated: true)
             navController?.dismiss(animated: true, completion: nil)
             AppCoordinator.shared.closeSideMenu()

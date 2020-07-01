@@ -6,9 +6,9 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformKit
 import RxSwift
 import ToolKit
-import PlatformKit
 
 protocol EmailConfirmationInterface: EmailVerificationInterface {
     func emailVerifiedSuccess()
@@ -17,7 +17,7 @@ protocol EmailConfirmationInterface: EmailVerificationInterface {
 final class VerifyEmailPresenter {
 
     var email: Single<String> {
-        return emailSettingsService.email
+        emailSettingsService.email
             .observeOn(MainScheduler.instance)
     }
     

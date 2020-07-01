@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 protocol ExchangeListDelegate: class {
     func onLoaded()
@@ -149,10 +149,10 @@ extension ExchangeListViewController: NavigatableView {
     }
     
     var leftNavControllerCTAType: NavigationCTAType {
-        return .dismiss
+        .dismiss
     }
     
     var rightNavControllerCTAType: NavigationCTAType {
-        return .none
+        .none
     }
 }

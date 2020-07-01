@@ -6,14 +6,14 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BuySellKit
+import Localization
+import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
-import Localization
 import ToolKit
-import PlatformKit
-import PlatformUIKit
-import BuySellKit
 
 final class TransferDetailScreenPresenter: DetailsScreenPresenterAPI {
 
@@ -37,7 +37,7 @@ final class TransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     let navigationBarLeadingButtonAction: DetailsScreen.BarButtonAction = .default
 
     var navigationBarAppearance: DetailsScreen.NavigationBarAppearance {
-        .custom(leading: .none, trailing: .none, barStyle: .darkContent(ignoresStatusBar: false, background: .white))
+        .custom(leading: .none, trailing: .none, barStyle: .darkContent())
     }
 
     let titleViewRelay: BehaviorRelay<Screen.Style.TitleView> = .init(value: .none)
@@ -159,11 +159,11 @@ extension TransferDetailScreenPresenter {
              analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording) {
             typealias SummaryString = LocalizedString.Summary
             typealias TitleString = LocalizedString.Title
-            let currency = data.order.fiatValue.currency
+            let currency = data.order.fiatValue.currencyType
             let currencyString = "\(currency.name) (\(currency.symbol))"
 
             title = TitleString.checkout
-            switch data.order.fiatValue.currency {
+            switch data.order.fiatValue.currencyType {
             case .USD, .GBP:
                 summary = "\(SummaryString.GbpAndUsd.prefix) \(currencyString) \(SummaryString.GbpAndUsd.suffix)"
             default:

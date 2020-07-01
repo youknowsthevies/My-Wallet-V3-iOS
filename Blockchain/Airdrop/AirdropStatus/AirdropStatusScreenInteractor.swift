@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import ToolKit
 import PlatformKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 final class AirdropStatusScreenInteractor {
 
@@ -17,7 +17,7 @@ final class AirdropStatusScreenInteractor {
 
     /// Streams the calculation state of the campaign
     var calculationState: Observable<ValueCalculationState<AirdropCampaigns.Campaign>> {
-        return calculationStateRelay.asObservable()
+        calculationStateRelay.asObservable()
     }
     
     // MARK: - Injected Properties

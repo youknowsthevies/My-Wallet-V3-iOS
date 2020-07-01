@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
+import BuySellKit
 import PlatformKit
 import PlatformUIKit
-import BuySellKit
+import RxSwift
 
 public final class FiatCurrencySelectionProvider: FiatCurrencySelectionProviderAPI {
     public var currencies: Observable<[FiatCurrency]> {

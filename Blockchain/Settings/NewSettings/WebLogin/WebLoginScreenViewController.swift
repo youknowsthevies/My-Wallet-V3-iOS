@@ -6,12 +6,12 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
-import PlatformUIKit
 import PlatformKit
+import PlatformUIKit
+import RxCocoa
 import RxRelay
 import RxSwift
-import RxCocoa
+import UIKit
 
 final class WebLoginScreenViewController: BaseScreenViewController {
 

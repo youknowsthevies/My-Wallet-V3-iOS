@@ -46,11 +46,11 @@ extension AppVersion: Comparable, Equatable {
     }
 
     public static func <= (lhs: AppVersion, rhs: AppVersion) -> Bool {
-        return lhs == rhs || lhs < rhs
+        lhs == rhs || lhs < rhs
     }
 
     public static func >= (lhs: AppVersion, rhs: AppVersion) -> Bool {
-        return lhs == rhs || lhs > rhs
+        lhs == rhs || lhs > rhs
     }
 
     public static func > (lhs: AppVersion, rhs: AppVersion) -> Bool {
@@ -64,7 +64,7 @@ extension AppVersion: Comparable, Equatable {
     }
 
     public static func == (lhs: AppVersion, rhs: AppVersion) -> Bool {
-        return lhs.major == rhs.major && lhs.minor == rhs.minor && lhs.patch == rhs.patch
+        lhs.major == rhs.major && lhs.minor == rhs.minor && lhs.patch == rhs.patch
     }
 }
 
@@ -74,5 +74,4 @@ fileprivate extension Array {
         return self[index]
     }
 }
-
 

@@ -18,7 +18,7 @@ class PaxAddress: NSObject & AssetAddress {
     let assetType = LegacyCryptoCurrency.pax
     
     override var description: String {
-        return address
+        address
     }
     
     // MARK: - Initialization

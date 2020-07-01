@@ -6,8 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import PlatformKit
+import RxSwift
 
 class KYCPager: KYCPagerAPI {
 
@@ -58,7 +58,7 @@ class KYCPager: KYCPagerAPI {
     }
 
     private func nextPageFromNextTierMaybe() -> Maybe<KYCPageType> {
-        return dataRepository.fetchNabuUser().flatMapMaybe { [weak self] user -> Maybe<KYCPageType> in
+        dataRepository.fetchNabuUser().flatMapMaybe { [weak self] user -> Maybe<KYCPageType> in
             guard let strongSelf = self else {
                 return Maybe.empty()
             }

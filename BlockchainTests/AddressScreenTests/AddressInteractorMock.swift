@@ -8,8 +8,8 @@
 
 import RxSwift
 
-import PlatformKit
 @testable import Blockchain
+import PlatformKit
 
 class AddressInteractorMock: AddressInteracting {
     

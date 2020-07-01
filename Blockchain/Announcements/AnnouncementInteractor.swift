@@ -6,12 +6,12 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
-import PlatformKit
-import RxSwift
+import BuySellKit
 import ERC20Kit
 import EthereumKit
-import BuySellKit
+import PlatformKit
+import PlatformUIKit
+import RxSwift
 
 /// The announcement interactor cross all the preliminary data
 /// that is required to display announcements to the user

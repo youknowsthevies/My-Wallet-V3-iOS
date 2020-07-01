@@ -6,12 +6,12 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
+import ToolKit
 
 final class AirdropStatusScreenPresenter {
     
@@ -23,28 +23,28 @@ final class AirdropStatusScreenPresenter {
     // MARK: - Exposed Properties
 
     var backgroundImage: Driver<ImageViewContent> {
-        return backgroundImageRelay.asDriver()
+        backgroundImageRelay.asDriver()
     }
     
     var image: Driver<ImageViewContent> {
-        return imageRelay.asDriver()
+        imageRelay.asDriver()
     }
     
     var title: Driver<LabelContent> {
-        return titleRelay.asDriver()
+        titleRelay.asDriver()
     }
     
     var description: Driver<LabelContent> {
-        return descriptionRelay.asDriver()
+        descriptionRelay.asDriver()
     }
     
     var cellPresenters: Observable<[AirdropStatusCellPresenter]> {
-        return cellPresentersRelay
+        cellPresentersRelay
             .observeOn(MainScheduler.instance)
     }
     
     var cellPresentersValue: [AirdropStatusCellPresenter] {
-        return cellPresentersRelay.value
+        cellPresentersRelay.value
     }
     
     // MARK: - Private Relays

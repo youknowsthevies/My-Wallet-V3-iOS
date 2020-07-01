@@ -14,36 +14,36 @@ import PlatformKit
     
     @objc
     static func convert(fromLegacy type: LegacyAssetType) -> LegacyCryptoCurrency {
-        return LegacyCryptoCurrency(CryptoCurrency(legacyAssetType: type))
+        LegacyCryptoCurrency(CryptoCurrency(legacyAssetType: type))
     }
 
     @objc
     static func convert(toLegacy type: LegacyCryptoCurrency) -> LegacyAssetType {
-        return type.legacy
+        type.legacy
     }
 
     @objc
     static func name(for type: LegacyCryptoCurrency) -> String {
-        return type.name
+        type.name
     }
     
     @objc
     static func name(from legacy: LegacyAssetType) -> String {
-        return name(for: .init(legacy))
+        name(for: .init(legacy))
     }
 
     @objc
     static func color(for type: LegacyAssetType) -> UIColor {
-        return CryptoCurrency(legacyAssetType: type).brandColor
+        CryptoCurrency(legacyAssetType: type).brandColor
     }
 
     @objc
     static func code(for type: LegacyAssetType) -> String {
-        return CryptoCurrency(legacyAssetType: type).code
+        CryptoCurrency(legacyAssetType: type).code
     }
     
     @objc
     static func displayCode(for type: LegacyAssetType) -> String {
-        return CryptoCurrency(legacyAssetType: type).displayCode
+        CryptoCurrency(legacyAssetType: type).displayCode
     }
 }

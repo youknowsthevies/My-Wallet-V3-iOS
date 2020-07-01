@@ -25,7 +25,7 @@ public protocol SessionTokenRepositoryAPI: class {
 
 public extension SessionTokenRepositoryAPI {
     var hasSessionToken: Single<Bool> {
-        return sessionToken
+        sessionToken
             .map { token in
                 guard let token = token else { return false }
                 return !token.isEmpty

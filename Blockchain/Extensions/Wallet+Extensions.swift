@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import StellarKit
 import PlatformKit
 import RxSwift
+import StellarKit
 
 /// `MnemonicAccessAPI` is part of the `bridge` that is used when injecting the `wallet` into
 /// a `WalletAccountRepository`. This is how we check if the user needs to enter their

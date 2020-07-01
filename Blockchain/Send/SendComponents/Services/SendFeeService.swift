@@ -6,12 +6,12 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BigInt
+import EthereumKit
 import Foundation
 import PlatformKit
-import EthereumKit
-import RxSwift
 import RxRelay
-import BigInt
+import RxSwift
 
 protocol SendFeeServicing: class {
     
@@ -46,7 +46,7 @@ final class SendFeeService: SendFeeServicing {
     // MARK: - Private Properties
     
     private var etherFee: Observable<CryptoValue> {
-        return ethereumService.fees
+        ethereumService.fees
             .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
             .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
             .map { fee -> CryptoValue in

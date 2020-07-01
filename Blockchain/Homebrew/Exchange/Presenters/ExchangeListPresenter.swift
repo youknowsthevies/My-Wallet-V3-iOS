@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import ToolKit
 import PlatformKit
+import ToolKit
 
 class ExchangeListPresenter {
     fileprivate let interactor: ExchangeListInput
@@ -71,7 +71,7 @@ extension ExchangeListPresenter: ExchangeListOutput {
     }
     
     func tradeWithIdentifier(_ identifier: String) -> ExchangeTradeCellModel? {
-        return interactor.tradeSelectedWith(identifier: identifier)
+        interactor.tradeSelectedWith(identifier: identifier)
     }
     
     func tradeFetchFailed(error: Error?) {

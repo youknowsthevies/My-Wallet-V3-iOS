@@ -79,11 +79,6 @@ struct Constants {
         static let montserratSemiBold = "Montserrat-SemiBold"
         static let montserratLight = "Montserrat-Light"
         static let montserratMedium = "Montserrat-Medium"
-        static let montserratSemiExtraLight = "Montserrat-ExtraLight"
-        static let gillSans = "GillSans"
-        static let gillSansLight = "GillSans-Light"
-        static let helveticaNueue = "Helvetica Neue"
-        static let helveticaNueueMedium = "HelveticaNeue-Medium"
     }
     struct Defaults {
         static let NumberOfRecoveryPhraseWords = 12
@@ -171,129 +166,129 @@ struct Constants {
 /// Constant class wrapper so that Constants can be accessed from Obj-C. Should deprecate this
 /// once Obj-C is no longer using this
 @objc class ConstantsObjcBridge: NSObject {
-    @objc class func airdropWaitlistUrl() -> String { return Constants.Url.airdropWaitlist }
+    @objc class func airdropWaitlistUrl() -> String { Constants.Url.airdropWaitlist }
 
-    @objc class func animationDuration() -> Double { return Constants.Animation.duration }
+    @objc class func animationDuration() -> Double { Constants.Animation.duration }
 
-    @objc class func animationDurationLong() -> Double { return Constants.Animation.durationLong }
+    @objc class func animationDurationLong() -> Double { Constants.Animation.durationLong }
     
     @objc class func notificationKeyModalViewDismissed() -> String {
-        return Constants.NotificationKeys.modalViewDismissed.rawValue
+        Constants.NotificationKeys.modalViewDismissed.rawValue
     }
 
     @objc class func notificationKeyReloadToDismissViews() -> String {
-        return Constants.NotificationKeys.reloadToDismissViews.rawValue
+        Constants.NotificationKeys.reloadToDismissViews.rawValue
     }
 
     @objc class func notificationKeyNewAddress() -> String {
-        return Constants.NotificationKeys.newAddress.rawValue
+        Constants.NotificationKeys.newAddress.rawValue
     }
 
     @objc class func notificationKeyMultiAddressResponseReload() -> String {
-        return Constants.NotificationKeys.multiAddressResponseReload.rawValue
+        Constants.NotificationKeys.multiAddressResponseReload.rawValue
     }
 
     @objc class func notificationKeyBackupSuccess() -> String {
-        return Constants.NotificationKeys.backupSuccess.rawValue
+        Constants.NotificationKeys.backupSuccess.rawValue
     }
 
     @objc class func notificationKeyGetFiatAtTime() -> String {
-        return Constants.NotificationKeys.getFiatAtTime.rawValue
+        Constants.NotificationKeys.getFiatAtTime.rawValue
     }
     
     @objc class func notificationKeyTransactionReceived() -> String {
-        return Constants.NotificationKeys.transactionReceived.rawValue
+        Constants.NotificationKeys.transactionReceived.rawValue
     }
     
     @objc class func tabSwap() -> Int {
-        return Constants.Navigation.tabSwap
+        Constants.Navigation.tabSwap
     }
 
     @objc class func tabSend() -> Int {
-        return Constants.Navigation.tabSend
+        Constants.Navigation.tabSend
     }
 
     @objc class func tabDashboard() -> Int {
-        return Constants.Navigation.tabDashboard
+        Constants.Navigation.tabDashboard
     }
 
     @objc class func tabReceive() -> Int {
-        return Constants.Navigation.tabReceive
+        Constants.Navigation.tabReceive
     }
 
     @objc class func tabTransactions() -> Int {
-        return Constants.Navigation.tabTransactions
+        Constants.Navigation.tabTransactions
     }
 
     @objc class func filterIndexAll() -> Int32 {
-        return Constants.FilterIndexes.all
+        Constants.FilterIndexes.all
     }
 
     @objc class func filterIndexImportedAddresses() -> Int32 {
-        return Constants.FilterIndexes.importedAddresses
+        Constants.FilterIndexes.importedAddresses
     }
 
     @objc class func assetTypeCellHeight() -> CGFloat {
-        return Constants.Measurements.assetTypeCellHeight
+        Constants.Measurements.assetTypeCellHeight
     }
 
     @objc class func bitcoinUriPrefix() -> String {
-        return Constants.Schemes.bitcoin
+        Constants.Schemes.bitcoin
     }
 
     @objc class func bitcoinCashUriPrefix() -> String {
-        return Constants.Schemes.bitcoinCash
+        Constants.Schemes.bitcoinCash
     }
 
     @objc class func ethereumUriPrefix() -> String {
-        return Constants.Schemes.ethereum
+        Constants.Schemes.ethereum
     }
 
     @objc class func wrongPrivateKey() -> String {
-        return Constants.JSErrors.addressAndKeyImportWrongPrivateKey
+        Constants.JSErrors.addressAndKeyImportWrongPrivateKey
     }
 
     @objc class func wrongBip38Password() -> String {
-        return Constants.JSErrors.addressAndKeyImportWrongBipPass
+        Constants.JSErrors.addressAndKeyImportWrongBipPass
     }
 
     @objc class func termsOfServiceURLString() -> String {
-        return Constants.Url.termsOfService
+        Constants.Url.termsOfService
     }
 
     @objc class func privacyPolicyURLString() -> String {
-        return Constants.Url.privacyPolicy
+        Constants.Url.privacyPolicy
     }
 
     @objc class func cookiePolicyURLString() -> String {
-        return Constants.Url.cookiePolicy
+        Constants.Url.cookiePolicy
     }
 
     @objc class func defaultNavigationBarHeight() -> CGFloat {
-        return Constants.Measurements.DefaultNavigationBarHeight
+        Constants.Measurements.DefaultNavigationBarHeight
     }
 
     @objc class func assetSelectorHeight() -> CGFloat {
-        return Constants.Measurements.AssetSelectorHeight
+        Constants.Measurements.AssetSelectorHeight
     }
 
     @objc class func minimumTapTargetSize() -> CGFloat {
-        return Constants.Measurements.MinimumTapTargetSize
+        Constants.Measurements.MinimumTapTargetSize
     }
 
     @objc class func montserratLight() -> String {
-        return Constants.FontNames.montserratLight
+        Constants.FontNames.montserratLight
     }
 
     @objc class func montserratSemiBold() -> String {
-        return Constants.FontNames.montserratSemiBold
+        Constants.FontNames.montserratSemiBold
     }
 
     @objc class func infoLabelEdgeInsets() -> UIEdgeInsets {
-        return Constants.Measurements.infoLabelEdgeInsets
+        Constants.Measurements.infoLabelEdgeInsets
     }
 
     @objc class func btcCode() -> String {
-        return Constants.AssetTypeCodes.bitcoin
+        Constants.AssetTypeCodes.bitcoin
     }
 }

@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 final class SimpleBuyFinishSignupAnnouncement: PersistentAnnouncement & ActionableAnnouncement {
 
@@ -47,7 +47,7 @@ final class SimpleBuyFinishSignupAnnouncement: PersistentAnnouncement & Actionab
     }
 
     var shouldShow: Bool {
-        return hasIncompleteBuyFlow && canCompleteTier2
+        hasIncompleteBuyFlow && canCompleteTier2
     }
 
     let type = AnnouncementType.simpleBuyPendingTransaction

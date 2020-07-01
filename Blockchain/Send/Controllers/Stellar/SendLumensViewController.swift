@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 protocol SendXLMViewControllerDelegate: class {
     func onLoad()
@@ -72,7 +72,7 @@ protocol SendXLMViewControllerDelegate: class {
     @IBOutlet fileprivate var sendingToAnExchangeStackView: UIStackView!
     
     fileprivate var inputFields: [UITextField] {
-        return [
+        [
             stellarAddressField,
             stellarAmountField,
             fiatAmountField,
@@ -516,7 +516,7 @@ extension SendLumensViewController: ConfirmPaymentViewDelegate {
 
 extension SendLumensViewController: ActionableLabelDelegate {
     func targetRange(_ label: ActionableLabel) -> NSRange? {
-        return trigger?.actionRange()
+        trigger?.actionRange()
     }
 
     func actionRequestingExecution(label: ActionableLabel) {

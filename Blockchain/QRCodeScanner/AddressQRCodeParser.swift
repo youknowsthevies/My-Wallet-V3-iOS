@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import ToolKit
 import PlatformKit
+import ToolKit
 
 final class AddressQRCodeParser: QRCodeScannerParsing {
     

@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import PlatformKit
+import RxRelay
+import RxSwift
 
 public final class AssetPriceViewInteractor: AssetPriceViewInteracting {
     
@@ -17,7 +17,7 @@ public final class AssetPriceViewInteractor: AssetPriceViewInteracting {
     // MARK: - Exposed Properties
     
     public var state: Observable<InteractionState> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
             .observeOn(MainScheduler.instance)
     }
             
@@ -41,7 +41,7 @@ public final class AssetPriceViewInteractor: AssetPriceViewInteracting {
                     let currentPrice = result.currentFiatValue
                     let fiatChange: FiatValue = .create(
                         amount: result.historicalPrices.fiatChange,
-                        currency: result.currentFiatValue.currency
+                        currency: result.currentFiatValue.currencyType
                     )
                     return .loaded(
                         next: .init(

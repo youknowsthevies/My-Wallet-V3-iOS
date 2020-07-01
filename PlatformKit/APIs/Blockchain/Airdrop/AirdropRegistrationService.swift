@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import RxSwift
 import NetworkKit
+import RxSwift
 
 public protocol AirdropRegistrationAPI {
     func submitRegistrationRequest(_ registrationRequest: AirdropRegistrationRequest) -> Single<AirdropRegistrationResponse>
@@ -33,6 +33,6 @@ public class AirdropRegistrationService: AirdropRegistrationAPI {
     }
     
     public func submitRegistrationRequest(_ registrationRequest: AirdropRegistrationRequest) -> Single<AirdropRegistrationResponse> {
-        return client.submitRegistrationRequest(registrationRequest)
+        client.submitRegistrationRequest(registrationRequest)
     }
 }

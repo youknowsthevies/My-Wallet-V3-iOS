@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import RxSwift
-import RxRelay
 import PlatformKit
+import RxRelay
+import RxSwift
 
 public class SparklineInteractor: SparklineInteracting {
     

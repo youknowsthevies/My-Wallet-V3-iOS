@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 final class RequestWalletIntroductionEvent: CompletableWalletIntroductionEvent {
     
@@ -33,7 +33,7 @@ final class RequestWalletIntroductionEvent: CompletableWalletIntroductionEvent {
     let introductionRecorder: WalletIntroductionRecorder
     
     var introductionEntry: WalletIntroductionRecorder.Entry {
-        return introductionRecorder[UserDefaults.Keys.walletIntroLatestLocation.rawValue]
+        introductionRecorder[UserDefaults.Keys.walletIntroLatestLocation.rawValue]
     }
     
     var shouldShow: Bool {
@@ -65,11 +65,11 @@ final class RequestDescriptionIntroductionEvent: WalletIntroductionEvent, Wallet
     let selection: WalletIntroductionAction
     
     var eventType: AnalyticsEvents.WalletIntro {
-        return .walletIntroRequestViewed
+        .walletIntroRequestViewed
     }
     
     var shouldShow: Bool {
-        return true
+        true
     }
     
     init(selection: @escaping WalletIntroductionAction) {

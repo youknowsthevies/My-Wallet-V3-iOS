@@ -6,16 +6,16 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import PlatformKit
 import BigInt
+import PlatformKit
+import RxSwift
 
 public class EthereumAssetAccountDetailsService: AssetAccountDetailsAPI {
 
     // MARK: - Properties
 
     private var balanceDetails: Single<BalanceDetailsResponse> {
-        return bridge
+        bridge
             .address
             .flatMap(weak: self) { (self, address) -> Single<BalanceDetailsResponse> in
                 self.client.balanceDetails(from: address.publicKey)
@@ -41,10 +41,10 @@ public class EthereumAssetAccountDetailsService: AssetAccountDetailsAPI {
     // TODO: IOS-3217 Method should use accountID parameter.
     /// Streams the account details
     public func accountDetails(for accountID: String) -> Single<EthereumAssetAccountDetails> {
-        return Single
+        Single
             .zip(bridge.account, balanceDetails)
             .map { accountAndDetails -> EthereumAssetAccountDetails in
-                return EthereumAssetAccountDetails(
+                EthereumAssetAccountDetails(
                     account: accountAndDetails.0,
                     balance: accountAndDetails.1.cryptoValue,
                     nonce: accountAndDetails.1.nonce

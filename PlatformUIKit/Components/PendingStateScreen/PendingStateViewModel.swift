@@ -41,7 +41,7 @@ public struct PendingStateViewModel {
     let button: ButtonViewModel?
     
     static private func title(_ string: String) -> NSAttributedString {
-        return NSAttributedString(
+        NSAttributedString(
             string,
             font: .main(.regular, 20),
             color: .titleText
@@ -49,7 +49,7 @@ public struct PendingStateViewModel {
     }
     
     static private func subtitle(_ string: String) -> NSAttributedString {
-        return NSAttributedString(
+        NSAttributedString(
             string,
             font: .main(.regular, 14),
             color: .descriptionText

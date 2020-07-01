@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformKit
+import RxCocoa
 import RxRelay
 import RxSwift
-import RxCocoa
 import ToolKit
-import PlatformKit
 
 public final class DefaultLineItemCellInteractor: LineItemCellInteracting {
     public let title: LabelContentInteracting
@@ -28,14 +28,14 @@ public final class DefaultLineItemCellPresenter: LineItemCellPresenting {
     // MARK: - Properties
 
     public var image: Driver<UIImage?> {
-        return imageRelay.asDriver()
+        imageRelay.asDriver()
     }
 
     /// The background color relay
     public let imageRelay = BehaviorRelay<UIImage?>(value: nil)
 
     public var backgroundColor: Driver<UIColor> {
-        return backgroundColorRelay.asDriver()
+        backgroundColorRelay.asDriver()
     }
 
     /// Accepts tap from a view

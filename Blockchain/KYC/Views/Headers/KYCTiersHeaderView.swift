@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import UIKit
 import PlatformUIKit
+import UIKit
 
 protocol KYCTiersHeaderViewDelegate: class {
     func headerView(_ view: KYCTiersHeaderView, actionTapped: KYCTiersHeaderViewModel.Action)

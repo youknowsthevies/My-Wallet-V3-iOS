@@ -7,10 +7,10 @@
 //
 
 import Foundation
-import Veriff
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
+import Veriff
 
 /// Account verification screen in KYC flow
 final class KYCResubmitIdentityController: KYCBaseViewController, ProgressableView {

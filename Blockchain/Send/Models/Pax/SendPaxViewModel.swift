@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import ERC20Kit
+import EthereumKit
 import Foundation
 import PlatformKit
-import EthereumKit
-import ERC20Kit
 
 struct SendPaxViewModel {
     var walletLabel: String?
@@ -20,7 +20,7 @@ struct SendPaxViewModel {
     var internalError: SendMoniesInternalError?
     
     var input: SendPaxInput {
-        return SendPaxInput(
+        SendPaxInput(
             addressStatus: addressStatus,
             paxAmount: paxAmount,
             fiatAmount: fiatAmount
@@ -40,6 +40,6 @@ struct SendPaxViewModel {
     }
     
     var description: String {
-        return "address: \(addressStatus) \n paxAmount: \(paxAmount.toDisplayString(includeSymbol: false, locale: Locale.current)) \n \(fiatAmount.toDisplayString()) \n internalError: \(String(describing: internalError))"
+        "address: \(addressStatus) \n paxAmount: \(paxAmount.toDisplayString(includeSymbol: false, locale: Locale.current)) \n \(fiatAmount.toDisplayString()) \n internalError: \(String(describing: internalError))"
     }
 }

@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxCocoa
+import RxSwift
 
 /// Has two labels, one which is a `title` and the other a `description`.
 public final class LineItemTableViewCell: UITableViewCell {

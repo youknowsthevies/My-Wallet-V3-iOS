@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Localization
-import ToolKit
-import PlatformKit
 import BuySellKit
+import Localization
+import PlatformKit
+import ToolKit
 
 public protocol CardAuthorizationStateServiceAPI: class {
     func cardAuthorized(with paymentMethodId: String)

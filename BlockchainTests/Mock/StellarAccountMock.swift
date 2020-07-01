@@ -6,13 +6,13 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import stellarsdk
-import RxSwift
-import RxRelay
-import StellarKit
-import PlatformKit
 @testable import Blockchain
+import Foundation
+import PlatformKit
+import RxRelay
+import RxSwift
+import StellarKit
+import stellarsdk
 
 class StellarAccountMock: StellarAccountAPI {
     typealias AccountID = String
@@ -20,34 +20,34 @@ class StellarAccountMock: StellarAccountAPI {
     typealias AccountDetailsCompletion = ((Result<StellarAccount, Error>) -> Void)
     
     public var balanceType: BalanceType {
-        return .nonCustodial
+        .nonCustodial
     }
 
     var currentAccount: StellarAccount?
 
     var balance: Single<CryptoValue> {
-        return Single.error(NSError())
+        Single.error(NSError())
     }
     var balanceObservable: Observable<CryptoValue> {
-        return Observable.error(NSError())
+        Observable.error(NSError())
     }
     
     let balanceFetchTriggerRelay = PublishRelay<Void>()
     
     func currentStellarAccountAsSingle(fromCache: Bool) -> Single<StellarAccount?> {
-        return .just(nil)
+        .just(nil)
     }
     
     func currentStellarAccount(fromCache: Bool) -> Maybe<StellarAccount> {
-        return Maybe.empty()
+        Maybe.empty()
     }
 
     func accountResponse(for accountID: AccountID) -> Single<AccountResponse> {
-        return Single.error(NSError())
+        Single.error(NSError())
     }
 
     func accountDetails(for accountID: AccountID) -> Maybe<StellarAccount> {
-        return Maybe.empty()
+        Maybe.empty()
     }
 
     func clear() {
@@ -55,7 +55,7 @@ class StellarAccountMock: StellarAccountAPI {
     }
 
     func fundAccount(_ accountID: AccountID, amount: Decimal, sourceKeyPair: StellarKeyPair) -> Completable {
-        return Completable.empty()
+        Completable.empty()
     }
 
     func prefetch() {
@@ -63,10 +63,10 @@ class StellarAccountMock: StellarAccountAPI {
     }
 
     func validate(accountID: AccountID) -> Single<Bool> {
-        return Single.just(false)
+        Single.just(false)
     }
     
     func isExchangeAddress(_ address: AccountID) -> Single<Bool> {
-        return Single.just(false)
+        Single.just(false)
     }
 }

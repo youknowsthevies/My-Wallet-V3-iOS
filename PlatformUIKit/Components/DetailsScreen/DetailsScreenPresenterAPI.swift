@@ -7,9 +7,9 @@
 //
 
 import Foundation
+import RxCocoa
 import RxRelay
 import RxSwift
-import RxCocoa
 
 public protocol DetailsScreenPresenterAPI: class {
 

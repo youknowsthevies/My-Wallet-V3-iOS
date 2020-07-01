@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
 import ToolKit
+import XCTest
 
 class MockErrorRecorder: ErrorRecording {
     func error(_ error: Error) { }

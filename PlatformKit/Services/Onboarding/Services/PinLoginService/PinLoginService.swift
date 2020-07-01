@@ -44,13 +44,13 @@ public final class PinLoginService: PinLoginServiceAPI {
     }
     
     public func password(from pinDecryptionKey: String) -> Single<String> {
-        return service
+        service
             .requestUsingSharedKey()
             .flatMapSingle(weak: self) { (self) -> Single<PasscodePayload> in
                 self.passcodePayload(from: pinDecryptionKey)
             }
             .flatMap(weak: self) { (self, payload) -> Single<String> in
-                return self
+                self
                     .cache(passcodePayload: payload)
                     .andThen(Single.just(payload.password))
             }
@@ -80,7 +80,7 @@ public final class PinLoginService: PinLoginServiceAPI {
     
     /// Caches the passcode payload using wallet repository
     private func cache(passcodePayload: PasscodePayload) -> Completable {
-        return Completable
+        Completable
             .zip(
                 walletRepository.set(sharedKey: passcodePayload.sharedKey),
                 walletRepository.set(password: passcodePayload.password),
@@ -89,7 +89,7 @@ public final class PinLoginService: PinLoginServiceAPI {
     }
 
     private var encryptedPinPassword: Single<String> {
-        return Single.create(weak: self) { (self, observer) -> Disposable in
+        Single.create(weak: self) { (self, observer) -> Disposable in
             if let encryptedPassword = self.settings.encryptedPinPassword {
                 observer(.success(encryptedPassword))
             } else {
@@ -101,7 +101,7 @@ public final class PinLoginService: PinLoginServiceAPI {
 
     /// Decrypt the password using the PIN decryption key
     private func decrypt(pinDecryptionKey: String) -> Single<String> {
-        return encryptedPinPassword
+        encryptedPinPassword
             .map { KeyDataPair<String, String>(key: pinDecryptionKey, data: $0) }
             .flatMap(weak: self) { (self, keyDataPair) -> Single<String> in
                 self.walletCryptoService.decrypt(pair: keyDataPair, pbkdf2Iterations: WalletCryptoPBKDF2Iterations.pinLogin)

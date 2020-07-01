@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformKit
 import RxSwift
 import ToolKit
-import PlatformKit
 
 /// A service API that aggregates card addition logic
 public protocol CardUpdateServiceAPI: class {
@@ -97,7 +97,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                         token: payload.token
                     )
                     .map { response -> (response: CardPayload, token: String) in
-                        return (response, payload.token)
+                        (response, payload.token)
                     }
                     .do(onError: { error in
                         self.analyticsRecorder.record(event: CardUpdateEvent.sbAddCardFailure)

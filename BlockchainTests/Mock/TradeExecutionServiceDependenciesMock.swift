@@ -6,15 +6,15 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import RxSwift
-import stellarsdk
-@testable import Blockchain
-@testable import PlatformKit
 import BitcoinKit
-import StellarKit
-import EthereumKit
+@testable import Blockchain
 import ERC20Kit
+import EthereumKit
+import Foundation
+@testable import PlatformKit
+import RxSwift
+import StellarKit
+import stellarsdk
 
 class TradeExecutionServiceDependenciesMock: TradeExecutionServiceDependenciesAPI {
     var assetAccountRepository: Blockchain.AssetAccountRepositoryAPI = AssetAccountRepositoryMock()

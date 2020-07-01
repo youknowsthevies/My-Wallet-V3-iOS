@@ -6,9 +6,9 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 /// Model definition for an item that is presented in the side menu of the app.
 enum SideMenuItem {
@@ -111,7 +111,7 @@ extension SideMenuItem {
     }
 
     var image: UIImage {
-        return UIImage(named: imageName)!
+        UIImage(named: imageName)!
     }
     
     var isNew: Bool {

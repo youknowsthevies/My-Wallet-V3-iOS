@@ -13,12 +13,12 @@ class DebugSettings: NSObject {
     static let shared = DebugSettings()
 
     @objc class func sharedInstance() -> DebugSettings {
-        return shared
+        shared
     }
 
     @objc var createWalletPrefill: Bool {
         get {
-            return defaults.bool(forKey: UserDefaults.DebugKeys.createWalletPrefill.rawValue)
+            defaults.bool(forKey: UserDefaults.DebugKeys.createWalletPrefill.rawValue)
         }
         set {
             defaults.set(newValue, forKey: UserDefaults.DebugKeys.createWalletPrefill.rawValue)
@@ -40,7 +40,7 @@ class DebugSettings: NSObject {
 
     @objc var createWalletEmailRandomSuffix: Bool {
         get {
-            return defaults.bool(forKey: UserDefaults.DebugKeys.createWalletEmailRandomSuffix.rawValue)
+            defaults.bool(forKey: UserDefaults.DebugKeys.createWalletEmailRandomSuffix.rawValue)
         }
         set {
             defaults.set(newValue, forKey: UserDefaults.DebugKeys.createWalletEmailRandomSuffix.rawValue)
@@ -49,7 +49,7 @@ class DebugSettings: NSObject {
 
     @objc var useHomebrewForExchange: Bool {
         get {
-            return defaults.bool(forKey: UserDefaults.DebugKeys.useHomebrewForExchange.rawValue)
+            defaults.bool(forKey: UserDefaults.DebugKeys.useHomebrewForExchange.rawValue)
         }
         set {
             defaults.set(newValue, forKey: UserDefaults.DebugKeys.useHomebrewForExchange.rawValue)
@@ -58,7 +58,7 @@ class DebugSettings: NSObject {
 
     @objc var mockExchangeOrderDepositAddress: String? {
         get {
-            return defaults.object(forKey: UserDefaults.DebugKeys.mockExchangeOrderDepositAddress.rawValue) as? String
+            defaults.object(forKey: UserDefaults.DebugKeys.mockExchangeOrderDepositAddress.rawValue) as? String
         }
         set {
             defaults.set(newValue, forKey: UserDefaults.DebugKeys.mockExchangeOrderDepositAddress.rawValue)
@@ -67,7 +67,7 @@ class DebugSettings: NSObject {
 
     @objc var mockExchangeDeposit: Bool {
         get {
-            return defaults.bool(forKey: UserDefaults.DebugKeys.mockExchangeDeposit.rawValue)
+            defaults.bool(forKey: UserDefaults.DebugKeys.mockExchangeDeposit.rawValue)
         }
         set {
             defaults.set(newValue, forKey: UserDefaults.DebugKeys.mockExchangeDeposit.rawValue)
@@ -76,7 +76,7 @@ class DebugSettings: NSObject {
 
     @objc var mockExchangeDepositQuantity: String? {
         get {
-            return defaults.object(forKey: UserDefaults.DebugKeys.mockExchangeDepositQuantity.rawValue) as? String
+            defaults.object(forKey: UserDefaults.DebugKeys.mockExchangeDepositQuantity.rawValue) as? String
         }
         set {
             defaults.set(newValue, forKey: UserDefaults.DebugKeys.mockExchangeDepositQuantity.rawValue)
@@ -85,7 +85,7 @@ class DebugSettings: NSObject {
 
     var mockExchangeDepositAssetTypeString: String? {
         get {
-            return defaults.object(forKey: UserDefaults.DebugKeys.mockExchangeDepositAssetTypeString.rawValue) as? String
+            defaults.object(forKey: UserDefaults.DebugKeys.mockExchangeDepositAssetTypeString.rawValue) as? String
         }
         set {
             defaults.set(newValue, forKey: UserDefaults.DebugKeys.mockExchangeDepositAssetTypeString.rawValue)
@@ -93,7 +93,7 @@ class DebugSettings: NSObject {
     }
 
     private lazy var defaults: UserDefaults = {
-        return UserDefaults.standard
+        UserDefaults.standard
     }()
 
     private override init() {

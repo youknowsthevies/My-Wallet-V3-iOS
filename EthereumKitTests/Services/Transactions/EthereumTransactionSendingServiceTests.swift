@@ -6,12 +6,12 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
+import BigInt
+@testable import EthereumKit
+@testable import PlatformKit
 import RxSwift
 import RxTest
-import BigInt
-@testable import PlatformKit
-@testable import EthereumKit
+import XCTest
 
 class EthereumTransactionSendingServiceTests: XCTestCase {
     

@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxRelay
+import RxSwift
 
 public final class LabeledButtonCollectionView<ViewModel: LabeledButtonViewModelAPI>: UICollectionView {
      
@@ -28,7 +28,7 @@ public final class LabeledButtonCollectionView<ViewModel: LabeledButtonViewModel
         }
 
         @available(*, unavailable)
-        required init?(coder aDecoder: NSCoder) { return nil }
+        required init?(coder aDecoder: NSCoder) { nil }
     }
     
     // MARK: - Injected

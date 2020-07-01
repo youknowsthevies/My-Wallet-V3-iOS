@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
-import RxSwift
-import RxRelay
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
+import RxRelay
+import RxSwift
 
 /// A view controller that displays thr dashboard
 final class DashboardViewController: BaseScreenViewController {
@@ -77,10 +77,7 @@ final class DashboardViewController: BaseScreenViewController {
     // MARK: - Setup
     
     private func setupNavigationBar() {
-        set(barStyle: .lightContent(
-                ignoresStatusBar: false,
-                background: .navigationBarBackground
-            ),
+        set(barStyle: .lightContent(),
             leadingButtonStyle: .drawer,
             trailingButtonStyle: .qrCode)
         titleViewStyle = .text(value: LocalizationConstants.DashboardScreen.title)

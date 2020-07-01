@@ -10,6 +10,6 @@ import Foundation
 
 extension Character {
     public func inSet(characterSet: CharacterSet) -> Bool {
-        return CharacterSet(charactersIn: "\(self)").isSubset(of: characterSet)
+        CharacterSet(charactersIn: "\(self)").isSubset(of: characterSet)
     }
 }

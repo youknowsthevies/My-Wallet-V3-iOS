@@ -6,14 +6,14 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import RxSwift
-import RxCocoa
 import BigInt
-import ToolKit
-import PlatformKit
-import EthereumKit
 import ERC20Kit
+import EthereumKit
+import Foundation
+import PlatformKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 enum SendMoniesEventPublic {
     case start
@@ -46,7 +46,7 @@ class SendPaxCalculator {
     let output: PublishSubject<SendPaxOutput> = PublishSubject<SendPaxOutput>()
     
     private var tokenAccount: Single<ERC20TokenAccount?> {
-        return Single.deferred { [weak self] in
+        Single.deferred { [weak self] in
             guard let self = self else {
                 return Single.just(nil)
             }

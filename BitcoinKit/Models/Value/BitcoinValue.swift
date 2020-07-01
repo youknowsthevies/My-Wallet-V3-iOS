@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import BigInt
+import PlatformKit
 
 public enum BitcoinValueError: Error {
     case invalidCryptoValue
@@ -20,7 +20,7 @@ public struct BitcoinValue: Crypto {
     public static let zero = try! BitcoinValue(crypto: CryptoValue.bitcoinZero)
     
     public var value: CryptoValue {
-        return crypto.value
+        crypto.value
     }
     
     private let crypto: Crypto
@@ -39,6 +39,6 @@ public struct BitcoinValue: Crypto {
 
 extension BitcoinValue: Equatable {
     public static func == (lhs: BitcoinValue, rhs: BitcoinValue) -> Bool {
-        return lhs.amount == rhs.amount
+        lhs.amount == rhs.amount
     }
 }

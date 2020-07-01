@@ -59,19 +59,19 @@ class AsyncOperation: Operation {
     }
     
     override var isAsynchronous: Bool {
-        return true
+        true
     }
     
     override var isFinished: Bool {
-        return executionState == .finished
+        executionState == .finished
     }
     
     override var isExecuting: Bool {
-        return executionState == .executing
+        executionState == .executing
     }
     
     override var isReady: Bool {
-        return executionState == .ready && dependencies.filter({$0.isFinished == true}).count == dependencies.count
+        executionState == .ready && dependencies.filter({ $0.isFinished == true }).count == dependencies.count
     }
     
     /// For custom operations, you should override this function. When your operation

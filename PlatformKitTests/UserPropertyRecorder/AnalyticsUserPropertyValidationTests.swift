@@ -8,8 +8,8 @@
 
 import XCTest
 
-import ToolKit
 @testable import PlatformKit
+import ToolKit
 
 final class AnalyticsUserPropertyValidationTests: XCTestCase {
     

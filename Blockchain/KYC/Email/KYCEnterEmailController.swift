@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 class KYCEnterEmailController: KYCBaseViewController, BottomButtonContainerView, ProgressableView {
 
@@ -35,7 +35,7 @@ class KYCEnterEmailController: KYCBaseViewController, BottomButtonContainerView,
     // MARK: Private Properties
 
     private lazy var presenter: VerifyEmailPresenter = {
-        return VerifyEmailPresenter(view: self)
+        VerifyEmailPresenter(view: self)
     }()
     
     private let analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared

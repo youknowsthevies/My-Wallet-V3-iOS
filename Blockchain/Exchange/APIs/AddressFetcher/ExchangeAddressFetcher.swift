@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import RxSwift
 import NetworkKit
 import PlatformKit
+import RxSwift
 
 /// Exchange address fetcher, should be used to fetch the address of the Exchange linked account
 final class ExchangeAddressFetcher: ExchangeAddressFetching {
@@ -146,7 +146,7 @@ final class ExchangeAddressFetcher: ExchangeAddressFetching {
                 self.authentication.tokenString
             }
             .flatMap(weak: self) { (self, token) -> Single<AddressResponseBody> in
-                return self.communicator.perform(
+                self.communicator.perform(
                     request: NetworkRequest(
                         endpoint: URL(string: url)!,
                         method: .put,

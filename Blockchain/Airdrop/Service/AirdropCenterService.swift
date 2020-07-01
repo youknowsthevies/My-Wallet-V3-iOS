@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import ToolKit
 import PlatformKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 protocol AirdropCenterServiceAPI: class {
     
@@ -81,7 +81,7 @@ final class AirdropCenterService: AirdropCenterServiceAPI {
     
     func fetchCampaignCalculationState(campaignName: AirdropCampaigns.Campaign.Name,
                                        useCache: Bool) -> Observable<ValueCalculationState<AirdropCampaigns.Campaign>> {
-        return fetchCampaignsCalculationState(useCache: useCache)
+        fetchCampaignsCalculationState(useCache: useCache)
             .map { state in
                 switch state {
                 case .value(let campaigns):

@@ -5,12 +5,12 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import BitcoinKit
-import EthereumKit
-import StellarKit
-import RxSwift
 import Blockchain
+import EthereumKit
+import PlatformKit
+import RxSwift
+import StellarKit
 
 class FeeServiceMock: FeeServiceAPI {
     var bitcoin: Single<BitcoinTransactionFee> = Single.error(NSError())

@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import RxSwift
 import NetworkKit
 import PlatformKit
+import RxSwift
 
 // TODO: Remove this layer once the send screens are migrated to Swift
 /// Bridging layer for Swift-ObjC, since ObjC isn't compatible with RxSwift
@@ -70,7 +70,7 @@ class BridgeBitpayService: NSObject {
             transactionSize: size
         )
             .flatMap(weak: self, { (self, memo) -> Single<BitPayMemo> in
-                return self.bitpayService.postPayment(
+                self.bitpayService.postPayment(
                     invoiceID: invoiceID,
                     currency: currency,
                     transactionHex: transactionHex,

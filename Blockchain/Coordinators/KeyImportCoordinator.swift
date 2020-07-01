@@ -37,7 +37,7 @@ import PlatformUIKit
     private let loadingViewPresenter: LoadingViewPresenting
     
     @objc class func sharedInstance() -> KeyImportCoordinator {
-        return KeyImportCoordinator.shared
+        KeyImportCoordinator.shared
     }
 
     // TODO: Refactor class to support other asset types (currently assumed to be Bitcoin)

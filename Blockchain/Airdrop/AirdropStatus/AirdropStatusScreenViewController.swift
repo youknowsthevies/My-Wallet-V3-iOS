@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
 import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 final class AirdropStatusScreenViewController: BaseScreenViewController {
 
@@ -67,7 +67,7 @@ final class AirdropStatusScreenViewController: BaseScreenViewController {
 
     private func setupNavigationBar() {
         titleViewStyle = .text(value: LocalizationConstants.Airdrop.StatusScreen.title)
-        set(barStyle: .lightContent(ignoresStatusBar: false, background: .navigationBarBackground),
+        set(barStyle: .lightContent(),
             leadingButtonStyle: presenter.presentationType.leadingButton)
     }
 
@@ -86,7 +86,7 @@ final class AirdropStatusScreenViewController: BaseScreenViewController {
 
 extension AirdropStatusScreenViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return presenter.cellPresentersValue.count
+        presenter.cellPresentersValue.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

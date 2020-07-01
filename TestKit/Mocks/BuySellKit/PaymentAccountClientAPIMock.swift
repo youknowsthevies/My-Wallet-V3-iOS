@@ -6,13 +6,13 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-@testable import PlatformKit
 @testable import BuySellKit
+@testable import PlatformKit
+import RxSwift
 
 class SimpleBuyPaymentAccountClientAPIMock: PaymentAccountClientAPI {
     var mockResponse: PaymentAccountResponse! = PaymentAccountResponse.mock(with: .GBP, agent: .fullMock)
     func paymentAccount(for currency: FiatCurrency, token: String) -> Single<PaymentAccountResponse> {
-        return Single.just(mockResponse)
+        Single.just(mockResponse)
     }
 }

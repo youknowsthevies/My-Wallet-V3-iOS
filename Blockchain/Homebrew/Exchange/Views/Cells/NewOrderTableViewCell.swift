@@ -36,6 +36,6 @@ class NewOrderTableViewCell: UITableViewCell {
     // MARK: Static Functions
     
     static func height() -> CGFloat {
-        return buttonHeight + verticalPadding + verticalPadding
+        buttonHeight + verticalPadding + verticalPadding
     }
 }

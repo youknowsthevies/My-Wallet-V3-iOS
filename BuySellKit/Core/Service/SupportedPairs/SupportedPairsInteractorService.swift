@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import ToolKit
 import PlatformKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 /// The calculation state of Simple Buy supported pairs
 public typealias BuyCryptoSupportedPairsCalculationState = ValueCalculationState<SupportedPairs>

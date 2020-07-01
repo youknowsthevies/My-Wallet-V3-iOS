@@ -39,7 +39,7 @@ extension ExchangeHeader {
     }
     
     func heightForProposed(width: CGFloat) -> CGFloat {
-        return headerType.heightForProposedWidth(width, model: self)
+        headerType.heightForProposedWidth(width, model: self)
     }
 }
 

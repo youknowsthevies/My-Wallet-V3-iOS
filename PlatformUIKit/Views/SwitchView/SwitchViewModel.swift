@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
 import RxCocoa
 import RxSwift
+import UIKit
 
 public struct SwitchViewModel {
     
@@ -34,27 +34,27 @@ public struct SwitchViewModel {
             thumbTintColorRelay.accept(newValue.thumbTintColor)
         }
         get {
-            return Theme(fillColor: fillColorRelay.value,
+            Theme(fillColor: fillColorRelay.value,
                          thumbTintColor: thumbTintColorRelay.value)
         }
     }
     
     /// Fill color of the switch when it is enabled
     public var fillColor: Driver<UIColor> {
-        return fillColorRelay.asDriver()
+        fillColorRelay.asDriver()
     }
     
     /// Tint color of the thumb view
     public var thumbTintColor: Driver<UIColor?> {
-        return thumbTintColorRelay.asDriver()
+        thumbTintColorRelay.asDriver()
     }
     
     public var isOn: Driver<Bool> {
-        return isOnRelay.asDriver()
+        isOnRelay.asDriver()
     }
     
     public var isEnabled: Driver<Bool> {
-        return isEnabledRelay.asDriver()
+        isEnabledRelay.asDriver()
     }
     
     /// Accessibility for the badge view

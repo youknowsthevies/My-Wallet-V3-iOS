@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import RxSwift
 import EthereumKit
+import Foundation
 import PlatformKit
+import RxSwift
 
 protocol SendExecuting: class {
     // TODO: Move outside this object
@@ -68,7 +68,7 @@ final class SendExecutor: SendExecuting {
             .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
             .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
             .flatMap(weak: self, { (self, candidate) -> Single<EthereumTransactionPublished> in
-                return self.ethereumService.send(transaction: candidate)
+                self.ethereumService.send(transaction: candidate)
             })
             .mapToVoid()
     }

@@ -5,9 +5,9 @@
 //  Created by Daniel Huri on 25/03/2020.
 //
 
-import XCTest
-import RxSwift
 import RxBlocking
+import RxSwift
+import XCTest
 
 @testable import PlatformUIKit
 

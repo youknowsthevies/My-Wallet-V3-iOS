@@ -14,14 +14,14 @@ public extension PrimitiveSequence where Trait == SingleTrait {
     func show(loader: LoadingViewPresenting,
               style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
               text: String? = nil) -> Single<Element> {
-        return self.do(onSuccess: { _ in
+        self.do(onSuccess: { _ in
             loader.show(with: style, text: text)
         })
     }
     
     /// Hides the loader
     func hide(loader: LoadingViewPresenting) -> Single<Element> {
-        return self.do(onSuccess: { _ in
+        self.do(onSuccess: { _ in
             loader.hide()
         })
     }
@@ -30,14 +30,14 @@ public extension PrimitiveSequence where Trait == SingleTrait {
     func showOnSubscription(loader: LoadingViewPresenting,
                             style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
                             text: String? = nil) -> Single<Element> {
-        return self.do(onSubscribe: {
+        self.do(onSubscribe: {
             loader.show(with: text)
         })
     }
     
     /// Hides the loader and returns `Element`
     func hideOnDisposal(loader: LoadingViewPresenting) -> Single<Element> {
-        return self.do(onDispose: {
+        self.do(onDispose: {
             loader.hide()
         })
     }
@@ -46,7 +46,7 @@ public extension PrimitiveSequence where Trait == SingleTrait {
     func handleLoaderForLifecycle(loader: LoadingViewPresenting,
                                   style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
                                   text: String? = nil) -> Single<Element> {
-        return self.do(onSubscribe: {
+        self.do(onSubscribe: {
             loader.show(with: style, text: text)
         }, onDispose: {
             loader.hide()
@@ -61,14 +61,14 @@ public extension ObservableType {
     func show(loader: LoadingViewPresenting,
               style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
               text: String? = nil) -> Observable<Element> {
-        return self.do(onNext: { _ in
+        self.do(onNext: { _ in
             loader.show(with: style, text: text)
         })
     }
     
     /// Hides the loader and returns `Element`
     func hide(loader: LoadingViewPresenting) -> Observable<Element> {
-        return self.do(onNext: { _ in
+        self.do(onNext: { _ in
             loader.hide()
         })
     }
@@ -112,7 +112,7 @@ public extension Reactive where Base: ReactiveLoaderPresenting {
     func show(loader: LoadingViewPresenting,
               style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
               text: String? = nil) -> Completable {
-        return Completable.create { completable -> Disposable in
+        Completable.create { completable -> Disposable in
             loader.show(with: style, text: text)
             completable(.completed)
             return Disposables.create()
@@ -121,7 +121,7 @@ public extension Reactive where Base: ReactiveLoaderPresenting {
     
     /// Show the loader and returns `Element`
     func hide(loader: LoadingViewPresenting) -> Completable {
-        return Completable.create { completable -> Disposable in
+        Completable.create { completable -> Disposable in
             loader.hide()
             completable(.completed)
             return Disposables.create()
@@ -135,14 +135,14 @@ public extension PrimitiveSequence where Trait == CompletableTrait, Element == N
     func show(loader: LoadingViewPresenting,
               style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
               text: String? = nil) -> Completable {
-        return self.do(onCompleted: {
+        self.do(onCompleted: {
             loader.show(with: style, text: text)
         })
     }
     
     /// Hides the loader
     func hide(loader: LoadingViewPresenting) -> Completable {
-        return self.do(onCompleted: {
+        self.do(onCompleted: {
             loader.hide()
         })
     }
@@ -151,14 +151,14 @@ public extension PrimitiveSequence where Trait == CompletableTrait, Element == N
     func showOnSubscription(loader: LoadingViewPresenting,
                             style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
                             text: String? = nil) -> Completable {
-        return self.do(onSubscribe: {
+        self.do(onSubscribe: {
             loader.show(with: text)
         })
     }
     
     /// Hides the loader and returns `Element`
     func hideOnDisposal(loader: LoadingViewPresenting) -> Completable {
-        return self.do(onDispose: {
+        self.do(onDispose: {
             loader.hide()
         })
     }
@@ -167,7 +167,7 @@ public extension PrimitiveSequence where Trait == CompletableTrait, Element == N
     func handleLoaderForLifecycle(loader: LoadingViewPresenting,
                                   style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
                                   text: String? = nil) -> Completable {
-        return self.do(onSubscribe: {
+        self.do(onSubscribe: {
             loader.show(with: style, text: text)
         }, onDispose: {
             loader.hide()

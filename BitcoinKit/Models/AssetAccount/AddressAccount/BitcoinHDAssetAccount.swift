@@ -17,7 +17,7 @@ public struct BitcoinHDAssetAccount: HDAddressAssetAccount {
     public let xpub: String
 
     public var currentAddress: Address {
-        return BitcoinAssetAddress(
+        BitcoinAssetAddress(
             isImported: false,
             publicKey: ""
         )
@@ -28,7 +28,7 @@ public struct BitcoinHDAssetAccount: HDAddressAssetAccount {
     // MARK: - AssetAccount
 
     public var accountAddress: String {
-        return currentAddress.publicKey
+        currentAddress.publicKey
     }
 
     public var name: String

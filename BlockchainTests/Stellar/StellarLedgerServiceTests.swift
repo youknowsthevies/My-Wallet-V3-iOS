@@ -6,13 +6,13 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
+@testable import Blockchain
+import PlatformKit
 import RxBlocking
 import RxSwift
-import stellarsdk
-import PlatformKit
 import StellarKit
-@testable import Blockchain
+import stellarsdk
+import XCTest
 
 class LedgerResponseMock: LedgerResponseProtocol {
     var id: String = ""
@@ -28,7 +28,7 @@ class LedgerResponseMock: LedgerResponseProtocol {
 
 class LedgerPageResponseMock: PageResponseProtocol {
     var allRecords: [LedgerResponseProtocol] {
-        return _allRecords
+        _allRecords
     }
     
     var _allRecords: [LedgerResponseMock] = [
@@ -47,7 +47,7 @@ class StellarFeeServiceMock: StellarFeeServiceAPI {
     static let fee = StellarTransactionFee(limits: StellarTransactionFee.defaultLimits, regular: 1000, priority: 10000)
     var stellarFees: Single<StellarTransactionFee> = Single.just(StellarFeeServiceMock.fee)
     var fees: Single<StellarTransactionFee> {
-        return stellarFees
+        stellarFees
     }
 }
 

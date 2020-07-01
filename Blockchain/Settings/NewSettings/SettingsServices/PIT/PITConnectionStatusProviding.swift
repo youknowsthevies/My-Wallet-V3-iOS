@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxRelay
+import RxSwift
 
 /// `PITConnectionStatusProviding` is an API for determining if the user
 /// has connected their wallet to the PIT
@@ -31,10 +31,10 @@ final class PITConnectionStatusProvider: PITConnectionStatusProviding {
     }
     
     var hasLinkedPITAccount: Observable<Bool> {
-        return Observable.combineLatest(
+        Observable.combineLatest(
             blockchainRepository.fetchNabuUser().asObservable(),
             fetchTriggerRelay).flatMap {
-                return Single.just($0.0.hasLinkedExchangeAccount)
+                Single.just($0.0.hasLinkedExchangeAccount)
         }
     }
 }

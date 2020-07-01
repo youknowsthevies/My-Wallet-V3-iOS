@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import BigInt
-import web3swift
-import PlatformKit
 import EthereumKit
+import PlatformKit
+import RxSwift
+import web3swift
 
 public protocol ERC20EvaluationError: Error { }
 
@@ -47,7 +47,7 @@ public class AnyERC20Service<Token: ERC20Token>: ERC20ServiceAPI, ValidateTransa
         do {
             let value = try ERC20TokenValue<Token>(crypto: amount)
             return evaluate(amount: value)
-                .map { _ in return .ok }
+                .map { _ in .ok }
                 .catchError { (error) -> Single<TransactionValidationResult> in
                     guard let validation = error as? TransactionValidationError else {
                         throw error
@@ -60,11 +60,11 @@ public class AnyERC20Service<Token: ERC20Token>: ERC20ServiceAPI, ValidateTransa
     }
     
     public func evaluate(amount cryptoValue: ERC20TokenValue<Token>) -> Single<ERC20TransactionEvaluationResult<Token>> {
-        return evaluateAmount(cryptoValue)
+        evaluateAmount(cryptoValue)
     }
     
     public func transfer(to: EthereumKit.EthereumAddress, amount cryptoValue: ERC20TokenValue<Token>) -> Single<EthereumTransactionCandidate> {
-        return transfer(to, cryptoValue)
+        transfer(to, cryptoValue)
     }
 }
 
@@ -89,7 +89,7 @@ public class ERC20Service<Token: ERC20Token>: ERC20API, ERC20TransactionEvaluati
     }
     
     private var handlePendingTransaction: Single<Void> {
-        return bridge.isWaitingOnTransaction
+        bridge.isWaitingOnTransaction
             .flatMap { isWaiting -> Single<Void> in
                 guard !isWaiting else {
                     throw ERC20ValidationError.pendingTransaction
@@ -99,11 +99,11 @@ public class ERC20Service<Token: ERC20Token>: ERC20API, ERC20TransactionEvaluati
     }
     
     private var tokenAssetAccountDetails: Single<ERC20AssetAccountDetails> {
-        return assetAccountRepository.assetAccountDetails.asObservable().asSingle()
+        assetAccountRepository.assetAccountDetails.asObservable().asSingle()
     }
     
     private var ethereumAssetAccountDetails: Single<EthereumAssetAccountDetails> {
-        return ethereumAssetAccountRepository.assetAccountDetails.asObservable().asSingle()
+        ethereumAssetAccountRepository.assetAccountDetails.asObservable().asSingle()
     }
     
     private let bridge: ERC20BridgeAPI
@@ -122,7 +122,7 @@ public class ERC20Service<Token: ERC20Token>: ERC20API, ERC20TransactionEvaluati
     }
     
     public func transfer(to: EthereumKit.EthereumAddress, amount cryptoValue: ERC20TokenValue<Token>) -> Single<EthereumTransactionCandidate> {
-        return buildTransactionCandidate(to: to, amount: cryptoValue, fee: nil)
+        buildTransactionCandidate(to: to, amount: cryptoValue, fee: nil)
     }
     
     public func transfer(
@@ -130,7 +130,7 @@ public class ERC20Service<Token: ERC20Token>: ERC20API, ERC20TransactionEvaluati
         amount cryptoValue: ERC20TokenValue<Token>,
         fee: EthereumTransactionFee
         ) -> Single<EthereumTransactionCandidate> {
-        return buildTransactionCandidate(to: to, amount: cryptoValue, fee: fee)
+        buildTransactionCandidate(to: to, amount: cryptoValue, fee: fee)
     }
     
     public func transfer(proposal: ERC20TransactionProposal<Token>, to address: EthereumKit.EthereumAddress) -> Single<EthereumTransactionCandidate> {
@@ -147,7 +147,7 @@ public class ERC20Service<Token: ERC20Token>: ERC20API, ERC20TransactionEvaluati
         let tokenAmount = BigUInt(cryptoValue.amount)
         return handlePendingTransaction
             .flatMap(weak: self) { (self, _) -> Single<(EthereumTransactionFee, ERC20AssetAccountDetails, EthereumAssetAccountDetails)> in
-                return Single.zip(
+                Single.zip(
                     self.feesFor(feeValue: fee),
                     self.tokenAssetAccountDetails,
                     self.ethereumAssetAccountDetails
@@ -168,7 +168,7 @@ public class ERC20Service<Token: ERC20Token>: ERC20API, ERC20TransactionEvaluati
                 let fee = validatedInputs.fee
                 return self.transferTransaction(to: to, amount: tokenAmount)
                     .flatMap(weak: self) { (self, transaction) -> Single<(EthereumTransactionFee, web3swift.EthereumTransaction)> in
-                        return Single.just((fee, transaction))
+                        Single.just((fee, transaction))
                     }
             }
             .flatMap(weak: self) { (self, tuple) -> Single<EthereumTransactionCandidate> in
@@ -188,7 +188,7 @@ public class ERC20Service<Token: ERC20Token>: ERC20API, ERC20TransactionEvaluati
     // MARK: ERC20TransactionEvaluationAPI
     
     public func evaluate(amount cryptoValue: ERC20TokenValue<Token>) -> Single<ERC20TransactionEvaluationResult<Token>> {
-        return buildProposal(with: cryptoValue).catchError({ (error) -> Single<ERC20TransactionEvaluationResult<Token>> in
+        buildProposal(with: cryptoValue).catchError({ (error) -> Single<ERC20TransactionEvaluationResult<Token>> in
             guard let validation = error as? ERC20ValidationError else {
                 throw error
             }
@@ -197,7 +197,7 @@ public class ERC20Service<Token: ERC20Token>: ERC20API, ERC20TransactionEvaluati
     }
     
     public func evaluate(amount cryptoValue: ERC20TokenValue<Token>, fee: EthereumTransactionFee) -> Single<ERC20TransactionEvaluationResult<Token>> {
-        return buildProposal(with: cryptoValue, fee: fee)
+        buildProposal(with: cryptoValue, fee: fee)
             .catchError { (error) -> Single<ERC20TransactionEvaluationResult<Token>> in
                 guard let validation = error as? ERC20ValidationError else {
                     throw error
@@ -210,9 +210,9 @@ public class ERC20Service<Token: ERC20Token>: ERC20API, ERC20TransactionEvaluati
         with cryptoValue: ERC20TokenValue<Token>,
         fee: EthereumTransactionFee? = nil)
         -> Single<ERC20TransactionEvaluationResult<Token>> {
-        return handlePendingTransaction
+        handlePendingTransaction
             .flatMap(weak: self) { (self, _) -> Single<(EthereumTransactionFee, ERC20AssetAccountDetails, EthereumAssetAccountDetails)> in
-                return Single.zip(
+                Single.zip(
                     self.feesFor(feeValue: fee),
                     self.tokenAssetAccountDetails,
                     self.ethereumAssetAccountDetails
@@ -300,20 +300,20 @@ public class ERC20Service<Token: ERC20Token>: ERC20API, ERC20TransactionEvaluati
 
 extension ERC20Service: ERC20WalletAPI {
     public var tokenAccount: Single<ERC20TokenAccount?> {
-        return bridge.tokenAccount(for: Token.metadataKey)
+        bridge.tokenAccount(for: Token.metadataKey)
     }
 }
 
 extension ERC20Service: ERC20TransactionMemoAPI {
     public func memo(for transactionHash: String) -> Single<String?> {
-        return bridge.memo(
+        bridge.memo(
             for: transactionHash,
             tokenKey: Token.metadataKey
         )
     }
     
     public func save(transactionMemo: String, for transactionHash: String) -> Single<Void> {
-        return bridge.save(
+        bridge.save(
             transactionMemo: transactionMemo,
             for: transactionHash,
             tokenKey: Token.metadataKey

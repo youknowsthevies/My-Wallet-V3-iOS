@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxCocoa
+import RxSwift
 
 public struct SelectionScreenTableHeaderViewModel {
     
@@ -16,7 +16,7 @@ public struct SelectionScreenTableHeaderViewModel {
     
     /// The content color of the title
     var contentColor: Driver<UIColor> {
-        return contentColorRelay.asDriver()
+        contentColorRelay.asDriver()
     }
     
     /// The text relay
@@ -24,7 +24,7 @@ public struct SelectionScreenTableHeaderViewModel {
     
     /// Text to be displayed on the badge
     var text: Driver<String> {
-        return textRelay.asDriver()
+        textRelay.asDriver()
     }
     
     let font: UIFont

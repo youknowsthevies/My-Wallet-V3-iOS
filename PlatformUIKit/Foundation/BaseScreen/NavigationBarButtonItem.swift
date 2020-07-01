@@ -9,26 +9,28 @@
 import RxSwift
 
 class NavigationBarButtonItem: UIBarButtonItem {
-    
+
     // MARK: - Types
-    
-    private let disposeBag = DisposeBag()
-    
-    // MARK: - Setup
-    
+
     enum ItemType {
         case processing
         case content(content: Screen.NavigationBarContent, tap: () -> Void)
         case none
     }
-    
+
+    // MARK: - Private Properties
+
+    private let disposeBag = DisposeBag()
+
+    // MARK: - Setup
+
     init(type: ItemType, color: UIColor) {
         super.init()
-        
-        self.tintColor = color
-        self.target = self
-        self.style = .plain
-        
+
+        tintColor = color
+        target = self
+        style = .plain
+
         switch type {
         case .content(content: let content, tap: let tap):
             let font = UIFont.main(.medium, 16)
@@ -36,29 +38,24 @@ class NavigationBarButtonItem: UIBarButtonItem {
                 .font: font,
                 .foregroundColor: color
             ]
-            self.setTitleTextAttributes(attributes, for: .normal)
-            self.setTitleTextAttributes(attributes, for: .highlighted)
-            self.setTitleTextAttributes(attributes, for: .disabled)
-            self.title = content.title
-            self.image = content.image
-            self.accessibilityIdentifier = content.accessibility?.id.rawValue
-            
-            self.rx.tap.bind {
-                tap()
-            }.disposed(by: disposeBag)
-            
+            setTitleTextAttributes(attributes, for: .normal)
+            setTitleTextAttributes(attributes, for: .highlighted)
+            setTitleTextAttributes(attributes, for: .disabled)
+            title = content.title
+            image = content.image
+            accessibilityIdentifier = content.accessibility?.id.rawValue
+            rx.tap
+                .bind { tap() }
+                .disposed(by: disposeBag)
         case .processing:
             let activityIndicator = UIActivityIndicatorView(style: .white)
-            self.customView = activityIndicator
+            customView = activityIndicator
             activityIndicator.startAnimating()
         case .none:
-            self.customView = nil
-            self.title = nil
-            self.image = nil
+            break
         }
     }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("\(#function) is not implemented")
-    }
+
+    @available(*, unavailable)
+    required init?(coder aDecoder: NSCoder) { nil }
 }

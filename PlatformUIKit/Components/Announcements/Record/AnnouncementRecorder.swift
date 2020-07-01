@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformKit
+import ToolKit
 
 /// A class that records dismiss actions taken by the user when dismissing an announcement.
 /// We record the dismissal so that it wouldn't be shown again in case it has already been shown once.
@@ -23,7 +23,7 @@ public final class AnnouncementRecorder {
     
     /// Key subscript for an entry
     public subscript(key: AnnouncementRecord.Key) -> Entry {
-        return Entry(errorRecorder: errorRecorder, recorder: self, key: key)
+        Entry(errorRecorder: errorRecorder, recorder: self, key: key)
     }
     
     // MARK: - Setup
@@ -49,7 +49,7 @@ extension AnnouncementRecorder {
         }
         
         [KeyCategoryPair(legacyKey: .shouldHidePITLinkingCard, category: .oneTime)]
-            .filter { return userDefaults.value(forKey: $0.legacyKey.rawValue) as? Bool ?? false }
+            .filter { userDefaults.value(forKey: $0.legacyKey.rawValue) as? Bool ?? false }
             .filter { $0.legacyKey.key != nil }
             .forEach {
                 let recorder = AnnouncementRecorder(cache: userDefaults, errorRecorder: errorRecorder)
@@ -77,7 +77,7 @@ extension AnnouncementRecorder {
         /// Returns the display state as per announcement
         /// If the record was not kept in cache - it's safe to assume it's a new record
         var displayState: AnnouncementRecord.DisplayState {
-            return value(for: key)?.displayState ?? .show
+            value(for: key)?.displayState ?? .show
         }
         
         private let errorRecorder: ErrorRecording
@@ -153,7 +153,7 @@ extension AnnouncementRecorder {
         // MARK: - Equatable
         
         public static func == (lhs: AnnouncementRecorder.Entry, rhs: AnnouncementRecorder.Entry) -> Bool {
-            return lhs.key == rhs.key
+            lhs.key == rhs.key
         }
     }
 }

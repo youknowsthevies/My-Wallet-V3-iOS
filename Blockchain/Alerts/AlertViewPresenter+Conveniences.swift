@@ -6,11 +6,11 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
-import RxSwift
-import RxCocoa
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 extension AlertViewPresenter {
     
@@ -35,7 +35,6 @@ extension AlertViewPresenter {
             self.standardNotify(alert: alert)
         }
     }
-    
     
     /// Asks permission from the user to use values in the keychain. This is typically invoked
     /// on a new installation of the app (meaning the user previously installed the app, deleted it,

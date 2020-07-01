@@ -12,7 +12,7 @@ struct SpendableUnspentOutputs: Equatable {
     
     // FIXME: Should this be a BitcoinValue?
     var spendableBalance: BigUInt {
-        return spendableOutputs.sum() - absoluteFee
+        spendableOutputs.sum() - absoluteFee
     }
     
     let spendableOutputs: [UnspentOutput]

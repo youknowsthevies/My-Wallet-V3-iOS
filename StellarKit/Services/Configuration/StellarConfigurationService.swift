@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
 import PlatformKit
+import RxCocoa
+import RxSwift
 
 public protocol StellarConfigurationAPI {
     var configuration: Single<StellarConfiguration> { get }
@@ -21,7 +21,7 @@ public protocol StellarWalletOptionsBridgeAPI: class {
 final public class StellarConfigurationService: StellarConfigurationAPI {
     
     public var configuration: Single<StellarConfiguration> {
-        return Single.deferred { [unowned self] in
+        Single.deferred { [unowned self] in
             guard let cachedValue = self.cachedConfiguration.value, !self.shouldRefresh else {
                 return self.fetchConfiguration
             }
@@ -34,7 +34,7 @@ final public class StellarConfigurationService: StellarConfigurationAPI {
     private var cachedConfiguration = BehaviorRelay<StellarConfiguration?>(value: nil)
     
     private var fetchConfiguration: Single<StellarConfiguration> {
-        return bridgeAPI.stellarConfigurationDomain
+        bridgeAPI.stellarConfigurationDomain
             .map { domain -> StellarConfiguration in
                 guard let stellarHorizon = domain else {
                     return StellarConfiguration.Blockchain.production
@@ -72,8 +72,8 @@ final public class StellarConfigurationService: StellarConfigurationAPI {
 
 extension WalletService: StellarWalletOptionsBridgeAPI {
     public var stellarConfigurationDomain: Single<String?> {
-        return walletOptions.map { value -> String? in
-            return value.domains?.stellarHorizon
+        walletOptions.map { value -> String? in
+            value.domains?.stellarHorizon
         }
     }
 }

@@ -14,32 +14,32 @@ public struct AssetFiatCryptoBalanceCalculationStates {
         
     /// Returns `FiatCryptoPairCalculationState` for a given `CryptoCurrency`
     public subscript(cyptoCurrency: CryptoCurrency) -> AssetFiatCryptoBalanceCalculationState {
-        return statePerCurrency[cyptoCurrency]!
+        statePerCurrency[cyptoCurrency]!
     }
     
     /// Returns all the states
     public var all: [AssetFiatCryptoBalanceCalculationState] {
-        return Array(statePerCurrency.values)
+        Array(statePerCurrency.values)
     }
     
     /// All elements must be `.calculating` for that to return `true`
     public var isCalculating: Bool {
-        return !all.contains { !$0.isCalculating }
+        !all.contains { !$0.isCalculating }
     }
     
     /// Must contain an `.invalid` element for that to return `true`
     public var isInvalid: Bool {
-        return all.contains { $0.isInvalid }
+        all.contains { $0.isInvalid }
     }
     
     /// All elements must have a value for that to return `true`
     public var isValue: Bool {
-        return !all.contains { !$0.isValue }
+        !all.contains { !$0.isValue }
     }
     
     /// Some elements must have a value for that to return `true`
     public var containsValue: Bool {
-        return all.contains { $0.isValue }
+        all.contains { $0.isValue }
     }
     
     /// Returns the total fiat calcuation state

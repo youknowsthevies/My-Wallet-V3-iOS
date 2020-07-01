@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import PhoneNumberKit
+import RxSwift
 
 /// Formats user mobile number entry to be formatted correctly.
 final class MobileNumberTextFormatter: TextFormatting {

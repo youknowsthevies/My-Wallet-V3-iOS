@@ -11,7 +11,7 @@ import RxCocoa
 import ToolKit
 
 extension ObservableType {
-    
+
     public func bindAndCatch<A: AnyObject>(
         file: String = #file,
         line: Int = #line,
@@ -29,7 +29,7 @@ extension ObservableType {
             function: function
         )
     }
-    
+
     public func bindAndCatch<A: AnyObject>(
         file: String = #file,
         line: Int = #line,
@@ -47,7 +47,7 @@ extension ObservableType {
             function: function
         )
     }
-    
+
     private func _bind(
         onNext: @escaping (Element) -> Void,
         file: String = #file,

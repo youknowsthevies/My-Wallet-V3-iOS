@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import RxCocoa
 import RxRelay
 import RxSwift
-import RxCocoa
 
 /// This protocol defines a single responsibility requirement for an account balance fetching
 public protocol AccountBalanceFetching: class {

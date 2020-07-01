@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import PlatformKit
+import RxSwift
 
 final class LaunchAnnouncementInteractor {
 
@@ -15,7 +15,7 @@ final class LaunchAnnouncementInteractor {
     
     /// Streams an `UpdateType` element
     var updateType: Single<LaunchAnnouncementType> {
-        return walletOptionsAPI.walletOptions
+        walletOptionsAPI.walletOptions
             .observeOn(MainScheduler.instance)
             .map { options in
                 if options.downForMaintenance {

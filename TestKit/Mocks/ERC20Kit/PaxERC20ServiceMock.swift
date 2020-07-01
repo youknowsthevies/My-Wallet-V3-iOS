@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import RxSwift
-import PlatformKit
-import EthereumKit
 import ERC20Kit
+import EthereumKit
+import Foundation
+import PlatformKit
+import RxSwift
 
 class PaxERC20ServiceMock: ERC20ServiceAPI {
     func evaluate(amount cryptoValue: ERC20TokenValue<PaxToken>) -> Single<ERC20TransactionEvaluationResult<PaxToken>> {

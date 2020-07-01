@@ -6,17 +6,17 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import PlatformKit
 import PlatformUIKit
+import RxRelay
+import RxSwift
 
 final class PreferredCurrencyBadgePresenter: BadgeAssetPresenting {
     
     typealias PresentationState = BadgeAsset.State.BadgeItem.Presentation
     
     var state: Observable<PresentationState> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
     }
     
     // MARK: - Private Accessors

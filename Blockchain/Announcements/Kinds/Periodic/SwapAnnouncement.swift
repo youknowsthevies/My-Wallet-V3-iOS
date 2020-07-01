@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 /// Swap announcement is a periodic announcement that introduces the user to in-wallet asset trading
 final class SwapAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {

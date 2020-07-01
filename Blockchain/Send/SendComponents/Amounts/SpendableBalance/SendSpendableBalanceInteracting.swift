@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import RxSwift
-import RxRelay
 import PlatformKit
+import RxRelay
+import RxSwift
 
 /// The interaction layer for spendable balance on the send screen
 protocol SendSpendableBalanceInteracting {
@@ -27,7 +27,7 @@ extension SendSpendableBalanceInteracting {
     
     /// The balance in crypto. Elements are emitted only when the calculation state contains a valid value
     var balance: Observable<FiatCryptoPair> {
-        return calculationState
+        calculationState
             .compactMap { $0.value }
     }
 }

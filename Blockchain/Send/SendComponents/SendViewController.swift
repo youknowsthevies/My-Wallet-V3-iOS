@@ -6,14 +6,14 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
-import RxSwift
-import RxRelay
-import RxCocoa
-import SafariServices
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
+import SafariServices
+import ToolKit
+import UIKit
 
 /// This class was designed to replace all current send screens
 /// Should contain as little logic as possible. It's only a view
@@ -195,7 +195,7 @@ extension SendViewController: ConfirmPaymentViewDelegate {
 
 extension SendViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return SendPresenter.TableViewDataSource.cellCount
+        SendPresenter.TableViewDataSource.cellCount
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -239,11 +239,11 @@ extension SendViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension SendViewController: NavigatableView {
     var rightNavControllerCTAType: NavigationCTAType {
-        return presenter.navigationRightButtonValue.indicator.button
+        presenter.navigationRightButtonValue.indicator.button
     }
     
     var rightCTATintColor: UIColor {
-        return presenter.navigationRightButtonValue.color
+        presenter.navigationRightButtonValue.color
     }
     
     func navControllerRightBarButtonTapped(_ navController: UINavigationController) {
@@ -261,14 +261,14 @@ extension Reactive where Base: SendViewController {
     
     /// Binder for the error handling
     fileprivate var errorHandler: Binder<SendInputState.StateError> {
-        return Binder(base) { viewController, error in
+        Binder(base) { viewController, error in
             viewController.handle(error: error)
         }
     }
     
     /// Binder for any alert
     fileprivate var alertHandler: Binder<AlertViewContent> {
-        return Binder(base) { viewController, content in
+        Binder(base) { viewController, content in
             viewController.alertPresenter.notify(content: content)
         }
     }

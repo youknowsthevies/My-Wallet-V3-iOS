@@ -33,13 +33,13 @@ extension WalletAction {
     static let shared = WalletActionEventBus()
 
     @objc class func sharedInstance() -> WalletActionEventBus {
-        return shared
+        shared
     }
 
     private let publishSubject = PublishSubject<WalletActionEvent>()
 
     var events: Observable<WalletActionEvent> {
-        return publishSubject.asObservable()
+        publishSubject.asObservable()
     }
 
     @objc func publishObj(action: WalletAction, extras: [String: Any]? = nil) {

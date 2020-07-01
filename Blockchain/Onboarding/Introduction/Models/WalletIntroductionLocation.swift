@@ -55,21 +55,21 @@ extension WalletIntroductionLocation {
 
 extension WalletIntroductionLocation.Screen {
     static func < (lhs: WalletIntroductionLocation.Screen, rhs: WalletIntroductionLocation.Screen) -> Bool {
-        return lhs.rawValue < rhs.rawValue
+        lhs.rawValue < rhs.rawValue
     }
     
     static func > (lhs: WalletIntroductionLocation.Screen, rhs: WalletIntroductionLocation.Screen) -> Bool {
-        return lhs.rawValue > rhs.rawValue
+        lhs.rawValue > rhs.rawValue
     }
 }
 
 extension WalletIntroductionLocation.Position {
     static func < (lhs: WalletIntroductionLocation.Position, rhs: WalletIntroductionLocation.Position) -> Bool {
-        return lhs.rawValue < rhs.rawValue
+        lhs.rawValue < rhs.rawValue
     }
     
     static func > (lhs: WalletIntroductionLocation.Position, rhs: WalletIntroductionLocation.Position) -> Bool {
-        return lhs.rawValue > rhs.rawValue
+        lhs.rawValue > rhs.rawValue
     }
 }
 

@@ -13,7 +13,7 @@ class BounceButton: UIButton {
     fileprivate var scaleDownAnimationDuration: TimeInterval = 0.02
     
     fileprivate var selectedScale: CGAffineTransform = {
-        return CGAffineTransform(scaleX: 1.5, y: 1.5)
+        CGAffineTransform(scaleX: 1.5, y: 1.5)
     }()
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

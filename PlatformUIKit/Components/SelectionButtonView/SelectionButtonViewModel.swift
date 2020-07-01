@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import RxCocoa
 import RxDataSources
+import RxRelay
+import RxSwift
 
 /// A view model for selection-view to use throughout the app
 public final class SelectionButtonViewModel: IdentifiableType {

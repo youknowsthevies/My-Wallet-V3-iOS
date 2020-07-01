@@ -17,6 +17,6 @@ public class EthereumQRMetadataFactory: CryptoAssetQRMetadataFactory {
     }
 
     public func create(from account: EthereumWalletAccount) -> EthereumQRMetadata? {
-        return EthereumQRMetadata(address: account.publicKey, amount: nil)
+        EthereumQRMetadata(address: account.publicKey, amount: nil)
     }
 }

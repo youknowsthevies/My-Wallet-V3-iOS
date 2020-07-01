@@ -16,19 +16,19 @@ public class EthereumURLPayload: EIP67URI, RawRepresentable {
     }
     
     public static var scheme: String {
-        return "ethereum"
+        "ethereum"
     }
     
     public var schemeCompat: String {
-        return EthereumURLPayload.scheme
+        EthereumURLPayload.scheme
     }
     
     public var absoluteString: String {
-        return components.url!.absoluteString
+        components.url!.absoluteString
     }
     
     public var rawValue: String {
-        return absoluteString
+        absoluteString
     }
     
     public let address: String
@@ -83,7 +83,7 @@ public class EthereumURLPayload: EIP67URI, RawRepresentable {
     }
     
     private static func valid(components: URLComponents) -> Bool {
-        return components.scheme == EthereumURLPayload.scheme && components.path.count == 42
+        components.scheme == EthereumURLPayload.scheme && components.path.count == 42
     }
     
     private static func urlComponents(from address: String, amount: String?, gas: String?) -> URLComponents {

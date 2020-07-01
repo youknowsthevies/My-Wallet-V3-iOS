@@ -32,7 +32,7 @@ extension UIView {
             isAccessibilityElement = newValue.isAccessible
         }
         get {
-            return Accessibility(id: accessibilityIdentifier != nil ? .value(accessibilityIdentifier!) : .none,
+            Accessibility(id: accessibilityIdentifier != nil ? .value(accessibilityIdentifier!) : .none,
                                  label: accessibilityLabel != nil ? .value(accessibilityLabel!) : .none,
                                  hint: accessibilityHint != nil ? .value(accessibilityHint!) : .none,
                                  traits: accessibilityTraits != .none ? .value(accessibilityTraits) : .none,

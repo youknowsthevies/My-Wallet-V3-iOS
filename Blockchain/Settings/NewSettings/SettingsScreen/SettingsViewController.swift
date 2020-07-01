@@ -6,12 +6,12 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BuySellUIKit
 import PlatformUIKit
-import RxSwift
 import RxCocoa
 import RxDataSources
+import RxSwift
 import ToolKit
-import BuySellUIKit
 
 final class SettingsViewController: BaseScreenViewController {
     

@@ -6,13 +6,13 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
+import BigInt
+@testable import EthereumKit
+import PlatformKit
 import RxSwift
 import RxTest
-import BigInt
 import web3swift
-import PlatformKit
-@testable import EthereumKit
+import XCTest
 
 class EthereumWalletServiceTests: XCTestCase {
     
@@ -387,20 +387,20 @@ class EthereumWalletServiceTests: XCTestCase {
 
 extension EthereumTransactionPublished: Equatable {
     public static func == (lhs: EthereumTransactionPublished, rhs: EthereumTransactionPublished) -> Bool {
-        return lhs.transactionHash == rhs.transactionHash
+        lhs.transactionHash == rhs.transactionHash
     }
 }
 
 extension EthereumTransactionFinalised: Equatable {
     public static func == (lhs: EthereumTransactionFinalised, rhs: EthereumTransactionFinalised) -> Bool {
-        return lhs.transactionHash == rhs.transactionHash
+        lhs.transactionHash == rhs.transactionHash
             && lhs.rawTx == rhs.rawTx
     }
 }
 
 extension EthereumTransactionCandidateCosted: Equatable {
     public static func == (lhs: EthereumTransactionCandidateCosted, rhs: EthereumTransactionCandidateCosted) -> Bool {
-        return lhs.transaction.gasLimit == rhs.transaction.gasLimit
+        lhs.transaction.gasLimit == rhs.transaction.gasLimit
             && lhs.transaction.gasPrice == rhs.transaction.gasPrice
     }
 }

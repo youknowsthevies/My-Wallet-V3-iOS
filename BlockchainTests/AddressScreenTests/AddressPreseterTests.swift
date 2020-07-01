@@ -7,11 +7,11 @@
 //
 
 import Foundation
-import XCTest
 import RxSwift
+import XCTest
 
-import PlatformKit
 @testable import Blockchain
+import PlatformKit
 
 class AddressPresenterTests: XCTestCase {
     

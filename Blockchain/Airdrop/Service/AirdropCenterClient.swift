@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import PlatformKit
 import NetworkKit
+import PlatformKit
+import RxSwift
 
 protocol AirdropCenterClientAPI: class {
     func campaigns(using sessionToken: String) -> Single<AirdropCampaigns>

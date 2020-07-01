@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformKit
+import ToolKit
 
 /// Announcement that can be dismissed using `X` or a secondary button
 public protocol DismissibleAnnouncement: Announcement {
@@ -33,8 +33,8 @@ public protocol DismissibleAnnouncement: Announcement {
 }
 
 extension DismissibleAnnouncement {
-    public var key: AnnouncementRecord.Key { return type.key }
+    public var key: AnnouncementRecord.Key { type.key }
     public var dismissAnalyticsEvent: AnalyticsEvents.Announcement {
-        return .cardDismissed(type: type)
+        .cardDismissed(type: type)
     }
 }

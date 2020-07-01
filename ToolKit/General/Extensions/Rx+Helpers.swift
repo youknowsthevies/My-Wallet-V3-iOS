@@ -10,30 +10,30 @@ import RxSwift
 
 public extension CompositeDisposable {
     @discardableResult func insertWithDiscardableResult(_ disposable: Disposable) -> CompositeDisposable.DisposeKey? {
-        return self.insert(disposable)
+        self.insert(disposable)
     }
 }
 
 public extension ObservableType {
     func optional() -> Observable<Element?> {
-        return self.asObservable().map { e -> Element? in
-            return e
+        self.asObservable().map { e -> Element? in
+            e
         }
     }
     
     func mapToVoid() -> Observable<Void> {
-        return map { _ in return () }
+        map { _ in () }
     }
 }
 
 public extension PrimitiveSequenceType where Trait == SingleTrait {
     func optional() -> Single<Element?> {
-        return self.map { e -> Element? in
-            return e
+        self.map { e -> Element? in
+            e
         }
     }
     
     func mapToVoid() -> Single<Void> {
-        return map { _ in return () }
+        map { _ in () }
     }
 }

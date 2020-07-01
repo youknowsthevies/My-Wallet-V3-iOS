@@ -6,12 +6,12 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
 import Localization
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 final class TransferCancellationScreenPresenter {
     

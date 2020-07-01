@@ -7,8 +7,8 @@
 //
 
 import PlatformUIKit
-import RxSwift
 import RxCocoa
+import RxSwift
 
 final class UpdateMobileScreenViewController: BaseScreenViewController {
     
@@ -90,7 +90,7 @@ final class UpdateMobileScreenViewController: BaseScreenViewController {
 
 extension Reactive where Base: UpdateMobileScreenViewController {
     var badgeViewModel: Binder<BadgeAsset.State.BadgeItem.Presentation> {
-        return Binder(base) { view, state in
+        Binder(base) { view, state in
             let loading = {
                 view.badgeShimmeringView.start()
             }

@@ -57,7 +57,7 @@ extension SettingsSectionType.CellType {
                  .cookiesPolicy:
                 return .showURL(URL(string: Constants.Url.privacyPolicy)!)
             }
-        case .switch(_, _):
+        case .switch:
             return .none
         }
     }

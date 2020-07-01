@@ -7,10 +7,10 @@
 //
 
 import Foundation
-import RxSwift
-import ToolKit
 import NetworkKit
 import PlatformKit
+import RxSwift
+import ToolKit
 
 protocol ExchangeAccountAuthenticatorAPI {
     typealias LinkID = String
@@ -46,7 +46,7 @@ class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
     }
     
     var exchangeURL: Single<URL> {
-        return Single
+        Single
             .zip(blockchainRepository.fetchNabuUser(), exchangeLinkID)
             .flatMap(weak: self, { (self, payload) -> Single<URL> in
                 let user = payload.0
@@ -73,11 +73,11 @@ class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
     }
     
     var nabuUser: Observable<NabuUser> {
-        return Observable<Int>.interval(
+        Observable<Int>.interval(
             3,
             scheduler: MainScheduler.asyncInstance
         ).flatMap(weak: self, selector: { (self, _) -> Observable<NabuUser> in
-            return self.blockchainRepository.fetchNabuUser().asObservable()
+            self.blockchainRepository.fetchNabuUser().asObservable()
         })
     }
         

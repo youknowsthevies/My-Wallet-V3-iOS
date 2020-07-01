@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import HDWalletKit
+import PlatformKit
 import RxSwift
 
 public struct BitcoinPrivateKey: Equatable {
@@ -21,7 +21,7 @@ public struct BitcoinPrivateKey: Equatable {
 public struct BitcoinKeyPair: KeyPair, Equatable {
     
     public var publicKey: String {
-        return privateKey.key.xpub
+        privateKey.key.xpub
     }
     
     public var privateKey: BitcoinPrivateKey
@@ -60,7 +60,7 @@ public class AnyBitcoinKeyPairDeriver: BitcoinKeyPairDeriverAPI {
     }
     
     public func derive(input: BitcoinKeyDerivationInput) -> Result<BitcoinKeyPair, Error> {
-        return deriver.derive(input: input)
+        deriver.derive(input: input)
     }
 }
 

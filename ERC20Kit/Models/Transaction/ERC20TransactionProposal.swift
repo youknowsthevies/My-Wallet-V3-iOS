@@ -17,7 +17,7 @@ public enum ERC20TransactionEvaluationResult<Token: ERC20Token> {
 public struct ERC20TransactionProposal<Token: ERC20Token> {
     
     public var aboveMinimumSpendable: Bool {
-        return value.amount >= Token.smallestSpendableValue.amount
+        value.amount >= Token.smallestSpendableValue.amount
     }
     
     public let from: EthereumKit.EthereumAddress
@@ -38,7 +38,7 @@ public struct ERC20TransactionProposal<Token: ERC20Token> {
 
 extension ERC20TransactionProposal: Equatable {
     public static func == (lhs: ERC20TransactionProposal, rhs: ERC20TransactionProposal) -> Bool {
-        return lhs.from == rhs.from &&
+        lhs.from == rhs.from &&
             lhs.gasLimit == rhs.gasLimit
             && lhs.gasPrice == rhs.gasPrice
             && lhs.value.value == rhs.value.value

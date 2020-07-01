@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import ToolKit
 import PlatformKit
+import RxRelay
+import RxSwift
+import ToolKit
 
 /// Fetches the available payment methods
 public protocol PaymentMethodsServiceAPI: class {
@@ -99,7 +99,7 @@ final class PaymentMethodsService: PaymentMethodsServiceAPI {
                                 //  have local support/UI.
                                 return BankLocallySupportedCurrencies
                                     .fiatCurrencies
-                                    .contains($0.min.currency)
+                                    .contains($0.min.currencyType)
                             }
                         }
                     }

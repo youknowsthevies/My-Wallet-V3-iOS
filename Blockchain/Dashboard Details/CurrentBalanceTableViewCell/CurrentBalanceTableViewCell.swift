@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
-import RxSwift
 import PlatformKit
 import PlatformUIKit
+import RxSwift
+import UIKit
 
 final class CurrentBalanceTableViewCell: UITableViewCell {
     

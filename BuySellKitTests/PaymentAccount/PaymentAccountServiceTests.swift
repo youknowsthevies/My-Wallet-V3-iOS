@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-import RxSwift
-import RxRelay
-@testable import PlatformKit
 @testable import BuySellKit
+@testable import PlatformKit
+import RxRelay
+import RxSwift
+import XCTest
 
 class PaymentAccountServiceTests: XCTestCase {
     var disposeBag: DisposeBag!

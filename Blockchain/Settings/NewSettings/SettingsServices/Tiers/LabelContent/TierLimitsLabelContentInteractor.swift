@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
 import PlatformKit
-import RxSwift
+import PlatformUIKit
 import RxRelay
+import RxSwift
 
 final class TierLimitsLabelContentInteractor: LabelContentInteracting {
     
@@ -21,7 +21,7 @@ final class TierLimitsLabelContentInteractor: LabelContentInteracting {
     
     let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     var state: Observable<InteractionState> {
-        return stateRelay.asObservable()
+        stateRelay.asObservable()
     }
     
     // MARK: - Private Accessors

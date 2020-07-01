@@ -26,7 +26,6 @@
 
     self.view.frame = [UIView rootViewSafeAreaFrameWithNavigationBar:YES tabBar:NO assetSelector:YES];
 
-    [self.navigationBar setTitleTextAttributes:[UINavigationBar largeTitleTextAttributes]];
     self.warningButton = [[UIBarButtonItem alloc]
                           initWithImage:[UIImage imageNamed:@"warning"]
                           style:UIBarButtonItemStylePlain

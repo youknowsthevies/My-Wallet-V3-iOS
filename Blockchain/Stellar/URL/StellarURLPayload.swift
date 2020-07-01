@@ -13,15 +13,15 @@ import stellarsdk
 class StellarURLPayload: SEP7URI {
 
     static var scheme: String {
-        return Constants.Schemes.stellar
+        Constants.Schemes.stellar
     }
 
     static var payOperation: String {
-        return "\(PayOperation)"
+        "\(PayOperation)"
     }
 
     var schemeCompat: String {
-        return StellarURLPayload.scheme
+        StellarURLPayload.scheme
     }
 
     var absoluteString: String {

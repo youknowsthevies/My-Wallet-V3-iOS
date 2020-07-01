@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BigInt
 import PlatformKit
 import web3swift
-import BigInt
 
 public struct EthereumTransactionCandidate {
     public let to: EthereumAddress
@@ -32,7 +32,7 @@ public struct EthereumTransactionCandidate {
 
 extension EthereumTransactionCandidate: Equatable {
     public static func == (lhs: EthereumTransactionCandidate, rhs: EthereumTransactionCandidate) -> Bool {
-        return lhs.gasLimit == rhs.gasLimit
+        lhs.gasLimit == rhs.gasLimit
             && lhs.gasPrice == rhs.gasPrice
             && lhs.to == rhs.to
             && lhs.value == rhs.value

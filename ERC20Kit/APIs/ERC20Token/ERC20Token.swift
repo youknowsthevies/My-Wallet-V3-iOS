@@ -7,9 +7,9 @@
 //
 
 import BigInt
-import web3swift
-import PlatformKit
 import EthereumKit
+import PlatformKit
+import web3swift
 
 public protocol ERC20Token {
     static var assetType: CryptoCurrency { get }
@@ -27,11 +27,11 @@ public protocol ERC20Token {
 
 extension ERC20Token {
     public static var name: String {
-        return assetType.rawValue
+        assetType.rawValue
     }
     
     public static var metadataKey: String {
-        return assetType.rawValue.lowercased()
+        assetType.rawValue.lowercased()
     }
     
     public static var zeroValue: ERC20TokenValue<Self> {
@@ -41,5 +41,5 @@ extension ERC20Token {
 }
 
 @objc public class ERC20TokenObjcBridge: NSObject {
-    @objc public class func paxContractAddress() -> String { return PaxToken.contractAddress.publicKey }
+    @objc public class func paxContractAddress() -> String { PaxToken.contractAddress.publicKey }
 }

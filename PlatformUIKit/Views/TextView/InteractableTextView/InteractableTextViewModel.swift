@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import RxRelay
+import RxSwift
 
 public struct TitledLink {
     public let title: String
@@ -40,7 +40,7 @@ public struct InteractableTextViewModel {
     
     /// Steams the url upon each tap
     public var tap: Observable<TitledLink> {
-        return tapRelay.asObservable()
+        tapRelay.asObservable()
     }
         
     /// Relay that accepts and streams the array of inputs

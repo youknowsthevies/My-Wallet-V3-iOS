@@ -502,12 +502,12 @@ public class AlertView: UIView {
 
 extension CGPoint {
     var vector: CGVector {
-        return CGVector(dx: x, dy: y)
+        CGVector(dx: x, dy: y)
     }
 }
 
 extension CGPoint {
     var magnitude: CGFloat {
-        return sqrt(pow(x, 2) + pow(y, 2))
+        sqrt(pow(x, 2) + pow(y, 2))
     }
 }

@@ -69,7 +69,7 @@ public extension String {
     
     /// Returns the string with no whitespaces
     var trimmingWhitespaces: String {
-        return trimmingCharacters(in: .whitespaces)
+        trimmingCharacters(in: .whitespaces)
     }
 }
 

@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import ToolKit
 @testable import PlatformKit
+import ToolKit
 
 final class MockUserPropertyRecorder: UserPropertyRecording {
     

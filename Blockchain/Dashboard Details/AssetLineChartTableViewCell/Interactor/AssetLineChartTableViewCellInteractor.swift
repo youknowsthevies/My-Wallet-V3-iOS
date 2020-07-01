@@ -6,11 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
+import Charts
+import PlatformKit
 import PlatformUIKit
 import RxCocoa
-import PlatformKit
-import Charts
+import RxSwift
 
 final class AssetLineChartTableViewCellInteractor: AssetLineChartTableViewCellInteracting {
     

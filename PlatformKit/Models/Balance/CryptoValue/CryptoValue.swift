@@ -69,7 +69,7 @@ extension CryptoValue {
 
     public func convertToFiatValue(exchangeRate: FiatValue) -> FiatValue {
         let conversionAmount = majorValue * exchangeRate.amount
-        return FiatValue.create(amount: conversionAmount, currency: exchangeRate.currency)
+        return FiatValue.create(amount: conversionAmount, currency: exchangeRate.currencyType)
     }
 }
 
@@ -85,7 +85,7 @@ extension BigInt {
 
 extension Decimal {
     public var doubleValue: Double {
-        return (self as NSDecimalNumber).doubleValue
+        (self as NSDecimalNumber).doubleValue
     }
 
     func roundTo(places: Int) -> Decimal {

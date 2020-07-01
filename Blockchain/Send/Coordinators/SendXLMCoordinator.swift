@@ -7,11 +7,11 @@
 //
 
 import Foundation
-import RxSwift
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxSwift
 import StellarKit
+import ToolKit
 
 class SendXLMCoordinator {
     fileprivate let serviceProvider: StellarServiceProvider
@@ -67,12 +67,12 @@ class SendXLMCoordinator {
     // MARK: Private Functions
     
     private func isExchangeAddress() -> Single<Bool> {
-        return Single.just(addressSource == .exchange)
+        Single.just(addressSource == .exchange)
     }
 
     fileprivate func accountDetailsTrigger() -> Observable<StellarAccount> {
-        return services.operation.operations.concatMap { result -> Observable<StellarAccount> in
-            return self.services.accounts.currentStellarAccount(fromCache: false).asObservable()
+        services.operation.operations.concatMap { result -> Observable<StellarAccount> in
+            self.services.accounts.currentStellarAccount(fromCache: false).asObservable()
         }
     }
     
@@ -283,7 +283,7 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
         ]
         if let entry = value {
             Single.zip(services.accounts.isExchangeAddress(entry), isExchangeAddress())
-                .map { return $0 && $1 }
+                .map { $0 && $1 }
                 .observeOn(MainScheduler.instance)
                 .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
                 .subscribe(onSuccess: { [weak self] (isExchangeAddress) in
@@ -312,7 +312,7 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
                 ])
             })
             .flatMap { keyPair -> Completable in
-                return transaction.send(paymentOperation, sourceKeyPair: keyPair)
+                transaction.send(paymentOperation, sourceKeyPair: keyPair)
             }
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
@@ -502,7 +502,7 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
     }
     
     var sendingToExchange: Bool {
-        return addressSource == .exchange
+        addressSource == .exchange
     }
     
     // MARK: - Private

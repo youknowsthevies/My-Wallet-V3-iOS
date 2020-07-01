@@ -23,18 +23,28 @@ public extension UIColor {
 
     // Navigation
 
-    static let sideMenuNavigationBarBackground = grey900
-    static let navigationBarBackground = blue900
+    enum NavigationBar {
+        public enum DarkContent {
+            public static let background = white
+            public static let title = black
+            public static let tintColor = black
+        }
+        public enum LightContent {
+            public static let background = grey900
+            public static let title = white
+            public static let tintColor = white
+        }
+
+        static let closeButton = grey400
+    }
     
     // Backgrounds & Borders
 
     static let background = grey000
     static let mediumBackground = grey100
-    static let hightlightedBackground = grey50
+    static let hightlightedBackground = grey050
     static let lightBlueBackground = blue000
     static let lightRedBackground = red000
-    
-    static let navigationBarCloseButton = grey400
     
     static let lightBorder = grey000
     static let mediumBorder = grey100
@@ -105,6 +115,4 @@ public extension UIColor {
     // MARK: - Feature Themes
     
     static let exchangeAnnouncementButton = grey800
-    static let exchangeTheme = exchangeBackground
-    static let blockastackCardBackground = blockstackBackground
 }

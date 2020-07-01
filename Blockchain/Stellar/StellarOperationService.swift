@@ -7,12 +7,12 @@
 //
 
 import Foundation
-import stellarsdk
-import RxSwift
-import RxCocoa
-import ToolKit
-import StellarKit
 import PlatformKit
+import RxCocoa
+import RxSwift
+import StellarKit
+import stellarsdk
+import ToolKit
 
 /// Model for paginating through StellarSDK calls
 struct StellarPageReponse<A: Any> {
@@ -62,19 +62,19 @@ class StellarOperationService: StellarOperationsAPI {
     private let configurationService: StellarConfigurationAPI
     
     private var configuration: Single<StellarConfiguration> {
-        return configurationService.configuration
+        configurationService.configuration
     }
     
     var sdk: Single<stellarsdk.StellarSDK> {
-        return configuration.map { $0.sdk }
+        configuration.map { $0.sdk }
     }
     
     var operationsService: Single<stellarsdk.OperationsService> {
-        return sdk.map { $0.operations }
+        sdk.map { $0.operations }
     }
     
     var transactionsService: Single<stellarsdk.TransactionsService> {
-        return sdk.map { $0.transactions }
+        sdk.map { $0.transactions }
     }
     
     private let bag = DisposeBag()
@@ -99,7 +99,7 @@ class StellarOperationService: StellarOperationsAPI {
             }
             return output.hasNextPage
         }.flatMap { output -> Observable<StellarPageReponse<StellarOperation>> in
-            return Observable<StellarPageReponse<StellarOperation>>.just(output).concat(
+            Observable<StellarPageReponse<StellarOperation>>.just(output).concat(
                 self.allOperations(from: accountID, token: output.items.last?.token)
             )
         }
@@ -111,7 +111,7 @@ class StellarOperationService: StellarOperationsAPI {
     }
     
     func isStreaming() -> Bool {
-        return stream != nil
+        stream != nil
     }
     
     func end() {
@@ -127,13 +127,13 @@ class StellarOperationService: StellarOperationsAPI {
     }
     
     private func all(from accountID: String) -> Observable<[StellarOperation]> {
-        return allOperations(from: accountID, token: nil)
+        allOperations(from: accountID, token: nil)
             .map { $0.items }
             .reduce([], accumulator: { $0 + $1 })
     }
     
     private func filter(operations: [OperationResponse]) -> [OperationResponse] {
-        return operations.filter { $0.operationType == .payment || $0.operationType == .accountCreated }
+        operations.filter { $0.operationType == .payment || $0.operationType == .accountCreated }
     }
     
     private func buildOperation(from operationResponse: OperationResponse, transaction: TransactionResponse, accountID: String) -> StellarOperation {
@@ -175,15 +175,15 @@ class StellarOperationService: StellarOperationsAPI {
     }
     
     private func operations(from accountID: AccountID, token: PageToken?) -> Single<StellarPageReponse<StellarOperation>> {
-        return fetchOperations(from: accountID, token: token)
+        fetchOperations(from: accountID, token: token)
             .flatMapLatest { response -> Observable<(OperationResponse, Bool)> in
-                return Observable<(OperationResponse, Bool)>.from(response.items.map { ($0, response.hasNextPage) })
+                Observable<(OperationResponse, Bool)>.from(response.items.map { ($0, response.hasNextPage) })
             }
             .concatMap { value -> Observable<(StellarOperation, Bool)> in
                 let (item, hasNextPage) = value
                 return self.getTransactionDetails(for: item, accountID: accountID)
                     .map { itemDetails -> (StellarOperation, Bool) in
-                        return (itemDetails, hasNextPage)
+                        (itemDetails, hasNextPage)
                     }
             }
             .toArray()
@@ -198,7 +198,7 @@ class StellarOperationService: StellarOperationsAPI {
     }
     
     private func getTransactionDetails(for operation: OperationResponse, accountID: AccountID, transactionsService: stellarsdk.TransactionsService) -> Observable<StellarOperation> {
-        return Observable<TransactionResponse>.create { observer -> Disposable in
+        Observable<TransactionResponse>.create { observer -> Disposable in
             transactionsService.getTransactionDetails(transactionHash: operation.transactionHash, response: { response in
                 switch response {
                 case .success(let payload):
@@ -217,15 +217,15 @@ class StellarOperationService: StellarOperationsAPI {
     }
     
     private func getTransactionDetails(for operation: OperationResponse, accountID: AccountID) -> Observable<StellarOperation> {
-        return transactionsService
+        transactionsService
             .flatMap(weak: self) { (self, transactionsService) -> Single<StellarOperation> in
-                return self.getTransactionDetails(for: operation, accountID: accountID, transactionsService: transactionsService).asSingle()
+                self.getTransactionDetails(for: operation, accountID: accountID, transactionsService: transactionsService).asSingle()
             }
             .asObservable()
     }
     
     private func fetchOperations(from accountID: AccountID, token: PageToken?, operationsService: stellarsdk.OperationsService) -> Observable<StellarPageReponse<OperationResponse>> {
-        return Observable<StellarPageReponse<OperationResponse>>.create { [weak self] observer -> Disposable in
+        Observable<StellarPageReponse<OperationResponse>>.create { [weak self] observer -> Disposable in
             guard let self = self else { return Disposables.create() }
             operationsService.getOperations(forAccount: accountID, from: token, order: .descending, limit: 200, response: { response in
                 switch response {
@@ -248,9 +248,9 @@ class StellarOperationService: StellarOperationsAPI {
     }
     
     private func fetchOperations(from accountID: AccountID, token: PageToken?) -> Observable<StellarPageReponse<OperationResponse>> {
-        return operationsService
+        operationsService
             .flatMap(weak: self) { (self, operationsService) -> Single<StellarPageReponse<OperationResponse>> in
-                return self.fetchOperations(from: accountID, token: token, operationsService: operationsService).asSingle()
+                self.fetchOperations(from: accountID, token: token, operationsService: operationsService).asSingle()
             }
             .asObservable()
     }
@@ -281,7 +281,7 @@ class StellarOperationService: StellarOperationsAPI {
                         let filtered = this.filter(operations: [payload])
                         let disposable = Observable.from(filtered)
                             .flatMapLatest { operationResponse -> Observable<StellarOperation> in
-                                return this.getTransactionDetails(for: operationResponse, accountID: accountID)
+                                this.getTransactionDetails(for: operationResponse, accountID: accountID)
                             }
                             .toArray()
                             .subscribe(onSuccess: { result in

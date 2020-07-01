@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import PlatformKit
+import RxSwift
 
 final class MockFeatureFetcher: FeatureFetching {
     
@@ -30,6 +30,6 @@ final class MockFeatureFetcher: FeatureFetching {
     }
     
     func fetchTestingVariant(for key: AppFeature) -> Single<FeatureTestingVariant> {
-        return Single.just(expectedVariant)
+        Single.just(expectedVariant)
     }
 }

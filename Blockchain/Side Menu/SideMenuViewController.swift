@@ -7,10 +7,10 @@
 //
 
 import Foundation
-import RxSwift
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import RxSwift
+import ToolKit
 
 protocol SideMenuViewControllerDelegate: class {
     func sideMenuViewController(_ viewController: SideMenuViewController, didTapOn item: SideMenuItem)
@@ -41,7 +41,7 @@ class SideMenuViewController: UIViewController {
     private let disposeBag = DisposeBag()
     
     private lazy var presenter: SideMenuPresenter = {
-        return SideMenuPresenter(view: self)
+        SideMenuPresenter(view: self)
     }()
 
     private var sideMenuItems: [SideMenuItem] = [] {
@@ -57,8 +57,8 @@ class SideMenuViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .sideMenuNavigationBarBackground
-        tableViewBackgroundView.backgroundColor = .sideMenuNavigationBarBackground
+        view.backgroundColor = UIColor.NavigationBar.LightContent.background
+        tableViewBackgroundView.backgroundColor = UIColor.NavigationBar.LightContent.background
         AppCoordinator.shared.slidingViewController.delegate = self
         tapToCloseGestureRecognizerTabBar = UITapGestureRecognizer(
             target: AppCoordinator.shared,
@@ -175,11 +175,11 @@ class SideMenuViewController: UIViewController {
 
 extension SideMenuViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return sideMenuItems.count
+        sideMenuItems.count
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return SideMenuCell.defaultHeight
+        SideMenuCell.defaultHeight
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

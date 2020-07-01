@@ -18,7 +18,7 @@ class MockWalletData: WalletProtocol {
     weak var delegate: WalletDelegate?
     private let initialized: Bool
     
-    var isBitcoinWalletFunded: Bool { return false }
+    var isBitcoinWalletFunded: Bool { false }
     
     init(initialized: Bool, delegate: WalletDelegate?) {
         self.initialized = initialized
@@ -26,11 +26,11 @@ class MockWalletData: WalletProtocol {
     }
     
     @objc func isInitialized() -> Bool {
-        return initialized
+        initialized
     }
     
     @objc func encrypt(_ data: String, password: String) -> String {
-        return password
+        password
     }
     
     /// When called, invokes the delegate's walletDidDecrypt and walletDidFinishLoad methods

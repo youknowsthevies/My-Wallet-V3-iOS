@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import CommonCryptoKit
 import Foundation
 import ToolKit
-import CommonCryptoKit
 
 extension HashedUserProperty {
     public init(key: Key, value: String, truncatesValueIfNeeded: Bool = true) {

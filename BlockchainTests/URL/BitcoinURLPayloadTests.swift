@@ -6,11 +6,11 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import XCTest
-import PlatformKit
 import BitcoinKit
 @testable import Blockchain
+import Foundation
+import PlatformKit
+import XCTest
 
 class BitcoinURLPayloadTests: XCTestCase {
 

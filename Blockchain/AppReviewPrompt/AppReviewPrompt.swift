@@ -7,9 +7,9 @@
 //
 
 import Foundation
+import PlatformKit
 import StoreKit
 import ToolKit
-import PlatformKit
 
 /**
  App Review Prompt
@@ -25,7 +25,7 @@ final class AppReviewPrompt: NSObject {
     static let shared = AppReviewPrompt()
 
     @objc class func sharedInstance() -> AppReviewPrompt {
-        return AppReviewPrompt.shared
+        AppReviewPrompt.shared
     }
 
     override private init() {

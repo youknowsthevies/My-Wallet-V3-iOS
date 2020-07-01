@@ -68,7 +68,7 @@ enum ExchangeCellModel {
 extension ExchangeCellModel {
     
     var reuseIdentifier: String {
-        return cellType().identifier
+        cellType().identifier
     }
     
     /// Each model maps to a specific Cell.Type.
@@ -86,7 +86,7 @@ extension ExchangeCellModel {
     }
     
     func heightForProposed(width: CGFloat) -> CGFloat {
-        return cellType().heightForProposedWidth(
+        cellType().heightForProposedWidth(
             width,
             model: self
         )

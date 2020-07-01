@@ -31,6 +31,6 @@ extension BalanceDetailsResponse: Decodable {
 
 extension BalanceDetailsResponse {
     var cryptoValue: CryptoValue {
-        return CryptoValue.createFromMinorValue(BigInt(balance) ?? BigInt(0), assetType: .ethereum)
+        CryptoValue.createFromMinorValue(BigInt(balance) ?? BigInt(0), assetType: .ethereum)
     }
 }

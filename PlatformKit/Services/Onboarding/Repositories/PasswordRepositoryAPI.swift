@@ -31,7 +31,7 @@ public protocol PasswordRepositoryAPI: class {
 
 public extension PasswordRepositoryAPI {
     var hasPassword: Single<Bool> {
-        return password
+        password
             .map { password in
                 guard let password = password else { return false }
                 return !password.isEmpty

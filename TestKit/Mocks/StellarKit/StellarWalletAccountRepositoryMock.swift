@@ -7,18 +7,18 @@
 //
 
 import Foundation
-import RxSwift
 import PlatformKit
+import RxSwift
 import StellarKit
 
 class StellarWalletAccountRepositoryMock: StellarWalletAccountRepositoryAPI {
     func initializeMetadataMaybe() -> Maybe<StellarWalletAccount> {
-        return Maybe.empty()
+        Maybe.empty()
     }
 
     var defaultAccount: StellarWalletAccount?
 
     func loadKeyPair() -> Maybe<StellarKeyPair> {
-        return Maybe.empty()
+        Maybe.empty()
     }
 }

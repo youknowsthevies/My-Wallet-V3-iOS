@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
 import PlatformKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 // TODO: - Ether: Write logic that checks if the destination address is a contract address
 // [WalletManager.sharedInstance.wallet isEtherContractAddress:address completion:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -21,12 +21,12 @@ final class SendDestinationAccountInteractor: SendDestinationAccountInteracting 
     
     /// Streams the state of the destination account
     var accountState: Observable<SendDestinationAccountState> {
-        return accountRelay.asObservable()
+        accountRelay.asObservable()
     }
     
     /// Streams boolean value on whether the source account is connected to the Exchange and has a valid Exchange address
     var hasExchangeAccount: Observable<Bool> {
-        return Observable
+        Observable
             .combineLatest(exchangeAccountRelay, isTwoFAConfigurationRequired)
             .map { $0.0.isValid || $0.1 }
             .distinctUntilChanged()
@@ -36,7 +36,7 @@ final class SendDestinationAccountInteractor: SendDestinationAccountInteracting 
     /// Streams boolean value indicating whether 2-fa configuration required.
     /// used upon tapping the Exchange address button.
     var isTwoFAConfigurationRequired: Observable<Bool> {
-        return twoFAConfigurationRequiredRelay.asObservable()
+        twoFAConfigurationRequiredRelay.asObservable()
     }
         
     /// A relay for Exchange address selection
@@ -83,10 +83,10 @@ final class SendDestinationAccountInteractor: SendDestinationAccountInteracting 
         Observable
             .combineLatest(exchangeSelectedRelay.asObservable(), exchangeAccountRelay.asObservable())
             .filter { (isSelected, accountState) -> Bool in
-                return isSelected
+                isSelected
             }
             .map { (_, accountState) -> String? in
-                return accountState.addressValue
+                accountState.addressValue
             }
             .compactMap { $0 }
             .bind { [weak self] address in

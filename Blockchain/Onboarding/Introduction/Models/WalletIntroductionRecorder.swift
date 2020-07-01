@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformKit
+import ToolKit
 
 /// A class that records actions taken by the user when interacting with a `WalletIntroductionEvent`.
 /// We record the interaction so that it wouldn't be shown after the user interacts with the event.
@@ -20,7 +20,7 @@ final class WalletIntroductionRecorder {
     
     /// Key subscript for an entry
     subscript(key: String) -> Entry {
-        return Entry(recorder: self, key: key)
+        Entry(recorder: self, key: key)
     }
     
     // MARK: - Setup
@@ -44,7 +44,7 @@ extension WalletIntroductionRecorder {
         /// Keep in cache whether the `WalletIntroductionEvent` was interacted with.
         private(set) var value: WalletIntroductionLocation? {
             get {
-                return recorder.cache.object(forKey: key) as? WalletIntroductionLocation
+                recorder.cache.object(forKey: key) as? WalletIntroductionLocation
             }
             set {
                 if let newValue = newValue {
@@ -83,7 +83,7 @@ extension WalletIntroductionRecorder {
         
         static func == (lhs: WalletIntroductionRecorder.Entry,
                         rhs: WalletIntroductionRecorder.Entry) -> Bool {
-            return lhs.key == rhs.key
+            lhs.key == rhs.key
         }
     }
 }

@@ -23,6 +23,6 @@ enum SendSourceAccountState {
     
     /// Is the value of self `true`
     var isCalculating: Bool {
-        return self == .calculating
+        self == .calculating
     }
 }

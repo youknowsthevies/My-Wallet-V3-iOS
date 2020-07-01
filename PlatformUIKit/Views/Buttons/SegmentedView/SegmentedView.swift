@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
 import RxCocoa
-import RxSwift
 import RxRelay
+import RxSwift
+import UIKit
 
 /// The standard wallet `UISegmentedControl` containerView.
 /// - see also: [SegmentedViewModel](x-source-tag://SegmentedViewModel).

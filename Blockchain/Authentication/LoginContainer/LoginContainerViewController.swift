@@ -144,7 +144,7 @@ extension LoginContainerViewController: UICollectionViewDelegate, UICollectionVi
     
     func collectionView(_ collectionView: UICollectionView,
                         numberOfItemsInSection section: Int) -> Int {
-        return inputs.count
+        inputs.count
     }
     
     func collectionView(_ collectionView: UICollectionView,

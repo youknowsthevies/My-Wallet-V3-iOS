@@ -45,7 +45,7 @@ class KYCCTAHeaderView: KYCTiersHeaderView {
     @IBOutlet var stackViewToDismissalButtonConstraint: NSLayoutConstraint!
     
     fileprivate var CTAs: [UIButton] {
-        return [learnMoreButton, contactSupportButton]
+        [learnMoreButton, contactSupportButton]
     }
     
     // MARK: Public Class Functions

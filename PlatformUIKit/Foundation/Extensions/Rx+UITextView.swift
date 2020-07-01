@@ -7,13 +7,13 @@
 //
 
 import Foundation
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
 
 extension Reactive where Base: UITextView {
     public var attributedText: Binder<NSAttributedString> {
-        return Binder(base) { textView, attributedText in
+        Binder(base) { textView, attributedText in
             textView.attributedText = attributedText
         }
     }

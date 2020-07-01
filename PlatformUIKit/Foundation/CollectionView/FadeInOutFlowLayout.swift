@@ -16,7 +16,7 @@ public class FadeInOutFlowLayout: UICollectionViewFlowLayout {
     }
     
     public override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
-        return true
+        true
     }
     
     private func animateAttributes(_ attributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {

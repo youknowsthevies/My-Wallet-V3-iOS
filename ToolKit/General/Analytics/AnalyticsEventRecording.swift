@@ -14,7 +14,7 @@ public protocol AnalyticsEvent {
 }
 
 extension AnalyticsEvent {
-    public var params: [String: String]? { return nil }
+    public var params: [String: String]? { nil }
 }
 
 public protocol AnalyticsEventRelayRecording {

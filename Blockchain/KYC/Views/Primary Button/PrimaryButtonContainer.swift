@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
+import UIKit
 
 @IBDesignable
 class PrimaryButtonContainer: NibBasedView {
@@ -155,7 +155,7 @@ public class PrimaryButton: UIButton {
 
 extension Reactive where Base: PrimaryButtonContainer {
     var isEnabled: Binder<Bool> {
-        return Binder(base) { container, isEnabled in
+        Binder(base) { container, isEnabled in
             container.isEnabled = isEnabled
         }
     }
@@ -163,6 +163,6 @@ extension Reactive where Base: PrimaryButtonContainer {
 
 extension Reactive where Base: PrimaryButtonContainer {
     var tap: ControlEvent<Void> {
-        return base.primaryButton.rx.tap
+        base.primaryButton.rx.tap
     }
 }

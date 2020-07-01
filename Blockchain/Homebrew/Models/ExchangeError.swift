@@ -139,7 +139,7 @@ extension ExchangeError {
             return cryptoValue.currencyType.errorImage
         case .insufficientFunds(let cryptoValue):
             return cryptoValue.currencyType.errorImage
-        case .insufficientGasForERC20Tx(_):
+        case .insufficientGasForERC20Tx:
             return #imageLiteral(resourceName: "eth_bad.pdf")
         case .default,
              .noVolumeProvided:

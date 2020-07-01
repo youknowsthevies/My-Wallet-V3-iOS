@@ -6,14 +6,14 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
+import BigInt
+@testable import ERC20Kit
+@testable import EthereumKit
+@testable import PlatformKit
 import RxSwift
 import RxTest
-import BigInt
 import web3swift
-@testable import PlatformKit
-@testable import EthereumKit
-@testable import ERC20Kit
+import XCTest
 
 enum ERC20ServiceMockError: Error {
     case mockError

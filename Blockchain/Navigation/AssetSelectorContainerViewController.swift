@@ -33,8 +33,8 @@ class AssetSelectorContainerViewController: UIViewController {
     
     // MARK: Private IBOutlets
     
-    @IBOutlet var assetSelector: AssetSelectorView!
-    @IBOutlet var containerView: UIView!
+    @IBOutlet private var assetSelector: AssetSelectorView!
+    @IBOutlet private var containerView: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()

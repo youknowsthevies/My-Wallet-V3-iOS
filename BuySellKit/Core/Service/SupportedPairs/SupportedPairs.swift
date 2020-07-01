@@ -20,7 +20,7 @@ public struct SupportedPairs {
         
         /// The fiat currency type
         public var fiatCurrency: FiatCurrency {
-            minFiatValue.currency
+            minFiatValue.currencyType
         }
         
         /// The minimum fiat value to buy
@@ -35,34 +35,34 @@ public struct SupportedPairs {
     
     /// Returns all supported unique alphabetically sorted crypto-currencies,
     public var cryptoCurrencies: [CryptoCurrency] {
-        return Array(cryptoCurrencySet).sorted { $0.name < $1.name }
+        Array(cryptoCurrencySet).sorted { $0.name < $1.name }
     }
     
     var fiatCurrencySet: Set<FiatCurrency> {
-        return Set(pairs.map { $0.minFiatValue.currency })
+        Set(pairs.map { $0.minFiatValue.currencyType })
     }
     
     var cryptoCurrencySet: Set<CryptoCurrency> {
-        return Set(pairs.map { $0.cryptoCurrency })
+        Set(pairs.map { $0.cryptoCurrency })
     }
     
     // MARK: - Methods
     
     /// Returns all pairs that include the given crypto-currency
     public func pairs(per cryptoCurrency: CryptoCurrency) -> [Pair] {
-        return pairs.filter { $0.cryptoCurrency == cryptoCurrency }
+        pairs.filter { $0.cryptoCurrency == cryptoCurrency }
     }
         
     func contains(fiatCurrency: FiatCurrency) -> Bool {
-        return fiatCurrencySet.contains(fiatCurrency)
+        fiatCurrencySet.contains(fiatCurrency)
     }
     
     func contains(oneOf currencies: [FiatCurrency]) -> Bool {
-        return !fiatCurrencySet.isDisjoint(with: currencies)
+        !fiatCurrencySet.isDisjoint(with: currencies)
     }
     
     func contains(oneOf currencies: FiatCurrency...) -> Bool {
-        return contains(oneOf: currencies)
+        contains(oneOf: currencies)
     }
 }
 
@@ -75,7 +75,7 @@ extension SupportedPairs {
         case .all:
             self.pairs = pairs
         case .only(fiatCurrency: let currency):
-            self.pairs = pairs.filter { $0.maxFiatValue.currency == currency }
+            self.pairs = pairs.filter { $0.maxFiatValue.currencyType == currency }
         }
     }
 }
