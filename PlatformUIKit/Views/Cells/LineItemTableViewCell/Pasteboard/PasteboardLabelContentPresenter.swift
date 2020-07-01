@@ -39,7 +39,7 @@ public final class PasteboardLabelContentPresenter: LabelContentPresenting {
         Observable
             .combineLatest(interactor.state, descriptorObservable)
             .map { .init(with: $0.0, descriptors: $0.1) }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

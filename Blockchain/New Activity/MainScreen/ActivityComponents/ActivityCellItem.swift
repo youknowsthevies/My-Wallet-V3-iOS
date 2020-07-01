@@ -10,15 +10,13 @@ import PlatformUIKit
 import RxDataSources
 
 enum ActivityCellItem: IdentifiableType {
-    
-    typealias Identity = String
-    
-    var identity: String {
+
+    var identity: AnyHashable {
         switch self {
         case .skeleton(let index):
-            return "\(index)"
+            return index
         case .selection(let viewModel):
-            return viewModel.titleRelay.value + (viewModel.subtitleRelay.value ?? "")
+            return viewModel.identity
         case .activity(let presenter):
             return presenter.identity
         }

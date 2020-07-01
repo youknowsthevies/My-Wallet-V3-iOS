@@ -143,11 +143,11 @@ final class SettingsScreenPresenter {
         // Bind notices
         cardsSectionPresenter
             .presenters
-            .bind(to: linkedCardsRelay)
+            .bindAndCatch(to: linkedCardsRelay)
             .disposed(by: disposeBag)
         
         actionRelay
-            .bind(to: router.actionRelay)
+            .bindAndCatch(to: router.actionRelay)
             .disposed(by: disposeBag)
     }
     

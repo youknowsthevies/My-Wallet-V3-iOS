@@ -58,7 +58,7 @@ final class AddCardBadgePresenter: BadgeImageAssetPresenting {
             .map { $0.0.count < CardData.maxCardCount && $0.1 && $0.2 }
             .map { $0 ? .card : .info }
             .map { .loaded(next: $0) }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

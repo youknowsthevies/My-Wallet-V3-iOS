@@ -11,17 +11,15 @@ import PlatformKit
 import RxDataSources
 import ToolKit
 
-public final class ActivityItemViewModel: IdentifiableType {
+public final class ActivityItemViewModel: IdentifiableType, Hashable {
     
     typealias AccessibilityId = Accessibility.Identifier.Activity
     typealias LocalizationStrings = LocalizationConstants.Activity.MainScreen.Item
     
     public typealias Descriptors = DashboardAsset.Value.Presentation.AssetBalance.Descriptors
-    
-    public typealias Identity = String
-    
-    public var identity: String {
-        event.identifier
+
+    public var identity: AnyHashable {
+        event
     }
     
     public var descriptors: Descriptors {
@@ -144,12 +142,16 @@ public final class ActivityItemViewModel: IdentifiableType {
             }
         }
     }
-    
     public let event: ActivityItemEvent
     
     public init(event: ActivityItemEvent) {
         self.event = event
     }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(event)
+    }
+
 }
 
 extension ActivityItemViewModel: Equatable {

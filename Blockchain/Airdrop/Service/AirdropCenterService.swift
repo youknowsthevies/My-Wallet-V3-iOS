@@ -60,7 +60,7 @@ final class AirdropCenterService: AirdropCenterServiceAPI {
             }
             .map { .value($0) }
             .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
-            .bind(to: campaignsCalculationStateRelay)
+            .bindAndCatch(to: campaignsCalculationStateRelay)
             .disposed(by: disposeBag)
     }
     

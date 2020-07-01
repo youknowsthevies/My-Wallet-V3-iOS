@@ -78,40 +78,40 @@ final class UpdateEmailScreenPresenter {
         resendButtonViewModel = .secondary(with: LocalizationIDs.resend, accessibilityId: AccessibilityIDs.resendEmailButton)
         
         resendButtonViewModel.tapRelay
-            .bind(to: interactor.resendRelay)
+            .bindAndCatch(to: interactor.resendRelay)
             .disposed(by: disposeBag)
         
         updateButtonViewModel.tapRelay
-            .bind(to: interactor.triggerRelay)
+            .bindAndCatch(to: interactor.triggerRelay)
             .disposed(by: disposeBag)
         
         textField.state
             .map { $0.isValid }
-            .bind(to: updateButtonViewModel.isEnabledRelay)
+            .bindAndCatch(to: updateButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
         textField.state
             .compactMap { $0.value }
-            .bind(to: interactor.contentRelay)
+            .bindAndCatch(to: interactor.contentRelay)
             .disposed(by: disposeBag)
         
         interactor.interactionState
             .compactMap { $0.value }
             .map { $0.values.isEmailVerified }
             .map { $0 ? .hidden : .visible }
-            .bind(to: resendVisibilityRelay)
+            .bindAndCatch(to: resendVisibilityRelay)
             .disposed(by: disposeBag)
         
         interactor.interactionState
             .filter { $0.value?.state != .updating }
             .compactMap { $0.value }
             .map { $0.values.email }
-            .bind(to: textField.textRelay)
+            .bindAndCatch(to: textField.textRelay)
             .disposed(by: disposeBag)
         
         interactor.interactionState
             .map { $0.isLoading }
-            .bind(to: updateButtonViewModel.isEnabledRelay)
+            .bindAndCatch(to: updateButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
          let interactionStateValue = interactor.interactionState
@@ -125,18 +125,18 @@ final class UpdateEmailScreenPresenter {
                 let currentEntry = value.1.value
                 return (interactionState == .waiting || interactionState == .ready) && (validEntry && currentEntry == settingsValue)
             }
-            .bind(to: resendButtonViewModel.isEnabledRelay)
+            .bindAndCatch(to: resendButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
         interactor.interactionState
             .compactMap { $0.value }
             .map { $0.state != .updating }
-            .bind(to: updateButtonViewModel.isEnabledRelay)
+            .bindAndCatch(to: updateButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
         interactor.interactionState
             .map { .init(with: $0) }
-            .bind(to: badgeRelay)
+            .bindAndCatch(to: badgeRelay)
             .disposed(by: disposeBag)
         
         interactor.interactionState

@@ -105,7 +105,7 @@ public final class DigitPadViewModel {
         // Bind taps on the bottom left view to an action
         customButtonViewModel.tapObservable
             .map { _ in Void() }
-            .bind(to: customButtonTapRelay)
+            .bindAndCatch(to: customButtonTapRelay)
             .disposed(by: disposeBag)
 
         // Merge all digit observables into one stream of digits

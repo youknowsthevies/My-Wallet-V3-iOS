@@ -23,12 +23,12 @@ final class AddCardTableViewCell: UITableViewCell {
             guard let presenter = presenter else { return }
             presenter.badgeImagePresenter.state
                 .compactMap { $0 }
-                .bind(to: rx.viewModel)
+                .bindAndCatch(to: rx.viewModel)
                 .disposed(by: disposeBag)
             
             presenter.labelContentPresenter.state
                 .compactMap { $0 }
-                .bind(to: rx.content)
+                .bindAndCatch(to: rx.content)
                 .disposed(by: disposeBag)
             
             presenter.addIconImageVisibility

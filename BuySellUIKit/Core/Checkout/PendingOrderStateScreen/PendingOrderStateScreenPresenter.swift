@@ -81,7 +81,7 @@ final class PendingOrderStateScreenPresenter: PendingStatePresenterAPI {
     private func showError() {
         let button = ButtonViewModel.primary(with: LocalizedString.button)
         button.tapRelay
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.stateService.orderCompleted()
             }
             .disposed(by: disposeBag)
@@ -100,7 +100,7 @@ final class PendingOrderStateScreenPresenter: PendingStatePresenterAPI {
     private func handleTimeout(order: OrderDetails) {
         let button = ButtonViewModel.primary(with: LocalizedString.button)
         button.tapRelay
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.stateService.orderPending(with: order)
             }
             .disposed(by: disposeBag)
@@ -119,7 +119,7 @@ final class PendingOrderStateScreenPresenter: PendingStatePresenterAPI {
     private func handleSuccess() {
         let button = ButtonViewModel.primary(with: LocalizedString.button)
         button.tapRelay
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.stateService.orderCompleted()
             }
             .disposed(by: disposeBag)

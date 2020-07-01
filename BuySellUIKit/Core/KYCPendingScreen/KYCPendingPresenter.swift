@@ -51,19 +51,19 @@ final class KYCPendingPresenter: PendingStatePresenterAPI {
             .map(weak: self) { (self, state) in
                 self.model(verificationState: state)
             }
-            .bind(to: modelRelay)
+            .bindAndCatch(to: modelRelay)
             .disposed(by: disposeBag)
         
         interactor.verificationState
             .map { $0.analyticsEvent }
-            .bind(to: analyticsRecorder.recordRelay)
+            .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
 
         interactor
             .verificationState
             .filter { $0 == .completed }
             .mapToVoid()
-            .bind(to: stateService.nextRelay)
+            .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: disposeBag)
 
         interactor.startPollingForGoldTier()
@@ -73,7 +73,7 @@ final class KYCPendingPresenter: PendingStatePresenterAPI {
         func actionButton(title: String) -> ButtonViewModel {
             let button = ButtonViewModel.primary(with: title)
             button.tapRelay
-                .bind(to: stateService.previousRelay)
+                .bindAndCatch(to: stateService.previousRelay)
                 .disposed(by: disposeBag)
             return button
         }

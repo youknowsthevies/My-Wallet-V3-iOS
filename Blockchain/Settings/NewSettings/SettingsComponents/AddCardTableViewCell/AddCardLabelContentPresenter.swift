@@ -43,7 +43,7 @@ final class AddCardLabelContentPresenter: LabelContentPresenting {
                 interactor.descriptorObservable
             )
             .map { PresentationState(with: $0.0, descriptors: $0.1) }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

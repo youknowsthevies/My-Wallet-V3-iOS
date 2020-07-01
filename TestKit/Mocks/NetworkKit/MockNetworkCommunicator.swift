@@ -37,6 +37,10 @@ class MockNetworkCommunicator: NetworkCommunicatorAPI {
     func perform<ResponseType>(request: NetworkRequest) -> Single<ResponseType> where ResponseType : Decodable {
         decode()
     }
+    
+    func performOptional<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType?> {
+        decode()
+    }
 
     private func decode<ResponseType: Decodable>() -> Single<ResponseType> {
         guard

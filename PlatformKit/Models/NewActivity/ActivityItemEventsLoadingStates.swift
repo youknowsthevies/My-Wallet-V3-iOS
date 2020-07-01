@@ -34,7 +34,9 @@ public struct ActivityItemEventsLoadingStates {
         guard !isLoading else {
             return .loading
         }
-        let values = all.compactMap { $0.value }.flatMap { $0 }
+        let values: [ActivityItemEvent] = all.compactMap { $0.value }
+            .flatMap { $0 }
+            .unique
         return .loaded(next: values)
     }
     

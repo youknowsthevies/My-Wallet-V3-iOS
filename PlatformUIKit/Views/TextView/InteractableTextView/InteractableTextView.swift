@@ -53,7 +53,7 @@ public final class InteractableTextView: UITextView {
                     mutableString.add(alignment: viewModel.alignment)
                     return mutableString
                 }
-                .bind(to: rx.attributedText)
+                .bindAndCatch(to: rx.attributedText)
                 .disposed(by: disposeBag)
         }
     }

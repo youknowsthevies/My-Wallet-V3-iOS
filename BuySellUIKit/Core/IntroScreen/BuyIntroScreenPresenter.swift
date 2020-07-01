@@ -70,21 +70,21 @@ final class BuyIntroScreenPresenter {
         )
          
         continueButtonViewModel.tapRelay
-            .bind(to: stateService.nextRelay)
+            .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: disposeBag)
         
         continueButtonViewModel.tapRelay
             .map { AnalyticsEvent.sbWantToBuyButtonClicked }
-            .bind(to: recordingProvider.analytics.recordRelay)
+            .bindAndCatch(to: recordingProvider.analytics.recordRelay)
             .disposed(by: disposeBag)
         
         skipButtonViewModel.tapRelay
-            .bind(to: stateService.previousRelay)
+            .bindAndCatch(to: stateService.previousRelay)
             .disposed(by: disposeBag)
         
         skipButtonViewModel.tapRelay
             .map { AnalyticsEvent.sbWantToBuyButtonSkip }
-            .bind(to: recordingProvider.analytics.recordRelay)
+            .bindAndCatch(to: recordingProvider.analytics.recordRelay)
             .disposed(by: disposeBag)
         
         recordingProvider.analytics.record(event: AnalyticsEvent.sbWantToBuyScreenShown)

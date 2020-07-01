@@ -93,12 +93,12 @@ final class RecoverFundsScreenPresenter {
         .catchErrorJustReturn(.invalid(.invalidMnemonic))
         
         stateObservable
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
         
         stateObservable
             .map { $0.isValid }
-            .bind(to: continueButtonViewModel.isEnabledRelay)
+            .bindAndCatch(to: continueButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
         stateRelay.compactMap { [weak self] state -> String? in
@@ -107,7 +107,7 @@ final class RecoverFundsScreenPresenter {
             self?.feedback.notificationOccurred(.success)
             return values.mneumonic
         }
-        .bind(to: mnemonicEntryRelay)
+        .bindAndCatch(to: mnemonicEntryRelay)
         .disposed(by: disposeBag)
         
         continueButtonViewModel.tapRelay.bind { [unowned self] _ in

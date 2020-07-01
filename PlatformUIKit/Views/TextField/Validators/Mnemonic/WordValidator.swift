@@ -31,7 +31,7 @@ final class WordValidator: TextValidating {
         valueRelay
             .map { $0.lowercased() == word.lowercased() }
             .map { $0 ? .valid : .invalid(reason: nil) }
-            .bind(to: validationStateRelay)
+            .bindAndCatch(to: validationStateRelay)
             .disposed(by: disposeBag)
     }
 }

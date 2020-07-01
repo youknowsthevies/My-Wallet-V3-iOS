@@ -91,7 +91,7 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
     private func setupButtons() {
         dismissButton.isHidden = viewModel.isDismissButtonHidden
         dismissButton.rx.tap
-            .bind(to: viewModel.dismissalRelay)
+            .bindAndCatch(to: viewModel.dismissalRelay)
             .disposed(by: disposeBag)
         
         for buttonViewModel in viewModel.buttons {

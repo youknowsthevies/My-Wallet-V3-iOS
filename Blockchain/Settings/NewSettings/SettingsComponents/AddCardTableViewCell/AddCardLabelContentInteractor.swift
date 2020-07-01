@@ -82,7 +82,7 @@ final class AddCardLabelContentInteractor: LabelContentInteracting {
         data
             .map { $0.isCardCountBelowLimit && $0.isKYCVerified && $0.isFeatureEnabled }
             .map { $0 ? .settings : .disclaimer(accessibilityId: AccessibilityID.AddCardCell.disclaimer) }
-            .bind(to: descriptorRelay)
+            .bindAndCatch(to: descriptorRelay)
             .disposed(by: disposeBag)
             
         data
@@ -93,7 +93,7 @@ final class AddCardLabelContentInteractor: LabelContentInteracting {
                 return LocalizationString.addACard
             }
             .map { .loaded(next: .init(text: $0)) }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

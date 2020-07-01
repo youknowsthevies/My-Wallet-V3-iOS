@@ -61,13 +61,13 @@ public final class SelectionScreenInteractor {
             .share(replay: 1)
 
         interactors
-            .bind(to: interactorsRelay)
+            .bindAndCatch(to: interactorsRelay)
             .disposed(by: disposeBag)
     }
     
     func recordSelection() {
         service.selectedDataRelay
-            .bind(to: selectionOnDismissalRelay)
+            .bindAndCatch(to: selectionOnDismissalRelay)
             .disposed(by: disposeBag)
     }
 }

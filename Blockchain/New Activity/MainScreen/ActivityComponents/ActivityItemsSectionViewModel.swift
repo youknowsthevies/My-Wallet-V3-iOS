@@ -12,13 +12,15 @@ import ToolKit
 
 struct ActivityItemsSectionViewModel {
     var items: [ActivityCellItem]
-    var identity: String {
-        items.map { $0.identity }.joined()
+    
+    var identity: AnyHashable {
+        // There's only ever one `ActivityItemsSectionViewModel` section
+        // so it must be a static string for an identifier.
+        "ActivityItemsSectionViewModel"
     }
 }
 
 extension ActivityItemsSectionViewModel: AnimatableSectionModelType {
-    typealias Identity = String
     typealias Item = ActivityCellItem
     
     init(original: ActivityItemsSectionViewModel, items: [ActivityCellItem]) {

@@ -44,7 +44,7 @@ final class WalletPickerScreenPresenter {
             .map { items -> [WalletPickerCellItem] in
                 items.map { .init(cellInteractor: $0) }
             }
-            .bind(to: sectionRelay)
+            .bindAndCatch(to: sectionRelay)
             .disposed(by: disposeBag)
     }
     

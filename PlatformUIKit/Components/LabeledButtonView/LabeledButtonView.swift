@@ -24,7 +24,7 @@ public final class LabeledButtonView<ViewModel: LabeledButtonViewModelAPI>: UIVi
             guard let viewModel = viewModel else { return }
 
             button.rx.tap
-                .bind(to: viewModel.tapRelay)
+                .bindAndCatch(to: viewModel.tapRelay)
                 .disposed(by: disposeBag)
 
             viewModel.content

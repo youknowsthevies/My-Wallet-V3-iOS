@@ -37,8 +37,8 @@ final class ActivityItemEventService: ActivityItemEventServiceAPI {
     }
     
     var activityLoadingStateObservable: Observable<ActivityItemEventsLoadingState> {
-        activityLoadingStateRelay
-            .asObservable()
+        _ = setup
+        return activityLoadingStateRelay.asObservable()
     }
     
     let transactional: TransactionalActivityItemEventServiceAPI
@@ -50,6 +50,21 @@ final class ActivityItemEventService: ActivityItemEventServiceAPI {
     private let activityLoadingStateRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
     private let disposeBag = DisposeBag()
     
+    private lazy var setup: Void = {
+        Observable
+            .combineLatest(
+                transactional.state,
+                buy.state,
+                swap.state
+            )
+            .map(weak: self) { (self, values) -> ActivityItemEventsLoadingState in
+                [values.0, values.1, values.2].reduce()
+            }
+            .catchErrorJustReturn(.loaded(next: []))
+            .bindAndCatch(to: activityLoadingStateRelay)
+            .disposed(by: disposeBag)
+    }()
+    
     // MARK: - Setup
     
     init(transactional: TransactionalActivityItemEventServiceAPI,
@@ -58,18 +73,6 @@ final class ActivityItemEventService: ActivityItemEventServiceAPI {
         self.transactional = transactional
         self.buy = buy
         self.swap = swap
-        
-        Observable.combineLatest(
-                transactional.state,
-                buy.state,
-                swap.state
-            )
-            .map(weak: self) { (self, values) -> ActivityItemEventsLoadingState in
-                [values.0, values.1, values.2].reduce()
-            }
-            .catchErrorJustReturn(.loading)
-            .bind(to: activityLoadingStateRelay)
-            .disposed(by: disposeBag)
     }
     
     func refresh() {

@@ -35,7 +35,7 @@ final class AirdropStatusScreenInteractor {
          campaignName: AirdropCampaigns.Campaign.Name) {
         self.service = service
         service.fetchCampaignCalculationState(campaignName: campaignName, useCache: true)
-            .bind(to: calculationStateRelay)
+            .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
     }
 }

@@ -127,20 +127,20 @@ public struct MnemonicTextViewViewModel {
         self.validator = validator
         
         text
-            .bind(to: validator.valueRelay)
+            .bindAndCatch(to: validator.valueRelay)
             .disposed(by: disposeBag)
         
         Observable.zip(validator.valueRelay, validator.score)
             .map { (value, score) -> State in
                 State(input: value, score: score)
         }
-        .bind(to: stateRelay)
+        .bindAndCatch(to: stateRelay)
         .disposed(by: disposeBag)
         
         validator.score.map {
             $0.tintColor
         }
-        .bind(to: borderColorRelay)
+        .bindAndCatch(to: borderColorRelay)
         .disposed(by: disposeBag)
         
         stateRelay.map { state -> NSAttributedString in
@@ -155,7 +155,7 @@ public struct MnemonicTextViewViewModel {
                 return value
             }
         }
-        .bind(to: attributedTextRelay)
+        .bindAndCatch(to: attributedTextRelay)
         .disposed(by: disposeBag)
     }
     

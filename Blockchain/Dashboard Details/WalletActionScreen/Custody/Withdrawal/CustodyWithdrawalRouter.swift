@@ -46,7 +46,7 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI, Router {
         self.stateService = CustodyWithdrawalStateService()
         
         stateService.action
-            .bind(weak: self) { (self, action) in
+            .bindAndCatch(weak: self) { (self, action) in
                 switch action {
                 case .previous:
                     self.previous()

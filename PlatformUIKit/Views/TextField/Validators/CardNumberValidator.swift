@@ -46,7 +46,7 @@ public final class CardNumberValidator: TextValidating, CardTypeSource {
         
         valueRelay
             .map { .determineType(from: $0) }
-            .bind(to: cardTypeRelay)
+            .bindAndCatch(to: cardTypeRelay)
             .disposed(by: disposeBag)
 
         let inputData = Observable
@@ -77,7 +77,7 @@ public final class CardNumberValidator: TextValidating, CardTypeSource {
                 
                 return .valid
              }
-            .bind(to: validationStateRelay)
+            .bindAndCatch(to: validationStateRelay)
             .disposed(by: disposeBag)
     }
     

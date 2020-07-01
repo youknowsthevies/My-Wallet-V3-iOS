@@ -89,13 +89,13 @@ public final class SelectionScreenPresenter {
             .map { interactors in
                 interactors.map { SelectionItemViewPresenter(interactor: $0) }
             }
-            .bind(to: presentersRelay)
+            .bindAndCatch(to: presentersRelay)
             .disposed(by: disposeBag)
         
         presentersRelay
             .filter { !$0.isEmpty }
             .take(1)
-            .bind(weak: self) { (self, presenters) in
+            .bindAndCatch(weak: self) { (self, presenters) in
                 presenters
                     .enumerated()
                     .forEach { (index, presenter) in
@@ -129,7 +129,7 @@ public final class SelectionScreenPresenter {
                         return presenters.filter { $0.contains(text: text) }
                     }
             }
-            .bind(to: displayPresentersRelay)
+            .bindAndCatch(to: displayPresentersRelay)
             .disposed(by: disposeBag)
     }
     
@@ -160,7 +160,7 @@ public final class SelectionScreenPresenter {
             .disposed(by: disposeBag)
         
         selectedIndex
-            .bind(to: selectionRelay)
+            .bindAndCatch(to: selectionRelay)
             .disposed(by: disposeBag)
     }
 

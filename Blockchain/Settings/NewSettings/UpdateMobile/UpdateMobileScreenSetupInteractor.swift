@@ -46,7 +46,7 @@ final class UpdateMobileScreenSetupInteractor {
     init(service: SettingsServiceAPI) {
         self.serviceAPI = service
         setupTrigger
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.setup()
             }
             .disposed(by: disposeBag)
@@ -65,8 +65,9 @@ final class UpdateMobileScreenSetupInteractor {
                 )
             }
             .map { .loaded(next: $0) }
+            .catchErrorJustReturn(.loading)
             .startWith(.loading)
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

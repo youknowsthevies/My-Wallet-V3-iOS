@@ -134,7 +134,7 @@ final class SendDestinationAccountTableViewCell: UITableViewCell {
             .disposed(by: exchangeButtonDisposeBag)
         
         exchangeButton.rx.tap
-            .bind(to: presenter.exchangeButtonTapRelay)
+            .bindAndCatch(to: presenter.exchangeButtonTapRelay)
             .disposed(by: exchangeButtonDisposeBag)
     }
     

@@ -76,11 +76,11 @@ final class ChangePasswordScreenInteractor {
             
         passwordRepository.password.asObservable()
             .compactMap { $0 }
-            .bind(to: currentPasswordRelay)
+            .bindAndCatch(to: currentPasswordRelay)
             .disposed(by: disposeBag)
         
         triggerRelay
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.changePassword()
             }
             .disposed(by: disposeBag)

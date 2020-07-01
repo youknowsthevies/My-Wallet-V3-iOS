@@ -79,11 +79,11 @@ final class WalletPickerScreenViewController: BaseScreenViewController {
         })
         
         presenter.sectionObservable
-            .bind(to: tableView.rx.items(dataSource: dataSource))
+            .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
         
         tableView.rx.modelSelected(WalletPickerCellItem.self)
-            .bind(weak: self) { (self, model) in
+            .bindAndCatch(weak: self) { (self, model) in
                 switch model {
                 case .total:
                     self.presenter.record(selection: .all)

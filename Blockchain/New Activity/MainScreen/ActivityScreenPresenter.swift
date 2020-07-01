@@ -65,30 +65,23 @@ final class ActivityScreenPresenter {
     
     /// Observable of the `ActivityItemsSectionViewModel` section
     private var activityItemsObservable: Observable<[ActivityItemsSectionViewModel]> {
-        Observable.combineLatest(activityCellItems, skeletonCellItems)
-            .map { $0.0 + $0.1 }
+        interactor
+            .state
+            .map { (state) -> [ActivityCellItem] in
+                switch state {
+                case .calculating:
+                    let items = Array(1...20)
+                    return items.map { .skeleton($0) }
+                case .invalid:
+                    return []
+                case .value(let interactors):
+                    let presenters = interactors
+                        .map { ActivityItemPresenter(interactor: $0) }
+                    return presenters.map { .activity($0) }
+                }
+            }
             .map { ActivityItemsSectionViewModel(items: $0) }
             .map { [$0] }
-    }
-    
-    /// The `[ActivityCellItem]` for only `.activity` types
-    private var activityCellItems: Observable<[ActivityCellItem]> {
-        interactor
-            .state
-            .map { $0.value ?? [] }
-            .map(weak: self) { (self, events) -> [ActivityItemPresenter] in
-                events.map { ActivityItemPresenter(interactor: $0) }
-            }
-            .map { presenters in presenters.map { .activity($0) } }
-    }
-    
-    /// The `[ActivityCellItem]` for only `.skeleton` types.
-    /// Used for the loading state.
-    private var skeletonCellItems: Observable<[ActivityCellItem]> {
-        interactor
-            .state
-            .map { $0.isCalculating ? Array(1...20) : [] }
-            .map { items in items.map { .skeleton($0) } }
     }
 
     let selectedModelRelay: PublishRelay<ActivityCellItem> = .init()
@@ -127,7 +120,7 @@ final class ActivityScreenPresenter {
         interactor
             .selectedData
             .map { SelectionButtonViewModel.LeadingContent.content(from: $0) }
-            .bind(to: selectionButtonViewModel.leadingContentTypeRelay)
+            .bindAndCatch(to: selectionButtonViewModel.leadingContentTypeRelay)
             .disposed(by: disposeBag)
         
         let titleObservable: Observable<String> = interactor
@@ -144,12 +137,12 @@ final class ActivityScreenPresenter {
             }
         
         titleObservable
-            .bind(to: selectionButtonViewModel.titleRelay)
+            .bindAndCatch(to: selectionButtonViewModel.titleRelay)
             .disposed(by: disposeBag)
         
         titleObservable
             .map { value in .id("\(AccessibilityId.WalletSelectorView.titleLabel).\(value)") }
-            .bind(to: selectionButtonViewModel.titleAccessibilityRelay)
+            .bindAndCatch(to: selectionButtonViewModel.titleAccessibilityRelay)
             .disposed(by: disposeBag)
         
         interactor
@@ -170,7 +163,7 @@ final class ActivityScreenPresenter {
                     )
                 }
             }
-            .bind(to: selectionButtonViewModel.trailingImageViewContentRelay)
+            .bindAndCatch(to: selectionButtonViewModel.trailingImageViewContentRelay)
             .disposed(by: disposeBag)
         
         let subtitleObservable: Observable<String> = Observable.combineLatest(
@@ -184,12 +177,12 @@ final class ActivityScreenPresenter {
         }
         
         subtitleObservable
-            .bind(to: selectionButtonViewModel.subtitleRelay)
+            .bindAndCatch(to: selectionButtonViewModel.subtitleRelay)
             .disposed(by: disposeBag)
         
         subtitleObservable
             .map { value in .id("\(AccessibilityId.WalletSelectorView.subtitleLabel).\(value)") }
-            .bind(to: selectionButtonViewModel.subtitleAccessibilityRelay)
+            .bindAndCatch(to: selectionButtonViewModel.subtitleAccessibilityRelay)
             .disposed(by: disposeBag)
 
         selectedModelRelay

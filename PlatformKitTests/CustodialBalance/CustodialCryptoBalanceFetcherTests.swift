@@ -96,13 +96,13 @@ class CustodialCryptoBalanceFetcherTests: XCTestCase {
                 
         scheduler
             .createHotObservable(times.map { .next($0, ()) })
-            .bind(to: sut.balanceFetchTriggerRelay)
+            .bindAndCatch(to: sut.balanceFetchTriggerRelay)
             .disposed(by: disposeBag)
         
         scheduler.start()
         
         sut.isFunded
-            .bind(to: observer)
+            .bindAndCatch(to: observer)
             .disposed(by: disposeBag)
         
         return observer.events
@@ -172,13 +172,13 @@ class CustodialCryptoBalanceFetcherTests: XCTestCase {
 
         scheduler
             .createHotObservable(data.map { .next($0.refresh, ()) })
-            .bind(to: sut.balanceFetchTriggerRelay)
+            .bindAndCatch(to: sut.balanceFetchTriggerRelay)
             .disposed(by: disposeBag)
 
         scheduler.start()
 
         sut.balanceObservable
-            .bind(to: observer)
+            .bindAndCatch(to: observer)
             .disposed(by: disposeBag)
 
         return observer.events

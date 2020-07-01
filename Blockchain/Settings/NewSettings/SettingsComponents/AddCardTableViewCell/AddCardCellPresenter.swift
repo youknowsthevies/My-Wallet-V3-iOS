@@ -108,17 +108,17 @@ final class AddCardCellPresenter: AsyncPresenting {
         
         isAbleToAddCard
             .map { $0 ? .visible : .hidden }
-            .bind(to: imageVisibilityRelay)
+            .bindAndCatch(to: imageVisibilityRelay)
             .disposed(by: disposeBag)
         
         isAbleToAddCard
             .map { $0 ? .showAddCardScreen : .none }
-            .bind(to: actionTypeRelay)
+            .bindAndCatch(to: actionTypeRelay)
             .disposed(by: disposeBag)
         
         badgeImagePresenter.state
             .map { $0.isLoading }
-            .bind(to: isLoadingRelay)
+            .bindAndCatch(to: isLoadingRelay)
             .disposed(by: disposeBag)
     }
 }

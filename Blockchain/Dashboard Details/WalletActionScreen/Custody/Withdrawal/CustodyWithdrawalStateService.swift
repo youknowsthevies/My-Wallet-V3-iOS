@@ -125,17 +125,17 @@ final class CustodyWithdrawalStateService: CustodyWithdrawalStateServiceAPI {
         completionRelay
             .observeOn(MainScheduler.instance)
             .filter { $0 != .unknown }
-            .bind(weak: self) { (self) in self.next() }
+            .bindAndCatch(weak: self) { (self) in self.next() }
             .disposed(by: disposeBag)
         
         nextRelay
             .observeOn(MainScheduler.instance)
-            .bind(weak: self) { (self) in self.next() }
+            .bindAndCatch(weak: self) { (self) in self.next() }
             .disposed(by: disposeBag)
         
         previousRelay
             .observeOn(MainScheduler.instance)
-            .bind(weak: self) { (self) in self.previous() }
+            .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
     }
     

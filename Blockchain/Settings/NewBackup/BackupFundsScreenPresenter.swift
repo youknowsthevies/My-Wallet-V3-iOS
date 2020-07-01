@@ -117,7 +117,7 @@ final class BackupFundsScreenPresenter {
         }
         
         self.startBackupButton.tapRelay
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 if entry == .custody {
                     self.analyticsRecorder.record(event: AnalyticsEvent.sbBackupWalletCardClicked)
                 }

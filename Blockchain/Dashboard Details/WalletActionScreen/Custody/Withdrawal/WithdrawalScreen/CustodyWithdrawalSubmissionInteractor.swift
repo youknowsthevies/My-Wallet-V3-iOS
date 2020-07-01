@@ -45,7 +45,7 @@ final class CustodyWithdrawalSubmissionInteractor {
             })
             .catchErrorJustReturn(.failed)
             .startWith(.calculating)
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

@@ -64,7 +64,7 @@ final class SendSpendableBalanceInteractor: SendSpendableBalanceInteracting {
             }
             .map { .value($0) }
             .startWith(.calculating)
-            .bind(to: calculationStateRelay)
+            .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
     }
 }

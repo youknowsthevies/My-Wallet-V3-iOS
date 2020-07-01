@@ -113,12 +113,12 @@ final class BackupRouterStateService: BackupRouterStateServiceAPI {
         self.entry = entry
         nextRelay
             .observeOn(MainScheduler.instance)
-            .bind(weak: self) { (self) in self.next() }
+            .bindAndCatch(weak: self) { (self) in self.next() }
             .disposed(by: disposeBag)
         
         previousRelay
             .observeOn(MainScheduler.instance)
-            .bind(weak: self) { (self) in self.previous() }
+            .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
     }
     

@@ -51,7 +51,7 @@ final class SendSpendableBalanceViewPresenter {
         
         tapRelay
             .map { AnalyticsEvents.Send.sendFormUseBalanceClick(asset: asset) }
-            .bind(to: analyticsRecorder.recordRelay)
+            .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
         
         spendableBalanceTap = tapRelay.withLatestFrom(interactor.balance)
@@ -88,7 +88,7 @@ final class SendSpendableBalanceViewPresenter {
                 text.append(suffix)
                 return text
             }
-            .bind(to: attributesStringRelay)
+            .bindAndCatch(to: attributesStringRelay)
             .disposed(by: disposeBag)
     }
 }

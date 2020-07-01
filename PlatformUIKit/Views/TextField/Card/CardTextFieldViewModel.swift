@@ -66,7 +66,7 @@ public final class CardTextFieldViewModel: TextFieldViewModel {
                     return .empty
                 }
             }
-            .bind(to: accessoryContentTypeRelay)
+            .bindAndCatch(to: accessoryContentTypeRelay)
             .disposed(by: disposeBag)
     }
 }

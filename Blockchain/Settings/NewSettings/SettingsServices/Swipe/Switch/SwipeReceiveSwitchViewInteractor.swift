@@ -29,14 +29,14 @@ class SwipeReceiveSwitchViewInteractor: SwitchViewInteracting {
         
         Observable.just(appSettings.swipeToReceiveEnabled)
             .map { .loaded(next: .init(isOn: $0, isEnabled: true)) }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
         
         switchTriggerRelay.do(onNext: { value in
             appSettings.swipeToReceiveEnabled = value
         })
         .map { .loaded(next: .init(isOn: $0, isEnabled: true)) }
-        .bind(to: stateRelay)
+        .bindAndCatch(to: stateRelay)
         .disposed(by: disposeBag)
     }
 }

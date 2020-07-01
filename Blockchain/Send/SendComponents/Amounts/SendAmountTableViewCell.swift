@@ -45,7 +45,7 @@ final class SendAmountTableViewCell: UITableViewCell {
                 .disposed(by: disposeBag)
 
             maxSpendableBalanceButton.rx.tap
-                .bind(to: spendableBalancePresenter.tapRelay)
+                .bindAndCatch(to: spendableBalancePresenter.tapRelay)
                 .disposed(by: disposeBag)
             
             // Upon tapping max spendable balance - fill fiat field

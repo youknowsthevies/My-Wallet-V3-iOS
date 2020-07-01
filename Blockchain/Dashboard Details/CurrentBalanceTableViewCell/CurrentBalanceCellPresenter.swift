@@ -89,7 +89,7 @@ final class CurrentBalanceCellPresenter {
         }
         
         descriptionValue()
-            .bind(to: descriptionRelay)
+            .bindAndCatch(to: descriptionRelay)
             .disposed(by: disposeBag)
     }
 }

@@ -71,7 +71,7 @@ final class ERC20AssetBalanceFetcher: AccountBalanceFetching {
                     .filter { !$0.isStopEvent }
                     .dematerialize()
             }
-            .bind(to: balanceRelay)
+            .bindAndCatch(to: balanceRelay)
             .disposed(by: disposeBag)
     }
 }

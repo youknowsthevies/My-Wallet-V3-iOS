@@ -25,7 +25,7 @@ public final class LinkView: UIView {
             textView.viewModel = viewModel.textViewModel
             viewModel.textDidChange
                 .observeOn(MainScheduler.instance)
-                .bind(weak: textView) { (textView) in
+                .bindAndCatch(weak: textView) { (textView) in
                     self.textDidChange()
                 }
                 .disposed(by: disposeBag)

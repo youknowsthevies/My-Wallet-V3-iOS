@@ -60,7 +60,7 @@ final class RemoveCardScreenPresenter {
             .state
             .filter { $0 == .complete }
             .mapToVoid()
-            .bind(to: dismissalRelay)
+            .bindAndCatch(to: dismissalRelay)
             .disposed(by: disposeBag)
         
         titleLabelContent = .init(
@@ -86,7 +86,7 @@ final class RemoveCardScreenPresenter {
         
         removeButtonViewModel = .destructive(with: LocalizationString.removeCard)
         removeButtonViewModel.tapRelay
-            .bind(to: interactor.triggerRelay)
+            .bindAndCatch(to: interactor.triggerRelay)
             .disposed(by: disposeBag)
     }
 }

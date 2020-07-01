@@ -162,7 +162,7 @@ final class SendDestinationAccountCellPresenter {
         
         exchangeButtonTapRelay
             .map { AnalyticsEvents.Send.sendFormExchangeButtonClick(asset: interactor.asset) }
-            .bind(to: analyticsRecorder.recordRelay)
+            .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
         
         // The selection state after the exchange button tap
@@ -183,14 +183,14 @@ final class SendDestinationAccountCellPresenter {
                     message: LocalizationConstants.Exchange.twoFactorNotEnabled
                 )
             }
-            .bind(to: twoFAConfigurationAlertRelay)
+            .bindAndCatch(to: twoFAConfigurationAlertRelay)
             .disposed(by: disposeBag)
         
         // Toggle Exchange selection state upon each tap only if 2FA is not required to do so
         twoFAConditionalSelectionState
             .filter { !$0.0 }
             .map { $0.1 }
-            .bind(to: selectionStateRelay)
+            .bindAndCatch(to: selectionStateRelay)
             .disposed(by: disposeBag)
         
         // True if the current selection state is PIT
@@ -201,29 +201,29 @@ final class SendDestinationAccountCellPresenter {
         isExchange
             .map { $0 ? "cancel_icon" : "exchange-icon-small" }
             .map { UIImage(named: $0)! }
-            .bind(to: exchangeButtonImageRelay)
+            .bindAndCatch(to: exchangeButtonImageRelay)
             .disposed(by: disposeBag)
         
         // Bind text field visibility
          isExchange
-            .bind(to: isTextFieldHiddenRelay)
+            .bindAndCatch(to: isTextFieldHiddenRelay)
             .disposed(by: disposeBag)
         
         // Bind cover text visibility
         selectionStateRelay
             .map { !$0.isExchange }
-            .bind(to: isCoverTextHiddenRelay)
+            .bindAndCatch(to: isCoverTextHiddenRelay)
             .disposed(by: disposeBag)
         
         // Bind cover text value
         let symbol = asset.displayCode
         isExchange
             .map { $0 ? String(format: LocalizationConstants.Send.Destination.exchangeCover, symbol) : "" }
-            .bind(to: coverTextRelay)
+            .bindAndCatch(to: coverTextRelay)
             .disposed(by: disposeBag)
         
         isExchange
-            .bind(to: interactor.exchangeSelectedRelay)
+            .bindAndCatch(to: interactor.exchangeSelectedRelay)
             .disposed(by: disposeBag)
         
         // Show Exchange button only when the Exchange account is valid,
@@ -231,7 +231,7 @@ final class SendDestinationAccountCellPresenter {
         Observable
             .combineLatest(interactor.hasExchangeAccount, selectionStateRelay)
             .map { $0 && ($1.isEmpty || $1.isExchange) }
-            .bind(to: isExchangeButtonVisibleRelay)
+            .bindAndCatch(to: isExchangeButtonVisibleRelay)
             .disposed(by: disposeBag)
     }
     

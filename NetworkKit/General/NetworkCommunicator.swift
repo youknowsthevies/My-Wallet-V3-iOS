@@ -16,10 +16,8 @@ public protocol NetworkCommunicatorAPI {
     func perform<ResponseType: Decodable, ErrorResponseType: Error & Decodable>(request: NetworkRequest, responseType: ResponseType.Type, errorResponseType: ErrorResponseType.Type) -> Single<Result<ResponseType, ErrorResponseType>>
     func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType>
     func perform<ResponseType: Decodable>(request: NetworkRequest) -> Single<ResponseType>
+    func performOptional<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType?>
 }
-
-// TODO:
-// * Handle network reachability
 
 final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRecordable {
     
@@ -75,6 +73,17 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
         perform(request: request)
     }
     
+    public func performOptional<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType?> {
+        execute(request: request)
+            .recordErrors(on: eventRecorder, request: request) { request, error -> AnalyticsEvent? in
+                error.analyticsEvent(for: request) { serverErrorResponse in
+                    request.decoder.decodeFailureToString(errorResponse: serverErrorResponse)
+                }
+            }
+            .mapRawServerError()
+            .decodeOptional(with: request.decoder)
+    }
+    
     public func perform<ResponseType: Decodable>(request: NetworkRequest) -> Single<ResponseType> {
         execute(request: request)
             .recordErrors(on: eventRecorder, request: request) { request, error -> AnalyticsEvent? in
@@ -109,6 +118,10 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
                 }
                 guard (200...299).contains(httpResponse.statusCode) else {
                     observer(.success(.failure(NetworkCommunicatorError.rawServerError(ServerErrorResponse(response: httpResponse, payload: payload)))))
+                    return
+                }
+                if httpResponse.statusCode == 204 {
+                    observer(.success(.success(ServerResponse(response: httpResponse, payload: nil))))
                     return
                 }
                 observer(.success(.success(ServerResponse(response: httpResponse, payload: payload))))

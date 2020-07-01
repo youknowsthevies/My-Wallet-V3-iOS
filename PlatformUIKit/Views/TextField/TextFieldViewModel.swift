@@ -251,11 +251,11 @@ public class TextFieldViewModel {
 
         originalText
             .compactMap { $0 }
-            .bind(to: textRelay)
+            .bindAndCatch(to: textRelay)
             .disposed(by: disposeBag)
 
         text
-            .bind(to: validator.valueRelay)
+            .bindAndCatch(to: validator.valueRelay)
             .disposed(by: disposeBag)
         
         let matchState: Observable<TextValidationState>
@@ -278,12 +278,12 @@ public class TextFieldViewModel {
                     text: text
                 )
             }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
         
         self.state
             .map { $0.hint ?? "" }
-            .bind(to: hintRelay)
+            .bindAndCatch(to: hintRelay)
             .disposed(by: disposeBag)
     }
     
@@ -291,7 +291,7 @@ public class TextFieldViewModel {
         focusRelay
             .filter { $0 == .off(.returnTapped) }
             .map { _ in .on }
-            .bind(to: next.focusRelay)
+            .bindAndCatch(to: next.focusRelay)
             .disposed(by: disposeBag)
     }
     

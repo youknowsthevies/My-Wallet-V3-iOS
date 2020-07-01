@@ -24,12 +24,12 @@ public final class LineItemTableViewCell: UITableViewCell {
             guard let presenter = presenter else { return }
             presenter.titleLabelContentPresenter.state
                 .compactMap { $0 }
-                .bind(to: rx.titleContent)
+                .bindAndCatch(to: rx.titleContent)
                 .disposed(by: disposeBag)
 
             presenter.descriptionLabelContentPresenter.state
                 .compactMap { $0 }
-                .bind(to: rx.descriptionContent)
+                .bindAndCatch(to: rx.descriptionContent)
                 .disposed(by: disposeBag)
 
             presenter.backgroundColor

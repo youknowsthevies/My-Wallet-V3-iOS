@@ -71,7 +71,7 @@ public final class AssetSparklineView: UIView {
                     return nil
                 }
             }
-            .bind(to: pathRelay)
+            .bindAndCatch(to: pathRelay)
             .disposed(by: disposeBag)
         
         lineWidth

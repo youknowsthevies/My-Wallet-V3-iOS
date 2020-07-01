@@ -123,7 +123,7 @@ extension AlertViewPresenter {
                 .text
                 .orEmpty
                 .map { !$0.isEmpty }
-                .bind(to: verifyAction.rx.isEnabled)
+                .bindAndCatch(to: verifyAction.rx.isEnabled)
                 .disposed(by: self.disposeBag)
             
             let cancelAction = UIAlertAction(title: LocalizationConstants.cancel, style: .cancel) { _ in

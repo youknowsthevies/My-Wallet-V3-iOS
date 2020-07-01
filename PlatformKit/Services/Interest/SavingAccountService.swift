@@ -62,7 +62,12 @@ public class SavingAccountService: SavingAccountServiceAPI {
                 return self.authenticationService
                     .tokenString
                     .flatMap(weak: self) { (self, token) in
-                        self.client.balance(token: token)
+                        self.client.balance(token: token).map { balance in
+                            guard let balance = balance else {
+                                return .empty
+                            }
+                            return balance
+                        }
                     }
             }
             .catchErrorJustReturn(.empty)

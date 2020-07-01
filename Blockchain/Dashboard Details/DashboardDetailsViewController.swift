@@ -77,7 +77,7 @@ final class DashboardDetailsViewController: BaseScreenViewController {
             .map(weak: self) { (self, row) in
                 self.presenter.cellArrangement[row]
             }
-            .bind(to: presenter.presenterSelectionRelay)
+            .bindAndCatch(to: presenter.presenterSelectionRelay)
             .disposed(by: disposeBag)
     }
     

@@ -90,7 +90,7 @@ final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                 }
         }
         .catchErrorJustReturn(.loading)
-        .bind(to: stateRelay)
+        .bindAndCatch(to: stateRelay)
         .disposed(by: disposeBag)
     }
 }

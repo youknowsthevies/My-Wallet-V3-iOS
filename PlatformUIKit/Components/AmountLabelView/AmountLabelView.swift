@@ -20,21 +20,21 @@ public final class AmountLabelView: UIView {
             guard let viewModel = viewModel else { return }
             
             viewModel.currencyCodeLabelContent
-                .bind(to: currencyCodeLabel.rx.content)
+                .bindAndCatch(to: currencyCodeLabel.rx.content)
                 .disposed(by: disposeBag)
             
             viewModel.amount
                 .map { $0.amount }
-                .bind(to: amountLabel.rx.attributedText)
+                .bindAndCatch(to: amountLabel.rx.attributedText)
                 .disposed(by: disposeBag)
             
             viewModel.amount
                 .map { $0.accessibility }
-                .bind(to: amountLabel.rx.accessibility)
+                .bindAndCatch(to: amountLabel.rx.accessibility)
                 .disposed(by: disposeBag)
             
             viewModel.stateImageContent
-                .bind(to: stateImageView.rx.content)
+                .bindAndCatch(to: stateImageView.rx.content)
                 .disposed(by: disposeBag)
         }
     }

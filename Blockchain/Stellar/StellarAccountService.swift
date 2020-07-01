@@ -77,7 +77,7 @@ class StellarAccountService: StellarAccountAPI {
                 self.balance.asObservable()
             }
             .catchErrorJustReturn(.lumensZero)
-            .bind(to: balanceRelay)
+            .bindAndCatch(to: balanceRelay)
             .disposed(by: disposeBag)
     }
 

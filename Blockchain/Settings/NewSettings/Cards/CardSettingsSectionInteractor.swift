@@ -36,7 +36,7 @@ final class CardSettingsSectionInteractor {
         cards
             .map { .loaded(next: $0) }
             .startWith(.loading)
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

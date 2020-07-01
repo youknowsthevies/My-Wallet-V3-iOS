@@ -118,17 +118,17 @@ final class CustodyActionStateService: CustodyActionStateServiceAPI {
         
         nextRelay
             .observeOn(MainScheduler.instance)
-            .bind(weak: self) { (self) in self.next() }
+            .bindAndCatch(weak: self) { (self) in self.next() }
             .disposed(by: disposeBag)
         
         previousRelay
             .observeOn(MainScheduler.instance)
-            .bind(weak: self) { (self) in self.previous() }
+            .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
 
         activityRelay
             .observeOn(MainScheduler.instance)
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 let nextStates = self.statesRelay.value.states(byAppending: .activity)
                 self.apply(action: .next(.activity), states: nextStates)
             }

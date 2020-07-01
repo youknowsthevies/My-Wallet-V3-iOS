@@ -78,13 +78,13 @@ final class TransferDetailScreenPresenter: DetailsScreenPresenterAPI {
 
         let continueButtonViewModel = ButtonViewModel.primary(with: LocalizedString.Button.ok)
         continueButtonViewModel.tapRelay
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.stateService.nextRelay.accept(())
             }
             .disposed(by: disposeBag)
         continueButtonViewModel
             .tapRelay
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.analyticsRecorder.record(event: AnalyticsEvent.sbBankDetailsFinished)
             }
             .disposed(by: disposeBag)
@@ -130,7 +130,7 @@ final class TransferDetailScreenPresenter: DetailsScreenPresenterAPI {
 
         if let termsTextViewModel = contentReducer.termsTextViewModel {
             termsTextViewModel.tap
-                .bind(to: webViewRouter.launchRelay)
+                .bindAndCatch(to: webViewRouter.launchRelay)
                 .disposed(by: disposeBag)
             cells.append(.interactableTextCell(termsTextViewModel))
         }

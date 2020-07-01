@@ -101,7 +101,7 @@ final class AddressInteractor: AddressInteracting {
             })
             .map {
                 $0.address
-        }
+            }
     }
     
     // Get the address from address-repo
@@ -149,7 +149,7 @@ final class AddressInteractor: AddressInteracting {
             .do(onNext: { [weak self] paymentDetails in
                 self?.remove(address: paymentDetails.address)
             })
-            .bind(to: receivedPaymentRelay)
+            .bindAndCatch(to: receivedPaymentRelay)
             .disposed(by: disposeBag)
     }
     

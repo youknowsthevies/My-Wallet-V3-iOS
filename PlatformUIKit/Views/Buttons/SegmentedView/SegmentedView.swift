@@ -90,7 +90,7 @@ public final class SegmentedView: UIView {
                 .disposed(by: disposeBag)
             
             segmentedControl.rx.value
-                .bind(to: viewModel.tapRelay)
+                .bindAndCatch(to: viewModel.tapRelay)
                 .disposed(by: disposeBag)
                 
             segmentedControl.isMomentary = viewModel.isMomentary

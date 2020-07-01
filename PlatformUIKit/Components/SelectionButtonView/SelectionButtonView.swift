@@ -86,7 +86,7 @@ public final class SelectionButtonView: UIView {
             
             button.rx
                 .controlEvent(.touchUpInside)
-                .bind(to: viewModel.tapRelay)
+                .bindAndCatch(to: viewModel.tapRelay)
                 .disposed(by: disposeBag)
 
             viewModel.accessibility

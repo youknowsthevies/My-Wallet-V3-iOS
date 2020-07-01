@@ -121,3 +121,117 @@ extension ObservableType {
             .catchError { .just(.failure($0)) }
     }
 }
+
+import RxRelay
+
+extension ObservableType {
+    
+    public func bindAndCatch(
+        to relays: PublishRelay<Element>...,
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) -> Disposable {
+        _bind(to: relays, file: file, line: line, function: function)
+    }
+    
+    private func _bind(
+        to relays: [PublishRelay<Element>],
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) -> Disposable {
+        self.do(onError: { error in
+            fatalError("Binding error to publish relay: \(error). file: \(file), line: \(line), function: \(function)")
+        })
+        .subscribe { e in
+            switch e {
+            case let .next(element):
+                relays.forEach {
+                    $0.accept(element)
+                }
+            case .error(_):
+                break
+            case .completed:
+                break
+            }
+        }
+    }
+    
+    public func bindAndCatch(
+        to relays: BehaviorRelay<Element>...,
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) -> Disposable {
+        _bind(to: relays, file: file, line: line, function: function)
+    }
+    
+    private func _bind(
+        to relays: [BehaviorRelay<Element>],
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) -> Disposable {
+        self.do(onError: { error in
+            fatalError("Binding error to behavior relay: \(error). file: \(file), line: \(line), function: \(function)")
+        })
+        .subscribe { e in
+            switch e {
+            case let .next(element):
+                relays.forEach {
+                    $0.accept(element)
+                }
+            case .error(_):
+                break
+            case .completed:
+                break
+            }
+        }
+    }
+    
+    public func bindAndCatch(
+        to relays: BehaviorRelay<Element?>...,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
+    ) -> Disposable {
+        map { $0 as Element? }._bind(to: relays, file: file, line: line, function: function)
+    }
+    
+    public func bindAndCatch<Observer: ObserverType>(
+        to observers: Observer...,
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) -> Disposable where Observer.Element == Element {
+        _bind(to: observers, file: file, line: line, function: function)
+    }
+    
+    public func bindAndCatch<Observer: ObserverType>(
+        to observers: Observer...,
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) -> Disposable where Observer.Element == Element? {
+        map { $0 as Element? }._bind(to: observers, file: file, line: line, function: function)
+    }
+    
+    private func _bind<Observer: ObserverType>(
+        to observers: [Observer],
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) -> Disposable where Observer.Element == Element {
+        self.do(onError: { error in
+            fatalError("Binding error to observers: \(error). file: \(file), line: \(line), function: \(function)")
+        })
+        .subscribe { event in
+            observers.forEach { $0.on(event) }
+        }
+    }
+    
+    public func bindAndCatch<Result>(to binder: (Self) -> Result) -> Result {
+        binder(self)
+    }
+}

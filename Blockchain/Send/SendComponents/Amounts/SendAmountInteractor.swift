@@ -116,7 +116,7 @@ final class SendAmountInteractor: SendAmountInteracting {
             .map { FiatCryptoPair(crypto: $0.0, exchangeRate: $0.1) }
             .map { $0.isZero ? .invalid(.empty) : .value($0) }
             .catchErrorJustReturn(.calculating)
-            .bind(to: calculationStateRelay)
+            .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
     }
     
@@ -135,7 +135,7 @@ final class SendAmountInteractor: SendAmountInteracting {
             .map { FiatCryptoPair(fiat: $0, priceInFiat: $1, cryptoCurrency: asset) }
             .map { $0.isZero ? .invalid(.empty) : .value($0) }
             .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
-            .bind(to: calculationStateRelay)
+            .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
     }
     

@@ -49,13 +49,13 @@ final class NewPasswordTextValidator: NewPasswordValidating {
             }
             // Ending up in an error state is fine (probably object deallocated)
             .catchErrorJustReturn(.weak)
-            .bind(to: scoreRelay)
+            .bindAndCatch(to: scoreRelay)
             .disposed(by: disposeBag)
         
         scoreRelay
             .map { $0.isValid }
             .map { $0 ? .valid : .invalid(reason: nil) }
-            .bind(to: validationStateRelay)
+            .bindAndCatch(to: validationStateRelay)
             .disposed(by: disposeBag)
     }
 }

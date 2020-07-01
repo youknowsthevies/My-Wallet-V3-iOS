@@ -69,19 +69,19 @@ final class SettingsRouter: SettingsRouterAPI {
         self.guidRepositoryAPI = guidRepositoryAPI
         
         previousRelay
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.dismiss()
             }
             .disposed(by: disposeBag)
         
         actionRelay
-            .bind(weak: self) { (self, action) in
+            .bindAndCatch(weak: self) { (self, action) in
                 self.handle(action: action)
             }
             .disposed(by: disposeBag)
         
         addCardCompletionRelay
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.cardsServiceProvider
                     .cardList
                     .fetchCards()
@@ -134,7 +134,7 @@ final class SettingsRouter: SettingsRouterAPI {
             stateService
                 .completionCardData
                 .mapToVoid()
-                .bind(to: addCardCompletionRelay)
+                .bindAndCatch(to: addCardCompletionRelay)
                 .disposed(by: disposeBag)
             
             addCardRouter = AddCardRouter(

@@ -66,7 +66,7 @@ public final class CardExpirationDateValidator: TextValidating {
         )
         
         valueRelay
-            .bind(to: regexValidator.valueRelay)
+            .bindAndCatch(to: regexValidator.valueRelay)
             .disposed(by: disposeBag)
     }
     

@@ -287,7 +287,7 @@ public class CachedValue<Value> {
                     return .flush
                 }
             }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
     

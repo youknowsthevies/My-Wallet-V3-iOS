@@ -141,7 +141,7 @@ class EthereumWallet: NSObject {
                     .filter { !$0.isStopEvent }
                     .dematerialize()
             }
-            .bind(to: balanceRelay)
+            .bindAndCatch(to: balanceRelay)
             .disposed(by: disposeBag)
     }
 

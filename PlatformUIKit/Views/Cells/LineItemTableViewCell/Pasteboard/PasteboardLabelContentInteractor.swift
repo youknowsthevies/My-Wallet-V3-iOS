@@ -56,12 +56,12 @@ public final class PasteboardLabelContentInteractor: PasteboardLabelContentInter
 
         stateRelay
             .filter { $0.value?.text != interactionText }
-            .bind(to: originalValueStateRelay)
+            .bindAndCatch(to: originalValueStateRelay)
             .disposed(by: disposeBag)
 
         pasteboardTriggerRelay
             .map { .loaded(next: .init(text: interactionText)) }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
 
         pasteboardTriggerRelay
@@ -70,13 +70,13 @@ public final class PasteboardLabelContentInteractor: PasteboardLabelContentInter
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .userInitiated)
             )
             .withLatestFrom(originalValueState)
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
 
         stateRelay
             .compactMap { $0.value?.text }
             .map { $0 == interactionText }
-            .bind(to: isPasteboarding)
+            .bindAndCatch(to: isPasteboarding)
             .disposed(by: disposeBag)
     }
 }

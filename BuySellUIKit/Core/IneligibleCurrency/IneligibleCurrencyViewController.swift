@@ -47,7 +47,7 @@ final class IneligibleCurrencyViewController: UIViewController {
         
         presenter.dismissalRelay
             .observeOn(MainScheduler.instance)
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.dismiss(animated: true) {
                     self.presenter.dismiss()
                 }
@@ -56,7 +56,7 @@ final class IneligibleCurrencyViewController: UIViewController {
         
         presenter.restartRelay
             .observeOn(MainScheduler.instance)
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.dismiss(animated: true) {
                     self.presenter.changeCurrency()
                 }

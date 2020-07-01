@@ -92,13 +92,13 @@ final class ManualPairingScreenPresenter {
         
         /// Bind the state
         stateObservable
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
         
         /// Controls button `isEnabled` property
         stateObservable
             .map { $0.isValid }
-            .bind(to: buttonViewModel.isEnabledRelay)
+            .bindAndCatch(to: buttonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
         // Extract the latest valid values to the interaction layer
@@ -107,7 +107,7 @@ final class ManualPairingScreenPresenter {
                 guard let walletId = walletIdState.value, let password = passwordState.value else { return nil }
                 return .init(walletIdentifier: walletId, password: password)
             }
-            .bind(to: interactor.contentStateRelay)
+            .bindAndCatch(to: interactor.contentStateRelay)
             .disposed(by: disposeBag)
             
         buttonViewModel.tapRelay

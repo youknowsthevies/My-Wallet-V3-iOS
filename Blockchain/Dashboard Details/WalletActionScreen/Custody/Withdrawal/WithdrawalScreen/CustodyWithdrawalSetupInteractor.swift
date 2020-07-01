@@ -67,7 +67,7 @@ final class CustodyWithdrawalSetupInteractor {
                     return .loading
                 }
             }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

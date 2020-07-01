@@ -208,7 +208,7 @@ final class DashboardScreenPresenter {
             })
             .map { .announcement($0) }
             .asObservable()
-            .bind(to: actionRelay)
+            .bindAndCatch(to: actionRelay)
             .disposed(by: disposeBag)
         
         // Bind notices
@@ -223,7 +223,7 @@ final class DashboardScreenPresenter {
             })
             .map { .notice($0) }
             .asObservable()
-            .bind(to: actionRelay)
+            .bindAndCatch(to: actionRelay)
             .disposed(by: disposeBag)
     }
     

@@ -61,7 +61,7 @@ final class AirdropCenterScreenInteractor {
             .map { campaigns in
                 campaigns.map { AirdropTypeCellInteractor(campaign: $0) }
             }
-            .bind(to: startedAirdropsInteractorsRelay)
+            .bindAndCatch(to: startedAirdropsInteractorsRelay)
             .disposed(by: disposeBag)
         
         allCampaigns
@@ -71,7 +71,7 @@ final class AirdropCenterScreenInteractor {
             .map { campaigns in
                 campaigns.map { AirdropTypeCellInteractor(campaign: $0) }
             }
-            .bind(to: endedAirdropsInteractorsRelay)
+            .bindAndCatch(to: endedAirdropsInteractorsRelay)
             .disposed(by: disposeBag)
     }
     

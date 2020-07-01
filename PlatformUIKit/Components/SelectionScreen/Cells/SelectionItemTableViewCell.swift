@@ -37,11 +37,11 @@ final class SelectionItemTableViewCell: UITableViewCell {
             descriptionLabel.content = presenter.description
                         
             presenter.selectionImage
-                .bind(to: selectionImageView.rx.content)
+                .bindAndCatch(to: selectionImageView.rx.content)
                 .disposed(by: disposeBag)
             
             button.rx.tap
-                .bind(to: presenter.tapRelay)
+                .bindAndCatch(to: presenter.tapRelay)
                 .disposed(by: disposeBag)
             
             accessibility = presenter.accessibility

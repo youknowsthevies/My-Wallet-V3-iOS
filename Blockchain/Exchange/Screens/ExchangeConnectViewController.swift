@@ -97,14 +97,14 @@ class ExchangeConnectViewController: UIViewController, NavigatableView {
         connectNowButton.setTitle(LocalizationConstants.Exchange.ConnectionPage.Actions.connectNow, for: .normal)
         
         connectNowButton.rx.tap
-            .bind(weak: self) { (self, _) in
+            .bindAndCatch(weak: self) { (self, _) in
                 self.connectRelay.accept(())
                 self.analyticsRecorder.record(event: AnalyticsEvents.Exchange.exchangeConnectNowTapped)
             }
             .disposed(by: bag)
         
         learnMoreButton.rx.tap
-            .bind(weak: self) { (self, _) in
+            .bindAndCatch(weak: self) { (self, _) in
                 self.learnMoreRelay.accept(())
                 self.analyticsRecorder.record(event: AnalyticsEvents.Exchange.exchangeLearnMoreTapped)
             }

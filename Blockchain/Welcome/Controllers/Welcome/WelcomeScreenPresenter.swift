@@ -89,7 +89,7 @@ final class WelcomeScreenPresenter {
             text: LocalizedString.Button.createWallet
         )
         createWalletButtonViewModel.tapRelay
-            .bind(to: createTapRelay)
+            .bindAndCatch(to: createTapRelay)
             .disposed(by: disposeBag)
         
         // Set login button
@@ -105,7 +105,7 @@ final class WelcomeScreenPresenter {
             text: LocalizedString.Button.login
         )
         loginButtonViewModel.tapRelay
-            .bind(to: loginTapRelay)
+            .bindAndCatch(to: loginTapRelay)
             .disposed(by: disposeBag)
         
         // Set recover funds button
@@ -122,7 +122,7 @@ final class WelcomeScreenPresenter {
             text: LocalizedString.Button.recoverFunds
         )
         recoverFundsButtonViewModel.tapRelay
-            .bind(to: recoverFundsTapRelay)
+            .bindAndCatch(to: recoverFundsTapRelay)
             .disposed(by: disposeBag)
     }
     

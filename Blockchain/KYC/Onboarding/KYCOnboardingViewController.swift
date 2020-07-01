@@ -24,6 +24,11 @@ class KYCOnboardingViewController: UIViewController {
         welcomeDescription.text = LocalizationConstants.KYC.welcomeMainText
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        beginNowButton.isEnabled = action != nil
+    }
+    
     @IBAction func beginNowTapped(_ sender: UIButton) {
         action?()
     }

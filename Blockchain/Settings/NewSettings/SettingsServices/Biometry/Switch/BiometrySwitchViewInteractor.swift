@@ -42,7 +42,7 @@ class BiometrySwitchViewInteractor: SwitchViewInteracting {
         Observable
             .just(settingsAuthenticating.biometryEnabled)
             .map { .loaded(next: .init(isOn: $0, isEnabled: true)) }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
         
         NotificationCenter.when(.login) { [weak self] _ in
@@ -69,7 +69,7 @@ class BiometrySwitchViewInteractor: SwitchViewInteracting {
         Observable
             .just(settingsAuthenticating.biometryEnabled)
             .map { .loaded(next: .init(isOn: $0, isEnabled: true)) }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

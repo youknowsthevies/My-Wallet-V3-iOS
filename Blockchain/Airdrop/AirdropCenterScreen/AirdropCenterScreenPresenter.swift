@@ -77,14 +77,14 @@ final class AirdropCenterScreenPresenter {
             .map { interactors in
                 interactors.map { AirdropTypeCellPresenter(interactor: $0) }
             }
-            .bind(to: startedPresentersRelay)
+            .bindAndCatch(to: startedPresentersRelay)
             .disposed(by: disposeBag)
         
         interactor.endedAirdropsInteractors
             .map { interactors in
                 interactors.map { AirdropTypeCellPresenter(interactor: $0) }
             }
-            .bind(to: endedPresentersRelay)
+            .bindAndCatch(to: endedPresentersRelay)
             .disposed(by: disposeBag)
         
         Observable
@@ -92,7 +92,7 @@ final class AirdropCenterScreenPresenter {
             .map { started, ended in
                 [.started(started), .ended(ended)]
             }
-            .bind(to: dataSourceRelay)
+            .bindAndCatch(to: dataSourceRelay)
             .disposed(by: disposeBag)
         
         presenterSelectionRelay

@@ -97,13 +97,13 @@ final class BuyCryptoScreenPresenter {
             .filter { !$0.isEmpty }
             .map { Character($0) }
             .map { .insert($0) }
-            .bind(to: interactor.inputScanner.actionRelay)
+            .bindAndCatch(to: interactor.inputScanner.actionRelay)
             .disposed(by: disposeBag)
         
         // Observe backspace button taps
         digitPadViewModel.backspaceButtonTapObservable
             .map { .remove }
-            .bind(to: interactor.inputScanner.actionRelay)
+            .bindAndCatch(to: interactor.inputScanner.actionRelay)
             .disposed(by: disposeBag)
         
         /// Continue Button Setup
@@ -114,7 +114,7 @@ final class BuyCryptoScreenPresenter {
                 
         interactor.state
             .map { $0.isValid }
-            .bind(to: continueButtonViewModel.isEnabledRelay)
+            .bindAndCatch(to: continueButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
                 
         // Amount Setup
@@ -124,7 +124,7 @@ final class BuyCryptoScreenPresenter {
             shouldDisplayStateImage: false
         )
         interactor.inputScanner.input
-            .bind(to: amountLabelViewModel.inputRelay)
+            .bindAndCatch(to: amountLabelViewModel.inputRelay)
             .disposed(by: disposeBag)
         
         // Asset Selection Button Setup
@@ -180,7 +180,7 @@ final class BuyCryptoScreenPresenter {
                     amount: $0.fiatValue.toDisplayString()
                 )
             }
-            .bind(to: analyticsRecorder.recordRelay)
+            .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
             
         ctaObservable
@@ -192,12 +192,12 @@ final class BuyCryptoScreenPresenter {
                     return .sbBuyFormConfirmFailure
                 }
             }
-            .bind(to: analyticsRecorder.recordRelay)
+            .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
         
         ctaObservable
             .observeOn(MainScheduler.instance)
-            .bind(weak: self) { (self, result) in
+            .bindAndCatch(weak: self) { (self, result) in
                 switch result {
                 case .success(let data):
                     switch (data.kycState, data.isSimpleBuyEligible) {
@@ -233,34 +233,34 @@ final class BuyCryptoScreenPresenter {
                     )
                 )
             }
-            .bind(to: assetSelectionButtonViewModel.leadingContentTypeRelay)
+            .bindAndCatch(to: assetSelectionButtonViewModel.leadingContentTypeRelay)
             .disposed(by: disposeBag)
 
         interactor.selectedCryptoCurrency
             .map { $0.name }
-            .bind(to: assetSelectionButtonViewModel.titleRelay)
+            .bindAndCatch(to: assetSelectionButtonViewModel.titleRelay)
             .disposed(by: disposeBag)
 
         interactor.selectedCryptoCurrency
             .map { .init(id: $0.displayCode, label: $0.name) }
-            .bind(to: assetSelectionButtonViewModel.accessibilityContentRelay)
+            .bindAndCatch(to: assetSelectionButtonViewModel.accessibilityContentRelay)
             .disposed(by: disposeBag)
 
         interactor.selectedCryptoCurrency
             .flatMap(weak: self) { (self, cryptoCurrency) -> Observable<String?> in
                 self.subtitleForCryptoCurrencyPicker(cryptoCurrency: cryptoCurrency)
             }
-            .bind(to: assetSelectionButtonViewModel.subtitleRelay)
+            .bindAndCatch(to: assetSelectionButtonViewModel.subtitleRelay)
             .disposed(by: disposeBag)
 
         interactor.selectedCryptoCurrency
             .map { AnalyticsEvent.sbBuyFormCryptoChanged(asset: $0) }
-            .bind(to: analyticsRecorder.recordRelay)
+            .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
 
         interactor.pairsCalculationState
             .handle(loadingViewPresenter: uiUtilityProvider.loader)
-            .bind(weak: self) { (self, state) in
+            .bindAndCatch(weak: self) { (self, state) in
                 guard case .invalid(.valueCouldNotBeCalculated) = state else {
                     return
                 }
@@ -277,7 +277,7 @@ final class BuyCryptoScreenPresenter {
                     return .invalid
                 }
             }
-            .bind(to: amountLabelViewModel.stateRelay)
+            .bindAndCatch(to: amountLabelViewModel.stateRelay)
             .disposed(by: disposeBag)
 
         assetSelectionButtonViewModel.trailingImageViewContentRelay.accept(
@@ -300,12 +300,12 @@ final class BuyCryptoScreenPresenter {
             .flatMap(weak: self) { (self, state) in
                 self.labeledButtons(for: state)
             }
-            .bind(to: labeledButtonViewModelsRelay)
+            .bindAndCatch(to: labeledButtonViewModelsRelay)
             .disposed(by: disposeBag)
 
         labeledButtonViewModelsRelay
             .map { $0.map { $0.elementOnTap } }
-            .bind(weak: self) { (self, amounts) in
+            .bindAndCatch(weak: self) { (self, amounts) in
                 amounts.forEach { amount in
                     amount
                         .map { MoneyValueInputScanner.Input(decimal: $0) }
@@ -322,7 +322,7 @@ final class BuyCryptoScreenPresenter {
                 interactor.preferredPaymentMethodType,
                 interactor.paymentMethodTypes.map { $0.count }
             )
-            .bind(weak: self) { (self, payload) in
+            .bindAndCatch(weak: self) { (self, payload) in
                 self.setup(preferredPaymentMethodType: payload.0, methodCount: payload.1)
             }
             .disposed(by: disposeBag)
@@ -340,7 +340,7 @@ final class BuyCryptoScreenPresenter {
                     return "\(fiatValue.currency.code)"
                 }
             }
-            .bind(to: trailingButtonViewModel.textRelay)
+            .bindAndCatch(to: trailingButtonViewModel.textRelay)
             .disposed(by: disposeBag)
 
         trailingButtonViewModel
@@ -356,7 +356,7 @@ final class BuyCryptoScreenPresenter {
                     return nil
                 }
             }
-            .bind(to: analyticsRecorder.recordRelay)
+            .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
         
         trailingButtonViewModel
@@ -381,7 +381,7 @@ final class BuyCryptoScreenPresenter {
                 }
             }
             .map { MoneyValueInputScanner.Input(decimal: $0) }
-            .bind(to: interactor.inputScanner.inputRelay)
+            .bindAndCatch(to: interactor.inputScanner.inputRelay)
             .disposed(by: disposeBag)
     }
     

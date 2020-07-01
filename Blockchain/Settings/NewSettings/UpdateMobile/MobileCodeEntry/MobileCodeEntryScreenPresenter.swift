@@ -69,21 +69,21 @@ final class MobileCodeEntryScreenPresenter {
         
         codeEntryTextFieldModel.state
             .compactMap { $0.value }
-            .bind(to: interactor.contentRelay)
+            .bindAndCatch(to: interactor.contentRelay)
             .disposed(by: disposeBag)
         
         changeNumberViewModel.tapRelay
-            .bind(to: stateService.previousRelay)
+            .bindAndCatch(to: stateService.previousRelay)
             .disposed(by: disposeBag)
         
         resendCodeViewModel.tapRelay
             .map { .resend }
-            .bind(to: interactor.actionRelay)
+            .bindAndCatch(to: interactor.actionRelay)
             .disposed(by: disposeBag)
         
         confirmViewModel.tapRelay
             .map { .verify }
-            .bind(to: interactor.actionRelay)
+            .bindAndCatch(to: interactor.actionRelay)
             .disposed(by: disposeBag)
         
         interactor.state
@@ -108,7 +108,7 @@ final class MobileCodeEntryScreenPresenter {
         interactor.state
             .filter { $0.isComplete }
             .mapToVoid()
-            .bind(to: stateService.nextRelay)
+            .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: disposeBag)
     }
 }

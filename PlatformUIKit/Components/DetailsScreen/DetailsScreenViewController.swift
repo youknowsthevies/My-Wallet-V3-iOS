@@ -71,7 +71,7 @@ public final class DetailsScreenViewController: BaseTableViewController {
 
     private func setupKeyboardObserver() {
         keyboardObserver.state
-            .bind(weak: self) { (self, state) in
+            .bindAndCatch(weak: self) { (self, state) in
                 switch state.visibility {
                 case .visible:
                     self.tableViewBottomConstraint.constant = state.payload.height - self.view.safeAreaInsets.bottom

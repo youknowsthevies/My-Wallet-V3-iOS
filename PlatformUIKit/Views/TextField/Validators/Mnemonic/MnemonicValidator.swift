@@ -87,12 +87,12 @@ final class MnemonicValidator: MnemonicValidating {
                 return .invalid(ranges)
         }
         .catchErrorJustReturn(.none)
-        .bind(to: scoreRelay)
+        .bindAndCatch(to: scoreRelay)
         .disposed(by: disposeBag)
         
         scoreRelay
             .map { $0.isValid }
-            .bind(to: isValidRelay)
+            .bindAndCatch(to: isValidRelay)
             .disposed(by: disposeBag)
     }
 }

@@ -146,7 +146,7 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
         itemRelay
             .compactMap { $0?.confirmation.factor }
-            .bind(to: badgeCircleModel.fillRatioRelay)
+            .bindAndCatch(to: badgeCircleModel.fillRatioRelay)
             .disposed(by: disposeBag)
 
         itemRelay
@@ -155,7 +155,7 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .map(weak: self) { (self, confirmation) in
                 .loaded(next: .init(type: .progress(self.badgeCircleModel), description: confirmation))
             }
-            .bind(to: confirmingBadge.interactor.stateRelay)
+            .bindAndCatch(to: confirmingBadge.interactor.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
@@ -164,61 +164,61 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .map(weak: self) { (self, needConfirmation) in
                 needConfirmation ? [ self.statusBadge, self.confirmingBadge ] : [ self.statusBadge ]
             }
-            .bind(to: badgesModel.badgesRelay)
+            .bindAndCatch(to: badgesModel.badgesRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .map { $0?.amounts.gasFor?.cryptoAmount }
             .mapToLabelContentStateInteraction()
-            .bind(to: cryptoAmountLabelPresenter.interactor.stateRelay)
+            .bindAndCatch(to: cryptoAmountLabelPresenter.interactor.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .map { $0?.dateCreated }
             .mapToLabelContentStateInteraction()
-            .bind(to: dateCreatedPresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: dateCreatedPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .map { $0?.amounts.gasFor?.amount }
             .mapToLabelContentStateInteraction()
-            .bind(to: amountPresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: amountPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .map { $0?.amounts.gasFor?.value }
             .mapToLabelContentStateInteraction()
-            .bind(to: valuePresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: valuePresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .map { $0?.from }
             .mapToLabelContentStateInteraction()
-            .bind(to: fromPresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: fromPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .map { $0?.to }
             .mapToLabelContentStateInteraction()
-            .bind(to: toPresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: toPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .compactMap { $0?.confirmation.statusBadge }
             .map { .loaded(next: $0) }
-            .bind(to: statusBadge.interactor.stateRelay)
+            .bindAndCatch(to: statusBadge.interactor.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .map { $0?.amounts.fee.cryptoAmount }
             .mapToLabelContentStateInteraction()
-            .bind(to: feePresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: feePresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .distinctUntilChanged()
             .mapToVoid()
-            .bind(to: reloadRelay)
+            .bindAndCatch(to: reloadRelay)
             .disposed(by: disposeBag)
     }
 }

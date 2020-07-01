@@ -33,12 +33,13 @@ final class SMSSwitchViewInteractor: SwitchViewInteracting {
             .map { ValueCalculationState.value($0) }
             .map { .init(with: $0) }
             .startWith(.loading)
-            .bind(to: stateRelay)
+            .catchErrorJustReturn(.loading)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
         
         switchTriggerRelay
             .map { _ in .loading }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
         
         switchTriggerRelay

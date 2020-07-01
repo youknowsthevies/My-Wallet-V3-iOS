@@ -25,7 +25,7 @@ final class TwoFactorVerificationBadgeInteractor: DefaultBadgeAssetInteractor {
             // TODO: Error handing
             .catchErrorJustReturn(.loading)
             .startWith(.loading)
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

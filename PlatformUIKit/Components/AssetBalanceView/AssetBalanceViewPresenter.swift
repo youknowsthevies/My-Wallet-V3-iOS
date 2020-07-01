@@ -50,7 +50,7 @@ public final class AssetBalanceViewPresenter {
             .map {
                 .init(with: $0, descriptors: descriptors)
             }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }

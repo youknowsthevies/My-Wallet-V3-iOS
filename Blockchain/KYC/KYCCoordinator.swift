@@ -193,7 +193,7 @@ protocol KYCCoordinatorDelegate: class {
             .compactMap { (tiers: KYC.UserTiers?) in
                 tiers?.latestTier ?? nil
             }
-            .bind(to: kycFinishedRelay)
+            .bindAndCatch(to: kycFinishedRelay)
             .disposed(by: disposeBag)
     }
     

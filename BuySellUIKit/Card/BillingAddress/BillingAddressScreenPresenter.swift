@@ -131,39 +131,39 @@ final class BillingAddressScreenPresenter {
         
         interactor.selectedCountry
             .map { .text($0.flag) }
-            .bind(to: selectionButtonViewModel.leadingContentTypeRelay)
+            .bindAndCatch(to: selectionButtonViewModel.leadingContentTypeRelay)
             .disposed(by: disposeBag)
 
         interactor.selectedCountry
             .map { $0.name }
-            .bind(to: selectionButtonViewModel.titleRelay)
+            .bindAndCatch(to: selectionButtonViewModel.titleRelay)
             .disposed(by: disposeBag)
 
         interactor.selectedCountry
             .map { $0.code }
-            .bind(to: selectionButtonViewModel.subtitleRelay)
+            .bindAndCatch(to: selectionButtonViewModel.subtitleRelay)
             .disposed(by: disposeBag)
         
         interactor.selectedCountry
             .map { .init(id: $0.code, label: $0.name) }
-            .bind(to: selectionButtonViewModel.accessibilityContentRelay)
+            .bindAndCatch(to: selectionButtonViewModel.accessibilityContentRelay)
             .disposed(by: disposeBag)
         
         interactor.selectedCountry
             .map { PresentationData(country: $0) }
-            .bind(to: presentationDataRelay)
+            .bindAndCatch(to: presentationDataRelay)
             .disposed(by: disposeBag)
         
         presentationDataRelay
             .map(weak: self) { (self, data) in
                 self.transformPresentationDataIntoViewModels(data)
             }
-            .bind(to: textFieldViewModelsMapRelay)
+            .bindAndCatch(to: textFieldViewModelsMapRelay)
             .disposed(by: disposeBag)
         
         textFieldViewModelsMapRelay
             .mapToVoid()
-            .bind(to: refreshRelay)
+            .bindAndCatch(to: refreshRelay)
             .disposed(by: disposeBag)
 
         selectionButtonViewModel.trailingImageViewContentRelay.accept(
@@ -233,12 +233,12 @@ final class BillingAddressScreenPresenter {
                     
         billingAddress
             .compactMap { $0 }
-            .bind(to: interactor.billingAddressRelay)
+            .bindAndCatch(to: interactor.billingAddressRelay)
             .disposed(by: disposeBag)
         
         billingAddress
             .map { $0 != nil }
-            .bind(to: isValidRelay)
+            .bindAndCatch(to: isValidRelay)
             .disposed(by: disposeBag)
         
         isValid
@@ -247,7 +247,7 @@ final class BillingAddressScreenPresenter {
         
         buttonViewModel.tapRelay
             .withLatestFrom(interactor.billingAddress)
-            .bind(weak: self) { (self, billingAddress) in
+            .bindAndCatch(weak: self) { (self, billingAddress) in
                 self.eventRecorder.record(event: AnalyticsEvent.sbBillingAddressSet)
                 self.add(billingAddress: billingAddress)
             }

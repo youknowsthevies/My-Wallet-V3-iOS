@@ -12,17 +12,6 @@ import ToolKit
 
 extension Array where Element: Equatable {
 
-    /// Returns an array of unique values in the array
-    var unique: [Element] {
-        var uniques = [Element]()
-        for value in self {
-            if !uniques.contains(value) {
-                uniques.append(value)
-            }
-        }
-        return uniques
-    }
-    
     func randomItem() -> Iterator.Element? {
         isEmpty ? nil : self[Int(arc4random_uniform(UInt32(endIndex)))]
     }

@@ -43,7 +43,7 @@ final class QRAddressView: UIView {
             
             // Bind taps to the view model
             button.rx.tap
-                .bind(to: viewModel.tapRelay)
+                .bindAndCatch(to: viewModel.tapRelay)
                 .disposed(by: disposeBag)
         }
     }

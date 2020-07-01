@@ -74,7 +74,7 @@ final class AnnouncementPresenter {
             .asObservable()
             .filter { $0.isHide }
             .mapToVoid()
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.currentAnnouncement = nil
             }
             .disposed(by: disposeBag)
@@ -101,7 +101,7 @@ final class AnnouncementPresenter {
             }
             .catchErrorJustReturn(.hide)
             .asObservable()
-            .bind(to: announcementRelay)
+            .bindAndCatch(to: announcementRelay)
             .disposed(by: disposeBag)
     }
     

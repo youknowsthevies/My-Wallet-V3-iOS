@@ -46,7 +46,7 @@ final class VerifyCodeEntryInteractor {
     init(service: MobileSettingsServiceAPI & SettingsServiceAPI) {
         self.service = service
         triggerRelay
-            .bind(weak: self, onNext: { (self) in
+            .bindAndCatch(weak: self, onNext: { (self) in
                 self.interactionStateRelay.accept(.verifying)
                 self.submit()
             })

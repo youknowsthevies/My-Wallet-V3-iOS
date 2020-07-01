@@ -132,7 +132,7 @@ final class VerifyBackupScreenPresenter {
             .share(replay: 1)
         
         isValid
-            .bind(to: verifyButtonViewModel.isEnabledRelay)
+            .bindAndCatch(to: verifyButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
         let isEmpty = states
@@ -142,7 +142,7 @@ final class VerifyBackupScreenPresenter {
             .combineLatest(isValid, isEmpty)
             .map { $0.0 || $0.1 }
             .map { $0 ? .hidden : .visible }
-            .bind(to: errorDescriptionVisibilityRelay)
+            .bindAndCatch(to: errorDescriptionVisibilityRelay)
             .disposed(by: disposeBag)
         
         verifyButtonViewModel
@@ -151,7 +151,7 @@ final class VerifyBackupScreenPresenter {
                 .milliseconds(500),
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
             )
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.markBackupVerified()
             }
             .disposed(by: disposeBag)
@@ -170,7 +170,7 @@ final class VerifyBackupScreenPresenter {
             )
             .andThen(Observable.just(()))
             .mapToVoid()
-            .bind(to: stateService.nextRelay)
+            .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: disposeBag)
     }
 }

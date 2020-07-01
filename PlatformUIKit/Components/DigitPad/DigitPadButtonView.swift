@@ -41,7 +41,7 @@ final class DigitPadButtonView: UIView {
             
             // Bind button taps to the view model tap relay
             button.rx.tap
-                .bind(weak: self) { (self) in
+                .bindAndCatch(weak: self) { (self) in
                     self.viewModel.tap()
                 }
                 .disposed(by: disposeBag)

@@ -21,9 +21,7 @@ enum SettingsSectionType: String, Equatable {
     
     enum CellType: Equatable, IdentifiableType {
         
-        typealias Identity = String
-        
-        var identity: String {
+        var identity: AnyHashable {
             switch self {
             case .badge(let type, _):
                 return type.rawValue
@@ -82,9 +80,8 @@ enum SettingsSectionType: String, Equatable {
         }
         
         enum CardsCellType: Equatable, IdentifiableType {
-            typealias Identity = String
             
-            var identity: String {
+            var identity: AnyHashable {
                 switch self {
                 case .addCard:
                     return "addCard"

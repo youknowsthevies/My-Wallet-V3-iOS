@@ -89,24 +89,25 @@ final class UpdateEmailScreenInteractor {
             }
             .map { .loaded(next: $0) }
             .startWith(.loading)
-            .bind(to: interactionModelRelay)
+            .catchErrorJustReturn(.loading)
+            .bindAndCatch(to: interactionModelRelay)
             .disposed(by: disposeBag)
         
         cancelRelay
-            .bind(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (self) in
                 self.cancel()
             }
             .disposed(by: disposeBag)
         
         resendRelay
-            .bind(weak: self, onNext: { (self) in
+            .bindAndCatch(weak: self, onNext: { (self) in
                 self.interactionStateRelay.accept(.updating)
                 self.resendEmailVerification()
             })
             .disposed(by: disposeBag)
         
         triggerRelay
-            .bind(weak: self, onNext: { (self) in
+            .bindAndCatch(weak: self, onNext: { (self) in
                 self.interactionStateRelay.accept(.updating)
                 self.submit()
             })

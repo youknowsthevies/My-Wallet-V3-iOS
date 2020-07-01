@@ -15,19 +15,18 @@ enum WalletPickerCellItem: IdentifiableType {
     // MARK: - Types
     
     private typealias AccessibilityId = Accessibility.Identifier.Activity.WalletPickerView
-    typealias Identity = String
     
     // MARK: - Properties
     
-    var identity: String {
+    var identity: AnyHashable {
         switch self {
         case .balance(let balanceType):
             let presenter = balanceType.presenter
             return presenter.currency.code + presenter.balanceType.description
-        case .total(let presenter):
-            // There's only ever one `Total` cell so, it can be
-            // any string for an identifier.
-            return "total"
+        case .total:
+            // There's only ever one `Total` cell
+            // so it must be a static string for an identifier.
+            return "WalletPickerCellItem.total"
         }
     }
     

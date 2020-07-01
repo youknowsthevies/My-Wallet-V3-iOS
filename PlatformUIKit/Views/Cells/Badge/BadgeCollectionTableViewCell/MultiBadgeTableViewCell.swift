@@ -73,7 +73,7 @@ class MultiBadgeTableViewCell: UITableViewCell {
         stackView.addArrangedSubview(badge)
         presenter.state
             .compactMap { $0 }
-            .bind(to: badge.rx.viewModel)
+            .bindAndCatch(to: badge.rx.viewModel)
             .disposed(by: disposeBag)
     }
 

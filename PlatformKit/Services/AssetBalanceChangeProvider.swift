@@ -8,6 +8,7 @@
 
 import RxRelay
 import RxSwift
+import ToolKit
 
 /// A provider for balance change
 public protocol AssetBalanceChangeProviding: class {
@@ -66,7 +67,7 @@ public final class AssetBalanceChangeProvider: AssetBalanceChangeProviding {
                 )
             }
             .catchErrorJustReturn(.calculating) // TODO: Error handling
-            .bind(to: calculationStateRelay)
+            .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
     }
 }
