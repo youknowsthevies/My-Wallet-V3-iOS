@@ -15,7 +15,8 @@ public class TransactionalActivityItemEventService: TransactionalActivityItemEve
     // MARK: - Public Properties
     
     public var transactionActivityEvents: Single<[TransactionalActivityItemEvent]> {
-        fetcher
+        _ = setup
+        return fetcher
             .fetchTransactionalActivityEvents(
                 token: nil,
                 limit: pageSize
@@ -25,12 +26,14 @@ public class TransactionalActivityItemEventService: TransactionalActivityItemEve
     }
     
     public var transactionActivityObservable: Observable<[TransactionalActivityItemEvent]> {
-        transactionActivityEvents
+        _ = setup
+        return transactionActivityEvents
             .asObservable()
     }
     
     public var state: Observable<ActivityItemEventsLoadingState> {
-        stateRelay
+        _ = setup
+        return stateRelay
             .catchErrorJustReturn(.loaded(next: []))
             .asObservable()
     }
@@ -39,15 +42,7 @@ public class TransactionalActivityItemEventService: TransactionalActivityItemEve
     
     // MARK: - Private Properties
     
-    private let fetcher: TransactionalActivityItemEventFetcherAPI
-    private let stateRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
-    private let disposeBag = DisposeBag()
-    
-    // MARK: - Init
-    
-    public init(fetcher: TransactionalActivityItemEventFetcherAPI) {
-        self.fetcher = fetcher
-        
+    private lazy var setup: Void = {
         fetchTriggerRelay
             .throttle(
                 .milliseconds(100),
@@ -62,5 +57,15 @@ public class TransactionalActivityItemEventService: TransactionalActivityItemEve
             .catchErrorJustReturn(.loaded(next: []))
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
+    }()
+    
+    private let fetcher: TransactionalActivityItemEventFetcherAPI
+    private let stateRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
+    private let disposeBag = DisposeBag()
+    
+    // MARK: - Init
+    
+    public init(fetcher: TransactionalActivityItemEventFetcherAPI) {
+        self.fetcher = fetcher
     }
 }

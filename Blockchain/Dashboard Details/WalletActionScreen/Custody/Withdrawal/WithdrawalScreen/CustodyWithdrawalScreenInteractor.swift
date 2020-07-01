@@ -45,11 +45,10 @@ final class CustodyWithdrawalScreenInteractor {
     // MARK: - Public Properties
     
     var state: Observable<InteractionState> {
-        stateRelay.asObservable()
+        _ = setup
+        return stateRelay.asObservable()
             .observeOn(MainScheduler.instance)
     }
-    
-    private let stateRelay = BehaviorRelay<InteractionState>(value: .settingUp)
     
     let selectionRelay = PublishRelay<Void>()
     let assetBalanceInteractor: AssetBalanceTypeViewInteracting
@@ -57,25 +56,7 @@ final class CustodyWithdrawalScreenInteractor {
     
     // MARK: - Private Properties
     
-    private let setupInteractor: CustodyWithdrawalSetupInteractor
-    private let submissionInteractor: CustodyWithdrawalSubmissionInteractor
-    private let disposeBag = DisposeBag()
-    
-    init(withdrawalService: CustodyWithdrawalServiceAPI,
-         balanceFetching: AssetBalanceFetching,
-         currency: CryptoCurrency,
-         accountRepository: AssetAccountRepositoryAPI) {
-        assetBalanceInteractor = AssetBalanceTypeViewInteractor(
-            assetBalanceFetching: balanceFetching,
-            balanceType: .custodial(.trading)
-        )
-        setupInteractor = CustodyWithdrawalSetupInteractor(
-            currency: currency,
-            balanceFetching: balanceFetching,
-            accountRepository: accountRepository
-        )
-        submissionInteractor = CustodyWithdrawalSubmissionInteractor(withdrawalService: withdrawalService)
-        
+    private lazy var setup: Void = {
         Observable
             .combineLatest(
                 balanceFetching.trading.balanceObservable,
@@ -121,5 +102,29 @@ final class CustodyWithdrawalScreenInteractor {
                 )
             })
             .disposed(by: disposeBag)
+    }()
+    
+    private let stateRelay = BehaviorRelay<InteractionState>(value: .settingUp)
+    
+    private let balanceFetching: AssetBalanceFetching
+    private let setupInteractor: CustodyWithdrawalSetupInteractor
+    private let submissionInteractor: CustodyWithdrawalSubmissionInteractor
+    private let disposeBag = DisposeBag()
+    
+    init(withdrawalService: CustodyWithdrawalServiceAPI,
+         balanceFetching: AssetBalanceFetching,
+         currency: CryptoCurrency,
+         accountRepository: AssetAccountRepositoryAPI) {
+        self.balanceFetching = balanceFetching
+        assetBalanceInteractor = AssetBalanceTypeViewInteractor(
+            assetBalanceFetching: balanceFetching,
+            balanceType: .custodial(.trading)
+        )
+        setupInteractor = CustodyWithdrawalSetupInteractor(
+            currency: currency,
+            balanceFetching: balanceFetching,
+            accountRepository: accountRepository
+        )
+        submissionInteractor = CustodyWithdrawalSubmissionInteractor(withdrawalService: withdrawalService)
     }
 }

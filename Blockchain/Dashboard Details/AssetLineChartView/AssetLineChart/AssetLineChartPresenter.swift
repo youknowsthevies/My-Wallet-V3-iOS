@@ -24,9 +24,17 @@ final class AssetLineChartPresenter {
     
     /// Streams the state of pie-chart
     var state: Observable<AssetLineChart.State.Presentation> {
-        stateRelay
+        _ = setup
+        return stateRelay
             .observeOn(MainScheduler.instance)
     }
+    
+    private lazy var setup: Void = {
+        interactor.state
+            .map { .init(with: $0) }
+            .bindAndCatch(to: stateRelay)
+            .disposed(by: disposeBag)
+    }()
     
     private let edge: CGFloat
     private let interactor: AssetLineChartInteracting
@@ -41,10 +49,5 @@ final class AssetLineChartPresenter {
          interactor: AssetLineChartInteracting) {
         self.edge = edge
         self.interactor = interactor
-        
-        interactor.state
-            .map { .init(with: $0) }
-            .bindAndCatch(to: stateRelay)
-            .disposed(by: disposeBag)
     }
 }

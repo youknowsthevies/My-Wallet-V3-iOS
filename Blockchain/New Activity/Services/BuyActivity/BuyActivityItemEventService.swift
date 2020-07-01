@@ -14,12 +14,25 @@ import RxSwift
 final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
     
     var state: Observable<ActivityItemEventsLoadingState> {
-        stateRelay
+        _ = setup
+        return stateRelay
             .catchErrorJustReturn(.loaded(next: []))
             .asObservable()
     }
     
     var buyActivityEvents: Single<[BuyActivityItemEvent]> {
+        _ = setup
+        return _buyActivityEvents
+    }
+    
+    var buyActivityObservable: Observable<[BuyActivityItemEvent]> {
+        _ = setup
+        return _buyActivityObservable
+    }
+    
+    let fetchTriggerRelay = PublishRelay<Void>()
+    
+    private var _buyActivityEvents: Single<[BuyActivityItemEvent]> {
         custodialFeatureFetching
             .featureEnabled(for: .simpleBuyEnabled)
             .flatMap(weak: self) { (self, simpleBuyEnabled) in
@@ -30,20 +43,12 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
             }
     }
     
-    var buyActivityObservable: Observable<[BuyActivityItemEvent]> {
-        buyActivityEvents
+    private var _buyActivityObservable: Observable<[BuyActivityItemEvent]> {
+        _buyActivityEvents
             .catchErrorJustReturn([])
             .asObservable()
     }
     
-    let fetchTriggerRelay = PublishRelay<Void>()
-    private let stateRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
-    private let buyActivityRelay = BehaviorRelay<[BuyActivityItemEvent]>(value: [])
-    private let currency: CryptoCurrency
-    private let service: BuySellKit.OrdersServiceAPI
-    private let disposeBag = DisposeBag()
-    private let custodialFeatureFetching: CustodialFeatureFetching
-
     private var fetchBuyActivityEvents: Single<[BuyActivityItemEvent]> {
         service
             .orders
@@ -56,16 +61,9 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
             .map { items in items.map { BuyActivityItemEvent.init(with: $0) } }
     }
 
-    init(currency: CryptoCurrency,
-         service: BuySellKit.OrdersServiceAPI,
-         tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
-         featureFetching: FeatureFetching = AppFeatureConfigurator.shared) {
-        self.currency = currency
-        self.service = service
-        custodialFeatureFetching = CustodialFeatureFetcher(tiersService: tiersService, featureFetching: featureFetching)
-        
+    private lazy var setup: Void = {
         Observable.combineLatest(
-                buyActivityObservable,
+                _buyActivityObservable,
                 fetchTriggerRelay
             )
             .map { $0.0 }
@@ -74,5 +72,21 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
             .catchErrorJustReturn(.loaded(next: []))
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
+    }()
+    
+    private let stateRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
+    private let buyActivityRelay = BehaviorRelay<[BuyActivityItemEvent]>(value: [])
+    private let currency: CryptoCurrency
+    private let service: BuySellKit.OrdersServiceAPI
+    private let disposeBag = DisposeBag()
+    private let custodialFeatureFetching: CustodialFeatureFetching
+
+    init(currency: CryptoCurrency,
+         service: BuySellKit.OrdersServiceAPI,
+         tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
+         featureFetching: FeatureFetching = AppFeatureConfigurator.shared) {
+        self.currency = currency
+        self.service = service
+        custodialFeatureFetching = CustodialFeatureFetcher(tiersService: tiersService, featureFetching: featureFetching)
     }
 }

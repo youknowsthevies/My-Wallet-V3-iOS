@@ -16,7 +16,8 @@ final class AssetLineChartInteractor: AssetLineChartInteracting {
     // MARK: - Properties
     
     var state: Observable<AssetLineChart.State.Interaction> {
-        stateRelay
+        _ = setup
+        return stateRelay
             .asObservable()
     }
     
@@ -27,6 +28,14 @@ final class AssetLineChartInteractor: AssetLineChartInteracting {
     public let priceWindowRelay = PublishRelay<PriceWindow>()
             
     // MARK: - Private Accessors
+    
+    private lazy var setup: Void = {
+        window.emit(onNext: { [weak self] priceWindow in
+            guard let self = self else { return }
+            self.loadHistoricalPrices(within: priceWindow)
+        })
+        .disposed(by: disposeBag)
+    }()
     
     private let stateRelay = BehaviorRelay<AssetLineChart.State.Interaction>(value: .loading)
     private let cryptoCurrency: CryptoCurrency
@@ -42,15 +51,6 @@ final class AssetLineChartInteractor: AssetLineChartInteracting {
         self.fiatCurrency = fiatCurrency
         self.priceService = priceService
         self.cryptoCurrency = cryptoCurrency
-        setup()
-    }
-    
-    private func setup() {
-        window.emit(onNext: { [weak self] priceWindow in
-            guard let self = self else { return }
-            self.loadHistoricalPrices(within: priceWindow)
-        })
-        .disposed(by: disposeBag)
     }
     
     private func loadHistoricalPrices(within window: PriceWindow) {

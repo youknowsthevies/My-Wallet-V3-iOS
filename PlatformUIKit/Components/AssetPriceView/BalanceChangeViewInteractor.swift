@@ -17,18 +17,13 @@ public final class BalanceChangeViewInteractor: AssetPriceViewInteracting {
     // MARK: - Exposed Properties
     
     public var state: Observable<InteractionState> {
-        stateRelay.asObservable()
+        _ = setup
+        return stateRelay.asObservable()
     }
     
     // MARK: - Private Accessors
     
-    private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
-    private let disposeBag = DisposeBag()
-    
-    // MARK: - Setup
-    
-    public init(balanceProvider: BalanceProviding,
-                balanceChangeProvider: BalanceChangeProviding) {
+    private lazy var setup: Void = {
         Observable
             .combineLatest(balanceProvider.fiatBalance, balanceChangeProvider.change)
             .throttle(.milliseconds(300), scheduler: MainScheduler.instance)
@@ -64,5 +59,19 @@ public final class BalanceChangeViewInteractor: AssetPriceViewInteracting {
             .catchErrorJustReturn(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
+    }()
+    
+    private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
+    private let disposeBag = DisposeBag()
+    
+    private let balanceProvider: BalanceProviding
+    private let balanceChangeProvider: BalanceChangeProviding
+    
+    // MARK: - Setup
+    
+    public init(balanceProvider: BalanceProviding,
+                balanceChangeProvider: BalanceChangeProviding) {
+        self.balanceProvider = balanceProvider
+        self.balanceChangeProvider = balanceChangeProvider
     }
 }
