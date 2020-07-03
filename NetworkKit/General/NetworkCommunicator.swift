@@ -102,7 +102,6 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
     private func executeAndHandleAuth<ResponseType: Decodable>(request: NetworkRequest) -> Single<ResponseType> {
         guard request.authenticated else {
             return privatePerform(request: request)
-                
         }
         guard let authenticator = authenticator else {
             fatalError("Authenticator missing")
