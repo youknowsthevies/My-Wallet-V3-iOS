@@ -41,7 +41,7 @@ class KYCPager: KYCPagerAPI {
             }
         }
 
-        return dataRepository.nabuUser.take(1).asSingle().flatMapMaybe { [weak self] user -> Maybe<KYCPageType> in
+        return dataRepository.nabuUserSingle.flatMapMaybe { [weak self] user -> Maybe<KYCPageType> in
             guard let strongSelf = self else {
                 return Maybe.empty()
             }

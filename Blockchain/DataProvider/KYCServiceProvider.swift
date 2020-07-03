@@ -9,7 +9,5 @@
 import PlatformKit
 
 extension KYCServiceProvider {
-    static let `default`: KYCServiceProviderAPI = KYCServiceProvider(
-        authenticationService: NabuAuthenticationService.shared
-    )
+    static let `default`: KYCServiceProviderAPI = KYCServiceProvider()
 }

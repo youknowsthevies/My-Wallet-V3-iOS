@@ -31,7 +31,8 @@ public final class AssetBalanceChangeProvider: AssetBalanceChangeProviding {
     public let prices: HistoricalFiatPriceServiceAPI
     
     public var calculationState: Observable<AssetFiatCryptoBalanceCalculationState> {
-        calculationStateRelay.asObservable()
+        _ = setup
+        return calculationStateRelay.asObservable()
     }
     
     // MARK: - Private Accessors
@@ -39,12 +40,7 @@ public final class AssetBalanceChangeProvider: AssetBalanceChangeProviding {
     private let calculationStateRelay = BehaviorRelay<AssetFiatCryptoBalanceCalculationState>(value: .calculating)
     private let disposeBag = DisposeBag()
     
-    // MARK: - Setup
-    
-    public init(balance: AssetBalanceFetching,
-                prices: HistoricalFiatPriceServiceAPI) {
-        self.balance = balance
-        self.prices = prices
+    private lazy var setup: Void = {
         Observable
             .combineLatest(balance.calculationState, prices.calculationState)
             .map { (balance, prices) in
@@ -69,5 +65,13 @@ public final class AssetBalanceChangeProvider: AssetBalanceChangeProviding {
             .catchErrorJustReturn(.calculating) // TODO: Error handling
             .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
+    }()
+    
+    // MARK: - Setup
+    
+    public init(balance: AssetBalanceFetching,
+                prices: HistoricalFiatPriceServiceAPI) {
+        self.balance = balance
+        self.prices = prices
     }
 }

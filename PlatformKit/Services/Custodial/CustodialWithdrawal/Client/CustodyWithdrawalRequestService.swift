@@ -20,23 +20,16 @@ public final class CustodyWithdrawalRequestService: CustodyWithdrawalServiceAPI 
     // MARK: - Private Properties
     
     private let client: CustodyWithdrawalClientAPI
-    private let authenticationService: NabuAuthenticationServiceAPI
     
     // MARK: - Init
     
-    public init(client: CustodyWithdrawalClientAPI = CustodialClient(),
-                authenticationService: NabuAuthenticationServiceAPI) {
+    public init(client: CustodyWithdrawalClientAPI = CustodialClient()) {
         self.client = client
-        self.authenticationService = authenticationService
     }
     
     // MARK: - SimpleBuyWithdrawalServiceAPI
     
     public func makeWithdrawal(amount: CryptoValue, destination: String) -> Single<CustodialWithdrawalResponse> {
-        authenticationService
-            .tokenString
-            .flatMap(weak: self) { (self, authToken) -> Single<CustodialWithdrawalResponse> in
-                self.client.withdraw(cryptoValue: amount, destination: destination, authToken: authToken)
-            }
+        self.client.withdraw(cryptoValue: amount, destination: destination)
     }
 }

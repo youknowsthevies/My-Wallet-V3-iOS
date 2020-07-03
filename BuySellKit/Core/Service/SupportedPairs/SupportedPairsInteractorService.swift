@@ -16,8 +16,7 @@ public typealias BuyCryptoSupportedPairsCalculationState = ValueCalculationState
 
 /// A Simple Buy Service that provides the supported pairs for the current Fiat Currency.
 public protocol SupportedPairsInteractorServiceAPI: class {
-    var valueObservable: Observable<SupportedPairs> { get }
-    var valueSingle: Single<SupportedPairs> { get }
+    var pairs: Observable<SupportedPairs> { get }
     func fetch() -> Observable<SupportedPairs>
 }
 
@@ -25,50 +24,50 @@ final class SupportedPairsInteractorService: SupportedPairsInteractorServiceAPI 
 
     // MARK: - Public properties
 
-    public var valueObservable: Observable<SupportedPairs> {
-        cachedValue.valueObservable
+    public var pairs: Observable<SupportedPairs> {
+        pairsRelay
+            .flatMap(weak: self) { (self, pairs) -> Observable<SupportedPairs> in
+                guard let pairs = pairs else {
+                    return self.fetch()
+                }
+                return .just(pairs)
+            }
+            .distinctUntilChanged()
     }
-
-    public var valueSingle: Single<SupportedPairs> {
-        cachedValue.valueSingle
-    }
-
+    
     // MARK: - Private properties
+    
+    private let pairsRelay = BehaviorRelay<SupportedPairs?>(value: nil)
 
-    private let cachedValue: CachedValue<SupportedPairs>
-
+    private let featureFetcher: FeatureFetching
+    private let pairsService: SupportedPairsServiceAPI
+    private let fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
+    
     // MARK: - Setup
 
     init(featureFetcher: FeatureFetching,
          pairsService: SupportedPairsServiceAPI,
          fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI) {
-
-        cachedValue = .init(
-            configuration: .init(
-                identifier: "simple-buy-supported-pairs",
-                refreshType: .periodic(seconds: 2),
-                fetchPriority: .fetchAll,
-                flushNotificationName: .logout,
-                fetchNotificationName: .login)
-        )
-
-        cachedValue
-            .setFetch { () -> Observable<SupportedPairs> in
-                featureFetcher.fetchBool(for: .simpleBuyEnabled)
-                    .asObservable()
-                    .flatMapLatest { isFeatureEnabled -> Observable<SupportedPairs> in
-                        guard isFeatureEnabled else {
-                            return .just(.empty)
-                        }
-                        return fiatCurrencySettingsService
-                            .fiatCurrencyObservable
-                            .map { .only(fiatCurrency: $0) }
-                            .flatMapLatest { pairsService.fetchPairs(for: $0).asObservable() }
-                }
-            }
+        self.featureFetcher = featureFetcher
+        self.pairsService = pairsService
+        self.fiatCurrencySettingsService = fiatCurrencySettingsService
     }
 
     func fetch() -> Observable<SupportedPairs> {
-        cachedValue.fetchValueObservable
+        featureFetcher.fetchBool(for: .simpleBuyEnabled)
+            .asObservable()
+            .flatMapLatest(weak: self) { (self, isFeatureEnabled) -> Observable<SupportedPairs> in
+                guard isFeatureEnabled else {
+                    return .just(.empty)
+                }
+                return self.fiatCurrencySettingsService
+                    .fiatCurrencyObservable
+                    .map { .only(fiatCurrency: $0) }
+                    .flatMapLatest { self.pairsService.fetchPairs(for: $0).asObservable() }
+            }
+            .do(onNext: { [weak self] pairs in
+                self?.pairsRelay.accept(pairs)
+            })
+            
     }
 }

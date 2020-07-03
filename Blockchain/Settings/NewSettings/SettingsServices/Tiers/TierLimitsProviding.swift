@@ -20,13 +20,13 @@ final class TierLimitsProvider: TierLimitsProviding {
     
     let fetchTriggerRelay = PublishRelay<Void>()
     
-    private let repository: BlockchainDataRepository
+    private let tiersService: KYCTiersServiceAPI
     
     var tiers: Observable<KYC.UserTiers> {
-        Observable.combineLatest(repository.tiers, fetchTriggerRelay).map { $0.0 }
+        Observable.combineLatest(tiersService.tiers.asObservable(), fetchTriggerRelay).map { $0.0 }
     }
     
-    init(repository: BlockchainDataRepository = BlockchainDataRepository.shared) {
-        self.repository = repository
+    init(tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers) {
+        self.tiersService = tiersService
     }
 }

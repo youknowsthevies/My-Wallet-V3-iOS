@@ -19,7 +19,6 @@ class StellarAirdropRouterTests: XCTestCase {
     private var mockDataRepo: MockBlockchainDataRepository!
     private var mockAirdropRegistration: AirdropRegistrationMock!
     private var mockKYCSettings: KYCSettingsMock!
-    private var mockNabuAuthenticationService: NabuAuthenticationServiceMock!
     private var stellarWalletAccountRepository: StellarWalletAccountRepository!
     
     private var router: StellarAirdropRouter!
@@ -32,13 +31,11 @@ class StellarAirdropRouterTests: XCTestCase {
         mockStellarBridge = MockStellarBridge()
         mockAirdropRegistration = AirdropRegistrationMock()
         mockKYCSettings = KYCSettingsMock()
-        mockNabuAuthenticationService = NabuAuthenticationServiceMock()
         stellarWalletAccountRepository = StellarWalletAccountRepository(with: mockStellarBridge)
         
         router = StellarAirdropRouter(
             kycSettings: mockKYCSettings,
             airdropRegistrationService: mockAirdropRegistration,
-            nabuAuthenticationService: mockNabuAuthenticationService,
             appSettings: mockAppSettings,
             repository: mockDataRepo,
             stellarWalletAccountRepository: stellarWalletAccountRepository

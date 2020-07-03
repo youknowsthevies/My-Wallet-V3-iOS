@@ -23,47 +23,32 @@ extension SwapActivityServiceAPI {
 public final class SwapActivityService: SwapActivityServiceAPI {
     
     private let client: SwapClientAPI
-    private let authenticationService: NabuAuthenticationServiceAPI
     private let fiatCurrencyProvider: FiatCurrencySettingsServiceAPI
     
     public init(client: SwapClientAPI = SwapClient(),
-                authenticationService: NabuAuthenticationServiceAPI,
                 fiatCurrencyProvider: FiatCurrencySettingsServiceAPI) {
         self.fiatCurrencyProvider = fiatCurrencyProvider
         self.client = client
-        self.authenticationService = authenticationService
     }
     
     public func fetchActivity(from date: Date) -> Single<[SwapActivityItemEvent]> {
-        Single.zip(
-                authenticationService.tokenString,
-                fiatCurrencyProvider.fiatCurrency
-            )
-            .flatMap(weak: self) { (self, values) -> Single<[SwapActivityItemEvent]> in
-                let sessionToken = values.0
-                let fiatCurrency = values.1.code
+        fiatCurrencyProvider.fiatCurrency
+            .flatMap(weak: self) { (self, fiatCurrency) -> Single<[SwapActivityItemEvent]> in
                 return self.client.fetchActivity(
                     from: date,
-                    fiatCurrency: fiatCurrency,
-                    token: sessionToken
-                )
-            }
+                    fiatCurrency: fiatCurrency.code
+            )
+        }
     }
     
     public func fetchActivity(from date: Date, cryptoCurrency: CryptoCurrency) -> Single<[SwapActivityItemEvent]> {
-        Single.zip(
-            authenticationService.tokenString,
-            fiatCurrencyProvider.fiatCurrency
-            )
-            .flatMap(weak: self) { (self, values) -> Single<[SwapActivityItemEvent]> in
-                let sessionToken = values.0
-                let fiatCurrency = values.1.code
+        fiatCurrencyProvider.fiatCurrency
+            .flatMap(weak: self) { (self, fiatCurrency) -> Single<[SwapActivityItemEvent]> in
                 return self.client.fetchActivity(
                     from: date,
-                    fiatCurrency: fiatCurrency,
+                    fiatCurrency: fiatCurrency.code,
                     cryptoCurrency: cryptoCurrency,
-                    limit: self.pageSize,
-                    token: sessionToken
+                    limit: self.pageSize
                 )
             }
     }

@@ -28,3 +28,23 @@ public extension SharedKeyRepositoryAPI {
             }
     }
 }
+
+public protocol CredentialsRepositoryAPI: SharedKeyRepositoryAPI, GuidRepositoryAPI {
+    var credentials: Single<(guid: String, sharedKey: String)> { get }
+}
+
+extension CredentialsRepositoryAPI {
+    public var credentials: Single<(guid: String, sharedKey: String)> {
+        Single
+            .zip(guid, sharedKey)
+            .map { (guid, sharedKey) -> (guid: String, sharedKey: String) in
+                guard let guid = guid else {
+                    throw MissingCredentialsError.guid
+                }
+                guard let sharedKey = sharedKey else {
+                    throw MissingCredentialsError.sharedKey
+                }
+                return (guid, sharedKey)
+            }
+    }
+}

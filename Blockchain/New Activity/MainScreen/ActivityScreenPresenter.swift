@@ -166,22 +166,21 @@ final class ActivityScreenPresenter {
             .bindAndCatch(to: selectionButtonViewModel.trailingImageViewContentRelay)
             .disposed(by: disposeBag)
         
-        let subtitleObservable: Observable<String> = Observable.combineLatest(
-            interactor.activityBalance,
-            interactor.fiatCurrency
-        )
-        .map { values in
-            let amount = values.0
-            let code = values.1.code
-            return amount.toDisplayString(includeSymbol: true) + " \(code)"
-        }
+        let subtitleObservable: Observable<String> = Observable
+            .combineLatest(
+                interactor.activityBalance,
+                interactor.fiatCurrency,
+                resultSelector: { (amount: $0, currency: $1) }
+            )
+            .map { $0.amount.toDisplayString(includeSymbol: true) + " \($0.currency.code)" }
+            .catchErrorJustReturn("")
         
         subtitleObservable
             .bindAndCatch(to: selectionButtonViewModel.subtitleRelay)
             .disposed(by: disposeBag)
         
         subtitleObservable
-            .map { value in .id("\(AccessibilityId.WalletSelectorView.subtitleLabel).\(value)") }
+            .map { .id("\(AccessibilityId.WalletSelectorView.subtitleLabel).\($0)") }
             .bindAndCatch(to: selectionButtonViewModel.subtitleAccessibilityRelay)
             .disposed(by: disposeBag)
 

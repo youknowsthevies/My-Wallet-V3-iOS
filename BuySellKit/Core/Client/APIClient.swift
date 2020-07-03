@@ -25,11 +25,7 @@ typealias SimpleBuyClientAPI = EligibilityClientAPI &
 final class APIClient: SimpleBuyClientAPI {
     
     // MARK: - Types
-    
-    enum ClientError: Error {
-        case unknown
-    }
-    
+        
     fileprivate enum Parameter {
         static let currency = "currency"
         static let fiatCurrency = "fiatCurrency"
@@ -67,8 +63,7 @@ final class APIClient: SimpleBuyClientAPI {
     // MARK: - EligibilityClientAPI
     
     func isEligible(for currency: String,
-                    methods: [String],
-                    token: String) -> Single<EligibilityResponse> {
+                    methods: [String]) -> Single<EligibilityResponse> {
         let parameters = [
             URLQueryItem(
                 name: Parameter.fiatCurrency,
@@ -82,25 +77,24 @@ final class APIClient: SimpleBuyClientAPI {
         let request = requestBuilder.get(
             path: Path.eligible,
             parameters: parameters,
-            headers: [HttpHeaderField.authorization: token]
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }
     
     // MARK: - OrderCancellationClientAPI
     
-    func cancel(order id: String, token: String) -> Completable {
+    func cancel(order id: String) -> Completable {
         let request = requestBuilder.delete(
             path: Path.trades + [id],
-            headers: [HttpHeaderField.authorization: token]
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }
         
     // MARK: - SuggestedAmountsClientAPI
     
-    func suggestedAmounts(for currency: FiatCurrency,
-                          using token: String) -> Single<SuggestedAmountsResponse> {
+    func suggestedAmounts(for currency: FiatCurrency) -> Single<SuggestedAmountsResponse> {
         let parameters = [
             URLQueryItem(
                 name: Parameter.currency,
@@ -110,7 +104,7 @@ final class APIClient: SimpleBuyClientAPI {
         let request = requestBuilder.get(
             path: Path.suggestedAmounts,
             parameters: parameters,
-            headers: [HttpHeaderField.authorization: token]
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }
@@ -140,7 +134,7 @@ final class APIClient: SimpleBuyClientAPI {
     
     // MARK: - OrderDetailsClientAPI
 
-    func orderDetails(token: String, pendingOnly: Bool) -> Single<[OrderPayload.Response]> {
+    func orderDetails(pendingOnly: Bool) -> Single<[OrderPayload.Response]> {
         let path = Path.trades
         let states: [OrderDetails.State] = OrderDetails.State.allCases.filter { $0 != .cancelled }
         let parameters = [
@@ -153,28 +147,26 @@ final class APIClient: SimpleBuyClientAPI {
                 value: states.map({ $0.rawValue }).joined(separator: ",")
             )
         ]
-        let headers = [HttpHeaderField.authorization: token]
         let request = requestBuilder.get(
             path: path,
             parameters: parameters,
-            headers: headers
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }
     
-    func orderDetails(with identifer: String, token: String) -> Single<OrderPayload.Response> {
+    func orderDetails(with identifer: String) -> Single<OrderPayload.Response> {
         let path = Path.trades + [identifer]
-        let headers = [HttpHeaderField.authorization: token]
         let request = requestBuilder.get(
             path: path,
-            headers: headers
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }
     
     // MARK: - PaymentAccountClientAPI
     
-    func paymentAccount(for currency: FiatCurrency, token: String) -> Single<PaymentAccountResponse> {
+    func paymentAccount(for currency: FiatCurrency) -> Single<PaymentAccountResponse> {
         struct Payload: Encodable {
             let currency: String
         }
@@ -183,7 +175,7 @@ final class APIClient: SimpleBuyClientAPI {
         let request = requestBuilder.put(
             path: Path.paymentAccount,
             body: try? payload.encode(),
-            headers: [HttpHeaderField.authorization: token]
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }
@@ -191,8 +183,7 @@ final class APIClient: SimpleBuyClientAPI {
     // MARK: - OrderCreationClientAPI
     
     func create(order: OrderPayload.Request,
-                createPendingOrder: Bool,
-                token: String) -> Single<OrderPayload.Response> {
+                createPendingOrder: Bool) -> Single<OrderPayload.Response> {
         var parameters: [URLQueryItem] = []
         if createPendingOrder {
             parameters.append(
@@ -204,12 +195,11 @@ final class APIClient: SimpleBuyClientAPI {
         }
         
         let path = Path.trades
-        let headers = [HttpHeaderField.authorization: token]
         let request = requestBuilder.post(
             path: path,
             parameters: parameters,
             body: try? order.encode(),
-            headers: headers
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }
@@ -218,19 +208,17 @@ final class APIClient: SimpleBuyClientAPI {
     
     func confirmOrder(with identifier: String,
                       partner: OrderPayload.ConfirmOrder.Partner,
-                      paymentMethodId: String?,
-                      token: String) -> Single<OrderPayload.Response> {
+                      paymentMethodId: String?) -> Single<OrderPayload.Response> {
         let payload = OrderPayload.ConfirmOrder(
             partner: partner,
             action: .confirm,
             paymentMethodId: paymentMethodId
         )
         let path = Path.trades + [identifier]
-        let headers = [HttpHeaderField.authorization: token]
         let request = requestBuilder.post(
             path: path,
             body: try? payload.encode(),
-            headers: headers
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }
@@ -239,8 +227,7 @@ final class APIClient: SimpleBuyClientAPI {
         
     func getQuote(for action: Order.Action,
                   to cryptoCurrency: CryptoCurrency,
-                  amount: FiatValue,
-                  token: String) -> Single<QuoteResponse> {
+                  amount: FiatValue) -> Single<QuoteResponse> {
         let parameters = [
             URLQueryItem(
                 name: Parameter.currencyPair,
@@ -256,11 +243,10 @@ final class APIClient: SimpleBuyClientAPI {
             )
         ]
         let path = Path.quote
-        let headers = [HttpHeaderField.authorization: token]
         let request = requestBuilder.get(
             path: path,
             parameters: parameters,
-            headers: headers
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }
@@ -268,8 +254,7 @@ final class APIClient: SimpleBuyClientAPI {
     // MARK: - PaymentMethodsClientAPI
     
     func paymentMethods(for currency: String,
-                        checkEligibility: Bool,
-                        token: String) -> Single<PaymentMethodsResponse> {
+                        checkEligibility: Bool) -> Single<PaymentMethodsResponse> {
         let queryParameters = [
             URLQueryItem(
                 name: Parameter.currency,
@@ -280,11 +265,10 @@ final class APIClient: SimpleBuyClientAPI {
                 value: "\(checkEligibility)"
             )
         ]
-        let headers = [HttpHeaderField.authorization: token]
         let request = requestBuilder.get(
             path: Path.paymentMethods,
             parameters: queryParameters,
-            headers: headers
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }

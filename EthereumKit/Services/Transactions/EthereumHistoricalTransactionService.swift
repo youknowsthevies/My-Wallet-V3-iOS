@@ -57,7 +57,7 @@ public final class EthereumHistoricalTransactionService: HistoricalTransactionAP
     public init(with bridge: Bridge, client: EthereumClientAPI) {
         self.bridge = bridge
         self.client = client
-        self.cachedAccount = CachedValue<EthereumAssetAccount>(configuration: .onSubscriptionAndLogin())
+        self.cachedAccount = CachedValue<EthereumAssetAccount>(configuration: .onSubscription())
         self.cachedTransactions = CachedValue<[EthereumHistoricalTransaction]>(configuration: .periodicAndLogin(60))
         self.cachedLatestBlock = CachedValue<Int>(configuration: .periodicAndLogin(5))
         

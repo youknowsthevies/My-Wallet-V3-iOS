@@ -20,15 +20,12 @@ final class CustodialServiceProvider: CustodialServiceProviderAPI {
         
     // MARK: - Setup
     
-    init(authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
-         client: CustodialClientAPI = CustodialClient()) {
+    init(client: CustodialClientAPI = CustodialClient()) {
         self.balance = TradingBalanceService(
-            client: client,
-            authenticationService: authenticationService
+            client: client
         )
         self.withdrawal = CustodyWithdrawalRequestService(
-            client: client,
-            authenticationService: authenticationService
+            client: client
         )
     }
 }

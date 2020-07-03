@@ -12,7 +12,7 @@ import RxSwift
 
 class SimpleBuyPaymentAccountClientAPIMock: PaymentAccountClientAPI {
     var mockResponse: PaymentAccountResponse! = PaymentAccountResponse.mock(with: .GBP, agent: .fullMock)
-    func paymentAccount(for currency: FiatCurrency, token: String) -> Single<PaymentAccountResponse> {
-        Single.just(mockResponse)
+    func paymentAccount(for currency: FiatCurrency) -> Single<PaymentAccountResponse> {
+        return Single.just(mockResponse)
     }
 }

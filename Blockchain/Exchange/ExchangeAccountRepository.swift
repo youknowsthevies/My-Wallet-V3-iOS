@@ -22,9 +22,9 @@ protocol ExchangeClientAPI {
     
     var appSettings: BlockchainSettings.App { get }
     var communicatorAPI: NetworkCommunicatorAPI { get }
-    func linkID(_ authenticationToken: String) -> Single<LinkID>
-    func linkToExistingExchangeUser(authenticationToken: String, _ linkID: LinkID) -> Completable
-    func syncDepositAddress(authenticationToken: String, _ accounts: [AssetAddress]) -> Completable
+    var linkID: Single<LinkID> { get }
+    func linkToExistingExchangeUser(linkID: LinkID) -> Completable
+    func syncDepositAddress(accounts: [AssetAddress]) -> Completable
 }
 
 enum ExchangeLinkingAPIError: Error {
@@ -35,16 +35,13 @@ enum ExchangeLinkingAPIError: Error {
 class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
     
     private let blockchainRepository: BlockchainDataRepository
-    private let authenticationService: NabuAuthenticationServiceAPI
     private let clientAPI: ExchangeClientAPI
     private let accountRepository: AssetAccountRepositoryAPI
     
     init(blockchainRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
-         authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
          clientAPI: ExchangeClientAPI = ExchangeClient(communicatorAPI: NetworkCommunicator.shared),
          accountRepository: AssetAccountRepositoryAPI = AssetAccountRepository.shared) {
         self.blockchainRepository = blockchainRepository
-        self.authenticationService = authenticationService
         self.clientAPI = clientAPI
         self.accountRepository = accountRepository
     }
@@ -68,13 +65,10 @@ class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
     }
     
     func syncDepositAddresses() -> Completable {
-        Single.zip(
-            authenticationService.tokenString,
-            accountRepository.accounts
-        )
-        .flatMapCompletable(weak: self) { (self, payload) -> Completable in
-                let addresses = payload.1.map { $0.address }
-                return self.clientAPI.syncDepositAddress(authenticationToken: payload.0, addresses)
+        accountRepository.accounts
+            .flatMapCompletable(weak: self) { (self, accounts) -> Completable in
+                let addresses = accounts.map { $0.address }
+                return self.clientAPI.syncDepositAddress(accounts: addresses)
             }
     }
 }
@@ -83,13 +77,25 @@ class ExchangeClient: ExchangeClientAPI {
     var communicatorAPI: NetworkCommunicatorAPI
     var appSettings: BlockchainSettings.App
     
-    init(communicatorAPI: NetworkCommunicatorAPI = NetworkCommunicator.shared,
+    init(communicatorAPI: NetworkCommunicatorAPI = Network.Dependencies.retail.communicator,
          settings: BlockchainSettings.App = BlockchainSettings.App.shared) {
         self.communicatorAPI = communicatorAPI
         self.appSettings = settings
     }
     
-    func syncDepositAddress(authenticationToken: String, _ accounts: [AssetAddress]) -> Completable {
+    var linkID: Single<LinkID> {
+        let fallback = fetchLinkIDPayload()
+            .flatMap(weak: self) { (self, payload) -> Single<LinkID> in
+                guard let linkID = payload["linkId"] else {
+                return Single.error(ExchangeLinkingAPIError.noLinkID)
+            }
+            
+            return Single.just(linkID)
+        }
+        return existingUserLinkIdentifier().ifEmpty(switchTo: fallback)
+    }
+    
+    func syncDepositAddress(accounts: [AssetAddress]) -> Completable {
         let depositAddresses = Dictionary(accounts.map { ($0.depositAddress.type.code, $0.depositAddress.address) }) { _, last in last }
         let payload = ["addresses" : depositAddresses ]
         guard let apiURL = URL(string: BlockchainAPI.shared.retailCoreUrl) else {
@@ -104,24 +110,13 @@ class ExchangeClient: ExchangeClientAPI {
             endpoint: endpoint,
             method: .post,
             body: try? JSONEncoder().encode(payload),
-            headers: [HttpHeaderField.authorization: authenticationToken],
+            authenticated: true,
             contentType: .json
         )
         return communicatorAPI.perform(request: request, responseType: EmptyNetworkResponse.self)
     }
     
-    func linkID(_ authenticationToken: String) -> Single<LinkID> {
-        let fallback = fetchLinkIDPayload(authenticationToken).flatMap(weak: self) { (self, payload) -> Single<LinkID> in
-            guard let linkID = payload["linkId"] else {
-                return Single.error(ExchangeLinkingAPIError.noLinkID)
-            }
-            
-            return Single.just(linkID)
-        }
-        return existingUserLinkIdentifier().ifEmpty(switchTo: fallback)
-    }
-    
-    func linkToExistingExchangeUser(authenticationToken: String, _ linkID: LinkID) -> Completable {
+    func linkToExistingExchangeUser(linkID: LinkID) -> Completable {
         let payload = ["linkId": linkID]
         guard let apiURL = URL(string: BlockchainAPI.shared.retailCoreUrl) else {
             return Completable.error(NetworkError.default)
@@ -135,13 +130,13 @@ class ExchangeClient: ExchangeClientAPI {
             endpoint: endpoint,
             method: .put,
             body: try? JSONEncoder().encode(payload),
-            headers: [HttpHeaderField.authorization: authenticationToken],
+            authenticated: true,
             contentType: .json
         )
         return communicatorAPI.perform(request: request, responseType: EmptyNetworkResponse.self)
     }
     
-    func fetchLinkIDPayload(_ token: String) -> Single<Dictionary<String, String>> {
+    func fetchLinkIDPayload() -> Single<Dictionary<String, String>> {
         guard let apiURL = URL(string: BlockchainAPI.shared.retailCoreUrl) else {
             return Single.error(NetworkError.default)
         }
@@ -154,7 +149,7 @@ class ExchangeClient: ExchangeClientAPI {
             endpoint: endpoint,
             method: .put,
             body: nil,
-            headers: [HttpHeaderField.authorization: token],
+            authenticated: true,
             contentType: .json
         )
         

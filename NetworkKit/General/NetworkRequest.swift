@@ -30,6 +30,11 @@ public struct NetworkRequest {
     }
     
     public var URLRequest: URLRequest {
+        
+        if authenticated && headers?[HttpHeaderField.authorization] == nil {
+            fatalError("Missing Autentication Header")
+        }
+        
         let request: NSMutableURLRequest = NSMutableURLRequest(
             url: endpoint,
             cachePolicy: .reloadIgnoringLocalCacheData,
@@ -58,7 +63,7 @@ public struct NetworkRequest {
     
     let method: NetworkMethod
     let endpoint: URL
-    let headers: HTTPHeaders?
+    private(set) var headers: HTTPHeaders?
     let contentType: ContentType
     // TODO:
     // * Also inject error decoder
@@ -69,12 +74,15 @@ public struct NetworkRequest {
     let body: Data?
     
     let recordErrors: Bool
+    
+    let authenticated: Bool
 
     public init(
         endpoint: URL,
         method: NetworkMethod,
         body: Data? = nil,
         headers: HTTPHeaders? = nil,
+        authenticated: Bool = false,
         contentType: ContentType = .json,
         decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
         recordErrors: Bool = false
@@ -83,9 +91,17 @@ public struct NetworkRequest {
         self.method = method
         self.body = body
         self.headers = headers
+        self.authenticated = authenticated
         self.contentType = contentType
         self.decoder = decoder
         self.recordErrors = recordErrors
+    }
+    
+    public mutating func add(authenticationToken: String) {
+        if headers == nil {
+            headers = [:]
+        }
+        headers?[HttpHeaderField.authorization] = authenticationToken
     }
     
     private func addHttpBody(to request: NSMutableURLRequest) {

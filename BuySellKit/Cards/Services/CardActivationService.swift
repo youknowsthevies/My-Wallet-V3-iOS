@@ -64,25 +64,18 @@ public class CardActivationService: CardActivationServiceAPI {
     // MARK: - Injected
     
     private let pollService: PollService<State>
-    private let authenticationService: NabuAuthenticationServiceAPI
     private let client: CardDetailClientAPI
     
     // MARK: - Setup
     
-    public init(client: CardDetailClientAPI,
-                authenticationService: NabuAuthenticationServiceAPI) {
+    public init(client: CardDetailClientAPI) {
         self.client = client
-        self.authenticationService = authenticationService
         pollService = .init(matcher: { !$0.isPending })
     }
     
     public func waitForActivation(of cardId: String) -> Single<PollResult<State>> {
         pollService.setFetch(weak: self) { (self) in
-            self.authenticationService
-                .tokenString
-                .flatMap(weak: self) { (self, token) in
-                    self.client.getCard(by: cardId, token: token)
-                }
+            self.client.getCard(by: cardId)
                 .map { payload in
                     guard payload.state != .pending else {
                         return .pending

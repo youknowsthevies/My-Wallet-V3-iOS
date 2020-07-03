@@ -38,23 +38,15 @@ public final class AssetBalanceFetcher: AssetBalanceFetching {
     
     /// The balance
     public var calculationState: Observable<AssetFiatCryptoBalanceCalculationState> {
-        calculationStateRelay.asObservable()
+        _ = setup
+        return calculationStateRelay.asObservable()
     }
     
     private let calculationStateRelay = BehaviorRelay<AssetFiatCryptoBalanceCalculationState>(value: .calculating)
     private let exchange: PairExchangeServiceAPI
     private let disposeBag = DisposeBag()
     
-    // MARK: - Setup
-    
-    public init(wallet: AccountBalanceFetching,
-                trading: CustodialAccountBalanceFetching,
-                savings: CustodialAccountBalanceFetching,
-                exchange: PairExchangeServiceAPI) {
-        self.trading = trading
-        self.wallet = wallet
-        self.savings = savings
-        self.exchange = exchange
+    private lazy var setup: Void = {
         Observable
             .combineLatest(
                 wallet.balanceObservable,
@@ -75,6 +67,18 @@ public final class AssetBalanceFetcher: AssetBalanceFetching {
             .catchErrorJustReturn(.calculating)
             .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
+    }()
+    
+    // MARK: - Setup
+    
+    public init(wallet: AccountBalanceFetching,
+                trading: CustodialAccountBalanceFetching,
+                savings: CustodialAccountBalanceFetching,
+                exchange: PairExchangeServiceAPI) {
+        self.trading = trading
+        self.wallet = wallet
+        self.savings = savings
+        self.exchange = exchange
     }
     
     public func refresh() {

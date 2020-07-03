@@ -45,50 +45,45 @@ public final class CardClient: CardClientAPI {
     // MARK: - CardListClientAPI
     
     /// Streams a list of available cards
-    /// - Parameter token: Session token
     /// - Returns: A Single with `CardPayload` array
-    public func cardList(by token: String) -> Single<[CardPayload]> {
+    public var cardList: Single<[CardPayload]> {
         let path = Path.card
-        let headers = [HttpHeaderField.authorization: token]
         let request = requestBuilder.get(
             path: path,
-            headers: headers
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }
     
     // MARK: - CardDetailClientAPI
         
-    public func getCard(by id: String, token: String) -> Single<CardPayload> {
+    public func getCard(by id: String) -> Single<CardPayload> {
         let path = Path.card + [id]
-        let headers = [HttpHeaderField.authorization: token]
         let request = requestBuilder.get(
             path: path,
-            headers: headers
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }
     
     // MARK: - CardDeletionClientAPI
 
-    public func deleteCard(by id: String, token: String) -> Completable {
+    public func deleteCard(by id: String) -> Completable {
         let path = Path.card + [id]
-        let headers = [HttpHeaderField.authorization: token]
         let request = requestBuilder.delete(
             path: path,
-            headers: headers
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }
     
     // MARK: - CardChargeClientAPI
     
-    public func chargeCard(by id: String, token: String) -> Completable {
+    public func chargeCard(by id: String) -> Completable {
         let path = Path.card + [id, "charge"]
-        let headers = [HttpHeaderField.authorization: token]
         let request = requestBuilder.post(
             path: path,
-            headers: headers
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }
@@ -97,8 +92,7 @@ public final class CardClient: CardClientAPI {
     
     public func add(for currency: String,
                     email: String,
-                    billingAddress: CardPayload.BillingAddress,
-                    token: String) -> Single<CardPayload> {
+                    billingAddress: CardPayload.BillingAddress) -> Single<CardPayload> {
         struct RequestPayload: Encodable {
             let currency: String
             let email: String
@@ -112,11 +106,10 @@ public final class CardClient: CardClientAPI {
         )
         
         let path = Path.card
-        let headers = [HttpHeaderField.authorization: token]
         let request = requestBuilder.post(
             path: path,
             body: try? payload.encode(),
-            headers: headers
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }
@@ -132,8 +125,7 @@ public final class CardClient: CardClientAPI {
     ///   - token: Session token
     /// - Returns: The card details
     public func activateCard(by id: String,
-                             url: String,
-                             token: String) -> Single<ActivateCardResponse.Partner> {
+                             url: String) -> Single<ActivateCardResponse.Partner> {
         
         struct Attributes: Encodable {
             struct EveryPay: Encodable {
@@ -146,13 +138,12 @@ public final class CardClient: CardClientAPI {
             }
         }
         let path = Path.activateCard(with: id)
-        let headers = [HttpHeaderField.authorization: token]
         let payload = Attributes(everypay: .init(customerUrl: url))
         
         let request = requestBuilder.post(
             path: path,
             body: try? payload.encode(),
-            headers: headers
+            authenticated: true
         )!
         return communicator
             .perform(request: request)

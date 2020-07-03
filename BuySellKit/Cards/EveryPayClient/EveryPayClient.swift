@@ -50,7 +50,6 @@ public final class EveryPayClient: EveryPayClientAPI {
                      token: String) -> Single<CardPartnerPayload.EveryPay.CardDetailsResponse> {
         let path = Path.cardDetails
         let headers = [HttpHeaderField.authorization: "Bearer \(token)"]
-                
         let payload = CardPartnerPayload.EveryPay.SendCardDetailsRequest(
             apiUserName: apiUserName,
             nonce: UUID().uuidString,

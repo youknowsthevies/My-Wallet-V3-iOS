@@ -13,15 +13,13 @@ import ToolKit
 
 class KYCCountrySelectionInteractor {
 
-    private let authenticationService: NabuAuthenticationService
-    private let walletNabuSynchronizer: WalletNabuSynchronizerAPI
-
-    init(
-        authenticationService: NabuAuthenticationService = NabuAuthenticationService.shared,
-        walletNabuSynchronizer: WalletNabuSynchronizerAPI = WalletNabuSynchronizerService()
-    ) {
-        self.authenticationService = authenticationService
-        self.walletNabuSynchronizer = walletNabuSynchronizer
+    private let jwtService: JWTServiceAPI
+    private let kycClient: KYCClientAPI
+    
+    init(jwtService: JWTServiceAPI = NabuServiceProvider.default.jwtToken,
+         kycClient: KYCClientAPI = KYCClient()) {
+        self.kycClient = kycClient
+        self.jwtService = jwtService
     }
 
     func selected(country: CountryData, shouldBeNotifiedWhenAvailable: Bool? = nil) -> Disposable {
@@ -36,32 +34,16 @@ class KYCCountrySelectionInteractor {
         )
     }
 
-    private func sendSelection(
-        countryCode: String,
-        state: String? = nil,
-        shouldBeNotifiedWhenAvailable: Bool? = nil
-    ) -> Disposable {
-        let sessionTokenSingle = authenticationService.tokenString
-        let signedRetailToken = walletNabuSynchronizer.getSignedRetailToken()
-        return Single.zip(sessionTokenSingle, signedRetailToken, resultSelector: {
-            ($0, $1)
-        }).flatMapCompletable { (sessionToken, signedRetailToken) -> Completable in
-            var payload = [
-                "jwt": signedRetailToken.token ?? "",
-                "countryCode": countryCode
-            ]
-            if let notify = shouldBeNotifiedWhenAvailable {
-                payload["notifyWhenAvailable"] = notify.description
+    private func sendSelection(countryCode: String, state: String? = nil, shouldBeNotifiedWhenAvailable: Bool? = nil) -> Disposable {
+        jwtService.token
+            .flatMapCompletable(weak: self) { (self, jwtToken) in
+                self.kycClient.selectCountry(
+                    country: countryCode,
+                    state: state,
+                    notifyWhenAvailable: shouldBeNotifiedWhenAvailable ?? false,
+                    jwtToken: jwtToken
+                )
             }
-            if let state = state {
-                payload["state"] = state
-            }
-            let headers = [HttpHeaderField.authorization: sessionToken]
-            return KYCNetworkRequest.request(post: .country, parameters: payload, headers: headers)
-        }.subscribe(onCompleted: {
-            Logger.shared.debug("Successfully notified the server of the selected country.")
-        }, onError: { error in
-            Logger.shared.error("Failed to notify the server of the selected country: \(error)")
-        })
+            .subscribe()
     }
 }

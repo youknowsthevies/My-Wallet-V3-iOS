@@ -6,7 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import RxSwift
+import ToolKit
 import PlatformKit
 import PlatformUIKit
 import ToolKit
@@ -18,19 +19,24 @@ protocol LocationSuggestionCoordinatorDelegate: class {
 
 class LocationSuggestionCoordinator: NSObject {
 
-    fileprivate let service: LocationSuggestionService
-    fileprivate let api: LocationUpdateAPI
-    fileprivate var model: LocationSearchResult {
+    private let locationSuggestionService: LocationSuggestionService
+    private let locationUpdateService: LocationUpdateService
+    private var model: LocationSearchResult {
         didSet {
             delegate?.coordinator(self, updated: model)
         }
     }
-    fileprivate weak var delegate: LocationSuggestionCoordinatorDelegate?
-    fileprivate weak var interface: LocationSuggestionInterface?
+    private weak var delegate: LocationSuggestionCoordinatorDelegate?
+    private weak var interface: LocationSuggestionInterface?
 
-    init(_ delegate: LocationSuggestionCoordinatorDelegate, interface: LocationSuggestionInterface) {
-        self.service = LocationSuggestionService()
-        self.api = LocationUpdateService()
+    private let disposeBag = DisposeBag()
+    
+    init(_ delegate: LocationSuggestionCoordinatorDelegate,
+         interface: LocationSuggestionInterface,
+         locationUpdateService: LocationUpdateService = LocationUpdateService(),
+         locationSuggestionService: LocationSuggestionService = LocationSuggestionService()) {
+        self.locationUpdateService = locationUpdateService
+        self.locationSuggestionService = locationSuggestionService
         self.delegate = delegate
         self.interface = interface
         self.model = .empty
@@ -65,7 +71,7 @@ extension LocationSuggestionCoordinator: SearchControllerDelegate {
         model = newModel
 
         if let input = selection as? LocationSuggestion {
-            service.fetchAddress(from: input) { (address) in
+            locationSuggestionService.fetchAddress(from: input) { (address) in
                 // TODO: May no longer be necessary 
             }
         }
@@ -76,7 +82,7 @@ extension LocationSuggestionCoordinator: SearchControllerDelegate {
             interface?.searchFieldText("")
             interface?.suggestionsList(.hidden)
             interface?.updateActivityIndicator(.visible)
-            service.fetchAddress(from: input) { [weak self] (address) in
+            locationSuggestionService.fetchAddress(from: input) { [weak self] (address) in
                 guard let this = self else { return }
                 this.interface?.termsOfServiceDisclaimer(.visible)
                 this.interface?.addressEntryView(.visible)
@@ -89,20 +95,30 @@ extension LocationSuggestionCoordinator: SearchControllerDelegate {
     }
 
     func onSubmission(_ address: UserAddress, completion: @escaping () -> Void) {
-        interface?.primaryButtonActivityIndicator(.visible)
-        interface?.primaryButtonEnabled(false)
-        api.updateAddress(address: address) { [weak self] (error) in
-            guard let this = self else { return }
-            this.interface?.primaryButtonActivityIndicator(.hidden)
-            this.interface?.primaryButtonEnabled(true)
-
-            if let err = error {
-                // TODO: Error state
-                Logger.shared.error("\(err)")
-            } else {
-                completion()
-            }
+        let onSubscribe = { [weak self] in
+            self?.interface?.primaryButtonEnabled(false)
+            self?.interface?.primaryButtonActivityIndicator(.visible)
         }
+        
+        let onDispose = { [weak self] in
+            self?.interface?.primaryButtonActivityIndicator(.hidden)
+            self?.interface?.primaryButtonEnabled(true)
+        }
+        
+        locationUpdateService
+            .update(address: address)
+            .observeOn(MainScheduler.instance)
+            .do(onSubscribe: onSubscribe)
+            .subscribe(
+                onCompleted: {
+                    onDispose()
+                    completion()
+                },
+                onError: { _ in
+                    onDispose()
+                }
+            )
+            .disposed(by: disposeBag)
     }
 
     func onSubmission(_ address: PostalAddress) {
@@ -119,11 +135,11 @@ extension LocationSuggestionCoordinator: SearchControllerDelegate {
             interface?.updateActivityIndicator(.visible)
         }
 
-        if service.isExecuting {
-            service.cancel()
+        if locationSuggestionService.isExecuting {
+            locationSuggestionService.cancel()
         }
 
-        service.search(for: query) { [weak self] (suggestions, error) in
+        locationSuggestionService.search(for: query) { [weak self] (suggestions, error) in
             guard let this = self else { return }
 
             let state: LocationSearchResult.SearchUIState = error != nil ? .error(error) : .success
@@ -164,7 +180,7 @@ extension LocationSuggestionCoordinator: SearchControllerDelegate {
         interface?.termsOfServiceDisclaimer(.visible)
         interface?.primaryButton(.visible)
         interface?.addressEntryView(.visible)
-        guard service.isExecuting else { return }
-        service.cancel()
+        guard locationSuggestionService.isExecuting else { return }
+        locationSuggestionService.cancel()
     }
 }

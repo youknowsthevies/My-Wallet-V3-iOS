@@ -18,15 +18,8 @@ import ToolKit
 public protocol LatestFiatPriceFetching: class {
     var latestPrice: Observable<FiatValue> { get }
 }
-/// This protocol defines a `Single<HistoricalPriceSeries>`. It's the
-/// latest Fiat price for a given asset type and is to be used
-/// with the `HistoricalPricesAPI`. Basically it's the last item
-/// in the array of prices returned
-public protocol HistoricalFiatPriceFetching: class {
-    var historicalPrices: Observable<(HistoricalPriceSeries, PriceWindow)> { get }
-}
 
-public protocol HistoricalFiatPriceServiceAPI: LatestFiatPriceFetching, HistoricalFiatPriceFetching {
+public protocol HistoricalFiatPriceServiceAPI: LatestFiatPriceFetching {
     
     /// The calculationState of the service. Returns a `ValueCalculationState` that
     /// contains `HistoricalPriceSeries` and a `FiatValue` each derived from `LatestFiatPriceFetching`
@@ -39,32 +32,29 @@ public protocol HistoricalFiatPriceServiceAPI: LatestFiatPriceFetching, Historic
 
 public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
     
-    // MARK: Typealias
+    // MARK: Types
     
     public typealias CalculationState = ValueCalculationState<(HistoricalFiatPriceResponse)>
     
-    // MARK: HistoricalFiatPriceServiceAPI
+    // MARK: - HistoricalFiatPriceServiceAPI
     
     public let fetchTriggerRelay = PublishRelay<PriceWindow>()
     
-    // MARK: LatestFiatPriceFetching
+    public var calculationState: Observable<CalculationState> {
+        _ = setup
+        return calculationStateRelay.asObservable()
+    }
+    
+    // MARK: - LatestFiatPriceFetching
     
     public var latestPrice: Observable<FiatValue> {
         exchangeAPI.fiatPrice
     }
-    
-    // MARK: HistoricalFiatPriceFetching
-    
-    public var historicalPrices: Observable<(HistoricalPriceSeries, PriceWindow)>
-    
-    public var calculationState: Observable<CalculationState> {
-        calculationStateRelay.asObservable()
-    }
-    
-    // MARK: Private Properties
+
+    // MARK: - Private Properties
     
     private let calculationStateRelay = BehaviorRelay<CalculationState>(value: .calculating)
-    private let bag: DisposeBag = DisposeBag()
+    private let bag = DisposeBag()
     
     // MARK: - Services
     
@@ -80,38 +70,29 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
     /// The associated asset
     private let cryptoCurrency: CryptoCurrency
     
-    public init(cryptoCurrency: CryptoCurrency,
-                exchangeAPI: PairExchangeServiceAPI,
-                priceService: PriceServiceAPI = PriceService(),
-                fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
-        self.exchangeAPI = exchangeAPI
-        self.cryptoCurrency = cryptoCurrency
-        self.priceService = priceService
-        self.fiatCurrencyService = fiatCurrencyService
-        
+    private lazy var setup: Void = {
         let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
         
-        let currencyProvider = Observable
+        let historicalPrices = Observable
             .combineLatest(fiatCurrencyService.fiatCurrencyObservable, fetchTriggerRelay)
             .throttle(.milliseconds(100), scheduler: scheduler)
             .map { ($0.0, $0.1) }
-            .flatMapLatest { tuple -> Observable<(HistoricalPriceSeries, String, PriceWindow)> in
+            .flatMapLatest(weak: self) { (self, tuple) -> Observable<(HistoricalPriceSeries, String, PriceWindow)> in
                 let fiatCurrency = tuple.0
                 let window = tuple.1
-                let prices = priceService.priceSeries(
+                let prices = self.priceService.priceSeries(
                         within: window,
-                        of: cryptoCurrency,
+                        of: self.cryptoCurrency,
                         in: fiatCurrency
                     )
                     .asObservable()
                 return Observable.zip(prices, Observable.just(fiatCurrency.code), Observable.just(window))
             }
+            .map { ($0.0, $0.2) }
             .subscribeOn(scheduler)
             .observeOn(scheduler)
             .share(replay: 1)
-        
-        historicalPrices = currencyProvider.map { ($0.0, $0.2) }
-        
+                
         Observable
             .combineLatest(latestPrice, historicalPrices)
             .map {
@@ -121,5 +102,15 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
             .catchErrorJustReturn(.calculating)
             .bindAndCatch(to: calculationStateRelay)
             .disposed(by: bag)
+    }()
+    
+    public init(cryptoCurrency: CryptoCurrency,
+                exchangeAPI: PairExchangeServiceAPI,
+                priceService: PriceServiceAPI = PriceService(),
+                fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
+        self.exchangeAPI = exchangeAPI
+        self.cryptoCurrency = cryptoCurrency
+        self.priceService = priceService
+        self.fiatCurrencyService = fiatCurrencyService
     }
 }

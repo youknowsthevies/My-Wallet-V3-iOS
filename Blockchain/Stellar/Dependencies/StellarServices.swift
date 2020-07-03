@@ -30,7 +30,6 @@ struct StellarServices: StellarDependenciesAPI {
         eventBus: WalletActionEventBus = WalletActionEventBus.shared,
         xlmFeeService: StellarFeeServiceAPI = StellarFeeService.shared,
         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-        authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
         simpleBuyOrdersAPI: BuySellKit.OrdersServiceAPI = ServiceProvider.default.ordersDetails,
         swapActivityAPI: SwapActivityServiceAPI = SwapServiceProvider.default.activity
     ) {

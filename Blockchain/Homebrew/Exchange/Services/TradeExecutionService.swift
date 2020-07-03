@@ -76,7 +76,6 @@ class TradeExecutionService: TradeExecutionAPI {
     
     // MARK: Private Properties
     
-    private let authentication: NabuAuthenticationServiceAPI
     private let wallet: WalletAPI
     private let assetAccountRepository: AssetAccountRepositoryAPI
     private let dependencies: TradeExecutionServiceDependenciesAPI
@@ -108,13 +107,11 @@ class TradeExecutionService: TradeExecutionAPI {
     
     init(
         ethereumWallet: EthereumWalletBridgeAPI = WalletManager.shared.wallet.ethereum,
-        service: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
         wallet: WalletAPI,
         dependencies: TradeExecutionServiceDependenciesAPI,
-        communicator: NetworkCommunicatorAPI = NetworkCommunicator.shared
+        communicator: NetworkCommunicatorAPI = Network.Dependencies.retail.communicator
         ) {
         self.ethereumWallet = ethereumWallet
-        self.authentication = service
         self.wallet = wallet
         self.dependencies = dependencies
         self.assetAccountRepository = dependencies.assetAccountRepository
@@ -233,18 +230,13 @@ class TradeExecutionService: TradeExecutionAPI {
         
         let payload = TransactionFailure(message: reason)
         
-        authentication.tokenString
-            .flatMapCompletable(weak: self) { (self, token) -> Completable in
-                self.communicator.perform(
-                    request: NetworkRequest(
-                        endpoint: endpoint,
-                        method: .put,
-                        body: try? JSONEncoder().encode(payload),
-                        headers: [HttpHeaderField.authorization: token]
-                    )
+        return self.communicator.perform(
+            request: NetworkRequest(endpoint: endpoint,
+                                    method: .put,
+                                    body: try? JSONEncoder().encode(payload),
+                                    authenticated: true
                 )
-            }
-            .subscribeOn(MainScheduler.asyncInstance)
+            )
             .observeOn(MainScheduler.instance)
             .subscribe(onCompleted: {
                 completion(nil)
@@ -416,17 +408,14 @@ class TradeExecutionService: TradeExecutionAPI {
                 return .error(TradeExecutionAPIError.generic)
         }
 
-        return authentication.tokenString
-            .flatMap(weak: self) { (self, token) -> Single<OrderResult> in
-                self.communicator.perform(
-                    request: NetworkRequest(
-                        endpoint: endpoint,
-                        method: .post,
-                        body: try? JSONEncoder().encode(order),
-                        headers: [HttpHeaderField.authorization: token]
-                    )
-                )
-            }
+        return self.communicator.perform(
+            request: NetworkRequest(
+                endpoint: endpoint,
+                method: .post,
+                body: try? JSONEncoder().encode(order),
+                authenticated: true
+            )
+        )
     }
 
     // Sign and send the payment object created by either of the buildOrder methods.

@@ -19,7 +19,6 @@ struct ETHServices: ETHDependencies {
     let transactionService: EthereumHistoricalTransactionService
 
     init(wallet: Wallet = WalletManager.shared.wallet,
-         authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          simpleBuyOrdersAPI: BuySellKit.OrdersServiceAPI = ServiceProvider.default.ordersDetails,
          swapActivityAPI: SwapActivityServiceAPI = SwapServiceProvider.default.activity) {

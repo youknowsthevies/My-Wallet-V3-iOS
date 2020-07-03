@@ -21,29 +21,22 @@ final class OrderCancellationService: OrderCancellationServiceAPI {
     
     private let client: OrderCancellationClientAPI
     private let orderDetailsService: OrdersServiceAPI
-    private let authenticationService: NabuAuthenticationServiceAPI
 
     // MARK: - Setup
     
     init(client: OrderCancellationClientAPI,
-         orderDetailsService: OrdersServiceAPI,
-         authenticationService: NabuAuthenticationServiceAPI) {
+         orderDetailsService: OrdersServiceAPI) {
         self.client = client
         self.orderDetailsService = orderDetailsService
-        self.authenticationService = authenticationService
     }
     
     // MARK: - Exposed
     
     public func cancel(order id: String) -> Completable {
-        authenticationService
-            .tokenString
             // Cancel the order
-            .flatMapCompletable(weak: self) { (self, token) -> Completable in
-                self.client.cancel(order: id, token: token)
-            }
-            // Fetch the orders anew
-            .andThen(orderDetailsService.fetchOrders())
-            .asCompletable()
+            self.client.cancel(order: id)
+                // Fetch the orders anew
+                .andThen(orderDetailsService.fetchOrders())
+                .asCompletable()
     }
 }

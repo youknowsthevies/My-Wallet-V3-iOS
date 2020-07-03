@@ -141,7 +141,6 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         tabControllerManager.sendBitcoinViewController?.reload()
         tabControllerManager.sendBitcoinCashViewController?.reload()
 
-        dataRepository.prefetchData()
         StellarServiceProvider.shared.services.accounts.prefetch()
         
         // Make user set up a pin if none is set. They can also optionally enable touch ID and link their email.
@@ -227,8 +226,6 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         
         WalletManager.shared.close()
 
-        dataRepository.clearCache()
-        
         NotificationCenter.default.post(name: .logout, object: nil)
         
         SocketManager.shared.disconnectAll()

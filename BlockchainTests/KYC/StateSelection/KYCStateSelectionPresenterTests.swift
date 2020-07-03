@@ -7,9 +7,10 @@
 //
 
 import Foundation
+import XCTest
 
 @testable import Blockchain
-import XCTest
+@testable import PlatformKit
 
 class KYCStateSelectionPresenterTests: XCTestCase {
 

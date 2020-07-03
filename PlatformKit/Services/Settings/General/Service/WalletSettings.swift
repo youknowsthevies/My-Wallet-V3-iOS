@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct WalletSettings {
+public struct WalletSettings: Equatable {
     
     public let countryCode: String
     public let language: String

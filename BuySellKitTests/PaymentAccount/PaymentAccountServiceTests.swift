@@ -30,7 +30,6 @@ class PaymentAccountServiceTests: XCTestCase {
         sut = PaymentAccountService(
             client: client,
             dataRepository: dataRepository,
-            authenticationService: NabuAuthenticationServiceMock(),
             fiatCurrencyService: fiatCurrencyService
         )
     }

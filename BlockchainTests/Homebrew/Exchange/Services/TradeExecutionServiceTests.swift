@@ -17,7 +17,6 @@ import XCTest
 
 class TradeExecutionServiceTests: XCTestCase {
     
-    var authenticationService: NabuAuthenticationServiceMock!
     var wallet: MockLegacyEthereumWallet!
     var dependencies: TradeExecutionServiceDependenciesMock!
     var subject: TradeExecutionService!
@@ -25,11 +24,9 @@ class TradeExecutionServiceTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        authenticationService = NabuAuthenticationServiceMock()
         wallet = MockLegacyEthereumWallet()
         dependencies = TradeExecutionServiceDependenciesMock()
         subject = TradeExecutionService(
-            service: authenticationService,
             wallet: wallet,
             dependencies: dependencies
         )
@@ -37,7 +34,6 @@ class TradeExecutionServiceTests: XCTestCase {
 
     override func tearDown() {
         subject = nil
-        authenticationService = nil
         wallet = nil
         dependencies = nil
         

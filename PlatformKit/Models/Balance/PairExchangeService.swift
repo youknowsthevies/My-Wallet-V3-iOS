@@ -28,7 +28,24 @@ public final class PairExchangeService: PairExchangeServiceAPI {
     /// Fetches the fiat price, and shares its stream with other
     /// subscribers to keep external API usage count in check.
     /// Also handles currency code change
-    public let fiatPrice: Observable<FiatValue>
+    public private(set) lazy var fiatPrice: Observable<FiatValue> = {
+        Observable
+            .combineLatest(
+                currencyService.fiatCurrencyObservable,
+                fetchTriggerRelay
+            )
+            .throttle(.milliseconds(100), scheduler: ConcurrentDispatchQueueScheduler(qos: .background))
+            .map { $0.0 }
+            .flatMapLatest(weak: self) { (self, fiatCurrency) -> Observable<PriceInFiatValue> in
+                self.priceService
+                    .price(for: self.cryptoCurrency, in: fiatCurrency)
+                    .asObservable()
+            }
+            .map { $0.priceInFiat }
+            .distinctUntilChanged()
+            .catchErrorJustReturn(.zero(currency: currencyService.legacyCurrency ?? .default))
+            .share(replay: 1)
+    }()
     
     /// A trigger for a fetch
     public let fetchTriggerRelay = PublishRelay<Void>()
@@ -43,7 +60,7 @@ public final class PairExchangeService: PairExchangeServiceAPI {
     
     /// The associated asset
     private let cryptoCurrency: CryptoCurrency
-    
+        
     // MARK: - Setup
     
     public init(cryptoCurrency: CryptoCurrency,
@@ -52,22 +69,5 @@ public final class PairExchangeService: PairExchangeServiceAPI {
         self.cryptoCurrency = cryptoCurrency
         self.priceService = priceService
         self.currencyService = currencyService
-
-        let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
-
-        fiatPrice = Observable
-            .combineLatest(currencyService.fiatCurrencyObservable, fetchTriggerRelay)
-            .throttle(.milliseconds(100), scheduler: scheduler)
-            .map { $0.0 }
-            .subscribeOn(scheduler)
-            .observeOn(scheduler)
-            .flatMapLatest { fiatCurrency -> Observable<PriceInFiatValue> in
-                priceService
-                    .price(for: cryptoCurrency, in: fiatCurrency)
-                    .asObservable()
-            }
-            .map { $0.priceInFiat }
-            .distinctUntilChanged()
-            .share(replay: 1)
     }
 }

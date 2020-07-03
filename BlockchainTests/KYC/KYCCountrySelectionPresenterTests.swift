@@ -21,7 +21,12 @@ class KYCCountrySelectionPresenterTests: XCTestCase {
         super.setUp()
         view = MockKYCCountrySelectionView()
         walletService = MockWalletService()
-        presenter = KYCCountrySelectionPresenter(view: view)
+        let jwtService = JWTServiceMock()
+        jwtService.expectedResult = .success("jwt-token")
+        let kycClient = KYCClientMock()
+        kycClient.expectedSelectCountry = .empty()
+        let interactor = KYCCountrySelectionInteractor(jwtService: jwtService, kycClient: kycClient)
+        presenter = KYCCountrySelectionPresenter(view: view, interactor: interactor)
     }
 
     func testSelectedSupportedKycCountry() {

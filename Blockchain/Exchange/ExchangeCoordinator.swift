@@ -88,6 +88,7 @@ class ExchangeCoordinator {
             .flatMap(weak: self) { (self, _) -> Observable<Bool> in
                 self.userRequiresEmailVerification()
             }
+            .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] showEmailVerification in
                 if showEmailVerification {
                     self?.showEmailConfirmationScreen()
@@ -236,6 +237,7 @@ class ExchangeCoordinator {
     
     private func hasLinkedExchangeAccount() -> Single<Bool> {
         repository.hasLinkedExchangeAccount
+            .observeOn(MainScheduler.instance)
     }
     
     private func isLinkingToExistingExchangeUser() -> Bool {

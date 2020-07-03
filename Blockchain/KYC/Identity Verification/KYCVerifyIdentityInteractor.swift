@@ -28,21 +28,21 @@ protocol KYCVerifyIdentityInput: class {
 }
 
 class KYCVerifyIdentityInteractor {
-    private let authentication: NabuAuthenticationService
     private let loadingViewPresenter: LoadingViewPresenting
     
     private var cache = [String: [KYCDocumentType]]()
 
     private let veriffService = VeriffService()
 
+    private let client: KYCClientAPI
     private var veriffCredentials: VeriffCredentials?
 
     private var disposable: Disposable?
 
-    init(authentication: NabuAuthenticationService = NabuAuthenticationService.shared,
+    init(client: KYCClientAPI = KYCClient(),
          loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared) {
         self.loadingViewPresenter = loadingViewPresenter
-        self.authentication = authentication
+        self.client = client
     }
 
     deinit {
@@ -56,22 +56,12 @@ class KYCVerifyIdentityInteractor {
             return Single.just(types)
         }
 
-        // If not available, request supported document types
-        return authentication.tokenString.flatMap { token -> Single<KYCSupportedDocumentsResponse> in
-            let headers = [HttpHeaderField.authorization: token]
-            return KYCNetworkRequest.request(
-                get: .supportedDocuments,
-                pathComponents: ["kyc", "supported-documents", countryCode],
-                headers: headers,
-                type: KYCSupportedDocumentsResponse.self
-            )
-        }
-        .map {
-            $0.documentTypes
-        }
-        .do(onSuccess: { [weak self] types in
-            self?.cache[countryCode] = types
-        })
+        return client
+            .supportedDocuments(for: countryCode)
+            .map { $0.documentTypes }
+            .do(onSuccess: { [weak self] types in
+                self?.cache[countryCode] = types
+            })
     }
 }
 
@@ -93,7 +83,6 @@ extension KYCVerifyIdentityInteractor: KYCVerifyIdentityInput {
 
     func createCredentials(onSuccess: @escaping ((VeriffCredentials) -> Void), onError: @escaping ((Error) -> Void)) {
         disposable = veriffService.createCredentials()
-            .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: { [weak self] credentials in
                 guard let this = self else { return }
@@ -104,7 +93,6 @@ extension KYCVerifyIdentityInteractor: KYCVerifyIdentityInput {
 
     func supportedDocumentTypes(countryCode: String, onSuccess: @escaping (([KYCDocumentType]) -> Void), onError: @escaping ((Error) -> Void)) {
         disposable = supportedDocumentTypes(countryCode)
-            .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: onSuccess, onError: onError)
     }

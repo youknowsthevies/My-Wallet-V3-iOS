@@ -7,6 +7,7 @@
 //
 
 import RxSwift
+import ToolKit
 
 final class MnemonicVerificationService: MnemonicVerificationAPI {
     
@@ -32,12 +33,19 @@ final class MnemonicVerificationService: MnemonicVerificationAPI {
     func verifyMnemonicAndSync() -> Completable {
         Completable
             .create { [weak self] observer -> Disposable in
-                guard let self = self else { return Disposables.create() }
-                self.wallet.markRecoveryPhraseVerified(completion: {
-                    observer(.completed)
-                }, error: {
-                    observer(.error(ServiceError.mnemonicVerificationError))
-                })
+                guard let self = self else {
+                    observer(.error(ToolKitError.nullReference(Self.self)))
+                    return Disposables.create()
+                }
+                self.wallet.markRecoveryPhraseVerified(
+                    completion: {
+                        observer(.completed)
+                    },
+                    error: {
+                        // There was an error syncing wallet.
+                        observer(.error(ServiceError.mnemonicVerificationError))
+                    }
+                )
                 return Disposables.create()
             }
             .subscribeOn(jsScheduler)

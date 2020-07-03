@@ -9,5 +9,5 @@
 import RxSwift
 
 public protocol CardListClientAPI: class {
-    func cardList(by token: String) -> Single<[CardPayload]>
+    var cardList: Single<[CardPayload]> { get }
 }

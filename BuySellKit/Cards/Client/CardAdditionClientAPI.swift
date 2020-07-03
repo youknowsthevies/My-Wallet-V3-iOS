@@ -11,6 +11,5 @@ import RxSwift
 public protocol CardAdditionClientAPI: class {
     func add(for currency: String,
              email: String,
-             billingAddress: CardPayload.BillingAddress,
-             token: String) -> Single<CardPayload>
+             billingAddress: CardPayload.BillingAddress) -> Single<CardPayload>
 }

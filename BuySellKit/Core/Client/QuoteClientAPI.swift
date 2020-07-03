@@ -12,6 +12,5 @@ import RxSwift
 protocol QuoteClientAPI: class {
     func getQuote(for action: Order.Action,
                   to cryptoCurrency: CryptoCurrency,
-                  amount: FiatValue,
-                  token: String) -> Single<QuoteResponse>
+                  amount: FiatValue) -> Single<QuoteResponse>
 }

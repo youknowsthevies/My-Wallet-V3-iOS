@@ -72,7 +72,11 @@ public final class BitcoinAssetBalanceFetcher: AccountBalanceFetching {
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
             )
             .flatMapLatest(weak: self) { (self, _) in
-                self.balance.asObservable()
+                self.balance
+                    .asObservable()
+                    .materialize()
+                    .filter { !$0.isStopEvent }
+                    .dematerialize()
             }
             .bindAndCatch(to: balanceRelay)
             .disposed(by: disposeBag)

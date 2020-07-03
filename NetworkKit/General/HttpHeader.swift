@@ -13,7 +13,6 @@ public struct HttpHeaderField {
     public static let accept = "Accept"
     public static let contentLength = "Content-Length"
     public static let contentType = "Content-Type"
-    public static let authorization = "Authorization"
     public static let appVersion = "X-APP-VERSION"
     public static let clientType = "X-CLIENT-TYPE"
     public static let walletGuid = "X-WALLET-GUID"
@@ -21,6 +20,7 @@ public struct HttpHeaderField {
     public static let deviceId = "X-DEVICE-ID"
     public static let airdropCampaign = "X-CAMPAIGN"
     public static let blockchainOrigin = "blockchain-origin"
+    public static let authorization = "Authorization"
 }
 
 public struct HttpHeaderValue {

@@ -13,7 +13,9 @@ import RxSwift
 
 public final class FiatCurrencySelectionProvider: FiatCurrencySelectionProviderAPI {
     public var currencies: Observable<[FiatCurrency]> {
-        supportedCurrencies.valueObservable.map { Array($0) }
+        supportedCurrencies.supportedCurrencies
+            .map { Array($0) }
+            .asObservable()
     }
 
     private let supportedCurrencies: SupportedCurrenciesServiceAPI

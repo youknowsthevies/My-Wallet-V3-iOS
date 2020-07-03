@@ -1,0 +1,264 @@
+//
+//  NabuUser.swift
+//  Blockchain
+//
+//  Created by Alex McGregor on 8/10/18.
+//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+
+public struct NabuUser: Decodable {
+
+    // MARK: - Types
+
+    public enum UserState: String, Codable {
+        case none = "NONE"
+        case created = "CREATED"
+        case active = "ACTIVE"
+        case blocked = "BLOCKED"
+    }
+
+    // MARK: - Properties
+
+    public let personalDetails: PersonalDetails
+    public let address: UserAddress?
+    public let email: Email
+    public let mobile: Mobile?
+    public let status: KYC.AccountStatus
+    public let state: UserState
+    public let tiers: KYC.UserState?
+    public let tags: Tags?
+    public let needsDocumentResubmission: DocumentResubmission?
+    public let userName: String?
+    public let depositAddresses: [DepositAddress]
+    public let settings: NabuUserSettings?
+
+    /// ISO-8601 Timestamp w/millis, eg 2018-08-15T17:00:45.129Z
+    public let kycCreationDate: String?
+
+    /// ISO-8601 Timestamp w/millis, eg 2018-08-15T17:00:45.129Z
+    public let kycUpdateDate: String?
+
+    // MARK: - Decodable
+
+    private enum CodingKeys: String, CodingKey {
+        case address
+        case status = "kycState"
+        case state
+        case tags
+        case tiers
+        case needsDocumentResubmission = "resubmission"
+        case userName
+        case settings
+        case kycCreationDate = "insertedAt"
+        case kycUpdateDate = "updatedAt"
+        case depositAddresses = "walletAddresses"
+    }
+
+    // MARK: - Init
+
+    public init(
+        hasLinkedExchangeAccount: Bool = false,
+        personalDetails: PersonalDetails,
+        address: UserAddress?,
+        email: Email,
+        mobile: Mobile?,
+        status: KYC.AccountStatus,
+        state: UserState,
+        tags: Tags?,
+        tiers: KYC.UserState?,
+        needsDocumentResubmission: DocumentResubmission?,
+        userName: String? = nil,
+        depositAddresses: [DepositAddress] = [],
+        settings: NabuUserSettings? = nil,
+        kycCreationDate: String? = nil,
+        kycUpdateDate: String? = nil
+    ) {
+        self.personalDetails = personalDetails
+        self.address = address
+        self.email = email
+        self.mobile = mobile
+        self.status = status
+        self.state = state
+        self.tags = tags
+        self.tiers = tiers
+        self.needsDocumentResubmission = needsDocumentResubmission
+        self.userName = userName
+        self.depositAddresses = depositAddresses
+        self.settings = settings
+        self.kycCreationDate = kycCreationDate
+        self.kycUpdateDate = kycUpdateDate
+    }
+
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        address = try values.decodeIfPresent(UserAddress.self, forKey: .address)
+        tiers = try values.decodeIfPresent(KYC.UserState.self, forKey: .tiers)
+        userName = try values.decodeIfPresent(String.self, forKey: .userName)
+        settings = try values.decodeIfPresent(NabuUserSettings.self, forKey: .settings)
+        personalDetails = try PersonalDetails(from: decoder)
+        email = try Email(from: decoder)
+        mobile = try? Mobile(from: decoder)
+        status = (try? values.decode(KYC.AccountStatus.self, forKey: .status)) ?? . none
+        state = (try? values.decode(UserState.self, forKey: .state)) ?? .none
+        tags = try values.decodeIfPresent(Tags.self, forKey: .tags)
+        needsDocumentResubmission = try values.decodeIfPresent(DocumentResubmission.self, forKey: .needsDocumentResubmission)
+        kycCreationDate = try values.decodeIfPresent(String.self, forKey: .kycCreationDate)
+        kycUpdateDate = try values.decodeIfPresent(String.self, forKey: .kycUpdateDate)
+
+        depositAddresses = (try values.decodeIfPresent([String: String].self, forKey: .depositAddresses))
+            .flatMap({ data -> [DepositAddress] in
+                data.compactMap { (key, value) -> DepositAddress? in
+                    DepositAddress(stringType: key, address: value)
+                }
+            }) ?? []
+    }
+}
+
+extension NabuUser: User { }
+
+extension NabuUser {
+    public var hasLinkedExchangeAccount: Bool {
+        settings != nil
+    }
+}
+
+extension NabuUser {
+    public var isGoldTierVerified: Bool {
+        guard let tiers = tiers else { return false }
+        return tiers.current == .tier2
+    }
+}
+
+extension NabuUser: NabuUserSunriverAirdropRegistering {
+    public var isSunriverAirdropRegistered: Bool {
+        tags?.sunriver != nil
+    }
+}
+
+extension NabuUser: NabuUserBlockstackAirdropRegistering {
+    public var isBlockstackAirdropRegistered: Bool {
+        tags?.blockstack != nil
+    }
+}
+
+extension NabuUser: NabuUserSimpleBuyEnabled {
+    public var isSimpleBuyEnabled: Bool {
+        tags?.simpleBuy != nil
+    }
+}
+
+public struct Mobile: Decodable {
+    public let phone: String
+    public let verified: Bool
+
+    private enum CodingKeys: String, CodingKey {
+        case phone = "mobile"
+        case verified = "mobileVerified"
+    }
+
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        phone = try values.decode(String.self, forKey: .phone)
+        verified = try values.decodeIfPresent(Bool.self, forKey: .verified) ?? false
+    }
+
+    public init(phone: String, verified: Bool) {
+        self.phone = phone
+        self.verified = verified
+    }
+}
+
+public struct Tags: Decodable {
+    
+    private enum CodingKeys: String, CodingKey {
+        case sunriver = "SUNRIVER"
+        case blockstack = "BLOCKSTACK"
+        case powerPax = "POWER_PAX"
+        case simpleBuy = "SIMPLE_BUY"
+    }
+    
+    public let sunriver: Sunriver?
+    public let blockstack: Blockstack?
+    public let powerPax: PowerPax?
+    public let simpleBuy: SimpleBuy?
+    
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        sunriver = try values.decodeIfPresent(Sunriver.self, forKey: .sunriver)
+        blockstack = try values.decodeIfPresent(Blockstack.self, forKey: .blockstack)
+        powerPax = try values.decodeIfPresent(PowerPax.self, forKey: .powerPax)
+        simpleBuy = try values.decodeIfPresent(SimpleBuy.self, forKey: .simpleBuy)
+    }
+
+    public init(sunriver: Sunriver? = nil,
+                blockstack: Blockstack? = nil,
+                powerPax: PowerPax? = nil,
+                simpleBuy: SimpleBuy? = nil) {
+        self.sunriver = sunriver
+        self.blockstack = blockstack
+        self.powerPax = powerPax
+        self.simpleBuy = simpleBuy
+    }
+
+    public struct Sunriver: Decodable {
+        let campaignAddress: String
+
+        private enum CodingKeys: String, CodingKey {
+            case campaignAddress = "x-campaign-address"
+        }
+    }
+    
+    public struct SimpleBuy: Decodable {}
+
+    public struct Blockstack: Decodable {
+        let campaignAddress: String
+
+        private enum CodingKeys: String, CodingKey {
+            case campaignAddress = "x-campaign-address"
+        }
+    }
+
+    public struct PowerPax: Decodable {
+        let campaignAddress: String
+
+        private enum CodingKeys: String, CodingKey {
+            case campaignAddress = "x-campaign-address"
+        }
+    }
+    
+    public var containsSimpleBuy: Bool {
+        simpleBuy != nil
+    }
+}
+
+public struct DocumentResubmission: Decodable {
+    public let reason: Int
+
+    private enum CodingKeys: String, CodingKey {
+        case reason
+    }
+}
+
+public struct DepositAddress {
+    public let type: CryptoCurrency
+    public let address: String
+
+    public init?(stringType: String, address: String) {
+        guard let type = CryptoCurrency(rawValue: stringType.uppercased()) else { return nil }
+        self.init(type: type, address: address)
+    }
+
+    public init(type: CryptoCurrency, address: String) {
+        self.type = type
+        self.address = address
+    }
+}
+
+public struct NabuUserSettings: Decodable {
+    public let mercuryEmailVerified: Bool
+
+    private enum CodingKeys: String, CodingKey {
+        case mercuryEmailVerified = "MERCURY_EMAIL_VERIFIED"
+    }
+}

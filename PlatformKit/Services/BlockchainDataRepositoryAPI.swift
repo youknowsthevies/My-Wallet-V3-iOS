@@ -11,5 +11,4 @@ import RxSwift
 public protocol DataRepositoryAPI {
     var userSingle: Single<User> { get }
     var user: Observable<User> { get }
-    func fetchTiers() -> Single<KYC.UserTiers>
 }

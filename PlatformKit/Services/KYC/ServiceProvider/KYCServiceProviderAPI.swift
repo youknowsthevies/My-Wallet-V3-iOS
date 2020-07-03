@@ -11,6 +11,9 @@ public protocol KYCServiceProviderAPI: class {
     /// The tiers service - it fetches and caches the tiers
     var tiers: KYCTiersServiceAPI { get }
     
+    /// Thwe user service - it fetches and caches the user
+    var user: NabuUserServiceAPI { get }
+    
     /// Returns a service that polls the tiers until a given one is confirmed
     var tiersPollingService: KYCTierUpdatePollingService { get }
 }

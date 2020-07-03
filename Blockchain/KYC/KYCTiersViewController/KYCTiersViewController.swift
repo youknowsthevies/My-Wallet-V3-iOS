@@ -302,17 +302,21 @@ extension KYCTiersViewController: KYCTiersInterface {
 extension KYCTiersViewController {
     typealias CurrencyCode = String
     
-    static func tiersMetadata(_ currencyCode: CurrencyCode = "USD") -> Observable<KYCTiersPageModel> {
+    static func tiersMetadata(_ currencyCode: CurrencyCode = "USD") -> Single<KYCTiersPageModel> {
         let tradesObservable = limitsAPI.getTradeLimits(withFiatCurrency: currencyCode, ignoringCache: true)
             .optional()
             .catchErrorJustReturn(nil)
-            .asObservable()
-        return Observable.zip(BlockchainDataRepository.shared.tiers, tradesObservable)
+        return KYCServiceProvider.default.tiers.tiers
+            .flatMap { tiers -> Single<(Decimal, KYC.UserTiers)> in
+                guard tiers.tierAccountStatus(for: .tier1).isApproved else {
+                    return Single.zip(.just(0), .just(tiers))
+                }
+                return Single.zip(tradesObservable.map { $0?.maxTradableToday ?? 0 }, .just(tiers))
+            }
             .observeOn(MainScheduler.asyncInstance)
-            .subscribeOn(MainScheduler.asyncInstance)
-            .map { (response, limits) -> KYCTiersPageModel in
+            .map { (maxTradableToday, response) -> KYCTiersPageModel in
                 let formatter: NumberFormatter = NumberFormatter.localCurrencyFormatterWithGroupingSeparator
-                let max = NSDecimalNumber(decimal: limits?.maxTradableToday ?? 0)
+                let max = NSDecimalNumber(decimal: maxTradableToday)
                 let header = KYCTiersHeaderViewModel.make(
                     with: response,
                     availableFunds: formatter.string(from: max),
@@ -331,9 +335,8 @@ extension KYCTiersViewController {
         code: CurrencyCode = "USD"
     ) -> Disposable {
         tiersMetadata()
-            .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { model in
+            .subscribe(onSuccess: { model in
                 let controller = KYCTiersViewController.make(with: model)
                 if let from = fromViewController as? UINavigationController {
                     from.pushViewController(controller, animated: true)

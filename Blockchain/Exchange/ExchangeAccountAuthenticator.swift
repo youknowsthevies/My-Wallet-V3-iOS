@@ -23,26 +23,19 @@ protocol ExchangeAccountAuthenticatorAPI {
 class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
     
     private let blockchainRepository: BlockchainDataRepository
-    private let authenticationService: NabuAuthenticationServiceAPI
     private let client: ExchangeClientAPI
     private let campaignComposer: CampaignComposer
     
     init(blockchainRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
-         authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
          campaignComposer: CampaignComposer = CampaignComposer(),
          clientAPI: ExchangeClientAPI = ExchangeClient(communicatorAPI: NetworkCommunicator.shared)) {
         self.blockchainRepository = blockchainRepository
-        self.authenticationService = authenticationService
         self.campaignComposer = campaignComposer
         self.client = clientAPI
     }
     
     var exchangeLinkID: Single<LinkID> {
-        authenticationService
-            .tokenString
-            .flatMap(weak: self) { (self, token) -> Single<LinkID> in
-                self.client.linkID(token)
-            }
+        self.client.linkID
     }
     
     var exchangeURL: Single<URL> {
@@ -82,9 +75,7 @@ class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
     }
         
     func linkToExistingExchangeUser(linkID: LinkID) -> Completable {
-        authenticationService.tokenString.flatMapCompletable(weak: self) { (self, sessionToken) -> Completable in
-            self.client.linkToExistingExchangeUser(authenticationToken: sessionToken, linkID)
-        }
+        self.client.linkToExistingExchangeUser(linkID: linkID)
     }
     
     private func percentEscapeString(_ stringToEscape: String) -> String {

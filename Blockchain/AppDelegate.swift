@@ -132,6 +132,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         CertificatePinner.shared.pinCertificateIfNeeded()
 
         Network.Dependencies.default.communicator.use(eventRecorder: AnalyticsEventRecorder.shared)
+        Network.Dependencies.retail.communicator.use(authenticator: NabuServiceProvider.default.authenticator)
         
         checkForNewInstall()
         
@@ -386,4 +387,8 @@ extension AppDelegate {
     }
 }
 
-extension UIDevice: DeviceInfo {}
+extension UIDevice: DeviceInfo {
+    public var uuidString: String {
+        UIDevice.current.identifierForVendor?.uuidString ?? ""
+    }
+}

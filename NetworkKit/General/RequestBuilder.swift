@@ -33,6 +33,7 @@ public class RequestBuilder {
     public func get(path components: [String] = [],
                     parameters: [URLQueryItem]? = nil,
                     headers: HTTPHeaders? = nil,
+                    authenticated: Bool = false,
                     contentType: NetworkRequest.ContentType = .json,
                     decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
                     recordErrors: Bool = false) -> NetworkRequest? {
@@ -40,6 +41,7 @@ public class RequestBuilder {
             path: RequestBuilder.path(from: components),
             parameters: parameters,
             headers: headers,
+            authenticated: authenticated,
             contentType: contentType,
             decoder: decoder,
             recordErrors: recordErrors
@@ -49,6 +51,7 @@ public class RequestBuilder {
     public func get(path: String,
                     parameters: [URLQueryItem]? = nil,
                     headers: HTTPHeaders? = nil,
+                    authenticated: Bool = false,
                     contentType: NetworkRequest.ContentType = .json,
                     decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
                     recordErrors: Bool = false) -> NetworkRequest? {
@@ -57,6 +60,7 @@ public class RequestBuilder {
             path: path,
             parameters: parameters,
             headers: headers,
+            authenticated: authenticated,
             contentType: contentType,
             decoder: decoder,
             recordErrors: recordErrors
@@ -69,6 +73,7 @@ public class RequestBuilder {
                     parameters: [URLQueryItem]? = nil,
                     body: Data? = nil,
                     headers: HTTPHeaders? = nil,
+                    authenticated: Bool = false,
                     contentType: NetworkRequest.ContentType = .json,
                     decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
                     recordErrors: Bool = false) -> NetworkRequest? {
@@ -77,6 +82,7 @@ public class RequestBuilder {
             parameters: parameters,
             body: body,
             headers: headers,
+            authenticated: authenticated,
             contentType: contentType,
             decoder: decoder,
             recordErrors: recordErrors
@@ -87,6 +93,7 @@ public class RequestBuilder {
                     parameters: [URLQueryItem]? = nil,
                     body: Data? = nil,
                     headers: HTTPHeaders? = nil,
+                    authenticated: Bool = false,
                     contentType: NetworkRequest.ContentType = .json,
                     decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
                     recordErrors: Bool = false) -> NetworkRequest? {
@@ -96,6 +103,7 @@ public class RequestBuilder {
             parameters: parameters,
             body: body,
             headers: headers,
+            authenticated: authenticated,
             contentType: contentType,
             decoder: decoder,
             recordErrors: recordErrors
@@ -108,6 +116,7 @@ public class RequestBuilder {
                      parameters: [URLQueryItem]? = nil,
                      body: Data? = nil,
                      headers: HTTPHeaders? = nil,
+                     authenticated: Bool = false,
                      contentType: NetworkRequest.ContentType = .json,
                      decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
                      recordErrors: Bool = false) -> NetworkRequest? {
@@ -116,6 +125,7 @@ public class RequestBuilder {
             parameters: parameters,
             body: body,
             headers: headers,
+            authenticated: authenticated,
             contentType: contentType,
             decoder: decoder,
             recordErrors: recordErrors
@@ -126,6 +136,7 @@ public class RequestBuilder {
                      parameters: [URLQueryItem]? = nil,
                      body: Data? = nil,
                      headers: HTTPHeaders? = nil,
+                     authenticated: Bool = false,
                      contentType: NetworkRequest.ContentType = .json,
                      decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
                      recordErrors: Bool = false) -> NetworkRequest? {
@@ -135,6 +146,7 @@ public class RequestBuilder {
             parameters: parameters,
             body: body,
             headers: headers,
+            authenticated: authenticated,
             contentType: contentType,
             decoder: decoder,
             recordErrors: recordErrors
@@ -146,6 +158,7 @@ public class RequestBuilder {
     public func delete(path components: [String] = [],
                        parameters: [URLQueryItem]? = nil,
                        headers: HTTPHeaders? = nil,
+                       authenticated: Bool = false,
                        contentType: NetworkRequest.ContentType = .json,
                        decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
                        recordErrors: Bool = false) -> NetworkRequest? {
@@ -154,6 +167,7 @@ public class RequestBuilder {
             path: RequestBuilder.path(from: components),
             parameters: parameters,
             headers: headers,
+            authenticated: authenticated,
             contentType: contentType,
             decoder: decoder,
             recordErrors: recordErrors
@@ -173,6 +187,7 @@ public class RequestBuilder {
                               parameters: [URLQueryItem]? = nil,
                               body: Data? = nil,
                               headers: HTTPHeaders? = nil,
+                              authenticated: Bool = false,
                               contentType: NetworkRequest.ContentType = .json,
                               decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
                               recordErrors: Bool = false) -> NetworkRequest? {
@@ -184,6 +199,7 @@ public class RequestBuilder {
             method: method,
             body: body,
             headers: headers,
+            authenticated: authenticated,
             contentType: contentType,
             decoder: decoder,
             recordErrors: recordErrors

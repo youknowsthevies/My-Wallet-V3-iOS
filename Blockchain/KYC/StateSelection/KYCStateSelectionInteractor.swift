@@ -9,15 +9,15 @@
 import PlatformKit
 import RxSwift
 
-class KYCStateSelectionInteractor {
+final class KYCStateSelectionInteractor {
 
+    private let client: KYCClientAPI
+    
+    init(client: KYCClientAPI = KYCClient()) {
+        self.client = client
+    }
+    
     func fetchState(for country: CountryData) -> Single<[KYCState]> {
-        KYCNetworkRequest.request(
-            get: .listOfStates,
-            pathComponents: country.urlPathComponentsForState,
-            type: [KYCState].self
-        ).map { states -> [KYCState] in
-            states.sorted(by: { $0.name.uppercased() < $1.name.uppercased() })
-        }
+        client.listOfStates(in: country.code)
     }
 }

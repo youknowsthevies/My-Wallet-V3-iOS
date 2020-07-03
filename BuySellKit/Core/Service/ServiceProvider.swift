@@ -42,7 +42,6 @@ public final class ServiceProvider: ServiceProviderAPI {
     public convenience init(cardServiceProvider: CardServiceProviderAPI,
                             recordingProvider: RecordingProviderAPI,
                             wallet: ReactiveWalletAPI,
-                            authenticationService: NabuAuthenticationServiceAPI,
                             cacheSuite: CacheSuite,
                             settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI,
                             dataRepository: DataRepositoryAPI,
@@ -51,7 +50,6 @@ public final class ServiceProvider: ServiceProviderAPI {
         self.init(cardServiceProvider: cardServiceProvider,
                   recordingProvider: recordingProvider,
                   wallet: wallet,
-                  authenticationService: authenticationService,
                   simpleBuyClient: APIClient(),
                   cacheSuite: cacheSuite,
                   settings: settings,
@@ -63,7 +61,6 @@ public final class ServiceProvider: ServiceProviderAPI {
     init(cardServiceProvider: CardServiceProviderAPI,
          recordingProvider: RecordingProviderAPI,
          wallet: ReactiveWalletAPI,
-         authenticationService: NabuAuthenticationServiceAPI,
          simpleBuyClient: SimpleBuyClientAPI,
          cacheSuite: CacheSuite,
          settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI,
@@ -83,42 +80,34 @@ public final class ServiceProvider: ServiceProviderAPI {
         suggestedAmounts = SuggestedAmountsService(
             client: simpleBuyClient,
             reactiveWallet: wallet,
-            authenticationService: authenticationService,
             fiatCurrencySettingsService: settings
         )
         ordersDetails = OrdersService(
             analyticsRecorder: recordingProvider.analytics,
-            client: simpleBuyClient,
-            reactiveWallet: wallet,
-            authenticationService: authenticationService
+            client: simpleBuyClient
         )
         eligibility = EligibilityService(
             client: simpleBuyClient,
             reactiveWallet: wallet,
-            authenticationService: authenticationService,
             fiatCurrencyService: settings,
             featureFetcher: featureFetcher
         )
         orderQuote = OrderQuoteService(
-            client: simpleBuyClient,
-            authenticationService: authenticationService
+            client: simpleBuyClient
         )
         paymentAccount = PaymentAccountService(
             client: simpleBuyClient,
             dataRepository: dataRepository,
-            authenticationService: authenticationService,
             fiatCurrencyService: settings,
             patcher: PaymentAccountPatcher()
         )
         orderConfirmation = OrderConfirmationService(
             analyticsRecorder: recordingProvider.analytics,
-            client: simpleBuyClient,
-            authenticationService: authenticationService
+            client: simpleBuyClient
         )
         orderCancellation = OrderCancellationService(
             client: simpleBuyClient,
-            orderDetailsService: ordersDetails,
-            authenticationService: authenticationService
+            orderDetailsService: ordersDetails
         )
         pendingOrderDetails = PendingOrderDetailsService(
             ordersService: ordersDetails,
@@ -127,15 +116,13 @@ public final class ServiceProvider: ServiceProviderAPI {
         orderCreation = OrderCreationService(
             analyticsRecorder: recordingProvider.analytics,
             client: simpleBuyClient,
-            pendingOrderDetailsService: pendingOrderDetails,
-            authenticationService: authenticationService
+            pendingOrderDetailsService: pendingOrderDetails
         )
         paymentMethods = PaymentMethodsService(
             client: simpleBuyClient,
             tiersService: tiersService,
             reactiveWallet: wallet,
             featureFetcher: featureFetcher,
-            authenticationService: authenticationService,
             fiatCurrencyService: settings
         )
         paymentMethodTypes = PaymentMethodTypesService(

@@ -23,10 +23,6 @@ public final class SelectionScreenPresenter {
         presentersRelay.asObservable()
     }
     
-    var shouldPreselect: Observable<Bool> {
-        preselectionSupportedRelay.asObservable()
-    }
-    
     var displayPresenters: Observable<[SelectionItemViewPresenter]> {
         displayPresentersRelay.asObservable()
     }
@@ -56,6 +52,7 @@ public final class SelectionScreenPresenter {
     }
     
     let preSelectionRelay = PublishRelay<Int>()
+    private var shouldPreselect: Bool
     private let preselectionSupportedRelay = BehaviorRelay<Bool>(value: true)
     private let selectionRelay = BehaviorRelay<Int?>(value: nil)
     private let displayPresentersRelay = BehaviorRelay<[SelectionItemViewPresenter]>(value: [])
@@ -70,6 +67,7 @@ public final class SelectionScreenPresenter {
                 shouldPreselect: Bool = true,
                 searchBarPlaceholder: String,
                 interactor: SelectionScreenInteractor) {
+        self.shouldPreselect = shouldPreselect
         self.preselectionSupportedRelay.accept(shouldPreselect)
         self.tableHeaderViewModel = SelectionScreenTableHeaderViewModel(title: description)
         self.searchBarPlaceholder = searchBarPlaceholder
@@ -91,7 +89,7 @@ public final class SelectionScreenPresenter {
             }
             .bindAndCatch(to: presentersRelay)
             .disposed(by: disposeBag)
-        
+                
         presentersRelay
             .filter { !$0.isEmpty }
             .take(1)
@@ -109,7 +107,7 @@ public final class SelectionScreenPresenter {
                             if let previousIndex = previousIndex {
                                 self.dismissRelay.accept(())
                                 presenters[previousIndex].deselect()
-                            } else if !self.preselectionSupportedRelay.value {
+                            } else if !self.shouldPreselect {
                                 self.dismissRelay.accept(())
                             }
                         }

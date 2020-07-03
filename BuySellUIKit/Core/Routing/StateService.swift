@@ -266,7 +266,9 @@ public final class StateService: StateServiceAPI {
         
     private func startFlow() {
         let cache = self.cache
-        let isFiatCurrencySupported: Single<Bool> = supportedPairsInteractor.valueSingle
+        let isFiatCurrencySupported: Single<Bool> = supportedPairsInteractor.pairs
+            .take(1)
+            .asSingle()
             .map { !$0.pairs.isEmpty }
 
         let isTier2Approved = kycTiersService

@@ -17,8 +17,7 @@ public protocol SavingAccountServiceAPI: AnyObject {
 public class SavingAccountService: SavingAccountServiceAPI {
 
     // MARK: - Private Properties
-
-    private let authenticationService: NabuAuthenticationServiceAPI
+    
     private let client: SavingsAccountClientAPI
     private let custodialFeatureFetching: CustodialFeatureFetching
     private let cachedSavingsAccountBalance: CachedValue<SavingsAccountBalanceResponse>
@@ -26,10 +25,8 @@ public class SavingAccountService: SavingAccountServiceAPI {
     // MARK: - Setup
 
     public init(client: SavingsAccountClientAPI = SavingsAccountClient(),
-                authenticationService: NabuAuthenticationServiceAPI,
                 custodialFeatureFetching: CustodialFeatureFetching) {
         self.client = client
-        self.authenticationService = authenticationService
         self.custodialFeatureFetching = custodialFeatureFetching
         self.cachedSavingsAccountBalance = CachedValue<SavingsAccountBalanceResponse>(configuration: .periodicAndLogin(10))
         cachedSavingsAccountBalance.setFetch(weak: self) { (self) in
@@ -59,25 +56,18 @@ public class SavingAccountService: SavingAccountServiceAPI {
                 guard interestAccountEnabled else {
                     return Single.just(.empty)
                 }
-                return self.authenticationService
-                    .tokenString
-                    .flatMap(weak: self) { (self, token) in
-                        self.client.balance(token: token).map { balance in
-                            guard let balance = balance else {
-                                return .empty
-                            }
-                            return balance
-                        }
+                return self.client.balance.map { balance in
+                    guard let balance = balance else {
+                        return .empty
                     }
+                    return balance
+                }
             }
             .catchErrorJustReturn(.empty)
     }
 
     public func rate(for currency: CryptoCurrency) -> Single<Double> {
-        authenticationService.tokenString
-            .flatMap(weak: self) { (self, token) in
-                self.client.rate(for: currency.rawValue, token: token)
-            }
+        self.client.rate(for: currency.rawValue)
             .map { $0.rate }
     }
 }

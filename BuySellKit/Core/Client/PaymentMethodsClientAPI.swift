@@ -10,6 +10,5 @@ import RxSwift
 
 protocol PaymentMethodsClientAPI: class {
     func paymentMethods(for currency: String,
-                        checkEligibility: Bool,
-                        token: String) -> Single<PaymentMethodsResponse>
+                        checkEligibility: Bool) -> Single<PaymentMethodsResponse>
 }

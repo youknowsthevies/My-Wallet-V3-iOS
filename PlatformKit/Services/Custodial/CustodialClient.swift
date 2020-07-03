@@ -39,10 +39,9 @@ public final class CustodialClient: CustodialClientAPI {
     
     // MARK: - TradingBalanceClientAPI
 
-    public func balance(for currency: String, token: String) -> Single<CustodialBalanceResponse?> {
+    public func balance(for currency: String) -> Single<CustodialBalanceResponse?> {
         let path = Path.custodialBalance
-        let headers = [HttpHeaderField.authorization: token]
-        guard let request = requestBuilder.get(path: path, headers: headers) else {
+        guard let request = requestBuilder.get(path: path, authenticated: true) else {
             return Single.error(ClientError.unknown)
         }
         return communicator.performOptional(request: request, responseType: CustodialBalanceResponse.self)
@@ -50,14 +49,14 @@ public final class CustodialClient: CustodialClientAPI {
     
     // MARK: - CustodyWithdrawalClientAPI
     
-    public func withdraw(cryptoValue: CryptoValue, destination: String, authToken: String) -> Single<CustodialWithdrawalResponse> {
+    public func withdraw(cryptoValue: CryptoValue, destination: String) -> Single<CustodialWithdrawalResponse> {
         let withdrawalRequest = CustodialWithdrawalRequest(address: destination, cryptoValue: cryptoValue)
-        let headers = [HttpHeaderField.authorization: authToken,
-                       HttpHeaderField.blockchainOrigin: HttpHeaderValue.simpleBuy]
+        let headers = [HttpHeaderField.blockchainOrigin: HttpHeaderValue.simpleBuy]
         let request = requestBuilder.post(
             path: Path.withdrawal,
             body: try? withdrawalRequest.encode(),
-            headers: headers
+            headers: headers,
+            authenticated: true
             )!
         return communicator.perform(request: request)
     }

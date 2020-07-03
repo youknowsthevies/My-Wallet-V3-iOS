@@ -17,6 +17,10 @@ extension KYC {
             latestApprovedTier == .tier2
         }
         
+        public var isTier1Approved: Bool {
+            latestApprovedTier == .tier1
+        }
+        
         public init(tiers: [KYC.UserTier]) {
             self.tiers = tiers
         }

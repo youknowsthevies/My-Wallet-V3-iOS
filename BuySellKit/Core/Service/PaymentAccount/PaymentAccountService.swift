@@ -40,7 +40,6 @@ final class PaymentAccountService: PaymentAccountServiceAPI {
     // MARK: - Private Properties
 
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
-    private let authenticationService: NabuAuthenticationServiceAPI
     private let client: PaymentAccountClientAPI
     private let dataRepository: DataRepositoryAPI
     private let patcher: PaymentAccountPatcher
@@ -49,11 +48,9 @@ final class PaymentAccountService: PaymentAccountServiceAPI {
 
     init(client: PaymentAccountClientAPI,
          dataRepository: DataRepositoryAPI,
-         authenticationService: NabuAuthenticationServiceAPI,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI,
          patcher: PaymentAccountPatcher = PaymentAccountPatcher()) {
         self.client = client
-        self.authenticationService = authenticationService
         self.fiatCurrencyService = fiatCurrencyService
         self.dataRepository = dataRepository
         self.patcher = patcher
@@ -62,21 +59,16 @@ final class PaymentAccountService: PaymentAccountServiceAPI {
     // MARK: - Public Methods
 
     func paymentAccount(for currency: FiatCurrency) -> Single<PaymentAccount> {
-        authenticationService
-            .tokenString
-            .flatMap(weak: self) { (self, token) -> Single<PaymentAccount> in
-                self.fetchPaymentAccount(for: currency, with: token, patcher: self.patcher)
-            }
+        self.fetchPaymentAccount(for: currency, patcher: self.patcher)
     }
 
     // MARK: - Private Methods
 
     func fetchPaymentAccount(for currency: FiatCurrency,
-                             with token: String,
                              patcher: PaymentAccountPatcher) -> Single<PaymentAccount> {
         Single
             .zip(
-                client.paymentAccount(for: currency, token: token),
+                client.paymentAccount(for: currency),
                 dataRepository.user.take(1).asSingle()
             )
             .map { (response, user) -> PaymentAccount? in

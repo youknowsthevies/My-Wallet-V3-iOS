@@ -105,7 +105,6 @@ final class ExchangeAddressFetcher: ExchangeAddressFetching {
     // MARK: - Properties
     
     private let featureConfigurator: FeatureConfiguring
-    private let authentication: NabuAuthenticationService
     private let communicator: NetworkCommunicatorAPI
     private let repository: ExchangeAccountRepositoryAPI
     private let urlPrefix: String
@@ -114,10 +113,8 @@ final class ExchangeAddressFetcher: ExchangeAddressFetching {
     
     init(featureConfigurator: FeatureConfiguring = AppFeatureConfigurator.shared,
          repository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository(),
-         authentication: NabuAuthenticationService = .shared,
-         communicator: NetworkCommunicatorAPI = NetworkCommunicator.shared,
+         communicator: NetworkCommunicatorAPI = Network.Dependencies.retail.communicator,
          urlPrefix: String = BlockchainAPI.shared.retailCoreUrl) {
-        self.authentication = authentication
         self.communicator = communicator
         self.repository = repository
         self.featureConfigurator = featureConfigurator
@@ -136,14 +133,10 @@ final class ExchangeAddressFetcher: ExchangeAddressFetching {
         let url = "\(urlPrefix)/payments/accounts/linked"
         let data = AddressRequestBody(currency: asset.code)
         
-        // TODO: Move `NabuAuthenticationService` inside PlatformKit and `getSessionToken` to network layer
         return repository.hasLinkedExchangeAccount
             .map { hasLinkedAccount -> Void in
                 guard hasLinkedAccount else { throw FetchingError.missingAccount }
                 return ()
-            }
-            .flatMap(weak: self) { (self, _) -> Single<String> in
-                self.authentication.tokenString
             }
             .flatMap(weak: self) { (self, token) -> Single<AddressResponseBody> in
                 self.communicator.perform(
@@ -151,7 +144,7 @@ final class ExchangeAddressFetcher: ExchangeAddressFetching {
                         endpoint: URL(string: url)!,
                         method: .put,
                         body: try? JSONEncoder().encode(data),
-                        headers: [HttpHeaderField.authorization: token]
+                        authenticated: true
                     )
                 )
             }

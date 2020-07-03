@@ -36,8 +36,7 @@ final class SuggestedAmountsService: SuggestedAmountsServiceAPI {
     }
         
     // MARK: - Injected
-            
-    private let authenticationService: NabuAuthenticationServiceAPI
+    
     private let client: SuggestedAmountsClientAPI
     
     // MARK: - Accessors
@@ -47,7 +46,9 @@ final class SuggestedAmountsService: SuggestedAmountsServiceAPI {
     private let reactiveWallet: ReactiveWalletAPI
     private let fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
     private let disposeBag = DisposeBag()
-        
+    
+    // MARK: - Setup
+    
     private lazy var setup: Void = {
         Observable
             .combineLatest(
@@ -69,11 +70,9 @@ final class SuggestedAmountsService: SuggestedAmountsServiceAPI {
     
     init(client: SuggestedAmountsClientAPI,
          reactiveWallet: ReactiveWalletAPI,
-         authenticationService: NabuAuthenticationServiceAPI,
          fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI) {
         self.client = client
         self.reactiveWallet = reactiveWallet
-        self.authenticationService = authenticationService
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
         self.fetchTriggerRelay = PublishRelay<Void>()
     }
@@ -84,11 +83,7 @@ final class SuggestedAmountsService: SuggestedAmountsServiceAPI {
     }
     
     private func fetchSuggestedAmounts(for currency: FiatCurrency) -> Single<[FiatValue]> {
-        authenticationService
-            .tokenString
-            .flatMap(weak: self) { (self, token) -> Single<SuggestedAmountsResponse> in
-                self.client.suggestedAmounts(for: currency, using: token)
-            }
+        client.suggestedAmounts(for: currency)
             .map { SuggestedAmounts(response: $0) }
             .map { $0[currency] }
     }

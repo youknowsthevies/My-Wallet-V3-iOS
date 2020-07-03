@@ -26,8 +26,8 @@ final class CachedValueTests: XCTestCase {
     
     func testInitialSubscriptionToValue() {
         let expectedValue = "expected_value"
-        let configuration = CachedValueConfiguration(refreshType: .onSubscription)
-        let cachedValue = CachedValue<String>(configuration: configuration)
+        let configuration = CachedValueConfigurationOld(refreshType: .onSubscription)
+        let cachedValue = CachedValueOld<String>(configuration: configuration)
         cachedValue.setFetch { Single.just(expectedValue) }
         do {
             let value = try cachedValue.valueSingle.toBlocking().first()
@@ -39,10 +39,10 @@ final class CachedValueTests: XCTestCase {
 
     func testInitialSubscriptionToValueObservable() {
         let expectedValue = "expected_value"
-        let configuration = CachedValueConfiguration(
+        let configuration = CachedValueConfigurationOld(
             refreshType: .onSubscription
         )
-        let cachedValue = CachedValue<String>(configuration: configuration)
+        let cachedValue = CachedValueOld<String>(configuration: configuration)
         cachedValue.setFetch { Single.just(expectedValue) }
         do {
             let value = try cachedValue.valueObservable.toBlocking().first()
@@ -54,10 +54,10 @@ final class CachedValueTests: XCTestCase {
 
     func testMultipleSubscriptionsToValueObservable() {
         let expectedResult = "expected_result1"
-        let configuration = CachedValueConfiguration(
+        let configuration = CachedValueConfigurationOld(
             refreshType: .onSubscription
         )
-        let cachedValue = CachedValue<String>(configuration: configuration)
+        let cachedValue = CachedValueOld<String>(configuration: configuration)
         cachedValue.setFetch {
             Single.just(expectedResult)
         }
@@ -74,10 +74,10 @@ final class CachedValueTests: XCTestCase {
         let expectedResults: [String] = ["expected_result1", "expected_result2", "expected_result3"]
         var index = 0
 
-        let configuration = CachedValueConfiguration(
+        let configuration = CachedValueConfigurationOld(
             refreshType: .onSubscription
         )
-        let cachedValue = CachedValue<String>(configuration: configuration)
+        let cachedValue = CachedValueOld<String>(configuration: configuration)
         cachedValue.setFetch { () -> Single<String> in
             let current = expectedResults[index % expectedResults.count]
             index += 1
@@ -95,10 +95,10 @@ final class CachedValueTests: XCTestCase {
     func testsRefreshTypeOnce() {
         let expectedResult = "expected_result1"
 
-        let configuration = CachedValueConfiguration(
+        let configuration = CachedValueConfigurationOld(
             refreshType: .onSubscription
         )
-        let cachedValue = CachedValue<String>(configuration: configuration)
+        let cachedValue = CachedValueOld<String>(configuration: configuration)
 
         cachedValue.setFetch {
             Single.just(expectedResult)
@@ -119,12 +119,12 @@ final class CachedValueTests: XCTestCase {
         let expectedResults: [String] = ["expected_result1", "expected_result2", "expected_result3"]
         var index = 0
 
-        let configuration = CachedValueConfiguration(
+        let configuration = CachedValueConfigurationOld(
             refreshType: .onSubscription,
             scheduler: testScheduler
         )
         
-        let cachedValue = CachedValue<String>(configuration: configuration)
+        let cachedValue = CachedValueOld<String>(configuration: configuration)
 
         cachedValue.setFetch { () -> Single<String> in
             let current = expectedResults[index % expectedResults.count]
@@ -160,11 +160,11 @@ final class CachedValueTests: XCTestCase {
         let expectedValue = "result"
         let expectedError = NSError(domain: "test-error", code: 0, userInfo: nil)
 
-        let configuration = CachedValueConfiguration(
+        let configuration = CachedValueConfigurationOld(
             refreshType: .onSubscription,
             scheduler: MainScheduler.instance
         )
-        let cachedValue = CachedValue<String>(configuration: configuration)
+        let cachedValue = CachedValueOld<String>(configuration: configuration)
 
         var result: Result<String, NSError> = .failure(expectedError)
 
@@ -183,7 +183,7 @@ final class CachedValueTests: XCTestCase {
         case .completed(elements: let elements):
             XCTFail("Expected an error to be thrown. Received an element: \(elements) instead")
         case .failed(elements: _, error: let error):
-            XCTAssertEqual(error as NSError, CachedValue<String>.CacheError.fetchFailed as NSError)
+            XCTAssertEqual(error as NSError, CachedValueOld<String>.CacheError.fetchFailed as NSError)
         }
 
         result = .success(expectedValue)
@@ -201,14 +201,14 @@ final class CachedValueTests: XCTestCase {
         
         // Arrange
         
-        typealias StreamState = CachedValue<String>.StreamState
+        typealias StreamState = CachedValueOld<String>.StreamState
         
-        let configuration = CachedValueConfiguration(
+        let configuration = CachedValueConfigurationOld(
             refreshType: .onSubscription,
             scheduler: testScheduler
         )
         
-        let cachedValue = CachedValue<String>(configuration: configuration)
+        let cachedValue = CachedValueOld<String>(configuration: configuration)
         
         let expectedValue = "expected_value"
         cachedValue.setFetch { Single.just(expectedValue) }

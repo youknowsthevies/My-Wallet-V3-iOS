@@ -15,45 +15,34 @@ public protocol TradingBalanceServiceAPI: AnyObject {
 public class TradingBalanceService: TradingBalanceServiceAPI {
 
     // MARK: - Private Properties
-
-    private let authenticationService: NabuAuthenticationServiceAPI
+    
     private let client: TradingBalanceClientAPI
 
     // MARK: - Setup
 
-    public init(client: TradingBalanceClientAPI,
-                authenticationService: NabuAuthenticationServiceAPI) {
+    public init(client: TradingBalanceClientAPI) {
         self.client = client
-        self.authenticationService = authenticationService
     }
 
     // MARK: - Public Methods
 
     public func balance(for crypto: CryptoCurrency) -> Single<TradingAccountBalanceState> {
-        authenticationService.tokenString
-            .flatMap(weak: self) { (self, token: String) in
-                self.balance(for: crypto, with: token)
-            }
-            .catchErrorJustReturn(.absent)
-    }
-    
-    private func balance(for currency: CryptoCurrency,
-                         with token: String) -> Single<TradingAccountBalanceState> {
         client
-            .balance(for: currency.code, token: token)
+            .balance(for: crypto.code)
             .map { response -> TradingAccountBalanceState in
                 guard let response = response else {
                     return .absent
                 }
-                guard let balance = response[currency] else {
+                guard let balance = response[crypto] else {
                     return .absent
                 }
                 return .present(
                     TradingAccountBalance(
-                        currency: currency,
+                        currency: crypto,
                         response: balance
                     )
                 )
             }
+            .catchErrorJustReturn(.absent)
     }
 }

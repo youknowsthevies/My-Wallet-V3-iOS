@@ -8,6 +8,7 @@
 
 import PlatformKit
 import RxSwift
+import RxRelay
 import ToolKit
 
 public protocol CardListServiceAPI: class {
@@ -28,45 +29,39 @@ public final class CardListService: CardListServiceAPI {
     // MARK: - Public properties
         
     public var cards: Observable<[CardData]> {
-        cachedValue.valueObservable
+        cardsRelay
+            .flatMap(weak: self) { (self, cardData) -> Observable<[CardData]> in
+                guard let cardData = cardData else {
+                    return self.fetchCards().asObservable()
+                }
+                return .just(cardData)
+            }
+            .distinctUntilChanged()
     }
     
     // MARK: - Private properties
     
-    private let cachedValue: CachedValue<[CardData]>
+    private let cardsRelay = BehaviorRelay<[CardData]?>(value: nil)
+    
+    private let client: CardListClientAPI
+    private let reactiveWallet: ReactiveWalletAPI
+    private let featureFetcher: FeatureFetching
+    private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     
     // MARK: - Setup
     
     public init(client: CardListClientAPI,
                 reactiveWallet: ReactiveWalletAPI,
                 featureFetcher: FeatureFetching,
-                authenticationService: NabuAuthenticationServiceAPI,
                 fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
-        cachedValue = .init(
-            configuration: .init(
-                identifier: "card-list-service",
-                refreshType: .onSubscription,
-                fetchPriority: .fetchAll,
-                flushNotificationName: .logout,
-                fetchNotificationName: .login
-            )
-        )
+        self.client = client
+        self.reactiveWallet = reactiveWallet
+        self.featureFetcher = featureFetcher
+        self.fiatCurrencyService = fiatCurrencyService
         
-        cachedValue
-            .setFetch { () -> Observable<[CardData]> in
-                reactiveWallet.waitUntilInitializedSingle
-                    .asObservable()
-                    .flatMap { authenticationService.tokenString }
-                    .flatMap { token in
-                        client.cardList(by: token)
-                    }
-                    .map { Array<CardData>.init(response: $0) }
-                    .flatMap { cards -> Observable<[CardData]> in
-                        featureFetcher.fetchBool(for: .simpleBuyCardsEnabled)
-                            .map { $0 ? cards : [] }
-                            .asObservable()
-                }
-            }
+        NotificationCenter.when(.login) { [weak self] _ in
+            self?.cardsRelay.accept(nil)
+        }
     }
     
     public func card(by identifier: String) -> Single<CardData?> {
@@ -77,9 +72,17 @@ public final class CardListService: CardListServiceAPI {
     }
     
     public func fetchCards() -> Single<[CardData]> {
-        cachedValue.fetchValueObservable
-            .take(1)
-            .asSingle()
+        featureFetcher.fetchBool(for: .simpleBuyCardsEnabled)
+            .flatMap(weak: self) { (self, enabled) -> Single<[CardPayload]> in
+                guard enabled else {
+                    return .just([])
+                }
+                return self.client.cardList
+            }
+            .map { Array<CardData>.init(response: $0) }
+            .do(onSuccess: { [weak self] cardList in
+                self?.cardsRelay.accept(cardList)
+            })
     }
     
     public func doesCardExist(number: String, expiryMonth: String, expiryYear: String) -> Single<Bool> {

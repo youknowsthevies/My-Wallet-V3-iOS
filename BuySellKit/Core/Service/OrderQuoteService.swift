@@ -20,14 +20,11 @@ final class OrderQuoteService: OrderQuoteServiceAPI {
     // MARK: - Properties
     
     private let client: QuoteClientAPI
-    private let authenticationService: NabuAuthenticationServiceAPI
 
     // MARK: - Setup
     
-    init(client: QuoteClientAPI,
-         authenticationService: NabuAuthenticationServiceAPI) {
+    init(client: QuoteClientAPI) {
         self.client = client
-        self.authenticationService = authenticationService
     }
     
     // MARK: - API
@@ -35,21 +32,17 @@ final class OrderQuoteService: OrderQuoteServiceAPI {
     func getQuote(for action: Order.Action,
                   cryptoCurrency: CryptoCurrency,
                   fiatValue: FiatValue) -> Single<Quote> {
-        authenticationService
-            .tokenString
-            .flatMap(weak: self) { (self, token) -> Single<QuoteResponse> in
-                self.client.getQuote(
-                    for: action,
-                    to: cryptoCurrency,
-                    amount: fiatValue,
-                    token: token)
-            }
-            .map {
-                try Quote(
-                    to: cryptoCurrency,
-                    amount: fiatValue,
-                    response: $0
-                )
-            }
+        client.getQuote(
+            for: action,
+            to: cryptoCurrency,
+            amount: fiatValue
+        )
+        .map {
+            try Quote(
+                to: cryptoCurrency,
+                amount: fiatValue,
+                response: $0
+            )
+        }
     }
 }

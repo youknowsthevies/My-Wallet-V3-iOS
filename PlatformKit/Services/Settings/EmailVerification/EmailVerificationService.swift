@@ -20,15 +20,15 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
 
     // MARK: - Properties
     
-    private let authenticationService: NabuAuthenticationServiceAPI
+    private let syncService: WalletNabuSynchronizerServiceAPI
     private let settingsService: SettingsServiceAPI & EmailSettingsServiceAPI
     private let isActiveRelay = BehaviorRelay<Bool>(value: false)
 
     // MARK: - Setup
     
-    public init(authenticationService: NabuAuthenticationServiceAPI,
+    public init(syncService: WalletNabuSynchronizerServiceAPI,
                 settingsService: SettingsServiceAPI & EmailSettingsServiceAPI) {
-        self.authenticationService = authenticationService
+        self.syncService = syncService
         self.settingsService = settingsService
     }
 
@@ -44,14 +44,14 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
     public func verifyEmail() -> Completable {
         start()
             .flatMapCompletable(weak: self) { (self, _) -> Completable in
-                self.authenticationService.updateWalletInfo()
+                return self.syncService.sync()
             }
     }
     
     public func requestVerificationEmail(to email: String, context: FlowContext?) -> Completable {
         settingsService
             .update(email: email, context: context)
-            .andThen(authenticationService.updateWalletInfo())
+            .andThen(syncService.sync())
     }
     
     /// Start polling by triggering the wallet settings fetch
@@ -76,7 +76,9 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
                 }
                 return ()
             }
-            .do(onSuccess: settingsService.refresh)
+            .flatMap(weak: self) { (self, _: ()) -> Single<Void> in
+                self.settingsService.fetch(force: true).mapToVoid()
+            }
     }
     
     /// Returns a Single that upon subscription waits until the email is verified.

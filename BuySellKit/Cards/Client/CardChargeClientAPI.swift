@@ -9,5 +9,5 @@
 import RxSwift
 
 public protocol CardChargeClientAPI: class {
-    func chargeCard(by id: String, token: String) -> Completable
+    func chargeCard(by id: String) -> Completable
 }

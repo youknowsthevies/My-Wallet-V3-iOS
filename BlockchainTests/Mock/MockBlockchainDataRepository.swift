@@ -10,6 +10,7 @@ import RxSwift
 import XCTest
 
 @testable import Blockchain
+@testable import PlatformKit
 
 class MockBlockchainDataRepository: BlockchainDataRepository {
 
@@ -18,12 +19,12 @@ class MockBlockchainDataRepository: BlockchainDataRepository {
     init() {
         super.init()
     }
-
-    override var nabuUser: Observable<NabuUser> {
+    
+    override var nabuUserSingle: Single<NabuUser> {
         if let mock = mockNabuUser {
-            return Observable.just(mock)
+            return .just(mock)
         }
-        return super.nabuUser
+        return super.nabuUserSingle
     }
 
     override func fetchNabuUser() -> Single<NabuUser> {

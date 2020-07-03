@@ -10,6 +10,5 @@ import RxSwift
 
 public protocol CardActivationClientAPI: class {
     func activateCard(by id: String,
-                      url: String,
-                      token: String) -> Single<ActivateCardResponse.Partner>
+                      url: String) -> Single<ActivateCardResponse.Partner>
 }

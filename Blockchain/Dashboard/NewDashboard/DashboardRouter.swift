@@ -59,7 +59,6 @@ final class DashboardRouter: Router {
     func showDetailsScreen(for currency: CryptoCurrency) {
         // TODO: Move away from the routing layer - phase II of savings
         let savingsRatesService = SavingAccountService(
-            authenticationService: NabuAuthenticationService.shared,
             custodialFeatureFetching: CustodialFeatureFetcher(tiersService: KYCServiceProvider.default.tiers,
                                                               featureFetching: AppFeatureConfigurator.shared)
         )

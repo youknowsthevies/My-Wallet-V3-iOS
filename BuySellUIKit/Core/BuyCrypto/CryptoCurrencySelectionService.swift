@@ -16,7 +16,7 @@ import ToolKit
 final class CryptoCurrencySelectionService: SelectionServiceAPI {
     
     var dataSource: Observable<[SelectionItemViewModel]> {
-        service.valueObservable
+        service.pairs
             .map { $0.cryptoCurrencies }
             .take(1)
             .map { $0.map(\.selectionItem) }

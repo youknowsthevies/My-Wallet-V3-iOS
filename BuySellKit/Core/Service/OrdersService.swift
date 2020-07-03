@@ -35,55 +35,44 @@ final class OrdersService: OrdersServiceAPI {
     // MARK: - Exposed
     
     var orders: Single<[OrderDetails]> {
-        ordersCachedValue.valueSingle
+        _ = setup
+        return ordersCachedValue.valueSingle
     }
     
-    private let ordersCachedValue = CachedValue<[OrderDetails]>(configuration: .onSubscriptionAndLogin())
+    private let ordersCachedValue = CachedValue<[OrderDetails]>(configuration: .onSubscription())
 
     // MARK: - Injected
     
     private let analyticsRecorder: AnalyticsEventRecording
     private let client: OrderDetailsClientAPI
-    private let authenticationService: NabuAuthenticationServiceAPI
-    private let reactiveWallet: ReactiveWalletAPI
+    
+    private lazy var setup: Void = {
+        ordersCachedValue.setFetch(weak: self) { (self) in
+            self.client.orderDetails(pendingOnly: false)
+                .map(weak: self) { (self, rawOrders) in
+                    rawOrders.compactMap {
+                        OrderDetails(recorder: self.analyticsRecorder, response: $0)
+                    }
+                }
+        }
+    }()
     
     // MARK: - Setup
     
     init(analyticsRecorder: AnalyticsEventRecording,
-         client: OrderDetailsClientAPI,
-         reactiveWallet: ReactiveWalletAPI,
-         authenticationService: NabuAuthenticationServiceAPI) {
+         client: OrderDetailsClientAPI) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client
-        self.reactiveWallet = reactiveWallet
-        self.authenticationService = authenticationService
-        
-        ordersCachedValue.setFetch {
-            reactiveWallet
-                .waitUntilInitializedSingle
-                .flatMap { _ in
-                    authenticationService
-                        .tokenString
-                        .flatMap { client.orderDetails(token: $0, pendingOnly: false) }
-                        .map { rawOrders in
-                            rawOrders.compactMap {
-                                OrderDetails(recorder: analyticsRecorder, response: $0)
-                            }
-                        }
-                }
-        }
     }
     
     func fetchOrders() -> Single<[OrderDetails]> {
-        ordersCachedValue.fetchValue
+        _ = setup
+        return ordersCachedValue.fetchValue
     }
     
     func fetchOrder(with identifier: String) -> Single<OrderDetails> {
-        authenticationService
-            .tokenString
-            .flatMap(weak: self) { (self, token) in
-                self.client.orderDetails(with: identifier, token: token)
-            }
+        _ = setup
+        return client.orderDetails(with: identifier)
             .map(weak: self) { (self, response) in
                 OrderDetails(recorder: self.analyticsRecorder, response: response)
             }

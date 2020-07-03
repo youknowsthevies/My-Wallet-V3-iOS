@@ -59,7 +59,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     var methodTypes: Observable<[PaymentMethodType]> {
         Observable
             .combineLatest(
-                paymentMethodsService.fetch(),
+                paymentMethodsService.paymentMethods,
                 cardListService.cards
             )
             .map(weak: self) { (self, payload) in

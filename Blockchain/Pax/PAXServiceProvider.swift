@@ -33,7 +33,6 @@ struct PAXServices: PAXDependencies {
          feeService: EthereumFeeServiceAPI = EthereumFeeService.shared,
          walletService: EthereumWalletServiceAPI = EthereumWalletService.shared,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
          simpleBuyOrdersAPI: BuySellKit.OrdersServiceAPI = ServiceProvider.default.ordersDetails,
          swapActivityAPI: SwapActivityServiceAPI = SwapServiceProvider.default.activity) {
         self.feeService = feeService

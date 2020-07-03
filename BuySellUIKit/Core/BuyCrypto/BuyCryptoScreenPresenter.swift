@@ -465,6 +465,7 @@ final class BuyCryptoScreenPresenter {
                 let tuple: (fiat: FiatValue, crypto: CryptoCurrency) = payload
                 return "1 \(tuple.crypto.displayCode) = \(tuple.fiat.toDisplayString()) \(tuple.fiat.currencyCode)"
             }
+            .catchErrorJustReturn(nil)
     }
 
     func labeledButtons(for state: BuyCryptoScreenInteractor.State) -> Observable<[CurrencyLabeledButtonViewModel]> {

@@ -9,18 +9,8 @@
 import NetworkKit
 import RxSwift
 
-public struct CreateUserResponse: Decodable {
-    public let userId: String
-    public let token: String
-    
-    public init(userId: String, token: String) {
-        self.userId = userId
-        self.token = token
-    }
-}
-
 public protocol UserCreationClientAPI: class {
-    func createUser(for token: String) -> Single<CreateUserResponse>
+    func createUser(for jwtToken: String) -> Single<NabuOfflineTokenResponse>
 }
 
 public final class UserCreationClient: UserCreationClientAPI {
@@ -47,12 +37,12 @@ public final class UserCreationClient: UserCreationClientAPI {
         self.requestBuilder = RequestBuilder(networkConfig: dependencies.blockchainAPIConfig)
     }
         
-    public func createUser(for token: String) -> Single<CreateUserResponse> {
+    public func createUser(for jwtToken: String) -> Single<NabuOfflineTokenResponse> {
         struct Payload: Encodable {
             let jwt: String
         }
         
-        let payload = Payload(jwt: token)
+        let payload = Payload(jwt: jwtToken)
         let request = requestBuilder.post(
             path: Path.users,
             body: try? payload.encode()

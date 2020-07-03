@@ -65,7 +65,6 @@ protocol KYCCoordinatorDelegate: class {
     private let pageFactory = KYCPageViewFactory()
 
     private let appSettings: BlockchainSettings.App
-    private let authenticationService: NabuAuthenticationService
     private let loadingViewPresenter: LoadingViewPresenting
     
     private var userTiersResponse: KYC.UserTiers?
@@ -104,15 +103,13 @@ protocol KYCCoordinatorDelegate: class {
         tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
         appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
         kycSettings: KYCSettingsAPI = KYCSettings.shared,
-        authenticationService: NabuAuthenticationService = NabuAuthenticationService.shared,
         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
-        communicator: NetworkCommunicatorAPI = NetworkCommunicator.shared
+        communicator: NetworkCommunicatorAPI = Network.Dependencies.retail.communicator
     ) {
         self.webViewServiceAPI = webViewServiceAPI
         self.tiersService = tiersService
         self.appSettings = appSettings
         self.kycSettings = kycSettings
-        self.authenticationService = authenticationService
         self.loadingViewPresenter = loadingViewPresenter
         self.communicator = communicator
         
@@ -267,11 +264,11 @@ protocol KYCCoordinatorDelegate: class {
         /// Refresh the user's tiers to get their status.
         /// Sometimes we receive an `INTERNAL_SERVER_ERROR` if we refresh this
         /// immediately after submitting all KYC data. So, we apply a delay here.
-        BlockchainDataRepository.shared.tiers
+        tiersService.tiers
             .handleLoaderForLifecycle(loader: loadingViewPresenter)
             .observeOn(MainScheduler.instance)
             .subscribe(
-                onNext: { [weak self] response in
+                onSuccess: { [weak self] response in
                     guard let self = self else { return }
                     let status = response.tierAccountStatus(for: .tier2)
                     
@@ -507,17 +504,14 @@ protocol KYCCoordinatorDelegate: class {
                 return .error(TradeExecutionAPIError.generic)
         }
         let body = KYCTierPostBody(selectedTier:tier)
-        return authenticationService.tokenString
-            .flatMap(weak: self) { (self, token) -> Single<KYC.UserTiers> in
-                self.communicator.perform(
-                    request: NetworkRequest(
-                        endpoint: endpoint,
-                        method: .post,
-                        body: try? JSONEncoder().encode(body),
-                        headers: [HttpHeaderField.authorization: token]
-                    )
-            )
-        }
+        return self.communicator.perform(
+                request: NetworkRequest(
+                    endpoint: endpoint,
+                    method: .post,
+                    body: try? JSONEncoder().encode(body),
+                    authenticated: true
+                )
+        )
     }
 
     @discardableResult private func presentInNavigationController(

@@ -54,7 +54,6 @@ public final class CardUpdateService: CardUpdateServiceAPI {
     private let cardClient: CardClientAPI
     private let everyPayClient: EveryPayClientAPI
     private let dataRepository: DataRepositoryAPI
-    private let authenticationService: NabuAuthenticationServiceAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     private let analyticsRecorder: AnalyticsEventRecording
     
@@ -64,13 +63,11 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                 cardClient: CardClientAPI,
                 everyPayClient: EveryPayClientAPI,
                 fiatCurrencyService: FiatCurrencySettingsServiceAPI,
-                analyticsRecorder: AnalyticsEventRecording,
-                authenticationService: NabuAuthenticationServiceAPI) {
+                analyticsRecorder: AnalyticsEventRecording) {
         self.dataRepository = dataRepository
         self.cardClient = cardClient
         self.everyPayClient = everyPayClient
         self.analyticsRecorder = analyticsRecorder
-        self.authenticationService = authenticationService
         self.fiatCurrencyService = fiatCurrencyService
     }
     
@@ -80,32 +77,26 @@ public final class CardUpdateService: CardUpdateServiceAPI {
         let email = dataRepository.userSingle
             .map { $0.email.address }
         
-        return Single
-            .zip(
-                authenticationService.tokenString,
+        return Single.zip(
                 fiatCurrencyService.fiatCurrency,
                 email
             )
-            .map { (token: $0.0, currency: $0.1, email: $0.2) }
+            .map { (currency: $0.0, email: $0.1) }
             // 1. Add the card details via BE
-            .flatMap(weak: self) { (self, payload) -> Single<(response: CardPayload, token: String)> in
+            .flatMap(weak: self) { (self, payload) -> Single<CardPayload> in
                 self.cardClient
                     .add(
                         for: payload.currency.code,
                         email: payload.email,
-                        billingAddress: card.billingAddress.requestPayload,
-                        token: payload.token
+                        billingAddress: card.billingAddress.requestPayload
                     )
-                    .map { response -> (response: CardPayload, token: String) in
-                        (response, payload.token)
-                    }
                     .do(onError: { error in
                         self.analyticsRecorder.record(event: CardUpdateEvent.sbAddCardFailure)
                     })
             }
             // 2. Make sure the card partner is supported
-            .map { payload -> (response: CardPayload, token: String) in
-                guard payload.response.partner.isKnown else {
+            .map { payload -> CardPayload in
+                guard payload.partner.isKnown else {
                     throw ServiceError.unknownPartner
                 }
                 return payload
@@ -113,12 +104,11 @@ public final class CardUpdateService: CardUpdateServiceAPI {
             // 3. Activate the card
             .flatMap(weak: self) { (self, payload) -> Single<(cardId: String, partner: ActivateCardResponse.Partner)> in
                 self.cardClient.activateCard(
-                    by: payload.response.identifier,
-                    url: PartnerAuthorizationData.exitLink,
-                    token: payload.token
+                    by: payload.identifier,
+                    url: PartnerAuthorizationData.exitLink
                 )
                 .map {
-                    (cardId: payload.response.identifier, partner: $0)
+                    (cardId: payload.identifier, partner: $0)
                 }
                 .do(onError: { error in
                     self.analyticsRecorder.record(event: CardUpdateEvent.sbCardActivationFailure)

@@ -20,22 +20,15 @@ public final class CardDeletionService: CardDeletionServiceAPI {
     // MARK: - Private Properties
     
     private let client: CardDeletionClientAPI
-    private let authenticationService: NabuAuthenticationServiceAPI
     
     // MARK: - Setup
     
-    public init(client: CardDeletionClientAPI,
-                authenticationService: NabuAuthenticationServiceAPI) {
-        self.authenticationService = authenticationService
+    public init(client: CardDeletionClientAPI) {
         self.client = client
     }
     
     public func deleteCard(by id: String) -> Completable {
-        authenticationService
-            .tokenString
-            .flatMapCompletable(weak: self) { (self, token) -> Completable in
-                self.client.deleteCard(by: id, token: token)
-            }
+        self.client.deleteCard(by: id)
     }
     
 }

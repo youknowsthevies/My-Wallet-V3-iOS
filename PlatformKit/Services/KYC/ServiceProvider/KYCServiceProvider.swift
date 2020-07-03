@@ -11,6 +11,7 @@ public final class KYCServiceProvider: KYCServiceProviderAPI {
     // MARK: - Properties
         
     public let tiers: KYCTiersServiceAPI
+    public let user: NabuUserServiceAPI
     
     /// Computes the polling service
     public var tiersPollingService: KYCTierUpdatePollingService {
@@ -19,12 +20,9 @@ public final class KYCServiceProvider: KYCServiceProviderAPI {
     
     // MARK: - Setup
     
-    public init(client: KYCClientAPI = KYCClient(),
-                authenticationService: NabuAuthenticationServiceAPI) {
-        tiers = KYCTiersService(
-            client: client,
-            authenticationService: authenticationService
-        )
+    public init(client: KYCClientAPI = KYCClient()) {
+        user = NabuUserService(client: client)
+        tiers = KYCTiersService(client: client)
     }
 }
 

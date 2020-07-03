@@ -10,26 +10,17 @@ import NetworkKit
 import PlatformKit
 import RxSwift
 
-class VeriffService {
+final class VeriffService {
+        
+    private let client: KYCClientAPI
     
-    private let authService: NabuAuthenticationService
-    
-    init(authService: NabuAuthenticationService = NabuAuthenticationService.shared) {
-        self.authService = authService
+    init(client: KYCClientAPI = KYCClient()) {
+        self.client = client
     }
     
-    // MARK: - Public
-    
     /// Creates VeriffCredentials
-    func createCredentials() -> Single<(VeriffCredentials)> {
-        authService.tokenString.flatMap { token in
-            let headers = [HttpHeaderField.authorization: token]
-            return KYCNetworkRequest.request(
-                get: .credentiasForVeriff,
-                headers: headers,
-                type: VeriffCredentials.self
-            )
-        }
+    func createCredentials() -> Single<VeriffCredentials> {
+        client.credentialsForVeriff()
     }
     
     /// Submits the Veriff applicantId to Blockchain to complete KYC processing.
@@ -38,17 +29,6 @@ class VeriffService {
     /// - Parameter applicantId: applicantId derived from `VeriffCredentials`
     /// - Returns: a Completable
     func submitVerification(applicantId: String) -> Completable {
-        authService.tokenString.flatMapCompletable { token in
-            let headers = [HttpHeaderField.authorization: token]
-            let payload = [
-                "applicantId": applicantId,
-                HttpHeaderField.clientType: HttpHeaderValue.clientTypeApp
-            ]
-            return KYCNetworkRequest.request(
-                post: .submitVerification,
-                parameters: payload,
-                headers: headers
-            )
-        }
+        client.submitToVeriffForVerification(applicantId: applicantId)
     }
 }

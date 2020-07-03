@@ -24,6 +24,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     
     private let wallet: WalletProtocol
     private let dataRepository: BlockchainDataRepository
+    private let tiersService: KYCTiersServiceAPI
     private let infoService: GeneralInformationService
     private let exchangeService: ExchangeService
     private let repository: AuthenticatorRepositoryAPI
@@ -36,12 +37,8 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             return Single.error(AnnouncementError.uninitializedWallet)
         }
         
-        let nabuUser = dataRepository.nabuUser
-            .take(1)
-            .asSingle()
-        let tiers = dataRepository.tiers
-            .take(1)
-            .asSingle()
+        let nabuUser = dataRepository.nabuUserSingle
+        let tiers = tiersService.tiers
         let countries = infoService.countries
         let hasTrades = exchangeService.hasExecutedTrades()
         let simpleBuyOrderDetails = simpleBuyServiceProvider
@@ -50,8 +47,10 @@ final class AnnouncementInteractor: AnnouncementInteracting {
 
         let isSimpleBuyAvailable = simpleBuyServiceProvider
             .supportedPairsInteractor
-            .valueSingle
+            .pairs
             .map { !$0.pairs.isEmpty }
+            .take(1)
+            .asSingle()
 
         return Single
             .zip(nabuUser,
@@ -81,6 +80,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     init(repository: AuthenticatorRepositoryAPI = WalletManager.shared.repository,
          wallet: WalletProtocol = WalletManager.shared.wallet,
          dataRepository: BlockchainDataRepository = .shared,
+         tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
          exchangeService: ExchangeService = .shared,
          infoService: GeneralInformationService = UserInformationServiceProvider.default.general,
          paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = PAXServiceProvider.shared.services.assetAccountRepository,
@@ -88,6 +88,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         self.repository = repository
         self.wallet = wallet
         self.dataRepository = dataRepository
+        self.tiersService = tiersService
         self.infoService = infoService
         self.exchangeService = exchangeService
         self.simpleBuyServiceProvider = simpleBuyServiceProvider

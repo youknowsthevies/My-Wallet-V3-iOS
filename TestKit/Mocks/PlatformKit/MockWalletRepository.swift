@@ -18,6 +18,7 @@ final class MockWalletRepository: WalletRepositoryAPI {
     private var expectedSharedKey: String?
     private var expectedPassword: String?
     private var expectedSyncPubKeys = false
+    var expectedOfflineTokenResponse: Result<NabuOfflineTokenResponse, MissingCredentialsError>!
 
     var sessionToken: Single<String?> { .just(expectedSessionToken) }
     var payload: Single<String?> { .just(expectedPayload) }
@@ -25,6 +26,15 @@ final class MockWalletRepository: WalletRepositoryAPI {
     var password: Single<String?> { .just(expectedPassword) }
     var guid: Single<String?> { .just(expectedGuid) }
     var authenticatorType: Single<AuthenticatorType> { .just(expectedAuthenticatorType) }
+    var offlineTokenResponse: Single<NabuOfflineTokenResponse> {
+        expectedOfflineTokenResponse.single
+    }
+    
+    func set(offlineTokenResponse: NabuOfflineTokenResponse) -> Completable {
+        return perform { [weak self] in
+            self?.expectedOfflineTokenResponse = .success(offlineTokenResponse)
+        }
+    }
     
     func set(sessionToken: String) -> Completable {
         perform { [weak self] in

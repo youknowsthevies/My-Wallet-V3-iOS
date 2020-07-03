@@ -24,13 +24,11 @@ enum HomebrewExchangeServiceError: Error {
 
 class HomebrewExchangeService: HomebrewExchangeAPI {
     
-    fileprivate let authentication: NabuAuthenticationService
     fileprivate var disposable: Disposable?
     
     private let communicator: NetworkCommunicatorAPI
     
-    init(service: NabuAuthenticationService = NabuAuthenticationService.shared, communicator: NetworkCommunicatorAPI = NetworkCommunicator.shared) {
-        self.authentication = service
+    init(communicator: NetworkCommunicatorAPI = Network.Dependencies.retail.communicator) {
         self.communicator = communicator
     }
     
@@ -64,16 +62,12 @@ class HomebrewExchangeService: HomebrewExchangeAPI {
             return .error(HomebrewExchangeServiceError.generic)
         }
         
-        return authentication
-            .tokenString
-            .flatMap(weak: self) { (self, token) -> Single<[ExchangeTradeCellModel]> in
-                self.communicator.perform(
-                    request: NetworkRequest(
-                        endpoint: endpoint,
-                        method: .get,
-                        headers: [HttpHeaderField.authorization: token]
-                    )
-                )
-            }
+        return self.communicator.perform(
+            request: NetworkRequest(
+                endpoint: endpoint,
+                method: .get,
+                authenticated: true
+            )
+        )
     }
 }

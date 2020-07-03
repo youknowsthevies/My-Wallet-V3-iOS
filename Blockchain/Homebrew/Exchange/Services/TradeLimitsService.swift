@@ -15,20 +15,15 @@ import ToolKit
 class TradeLimitsService: TradeLimitsAPI {
 
     private let disposables = CompositeDisposable()
-
-    private let authenticationService: NabuAuthenticationService
+    
     private let socketManager: SocketManager
     private var cachedLimits = BehaviorRelay<TradeLimits?>(value: nil)
     private var cachedLimitsTimer: Timer?
     private let clearCachedLimitsInterval: TimeInterval = 60
     private let communicator: NetworkCommunicatorAPI
 
-    init(
-        authenticationService: NabuAuthenticationService = NabuAuthenticationService.shared,
-        socketManager: SocketManager = SocketManager.shared,
-        communicator: NetworkCommunicatorAPI = NetworkCommunicator.shared
-    ) {
-        self.authenticationService = authenticationService
+    init(socketManager: SocketManager = SocketManager.shared,
+         communicator: NetworkCommunicatorAPI = Network.Dependencies.retail.communicator) {
         self.socketManager = socketManager
         self.communicator = communicator
         self.cachedLimitsTimer = Timer.scheduledTimer(withTimeInterval: clearCachedLimitsInterval, repeats: true) { [weak self] _ in
@@ -104,17 +99,13 @@ class TradeLimitsService: TradeLimitsAPI {
             return .error(TradeLimitsAPIError.generic)
         }
 
-        return authenticationService
-            .tokenString
-            .flatMap(weak: self) { (self, token) in
-                self.communicator.perform(
-                    request: NetworkRequest(
-                        endpoint: endpoint,
-                        method: .get,
-                        headers: [HttpHeaderField.authorization: token]
-                    )
-                )
-        }
+        return self.communicator.perform(
+            request: NetworkRequest(
+                endpoint: endpoint,
+                method: .get,
+                authenticated: true
+            )
+        )
     }
 
     private func clearCachedLimits() {

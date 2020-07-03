@@ -27,39 +27,32 @@ final class OrderCreationService: OrderCreationServiceAPI {
     private let analyticsRecorder: AnalyticsEventRecording
     private let client: OrderCreationClientAPI
     private let pendingOrderDetailsService: PendingOrderDetailsServiceAPI
-    private let authenticationService: NabuAuthenticationServiceAPI
-
+    
     // MARK: - Setup
     
     init(analyticsRecorder: AnalyticsEventRecording,
          client: OrderCreationClientAPI,
-         pendingOrderDetailsService: PendingOrderDetailsServiceAPI,
-         authenticationService: NabuAuthenticationServiceAPI) {
+         pendingOrderDetailsService: PendingOrderDetailsServiceAPI) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client
         self.pendingOrderDetailsService = pendingOrderDetailsService
-        self.authenticationService = authenticationService
     }
     
     // MARK: - API
     
     func create(using candidateOrderDetails: CandidateOrderDetails) -> Single<CheckoutData> {
-        let creation = authenticationService.tokenString
-            .flatMap(weak: self) { (self, token) -> Single<OrderPayload.Response> in
-                let data = OrderPayload.Request(
-                    action: .buy,
-                    fiatValue: candidateOrderDetails.fiatValue,
-                    for: candidateOrderDetails.cryptoCurrency,
-                    paymentType: candidateOrderDetails.paymentMethod.method,
-                    paymentMethodId: candidateOrderDetails.paymentMethodId
-                )
-                return self.client
-                    .create(
-                        order: data,
-                        createPendingOrder: true,
-                        token: token
-                    )
-            }
+        let data = OrderPayload.Request(
+            action: .buy,
+            fiatValue: candidateOrderDetails.fiatValue,
+            for: candidateOrderDetails.cryptoCurrency,
+            paymentType: candidateOrderDetails.paymentMethod.method,
+            paymentMethodId: candidateOrderDetails.paymentMethodId
+        )
+        let creation = self.client
+            .create(
+                order: data,
+                createPendingOrder: true
+            )
             .map(weak: self) { (self, response) in
                 OrderDetails(recorder: self.analyticsRecorder, response: response)
             }

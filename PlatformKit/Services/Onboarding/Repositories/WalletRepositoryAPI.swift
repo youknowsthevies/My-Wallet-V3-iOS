@@ -6,8 +6,6 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-
 public typealias WalletRepositoryAPI = SessionTokenRepositoryAPI
                                      & SharedKeyRepositoryAPI
                                      & PasswordRepositoryAPI
@@ -16,3 +14,5 @@ public typealias WalletRepositoryAPI = SessionTokenRepositoryAPI
                                      & LanguageRepositoryAPI
                                      & AuthenticatorRepositoryAPI
                                      & PayloadRepositoryAPI
+                                     & NabuOfflineTokenRepositoryAPI
+                                     & CredentialsRepositoryAPI

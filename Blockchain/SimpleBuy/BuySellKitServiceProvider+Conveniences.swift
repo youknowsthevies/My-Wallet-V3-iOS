@@ -19,7 +19,6 @@ extension ServiceProvider {
             cardServiceProvider: CardServiceProvider.default,
             recordingProvider: RecordingProvider.default,
             wallet: WalletManager.shared.reactiveWallet,
-            authenticationService: NabuAuthenticationService.shared,
             cacheSuite: UserDefaults.standard,
             settings: UserInformationServiceProvider.default.settings,
             dataRepository: BlockchainDataRepository.shared,

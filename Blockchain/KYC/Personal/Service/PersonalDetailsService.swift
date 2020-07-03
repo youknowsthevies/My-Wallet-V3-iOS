@@ -10,28 +10,15 @@ import NetworkKit
 import PlatformKit
 import RxSwift
 
-class PersonalDetailsService: NSObject, PersonalDetailsAPI {
+final class PersonalDetailsService {
 
-    private var disposable: Disposable?
-
-    deinit {
-        disposable?.dispose()
+    private let client: KYCClientAPI
+    
+    init(client: KYCClientAPI = KYCClient()) {
+        self.client = client
     }
 
-    func update(personalDetails: KYCUpdatePersonalDetailsRequest, with completion: @escaping PersonalDetailsUpdateCompletion) {
-        disposable = NabuAuthenticationService.shared.tokenString.flatMapCompletable { token in
-            let headers = [HttpHeaderField.authorization: token]
-            return KYCNetworkRequest.request(
-                put: .updateUserDetails,
-                parameters: personalDetails,
-                headers: headers
-            )
-        }.subscribeOn(MainScheduler.asyncInstance)
-            .observeOn(MainScheduler.instance)
-            .subscribe(onCompleted: {
-                completion(nil)
-            }, onError: { error in
-                completion(error)
-            })
+    func update(firstName: String?, lastName: String?, birthday: Date?) -> Completable {
+        client.updatePersonalDetails(firstName: firstName, lastName: lastName, birthday: birthday)
     }
 }

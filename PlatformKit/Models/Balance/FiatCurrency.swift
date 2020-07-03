@@ -933,7 +933,7 @@ public enum FiatCurrency: String, Codable {
 
 extension FiatCurrency {
     
-    private static let `default` = FiatCurrency.USD
+    public static let `default` = FiatCurrency.USD
     
     public static var locale: FiatCurrency {
         let locale = NSLocale.current as NSLocale

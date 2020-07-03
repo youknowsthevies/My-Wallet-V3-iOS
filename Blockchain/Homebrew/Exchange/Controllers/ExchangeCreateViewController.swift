@@ -246,7 +246,7 @@ class ExchangeCreateViewController: UIViewController {
     }
     
     private func isETHAirdropEligible() -> Single<Bool> {
-        BlockchainDataRepository.shared.nabuUser.take(1).asSingle().flatMap { user -> Single<Bool> in
+        BlockchainDataRepository.shared.nabuUserSingle.flatMap { user -> Single<Bool> in
             guard let tiers = user.tiers else { return Single.just(false) }
             guard let tags = user.tags else { return Single.just(false) }
             let eligible = tiers.current == .tier2 && tags.powerPax == nil

@@ -26,16 +26,13 @@ final class OrderConfirmationService: OrderConfirmationServiceAPI {
     
     private let analyticsRecorder: AnalyticsEventRecording
     private let client: CardOrderConfirmationClientAPI
-    private let authenticationService: NabuAuthenticationServiceAPI
 
     // MARK: - Setup
     
     init(analyticsRecorder: AnalyticsEventRecording,
-         client: CardOrderConfirmationClientAPI,
-         authenticationService: NabuAuthenticationServiceAPI) {
+         client: CardOrderConfirmationClientAPI) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client
-        self.authenticationService = authenticationService
     }
     
     public func confirm(checkoutData: CheckoutData) -> Single<CheckoutData> {
@@ -49,16 +46,11 @@ final class OrderConfirmationService: OrderConfirmationServiceAPI {
             partner = .everyPay(customerUrl: PartnerAuthorizationData.exitLink)
         }
                 
-        return authenticationService
-            .tokenString
-            .flatMap(weak: self) { (self, token) in
-                self.client.confirmOrder(
-                    with: orderId,
-                    partner: partner,
-                    paymentMethodId: paymentMethodId,
-                    token: token
-                )
-            }
+        return self.client.confirmOrder(
+                with: orderId,
+                partner: partner,
+                paymentMethodId: paymentMethodId
+            )
             .map(weak: self) { (self, response) in
                 OrderDetails(recorder: self.analyticsRecorder, response: response)
             }

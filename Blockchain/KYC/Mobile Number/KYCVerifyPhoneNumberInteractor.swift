@@ -15,16 +15,13 @@ import ToolKit
 class KYCVerifyPhoneNumberInteractor {
 
     private let phoneNumberKit = PhoneNumberKit()
-    private let authenticationService: NabuAuthenticationService
     private let wallet: Wallet
-    private let walletSync: WalletNabuSynchronizerAPI
+    private let walletSync: WalletNabuSynchronizerServiceAPI
 
     init(
-        authenticationService: NabuAuthenticationService = NabuAuthenticationService.shared,
         wallet: Wallet = WalletManager.shared.wallet,
-        walletSync: WalletNabuSynchronizerAPI = WalletNabuSynchronizerService()
+        walletSync: WalletNabuSynchronizerServiceAPI = NabuServiceProvider.default.walletSynchronizer
     ) {
-        self.authenticationService = authenticationService
         self.wallet = wallet
         self.walletSync = walletSync
     }
@@ -64,17 +61,7 @@ class KYCVerifyPhoneNumberInteractor {
     }
 
     private func updateWalletInfo() -> Completable {
-        authenticationService.tokenString.flatMap { [weak self] token -> Single<NabuUser> in
-            guard let strongSelf = self else {
-                return Single.never()
-            }
-            return strongSelf.walletSync.sync(token: token).do(onSuccess: { user in
-                Logger.shared.debug("""
-                    Successfully updated user: \(user.personalDetails.identifier ?? "").
-                    Mobile number: \(user.mobile?.phone ?? "")
-                """)
-            })
-        }.asCompletable()
+        walletSync.sync()
     }
 }
 

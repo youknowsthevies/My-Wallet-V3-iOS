@@ -12,6 +12,5 @@ protocol EligibilityClientAPI: class {
     
     /// Streams a boolean value indicating whether the user can or cannot trade
     func isEligible(for currency: String,
-                    methods: [String],
-                    token: String) -> Single<EligibilityResponse>
+                    methods: [String]) -> Single<EligibilityResponse>
 }

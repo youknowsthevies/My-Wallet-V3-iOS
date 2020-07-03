@@ -10,6 +10,5 @@ import PlatformKit
 import RxSwift
 
 protocol SuggestedAmountsClientAPI: class {
-    func suggestedAmounts(for currency: FiatCurrency,
-                          using token: String) -> Single<SuggestedAmountsResponse>
+    func suggestedAmounts(for currency: FiatCurrency) -> Single<SuggestedAmountsResponse>
 }

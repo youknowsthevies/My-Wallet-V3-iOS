@@ -17,9 +17,6 @@ public struct AirdropRegistrationRequest: Encodable {
         case powerPax = "POWER_PAX"
     }
 
-    /// Token derived from a `NabuSessionTokenResponse`
-    let authToken: String
-
     /// The `publicKey` for any `CryptoCurrency` that you are registering
     /// for an Airdrop.
     let publicKey: String
@@ -31,8 +28,9 @@ public struct AirdropRegistrationRequest: Encodable {
     /// and `isCompletingKyc` evaulates to `false`.
     let newUser: Bool
 
-    public init(authToken: String, publicKey: String, campaignIdentifier: CampaignIdentifier, isNewUser: Bool) {
-        self.authToken = authToken
+    public init(publicKey: String,
+                campaignIdentifier: CampaignIdentifier,
+                isNewUser: Bool) {
         self.publicKey = publicKey
         self.campaignIdentifier = campaignIdentifier.rawValue
         self.newUser = isNewUser

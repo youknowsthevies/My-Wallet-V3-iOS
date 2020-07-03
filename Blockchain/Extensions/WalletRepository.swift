@@ -15,7 +15,7 @@ import ToolKit
 /// A bridge to `Wallet` since it is an ObjC object.
 @objc
 final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsProviding {
-    
+        
     // MARK: - Types
     
     private struct JSSetter {
@@ -34,6 +34,20 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
         
         /// Accepts a String representing the wallet payload
         static let payload = "MyWalletPhone.setEncryptedWalletData(\"%@\")"
+        
+        /// Fetches the user offline token
+        static let offlineToken = "MyWalletPhone.KYC.lifetimeToken()"
+        
+        /// Fetches the user id
+        static let userId = "MyWalletPhone.KYC.userId()"
+        
+        /// Updates user credentials: userId, lifetimeToken
+        static let updateUserCredentials = "MyWalletPhone.KYC.updateUserCredentials(\"%@\", \"%@\")"
+    }
+    
+    private struct JSCallback {
+        static let updateUserCredentialsSuccess = "objc_updateUserCredentials_success"
+        static let updateUserCredentialsFailure = "objc_updateUserCredentials_error"
     }
     
     private let authenticatorTypeRelay = BehaviorRelay<AuthenticatorType>(value: .standard)
@@ -82,6 +96,49 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
             .asSingle()
     }
 
+    var offlineTokenResponse: Single<NabuOfflineTokenResponse> {
+        Single
+            .zip(userId, offlineToken)
+            .map { payload -> (userId: String, offlineToken: String) in
+                guard let userId = payload.0 else {
+                    throw MissingCredentialsError.userId
+                }
+                guard let offlineToken = payload.1 else {
+                    throw MissingCredentialsError.offlineToken
+                }
+                return (userId, offlineToken)
+            }
+            .map { NabuOfflineTokenResponse(userId: $0.userId, token: $0.offlineToken) }
+    }
+            
+    private var offlineToken: Single<String?> {
+        Single.deferred { [weak self] in
+            guard let self = self else {
+                return .error(ToolKitError.nullReference(Self.self))
+            }
+            guard let jsValue = self.jsContextProvider.jsContext.evaluateScript(JSSetter.offlineToken) else {
+                return Single.just(nil)
+            }
+            guard !jsValue.isNull, !jsValue.isUndefined else { return .just(nil) }
+            return Single.just(jsValue.toString())
+        }
+        .subscribeOn(jsScheduler)
+    }
+    
+    private var userId: Single<String?> {
+        Single.deferred { [weak self] in
+            guard let self = self else {
+                return .error(ToolKitError.nullReference(Self.self))
+            }
+            guard let jsValue = self.jsContextProvider.jsContext.evaluateScript(JSSetter.userId) else {
+                return Single.just(nil)
+            }
+            guard !jsValue.isNull, !jsValue.isUndefined else { return .just(nil) }
+            return Single.just(jsValue.toString())
+        }
+        .subscribeOn(jsScheduler)
+    }
+    
     private let jsScheduler = MainScheduler.instance
     private let settings: AppSettingsAPI
 
@@ -96,6 +153,39 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     }
     
     // MARK: - Wallet Setters
+    
+    func set(offlineTokenResponse: NabuOfflineTokenResponse) -> Completable {
+        Completable
+            .create { [weak self] observer -> Disposable in
+                guard let self = self else {
+                    observer(.error(ToolKitError.nullReference(Self.self)))
+                    return Disposables.create()
+                }
+                
+                self.jsContextProvider.jsContext.invokeOnce(
+                    functionBlock: {
+                        observer(.error(CredentialWritingError.offlineToken))
+                    },
+                    forJsFunctionName: JSCallback.updateUserCredentialsFailure as NSString
+                )
+                
+                self.jsContextProvider.jsContext.invokeOnce(
+                    functionBlock: {
+                        observer(.completed)
+                    },
+                    forJsFunctionName: JSCallback.updateUserCredentialsSuccess as NSString
+                )
+
+                let userId = offlineTokenResponse.userId.escapedForJS()
+                let offlineToken = offlineTokenResponse.token.escapedForJS()
+                let script = String(format: JSSetter.updateUserCredentials, userId, offlineToken)
+                
+                self.jsContextProvider.jsContext.evaluateScript(script)?.toString()
+                
+                return Disposables.create()
+            }
+            .subscribeOn(jsScheduler)
+    }
     
     /// Sets GUID
     func set(guid: String) -> Completable {

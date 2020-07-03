@@ -64,6 +64,7 @@ public final class AmountLabelViewModel {
                     accessibility: .id(AccessibilityId.fiatCurrencyCodeLabel)
                 )
             }
+            .catchErrorJustReturn(.empty)
     }
     
     /// Streams the amount label content

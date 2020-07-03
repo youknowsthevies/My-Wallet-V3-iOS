@@ -67,6 +67,15 @@ extension PrimitiveSequence where Trait == CompletableTrait {
             return .error(error)
         }
     }
+    
+    /// Convert from `Completable` into `Single`
+    public func flatMapSingle<R>(_ selector: @escaping () throws -> Single<R>) -> Single<R> {
+        do {
+            return asObservable().ignoreElements().andThen(try selector())
+        } catch {
+            return .error(error)
+        }
+    }
 }
 
 extension PrimitiveSequence where Trait == SingleTrait {
@@ -81,6 +90,18 @@ extension PrimitiveSequence where Trait == SingleTrait {
     
     public static func create<A: AnyObject>(weak object: A, subscribe: @escaping (A, @escaping SingleObserver) -> Disposable) -> Single<Element> {
         Single<Element>.create { [weak object] observer -> Disposable in
+            guard let object = object else {
+                observer(.error(ToolKitError.nullReference(A.self)))
+                return Disposables.create()
+            }
+            return subscribe(object, observer)
+        }
+    }
+}
+
+extension PrimitiveSequence where Trait == CompletableTrait, Element == Never {
+    public static func create<A: AnyObject>(weak object: A, subscribe: @escaping (A, Self.CompletableObserver) -> Disposable) -> RxSwift.PrimitiveSequence<Self.Trait, Self.Element> {
+        Completable.create { [weak object] observer -> Disposable in
             guard let object = object else {
                 observer(.error(ToolKitError.nullReference(A.self)))
                 return Disposables.create()

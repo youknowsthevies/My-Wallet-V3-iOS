@@ -40,7 +40,6 @@ final class DataProvider: DataProviding {
          tradingAccountClient: TradingBalanceClientAPI = TradingBalanceClient(),
          savingsAccountClient: SavingsAccountClientAPI = SavingsAccountClient(),
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
          paxServiceProvider: PAXServiceProvider = PAXServiceProvider.shared,
          algorandServiceProvider: AlgorandServiceProvider = .shared,
          ethereumServiceProvider: ETHServiceProvider = ETHServiceProvider.shared,
@@ -125,13 +124,11 @@ final class DataProvider: DataProviding {
         )
         
         let tradingBalanceService = TradingBalanceService(
-            client: tradingAccountClient,
-            authenticationService: authenticationService
+            client: tradingAccountClient
         )
         
         let savingsAccountService = SavingAccountService(
             client: savingsAccountClient,
-            authenticationService: authenticationService,
             custodialFeatureFetching: CustodialFeatureFetcher(tiersService: kycTierService, featureFetching: featureFetching)
         )
 

@@ -6,19 +6,21 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import RxSwift
+import ToolKit
 import PlatformKit
 import ToolKit
 
-class PersonalDetailsCoordinator: NSObject {
+final class PersonalDetailsCoordinator {
 
-    fileprivate let service: PersonalDetailsService
-    fileprivate weak var interface: PersonalDetailsInterface?
+    private let disposeBag = DisposeBag()
+    private let service: PersonalDetailsService
+    private weak var interface: PersonalDetailsInterface?
 
-    init(interface: PersonalDetailsInterface) {
-        self.service = PersonalDetailsService()
+    init(interface: PersonalDetailsInterface,
+         service: PersonalDetailsService = PersonalDetailsService()) {
+        self.service = service
         self.interface = interface
-        super.init()
 
         if let controller = interface as? KYCPersonalDetailsController {
             controller.delegate = self
@@ -28,19 +30,33 @@ class PersonalDetailsCoordinator: NSObject {
 
 extension PersonalDetailsCoordinator: PersonalDetailsDelegate {
     func onSubmission(_ input: KYCUpdatePersonalDetailsRequest, completion: @escaping () -> Void) {
-        interface?.primaryButtonEnabled(false)
-        interface?.primaryButtonActivityIndicator(.visible)
-        service.update(personalDetails: input) { [weak self] (error) in
-            guard let this = self else { return }
-            this.interface?.primaryButtonActivityIndicator(.hidden)
-
-            if let err = error {
-                // TODO: Error state
-                Logger.shared.error("Failed to update personal details: \(err)")
-            } else {
-                completion()
-            }
-            this.interface?.primaryButtonEnabled(true)
+        let onSubscribe = { [weak self] in
+            self?.interface?.primaryButtonEnabled(false)
+            self?.interface?.primaryButtonActivityIndicator(.visible)
         }
+        
+        let onDispose = { [weak self] in
+            self?.interface?.primaryButtonActivityIndicator(.hidden)
+            self?.interface?.primaryButtonEnabled(true)
+        }
+        
+        service
+            .update(
+                firstName: input.firstName,
+                lastName: input.lastName,
+                birthday: input.birthday
+            )
+            .observeOn(MainScheduler.instance)
+            .do(onSubscribe: onSubscribe)
+            .subscribe(
+                onCompleted: {
+                    onDispose()
+                    completion()
+                },
+                onError: { _ in
+                    onDispose()
+                }
+            )
+            .disposed(by: disposeBag)
     }
 }

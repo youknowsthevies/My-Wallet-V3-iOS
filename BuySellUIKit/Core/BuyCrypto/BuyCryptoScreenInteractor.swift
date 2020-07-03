@@ -108,7 +108,7 @@ final class BuyCryptoScreenInteractor {
     }
 
     var paymentMethodTypes: Observable<[PaymentMethodType]> {
-        paymentMethodTypesService.methodTypes
+        paymentMethodTypesService.methodTypes.catchErrorJustReturn([])
     }
     
     var preferredPaymentMethodType: Observable<PaymentMethodType?> {

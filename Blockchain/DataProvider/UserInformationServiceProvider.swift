@@ -25,7 +25,7 @@ final class UserInformationServiceProvider: UserInformationServiceProviding {
     /// Computes and returns an email verification service API
     var emailVerification: EmailVerificationServiceAPI {
         EmailVerificationService(
-            authenticationService: NabuAuthenticationService.shared, /// TODO: Move it to `PlatformKit`
+            syncService: NabuServiceProvider.default.walletSynchronizer,
             settingsService: settings
         )
     }

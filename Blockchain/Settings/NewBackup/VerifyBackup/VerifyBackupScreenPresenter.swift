@@ -151,8 +151,9 @@ final class VerifyBackupScreenPresenter {
                 .milliseconds(500),
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
             )
-            .bindAndCatch(weak: self) { (self) in
-                self.markBackupVerified()
+            .observeOn(MainScheduler.instance)
+            .subscribe { [weak self] _ in
+                self?.markBackupVerified()
             }
             .disposed(by: disposeBag)
     }
@@ -168,8 +169,12 @@ final class VerifyBackupScreenPresenter {
                 style: .circle,
                 text: LocalizationConstants.syncingWallet
             )
+            .catchError { _ in
+                // There was an error syncing wallet
+                // Ignore
+                return .empty()
+            }
             .andThen(Observable.just(()))
-            .mapToVoid()
             .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: disposeBag)
     }

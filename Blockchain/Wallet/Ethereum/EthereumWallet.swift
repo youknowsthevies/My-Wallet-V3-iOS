@@ -132,7 +132,17 @@ class EthereumWallet: NSObject {
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
             )
             .flatMap(weak: self) { (self, _) in
-                self.walletLoaded().andThen(Observable.just(()))
+                self.walletLoaded()
+                    .catchError { error in
+                        switch error {
+                        case SecondPasswordError.userDismissed:
+                            // User dismissed SecondPassword screen.
+                            return .empty()
+                        default:
+                            throw error
+                        }
+                    }
+                    .andThen(Observable.just(()))
             }
             .flatMapLatest(weak: self) { (self, _) in
                 self.balance
@@ -147,7 +157,7 @@ class EthereumWallet: NSObject {
 
     func walletLoaded() -> Completable {
         guard let wallet = wallet else {
-            return Completable.empty()
+            return .empty()
         }
         ethereumAccountExists = wallet.checkIfEthereumAccountExists()
         return saveDefaultPAXAccountIfNeeded()

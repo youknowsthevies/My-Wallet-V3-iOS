@@ -16,8 +16,8 @@ public struct ServerResponse {
 }
 
 public struct ServerErrorResponse: Error {
-    let response: HTTPURLResponse
-    let payload: Data?
+    public let response: HTTPURLResponse
+    public let payload: Data?
 }
 
 extension PrimitiveSequence where Trait == SingleTrait, Element == Result<ServerResponse, ServerErrorResponse> {

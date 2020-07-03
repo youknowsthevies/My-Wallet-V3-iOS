@@ -9,5 +9,5 @@
 import RxSwift
 
 public protocol CardDeletionClientAPI: class {
-    func deleteCard(by id: String, token: String) -> Completable
+    func deleteCard(by id: String) -> Completable
 }

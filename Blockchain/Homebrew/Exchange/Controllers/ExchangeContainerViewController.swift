@@ -73,9 +73,8 @@ class ExchangeContainerViewController: BaseNavigationController {
             viewControllers.removeAll()
         }
         
-        let tiers = KYCTiersViewController.tiersMetadata().asSingle()
+        let tiers = KYCTiersViewController.tiersMetadata()
         Single.zip(tiers, hasStartedKYC())
-            .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .hideOnDisposal(loader: loadingViewPresenter)
             .subscribe(onSuccess: { [weak self] (pageModel, hasStarted) in
@@ -100,8 +99,7 @@ class ExchangeContainerViewController: BaseNavigationController {
     }
     
     private func introductionStartTapped() {
-        KYCTiersViewController.tiersMetadata().asSingle()
-            .subscribeOn(MainScheduler.asyncInstance)
+        KYCTiersViewController.tiersMetadata()
             .observeOn(MainScheduler.instance)
             .showOnSubscription(loader: loadingViewPresenter)
             .hideOnDisposal(loader: loadingViewPresenter)

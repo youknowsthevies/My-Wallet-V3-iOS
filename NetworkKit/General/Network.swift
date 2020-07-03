@@ -76,7 +76,7 @@ public struct Network {
         let sessionConfiguration: URLSessionConfiguration
         let sessionDelegate: SessionDelegateAPI
         
-        public let communicator: NetworkCommunicatorAPI & AnalyticsEventRecordable
+        public let communicator: NetworkCommunicatorAPI & AnalyticsEventRecordable & Authenticatable
         
         public static let `default`: Dependencies = {
             let blockchainAPIConfig = Config.defaultConfig
@@ -191,11 +191,6 @@ public struct Network {
             )
         }()
     }
-}
-
-public protocol DeviceInfo {
-    var systemVersion: String { get }
-    var model: String { get }
 }
 
 public class UserAgentProvider {

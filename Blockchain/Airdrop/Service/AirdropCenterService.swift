@@ -43,20 +43,17 @@ final class AirdropCenterService: AirdropCenterServiceAPI {
     
     // MARK: - Injected (Privately used)
     
-    private let authenticationService: NabuAuthenticationServiceAPI
     private let client: AirdropCenterClientAPI
     
     // MARK: - Setup
     
-    init(authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
-         client: AirdropCenterClientAPI = AirdropCenterClient()) {
-        self.authenticationService = authenticationService
+    init(client: AirdropCenterClientAPI = AirdropCenterClient()) {
         self.client = client
         
         fetchTriggerRelay
             .throttle(.milliseconds(500), scheduler: ConcurrentDispatchQueueScheduler(qos: .background))
             .flatMapLatest(weak: self) { (self, campaigns) -> Observable<AirdropCampaigns> in
-                self.fetchCampaigns().asObservable()
+                self.client.campaigns.asObservable()
             }
             .map { .value($0) }
             .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
@@ -97,16 +94,6 @@ final class AirdropCenterService: AirdropCenterServiceAPI {
                 case .invalid:
                     return .invalid(.valueCouldNotBeCalculated)
                 }
-            }
-    }
-    
-    // MARK: - Accessors
-    
-    private func fetchCampaigns() -> Single<AirdropCampaigns> {
-        authenticationService
-            .tokenString
-            .flatMap(weak: self) { (self, token) -> Single<AirdropCampaigns> in
-                self.client.campaigns(using: token)
             }
     }
 }

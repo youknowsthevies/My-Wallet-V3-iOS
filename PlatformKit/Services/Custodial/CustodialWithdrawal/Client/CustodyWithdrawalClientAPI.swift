@@ -12,5 +12,5 @@ public protocol CustodyWithdrawalClientAPI: class {
     /// Make a withdrawal with a `SimpleBuyWithdrawalRequest`.
     /// A `403` means a withdrawal is pending.
     /// A `409` means you have insufficient funds for the withdrawal. 
-    func withdraw(cryptoValue: CryptoValue, destination: String, authToken: String) -> Single<CustodialWithdrawalResponse>
+    func withdraw(cryptoValue: CryptoValue, destination: String) -> Single<CustodialWithdrawalResponse>
 }

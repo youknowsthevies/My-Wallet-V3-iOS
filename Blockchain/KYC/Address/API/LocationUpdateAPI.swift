@@ -10,8 +10,6 @@ import NetworkKit
 import PlatformKit
 import RxSwift
 
-typealias LocationUpdateCompletion = ((Error?) -> Void)
-
 enum LocationUpdateError: Error {
     case noPostalCode
     case noAddress
@@ -19,35 +17,14 @@ enum LocationUpdateError: Error {
     case noCountry
 }
 
-protocol LocationUpdateAPI {
-    func updateAddress(address: UserAddress, with completion: @escaping LocationUpdateCompletion)
-}
-
-class LocationUpdateService: NSObject, LocationUpdateAPI {
-
-    private var disposable: Disposable?
-
-    deinit {
-        disposable?.dispose()
+final class LocationUpdateService {
+    private let client: KYCClientAPI
+    
+    init(client: KYCClientAPI = KYCClient()) {
+        self.client = client
     }
 
-    func updateAddress(address: UserAddress, with completion: @escaping LocationUpdateCompletion) {
-        disposable = NabuAuthenticationService.shared
-            .tokenString
-            .flatMapCompletable { token in
-                let headers = [HttpHeaderField.authorization: token]
-                let payload = KYCUpdateAddressRequest(address: address)
-                return KYCNetworkRequest.request(
-                    put: .updateAddress,
-                    parameters: payload,
-                    headers: headers
-                )
-            }
-            .observeOn(MainScheduler.instance)
-            .subscribe(onCompleted: {
-                completion(nil)
-            }, onError: { error in
-                completion(error)
-            })
+    func update(address: UserAddress) -> Completable {
+        client.updateAddress(userAddress: address)
     }
 }

@@ -12,92 +12,92 @@ import ToolKit
 
 public final class SettingsService: SettingsServiceAPI {
     
-    // MARK: - Types
-
-    enum ServiceError: Error {
-        case missingSharedKey
-        case missingGuid
-    }
-    
     // MARK: - Exposed Properties
     
     /// Streams the first available settings element
     public var valueSingle: Single<WalletSettings> {
-        cachedValue.valueSingle
+        valueObservable
+            .take(1)
+            .asSingle()
     }
     
     public var valueObservable: Observable<WalletSettings> {
-        cachedValue.valueObservable
+        settingsRelay
+            .flatMap(weak: self) { (self, settings) -> Observable<WalletSettings> in
+                guard let settings = settings else {
+                    return self.fetch(force: false).asObservable()
+                }
+                return .just(settings)
+            }
+            .distinctUntilChanged()
     }
     
     // MARK: - Private Properties
 
     private let client: SettingsClientAPI
-    private let credentialsRepository: GuidRepositoryAPI & SharedKeyRepositoryAPI
-
-    private let cachedValue: CachedValue<WalletSettings>
+    private let credentialsRepository: CredentialsRepositoryAPI
+    
+    private let settingsRelay = BehaviorRelay<WalletSettings?>(value: nil)
     
     private let disposeBag = DisposeBag()
-    
-    /// GUID and Shared-Key credentials are necessary to settings operations.
-    private var credentials: Single<(guid: String, sharedKey: String)> {
-        Single
-            // Make sure guid and shared key exist
-            .zip(credentialsRepository.guid, credentialsRepository.sharedKey)
-            .map { (guid, sharedKey) -> (guid: String, sharedKey: String) in
-                guard let guid = guid else {
-                    throw ServiceError.missingGuid
-                }
-                guard let sharedKey = sharedKey else {
-                    throw ServiceError.missingSharedKey
-                }
-                return (guid, sharedKey)
-            }
-    }
-    
+        
     // MARK: - Setup
     
     public init(client: SettingsClientAPI,
-                credentialsRepository: GuidRepositoryAPI & SharedKeyRepositoryAPI) {
+                credentialsRepository: CredentialsRepositoryAPI) {
         self.client = client
         self.credentialsRepository = credentialsRepository
         
-        cachedValue = .init(
-            configuration: .init(
-                identifier: "settings-service",
-                refreshType: .onSubscription,
-                fetchPriority: .throttle(
-                    milliseconds: 1000,
-                    scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
-                ),
-                fetchNotificationName: .login
-            )
-        )
-        
-        cachedValue
-            .setFetch(weak: self) { (self) -> Single<WalletSettings> in
-                self.credentials
-                    .flatMap(weak: self) { (self, credentials) in
-                        self.client.settings(
-                            by: credentials.guid,
-                            sharedKey: credentials.sharedKey
-                        )
-                    }
-                    .map { WalletSettings(response: $0) }
-            }
+        NotificationCenter.when(.login) { [weak self] _ in
+            self?.settingsRelay.accept(nil)
+        }
     }
     
     // MARK: - Public Methods
     
-    public func fetch() -> Single<WalletSettings> {
-        cachedValue.fetchValue
+    private let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
+    private let semaphore = DispatchSemaphore(value: 1)
+        
+    public func fetch(force: Bool) -> Single<WalletSettings> {
+        Single
+            .create(weak: self) { (self, observer) -> Disposable in
+                self.semaphore.wait()
+                let disposable = self.settingsRelay
+                    .take(1)
+                    .asSingle()
+                    .flatMap(weak: self) { (self, settings: WalletSettings?) -> Single<WalletSettings> in
+                        self.fetchSettings(settings: settings, force: force)
+                    }
+                    .subscribe { event in
+                        switch event {
+                        case .success(let settings):
+                            observer(.success(settings))
+                        case .error(let error):
+                            observer(.error(error))
+                        }
+                    }
+                
+                return Disposables.create {
+                    disposable.dispose()
+                    self.semaphore.signal()
+                }
+            }
+            .subscribeOn(scheduler)
     }
     
-    @available(*, deprecated, message: "Do not use this! Superseded by `fetch()`")
-    public func refresh() {
-        fetch()
-            .subscribe()
-            .disposed(by: disposeBag)
+    private func fetchSettings(settings: WalletSettings?, force: Bool) -> Single<WalletSettings> {
+        guard force || settings == nil else { return Single.just(settings!) }
+        return credentialsRepository.credentials
+            .flatMap(weak: self) { (self, credentials) in
+                self.client.settings(
+                    by: credentials.guid,
+                    sharedKey: credentials.sharedKey
+                )
+            }
+            .map { WalletSettings(response: $0) }
+            .do(onSuccess: { [weak self] settings in
+                self?.settingsRelay.accept(settings)
+            })
     }
 }
 
@@ -127,7 +127,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
     }
     
     public func update(currency: FiatCurrency, context: FlowContext) -> Completable {
-        credentials
+        credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.update(
                     currency: currency.code,
@@ -137,14 +137,14 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
                 )
             }
             .flatMapSingle(weak: self) { (self) in
-                self.fetch()
+                self.fetch(force: true)
             }
             .asCompletable()
     }
     
     @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencySettingsServiceAPI`")
     public var legacyCurrency: FiatCurrency? {
-        cachedValue.legacyValue?.currency
+        settingsRelay.value?.currency
     }
 }
 
@@ -157,7 +157,7 @@ extension SettingsService: EmailSettingsServiceAPI {
     }
     
     public func update(email: String, context: FlowContext?) -> Completable {
-        credentials
+        credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.update(
                     email: email,
@@ -173,7 +173,7 @@ extension SettingsService: EmailSettingsServiceAPI {
 
 extension SettingsService: LastTransactionSettingsUpdateServiceAPI {
     public func updateLastTransaction() -> Completable {
-        credentials
+        credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.updateLastTransactionTime(
                     guid: payload.guid,
@@ -181,7 +181,7 @@ extension SettingsService: LastTransactionSettingsUpdateServiceAPI {
                 )
             }
             .flatMapSingle(weak: self) { (self) in
-                self.fetch()
+                self.fetch(force: true)
             }
             .asCompletable()
     }
@@ -191,7 +191,7 @@ extension SettingsService: LastTransactionSettingsUpdateServiceAPI {
 
 extension SettingsService: EmailNotificationSettingsServiceAPI {
     public func emailNotifications(enabled: Bool) -> Completable {
-        credentials
+        credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.emailNotifications(
                     enabled: enabled,
@@ -200,7 +200,7 @@ extension SettingsService: EmailNotificationSettingsServiceAPI {
                 )
             }
             .flatMapSingle(weak: self) { (self) in
-                self.fetch()
+                self.fetch(force: true)
             }
             .asCompletable()
     }
@@ -210,7 +210,7 @@ extension SettingsService: EmailNotificationSettingsServiceAPI {
 
 extension SettingsService: MobileSettingsServiceAPI {
     public func update(mobileNumber: String) -> Completable {
-        credentials
+        credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.update(
                     smsNumber: mobileNumber,
@@ -220,13 +220,13 @@ extension SettingsService: MobileSettingsServiceAPI {
                 )
         }
         .flatMapSingle(weak: self) { (self) in
-            self.fetch()
+            self.fetch(force: true)
         }
         .asCompletable()
     }
     
     public func verify(with code: String) -> Completable {
-        credentials
+        credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.verifySMS(
                     code: code,
@@ -235,7 +235,7 @@ extension SettingsService: MobileSettingsServiceAPI {
                 )
         }
         .flatMapSingle(weak: self) { (self) in
-            self.fetch()
+            self.fetch(force: true)
         }
         .asCompletable()
     }
@@ -245,7 +245,7 @@ extension SettingsService: MobileSettingsServiceAPI {
 
 extension SettingsService: SMSTwoFactorSettingsServiceAPI {
     public func smsTwoFactorAuthentication(enabled: Bool) -> Completable {
-        credentials
+        credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.smsTwoFactorAuthentication(
                     enabled: enabled,
@@ -254,7 +254,7 @@ extension SettingsService: SMSTwoFactorSettingsServiceAPI {
                 )
         }
         .flatMapSingle(weak: self) { (self) in
-            self.fetch()
+            self.fetch(force: true)
         }
         .asCompletable()
     }

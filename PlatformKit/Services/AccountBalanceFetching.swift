@@ -28,7 +28,7 @@ public final class AbsentAccountBalanceFetching: AccountBalanceFetching {
     public let balanceType: BalanceType = .nonCustodial
 
     public var balance: Single<CryptoValue> {
-        .just(.zero(assetType: cryptoCurrency))
+        balanceObservable.take(1).asSingle()
     }
 
     public var balanceObservable: Observable<CryptoValue> {
@@ -36,22 +36,9 @@ public final class AbsentAccountBalanceFetching: AccountBalanceFetching {
     }
 
     public let balanceFetchTriggerRelay: PublishRelay<Void> = .init()
-
-    private let cryptoCurrency: CryptoCurrency
-    private let balanceRelay: PublishRelay<CryptoValue> = .init()
-    private let disposeBag: DisposeBag = .init()
+    private let balanceRelay: BehaviorRelay<CryptoValue>
 
     public init(cryptoCurrency: CryptoCurrency) {
-        self.cryptoCurrency = cryptoCurrency
-        balanceFetchTriggerRelay
-            .throttle(
-                .milliseconds(100),
-                scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
-            )
-            .flatMapLatest(weak: self) { (self, _) in
-                self.balance.asObservable()
-            }
-            .bindAndCatch(to: balanceRelay)
-            .disposed(by: disposeBag)
+        balanceRelay = BehaviorRelay(value: CryptoValue.zero(assetType: cryptoCurrency))
     }
 }

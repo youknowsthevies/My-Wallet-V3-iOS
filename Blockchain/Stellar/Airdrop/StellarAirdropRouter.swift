@@ -21,7 +21,6 @@ class StellarAirdropRouter: DeepLinkRouting {
     private let repository: BlockchainDataRepository
     private let kycSettings: KYCSettingsAPI
     private let airdropRegistrationService: AirdropRegistrationAPI
-    private let nabuAuthenticationService: NabuAuthenticationServiceAPI
 
     private let disposables = CompositeDisposable()
     
@@ -30,14 +29,12 @@ class StellarAirdropRouter: DeepLinkRouting {
     init(
         kycSettings: KYCSettingsAPI = KYCSettings.shared,
         airdropRegistrationService: AirdropRegistrationAPI = AirdropRegistrationService(),
-        nabuAuthenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
         appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
         kycCoordinator: KYCCoordinator = KYCCoordinator.shared,
         repository: BlockchainDataRepository = BlockchainDataRepository.shared,
         stellarWalletAccountRepository: StellarWalletAccountRepository = StellarWalletAccountRepository(with: WalletManager.shared.wallet)
     ) {
         self.kycSettings = kycSettings
-        self.nabuAuthenticationService = nabuAuthenticationService
         self.airdropRegistrationService = airdropRegistrationService
         self.appSettings = appSettings
         self.kycCoordinator = kycCoordinator
@@ -120,7 +117,7 @@ class StellarAirdropRouter: DeepLinkRouting {
     }
 
     func registerForCampaign(success: @escaping ((NabuUser) -> Void), error: @escaping ((Swift.Error) -> Void)) {
-        let nabuUser = repository.nabuUser.take(1)
+        let nabuUser = repository.nabuUserSingle.asObservable()
         let xlmAccount = stellarWalletAccountRepository.initializeMetadataMaybe().asObservable()
         let disposable = Observable.combineLatest(nabuUser, xlmAccount)
             .subscribeOn(MainScheduler.asyncInstance)
@@ -149,18 +146,16 @@ class StellarAirdropRouter: DeepLinkRouting {
 
     private func registerForCampaign(xlmAccount: StellarWalletAccount, nabuUser: NabuUser) -> Observable<NabuUser> {
         let isNewUser = (nabuUser.status == .none) && !kycSettings.isCompletingKyc
-        return nabuAuthenticationService.tokenString.flatMap(weak: self) { (self, token) -> Single<AirdropRegistrationResponse> in
-            let request = AirdropRegistrationRequest(
-                authToken: token,
-                publicKey: xlmAccount.publicKey,
-                campaignIdentifier: .sunriver,
-                isNewUser: isNewUser
-            )
-            return self.airdropRegistrationService.submitRegistrationRequest(request)
-        }
-        .asObservable()
-        .map { _ -> NabuUser in
-            nabuUser
-        }
+        let request = AirdropRegistrationRequest(
+            publicKey: xlmAccount.publicKey,
+            campaignIdentifier: .sunriver,
+            isNewUser: isNewUser
+        )
+        return airdropRegistrationService
+            .submitRegistrationRequest(request)
+            .asObservable()
+            .map { _ -> NabuUser in
+                return nabuUser
+            }
     }
 }

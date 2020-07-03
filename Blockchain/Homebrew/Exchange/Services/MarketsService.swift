@@ -53,7 +53,7 @@ protocol ExchangeMarketsAPI {
 class MarketsService {
 
     private let restMessageSubject = PublishSubject<Conversion>()
-    private let authentication: NabuAuthenticationService
+    private let authentication: NabuServiceProviderAPI
     private let socketManager: SocketManager
     private let cachedExchangeRates = BehaviorRelay<ExchangeRates?>(value: nil)
     private let cachedTradingPairs = BehaviorRelay<ExchangeTradingPairs?>(value: nil)
@@ -70,9 +70,9 @@ class MarketsService {
     private let communicator: NetworkCommunicatorAPI
     
     init(
-        authenticationService: NabuAuthenticationService = NabuAuthenticationService.shared,
+        authenticationService: NabuServiceProviderAPI = NabuServiceProvider.default,
         socketManager: SocketManager = SocketManager.shared,
-        communicator: NetworkCommunicatorAPI = NetworkCommunicator.shared
+        communicator: NetworkCommunicatorAPI = Network.Dependencies.retail.communicator
     ) {
         self.authentication = authenticationService
         self.socketManager = socketManager
@@ -157,29 +157,25 @@ extension MarketsService: ExchangeMarketsAPI {
     }
 
     func exchangeRateAvailablePairs() -> Single<ExchangeTradingPairs> {
-        authentication
-            .tokenString
-            .flatMap(weak: self) { (self, token) -> Single<ExchangeTradingPairs> in
-                guard let baseURL = URL(
-                    string: BlockchainAPI.shared.retailCoreUrl) else {
-                        return Single.error(NetworkError.generic(message: "Could not form retail core url"))
-                }
+        guard let baseURL = URL(
+            string: BlockchainAPI.shared.retailCoreUrl) else {
+                return Single.error(NetworkError.generic(message: "Could not form retail core url"))
+        }
 
-                guard let endpoint = URL.endpoint(
-                    baseURL,
-                    pathComponents: ["markets", "bestrates", "pairs"],
-                    queryParameters: nil) else {
-                        return Single.error(NetworkError.generic(message: "Could not get endpoint"))
-                }
+        guard let endpoint = URL.endpoint(
+            baseURL,
+            pathComponents: ["markets", "bestrates", "pairs"],
+            queryParameters: nil) else {
+                return Single.error(NetworkError.generic(message: "Could not get endpoint"))
+        }
 
-                return self.communicator.perform(
-                    request: NetworkRequest(
-                        endpoint: endpoint,
-                        method: .get,
-                        headers: [HttpHeaderField.authorization: token]
-                    )
-                )
-            }
+        return self.communicator.perform(
+            request: NetworkRequest(
+                endpoint: endpoint,
+                method: .get,
+                authenticated: true
+            )
+        )
     }
 
     func bestExchangeRates() -> Observable<ExchangeRates> {
@@ -283,13 +279,17 @@ private extension MarketsService {
     }
 
     func authenticateSocket() {
-        let authenticationDisposable = authentication.fetchValue
-            .map { tokenResponse -> Subscription<AuthSubscribeParams> in
-                let params = AuthSubscribeParams(type: "auth", token: tokenResponse.token)
+        let authenticationDisposable = authentication
+            .authenticator
+            .token
+            .map { token -> Subscription<AuthSubscribeParams> in
+                let params = AuthSubscribeParams(type: "auth", token: token)
                 return Subscription(channel: "auth", params: params)
-            }.map { message in
+            }
+            .map { message in
                 SocketMessage(type: .exchange, JSONMessage: message)
-            }.subscribe(onSuccess: { socketMessage in
+            }
+            .subscribe(onSuccess: { socketMessage in
                 SocketManager.shared.send(message: socketMessage)
             })
 

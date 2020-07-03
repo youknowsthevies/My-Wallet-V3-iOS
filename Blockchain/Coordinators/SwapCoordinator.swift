@@ -75,12 +75,8 @@ protocol SwapCoordinatorAPI {
     }
     
     func canSwap() -> Single<Bool> {
-        let user = BlockchainDataRepository.shared.nabuUser
-            .take(1)
-            .asSingle()
-        let tiers = BlockchainDataRepository.shared.tiers
-            .take(1)
-            .asSingle()
+        let user = BlockchainDataRepository.shared.nabuUserSingle
+        let tiers = KYCServiceProvider.default.tiers.tiers
         return Single.create(subscribe: { [unowned self] observer -> Disposable in
             self.disposable = Single.zip(user, tiers)
                 .subscribeOn(MainScheduler.asyncInstance)

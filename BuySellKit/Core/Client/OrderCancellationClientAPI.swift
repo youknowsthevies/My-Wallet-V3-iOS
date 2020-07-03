@@ -10,5 +10,5 @@ import RxSwift
 
 protocol OrderCancellationClientAPI: class {
     /// Cancels an order with a given identifier
-    func cancel(order id: String, token: String) -> Completable
+    func cancel(order id: String) -> Completable
 }

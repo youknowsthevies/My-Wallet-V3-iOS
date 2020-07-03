@@ -12,10 +12,7 @@ import RxSwift
 public protocol SettingsServiceAPI: class {
     var valueSingle: Single<WalletSettings> { get }
     var valueObservable: Observable<WalletSettings> { get }
-    func fetch() -> Single<WalletSettings>
-    
-    @available(*, deprecated, message: "Do not use this! Superseded by `fetch()`")
-    func refresh()
+    func fetch(force: Bool) -> Single<WalletSettings>
 }
 
 public protocol LastTransactionSettingsUpdateServiceAPI: class {

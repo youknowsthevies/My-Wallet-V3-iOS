@@ -15,6 +15,8 @@ public protocol NabuAuthenticationClientAPI: AnyObject {
                       userIdentifier: String,
                       deviceId: String,
                       email: String) -> Single<NabuSessionTokenResponse>
+    
+    func recoverUser(offlineToken: NabuOfflineTokenResponse, jwt: String) -> Completable
 }
 
 public final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
@@ -27,6 +29,10 @@ public final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
     
     private enum Path {
         static let auth = [ "auth" ]
+        
+        static func recover(userId: String) -> [String] {
+            [ "users", "recover", userId ]
+        }
     }
     
     // MARK: - Properties
@@ -67,6 +73,15 @@ public final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
             path: Path.auth,
             parameters: parameters,
             headers: headers
+        )!
+        return communicator.perform(request: request)
+    }
+    
+    public func recoverUser(offlineToken: NabuOfflineTokenResponse, jwt: String) -> Completable {
+        let request = requestBuilder.post(
+            path: Path.recover(userId: offlineToken.userId),
+            body: try? JWTPayload(jwt: jwt).encode(),
+            headers: [HttpHeaderField.authorization: "Bearer \(offlineToken.token)"]
         )!
         return communicator.perform(request: request)
     }

@@ -9,11 +9,11 @@
 import PlatformKit
 
 /// Simple-Buy supported pairs
-public struct SupportedPairs {
+public struct SupportedPairs: Equatable {
     static let empty: SupportedPairs = .init(pairs: [])
     
     /// A possible tradable pair supported by Simple-Buy feature
-    public struct Pair {
+    public struct Pair: Equatable {
         
         /// The crypto currency type
         public let cryptoCurrency: CryptoCurrency

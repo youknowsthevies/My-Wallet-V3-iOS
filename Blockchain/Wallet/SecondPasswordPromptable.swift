@@ -6,8 +6,12 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import ToolKit
 import RxSwift
+
+enum SecondPasswordError: Error {
+    case userDismissed
+}
 
 protocol SecondPasswordPromptable: class {
     var legacyWallet: LegacyWalletAPI? { get }
@@ -32,32 +36,29 @@ extension SecondPasswordPromptable {
     @available(*, deprecated, message: "The implementation of second password prompting will be deprecated soon")
     var secondPasswordIfNeeded: Single<String?> {
         secondPasswordNeeded
-            .flatMap { [weak self] needed -> Single<String?> in
-                guard let self = self else { throw WalletError.unknown }
+            .flatMap(weak: self) { (self, needed) -> Single<String?> in
                 guard !needed else {
-                    return self.promptForSecondPassword
-                        .map { password -> String? in
-                            password
-                        }
+                    return self.promptForSecondPassword.optional()
                 }
-                return Single.just(nil)
+                return .just(nil)
             }
     }
     
     @available(*, deprecated, message: "The implementation of second password prompting will be deprecated soon")
     var promptForSecondPassword: Single<String> {
-        Single.create(subscribe: { observer -> Disposable in
-            AuthenticationCoordinator.shared.showPasswordScreen(
-                type: .actionRequiresPassword,
-                confirmHandler: { password in
-                    observer(.success(password))
-                },
-                dismissHandler: {
-                    observer(.error(WalletError.unknown))
-                }
-            )
+        Single.create { observer -> Disposable in
+            AuthenticationCoordinator.shared
+                .showPasswordScreen(
+                    type: .actionRequiresPassword,
+                    confirmHandler: { password in
+                        observer(.success(password))
+                    },
+                    dismissHandler: {
+                        observer(.error(SecondPasswordError.userDismissed))
+                    }
+                )
             return Disposables.create()
-        })
+        }
         .subscribeOn(MainScheduler.instance)
     }
     
@@ -68,7 +69,7 @@ extension SecondPasswordPromptable {
                 guard accountExists else {
                     return self.secondPasswordIfNeeded
                 }
-                return Single.just(nil)
+                return .just(nil)
             }
     }
 }

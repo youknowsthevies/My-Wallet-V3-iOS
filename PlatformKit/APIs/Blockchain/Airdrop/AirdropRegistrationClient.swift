@@ -61,11 +61,13 @@ final class AirdropRegistrationClient: AirdropRegistrationClientAPI {
         let data = try? JSONEncoder().encode(payload)
 
         let headers: HTTPHeaders = [
-            HttpHeaderField.authorization: registrationRequest.authToken,
             HttpHeaderField.airdropCampaign: registrationRequest.campaignIdentifier
         ]
 
-        guard let request = requestBuilder.put(path: Endpoint.airdropRegistration, body: data, headers: headers) else {
+        guard let request = requestBuilder.put(path: Endpoint.airdropRegistration,
+                                               body: data,
+                                               headers: headers,
+                                               authenticated: true) else {
             return .error(NetworkRequest.NetworkError.generic)
         }
         return communicator.perform(request: request)

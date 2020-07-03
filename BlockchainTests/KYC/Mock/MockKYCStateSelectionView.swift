@@ -9,6 +9,7 @@
 import XCTest
 
 @testable import Blockchain
+@testable import PlatformKit
 
 class MockKYCStateSelectionView: KYCStateSelectionView {
     var didCallContinueKycFlow: XCTestExpectation?

@@ -20,4 +20,9 @@ public struct CountryData: Decodable {
         self.scopes = scopes
         self.states = states
     }
+    
+    /// Returns a boolean indicating if this country is supported by Blockchain's native KYC
+    public var isKycSupported: Bool {
+        return scopes?.contains(where: { $0.lowercased() == "kyc" }) ?? false
+    }
 }

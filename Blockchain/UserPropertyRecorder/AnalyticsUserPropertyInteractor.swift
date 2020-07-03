@@ -17,6 +17,7 @@ final class AnalyticsUserPropertyInteractor {
     
     private let recorder: UserPropertyRecording
     private let dataRepository: BlockchainDataRepository
+    private let tiersService: KYCTiersServiceAPI
     private let walletRepository: WalletRepositoryAPI
     private let balanceProvider: BalanceProviding
     private let disposeBag = DisposeBag()
@@ -25,12 +26,14 @@ final class AnalyticsUserPropertyInteractor {
     
     init(recorder: UserPropertyRecording = AnalyticsUserPropertyRecorder(),
          balanceProvider: BalanceProviding = DataProvider.default.balance,
+         tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
          walletRepository: WalletRepositoryAPI = WalletManager.shared.repository,
          dataRepository: BlockchainDataRepository = .shared) {
         self.recorder = recorder
         self.dataRepository = dataRepository
         self.balanceProvider = balanceProvider
         self.walletRepository = walletRepository
+        self.tiersService = tiersService
     }
     
     /// Records all the user properties
@@ -46,11 +49,12 @@ final class AnalyticsUserPropertyInteractor {
         
         Single
             .zip(
-                dataRepository.nabuUser.first(),
-                dataRepository.tiers.first(),
+                dataRepository.nabuUserSingle,
+                tiersService.tiers,
                 walletRepository.authenticatorType,
                 walletRepository.guid,
-                balances)
+                balances
+            )
             .subscribe(
                 onSuccess: { [weak self] (user, tiers, authenticatorType, guid, balances) in
                     self?.record(

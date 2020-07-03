@@ -1,5 +1,5 @@
 //
-//  CachedValue+Setup.swift
+//  CachedValueOld+Setup.swift
 //  PlatformKit
 //
 //  Created by Daniel Huri on 04/03/2020.
@@ -9,8 +9,8 @@
 import RxSwift
 import ToolKit
 
-extension CachedValueConfiguration {
-    public static func onSubscriptionAndLogin(scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()) -> CachedValueConfiguration {
+extension CachedValueConfigurationOld {
+    public static func onSubscriptionAndLogin(scheduler: SchedulerType = CachedValueConfigurationOld.generateScheduler()) -> CachedValueConfigurationOld {
         .init(
             refreshType: .onSubscription,
             scheduler: scheduler,
@@ -19,7 +19,7 @@ extension CachedValueConfiguration {
         )
     }
     
-    public static func periodicAndLogin(_ time: TimeInterval, scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()) -> CachedValueConfiguration {
+    public static func periodicAndLogin(_ time: TimeInterval, scheduler: SchedulerType = CachedValueConfigurationOld.generateScheduler()) -> CachedValueConfigurationOld {
         .init(
             refreshType: .periodic(seconds: time),
             scheduler: scheduler,
@@ -28,3 +28,29 @@ extension CachedValueConfiguration {
         )
     }
 }
+
+extension CachedValueConfiguration {
+    
+    public static func onSubscription(
+        scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()
+    ) -> CachedValueConfiguration {
+        CachedValueConfiguration(
+            refreshType: .onSubscription,
+            scheduler: scheduler,
+            flushNotificationName: .logout
+        )
+    }
+    
+    public static func periodicAndLogin(
+        _ time: TimeInterval,
+        scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()
+    ) -> CachedValueConfiguration {
+        CachedValueConfiguration(
+            refreshType: .periodic(seconds: time),
+            scheduler: scheduler,
+            flushNotificationName: .logout,
+            fetchNotificationName: .login
+        )
+    }
+}
+

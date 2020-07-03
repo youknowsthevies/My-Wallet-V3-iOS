@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 protocol PersonalDetailsDelegate: class {
     func onSubmission(_ input: KYCUpdatePersonalDetailsRequest, completion: @escaping () -> Void)

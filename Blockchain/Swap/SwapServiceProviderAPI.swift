@@ -16,12 +16,10 @@ final class SwapServiceProvider: SwapServiceProviderAPI {
 
     let activity: SwapActivityService
     
-    init(authenticationService: NabuAuthenticationServiceAPI = NabuAuthenticationService.shared,
-         swapClient: SwapClientAPI = SwapClient(),
+    init(swapClient: SwapClientAPI = SwapClient(),
          fiatCurrencyProvider: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings) {
         activity = SwapActivityService(
-            client: swapClient, authenticationService:
-            authenticationService,
+            client: swapClient,
             fiatCurrencyProvider: fiatCurrencyProvider
         )
     }

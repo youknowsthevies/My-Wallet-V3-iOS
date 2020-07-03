@@ -14,12 +14,10 @@ public protocol SwapActivityClientAPI {
     func fetchActivity(from date: Date,
                        fiatCurrency: String,
                        cryptoCurrency: CryptoCurrency,
-                       limit: Int,
-                       token: String) -> Single<[SwapActivityItemEvent]>
+                       limit: Int) -> Single<[SwapActivityItemEvent]>
     
     func fetchActivity(from date: Date,
-                       fiatCurrency: String,
-                       token: String) -> Single<[SwapActivityItemEvent]>
+                       fiatCurrency: String) -> Single<[SwapActivityItemEvent]>
 }
 
 public typealias SwapClientAPI = SwapActivityClientAPI
@@ -54,8 +52,7 @@ public final class SwapClient: SwapClientAPI {
     public func fetchActivity(from date: Date,
                               fiatCurrency: String,
                               cryptoCurrency: CryptoCurrency,
-                              limit: Int,
-                              token: String) -> Single<[SwapActivityItemEvent]> {
+                              limit: Int) -> Single<[SwapActivityItemEvent]> {
         let parameters = [
             URLQueryItem(
                 name: Parameter.before,
@@ -75,16 +72,15 @@ public final class SwapClient: SwapClientAPI {
             )
         ]
         let path = Path.activity
-        let headers = [HttpHeaderField.authorization: token]
         let request = requestBuilder.get(
             path: path,
             parameters: parameters,
-            headers: headers
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }
     
-    public func fetchActivity(from date: Date, fiatCurrency: String, token: String) -> Single<[SwapActivityItemEvent]> {
+    public func fetchActivity(from date: Date, fiatCurrency: String) -> Single<[SwapActivityItemEvent]> {
         let parameters = [
             URLQueryItem(
                 name: Parameter.before,
@@ -96,11 +92,10 @@ public final class SwapClient: SwapClientAPI {
             )
         ]
         let path = Path.activity
-        let headers = [HttpHeaderField.authorization: token]
         let request = requestBuilder.get(
             path: path,
             parameters: parameters,
-            headers: headers
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }
