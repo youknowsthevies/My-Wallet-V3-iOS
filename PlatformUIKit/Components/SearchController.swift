@@ -23,6 +23,8 @@ public final class SearchController: UISearchController {
         searchBar.placeholder = placeholderText
         searchBar.showsCancelButton = false
         searchBar.tintColor = .descriptionText
+        searchBar.backgroundColor = .white
+        searchBar.isTranslucent = false
     }
     
     public required init?(coder: NSCoder) {

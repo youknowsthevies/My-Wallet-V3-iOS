@@ -166,7 +166,7 @@ extension Screen.Style.Bar {
     }
 
     /// Is translucent.
-    var isTranslucent: Bool {
+    public var isTranslucent: Bool {
         switch self {
         case .darkContent(ignoresStatusBar: _, isTranslucent: let value, background: _),
              .lightContent(ignoresStatusBar: _, isTranslucent: let value, background: _):

@@ -109,7 +109,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let defaultBarStyle = Screen.Style.Bar.lightContent()
         let navigationBarAppearance = UINavigationBar.appearance()
         navigationBarAppearance.shadowImage = UIImage()
-        navigationBarAppearance.isTranslucent = false
+        navigationBarAppearance.isTranslucent = defaultBarStyle.isTranslucent
         navigationBarAppearance.titleTextAttributes = defaultBarStyle.titleTextAttributes
         navigationBarAppearance.barTintColor = defaultBarStyle.backgroundColor
         navigationBarAppearance.tintColor = defaultBarStyle.tintColor
