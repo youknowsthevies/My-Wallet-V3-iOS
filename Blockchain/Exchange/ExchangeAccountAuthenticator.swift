@@ -28,7 +28,7 @@ class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
     
     init(blockchainRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
          campaignComposer: CampaignComposer = CampaignComposer(),
-         clientAPI: ExchangeClientAPI = ExchangeClient(communicatorAPI: NetworkCommunicator.shared)) {
+         clientAPI: ExchangeClientAPI = ExchangeClient(communicatorAPI: Network.Dependencies.retail.communicator)) {
         self.blockchainRepository = blockchainRepository
         self.campaignComposer = campaignComposer
         self.client = clientAPI

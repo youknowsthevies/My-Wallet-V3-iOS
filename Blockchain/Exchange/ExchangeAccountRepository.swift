@@ -39,7 +39,7 @@ class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
     private let accountRepository: AssetAccountRepositoryAPI
     
     init(blockchainRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
-         clientAPI: ExchangeClientAPI = ExchangeClient(communicatorAPI: NetworkCommunicator.shared),
+         clientAPI: ExchangeClientAPI = ExchangeClient(communicatorAPI: Network.Dependencies.retail.communicator),
          accountRepository: AssetAccountRepositoryAPI = AssetAccountRepository.shared) {
         self.blockchainRepository = blockchainRepository
         self.clientAPI = clientAPI
