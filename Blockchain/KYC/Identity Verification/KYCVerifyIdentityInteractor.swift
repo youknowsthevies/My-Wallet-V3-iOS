@@ -72,7 +72,6 @@ extension KYCVerifyIdentityInteractor: KYCVerifyIdentityInput {
     ) {
         guard let credentials = veriffCredentials else { return }
         disposable = veriffService.submitVerification(applicantId: credentials.applicantId)
-            .observeOn(MainScheduler.instance)
             .do(onDispose: { [weak self] in
                 self?.loadingViewPresenter.hide()
             })
