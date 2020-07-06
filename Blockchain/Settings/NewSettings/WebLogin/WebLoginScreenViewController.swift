@@ -34,9 +34,7 @@ final class WebLoginScreenViewController: BaseScreenViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        set(barStyle: presenter.barStyle,
-            leadingButtonStyle: presenter.leadingButton,
-            trailingButtonStyle: .none)
+        set(barStyle: presenter.barStyle, trailingButtonStyle: .close)
         titleViewStyle = presenter.titleView
         
         securityAlert.content = presenter.securityAlert
