@@ -90,9 +90,10 @@ public extension ObservableType {
     
     /// Shows the loader upon subscription
     func showLoaderOnSubscription(loader: LoadingViewPresenting,
+                                  style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator,
                                   text: String? = nil) -> Observable<Element> {
         self.do(onSubscribe: {
-            loader.show(with: text)
+            loader.show(with: style, text: text)
         })
     }
     

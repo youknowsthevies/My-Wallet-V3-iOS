@@ -41,7 +41,9 @@ final class SettingsScreenInteractor {
     let featureConfigurator: FeatureFetching & FeatureConfiguring
     let recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
     let pitLinkingConfiguration: AppFeatureConfiguration
-    
+    let simpleBuyCardsConfiguration: AppFeatureConfiguration
+    let swipeToReceiveConfiguration: AppFeatureConfiguration
+
     // MARK: - Private Properties
     
     private let disposeBag = DisposeBag()
@@ -86,6 +88,8 @@ final class SettingsScreenInteractor {
         )
         
         pitLinkingConfiguration = featureConfigurator.configuration(for: .exchangeLinking)
+        simpleBuyCardsConfiguration = featureConfigurator.configuration(for: .simpleBuyCardsEnabled)
+        swipeToReceiveConfiguration = featureConfigurator.configuration(for: .swipeToReceive)
         tiersProviding = TierLimitsProvider(tiersService: tiersService)
         self.biometryProviding = BiometryProvider(settings: settingsAuthenticating, featureConfigurator: featureConfigurator)
         self.settingsAuthenticating = settingsAuthenticating

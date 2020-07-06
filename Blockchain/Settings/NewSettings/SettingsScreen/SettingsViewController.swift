@@ -28,11 +28,14 @@ final class SettingsViewController: BaseScreenViewController {
     
     private let presenter: SettingsScreenPresenter
     private let disposeBag = DisposeBag()
+    private let loadingViewPresenting: LoadingViewPresenting
     
     // MARK: - Setup
     
-    init(presenter: SettingsScreenPresenter) {
+    init(presenter: SettingsScreenPresenter,
+         loadingViewPresenting: LoadingViewPresenting = LoadingViewPresenter.shared) {
         self.presenter = presenter
+        self.loadingViewPresenting = loadingViewPresenting
         super.init(nibName: SettingsViewController.objectName, bundle: nil)
     }
     
@@ -107,12 +110,15 @@ final class SettingsViewController: BaseScreenViewController {
             cell.selectionStyle = .none
             return cell
         })
-        
+
         presenter.sectionObservable
+            .showLoaderOnSubscription(loader: loadingViewPresenting, style: .circle)
+            .hide(loader: loadingViewPresenting)
             .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
-        
-        tableView.rx.modelSelected(SettingsCellViewModel.self)
+
+        tableView.rx
+            .modelSelected(SettingsCellViewModel.self)
             .bindAndCatch(weak: self) { (self, model) in
                 model.recordSelection()
                 self.presenter.actionRelay.accept(model.action)
@@ -130,7 +136,9 @@ final class SettingsViewController: BaseScreenViewController {
 extension SettingsViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: TableHeaderView.objectName) as? TableHeaderView else { return nil }
+        guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: TableHeaderView.objectName) as? TableHeaderView else {
+            return nil
+        }
         let section = presenter.sectionArrangement[section]
         let viewModel = TableHeaderViewModel.settings(title: section.sectionTitle)
         header.viewModel = viewModel

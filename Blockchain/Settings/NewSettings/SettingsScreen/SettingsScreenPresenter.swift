@@ -15,6 +15,11 @@ import RxRelay
 import RxSwift
 
 final class SettingsScreenPresenter {
+
+    // MARK: - Types
+
+    private typealias CellType = SettingsSectionType.CellType
+    typealias Section = SettingsSectionType
     
     // MARK: - Navigation Properties
     
@@ -28,26 +33,15 @@ final class SettingsScreenPresenter {
         }
     }
     
-    var barStyle: Screen.Style.Bar {
-        .lightContent()
-    }
-    
-    // MARK: - Types
-    
-    typealias Section = SettingsSectionType
-    private typealias CellType = SettingsSectionType.CellType
+    let barStyle: Screen.Style.Bar = .lightContent()
     
     // MARK: - Public Properties
     
     var sectionObservable: Observable<[SettingsSectionViewModel]> {
-        let exchangeLinking = Observable.just(interactor.pitLinkingConfiguration.isEnabled)
-        let swipe = Observable.just(AppFeatureConfigurator.shared.configuration(for: .swipeToReceive).isEnabled)
-        let cards = cardsSectionPresenter.presenters
-        return Observable.combineLatest(exchangeLinking, swipe, cards)
+        cardsSectionPresenter
+            .presenters
             .map(weak: self) { (self, values) -> [SettingsSectionViewModel] in
-                let exchangeEnabled = values.0
-                let sections = self.sections(exchangeEnabled: exchangeEnabled)
-                return sections.map {
+                self.sectionArrangement.map {
                     SettingsSectionViewModel(
                         sectionType: $0,
                         items: self.cellArrangement(for: $0)
@@ -57,7 +51,10 @@ final class SettingsScreenPresenter {
     }
     
     var sectionArrangement: [Section] {
-        sections(exchangeEnabled: interactor.pitLinkingConfiguration.isEnabled)
+        sections(
+            exchangeEnabled: interactor.pitLinkingConfiguration.isEnabled,
+            simpleBuyCardsEnabled: interactor.simpleBuyCardsConfiguration.isEnabled
+        )
     }
     
     // MARK: - Cell Presenters
@@ -150,15 +147,15 @@ final class SettingsScreenPresenter {
             .bindAndCatch(to: router.actionRelay)
             .disposed(by: disposeBag)
     }
-    
-    private func sections(exchangeEnabled: Bool) -> [Section] {
+
+    private func sections(exchangeEnabled: Bool, simpleBuyCardsEnabled: Bool) -> [Section] {
         var sections: [Section] = [
             .profile,
             .preferences,
             .security
         ]
         
-        if AppFeatureConfigurator.shared.configuration(for: .simpleBuyCardsEnabled).isEnabled {
+        if simpleBuyCardsEnabled {
             sections.append(.cards)
         }
         
@@ -246,7 +243,7 @@ final class SettingsScreenPresenter {
                 )
             ]
             
-            if AppFeatureConfigurator.shared.configuration(for: .swipeToReceive).isEnabled {
+            if interactor.swipeToReceiveConfiguration.isEnabled {
                 viewModels.append(
                     .init(
                         cellType: .switch(.swipeToReceive, swipeReceiveCellPresenter)
