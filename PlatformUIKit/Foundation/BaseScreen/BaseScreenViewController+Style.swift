@@ -137,7 +137,7 @@ extension Screen.Style.Bar {
     }
 
     public var titleFont: UIFont {
-        .main(.regular, 20)
+        .main(.medium, 20)
     }
 
     public var titleTextAttributes: [ NSAttributedString.Key: Any ] {
