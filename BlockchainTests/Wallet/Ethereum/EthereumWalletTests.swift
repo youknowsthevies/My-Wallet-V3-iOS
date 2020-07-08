@@ -145,7 +145,7 @@ class EthereumWalletTests: XCTestCase {
         
         // Assert
         let expectedEvents: [Recorded<Event<EthereumAssetAccount>>] = Recorded.events(
-            .error(200, Blockchain.WalletError.unknown)
+            .error(200, EthereumWallet.EthereumWalletError.ethereumAccountsFailed)
         )
         
         XCTAssertEqual(result.events, expectedEvents)

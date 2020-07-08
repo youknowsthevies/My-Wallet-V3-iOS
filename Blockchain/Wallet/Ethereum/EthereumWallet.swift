@@ -15,7 +15,18 @@ import RxRelay
 import RxSwift
 
 class EthereumWallet: NSObject {
-    
+
+    enum EthereumWalletError: Error {
+        case noEthereumAccount
+        case recordLastEthereumTransactionFailed
+        case getEthereumAddressFailed
+        case saveERC20TokensFailed
+        case erc20TokensFailed
+        case getLabelForEthereumAccountFailed
+        case ethereumAccountsFailed
+        case encodingERC20TokenAccountsFailed
+    }
+
     typealias Dispatcher = EthereumJSInteropDispatcherAPI & EthereumJSInteropDelegateAPI
     
     typealias WalletAPI = LegacyEthereumWalletAPI & LegacyWalletAPI & MnemonicAccessAPI
@@ -131,33 +142,19 @@ class EthereumWallet: NSObject {
                 .milliseconds(100),
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
             )
-            .flatMap(weak: self) { (self, _) in
+            .flatMap(weak: self) { (self, _) -> Observable<CryptoValue> in
                 self.walletLoaded()
-                    .catchError { error in
-                        switch error {
-                        case SecondPasswordError.userDismissed:
-                            // User dismissed SecondPassword screen.
-                            return .empty()
-                        default:
-                            throw error
-                        }
-                    }
-                    .andThen(Observable.just(()))
+                    .andThen(self.balance.asObservable())
             }
-            .flatMapLatest(weak: self) { (self, _) in
-                self.balance
-                    .asObservable()
-                    .materialize()
-                    .filter { !$0.isStopEvent }
-                    .dematerialize()
-            }
-            .bindAndCatch(to: balanceRelay)
+            .subscribe(onNext: { [weak self] cryptoValue in
+                self?.balanceRelay.accept(cryptoValue)
+            })
             .disposed(by: disposeBag)
     }
 
     func walletLoaded() -> Completable {
         guard let wallet = wallet else {
-            return .empty()
+            return .error(WalletError.notInitialized)
         }
         ethereumAccountExists = wallet.checkIfEthereumAccountExists()
         return saveDefaultPAXAccountIfNeeded()
@@ -177,20 +174,15 @@ class EthereumWallet: NSObject {
     private func saveDefaultPAXAccount() -> Single<ERC20TokenAccount> {
         let paxAccount = EthereumWallet.defaultPAXAccount
         return save(erc20TokenAccounts: [ PaxToken.metadataKey : paxAccount ])
-            .asObservable()
-            .flatMap(weak: self) { (self, _) -> Observable<ERC20TokenAccount> in
-                Observable.just(paxAccount)
-            }
-            .asSingle()
+            .flatMap { .just(paxAccount) }
     }
 }
 
 extension EthereumWallet: ERC20BridgeAPI { 
     func tokenAccount(for key: String) -> Single<ERC20TokenAccount?> {
-        erc20TokenAccounts
-            .flatMap { tokenAccounts -> Single<ERC20TokenAccount?> in
-                Single.just(tokenAccounts[key])
-            }
+        erc20TokenAccounts.map { accounts in
+            accounts[key]
+        }
     }
     
     func save(erc20TokenAccounts: [String: ERC20TokenAccount]) -> Single<Void> {
@@ -207,26 +199,23 @@ extension EthereumWallet: ERC20BridgeAPI {
         secondPasswordIfAccountCreationNeeded
             .flatMap(weak: self) { (self, secondPassword) -> Single<[String: ERC20TokenAccount]> in
                 self.erc20TokenAccounts(secondPassword: secondPassword)
-        }
+            }
     }
 
     func memo(for transactionHash: String, tokenKey: String) -> Single<String?> {
-        erc20TokenAccounts
-            .map { tokenAccounts -> ERC20TokenAccount? in
-                tokenAccounts[tokenKey]
-            }
-            .map { tokenAccount -> String? in
-                tokenAccount?.transactionNotes[transactionHash]
+        tokenAccount(for: tokenKey)
+            .map { account in
+                account?.transactionNotes[transactionHash]
             }
     }
     
     func save(transactionMemo: String, for transactionHash: String, tokenKey: String) -> Single<Void> {
         erc20TokenAccounts
-            .flatMap { tokenAccounts -> Single<([String: ERC20TokenAccount], ERC20TokenAccount)> in
+            .map { tokenAccounts -> ([String: ERC20TokenAccount], ERC20TokenAccount) in
                 guard let tokenAccount = tokenAccounts[tokenKey] else {
                     throw WalletError.failedToSaveMemo
                 }
-                return Single.just((tokenAccounts, tokenAccount))
+                return (tokenAccounts, tokenAccount)
             }
             .flatMap(weak: self) { (self, tuple) -> Single<Void> in
                 var (tokenAccounts, tokenAccount) = tuple
@@ -238,41 +227,47 @@ extension EthereumWallet: ERC20BridgeAPI {
     }
     
     private func save(erc20TokenAccounts: [String: ERC20TokenAccount], secondPassword: String?) -> Single<Void> {
-        Single.create(subscribe: { [weak self] observer -> Disposable in
+        Single.create { [weak self] observer -> Disposable in
             guard let wallet = self?.wallet else {
                 observer(.error(WalletError.notInitialized))
                 return Disposables.create()
             }
             guard let jsonData = try? JSONEncoder().encode(erc20TokenAccounts) else {
-                observer(.error(WalletError.unknown))
+                observer(.error(EthereumWalletError.encodingERC20TokenAccountsFailed))
                 return Disposables.create()
             }
-            wallet.saveERC20Tokens(with: nil, tokensJSONString: jsonData.string, success: {
-                observer(.success(()))
-            }, error: { errorMessage in
-                observer(.error(WalletError.unknown))
-            })
+            wallet.saveERC20Tokens(
+                with: nil,
+                tokensJSONString: jsonData.string,
+                success: {
+                    observer(.success(()))
+                },
+                error: { _ in
+                    observer(.error(EthereumWalletError.saveERC20TokensFailed))
+                }
+            )
             return Disposables.create()
-        })
+        }
     }
     
     private func erc20TokenAccounts(secondPassword: String? = nil) -> Single<[String: ERC20TokenAccount]> {
-        Single<[String: [String: Any]]>.create(subscribe: { [weak self] observer -> Disposable in
+        Single<[String: [String: Any]]>.create { [weak self] observer -> Disposable in
             guard let wallet = self?.wallet else {
                 observer(.error(WalletError.notInitialized))
                 return Disposables.create()
             }
-            wallet.erc20Tokens(with: secondPassword, success: { erc20Tokens in
-                observer(.success(erc20Tokens))
-            }, error: { errorMessage in
-                observer(.error(WalletError.unknown))
-            })
+            wallet.erc20Tokens(
+                with: secondPassword,
+                success: { erc20Tokens in
+                    observer(.success(erc20Tokens))
+                },
+                error: { _ in
+                    observer(.error(EthereumWalletError.erc20TokensFailed))
+                }
+            )
             return Disposables.create()
-        })
-        .flatMap { erc20Accounts -> Single<[String: ERC20TokenAccount]> in
-            let accounts: [String: ERC20TokenAccount] = erc20Accounts.decodeJSONObjects(type: ERC20TokenAccount.self)
-            return Single.just(accounts)
         }
+        .map { $0.decodeJSONObjects(type: ERC20TokenAccount.self) }
     }
 }
 
@@ -291,17 +286,18 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
     }
 
     func memo(for transactionHash: String) -> Single<String?> {
-        Single
+        Single<String?>
             .create(weak: self) { (self, observer) -> Disposable in
                 guard let wallet = self.wallet else {
+                    observer(.error(WalletError.notInitialized))
                     return Disposables.create()
                 }
                 wallet.getEthereumMemo(
                     for: transactionHash,
-                    success: { (memo) in
+                    success: { memo in
                         observer(.success(memo))
                     },
-                    error: { (error) in
+                    error: { _ in
                         observer(.error(WalletError.notInitialized))
                     }
                 )
@@ -321,7 +317,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
         secondPasswordIfAccountCreationNeeded
             .flatMap(weak: self) { (self, secondPassword) -> Single<CryptoValue> in
                 self.fetchBalance(secondPassword: secondPassword)
-        }
+            }
     }
     
     var name: Single<String> {
@@ -341,16 +337,15 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
     
     var account: Single<EthereumAssetAccount> {
         wallets
-            .flatMap { accounts -> Single<EthereumAssetAccount> in
-                guard let defaultAccount = accounts.first else {
-                    throw WalletError.unknown
+            .map { wallets in
+                guard let defaultAccount = wallets.first else {
+                    throw EthereumWalletError.noEthereumAccount
                 }
-                let account = EthereumAssetAccount(
+                return EthereumAssetAccount(
                     walletIndex: 0,
                     accountAddress: defaultAccount.publicKey,
                     name: defaultAccount.label ?? ""
                 )
-                return Single.just(account)
             }
     }
     
@@ -381,8 +376,8 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
                     success: {
                         observer(.success(transaction))
                     },
-                    error: { errorMessage in
-                        observer(.error(WalletError.unknown))
+                    error: { _ in
+                        observer(.error(EthereumWalletError.recordLastEthereumTransactionFailed))
                     }
                 )
                 return Disposables.create()
@@ -402,21 +397,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
                 self?.legacyEthBalance = NSDecimalNumber(decimal: cryptoValue.majorValue)
             })
     }
-    
-    private func accounts(secondPassword: String? = nil) -> Single<EthereumAssetAccount> {
-        wallets.flatMap { wallets -> Single<EthereumAssetAccount> in
-            guard let defaultAccount = wallets.first else {
-                throw WalletError.unknown
-            }
-            let account = EthereumAssetAccount(
-                walletIndex: 0,
-                accountAddress: defaultAccount.publicKey,
-                name: defaultAccount.label ?? ""
-            )
-            return Single.just(account)
-        }
-    }
-    
+
     private func label(secondPassword: String? = nil) -> Single<String> {
         Single<String>
             .create(weak: self) { (self, observer) -> Disposable in
@@ -426,8 +407,12 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
                 }
                 wallet.getLabelForEthereumAccount(
                     with: secondPassword,
-                    success: { observer(.success($0)) },
-                    error: { _ in observer(.error(WalletError.unknown)) }
+                    success: { label in
+                        observer(.success(label))
+                    },
+                    error: { _ in
+                        observer(.error(EthereumWalletError.getLabelForEthereumAccountFailed))
+                    }
                 )
                 return Disposables.create()
             }
@@ -441,24 +426,26 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
                     observer(.error(WalletError.notInitialized))
                     return Disposables.create()
                 }
-                wallet.getEthereumAddress(with: secondPassword, success: { address in
-                    observer(.success(address))
-                }, error: { errorMessage in
-                    observer(.error(WalletError.unknown))
-                })
+                wallet.getEthereumAddress(
+                    with: secondPassword,
+                    success: { address in
+                        observer(.success(address))
+                    },
+                    error: { _ in
+                        observer(.error(EthereumWalletError.getEthereumAddressFailed))
+                    }
+                )
                 return Disposables.create()
             }
             .subscribeOn(schedulerType)
     }
 
     private func fetchHistory(fromCache: Bool) -> Single<Void> {
-        let transactions: Single<[EthereumHistoricalTransaction]>
         if fromCache {
-            transactions = dependencies.transactionService.transactions
+            return dependencies.transactionService.transactions.mapToVoid()
         } else {
-            transactions = dependencies.transactionService.fetchTransactions()
+            return dependencies.transactionService.fetchTransactions().mapToVoid()
         }
-        return transactions.mapToVoid()
     }
 }
 
@@ -499,18 +486,23 @@ extension EthereumWallet: EthereumWalletAccountBridgeAPI {
         guard let base58PrivateKey = keyPair.privateKey.base58EncodedString else {
             return Completable.error(WalletError.failedToSaveKeyPair("Invalid private key"))
         }
-        return Completable.create(subscribe: { [weak self] observer -> Disposable in
+        return Completable.create { [weak self] observer -> Disposable in
             guard let wallet = self?.wallet else {
                 observer(.error(WalletError.notInitialized))
                 return Disposables.create()
             }
-            wallet.saveEthereumAccount(with: base58PrivateKey, label: label, success: {
-                observer(.completed)
-            }, error: { errorMessage in
-                observer(.error(WalletError.failedToSaveKeyPair(errorMessage)))
-            })
+            wallet.saveEthereumAccount(
+                with: base58PrivateKey,
+                label: label,
+                success: {
+                    observer(.completed)
+                },
+                error: { errorMessage in
+                    observer(.error(WalletError.failedToSaveKeyPair(errorMessage)))
+                }
+            )
             return Disposables.create()
-        })
+        }
     }
     
     var wallets: Single<[EthereumWalletAccount]> {
@@ -522,34 +514,35 @@ extension EthereumWallet: EthereumWalletAccountBridgeAPI {
     
     private func ethereumWallets(secondPassword: String?) -> Single<[EthereumWalletAccount]> {
         Single<[[String: Any]]>
-            .create(subscribe: { [weak self] observer -> Disposable in
+            .create { [weak self] observer -> Disposable in
                 guard let wallet = self?.wallet else {
                     observer(.error(WalletError.notInitialized))
                     return Disposables.create()
                 }
-                wallet.ethereumAccounts(with: secondPassword, success: { accounts in
-                    observer(.success(accounts))
-                }, error: { errorMessage in
-                    observer(.error(WalletError.unknown))
-                })
+                wallet.ethereumAccounts(
+                    with: secondPassword,
+                    success: { account in
+                        observer(.success(account))
+                    },
+                    error: { _ in
+                        observer(.error(EthereumWalletError.ethereumAccountsFailed))
+                    }
+                )
                 return Disposables.create()
-            })
-            .flatMap(weak: self) { (self, legacyAccounts) -> Single<[EthereumWalletAccount]> in
-                let accounts = legacyAccounts
-                    .decodeJSONObjects(type: LegacyEthereumWalletAccount.self)
-                    .enumerated()
-                    .map { index, account -> EthereumWalletAccount in
+            }
+            .map { $0.decodeJSONObjects(type: LegacyEthereumWalletAccount.self) }
+            .map { legacyWallets in
+                legacyWallets.enumerated()
+                    .map { offset, account in
                         EthereumWalletAccount(
-                            index: index,
+                            index: offset,
                             publicKey: account.addr,
                             label: account.label,
                             archived: false
                         )
-                }
-                return Single.just(accounts)
+                    }
             }
     }
-
 }
 
 extension EthereumWallet: SecondPasswordPromptable {
@@ -559,8 +552,8 @@ extension EthereumWallet: SecondPasswordPromptable {
     
     var accountExists: Single<Bool> {
         guard let ethereumAccountExists = ethereumAccountExists else {
-            return Single.error(WalletError.notInitialized)
+            return .error(WalletError.notInitialized)
         }
-        return Single.just(ethereumAccountExists)
+        return .just(ethereumAccountExists)
     }
 }
