@@ -255,47 +255,40 @@ class ExchangeCreateViewController: UIViewController {
     }
 
     fileprivate func dependenciesSetup() -> Completable {
-        Completable.create(subscribe: { [weak self] observer -> Disposable in
-            guard let self = self else {
-                observer(.completed)
-                return Disposables.create()
-            }
-            let btcAccount = self.dependencies.assetAccountRepository.accounts(for: .bitcoin)
-            let ethAccount = self.dependencies.assetAccountRepository.accounts(for: .ethereum)
-            
-            let disposable = Single.zip(btcAccount, ethAccount)
-                .subscribeOn(MainScheduler.asyncInstance)
-                .observeOn(MainScheduler.instance)
-                .subscribe(onSuccess: { [weak self] (bitcoin, ethereum) in
-                    guard let self = self else { return }
-                    guard let bitcoinAccount = bitcoin.first else { return }
-                    guard let ethereumAccount = ethereum.first else { return }
-                    self.fromAccount = bitcoinAccount
-                    self.toAccount = ethereumAccount
-                    // DEBUG - ideally add an .empty state for a blank/loading state for MarketsModel here.
-                    let interactor = ExchangeCreateInteractor(
-                        dependencies: self.dependencies,
-                        model: MarketsModel(
-                            marketPair: MarketPair(fromAccount: self.fromAccount, toAccount: self.toAccount),
-                            fiatCurrencyCode: BlockchainSettings.sharedAppInstance().fiatCurrencyCode,
-                            fiatCurrencySymbol: BlockchainSettings.App.shared.fiatCurrencySymbol,
-                            fix: .baseInFiat,
-                            volume: "0"
-                        )
+
+        let btcAccount = self.dependencies.assetAccountRepository.accounts(for: .bitcoin)
+        let ethAccount = self.dependencies.assetAccountRepository.accounts(for: .ethereum)
+        let currency = self.dependencies.fiatCurrencySettingsService.fiatCurrency
+        return Single
+            .zip(btcAccount, ethAccount, currency)
+            .subscribeOn(MainScheduler.asyncInstance)
+            .observeOn(MainScheduler.instance)
+            .do(onSuccess: { [weak self] (bitcoin, ethereum, currency) in
+                guard let self = self else { return }
+                guard let bitcoinAccount = bitcoin.first else { return }
+                guard let ethereumAccount = ethereum.first else { return }
+                self.fromAccount = bitcoinAccount
+                self.toAccount = ethereumAccount
+                // DEBUG - ideally add an .empty state for a blank/loading state for MarketsModel here.
+                let interactor = ExchangeCreateInteractor(
+                    dependencies: self.dependencies,
+                    model: MarketsModel(
+                        marketPair: MarketPair(fromAccount: self.fromAccount, toAccount: self.toAccount),
+                        fiatCurrency: currency,
+                        fix: .baseInFiat,
+                        volume: "0"
                     )
-                    self.assetAccountListPresenter = ExchangeAssetAccountListPresenter(view: self)
-                    self.numberKeypadView.delegate = self
-                    self.presenter = ExchangeCreatePresenter(interactor: interactor)
-                    self.presenter.interface = self
-                    interactor.output = self.presenter
-                    self.delegate = self.presenter
-                    observer(.completed)
-                })
-            self.disposables.insertWithDiscardableResult(disposable)
-            return Disposables.create()
-        })
+                )
+                self.assetAccountListPresenter = ExchangeAssetAccountListPresenter(view: self)
+                self.numberKeypadView.delegate = self
+                self.presenter = ExchangeCreatePresenter(interactor: interactor)
+                self.presenter.interface = self
+                interactor.output = self.presenter
+                self.delegate = self.presenter
+            })
+            .asCompletable()
     }
-    
+
     fileprivate func presentURL(_ url: URL) {
         let viewController = SFSafariViewController(url: url)
         guard let controller = AppCoordinator.shared.tabControllerManager.tabViewController else { return }

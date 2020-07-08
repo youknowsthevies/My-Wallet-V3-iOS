@@ -29,20 +29,23 @@ extension MarketPair {
 // State model for interacting with the MarketsService
 class MarketsModel {
     var marketPair: MarketPair
-    var fiatCurrencyCode: String
-    var fiatCurrencySymbol: String
+    var fiatCurrency: FiatCurrency
+    var fiatCurrencyCode: String {
+        fiatCurrency.code
+    }
+    var fiatCurrencySymbol: String {
+        fiatCurrency.symbol
+    }
     var fix: Fix
     var volume: String
     var lastConversion: Conversion?
 
     init(marketPair: MarketPair,
-         fiatCurrencyCode: String,
-         fiatCurrencySymbol: String,
+         fiatCurrency: FiatCurrency,
          fix: Fix,
          volume: String) {
         self.marketPair = marketPair
-        self.fiatCurrencyCode = fiatCurrencyCode
-        self.fiatCurrencySymbol = fiatCurrencySymbol
+        self.fiatCurrency = fiatCurrency
         self.fix = fix
         self.volume = volume
     }
@@ -88,10 +91,9 @@ extension MarketsModel {
 extension MarketsModel: Equatable {
     // Do not compare lastConversion
     static func == (lhs: MarketsModel, rhs: MarketsModel) -> Bool {
-        lhs.pair == rhs.pair &&
-        lhs.fiatCurrencyCode == rhs.fiatCurrencyCode &&
-        lhs.fiatCurrencySymbol == rhs.fiatCurrencySymbol &&
-        lhs.fix == rhs.fix &&
-        lhs.volume == rhs.volume
+        lhs.pair == rhs.pair
+            && lhs.fiatCurrency == rhs.fiatCurrency
+            && lhs.fix == rhs.fix
+            && lhs.volume == rhs.volume
     }
 }

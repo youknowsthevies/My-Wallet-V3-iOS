@@ -15,4 +15,5 @@ extension Locale {
     public static let France = Locale(identifier: "fr_FR")
     public static let Japan = Locale(identifier: "ja_JP")
     public static let Lithuania = Locale(identifier: "lt_LT")
+    public static let Posix = Locale(identifier: "en_US_POSIX")
 }

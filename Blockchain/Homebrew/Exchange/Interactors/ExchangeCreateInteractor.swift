@@ -536,7 +536,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
                     return
                 }
                 guard let output = self.output else { return }
-                guard let candidate = Decimal(string: conversion.baseFiatValue, locale: Locale.current) else {
+                guard let candidate = Decimal(string: conversion.baseFiatValue, locale: Locale.Posix) else {
                     return
                 }
 
@@ -577,13 +577,13 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
 
                             switch candidate {
                             case ..<minValue:
-                                let fiatValue = FiatValue.create(amount: minValue, currencyCode: model.fiatCurrencyCode)
+                                let fiatValue = FiatValue.create(amount: minValue, currency: model.fiatCurrency)
                                 self.status = .error(.belowTradingLimit(fiatValue, fromAssetType))
                             case periodicLimit..<greatestFiniteMagnitude:
-                                let fiatValue = FiatValue.create(amount: daily ?? 0, currencyCode: model.fiatCurrencyCode)
+                                let fiatValue = FiatValue.create(amount: daily ?? 0, currency: model.fiatCurrency)
                                 self.status = .error(.aboveTierLimit(fiatValue, fromAssetType))
                             case maxValue..<greatestFiniteMagnitude:
-                                let fiatValue = FiatValue.create(amount: maxValue, currencyCode: model.fiatCurrencyCode)
+                                let fiatValue = FiatValue.create(amount: maxValue, currency: model.fiatCurrency)
                                 self.status = .error(.aboveTradingLimit(fiatValue, fromAssetType))
                             default:
                                 self.status = .valid
@@ -673,9 +673,8 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
 
     private func subscribeToConversions() {
         let conversionsDisposable = markets.conversions.subscribe(onNext: { [weak self] conversion in
-            guard let this = self else { return }
-
-            guard let model = this.model else { return }
+            guard let self = self else { return }
+            guard let model = self.model else { return }
 
             guard model.pair.stringRepresentation == conversion.quote.pair else {
                 Logger.shared.warning(
@@ -684,29 +683,27 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
                 return
             }
             
-            if let last = model.lastConversion, last == conversion {
-                if this.waitingOnConversion(last) {
-                    /// We set the status to `unknown` as until the conversion that matches
-                    /// the candidates volume arrives, the user's current input hasn't been
-                    /// validated.
-                    this.status = .unknown
-                }
+            if let last = model.lastConversion, last == conversion, self.waitingOnConversion(last) {
+                /// We set the status to `unknown` as until the conversion that matches
+                /// the candidates volume arrives, the user's current input hasn't been
+                /// validated.
+                self.status = .unknown
             }
 
             // Store conversion
             model.lastConversion = conversion
 
             // Use conversions service to determine new input/output
-            this.conversions.update(with: conversion)
+            self.conversions.update(with: conversion)
 
             // Update interface to reflect the values returned from the conversion
             // Update input labels
-            this.updateOutput()
+            self.updateOutput()
 
             // Update trading pair view values
-            this.updateTradingValues(left: this.conversions.baseOutput, right: this.conversions.counterOutput)
+            self.updateTradingValues(left: self.conversions.baseOutput, right: self.conversions.counterOutput)
 
-            this.validateInput()
+            self.validateInput()
         }, onError: { error in
             Logger.shared.error("Error subscribing to quote with trading pair")
         })
@@ -721,7 +718,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
                     onSuccess: { [weak self] canTrade in
                         guard let self = self else { return }
                         if !canTrade {
-                            if let _ = self.errorMessage(for: model.pair.from) {
+                            if self.errorMessage(for: model.pair.from) != nil {
                                 self.status = .error(.waitingOnEthereumPayment)
                             } else {
                                 // This shouldn't happen because the only case (eth) should have an error message,

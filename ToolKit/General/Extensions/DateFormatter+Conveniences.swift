@@ -46,7 +46,7 @@ extension DateFormatter {
     public static let utcSessionDateFormat: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.locale = Locale.Posix
         formatter.timeZone = TimeZone(abbreviation: "UTC")
         return formatter
     }()

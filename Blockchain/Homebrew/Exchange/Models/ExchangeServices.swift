@@ -20,6 +20,7 @@ protocol ExchangeDependencies {
     var assetAccountRepository: AssetAccountRepositoryAPI { get }
     var tradeLimits: TradeLimitsAPI { get }
     var analyticsRecorder: AnalyticsEventRecording { get }
+    var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI { get }
 }
 
 struct ExchangeServices: ExchangeDependencies {
@@ -31,7 +32,8 @@ struct ExchangeServices: ExchangeDependencies {
     let assetAccountRepository: AssetAccountRepositoryAPI
     let tradeLimits: TradeLimitsAPI
     let analyticsRecorder: AnalyticsEventRecording
-    
+    let fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
+
     init() {
         service = ExchangeService()
         markets = MarketsService()
@@ -44,5 +46,6 @@ struct ExchangeServices: ExchangeDependencies {
         )
         tradeLimits = TradeLimitsService()
         analyticsRecorder = AnalyticsEventRecorder.shared
+        fiatCurrencySettingsService = UserInformationServiceProvider.default.settings
     }
 }

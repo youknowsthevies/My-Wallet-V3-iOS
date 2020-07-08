@@ -106,11 +106,11 @@ extension MarketsService: ExchangeMarketsAPI {
     // MARK: - Authentication
     func authenticate(completion: @escaping () -> Void) {
         switch dataSource {
-        case .socket: do {
+        case .socket:
             subscribeToHeartBeat(completion: completion)
             authenticateSocket()
-        }
-        case .rest: Logger.shared.debug("use REST endpoint")
+        case .rest:
+            Logger.shared.debug("use REST endpoint")
         }
     }
 
@@ -118,42 +118,33 @@ extension MarketsService: ExchangeMarketsAPI {
     var conversions: Observable<Conversion> {
         switch dataSource {
         case .socket:
-            return socketMessageObservable.filter {
-                $0.type == .exchange &&
-                    $0.JSONMessage is Conversion
-            }.map { message in
-                message.JSONMessage as! Conversion
-            }
+            return socketMessageObservable
+                .filter { $0.type == .exchange && $0.JSONMessage is Conversion }
+                .map { $0.JSONMessage as! Conversion }
         case .rest:
-            return restMessageSubject.filter({ _ -> Bool in
-                false
-            })
+            return restMessageSubject
+                .filter { _ in false }
         }
     }
     
     var errors: Observable<SocketError> {
         // TODO: handle REST
         // TICKET: IOS-1320
-        return socketMessageObservable.filter {
-            $0.type == .exchange &&
-                $0.JSONMessage is SocketError
-            }.map { message in
-                message.JSONMessage as! SocketError
-        }
+        return socketMessageObservable
+            .filter { $0.type == .exchange && $0.JSONMessage is SocketError }
+            .map { $0.JSONMessage as! SocketError }
     }
 
     private var exchangeRatesObservable: Observable<ExchangeRates> {
         // TODO: handle REST
         // TICKET: IOS-1320
-        return socketMessageObservable.filter {
-            $0.type == .exchange
-        }.filter {
-            $0.JSONMessage is ExchangeRates
-        }.map {
-            $0.JSONMessage as! ExchangeRates
-        }.do(onNext: { [weak self] exchangeRates in
-            self?.cachedExchangeRates.accept(exchangeRates)
-        })
+        return socketMessageObservable
+            .filter { $0.type == .exchange }
+            .filter { $0.JSONMessage is ExchangeRates }
+            .map { $0.JSONMessage as! ExchangeRates }
+            .do(onNext: { [weak self] exchangeRates in
+                self?.cachedExchangeRates.accept(exchangeRates)
+            })
     }
 
     func exchangeRateAvailablePairs() -> Single<ExchangeTradingPairs> {
