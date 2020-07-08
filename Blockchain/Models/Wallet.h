@@ -138,7 +138,6 @@
 - (void)getHistoryWithoutBusyView;
 - (void)getHistoryIfNoTransactionMessage;
 - (void)getBitcoinCashHistoryIfNoTransactionMessage;
-- (void)getWalletAndHistory;
 - (void)getHistoryForAllAssets;
 
 - (id)getLegacyAddressBalance:(NSString *)address assetType:(LegacyAssetType)assetType;
@@ -335,4 +334,5 @@
 - (NSDecimalNumber *)btcDecimalBalance;
 
 - (NSString *)getMobileMessage;
+
 @end

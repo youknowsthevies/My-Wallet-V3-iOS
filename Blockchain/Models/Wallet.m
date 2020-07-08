@@ -17,7 +17,6 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 #import "ModuleXMLHttpRequest.h"
 #import "KeychainItemWrapper+Credentials.h"
-#import <openssl/evp.h>
 #import "NSURLRequest+SRWebSocket.h"
 #import <CommonCrypto/CommonKeyDerivation.h>
 #import "HDNode.h"
@@ -28,6 +27,7 @@
 #import "KeyPair.h"
 #import "NSData+BTCData.h"
 #import "NSNumberFormatter+Currencies.h"
+#import <CommonCryptoKit/CommonCryptoKit.h>
 
 @import FirebaseAnalytics;
 
@@ -232,26 +232,15 @@ NSString * const kLockboxInvitation = @"lockbox";
         KeyPair *keyPair = [[KeyPair alloc] initWithKey:key network:nil];
         return [[keyPair getAddress] isEqualToString:address];
     };
-
-    self.context[@"objc_pbkdf2_sync"] = ^(NSString *mnemonicBuffer, NSString *saltBuffer, int iterations, int keylength, NSString *digest) {
-        // Salt data getting from salt string.
-        NSData *saltData = [saltBuffer dataUsingEncoding:NSUTF8StringEncoding];
-        
-        // Data of String to generate Hash key(hexa decimal string).
-        NSData *passwordData = [mnemonicBuffer dataUsingEncoding:NSUTF8StringEncoding];
-        
-        // Hash key (hexa decimal) string data length.
-        NSMutableData *hashKeyData = [NSMutableData dataWithLength:keylength];
-        
-        CCKeyDerivationPBKDF(kCCPBKDF2, passwordData.bytes, passwordData.length, saltData.bytes, saltData.length, kCCPRFHmacAlgSHA512, iterations, hashKeyData.mutableBytes, hashKeyData.length);
-
-        return [hashKeyData hexadecimalString];
+    
+    self.context[@"objc_pbkdf2_sync"] = ^(NSString *mnemonicBuffer, NSString *saltBuffer, int iterations, int keylength) {
+        return [JSCrypto derivePBKDF2SHA512HexStringWithPassword:mnemonicBuffer
+                                                            salt:saltBuffer
+                                                      iterations:iterations
+                                                    keySizeBytes:keylength];
     };
 
-    self.context[@"objc_sjcl_misc_pbkdf2"] = ^(NSString *_password, id _salt, int iterations, int keylength, NSString *hmacSHA1) {
-
-        uint8_t * finalOut = malloc(keylength);
-
+    self.context[@"objc_sjcl_misc_pbkdf2"] = ^(NSString *_password, id _salt, int iterations, int keylength) {
         uint8_t * _saltBuff = NULL;
         size_t _saltBuffLen = 0;
 
@@ -262,7 +251,7 @@ NSString * const kLockboxInvitation = @"lockbox";
             {
                 int ii = 0;
                 for (NSNumber * number in _salt) {
-                    _saltBuff[ii] = [number shortValue];
+                    _saltBuff[ii] = [number unsignedCharValue];
                     ++ii;
                 }
             }
@@ -273,14 +262,12 @@ NSString * const kLockboxInvitation = @"lockbox";
             DLog(@"Scrypt salt unsupported type");
             return [[NSData new] hexadecimalString];
         }
-
-        const char *passwordUTF8String = [_password UTF8String];
-
-        if (PKCS5_PBKDF2_HMAC_SHA1(passwordUTF8String, (int)strlen(passwordUTF8String), _saltBuff, (int)_saltBuffLen, iterations, keylength, finalOut) == 0) {
-            return [[NSData new] hexadecimalString];
-        };
-
-        return [[NSData dataWithBytesNoCopy:finalOut length:keylength] hexadecimalString];
+        
+        NSData * _Nonnull saltData = [NSData dataWithBytes:_saltBuff length:_saltBuffLen];
+        return [JSCrypto derivePBKDF2SHA1HexStringWithPassword:_password
+                                                      saltData:saltData
+                                                    iterations:iterations
+                                                  keySizeBytes:keylength];
     };
 
     self.context[@"objc_get_satoshi"] = ^() {
@@ -1100,12 +1087,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 {
     if ([self isInitialized])
         [self.context evaluateScript:@"MyWalletPhone.get_history(true)"];
-}
-
-- (void)getWalletAndHistory
-{
-    if ([self isInitialized])
-    [self.context evaluateScript:@"MyWalletPhone.get_wallet_and_history()"];
 }
 
 - (void)getHistoryIfNoTransactionMessage
