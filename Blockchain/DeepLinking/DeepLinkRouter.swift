@@ -13,7 +13,6 @@ class DeepLinkRouter {
     private let routers: [DeepLinkRouting]
 
     init(routers: [DeepLinkRouting] = [
-        StellarAirdropRouter(),
         KYCDeepLinkRouter(),
         KYCResubmitIdentityRouter(),
         ExchangeDeepLinkRouter(),
