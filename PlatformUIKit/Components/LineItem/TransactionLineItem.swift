@@ -134,12 +134,15 @@ public enum TransactionalLineItem: Hashable {
         }
     }
 
-    public func defaultPresenter() -> DefaultLineItemCellPresenter {
+    public func defaultPresenter(accessibilityIdPrefix: String) -> DefaultLineItemCellPresenter {
         let interactor = DefaultLineItemCellInteractor(
             title: DefaultLabelContentInteractor(knownValue: title),
             description: DefaultLabelContentInteractor(knownValue: content ?? "")
         )
-        return DefaultLineItemCellPresenter(interactor: interactor, accessibilityIdPrefix: accessibilityID)
+        return DefaultLineItemCellPresenter(
+            interactor: interactor,
+            accessibilityIdPrefix: "\(accessibilityIdPrefix)\(accessibilityID)"
+        )
     }
 
     public var descriptionInteractionText: String {
@@ -156,7 +159,8 @@ public enum TransactionalLineItem: Hashable {
 
     public func defaultCopyablePresenter(
         analyticsEvent: AnalyticsEvent? = nil,
-        analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
+        analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording,
+        accessibilityIdPrefix: String
     ) -> PasteboardingLineItemCellPresenter {
 
         PasteboardingLineItemCellPresenter(
@@ -168,7 +172,7 @@ public enum TransactionalLineItem: Hashable {
                 analyticsEvent: analyticsEvent
             ),
             analyticsRecorder: analyticsRecorder,
-            accessibilityIdPrefix: accessibilityID
+            accessibilityIdPrefix: "\(accessibilityIdPrefix)\(accessibilityID)"
         )
     }
 }

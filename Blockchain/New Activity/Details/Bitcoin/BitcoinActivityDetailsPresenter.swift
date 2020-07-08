@@ -17,6 +17,7 @@ final class BitcoinActivityDetailsPresenter: DetailsScreenPresenterAPI {
     // MARK: - Types
 
     private typealias LocalizedString = LocalizationConstants.Activity.Details
+    private typealias AccessibilityId = Accessibility.Identifier.Activity.Details
 
     // MARK: - DetailsScreenPresenterAPI
 
@@ -91,20 +92,37 @@ final class BitcoinActivityDetailsPresenter: DetailsScreenPresenterAPI {
         self.router = router
         explorerButton = .secondary(with: LocalizedString.Button.viewOnExplorer)
         buttons = [ explorerButton ]
-        dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter()
-        amountPresenter = TransactionalLineItem.amount().defaultPresenter()
-        valuePresenter = TransactionalLineItem.value().defaultPresenter()
-        feePresenter = TransactionalLineItem.fee().defaultPresenter()
-        fromPresenter = TransactionalLineItem.from().defaultCopyablePresenter(analyticsRecorder: analyticsRecorder)
-        toPresenter = TransactionalLineItem.to().defaultCopyablePresenter(analyticsRecorder: analyticsRecorder)
-        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(analyticsRecorder: analyticsRecorder)
+        dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        amountPresenter = TransactionalLineItem.amount().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        valuePresenter = TransactionalLineItem.value().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        feePresenter = TransactionalLineItem.fee().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        fromPresenter = TransactionalLineItem.from().defaultCopyablePresenter(
+            analyticsRecorder: analyticsRecorder,
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        toPresenter = TransactionalLineItem.to().defaultCopyablePresenter(
+            analyticsRecorder: analyticsRecorder,
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
+            analyticsRecorder: analyticsRecorder,
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
         noteModel = TextFieldViewModel(
             with: .description,
             validator: TextValidationFactory.General.alwaysValid,
             messageRecorder: messageRecorder
         )
         cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
-            descriptors: .h1(accessibilityIdPrefix: Accessibility.Identifier.LineItem.Transactional.cryptoAmount)
+            descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
         cells = [
             .label(cryptoAmountLabelPresenter),

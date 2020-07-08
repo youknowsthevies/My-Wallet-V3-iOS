@@ -116,8 +116,7 @@ final class TransferDetailScreenPresenter: DetailsScreenPresenterAPI {
 
         let totalCost = TransactionalLineItem
             .totalCost(interactor.checkoutData.order.fiatValue.toDisplayString())
-            .defaultPresenter()
-//            .presenter(analyticsRecorder: analyticsRecorder)
+            .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
 
         cells.append(.staticLabel(summary))
         cells.append(.separator)
@@ -194,6 +193,8 @@ extension TransferDetailScreenPresenter {
 }
 
 fileprivate extension Array where Element == PaymentAccountProperty.Field {
+    private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.TransferDetails
+
     func transferDetailsCellsPresenting(analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording) -> [LineItemCellPresenting] {
 
         func isCopyable(field: TransactionalLineItem) -> Bool {
@@ -221,10 +222,11 @@ fileprivate extension Array where Element == PaymentAccountProperty.Field {
                 if isCopyable(field: field) {
                     return field.defaultCopyablePresenter(
                         analyticsEvent: analyticsEvent(field: field),
-                        analyticsRecorder: analyticsRecorder
+                        analyticsRecorder: analyticsRecorder,
+                        accessibilityIdPrefix: AccessibilityId.lineItemPrefix
                     )
                 } else {
-                    return field.defaultPresenter()
+                    return field.defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
                 }
             }
     }

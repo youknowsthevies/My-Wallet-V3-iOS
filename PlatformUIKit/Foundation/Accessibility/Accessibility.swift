@@ -62,6 +62,23 @@ public struct Accessibility {
         self.traits = traits
         self.isAccessible = isAccessible
     }
+
+    func with(idSuffix: String) -> Accessibility {
+        let id: Value<String>
+        switch self.id {
+        case .none:
+            id = .none
+        case .value(let string):
+            id = .value("\(string)\(idSuffix)")
+        }
+        return Accessibility(
+            id: id,
+            label: label,
+            hint: hint,
+            traits: traits,
+            isAccessible: isAccessible
+        )
+    }
 }
 
 // MARK: - Conveniences

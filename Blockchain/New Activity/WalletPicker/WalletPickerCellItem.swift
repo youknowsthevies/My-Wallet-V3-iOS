@@ -62,11 +62,11 @@ enum WalletPickerCellItem: IdentifiableType {
                     currency: currency,
                     alignment: .trailing,
                     separatorVisibility: .visible,
-                    titleAccessibilitySuffix: "\(AccessibilityId.WalletCellItem.titleValue)",
-                    descriptionAccessibilitySuffix: "\(AccessibilityId.WalletCellItem.descriptionValue)",
+                    titleAccessibilitySuffix: AccessibilityId.WalletCellItem.titleValue,
+                    descriptionAccessibilitySuffix: AccessibilityId.WalletCellItem.descriptionValue,
                     descriptors: .activity(
-                        cryptoAccessiblitySuffix: "\(AccessibilityId.WalletCellItem.cryptoValue)",
-                        fiatAccessiblitySuffix: "\(AccessibilityId.WalletCellItem.fiatValue)"
+                        cryptoAccessiblitySuffix: AccessibilityId.WalletCellItem.cryptoValuePrefix,
+                        fiatAccessiblitySuffix: AccessibilityId.WalletCellItem.fiatValuePrefix
                     )
                 )
                 self = .balance(.custodial(presenter))
@@ -80,11 +80,11 @@ enum WalletPickerCellItem: IdentifiableType {
                     currency: currency,
                     alignment: .trailing,
                     separatorVisibility: .visible,
-                    titleAccessibilitySuffix: "\(AccessibilityId.WalletCellItem.titleValue)",
-                    descriptionAccessibilitySuffix: "\(AccessibilityId.WalletCellItem.descriptionValue)",
+                    titleAccessibilitySuffix: AccessibilityId.WalletCellItem.titleValue,
+                    descriptionAccessibilitySuffix: AccessibilityId.WalletCellItem.descriptionValue,
                     descriptors: .activity(
-                        cryptoAccessiblitySuffix: "\(AccessibilityId.WalletCellItem.cryptoValue)",
-                        fiatAccessiblitySuffix: "\(AccessibilityId.WalletCellItem.fiatValue)"
+                        cryptoAccessiblitySuffix: AccessibilityId.WalletCellItem.cryptoValuePrefix,
+                        fiatAccessiblitySuffix: AccessibilityId.WalletCellItem.fiatValuePrefix
                     )
                 )
                 self = .balance(.nonCustodial(presenter))

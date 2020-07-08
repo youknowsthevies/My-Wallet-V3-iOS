@@ -23,7 +23,7 @@ final class CheckoutScreenContentReducer {
     private typealias LocalizedLineItem = LocalizationConstants.LineItem.Transactional
     private typealias LocalizedSummary = LocalizedString.Summary
     private typealias AccessibilityLineItem = Accessibility.Identifier.LineItem
-    private typealias AccessibilitySimpleBuy = Accessibility.Identifier.SimpleBuy
+    private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.Checkout
     private typealias LineItem = TransactionalLineItem
 
     // MARK: - Properties
@@ -39,21 +39,35 @@ final class CheckoutScreenContentReducer {
 
     // MARK: - Cell Presenters
 
-    private let orderIdLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.orderId().defaultPresenter()
-    private let dateLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.date().defaultPresenter()
-    private let totalCostLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.totalCost().defaultPresenter()
-    private let buyingFeeLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.buyingFee().defaultPresenter()
-    private let paymentMethodLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.paymentMethod().defaultPresenter()
-    private let exchangeRateLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.exchangeRate().defaultPresenter()
-    private let statusLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.status(LocalizedLineItem.pending).defaultPresenter()
-
-    private let cryptoAmountLabelPresenter: DefaultLabelContentPresenter = .init(
-        knownValue: " ",
-        descriptors: .h1(accessibilityIdPrefix: AccessibilityLineItem.Transactional.cryptoAmount)
+    private let orderIdLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.orderId().defaultPresenter(
+        accessibilityIdPrefix: AccessibilityId.lineItemPrefix
     )
-    private let fiatAmountLabelPresenter: DefaultLabelContentPresenter = .init(
+    private let dateLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.date().defaultPresenter(
+        accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+    )
+    private let totalCostLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.totalCost().defaultPresenter(
+        accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+    )
+    private let buyingFeeLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.buyingFee().defaultPresenter(
+        accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+    )
+    private let paymentMethodLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.paymentMethod().defaultPresenter(
+        accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+    )
+    private let exchangeRateLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.exchangeRate().defaultPresenter(
+        accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+    )
+    private let statusLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.status(LocalizedLineItem.pending).defaultPresenter(
+        accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+    )
+
+    private let cryptoAmountLabelPresenter: DefaultLabelContentPresenter = DefaultLabelContentPresenter(
         knownValue: " ",
-        descriptors: .h1(accessibilityIdPrefix: AccessibilityLineItem.Transactional.fiatAmount)
+        descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
+    )
+    private let fiatAmountLabelPresenter: DefaultLabelContentPresenter = DefaultLabelContentPresenter(
+        knownValue: " ",
+        descriptors: .h1(accessibilityIdPrefix: AccessibilityId.fiatAmountPrefix)
     )
 
     private let statusBadge: DefaultBadgeAssetPresenter = .init()
@@ -229,7 +243,7 @@ final class CheckoutScreenContentReducer {
 
             transferDetailsButtonViewModel = .primary(
                 with: LocalizedString.Button.transferDetails,
-                accessibilityId: AccessibilitySimpleBuy.Checkout.Button.transferDetails
+                accessibilityId: AccessibilityId.Button.transferDetails
             )
 
             cells = [

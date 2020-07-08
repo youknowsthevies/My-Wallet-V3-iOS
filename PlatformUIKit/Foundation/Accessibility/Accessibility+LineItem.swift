@@ -25,7 +25,7 @@ extension Accessibility.Identifier.LineItem.Base {
 }
 
 extension Accessibility.Identifier.LineItem.Transactional {
-    private static let prefix = "SimpleBuy.LineItem."
+    private static let prefix = "LineItem."
 
     public static let themeBackgroundImageView = "\(prefix)themeBackgroundImageView."
     public static let bankName = "\(prefix)bankName."

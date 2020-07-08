@@ -242,7 +242,7 @@ public class TextFieldViewModel {
         isSecureRelay.accept(type.isSecure)
         
         if let suffix = accessibilitySuffix {
-            accessibility = .id("\(type.accessibility).\(suffix)")
+            accessibility = type.accessibility.with(idSuffix: ".\(suffix)")
         } else {
             accessibility = type.accessibility
         }

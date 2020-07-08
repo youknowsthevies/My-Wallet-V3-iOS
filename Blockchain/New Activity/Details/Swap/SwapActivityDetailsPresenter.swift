@@ -17,6 +17,7 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
     // MARK: - Types
 
     private typealias LocalizedString = LocalizationConstants.Activity.Details
+    private typealias AccessibilityId = Accessibility.Identifier.Activity.Details
 
     // MARK: - DetailsScreenPresenterAPI
 
@@ -60,26 +61,27 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
          analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
         cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
             knownValue: event.amounts.withdrawal.toDisplayString(includeSymbol: true),
-            descriptors: .h1(accessibilityIdPrefix: Accessibility.Identifier.LineItem.Transactional.cryptoAmount)
+            descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
-        dateCreatedPresenter = TransactionalLineItem
-            .date(DateFormatter.elegantDateFormatter.string(from: event.date))
-            .defaultPresenter()
+        dateCreatedPresenter = TransactionalLineItem.date(DateFormatter.elegantDateFormatter.string(from: event.date))
+            .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
         valuePresenter = TransactionalLineItem
             .value(event.amounts.fiatValue.toDisplayString())
-            .defaultPresenter()
+            .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
         amountFromPresenter = TransactionalLineItem
             .amount(event.amounts.deposit.toDisplayString(includeSymbol: true))
-            .defaultPresenter()
+            .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
         amountForPresenter = TransactionalLineItem
             .for(event.amounts.withdrawal.toDisplayString(includeSymbol: true))
-            .defaultPresenter()
-        orderIDPresenter = TransactionalLineItem
-            .orderId(event.identifier)
-            .defaultCopyablePresenter(analyticsRecorder: analyticsRecorder)
-        toPresenter = TransactionalLineItem
-            .to(event.addresses.withdrawalAddress)
-            .defaultCopyablePresenter(analyticsRecorder: analyticsRecorder)
+            .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
+        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
+            analyticsRecorder: analyticsRecorder,
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        toPresenter = TransactionalLineItem.to(event.addresses.withdrawalAddress).defaultCopyablePresenter(
+            analyticsRecorder: analyticsRecorder,
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
 
         titleViewRelay
             .accept(.text(value: LocalizedString.Title.swap))

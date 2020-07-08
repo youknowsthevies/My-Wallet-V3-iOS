@@ -9,7 +9,7 @@
 import PlatformUIKit
 
 extension Accessibility.Identifier {
-    
+
     enum SimpleBuy {
 
         enum IntroScreen {
@@ -26,24 +26,28 @@ extension Accessibility.Identifier {
 
         enum Checkout {
             private static let prefix = "Checkout."
+            static let lineItemPrefix = prefix
+            static let cryptoAmountPrefix = prefix + Accessibility.Identifier.LineItem.Transactional.cryptoAmount
+            static let fiatAmountPrefix = prefix + Accessibility.Identifier.LineItem.Transactional.fiatAmount
             static let titleLabel = "\(prefix)titleLabel"
             static let descriptionLabel = "\(prefix)descriptionLabel"
             static let disclaimerLabel = "\(prefix)disclaimerLabel"
             static let disclaimerImage = "\(prefix)disclaimerImage"
-            
+
             public enum Button {
                 static let transferDetails = "\(prefix)transferDetails"
             }
         }
-        
+
         enum TransferDetails {
             private static let prefix = "TransferDetails."
+            static let lineItemPrefix = prefix
             static let titleLabel = "\(prefix)titleLabel"
             static let descriptionLabel = "\(prefix)descriptionLabel"
             static let disclaimerLabel = "\(prefix)disclaimerLabel"
             static let disclaimerImage = "\(prefix)disclaimerImage"
         }
-        
+
         enum Cancellation {
             private static let prefix = "Cancellation."
             static let titleLabel = "\(prefix)titleLabel"
@@ -51,6 +55,7 @@ extension Accessibility.Identifier {
             static let yesButton = "\(prefix)yesButton"
             static let noButton = "\(prefix)noButton"
         }
+
         enum IneligibleCurrency {
             private static let prefix = "IneligibleCurrency."
             static let titleLabel = "\(prefix)titleLabel"
@@ -68,3 +73,4 @@ extension Accessibility.Identifier.SimpleBuy {
         static let goToWalletButton = "goToWalletButton"
     }
 }
+

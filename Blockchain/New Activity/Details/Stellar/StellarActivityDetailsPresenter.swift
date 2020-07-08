@@ -17,6 +17,7 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
     // MARK: - Types
 
     private typealias LocalizedString = LocalizationConstants.Activity.Details
+    private typealias AccessibilityId = Accessibility.Identifier.Activity.Details
 
     // MARK: - DetailsScreenPresenterAPI
 
@@ -124,16 +125,35 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
         self.interactor = interactor
         explorerButton = .secondary(with: LocalizedString.Button.viewOnStellarChainIO)
         buttons = [ explorerButton ]
-        dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter()
-        amountPresenter = TransactionalLineItem.amount().defaultPresenter()
-        valuePresenter = TransactionalLineItem.value().defaultPresenter()
-        fromPresenter = TransactionalLineItem.from().defaultCopyablePresenter(analyticsRecorder: analyticsRecorder)
-        toPresenter = TransactionalLineItem.to().defaultCopyablePresenter(analyticsRecorder: analyticsRecorder)
-        feePresenter = TransactionalLineItem.fee().defaultPresenter()
-        memoPresenter = TransactionalLineItem.memo().defaultPresenter()
-        orderIDPresenter = TransactionalLineItem.orderId().defaultCopyablePresenter(analyticsRecorder: analyticsRecorder)
+        dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        amountPresenter = TransactionalLineItem.amount().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        valuePresenter = TransactionalLineItem.value().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        fromPresenter = TransactionalLineItem.from().defaultCopyablePresenter(
+            analyticsRecorder: analyticsRecorder,
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        toPresenter = TransactionalLineItem.to().defaultCopyablePresenter(
+            analyticsRecorder: analyticsRecorder,
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        feePresenter = TransactionalLineItem.fee().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        memoPresenter = TransactionalLineItem.memo().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        orderIDPresenter = TransactionalLineItem.orderId().defaultCopyablePresenter(
+            analyticsRecorder: analyticsRecorder,
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
         cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
-            descriptors: .h1(accessibilityIdPrefix: Accessibility.Identifier.LineItem.Transactional.cryptoAmount)
+            descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
         let title: String
         switch event.type {

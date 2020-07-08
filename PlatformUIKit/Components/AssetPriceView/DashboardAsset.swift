@@ -153,25 +153,21 @@ public struct DashboardAsset {
                 }
                 
                 // MARK: - Setup
-                
+
                 public init(with value: Interaction.AssetBalance, descriptors: Descriptors) {
                     fiatBalance = LabelContent(
                         text: value.fiatValue.toDisplayString(includeSymbol: true, locale: .current),
                         font: descriptors.fiatFont,
                         color: descriptors.fiatTextColor,
-                        accessibility: .init(
-                            id: .value("\(descriptors.fiatAccessibility).\(value.cryptoValue.code)")
-                            )
-                        )
+                        accessibility: descriptors.fiatAccessibility.with(idSuffix: value.cryptoValue.code)
+                    )
                     
                     cryptoBalance = LabelContent(
                         text: value.cryptoValue.toDisplayString(includeSymbol: true, locale: .current),
                         font: descriptors.cryptoFont,
                         color: descriptors.cryptoTextColor,
-                        accessibility: .init(
-                            id: .value("\(descriptors.cryptoAccessibility).\(value.cryptoValue.displayCode)")
-                            )
-                        )
+                        accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.displayCode)
+                    )
                 }
             }
             
@@ -330,12 +326,12 @@ public extension DashboardAsset.Value.Presentation.AssetBalance.Descriptors {
             fiatFont: .main(.semibold, 16.0),
             fiatTextColor: .dashboardFiatPriceTitle,
             fiatAccessibility: .init(
-                id: .value("\(fiatAccessiblitySuffix)")
+                id: .value(fiatAccessiblitySuffix)
             ),
             cryptoFont: .main(.medium, 14.0),
             cryptoTextColor: .descriptionText,
             cryptoAccessibility: .init(
-                id: .value("\(cryptoAccessiblitySuffix)")
+                id: .value(cryptoAccessiblitySuffix)
             )
         )
     }
@@ -348,12 +344,12 @@ public extension DashboardAsset.Value.Presentation.AssetBalance.Descriptors {
             fiatFont: .main(.medium, 16.0),
             fiatTextColor: .mutedText,
             fiatAccessibility: .init(
-                id: .value("\(fiatAccessiblitySuffix)")
+                id: .value(fiatAccessiblitySuffix)
             ),
             cryptoFont: .main(.medium, 14.0),
             cryptoTextColor: .mutedText,
             cryptoAccessibility: .init(
-                id: .value("\(cryptoAccessiblitySuffix)")
+                id: .value(cryptoAccessiblitySuffix)
             )
         )
     }
@@ -366,12 +362,12 @@ public extension DashboardAsset.Value.Presentation.AssetBalance.Descriptors {
             fiatFont: .main(.semibold, 16.0),
             fiatTextColor: .textFieldText,
             fiatAccessibility: .init(
-                id: .value("\(fiatAccessiblitySuffix)")
+                id: .value(fiatAccessiblitySuffix)
             ),
             cryptoFont: .main(.medium, 14.0),
             cryptoTextColor: .descriptionText,
             cryptoAccessibility: .init(
-                id: .value("\(cryptoAccessiblitySuffix)")
+                id: .value(cryptoAccessiblitySuffix)
             )
         )
     }

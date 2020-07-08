@@ -110,6 +110,8 @@ final class ActivityScreenPresenter {
         
         selectionButtonViewModel = SelectionButtonViewModel()
         selectionButtonViewModel.shouldShowSeparatorRelay.accept(true)
+        selectionButtonViewModel.titleAccessibilityRelay.accept(.id(AccessibilityId.WalletSelectorView.titleLabel))
+        selectionButtonViewModel.subtitleAccessibilityRelay.accept(.id(AccessibilityId.WalletSelectorView.subtitleLabel))
         
         selectionButtonViewModel.tap
             .emit(onNext: { [unowned router] in
@@ -139,12 +141,7 @@ final class ActivityScreenPresenter {
         titleObservable
             .bindAndCatch(to: selectionButtonViewModel.titleRelay)
             .disposed(by: disposeBag)
-        
-        titleObservable
-            .map { value in .id("\(AccessibilityId.WalletSelectorView.titleLabel).\(value)") }
-            .bindAndCatch(to: selectionButtonViewModel.titleAccessibilityRelay)
-            .disposed(by: disposeBag)
-        
+
         interactor
             .selectedData
             .map { selection in
@@ -178,11 +175,7 @@ final class ActivityScreenPresenter {
         subtitleObservable
             .bindAndCatch(to: selectionButtonViewModel.subtitleRelay)
             .disposed(by: disposeBag)
-        
-        subtitleObservable
-            .map { .id("\(AccessibilityId.WalletSelectorView.subtitleLabel).\($0)") }
-            .bindAndCatch(to: selectionButtonViewModel.subtitleAccessibilityRelay)
-            .disposed(by: disposeBag)
+
 
         selectedModelRelay
             .bind { [weak self] model in

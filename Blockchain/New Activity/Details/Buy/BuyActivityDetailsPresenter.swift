@@ -19,6 +19,7 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     private typealias LocalizedString = LocalizationConstants.Activity.Details
     private typealias LocalizedLineItem = LocalizationConstants.LineItem.Transactional
+    private typealias AccessibilityId = Accessibility.Identifier.Activity.Details
 
     // MARK: - DetailsScreenPresenterAPI
 
@@ -76,14 +77,24 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
         }
         let date = DateFormatter.elegantDateFormatter.string(from: event.creationDate)
 
-        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultPresenter()
-        dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter()
-        totalCostPresenter = TransactionalLineItem.totalCost(event.fiatValue.toDisplayString()).defaultPresenter()
-        feePresenter = TransactionalLineItem.buyingFee(event.fee.toDisplayString()).defaultPresenter()
-        paymentMethodPresenter = TransactionalLineItem.paymentMethod(paymentMethod).defaultPresenter()
+        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        totalCostPresenter = TransactionalLineItem.totalCost(event.fiatValue.toDisplayString()).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        feePresenter = TransactionalLineItem.buyingFee(event.fee.toDisplayString()).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        paymentMethodPresenter = TransactionalLineItem.paymentMethod(paymentMethod).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
         cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
             knownValue: event.cryptoValue.toDisplayString(includeSymbol: true),
-            descriptors: .h1(accessibilityIdPrefix: Accessibility.Identifier.LineItem.Transactional.cryptoAmount)
+            descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
         badgesModel.badgesRelay.accept([statusBadge])
         statusBadge.interactor.stateRelay.accept(
