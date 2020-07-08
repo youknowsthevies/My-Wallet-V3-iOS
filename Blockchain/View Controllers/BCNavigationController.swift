@@ -34,6 +34,20 @@ class BCNavigationController: UINavigationController {
         self.headerTitle = title
     }
 
+    public init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    public override init(rootViewController: UIViewController) {
+        super.init(rootViewController: rootViewController)
+    }
+    
+    // NOTE: Don't delete this - that fixes a crash that occurs when subclassing a UINavigationController
+    // on iOS 12.
+    public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    }
+    
     @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) { nil }
 
