@@ -12,6 +12,7 @@ import web3swift
 public struct EthereumAddress: EthereumAddressProtocols, AssetAddress {
 
     public let publicKey: String
+    public let cryptoCurrency: CryptoCurrency = .ethereum
 
     public init(stringLiteral value: String) {
         publicKey = Address.toChecksumAddress(value)!

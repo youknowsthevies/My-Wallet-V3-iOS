@@ -1177,147 +1177,6 @@ MyWalletPhone.getMultiAddrResponse = function(txFilter) {
     return obj;
 };
 
-MyWalletPhone.addKey = function(keyString) {
-    var success = function(address) {
-        console.log('Add private key success');
-
-        objc_on_add_key(address.address);
-    };
-    var error = function(e) {
-        console.log('Add private key Error');
-        console.log(e);
-
-        objc_on_error_adding_private_key(e);
-    };
-
-    var needsBip38Passsword = Helpers.detectPrivateKeyFormat(keyString) === 'bip38';
-
-    if (needsBip38Passsword) {
-        MyWalletPhone.getPrivateKeyPassword(function (bip38Pass) {
-          if (MyWallet.wallet.isDoubleEncrypted) {
-            objc_on_add_private_key_start();
-            MyWalletPhone.getSecondPassword(function (pw) {
-              var promise = MyWallet.wallet.importLegacyAddress(keyString, null, pw, bip38Pass);
-              promise.then(success, error);
-            });
-          } else {
-            objc_on_add_private_key_start();
-            var promise = MyWallet.wallet.importLegacyAddress(keyString, null, null, bip38Pass);
-            promise.then(success, error);
-          }
-        });
-    }
-    else {
-        if (MyWallet.wallet.isDoubleEncrypted) {
-            objc_on_add_private_key_start();
-            MyWalletPhone.getSecondPassword(function (pw) {
-              var promise = MyWallet.wallet.importLegacyAddress(keyString, null, pw, null);
-              promise.then(success, error);
-            });
-        } else {
-            objc_on_add_private_key_start();
-            var promise = MyWallet.wallet.importLegacyAddress(keyString, null, null, null);
-            promise.then(success, error);
-        }
-    }
-};
-
-MyWalletPhone.sendFromWatchOnlyAddressWithPrivateKey = function(privateKeyString, watchOnlyAddress) {
-
-    if (!MyWallet.wallet.key(watchOnlyAddress).isWatchOnly) {
-        console.log('Address is not watch only!');
-        return;
-    }
-
-    var success = function(payment) {
-        console.log('Add private key success:');
-        objc_on_success_import_key_for_sending_from_watch_only();
-    };
-
-    var error = function(message) {
-        console.log('Add private key error: ' + message);
-        objc_on_error_import_key_for_sending_from_watch_only(message);
-    };
-
-    var needsBip38Passsword = Helpers.detectPrivateKeyFormat(privateKeyString) === 'bip38';
-
-    if (needsBip38Passsword) {
-        MyWalletPhone.getPrivateKeyPassword(function (bip38Pass) {
-          Helpers.privateKeyCorrespondsToAddress(watchOnlyAddress, privateKeyString, bip38Pass).then(function (decryptedPrivateKey) {
-            if (decryptedPrivateKey) {
-              if (currentPayment) {
-                currentPayment.from(decryptedPrivateKey).sideEffect(success).catch(error);
-              } else {
-                console.log('Payment error: null payment object!');
-              }
-            } else {
-              console.log('Add private key error: ');
-              objc_on_error_import_key_for_sending_from_watch_only('wrongPrivateKey');
-            }
-          }).catch(error);
-        });
-    } else {
-        Helpers.privateKeyCorrespondsToAddress(watchOnlyAddress, privateKeyString, null).then(function (decryptedPrivateKey) {
-          if (decryptedPrivateKey) {
-            if (currentPayment) {
-              currentPayment.from(decryptedPrivateKey).sideEffect(success).catch(error);
-            } else {
-              console.log('Payment error: null payment object!');
-            }
-          } else {
-            console.log('Add private key error: ');
-            objc_on_error_import_key_for_sending_from_watch_only('wrongPrivateKey');
-          }
-        }).catch(error);
-    }
-}
-
-MyWalletPhone.addKeyToLegacyAddress = function(privateKeyString, legacyAddress) {
-
-    var success = function(address) {
-        console.log('Add private key success:');
-        console.log(address.address);
-
-        if (address.address != legacyAddress) {
-            objc_on_add_incorrect_private_key(legacyAddress);
-        } else {
-            objc_on_add_private_key_to_legacy_address(legacyAddress);
-        }
-    };
-    var error = function(message) {
-        console.log('Add private key Error: ' + message);
-
-        objc_on_error_adding_private_key_watch_only(message);
-    };
-
-    var needsBip38Passsword = Helpers.detectPrivateKeyFormat(privateKeyString) === 'bip38';
-
-    if (needsBip38Passsword) {
-        MyWalletPhone.getPrivateKeyPassword(function (bip38Pass) {
-          if (MyWallet.wallet.isDoubleEncrypted) {
-            objc_on_add_private_key_start();
-            MyWalletPhone.getSecondPassword(function (pw) {
-              MyWallet.wallet.addKeyToLegacyAddress(privateKeyString, legacyAddress, pw, bip38Pass).then(success).catch(error);
-            });
-          } else {
-            objc_on_add_private_key_start();
-            MyWallet.wallet.addKeyToLegacyAddress(privateKeyString, legacyAddress, null, bip38Pass).then(success).catch(error);
-          }
-        });
-    }
-    else {
-        if (MyWallet.wallet.isDoubleEncrypted) {
-            objc_on_add_private_key_start();
-            MyWalletPhone.getSecondPassword(function (pw) {
-              MyWallet.wallet.addKeyToLegacyAddress(privateKeyString, legacyAddress, pw, null).then(success).catch(error);
-            });
-        } else {
-            objc_on_add_private_key_start();
-            MyWallet.wallet.addKeyToLegacyAddress(privateKeyString, legacyAddress, null, null).then(success).catch(error);
-        }
-    }
-};
-
 MyWalletPhone.markMnemonicAsVerified = function() {
   return MyWallet.wallet.hdwallet.verifyMnemonic(objc_wallet_mnemonic_verification_updated, objc_wallet_mnemonic_verification_error)
 };
@@ -1410,6 +1269,97 @@ SharedMetadata.prototype.decryptFrom = function (message, contact) {
 // TODO what should this value be?
 MyWallet.getNTransactionsPerPage = function() {
     return 50;
+};
+
+MyWalletPhone.addKey = function(keyString) {
+    var success = function(address) {
+        console.log('Add private key success');
+
+        objc_on_add_key(address.address);
+    };
+    var error = function(e) {
+        console.log('Add private key Error');
+        console.log(e);
+
+        objc_on_error_adding_private_key(e);
+    };
+
+    var needsBip38Passsword = Helpers.detectPrivateKeyFormat(keyString) === 'bip38';
+
+    if (needsBip38Passsword) {
+        MyWalletPhone.getPrivateKeyPassword(function (bip38Pass) {
+          if (MyWallet.wallet.isDoubleEncrypted) {
+            objc_on_add_private_key_start();
+            MyWalletPhone.getSecondPassword(function (pw) {
+              var promise = MyWallet.wallet.importLegacyAddress(keyString, null, pw, bip38Pass);
+              promise.then(success, error);
+            });
+          } else {
+            objc_on_add_private_key_start();
+            var promise = MyWallet.wallet.importLegacyAddress(keyString, null, null, bip38Pass);
+            promise.then(success, error);
+          }
+        });
+    }
+    else {
+        if (MyWallet.wallet.isDoubleEncrypted) {
+            objc_on_add_private_key_start();
+            MyWalletPhone.getSecondPassword(function (pw) {
+              var promise = MyWallet.wallet.importLegacyAddress(keyString, null, pw, null);
+              promise.then(success, error);
+            });
+        } else {
+            objc_on_add_private_key_start();
+            var promise = MyWallet.wallet.importLegacyAddress(keyString, null, null, null);
+            promise.then(success, error);
+        }
+    }
+};
+
+MyWalletPhone.addKeyToLegacyAddress = function(privateKeyString, legacyAddress) {
+
+    var success = function(address) {
+        console.log('Add private key success:');
+        console.log(address.address);
+
+        if (address.address != legacyAddress) {
+            objc_on_add_incorrect_private_key(legacyAddress);
+        } else {
+            objc_on_add_private_key_to_legacy_address(legacyAddress);
+        }
+    };
+    var error = function(message) {
+        console.log('Add private key Error: ' + message);
+
+        objc_on_error_adding_private_key_watch_only(message);
+    };
+
+    var needsBip38Passsword = Helpers.detectPrivateKeyFormat(privateKeyString) === 'bip38';
+
+    if (needsBip38Passsword) {
+        MyWalletPhone.getPrivateKeyPassword(function (bip38Pass) {
+          if (MyWallet.wallet.isDoubleEncrypted) {
+            objc_on_add_private_key_start();
+            MyWalletPhone.getSecondPassword(function (pw) {
+              MyWallet.wallet.addKeyToLegacyAddress(privateKeyString, legacyAddress, pw, bip38Pass).then(success).catch(error);
+            });
+          } else {
+            objc_on_add_private_key_start();
+            MyWallet.wallet.addKeyToLegacyAddress(privateKeyString, legacyAddress, null, bip38Pass).then(success).catch(error);
+          }
+        });
+    }
+    else {
+        if (MyWallet.wallet.isDoubleEncrypted) {
+            objc_on_add_private_key_start();
+            MyWalletPhone.getSecondPassword(function (pw) {
+              MyWallet.wallet.addKeyToLegacyAddress(privateKeyString, legacyAddress, pw, null).then(success).catch(error);
+            });
+        } else {
+            objc_on_add_private_key_start();
+            MyWallet.wallet.addKeyToLegacyAddress(privateKeyString, legacyAddress, null, null).then(success).catch(error);
+        }
+    }
 };
 
 // Settings

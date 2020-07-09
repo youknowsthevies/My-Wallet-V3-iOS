@@ -11,7 +11,7 @@
 #import "Transaction.h"
 #import "Blockchain-Swift.h"
 
-@interface TabControllerManager () <WalletSettingsDelegate, WalletSendBitcoinDelegate, WalletSendEtherDelegate, WalletExchangeIntermediateDelegate, WalletTransactionDelegate, WalletWatchOnlyDelegate>
+@interface TabControllerManager () <WalletSettingsDelegate, WalletSendBitcoinDelegate, WalletSendEtherDelegate, WalletExchangeIntermediateDelegate, WalletTransactionDelegate>
 
 #pragma mark - Private Properties
 
@@ -48,7 +48,6 @@
     walletManager.sendEtherDelegate = self;
     walletManager.partnerExchangeIntermediateDelegate = self;
     walletManager.transactionDelegate = self;
-    walletManager.watchOnlyDelegate = self;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -269,13 +268,6 @@
         self.sendBitcoinCashViewController.addressFromURLHandler = address;
         [self.sendBitcoinCashViewController reload];
     }
-}
-
-#pragma mark - Wallet Watch Only Delegate
-
-- (void)sendFromWatchOnlyAddress
-{
-    [_sendBitcoinViewController sendFromWatchOnlyAddress];
 }
 
 #pragma mark - Wallet Send Bitcoin Delegate

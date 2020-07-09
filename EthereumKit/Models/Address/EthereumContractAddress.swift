@@ -10,7 +10,8 @@ import PlatformKit
 import web3swift
 
 public struct EthereumContractAddress: EthereumAddressProtocols, AssetAddress {
-
+    public let cryptoCurrency: CryptoCurrency = .ethereum
+    
     public let ethereumAddress: EthereumAddress
 
     public var publicKey: String {

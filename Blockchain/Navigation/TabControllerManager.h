@@ -64,7 +64,6 @@
 - (void)setupBitpayPaymentFromURL:(NSURL *)bitpayURL;
 - (void)setupBitcoinPaymentFromURLHandlerWithAmountString:(NSString *)amountString address:(NSString *)address;
 - (void)transferFundsToDefaultAccountFromAddress:(NSString *)address;
-- (void)sendFromWatchOnlyAddress;
 - (void)didGetSurgeStatus:(BOOL)surgeStatus;
 - (void)updateTransferAllAmount:(NSNumber *)amount fee:(NSNumber *)fee addressesUsed:(NSArray *)addressesUsed;
 - (void)showSummaryForTransferAll;

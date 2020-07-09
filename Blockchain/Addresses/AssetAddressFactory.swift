@@ -6,7 +6,11 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BitcoinKit
+import ERC20Kit
+import EthereumKit
 import PlatformKit
+import StellarKit
 
 class AssetAddressFactory {
     /// Creates the appropriate concrete instance of an `AssetAddress` provided an
@@ -21,15 +25,15 @@ class AssetAddressFactory {
         case .algorand:
             fatalError("Algorand not supported")
         case .bitcoin:
-            return BitcoinAddress(string: address)
+            return BitcoinAssetAddress(publicKey: address)
         case .bitcoinCash:
-            return BitcoinCashAddress(string: address)
+            return BitcoinCashAssetAddress(publicKey: address)
         case .ethereum:
-            return EthereumAddress(string: address)
+            return EthereumAddress(stringLiteral: address)
         case .stellar:
-            return StellarAddress(string: address)
+            return StellarAssetAddress(publicKey: address)
         case .pax:
-            return PaxAddress(string: address)
+            return AnyERC20AssetAddress<PaxToken>(publicKey: address)
         }
     }
 

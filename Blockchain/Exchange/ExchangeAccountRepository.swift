@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import BitcoinKit
 import NetworkKit
 import PlatformKit
 import RxSwift
@@ -96,7 +96,14 @@ class ExchangeClient: ExchangeClientAPI {
     }
     
     func syncDepositAddress(accounts: [AssetAddress]) -> Completable {
-        let depositAddresses = Dictionary(accounts.map { ($0.depositAddress.type.code, $0.depositAddress.address) }) { _, last in last }
+        let depositAddresses: Dictionary<String, String> = Dictionary(accounts.map { account in
+            if let bitcoinCashAddress = account as? BitcoinCashAssetAddress {
+                let depositAddress = bitcoinCashAddress.publicKey.removing(prefix: "\(Constants.Schemes.bitcoinCash):")
+                return (bitcoinCashAddress.cryptoCurrency.code, depositAddress)
+            } else {
+                return (account.cryptoCurrency.code, account.publicKey)
+            }
+        }) { _, last in last }
         let payload = ["addresses" : depositAddresses ]
         guard let apiURL = URL(string: BlockchainAPI.shared.retailCoreUrl) else {
             return Completable.error(NetworkError.default)

@@ -40,7 +40,7 @@ typedef enum {
 - (void)stopReadingQRCode;
 @end
 
-@interface SendBitcoinViewController () <UITextFieldDelegate, TransferAllFundsDelegate, FeeSelectionDelegate, ConfirmPaymentViewDelegate, LegacyPrivateKeyDelegate>
+@interface SendBitcoinViewController () <UITextFieldDelegate, TransferAllFundsDelegate, FeeSelectionDelegate, ConfirmPaymentViewDelegate>
 
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *continueButtonTopConstraint;
 
@@ -620,7 +620,6 @@ BOOL displayingLocalSymbolSend;
         return;
     }
     if (self.sendFromAddress && [WalletManager.sharedInstance.wallet isWatchOnlyLegacyAddress:self.fromAddress]) {
-        [self alertUserForSpendingFromWatchOnlyAddress];
         return;
     }
     [self sendPaymentWithListener];
@@ -710,11 +709,6 @@ BOOL displayingLocalSymbolSend;
     [self selectToAccount:[WalletManager.sharedInstance.wallet getDefaultAccountIndexForAssetType:self.assetType]];
     
     [WalletManager.sharedInstance.wallet transferFundsToDefaultAccountFromAddress:address];
-}
-
-- (void)sendFromWatchOnlyAddress
-{
-    [self sendPaymentWithListener];
 }
 
 - (void)sendPaymentWithListener
@@ -1326,38 +1320,6 @@ BOOL displayingLocalSymbolSend;
     } else {
         [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:error in:self handler:nil];
     }
-}
-
-- (void)alertUserForSpendingFromWatchOnlyAddress
-{
-    UIAlertController *alertForSpendingFromWatchOnly = [UIAlertController alertControllerWithTitle:[LocalizationConstantsObjcBridge privateKeyNeeded] message:[NSString stringWithFormat:BC_STRING_PRIVATE_KEY_NEEDED_MESSAGE_ARGUMENT, self.fromAddress] preferredStyle:UIAlertControllerStyleAlert];
-    [alertForSpendingFromWatchOnly addAction:[UIAlertAction actionWithTitle:BC_STRING_CONTINUE style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self scanPrivateKeyToSendFromWatchOnlyAddress];
-    }]];
-    [alertForSpendingFromWatchOnly addAction:[UIAlertAction actionWithTitle:BC_STRING_CANCEL style:UIAlertActionStyleCancel handler:nil]];
-    TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
-    [tabControllerManager.tabViewController presentViewController:alertForSpendingFromWatchOnly animated:YES completion:nil];
-}
-
-- (void)scanPrivateKeyToSendFromWatchOnlyAddress
-{
-    TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
-    [[KeyImportCoordinator sharedInstance] startWith:self
-                                                  in:tabControllerManager.tabViewController
-                                           assetType:self.assetType
-                                    acceptPublicKeys:NO
-                                         loadingText:[LocalizationConstantsObjcBridge loadingProcessingKey]
-                                        assetAddress:nil];
-}
-
-#pragma mark - LegacyPrivateKeyDelegate
-
-- (void)didFinishScanning:(NSString *)privateKey {
-    [WalletManager.sharedInstance.wallet sendFromWatchOnlyAddress:self.fromAddress privateKey:privateKey];
-}
-
-- (void)didFinishScanningWithError:(PrivateKeyReaderError)error {
-    [[ModalPresenter sharedInstance] closeAllModals];
 }
 
 - (void)setupFees

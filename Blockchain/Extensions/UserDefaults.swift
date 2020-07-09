@@ -41,7 +41,6 @@ extension UserDefaults {
         case firstRun
         case graphTimeFrameKey = "timeFrame"
         case hasEndedFirstSession
-        case hideTransferAllFundsAlert
         case password
         case passwordPartHash
         case pin

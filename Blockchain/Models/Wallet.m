@@ -386,14 +386,6 @@ NSString * const kLockboxInvitation = @"lockbox";
         [weakSelf on_error_update_fee:error updateType:updateType];
     };
 
-    self.context[@"objc_on_success_import_key_for_sending_from_watch_only"] = ^() {
-        [weakSelf on_success_import_key_for_sending_from_watch_only];
-    };
-
-    self.context[@"objc_on_error_import_key_for_sending_from_watch_only"] = ^(NSString *error) {
-        [weakSelf on_error_import_key_for_sending_from_watch_only:error];
-    };
-
     self.context[@"objc_on_payment_notice"] = ^(NSString *notice) {
         [weakSelf on_payment_notice:notice];
     };
@@ -471,6 +463,10 @@ NSString * const kLockboxInvitation = @"lockbox";
         [weakSelf loading_start_new_account];
     };
 
+    self.context[@"objc_update_transfer_all_amount_fee_addressesUsed"] = ^(NSNumber *amount, NSNumber *fee, NSArray *addressesUsed) {
+        [weakSelf update_transfer_all_amount:amount fee:fee addressesUsed:addressesUsed];
+    };
+    
     self.context[@"objc_on_add_private_key_start"] = ^() {
         [weakSelf on_add_private_key_start];
     };
@@ -497,10 +493,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     self.context[@"objc_on_error_adding_private_key_watch_only"] = ^(NSString *key) {
         [weakSelf on_error_adding_private_key_watch_only:key];
-    };
-
-    self.context[@"objc_update_transfer_all_amount_fee_addressesUsed"] = ^(NSNumber *amount, NSNumber *fee, NSArray *addressesUsed) {
-        [weakSelf update_transfer_all_amount:amount fee:fee addressesUsed:addressesUsed];
     };
 
     self.context[@"objc_loading_start_transfer_all"] = ^(NSNumber *index, NSNumber *totalAddreses) {
@@ -1438,14 +1430,11 @@ NSString * const kLockboxInvitation = @"lockbox";
     AddressValidator *validator = [[AddressValidator alloc] initWithContext:WalletManager.sharedInstance.wallet.context];
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        BitcoinAddress *address = [[BitcoinAddress alloc] initWithString:string];
-        return [validator validateWithBitcoinAddress:address];
+        return [validator validateWithBitcoinAddress:string];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        BitcoinCashAddress *address = [[BitcoinCashAddress alloc] initWithString:string];
-        return [validator validateWithBitcoinCashAddress:address];
+        return [validator validateWithBitcoinCashAddress:string];
     } else if (assetType == LegacyAssetTypeEther) {
-        EthereumAddress *address = [[EthereumAddress alloc] initWithString:string];
-        return [validator validateWithEthereumAddress:address];
+        return [validator validateWithEthereumAddress:string];
     }
     return NO;
 }
@@ -1603,15 +1592,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.addKeyToLegacyAddress(\"%@\", \"%@\")", [privateKeyString escapedForJS], [watchOnlyAddress escapedForJS]]] toBool];
-}
-
-- (void)sendFromWatchOnlyAddress:(NSString *)watchOnlyAddress privateKey:(NSString *)privateKeyString
-{
-    if (![self isInitialized]) {
-        return;
-    }
-
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.sendFromWatchOnlyAddressWithPrivateKey(\"%@\", \"%@\")", [privateKeyString escapedForJS], [watchOnlyAddress escapedForJS]]];
 }
 
 - (NSDictionary*)addressBook
@@ -2845,12 +2825,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     [[KeyImportCoordinator sharedInstance] on_error_adding_private_key_watch_onlyWithError:error];
 }
 
-- (void)on_error_import_key_for_sending_from_watch_only:(NSString *)error
-{
-    // TODO: remove bridging function call
-    [[KeyImportCoordinator sharedInstance] on_error_import_key_for_sending_from_watch_onlyWithError:error];
-}
-
 /* End Key Importer */
 
 - (void)on_error_creating_new_account:(NSString*)message
@@ -3219,16 +3193,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     DLog(@"return_to_addresses_screen");
     if ([self.delegate respondsToSelector:@selector(returnToAddressesScreen)]) {
         [self.delegate returnToAddressesScreen];
-    }
-}
-
-- (void)on_success_import_key_for_sending_from_watch_only
-{
-    [self loading_stop];
-
-    DLog(@"on_success_import_key_for_sending_from_watch_only");
-    if ([self.delegate respondsToSelector:@selector(sendFromWatchOnlyAddress)]) {
-        [self.delegate sendFromWatchOnlyAddress];
     }
 }
 

@@ -6,11 +6,12 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BitcoinKit
 import ERC20Kit
-import Foundation
+import EthereumKit
 import NetworkKit
-import PlatformKit
 import RxSwift
+import PlatformKit
 import StellarKit
 import ToolKit
 
@@ -148,17 +149,17 @@ enum AssetAddressType {
             guard let swipeAddressForEther = appSettings.swipeAddressForEther else {
                 return []
             }
-            return [EthereumAddress(string: swipeAddressForEther)]
+            return [EthereumAddress(stringLiteral: swipeAddressForEther)]
         case .stellar:
             guard let swipeAddressForStellar = appSettings.swipeAddressForStellar else {
                 return []
             }
-            return [StellarAddress(string: swipeAddressForStellar)]
+            return [StellarAssetAddress(publicKey: swipeAddressForStellar)]
         case .pax:
             guard let swipeAddressForPax = appSettings.swipeAddressForPax else {
                 return []
             }
-            return [PaxAddress(string: swipeAddressForPax)]
+            return [AnyERC20AssetAddress<PaxToken>(publicKey: swipeAddressForPax)]
         case .bitcoinCash, .bitcoin:
             let swipeAddresses = KeychainItemWrapper.getSwipeAddresses(for: asset.legacy) as? [String] ?? []
             return AssetAddressFactory.create(fromAddressStringArray: swipeAddresses, assetType: asset)
@@ -235,8 +236,8 @@ extension AssetAddressRepository {
             }
             
             var assetAddress = AssetAddressFactory.create(fromAddressString: address, assetType: asset)
-            if let bchAddress = assetAddress as? BitcoinCashAddress,
-                let transformedBtcAddress = bchAddress.toBitcoinAddress(wallet: self.walletManager.wallet) {
+            if let bchAddress = assetAddress as? BitcoinCashAssetAddress,
+                let transformedBtcAddress = bchAddress.bitcoinAssetAddress(from: self.walletManager.wallet) {
                 assetAddress = transformedBtcAddress
             }
             

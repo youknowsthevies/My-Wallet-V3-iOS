@@ -6,8 +6,6 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-
 @objc
 public final class AddressValidator: NSObject {
 
@@ -24,8 +22,8 @@ public final class AddressValidator: NSObject {
     // MARK: - Bitcoin Address Validation
 
     @objc
-    func validate(bitcoinAddress address: BitcoinAddress) -> Bool {
-        let escapedString = address.description.escapedForJS()
+    func validate(bitcoinAddress address: String) -> Bool {
+        let escapedString = address.escapedForJS()
         guard let result = context.evaluateScript("Helpers.isBitcoinAddress(\"\(escapedString)\");") else { return false }
         return result.toBool()
     }
@@ -33,30 +31,29 @@ public final class AddressValidator: NSObject {
     // MARK: - Bitcoin Cash Address Validation
 
     @objc
-    func validate(bitcoinCashAddress address: BitcoinCashAddress) -> Bool {
-        let escapedString = address.description.escapedForJS()
+    func validate(bitcoinCashAddress address: String) -> Bool {
+        let escapedString = address.escapedForJS()
         guard let result = context.evaluateScript("MyWalletPhone.bch.isValidAddress(\"\(escapedString)\");") else {
-            let possibleBTCAddress = BitcoinAddress(string: address.description)
-            return validate(bitcoinAddress: possibleBTCAddress)
+            return validate(bitcoinAddress: address)
         }
 
         let isValidBCHAddress = result.toBool()
 
         // Fallback on BTC address validation for legacy BCH addresses
         if !isValidBCHAddress {
-            let possibleBTCAddress = BitcoinAddress(string: address.description)
-            return validate(bitcoinAddress: possibleBTCAddress)
+            return validate(bitcoinAddress: address)
         }
 
         return isValidBCHAddress
     }
-
+    
     // MARK: - Ethereum Address Validation
 
     @objc
-    func validate(ethereumAddress address: EthereumAddress) -> Bool {
+    func validate(ethereumAddress address: String) -> Bool {
         let escapedString = address.description.escapedForJS()
         guard let result = context.evaluateScript("MyWalletPhone.isEthAddress(\"\(escapedString)\");") else { return false }
         return result.toBool()
     }
+
 }

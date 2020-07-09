@@ -11,6 +11,8 @@ import PlatformKit
 import RxSwift
 
 class AssetAccountRepositoryMock: Blockchain.AssetAccountRepositoryAPI {
+    typealias Error = AssetAccountRepository.AssetAccountRepositoryError
+    
     var accounts: Single<[Blockchain.AssetAccount]> {
         .just([])
     }
@@ -31,8 +33,8 @@ class AssetAccountRepositoryMock: Blockchain.AssetAccountRepositoryAPI {
         .just("")
     }
 
-    func defaultAccount(for assetType: CryptoCurrency) -> Single<Blockchain.AssetAccount?> {
-        .just(nil)
+    func defaultAccount(for assetType: CryptoCurrency) -> Single<Blockchain.AssetAccount> {
+        Single.error(Error.noDefaultAccount)
     }
 
     func fetchAccounts() -> Single<[Blockchain.AssetAccount]> {

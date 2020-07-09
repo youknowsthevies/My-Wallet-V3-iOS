@@ -48,7 +48,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_KEY_RELOAD_ACCOUNTS_AND_ADDRESSES object:nil];
 }
 
-- (void)alertUserToTransferAllFunds:(BOOL)userClicked
+- (void)alertUserToTransferAllFunds
 {
     AppFeatureConfiguration *transferFundsConfig = [AppFeatureConfigurator.sharedInstance configurationFor:AppFeatureTransferFundsFromImportedAddress];
     if (!transferFundsConfig.isEnabled) {
@@ -61,12 +61,6 @@
         [self transferAllFundsClicked];
     }]];
     
-    if (!userClicked) {
-        [alertToTransfer addAction:[UIAlertAction actionWithTitle:[LocalizationConstantsObjcBridge dontShowAgain] style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            BlockchainSettings.sharedAppInstance.hideTransferAllFundsAlert = YES;
-        }]];
-    }
-    
     [self presentViewController:alertToTransfer animated:YES completion:nil];
 }
 
@@ -74,7 +68,7 @@
 
 - (void)transferAllFundsWarningClicked
 {
-    [self alertUserToTransferAllFunds:YES];
+    [self alertUserToTransferAllFunds];
 }
 
 - (void)transferAllFundsClicked

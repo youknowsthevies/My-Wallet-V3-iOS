@@ -9,7 +9,8 @@
 import PlatformKit
 
 public struct StellarAssetAddress: AssetAddress {
-    public var publicKey: String
+    public let publicKey: String
+    public let cryptoCurrency: CryptoCurrency = .stellar
     
     public init(publicKey: String) {
         self.publicKey = publicKey

@@ -6,10 +6,13 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-
 @testable import Blockchain
+import BitcoinKit
+import ERC20Kit
+import EthereumKit
 import PlatformKit
+import RxSwift
+import StellarKit
 
 class AssetAddressRepositoryMock: AssetAddressFetching {
     
@@ -35,22 +38,22 @@ class AssetAddressRepositoryMock: AssetAddressFetching {
     }
     
     /// Return the candidate addresses by type and asset
-    func addresses(by type: AssetAddressType, asset: CryptoCurrency) -> [Blockchain.AssetAddress] {
-        var result: [Blockchain.AssetAddress] = []
+    func addresses(by type: AssetAddressType, asset: CryptoCurrency) -> [AssetAddress] {
+        var result: [AssetAddress] = []
         for address in addresses {
             switch asset {
             case .algorand:
                 break
             case .bitcoin:
-                result += [BitcoinAddress(string: address)]
+                result += [BitcoinAssetAddress(publicKey: address)]
             case .bitcoinCash:
-                result += [BitcoinCashAddress(string: address)]
+                result += [BitcoinCashAssetAddress(publicKey: address)]
             case .ethereum:
-                result += [EthereumAddress(string: address)]
+                result += [EthereumAddress(stringLiteral: address)]
             case .pax:
-                result += [PaxAddress(string: address)]
+                result += [AnyERC20AssetAddress<PaxToken>(publicKey: address)]
             case .stellar:
-                result += [StellarAddress(string: address)]
+                result += [StellarAssetAddress(publicKey: address)]
             }
         }
         return result

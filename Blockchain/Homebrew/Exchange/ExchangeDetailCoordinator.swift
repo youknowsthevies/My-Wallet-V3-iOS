@@ -83,9 +83,9 @@ class ExchangeDetailCoordinator: NSObject {
             case .confirm(let orderTransaction, let conversion):
                 let currencyType = orderTransaction.destination.balance.currencyType
                 let disposable = accountRepository.nameOfAccountContaining(
-                    address: orderTransaction.destination.address.address,
+                    address: orderTransaction.destination.address.publicKey,
                     currencyType: currencyType
-                    ).asObservable()
+                ).asObservable()
                     .take(1)
                     .subscribeOn(MainScheduler.asyncInstance)
                     .observeOn(MainScheduler.instance)
@@ -168,9 +168,9 @@ class ExchangeDetailCoordinator: NSObject {
                 let destinationCurrency = orderTransaction.destination.balance.currencyType
                 
                 let disposable = accountRepository.nameOfAccountContaining(
-                    address: orderTransaction.destination.address.address,
+                    address: orderTransaction.destination.address.publicKey,
                     currencyType: destinationCurrency
-                    ).asObservable()
+                ).asObservable()
                     .take(1)
                     .subscribeOn(MainScheduler.asyncInstance)
                     .observeOn(MainScheduler.instance)
@@ -424,9 +424,7 @@ class ExchangeDetailCoordinator: NSObject {
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: { account in
-                guard let balance = account?.balance else {
-                    return
-                }
+                let balance = account.balance
                 AnalyticsService.shared.trackEvent(
                     title: "swap_failure",
                     parameters: [

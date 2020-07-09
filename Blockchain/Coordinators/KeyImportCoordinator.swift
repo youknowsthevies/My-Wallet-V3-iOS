@@ -6,9 +6,26 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import BitcoinKit
 import PlatformKit
 import PlatformUIKit
+
+@objc protocol PrivateKeyReaderDelegate: class {
+    func didFinishScanning(_ privateKey: String, for address: String?)
+    @objc optional func didFinishScanningWithError(_ error: PrivateKeyReaderError)
+}
+
+// TODO: remove once AccountsAndAddresses and SendBitcoinViewController are migrated to Swift
+@objc protocol LegacyPrivateKeyDelegate: class {
+    func didFinishScanning(_ privateKey: String)
+    @objc optional func didFinishScanningWithError(_ error: PrivateKeyReaderError)
+}
+
+@objc enum PrivateKeyReaderError: Int {
+    case badMetadataObject
+    case unknownKeyFormat
+    case unsupportedPrivateKey
+}
 
 // TODO: Refactor class to support other asset types (currently assumed to be Bitcoin)
 @objc class KeyImportCoordinator: NSObject, Coordinator {
@@ -58,14 +75,12 @@ import PlatformUIKit
     func start(with delegate: PrivateKeyReaderDelegate,
                in viewController: UIViewController,
                assetType: CryptoCurrency = .bitcoin,
-               acceptPublicKeys: Bool = false,
                loadingText: String = LocalizationConstants.AddressAndKeyImport.loadingImportKey,
                assetAddress: AssetAddress? = nil) {
         
         let privateKeyQRCodeParser = PrivateKeyQRCodeParser(
             walletManager: walletManager,
             loadingViewPresenter: loadingViewPresenter,
-            acceptPublicKeys: acceptPublicKeys,
             assetAddress: assetAddress
         )
 
@@ -89,15 +104,12 @@ import PlatformUIKit
     @objc func start(with delegate: LegacyPrivateKeyDelegate,
                      in viewController: UIViewController,
                      assetType: LegacyAssetType = .bitcoin,
-                     acceptPublicKeys: Bool = false,
-                     loadingText: String = LocalizationConstants.AddressAndKeyImport.loadingImportKey,
-                     assetAddress: AssetAddress? = nil) {
+                     loadingText: String = LocalizationConstants.AddressAndKeyImport.loadingImportKey) {
         
         let privateKeyQRCodeParser = PrivateKeyQRCodeParser(
             walletManager: walletManager,
             loadingViewPresenter: loadingViewPresenter,
-            acceptPublicKeys: acceptPublicKeys,
-            assetAddress: assetAddress
+            assetAddress: nil
         )
 
         qrCodeScannerViewController =
@@ -120,7 +132,7 @@ import PlatformUIKit
         handlePrivateKeyScanFinished()
         switch result {
         case .success(let privateKey):
-            delegate.didFinishScanning(privateKey.scannedKey, for: privateKey.assetAddress)
+            delegate.didFinishScanning(privateKey.scannedKey, for: privateKey.assetAddress?.publicKey)
         case .failure(let error):
             presentPrivateKeyScan(error: error.privateKeyReaderError)
             delegate.didFinishScanningWithError?(error.privateKeyReaderError)
@@ -163,12 +175,11 @@ import PlatformUIKit
     }
 
     @objc func on_add_key(address: String) {
-        let importedAddress = BitcoinAddress(string: address)
         let validator = AddressValidator(context: WalletManager.shared.wallet.context)
-        guard validator.validate(bitcoinAddress: importedAddress) else { return }
+        guard validator.validate(bitcoinAddress: address) else { return }
         walletManager.wallet.isSyncing = true
         walletManager.wallet.shouldLoadMetadata = true
-        importKey(from: importedAddress)
+        importKey(from: BitcoinAssetAddress(publicKey: address))
     }
 
     // TODO: unused parameter - confirm whether address param will be used in the future
@@ -292,9 +303,9 @@ extension KeyImportCoordinator: WalletKeyImportDelegate {
 
         let cancelAction = UIAlertAction(title: LocalizationConstants.cancel, style: .cancel, handler: nil)
         let tryAgainAction = UIAlertAction(title: LocalizationConstants.tryAgain, style: .default) { [unowned self] _ in
-            let address = BitcoinAddress(string: self.walletManager.wallet.lastScannedWatchOnlyAddress)
+            let address = BitcoinAssetAddress(publicKey: self.walletManager.wallet.lastScannedWatchOnlyAddress)
             let validator = AddressValidator(context: WalletManager.shared.wallet.context)
-            guard validator.validate(bitcoinAddress: address) else { return }
+            guard validator.validate(bitcoinAddress: address.publicKey) else { return }
             self.scanPrivateKeyForWatchOnlyAddress(address)
         }
 
@@ -303,13 +314,13 @@ extension KeyImportCoordinator: WalletKeyImportDelegate {
     }
 
     func importKey(from address: AssetAddress) {
-        if walletManager.wallet.isWatchOnlyLegacyAddress(address.description) {
+        if walletManager.wallet.isWatchOnlyLegacyAddress(address.publicKey) {
             // TODO: change assetType parameter to `address.assetType` once it is directly called from Swift
-            walletManager.wallet.subscribe(toAddress: address.description, assetType: .bitcoin)
+            walletManager.wallet.subscribe(toAddress: address.publicKey, assetType: .bitcoin)
         }
 
         loadingViewPresenter.show(with: LocalizationConstants.syncingWallet)
-        walletManager.wallet.lastImportedAddress = address.description
+        walletManager.wallet.lastImportedAddress = address.publicKey
 
         NotificationCenter.default.addObserver(self, selector: #selector(alertUserOfImportedKey), name: backupKey, object: nil)
     }
@@ -334,14 +345,14 @@ extension KeyImportCoordinator: WalletKeyImportDelegate {
         start(with: self, in: topVC, assetAddress: address)
 
         // TODO: `lastScannedWatchOnlyAddress` needs to be of type AssetAddress, not String
-        walletManager.wallet.lastScannedWatchOnlyAddress = address.address
+        walletManager.wallet.lastScannedWatchOnlyAddress = address.publicKey
     }
 }
 
 // MARK: - PrivateKeyReaderDelegate
 
 extension KeyImportCoordinator: PrivateKeyReaderDelegate {
-    func didFinishScanning(_ privateKey: String, for address: AssetAddress?) {
-        walletManager.wallet.addKey(privateKey, toWatchOnlyAddress: address?.address)
+    func didFinishScanning(_ privateKey: String, for address: String?) {
+        walletManager.wallet.addKey(privateKey, toWatchOnlyAddress: address)
     }
 }

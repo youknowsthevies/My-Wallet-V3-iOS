@@ -15,6 +15,6 @@ protocol AssetAccountRepositoryAPI: AnyObject {
     func accounts(for assetType: CryptoCurrency) -> Single<[AssetAccount]>
     func accounts(for assetType: CryptoCurrency, fromCache: Bool) -> Single<[AssetAccount]>
     func nameOfAccountContaining(address: String, currencyType: CryptoCurrency) -> Single<String>
-    func defaultAccount(for assetType: CryptoCurrency) -> Single<AssetAccount?>
+    func defaultAccount(for assetType: CryptoCurrency) -> Single<AssetAccount>
     func fetchAccounts() -> Single<[AssetAccount]>
 }

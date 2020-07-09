@@ -556,8 +556,13 @@ typedef enum {
                 cell.balanceLabel.text = [NSNumberFormatter formatBchWithSymbol:bchBalance];
             }
             
-            // Cells with empty balance can't be clicked and are dimmed
-            if (zeroBalance && ![self allSelectable]) {
+            if (section == legacyAddressesSectionNumber && (selectMode == SelectModeSendFrom || selectMode == SelectModeReceiveTo)) {
+                cell.userInteractionEnabled = NO;
+                cell.labelLabel.alpha = 0.5;
+                cell.addressLabel.alpha = 0.5;
+            }
+            else if (zeroBalance && ![self allSelectable]) {
+                // Cells with empty balance can't be clicked and are dimmed
                 cell.userInteractionEnabled = NO;
                 cell.labelLabel.alpha = 0.5;
                 cell.addressLabel.alpha = 0.5;

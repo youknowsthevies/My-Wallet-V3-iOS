@@ -28,7 +28,7 @@ struct AssetAccount {
 extension AssetAccount: Equatable {
     static func == (lhs: AssetAccount, rhs: AssetAccount) -> Bool {
         lhs.index == rhs.index &&
-        lhs.address.address == rhs.address.address &&
+        lhs.address.publicKey == rhs.address.publicKey &&
         lhs.balance == rhs.balance &&
         lhs.name == rhs.name
     }

@@ -168,6 +168,6 @@ extension OrderTransaction: Equatable {
             && lhs.fees == rhs.fees
             && lhs.from == rhs.from
             && lhs.orderIdentifier == rhs.orderIdentifier
-            && lhs.to.address == rhs.to.address
+            && lhs.to.publicKey == rhs.to.publicKey
     }
 }

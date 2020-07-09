@@ -6,16 +6,17 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-
 @testable import Blockchain
+import BitcoinKit
+import ERC20Kit
+import EthereumKit
 import XCTest
 
 class AssetAddressFactoryTests: XCTestCase {
 
     func testBitcoinAddressCorrectlyConstructed() {
         let address = AssetAddressFactory.create(fromAddressString: "test", assetType: .bitcoin)
-        XCTAssertTrue(address is BitcoinAddress)
+        XCTAssertTrue(address is BitcoinAssetAddress)
     }
 
     func testEtherAddressCorrectlyConstructed() {
@@ -25,6 +26,6 @@ class AssetAddressFactoryTests: XCTestCase {
 
     func testBitcoinCashAddressCorrectlyConstructed() {
         let address = AssetAddressFactory.create(fromAddressString: "test", assetType: .bitcoinCash)
-        XCTAssertTrue(address is BitcoinCashAddress)
+        XCTAssertTrue(address is BitcoinCashAssetAddress)
     }
 }

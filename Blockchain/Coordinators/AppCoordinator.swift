@@ -280,15 +280,14 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
 
             let wallet = strongSelf.walletManager.wallet
 
-            guard !BlockchainSettings.App.shared.hideTransferAllFundsAlert &&
-                strongSelf.accountsAndAddressesNavigationController.viewControllers.count == 1 &&
+            guard strongSelf.accountsAndAddressesNavigationController.viewControllers.count == 1 &&
                 wallet.didUpgradeToHd() &&
                 wallet.getTotalBalanceForSpendableActiveLegacyAddresses() >= wallet.dust() &&
                 strongSelf.accountsAndAddressesNavigationController.assetSelectorView().selectedAsset == .bitcoin else {
                     return
             }
 
-            strongSelf.accountsAndAddressesNavigationController.alertUser(toTransferAllFunds: false)
+            strongSelf.accountsAndAddressesNavigationController.alertUserToTransferAllFunds()
         }
     }
 

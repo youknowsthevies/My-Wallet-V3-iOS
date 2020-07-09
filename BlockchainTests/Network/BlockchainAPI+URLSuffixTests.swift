@@ -7,6 +7,7 @@
 //
 
 @testable import Blockchain
+import BitcoinKit
 import NetworkKit
 import PlatformKit
 import XCTest
@@ -24,34 +25,18 @@ class BlockchainAPIURLSuffixTests: XCTestCase {
     // MARK: - Bitcoin
 
     func testSuffixURLWithValidBitcoinAddress() {
-        let btcAddress = BitcoinAddress(string: "1W3hBBAnECvpmpFXcBrWoBXXihJAEkTmA")
+        let btcAddress = BitcoinAssetAddress(publicKey: "1W3hBBAnECvpmpFXcBrWoBXXihJAEkTmA")
         let url = BlockchainAPI.shared.assetInfoURL(for: btcAddress)
-        let expected = "https://blockchain.info/address/\(btcAddress.description)?format=json"
+        let expected = "https://blockchain.info/address/\(btcAddress.publicKey)?format=json"
         XCTAssertNotNil(url, "Expected the url to be \(expected), but got nil.")
     }
-
-    // TODO: enable test when address validation is implemented in BitcoinAddress struct.
-
-//    func testSuffixURLWithInvalidBitcoinAddress() {
-//        let invalidBtcAddress = BitcoinAddress(string: "12345")
-//        let url = BlockchainAPI.shared.assetInfoURL(for: invalidBtcAddress!)
-//        XCTAssertNil(url, "Expected the url to be nil due to an invalid address.")
-//    }
 
     // MARK: - Bitcoin Cash
 
     func testSuffixURLWithValidBitcoinCashAddress() {
-        let bchAddress = BitcoinCashAddress(string: "qqzhunu9f7p39e8kgchr628z9wsdxq0c5ua3yf4kzr")
+        let bchAddress = BitcoinCashAssetAddress(publicKey: "qqzhunu9f7p39e8kgchr628z9wsdxq0c5ua3yf4kzr")
         let url = BlockchainAPI.shared.assetInfoURL(for: bchAddress)
-        let expected = "https://api.blockchain.info/bch/multiaddr?active=\(bchAddress.description)"
+        let expected = "https://api.blockchain.info/bch/multiaddr?active=\(bchAddress.publicKey)"
         XCTAssertNotNil(url, "Expected the url to be \(expected), but got nil.")
     }
-
-    // TODO: enable test when address validation is implemented in BitcoinCashAddress struct.
-
-//    func testSuffixURLWithInvalidBitcoinCashAddress() {
-//        let invalidBchAddress = BitcoinCashAddress(string: "abc")
-//        let url = BlockchainAPI.shared.assetInfoURL(for: invalidBchAddress!)
-//        XCTAssertNil(url, "Expected the url to be nil due to an invalid address.")
-//    }
 }

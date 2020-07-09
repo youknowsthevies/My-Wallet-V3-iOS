@@ -20,9 +20,9 @@ extension BlockchainAPI {
     func assetInfoURL(for assetAddress: AssetAddress) -> String? {
         switch assetAddress.cryptoCurrency {
         case .bitcoin:
-            return "\(walletUrl)/address/\(assetAddress.address)?format=json"
+            return "\(walletUrl)/address/\(assetAddress.publicKey)?format=json"
         case .bitcoinCash:
-            return "\(walletUrl)/bch/multiaddr?active=\(assetAddress.address)"
+            return "\(walletUrl)/bch/multiaddr?active=\(assetAddress.publicKey)"
         default:
             return nil
         }

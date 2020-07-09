@@ -10,4 +10,5 @@ import Foundation
 
 public protocol AssetAddress {
     var publicKey: String { get }
+    var cryptoCurrency: CryptoCurrency { get }
 }

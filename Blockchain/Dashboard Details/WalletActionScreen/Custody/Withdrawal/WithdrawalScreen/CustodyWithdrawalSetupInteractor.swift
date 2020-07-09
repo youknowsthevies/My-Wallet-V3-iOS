@@ -45,7 +45,10 @@ final class CustodyWithdrawalSetupInteractor {
          accountRepository: AssetAccountRepositoryAPI) {
         let accountAddress: Single<String> = accountRepository
             .defaultAccount(for: currency)
-            .map { $0?.address.address ?? "" }
+            .map { $0.address.publicKey }
+            .catchError { error -> Single<String> in
+                fatalError("No \(currency.code) address, error: \(error)")
+            }
         
         Observable
             .combineLatest(

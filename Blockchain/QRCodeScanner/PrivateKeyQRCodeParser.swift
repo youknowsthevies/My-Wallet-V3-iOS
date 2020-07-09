@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import BitcoinKit
 import PlatformKit
 import PlatformUIKit
 
@@ -36,16 +36,13 @@ final class PrivateKeyQRCodeParser: QRCodeScannerParsing {
     
     private let walletManager: WalletManager
     private let loadingViewPresenter: LoadingViewPresenting
-    private let acceptPublicKeys: Bool
     private let assetAddress: AssetAddress?
     
     init(walletManager: WalletManager = .shared,
          loadingViewPresenter: LoadingViewPresenting,
-         acceptPublicKeys: Bool,
          assetAddress: AssetAddress?) {
         self.walletManager = walletManager
         self.loadingViewPresenter = loadingViewPresenter
-        self.acceptPublicKeys = acceptPublicKeys
         self.assetAddress = assetAddress
     }
     
@@ -70,19 +67,7 @@ final class PrivateKeyQRCodeParser: QRCodeScannerParsing {
         //: Check if the scanned key is a private key, otherwise try public key if accepted
         guard let format = walletManager.wallet.detectPrivateKeyFormat(scannedKey), format.count > 0 else {
             loadingViewPresenter.hide()
-            if acceptPublicKeys {
-                let address = BitcoinAddress(string: scannedKey)
-                let validator = AddressValidator(context: WalletManager.shared.wallet.context)
-                guard validator.validate(bitcoinAddress: address) else {
-                    completion?(.failure(.unknownKeyFormat))
-                    return
-                }
-                walletManager.askUserToAddWatchOnlyAddress(address) { [weak self] in
-                    completion?(.success(PrivateKey(scannedKey: scannedKey, assetAddress: self?.assetAddress)))
-                }
-            } else {
-                completion?(.failure(.unsupportedPrivateKey))
-            }
+            completion?(.failure(.unsupportedPrivateKey))
             return
         }
         //: Pass valid private key back via success handler

@@ -580,7 +580,7 @@ extension StellarAccount {
     static func empty() -> StellarAccount {
         let assetAccount = AssetAccount(
             index: 0,
-            address: StellarAddress(string: ""),
+            address: StellarAssetAddress(publicKey: ""),
             balance: CryptoValue.lumensZero,
             name: ""
         )

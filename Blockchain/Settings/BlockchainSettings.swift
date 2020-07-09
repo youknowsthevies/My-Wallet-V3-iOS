@@ -254,15 +254,6 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        @objc var hideTransferAllFundsAlert: Bool {
-            get {
-                defaults.bool(forKey: UserDefaults.Keys.hideTransferAllFundsAlert.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.hideTransferAllFundsAlert.rawValue)
-            }
-        }
-
         /// Ether address to be used for swipe to receive
         @objc var swipeAddressForEther: String? {
             get {

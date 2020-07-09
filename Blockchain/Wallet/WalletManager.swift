@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import BitcoinKit
 import JavaScriptCore
 import PlatformKit
 import RxCocoa
@@ -48,7 +48,6 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI {
     @objc weak var partnerExchangeIntermediateDelegate: WalletExchangeIntermediateDelegate?
     @objc weak var transactionDelegate: WalletTransactionDelegate?
     @objc weak var transferAllDelegate: WalletTransferAllDelegate?
-    @objc weak var watchOnlyDelegate: WalletWatchOnlyDelegate?
     @objc weak var upgradeWalletDelegate: WalletUpgradeDelegate?
     weak var swipeAddressDelegate: WalletSwipeAddressDelegate?
     weak var keyImportDelegate: WalletKeyImportDelegate?
@@ -449,13 +448,6 @@ extension WalletManager: WalletDelegate {
         }
     }
 
-    // MARK: - Watch Only Send
-    func sendFromWatchOnlyAddress() {
-        DispatchQueue.main.async { [unowned self] in
-            self.watchOnlyDelegate?.sendFromWatchOnlyAddress()
-        }
-    }
-
     // MARK: - Transaction
 
     func didPushTransaction() {
@@ -519,21 +511,6 @@ extension WalletManager: WalletDelegate {
         }
     }
 
-    // MARK: - Key Importing
-
-    func askUserToAddWatchOnlyAddress(_ address: AssetAddress, then: @escaping () -> Void) {
-        DispatchQueue.main.async { [unowned self] in
-            self.keyImportDelegate?.askUserToAddWatchOnlyAddress(address, then: then)
-        }
-    }
-
-    @objc func scanPrivateKeyForWatchOnlyAddress(_ address: String) {
-        let address = BitcoinAddress(string: address)
-        DispatchQueue.main.async { [unowned self] in
-            self.keyImportDelegate?.scanPrivateKeyForWatchOnlyAddress(address)
-        }
-    }
-
     // MARK: - Second Password
     @objc func getSecondPassword(withSuccess success: WalletSuccessCallback, dismiss: WalletDismissCallback) {
         secondPasswordDelegate?.getSecondPassword(success: success, dismiss: dismiss)
@@ -541,6 +518,20 @@ extension WalletManager: WalletDelegate {
 
     @objc func getPrivateKeyPassword(withSuccess success: WalletSuccessCallback) {
         secondPasswordDelegate?.getPrivateKeyPassword(success: success)
+    }
+    
+    // MARK: - Key Importing
+    func askUserToAddWatchOnlyAddress(_ address: AssetAddress, then: @escaping () -> Void) {
+        DispatchQueue.main.async { [unowned self] in
+            self.keyImportDelegate?.askUserToAddWatchOnlyAddress(address, then: then)
+        }
+    }
+
+    @objc func scanPrivateKeyForWatchOnlyAddress(_ address: String) {
+        let address = BitcoinAssetAddress(publicKey: address)
+        DispatchQueue.main.async { [unowned self] in
+            self.keyImportDelegate?.scanPrivateKeyForWatchOnlyAddress(address)
+        }
     }
 
     // MARK: - Upgrade

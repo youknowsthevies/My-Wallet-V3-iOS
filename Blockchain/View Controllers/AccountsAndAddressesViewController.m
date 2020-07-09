@@ -180,7 +180,7 @@
         [self importAddress];
     } else {
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:BC_STRING_NEW_ADDRESS message:nil preferredStyle:UIAlertControllerStyleAlert];
-        
+
         UIAlertAction *generateNewAddressAction = [UIAlertAction actionWithTitle:BC_STRING_NEW_ADDRESS_CREATE_NEW style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             [self generateNewAddress];
         }];
@@ -189,11 +189,11 @@
         }];
         UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:BC_STRING_CANCEL style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
         }];
-        
+
         [alertController addAction:generateNewAddressAction];
         [alertController addAction:importAddressAction];
         [alertController addAction:cancelAction];
-        
+
         [self presentViewController:alertController animated:YES completion:^{
             [[NSNotificationCenter defaultCenter] addObserver:alertController
                                                      selector:@selector(autoDismiss)
@@ -230,6 +230,13 @@
                                                   object:nil];
 }
 
+#pragma mark - LegacyPrivateKeyDelegate
+
+- (void)didFinishScanning:(NSString *)privateKey {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(promptForLabelAfterScan) name:[ConstantsObjcBridge notificationKeyBackupSuccess] object:nil];
+    [WalletManager.sharedInstance.wallet addKey:privateKey];
+}
+
 - (void)importAddress
 {
     if (!Reachability.hasInternetConnection) {
@@ -240,16 +247,7 @@
     [[KeyImportCoordinator sharedInstance] startWith:self
                                                   in:self
                                            assetType:self.assetType
-                                    acceptPublicKeys:YES
-                                         loadingText:[LocalizationConstantsObjcBridge loadingImportKey]
-                                        assetAddress:nil];
-}
-
-#pragma mark - LegacyPrivateKeyDelegate
-
-- (void)didFinishScanning:(NSString *)privateKey {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(promptForLabelAfterScan) name:[ConstantsObjcBridge notificationKeyBackupSuccess] object:nil];
-    [WalletManager.sharedInstance.wallet addKey:privateKey];
+                                         loadingText:[LocalizationConstantsObjcBridge loadingImportKey]];
 }
 
 - (void)promptForLabelAfterScan

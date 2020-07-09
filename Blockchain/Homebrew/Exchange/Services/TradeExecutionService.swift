@@ -60,6 +60,10 @@ class TradeExecutionService: TradeExecutionAPI {
         }
     }
     
+    enum TradeExecutionServiceError: Error {
+        case emptyReceiveAddress
+    }
+    
     private struct PathComponents {
         let components: [String]
         
@@ -169,8 +173,8 @@ class TradeExecutionService: TradeExecutionAPI {
             Logger.shared.error("Invalid pair returned from server: \(conversion.quote.pair)")
             return
         }
-        guard pair.from == from.address.cryptoCurrency,
-            pair.to == to.address.cryptoCurrency else {
+        guard pair.from == from.balance.currencyType,
+            pair.to == to.balance.currencyType else {
                 error(LocalizationConstants.Swap.tradeExecutionError)
                 Logger.shared.error("Asset types don't match.")
                 return
@@ -178,7 +182,7 @@ class TradeExecutionService: TradeExecutionAPI {
         // This is not the real 'to' address because an order has not been submitted yet
         // but this placeholder is needed to build the payment so that
         // the fees can be returned and displayed by the view.
-        let placeholderAddress = from.address.address
+        let placeholderAddress = from.address.publicKey
         let currencyRatio = conversion.quote.currencyRatio
         let orderTransactionLegacy = OrderTransactionLegacy(
             legacyAssetType: pair.from.legacy,
@@ -586,7 +590,7 @@ fileprivate extension TradeExecutionService {
         let refund = getReceiveAddress(for: fromAccount.index, assetType: fromAccount.address.cryptoCurrency)
         let destination = getReceiveAddress(for: toAccount.index, assetType: toAccount.address.cryptoCurrency)
         
-        Maybe.zip(refund, destination)
+        Single.zip(refund, destination)
             .subscribeOn(MainScheduler.asyncInstance)
             .flatMap(weak: self, { (self, tuple) -> Single<Order> in
                 let refundAddress = tuple.0
@@ -785,28 +789,19 @@ extension TradeExecutionService {
 }
 
 private extension TradeExecutionService {
-    func getReceiveAddress(for account: Int32, assetType: CryptoCurrency) -> Maybe<String> {
+    func getReceiveAddress(for account: Int32, assetType: CryptoCurrency) -> Single<String> {
         if assetType == .stellar {
             return  assetAccountRepository
                 .defaultAccount(for: .stellar)
-                .asMaybe()
-                .flatMap { (account) -> Maybe<String> in
-                    if let address = account?.address.address {
-                        return Maybe.just(address)
-                    }
-                    return Maybe.empty()
-                }
+                .map { $0.address.publicKey }
         }
         if assetType == .pax {
             return dependencies.erc20AccountRepository.assetAccountDetails
-                .asMaybe()
-                .flatMap { details -> Maybe<String> in
-                    Maybe.just(details.account.accountAddress)
-                }
+                .map { $0.account.accountAddress }
         }
         guard let receiveAddress = wallet.getReceiveAddress(forAccount: account, assetType: assetType.legacy) else {
-            return Maybe.empty()
+            return Single.error(TradeExecutionServiceError.emptyReceiveAddress)
         }
-        return Maybe.just(receiveAddress)
+        return Single.just(receiveAddress)
     }
 }

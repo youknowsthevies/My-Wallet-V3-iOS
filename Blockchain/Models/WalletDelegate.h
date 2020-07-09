@@ -42,7 +42,6 @@
 - (void)resendTwoFactorSuccess;
 - (void)resendTwoFactorError:(NSString *)error;
 - (void)returnToAddressesScreen;
-- (void)sendFromWatchOnlyAddress;
 - (void)estimateTransactionSize:(uint64_t)size;
 - (void)didCheckForOverSpending:(NSNumber *)amount fee:(NSNumber *)fee;
 - (void)didGetMaxFee:(NSNumber *)fee amount:(NSNumber *)amount dust:(NSNumber *_Nullable)dust willConfirm:(BOOL)willConfirm;

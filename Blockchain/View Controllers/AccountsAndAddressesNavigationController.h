@@ -15,6 +15,6 @@
 - (AssetSelectorView *)assetSelectorView;
 - (void)didGenerateNewAddress;
 - (void)reload;
-- (void)alertUserToTransferAllFunds:(BOOL)automaticallyShown;
+- (void)alertUserToTransferAllFunds;
 
 @end

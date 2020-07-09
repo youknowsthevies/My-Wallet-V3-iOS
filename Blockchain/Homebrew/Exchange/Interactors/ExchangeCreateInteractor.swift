@@ -258,7 +258,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
             secondary: secondaryResult
         )
         
-        let address = model.marketPair.fromAccount.address.address
+        let address = model.marketPair.fromAccount.address.publicKey
         let type = model.marketPair.pair.from
         if let key = accountBalanceDiposableKey {
             disposables.remove(for: key)
@@ -275,7 +275,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
                 guard let self = self else { return Observable.empty() }
                 let accounts = accountsAndFees.0
                 let cryptoFees = accountsAndFees.1
-                guard let account = accounts.filter({ $0.address.address == address }).first else { return Observable.empty() }
+                guard let account = accounts.filter({ $0.address.publicKey == address }).first else { return Observable.empty() }
                 
                 let fiatBalance = self.markets.fiatBalance(forCryptoValue: account.balance, fiatCurrencyCode: model.fiatCurrencyCode)
                 let fiatFee = self.markets.fiatBalance(forCryptoValue: cryptoFees, fiatCurrencyCode: model.fiatCurrencyCode)
@@ -490,9 +490,9 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
                 guard let self = self else { return }
                 let model = payload.0
                 let accounts = payload.1
-                let address = model.marketPair.fromAccount.address.address
+                let address = model.marketPair.fromAccount.address.publicKey
                 let fromAssetType = model.marketPair.pair.from
-                guard let account = accounts.first(where: { $0.address.address == address }) else { return }
+                guard let account = accounts.first(where: { $0.address.publicKey == address }) else { return }
                 
                 if case let .invalid(validationError) = payload.6 {
                     if let value = validationError as? StellarFundsError {

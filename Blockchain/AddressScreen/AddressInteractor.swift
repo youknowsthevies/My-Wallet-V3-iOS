@@ -113,7 +113,7 @@ final class AddressInteractor: AddressInteracting {
             }
             
             // Get a swipe to receive address
-            guard let address = self.addressFetcher.addresses(by: self.addressType, asset: self.asset).first?.address else {
+            guard let address = self.addressFetcher.addresses(by: self.addressType, asset: self.asset).first?.publicKey else {
                 let error = AddressFetchingError.absent
                 self.recorder.error(error)
                 single(.error(error))

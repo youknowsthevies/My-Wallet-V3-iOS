@@ -9,7 +9,6 @@
 import BigInt
 import ERC20Kit
 import EthereumKit
-import Foundation
 import PlatformKit
 import RxCocoa
 import RxSwift
@@ -22,6 +21,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
 
     enum AssetAccountRepositoryError: Error {
         case unknown
+        case noDefaultAccount
     }
 
     static let shared: AssetAccountRepositoryAPI = AssetAccountRepository()
@@ -95,7 +95,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     func nameOfAccountContaining(address: String, currencyType: CryptoCurrency) -> Single<String> {
         accounts
             .flatMap { output -> Single<String> in
-                guard let result = output.first(where: { $0.address.address == address && $0.balance.currencyType == currencyType }) else {
+                guard let result = output.first(where: { $0.address.publicKey == address && $0.balance.currencyType == currencyType }) else {
                     return .error(AssetAccountRepositoryError.unknown)
                 }
                 return .just(result.name)
@@ -120,22 +120,36 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         }
     }
 
-    func defaultAccount(for assetType: CryptoCurrency) -> Single<AssetAccount?> {
+    func defaultAccount(for assetType: CryptoCurrency) -> Single<AssetAccount> {
         switch assetType {
         case .algorand:
-            return .just(nil)
+            return Single.error(AssetAccountRepositoryError.noDefaultAccount)
         case .ethereum:
-            return accounts(for: assetType, fromCache: false).map { $0.first }
+            return accounts(for: assetType, fromCache: false)
+                .flatMap { accounts in
+                    guard let primaryAccount = accounts.first else {
+                        return Single.error(AssetAccountRepositoryError.noDefaultAccount)
+                    }
+                    return Single.just(primaryAccount)
+                }
         case .stellar:
             let account: AssetAccount? = stellarAccountService.currentAccount?.assetAccount
-            return .just(account)
+            guard let defaultAccount = account else { return Single.error(AssetAccountRepositoryError.noDefaultAccount) }
+            return Single.just(defaultAccount)
         case .pax:
-            return accounts(for: .pax, fromCache: false).map { $0.first }
+            return accounts(for: .pax, fromCache: false)
+                .flatMap { accounts in
+                    guard let primaryAccount = accounts.first else {
+                        return Single.error(AssetAccountRepositoryError.noDefaultAccount)
+                    }
+                    return Single.just(primaryAccount)
+                }
         case .bitcoin,
              .bitcoinCash:
             let index = wallet.getDefaultAccountIndex(for: assetType.legacy)
             let account: AssetAccount? = AssetAccount.create(assetType: assetType, index: index, wallet: wallet)
-            return .just(account)
+            guard let defaultAccount = account else { return Single.error(AssetAccountRepositoryError.noDefaultAccount) }
+            return .just(defaultAccount)
         }
     }
 
