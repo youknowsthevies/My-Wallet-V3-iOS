@@ -26,25 +26,33 @@ public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
     public let exchange: PairExchangeServiceAPI
     
     public var calculationState: Observable<FiatCryptoPairCalculationState> {
-        calculationStateRelay.asObservable()
+        _ = setup
+        return calculationStateRelay.asObservable()
     }
+    
+    private lazy var setup: Void = {
+        exchange
+            .fiatPrice
+            .map(weak: self) { (self, fiatPrice) -> FiatCryptoPair in
+                FiatCryptoPair(crypto: self.cryptoValue, exchangeRate: fiatPrice)
+            }
+            .map { .value($0) }
+            .startWith(.calculating)
+            .catchErrorJustReturn(.calculating)
+            .bindAndCatch(to: calculationStateRelay)
+            .disposed(by: disposeBag)
+    }()
     
     // MARK: - Private Properties
     
     private let calculationStateRelay = BehaviorRelay<FiatCryptoPairCalculationState>(value: .calculating)
     private let disposeBag = DisposeBag()
     
+    private let cryptoValue: CryptoValue
+    
     public init(exchange: PairExchangeServiceAPI, cryptoValue: CryptoValue) {
         self.exchange = exchange
-        
-        exchange
-            .fiatPrice
-            .map { .init(crypto: cryptoValue, exchangeRate: $0) }
-            .map { .value($0) }
-            .startWith(.calculating)
-            .catchErrorJustReturn(.calculating)
-            .bindAndCatch(to: calculationStateRelay)
-            .disposed(by: disposeBag)
+        self.cryptoValue = cryptoValue
     }
     
     public func refresh() {

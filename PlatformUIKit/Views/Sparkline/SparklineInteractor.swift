@@ -18,16 +18,11 @@ public class SparklineInteractor: SparklineInteracting {
     public let cryptoCurrency: CryptoCurrency
     
     public var calculationState: Observable<SparklineCalculationState> {
-        calculationStateRelay.asObservable()
+        _ = setup
+        return calculationStateRelay.asObservable()
     }
     
-    private let priceService: HistoricalFiatPriceServiceAPI
-    private let calculationStateRelay = BehaviorRelay<SparklineCalculationState>(value: .invalid(.empty))
-    private let disposeBag = DisposeBag()
-    
-    public init(priceService: HistoricalFiatPriceServiceAPI, cryptoCurrency: CryptoCurrency) {
-        self.cryptoCurrency = cryptoCurrency
-        self.priceService = priceService
+    private lazy var setup: Void = {
         priceService.calculationState
             .map { state -> SparklineCalculationState in
                 switch state {
@@ -41,5 +36,15 @@ public class SparklineInteractor: SparklineInteracting {
             .catchErrorJustReturn(.calculating)
             .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
+    }()
+    
+    private let priceService: HistoricalFiatPriceServiceAPI
+    private let calculationStateRelay = BehaviorRelay<SparklineCalculationState>(value: .invalid(.empty))
+    private let disposeBag = DisposeBag()
+    
+    public init(priceService: HistoricalFiatPriceServiceAPI, cryptoCurrency: CryptoCurrency) {
+        self.cryptoCurrency = cryptoCurrency
+        self.priceService = priceService
+
     }
 }

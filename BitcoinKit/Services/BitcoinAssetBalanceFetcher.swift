@@ -31,7 +31,9 @@ public final class BitcoinAssetBalanceFetcher: AccountBalanceFetching {
     }
     
     public var balanceObservable: Observable<CryptoValue> {
-        balanceRelay.asObservable()
+        _ = setup
+        return balanceRelay
+            .asObservable()
     }
     
     public let balanceFetchTriggerRelay = PublishRelay<Void>()
@@ -42,6 +44,23 @@ public final class BitcoinAssetBalanceFetcher: AccountBalanceFetching {
         repository.activeAccounts
             .map { $0.map(\.publicKey) }
     }
+    
+    private lazy var setup: Void = {
+        balanceFetchTriggerRelay
+            .throttle(
+                .milliseconds(100),
+                scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
+            )
+            .flatMapLatest(weak: self) { (self, _) in
+                self.balance
+                    .asObservable()
+                    .materialize()
+                    .filter { !$0.isStopEvent }
+                    .dematerialize()
+            }
+            .bindAndCatch(to: balanceRelay)
+            .disposed(by: disposeBag)
+    }()
     
     private let balanceRelay = PublishRelay<CryptoValue>()
     private let disposeBag = DisposeBag()
@@ -65,21 +84,6 @@ public final class BitcoinAssetBalanceFetcher: AccountBalanceFetching {
         repository = BitcoinWalletAccountRepository(
             with: bridge
         )
-        
-        balanceFetchTriggerRelay
-            .throttle(
-                .milliseconds(100),
-                scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
-            )
-            .flatMapLatest(weak: self) { (self, _) in
-                self.balance
-                    .asObservable()
-                    .materialize()
-                    .filter { !$0.isStopEvent }
-                    .dematerialize()
-            }
-            .bindAndCatch(to: balanceRelay)
-            .disposed(by: disposeBag)
     }
 }
 
