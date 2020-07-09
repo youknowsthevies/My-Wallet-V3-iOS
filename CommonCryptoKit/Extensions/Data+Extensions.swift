@@ -36,3 +36,9 @@ extension Data {
         self = data
     }
 }
+
+extension Data {
+    public var bytes: Array<UInt8> {
+      Array(self)
+    }
+}
