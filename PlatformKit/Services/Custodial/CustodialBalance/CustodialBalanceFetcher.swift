@@ -27,20 +27,40 @@ public final class CustodialCryptoBalanceFetcher: CustodialAccountBalanceFetchin
     }
      
     public var balanceObservable: Observable<CryptoValue> {
+        _ = setup
         let currencyType = self.currencyType
         return balanceRelay
             .map { $0 ?? CryptoValue.zero(assetType: currencyType) }
     }
 
     public var isFunded: Observable<Bool> {
-        balanceRelay.map { $0 != nil }
+        _ = setup
+        return balanceRelay.map { $0 != nil }
     }
 
     public let balanceFetchTriggerRelay = PublishRelay<Void>()
 
     // MARK: - Private Properties
+    
+    private lazy var setup: Void = {
+        balanceFetchTriggerRelay
+            .throttle(
+                .milliseconds(100),
+                latest: false,
+                scheduler: scheduler
+            )
+            .flatMapLatest(weak: self) { (self, _) -> Observable<CryptoValue?> in
+                self.fetch(self.currencyType)
+                    .catchErrorJustReturn(nil)
+                    .asObservable()
+            }
+            .bindAndCatch(to: balanceRelay)
+            .disposed(by: disposeBag)
+    }()
 
-    private let balanceRelay: BehaviorRelay<CryptoValue?>
+    private let fetch: Fetch
+    private let scheduler: SchedulerType
+    private let balanceRelay = BehaviorRelay<CryptoValue?>(value: nil)
     private let currencyType: CryptoCurrency
     private let disposeBag = DisposeBag()
     
@@ -50,24 +70,10 @@ public final class CustodialCryptoBalanceFetcher: CustodialAccountBalanceFetchin
          currencyType: CryptoCurrency,
          fetch: @escaping Fetch,
          scheduler: SchedulerType) {
-                
-        self.balanceRelay = BehaviorRelay(value: nil)
-        self.balanceType = .custodial(custodialType)
         self.currencyType = currencyType
-         
-        balanceFetchTriggerRelay
-            .throttle(
-                .milliseconds(100),
-                latest: false,
-                scheduler: scheduler
-            )
-            .flatMapLatest {
-                fetch(currencyType)
-                    .catchErrorJustReturn(nil)
-                    .asObservable()
-            }
-            .bindAndCatch(to: balanceRelay)
-            .disposed(by: disposeBag)
+        self.balanceType = .custodial(custodialType)
+        self.fetch = fetch
+        self.scheduler = scheduler
     }
 }
 

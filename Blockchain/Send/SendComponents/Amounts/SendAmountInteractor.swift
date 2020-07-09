@@ -20,13 +20,15 @@ final class SendAmountInteractor: SendAmountInteracting {
     /// The amount calculation state.
     /// This state may being indicating of `.calculating`, `.invalid`, `.value`
     var calculationState: Observable<FiatCryptoPairCalculationState> {
-        calculationStateRelay.asObservable()
+        _ = setup
+        return calculationStateRelay.asObservable()
     }
     
     /// Streams `.withinSpendableBalance` if the amount + fee is within the spendable balance.
     /// Streams `.aboveSpendableBalance` if the amount + fee is above the spendable balance.
     /// Always starts with `.withinSpendableBalance`.
     var amountBalanceRatio: Observable<AmountBalanceRatio> {
+        _ = setup
         let amount = calculationState
             .map { [weak self] state -> CryptoValue? in
                 guard let self = self else { return nil }
@@ -50,6 +52,7 @@ final class SendAmountInteractor: SendAmountInteracting {
 
     /// Streams the total of amount + fee represented as both fiat and crypto.
     var total: Observable<FiatCryptoPair> {
+        _ = setup
         let amount = calculationState
             .compactMap { $0.value }
         let fee = feeInteractor.calculationState
@@ -66,6 +69,11 @@ final class SendAmountInteractor: SendAmountInteracting {
     let asset: CryptoCurrency
     let spendableBalanceInteractor: SendSpendableBalanceInteracting
 
+    private lazy var setup: Void = {
+        setupFiatUpdates()
+        setupCryptoUpdates()
+    }()
+    
     private let feeInteractor: SendFeeInteracting
     private let exchangeService: PairExchangeServiceAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
@@ -90,9 +98,6 @@ final class SendAmountInteractor: SendAmountInteracting {
         self.feeInteractor = feeInteractor
         self.exchangeService = exchangeService
         self.fiatCurrencyService = fiatCurrencyService
-        
-        setupFiatUpdates()
-        setupCryptoUpdates()
     }
     
     private func setupCryptoUpdates() {

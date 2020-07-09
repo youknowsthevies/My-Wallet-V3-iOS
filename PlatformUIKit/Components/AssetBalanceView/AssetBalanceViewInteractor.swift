@@ -17,17 +17,13 @@ public final class AssetBalanceViewInteractor: AssetBalanceViewInteracting {
     // MARK: - Exposed Properties
     
     public var state: Observable<InteractionState> {
-        stateRelay.asObservable()
+        _ = setup
+        return stateRelay.asObservable()
     }
             
     // MARK: - Private Accessors
     
-    private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
-    private let disposeBag = DisposeBag()
-    
-    // MARK: - Setup
-    
-    public init(assetBalanceFetching: AssetBalanceFetching) {
+    private lazy var setup: Void = {
         assetBalanceFetching.calculationState
             .map { state -> InteractionState in
                 switch state {
@@ -44,6 +40,17 @@ public final class AssetBalanceViewInteractor: AssetBalanceViewInteracting {
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
+    }()
+    
+    private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
+    private let disposeBag = DisposeBag()
+    
+    private let assetBalanceFetching: AssetBalanceFetching
+    
+    // MARK: - Setup
+    
+    public init(assetBalanceFetching: AssetBalanceFetching) {
+        self.assetBalanceFetching = assetBalanceFetching
     }
 }
 
@@ -54,36 +61,43 @@ public final class AssetBalanceTypeViewInteractor: AssetBalanceTypeViewInteracti
     // MARK: - Exposed Properties
     
     public let balanceType: BalanceType
+    
     public var state: Observable<InteractionState> {
-        stateRelay.asObservable()
+        _ = setup
+        return stateRelay.asObservable()
     }
             
     // MARK: - Private Accessors
     
-    private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
-    private let disposeBag = DisposeBag()
-    
-    // MARK: - Setup
-    
-    public init(assetBalanceFetching: AssetBalanceFetching, balanceType: BalanceType) {
-        self.balanceType = balanceType
-        
+    private lazy var setup: Void = {
         assetBalanceFetching.calculationState
-            .map { state -> InteractionState in
+            .map(weak: self) { (self, state) -> InteractionState in
                 switch state {
                 case .calculating, .invalid:
                     return .loading
                 case .value(let result):
                     return .loaded(
                         next: .init(
-                            fiatValue: result[balanceType].fiat,
-                            cryptoValue: result[balanceType].crypto
+                            fiatValue: result[self.balanceType].fiat,
+                            cryptoValue: result[self.balanceType].crypto
                         )
                     )
                 }
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
+    }()
+    
+    private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
+    private let disposeBag = DisposeBag()
+    
+    private let assetBalanceFetching: AssetBalanceFetching
+    
+    // MARK: - Setup
+    
+    public init(assetBalanceFetching: AssetBalanceFetching, balanceType: BalanceType) {
+        self.balanceType = balanceType
+        self.assetBalanceFetching = assetBalanceFetching
     }
 }
 

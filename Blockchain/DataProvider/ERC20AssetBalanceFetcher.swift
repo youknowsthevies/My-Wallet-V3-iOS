@@ -31,30 +31,15 @@ final class ERC20AssetBalanceFetcher: AccountBalanceFetching {
     }
 
     var balanceObservable: Observable<CryptoValue> {
-        balanceRelay.asObservable()
+        _ = setup
+        return balanceRelay.asObservable()
     }
 
     let balanceFetchTriggerRelay = PublishRelay<Void>()
     
     // MARK: - Private Properties
-
-    private let balanceRelay = PublishRelay<CryptoValue>()
-    private let disposeBag = DisposeBag()
-    private let assetAccountRepository: ERC20AssetAccountRepository<PaxToken>
-
-    private unowned let reactiveWallet: ReactiveWalletAPI
     
-    // MARK: - Setup
-
-    init(wallet: EthereumWalletBridgeAPI = WalletManager.shared.wallet.ethereum,
-         reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet) {
-
-        let service = ERC20AssetAccountDetailsService<PaxToken>(
-            with: wallet,
-            accountClient: ERC20AccountAPIClient<PaxToken>()
-        )
-        self.reactiveWallet = reactiveWallet
-        assetAccountRepository = ERC20AssetAccountRepository(service: service)
+    private lazy var setup: Void = {
         Observable
             .combineLatest(
                 reactiveWallet.waitUntilInitialized,
@@ -73,5 +58,24 @@ final class ERC20AssetBalanceFetcher: AccountBalanceFetching {
             }
             .bindAndCatch(to: balanceRelay)
             .disposed(by: disposeBag)
+    }()
+
+    private let balanceRelay = PublishRelay<CryptoValue>()
+    private let disposeBag = DisposeBag()
+    private let assetAccountRepository: ERC20AssetAccountRepository<PaxToken>
+
+    private unowned let reactiveWallet: ReactiveWalletAPI
+    
+    // MARK: - Setup
+
+    init(wallet: EthereumWalletBridgeAPI = WalletManager.shared.wallet.ethereum,
+         reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet) {
+
+        let service = ERC20AssetAccountDetailsService<PaxToken>(
+            with: wallet,
+            accountClient: ERC20AccountAPIClient<PaxToken>()
+        )
+        self.reactiveWallet = reactiveWallet
+        assetAccountRepository = ERC20AssetAccountRepository(service: service)
     }
 }

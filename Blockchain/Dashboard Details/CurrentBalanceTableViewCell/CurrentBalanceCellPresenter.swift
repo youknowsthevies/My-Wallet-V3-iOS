@@ -13,6 +13,8 @@ import RxSwift
 
 final class CurrentBalanceCellPresenter {
     
+    typealias DescriptionValue = () -> Observable<String>
+    
     private typealias LocalizedString = LocalizationConstants.DashboardDetails.BalanceCell
     
     var iconImageViewContent: Driver<ImageViewContent> {
@@ -30,7 +32,8 @@ final class CurrentBalanceCellPresenter {
     
     /// Returns the description of the balance
     var description: Driver<String> {
-        descriptionRelay.asDriver()
+        _ = setup
+        return descriptionRelay.asDriver()
     }
     
     var separatorVisibility: Driver<Visibility> {
@@ -48,17 +51,25 @@ final class CurrentBalanceCellPresenter {
         
     // MARK: - Private Properties
     
+    private lazy var setup: Void = {
+        descriptionValue()
+            .catchErrorJustReturn("")
+            .bindAndCatch(to: descriptionRelay)
+            .disposed(by: disposeBag)
+    }()
+    
     private let separatorVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let imageViewContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
     private let iconImageViewContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
     private let titleRelay = BehaviorRelay<String>(value: "")
     private let descriptionRelay = BehaviorRelay<String>(value: "")
     private let interactor: CurrentBalanceCellInteractor
+    private let descriptionValue: DescriptionValue
     
     private let disposeBag = DisposeBag()
     
     init(interactor: CurrentBalanceCellInteractor,
-         descriptionValue: () -> Observable<String>,
+         descriptionValue: @escaping DescriptionValue,
          currency: CryptoCurrency,
          alignment: UIStackView.Alignment,
          separatorVisibility: Visibility = .hidden,
@@ -75,6 +86,7 @@ final class CurrentBalanceCellPresenter {
             descriptors: descriptors
         )
         self.currency = currency
+        self.descriptionValue = descriptionValue
         imageViewContentRelay.accept(ImageViewContent(imageName: currency.logoImageName))
         switch interactor.balanceType {
         case .nonCustodial:
@@ -87,9 +99,5 @@ final class CurrentBalanceCellPresenter {
             iconImageViewContentRelay.accept(.empty)
             titleRelay.accept(LocalizedString.Title.savings)
         }
-        
-        descriptionValue()
-            .bindAndCatch(to: descriptionRelay)
-            .disposed(by: disposeBag)
     }
 }

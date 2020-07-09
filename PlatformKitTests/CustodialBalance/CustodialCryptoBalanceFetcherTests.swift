@@ -45,6 +45,9 @@ class CustodialCryptoBalanceFetcherTests: XCTestCase {
                 response: .init(available: "1", pending: "2")
             )
         )
+        
+        _ = sut.isFunded
+        
         let events = obervedIsFundedEvents(times: [20, 100, 140, 180])
         let expectedEvents: [Recorded<Event<Bool>>] = [
             .next(180, true)
@@ -59,6 +62,9 @@ class CustodialCryptoBalanceFetcherTests: XCTestCase {
                 response: .init(available: "0", pending: "0")
             )
         )
+        
+        _ = sut.isFunded
+        
         let events = obervedIsFundedEvents(times: [20, 30, 40])
         let expectedEvents: [Recorded<Event<Bool>>] = [
             .next(40, true)
@@ -73,6 +79,9 @@ class CustodialCryptoBalanceFetcherTests: XCTestCase {
                 response: .init(available: "1", pending: "2")
             )
         )
+        
+        _ = sut.isFunded
+        
         let events = obervedIsFundedEvents(times: [20, 30, 40])
         let expectedEvents: [Recorded<Event<Bool>>] = [
             .next(40, true)
@@ -82,6 +91,9 @@ class CustodialCryptoBalanceFetcherTests: XCTestCase {
     
     func testNilResponseIsFunded() {
         api.underlyingCustodialBalance = .absent
+        
+        _ = sut.isFunded
+        
         let events = obervedIsFundedEvents(times: [20, 30, 80])
         let expectedEvents: [Recorded<Event<Bool>>] = [
             .next(80, false)
@@ -93,7 +105,9 @@ class CustodialCryptoBalanceFetcherTests: XCTestCase {
 
     private func obervedIsFundedEvents(times: [Int])  -> [Recorded<Event<Bool>>] {
         let observer = scheduler.createObserver(Bool.self)
-                
+        
+        _ = sut.isFunded
+        
         scheduler
             .createHotObservable(times.map { .next($0, ()) })
             .bindAndCatch(to: sut.balanceFetchTriggerRelay)
@@ -112,6 +126,9 @@ class CustodialCryptoBalanceFetcherTests: XCTestCase {
         
     func testNilResponseBalance() {
         api.underlyingCustodialBalance = .absent
+        
+        _ = sut.balanceObservable
+        
         let events = obervedBalanceEvents(
             data: [
                 (20, .absent)
@@ -125,6 +142,9 @@ class CustodialCryptoBalanceFetcherTests: XCTestCase {
 
     func testZeroedResponse() {
         api.underlyingCustodialBalance = .absent
+        
+        _ = sut.balanceObservable
+        
         let events = obervedBalanceEvents(
             data: [
                 (20, .present(
@@ -144,6 +164,9 @@ class CustodialCryptoBalanceFetcherTests: XCTestCase {
 
     func testValidResponse() {
         api.underlyingCustodialBalance = .absent
+        
+        _ = sut.balanceObservable
+        
         let events = obervedBalanceEvents(
             data: [
                 (40, .present(

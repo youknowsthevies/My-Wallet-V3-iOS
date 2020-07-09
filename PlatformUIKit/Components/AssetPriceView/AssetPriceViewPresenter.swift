@@ -18,7 +18,8 @@ public final class AssetPriceViewPresenter {
     // MARK: - Exposed Properties
     
     var state: Observable<PresentationState> {
-        stateRelay
+        _ = setup
+        return stateRelay
             .observeOn(MainScheduler.instance)
     }
     
@@ -32,7 +33,20 @@ public final class AssetPriceViewPresenter {
     
     // MARK: - Private Accessors
     
-    private let alignmentRelay = BehaviorRelay<UIStackView.Alignment>(value: .fill)
+    private lazy var setup: Void = {
+        /// Map interaction state into presnetation state
+        /// and bind it to `stateRelay`
+        interactor.state
+            .map(weak: self) { (self, state) -> PresentationState in
+                PresentationState(with: state, descriptors: self.descriptors)
+            }
+            .bindAndCatch(to: stateRelay)
+            .disposed(by: disposeBag)
+    }()
+    
+    private let descriptors: DashboardAsset.Value.Presentation.AssetPrice.Descriptors
+    
+    private let alignmentRelay: BehaviorRelay<UIStackView.Alignment>
     private let stateRelay = BehaviorRelay<PresentationState>(value: .loading)
     private let disposeBag = DisposeBag()
     
@@ -42,13 +56,7 @@ public final class AssetPriceViewPresenter {
                 alignment: UIStackView.Alignment = .fill,
                 descriptors: DashboardAsset.Value.Presentation.AssetPrice.Descriptors) {
         self.interactor = interactor
-        self.alignmentRelay.accept(alignment)
-        
-        /// Map interaction state into presnetation state
-        /// and bind it to `stateRelay`
-        interactor.state
-            .map { .init(with: $0, descriptors: descriptors) }
-            .bindAndCatch(to: stateRelay)
-            .disposed(by: disposeBag)
+        self.descriptors = descriptors
+        self.alignmentRelay = BehaviorRelay<UIStackView.Alignment>(value: alignment)
     }
 }
