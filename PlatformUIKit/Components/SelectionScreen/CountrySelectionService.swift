@@ -13,7 +13,7 @@ import RxSwift
 public final class CountrySelectionService: SelectionServiceAPI {
     
     public var dataSource: Observable<[SelectionItemViewModel]> {
-        .just(Country.all.map { $0.selectionItem })
+        .just(Country.all.map { $0.selectionItem }.sorted() )
     }
     
     public let selectedDataRelay: BehaviorRelay<SelectionItemViewModel>

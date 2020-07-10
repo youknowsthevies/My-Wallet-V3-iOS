@@ -16,7 +16,8 @@ public final class SelectionScreenInteractor {
     
     private let interactorsRelay = BehaviorRelay<[SelectionItemViewInteractor]>(value: [])
     var interactors: Observable<[SelectionItemViewInteractor]> {
-        interactorsRelay.asObservable()
+        _ = setup
+        return interactorsRelay.asObservable()
     }
     
     public var selectedIdOnDismissal: Single<String> {
@@ -41,28 +42,26 @@ public final class SelectionScreenInteractor {
     // MARK: - Accessors
     
     private let disposeBag = DisposeBag()
-    
+
+    private lazy var setup: Void = {
+        service.dataSource
+                .map(weak: self) { (self, items) in
+                    items
+                        .map { item in
+                            SelectionItemViewInteractor(
+                                item: item,
+                                service: self.service
+                            )
+                        }
+                }
+                .bindAndCatch(to: interactorsRelay)
+                .disposed(by: disposeBag)
+    }()
+
     // MARK: - Setup
     
     public init(service: SelectionServiceAPI) {
         self.service = service
-        
-        let interactors = service.dataSource
-            .map { items in
-                items
-                    .sorted()
-                    .map { item in
-                        SelectionItemViewInteractor(
-                            item: item,
-                            service: service
-                        )
-                    }
-            }
-            .share(replay: 1)
-
-        interactors
-            .bindAndCatch(to: interactorsRelay)
-            .disposed(by: disposeBag)
     }
     
     func recordSelection() {

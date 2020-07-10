@@ -74,16 +74,16 @@ final class WalletPickerScreenInteractor {
     private var balanceCellInteractors: Observable<[WalletPickerCellInteractor]> {
         Observable
             .combineLatest(
-                providers[.ethereum]!.interactors,
                 providers[.bitcoin]!.interactors,
+                providers[.ethereum]!.interactors,
                 providers[.bitcoinCash]!.interactors,
-                providers[.pax]!.interactors,
                 providers[.stellar]!.interactors,
-                providers[.algorand]!.interactors
+                providers[.algorand]!.interactors,
+                providers[.pax]!.interactors
             )
             .map { arg in
-                let (ethereum, bitcoin, bitcoinCash, pax, stellar, algorand) = arg
-                return ethereum + bitcoin + bitcoinCash + pax + stellar + algorand
+                let (bitcoin, ethereum, bitcoinCash, stellar, algorand, pax) = arg
+                return bitcoin + ethereum + bitcoinCash + stellar + algorand + pax
             }
     }
     

@@ -33,9 +33,10 @@ public struct SupportedPairs: Equatable {
     /// Array of supported pairs
     public let pairs: [Pair]
     
-    /// Returns all supported unique alphabetically sorted crypto-currencies,
+    /// Array of supported unique crypto-currencies, sorted following `CryptoCurrency` default order.
     public var cryptoCurrencies: [CryptoCurrency] {
-        Array(cryptoCurrencySet).sorted { $0.name < $1.name }
+        let set = cryptoCurrencySet
+        return CryptoCurrency.allCases.filter { set.contains($0) }
     }
     
     var fiatCurrencySet: Set<FiatCurrency> {

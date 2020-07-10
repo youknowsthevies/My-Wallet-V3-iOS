@@ -17,7 +17,8 @@ extension Notification.Name {
 public final class FiatCurrencySelectionService: SelectionServiceAPI {
     
     public var dataSource: Observable<[SelectionItemViewModel]> {
-        provider.currencies.map { $0.map { $0.selectionItem } }
+        provider.currencies
+            .map { $0.map { $0.selectionItem }.sorted() }
     }
     
     public let selectedDataRelay: BehaviorRelay<SelectionItemViewModel>

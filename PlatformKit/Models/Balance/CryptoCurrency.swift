@@ -19,8 +19,8 @@ public enum CryptoCurrency: String, Codable, CaseIterable {
     case ethereum = "ETH"
     case bitcoinCash = "BCH"
     case stellar = "XLM"
-    case pax = "PAX"
     case algorand = "ALGO"
+    case pax = "PAX"
 
     /// Initialize with currency code: `BTC`, `ETH`, `BCH`, `XLM`, `PAX`, `ALGO`
     public init?(code: String) {
