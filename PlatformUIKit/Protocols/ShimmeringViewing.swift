@@ -31,14 +31,20 @@ public extension ShimmeringViewing where Self: UIView {
         layer.mask != nil
     }
     
-    /// Starts the shimmerring of the view's content
-    func startShimmering(dark: UIColor, light: UIColor) {
+    /// Starts the shimmerring of the view's content.
+    ///  This works by applying a `CAGradientLayer` mask to the receiving `UIView` layer.
+    /// - parameter color: The color of the central section of the shimmering effect, this will be set to this view `backgroundColor`.
+    /// - parameter alpha: The alpha value of the central section of the gradient mask that will be used.
+    func startShimmering(color: UIColor, alpha: CGFloat = 1) {
         stopShimmering()
-        backgroundColor = dark
+        backgroundColor = color
         let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [UIColor.clear.cgColor,
-                                light.cgColor,
-                                UIColor.clear.cgColor]
+        // Because `CAGradientLayer` will be used as a mask, only the alpha channel of its colors will be used.
+        gradientLayer.colors = [
+            UIColor.clear.cgColor,
+            UIColor(white: 0, alpha: alpha).cgColor,
+            UIColor.clear.cgColor
+        ]
         gradientLayer.locations = [0, 0.5, 1]
         gradientLayer.transform = CATransform3DMakeRotation(0.25 * .pi, 0, 0, 1)
         let animation = CABasicAnimation(keyPath: "transform.translation.x")
@@ -53,13 +59,13 @@ public extension ShimmeringViewing where Self: UIView {
         animation.duration = 3
         animation.repeatCount = .infinity
         gradientLayer.add(animation, forKey: "shimmering.x")
+        gradientLayer.frame = bounds
         layer.mask = gradientLayer
-        
-        layoutShimmeringFrameIfNeeded()
     }
     
     /// Stops the shimerring effect
     func stopShimmering() {
+        backgroundColor = .clear
         layer.mask = nil
     }
     

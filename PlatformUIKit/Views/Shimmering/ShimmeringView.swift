@@ -10,19 +10,15 @@ import Foundation
 
 public final class ShimmeringView: UIView {
 
+    public enum Constants {
+        public static let cornerRadius: CGFloat = 4
+    }
+
     final class AnimatingView: UIView, ShimmeringViewing {}
 
     private weak var anchorView: UIView!
-    
-    private let light: UIColor
-    private let dark: UIColor
 
-    private lazy var backgroundView: UIView = {
-        let view = UIView(frame: bounds)
-        view.backgroundColor = light
-        addSubview(view)
-        return view
-    }()
+    private let dark: UIColor
 
     private lazy var animatingView: AnimatingView = {
         let view = AnimatingView(frame: bounds)
@@ -33,25 +29,26 @@ public final class ShimmeringView: UIView {
     public var isShimmering: Bool {
         animatingView.isShimmering
     }
-    
+
     public init(in superview: UIView,
                 anchorView: UIView,
                 size: CGSize,
+                cornerRadius: CGFloat = Constants.cornerRadius,
                 light: UIColor = .lightShimmering,
                 dark: UIColor = .darkShimmering) {
         self.anchorView = anchorView
-        self.light = light
         self.dark = dark
         super.init(frame: .init(origin: .zero, size: size))
+        self.backgroundColor = light
         superview.addSubview(self)
         layout(to: .leading, of: anchorView)
         layout(to: .top, of: anchorView)
         layout(to: .height, of: anchorView, priority: .defaultHigh)
         layout(dimension: .width, to: size.width)
         layout(dimension: .height, to: size.height, priority: .defaultLow)
-        
-        backgroundView.fillSuperview()
         animatingView.fillSuperview()
+        layer.cornerRadius = cornerRadius
+        animatingView.layer.cornerRadius = cornerRadius
         layoutIfNeeded()
         start()
     }
@@ -59,45 +56,48 @@ public final class ShimmeringView: UIView {
     public init(in superview: UIView,
                 centeredIn anchorView: UIView,
                 size: CGSize,
-                cornerRadius: CGFloat = 0,
+                cornerRadius: CGFloat = Constants.cornerRadius,
                 light: UIColor = .lightShimmering,
                 dark: UIColor = .darkShimmering) {
         self.anchorView = anchorView
-        self.light = light
         self.dark = dark
-        super.init(frame: .zero)
+        super.init(frame: CGRect(origin: .zero, size: size))
+        self.backgroundColor = light
         superview.addSubview(self)
         translatesAutoresizingMaskIntoConstraints = false
-        
+
         NSLayoutConstraint.activate([
             centerXAnchor.constraint(equalTo: anchorView.centerXAnchor),
             centerYAnchor.constraint(equalTo: anchorView.centerYAnchor),
-            widthAnchor.constraint(equalToConstant: size.width)
+            widthAnchor.constraint(equalToConstant: size.width),
+            heightAnchor.constraint(equalToConstant: size.height)
         ])
-        
-        let height = heightAnchor.constraint(equalToConstant: size.height)
-        height.isActive = true
-        
-        backgroundView.fillSuperview()
-        animatingView.fillSuperview()
-        backgroundView.layer.cornerRadius = cornerRadius
+
+        animatingView.layoutToSuperviewSize()
+        layer.cornerRadius = cornerRadius
         animatingView.layer.cornerRadius = cornerRadius
         layoutIfNeeded()
         start()
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("\(#function) is not implemented")
     }
 
     public func start() {
-        animatingView.startShimmering(dark: dark, light: light)
+        animatingView.startShimmering(color: dark)
         alpha = 1
     }
     
     public func stop() {
-        animatingView.stopShimmering()
         alpha = 0
+        animatingView.stopShimmering()
+    }
+
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        animatingView.layoutShimmeringFrameIfNeeded()
     }
 }
 

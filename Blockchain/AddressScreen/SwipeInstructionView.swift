@@ -106,7 +106,7 @@ extension SwipeInstructionView {
             imageView.tintColor = color
             layoutIfNeeded()
             if startShimmering {
-                self.startShimmering(dark: .clear, light: .white)
+                self.startShimmering(color: .clear)
             }
         }
     }

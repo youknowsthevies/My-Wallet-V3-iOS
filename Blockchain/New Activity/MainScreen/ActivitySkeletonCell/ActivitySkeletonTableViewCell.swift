@@ -26,23 +26,21 @@ final class ActivitySkeletonTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        badgeContainerShimmeringView = .init(
+        badgeContainerShimmeringView = ShimmeringView(
             in: self,
             centeredIn: badgeContainerView,
             size: badgeContainerView.bounds.size,
             cornerRadius: 16.0
         )
-        titleContainerShimmeringView = .init(
+        titleContainerShimmeringView = ShimmeringView(
             in: self,
             centeredIn: titleContainerView,
-            size: titleContainerView.bounds.size,
-            cornerRadius: 4.0
+            size: titleContainerView.bounds.size
         )
-        subtitleContainerShimmeringView = .init(
+        subtitleContainerShimmeringView = ShimmeringView(
             in: self,
             centeredIn: subtitleContainerView,
-            size: subtitleContainerView.bounds.size,
-            cornerRadius: 4.0
+            size: subtitleContainerView.bounds.size
         )
     }
 }

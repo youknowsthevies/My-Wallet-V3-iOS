@@ -40,8 +40,8 @@ final class TotalBalanceTableViewCell: UITableViewCell {
         super.awakeFromNib()
         bottomSeparatorView.backgroundColor = .lightBorder
         balanceView.shimmer(
-            estimatedPriceLabelSize: CGSize(width: 120, height: 22),
-            estimatedChangeLabelSize: CGSize(width: 100, height: 14)
+            estimatedPriceLabelSize: CGSize(width: 140, height: 29),
+            estimatedChangeLabelSize: CGSize(width: 120, height: 17)
         )
     }
     

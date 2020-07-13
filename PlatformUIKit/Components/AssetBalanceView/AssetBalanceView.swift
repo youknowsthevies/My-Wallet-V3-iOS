@@ -93,7 +93,7 @@ public final class AssetBalanceView: UIView {
     private func stopShimmering() {
         guard fiatLabelShimmeringView != nil else { return }
         guard cryptoLabelShimmeringView != nil else { return }
-        guard fiatLabelShimmeringView.isShimmering && cryptoLabelShimmeringView.isShimmering else { return }
+        guard fiatLabelShimmeringView.isShimmering, cryptoLabelShimmeringView.isShimmering else { return }
         
         fiatBalanceLabel.alpha = 0
         cryptoBalanceLabel.alpha = 0

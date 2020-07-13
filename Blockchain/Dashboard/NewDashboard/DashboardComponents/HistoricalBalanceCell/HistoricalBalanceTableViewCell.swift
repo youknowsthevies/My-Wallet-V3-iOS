@@ -49,8 +49,8 @@ final class HistoricalBalanceTableViewCell: UITableViewCell {
         separatorView.backgroundColor = .lightBorder
         bottomSeparatorView.backgroundColor = .lightBorder
         assetPriceView.shimmer(
-            estimatedPriceLabelSize: CGSize(width: 84, height: 16),
-            estimatedChangeLabelSize: CGSize(width: 62, height: 14)
+            estimatedPriceLabelSize: CGSize(width: 90, height: 19),
+            estimatedChangeLabelSize: CGSize(width: 80, height: 18)
         )
         assetBalanceView.shimmer(
             estimatedFiatLabelSize: CGSize(width: 90, height: 16),
