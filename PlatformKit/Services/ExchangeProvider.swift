@@ -33,13 +33,15 @@ public final class ExchangeProvider: ExchangeProviding {
                 pax: PairExchangeServiceAPI,
                 stellar: PairExchangeServiceAPI,
                 bitcoin: PairExchangeServiceAPI,
-                bitcoinCash: PairExchangeServiceAPI) {
+                bitcoinCash: PairExchangeServiceAPI,
+                tether: PairExchangeServiceAPI) {
         services[.algorand] = algorand
         services[.ethereum] = ether
         services[.pax] = pax
         services[.stellar] = stellar
         services[.bitcoin] = bitcoin
         services[.bitcoinCash] = bitcoinCash
+        services[.tether] = tether
     }
     
     public func refresh() {

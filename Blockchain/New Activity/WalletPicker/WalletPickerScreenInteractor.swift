@@ -18,29 +18,28 @@ enum WalletPickerCellInteractor {
 final class WalletPickerCellInteractorProvider {
     
     var interactors: Observable<[WalletPickerCellInteractor]> {
-        interactorsRelay.asObservable()
+        _ = setup
+        return interactorsRelay.asObservable()
     }
-    
+
     private let interactorsRelay = BehaviorRelay<[WalletPickerCellInteractor]>(value: [])
+    private let balanceFetcher: AssetBalanceFetching
+    private let currency: CryptoCurrency
     private let disposeBag = DisposeBag()
-    
-    init(balanceFetcher: AssetBalanceFetching, currency: CryptoCurrency) {
-        interactors(for: currency, balanceFetching: balanceFetcher)
-            .bindAndCatch(to: interactorsRelay)
-            .disposed(by: disposeBag)
-    }
-    
-    private func interactors(for currency: CryptoCurrency,
-                             balanceFetching: AssetBalanceFetching) -> Observable<[WalletPickerCellInteractor]> {
-        balanceFetching
+
+    private lazy var setup: Void = {
+        guard CryptoCurrency.allEnabled.contains(currency) else {
+            return
+        }
+        return balanceFetcher
             .trading
             .isFunded
-            .map { isFunded -> [CurrentBalanceCellInteractor] in
+            .map(weak: self) { (self, isFunded) -> [CurrentBalanceCellInteractor] in
                 var result: [CurrentBalanceCellInteractor] = []
-                if currency.hasNonCustodialSupport {
+                if self.currency.hasNonCustodialSupport {
                     result.append(
                         CurrentBalanceCellInteractor(
-                            balanceFetching: balanceFetching,
+                            balanceFetching: self.balanceFetcher,
                             balanceType: .nonCustodial
                         )
                     )
@@ -48,16 +47,23 @@ final class WalletPickerCellInteractorProvider {
                 if isFunded {
                     result.append(
                         CurrentBalanceCellInteractor(
-                            balanceFetching: balanceFetching,
+                            balanceFetching: self.balanceFetcher,
                             balanceType: .custodial(.trading)
                         )
                     )
                 }
                 return result
             }
-            .map { interactors in
-                interactors.map { .balance($0, currency) }
+            .map(weak: self) { (self, interactors) in
+                interactors.map { .balance($0, self.currency) }
             }
+            .bindAndCatch(to: interactorsRelay)
+            .disposed(by: disposeBag)
+    }()
+    
+    init(balanceFetcher: AssetBalanceFetching, currency: CryptoCurrency) {
+        self.balanceFetcher = balanceFetcher
+        self.currency = currency
     }
 }
 
@@ -79,11 +85,12 @@ final class WalletPickerScreenInteractor {
                 providers[.bitcoinCash]!.interactors,
                 providers[.stellar]!.interactors,
                 providers[.algorand]!.interactors,
+                providers[.tether]!.interactors,
                 providers[.pax]!.interactors
             )
             .map { arg in
-                let (bitcoin, ethereum, bitcoinCash, stellar, algorand, pax) = arg
-                return bitcoin + ethereum + bitcoinCash + stellar + algorand + pax
+                let (bitcoin, ethereum, bitcoinCash, stellar, algorand, tether, pax) = arg
+                return bitcoin + ethereum + bitcoinCash + stellar + algorand + tether + pax
             }
     }
     
@@ -97,11 +104,11 @@ final class WalletPickerScreenInteractor {
     let balanceProviding: BalanceProviding
     
     private var providers: [CryptoCurrency: WalletPickerCellInteractorProvider] = [:]
-    private let interactorsRelay = BehaviorRelay<[WalletPickerCellInteractor]>(value: [])
     private let selectionService: WalletPickerSelectionServiceAPI
     private let disposeBag = DisposeBag()
     
     init(balanceProviding: BalanceProviding,
+         tether: WalletPickerCellInteractorProvider,
          algorand: WalletPickerCellInteractorProvider,
          ether: WalletPickerCellInteractorProvider,
          pax: WalletPickerCellInteractorProvider,
@@ -111,6 +118,7 @@ final class WalletPickerScreenInteractor {
          selectionService: WalletPickerSelectionServiceAPI) {
         self.balanceProviding = balanceProviding
         self.selectionService = selectionService
+        providers[.tether] = tether
         providers[.algorand] = algorand
         providers[.ethereum] = ether
         providers[.pax] = pax

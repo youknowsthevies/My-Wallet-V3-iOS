@@ -16,8 +16,10 @@ enum ExchangeAction {
 
     var title: String {
         switch self {
-        case .exchanging: return LocalizationConstants.Swap.whatDoYouWantToExchange
-        case .receiving: return LocalizationConstants.Swap.whatDoYouWantToReceive
+        case .exchanging:
+            return LocalizationConstants.Swap.whatDoYouWantToExchange
+        case .receiving:
+            return LocalizationConstants.Swap.whatDoYouWantToReceive
         }
     }
 }
@@ -32,7 +34,7 @@ class ExchangeAssetAccountListPresenter {
 
     private weak var view: ExchangeAssetAccountListView?
     private let assetAccountRepository: AssetAccountRepositoryAPI
-    private let disposables = CompositeDisposable()
+    private let disposeBag = DisposeBag()
 
     init(
         view: ExchangeAssetAccountListView,
@@ -43,14 +45,19 @@ class ExchangeAssetAccountListPresenter {
     }
 
     func presentPicker(excludingAccount assetAccount: AssetAccount?, for action: ExchangeAction) {
-        let disposable = assetAccountRepository.accounts
+        assetAccountRepository
+            .accounts
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
-            .subscribe(onSuccess: { [weak self] accounts in
+            .map { allAccounts in
+                allAccounts
+                    .filter { $0 != assetAccount }
+                    .filter { $0.address.cryptoCurrency.hasSwapSupport }
+            }
+            .subscribe(onSuccess: { [weak self] filteredAccounts in
                 guard let self = self else { return }
-                let available = accounts.filter({ $0 != assetAccount })
-                self.view?.showPicker(for: available, action: action)
+                self.view?.showPicker(for: filteredAccounts, action: action)
             })
-        disposables.insertWithDiscardableResult(disposable)
+            .disposed(by: disposeBag)
     }
 }

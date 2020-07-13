@@ -66,16 +66,19 @@ enum AssetAddressType {
     private let walletManager: WalletManager
     private let stellarWalletAccountRepository: StellarWalletAccountRepository
     private let paxAssetAccountRepository: ERC20AssetAccountRepository<PaxToken>
+    private let tetherAssetAccountRepository: ERC20AssetAccountRepository<TetherToken>
     
     private let disposeBag = DisposeBag()
     
     init(walletManager: WalletManager = WalletManager.shared,
          stellarWalletRepository: StellarWalletAccountRepository = StellarWalletAccountRepository(with: WalletManager.shared.wallet),
-         paxAssetAccountRepository: ERC20AssetAccountRepository<PaxToken> = PAXServiceProvider.shared.services.assetAccountRepository
+         paxAssetAccountRepository: ERC20AssetAccountRepository<PaxToken> = PAXServiceProvider.shared.services.assetAccountRepository,
+         tetherAssetAccountRepository: ERC20AssetAccountRepository<TetherToken> = TetherServiceProvider.shared.services.assetAccountRepository
         ) {
         self.walletManager = walletManager
         self.stellarWalletAccountRepository = stellarWalletRepository
         self.paxAssetAccountRepository = paxAssetAccountRepository
+        self.tetherAssetAccountRepository = tetherAssetAccountRepository
         super.init()
         self.walletManager.swipeAddressDelegate = self
     }
@@ -107,9 +110,19 @@ enum AssetAddressType {
         // Only one address for ethereum and stellar
         appSettings.swipeAddressForEther = wallet.getEtherAddress()
         appSettings.swipeAddressForStellar = stellarWalletAccountRepository.defaultAccount?.publicKey
-        paxAssetAccountRepository.assetAccountDetails.subscribe(onSuccess: { details in
-            appSettings.swipeAddressForPax = details.account.accountAddress
-        }).disposed(by: disposeBag)
+        paxAssetAccountRepository
+            .assetAccountDetails
+            .subscribe(onSuccess: { details in
+                appSettings.swipeAddressForPax = details.account.accountAddress
+            })
+            .disposed(by: disposeBag)
+
+        tetherAssetAccountRepository
+            .assetAccountDetails
+            .subscribe(onSuccess: { details in
+                appSettings.swipeAddressForTether = details.account.accountAddress
+            })
+            .disposed(by: disposeBag)
         
         // Retrieve swipe addresses for bitcoin and bitcoin cash
         let assetTypesWithHDAddresses = [CryptoCurrency.bitcoin, CryptoCurrency.bitcoinCash]
@@ -140,26 +153,31 @@ enum AssetAddressType {
     /// - Returns: the asset address
     func swipeAddresses(for asset: CryptoCurrency) -> [AssetAddress] {
         let appSettings = BlockchainSettings.App.shared
-        
+
         // TODO: In `BlockchainSettings.App`, create a method that receives an enum and returns a swipe address
         switch asset {
         case .algorand:
             return []
         case .ethereum:
-            guard let swipeAddressForEther = appSettings.swipeAddressForEther else {
+            guard let address = appSettings.swipeAddressForEther else {
                 return []
             }
-            return [EthereumAddress(stringLiteral: swipeAddressForEther)]
+            return [EthereumAddress(stringLiteral: address)]
         case .stellar:
-            guard let swipeAddressForStellar = appSettings.swipeAddressForStellar else {
+            guard let address = appSettings.swipeAddressForStellar else {
                 return []
             }
-            return [StellarAssetAddress(publicKey: swipeAddressForStellar)]
+            return [StellarAssetAddress(publicKey: address)]
         case .pax:
-            guard let swipeAddressForPax = appSettings.swipeAddressForPax else {
+            guard let address = appSettings.swipeAddressForPax else {
                 return []
             }
-            return [AnyERC20AssetAddress<PaxToken>(publicKey: swipeAddressForPax)]
+            return [AnyERC20AssetAddress<PaxToken>(publicKey: address)]
+        case .tether:
+            guard let address = appSettings.swipeAddressForTether else {
+                return []
+            }
+            return [AnyERC20AssetAddress<TetherToken>(publicKey: address)]
         case .bitcoinCash, .bitcoin:
             let swipeAddresses = KeychainItemWrapper.getSwipeAddresses(for: asset.legacy) as? [String] ?? []
             return AssetAddressFactory.create(fromAddressStringArray: swipeAddresses, assetType: asset)

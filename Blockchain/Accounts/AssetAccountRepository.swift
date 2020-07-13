@@ -29,6 +29,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     private let wallet: Wallet
     private let stellarServiceProvider: StellarServiceProvider
     private let paxAccountRepository: ERC20AssetAccountRepository<PaxToken>
+    private let tetherAccountRepository: ERC20AssetAccountRepository<TetherToken>
     private let ethereumAccountRepository: EthereumAssetAccountRepository
     private let ethereumWalletService: EthereumWalletServiceAPI
     private let stellarAccountService: StellarAccountAPI
@@ -39,10 +40,12 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         wallet: Wallet = WalletManager.shared.wallet,
         stellarServiceProvider: StellarServiceProvider = StellarServiceProvider.shared,
         paxServiceProvider: PAXServiceProvider = PAXServiceProvider.shared,
-        ethereumServiceProvider: ETHServiceProvider = ETHServiceProvider.shared
+        ethereumServiceProvider: ETHServiceProvider = ETHServiceProvider.shared,
+        tetherServiceProvider: TetherServiceProvider = .shared
     ) {
         self.wallet = wallet
         self.paxAccountRepository = paxServiceProvider.services.assetAccountRepository
+        self.tetherAccountRepository = tetherServiceProvider.services.assetAccountRepository
         self.ethereumWalletService = paxServiceProvider.services.walletService
         self.stellarServiceProvider = stellarServiceProvider
         self.stellarAccountService = stellarServiceProvider.services.accounts
@@ -89,6 +92,8 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         case .bitcoin,
              .bitcoinCash:
             return legacyAddress(assetType: assetType, fromCache: fromCache)
+        case .tether:
+            return tetherAccount(fromCache: fromCache)
         }
     }
 
@@ -103,7 +108,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     }
 
     func fetchAccounts() -> Single<[AssetAccount]> {
-        let observables: [Observable<[AssetAccount]>] = CryptoCurrency.allCases.map {
+        let observables: [Observable<[AssetAccount]>] = CryptoCurrency.allEnabled.map {
             accounts(for: $0, fromCache: false).asObservable()
         }
         return Single.create { observer -> Disposable in
@@ -123,33 +128,29 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     func defaultAccount(for assetType: CryptoCurrency) -> Single<AssetAccount> {
         switch assetType {
         case .algorand:
-            return Single.error(AssetAccountRepositoryError.noDefaultAccount)
-        case .ethereum:
-            return accounts(for: assetType, fromCache: false)
-                .flatMap { accounts in
-                    guard let primaryAccount = accounts.first else {
-                        return Single.error(AssetAccountRepositoryError.noDefaultAccount)
-                    }
-                    return Single.just(primaryAccount)
-                }
+            return .error(AssetAccountRepositoryError.noDefaultAccount)
         case .stellar:
-            let account: AssetAccount? = stellarAccountService.currentAccount?.assetAccount
-            guard let defaultAccount = account else { return Single.error(AssetAccountRepositoryError.noDefaultAccount) }
-            return Single.just(defaultAccount)
-        case .pax:
-            return accounts(for: .pax, fromCache: false)
-                .flatMap { accounts in
-                    guard let primaryAccount = accounts.first else {
-                        return Single.error(AssetAccountRepositoryError.noDefaultAccount)
-                    }
-                    return Single.just(primaryAccount)
-                }
+            guard let defaultAccount = stellarAccountService.currentAccount?.assetAccount else {
+                return .error(AssetAccountRepositoryError.noDefaultAccount)
+            }
+            return .just(defaultAccount)
         case .bitcoin,
              .bitcoinCash:
             let index = wallet.getDefaultAccountIndex(for: assetType.legacy)
-            let account: AssetAccount? = AssetAccount.create(assetType: assetType, index: index, wallet: wallet)
-            guard let defaultAccount = account else { return Single.error(AssetAccountRepositoryError.noDefaultAccount) }
+            guard let defaultAccount = AssetAccount.create(assetType: assetType, index: index, wallet: wallet) else {
+                return .error(AssetAccountRepositoryError.noDefaultAccount)
+            }
             return .just(defaultAccount)
+        case .ethereum,
+             .pax,
+             .tether:
+            return accounts(for: assetType, fromCache: false)
+                .map { accounts in
+                    guard let defaultAccount = accounts.first else {
+                        throw AssetAccountRepositoryError.noDefaultAccount
+                    }
+                    return defaultAccount
+                }
         }
     }
 
@@ -183,24 +184,40 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     private func paxAccount(fromCache: Bool) -> Single<[AssetAccount]> {
         paxAccountRepository
             .currentAssetAccountDetails(fromCache: fromCache)
-            .flatMap {
-                let account = AssetAccount(
+            .map { details -> AssetAccount in
+                AssetAccount(
                     index: 0,
                     address: AssetAddressFactory.create(
-                        fromAddressString: $0.account.accountAddress,
+                        fromAddressString: details.account.accountAddress,
                         assetType: .pax
                     ),
-                    balance: $0.balance,
-                    name: $0.account.name
+                    balance: details.balance,
+                    name: details.account.name
                 )
-                return .just([account])
-        }
+            }
+            .map { [$0] }
+    }
+
+    private func tetherAccount(fromCache: Bool) -> Single<[AssetAccount]> {
+        tetherAccountRepository
+            .currentAssetAccountDetails(fromCache: fromCache)
+            .map { details -> AssetAccount in
+                AssetAccount(
+                    index: 0,
+                    address: AssetAddressFactory.create(
+                        fromAddressString: details.account.accountAddress,
+                        assetType: .tether
+                    ),
+                    balance: details.balance,
+                    name: details.account.name
+                )
+            }
+            .map { [$0] }
     }
 
     private func cachedAccount(assetType: CryptoCurrency) -> Single<[AssetAccount]> {
-        accounts.flatMap { result -> Single<[AssetAccount]> in
-            let cached = result.filter { $0.address.cryptoCurrency == assetType }
-            return .just(cached)
+        accounts.map { result -> [AssetAccount] in
+            result.filter { $0.address.cryptoCurrency == assetType }
         }
     }
 
@@ -227,8 +244,8 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
 
         return ethereumAccountRepository.assetAccountDetails
             .catchErrorJustReturn(details)
-            .flatMap { details -> Single<[AssetAccount]> in
-                let account = AssetAccount(
+            .map { details -> AssetAccount in
+                AssetAccount(
                     index: 0,
                     address: AssetAddressFactory.create(
                         fromAddressString: details.account.accountAddress,
@@ -237,8 +254,8 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
                     balance: details.balance,
                     name: LocalizationConstants.myEtherWallet
                 )
-                return .just([account].compactMap { $0 })
             }
+            .map { [$0] }
     }
 
     // Handle BTC and BCH

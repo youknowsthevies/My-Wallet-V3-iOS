@@ -137,9 +137,12 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
 
         var message: String {
             switch self {
-            case .aboveTradingLimit: return LocalizationConstants.Swap.aboveTradingLimit
-            case .belowTradingLimit: return LocalizationConstants.Swap.belowTradingLimit
-            case .unknown: return LocalizationConstants.Errors.error
+            case .aboveTradingLimit:
+                return LocalizationConstants.Swap.aboveTradingLimit
+            case .belowTradingLimit:
+                return LocalizationConstants.Swap.belowTradingLimit
+            case .unknown:
+                return LocalizationConstants.Errors.error
             }
         }
     }
@@ -426,7 +429,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
             return feeServiceAPI.bitcoin.asObservable().map { $0.priority }
         case .bitcoinCash:
             return feeServiceAPI.bitcoinCash.asObservable().map { $0.priority }
-        case .ethereum, .pax:
+        case .ethereum, .pax, .tether:
             return feeServiceAPI.ethereum.asObservable().map { $0.priority }
         case .stellar:
             return feeServiceAPI.stellar.asObservable().map { $0.priority }

@@ -52,6 +52,7 @@
 - (void)showTransactionsBitcoinCash;
 - (void)showTransactionsStellar;
 - (void)showTransactionsPax;
+- (void)showTransactionsTether;
 
 // Send Bitcoin View Controller
 - (BOOL)isSending;

@@ -105,6 +105,7 @@ public extension UIColor {
     static let stellar = xlm
     static let usdd = pax
     static let algorand = algo
+    static let tether = usdt
     
     // Tiers
     

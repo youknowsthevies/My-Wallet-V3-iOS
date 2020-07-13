@@ -29,6 +29,7 @@ final class SendExecutor: SendExecuting {
     // MARK: - Setup
     
     init(asset: CryptoCurrency, ethereumService: EthereumWalletServiceAPI = EthereumWalletService.shared) {
+        assert(asset == .ethereum, "\(asset.rawValue) doesn't support new send logic.")
         self.asset = asset
         self.ethereumService = ethereumService
     }
@@ -37,12 +38,12 @@ final class SendExecutor: SendExecuting {
     /// Fetches history for account if needed
     func fetchHistoryIfNeeded() {
         switch asset {
-        case .ethereum, .pax:
+        case .ethereum:
             ethereumService.fetchHistoryIfNeeded
                 .subscribe()
                 .disposed(by: disposeBag)
-        case .algorand, .bitcoin, .bitcoinCash, .stellar:
-            fatalError("assets do not support the new send logic")
+        case .algorand, .bitcoin, .bitcoinCash, .stellar, .pax, .tether:
+            fatalError("\(asset.rawValue) doesn't support new send logic.")
         }
     }
     
@@ -50,8 +51,8 @@ final class SendExecutor: SendExecuting {
         switch asset {
         case .ethereum:
             return send(ether: value, to: address)
-        case .algorand, .bitcoin, .bitcoinCash, .pax, .stellar:
-            fatalError("assets do not support the new send logic")
+        case .algorand, .bitcoin, .bitcoinCash, .pax, .stellar, .tether:
+            fatalError("\(asset.rawValue) doesn't support new send logic.")
         }
     }
     

@@ -46,17 +46,19 @@ public final class BalanceProvider: BalanceProviding {
                 services[.stellar]!.calculationState,
                 services[.bitcoin]!.calculationState,
                 services[.bitcoinCash]!.calculationState,
-                services[.algorand]!.calculationState
-            )
-            .map {
+                services[.algorand]!.calculationState,
+                services[.tether]!.calculationState
+            ) { (ethereum: $0, pax: $1, stellar: $2, bitcoin: $3, bitcoinCash: $4, algorand: $5, tether: $6) }
+            .map { states in
                 AssetFiatCryptoBalanceCalculationStates(
                     statePerCurrency: [
-                        .ethereum: $0.0,
-                        .pax: $0.1,
-                        .stellar: $0.2,
-                        .bitcoin: $0.3,
-                        .bitcoinCash: $0.4,
-                        .algorand: $0.5
+                        .ethereum: states.ethereum,
+                        .pax: states.pax,
+                        .stellar: states.stellar,
+                        .bitcoin: states.bitcoin,
+                        .bitcoinCash: states.bitcoinCash,
+                        .algorand: states.algorand,
+                        .tether: states.tether
                     ]
                 )
             }
@@ -78,13 +80,15 @@ public final class BalanceProvider: BalanceProviding {
                 pax: AssetBalanceFetching,
                 stellar: AssetBalanceFetching,
                 bitcoin: AssetBalanceFetching,
-                bitcoinCash: AssetBalanceFetching) {
+                bitcoinCash: AssetBalanceFetching,
+                tether: AssetBalanceFetching) {
         services[.algorand] = algorand
         services[.ethereum] = ether
         services[.pax] = pax
         services[.stellar] = stellar
         services[.bitcoin] = bitcoin
         services[.bitcoinCash] = bitcoinCash
+        services[.tether] = tether
     }
     
     public func refresh() {

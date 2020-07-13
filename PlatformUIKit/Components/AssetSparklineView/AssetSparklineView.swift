@@ -15,10 +15,15 @@ public final class AssetSparklineView: UIView {
     // MARK: - Injected
     
     public var presenter: AssetSparklinePresenter! {
+        willSet {
+            presenterDisposeBag = DisposeBag()
+        }
         didSet {
-            if presenter != nil {
-                calculate()
+            guard presenter != nil else {
+                pathRelay.accept(nil)
+                return
             }
+            calculate()
         }
     }
     
@@ -29,20 +34,21 @@ public final class AssetSparklineView: UIView {
     }
     
     private var lineColor: Driver<UIColor> {
-        Driver.just(presenter.lineColor)
+        .just(presenter.lineColor)
     }
     
     private var fillColor: Driver<UIColor> {
-        Driver.just(.clear)
+        .just(.clear)
     }
     
     private var lineWidth: Driver<CGFloat> {
-        Driver.just(attributes.lineWidth)
+        .just(attributes.lineWidth)
     }
     
     private let pathRelay: BehaviorRelay<UIBezierPath?> = BehaviorRelay(value: nil)
     private let shape: CAShapeLayer = CAShapeLayer()
-    private var disposeBag = DisposeBag()
+    private let disposeBag = DisposeBag()
+    private var presenterDisposeBag = DisposeBag()
     
     private var attributes: SparklineAttributes {
         .init(size: frame.size)
@@ -62,7 +68,8 @@ public final class AssetSparklineView: UIView {
     
     private func calculate() {
         let calculator = SparklineCalculator(attributes: attributes)
-        presenter.state
+        presenter
+            .state
             .compactMap { state -> UIBezierPath? in
                 switch state {
                 case .valid(prices: let prices):
@@ -72,19 +79,19 @@ public final class AssetSparklineView: UIView {
                 }
             }
             .bindAndCatch(to: pathRelay)
-            .disposed(by: disposeBag)
-        
-        lineWidth
-            .drive(shape.rx.lineWidth)
-            .disposed(by: disposeBag)
-        
+            .disposed(by: presenterDisposeBag)
+
         lineColor
             .drive(shape.rx.strokeColor)
-            .disposed(by: disposeBag)
-        
+            .disposed(by: presenterDisposeBag)
+
         fillColor
             .drive(shape.rx.fillColor)
-            .disposed(by: disposeBag)
+            .disposed(by: presenterDisposeBag)
+
+        lineWidth
+            .drive(shape.rx.lineWidth)
+            .disposed(by: presenterDisposeBag)
     }
     
     private func setup() {
@@ -93,8 +100,9 @@ public final class AssetSparklineView: UIView {
             shape.position = center
             layer.addSublayer(shape)
         }
-        
-        path.drive(shape.rx.path)
+
+        path
+            .drive(shape.rx.path)
             .disposed(by: disposeBag)
     }
 }

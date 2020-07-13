@@ -34,6 +34,8 @@ class AssetAddressFactory {
             return StellarAssetAddress(publicKey: address)
         case .pax:
             return AnyERC20AssetAddress<PaxToken>(publicKey: address)
+        case .tether:
+            return AnyERC20AssetAddress<TetherToken>(publicKey: address)
         }
     }
 

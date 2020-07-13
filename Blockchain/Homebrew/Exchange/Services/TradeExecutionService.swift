@@ -152,6 +152,8 @@ class TradeExecutionService: TradeExecutionAPI {
         case .bitcoin,
              .bitcoinCash:
             return Single.just(.ok)
+        case .tether:
+            return validateTether(volume: volume)
         }
     }
     
@@ -377,7 +379,7 @@ class TradeExecutionService: TradeExecutionAPI {
                     case .ethereum:
                         orderTransactionLegacy.fees = ethereumFee.priorityGweiValue
                         orderTransactionLegacy.gasLimit = String(ethereumFee.gasLimit)
-                    case .stellar, .pax, .algorand:
+                    case .stellar, .pax, .algorand, .tether:
                         break
                     }
                     
@@ -535,16 +537,23 @@ class TradeExecutionService: TradeExecutionAPI {
             return Single.error(error)
         }
     }
-    
-    private func validatePax(volume: CryptoValue) -> Single<TransactionValidationResult> {
-        do {
-            let tokenValue = try ERC20TokenValue<PaxToken>(crypto: volume)
-            return dependencies.erc20Service.validateCryptoAmount(amount: tokenValue)
-        } catch {
-            return Single.error(error)
-        }
+
+    private func validateTether(volume: CryptoValue) -> Single<TransactionValidationResult> {
+        validateERC20(volume: volume, token: TetherToken.self)
     }
-    
+
+    private func validatePax(volume: CryptoValue) -> Single<TransactionValidationResult> {
+        validateERC20(volume: volume, token: PaxToken.self)
+    }
+
+    private func validateERC20<Token: ERC20Token>(volume: CryptoValue, token: Token.Type) -> Single<TransactionValidationResult> {
+        Result { try ERC20TokenValue<Token>(crypto: volume) }
+            .single
+            .flatMap(weak: self) { (self, tokenValue) -> Single<TransactionValidationResult> in
+                self.dependencies.erc20Service.validateCryptoAmount(amount: tokenValue)
+            }
+    }
+
     private func validateXLM(volume: CryptoValue) -> Single<TransactionValidationResult> {
         dependencies.stellar.limits.validateCryptoAmount(amount: volume)
     }
@@ -692,7 +701,7 @@ fileprivate extension TradeExecutionService {
                 case .ethereum:
                     orderTransactionLegacy.fees = ethereumFee.priorityGweiValue
                     orderTransactionLegacy.gasLimit = String(ethereumFee.gasLimit)
-                case .stellar, .pax, .algorand:
+                case .stellar, .pax, .algorand, .tether:
                     break
                 }
                 

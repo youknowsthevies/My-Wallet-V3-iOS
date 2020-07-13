@@ -12,7 +12,7 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-final class ERC20AssetBalanceFetcher: AccountBalanceFetching {
+final class ERC20AssetBalanceFetcher<Token: ERC20Token>: AccountBalanceFetching {
 
     // MARK: - Exposed Properties
 
@@ -62,7 +62,7 @@ final class ERC20AssetBalanceFetcher: AccountBalanceFetching {
 
     private let balanceRelay = PublishRelay<CryptoValue>()
     private let disposeBag = DisposeBag()
-    private let assetAccountRepository: ERC20AssetAccountRepository<PaxToken>
+    private let assetAccountRepository: ERC20AssetAccountRepository<Token>
 
     private unowned let reactiveWallet: ReactiveWalletAPI
     
@@ -71,9 +71,9 @@ final class ERC20AssetBalanceFetcher: AccountBalanceFetching {
     init(wallet: EthereumWalletBridgeAPI = WalletManager.shared.wallet.ethereum,
          reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet) {
 
-        let service = ERC20AssetAccountDetailsService<PaxToken>(
+        let service = ERC20AssetAccountDetailsService<Token>(
             with: wallet,
-            accountClient: ERC20AccountAPIClient<PaxToken>()
+            accountClient: ERC20AccountAPIClient<Token>()
         )
         self.reactiveWallet = reactiveWallet
         assetAccountRepository = ERC20AssetAccountRepository(service: service)

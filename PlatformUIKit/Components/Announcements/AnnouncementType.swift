@@ -21,6 +21,7 @@ public enum AnnouncementType: String, Codable {
     case resubmitDocuments = "kyc_resubmit"
     case swap = "swap"
     case algorand = "algorand"
+    case tether = "tether"
     case bitpay = "bitpay"
     case kycAirdrop = "kyc_airdrop"
 
@@ -49,6 +50,8 @@ public enum AnnouncementType: String, Codable {
             return .swap
         case .algorand:
             return .algorand
+        case .tether:
+            return .tether
         case .bitpay:
             return .bitpay
         case .resubmitDocuments:

@@ -54,6 +54,8 @@ class AssetAddressRepositoryMock: AssetAddressFetching {
                 result += [AnyERC20AssetAddress<PaxToken>(publicKey: address)]
             case .stellar:
                 result += [StellarAssetAddress(publicKey: address)]
+            case .tether:
+                result += [AnyERC20AssetAddress<TetherToken>(publicKey: address)]
             }
         }
         return result
@@ -61,7 +63,7 @@ class AssetAddressRepositoryMock: AssetAddressFetching {
     
     /// Removes a given asset address according to type
     func remove(address: String, for assetType: CryptoCurrency, addressType: AssetAddressType) {
-        guard let index = (addresses.index { $0 == address }) else {
+        guard let index = addresses.firstIndex(where: { $0 == address }) else {
             return
         }
         addresses.remove(at: index)

@@ -23,6 +23,7 @@ class CryptoCurrencyTests: XCTestCase {
             .bitcoinCash,
             .stellar,
             .algorand,
+            .tether,
             .pax
         ]
         XCTAssertTrue(CryptoCurrency.allCases == cryptoCurrencyDesiredOrder,

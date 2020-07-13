@@ -40,6 +40,8 @@ public struct ERC20ContractGasActivityModel {
     private static func token(address: EthereumAddress) -> CryptoCurrency? {
         if address.publicKey.compare(PaxToken.contractAddress.publicKey, options: .caseInsensitive) == .orderedSame {
             return .pax
+        } else if address.publicKey.compare(TetherToken.contractAddress.publicKey, options: .caseInsensitive) == .orderedSame {
+            return .tether
         }
         return nil
     }

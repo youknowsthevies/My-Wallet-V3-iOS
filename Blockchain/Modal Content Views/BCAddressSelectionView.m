@@ -58,7 +58,8 @@ typedef enum {
 
 - (id)initWithWallet:(Wallet *)_wallet selectMode:(SelectMode)_selectMode delegate:(id<AddressSelectionDelegate>)delegate
 {
-    if ([super initWithFrame:CGRectZero]) {
+    self = [super initWithFrame:CGRectZero];
+    if (self) {
         [[NSBundle mainBundle] loadNibNamed:@"BCAddressSelectionView" owner:self options:nil];
         
         self.delegate = delegate;
@@ -650,6 +651,12 @@ typedef enum {
             break;
         case LegacyAssetTypeEther:
             accounts = ethAccounts;
+            break;
+        case LegacyAssetTypeStellar:
+        case LegacyAssetTypePax:
+        case LegacyAssetTypeAlgorand:
+        case LegacyAssetTypeTether:
+            accounts = @[];
             break;
     }
 

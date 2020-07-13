@@ -13,13 +13,17 @@
 - (void)didSelectAsset:(LegacyAssetType)assetType;
 - (void)didOpenSelector;
 @end
+
 @interface AssetSelectorView : UIView
-@property (nonatomic) LegacyAssetType selectedAsset;
-@property (nonatomic, readonly) NSArray *assets;
-@property (nonatomic, readonly) BOOL isOpen;
+
+@property (nonatomic, assign) LegacyAssetType selectedAsset;
+@property (nonatomic, copy, readonly) NSArray<NSNumber *> *assets;
+@property (nonatomic, assign, readonly) BOOL isOpen;
 @property (nonatomic, weak) id <AssetSelectorViewDelegate> delegate;
 
-- (instancetype)initWithFrame:(CGRect)frame assets:(NSArray *)assets parentView:(UIView *)parentView;
+- (instancetype)initWithCoder:(NSCoder *)coder;
+- (instancetype)initWithFrame:(CGRect)frame parentView:(UIView *)parentView;
+- (instancetype)initWithFrame:(CGRect)frame assets:(NSArray<NSNumber *> *)assets parentView:(UIView *)parentView;
 - (void)constraintToParent:(UIView *)parentView;
 - (void)close;
 - (void)open;

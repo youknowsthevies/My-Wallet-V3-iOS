@@ -30,13 +30,15 @@ public final class HistoricalFiatPriceProvider: HistoricalFiatPriceProviding {
                 pax: HistoricalFiatPriceServiceAPI,
                 stellar: HistoricalFiatPriceServiceAPI,
                 bitcoin: HistoricalFiatPriceServiceAPI,
-                bitcoinCash: HistoricalFiatPriceServiceAPI) {
+                bitcoinCash: HistoricalFiatPriceServiceAPI,
+                tether: HistoricalFiatPriceServiceAPI) {
         services[.algorand] = algorand
         services[.ethereum] = ether
         services[.pax] = pax
         services[.stellar] = stellar
         services[.bitcoin] = bitcoin
         services[.bitcoinCash] = bitcoinCash
+        services[.tether] = tether
         
         refresh()
     }

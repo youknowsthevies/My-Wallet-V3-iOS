@@ -30,6 +30,7 @@
 @property (strong, nonatomic) SendRouter *sendRouter;
 
 @end
+
 @implementation TabControllerManager
 
 - (void)viewDidLoad
@@ -233,6 +234,13 @@
             [_tabViewController setActiveViewController:_sendPaxViewController animated:animated index:tabIndex];
             break;
         }
+        case LegacyAssetTypeAlgorand: {
+            break;
+        }
+        case LegacyAssetTypeTether: {
+            // TICKET: IOS-3563 - Add USD-T support to Send
+            break;
+        }
     }
 }
 
@@ -333,8 +341,6 @@
 
 - (void)receivedTransactionMessage
 {
-    // TODO: IOS-3395 Not sure exactly what to do here
-    // Looks likes `_transactionsBitcoinViewController` and `_transactionsBitcoinCashViewController` would never be nil
     if (self.assetType == LegacyAssetTypeBitcoin) {
         if (_receiveBitcoinViewController) {
             [_receiveBitcoinViewController storeRequestedAmount];
@@ -437,6 +443,13 @@
         }
         case LegacyAssetTypePax: {
             [self setReceiveControllerIfNeededForAssetType:self.assetType animated:animated];
+            break;
+        }
+        case LegacyAssetTypeAlgorand: {
+            break;
+        }
+        case LegacyAssetTypeTether: {
+            // TICKET: IOS-3563 - Add USD-T support to Receive
             break;
         }
     }
@@ -678,6 +691,11 @@
     [self showTransactionsAnimated:YES];
 }
 
+-(void)showTransactionsTether
+{
+    [self showTransactionsAnimated:YES];
+}
+
 - (void)changeAssetSelectorAsset:(LegacyAssetType)assetType
 {
     self.assetType = assetType;
@@ -746,6 +764,13 @@
             _sendPaxViewController = [SendPaxViewController make];
             [_sendPaxViewController scanQrCodeForDestinationAddress];
             viewControllerToPresent = _sendPaxViewController;
+            break;
+        }
+        case LegacyAssetTypeAlgorand: {
+            break;
+        }
+        case LegacyAssetTypeTether: {
+            // TICKET: IOS-3563 - Add USD-T support to Send
             break;
         }
     }

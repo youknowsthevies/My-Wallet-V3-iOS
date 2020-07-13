@@ -23,9 +23,12 @@ final class LegacyCryptoCurrency: NSObject {
     
     @objc
     static let pax = LegacyCryptoCurrency(CryptoCurrency.pax)
-    
+
     @objc
     static let stellar = LegacyCryptoCurrency(CryptoCurrency.stellar)
+
+    @objc
+    static let tether = LegacyCryptoCurrency(CryptoCurrency.tether)
         
     @objc
     var legacy: LegacyAssetType { value.legacy }

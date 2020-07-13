@@ -17,19 +17,26 @@ public protocol HTTPRequestError: Error {
 public enum HTTPRequestClientError: HTTPRequestError {
     case reachability
     case failedRequest(description: String)
+
     public var debugDescription: String {
         switch self {
-        case .failedRequest(let description): return description
-        case .reachability: return "Internet unreachable"
+        case .failedRequest(let description):
+            return description
+        case .reachability:
+            return "Internet unreachable"
         }
     }
 }
 public enum HTTPRequestServerError: HTTPRequestError {
-    case badResponse, badStatusCode(code: Int, error: Error?, message: String?)
+    case badResponse
+    case badStatusCode(code: Int, error: Error?, message: String?)
+
     public var debugDescription: String {
         switch self {
-        case .badResponse: return "Bad response."
-        case .badStatusCode(let code, _, let message): return "The server returned a bad response: \(code). Message: \(message ?? "")"
+        case .badResponse:
+            return "Bad response."
+        case .badStatusCode(let code, _, let message):
+            return "The server returned a bad response: \(code). Message: \(message ?? "")"
         }
     }
     
@@ -62,9 +69,12 @@ public enum HTTPRequestPayloadError: HTTPRequestError {
     
     public var debugDescription: String {
         switch self {
-        case .badData: return "The data returned by the server was bad."
-        case .emptyData: return "The data returned by the server was empty."
-        case .invalidMimeType(let type): return "The server returned an invalid MIME type: \(type)."
+        case .badData:
+            return "The data returned by the server was bad."
+        case .emptyData:
+            return "The data returned by the server was empty."
+        case .invalidMimeType(let type):
+            return "The server returned an invalid MIME type: \(type)."
         }
     }
 }

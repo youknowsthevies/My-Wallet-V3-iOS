@@ -87,7 +87,7 @@ final class DashboardScreenPresenter {
             cellTypes.append(.notice)
         }
         
-        let assetCells: [CellType] = CryptoCurrency.allCases.map { .crypto($0) }
+        let assetCells: [CellType] = CryptoCurrency.allEnabled.map { .crypto($0) }
         assetCells.forEach { cellTypes.append($0) }
         
         switch announcementCardArrangement {

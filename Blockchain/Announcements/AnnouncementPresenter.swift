@@ -143,6 +143,8 @@ final class AnnouncementPresenter {
                 announcement = bitpay
             case .algorand:
                 announcement = algorand
+            case .tether:
+                announcement = tether
             case .resubmitDocuments:
                 announcement = resubmitDocuments(user: preliminaryData.user)
             case .simpleBuyPendingTransaction:
@@ -289,10 +291,20 @@ extension AnnouncementPresenter {
             action: exchangeCoordinator.start
         )
     }
-        
+
     /// Computes Algorand card announcement
     private var algorand: Announcement {
         AlgorandAnnouncement(
+            dismiss: hideAnnouncement,
+            action: { [weak appCoordinator] in
+                appCoordinator?.handleBuyCrypto()
+            }
+        )
+    }
+
+    /// Computes Tether card announcement
+    private var tether: Announcement {
+        TetherAnnouncement(
             dismiss: hideAnnouncement,
             action: { [weak appCoordinator] in
                 appCoordinator?.handleBuyCrypto()

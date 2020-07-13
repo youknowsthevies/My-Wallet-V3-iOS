@@ -13,11 +13,11 @@
 #define CELL_IDENTIFIER_ASSET_SELECTOR @"assetSelectorCell"
 
 @interface AssetSelectorView () <UITableViewDataSource, UITableViewDelegate, AssetTypeCellDelegate>
-@property (nonatomic) UITableView *tableView;
+
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSLayoutConstraint *heightConstraint;
 @property (nonatomic, readwrite) BOOL isOpen;
 @property (nonatomic, readwrite) NSArray<NSNumber *> *assets;
-
-@property (nonatomic, strong) NSLayoutConstraint *heightConstraint;
 
 @end
 
@@ -34,78 +34,76 @@
 
 - (instancetype)initWithFrame:(CGRect)frame parentView:(UIView *)parentView
 {
-    if (self == [super initWithFrame:frame]) {
-        [self setupInParent: parentView];
+    self = [super initWithFrame:frame];
+    if (self) {
+        [self setupInParent:parentView];
     }
-    
     return self;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame assets:(NSArray *)assets parentView:(UIView *)parentView
+- (instancetype)initWithFrame:(CGRect)frame assets:(NSArray<NSNumber *> *)assets parentView:(UIView *)parentView
 {
-    AssetSelectorView *assetSelectorView = [self initWithFrame:frame parentView:parentView];
-    assetSelectorView.assets = assets;
-    return assetSelectorView;
+    self = [self initWithFrame:frame parentView:parentView];
+    if (self) {
+        self.assets = assets;
+    }
+    return self;
 }
 
 - (void)setupInParent:(UIView *)parentView
 {
-    if (self.tableView == nil) {
-        self.assets = @[
-            [NSNumber numberWithInteger:LegacyAssetTypeBitcoin],
-            [NSNumber numberWithInteger:LegacyAssetTypeEther],
-            [NSNumber numberWithInteger:LegacyAssetTypeBitcoinCash],
-            [NSNumber numberWithInteger:LegacyAssetTypeStellar],
-            [NSNumber numberWithInteger:LegacyAssetTypePax]
-        ];
-        
-        self.clipsToBounds = YES;
-        
-        self.tableView = [[UITableView alloc] initWithFrame:self.bounds];
-        self.tableView.delegate = self;
-        self.tableView.dataSource = self;
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        [self.tableView registerNib:[UINib nibWithNibName:@"AssetTypeCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:[AssetTypeCell identifier]];
-        [self addSubview:self.tableView];
-        
-        self.tableView.separatorColor = [UIColor navigationBarBackground];
-        self.tableView.backgroundColor = [UIColor navigationBarBackground];
-        self.backgroundColor = [UIColor navigationBarBackground];
-                
-        self.tableView.translatesAutoresizingMaskIntoConstraints = false;
+    self.assets = @[
+        @(LegacyAssetTypeBitcoin),
+        @(LegacyAssetTypeEther),
+        @(LegacyAssetTypeBitcoinCash),
+        @(LegacyAssetTypeStellar),
+        @(LegacyAssetTypePax)
+        // TICKET: IOS-3563 - Add USD-T support to Send/Receive.
+    ];
+    self.clipsToBounds = YES;
 
-        CGFloat height = [ConstantsObjcBridge assetTypeCellHeight] * self.assets.count;
-        NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:height];
-        [self.tableView addConstraint:heightConstraint];
-        
-        [NSLayoutConstraint activateConstraints: @[
-            [NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:0],
-            [NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1 constant:0],
-            [NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:0]
-        ]];
-                        
-        if (parentView != nil) {
-            [self constraintToParent:parentView];
-        }
+    self.tableView = [[UITableView alloc] initWithFrame:self.bounds];
+    self.tableView.bounces = NO;
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [self.tableView registerNib:[UINib nibWithNibName:@"AssetTypeCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:[AssetTypeCell identifier]];
+    [self addSubview:self.tableView];
+
+    self.tableView.separatorColor = [UIColor navigationBarBackground];
+    self.tableView.backgroundColor = [UIColor navigationBarBackground];
+    self.backgroundColor = [UIColor navigationBarBackground];
+
+    self.tableView.translatesAutoresizingMaskIntoConstraints = false;
+
+    CGFloat height = [ConstantsObjcBridge assetTypeCellHeight] * self.assets.count;
+    [NSLayoutConstraint activateConstraints:@[
+        [self.tableView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+        [self.tableView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+        [self.tableView.topAnchor constraintEqualToAnchor:self.topAnchor],
+        [self.tableView.heightAnchor constraintEqualToConstant:height]
+    ]];
+
+    if (parentView != nil) {
+        [self constraintToParent:parentView];
     }
 }
 
 - (void)constraintToParent:(UIView *)parentView {
     self.translatesAutoresizingMaskIntoConstraints = false;
-        
+
     if (self.superview == nil) {
         [parentView addSubview:self];
     }
-    
-    [NSLayoutConstraint activateConstraints: @[
-        [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:parentView attribute:NSLayoutAttributeLeft multiplier:1 constant:0],
-        [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:parentView attribute:NSLayoutAttributeRight multiplier:1 constant:0],
-        [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:parentView attribute:NSLayoutAttributeTop multiplier:1 constant:0]
-    ]];
-    
+
     CGFloat height = [ConstantsObjcBridge assetTypeCellHeight];
-    self.heightConstraint = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:height];
-    [self addConstraint: self.heightConstraint];
+    self.heightConstraint = [self.heightAnchor constraintEqualToConstant:height];
+    [NSLayoutConstraint activateConstraints:@[
+        [parentView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+        [parentView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+        [parentView.topAnchor constraintEqualToAnchor:self.topAnchor],
+        self.heightConstraint
+    ]];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath

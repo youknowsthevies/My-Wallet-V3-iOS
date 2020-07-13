@@ -39,13 +39,15 @@ public final class ActivityProvider: ActivityProviding {
                 pax: ActivityItemEventServiceAPI,
                 stellar: ActivityItemEventServiceAPI,
                 bitcoin: ActivityItemEventServiceAPI,
-                bitcoinCash: ActivityItemEventServiceAPI) {
+                bitcoinCash: ActivityItemEventServiceAPI,
+                tether: ActivityItemEventServiceAPI) {
         services[.algorand] = algorand
         services[.ethereum] = ether
         services[.pax] = pax
         services[.stellar] = stellar
         services[.bitcoin] = bitcoin
         services[.bitcoinCash] = bitcoinCash
+        services[.tether] = tether
     }
     
     public var buyActivityItems: Observable<ActivityItemEventsLoadingStates> {
@@ -55,17 +57,19 @@ public final class ActivityProvider: ActivityProviding {
             services[.stellar]!.buy.state,
             services[.bitcoin]!.buy.state,
             services[.bitcoinCash]!.buy.state,
-            services[.algorand]!.buy.state
-        )
-        .map {
+            services[.algorand]!.buy.state,
+            services[.tether]!.buy.state
+        ) { (ethereum: $0, pax: $1, stellar: $2, bitcoin: $3, bitcoinCash: $4, algorand: $5, tether: $6) }
+        .map { states in
             ActivityItemEventsLoadingStates(
                 statePerCurrency: [
-                    .ethereum: $0.0,
-                    .pax: $0.1,
-                    .stellar: $0.2,
-                    .bitcoin: $0.3,
-                    .bitcoinCash: $0.4,
-                    .algorand: $0.5
+                    .ethereum: states.ethereum,
+                    .pax: states.pax,
+                    .stellar: states.stellar,
+                    .bitcoin: states.bitcoin,
+                    .bitcoinCash: states.bitcoinCash,
+                    .algorand: states.algorand,
+                    .tether: states.tether
                 ]
             )
         }

@@ -27,7 +27,7 @@ public protocol ERC20Token {
 
 extension ERC20Token {
     public static var name: String {
-        assetType.rawValue
+        assetType.name
     }
     
     public static var metadataKey: String {
@@ -38,8 +38,22 @@ extension ERC20Token {
         // swiftlint:disable:next force_try
         return try! ERC20TokenValue<Self>(crypto: CryptoValue.zero(assetType: assetType))
     }
-}
 
-@objc public class ERC20TokenObjcBridge: NSObject {
-    @objc public class func paxContractAddress() -> String { PaxToken.contractAddress.publicKey }
+    public static func cryptoValueFrom(minorValue: BigInt) -> ERC20TokenValue<Self>? {
+        try? ERC20TokenValue<Self>(crypto: CryptoValue.createFromMinorValue(minorValue, assetType: assetType))
+    }
+
+    public static func cryptoValueFrom(majorValue: String) -> ERC20TokenValue<Self>? {
+        guard let cryptoValue = CryptoValue.createFromMajorValue(string: majorValue, assetType: assetType) else {
+            return nil
+        }
+        return try? ERC20TokenValue<Self>(crypto: cryptoValue)
+    }
+
+    public static func cryptoValueFrom(minorValue: String) -> ERC20TokenValue<Self>? {
+        guard let minorBigInt = BigInt(minorValue) else {
+            return nil
+        }
+        return try? ERC20TokenValue<Self>(crypto: CryptoValue.createFromMinorValue(minorBigInt, assetType: assetType))
+    }
 }

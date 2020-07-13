@@ -16,6 +16,7 @@ typedef NS_CLOSED_ENUM(NSInteger, LegacyAssetType) {
     LegacyAssetTypeStellar,
     LegacyAssetTypePax,
     LegacyAssetTypeAlgorand,
+    LegacyAssetTypeTether,
 };
 
 #endif /* Assets_h */

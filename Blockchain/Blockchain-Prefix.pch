@@ -318,6 +318,10 @@
 #define KEYCHAIN_KEY_BTC_SWIPE_ADDRESSES @"btcSwipeAddresses"
 #define KEYCHAIN_KEY_BCH_SWIPE_ADDRESSES @"bchSwipeAddresses"
 #define KEYCHAIN_KEY_ETHER_ADDRESS @"etherAddress"
+#define KEYCHAIN_KEY_XLM_ADDRESS @"xlmSwipeToReceiveAddress"
+#define KEYCHAIN_KEY_PAX_ADDRESS @"paxSwipeToReceiveAddress"
+#define KEYCHAIN_KEY_ALGO_ADDRESS @"algoSwipeToReceiveAddress"
+#define KEYCHAIN_KEY_USDT_ADDRESS @"usdtSwipeToReceiveAddress"
 
 #define QR_CODE_KEY_GUID @"guid"
 #define QR_CODE_KEY_SHARED_KEY @"sharedKey"

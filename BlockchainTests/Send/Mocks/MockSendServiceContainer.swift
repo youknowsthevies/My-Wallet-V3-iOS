@@ -40,7 +40,7 @@ struct MockSendServiceContainer: SendServiceContaining {
         bus = WalletActionEventBus()
         self.fiatCurrency = fiatCurrency
         switch asset {
-        case .ethereum, .pax:
+        case .ethereum, .pax, .tether:
             sourceAccountProvider = EtherSendSourceAccountProvider()
             self.balance = MockAccountBalanceFetcher(expectedBalance: balance)
         case .algorand, .bitcoin, .bitcoinCash, .stellar:

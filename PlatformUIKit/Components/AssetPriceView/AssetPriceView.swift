@@ -19,6 +19,8 @@ public final class AssetPriceView: UIView {
         }
         didSet {
             guard let presenter = presenter else {
+                priceLabel.text = " "
+                changeLabel.text = " "
                 return
             }
             presenter.alignment

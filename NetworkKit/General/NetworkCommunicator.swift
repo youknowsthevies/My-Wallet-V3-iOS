@@ -117,7 +117,7 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
     }
     
     private func privatePerform<ResponseType: Decodable, ErrorResponseType: Error & Decodable>(request: NetworkRequest) -> Single<Result<ResponseType, ErrorResponseType>> {
-        return execute(request: request)
+        execute(request: request)
             .recordErrors(on: eventRecorder, request: request) { request, error -> AnalyticsEvent? in
                 error.analyticsEvent(for: request) { serverErrorResponse in
                     request.decoder.decodeFailureToString(errorResponse: serverErrorResponse)
@@ -128,7 +128,7 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
     }
     
     private func privatePerform<ResponseType: Decodable>(request: NetworkRequest) -> Single<ResponseType> {
-        return execute(request: request)
+        execute(request: request)
             .recordErrors(on: eventRecorder, request: request) { request, error -> AnalyticsEvent? in
                 error.analyticsEvent(for: request) { serverErrorResponse in
                     request.decoder.decodeFailureToString(errorResponse: serverErrorResponse)
@@ -144,26 +144,31 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
     > {
         Single<Result<ServerResponse, NetworkCommunicatorError>>.create(weak: self) { (self, observer) -> Disposable in
             let urlRequest = request.URLRequest
+            let requestPath = urlRequest.url?.path ?? ""
 
-            Logger.shared.debug("URLRequest.URL: \(String(describing: urlRequest.url))")
+            Logger.shared.debug("URL: \(urlRequest.url?.absoluteString ?? "")")
 
             let task = self.session.dataTask(with: urlRequest) { payload, response, error in
-                guard let httpResponse = response as? HTTPURLResponse else {
+                guard let response = response as? HTTPURLResponse else {
+                    Logger.shared.debug("\(requestPath) failed with error: \(error?.localizedDescription ?? "nil")")
                     observer(.success(.failure(NetworkCommunicatorError.serverError(.badResponse))))
                     return
                 }
 //                if let payload = payload, let responseValue = String(data: payload, encoding: .utf8) {
-////                    Logger.shared.debug("\(responseValue) <- \(response?.url?.path ?? "")")
+//                    Logger.shared.debug("\(responseValue) <- \(requestPath)")
 //                }
-                guard (200...299).contains(httpResponse.statusCode) else {
-                    observer(.success(.failure(NetworkCommunicatorError.rawServerError(ServerErrorResponse(response: httpResponse, payload: payload)))))
+                switch response.statusCode {
+                case 204:
+                    observer(.success(.success(ServerResponse(response: response, payload: nil))))
+                    return
+                case 200...299:
+                    observer(.success(.success(ServerResponse(response: response, payload: payload))))
+                    return
+                default:
+                    Logger.shared.debug("\(requestPath) failed with status code: \(response.statusCode)")
+                    observer(.success(.failure(NetworkCommunicatorError.rawServerError(ServerErrorResponse(response: response, payload: payload)))))
                     return
                 }
-                if httpResponse.statusCode == 204 {
-                    observer(.success(.success(ServerResponse(response: httpResponse, payload: nil))))
-                    return
-                }
-                observer(.success(.success(ServerResponse(response: httpResponse, payload: payload))))
             }
             defer {
                 task.resume()

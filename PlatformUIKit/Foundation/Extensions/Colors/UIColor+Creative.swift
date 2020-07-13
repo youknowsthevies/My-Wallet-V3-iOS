@@ -28,6 +28,7 @@ extension UIColor {
     static let bch = color(named: "BitcoinCash")
     static let xlm = color(named: "Stellar")
     static let pax = color(named: "Pax")
+    static let usdt = color(named: "Tether")
 
     // Tiers
 

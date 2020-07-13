@@ -55,7 +55,7 @@ struct SendServiceContainer: SendServiceContaining {
             exchange = DataProvider.default.exchange[.ethereum]
             sourceAccountProvider = EtherSendSourceAccountProvider()
             balance = WalletManager.shared.wallet.ethereum
-        case .algorand, .bitcoin, .bitcoinCash, .pax, .stellar:
+        case .algorand, .bitcoin, .bitcoinCash, .pax, .stellar, .tether:
             fatalError("\(#function) is not implemented for \(asset)")
         }
     }

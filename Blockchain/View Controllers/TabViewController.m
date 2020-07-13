@@ -92,9 +92,12 @@
             [self.assetContainerView setHidden:YES];
             [self insertActiveView];
             break;
-        default:
+        case 3:
+        case 4:
             [self.assetContainerView setHidden:NO];
             [self.assetSelectorViewController insertWithViewController:activeViewController];
+            break;
+        default:
             break;
     }
     [self updateTopBarForIndex:newIndex];

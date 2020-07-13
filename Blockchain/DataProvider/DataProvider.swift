@@ -7,6 +7,7 @@
 //
 
 import BitcoinKit
+import ERC20Kit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -45,7 +46,8 @@ final class DataProvider: DataProviding {
          ethereumServiceProvider: ETHServiceProvider = ETHServiceProvider.shared,
          stellarServiceProvider: StellarServiceProvider = StellarServiceProvider.shared,
          bitcoinServiceProvider: BitcoinServiceProvider = BitcoinServiceProvider.shared,
-         bitcoinCashServiceProvider: BitcoinCashServiceProvider = BitcoinCashServiceProvider.shared) {
+         bitcoinCashServiceProvider: BitcoinCashServiceProvider = BitcoinCashServiceProvider.shared,
+         tetherServiceProvider: TetherServiceProvider = TetherServiceProvider.shared) {
         
         self.activity = ActivityProvider(
             algorand: algorandServiceProvider.services.activity,
@@ -53,7 +55,8 @@ final class DataProvider: DataProviding {
             pax: paxServiceProvider.services.activity,
             stellar: stellarServiceProvider.services.activity,
             bitcoin: bitcoinServiceProvider.services.activity,
-            bitcoinCash: bitcoinCashServiceProvider.services.activity
+            bitcoinCash: bitcoinCashServiceProvider.services.activity,
+            tether: tetherServiceProvider.services.activity
         )
         
         self.exchange = ExchangeProvider(
@@ -79,6 +82,10 @@ final class DataProvider: DataProviding {
             ),
             bitcoinCash: PairExchangeService(
                 cryptoCurrency: .bitcoinCash,
+                fiatCurrencyService: fiatCurrencyService
+            ),
+            tether: PairExchangeService(
+                cryptoCurrency: .tether,
                 fiatCurrencyService: fiatCurrencyService
             )
         )
@@ -113,6 +120,11 @@ final class DataProvider: DataProviding {
             exchangeAPI: exchange[.pax],
             fiatCurrencyService: fiatCurrencyService
         )
+        let tetherHistoricalFiatService = HistoricalFiatPriceService(
+            cryptoCurrency: .tether,
+            exchangeAPI: exchange[.tether],
+            fiatCurrencyService: fiatCurrencyService
+        )
         
         self.historicalPrices = HistoricalFiatPriceProvider(
             algorand: algorandHistoricalFiatService,
@@ -120,7 +132,8 @@ final class DataProvider: DataProviding {
             pax: paxHistoricalFiatService,
             stellar: stellarHistoricalFiatService,
             bitcoin: bitcoinHistoricalFiatService,
-            bitcoinCash: bitcoinCashHistoricalFiatService
+            bitcoinCash: bitcoinCashHistoricalFiatService,
+            tether: tetherHistoricalFiatService
         )
         
         let tradingBalanceService = TradingBalanceService(
@@ -156,9 +169,9 @@ final class DataProvider: DataProviding {
             ),
             exchange: exchange[.ethereum]
         )
-        
+
         let paxBalanceFetcher = AssetBalanceFetcher(
-            wallet: ERC20AssetBalanceFetcher(),
+            wallet: ERC20AssetBalanceFetcher<PaxToken>(),
             trading: CustodialCryptoBalanceFetcher(
                 currencyType: .pax,
                 service: tradingBalanceService
@@ -168,6 +181,18 @@ final class DataProvider: DataProviding {
                 service: savingsAccountService
             ),
             exchange: exchange[.pax]
+        )
+        let tetherBalanceFetcher = AssetBalanceFetcher(
+            wallet: ERC20AssetBalanceFetcher<TetherToken>(),
+            trading: CustodialCryptoBalanceFetcher(
+                currencyType: .tether,
+                service: tradingBalanceService
+            ),
+            savings: CustodialCryptoBalanceFetcher(
+                currencyType: .tether,
+                service: savingsAccountService
+            ),
+            exchange: exchange[.tether]
         )
         let stellarBalanceFetcher = AssetBalanceFetcher(
             wallet: StellarServiceProvider.shared.services.accounts,
@@ -212,7 +237,8 @@ final class DataProvider: DataProviding {
             pax: paxBalanceFetcher,
             stellar: stellarBalanceFetcher,
             bitcoin: bitcoinBalanceFetcher,
-            bitcoinCash: bitcoinCashBalanceFetcher
+            bitcoinCash: bitcoinCashBalanceFetcher,
+            tether: tetherBalanceFetcher
         )
         
         balanceChange = BalanceChangeProvider(

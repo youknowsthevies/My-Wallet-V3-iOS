@@ -22,7 +22,7 @@ public struct AssetPieChart {
     public struct Value {
         
         /// Value for the interaction level
-        public struct Interaction {
+        public struct Interaction: Equatable {
             
             /// The asset type
             let asset: CryptoCurrency

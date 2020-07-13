@@ -19,9 +19,11 @@ public final class AssetBalanceView: UIView {
         }
         didSet {
             guard let presenter = presenter else {
+                fiatBalanceLabel.text = " "
+                cryptoBalanceLabel.text = " "
                 return
             }
-            
+
             presenter.alignment
                 .drive(stackView.rx.alignment)
                 .disposed(by: disposeBag)

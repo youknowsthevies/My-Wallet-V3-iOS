@@ -460,6 +460,8 @@ extension AppCoordinator: TabSwapping {
             tabControllerManager.showTransactionsPax()
         case .stellar:
             tabControllerManager.showTransactionsStellar()
+        case .tether:
+            tabControllerManager.showTransactionsTether()
         }
     }
 }

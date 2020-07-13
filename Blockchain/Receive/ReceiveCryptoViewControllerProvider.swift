@@ -68,7 +68,9 @@ final class ReceiveCryptoViewModelProvider {
         switch cryptoCurrency {
         case .algorand,
              .bitcoin,
-             .bitcoinCash:
+             .bitcoinCash,
+             .tether:
+            // TICKET: IOS-3563 - Add USD-T support to Receive
             Logger.shared.warning("Not supported for \(cryptoCurrency)")
             return nil
         case .ethereum,

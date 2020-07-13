@@ -176,7 +176,6 @@ final class ActivityScreenPresenter {
             .bindAndCatch(to: selectionButtonViewModel.subtitleRelay)
             .disposed(by: disposeBag)
 
-
         selectedModelRelay
             .bind { [weak self] model in
                 guard case let .activity(presenter) = model else { return }
@@ -219,7 +218,7 @@ fileprivate extension SelectionButtonViewModel.LeadingContent {
         case .custodial(let currency),
              .nonCustodial(let currency):
             return .image(
-                .init(name: currency.filledImageLargeName,
+                .init(name: currency.logoImageName,
                       background: .clear,
                       offset: 0,
                       cornerRadius: .round,

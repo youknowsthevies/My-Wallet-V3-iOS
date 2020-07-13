@@ -11,7 +11,7 @@ import PlatformKit
 
 extension CryptoCurrency {
 
-    /// Initialize with a display currency code: `BTC`, `ETH`, `BCH`, `XLM`, `USD-D`, `ALGO`
+    /// Initialize with a display currency code: `BTC`, `ETH`, `BCH`, `XLM`, `USD-D`, `ALGO`, `USD-T`
     public init?(displayCode: String) {
         guard let currency = (CryptoCurrency.allCases.first { $0.displayCode == displayCode }) else {
             return nil
@@ -35,6 +35,8 @@ extension CryptoCurrency {
             return .usdd
         case .stellar:
             return .stellar
+        case .tether:
+            return .tether
         }
     }
 
@@ -54,12 +56,12 @@ extension CryptoCurrency {
             return "filled_pax_small"
         case .stellar:
             return "filled_xlm_small"
+        case .tether:
+            return "filled_usdt_small"
         }
     }
 
-    // MARK: Filled large image
-
-    public var filledImageLargeName: String {
+    public var logoImageName: String {
         switch self {
         case .algorand:
             return "filled_algo_large"
@@ -73,23 +75,8 @@ extension CryptoCurrency {
             return "filled_pax_large"
         case .stellar:
             return "filled_xlm_large"
-        }
-    }
-
-    public var logoImageName: String {
-        switch self {
-        case .algorand:
-            return "filled_algo_large"
-        case .bitcoin:
-            return "filled_btc_small"
-        case .bitcoinCash:
-            return "filled_bch_large"
-        case .ethereum:
-            return "filled_eth_large"
-        case .pax:
-            return "filled_pax_large"
-        case .stellar:
-            return "filled_xlm_large"
+        case .tether:
+            return "filled_usdt_large"
         }
     }
 
@@ -107,6 +94,8 @@ extension CryptoCurrency {
             return "white_pax_small"
         case .stellar:
             return "white_xlm_small"
+        case .tether:
+            return "white_usdt_small"
         }
     }
 
@@ -124,6 +113,8 @@ extension CryptoCurrency {
             return #imageLiteral(resourceName: "symbol-eth")
         case .stellar:
             return #imageLiteral(resourceName: "symbol-xlm")
+        case .tether:
+            return #imageLiteral(resourceName: "symbol-usdt")
         }
     }
 
@@ -141,9 +132,11 @@ extension CryptoCurrency {
             return #imageLiteral(resourceName: "eth_bad")
         case .stellar:
             return #imageLiteral(resourceName: "xlm_bad")
+        case .tether:
+            return #imageLiteral(resourceName: "usdt_bad")
         }
     }
-
+    
     public var successImage: UIImage {
         switch self {
         case .algorand:
@@ -158,6 +151,8 @@ extension CryptoCurrency {
             return #imageLiteral(resourceName: "eth_good")
         case .stellar:
             return #imageLiteral(resourceName: "xlm_good")
+        case .tether:
+            return #imageLiteral(resourceName: "usdt_good")
         }
     }
 
@@ -167,10 +162,6 @@ extension CryptoCurrency {
 
     public var logo: UIImage {
         UIImage(named: logoImageName)!
-    }
-
-    public var filledImageLarge: UIImage {
-        UIImage(named: filledImageLargeName)!
     }
 
     public var filledImageSmall: UIImage {

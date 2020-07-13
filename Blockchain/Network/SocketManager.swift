@@ -40,7 +40,8 @@ class SocketManager {
         case .exchange:
             self.exchangeSocket = WebSocket(url: url)
             self.exchangeSocket?.advancedDelegate = self
-        default: Logger.shared.error(errorUnsupportedSocketType)
+        default:
+            Logger.shared.error(errorUnsupportedSocketType)
         }
     }
 
@@ -52,7 +53,8 @@ class SocketManager {
                 return
             }
             tryToSend(message: message, socket: socket)
-        default: Logger.shared.error(errorUnsupportedSocketType)
+        default:
+            Logger.shared.error(errorUnsupportedSocketType)
         }
     }
 
@@ -64,7 +66,8 @@ class SocketManager {
                 return
             }
             socket.connect()
-        default: Logger.shared.error(errorUnsupportedSocketType)
+        default:
+            Logger.shared.error(errorUnsupportedSocketType)
         }
     }
 
@@ -80,7 +83,8 @@ class SocketManager {
                 return
             }
             socket.disconnect()
-        default: Logger.shared.error(errorUnsupportedSocketType)
+        default:
+            Logger.shared.error(errorUnsupportedSocketType)
         }
     }
 

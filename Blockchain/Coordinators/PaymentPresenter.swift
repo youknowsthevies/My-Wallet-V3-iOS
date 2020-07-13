@@ -33,7 +33,7 @@ class PaymentPresenter {
         let alert = AlertModel(headline: title,
                                body: payment.amount,
                                actions: [button],
-                               image: payment.asset.filledImageLarge,
+                               image: payment.asset.logo,
                                style: .sheet)
         let alertView = AlertView.make(with: alert, completion: nil)
         alertView.show()

@@ -135,7 +135,7 @@ public final class DigitPadViewModel {
                             self.valueInsertedPublishRelay.accept(Void())
                         }
                     }
-                case .label, .image, .none:
+                case .image, .none:
                     break
                 }
             }

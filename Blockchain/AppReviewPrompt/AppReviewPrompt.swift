@@ -42,9 +42,11 @@ final class AppReviewPrompt: NSObject {
         // TODO: support overriding appBecameActiveCount for debugging
         let count = BlockchainSettings.App.shared.appBecameActiveCount
         switch count {
-        case 10, 50,
+        case 10,
+             50,
              _ where (count >= 100) && (count % 100 == 0),
-             _ where transactionsCount == numberOfTransactionsBeforePrompt: requestReview()
+             _ where transactionsCount == numberOfTransactionsBeforePrompt:
+            requestReview()
         default:
             Logger.shared.info("App review prompt will not show because the application open count is too low (\(count)).")
             return

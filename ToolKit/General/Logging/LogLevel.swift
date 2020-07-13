@@ -17,10 +17,14 @@ public extension LogLevel {
 
     var emoji: String {
         switch self {
-        case .debug: return "🏗"
-        case .info: return "ℹ️"
-        case .warning: return "⚠️"
-        case .error: return "🛑"
+        case .debug:
+            return "🏗"
+        case .info:
+            return "ℹ️"
+        case .warning:
+            return "⚠️"
+        case .error:
+            return "🛑"
         }
     }
 }

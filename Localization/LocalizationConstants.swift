@@ -1532,6 +1532,20 @@ public enum LocalizationConstants {
                 comment: "Algorand announcement card CTA button title"
             )
         }
+        public struct Tether {
+            public static let title = NSLocalizedString(
+                "Say Hello to Tether!",
+                comment: "Tether announcement card title"
+            )
+            public static let description = NSLocalizedString(
+                "USDT is the world's largest Stablecoin. Buy and swap from your app. Full Send and Receive functionality are available on the Web wallet.",
+                comment: "Tether announcement card description"
+            )
+            public static let ctaButton = NSLocalizedString(
+                "Buy Tether Now",
+                comment: "Tether announcement card CTA button title"
+            )
+        }
         public struct Exchange {
             public static let title = NSLocalizedString(
                 "Introducing the Exchange",

@@ -20,6 +20,7 @@ public enum CryptoCurrency: String, Codable, CaseIterable {
     case bitcoinCash = "BCH"
     case stellar = "XLM"
     case algorand = "ALGO"
+    case tether = "USDT"
     case pax = "PAX"
 
     /// Initialize with currency code: `BTC`, `ETH`, `BCH`, `XLM`, `PAX`, `ALGO`
@@ -38,6 +39,7 @@ extension CryptoCurrency {
              .bitcoinCash,
              .ethereum,
              .pax,
+             .tether,
              .stellar:
             return true
         }
@@ -57,6 +59,8 @@ extension CryptoCurrency {
             return "USD \(LocalizationConstants.digital)"
         case .stellar:
             return "Stellar"
+        case .tether:
+            return "Tether"
         }
     }
     
@@ -72,11 +76,13 @@ extension CryptoCurrency {
         switch self {
         case .algorand, .bitcoin, .bitcoinCash, .ethereum, .stellar:
             return code
+        case .tether:
+            return "USD-T"
         case .pax:
             return "USD-D"
         }
     }
-    
+
     public var maxDecimalPlaces: Int {
         switch self {
         case .algorand:
@@ -91,9 +97,11 @@ extension CryptoCurrency {
             return 18
         case .stellar:
             return 7
+        case .tether:
+            return 6
         }
     }
-    
+
     public var maxDisplayableDecimalPlaces: Int {
         switch self {
         case .algorand:
@@ -108,6 +116,8 @@ extension CryptoCurrency {
             return 8
         case .stellar:
             return 7
+        case .tether:
+            return 6
         }
     }
 }

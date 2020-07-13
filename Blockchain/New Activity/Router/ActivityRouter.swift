@@ -32,6 +32,7 @@ final class ActivityRouter: ActivityRouterAPI {
         
         let interactor = WalletPickerScreenInteractor(
             balanceProviding: balanceProviding,
+            tether: .init(balanceFetcher: balanceProviding[.tether], currency: .tether),
             algorand: .init(balanceFetcher: balanceProviding[.algorand], currency: .algorand),
             ether: .init(balanceFetcher: balanceProviding[.ethereum], currency: .ethereum),
             pax: .init(balanceFetcher: balanceProviding[.pax], currency: .pax),

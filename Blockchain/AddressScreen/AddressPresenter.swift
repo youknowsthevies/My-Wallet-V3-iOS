@@ -16,9 +16,6 @@ final class AddressPresenter {
     /// The name of the asset
     let assetName: String
     
-    /// The representative image name of the asset
-    let assetImageName: String
-    
     /// The asset name label accessibility
     var titleAccessibility: Accessibility {
         Accessibility(id: .value(AccessibilityIdentifiers.Address.assetNameLabel),
@@ -60,7 +57,7 @@ final class AddressPresenter {
     
     /// Computed variable that returns the asset image.
     var assetImage: UIImage {
-        UIImage(named: assetImageName)!
+        interactor.asset.logo
     }
     
     /// Accepts and streams the raw address in order to share it
@@ -90,7 +87,6 @@ final class AddressPresenter {
         self.interactor = interactor
         self.pasteboard = pasteboard
         let asset = interactor.asset
-        assetImageName = asset.filledImageLargeName
         assetName = String(format: LocalizationConstants.Address.titleFormat, asset.name)
         
         setupCopyViewModel()

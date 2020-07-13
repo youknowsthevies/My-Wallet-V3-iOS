@@ -53,6 +53,8 @@ extension BlockchainAPI {
             return "\(stellarchainUrl)/tx/\(transactionHash)"
         case .pax:
             return "\(etherExplorerUrl)/tx/\(transactionHash)"
+        case .tether:
+            return "\(etherExplorerUrl)/tx/\(transactionHash)"
         }
     }
 }

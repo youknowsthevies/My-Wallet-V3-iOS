@@ -34,7 +34,7 @@ final class BlockchainSettings: NSObject {
 
     @objc
     class App: NSObject, AppSettingsAPI, ReactiveAppSettingsAuthenticating, AppSettingsAuthenticating, SwipeToReceiveConfiguring {
-        
+
         static let shared = App()
 
         private lazy var defaults: UserDefaults = {
@@ -65,7 +65,7 @@ final class BlockchainSettings: NSObject {
                 defaults.set(newValue, forKey: UserDefaults.Keys.appBecameActiveCount.rawValue)
             }
         }
-        
+
         @objc var didRequestCameraPermissions: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.didRequestCameraPermissions.rawValue)
@@ -74,7 +74,7 @@ final class BlockchainSettings: NSObject {
                 defaults.set(newValue, forKey: UserDefaults.Keys.didRequestCameraPermissions.rawValue)
             }
         }
-        
+
         @objc var didRequestMicrophonePermissions: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.didRequestMicrophonePermissions.rawValue)
@@ -83,7 +83,7 @@ final class BlockchainSettings: NSObject {
                 defaults.set(newValue, forKey: UserDefaults.Keys.didRequestMicrophonePermissions.rawValue)
             }
         }
-        
+
         @objc var didRequestNotificationPermissions: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.didRequestNotificationPermissions.rawValue)
@@ -122,7 +122,7 @@ final class BlockchainSettings: NSObject {
                 defaults.set(newValue, forKey: UserDefaults.Keys.hasEndedFirstSession.rawValue)
             }
         }
-        
+
         @objc var pin: String? {
             get {
                 KeychainItemWrapper.pinFromKeychain()
@@ -167,7 +167,7 @@ final class BlockchainSettings: NSObject {
                 }
             }
         }
-        
+
         @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencySettingsServiceAPI`")
         @objc var fiatCurrencySymbol: String {
             UserInformationServiceProvider.default.settings.legacyCurrency?.symbol ?? "$"
@@ -254,46 +254,40 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        /// Ether address to be used for swipe to receive
-        @objc var swipeAddressForEther: String? {
-            get {
-                KeychainItemWrapper.getSingleSwipeAddress(for: .ether)
+        private func getSwipeAddress(for currency: CryptoCurrency) -> String? {
+            KeychainItemWrapper.getSingleSwipeAddress(for: currency.legacy)
+        }
+
+        private func setSwipeAddress(_ address: String?, for currency: CryptoCurrency) {
+            guard let address = address else {
+                KeychainItemWrapper.removeAllSwipeAddresses(for: currency.legacy)
+                return
             }
-            set {
-                guard let etherAddress = newValue else {
-                    KeychainItemWrapper.removeAllSwipeAddresses(for: .ether)
-                    return
-                }
-                KeychainItemWrapper.setSingleSwipeAddress(etherAddress, for: .ether)
-            }
+            KeychainItemWrapper.setSingleSwipeAddress(address, for: currency.legacy)
+        }
+
+        /// ETH address to be used for swipe to receive
+        var swipeAddressForEther: String? {
+            get { getSwipeAddress(for: .ethereum) }
+            set { setSwipeAddress(newValue, for: .ethereum) }
         }
 
         /// XLM address to be used for swipe to receive
-        @objc var swipeAddressForStellar: String? {
-            get {
-                KeychainItemWrapper.getSingleSwipeAddress(for: .stellar)
-            }
-            set {
-                guard let xlmAddress = newValue else {
-                    KeychainItemWrapper.removeAllSwipeAddresses(for: .stellar)
-                    return
-                }
-                KeychainItemWrapper.setSingleSwipeAddress(xlmAddress, for: .stellar)
-            }
+        var swipeAddressForStellar: String? {
+            get { getSwipeAddress(for: .stellar) }
+            set { setSwipeAddress(newValue, for: .stellar) }
         }
-        
-        /// XLM address to be used for swipe to receive
-        @objc var swipeAddressForPax: String? {
-            get {
-                KeychainItemWrapper.getSingleSwipeAddress(for: .pax)
-            }
-            set {
-                guard let paxAddress = newValue else {
-                    KeychainItemWrapper.removeAllSwipeAddresses(for: .pax)
-                    return
-                }
-                KeychainItemWrapper.setSingleSwipeAddress(paxAddress, for: .pax)
-            }
+
+        /// PAX address to be used for swipe to receive
+        var swipeAddressForPax: String? {
+            get { getSwipeAddress(for: .pax) }
+            set { setSwipeAddress(newValue, for: .pax) }
+        }
+
+        /// USDT address to be used for swipe to receive
+        var swipeAddressForTether: String? {
+            get { getSwipeAddress(for: .tether) }
+            set { setSwipeAddress(newValue, for: .tether) }
         }
 
         /**
@@ -387,7 +381,7 @@ final class BlockchainSettings: NSObject {
                 defaults.set(newValue, forKey: UserDefaults.Keys.documentResubmissionLinkReason.rawValue)
             }
         }
-        
+
         /// Users that are linking their Exchange account to their blockchain wallet will deep-link
         /// from the Exchange into the mobile app.
         var exchangeLinkIdentifier: String? {
@@ -398,7 +392,7 @@ final class BlockchainSettings: NSObject {
                 defaults.set(newValue, forKey: UserDefaults.Keys.exchangeLinkIdentifier.rawValue)
             }
         }
-        
+
         var didTapOnExchangeDeepLink: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.didTapOnExchangeDeepLink.rawValue)
@@ -407,7 +401,7 @@ final class BlockchainSettings: NSObject {
                 defaults.set(newValue, forKey: UserDefaults.Keys.didTapOnExchangeDeepLink.rawValue)
             }
         }
-        
+
         @objc var custodySendInterstitialViewed: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.custodySendInterstitialViewed.rawValue)
@@ -452,7 +446,7 @@ final class BlockchainSettings: NSObject {
             KYCSettings.shared.reset()
             AnnouncementRecorder.reset()
             ServiceProvider.default.cache.reset()
-            
+
             Logger.shared.info("Application settings have been reset.")
         }
 

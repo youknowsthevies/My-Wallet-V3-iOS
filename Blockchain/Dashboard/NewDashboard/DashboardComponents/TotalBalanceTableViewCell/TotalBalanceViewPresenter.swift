@@ -37,7 +37,7 @@ final class TotalBalanceViewPresenter {
             balanceProvider: balanceProvider,
             balanceChangeProvider: balanceChangeProvider
         )
-        let chartInteractor = AssetPieChartInteractor(balanceProvider: balanceProvider)
+        let chartInteractor = AssetPieChartInteractor(balanceProvider: balanceProvider, cryptoCurrencies: CryptoCurrency.allEnabled)
         pieChartPresenter = AssetPieChartPresenter(
             edge: 88,
             interactor: chartInteractor

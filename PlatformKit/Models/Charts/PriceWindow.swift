@@ -99,6 +99,8 @@ public extension CryptoCurrency {
             return 1525716000
         case .algorand:
             return 1560211225
+        case .tether:
+            return 1511829681
         }
     }
 }

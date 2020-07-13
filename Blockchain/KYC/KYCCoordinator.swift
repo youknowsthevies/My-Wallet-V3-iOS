@@ -289,7 +289,8 @@ protocol KYCCoordinatorDelegate: class {
                             break
                         case .failed, .expired:
                             URL(string: Constants.Url.blockchainSupport)?.launch()
-                        case .none, .underReview: return
+                        case .none, .underReview:
+                            return
                         }
                     }
                     
