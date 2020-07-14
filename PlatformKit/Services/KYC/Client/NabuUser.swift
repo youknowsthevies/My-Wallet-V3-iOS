@@ -6,9 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-
 public struct NabuUser: Decodable {
-
+    
     // MARK: - Types
 
     public enum UserState: String, Codable {
@@ -18,6 +17,25 @@ public struct NabuUser: Decodable {
         case blocked = "BLOCKED"
     }
 
+    /// Products used by the user
+    public struct ProductsUsed: Decodable {
+        
+        private enum CodingKeys: String, CodingKey {
+            case exchange
+        }
+        
+        let exchange: Bool
+        
+        public init(exchange: Bool) {
+            self.exchange = exchange
+        }
+
+        public init(from decoder: Decoder) throws {
+            let values = try decoder.container(keyedBy: CodingKeys.self)
+            exchange = try values.decodeIfPresent(Bool.self, forKey: .exchange) ?? false
+        }
+    }
+    
     // MARK: - Properties
 
     public let personalDetails: PersonalDetails
@@ -31,8 +49,8 @@ public struct NabuUser: Decodable {
     public let needsDocumentResubmission: DocumentResubmission?
     public let userName: String?
     public let depositAddresses: [DepositAddress]
-    public let settings: NabuUserSettings?
-
+    public let productsUsed: ProductsUsed
+    
     /// ISO-8601 Timestamp w/millis, eg 2018-08-15T17:00:45.129Z
     public let kycCreationDate: String?
 
@@ -49,7 +67,7 @@ public struct NabuUser: Decodable {
         case tiers
         case needsDocumentResubmission = "resubmission"
         case userName
-        case settings
+        case productsUsed
         case kycCreationDate = "insertedAt"
         case kycUpdateDate = "updatedAt"
         case depositAddresses = "walletAddresses"
@@ -70,7 +88,7 @@ public struct NabuUser: Decodable {
         needsDocumentResubmission: DocumentResubmission?,
         userName: String? = nil,
         depositAddresses: [DepositAddress] = [],
-        settings: NabuUserSettings? = nil,
+        productsUsed: ProductsUsed,
         kycCreationDate: String? = nil,
         kycUpdateDate: String? = nil
     ) {
@@ -85,7 +103,7 @@ public struct NabuUser: Decodable {
         self.needsDocumentResubmission = needsDocumentResubmission
         self.userName = userName
         self.depositAddresses = depositAddresses
-        self.settings = settings
+        self.productsUsed = productsUsed
         self.kycCreationDate = kycCreationDate
         self.kycUpdateDate = kycUpdateDate
     }
@@ -95,7 +113,11 @@ public struct NabuUser: Decodable {
         address = try values.decodeIfPresent(UserAddress.self, forKey: .address)
         tiers = try values.decodeIfPresent(KYC.UserState.self, forKey: .tiers)
         userName = try values.decodeIfPresent(String.self, forKey: .userName)
-        settings = try values.decodeIfPresent(NabuUserSettings.self, forKey: .settings)
+        if let productsUsed = try values.decodeIfPresent(ProductsUsed.self, forKey: .productsUsed) {
+            self.productsUsed = productsUsed
+        } else {
+            self.productsUsed = ProductsUsed(exchange: false)
+        }
         personalDetails = try PersonalDetails(from: decoder)
         email = try Email(from: decoder)
         mobile = try? Mobile(from: decoder)
@@ -118,8 +140,8 @@ public struct NabuUser: Decodable {
 extension NabuUser: User { }
 
 extension NabuUser {
-    public var hasLinkedExchangeAccount: Bool {
-        settings != nil
+    public var hasLinkedExchangeAccount: Bool {        
+        productsUsed.exchange
     }
 }
 
@@ -252,13 +274,5 @@ public struct DepositAddress {
     public init(type: CryptoCurrency, address: String) {
         self.type = type
         self.address = address
-    }
-}
-
-public struct NabuUserSettings: Decodable {
-    public let mercuryEmailVerified: Bool
-
-    private enum CodingKeys: String, CodingKey {
-        case mercuryEmailVerified = "MERCURY_EMAIL_VERIFIED"
     }
 }

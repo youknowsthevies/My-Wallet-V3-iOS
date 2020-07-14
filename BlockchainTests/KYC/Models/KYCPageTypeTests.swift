@@ -152,7 +152,8 @@ class KYCPageTypeTests: XCTestCase {
             state: NabuUser.UserState.none,
             tags: Tags(),
             tiers: nil,
-            needsDocumentResubmission: nil
+            needsDocumentResubmission: nil,
+            productsUsed: NabuUser.ProductsUsed(exchange: false)
         )
     }
 }

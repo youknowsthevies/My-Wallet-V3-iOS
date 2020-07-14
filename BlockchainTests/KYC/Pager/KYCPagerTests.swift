@@ -70,7 +70,8 @@ class KYCPagerTests: XCTestCase {
             state: .active,
             tags: nil,
             tiers: tiers,
-            needsDocumentResubmission: nil
+            needsDocumentResubmission: nil,
+            productsUsed: NabuUser.ProductsUsed(exchange: false)
         )
     }
 }
