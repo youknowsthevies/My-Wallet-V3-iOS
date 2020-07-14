@@ -104,7 +104,11 @@ public final class SelectionScreenViewController: BaseScreenViewController {
         
         // Table view binding
         
-        presenter.displayPresenters
+        let displayPresenters = presenter
+            .displayPresenters
+            .share(replay: 1)
+        
+        displayPresenters
             .bind(
                 to: tableView.rx.items(
                     cellIdentifier: SelectionItemTableViewCell.objectName,
@@ -116,15 +120,21 @@ public final class SelectionScreenViewController: BaseScreenViewController {
             )
             .disposed(by: disposeBag)
 
-        presenter.preselection
+        displayPresenters
+            .filter { !$0.isEmpty }
+            .flatMap(weak: self) { (self, _) in
+                self.presenter.preselection
+            }
             .take(1)
-            .bindAndCatch(weak: tableView) { (tableView, index) in
-                tableView.scrollToRow(
+            .asSingle()
+            .observeOn(MainScheduler.asyncInstance)
+            .subscribe(onSuccess: { [weak self] (index) in
+                self?.tableView.scrollToRow(
                     at: IndexPath(row: index, section: 0),
                     at: .middle,
                     animated: true
                 )
-            }
+            })
             .disposed(by: disposeBag)
     }
     
