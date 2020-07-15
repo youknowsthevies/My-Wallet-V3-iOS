@@ -96,7 +96,10 @@ struct EthereumActivityDetailsViewModel: Equatable {
         case .confirmed:
             return .init(type: .verified, description: LocalizedString.completed)
         case .pending:
-            return .init(type: .default, description: LocalizedString.pending)
+            return .init(
+                type: .default(accessibilitySuffix: "Pending"),
+                description: LocalizedString.pending
+            )
         case .replaced:
             return .init(type: .verified, description: LocalizedString.replaced)
         }

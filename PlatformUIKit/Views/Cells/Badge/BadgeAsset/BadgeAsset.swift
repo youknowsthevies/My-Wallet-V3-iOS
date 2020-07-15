@@ -26,7 +26,7 @@ public enum BadgeAsset {
             public struct BadgeItem: Equatable {
 
                 public enum BadgeType: Equatable {
-                    case `default`
+                    case `default`(accessibilitySuffix: String)
                     case verified
                     case destructive
                     case progress(BadgeCircleViewModel)
@@ -65,8 +65,8 @@ public enum BadgeAsset {
                 
                 public init(with value: Interaction.BadgeItem) {
                     switch value.type {
-                    case .default:
-                        viewModel = .default(with: value.description)
+                    case .default(accessibilitySuffix: let suffix):
+                        viewModel = .default(with: value.description, accessibilityId: suffix)
                     case .destructive:
                         viewModel = .destructive(with: value.description)
                     case .verified:
@@ -92,12 +92,12 @@ extension BadgeAsset.Value.Interaction.BadgeItem {
     )
     
     public static let connect: BadgeAsset.Value.Interaction.BadgeItem = .init(
-        type: .default,
+        type: .default(accessibilitySuffix: "Connect"),
         description: LocalizationConstants.Exchange.connect
     )
     
     public static let confirmed: BadgeAsset.Value.Interaction.BadgeItem = .init(
-        type: .default,
+        type: .default(accessibilitySuffix: "Confirmed"),
         description: LocalizationConstants.Settings.Badge.confirmed
     )
     
@@ -107,7 +107,7 @@ extension BadgeAsset.Value.Interaction.BadgeItem {
     )
 
     public static let connected: BadgeAsset.Value.Interaction.BadgeItem = .init(
-        type: .default,
+        type: .default(accessibilitySuffix: "Connected"),
         description: LocalizationConstants.Exchange.connected
     )
 }

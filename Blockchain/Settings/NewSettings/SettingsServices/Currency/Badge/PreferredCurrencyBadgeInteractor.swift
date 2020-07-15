@@ -29,7 +29,10 @@ final class PreferredCurrencyBadgeInteractor: DefaultBadgeAssetInteractor {
                 let currency = currencyInfo.0
                 let description = currencyNames[currency] as? String ?? currency
                 let title = "\(description) (\(currencyInfo.1.symbol))"
-                return BadgeItem(type: .default, description: title)
+                return BadgeItem(
+                    type: .default(accessibilitySuffix: title),
+                    description: title
+                )
             }
             .map { .loaded(next: $0) }
             .catchErrorJustReturn(.loading)

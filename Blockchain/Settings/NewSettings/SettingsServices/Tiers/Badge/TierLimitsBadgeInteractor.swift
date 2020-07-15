@@ -39,11 +39,21 @@ fileprivate extension KYC.UserTiers {
         
         switch currentTier.state {
         case .none:
-            return .loaded(next: .init(type: .default, description: LocalizationConstants.KYC.accountUnverifiedBadge))
+            return .loaded(
+                next: .init(
+                    type: .default(accessibilitySuffix: "Verify Now"),
+                    description: LocalizationConstants.KYC.accountUnverifiedBadge
+                )
+            )
         case .rejected:
             return .loaded(next: .init(type: .destructive, description: LocalizationConstants.KYC.verificationFailedBadge))
         case .pending:
-            return .loaded(next: .init(type: .default, description: LocalizationConstants.KYC.accountInReviewBadge))
+            return .loaded(
+                next: .init(
+                    type: .default(accessibilitySuffix: "In Review"),
+                    description: LocalizationConstants.KYC.accountInReviewBadge
+                )
+            )
         case .verified:
             return .loaded(next: .init(type: .verified, description: LocalizationConstants.KYC.accountApprovedBadge))
         }

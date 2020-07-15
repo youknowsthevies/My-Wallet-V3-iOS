@@ -175,9 +175,11 @@ final class CheckoutScreenContentReducer {
         fiatAmountLabelPresenter.interactor.stateRelay.accept(
             .loaded(next: .init(text: "\(totalCost) \(LocalizedSummary.of) \(data.cryptoCurrency.displayCode)"))
         )
+        
+        let description = data.order.state.localizedDescription
 
         statusBadge.interactor.stateRelay.accept(
-            .loaded(next: .init(type: .default, description: data.order.state.localizedDescription))
+            .loaded(next: .init(type: .default(accessibilitySuffix: description), description: description))
         )
 
         // MARK: Title Setup

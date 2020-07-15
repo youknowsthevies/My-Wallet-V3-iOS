@@ -16,6 +16,8 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Types
 
+    private typealias BadgeItem = BadgeAsset.Value.Interaction.BadgeItem
+    private typealias BadgeType = BadgeItem.BadgeType
     private typealias LocalizedString = LocalizationConstants.Activity.Details
     private typealias AccessibilityId = Accessibility.Identifier.Activity.Details
 
@@ -85,12 +87,18 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
         titleViewRelay
             .accept(.text(value: LocalizedString.Title.swap))
+        let statusDescription = event.status.localizedDescription
+        let badgeType: BadgeType = event.status == .complete ? .verified : .default(accessibilitySuffix: statusDescription)
+        let badgeItem: BadgeItem = .init(
+            type: badgeType,
+            description: statusDescription
+        )
         statusBadge
             .interactor
             .stateRelay
             .accept(
                 .loaded(
-                    next: .init(type: event.status == .complete ? .verified : .default, description: event.status.localizedDescription)
+                    next: badgeItem
                 )
         )
         badgesModel

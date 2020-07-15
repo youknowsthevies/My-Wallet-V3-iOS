@@ -60,7 +60,10 @@ struct BitcoinCashActivityDetailsViewModel: Equatable {
 
     private static func statusBadge(needConfirmation: Bool) -> BadgeAsset.Value.Interaction.BadgeItem {
         if needConfirmation {
-            return .init(type: .default, description: LocalizedString.pending)
+            return .init(
+                type: .default(accessibilitySuffix: "Pending"),
+                description: LocalizedString.pending
+            )
         } else {
             return .init(type: .verified, description: LocalizedString.completed)
         }

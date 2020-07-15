@@ -97,8 +97,14 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
             descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
         badgesModel.badgesRelay.accept([statusBadge])
+        let description = event.status.localizedDescription
         statusBadge.interactor.stateRelay.accept(
-            .loaded(next: .init(type: .default, description: event.status.localizedDescription))
+            .loaded(
+                next: .init(
+                    type: .default(accessibilitySuffix: description),
+                    description: event.status.localizedDescription
+                )
+            )
         )
         cardDataRelay
             .compactMap { $0 }
