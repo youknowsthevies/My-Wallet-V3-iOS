@@ -52,6 +52,7 @@ extension Accessibility.Identifier.Activity.ActivityCell {
 
 extension Accessibility.Identifier.Activity.WalletSelectorView {
     private static let prefix = "\(Accessibility.Identifier.Activity.prefix)WalletSelectorView."
+    public static let button = "\(prefix)button"
     public static let titleLabel = "\(prefix)titleLabel"
     public static let subtitleLabel = "\(prefix)subtitleLabel"
 }
