@@ -23,8 +23,8 @@ class CryptoCurrencyTests: XCTestCase {
             .bitcoinCash,
             .stellar,
             .algorand,
-            .tether,
-            .pax
+            .pax,
+            .tether
         ]
         XCTAssertTrue(CryptoCurrency.allCases == cryptoCurrencyDesiredOrder,
                       "CryptoCurrency.allCases is not as expected.")
