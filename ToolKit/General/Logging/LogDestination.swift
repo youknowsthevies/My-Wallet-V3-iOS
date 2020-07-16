@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import SwiftyBeaver
 
 /// Protocol description for a log statement destination (e.g. console, file, remote, etc.)
 public protocol LogDestination {
@@ -15,5 +15,5 @@ public protocol LogDestination {
     ///
     /// - Parameters:
     ///   - statement: the statement to log
-    func log(statement: String)
+    func log(statement: String, level: LogLevel)
 }

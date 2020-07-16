@@ -177,6 +177,7 @@ targets:
     - carthage: SocketIO
     - carthage: Starscream
     - carthage: stellarsdk
+    - carthage: SwiftyBeaver
     - carthage: web3swift
     - carthage: WebRTC
     - carthage: Veriff
@@ -523,6 +524,9 @@ targets:
         WEBSOCKET_SERVER: $(WEBSOCKET_SERVER)
         WEBSOCKET_SERVER_BCH: $(WEBSOCKET_SERVER_BCH)
         WEBSOCKET_SERVER_ETH: $(WEBSOCKET_SERVER_ETH)
+        SWIFTY_BEAVER_APP_ID: $(SWIFTY_BEAVER_APP_ID)
+        SWIFTY_BEAVER_APP_SECRET: $(SWIFTY_BEAVER_APP_SECRET)
+        SWIFTY_BEAVER_APP_KEY: $(SWIFTY_BEAVER_APP_KEY)
     platform: iOS
     postCompileScripts:
     - name: Get SSL Certificate
@@ -644,6 +648,7 @@ targets:
     - carthage: BigInt
     - carthage: RxSwift
     - carthage: RxRelay
+    - carthage: SwiftyBeaver
     scheme:
       testTargets:
       - ToolKitTests

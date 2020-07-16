@@ -6,12 +6,11 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-
 /// Class in charge of logging debug/info/warning/error messages to a `LogDestination`.
 @objc public class Logger: NSObject {
 
-    private var destinations = [LogDestination]()
+    private let destinations: [LogDestination] = [ConsoleLogDestination(),
+                                                  SwiftyBeaverDestination()]
 
     private lazy var timestampFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -21,9 +20,6 @@ import Foundation
 
     public static let shared: Logger = {
         let logger = Logger()
-        #if DEBUG
-        logger.destinations.append(ConsoleLogDestination())
-        #endif
         return logger
     }()
 
@@ -86,7 +82,7 @@ import Foundation
                 function: function,
                 line: line
             )
-            $0.log(statement: statement)
+            $0.log(statement: statement, level: level)
         }
     }
 

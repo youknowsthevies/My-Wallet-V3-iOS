@@ -34,6 +34,12 @@
 	<string>$(RETAIL_CORE_SOCKET_URL)</string>
 	<key>RETAIL_CORE_URL</key>
 	<string>$(RETAIL_CORE_URL)</string>
+	<key>SWIFTY_BEAVER_APP_ID</key>
+	<string>$(SWIFTY_BEAVER_APP_ID)</string>
+	<key>SWIFTY_BEAVER_APP_KEY</key>
+	<string>$(SWIFTY_BEAVER_APP_KEY)</string>
+	<key>SWIFTY_BEAVER_APP_SECRET</key>
+	<string>$(SWIFTY_BEAVER_APP_SECRET)</string>
 	<key>WALLET_SERVER</key>
 	<string>$(WALLET_SERVER)</string>
 	<key>WEBSOCKET_SERVER</key>
