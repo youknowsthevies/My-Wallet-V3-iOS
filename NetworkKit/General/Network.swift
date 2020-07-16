@@ -81,9 +81,7 @@ public struct Network {
         public static let `default`: Dependencies = {
             let blockchainAPIConfig = Config.defaultConfig
             let sessionConfiguration = URLSessionConfiguration.default
-            if let userAgent = UserAgentProvider.shared.userAgent {
-                sessionConfiguration.httpAdditionalHeaders = [HttpHeaderField.userAgent: userAgent]
-            }
+            sessionConfiguration.httpAdditionalHeaders = [HttpHeaderField.userAgent: UserAgentProvider.shared.userAgent!]
             sessionConfiguration.waitsForConnectivity = true
             let sessionDelegate = SessionDelegate()
             let session = URLSession(configuration: sessionConfiguration, delegate: sessionDelegate, delegateQueue: nil)
@@ -102,9 +100,7 @@ public struct Network {
         public static let explorer: Dependencies = {
             let blockchainAPIConfig = Config.explorerConfig
             let sessionConfiguration = URLSessionConfiguration.default
-            if let userAgent = UserAgentProvider.shared.userAgent {
-                sessionConfiguration.httpAdditionalHeaders = [HttpHeaderField.userAgent: userAgent]
-            }
+            sessionConfiguration.httpAdditionalHeaders = [HttpHeaderField.userAgent: UserAgentProvider.shared.userAgent!]
             sessionConfiguration.waitsForConnectivity = true
             let sessionDelegate = SessionDelegate()
             let session = URLSession(configuration: sessionConfiguration, delegate: sessionDelegate, delegateQueue: nil)
@@ -123,9 +119,7 @@ public struct Network {
         public static let wallet: Dependencies = {
             let blockchainAPIConfig = Config.walletConfig
             let sessionConfiguration = URLSessionConfiguration.default
-            if let userAgent = UserAgentProvider.shared.userAgent {
-                sessionConfiguration.httpAdditionalHeaders = [HttpHeaderField.userAgent: userAgent]
-            }
+            sessionConfiguration.httpAdditionalHeaders = [HttpHeaderField.userAgent: UserAgentProvider.shared.userAgent!]
             sessionConfiguration.waitsForConnectivity = true
             let sessionDelegate = SessionDelegate()
             let session = URLSession(configuration: sessionConfiguration, delegate: sessionDelegate, delegateQueue: nil)
@@ -144,9 +138,7 @@ public struct Network {
         public static let retail: Dependencies = {
             let blockchainAPIConfig = Config.retailConfig
             let sessionConfiguration = URLSessionConfiguration.default
-            if let userAgent = UserAgentProvider.shared.userAgent {
-                sessionConfiguration.httpAdditionalHeaders = [HttpHeaderField.userAgent: userAgent]
-            }
+            sessionConfiguration.httpAdditionalHeaders = [HttpHeaderField.userAgent: UserAgentProvider.shared.userAgent!]
             sessionConfiguration.waitsForConnectivity = true
             let sessionDelegate = SessionDelegate()
             let session = URLSession(configuration: sessionConfiguration, delegate: sessionDelegate, delegateQueue: nil)

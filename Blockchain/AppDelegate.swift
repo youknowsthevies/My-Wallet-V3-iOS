@@ -43,7 +43,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         DeepLinkHandler()
     }()
     
-    private let deepLinkRouter: DeepLinkRouter = DeepLinkRouter()
+    private lazy var deepLinkRouter = DeepLinkRouter()
 
     /// A service that provides remote notification registration logic,
     /// thus taking responsibility off `AppDelegate` instance.
@@ -58,7 +58,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private let disposeBag = DisposeBag()
     private weak var appCoordinator: AppCoordinator!
-    private let bitpayRouter = BitPayLinkRouter()
+    
+    private lazy var bitpayRouter = BitPayLinkRouter()
     
     // MARK: - Lifecycle Methods
 
