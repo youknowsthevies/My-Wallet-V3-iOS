@@ -40,12 +40,6 @@ final class AddCardCellPresenter: AsyncPresenting {
         alignment: .left,
         accessibility: .none
     )
-
-    let badgeImageViewModel: BadgeImageViewModel = .primary(
-        with: "icon-card",
-        cornerRadius: .value(14),
-        accessibilityIdSuffix: ""
-    )
     
     let badgeImagePresenter: BadgeImageAssetPresenting
     let labelContentPresenter: AddCardLabelContentPresenter

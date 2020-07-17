@@ -71,7 +71,7 @@ fileprivate extension BadgeImageViewModel {
     )
     
     static let info: BadgeImageViewModel = .default(
-        with: "Icon-Information",
+        with: "Icon-Info",
         cornerRadius: .round,
         accessibilityIdSuffix: ""
     )

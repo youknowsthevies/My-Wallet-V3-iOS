@@ -12,11 +12,15 @@ import ToolKit
 
 struct SettingsCellViewModel {
     
+    /// The `Action` executed when the cell is tapped
     var action: SettingsScreenAction {
         cellType.action
     }
     
+    /// The type of cell associated with the viewModel.
     let cellType: SettingsSectionType.CellType
+    
+    /// The analytics recorder that records tap events.
     let analyticsRecorder: AnalyticsEventRecording
     
     init(cellType: SettingsSectionType.CellType,

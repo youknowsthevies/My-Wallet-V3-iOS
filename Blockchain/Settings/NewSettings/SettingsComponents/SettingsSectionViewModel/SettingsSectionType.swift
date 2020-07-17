@@ -11,13 +11,13 @@ import BuySellUIKit
 import PlatformUIKit
 import RxDataSources
 
-enum SettingsSectionType: String, Equatable {
-    case profile
-    case preferences
-    case connect
-    case security
-    case cards
-    case about
+enum SettingsSectionType: Int, Equatable {
+    case profile = 1
+    case preferences = 2
+    case connect = 3
+    case security = 4
+    case cards = 5
+    case about = 6
     
     enum CellType: Equatable, IdentifiableType {
         
@@ -83,6 +83,8 @@ enum SettingsSectionType: String, Equatable {
             
             var identity: AnyHashable {
                 switch self {
+                case .skeleton(let index):
+                    return "skeleton.\(index)"
                 case .addCard:
                     return "addCard"
                 case .linkedCard(let value):
@@ -90,12 +92,15 @@ enum SettingsSectionType: String, Equatable {
                 }
             }
             
+            case skeleton(Int)
             case linkedCard(LinkedCardCellPresenter)
             case addCard(AddCardCellPresenter)
             
             static func == (lhs: SettingsSectionType.CellType.CardsCellType,
                             rhs: SettingsSectionType.CellType.CardsCellType) -> Bool {
                 switch (lhs, rhs) {
+                case (.skeleton(let left), .skeleton(let right)):
+                    return left == right
                 case (.linkedCard(let left), .linkedCard(let right)):
                     return left.cardData.identifier == right.cardData.identifier
                 case (.addCard, .addCard):
@@ -116,4 +121,13 @@ enum SettingsSectionType: String, Equatable {
             case cookiesPolicy
         }
     }
+}
+
+extension SettingsSectionType {
+    static let `default`: [SettingsSectionType] = [
+        .profile,
+        .preferences,
+        .security,
+        .about
+    ]
 }

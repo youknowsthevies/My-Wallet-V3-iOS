@@ -28,14 +28,11 @@ final class SettingsViewController: BaseScreenViewController {
     
     private let presenter: SettingsScreenPresenter
     private let disposeBag = DisposeBag()
-    private let loadingViewPresenting: LoadingViewPresenting
     
     // MARK: - Setup
     
-    init(presenter: SettingsScreenPresenter,
-         loadingViewPresenting: LoadingViewPresenting = LoadingViewPresenter.shared) {
+    init(presenter: SettingsScreenPresenter) {
         self.presenter = presenter
-        self.loadingViewPresenting = loadingViewPresenting
         super.init(nibName: SettingsViewController.objectName, bundle: nil)
     }
     
@@ -85,6 +82,7 @@ final class SettingsViewController: BaseScreenViewController {
         tableView.registerNibCell(PlainTableViewCell.self)
         tableView.registerNibCell(AddCardTableViewCell.self)
         tableView.registerNibCell(LinkedCardTableViewCell.self)
+        tableView.register(SettingsSkeletonTableViewCell.self)
         tableView.registerHeaderView(TableHeaderView.objectName)
         
         let dataSource = RxDataSource(configureCell: { [weak self] _, _, indexPath, item in
@@ -99,6 +97,8 @@ final class SettingsViewController: BaseScreenViewController {
                 cell = self.plainCell(for: indexPath, viewModel: type.viewModel)
             case .cards(let type):
                 switch type {
+                case .skeleton:
+                    cell = self.skeletonCell(for: indexPath)
                 case .addCard(let presenter):
                     cell = self.addCardCell(for: indexPath, presenter: presenter)
                 case .linkedCard(let presenter):
@@ -112,8 +112,6 @@ final class SettingsViewController: BaseScreenViewController {
         })
 
         presenter.sectionObservable
-            .showLoaderOnSubscription(loader: loadingViewPresenting, style: .circle)
-            .hide(loader: loadingViewPresenting)
             .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
 
@@ -143,6 +141,11 @@ extension SettingsViewController: UITableViewDelegate {
         let viewModel = TableHeaderViewModel.settings(title: section.sectionTitle)
         header.viewModel = viewModel
         return header
+    }
+    
+    private func skeletonCell(for indexPath: IndexPath) -> SettingsSkeletonTableViewCell {
+        let cell = tableView.dequeue(SettingsSkeletonTableViewCell.self, for: indexPath)
+        return cell
     }
     
     private func switchCell(for indexPath: IndexPath, presenter: SwitchCellPresenting) -> SwitchTableViewCell {

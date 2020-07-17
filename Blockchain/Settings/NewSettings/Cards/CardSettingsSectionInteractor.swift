@@ -10,18 +10,40 @@ import BuySellKit
 import PlatformKit
 import RxRelay
 import RxSwift
+import ToolKit
 
 final class CardSettingsSectionInteractor {
     
-    typealias State = LoadingState<[CardData]>
+    typealias State = ValueCalculationState<[CardData]>
     
-    var state: Observable<State> {
-        stateRelay.asObservable()
+    enum CardSettingsSectionError: Error {
+        case notSupported
     }
     
-    private let stateRelay = BehaviorRelay<State>(value: .loading)
-    private let disposeBag = DisposeBag()
+    var state: Observable<State> {
+        _ = setup
+        return stateRelay
+            .asObservable()
+    }
+    
+    private lazy var setup: Void = {
+        featureFetching
+            .fetchBool(for: .simpleBuyCardsEnabled)
+            .asObservable()
+            .flatMap(weak: self) { (self, enabled) -> Observable<State> in
+                guard enabled else { return .just(.invalid(.empty)) }
+                return self.cards.map { values -> State in
+                    return .value(values)
+                }
+            }
+            .bindAndCatch(to: stateRelay)
+            .disposed(by: disposeBag)
+    }()
+    
+    private let stateRelay = BehaviorRelay<State>(value: .invalid(.empty))
+    private let featureFetching: FeatureFetching
     private let service: BuySellKit.PaymentMethodTypesServiceAPI
+    private let disposeBag = DisposeBag()
     
     private var cards: Observable<[CardData]> {
         service.cards
@@ -31,12 +53,9 @@ final class CardSettingsSectionInteractor {
 
     // MARK: - Setup
     
-    init(service: BuySellKit.PaymentMethodTypesServiceAPI) {
+    init(featureFetching: FeatureFetching = AppFeatureConfigurator.shared,
+         service: BuySellKit.PaymentMethodTypesServiceAPI) {
+        self.featureFetching = featureFetching
         self.service = service
-        cards
-            .map { .loaded(next: $0) }
-            .startWith(.loading)
-            .bindAndCatch(to: stateRelay)
-            .disposed(by: disposeBag)
     }
 }

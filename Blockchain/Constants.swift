@@ -124,10 +124,10 @@ struct Constants {
     struct Url {
         static let blockchainHome = "https://www.blockchain.com"
         static let privacyPolicy = blockchainHome + "/privacy"
+        static let cookiesPolicy = blockchainHome + "/legal/cookies"
         static let termsOfService = blockchainHome + "/terms"
         static let simpleBuyGBPTerms = "https://exchange.blockchain.com/legal#modulr"
 
-        static let cookiePolicy = blockchainHome + "/cookies"
         static let appStoreLinkPrefix = "itms-apps://itunes.apple.com/app/"
         static let blockchainSupport = "https://support.blockchain.com"
         static let exchangeSupport = "https://exchange-support.blockchain.com/hc/en-us"
@@ -261,7 +261,7 @@ struct Constants {
     }
 
     @objc class func cookiePolicyURLString() -> String {
-        Constants.Url.cookiePolicy
+        Constants.Url.cookiesPolicy
     }
 
     @objc class func defaultNavigationBarHeight() -> CGFloat {

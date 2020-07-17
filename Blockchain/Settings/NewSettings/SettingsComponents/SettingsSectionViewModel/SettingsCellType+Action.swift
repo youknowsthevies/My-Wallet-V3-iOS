@@ -30,6 +30,8 @@ extension SettingsSectionType.CellType {
             }
         case .cards(let type):
             switch type {
+            case .skeleton:
+                return .none
             case .linkedCard(let presenter):
                 return .showRemoveCardScreen(presenter.cardData)
             case .addCard(let presenter):
@@ -53,9 +55,10 @@ extension SettingsSectionType.CellType {
                 return .showAppStore
             case .termsOfService:
                 return .showURL(URL(string: Constants.Url.termsOfService)!)
-            case .privacyPolicy,
-                 .cookiesPolicy:
+            case .privacyPolicy:
                 return .showURL(URL(string: Constants.Url.privacyPolicy)!)
+            case .cookiesPolicy:
+                return .showURL(URL(string: Constants.Url.cookiesPolicy)!)
             }
         case .switch:
             return .none
