@@ -237,6 +237,20 @@ final class BlockchainSettings: NSObject {
             }
         }
 
+        @objc var selectedLegacyAssetType: LegacyAssetType {
+            get {
+                let rawValue = defaults.integer(forKey: UserDefaults.Keys.selectedLegacyAssetType.rawValue)
+                guard let value = LegacyAssetType(rawValue: rawValue),
+                    CryptoCurrency.allEnabled.contains(CryptoCurrency(legacyAssetType: value)) else {
+                        return .bitcoin
+                }
+                return value
+            }
+            set {
+                defaults.set(newValue.rawValue, forKey: UserDefaults.Keys.selectedLegacyAssetType.rawValue)
+            }
+        }
+
         /**
          Determines if the application should allow access to swipe-to-receive on the pin screen.
 
@@ -418,7 +432,7 @@ final class BlockchainSettings: NSObject {
 
             defaults.register(defaults: [
                 UserDefaults.Keys.swipeToReceiveEnabled.rawValue: true,
-                UserDefaults.Keys.assetType.rawValue: CryptoCurrency.bitcoin.code
+                UserDefaults.Keys.selectedLegacyAssetType.rawValue: LegacyAssetType.bitcoin.rawValue
             ])
             migratePasswordAndPinIfNeeded()
             handleMigrationIfNeeded()

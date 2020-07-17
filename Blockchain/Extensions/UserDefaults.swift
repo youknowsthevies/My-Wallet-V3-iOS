@@ -31,7 +31,6 @@ extension UserDefaults {
 
     enum Keys: String {
         case appBecameActiveCount
-        case assetType
         case biometryEnabled
         case defaultAccountLabelledAddressesCount
         case dontAskUserToShowAppReviewPrompt
@@ -48,6 +47,7 @@ extension UserDefaults {
         case isCompletingKyc = "shouldShowKYCAnnouncementCard"
         case didTapOnAirdropDeepLink
         case swipeToReceiveEnabled = "swipeToReceive"
+        case selectedLegacyAssetType = "assetType"
         case symbolLocal
         case hasSeenAirdropJoinWaitlistCard
         case hasSeenGetFreeXlmModal

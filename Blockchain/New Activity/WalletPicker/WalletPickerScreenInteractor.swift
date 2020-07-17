@@ -36,7 +36,7 @@ final class WalletPickerCellInteractorProvider {
             .isFunded
             .map(weak: self) { (self, isFunded) -> [CurrentBalanceCellInteractor] in
                 var result: [CurrentBalanceCellInteractor] = []
-                if self.currency.hasNonCustodialSupport {
+                if self.currency.hasNonCustodialActivitySupport {
                     result.append(
                         CurrentBalanceCellInteractor(
                             balanceFetching: self.balanceFetcher,

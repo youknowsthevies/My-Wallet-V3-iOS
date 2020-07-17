@@ -31,7 +31,35 @@ public enum CryptoCurrency: String, Codable, CaseIterable {
 
 extension CryptoCurrency {
 
-    public var hasNonCustodialSupport: Bool {
+    public var hasNonCustodialTradeSupport: Bool {
+        switch self {
+        case .algorand,
+            .tether:
+            return false
+        case .bitcoin,
+             .bitcoinCash,
+             .ethereum,
+             .pax,
+             .stellar:
+            return true
+        }
+    }
+
+    public var hasNonCustodialWithdrawalSupport: Bool {
+        switch self {
+        case .algorand:
+            return false
+        case .bitcoin,
+             .bitcoinCash,
+             .ethereum,
+             .pax,
+             .tether,
+             .stellar:
+            return true
+        }
+    }
+
+    public var hasNonCustodialActivitySupport: Bool {
         switch self {
         case .algorand:
             return false

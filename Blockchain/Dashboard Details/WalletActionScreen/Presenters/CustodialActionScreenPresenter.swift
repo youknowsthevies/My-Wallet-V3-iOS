@@ -114,7 +114,7 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
         let isSavings = interactor.balanceType.isSavings
         activityButtonVisibilityRelay.accept(!isSavings ? .visible : .hidden)
         swapButtonVisibilityRelay.accept(!isCustodial ? .visible : .hidden)
-        sendToWalletVisibilityRelay.accept(isTrading && currency.hasNonCustodialSupport ? .visible : .hidden)
+        sendToWalletVisibilityRelay.accept(isTrading && currency.hasNonCustodialWithdrawalSupport ? .visible : .hidden)
     }
 }
 

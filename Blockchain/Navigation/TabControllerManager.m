@@ -39,7 +39,12 @@
     
     self.tabViewController.assetDelegate = self;
 
-    NSInteger assetType = [[[NSUserDefaults standardUserDefaults] objectForKey:USER_DEFAULTS_KEY_ASSET_TYPE] integerValue];
+    LegacyAssetType assetType = BlockchainSettings.sharedAppInstance.selectedLegacyAssetType;
+
+    if (![AssetSelectorView.availableAssets containsObject:@(assetType)]) {
+        // Guard against value being read is not enabled for use with Asset Selector.
+        assetType = LegacyAssetTypeBitcoin;
+    }
     self.assetType = assetType;
     [self.tabViewController selectAsset:assetType];
 
@@ -69,7 +74,7 @@
 {
     self.assetType = assetType;
 
-    [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInteger:self.assetType] forKey:USER_DEFAULTS_KEY_ASSET_TYPE];
+    BlockchainSettings.sharedAppInstance.selectedLegacyAssetType = self.assetType;
 
     BOOL animated = NO;
 
@@ -699,9 +704,7 @@
 - (void)changeAssetSelectorAsset:(LegacyAssetType)assetType
 {
     self.assetType = assetType;
-
-    [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInteger:self.assetType] forKey:USER_DEFAULTS_KEY_ASSET_TYPE];
- 
+    BlockchainSettings.sharedAppInstance.selectedLegacyAssetType = assetType;
     [self.tabViewController selectAsset:assetType];
 }
 
