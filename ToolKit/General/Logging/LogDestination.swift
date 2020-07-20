@@ -6,8 +6,6 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import SwiftyBeaver
-
 /// Protocol description for a log statement destination (e.g. console, file, remote, etc.)
 public protocol LogDestination {
 

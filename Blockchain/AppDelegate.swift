@@ -14,7 +14,6 @@ import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
-import SwiftyBeaver
 import ToolKit
 
 @UIApplicationMain
@@ -57,7 +56,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         RemoteNotificationServiceContainer.default.tokenReceiver
     }()
     
-    private let log = SwiftyBeaver.self
     private let disposeBag = DisposeBag()
     private weak var appCoordinator: AppCoordinator!
     
@@ -68,8 +66,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions
                      launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
-        setupSwiftyBeaverLogging()
         
         /// `User-Agent` uses `UIDevice` which, given that it is a
         /// `UIKit` class should not be in any of our frameworks other than `PlatformUIKit`
@@ -376,18 +372,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             message: LocalizationConstants.DeepLink.deepLinkUpdateMessage,
             actions: actions
         )
-    }
-    
-    private func setupSwiftyBeaverLogging() {
-        let console = ConsoleDestination()
-        let cloud = SBPlatformDestination(
-            appID: BlockchainAPI.shared.swiftyBeaverAppID,
-            appSecret: BlockchainAPI.shared.swiftyBeaverAppSecret,
-            encryptionKey: BlockchainAPI.shared.swiftyBeaverAppKey
-        )
-        console.format = "$J"
-        log.addDestination(console)
-        log.addDestination(cloud)
     }
 }
 

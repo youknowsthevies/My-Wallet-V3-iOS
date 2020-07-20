@@ -177,7 +177,6 @@ targets:
     - carthage: SocketIO
     - carthage: Starscream
     - carthage: stellarsdk
-    - carthage: SwiftyBeaver
     - carthage: web3swift
     - carthage: WebRTC
     - carthage: Veriff
@@ -648,7 +647,6 @@ targets:
     - carthage: BigInt
     - carthage: RxSwift
     - carthage: RxRelay
-    - carthage: SwiftyBeaver
     scheme:
       testTargets:
       - ToolKitTests

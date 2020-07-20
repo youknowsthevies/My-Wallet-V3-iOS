@@ -8,9 +8,8 @@
 
 /// Class in charge of logging debug/info/warning/error messages to a `LogDestination`.
 @objc public class Logger: NSObject {
-
-    private let destinations: [LogDestination] = [ConsoleLogDestination(),
-                                                  SwiftyBeaverDestination()]
+    
+    private var destinations = [LogDestination]()
 
     private lazy var timestampFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -20,6 +19,9 @@
 
     public static let shared: Logger = {
         let logger = Logger()
+        #if DEBUG
+        logger.destinations.append(ConsoleLogDestination())
+        #endif
         return logger
     }()
 
