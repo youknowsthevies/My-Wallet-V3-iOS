@@ -163,6 +163,7 @@ targets:
     - sdk: libicucore.tbd
     - carthage: BigInt
     - carthage: Charts
+    - carthage: DIKit
     - carthage: keccak
     - carthage: LibWally
     - carthage: PhoneNumberKit
@@ -507,6 +508,7 @@ targets:
       Release Staging: Config/NetworkKitConfig/NetworkKit-Staging.xcconfig
     dependencies:
     - carthage: RxSwift
+    - carthage: DIKit
     - target: ToolKit
     info:
       path: NetworkKit/Info.plist

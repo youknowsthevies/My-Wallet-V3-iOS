@@ -7,6 +7,7 @@
 //
 
 import BitcoinKit
+import DIKit
 import JavaScriptCore
 import PlatformKit
 import RxCocoa
@@ -19,7 +20,7 @@ import ToolKit
 @objc
 class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI {
     
-    static let shared = WalletManager()
+    @Inject static var shared: WalletManager
     
     @objc static var sharedInstance: WalletManager {
         shared
@@ -65,7 +66,7 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI {
     }
     
     init(wallet: Wallet = Wallet()!,
-         appSettings: BlockchainSettings.App = .shared) {
+         appSettings: BlockchainSettings.App = resolve()) {
         self.appSettings = appSettings
         self.wallet = wallet
         self.reactiveWallet = ReactiveWallet(wallet: wallet)

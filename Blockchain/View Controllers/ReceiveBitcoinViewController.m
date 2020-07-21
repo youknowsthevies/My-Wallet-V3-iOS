@@ -326,7 +326,7 @@ NSString *const BCFiatCurrencySelected = @"fiat_currency_selected";
 - (void)reloadLocalAndBtcSymbolsFromLatestResponse
 {
     if (WalletManager.sharedInstance.latestMultiAddressResponse.symbol_local && WalletManager.sharedInstance.latestMultiAddressResponse.symbol_btc) {
-        self.amountInputView.fiatLabel.text = [BlockchainSettings.sharedAppInstance fiatCurrencySymbol];
+        self.amountInputView.fiatLabel.text = [BlockchainSettingsApp.shared fiatCurrencySymbol];
         self.amountInputView.btcLabel.text = WalletManager.sharedInstance.latestMultiAddressResponse.symbol_btc.symbol;
     }
 }
@@ -653,7 +653,7 @@ NSString *const BCFiatCurrencySelected = @"fiat_currency_selected";
     
     [[NSNotificationCenter defaultCenter] addObserver:alertForWatchOnly selector:@selector(autoDismiss) name:ConstantsObjcBridge.notificationKeyReloadToDismissViews object:nil];
 
-    TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
+    TabControllerManager *tabControllerManager = AppCoordinator.shared.tabControllerManager;
     [tabControllerManager.tabViewController presentViewController:alertForWatchOnly animated:YES completion:nil];
 }
 
@@ -746,7 +746,7 @@ NSString *const BCFiatCurrencySelected = @"fiat_currency_selected";
     [self.amountInputView.btcField resignFirstResponder];
     [self.amountInputView.fiatField resignFirstResponder];
 
-    TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
+    TabControllerManager *tabControllerManager = AppCoordinator.shared.tabControllerManager;
     [tabControllerManager.tabViewController presentViewController:activityViewController animated:YES completion:nil];
 }
 
@@ -791,7 +791,7 @@ NSString *const BCFiatCurrencySelected = @"fiat_currency_selected";
         return NO;
     }
     
-    if ([AppCoordinator sharedInstance].slidingViewController.currentTopViewPosition == ECSlidingViewControllerTopViewPositionAnchoredRight) {
+    if (AppCoordinator.shared.slidingViewController.currentTopViewPosition == ECSlidingViewControllerTopViewPositionAnchoredRight) {
         return NO;
     }
     

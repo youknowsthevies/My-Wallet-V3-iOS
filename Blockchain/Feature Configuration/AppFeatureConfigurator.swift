@@ -9,6 +9,7 @@
 import FirebaseRemoteConfig
 import PlatformKit
 import RxSwift
+import DIKit
 
 @objc class AppFeatureConfigurator: NSObject, FeatureConfiguring {
     
@@ -16,15 +17,12 @@ import RxSwift
         case missingKeyRawValue
         case missingValue
     }
-    
-    static let shared = AppFeatureConfigurator()
 
-    /// Class function to retrieve the AppFeatureConfigurator shared instance for obj-c compatibility.
-    @objc class func sharedInstance() -> AppFeatureConfigurator { shared }
+    @Inject @objc static var shared: AppFeatureConfigurator
 
     private let remoteConfig: RemoteConfig
 
-    private override init() {
+    override init() {
         remoteConfig = RemoteConfig.remoteConfig()
         super.init()
         setDefaultConfigs()

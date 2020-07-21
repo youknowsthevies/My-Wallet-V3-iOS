@@ -7,6 +7,7 @@
 //
 
 import BuySellUIKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
@@ -18,29 +19,23 @@ import RxSwift
     
     // MARK: - Properties
 
-    static let shared = AppCoordinator()
-    
-    // class function declared so that the AppCoordinator singleton can be accessed from obj-C
-    @objc class func sharedInstance() -> AppCoordinator {
-        AppCoordinator.shared
-    }
+    @Inject @objc static var shared: AppCoordinator
 
     // MARK: - Services
     
     /// Onboarding router
-    let onboardingRouter: OnboardingRouter
+    @Inject var onboardingRouter: OnboardingRouter
     
     weak var window: UIWindow!
 
-    private let authenticationCoordinator: AuthenticationCoordinator
-    private let blockchainSettings: BlockchainSettings.App
-    private let walletManager: WalletManager
-    private let paymentPresenter: PaymentPresenter
-    private let loadingViewPresenter: LoadingViewPresenting
-    private lazy var appFeatureConfigurator: AppFeatureConfigurator = { appFeatureConfiguratorProvider() }()
-    private let appFeatureConfiguratorProvider: () -> AppFeatureConfigurator
+    @Inject private var authenticationCoordinator: AuthenticationCoordinator
+    @Inject private var blockchainSettings: BlockchainSettings.App
+    @Inject private var walletManager: WalletManager
+    @Inject private var paymentPresenter: PaymentPresenter
+    @Inject private var loadingViewPresenter: LoadingViewPresenting
+    @LazyInject private var appFeatureConfigurator: AppFeatureConfigurator
 
-    let airdropRouter: AirdropRouterAPI
+    @Inject var airdropRouter: AirdropRouterAPI
     private var settingsRouterAPI: SettingsRouterAPI?
     private var simpleBuyRouter: BuySellUIKit.RouterAPI!
     private var backupRouter: BackupRouterAPI?
@@ -64,22 +59,7 @@ import RxSwift
 
     // MARK: NSObject
 
-    private init(authenticationCoordinator: AuthenticationCoordinator = .shared,
-                 blockchainSettings: BlockchainSettings.App = .shared,
-                 onboardingRouter: OnboardingRouter = OnboardingRouter(),
-                 walletManager: WalletManager = WalletManager.shared,
-                 paymentPresenter: PaymentPresenter = PaymentPresenter(),
-                 airdropRouter: AirdropRouterAPI = AirdropRouter(topMostViewControllerProvider: UIApplication.shared),
-                 loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
-                 appFeatureConfiguratorProvider: @escaping () -> AppFeatureConfigurator = { AppFeatureConfigurator.shared }) {
-        self.airdropRouter = airdropRouter
-        self.authenticationCoordinator = authenticationCoordinator
-        self.blockchainSettings = blockchainSettings
-        self.onboardingRouter = onboardingRouter
-        self.walletManager = walletManager
-        self.paymentPresenter = paymentPresenter
-        self.loadingViewPresenter = loadingViewPresenter
-        self.appFeatureConfiguratorProvider = appFeatureConfiguratorProvider
+    override init() {
         super.init()
         self.walletManager.accountInfoAndExchangeRatesDelegate = self
         self.walletManager.backupDelegate = self

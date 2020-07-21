@@ -159,7 +159,7 @@ typedef enum {
                 [bchAccountLabels addObjectsFromArray:accountsAndLabelsBitcoinCash[DICTIONARY_KEY_ACCOUNT_LABELS]];
 
             } else if (assetType == LegacyAssetTypeBitcoin || assetType == LegacyAssetTypeBitcoinCash) {
-                TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
+                TabControllerManager *tabControllerManager = AppCoordinator.shared.tabControllerManager;
 
                 // Show the address book
                 for (NSString * addr in [_wallet.addressBook allKeys]) {
@@ -534,8 +534,8 @@ typedef enum {
                 NSDecimalNumber *ethBalance = [WalletManager.sharedInstance.wallet getEthBalance];
                 NSComparisonResult result = [ethBalance compare:[NSDecimalNumber numberWithInt:0]];
                 zeroBalance = result == NSOrderedDescending || result == NSOrderedSame;
-                TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
-                cell.balanceLabel.text = BlockchainSettings.sharedAppInstance.symbolLocal ? [NSNumberFormatter formatEthToFiatWithSymbol:[ethBalance stringValue] exchangeRate:tabControllerManager.latestEthExchangeRate] : [NSNumberFormatter formatEth:[NSNumberFormatter localFormattedString:[ethBalance stringValue]]];
+                TabControllerManager *tabControllerManager = AppCoordinator.shared.tabControllerManager;
+                cell.balanceLabel.text = BlockchainSettingsApp.shared.symbolLocal ? [NSNumberFormatter formatEthToFiatWithSymbol:[ethBalance stringValue] exchangeRate:tabControllerManager.latestEthExchangeRate] : [NSNumberFormatter formatEth:[NSNumberFormatter localFormattedString:[ethBalance stringValue]]];
             } else {
                 uint64_t bchBalance = 0;
                 if (section == bchAccountsSectionNumber) {

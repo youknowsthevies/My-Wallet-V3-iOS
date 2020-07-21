@@ -15,6 +15,7 @@ import PlatformKit
 import PlatformUIKit
 import RxSwift
 import ToolKit
+import DIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -42,8 +43,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private lazy var deepLinkHandler: DeepLinkHandler = {
         DeepLinkHandler()
     }()
-    
-    private lazy var deepLinkRouter = DeepLinkRouter()
+
+    @LazyInject private var deepLinkRouter: DeepLinkRouter
 
     /// A service that provides remote notification registration logic,
     /// thus taking responsibility off `AppDelegate` instance.
@@ -57,10 +58,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }()
     
     private let disposeBag = DisposeBag()
-    private weak var appCoordinator: AppCoordinator!
-    
+    private var appCoordinator: AppCoordinator { .shared }
     private lazy var bitpayRouter = BitPayLinkRouter()
-    
+
+    override init() {
+        super.init()
+        DependencyContainer.defined(by: modules {
+            DependencyContainer.airdropRouter;
+            DependencyContainer.appCoordinator;
+            DependencyContainer.appFeatureConfigurator;
+            DependencyContainer.authenticationCoordinator;
+            DependencyContainer.blockchainSettingsApp;
+            DependencyContainer.loadingViewPresenter;
+            DependencyContainer.onboardingRouter;
+            DependencyContainer.paymentPresenter;
+            DependencyContainer.topMostViewControllerProviding;
+            DependencyContainer.walletManager;
+            DependencyContainer.deepLinkRouter
+        })
+    }
+
     // MARK: - Lifecycle Methods
 
     func application(_ application: UIApplication,
@@ -91,7 +108,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.backgroundColor = #colorLiteral(red: 0.0431372549, green: 0.1019607843, blue: 0.2784313725, alpha: 1)
 
         // Trigger routing hierarchy
-        appCoordinator = AppCoordinator.shared
         appCoordinator.window = window
         
         // Migrate announcements
@@ -182,7 +198,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             UIApplication.shared.keyWindow?.rootViewController?.dismiss(animated: false)
         }
 
-        AppCoordinator.shared.cleanupOnAppBackgrounded()
+        appCoordinator.cleanupOnAppBackgrounded()
         AuthenticationCoordinator.shared.cleanupOnAppBackgrounded()
 
         Network.Dependencies.default.session.reset {

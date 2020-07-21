@@ -50,7 +50,7 @@
 
 - (void)alertUserToTransferAllFunds
 {
-    AppFeatureConfiguration *transferFundsConfig = [AppFeatureConfigurator.sharedInstance configurationFor:AppFeatureTransferFundsFromImportedAddress];
+    AppFeatureConfiguration *transferFundsConfig = [AppFeatureConfigurator.shared configurationFor:AppFeatureTransferFundsFromImportedAddress];
     if (!transferFundsConfig.isEnabled) {
         return;
     }
@@ -74,7 +74,7 @@
 - (void)transferAllFundsClicked
 {
     [self dismissViewControllerAnimated:YES completion:^{
-        [[AppCoordinator sharedInstance] closeSideMenu];
+        [AppCoordinator.shared closeSideMenu];
     }];
     
     [[TransferAllCoordinator sharedInstance] startWithSendScreen];
@@ -87,7 +87,7 @@
 {
     [AssetAddressRepository.sharedInstance removeAllSwipeAddressesForAsset:LegacyAssetTypeBitcoin];
     [AssetAddressRepository.sharedInstance removeAllSwipeAddressesForAsset:LegacyAssetTypeBitcoinCash];
-    [AppCoordinator.sharedInstance.tabControllerManager didSetDefaultAccount];
+    [AppCoordinator.shared.tabControllerManager didSetDefaultAccount];
 }
 
 - (void)didGenerateNewAddress

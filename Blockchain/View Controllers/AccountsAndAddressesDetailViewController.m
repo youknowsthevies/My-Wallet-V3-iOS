@@ -112,7 +112,7 @@ typedef enum {
 
 - (BOOL)canTransferFromAddress
 {
-    AppFeatureConfiguration *transferFundsConfiguration = [AppFeatureConfigurator.sharedInstance configurationFor:AppFeatureTransferFundsFromImportedAddress];
+    AppFeatureConfiguration *transferFundsConfiguration = [AppFeatureConfigurator.shared configurationFor:AppFeatureTransferFundsFromImportedAddress];
     if (!transferFundsConfiguration.isEnabled) {
         return NO;
     }
@@ -129,12 +129,12 @@ typedef enum {
 - (void)transferFundsFromAddressClicked
 {
     [self dismissViewControllerAnimated:YES completion:^{
-        [[AppCoordinator sharedInstance] closeSideMenu];
+        [AppCoordinator.shared closeSideMenu];
     }];
 
-    [AppCoordinator.sharedInstance.tabControllerManager showSendCoinsAnimated:YES];
+    [AppCoordinator.shared.tabControllerManager showSendCoinsAnimated:YES];
 
-    TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
+    TabControllerManager *tabControllerManager = AppCoordinator.shared.tabControllerManager;
     [tabControllerManager transferFundsToDefaultAccountFromAddress:self.address];
 
     [self.navigationController popToRootViewControllerAnimated:NO];

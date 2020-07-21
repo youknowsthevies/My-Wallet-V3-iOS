@@ -39,7 +39,7 @@
     
     self.tabViewController.assetDelegate = self;
 
-    LegacyAssetType assetType = BlockchainSettings.sharedAppInstance.selectedLegacyAssetType;
+    LegacyAssetType assetType = BlockchainSettingsApp.shared.selectedLegacyAssetType;
 
     if (![AssetSelectorView.availableAssets containsObject:@(assetType)]) {
         // Guard against value being read is not enabled for use with Asset Selector.
@@ -59,7 +59,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [AppCoordinator.sharedInstance showHdUpgradeViewIfNeeded];
+    [AppCoordinator.shared showHdUpgradeViewIfNeeded];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -74,7 +74,7 @@
 {
     self.assetType = assetType;
 
-    BlockchainSettings.sharedAppInstance.selectedLegacyAssetType = self.assetType;
+    BlockchainSettingsApp.shared.selectedLegacyAssetType = self.assetType;
 
     BOOL animated = NO;
 
@@ -207,7 +207,7 @@
         }
         case LegacyAssetTypeEther: {
             if (!_sendRouter) {
-                _sendRouter = [[SendRouter alloc] initUsing:_tabViewController appCoordinator: AppCoordinator.sharedInstance];
+                _sendRouter = [[SendRouter alloc] initUsing:_tabViewController appCoordinator: AppCoordinator.shared];
             }
             if (!_transferEtherViewController) {
                 _transferEtherViewController = [_sendRouter sendViewControllerBy:LegacyAssetTypeEther];
@@ -360,7 +360,7 @@
     if (notice &&
         self.tabViewController.selectedIndex == [ConstantsObjcBridge tabSend] &&
         !LoadingViewPresenter.sharedInstance.isVisible &&
-        AuthenticationCoordinator.sharedInstance.isDisplayingLoginAuthenticationFlow &&
+        AuthenticationCoordinator.shared.isDisplayingLoginAuthenticationFlow &&
         !self.tabViewController.presentedViewController) {
         [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:[LocalizationConstantsObjcBridge information] message:notice in:self handler: nil];
     }
@@ -704,7 +704,7 @@
 - (void)changeAssetSelectorAsset:(LegacyAssetType)assetType
 {
     self.assetType = assetType;
-    BlockchainSettings.sharedAppInstance.selectedLegacyAssetType = assetType;
+    BlockchainSettingsApp.shared.selectedLegacyAssetType = assetType;
     [self.tabViewController selectAsset:assetType];
 }
 
@@ -738,7 +738,7 @@
         }
         case LegacyAssetTypeEther: {
             if (!_sendRouter) {
-                _sendRouter = [[SendRouter alloc] initUsing:_tabViewController appCoordinator: AppCoordinator.sharedInstance];
+                _sendRouter = [[SendRouter alloc] initUsing:_tabViewController appCoordinator: AppCoordinator.shared];
             }
             _transferEtherViewController = [_sendRouter sendViewControllerBy:LegacyAssetTypeEther];
             

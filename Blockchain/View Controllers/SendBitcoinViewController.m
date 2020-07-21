@@ -320,7 +320,7 @@ BOOL displayingLocalSymbolSend;
     [WalletManager.sharedInstance.wallet createNewPayment:self.assetType];
     [self resetFromAddress];
 
-    TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
+    TabControllerManager *tabControllerManager = AppCoordinator.shared.tabControllerManager;
     if (tabControllerManager.tabViewController.activeViewController == self && !tabControllerManager.tabViewController.presentedViewController) {
         [[ModalPresenter sharedInstance] closeModalWithTransition:kCATransitionPush];
     }
@@ -530,11 +530,11 @@ BOOL displayingLocalSymbolSend;
 - (void)reloadLocalAndBtcSymbolsFromLatestResponse
 {
     if (WalletManager.sharedInstance.latestMultiAddressResponse.symbol_local && WalletManager.sharedInstance.latestMultiAddressResponse.symbol_btc) {
-        fiatLabel.text = [BlockchainSettings.sharedAppInstance fiatCurrencySymbol];
+        fiatLabel.text = [BlockchainSettingsApp.shared fiatCurrencySymbol];
         btcLabel.text = self.assetType == LegacyAssetTypeBitcoin ? WalletManager.sharedInstance.latestMultiAddressResponse.symbol_btc.symbol : CURRENCY_SYMBOL_BCH;
     }
     
-    if (BlockchainSettings.sharedAppInstance.symbolLocal && WalletManager.sharedInstance.latestMultiAddressResponse.symbol_local && WalletManager.sharedInstance.latestMultiAddressResponse.symbol_local.conversion > 0) {
+    if (BlockchainSettingsApp.shared.symbolLocal && WalletManager.sharedInstance.latestMultiAddressResponse.symbol_local && WalletManager.sharedInstance.latestMultiAddressResponse.symbol_local.conversion > 0) {
         displayingLocalSymbol = TRUE;
         displayingLocalSymbolSend = TRUE;
     } else if (WalletManager.sharedInstance.latestMultiAddressResponse.symbol_btc) {
@@ -669,7 +669,7 @@ BOOL displayingLocalSymbolSend;
             [self.bitpayTimer invalidate];
             
             [[ModalPresenter sharedInstance] closeModalWithTransition:kCATransitionFade];
-            TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
+            TabControllerManager *tabControllerManager = AppCoordinator.shared.tabControllerManager;
             // TODO: IOS-3395
             // This selects Activity screen. Then it was instructing transactionsBitcoinViewController to display the new transaction.
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -772,7 +772,7 @@ BOOL displayingLocalSymbolSend;
              [[ModalPresenter sharedInstance] closeModalWithTransition:kCATransitionFade];
              // TODO: IOS-3395
              // This selects Activity screen. Then it was instructing transactionsBitcoinViewController to display the new transaction.
-             TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
+             TabControllerManager *tabControllerManager = AppCoordinator.shared.tabControllerManager;
              dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                  [tabControllerManager transactionsClicked:nil];
              });
@@ -910,7 +910,7 @@ BOOL displayingLocalSymbolSend;
         [alertForPaymentsSent addAction:[UIAlertAction actionWithTitle:BC_STRING_OK style:UIAlertActionStyleCancel handler:nil]];
     }
 
-    TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
+    TabControllerManager *tabControllerManager = AppCoordinator.shared.tabControllerManager;
     [tabControllerManager.tabViewController presentViewController:alertForPaymentsSent animated:YES completion:nil];
     
     [sendProgressActivityIndicator stopAnimating];
@@ -1072,7 +1072,7 @@ BOOL displayingLocalSymbolSend;
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:BC_STRING_NO_AVAILABLE_FUNDS message:BC_STRING_PLEASE_SELECT_DIFFERENT_ADDRESS preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:BC_STRING_OK style:UIAlertActionStyleCancel handler:nil]];
     [[NSNotificationCenter defaultCenter] addObserver:alert selector:@selector(autoDismiss) name:ConstantsObjcBridge.notificationKeyReloadToDismissViews object:nil];
-    TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
+    TabControllerManager *tabControllerManager = AppCoordinator.shared.tabControllerManager;
     [tabControllerManager.tabViewController presentViewController:alert animated:YES completion:nil];
     [self enablePaymentButtons];
 }
@@ -2165,7 +2165,7 @@ BOOL displayingLocalSymbolSend;
                 [[NSUserDefaults standardUserDefaults] setBool:YES forKey:USER_DEFAULTS_KEY_HAS_SEEN_CUSTOM_FEE_WARNING];
             }]];
             [alert addAction:[UIAlertAction actionWithTitle:BC_STRING_CANCEL style:UIAlertActionStyleCancel handler:nil]];
-            TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
+            TabControllerManager *tabControllerManager = AppCoordinator.shared.tabControllerManager;
             [tabControllerManager.tabViewController presentViewController:alert animated:YES completion:nil];
         } else {
             [self selectFeeType:feeType];
@@ -2442,7 +2442,7 @@ BOOL displayingLocalSymbolSend;
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:BC_STRING_OK style:UIAlertActionStyleCancel handler:nil]];
     [[NSNotificationCenter defaultCenter] addObserver:alert selector:@selector(autoDismiss) name:ConstantsObjcBridge.notificationKeyReloadToDismissViews object:nil];
-    TabControllerManager *tabControllerManager = [AppCoordinator sharedInstance].tabControllerManager;
+    TabControllerManager *tabControllerManager = AppCoordinator.shared.tabControllerManager;
     [tabControllerManager.tabViewController presentViewController:alert animated:YES completion:nil];
 }
 

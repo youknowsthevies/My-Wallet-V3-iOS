@@ -43,7 +43,7 @@
     selectedIndex = [ConstantsObjcBridge tabDashboard];
     
     _menuSwipeRecognizerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 20, UIScreen.mainScreen.bounds.size.height)];
-    ECSlidingViewController *sideMenu = [AppCoordinator sharedInstance].slidingViewController;
+    ECSlidingViewController *sideMenu = AppCoordinator.shared.slidingViewController;
     [_menuSwipeRecognizerView addGestureRecognizer:sideMenu.panGesture];
     [self.view addSubview:_menuSwipeRecognizerView];
     
@@ -177,15 +177,15 @@
 {
     // TODO: Close asset selectors
     if (item == self.sendTabBarItem) {
-        [[AppCoordinator sharedInstance].tabControllerManager sendCoinsClicked:item];
+        [AppCoordinator.shared.tabControllerManager sendCoinsClicked:item];
     } else if (item == self.activityTabBarItem) {
-        [[AppCoordinator sharedInstance].tabControllerManager transactionsClicked:item];
+        [AppCoordinator.shared.tabControllerManager transactionsClicked:item];
     } else if (item == self.requestTabBarItem) {
-        [[AppCoordinator sharedInstance].tabControllerManager receiveCoinClicked:item];
+        [AppCoordinator.shared.tabControllerManager receiveCoinClicked:item];
     } else if (item == self.homeTabBarItem) {
-        [[AppCoordinator sharedInstance].tabControllerManager dashBoardClicked:item];
+        [AppCoordinator.shared.tabControllerManager dashBoardClicked:item];
     } else if (item == self.swapTabBarItem) {
-        [[AppCoordinator sharedInstance].tabControllerManager swapTapped:item];
+        [AppCoordinator.shared.tabControllerManager swapTapped:item];
     }
 }
 

@@ -56,7 +56,7 @@
 
 + (NSString*)formatMoney:(uint64_t)value
 {
-    return [self formatMoney:value localCurrency:BlockchainSettings.sharedAppInstance.symbolLocal];
+    return [self formatMoney:value localCurrency:BlockchainSettingsApp.shared.symbolLocal];
 }
 
 // Format amount in satoshi as NSString (without symbol)
@@ -116,7 +116,7 @@
 
 + (NSString *)formatMoneyWithLocalSymbol:(uint64_t)value
 {
-    return [self formatMoney:value localCurrency:BlockchainSettings.sharedAppInstance.symbolLocal];
+    return [self formatMoney:value localCurrency:BlockchainSettingsApp.shared.symbolLocal];
 }
 
 #pragma mark - Ether
@@ -188,7 +188,7 @@
     NSString *symbol = WalletManager.sharedInstance.latestMultiAddressResponse.symbol_local.symbol;
     BOOL hasSymbol = symbol && ![symbol isKindOfClass:[NSNull class]];
 
-    if (BlockchainSettings.sharedAppInstance.symbolLocal && hasSymbol) {
+    if (BlockchainSettingsApp.shared.symbolLocal && hasSymbol) {
         return [NSNumberFormatter formatEthToFiatWithSymbol:ethAmount exchangeRate:exchangeRate];
     } else {
         return [NSNumberFormatter formatEth:ethAmount];
@@ -251,7 +251,7 @@
 
 + (NSString*)formatBchWithSymbol:(uint64_t)value
 {
-    return [self formatBchWithSymbol:value localCurrency:BlockchainSettings.sharedAppInstance.symbolLocal];
+    return [self formatBchWithSymbol:value localCurrency:BlockchainSettingsApp.shared.symbolLocal];
 }
 
 // Format amount in satoshi as NSString (with symbol)

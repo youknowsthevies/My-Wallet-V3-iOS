@@ -75,7 +75,7 @@
     [[ModalPresenter sharedInstance] closeModalWithTransition:kCATransitionFade];
     
     // Go to the send screen if we are not already on it
-    [AppCoordinator.sharedInstance.tabControllerManager showSendCoinsAnimated:YES];
+    [AppCoordinator.shared.tabControllerManager showSendCoinsAnimated:YES];
 }
 
 #pragma mark - AVCaptureMetadataOutputObjectsDelegate

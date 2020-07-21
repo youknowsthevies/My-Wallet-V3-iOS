@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformUIKit
 
 protocol AirdropRouterAPI: class {
@@ -28,7 +29,7 @@ final class AirdropRouter: AirdropRouterAPI {
     private weak var topMostViewControllerProvider: TopMostViewControllerProviding!
     private weak var navigationControllerAPI: NavigationControllerAPI?
     
-    init(topMostViewControllerProvider: TopMostViewControllerProviding) {
+    init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve()) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
     }
     

@@ -133,7 +133,7 @@
         [wallet sendPaymentWithListener:listener secondPassword:_secondPassword];
     } else {
         if (wallet.needsSecondPassword && !_secondPassword) {
-            [AuthenticationCoordinator.sharedInstance showPasswordScreenWithConfirmHandler:^(NSString * _Nonnull secondPasswordInput) {
+            [AuthenticationCoordinator.shared showPasswordScreenWithConfirmHandler:^(NSString * _Nonnull secondPasswordInput) {
                 if (self.on_before_send) {
                     self.on_before_send();
                 }

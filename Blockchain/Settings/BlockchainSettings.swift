@@ -12,6 +12,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 import ToolKit
+import DIKit
 
 /**
  Settings for the current user.
@@ -19,32 +20,16 @@ import ToolKit
 */
 @objc
 final class BlockchainSettings: NSObject {
-
-    // class function declared so that the BlockchainSettings singleton can be accessed from obj-C
-    // TODO remove this once all Obj-C references of this file have been removed
-    @objc class func sharedAppInstance() -> App {
-        App.shared
-    }
-
-    @objc class func sharedOnboardingInstance() -> Onboarding {
-        Onboarding.shared
-    }
-
     // MARK: - App
 
-    @objc
+    @objc(BlockchainSettingsApp)
     class App: NSObject, AppSettingsAPI, ReactiveAppSettingsAuthenticating, AppSettingsAuthenticating, SwipeToReceiveConfiguring {
 
-        static let shared = App()
+        @Inject @objc static var shared: App
 
         private lazy var defaults: UserDefaults = {
             UserDefaults.standard
         }()
-
-        // class function declared so that the App singleton can be accessed from obj-C
-        @objc class func sharedInstance() -> App {
-            App.shared
-        }
 
         // MARK: - Properties
 
@@ -503,7 +488,7 @@ final class BlockchainSettings: NSObject {
     // MARK: - App
 
     /// Encapsulates all onboarding-related settings for the user
-    @objc class Onboarding: NSObject {
+    class Onboarding {
         static let shared: Onboarding = Onboarding()
 
         private lazy var defaults: UserDefaults = {
@@ -542,9 +527,7 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        private override init() {
-            super.init()
-        }
+        private init() { }
 
         func reset() {
             walletIntroLatestLocation = nil

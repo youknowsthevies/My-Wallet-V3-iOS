@@ -3667,7 +3667,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 {
     DLog(@"reload");
 
-    [AppCoordinator.sharedInstance reload];
+    [AppCoordinator.shared reload];
 }
 
 - (void)logging_out

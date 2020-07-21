@@ -649,7 +649,7 @@ extension ExchangeDetailCoordinator {
 extension ExchangeDetailCoordinator {
     // TICKET: IOS-1328 Find a better place for this
     func valueString(for amount: String, currencyCode: String) -> String {
-        if let currencySymbol =  BlockchainSettings.sharedAppInstance().fiatSymbolFromCode(currencyCode: currencyCode) {
+        if let currencySymbol =  BlockchainSettings.App.shared.fiatSymbolFromCode(currencyCode: currencyCode) {
             // $2.34
             // `Partner` models already have the currency symbol appended.
             return amount.contains(currencySymbol) ? amount : currencySymbol + amount

@@ -13,6 +13,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 import ToolKit
+import DIKit
 
 protocol PairingWalletFetching: class {
     func authenticate(using password: String)
@@ -37,12 +38,8 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     typealias WalletAuthHandler = (_ authenticated: Bool, _
                                    twoFactorType: AuthenticatorType?, _
                                    error: AuthenticationError?) -> Void
-    
-    @objc static let shared = AuthenticationCoordinator()
 
-    @objc class func sharedInstance() -> AuthenticationCoordinator {
-        shared
-    }
+    @Inject @objc static var shared: AuthenticationCoordinator
     
     var postAuthenticationRoute: PostAuthenticationRoute?
     

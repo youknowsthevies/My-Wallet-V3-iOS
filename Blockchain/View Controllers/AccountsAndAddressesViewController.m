@@ -539,7 +539,7 @@
 
 - (void)toggleSymbol
 {
-    BlockchainSettings.sharedAppInstance.symbolLocal = !BlockchainSettings.sharedAppInstance.symbolLocal;
+    BlockchainSettingsApp.shared.symbolLocal = !BlockchainSettingsApp.shared.symbolLocal;
 }
 
 @end
