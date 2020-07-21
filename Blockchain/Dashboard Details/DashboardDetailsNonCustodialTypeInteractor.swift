@@ -12,7 +12,7 @@ import RxSwift
 final class DashboardDetailsNonCustodialTypeInteractor {
 
     var exists: Observable<Bool> {
-        .just(currency.hasNonCustodialSupport)
+        .just(currency.hasNonCustodialActivitySupport)
     }
 
     private let currency: CryptoCurrency

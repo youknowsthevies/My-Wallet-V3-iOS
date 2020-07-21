@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import ToolKit
 
 @objc public protocol BitcoinJSInteropDelegateAPI {
     
@@ -83,6 +83,7 @@ extension BitcoinJSInteropDispatcher: BitcoinJSInteropDelegateAPI {
             dispatcher.sendFailure(.unknown)
             return
         }
+        Logger.shared.error(message)
         dispatcher.sendFailure(.jsError(message))
     }
 }

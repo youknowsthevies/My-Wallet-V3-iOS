@@ -9,12 +9,9 @@
 import RxSwift
 
 public protocol BalanceChangeProviding: class {
-    var ether: AssetBalanceChangeProviding { get }
-    var pax: AssetBalanceChangeProviding { get }
-    var stellar: AssetBalanceChangeProviding { get }
-    var bitcoin: AssetBalanceChangeProviding { get }
-    var bitcoinCash: AssetBalanceChangeProviding { get }
-    
+
+    subscript(currency: CryptoCurrency) -> AssetBalanceChangeProviding { get }
+
     var change: Observable<AssetFiatCryptoBalanceCalculationStates> { get }
 }
 
@@ -22,47 +19,43 @@ public protocol BalanceChangeProviding: class {
 public final class BalanceChangeProvider: BalanceChangeProviding {
     
     // MARK: - Services
-    
-    public let ether: AssetBalanceChangeProviding
-    public let pax: AssetBalanceChangeProviding
-    public let stellar: AssetBalanceChangeProviding
-    public let bitcoin: AssetBalanceChangeProviding
-    public let bitcoinCash: AssetBalanceChangeProviding
+
+    private let currencies: [CryptoCurrency]
+    private let services: [CryptoCurrency: AssetBalanceChangeProviding]
     
     public var change: Observable<AssetFiatCryptoBalanceCalculationStates> {
-        Observable
-            .combineLatest(
-                ether.calculationState,
-                pax.calculationState,
-                stellar.calculationState,
-                bitcoin.calculationState,
-                bitcoinCash.calculationState
-            )
-            .map {
-                AssetFiatCryptoBalanceCalculationStates(
-                    statePerCurrency: [
-                        .ethereum: $0.0,
-                        .pax: $0.1,
-                        .stellar: $0.2,
-                        .bitcoin: $0.3,
-                        .bitcoinCash: $0.4
-                    ]
-                )
+        let currencies = self.currencies
+        return Observable.combineLatest(currencies.compactMap { self[$0].calculationState })
+            .map { Dictionary(uniqueKeysWithValues: zip(currencies, $0)) }
+            .map { states -> AssetFiatCryptoBalanceCalculationStates in
+                AssetFiatCryptoBalanceCalculationStates(statePerCurrency: states)
             }
     }
     
     // MARK: - Setup
     
     public init(
+        currencies: [CryptoCurrency],
         ether: AssetBalanceChangeProviding,
         pax: AssetBalanceChangeProviding,
         stellar: AssetBalanceChangeProviding,
         bitcoin: AssetBalanceChangeProviding,
-        bitcoinCash: AssetBalanceChangeProviding) {
-        self.ether = ether
-        self.pax = pax
-        self.stellar = stellar
-        self.bitcoin = bitcoin
-        self.bitcoinCash = bitcoinCash
+        bitcoinCash: AssetBalanceChangeProviding,
+        algorand: AssetBalanceChangeProviding,
+        tether: AssetBalanceChangeProviding) {
+        self.currencies = currencies
+        services = [
+            .ethereum: ether,
+            .pax: pax,
+            .stellar: stellar,
+            .bitcoin: bitcoin,
+            .bitcoinCash: bitcoinCash,
+            .algorand: algorand,
+            .tether: tether
+        ]
+    }
+
+    public subscript(currency: CryptoCurrency) -> AssetBalanceChangeProviding {
+        services[currency]!
     }
 }

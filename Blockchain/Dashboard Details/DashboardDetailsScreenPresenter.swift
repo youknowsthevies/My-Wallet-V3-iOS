@@ -167,7 +167,7 @@ final class DashboardDetailsScreenPresenter {
     }
 
     private var shouldShowSendRequest: Bool {
-        currency.hasNonCustodialSupport
+        currency.hasNonCustodialTradeSupport
     }
 
     private var shouldShowTradingBalance: Bool {

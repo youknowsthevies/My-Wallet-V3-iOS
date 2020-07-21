@@ -20,8 +20,8 @@ public enum CryptoCurrency: String, Codable, CaseIterable {
     case bitcoinCash = "BCH"
     case stellar = "XLM"
     case algorand = "ALGO"
-    case tether = "USDT"
     case pax = "PAX"
+    case tether = "USDT"
 
     /// Initialize with currency code: `BTC`, `ETH`, `BCH`, `XLM`, `PAX`, `ALGO`
     public init?(code: String) {
@@ -31,7 +31,35 @@ public enum CryptoCurrency: String, Codable, CaseIterable {
 
 extension CryptoCurrency {
 
-    public var hasNonCustodialSupport: Bool {
+    public var hasNonCustodialTradeSupport: Bool {
+        switch self {
+        case .algorand,
+            .tether:
+            return false
+        case .bitcoin,
+             .bitcoinCash,
+             .ethereum,
+             .pax,
+             .stellar:
+            return true
+        }
+    }
+
+    public var hasNonCustodialWithdrawalSupport: Bool {
+        switch self {
+        case .algorand:
+            return false
+        case .bitcoin,
+             .bitcoinCash,
+             .ethereum,
+             .pax,
+             .tether,
+             .stellar:
+            return true
+        }
+    }
+
+    public var hasNonCustodialActivitySupport: Bool {
         switch self {
         case .algorand:
             return false

@@ -242,6 +242,7 @@ final class DataProvider: DataProviding {
         )
         
         balanceChange = BalanceChangeProvider(
+            currencies: CryptoCurrency.allEnabled,
             ether: AssetBalanceChangeProvider(
                 balance: etherBalanceFetcher,
                 prices: historicalPrices[.ethereum]
@@ -261,6 +262,14 @@ final class DataProvider: DataProviding {
             bitcoinCash: AssetBalanceChangeProvider(
                 balance: bitcoinCashBalanceFetcher,
                 prices: historicalPrices[.bitcoinCash]
+            ),
+            algorand: AssetBalanceChangeProvider(
+                balance: algorandBalanceFetcher,
+                prices: historicalPrices[.algorand]
+            ),
+            tether: AssetBalanceChangeProvider(
+                balance: tetherBalanceFetcher,
+                prices: historicalPrices[.tether]
             )
         )
     }

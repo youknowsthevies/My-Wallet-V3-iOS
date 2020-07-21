@@ -23,6 +23,17 @@
 
 @implementation AssetSelectorView
 
++ (NSArray<NSNumber *> *)availableAssets {
+    return @[
+        @(LegacyAssetTypeBitcoin),
+        @(LegacyAssetTypeEther),
+        @(LegacyAssetTypeBitcoinCash),
+        @(LegacyAssetTypeStellar),
+        @(LegacyAssetTypePax)
+        // TICKET: IOS-3563 - Add USD-T support to Send/Receive.
+    ];
+}
+
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
@@ -52,14 +63,7 @@
 
 - (void)setupInParent:(UIView *)parentView
 {
-    self.assets = @[
-        @(LegacyAssetTypeBitcoin),
-        @(LegacyAssetTypeEther),
-        @(LegacyAssetTypeBitcoinCash),
-        @(LegacyAssetTypeStellar),
-        @(LegacyAssetTypePax)
-        // TICKET: IOS-3563 - Add USD-T support to Send/Receive.
-    ];
+    self.assets = [AssetSelectorView availableAssets];
     self.clipsToBounds = YES;
 
     self.tableView = [[UITableView alloc] initWithFrame:self.bounds];

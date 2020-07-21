@@ -80,7 +80,6 @@
 - (void)didSetDefaultAccount;
 - (void)paymentReceived:(uint64_t)amount;
 
-- (void)removeTransactionsFilter;
 - (void)reloadSymbols;
 - (void)didChangeLocalCurrency;
 

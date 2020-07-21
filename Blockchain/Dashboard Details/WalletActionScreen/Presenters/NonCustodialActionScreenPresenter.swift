@@ -82,11 +82,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
                 fiatAccessiblitySuffix: "\(AccessibilityId.NonCustodial.fiatValue)"
             )
         )
-        
-        activityButtonVisibilityRelay.accept(!interactor.balanceType.isCustodial ? .visible : .hidden)
-        swapButtonVisibilityRelay.accept(!interactor.balanceType.isCustodial ? .visible : .hidden)
-        sendToWalletVisibilityRelay.accept(interactor.balanceType.isTrading ? .visible : .hidden)
-        
+
         swapButtonViewModel = .primary(with: LocalizationIds.swap)
         activityButtonViewModel = .secondary(with: LocalizationIds.viewActivity)
         sendToWalletViewModel = .primary(with: LocalizationIds.sendToWallet)
@@ -98,5 +94,11 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
         activityButtonViewModel.tapRelay
             .bindAndCatch(to: stateService.activityRelay)
             .disposed(by: disposeBag)
+
+        let isCustodial = interactor.balanceType.isCustodial
+        let isTrading = interactor.balanceType.isTrading
+        activityButtonVisibilityRelay.accept(!isCustodial ? .visible : .hidden)
+        swapButtonVisibilityRelay.accept(!isCustodial && currency.hasNonCustodialTradeSupport ? .visible : .hidden)
+        sendToWalletVisibilityRelay.accept(isTrading ? .visible : .hidden)
     }
 }

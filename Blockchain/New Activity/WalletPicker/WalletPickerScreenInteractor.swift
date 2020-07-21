@@ -36,7 +36,7 @@ final class WalletPickerCellInteractorProvider {
             .isFunded
             .map(weak: self) { (self, isFunded) -> [CurrentBalanceCellInteractor] in
                 var result: [CurrentBalanceCellInteractor] = []
-                if self.currency.hasNonCustodialSupport {
+                if self.currency.hasNonCustodialActivitySupport {
                     result.append(
                         CurrentBalanceCellInteractor(
                             balanceFetching: self.balanceFetcher,
@@ -88,9 +88,9 @@ final class WalletPickerScreenInteractor {
                 providers[.tether]!.interactors,
                 providers[.pax]!.interactors
             )
-            .map { arg in
-                let (bitcoin, ethereum, bitcoinCash, stellar, algorand, tether, pax) = arg
-                return bitcoin + ethereum + bitcoinCash + stellar + algorand + tether + pax
+            .map { interactors in
+                let (bitcoin, ethereum, bitcoinCash, stellar, algorand, tether, pax) = interactors
+                return bitcoin + ethereum + bitcoinCash + stellar + algorand + pax + tether
             }
     }
     

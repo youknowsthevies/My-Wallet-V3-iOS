@@ -69,6 +69,20 @@ final public class BlockchainAPI: NSObject {
     @objc public func etherExplorer() -> String {
         etherExplorerUrl
     }
+    
+    // MARK: - Logging
+    
+    public var swiftyBeaverAppID: String {
+        InfoDictionaryHelper.value(for: .swiftyBeaverAppId)
+    }
+    
+    public var swiftyBeaverAppSecret: String {
+        InfoDictionaryHelper.value(for: .swiftyBeaverAppSecret)
+    }
+    
+    public var swiftyBeaverAppKey: String {
+        InfoDictionaryHelper.value(for: .swiftyBeaverAppKey)
+    }
 
     // MARK: URI
     
@@ -229,6 +243,9 @@ private struct InfoDictionaryHelper {
         case websocketServerETH = "WEBSOCKET_SERVER_ETH"
         case certificatePinning = "PIN_CERTIFICATE"
         case everyPayURL = "EVERYPAY_API_URL"
+        case swiftyBeaverAppId = "SWIFTY_BEAVER_APP_ID"
+        case swiftyBeaverAppSecret = "SWIFTY_BEAVER_APP_SECRET"
+        case swiftyBeaverAppKey = "SWIFTY_BEAVER_APP_KEY"
     }
 
     private static let infoDictionary = Bundle(for: BlockchainAPI.self).infoDictionary

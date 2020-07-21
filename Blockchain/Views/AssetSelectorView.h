@@ -21,6 +21,7 @@
 @property (nonatomic, assign, readonly) BOOL isOpen;
 @property (nonatomic, weak) id <AssetSelectorViewDelegate> delegate;
 
++ (NSArray<NSNumber *> *)availableAssets;
 - (instancetype)initWithCoder:(NSCoder *)coder;
 - (instancetype)initWithFrame:(CGRect)frame parentView:(UIView *)parentView;
 - (instancetype)initWithFrame:(CGRect)frame assets:(NSArray<NSNumber *> *)assets parentView:(UIView *)parentView;

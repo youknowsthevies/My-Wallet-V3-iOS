@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import ToolKit
 import PlatformKit
 
 public enum EthereumJSInteropDispatcherError: Error {
@@ -128,6 +128,7 @@ extension EthereumJSInteropDispatcher: EthereumJSInteropDelegateAPI {
             dispatcher.sendFailure(.unknown)
             return
         }
+        Logger.shared.error(message)
         dispatcher.sendFailure(.jsError(message))
     }
 }
