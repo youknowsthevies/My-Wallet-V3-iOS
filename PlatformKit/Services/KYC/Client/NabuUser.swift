@@ -49,7 +49,8 @@ public struct NabuUser: Decodable {
     public let needsDocumentResubmission: DocumentResubmission?
     public let userName: String?
     public let depositAddresses: [DepositAddress]
-    public let productsUsed: ProductsUsed
+    private let productsUsed: ProductsUsed?
+    private let settings: NabuUserSettings?
     
     /// ISO-8601 Timestamp w/millis, eg 2018-08-15T17:00:45.129Z
     public let kycCreationDate: String?
@@ -67,6 +68,7 @@ public struct NabuUser: Decodable {
         case tiers
         case needsDocumentResubmission = "resubmission"
         case userName
+        case settings
         case productsUsed
         case kycCreationDate = "insertedAt"
         case kycUpdateDate = "updatedAt"
@@ -76,7 +78,6 @@ public struct NabuUser: Decodable {
     // MARK: - Init
 
     public init(
-        hasLinkedExchangeAccount: Bool = false,
         personalDetails: PersonalDetails,
         address: UserAddress?,
         email: Email,
@@ -89,6 +90,7 @@ public struct NabuUser: Decodable {
         userName: String? = nil,
         depositAddresses: [DepositAddress] = [],
         productsUsed: ProductsUsed,
+        settings: NabuUserSettings,
         kycCreationDate: String? = nil,
         kycUpdateDate: String? = nil
     ) {
@@ -104,6 +106,7 @@ public struct NabuUser: Decodable {
         self.userName = userName
         self.depositAddresses = depositAddresses
         self.productsUsed = productsUsed
+        self.settings = settings
         self.kycCreationDate = kycCreationDate
         self.kycUpdateDate = kycUpdateDate
     }
@@ -113,11 +116,8 @@ public struct NabuUser: Decodable {
         address = try values.decodeIfPresent(UserAddress.self, forKey: .address)
         tiers = try values.decodeIfPresent(KYC.UserState.self, forKey: .tiers)
         userName = try values.decodeIfPresent(String.self, forKey: .userName)
-        if let productsUsed = try values.decodeIfPresent(ProductsUsed.self, forKey: .productsUsed) {
-            self.productsUsed = productsUsed
-        } else {
-            self.productsUsed = ProductsUsed(exchange: false)
-        }
+        productsUsed = try values.decodeIfPresent(ProductsUsed.self, forKey: .productsUsed)
+        settings = try values.decodeIfPresent(NabuUserSettings.self, forKey: .settings)
         personalDetails = try PersonalDetails(from: decoder)
         email = try Email(from: decoder)
         mobile = try? Mobile(from: decoder)
@@ -140,8 +140,18 @@ public struct NabuUser: Decodable {
 extension NabuUser: User { }
 
 extension NabuUser {
-    public var hasLinkedExchangeAccount: Bool {        
-        productsUsed.exchange
+    /// User has a linked Exchange Account.
+    ///
+    /// If `ProductsUsed` property is present, use its `exchange` value.
+    /// Else use value of `NabuUserSettings`s `mercuryEmailVerified`.
+    /// Both `ProductsUsed` and `NabuUserSettings` are optionally present.
+    public var hasLinkedExchangeAccount: Bool {
+        if let productsUsed = self.productsUsed {
+            return productsUsed.exchange
+        } else if let mercuryEmailVerified = settings?.mercuryEmailVerified {
+            return mercuryEmailVerified
+        }
+        return false
     }
 }
 
@@ -274,5 +284,17 @@ public struct DepositAddress {
     public init(type: CryptoCurrency, address: String) {
         self.type = type
         self.address = address
+    }
+}
+
+public struct NabuUserSettings: Decodable {
+    public let mercuryEmailVerified: Bool?
+
+    private enum CodingKeys: String, CodingKey {
+        case mercuryEmailVerified = "MERCURY_EMAIL_VERIFIED"
+    }
+
+    public init(mercuryEmailVerified: Bool) {
+        self.mercuryEmailVerified = mercuryEmailVerified
     }
 }
