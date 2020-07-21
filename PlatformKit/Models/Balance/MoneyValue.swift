@@ -109,7 +109,30 @@ public struct MoneyValue: Money, Hashable, Equatable {
         }
     }
     
+    public var majorValue: Decimal {
+        switch value {
+        case .crypto(let cryptoValue):
+            return cryptoValue.majorValue
+        case .fiat(let fiatValue):
+            return fiatValue.majorValue
+        }
+    }
+    
     private let value: Value
+    
+    public var fiatValue: FiatValue? {
+        guard case Value.fiat(let value) = value else {
+            return nil
+        }
+        return value
+    }
+    
+    public var cryptoValue: CryptoValue? {
+        guard case Value.crypto(let value) = value else {
+            return nil
+        }
+        return value
+    }
     
     /// Constructs a `MoneyValue`
     /// - Parameters:
@@ -159,21 +182,59 @@ public struct MoneyValue: Money, Hashable, Equatable {
         try self.init(minor: "\(amount)", currency: currency)
     }
     
-    fileprivate init(cryptoValue: CryptoValue) {
+    public init(major amount: BigInt, currencyType: CurrencyType) throws {
+        let amount = amount.toMinor(maxDecimalPlaces: currencyType.maxDecimalPlaces)
+        try self.init(minor: "\(amount)", currency: currencyType.code)
+    }
+    
+    public init(cryptoValue: CryptoValue) {
         self.value = .crypto(cryptoValue)
     }
     
-    fileprivate init(fiatValue: FiatValue) {
+    public init(fiatValue: FiatValue) {
         self.value = .fiat(fiatValue)
     }
     
-    public func toDisplayString(includeSymbol: Bool, locale: Locale) -> String {
+    public func toDisplayString(includeSymbol: Bool, locale: Locale = .current) -> String {
         switch value {
         case .crypto(let cryptoValue):
             return cryptoValue.toDisplayString(includeSymbol: includeSymbol, locale: locale)
         case .fiat(let fiatValue):
             return fiatValue.toDisplayString(includeSymbol: includeSymbol, locale: locale)
         }
+    }
+    
+    public func value(before percentageChange: Double) throws -> MoneyValue {
+        switch value {
+        case .fiat(let value):
+            return MoneyValue(fiatValue: value.value(before: percentageChange))
+        case .crypto(let value):
+            return MoneyValue(cryptoValue: try value.value(before: percentageChange))
+        }
+    }
+    
+    public static func zero(_ cryptoCurrency: CryptoCurrency) -> MoneyValue {
+        MoneyValue(cryptoValue: CryptoValue(currencyType: cryptoCurrency, amount: 0))
+    }
+    
+    public static func zero(_ fiatCurrency: FiatCurrency) -> MoneyValue {
+        MoneyValue(fiatValue: FiatValue(currencyCode: fiatCurrency.code, amount: 0))
+    }
+    
+    public static func zero(_ currencyType: CurrencyType) -> MoneyValue {
+        switch currencyType {
+        case .fiat(let currency):
+            return .zero(currency)
+        case .crypto(let currency):
+            return .zero(currency)
+        }
+    }
+    
+    public func convert(using exchangeRate: MoneyValue) throws -> MoneyValue {
+        let exchangeRateAmount = exchangeRate.majorValue
+        let majorDecimal = majorValue * exchangeRateAmount
+        let major = "\(majorDecimal)"
+        return try MoneyValue(major: major, currency: exchangeRate.currencyType.code)
     }
 }
 

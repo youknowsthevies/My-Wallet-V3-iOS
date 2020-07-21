@@ -12,7 +12,7 @@ import BigInt
 
 extension CryptoValue {
     public static var lumensZero: CryptoValue {
-        zero(assetType: .stellar)
+        zero(currency: .stellar)
     }
 
     public static func lumensFromStroops(int stroops: Int) -> CryptoValue {

@@ -27,18 +27,21 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
         Observable
             .combineLatest(balanceProvider.fiatBalances, balanceProvider.fiatBalance, currencies)
             .map { (balances, totalBalance, currencies) in
-                guard let total = totalBalance.value else {
+                guard let totalFiatValue = totalBalance.value else {
                     return .loading
                 }
+                
+                let total = MoneyValue(fiatValue: totalFiatValue)
+                
                 guard total.isPositive else {
-                    let zero: FiatValue = .zero(currency: total.currencyType)
+                    let zero = MoneyValue.zero(total.currencyType)
                     let states = currencies.map { AssetPieChart.Value.Interaction(asset: $0, percentage: zero) }
                     return .loaded(next: states)
                 }
 
                 let balances: [LoadingState<AssetPieChart.Value.Interaction>] = try currencies
                     .map { currency -> LoadingState<AssetPieChart.Value.Interaction> in
-                        guard let balance = balances[currency].value?.fiat else {
+                        guard let balance = balances[currency.currency].value?.quote else {
                             return .loading
                         }
                         return .loaded(next: AssetPieChart.Value.Interaction(asset: currency, percentage: try balance / total))

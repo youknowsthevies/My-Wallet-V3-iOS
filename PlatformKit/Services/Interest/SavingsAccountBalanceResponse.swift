@@ -20,7 +20,7 @@ public struct SavingsAccountBalanceResponse: Decodable {
 
     // MARK: - Properties
 
-    private let balances: [String: Details]
+    let balances: [String: Details]
 
     // MARK: - Init
 

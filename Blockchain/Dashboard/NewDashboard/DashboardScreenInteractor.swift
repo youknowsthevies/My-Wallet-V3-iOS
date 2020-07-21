@@ -7,7 +7,10 @@
 //
 
 import PlatformKit
+import PlatformUIKit
 import RxSwift
+import RxRelay
+import BuySellKit
 
 final class DashboardScreenInteractor {
     
@@ -21,6 +24,7 @@ final class DashboardScreenInteractor {
     let userPropertyInteractor: AnalyticsUserPropertyInteractor
     
     let historicalBalanceInteractors: [HistoricalBalanceCellInteractor]
+    let fiatBalancesInteractor: DashboardFiatBalancesInteractor
     
     // MARK: - Private Accessors
     
@@ -42,9 +46,12 @@ final class DashboardScreenInteractor {
             HistoricalBalanceCellInteractor(
                 cryptoCurrency: $0,
                 historicalFiatPriceService: historicalProvider[$0],
-                assetBalanceFetcher: balanceProvider[$0]
+                assetBalanceFetcher: balanceProvider[$0.currency]
             )
         }
+        fiatBalancesInteractor = DashboardFiatBalancesInteractor(
+            balanceProvider: balanceProvider
+        )
     }
     
     func refresh() {

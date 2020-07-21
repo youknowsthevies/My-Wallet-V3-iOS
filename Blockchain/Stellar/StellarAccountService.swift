@@ -30,12 +30,16 @@ class StellarAccountService: StellarAccountAPI {
             }
             .catchError { (error) -> Single<CryptoValue> in
                 guard error is StellarAccountError else { return Single.error(error) }
-                return Single.just(.zero(assetType: .stellar))
+                return Single.just(.zero(currency: .stellar))
             }
     }
     
     var balanceObservable: Observable<CryptoValue> {
         balanceRelay.asObservable()
+    }
+
+    var balanceMoneyObservable: Observable<MoneyValue> {
+        balanceObservable.map { MoneyValue(cryptoValue: $0) }
     }
     
     private let balanceRelay = PublishRelay<CryptoValue>()
@@ -76,7 +80,7 @@ class StellarAccountService: StellarAccountAPI {
             .flatMapLatest(weak: self) { (self, _) in
                 self.balance.asObservable()
             }
-            .catchErrorJustReturn(.lumensZero)
+            .catchErrorJustReturn(CryptoValue.lumensZero)
             .bindAndCatch(to: balanceRelay)
             .disposed(by: disposeBag)
     }

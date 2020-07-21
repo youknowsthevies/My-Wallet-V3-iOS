@@ -9,26 +9,6 @@
 import RxSwift
 import ToolKit
 
-extension CachedValueConfigurationOld {
-    public static func onSubscriptionAndLogin(scheduler: SchedulerType = CachedValueConfigurationOld.generateScheduler()) -> CachedValueConfigurationOld {
-        .init(
-            refreshType: .onSubscription,
-            scheduler: scheduler,
-            flushNotificationName: .logout,
-            fetchNotificationName: .login
-        )
-    }
-    
-    public static func periodicAndLogin(_ time: TimeInterval, scheduler: SchedulerType = CachedValueConfigurationOld.generateScheduler()) -> CachedValueConfigurationOld {
-        .init(
-            refreshType: .periodic(seconds: time),
-            scheduler: scheduler,
-            flushNotificationName: .logout,
-            fetchNotificationName: .login
-        )
-    }
-}
-
 extension CachedValueConfiguration {
     
     public static func onSubscription(

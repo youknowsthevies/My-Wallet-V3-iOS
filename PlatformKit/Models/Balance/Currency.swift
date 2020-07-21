@@ -21,6 +21,7 @@ public protocol Currency {
     var maxDisplayableDecimalPlaces: Int { get }
     var isFiatCurrency: Bool { get }
     var isCryptoCurrency: Bool { get }
+    var currency: CurrencyType { get }
 }
 
 extension Currency {
@@ -107,17 +108,21 @@ extension CurrencyType: Currency {
             return fiatCurrency.maxDisplayableDecimalPlaces
         }
     }
-}
-
-extension CryptoCurrency: Currency {}
-
-extension FiatCurrency: Currency {
-    public var displayCode: String {
-        code
-    }
     
-    public var maxDisplayableDecimalPlaces: Int {
-        maxDecimalPlaces
+    public var currency: CurrencyType { self }
+    
+    public var isFiatCurrency: Bool {
+        guard case .fiat = self else {
+            return false
+        }
+        return true
+    }
+
+    public var isCryptoCurrency: Bool {
+        guard case .crypto = self else {
+            return false
+        }
+        return true        
     }
 }
 
@@ -144,5 +149,15 @@ extension CryptoValue {
 extension FiatValue {
     public var currency: CurrencyType {
         currencyType.currency
+    }
+}
+
+extension CurrencyType {
+    public static func == (lhs: CurrencyType, rhs: FiatCurrency) -> Bool {
+        lhs.code == rhs.code
+    }
+
+    public static func == (lhs: CurrencyType, rhs: CryptoCurrency) -> Bool {
+        lhs.code == rhs.code
     }
 }

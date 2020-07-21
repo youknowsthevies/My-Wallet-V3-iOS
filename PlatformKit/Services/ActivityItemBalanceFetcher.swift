@@ -14,8 +14,8 @@ public protocol ActivityItemBalanceFetching {
     /// The exchange service
     var exchange: PairExchangeServiceAPI { get }
     
-    /// The calculation state of the `FiatCryptoPair`
-    var calculationState: Observable<FiatCryptoPairCalculationState> { get }
+    /// The calculation state of the `MoneyValuePair`
+    var calculationState: Observable<MoneyValuePairCalculationState> { get }
     
     /// Trigger a refresh on the balance and exchange rate
     func refresh()
@@ -25,16 +25,22 @@ public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
     
     public let exchange: PairExchangeServiceAPI
     
-    public var calculationState: Observable<FiatCryptoPairCalculationState> {
+    public var calculationState: Observable<MoneyValuePairCalculationState> {
         _ = setup
         return calculationStateRelay.asObservable()
     }
     
+    // MARK: - Private Properties
+    
+    private let calculationStateRelay = BehaviorRelay<MoneyValuePairCalculationState>(value: .calculating)
+    private let disposeBag = DisposeBag()
+    private let cryptoValue: CryptoValue
+
     private lazy var setup: Void = {
         exchange
             .fiatPrice
-            .map(weak: self) { (self, fiatPrice) -> FiatCryptoPair in
-                FiatCryptoPair(crypto: self.cryptoValue, exchangeRate: fiatPrice)
+            .map(weak: self) { (self, fiatPrice) -> MoneyValuePair in
+                MoneyValuePair(base: self.cryptoValue, exchangeRate: fiatPrice)
             }
             .map { .value($0) }
             .startWith(.calculating)
@@ -42,14 +48,9 @@ public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
             .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     // MARK: - Private Properties
-    
-    private let calculationStateRelay = BehaviorRelay<FiatCryptoPairCalculationState>(value: .calculating)
-    private let disposeBag = DisposeBag()
-    
-    private let cryptoValue: CryptoValue
-    
+        
     public init(exchange: PairExchangeServiceAPI, cryptoValue: CryptoValue) {
         self.exchange = exchange
         self.cryptoValue = cryptoValue

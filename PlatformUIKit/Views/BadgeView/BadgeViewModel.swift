@@ -148,9 +148,13 @@ extension BadgeViewModel {
     /// Returns a default badgeViewModel with text only
     public static func `default`(
         with text: String,
+        font: UIFont = .main(.semibold, 14),
+        cornerRadius: CGFloat = 4,
         accessibilityId: String = Accessibility.Identifier.General.defaultBadgeView
         ) -> BadgeViewModel {
         var viewModel = BadgeViewModel(
+            font: font,
+            cornerRadius: cornerRadius,
             accessibility: .init(id: .value(accessibilityId))
         )
         viewModel.theme = Theme(

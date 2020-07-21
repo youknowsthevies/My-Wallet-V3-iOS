@@ -29,7 +29,7 @@ final class SendSpendableBalanceViewPresenter {
     let tapRelay = PublishRelay<Void>()
     
     /// Streams the max spendable balance upon interaction
-    let spendableBalanceTap: Observable<FiatCryptoPair>
+    let spendableBalanceTap: Observable<MoneyValuePair>
 
     // MARK: - Private Properties
     
@@ -58,7 +58,7 @@ final class SendSpendableBalanceViewPresenter {
         
         // Construct the attributed string for the crypto balance
         interactor.balance
-            .map { $0.crypto }
+            .map { $0.base }
             .map { $0.toDisplayString(includeSymbol: true) }
             .map { value -> NSAttributedString in
                 let font = Font(

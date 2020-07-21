@@ -124,6 +124,16 @@ extension LocalizationConstants.LineItem.Transactional {
         "Bank Transfer",
         comment: "Bank Transfer"
     )
+    public struct Funds {
+        public static let prefix = NSLocalizedString(
+            "My",
+            comment: "My"
+        )
+        public static let suffix = NSLocalizedString(
+            "Wallet",
+            comment: "Wallet"
+        )
+    }
     public static let creditOrDebitCard = NSLocalizedString(
         "Credit or Debit Card",
         comment: "Simple Buy: Payment method"

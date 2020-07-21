@@ -32,8 +32,8 @@ public final class AssetBalanceViewInteractor: AssetBalanceViewInteracting {
                 case .value(let result):
                     return .loaded(
                         next: .init(
-                            fiatValue: result.fiat,
-                            cryptoValue: result.crypto
+                            fiatValue: result.quote,
+                            cryptoValue: result.base
                         )
                     )
                 }
@@ -78,8 +78,8 @@ public final class AssetBalanceTypeViewInteractor: AssetBalanceTypeViewInteracti
                 case .value(let result):
                     return .loaded(
                         next: .init(
-                            fiatValue: result[self.balanceType].fiat,
-                            cryptoValue: result[self.balanceType].crypto
+                            fiatValue: result[self.balanceType].quote,
+                            cryptoValue: result[self.balanceType].base
                         )
                     )
                 }

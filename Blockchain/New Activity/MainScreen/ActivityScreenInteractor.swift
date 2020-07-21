@@ -48,16 +48,16 @@ final class ActivityScreenInteractor {
                     return self.serviceContainer
                         .balanceProviding
                         .fiatBalances
-                        .map { $0[currency] }
+                        .map { $0[currency.currency] }
                         .compactMap { $0.value }
-                        .map { $0[.custodial(.trading)].fiat }
+                        .compactMap { $0[.custodial(.trading)].quote.fiatValue }
                 case .nonCustodial(let currency):
                     return self.serviceContainer
                         .balanceProviding
                         .fiatBalances
-                        .map { $0[currency] }
+                        .map { $0[currency.currency] }
                         .compactMap { $0.value }
-                        .map { $0[.nonCustodial].fiat }
+                        .compactMap { $0[.nonCustodial].quote.fiatValue }
                 }
         }
     }

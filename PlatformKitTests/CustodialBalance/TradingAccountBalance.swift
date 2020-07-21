@@ -12,13 +12,11 @@ import XCTest
 class TradingAccountBalanceTests: XCTestCase {
 
     func testInitialiser() {
-        let bitcoin = TradingAccountBalance(currency: .bitcoin, response: .init(available: "0", pending: "0"))
+        let bitcoin = CustodialAccountBalance(currency: .crypto(.bitcoin), response: .init(available: "0"))
         XCTAssertEqual(bitcoin.available.amount, 0, "CryptoCurrency.bitcoin available should be 0")
-        XCTAssertEqual(bitcoin.pending.amount, 0, "CryptoCurrency.bitcoin pending should be 0")
 
-        let ethereum = TradingAccountBalance(currency: .ethereum, response: .init(available: "100", pending: "100"))
+        let ethereum = CustodialAccountBalance(currency: .crypto(.ethereum), response: .init(available: "100"))
         XCTAssertEqual(ethereum.available.amount, 100, "CryptoCurrency.ethereum available should be 100")
-        XCTAssertEqual(ethereum.pending.amount, 100, "CryptoCurrency.ethereum pending should be 100")
     }
 }
 

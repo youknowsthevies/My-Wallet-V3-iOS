@@ -44,6 +44,8 @@ final class OrderConfirmationService: OrderConfirmationServiceAPI {
             partner = .bank
         case .card:
             partner = .everyPay(customerUrl: PartnerAuthorizationData.exitLink)
+        case .funds:
+            partner = .funds
         }
                 
         return self.client.confirmOrder(

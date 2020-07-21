@@ -31,19 +31,27 @@ public final class PairExchangeService: PairExchangeServiceAPI {
     public private(set) lazy var fiatPrice: Observable<FiatValue> = {
         Observable
             .combineLatest(
-                currencyService.fiatCurrencyObservable,
+                fiatCurrencyService.fiatCurrencyObservable,
                 fetchTriggerRelay
             )
             .throttle(.milliseconds(100), scheduler: ConcurrentDispatchQueueScheduler(qos: .background))
             .map { $0.0 }
-            .flatMapLatest(weak: self) { (self, fiatCurrency) -> Observable<PriceInFiatValue> in
+            .flatMapLatest(weak: self) { (self, fiatCurrency) -> Observable<PriceQuoteAtTime> in
                 self.priceService
-                    .price(for: self.cryptoCurrency, in: fiatCurrency)
+                    .price(for: self.currency, in: fiatCurrency)
+                    .catchErrorJustReturn(
+                        PriceQuoteAtTime(
+                            timestamp: Date(),
+                            volume24h: nil,
+                            moneyValue: .zero(fiatCurrency)
+                        )
+                    )
                     .asObservable()
             }
-            .map { $0.priceInFiat }
+            // There MUST be a fiat value here
+            .map { $0.moneyValue.fiatValue! }
+            .catchErrorJustReturn(.zero(currency: fiatCurrencyService.legacyCurrency ?? .default))
             .distinctUntilChanged()
-            .catchErrorJustReturn(.zero(currency: currencyService.legacyCurrency ?? .default))
             .share(replay: 1)
     }()
     
@@ -56,18 +64,18 @@ public final class PairExchangeService: PairExchangeServiceAPI {
     private let priceService: PriceServiceAPI
     
     /// The currency service
-    private let currencyService: FiatCurrencySettingsServiceAPI
+    private let fiatCurrencyService: FiatCurrencyServiceAPI
     
-    /// The associated asset
-    private let cryptoCurrency: CryptoCurrency
+    /// The associated currency
+    private let currency: Currency
         
     // MARK: - Setup
     
-    public init(cryptoCurrency: CryptoCurrency,
+    public init(currency: Currency,
                 priceService: PriceServiceAPI = PriceService(),
-                currencyService: FiatCurrencySettingsServiceAPI) {
-        self.cryptoCurrency = cryptoCurrency
+                fiatCurrencyService: FiatCurrencyServiceAPI) {
+        self.currency = currency
         self.priceService = priceService
-        self.currencyService = currencyService
+        self.fiatCurrencyService = fiatCurrencyService
     }
 }

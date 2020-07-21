@@ -13,7 +13,7 @@ final class ETHServiceProvider {
     static let shared: ETHServiceProvider = .init(services: .init())
     
     let services: ETHServices
-
+    
     init(services: ETHServices) {
         self.services = services
     }

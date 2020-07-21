@@ -6,7 +6,6 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -15,10 +14,10 @@ import RxSwift
 protocol SendSpendableBalanceInteracting {
     
     /// Stream of the updated balance in account
-    var calculationState: Observable<FiatCryptoPairCalculationState> { get }
+    var calculationState: Observable<MoneyValuePairCalculationState> { get }
     
     /// The crypto balance, when applicable
-    var balance: Observable<FiatCryptoPair> { get }
+    var balance: Observable<MoneyValuePair> { get }
 }
 
 // MARK: - SendSpendableBalanceInteracting (default)
@@ -26,7 +25,7 @@ protocol SendSpendableBalanceInteracting {
 extension SendSpendableBalanceInteracting {
     
     /// The balance in crypto. Elements are emitted only when the calculation state contains a valid value
-    var balance: Observable<FiatCryptoPair> {
+    var balance: Observable<MoneyValuePair> {
         calculationState
             .compactMap { $0.value }
     }

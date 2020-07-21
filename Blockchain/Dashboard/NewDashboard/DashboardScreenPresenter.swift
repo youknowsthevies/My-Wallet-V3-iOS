@@ -27,7 +27,10 @@ enum DashboardCollectionAction {
     case announcement(AnnouncementDisplayAction)
     
     /// Any action related to notice about the wallet state
-    case notice(NoticeDisplayAction)
+    case notice(DashboardItemDisplayAction<NoticeViewModel>)
+    
+    /// Any action related to the custodial fiat balances
+    case fiatBalance(DashboardItemDisplayAction<FiatBalanceCollectionViewPresenter>)
 }
 
 enum DashboardItemState {
@@ -62,7 +65,8 @@ final class DashboardScreenPresenter {
     
     enum CellType: Hashable {
         case announcement
-        case balance
+        case fiatCustodialBalances
+        case totalBalance
         case notice
         case crypto(CryptoCurrency)
     }
@@ -82,12 +86,17 @@ final class DashboardScreenPresenter {
     /// Returns the ordered cell types
     var cellArrangement: [CellType] {
         var cellTypes: [CellType] = []
-        cellTypes.append(.balance)
+        cellTypes += [.totalBalance]
+        
         if shouldShowNotice {
             cellTypes.append(.notice)
         }
         
-        let assetCells: [CellType] = CryptoCurrency.allEnabled.map { .crypto($0) }
+        if shouldShowBalanceCollectionView {
+            cellTypes.append(.fiatCustodialBalances)
+        }
+                
+        let assetCells: [CellType] = CryptoCurrency.allCases.map { .crypto($0) }
         assetCells.forEach { cellTypes.append($0) }
         
         switch announcementCardArrangement {
@@ -138,15 +147,23 @@ final class DashboardScreenPresenter {
     var cardState = DashboardItemState.hidden
     private(set) var announcementCardViewModel: AnnouncementCardViewModel!
     private let announcmentPresenter: AnnouncementPresenter
-
-    // MARK: - TotalBalance
-
+    
+    // MARK: - Balances
+    
     let totalBalancePresenter: TotalBalanceViewPresenter
+    
+    private var shouldShowBalanceCollectionView: Bool {
+        fiatBalanceCollectionViewPresenter != nil
+    }
+    
+    var fiatBalanceState = DashboardItemState.hidden
+    private(set) var fiatBalanceCollectionViewPresenter: FiatBalanceCollectionViewPresenter!
+    let fiatBalancePresenter: DashboardFiatBalancesPresenter
     
     // MARK: - Notice
     
     /// Returns `true` if the notice cell should be visible
-    var shouldShowNotice: Bool {
+    private var shouldShowNotice: Bool {
         noticeViewModel != nil
     }
     
@@ -190,6 +207,9 @@ final class DashboardScreenPresenter {
         historicalBalanceCellPresenters = interactor
             .historicalBalanceInteractors
             .map { .init(interactor: $0) }
+        fiatBalancePresenter = DashboardFiatBalancesPresenter(
+            interactor: interactor.fiatBalancesInteractor
+        )
     }
     
     /// Should be called once the view is loaded
@@ -225,6 +245,20 @@ final class DashboardScreenPresenter {
             .asObservable()
             .bindAndCatch(to: actionRelay)
             .disposed(by: disposeBag)
+        
+        fiatBalancePresenter.action
+            .do(onNext: { action in
+                switch action {
+                case .hide:
+                    self.fiatBalanceCollectionViewPresenter = nil
+                case .show(let presenter):
+                    self.fiatBalanceCollectionViewPresenter = presenter
+                }
+            })
+            .map { .fiatBalance($0) }
+            .asObservable()
+            .bindAndCatch(to: actionRelay)
+            .disposed(by: disposeBag)
     }
     
     /// Should be called each time the dashboard view shows
@@ -233,6 +267,7 @@ final class DashboardScreenPresenter {
         interactor.refresh()
         announcmentPresenter.refresh()
         noticePresenter.refresh()
+        fiatBalancePresenter.refresh()
     }
     
     /// Given the cell index, returns the historical balance presenter

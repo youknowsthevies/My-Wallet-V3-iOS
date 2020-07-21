@@ -17,7 +17,6 @@ public final class LabeledButtonCollectionView<ViewModel: LabeledButtonViewModel
     
     /// The flow layout of the collection view
     private class CollectionViewFlowLayout: UICollectionViewFlowLayout {
-        var spread: Bool = false
         override init() {
             super.init()
             estimatedItemSize = CGSize(width: 100, height: 32)
@@ -53,18 +52,16 @@ public final class LabeledButtonCollectionView<ViewModel: LabeledButtonViewModel
         register(CellType.self)
         viewModelsRelay
             .observeOn(MainScheduler.instance)
-            .bind(
-                to: rx.items(
-                    cellIdentifier: CellType.objectName,
-                    cellType: CellType.self),
-                    curriedArgument: { _, viewModel, cell in
-                        cell.viewModel = viewModel
-                    }
+            .bind(to: rx.items(
+                cellIdentifier: CellType.objectName,
+                cellType: CellType.self),
+                curriedArgument: { _, viewModel, cell in
+                    cell.viewModel = viewModel
+                }
             )
             .disposed(by: disposeBag)
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { nil }
 }

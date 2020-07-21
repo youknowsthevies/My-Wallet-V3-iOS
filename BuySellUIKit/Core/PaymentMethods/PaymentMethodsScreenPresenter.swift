@@ -21,10 +21,12 @@ final class PaymentMethodsScreenPresenter {
     
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.PaymentMethodSelectionScreen
-        
+    private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.PaymentMethodsScreen
+    
     enum CellViewModelType {
-        case suggestedPaymentMethod(SelectionButtonViewModel)
+        case suggestedPaymentMethod(ExplainedActionViewModel)
         case linkedCard(LinkedCardCellPresenter)
+        case account(FiatCustodialBalanceViewPresenter)
     }
     
     // MARK: - Exposed
@@ -40,7 +42,7 @@ final class PaymentMethodsScreenPresenter {
     private(set) var cellViewModelTypesRelay = BehaviorRelay<[CellViewModelType]>(value: [])
 
     private let loadingViewPresenter: LoadingViewPresenting
-    private let stateService: RoutingPreviousStateEmitterAPI
+    private let stateService: PaymentMethodsStateAPI
     private let interactor: PaymentMethodsScreenInteractor
     private let eventRecorder: AnalyticsEventRecording
 
@@ -52,7 +54,7 @@ final class PaymentMethodsScreenPresenter {
     
     init(interactor: PaymentMethodsScreenInteractor,
          loadingViewPresenter: LoadingViewPresenting = UIUtilityProvider.default.loader,
-         stateService: RoutingPreviousStateEmitterAPI,
+         stateService: PaymentMethodsStateAPI,
          eventRecorder: AnalyticsEventRecording) {
         self.loadingViewPresenter = loadingViewPresenter
         self.stateService = stateService
@@ -91,21 +93,54 @@ final class PaymentMethodsScreenPresenter {
         let cellType: CellViewModelType
         switch paymentMethodType {
         case .suggested(let method):
-            let viewModel = SelectionButtonViewModel(with: paymentMethodType)
-            viewModel.horizontalOffsetRelay.accept(24)
-            viewModel.verticalOffsetRelay.accept(16)
+            let viewModel: ExplainedActionViewModel
+            switch method.type {
+            case .funds:
+                viewModel = .init(
+                    thumbImage: "icon-deposit-cash",
+                    title: LocalizedString.DepositCash.title,
+                    descriptions: [LocalizedString.DepositCash.description],
+                    badgeTitle: nil,
+                    uniqueAccessibilityIdentifier: AccessibilityId.depositCash
+                )
+            case .card:
+                viewModel = .init(
+                    thumbImage: "Icon-Creditcard",
+                    title: LocalizedString.Card.title,
+                    descriptions: [
+                        "\(method.max.toDisplayString()) \(LocalizedString.Card.descriptionLimit)",
+                        LocalizedString.Card.descriptionInfo
+                    ],
+                    badgeTitle: LocalizedString.Card.badgeTitle,
+                    uniqueAccessibilityIdentifier: AccessibilityId.addCard
+                )
+            case .bankTransfer:
+                fatalError("Bank transfer is not a valid payment method any longer")
+            }
             viewModel.tap
-                .emit(onNext: { [weak self] in
-                    guard let self = self else { return }
+                .emit(weak: self) { (self) in
+                    let event: AnalyticsEvents.SimpleBuy.PaymentMethod
+                    switch method.type {
+                    case .bankTransfer:
+                        event = .bank
+                        self.interactor.select(method: paymentMethodType)
+                        self.stateService.previousRelay.accept(())
+                    case .funds(.fiat(let currency)):
+                        event = .funds
+                        self.stateService.showFundsTransferDetails(for: currency)
+                    case .funds(.crypto):
+                        fatalError("Funds with crypto currency is not a possible state")
+                    case .card:
+                        event = .newCard
+                        self.interactor.select(method: paymentMethodType)
+                        self.stateService.previousRelay.accept(())
+                    }
                     self.eventRecorder.record(
-                        event: AnalyticsEvent.sbPaymentMethodSelected(
-                            selection: method.type == .bankTransfer ? .bank : .newCard
-                        )
+                        event: AnalyticsEvent.sbPaymentMethodSelected(selection: event)
                     )
-                    self.interactor.select(method: paymentMethodType)
-                    self.stateService.previousRelay.accept(())
-                })
+                }
                 .disposed(by: disposeBag)
+
             cellType = .suggestedPaymentMethod(viewModel)
         case .card(let cardData):
             let presenter = LinkedCardCellPresenter(
@@ -113,16 +148,32 @@ final class PaymentMethodsScreenPresenter {
                 cardData: cardData
             )
             presenter.tap
-                .emit(onNext: { [weak self] in
-                    guard let self = self else { return }
+                .emit(weak: self) { (self) in
                     self.eventRecorder.record(
                         event: AnalyticsEvent.sbPaymentMethodSelected(selection: .card)
                     )
                     self.interactor.select(method: paymentMethodType)
                     self.stateService.previousRelay.accept(())
-                })
+                }
                 .disposed(by: disposeBag)
             cellType = .linkedCard(presenter)
+        case .account(let balance):
+            let presenter = FiatCustodialBalanceViewPresenter(
+                interactor: interactor.custodialFiatBalanceViewInteractor(by: balance),
+                descriptors: .paymentMethods(),
+                respondsToTaps: true,
+                presentationStyle: .plain
+            )
+            presenter.tap
+                .emit(weak: self) { (self) in
+                    self.eventRecorder.record(
+                        event: AnalyticsEvent.sbPaymentMethodSelected(selection: .funds)
+                    )
+                    self.interactor.select(method: paymentMethodType)
+                    self.stateService.previousRelay.accept(())
+                }
+                .disposed(by: disposeBag)
+            cellType = .account(presenter)
         }
         
         return cellType

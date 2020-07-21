@@ -160,7 +160,7 @@ final class CardDetailsScreenPresenter {
                 accessibility: .id(AccessibilityId.noticeImage),
                 bundle: .platformUIKit
             ),
-            labelContent: .init(
+            labelContents: .init(
                 text: LocalizedString.notice,
                 font: .main(.medium, 12),
                 color: .descriptionText,

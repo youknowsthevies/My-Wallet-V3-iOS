@@ -16,7 +16,7 @@ final class DashboardNoticePresenter {
     // MARK: - Exposed Properties
     
     /// Streams only distinct actions
-    var action: Driver<NoticeDisplayAction> {
+    var action: Driver<DashboardItemDisplayAction<NoticeViewModel>> {
         actionRelay
             .asDriver()
             .distinctUntilChanged()
@@ -24,7 +24,7 @@ final class DashboardNoticePresenter {
     
     // MARK: - Private Properties
     
-    let actionRelay = BehaviorRelay<NoticeDisplayAction>(value: .hide)
+    let actionRelay = BehaviorRelay<DashboardItemDisplayAction<NoticeViewModel>>(value: .hide)
     
     private let interactor: DashboardNoticeInteractor
     private let disposeBag = DisposeBag()
@@ -54,7 +54,7 @@ final class DashboardNoticePresenter {
                 accessibility: .id(AccessibilityId.imageView),
                 bundle: .platformUIKit
             ),
-            labelContent: .init(
+            labelContents: .init(
                 text: LocalizedString.lockboxNotice,
                 font: .main(.medium, 12),
                 color: .descriptionText,

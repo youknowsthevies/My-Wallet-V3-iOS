@@ -20,8 +20,8 @@ final class BitcoinActivityDetailsInteractor {
     init(wallet: BitcoinWallet = WalletManager.shared.wallet.bitcoin,
          fiatCurrencySettings: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          priceService: PriceServiceAPI = PriceService(),
-         serviceProvider: BitcoinServiceProvider = BitcoinServiceProvider.shared) {
-        self.detailsService = serviceProvider.services.activityDetails
+         detailsService: AnyActivityItemEventDetailsFetcher<BitcoinActivityItemEventDetails> = ActivityServiceProvider.default.bitcoinDetails) {
+        self.detailsService = detailsService
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService
         self.wallet = wallet
@@ -35,7 +35,7 @@ final class BitcoinActivityDetailsInteractor {
         wallet.updateMemo(for: identifier, memo: memo)
     }
 
-    private func price(at date: Date) -> Single<PriceInFiatValue> {
+    private func price(at date: Date) -> Single<PriceQuoteAtTime> {
         fiatCurrencySettings
             .fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) in
@@ -43,9 +43,9 @@ final class BitcoinActivityDetailsInteractor {
             }
     }
 
-    private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceInFiatValue> {
+    private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceQuoteAtTime> {
         priceService.price(
-            for: .bitcoin,
+            for: CurrencyType.crypto(CryptoCurrency.bitcoin),
             in: fiatCurrency,
             at: date
         )
@@ -66,6 +66,6 @@ final class BitcoinActivityDetailsInteractor {
                 price.asObservable(),
                 memo.asObservable()
             )
-            .map { BitcoinActivityDetailsViewModel(details: $0, price: $1?.priceInFiat, memo: $2) }
+            .map { BitcoinActivityDetailsViewModel(details: $0, price: $1?.moneyValue.fiatValue, memo: $2) }
     }
 }

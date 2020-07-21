@@ -9,7 +9,6 @@
 /// The available payment methods
 struct PaymentMethodsResponse: Decodable {
     
-    /// The method
     struct Method: Decodable {
         
         /// The limits
@@ -18,15 +17,17 @@ struct PaymentMethodsResponse: Decodable {
             let max: String
         }
         
-        /// The type of the method (e.g: `BANK_TRANSFER` / `CARD`)
         let type: String
         
         /// The boundaries of the method (min / max)
         let limits: Limits
         
         /// The supported subtypes of the payment method
-        /// e.g cards: ["VISA", "MASTERCARD"]
+        /// e.g for a card payment method: ["VISA", "MASTERCARD"]
         let subTypes: [String]
+        
+        /// The currency limiter of the method
+        let currency: String?
     }
     
     /// The currency for the payment method (e.g: `USD`)

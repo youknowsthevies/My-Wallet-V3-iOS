@@ -13,10 +13,11 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class CryptoCurrencySelectionService: SelectionServiceAPI {
+final class CryptoCurrencySelectionService: SelectionServiceAPI, CryptoCurrencyServiceAPI {
     
     var dataSource: Observable<[SelectionItemViewModel]> {
-        service.pairs
+        _ = setup
+        return service.pairs
             .map { $0.cryptoCurrencies }
             .take(1)
             .map { $0.map(\.selectionItem) }
@@ -25,14 +26,44 @@ final class CryptoCurrencySelectionService: SelectionServiceAPI {
     let selectedDataRelay: BehaviorRelay<SelectionItemViewModel>
     
     var selectedData: Observable<SelectionItemViewModel> {
-        selectedDataRelay.distinctUntilChanged()
+        _ = setup
+        return selectedDataRelay.distinctUntilChanged()
     }
+    
+    var cryptoCurrencyObservable: Observable<CryptoCurrency> {
+        _ = setup
+        return cryptoCurrencyRelay
+            .asObservable()
+            .distinctUntilChanged()
+    }
+    
+    var cryptoCurrency: Single<CryptoCurrency> {
+        _ = setup
+        return cryptoCurrencyObservable
+            .take(1)
+            .asSingle()
+    }
+        
+    // MARK: - Injected
     
     private let service: SupportedPairsInteractorServiceAPI
     
+    // MARK: - Accessors
+    
+    private let cryptoCurrencyRelay: BehaviorRelay<CryptoCurrency>
+    private let disposeBag = DisposeBag()
+        
+    private lazy var setup: Void = {
+        selectedData
+            .map {  CryptoCurrency(code: $0.id)! }
+            .bindAndCatch(to: cryptoCurrencyRelay)
+            .disposed(by: disposeBag)
+    }()
+    
     init(service: SupportedPairsInteractorServiceAPI, defaultSelectedData: CryptoCurrency) {
         self.service = service
-        self.selectedDataRelay = BehaviorRelay(value: defaultSelectedData.selectionItem)
+        selectedDataRelay = BehaviorRelay(value: defaultSelectedData.selectionItem)
+        cryptoCurrencyRelay = BehaviorRelay(value: defaultSelectedData)
     }
 }
 

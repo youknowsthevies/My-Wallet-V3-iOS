@@ -60,7 +60,7 @@ final class SettingsScreenInteractor {
          tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
          wallet: Wallet = WalletManager.shared.wallet,
          cardsService: CardServiceProviderAPI = CardServiceProvider.default,
-         simpleBuyService: ServiceProviderAPI = ServiceProvider.default) {
+         simpleBuyService: ServiceProviderAPI = DataProvider.default.buySell) {
         self.simpleBuyService = simpleBuyService
         self.cardsService = cardsService
         self.smsTwoFactorService = smsTwoFactorService

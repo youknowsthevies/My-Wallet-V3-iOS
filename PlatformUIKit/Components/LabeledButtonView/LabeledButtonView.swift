@@ -19,8 +19,10 @@ public final class LabeledButtonView<ViewModel: LabeledButtonViewModelAPI>: UIVi
     // MARK: - Injected
 
     var viewModel: ViewModel! {
-        didSet {
+        willSet {
             disposeBag = DisposeBag()
+        }
+        didSet {
             guard let viewModel = viewModel else { return }
 
             button.rx.tap

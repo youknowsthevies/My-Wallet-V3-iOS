@@ -10,7 +10,6 @@ import ERC20Kit
 import PlatformKit
 
 public protocol TetherDependencies {
-    var activity: ActivityItemEventServiceAPI { get }
     var assetAccountRepository: ERC20AssetAccountRepository<TetherToken> { get }
     var historicalTransactionService: AnyERC20HistoricalTransactionService<TetherToken> { get }
 }

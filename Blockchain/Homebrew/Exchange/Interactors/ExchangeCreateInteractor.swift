@@ -424,7 +424,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
     private func estimatedFeeForCurrency(_ cryptoCurrency: CryptoCurrency) -> Observable<CryptoValue> {
         switch cryptoCurrency {
         case .algorand:
-            return .just(.zero(assetType: .algorand))
+            return .just(.zero(currency: .algorand))
         case .bitcoin:
             return feeServiceAPI.bitcoin.asObservable().map { $0.priority }
         case .bitcoinCash:
@@ -871,7 +871,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
     private func clearInputs() {
         guard let model = model else { return }
         let fromAssetType = model.marketPair.pair.from
-        volumeSubject.accept(CryptoValue.zero(assetType: fromAssetType))
+        volumeSubject.accept(CryptoValue.zero(currency: fromAssetType))
         inputs.clear()
         conversions.clear()
         output?.updateTradingPairValues(left: "", right: "")

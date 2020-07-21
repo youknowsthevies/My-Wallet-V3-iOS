@@ -56,7 +56,7 @@ final class SendFeeService: SendFeeServicing {
                 if let value = CryptoValue.etherFromWei(string: "\(cost)") {
                     return value
                 } else {
-                    throw FiatCryptoPairCalculationState.CalculationError.valueCouldNotBeCalculated
+                    throw MoneyValuePairCalculationState.CalculationError.valueCouldNotBeCalculated
                 }
             }
             .asObservable()

@@ -25,8 +25,4 @@ public protocol DataProviding: class {
     /// This service is wallet agnostic and provides the
     /// market prices over a given duration
     var historicalPrices: HistoricalFiatPriceProviding { get }
-    
-    /// Returns all the `ActivityItemEventFetcherAPI` providers,
-    /// one for each asset type.
-    var activity: ActivityProviding { get }
 }

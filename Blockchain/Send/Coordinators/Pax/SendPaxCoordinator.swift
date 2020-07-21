@@ -156,14 +156,14 @@ extension SendPaxCoordinator {
 
         let currencyCode = BlockchainSettings.App.shared.fiatCurrencyCode
         return Single.zip(
-            priceAPI.price(for: .ethereum, in: FiatCurrency(code: currencyCode)!),
-            priceAPI.price(for: .pax, in: FiatCurrency(code: currencyCode)!),
+            priceAPI.price(for: CryptoCurrency.ethereum, in: FiatCurrency(code: currencyCode)!),
+            priceAPI.price(for: CryptoCurrency.pax, in: FiatCurrency(code: currencyCode)!),
             fees,
             balance
         )
         .map { (ethPrice, paxPrice, etherTransactionFee, balance) -> Metadata in
-            Metadata(etherInFiat: ethPrice.priceInFiat,
-                            paxInFiat: paxPrice.priceInFiat,
+            Metadata(etherInFiat: ethPrice.moneyValue.fiatValue!,
+                            paxInFiat: paxPrice.moneyValue.fiatValue!,
                             etherFee: etherTransactionFee,
                             balance: balance)
         }

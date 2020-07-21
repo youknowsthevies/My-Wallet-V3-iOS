@@ -36,7 +36,7 @@ extension ERC20Token {
     
     public static var zeroValue: ERC20TokenValue<Self> {
         // swiftlint:disable:next force_try
-        return try! ERC20TokenValue<Self>(crypto: CryptoValue.zero(assetType: assetType))
+        return try! ERC20TokenValue<Self>(crypto: CryptoValue.zero(currency: assetType))
     }
 
     public static func cryptoValueFrom(minorValue: BigInt) -> ERC20TokenValue<Self>? {

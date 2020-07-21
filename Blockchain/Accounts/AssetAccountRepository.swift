@@ -298,7 +298,7 @@ extension AssetAccount {
             balance = CryptoValue.createFromMinorValue(balanceBigInt, assetType: assetType)
         } else {
             let balanceString = balanceFromWalletObject as? String ?? "0"
-            balance = CryptoValue.createFromMajorValue(string: balanceString, assetType: assetType) ?? CryptoValue.zero(assetType: assetType)
+            balance = CryptoValue.createFromMajorValue(string: balanceString, assetType: assetType) ?? CryptoValue.zero(currency: assetType)
         }
         return AssetAccount(
             index: index,

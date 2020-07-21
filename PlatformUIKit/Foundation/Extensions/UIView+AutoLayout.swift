@@ -7,11 +7,18 @@
 //
 
 import ToolKit
-
-public extension UILayoutPriority {
+extension UILayoutPriority {
     /// Owns `999` as value, one prior to the highest (`1000`) that can still be changed w/o crashing
-    static let penultimateHigh = UILayoutPriority(rawValue: 999)
-    static let penultimateLow = UILayoutPriority(rawValue: 1)
+    public static let penultimateHigh = UILayoutPriority(rawValue: 999)
+    public static let penultimateLow = UILayoutPriority(rawValue: 1)
+    
+    public static func +=(lhs: inout UILayoutPriority, value: Float) throws {
+        lhs = UILayoutPriority(rawValue: lhs.rawValue + value)
+    }
+
+    public static func -=(lhs: inout UILayoutPriority, value: Float) throws {
+        lhs = UILayoutPriority(rawValue: lhs.rawValue - value)
+    }
 }
 
 extension UIView {

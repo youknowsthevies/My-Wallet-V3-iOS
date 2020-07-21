@@ -9,6 +9,14 @@
 extension Accessibility.Identifier {
     public struct Dashboard {
         private static let prefix = "Dashboard."
+        public struct FiatCustodialCell {
+            public static let prefix = "\(Dashboard.prefix)FiatCustodialCell."
+            public static let currencyName = "\(prefix)currencyName"
+            public static let currencyCode = "\(prefix)currencyCode"
+            public static let currencyBadgeView = "\(prefix)currencyBadgeView"
+            public static let baseFiatBalance = "\(prefix)baseFiatBalance"
+            public static let quoteFiatBalance = "\(prefix)quoteFiatBalance"
+        }
         public struct CurrentBalanceCell {
             public static let prefix = "\(Dashboard.prefix)CurrentBalance."
             public static let view = "\(prefix)view"

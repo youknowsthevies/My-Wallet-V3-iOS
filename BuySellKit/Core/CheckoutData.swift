@@ -36,6 +36,7 @@ public struct CheckoutData {
         
     public let order: OrderDetails
     public let paymentAccount: PaymentAccount!
+    public let isPaymentMethodFinalized: Bool
     
     // MARK: - Properties
 
@@ -59,10 +60,15 @@ public struct CheckoutData {
     public var isUnknownCardType: Bool {
         order.paymentMethod.isCard && order.paymentMethodId == nil
     }
+    
+    public var isPendingConfirmationFunds: Bool {
+        order.isPendingConfirmation && order.paymentMethod.isFunds
+    }
                 
     public init(order: OrderDetails, paymentAccount: PaymentAccount? = nil) {
         self.order = order
         self.paymentAccount = paymentAccount
+        isPaymentMethodFinalized = (paymentAccount != nil || order.paymentMethodId != nil)
     }
 
     public func checkoutData(byAppending cardData: CardData) -> CheckoutData {

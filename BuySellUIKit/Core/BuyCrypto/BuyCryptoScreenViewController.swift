@@ -31,11 +31,9 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
     
     // MARK: - Properties
     
+    private let paymentMethodSeparatorView = TitledSeparatorView()
     private let assetSelectionButtonView = SelectionButtonView()
-    private let amountLabelView = AmountLabelView()
-    private let amountLabelContainerView = UIView()
-    private var labeledButtonCollectionView = LabeledButtonCollectionView<CurrencyLabeledButtonViewModel>()
-    private let trailingButtonView = ButtonView()
+    private var amountTranslationView: AmountTranslationView!
     private let paymentMethodSelectionButtonView = SelectionButtonView()
     private let continueButtonView = ButtonView()
     private let digitPadView = DigitPadView()
@@ -65,61 +63,35 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
     override func loadView() {
         view = UIView()
         view.backgroundColor = .white
+                
+        let digitPadTopSeparatorView = UIView()
+
+        amountTranslationView = AmountTranslationView(presenter: presenter.amountTranslationPresenter)
         
         view.addSubview(assetSelectionButtonView)
-        
-        amountLabelContainerView.addSubview(amountLabelView)
-        view.addSubview(amountLabelContainerView)
-
-        view.addSubview(labeledButtonCollectionView)
-        view.addSubview(trailingButtonView)
-        
-        let paymentMethodTopSeparatorView = UIView()
-        view.addSubview(paymentMethodTopSeparatorView)
-        
+        view.addSubview(amountTranslationView)
+        view.addSubview(paymentMethodSeparatorView)
         view.addSubview(paymentMethodSelectionButtonView)
-        
         view.addSubview(continueButtonView)
-        
-        let digitPadTopSeparatorView = UIView()
         view.addSubview(digitPadTopSeparatorView)
-        
         view.addSubview(digitPadView)
         
         assetSelectionButtonView.layoutToSuperview(.top, usesSafeAreaLayoutGuide: true)
         assetSelectionButtonView.layoutToSuperview(.leading, .trailing)
         assetSelectionViewHeightConstraint = assetSelectionButtonView.layout(dimension: .height, to: 78)
-                
-        amountLabelContainerView.layoutToSuperview(.leading, .trailing)
-        amountLabelContainerView.layout(edge: .top, to: .bottom, of: assetSelectionButtonView)
-        amountLabelContainerView.layout(edge: .bottom, to: .top, of: labeledButtonCollectionView)
         
-        amountLabelView.layoutToSuperview(axis: .horizontal, offset: 24, priority: .penultimateHigh)
-        amountLabelView.layoutToSuperview(.centerY)
-        amountLabelView.layout(dimension: .height, to: 40)
-        
-        labeledButtonCollectionView.layoutToSuperview(axis: .horizontal, priority: .penultimateHigh)
-        labeledButtonCollectionView.layout(
-            edge: .bottom,
-            to: .top,
-            of: paymentMethodTopSeparatorView,
-            offset: -16
-        )
-        labeledButtonCollectionView.layout(dimension: .height, to: 32, priority: .penultimateHigh)
-        
-        trailingButtonView.layoutToSuperview(.trailing, offset: -24)
-        trailingButtonView.layout(to: .centerY, of: labeledButtonCollectionView)
-        trailingButtonView.layout(dimension: .height, to: 32)
+        amountTranslationView.layoutToSuperview(axis: .horizontal)
+        amountTranslationView.layout(edge: .top, to: .bottom, of: assetSelectionButtonView)
 
-        paymentMethodTopSeparatorView.layoutToSuperview(.leading, .trailing)
-        paymentMethodTopSeparatorView.layout(edge: .top, to: .bottom, of: labeledButtonCollectionView)
-        paymentMethodTopSeparatorView.layout(dimension: .height, to: 1)
+        paymentMethodSeparatorView.layout(edge: .top, to: .bottom, of: amountTranslationView)
+        paymentMethodSeparatorView.layoutToSuperview(.leading, offset: 24, priority: .defaultHigh)
+        paymentMethodSeparatorView.layoutToSuperview(.trailing)
 
         paymentMethodSelectionButtonView.layoutToSuperview(.leading, .trailing)
         paymentMethodSelectionButtonView.layout(
             edge: .top,
             to: .bottom,
-            of: paymentMethodTopSeparatorView,
+            of: paymentMethodSeparatorView,
             priority: .defaultLow
         )
         paymentMethodSelectionViewHeightConstraint = paymentMethodSelectionButtonView.layout(
@@ -151,7 +123,6 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
         digitPadHeightConstraint = digitPadView.layout(dimension: .height, to: 260, priority: .penultimateHigh)
                 
         digitPadTopSeparatorView.backgroundColor = presenter.separatorColor
-        paymentMethodTopSeparatorView.backgroundColor = presenter.separatorColor
     }
     
     override func viewDidLoad() {
@@ -159,16 +130,9 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
         setupNavigationBar()
         digitPadView.viewModel = presenter.digitPadViewModel
         continueButtonView.viewModel = presenter.continueButtonViewModel
-        amountLabelView.viewModel = presenter.amountLabelViewModel
         assetSelectionButtonView.viewModel = presenter.assetSelectionButtonViewModel
-        
+        paymentMethodSeparatorView.viewModel = presenter.paymentMethodSeparatorViewModel
         setupPaymentMethodSelectionButtonView()
-        
-        presenter.labeledButtonViewModels
-            .drive(labeledButtonCollectionView.viewModelsRelay)
-            .disposed(by: disposeBag)
-        trailingButtonView.viewModel = presenter.trailingButtonViewModel
-
         presenter.refresh()
     }
     
@@ -235,6 +199,7 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
             initialSpringVelocity: 0,
             options: [.beginFromCurrentState, .curveEaseOut],
             animations: {
+                self.paymentMethodSeparatorView.alpha = visibility.defaultAlpha
                 self.paymentMethodSelectionButtonView.alpha = visibility.defaultAlpha
                 self.paymentMethodSelectionViewHeightConstraint.constant = height
             },

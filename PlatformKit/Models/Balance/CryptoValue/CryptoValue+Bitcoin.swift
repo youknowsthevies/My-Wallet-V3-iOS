@@ -12,7 +12,7 @@ import BigInt
 
 extension CryptoValue {
     public static var bitcoinZero: CryptoValue {
-        zero(assetType: .bitcoin)
+        zero(currency: .bitcoin)
     }
 
     public static func bitcoinFromSatoshis(bigInt satoshis: BigInt) -> CryptoValue {

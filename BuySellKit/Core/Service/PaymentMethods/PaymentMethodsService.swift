@@ -54,7 +54,7 @@ final class PaymentMethodsService: PaymentMethodsServiceAPI {
             switch card.type {
             case .card(let types):
                 return types
-            case .bankTransfer:
+            case .bankTransfer, .funds:
                 return []
             }
         }
@@ -66,7 +66,6 @@ final class PaymentMethodsService: PaymentMethodsServiceAPI {
     
     private let client: PaymentMethodsClientAPI
     private let tiersService: KYCTiersServiceAPI
-    private let reactiveWallet: ReactiveWalletAPI
     private let featureFetcher: FeatureFetching
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     
@@ -79,14 +78,13 @@ final class PaymentMethodsService: PaymentMethodsServiceAPI {
          fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
         self.client = client
         self.tiersService = tiersService
-        self.reactiveWallet = reactiveWallet
         self.featureFetcher = featureFetcher
         self.fiatCurrencyService = fiatCurrencyService
     }
     
     func fetch() -> Observable<[PaymentMethod]> {
         fiatCurrencyService.fiatCurrencyObservable
-            .flatMap(weak: self) { (self, fiatCurrency) -> Observable<PaymentMethodsResponse> in
+            .flatMap(weak: self) { (self, fiatCurrency) -> Observable<[PaymentMethod]> in
                 self.tiersService.fetchTiers()
                     .map { $0.isTier2Approved }
                     .flatMap { isTier2Approved -> Single<PaymentMethodsResponse> in
@@ -95,22 +93,24 @@ final class PaymentMethodsService: PaymentMethodsServiceAPI {
                             checkEligibility: isTier2Approved
                         )
                     }
-                    .asObservable()
-            }
-            .map { Array<PaymentMethod>.init(response: $0) }
-            .map {
-                $0.filter {
-                    switch $0.type {
-                    case .card:
-                        return true
-                    case .bankTransfer:
-                        // Filter out bank transfer details from currencies we do not
-                        //  have local support/UI.
-                        return BankLocallySupportedCurrencies
-                            .fiatCurrencies
-                            .contains($0.min.currencyType)
+                    .map { Array<PaymentMethod>.init(response: $0) }
+                    .map { paymentMethods in
+                        paymentMethods.filter {
+                            switch $0.type {
+                            case .card:
+                                return true
+                            case .funds(let currencyType):
+                                return currencyType.code == fiatCurrency.code
+                            case .bankTransfer:
+                                // Filter out bank transfer details from currencies we do not
+                                //  have local support/UI.
+                                return CustodialLocallySupportedFiatCurrencies
+                                    .fiatCurrencies
+                                    .contains($0.min.currencyType)
+                            }
+                        }
                     }
-                }
+                    .asObservable()
             }
             .flatMap(weak: self) { (self, methods) -> Observable<[PaymentMethod]> in
                 self.featureFetcher.fetchBool(for: .simpleBuyCardsEnabled)

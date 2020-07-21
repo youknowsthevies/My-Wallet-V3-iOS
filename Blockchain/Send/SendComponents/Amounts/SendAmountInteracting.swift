@@ -20,10 +20,10 @@ protocol SendAmountInteracting {
     var amountBalanceRatio: Observable<AmountBalanceRatio> { get }
     
     /// The total value: amount + fee
-    var total: Observable<FiatCryptoPair> { get }
+    var total: Observable<MoneyValuePair> { get }
     
     /// The amount calculation state
-    var calculationState: Observable<FiatCryptoPairCalculationState> { get }
+    var calculationState: Observable<MoneyValuePairCalculationState> { get }
     
     /// Spendable balance interactor
     var spendableBalanceInteractor: SendSpendableBalanceInteracting { get }

@@ -24,6 +24,7 @@ final class AnnouncementPresenter {
     private let featureConfigurator: FeatureConfiguring
     private let featureFetcher: FeatureFetching
     private let airdropRouter: AirdropRouterAPI
+    private let cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting
     private let kycCoordinator: KYCCoordinator
     private let exchangeCoordinator: ExchangeCoordinator
     private let wallet: Wallet
@@ -53,6 +54,7 @@ final class AnnouncementPresenter {
          featureConfigurator: FeatureConfiguring = AppFeatureConfigurator.shared,
          featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
          airdropRouter: AirdropRouterAPI = AppCoordinator.shared.airdropRouter,
+         cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting = AppCoordinator.shared,
          appCoordinator: AppCoordinator = .shared,
          exchangeCoordinator: ExchangeCoordinator = .shared,
          kycCoordinator: KYCCoordinator = .shared,
@@ -61,6 +63,7 @@ final class AnnouncementPresenter {
          wallet: Wallet = WalletManager.shared.wallet) {
         self.interactor = interactor
         self.appCoordinator = appCoordinator
+        self.cashIdentityVerificationRouter = cashIdentityVerificationRouter
         self.exchangeCoordinator = exchangeCoordinator
         self.kycCoordinator = kycCoordinator
         self.airdropRouter = airdropRouter
@@ -111,6 +114,8 @@ final class AnnouncementPresenter {
         for type in metadata.order {
             let announcement: Announcement
             switch type {
+            case .cashIdentity:
+                announcement = cashAnnouncement(isKYCVerified: preliminaryData.tiers.isTier2Approved)
             case .verifyEmail:
                 announcement = verifyEmail(user: preliminaryData.user)
             case .walletIntro:
@@ -310,6 +315,16 @@ extension AnnouncementPresenter {
                 appCoordinator?.handleBuyCrypto()
             }
         )
+    }
+    
+    /// Cash Support Announcement for users who have not KYC'd
+    private func cashAnnouncement(isKYCVerified: Bool) -> Announcement {
+        CashIdentityVerificationAnnouncement(
+            shouldShowCashIdentityAnnouncement: !isKYCVerified,
+            dismiss: hideAnnouncement,
+            action: { [weak cashIdentityVerificationRouter] in
+                cashIdentityVerificationRouter?.showCashIdentityVerificationScreen()
+            })
     }
     
     /// Computes Buy BTC announcement

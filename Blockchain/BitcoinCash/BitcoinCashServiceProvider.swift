@@ -12,34 +12,14 @@ import PlatformKit
 
 protocol BitcoinCashDependencies {
     var transactions: BitcoinCashHistoricalTransactionService { get }
-    var activity: ActivityItemEventServiceAPI { get }
-    var activityDetails: AnyActivityItemEventDetailsFetcher<BitcoinCashActivityItemEventDetails> { get }
 }
 
 struct BitcoinCashServices: BitcoinCashDependencies {
     let transactions: BitcoinCashHistoricalTransactionService
-    let activity: ActivityItemEventServiceAPI
-    let activityDetails: AnyActivityItemEventDetailsFetcher<BitcoinCashActivityItemEventDetails>
 
-    init(bridge: BitcoinCashWalletBridgeAPI = BitcoinCashWallet(),
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         simpleBuyOrdersAPI: BuySellKit.OrdersServiceAPI = ServiceProvider.default.ordersDetails,
-         swapActivityAPI: SwapActivityServiceAPI = SwapServiceProvider.default.activity) {
+    init(bridge: BitcoinCashWalletBridgeAPI = BitcoinCashWallet()) {
         transactions = .init(
             bridge: bridge
-        )
-        activityDetails = .init(
-            api: BitcoinCashActivityItemEventDetailsFetcher(transactionService: transactions)
-        )
-        activity = ActivityItemEventService(
-            transactional: TransactionalActivityItemEventService(
-                fetcher: BitcoinCashTransactionalActivityItemEventsService(transactionsService: transactions)
-            ),
-            buy: BuyActivityItemEventService(currency: .bitcoinCash, service: simpleBuyOrdersAPI),
-            swap: SwapActivityItemEventService(
-                fetcher: BitcoinCashSwapActivityItemEventsService(service: swapActivityAPI),
-                fiatCurrencyProvider: fiatCurrencyService
-            )
         )
     }
 }
@@ -60,10 +40,6 @@ final class BitcoinCashServiceProvider {
     
     var transactions: BitcoinCashHistoricalTransactionService {
         services.transactions
-    }
-    
-    var activity: ActivityItemEventServiceAPI {
-        services.activity
     }
 }
 

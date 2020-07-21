@@ -8,16 +8,17 @@
 
 import Foundation
 
-public struct SavingsAccountBalance {
+public struct CustodialAccountBalance: Equatable {
 
-    let available: CryptoValue
+    let available: MoneyValue
 
-    init?(currency: CryptoCurrency,
-          response: SavingsAccountBalanceResponse.Details) {
+    init?(currency: CryptoCurrency, response: SavingsAccountBalanceResponse.Details) {
         guard let balance = response.balance else { return nil }
-        available = CryptoValue(
-            minor: balance,
-            cryptoCurreny: currency
-            ) ?? .zero(assetType: currency)
+        let available = CryptoValue(minor: balance, cryptoCurrency: currency) ?? .zero(currency: currency)
+        self.available = available.moneyValue
+    }
+    
+    init(currency: CurrencyType, response: CustodialBalanceResponse.Balance) {
+        self.available = (try? MoneyValue(minor: response.available, currency: currency.code)) ?? .zero(currency)
     }
 }

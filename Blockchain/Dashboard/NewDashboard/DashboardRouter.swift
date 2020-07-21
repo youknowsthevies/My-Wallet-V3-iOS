@@ -59,10 +59,12 @@ final class DashboardRouter: Router {
     func showDetailsScreen(for currency: CryptoCurrency) {
         // TODO: Move away from the routing layer - phase II of savings
         let savingsRatesService = SavingAccountService(
-            custodialFeatureFetching: CustodialFeatureFetcher(tiersService: KYCServiceProvider.default.tiers,
-                                                              featureFetching: AppFeatureConfigurator.shared)
+            custodialFeatureFetcher: CustodialFeatureFetcher(
+                tiersService: KYCServiceProvider.default.tiers,
+                featureFetching: AppFeatureConfigurator.shared
+            )
         )
-        let balanceFetcher = dataProvider.balance[currency]
+        let balanceFetcher = dataProvider.balance[.crypto(currency)]
         let detailsInteractor = DashboardDetailsScreenInteractor(
             currency: currency,
             balanceFetcher: balanceFetcher,

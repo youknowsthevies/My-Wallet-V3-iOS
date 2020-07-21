@@ -9,6 +9,7 @@
 import RxRelay
 import RxSwift
 import ToolKit
+import PlatformKit
 
 /// The type of payment method
 public enum PaymentMethodType: Equatable {
@@ -16,8 +17,22 @@ public enum PaymentMethodType: Equatable {
     /// A card payment method (from the user's buy data)
     case card(CardData)
     
+    /// An account for an asset. Currency supports fiat
+    case account(MoneyValueBalancePairs)
+    
     /// Suggested payment methods (e.g bank-wire / card)
     case suggested(PaymentMethod)
+    
+    public var method: PaymentMethod.MethodType {
+        switch self {
+        case .card(let data):
+            return .card([data.type])
+        case .account(let balance):
+            return .funds(balance.base.currencyType)
+        case .suggested(let method):
+            return method.type
+        }
+    }
     
     var methodId: String? {
         switch self {
@@ -25,15 +40,8 @@ public enum PaymentMethodType: Equatable {
             return card.identifier
         case .suggested:
             return nil
-        }
-    }
-    
-    var method: PaymentMethod.MethodType {
-        switch self {
-        case .card(let data):
-            return .card([data.type])
-        case .suggested(let method):
-            return method.type
+        case .account:
+            return nil
         }
     }
 }
@@ -59,19 +67,13 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     var methodTypes: Observable<[PaymentMethodType]> {
         Observable
             .combineLatest(
-                paymentMethodsService.paymentMethods,
-                cardListService.cards
+                paymentMethodsService.fetch(),
+                cardListService.cards,
+                balanceProvider.fiatFundsBalances
             )
             .map(weak: self) { (self, payload) in
-                self.merge(paymentMethods: payload.0, with: payload.1)
+                self.merge(paymentMethods: payload.0, cards: payload.1, balances: payload.2)
             }
-            .do(onNext: { [weak preferredPaymentMethodTypeRelay] types in
-                if let preferredCard = types.cards.first {
-                    preferredPaymentMethodTypeRelay?.accept(.card(preferredCard))
-                } else if let preferredMethod = types.first {
-                    preferredPaymentMethodTypeRelay?.accept(preferredMethod)
-                }
-            })
     }
     
     var cards: Observable<[CardData]> {
@@ -92,8 +94,10 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                                 switch type {
                                 case .card(let card):
                                     return card.state.isActive
-                                case .suggested:
+                                case .account:
                                     return true
+                                case .suggested(let method):
+                                    return !method.type.isBankTransfer
                                 }
                             }
                         }
@@ -108,23 +112,27 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     
     private let paymentMethodsService: PaymentMethodsServiceAPI
     private let cardListService: CardListServiceAPI
+    private let balanceProvider: BalanceProviding
     
     // MARK: - Setup
     
     init(paymentMethodsService: PaymentMethodsServiceAPI,
-         cardListService: CardListServiceAPI) {
+         cardListService: CardListServiceAPI,
+         balanceProvider: BalanceProviding) {
         self.paymentMethodsService = paymentMethodsService
         self.cardListService = cardListService
+        self.balanceProvider = balanceProvider
     }
     
     func fetchCards(andPrefer cardId: String) -> Completable {
         Single
             .zip(
                 paymentMethodsService.paymentMethodsSingle,
-                cardListService.fetchCards()
+                cardListService.fetchCards(),
+                balanceProvider.fiatFundsBalances.take(1).asSingle()
             )
             .map(weak: self) { (self, payload) in
-                self.merge(paymentMethods: payload.0, with: payload.1)
+                self.merge(paymentMethods: payload.0, cards: payload.1, balances: payload.2)
             }
             .do(onSuccess: { [weak preferredPaymentMethodTypeRelay] types in
                 let card = types
@@ -132,7 +140,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                         switch type {
                         case .card(let cardData):
                             return cardData
-                        case .suggested:
+                        case .suggested, .account:
                             return nil
                         }
                     }
@@ -144,7 +152,8 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     }
     
     private func merge(paymentMethods: [PaymentMethod],
-                       with cards: [CardData]) -> [PaymentMethodType] {
+                       cards: [CardData],
+                       balances: MoneyBalancePairsCalculationStates) -> [PaymentMethodType] {
         let topLimit = (paymentMethods.first { $0.type.isCard })?.max
         let cardTypes = cards
             .filter { $0.state.isUsable }
@@ -157,7 +166,25 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             }
             .map { PaymentMethodType.card($0) }
         let suggestedMethods = paymentMethods.map { PaymentMethodType.suggested($0) }
-        return cardTypes + suggestedMethods
+        
+        let fundsCurrencies = Set(
+            paymentMethods
+                .compactMap { method -> CurrencyType? in
+                    switch method.type {
+                    case .funds(let currencyType):
+                        return currencyType
+                    default:
+                        return nil
+                    }
+                }
+        )
+        
+        let balances = balances.all
+            .compactMap { $0.value }
+            .filter { fundsCurrencies.contains($0.baseCurrency) }
+            .map { PaymentMethodType.account($0) }
+        
+        return balances + cardTypes + suggestedMethods
     }
 }
 
@@ -167,9 +194,21 @@ private extension Array where Element == PaymentMethodType {
             switch paymentMethod {
             case .card(let data):
                 return data
-            case .suggested:
+            case .suggested, .account:
                 return nil
             }
         }
+    }
+    
+    var accounts: [MoneyValueBalancePairs] {
+        compactMap { paymentMethod in
+            switch paymentMethod {
+            case .account(let balance):
+                return balance
+            case .suggested, .card:
+                return nil
+            }
+        }
+        
     }
 }

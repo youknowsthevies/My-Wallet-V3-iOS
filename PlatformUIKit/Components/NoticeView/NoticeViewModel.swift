@@ -21,16 +21,24 @@ public struct NoticeViewModel: Equatable {
     public let imageViewContent: ImageViewContent
     
     /// The label content
-    public let labelContent: LabelContent
+    public let labelContents: [LabelContent]
     
     /// The vertical alignment of the element
     public let verticalAlignment: Alignement
     
     public init(imageViewContent: ImageViewContent,
-                labelContent: LabelContent,
+                labelContents: [LabelContent],
                 verticalAlignment: Alignement) {
         self.imageViewContent = imageViewContent
-        self.labelContent = labelContent
+        self.labelContents = labelContents
+        self.verticalAlignment = verticalAlignment
+    }
+    
+    public init(imageViewContent: ImageViewContent,
+                labelContents: LabelContent...,
+                verticalAlignment: Alignement) {
+        self.imageViewContent = imageViewContent
+        self.labelContents = labelContents
         self.verticalAlignment = verticalAlignment
     }
 }

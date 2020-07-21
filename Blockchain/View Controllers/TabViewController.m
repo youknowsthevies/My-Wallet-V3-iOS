@@ -71,6 +71,14 @@
     }
 }
 
+- (void)showCashIdentityViewController
+{
+    CashIdentityVerificationViewController *viewController = [[CashIdentityVerificationViewController alloc] init];
+    viewController.transitioningDelegate = self.sheetPresenter;
+    viewController.modalPresentationStyle = UIModalPresentationCustom;
+    [self presentViewController:viewController animated:YES completion:nil];
+}
+
 - (void)setActiveViewController:(UIViewController *)nviewcontroller
 {
     [self setActiveViewController:nviewcontroller animated:NO index:selectedIndex];

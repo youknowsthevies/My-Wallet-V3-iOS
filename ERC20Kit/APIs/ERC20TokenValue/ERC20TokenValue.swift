@@ -30,7 +30,7 @@ public struct ERC20TokenValue<Token: ERC20Token>: Crypto {
     }
     
     public static func zero<Token: ERC20Token>() -> ERC20TokenValue<Token> {
-        let value = CryptoValue.zero(assetType: Token.assetType)
+        let value = CryptoValue.zero(currency: Token.assetType)
         // swiftlint:disable force_try
         return try! ERC20TokenValue<Token>(crypto: value)
     }

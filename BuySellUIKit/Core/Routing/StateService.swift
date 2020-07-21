@@ -90,7 +90,10 @@ public final class StateService: StateServiceAPI {
         case checkout(CheckoutData)
         
         /// The user authorized his bank wire
-        case transferDetails(CheckoutData)
+        case bankTransferDetails(CheckoutData)
+
+        /// Funds transfer details
+        case fundsTransferDetails(currency: FiatCurrency, isOriginPaymentMethods: Bool)
         
         /// The user authorized his card payment and should now be referred to partner
         case authorizeCard(order: OrderDetails)
@@ -110,6 +113,15 @@ public final class StateService: StateServiceAPI {
         var isInactive: Bool {
             switch self {
             case .inactive:
+                return true
+            default:
+                return false
+            }
+        }
+        
+        var isPaymentMethods: Bool {
+            switch self {
+            case .paymentMethods:
                 return true
             default:
                 return false
@@ -226,12 +238,18 @@ public final class StateService: StateServiceAPI {
                 state = .checkout(data)
             case .card:
                 state = .addCard(data)
+            case .funds:
+                state = .fundsTransferDetails(
+                    currency: data.order.fiatValue.currencyType,
+                    isOriginPaymentMethods: false
+                )
             }
             apply(
                 action: .next(to: state),
                 states: states.states(byAppending: state)
             )
-        case .transferDetails,
+        case .bankTransferDetails,
+             .fundsTransferDetails,
              .pendingOrderDetails,
              .transferCancellation,
              .unsupportedFiat,
@@ -304,7 +322,7 @@ public final class StateService: StateServiceAPI {
                                 if checkoutData.isUnknownCardType {
                                     return .buy
                                 }
-                                return  .checkout(checkoutData)
+                                return .checkout(checkoutData)
                             }
                     default:
                         switch orderDetails.paymentMethod {
@@ -320,6 +338,8 @@ public final class StateService: StateServiceAPI {
                                 return .just(.checkout(checkoutData))
                             }
                         case .bankTransfer:
+                            return .just(.pendingOrderDetails(checkoutData))
+                        case .funds:
                             return .just(.pendingOrderDetails(checkoutData))
                         }
                     }
@@ -337,7 +357,7 @@ public final class StateService: StateServiceAPI {
                     /// The user already has a pending order, so
                     /// mark the intro screen as `shown`.
                     switch state {
-                    case .checkout, .pendingOrderDetails, .pendingOrderCompleted, .transferDetails:
+                    case .checkout, .pendingOrderDetails, .pendingOrderCompleted, .bankTransferDetails:
                         cache[.hasShownIntroScreen] = true
                     default:
                         break
@@ -373,6 +393,25 @@ public final class StateService: StateServiceAPI {
     }
 }
 
+// MARK: - PaymentMethods
+
+extension StateService {
+    
+    public func showFundsTransferDetails(for fiatCurrency: FiatCurrency) {
+        let currentState = statesRelay.value.current
+        if currentState.isPaymentMethods {
+            statesRelay.accept(statesRelay.value.statesByRemovingLast())
+        }
+        let states = statesRelay.value.states(
+            byAppending: .fundsTransferDetails(
+                currency: fiatCurrency,
+                isOriginPaymentMethods: currentState.isPaymentMethods
+            )
+        )
+        apply(action: .next(to: states.current), states: states)
+    }
+}
+
 // MARK: - ElibilityRelayAPI
 
 extension StateService {
@@ -389,11 +428,13 @@ extension StateService {
     
     public func nextFromBuyCrypto(with checkoutData: CheckoutData) {
         let state: State
-        if checkoutData.isUnknownCardType {
+        switch checkoutData.order.paymentMethod {
+        case .card where !checkoutData.isPaymentMethodFinalized:
             state = .addCard(checkoutData)
-        } else {
+        default:
             state = .checkout(checkoutData)
         }
+
         let states = statesRelay.value.states(byAppending: state)
         apply(action: .next(to: states.current), states: states)
     }
@@ -423,8 +464,8 @@ extension StateService {
         apply(action: .next(to: states.current), states: states)
     }
 
-    public func transferDetails(with checkoutData: CheckoutData) {
-        let states = statesRelay.value.states(byAppending: .transferDetails(checkoutData))
+    public func bankTransferDetails(with checkoutData: CheckoutData) {
+        let states = statesRelay.value.states(byAppending: .bankTransferDetails(checkoutData))
         apply(action: .next(to: states.current), states: states)
     }
 }
@@ -451,9 +492,12 @@ extension StateService {
         let state: State
         let data = (checkoutData.order.paymentMethod, isOrderNew)
         switch data {
+        case (.funds, true):
+            state = .pendingOrderCompleted(amount: checkoutData.order.cryptoValue, orderId: checkoutData.order.identifier)
         case (.bankTransfer, true):
-            state = .transferDetails(checkoutData)
-        case (.bankTransfer, false):
+            state = .bankTransferDetails(checkoutData)
+        case (.bankTransfer, false),
+             (.funds, false):
             state = .inactive
         case (.card, _):
             state = .authorizeCard(order: checkoutData.order)
@@ -499,5 +543,51 @@ extension StateService {
             action: .next(to: state),
             states: self.statesRelay.value.states(byAppending: state)
         )
+    }
+}
+
+extension StateService.State: CustomDebugStringConvertible {
+    
+    public var debugDescription: String {
+        let suffix: String
+        switch self {
+        case .intro:
+            suffix = "intro"
+        case .selectFiat:
+            suffix = "select-fiat"
+        case .unsupportedFiat:
+            suffix = "unsupported-fiat"
+        case .buy:
+            suffix = "enter-amount-to-buy"
+        case .changeFiat:
+            suffix = "change-fiat"
+        case .paymentMethods:
+            suffix = "payment-methods"
+        case .addCard:
+            suffix = "add-card"
+        case .kyc:
+            suffix = "kyc"
+        case .pendingKycApproval:
+            suffix = "pending-kyc-approval"
+        case .ineligible:
+            suffix = "ineligible-for-buy"
+        case .checkout:
+            suffix = "checkout"
+        case .bankTransferDetails:
+            suffix = "bank-transfer-details"
+        case .fundsTransferDetails:
+            suffix = "funds-transfer-details"
+        case .authorizeCard:
+            suffix = "authorize-card"
+        case .transferCancellation:
+            suffix = "order-cancellation"
+        case .pendingOrderDetails:
+            suffix = "pending-order-details"
+        case .pendingOrderCompleted:
+            suffix = "pending-order-completed"
+        case .inactive:
+            suffix = "inactive"
+        }
+        return "buy-state: \(suffix)"
     }
 }

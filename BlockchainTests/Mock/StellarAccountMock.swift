@@ -15,6 +15,7 @@ import StellarKit
 import stellarsdk
 
 class StellarAccountMock: StellarAccountAPI {
+    
     typealias AccountID = String
     typealias CompletionHandler = ((Result<Bool, Error>) -> Void)
     typealias AccountDetailsCompletion = ((Result<StellarAccount, Error>) -> Void)
@@ -28,7 +29,8 @@ class StellarAccountMock: StellarAccountAPI {
     var balance: Single<CryptoValue> {
         Single.error(NSError())
     }
-    var balanceObservable: Observable<CryptoValue> {
+    
+    var balanceMoneyObservable: Observable<MoneyValue> {
         Observable.error(NSError())
     }
     

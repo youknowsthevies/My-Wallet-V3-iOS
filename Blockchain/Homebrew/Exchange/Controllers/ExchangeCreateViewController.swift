@@ -43,7 +43,7 @@ extension BalanceMetadata {
                 /// Otherwise subtracting the fees from the balance will fail since PAX fees
                 /// are in ETH. 
                 let adjusted = cryptoBalance.amount - cryptoFees.amount
-                cryptoValue = try CryptoValue.max(CryptoValue.createFromMinorValue(adjusted, assetType: cryptoBalance.currencyType), CryptoValue.zero(assetType: cryptoValue.currencyType))
+                cryptoValue = try CryptoValue.max(CryptoValue.createFromMinorValue(adjusted, assetType: cryptoBalance.currencyType), CryptoValue.zero(currency: cryptoValue.currencyType))
                 fiatValue = try FiatValue.max(fiatBalance - fiatFees, FiatValue.zero(currencyCode: BlockchainSettings.App.shared.fiatCurrencyCode))
             } catch {
                 return nil

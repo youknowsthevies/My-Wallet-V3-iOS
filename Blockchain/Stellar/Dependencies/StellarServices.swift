@@ -13,8 +13,6 @@ import StellarKit
 
 struct StellarServices: StellarDependenciesAPI {
     let accounts: StellarAccountAPI
-    let activity: ActivityItemEventServiceAPI
-    let activityDetails: AnyActivityItemEventDetailsFetcher<StellarActivityItemEventDetails>
     let feeService: StellarFeeServiceAPI
     let ledger: StellarLedgerAPI
     let limits: StellarTradeLimitsAPI
@@ -28,10 +26,7 @@ struct StellarServices: StellarDependenciesAPI {
         configurationService: StellarConfigurationAPI = StellarConfigurationService.shared,
         wallet: Wallet = WalletManager.shared.wallet,
         eventBus: WalletActionEventBus = WalletActionEventBus.shared,
-        xlmFeeService: StellarFeeServiceAPI = StellarFeeService.shared,
-        fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-        simpleBuyOrdersAPI: BuySellKit.OrdersServiceAPI = ServiceProvider.default.ordersDetails,
-        swapActivityAPI: SwapActivityServiceAPI = SwapServiceProvider.default.activity
+        xlmFeeService: StellarFeeServiceAPI = StellarFeeService.shared
     ) {
         walletActionEventBus = eventBus
         repository = StellarWalletAccountRepository(with: wallet)
@@ -52,19 +47,6 @@ struct StellarServices: StellarDependenciesAPI {
         operation = StellarOperationService(
             configurationService: configurationService,
             repository: repository
-        )
-        activity = ActivityItemEventService(
-            transactional: TransactionalActivityItemEventService(
-                fetcher: StellarTransactionalActivityItemEventsService(repository: repository)
-            ),
-            buy: BuyActivityItemEventService(currency: .stellar, service: simpleBuyOrdersAPI),
-            swap: SwapActivityItemEventService(
-                fetcher: StellarSwapActivityItemEventsService(service: swapActivityAPI),
-                fiatCurrencyProvider: fiatCurrencyService
-            )
-        )
-        activityDetails = .init(
-            api: StellarActivityItemEventDetailsFetcher(repository: repository)
         )
         prices = PriceService()
         limits = StellarTradeLimitsService(

@@ -99,11 +99,11 @@ public struct DashboardAsset {
             public struct AssetBalance {
                 
                 /// The wallet's balance in fiat
-                let fiatValue: FiatValue
+                let fiatValue: MoneyValue
                 /// The wallet's balance in crypto
-                let cryptoValue: CryptoValue
+                let cryptoValue: MoneyValue
                 
-                init(fiatValue: FiatValue, cryptoValue: CryptoValue) {
+                init(fiatValue: MoneyValue, cryptoValue: MoneyValue) {
                     self.fiatValue = fiatValue
                     self.cryptoValue = cryptoValue
                 }
@@ -159,14 +159,14 @@ public struct DashboardAsset {
                         text: value.fiatValue.toDisplayString(includeSymbol: true, locale: .current),
                         font: descriptors.fiatFont,
                         color: descriptors.fiatTextColor,
-                        accessibility: descriptors.fiatAccessibility.with(idSuffix: value.cryptoValue.code)
+                        accessibility: descriptors.fiatAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
                     )
                     
                     cryptoBalance = LabelContent(
                         text: value.cryptoValue.toDisplayString(includeSymbol: true, locale: .current),
                         font: descriptors.cryptoFont,
                         color: descriptors.cryptoTextColor,
-                        accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.displayCode)
+                        accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
                     )
                 }
             }

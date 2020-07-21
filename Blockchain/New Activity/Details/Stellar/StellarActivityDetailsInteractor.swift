@@ -23,10 +23,10 @@ final class StellarActivityDetailsInteractor {
 
     init(fiatCurrencySettings: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          priceService: PriceServiceAPI = PriceService(),
-         provider: StellarServiceProvider = StellarServiceProvider.shared) {
+         detailsService: AnyActivityItemEventDetailsFetcher<StellarActivityItemEventDetails> = ActivityServiceProvider.default.stellarDetails) {
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService
-        detailsService = provider.services.activityDetails
+        self.detailsService = detailsService
     }
     
     // MARK: - Public Functions
@@ -43,12 +43,12 @@ final class StellarActivityDetailsInteractor {
                 transaction,
                 price.asObservable()
             )
-            .map { StellarActivityDetailsViewModel(with: $0, price: $1?.priceInFiat) }
+            .map { StellarActivityDetailsViewModel(with: $0, price: $1?.moneyValue.fiatValue) }
     }
     
     // MARK: - Private Functions
     
-    private func price(at date: Date) -> Single<PriceInFiatValue> {
+    private func price(at date: Date) -> Single<PriceQuoteAtTime> {
         fiatCurrencySettings
             .fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) in
@@ -56,9 +56,9 @@ final class StellarActivityDetailsInteractor {
             }
     }
 
-    private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceInFiatValue> {
+    private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceQuoteAtTime> {
         priceService.price(
-            for: .stellar,
+            for: CurrencyType.crypto(CryptoCurrency.stellar),
             in: fiatCurrency,
             at: date
         )

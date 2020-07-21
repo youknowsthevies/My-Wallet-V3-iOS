@@ -10,7 +10,7 @@
 
 extension CryptoValue {
     public static var tetherZero: CryptoValue {
-        zero(assetType: .tether)
+        zero(currency: .tether)
     }
 
     public static func tetherFromMajor(string tether: String) -> CryptoValue? {

@@ -48,6 +48,11 @@ class ERC20EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
     var balanceObservable: Observable<CryptoValue> {
         balance.asObservable()
     }
+    
+    var balanceMoneyObservable: Observable<MoneyValue> {
+        balanceObservable.map { MoneyValue(cryptoValue: $0) }
+    }
+    
     let balanceFetchTriggerRelay = PublishRelay<Void>()
         
     var nameValue: Single<String> = Single.just("")

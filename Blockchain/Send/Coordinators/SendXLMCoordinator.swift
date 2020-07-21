@@ -195,7 +195,7 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
         interface.apply(updates: [.fiatSymbolLabel(fiatSymbol)])
         
         let disposable = Single.zip(
-                services.prices.price(for: .stellar, in: FiatCurrency(code: fiatSymbol)!),
+                services.prices.price(for: CryptoCurrency.stellar, in: FiatCurrency(code: fiatSymbol)!),
                 services.ledger.current.take(1).asSingle(),
                 services.feeService.fees
             )
@@ -216,7 +216,7 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
                 
                 self.modelInterface.updateBaseReserve(ledger.baseReserveInXlm?.majorValue)
                 self.modelInterface.updateFee(feeInXlm)
-                self.modelInterface.updatePrice(price.priceInFiat.amount)
+                self.modelInterface.updatePrice(price.moneyValue.majorValue)
                 self.interface.apply(updates: [.feeAmountLabelText])
             }, onError: { [unowned self] error in
                 Logger.shared.error(error.localizedDescription)
@@ -448,7 +448,7 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
     func onMinimumBalanceInfoTapped() {
         let fiatSymbol = BlockchainSettings.App.shared.fiatCurrencyCode
         let disposable = Single.zip(
-            services.prices.price(for: .stellar, in: FiatCurrency(code: fiatSymbol)!),
+            services.prices.price(for: CryptoCurrency.stellar, in: FiatCurrency(code: fiatSymbol)!),
             services.ledger.current.take(1).asSingle(),
             services.accounts.currentStellarAccount(fromCache: true)
                 .ifEmpty(default: StellarAccount.empty())
@@ -457,7 +457,7 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
         .subscribe(onSuccess: { [weak self] price, ledger, account in
             guard let this = self else { return }
             this.showMinimumBalanceView(
-                latestPrice: price.priceInFiat.amount,
+                latestPrice: price.moneyValue.majorValue,
                 fee: ledger.baseFeeInXlm?.majorValue ?? this.services.ledger.fallbackBaseFee,
                 balance: account.assetAccount.balance.majorValue,
                 baseReserve: ledger.baseReserveInXlm?.majorValue ?? this.services.ledger.fallbackBaseReserve
@@ -544,14 +544,14 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
     private func computeMaxSpendableAmount(for accountId: String) {
         let fiatSymbol = BlockchainSettings.App.shared.fiatCurrencyCode
         let disposable = Single.zip(
-            services.prices.price(for: .stellar, in: FiatCurrency(code: fiatSymbol)!),
+            services.prices.price(for: CryptoCurrency.stellar, in: FiatCurrency(code: fiatSymbol)!),
             services.limits.maxSpendableAmount(for: accountId)
         ).subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: { [weak self] price, maxSpendableAmount in
                 let stellarMaxString = maxSpendableAmount.toDisplayString(includeSymbol: false)
                 let fiatMaxString = maxSpendableAmount
-                    .convertToFiatValue(exchangeRate: price.priceInFiat)
+                    .convertToFiatValue(exchangeRate: price.moneyValue.fiatValue!)
                     .toDisplayString(includeSymbol: false)
                 let trigger = ActionableTrigger(
                     text: LocalizationConstants.Stellar.useSpendableBalanceX,
@@ -561,7 +561,7 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
                             .stellarAmountText(stellarMaxString),
                             .fiatAmountText(fiatMaxString)
                         ])
-                        self?.onXLMEntry(stellarMaxString, latestPrice: price.priceInFiat.amount)
+                        self?.onXLMEntry(stellarMaxString, latestPrice: price.moneyValue.majorValue)
                     }
                 )
                 self?.interface.apply(updates: [

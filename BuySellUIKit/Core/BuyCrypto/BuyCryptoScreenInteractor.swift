@@ -9,19 +9,20 @@
 import BuySellKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 import RxRelay
 import RxSwift
 
 final class BuyCryptoScreenInteractor {
 
     // MARK: - Types
-
+    
     enum State {
         case inBounds(data: CandidateOrderDetails, upperLimit: FiatValue)
         case tooLow(min: FiatValue)
         case tooHigh(max: FiatValue)
         case empty(currency: FiatCurrency)
-        
+                
         var isValid: Bool {
             switch self {
             case .inBounds:
@@ -40,18 +41,7 @@ final class BuyCryptoScreenInteractor {
             }
         }
     }
-               
-    private enum Constant {
-        static var defaultFiatCurrency: FiatCurrency { FiatCurrency.USD }
-        static var defaultCryptoCurrency: CryptoCurrency { CryptoCurrency.bitcoin }
-    }
-        
-    // MARK: - Input Properties (writable)
 
-    /// Input scanner - scans each digit and map it into
-    /// a valid fiat number
-    let inputScanner = MoneyValueInputScanner(maxFractionDigits: 2, maxIntegerDigits: 10)
-    
     /// Exposes a stream of the currently selected `CryptoCurrency` value
     var selectedCryptoCurrency: Observable<CryptoCurrency> {
         cryptoCurrencySelectionService.selectedData.map { $0.cryptoCurrency }.asObservable()
@@ -77,12 +67,7 @@ final class BuyCryptoScreenInteractor {
     }
     
     // MARK: - Output (readable)
-    
-    /// Streams the amount as `FiatValue`
-    var amount: Observable<FiatValue> {
-        currentAmountRelay.asObservable()
-    }
-        
+            
     /// Calculation state of the supported pairs
     var pairsCalculationState: Observable<BuyCryptoSupportedPairsCalculationState> {
         pairsCalculationStateRelay.asObservable()
@@ -108,22 +93,29 @@ final class BuyCryptoScreenInteractor {
     }
 
     var paymentMethodTypes: Observable<[PaymentMethodType]> {
-        paymentMethodTypesService.methodTypes.catchErrorJustReturn([])
+        paymentMethodTypesService.methodTypes
+            .map { methodType in
+                methodType.filter { !$0.method.isBankTransfer }
+            }
+            .catchErrorJustReturn([])
     }
     
     var preferredPaymentMethodType: Observable<PaymentMethodType?> {
         paymentMethodTypesService.preferredPaymentMethodType
     }
     
-    // MARK: - Injected
+    // MARK: - Dependencies
     
-    let fiatCurrencyService: FiatCurrencySettingsServiceAPI
+    /// Amount translation interactor
+    let amountTranslationInteractor: AmountTranslationInteractor
+    
     let exchangeProvider: ExchangeProviding
-    
+    let fiatCurrencyService: FiatCurrencyServiceAPI
+    private let cryptoCurrencySelectionService: SelectionServiceAPI & CryptoCurrencyServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
+
     private let suggestedAmountsService: SuggestedAmountsServiceAPI
     private let pairsService: SupportedPairsInteractorServiceAPI
-    private let cryptoCurrencySelectionService: SelectionServiceAPI
     private let eligibilityService: EligibilityServiceAPI
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private let orderCreationService: OrderCreationServiceAPI
@@ -137,13 +129,8 @@ final class BuyCryptoScreenInteractor {
         value: .invalid(.empty)
     )
     
-    /// The current amount as `FiatValue`
-    private let currentAmountRelay = BehaviorRelay<FiatValue>(
-        value: .zero(currency: Constant.defaultFiatCurrency)
-    )
-    
     /// The state of the screen
-    private let stateRelay = BehaviorRelay<State>(value: .empty(currency: Constant.defaultFiatCurrency))
+    private let stateRelay = BehaviorRelay<State>(value: .empty(currency: FiatCurrency.default))
     
     private let disposeBag = DisposeBag()
     
@@ -151,22 +138,74 @@ final class BuyCryptoScreenInteractor {
     
     init(kycTiersService: KYCTiersServiceAPI,
          exchangeProvider: ExchangeProviding,
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI,
+         fiatCurrencyService: FiatCurrencyServiceAPI,
+         cryptoCurrencySelectionService: SelectionServiceAPI & CryptoCurrencyServiceAPI,
          pairsService: SupportedPairsInteractorServiceAPI,
          eligibilityService: EligibilityServiceAPI,
          paymentMethodTypesService: PaymentMethodTypesServiceAPI,
-         cryptoCurrencySelectionService: SelectionServiceAPI,
          orderCreationService: OrderCreationServiceAPI,
          suggestedAmountsService: SuggestedAmountsServiceAPI) {
         self.kycTiersService = kycTiersService
-        self.fiatCurrencyService = fiatCurrencyService
         self.pairsService = pairsService
         self.suggestedAmountsService = suggestedAmountsService
-        self.cryptoCurrencySelectionService = cryptoCurrencySelectionService
         self.eligibilityService = eligibilityService
         self.paymentMethodTypesService = paymentMethodTypesService
+        self.fiatCurrencyService = fiatCurrencyService
+        self.cryptoCurrencySelectionService = cryptoCurrencySelectionService
         self.orderCreationService = orderCreationService
         self.exchangeProvider = exchangeProvider
+
+        amountTranslationInteractor = AmountTranslationInteractor(
+            fiatCurrencyService: fiatCurrencyService,
+            cryptoCurrencyService: cryptoCurrencySelectionService,
+            exchangeProvider: exchangeProvider
+        )
+        // Begin with fiat as active input
+        amountTranslationInteractor.activeInputRelay.accept(.fiat)
+        
+        state
+            .flatMapLatest(weak: self) { (self, state) -> Observable<AmountTranslationInteractor.State> in
+                Single
+                    .zip(
+                        self.amountTranslationInteractor.activeInputRelay.take(1).asSingle(),
+                        cryptoCurrencySelectionService.cryptoCurrency
+                    )
+                    .flatMap { (activeInput, currency) -> Single<AmountTranslationInteractor.State> in
+                        switch state {
+                        case .tooHigh(max: let fiatValue), .tooLow(min: let fiatValue):
+                            return exchangeProvider[currency].fiatPrice
+                                .take(1)
+                                .asSingle()
+                                 .map { exchangeRate -> MoneyValuePair in
+                                    MoneyValuePair(
+                                        fiat: fiatValue,
+                                        priceInFiat: exchangeRate,
+                                        cryptoCurrency: currency,
+                                        usesFiatAsBase: activeInput == .fiat
+                                    )
+                                 }
+                                .map { pair -> AmountTranslationInteractor.State in
+                                    switch state {
+                                    case .tooHigh:
+                                        return .maxLimitExceeded(pair)
+                                    case .tooLow:
+                                        return .minLimitExceeded(pair)
+                                    case .empty:
+                                        return .empty
+                                    case .inBounds:
+                                        return .inBounds
+                                    }
+                                }
+                        case .empty:
+                            return .just(.empty)
+                        case .inBounds:
+                            return .just(.inBounds)
+                        }
+                    }
+                    .asObservable()
+            }
+            .bindAndCatch(to: amountTranslationInteractor.stateRelay)
+            .disposed(by: disposeBag)
         
         suggestedAmountsService.calculationState
             .compactMap { $0.value }
@@ -179,24 +218,10 @@ final class BuyCryptoScreenInteractor {
             .startWith(.invalid(.empty))
             .bindAndCatch(to: pairsCalculationStateRelay)
             .disposed(by: disposeBag)
-
-        Observable
-            .combineLatest(
-                fiatCurrencyService.fiatCurrencyObservable,
-                inputScanner.inputRelay
-            )
-            .map { (fiatCurrency, input) -> FiatValue in
-                FiatValue.create(
-                    amountString: input.string,
-                    currency: fiatCurrency
-                )
-            }
-            .bindAndCatch(to: currentAmountRelay)
-            .disposed(by: disposeBag)
         
         let pairs = pairsCalculationState
             .compactMap { $0.value }
-            
+        
         let pairForCryptoCurrency = Observable
             .combineLatest(
                 pairs,
@@ -212,7 +237,7 @@ final class BuyCryptoScreenInteractor {
         Observable
             .combineLatest(
                 preferredPaymentMethod,
-                currentAmountRelay,
+                amountTranslationInteractor.fiatAmount.compactMap { $0.fiatValue },
                 pairForCryptoCurrency,
                 fiatCurrencyService.fiatCurrencyObservable
             )
@@ -231,6 +256,10 @@ final class BuyCryptoScreenInteractor {
                 case .card(let cardData):
                     maxFiatValue = cardData.topLimit
                     paymentMethodId = cardData.identifier
+                case .account(let balance):
+                    // Quote must be a fiat value
+                    maxFiatValue = balance.quote.fiatValue!
+                    paymentMethodId = nil
                 case .suggested(let method):
                     guard method.max.currency == pair.maxFiatValue.currency else {
                         return .empty(currency: currency)
@@ -239,7 +268,7 @@ final class BuyCryptoScreenInteractor {
                     paymentMethodId = nil
                 }
                 
-                guard minFiatValue.currency == amount.currency && maxFiatValue.currency == amount.currency else {
+                guard amount.currencyType == minFiatValue.currencyType && amount.currencyType == maxFiatValue.currencyType else {
                     return .empty(currency: currency)
                 }
                 

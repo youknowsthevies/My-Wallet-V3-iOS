@@ -41,7 +41,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
     init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
          appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
          dataProviding: DataProviding = DataProvider.default,
-         simpleBuyAPI: ServiceProviderAPI = ServiceProvider.default,
+         simpleBuyAPI: ServiceProviderAPI = DataProvider.default.buySell,
          custodyWithdrawalRouter: CustodyWithdrawalRouterAPI = CustodyWithdrawalRouter(),
          backupRouterAPI: BackupRouterAPI,
          tabSwapping: TabSwapping) {
@@ -128,7 +128,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
         let interactor = WalletActionScreenInteractor(
             balanceType: .custodial(.trading),
             currency: currency,
-            service: dataProviding.balance[currency]
+            service: dataProviding.balance[currency.currency]
         )
         let presenter = CustodialActionScreenPresenter(using: interactor, stateService: stateService)
         let controller = WalletActionScreenViewController(using: presenter)

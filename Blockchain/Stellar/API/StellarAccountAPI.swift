@@ -12,7 +12,7 @@ import RxSwift
 import StellarKit
 import stellarsdk
 
-protocol StellarAccountAPI: AccountBalanceFetching {
+protocol StellarAccountAPI: CryptoAccountBalanceFetching {
     
     typealias AccountID = String
     typealias CompletionHandler = ((Result<Bool, Error>) -> Void)

@@ -32,13 +32,13 @@ final class ActivityRouter: ActivityRouterAPI {
         
         let interactor = WalletPickerScreenInteractor(
             balanceProviding: balanceProviding,
-            tether: .init(balanceFetcher: balanceProviding[.tether], currency: .tether),
-            algorand: .init(balanceFetcher: balanceProviding[.algorand], currency: .algorand),
-            ether: .init(balanceFetcher: balanceProviding[.ethereum], currency: .ethereum),
-            pax: .init(balanceFetcher: balanceProviding[.pax], currency: .pax),
-            stellar: .init(balanceFetcher: balanceProviding[.stellar], currency: .stellar),
-            bitcoin: .init(balanceFetcher: balanceProviding[.bitcoin], currency: .bitcoin),
-            bitcoinCash: .init(balanceFetcher: balanceProviding[.bitcoinCash], currency: .bitcoinCash),
+            tether: .init(balanceFetcher: balanceProviding[.crypto(.tether)], currency: .tether),
+            algorand: .init(balanceFetcher: balanceProviding[.crypto(.algorand)], currency: .algorand),
+            ether: .init(balanceFetcher: balanceProviding[.crypto(.ethereum)], currency: .ethereum),
+            pax: .init(balanceFetcher: balanceProviding[.crypto(.pax)], currency: .pax),
+            stellar: .init(balanceFetcher: balanceProviding[.crypto(.stellar)], currency: .stellar),
+            bitcoin: .init(balanceFetcher: balanceProviding[.crypto(.bitcoin)], currency: .bitcoin),
+            bitcoinCash: .init(balanceFetcher: balanceProviding[.crypto(.bitcoinCash)], currency: .bitcoinCash),
             selectionService: serviceContainer.selectionServiceAPI
         )
         

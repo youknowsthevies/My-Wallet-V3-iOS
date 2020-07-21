@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -48,9 +48,10 @@
                     </subviews>
                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                     <constraints>
-                        <constraint firstItem="kPX-Gh-v3q" firstAttribute="top" secondItem="Bkz-Ve-1ky" secondAttribute="top" constant="4" id="DUa-NZ-p9H"/>
+                        <constraint firstItem="kPX-Gh-v3q" firstAttribute="top" secondItem="Bkz-Ve-1ky" secondAttribute="top" priority="999" constant="4" id="DUa-NZ-p9H"/>
+                        <constraint firstItem="kPX-Gh-v3q" firstAttribute="centerY" secondItem="Bkz-Ve-1ky" secondAttribute="centerY" id="VKl-dQ-sbC"/>
                         <constraint firstItem="SzM-TD-gQM" firstAttribute="top" secondItem="Bkz-Ve-1ky" secondAttribute="top" id="WLh-ON-yGn"/>
-                        <constraint firstAttribute="bottom" secondItem="kPX-Gh-v3q" secondAttribute="bottom" constant="4" id="an5-uu-4Ef"/>
+                        <constraint firstAttribute="bottom" secondItem="kPX-Gh-v3q" secondAttribute="bottom" priority="999" constant="4" id="an5-uu-4Ef"/>
                         <constraint firstItem="SzM-TD-gQM" firstAttribute="leading" secondItem="Bkz-Ve-1ky" secondAttribute="leading" constant="8" id="eCi-yJ-W04"/>
                         <constraint firstAttribute="trailing" secondItem="kPX-Gh-v3q" secondAttribute="trailing" constant="8" id="fno-K5-gNi"/>
                         <constraint firstItem="kPX-Gh-v3q" firstAttribute="leading" secondItem="SzM-TD-gQM" secondAttribute="trailing" id="kUE-wv-hbZ"/>

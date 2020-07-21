@@ -50,7 +50,7 @@ final class SendAmountTableViewCell: UITableViewCell {
             
             // Upon tapping max spendable balance - fill fiat field
             spendableBalancePresenter.spendableBalanceTap
-                .map { $0.fiat }
+                .map { $0.quote }
                 .map { $0.toDisplayString(includeSymbol: false) }
                 .bind { [weak self] text in
                     self?.presenter.fiatFieldEdited(rawValue: text)
@@ -59,7 +59,7 @@ final class SendAmountTableViewCell: UITableViewCell {
             
             // Upon tapping max spendable balance - fill crypto field
             spendableBalancePresenter.spendableBalanceTap
-                .map { $0.crypto }
+                .map { $0.base }
                 .map { $0.toDisplayString(includeSymbol: false) }
                 .bind { [weak self] text in
                     self?.presenter.cryptoFieldEdited(rawValue: text)

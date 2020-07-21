@@ -39,24 +39,18 @@ final class BuyCryptoScreenPresenter {
 
     let title = LocalizedString.title
     
+    let amountTranslationPresenter: AmountTranslationPresenter
     let assetSelectionButtonViewModel: SelectionButtonViewModel
-    let amountLabelViewModel: AmountLabelViewModel
     let continueButtonViewModel: ButtonViewModel
     let separatorColor: Color = .lightBorder
+    let paymentMethodSeparatorViewModel: TitledSeparatorViewModel
     let digitPadViewModel: DigitPadViewModel
     let currencySelectionRelay = PublishRelay<Void>()
-    var labeledButtonViewModels: Driver<[CurrencyLabeledButtonViewModel]> {
-        labeledButtonViewModelsRelay.asDriver()
-    }
-    let trailingButtonViewModel: ButtonViewModel
 
     var paymentMethodSelectionButtonViewModelState: Driver<PaymentMethodSelectionButtonViewModelState> {
         paymentMethodSelectionButtonViewModelStateRelay.asDriver()
     }
-    
-    private let labeledButtonViewModelsRelay = BehaviorRelay<[CurrencyLabeledButtonViewModel]>(
-        value: []
-    )
+
     private let paymentMethodSelectionButtonViewModelStateRelay = BehaviorRelay(
         value: PaymentMethodSelectionButtonViewModelState.hidden
     )
@@ -65,9 +59,10 @@ final class BuyCryptoScreenPresenter {
     private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
     private let uiUtilityProvider: UIUtilityProviderAPI
     private let interactor: BuyCryptoScreenInteractor
+
     private unowned let stateService: CheckoutServiceAPI
     private unowned let router: RouterAPI
-    
+        
     // MARK: - Accessors
     
     private let disposeBag = DisposeBag()
@@ -84,28 +79,35 @@ final class BuyCryptoScreenPresenter {
         self.router = router
         self.stateService = stateService
         self.interactor = interactor
-        let fiatCurrencyService = interactor.fiatCurrencyService
 
-        /// Trailing Button Setup
-        trailingButtonViewModel = BuyCryptoScreenPresenter.trailingButtonViewModel()
-
-        /// Digit Pad Setup
-        digitPadViewModel = BuyCryptoScreenPresenter.digitPadViewModel()
+        paymentMethodSeparatorViewModel = TitledSeparatorViewModel(
+            title: LocalizedString.paymentMethodTitle,
+            accessibilityId: AccessibilityId.paymentMethodTitle
+        )
         
-        // Observe tapped digits
+        /// Amount translation
+        amountTranslationPresenter = AmountTranslationPresenter(
+            interactor: interactor.amountTranslationInteractor,
+            analyticsRecorder: analyticsRecorder,
+            minTappedAnalyticsEvent: AnalyticsEvents.SimpleBuy.sbBuyFormMinClicked,
+            maxTappedAnalyticsEvent: AnalyticsEvents.SimpleBuy.sbBuyFormMaxClicked
+        )
+        // Hide swap button
+        amountTranslationPresenter.swapButtonVisibilityRelay.accept(.hidden)
+        
+        /// Digit Pad Setup
+        
+        digitPadViewModel = BuyCryptoScreenPresenter.digitPadViewModel()
         digitPadViewModel.valueObservable
             .filter { !$0.isEmpty }
             .map { Character($0) }
-            .map { .insert($0) }
-            .bindAndCatch(to: interactor.inputScanner.actionRelay)
+            .bindAndCatch(to: interactor.amountTranslationInteractor.appendNewRelay)
             .disposed(by: disposeBag)
-        
-        // Observe backspace button taps
+                
         digitPadViewModel.backspaceButtonTapObservable
-            .map { .remove }
-            .bindAndCatch(to: interactor.inputScanner.actionRelay)
+            .bindAndCatch(to: interactor.amountTranslationInteractor.deleteLastRelay)
             .disposed(by: disposeBag)
-        
+
         /// Continue Button Setup
         
         continueButtonViewModel = .primary(
@@ -117,16 +119,6 @@ final class BuyCryptoScreenPresenter {
             .bindAndCatch(to: continueButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
                 
-        // Amount Setup
-        
-        amountLabelViewModel = AmountLabelViewModel(
-            fiatCurrencyService: fiatCurrencyService,
-            shouldDisplayStateImage: false
-        )
-        interactor.inputScanner.input
-            .bindAndCatch(to: amountLabelViewModel.inputRelay)
-            .disposed(by: disposeBag)
-        
         // Asset Selection Button Setup
         
         assetSelectionButtonViewModel = SelectionButtonViewModel(showSeparator: true)
@@ -268,18 +260,6 @@ final class BuyCryptoScreenPresenter {
             }
             .disposed(by: disposeBag)
         
-        interactor.state
-            .map { state -> AmountLabelViewModel.State in
-                switch state {
-                case .inBounds, .empty:
-                    return .valid
-                case .tooLow, .tooHigh:
-                    return .invalid
-                }
-            }
-            .bindAndCatch(to: amountLabelViewModel.stateRelay)
-            .disposed(by: disposeBag)
-
         assetSelectionButtonViewModel.trailingImageViewContentRelay.accept(
             ImageViewContent(
                 imageName: "icon-disclosure-down-small"
@@ -292,29 +272,6 @@ final class BuyCryptoScreenPresenter {
             })
             .disposed(by: disposeBag)
         
-        /// Observe labeled button view model changes and
-        /// bind taps
-
-        interactor
-            .state
-            .flatMap(weak: self) { (self, state) in
-                self.labeledButtons(for: state)
-            }
-            .bindAndCatch(to: labeledButtonViewModelsRelay)
-            .disposed(by: disposeBag)
-
-        labeledButtonViewModelsRelay
-            .map { $0.map { $0.elementOnTap } }
-            .bindAndCatch(weak: self) { (self, amounts) in
-                amounts.forEach { amount in
-                    amount
-                        .map { MoneyValueInputScanner.Input(decimal: $0) }
-                        .emit(to: interactor.inputScanner.inputRelay)
-                        .disposed(by: self.disposeBag)
-                }
-            }
-            .disposed(by: disposeBag)
-
         // Payment Method Selection Button Setup
         
         Observable
@@ -325,63 +282,6 @@ final class BuyCryptoScreenPresenter {
             .bindAndCatch(weak: self) { (self, payload) in
                 self.setup(preferredPaymentMethodType: payload.0, methodCount: payload.1)
             }
-            .disposed(by: disposeBag)
-        
-        interactor.state
-            .map {
-                switch $0 {
-                case .tooHigh:
-                    return LocalizedString.LimitView.Max.useMax
-                case .tooLow:
-                    return LocalizedString.LimitView.Min.useMin
-                case .empty(currency: let currency):
-                    return "\(currency.code)"
-                case .inBounds(data: _, upperLimit: let fiatValue):
-                    return "\(fiatValue.currency.code)"
-                }
-            }
-            .bindAndCatch(to: trailingButtonViewModel.textRelay)
-            .disposed(by: disposeBag)
-
-        trailingButtonViewModel
-            .tapRelay
-            .withLatestFrom(interactor.state)
-            .compactMap { state -> AnalyticsEvent? in
-                switch state {
-                case .tooHigh:
-                    return .sbBuyFormMaxClicked
-                case .tooLow:
-                    return .sbBuyFormMinClicked
-                case .empty, .inBounds:
-                    return nil
-                }
-            }
-            .bindAndCatch(to: analyticsRecorder.recordRelay)
-            .disposed(by: disposeBag)
-        
-        trailingButtonViewModel
-            .tapRelay
-            .withLatestFrom(interactor.state)
-            .filter { ($0.isValid || $0.isEmpty) }
-            .mapToVoid()
-            .bind { stateService.changeCurrency() }
-            .disposed(by: disposeBag)
-
-        trailingButtonViewModel
-            .tapRelay
-            .withLatestFrom(interactor.state)
-            .compactMap { state -> Decimal? in
-                switch state {
-                case .tooHigh(let fiat):
-                    return fiat.amount
-                case .tooLow(let fiat):
-                    return fiat.amount
-                case .empty, .inBounds:
-                    return nil
-                }
-            }
-            .map { MoneyValueInputScanner.Input(decimal: $0) }
-            .bindAndCatch(to: interactor.inputScanner.inputRelay)
             .disposed(by: disposeBag)
     }
     
@@ -412,9 +312,7 @@ final class BuyCryptoScreenPresenter {
     }
     
     private func setup(preferredPaymentMethodType: PaymentMethodType?, methodCount: Int) {
-        guard let type = preferredPaymentMethodType else { return }
-        
-        let viewModel = SelectionButtonViewModel(with: type)
+        let viewModel = SelectionButtonViewModel(with: preferredPaymentMethodType)
         if deviceType == .superCompact {
             viewModel.subtitleRelay.accept(nil)
         }
@@ -451,66 +349,15 @@ final class BuyCryptoScreenPresenter {
         guard deviceType != .superCompact else {
             return .just(nil)
         }
-        
-        let exchangeRate = interactor.exchangeProvider[cryptoCurrency]
-            .fiatPrice
-            .share(replay: 1)
-        
         return Observable
             .combineLatest(
-                exchangeRate,
+                interactor.exchangeProvider[cryptoCurrency].fiatPrice,
                 Observable.just(cryptoCurrency)
             )
             .map { payload -> String in
                 let tuple: (fiat: FiatValue, crypto: CryptoCurrency) = payload
                 return "1 \(tuple.crypto.displayCode) = \(tuple.fiat.toDisplayString()) \(tuple.fiat.currencyCode)"
             }
-            .catchErrorJustReturn(nil)
-    }
-
-    func labeledButtons(for state: BuyCryptoScreenInteractor.State) -> Observable<[CurrencyLabeledButtonViewModel]> {
-        switch state {
-        case .empty, .inBounds:
-            return interactor
-                .suggestedAmounts
-                .map {
-                    $0.enumerated()
-                        .map { .init(amount: $0.element, accessibilityId: "\($0.offset)") }
-                }
-        case .tooLow(min: let amount):
-            return .just([
-                CurrencyLabeledButtonViewModel(
-                    amount: amount,
-                    suffix: LocalizedString.LimitView.Min.suffix,
-                    style: .currencyTooLow,
-                    accessibilityId: AccessibilityId.minimumBuy)
-            ])
-        case .tooHigh(max: let amount):
-            return .just([
-                CurrencyLabeledButtonViewModel(
-                    amount: amount,
-                    suffix: LocalizedString.LimitView.Max.suffix,
-                    style: .currencyTooHigh,
-                    accessibilityId: AccessibilityId.maximumBuy)
-            ])
-        }
-    }
-
-    private static func trailingButtonViewModel() -> ButtonViewModel {
-        var model = ButtonViewModel(
-            font: .main(.semibold, 14),
-            cornerRadius: 8,
-            accessibility: .init(id: .value(AccessibilityId.traillingActionButton))
-        )
-        model.theme = .init(
-            backgroundColor: .white,
-            borderColor: .mediumBorder,
-            contentColor: .primaryButton,
-            imageName: nil,
-            text: "",
-            contentInset: UIEdgeInsets(top: 6, left: 10, bottom: 6, right: 10)
-        )
-        return model
     }
 
     private static func digitPadViewModel() -> DigitPadViewModel {

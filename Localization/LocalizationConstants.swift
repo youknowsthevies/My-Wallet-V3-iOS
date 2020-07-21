@@ -1560,6 +1560,15 @@ public enum LocalizationConstants {
                 comment: "Exchange announcement card CTA button title"
             )
         }
+        public struct CashIdentityVerification {
+            public static let title = NSLocalizedString("Keep Cash in Your Wallet", comment: "Keep Cash in Your Wallet")
+            public static let description = NSLocalizedString(
+                "Verify your identity to deposit cash into the Wallet and buy crypto.",
+                comment: "Verify your identity to deposit cash into the Wallet and buy crypto."
+            )
+            public static let badgeName = NSLocalizedString("NEW", comment: "NEW")
+            public static let learnMore = NSLocalizedString("Learn More", comment: "Learn More")
+        }
         public struct Bitpay {
             public static let description = NSLocalizedString(
                 "With BitPay, you can now use your Blockchain wallet for purchases with supporting retailers.",

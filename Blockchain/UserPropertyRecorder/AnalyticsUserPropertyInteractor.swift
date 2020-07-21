@@ -76,7 +76,7 @@ final class AnalyticsUserPropertyInteractor {
                         tiers: KYC.UserTiers?,
                         authenticatorType: AuthenticatorType,
                         guid: String?,
-                        balances: [AssetFiatCryptoBalancePairs]) {
+                        balances: [MoneyValueBalancePairs]) {
         if let identifier = user?.personalDetails.identifier {
             recorder.record(id: identifier)
         }
@@ -106,19 +106,19 @@ final class AnalyticsUserPropertyInteractor {
         recorder.record(StandardUserProperty(key: .twoFAEnabled, value: String(authenticatorType.isTwoFactor)))
         
         let firstBalance = balances[0]
-        var totalFiatBalance = firstBalance.fiat
+        var totalFiatBalance = firstBalance.quote
         
         var positives: [String] = []
-        if firstBalance.crypto.isPositive {
-            positives += [firstBalance.crypto.code]
+        if firstBalance.base.isPositive {
+            positives += [firstBalance.base.currencyType.code]
         }
                 
         for balance in balances.dropFirst() {
             do {
-                if balance.crypto.isPositive {
-                    positives += [balance.crypto.code]
+                if balance.base.isPositive {
+                    positives += [balance.base.currencyType.code]
                 }
-                totalFiatBalance = try totalFiatBalance + balance.fiat
+                totalFiatBalance = try totalFiatBalance + balance.quote
             } catch {
                 Logger.shared.error(error)
             }
@@ -139,7 +139,7 @@ final class AnalyticsUserPropertyInteractor {
         default: // > 1000
             reportedBalance = "1001"
         }
-        reportedBalance += " \(totalFiatBalance.currency.code)"
+        reportedBalance += " \(totalFiatBalance.currencyType.code)"
         recorder.record(StandardUserProperty(key: .totalBalance, value: reportedBalance))
     }
 }

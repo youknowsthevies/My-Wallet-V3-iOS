@@ -11,10 +11,8 @@ import PlatformKit
 import ToolKit
 
 extension ServiceProvider {
-    
-    static let `default`: ServiceProviderAPI = ServiceProvider()
-    
-    convenience init() {
+        
+    convenience init(balanceProvider: BalanceProviding) {
         self.init(
             cardServiceProvider: CardServiceProvider.default,
             recordingProvider: RecordingProvider.default,
@@ -23,6 +21,7 @@ extension ServiceProvider {
             settings: UserInformationServiceProvider.default.settings,
             dataRepository: BlockchainDataRepository.shared,
             tiersService: KYCServiceProvider.default.tiers,
+            balanceProvider: balanceProvider,
             featureFetcher: AppFeatureConfigurator.shared
         )
     }

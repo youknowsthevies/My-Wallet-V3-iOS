@@ -97,7 +97,7 @@ public extension UIColor {
     static let iconSelected = grey400
     static let iconWarning = orange600
     
-    // Crypto
+    // Currency
     
     static let bitcoin = btc
     static let ethereum = eth
@@ -106,6 +106,7 @@ public extension UIColor {
     static let usdd = pax
     static let algorand = algo
     static let tether = usdt
+    static let fiat = green500
     
     // Tiers
     

@@ -20,7 +20,7 @@ public final class PendingStateViewController: BaseScreenViewController {
     @IBOutlet private var actionButton: ButtonView!
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var subtitleLabel: UILabel!
-    private let compositeStatusView = CompositeStatusView(edge: 80)
+    private var compositeStatusView: CompositeStatusView!
 
     // MARK: - Properties
 
@@ -66,6 +66,10 @@ public final class PendingStateViewController: BaseScreenViewController {
     }
     
     private func setupCompositeStatusView() {
+        compositeStatusView = .init(
+            edge: presenter.pendingStatusViewEdgeSize,
+            sizeContainerViewRatio: presenter.pendingStatusViewSideContainerRatio
+        )
         view.addSubview(compositeStatusView)
         compositeStatusView.layout(edge: .bottom, to: .top, of: titleLabel, offset: -16)
         compositeStatusView.layoutToSuperview(.centerX)

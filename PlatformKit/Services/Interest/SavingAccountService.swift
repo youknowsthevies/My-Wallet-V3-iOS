@@ -10,47 +10,51 @@ import RxSwift
 import ToolKit
 
 public protocol SavingAccountServiceAPI: AnyObject {
-    func balance(for currency: CryptoCurrency) -> Single<SavingsAccountBalanceState>
+    var balances: Single<CustodialAccountBalanceStates> { get }
+    func fetchBalances() -> Single<CustodialAccountBalanceStates>
+    func balance(for currency: CryptoCurrency) -> Single<CustodialAccountBalanceState>
     func rate(for currency: CryptoCurrency) -> Single<Double>
 }
 
 public class SavingAccountService: SavingAccountServiceAPI {
-
+    
+    // MARK: - Public Properties
+    
+    public var balances: Single<CustodialAccountBalanceStates> {
+        _ = setup
+        return cachedValue.valueSingle
+    }
+        
     // MARK: - Private Properties
     
     private let client: SavingsAccountClientAPI
-    private let custodialFeatureFetching: CustodialFeatureFetching
-    private let cachedSavingsAccountBalance: CachedValue<SavingsAccountBalanceResponse>
+    private let custodialFeatureFetcher: CustodialFeatureFetching
+    private let cachedValue: CachedValue<CustodialAccountBalanceStates>
 
+    private lazy var setup: Void = {
+        cachedValue.setFetch(weak: self) { (self) in
+            self.fetchBalancesResponse()
+                .map { CustodialAccountBalanceStates(response: $0) }
+        }
+    }()
+    
     // MARK: - Setup
 
     public init(client: SavingsAccountClientAPI = SavingsAccountClient(),
-                custodialFeatureFetching: CustodialFeatureFetching) {
+                custodialFeatureFetcher: CustodialFeatureFetching) {
         self.client = client
-        self.custodialFeatureFetching = custodialFeatureFetching
-        self.cachedSavingsAccountBalance = CachedValue<SavingsAccountBalanceResponse>(configuration: .periodicAndLogin(10))
-        cachedSavingsAccountBalance.setFetch(weak: self) { (self) in
-            self.fetchBalances()
-        }
+        self.custodialFeatureFetcher = custodialFeatureFetcher
+        self.cachedValue = CachedValue(configuration: .onSubscription())
     }
 
     // MARK: - Public Methods
 
-    public func balance(for currency: CryptoCurrency) -> Single<SavingsAccountBalanceState> {
-        cachedSavingsAccountBalance
-            .valueSingle
-            .map { $0[currency] }
-            .map { response in
-                guard let response = response,
-                    let accountBalance = SavingsAccountBalance(currency: currency, response: response) else {
-                        return .absent
-                }
-                return .present(accountBalance)
-            }
+    public func balance(for currency: CryptoCurrency) -> Single<CustodialAccountBalanceState> {
+        balances.map { $0[currency.currency] }
     }
 
-    private func fetchBalances() -> Single<SavingsAccountBalanceResponse> {
-        custodialFeatureFetching
+    private func fetchBalancesResponse() -> Single<SavingsAccountBalanceResponse> {
+        custodialFeatureFetcher
             .featureEnabled(for: .interestAccountEnabled)
             .flatMap(weak: self) { (self, interestAccountEnabled) in
                 guard interestAccountEnabled else {
@@ -66,8 +70,13 @@ public class SavingAccountService: SavingAccountServiceAPI {
             .catchErrorJustReturn(.empty)
     }
 
+    public func fetchBalances() -> Single<CustodialAccountBalanceStates> {
+        _ = setup
+        return cachedValue.fetchValue
+    }
+    
     public func rate(for currency: CryptoCurrency) -> Single<Double> {
-        self.client.rate(for: currency.rawValue)
+        client.rate(for: currency.rawValue)
             .map { $0.rate }
     }
 }

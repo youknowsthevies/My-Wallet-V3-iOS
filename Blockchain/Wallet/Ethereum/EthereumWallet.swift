@@ -35,6 +35,10 @@ class EthereumWallet: NSObject {
         balanceRelay.asObservable()
     }
     
+    var balanceMoneyObservable: Observable<MoneyValue> {
+        balanceObservable.map(\.moneyValue)
+    }
+    
     let balanceFetchTriggerRelay = PublishRelay<Void>()
 
     private let balanceRelay = PublishRelay<CryptoValue>()

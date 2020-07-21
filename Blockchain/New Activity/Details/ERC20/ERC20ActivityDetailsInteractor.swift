@@ -25,10 +25,10 @@ final class ERC20ActivityDetailsInteractor {
     init(wallet: EthereumWalletBridgeAPI = WalletManager.shared.wallet.ethereum,
          fiatCurrencySettings: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          priceService: PriceServiceAPI = PriceService(),
-         serviceProvider: ETHServiceProvider = ETHServiceProvider.shared,
+         detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> = ActivityServiceProvider.default.ethereumDetails,
          cryptoCurrency: CryptoCurrency) {
         self.cryptoCurrency = cryptoCurrency
-        self.detailsService = serviceProvider.services.activityDetails
+        self.detailsService = detailsService
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService
         self.wallet = wallet
@@ -48,12 +48,12 @@ final class ERC20ActivityDetailsInteractor {
                 transaction,
                 price.asObservable()
             )
-            .map { ERC20ActivityDetailsViewModel(details: $0, price: $1?.priceInFiat) }
+            .map { ERC20ActivityDetailsViewModel(details: $0, price: $1?.moneyValue.fiatValue) }
     }
     
     // MARK: - Private Functions
     
-    private func price(at date: Date) -> Single<PriceInFiatValue> {
+    private func price(at date: Date) -> Single<PriceQuoteAtTime> {
         fiatCurrencySettings
             .fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) in
@@ -61,7 +61,7 @@ final class ERC20ActivityDetailsInteractor {
             }
     }
 
-    private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceInFiatValue> {
+    private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceQuoteAtTime> {
         priceService.price(
             for: cryptoCurrency,
             in: fiatCurrency,

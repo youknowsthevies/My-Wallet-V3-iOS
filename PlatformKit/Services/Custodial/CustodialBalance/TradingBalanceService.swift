@@ -7,42 +7,71 @@
 //
 
 import RxSwift
+import ToolKit
 
 public protocol TradingBalanceServiceAPI: AnyObject {
-    func balance(for crypto: CryptoCurrency) -> Single<TradingAccountBalanceState>
+    var balances: Single<CustodialAccountBalanceStates> { get }
+    func balance(for currencyType: CurrencyType) -> Single<CustodialAccountBalanceState>
+    func fetchBalances() -> Single<CustodialAccountBalanceStates>
 }
 
 public class TradingBalanceService: TradingBalanceServiceAPI {
 
+    // MARK: - Public Properties
+    
+    public var balances: Single<CustodialAccountBalanceStates> {
+        _ = setup
+        return cachedValue.valueSingle
+    }
+    
     // MARK: - Private Properties
     
-    private let client: TradingBalanceClientAPI
-
+    private let client: CustodialClientAPI
+    private let cachedValue: CachedValue<CustodialAccountBalanceStates>
+    
+    private let lock = NSLock()
+    
+    private lazy var setup: Void = {
+        lock.lock()
+        defer { lock.unlock() }
+        cachedValue.setFetch(weak: self) { (self) in
+            self.client.balance
+                .map { response in
+                    guard let response = response else {
+                        return .absent
+                    }
+                    return CustodialAccountBalanceStates(response: response)
+                }
+        }
+    }()
+    
     // MARK: - Setup
 
-    public init(client: TradingBalanceClientAPI) {
+    public init(client: CustodialClientAPI) {
         self.client = client
+        cachedValue = CachedValue(configuration: .onSubscription())        
     }
 
     // MARK: - Public Methods
 
-    public func balance(for crypto: CryptoCurrency) -> Single<TradingAccountBalanceState> {
+    public func balance(for currencyType: CurrencyType) -> Single<CustodialAccountBalanceState> {
         client
-            .balance(for: crypto.code)
-            .map { response -> TradingAccountBalanceState in
+            .balance(for: currencyType.code)
+            .map { response -> CustodialAccountBalanceState in
                 guard let response = response else {
                     return .absent
                 }
-                guard let balance = response[crypto] else {
+                guard let balance = response[currencyType.code] else {
                     return .absent
                 }
-                return .present(
-                    TradingAccountBalance(
-                        currency: crypto,
-                        response: balance
-                    )
-                )
+                let accountBalance = CustodialAccountBalance(currency: currencyType, response: balance)
+                return .present(accountBalance)
             }
             .catchErrorJustReturn(.absent)
+    }
+    
+    public func fetchBalances() -> Single<CustodialAccountBalanceStates> {
+        _ = setup
+        return cachedValue.fetchValue
     }
 }

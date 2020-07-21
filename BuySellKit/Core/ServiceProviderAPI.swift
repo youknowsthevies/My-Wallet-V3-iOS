@@ -26,6 +26,8 @@ public protocol ServiceProviderAPI: class {
     var orderQuote: OrderQuoteServiceAPI { get }
     var paymentAccount: PaymentAccountServiceAPI { get }
     
+    var beneficiaries: BeneficiariesServiceAPI { get }
+    
     var cache: EventCache { get }
     
     var settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI { get }

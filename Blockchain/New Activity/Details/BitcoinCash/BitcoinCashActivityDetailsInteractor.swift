@@ -23,8 +23,8 @@ final class BitcoinCashActivityDetailsInteractor {
     init(wallet: BitcoinWallet = WalletManager.shared.wallet.bitcoin,
          fiatCurrencySettings: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          priceService: PriceServiceAPI = PriceService(),
-         serviceProvider: BitcoinCashServiceProvider = BitcoinCashServiceProvider.shared) {
-        self.detailsService = serviceProvider.services.activityDetails
+         detailsService: AnyActivityItemEventDetailsFetcher<BitcoinCashActivityItemEventDetails> = ActivityServiceProvider.default.bitcoinCashDetails) {
+        self.detailsService = detailsService
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService
     }
@@ -44,12 +44,12 @@ final class BitcoinCashActivityDetailsInteractor {
                 transaction,
                 price.asObservable()
             )
-            .map { BitcoinCashActivityDetailsViewModel(details: $0, price: $1?.priceInFiat) }
+            .map { BitcoinCashActivityDetailsViewModel(details: $0, price: $1?.moneyValue.fiatValue) }
     }
     
     // MARK: - Private Functions
 
-    private func price(at date: Date) -> Single<PriceInFiatValue> {
+    private func price(at date: Date) -> Single<PriceQuoteAtTime> {
         fiatCurrencySettings
             .fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) in
@@ -57,9 +57,9 @@ final class BitcoinCashActivityDetailsInteractor {
             }
     }
 
-    private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceInFiatValue> {
+    private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceQuoteAtTime> {
         priceService.price(
-            for: .bitcoinCash,
+            for: CurrencyType.crypto(.bitcoinCash),
             in: fiatCurrency,
             at: date
         )

@@ -16,12 +16,21 @@ extension Accessibility.Identifier {
             private static let prefix = "Intro."
             static let themeBackgroundImageView = "\(prefix)themeBackgroundImageView"
         }
-
+        
         enum BuyScreen {
             private static let prefix = "Buy."
             static let minimumBuy = "\(prefix)MinimumBuy"
             static let maximumBuy = "\(prefix)MaximumBuy"
-            static let traillingActionButton = "\(prefix)TraillingActionButton"
+            static let trailingActionButton = "\(prefix)TraillingActionButton"
+            static let paymentMethodTitle = "\(prefix)paymentMethodTitle"
+            static let selectPaymentMethodLabel = "\(prefix)selectPaymentMethodLabel"
+        }
+        
+        enum PaymentMethodsScreen {
+            private static let prefix = "PaymentMethods."
+            static let addCard = "\(prefix)AddCard"
+            static let addBank = "\(prefix)AddBank"
+            static let depositCash = "\(prefix)DepositCash"
         }
 
         enum Checkout {
@@ -55,7 +64,7 @@ extension Accessibility.Identifier {
             static let yesButton = "\(prefix)yesButton"
             static let noButton = "\(prefix)noButton"
         }
-
+        
         enum IneligibleCurrency {
             private static let prefix = "IneligibleCurrency."
             static let titleLabel = "\(prefix)titleLabel"

@@ -8,11 +8,11 @@
 
 import RxSwift
 
-public protocol BalanceChangeProviding: class {
+public protocol BalanceChangeProviding: class {    
+    var change: Observable<MoneyBalancePairsCalculationStates> { get }
 
     subscript(currency: CryptoCurrency) -> AssetBalanceChangeProviding { get }
-
-    var change: Observable<AssetFiatCryptoBalanceCalculationStates> { get }
+    subscript(currency: CurrencyType) -> AssetBalanceChangeProviding { get }
 }
 
 /// A service that providers a balance change in crypto fiat and percentages
@@ -20,15 +20,19 @@ public final class BalanceChangeProvider: BalanceChangeProviding {
     
     // MARK: - Services
 
-    private let currencies: [CryptoCurrency]
-    private let services: [CryptoCurrency: AssetBalanceChangeProviding]
+    private let currencies: [CurrencyType]
+    private let services: [CurrencyType: AssetBalanceChangeProviding]
     
-    public var change: Observable<AssetFiatCryptoBalanceCalculationStates> {
-        let currencies = self.currencies
-        return Observable.combineLatest(currencies.compactMap { self[$0].calculationState })
+    public var change: Observable<MoneyBalancePairsCalculationStates> {
+        let currencies = self.currencies.map { $0.currency }
+        return Observable
+            .combineLatest(currencies.compactMap { self[$0].calculationState })
             .map { Dictionary(uniqueKeysWithValues: zip(currencies, $0)) }
-            .map { states -> AssetFiatCryptoBalanceCalculationStates in
-                AssetFiatCryptoBalanceCalculationStates(statePerCurrency: states)
+            .map { states -> MoneyBalancePairsCalculationStates in
+                MoneyBalancePairsCalculationStates(
+                    identifier: "total-balance-change",
+                    statePerCurrency: states
+                )
             }
     }
     
@@ -43,19 +47,23 @@ public final class BalanceChangeProvider: BalanceChangeProviding {
         bitcoinCash: AssetBalanceChangeProviding,
         algorand: AssetBalanceChangeProviding,
         tether: AssetBalanceChangeProviding) {
-        self.currencies = currencies
+        self.currencies = currencies.map { $0.currency }
         services = [
-            .ethereum: ether,
-            .pax: pax,
-            .stellar: stellar,
-            .bitcoin: bitcoin,
-            .bitcoinCash: bitcoinCash,
-            .algorand: algorand,
-            .tether: tether
+            .crypto(.ethereum): ether,
+            .crypto(.pax): pax,
+            .crypto(.stellar): stellar,
+            .crypto(.bitcoin): bitcoin,
+            .crypto(.bitcoinCash): bitcoinCash,
+            .crypto(.algorand): algorand,
+            .crypto(.tether): tether
         ]
     }
 
     public subscript(currency: CryptoCurrency) -> AssetBalanceChangeProviding {
+        services[currency.currency]!
+    }
+    
+    public subscript(currency: CurrencyType) -> AssetBalanceChangeProviding {
         services[currency]!
     }
 }

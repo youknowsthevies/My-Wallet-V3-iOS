@@ -34,13 +34,17 @@ public protocol CheckoutServiceAPI: RoutingPreviousStateEmitterAPI {
     func reselectCurrency()
 }
 
+public protocol PaymentMethodsStateAPI: RoutingPreviousStateEmitterAPI {
+    func showFundsTransferDetails(for fiatCurrency: FiatCurrency)
+}
+
 public protocol ElibilityRelayAPI: RoutingPreviousStateEmitterAPI {
     func ineligible(with currency: FiatCurrency)
 }
 
 /// A confirm-checkout service API
 public protocol TransferDetailsServiceAPI: RoutingPreviousStateEmitterAPI {
-    func transferDetails(with checkoutData: CheckoutData)
+    func bankTransferDetails(with checkoutData: CheckoutData)
 }
 
 /// A confirm-checkout service API
@@ -80,4 +84,5 @@ public typealias StateServiceAPI = RoutingStateEmitterAPI &
                                    CurrencySelectionServiceAPI &
                                    CardAuthorizationStateServiceAPI &
                                    PendingOrderCompletionStateServiceAPI &
-                                   ElibilityRelayAPI
+                                   ElibilityRelayAPI &
+                                   PaymentMethodsStateAPI

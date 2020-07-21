@@ -86,7 +86,7 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
         let timestampString = try values.decode(String.self, forKey: .timestamp)
         transactionHash = try values.decode(String.self, forKey: .transactionHash)
         let amountString = try values.decode(String.self, forKey: .value)
-        self.amount = CryptoValue.createFromMinorValue(amountString, assetType: Token.assetType) ?? CryptoValue.zero(assetType: Token.assetType)
+        self.amount = CryptoValue.createFromMinorValue(amountString, assetType: Token.assetType) ?? CryptoValue.zero(currency: Token.assetType)
         fromAddress = EthereumAddress(stringLiteral: from)
         toAddress = EthereumAddress(stringLiteral: to)
         if let timeSinceEpoch = Double(timestampString) {
@@ -116,7 +116,7 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
             )
             .map {
                 var output = self.make(from: self.direction, fee: $0.0.fee, memo: nil)
-                output.historicalFiatValue = self.amount.convertToFiatValue(exchangeRate: $0.1.priceInFiat)
+                output.historicalFiatValue = self.amount.convertToFiatValue(exchangeRate: $0.1.moneyValue.fiatValue!)
                 return output
             }
     }
@@ -138,7 +138,7 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
     // Provides price index (exchange rate) between supported cryptocurrency and fiat currency.
     // This is how you populate the `historicalFiatValue`.
     @available(*, deprecated, message: "Network Requests shouldn't be performed from models. This method should be replaced by a call to a Service e.g. ERC20Service")
-    public func historicalFiatPrice(with currencyCode: String) -> Single<PriceInFiatValue> {
+    public func historicalFiatPrice(with currencyCode: String) -> Single<PriceQuoteAtTime> {
         guard let baseUrl = URL(string: BlockchainAPI.shared.servicePriceUrl) else {
             return Single.error(NetworkError.generic(message: "URL is invalid."))
         }
@@ -155,8 +155,8 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
         }
         return Network.Dependencies.default.communicator
             .perform(request: NetworkRequest(endpoint: url, method: .get))
-            .map { (price: PriceInFiat) -> PriceInFiatValue in
-                price.toPriceInFiatValue(fiatCurrency: FiatCurrency(code: currencyCode)!)
+            .map { (response: PriceQuoteAtTimeResponse) -> PriceQuoteAtTime in
+                try PriceQuoteAtTime(response: response, currency: CurrencyType(currency: currencyCode))
             }
     }
     

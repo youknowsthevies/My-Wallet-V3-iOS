@@ -72,7 +72,7 @@ final class NonCustodialActionRouter: NonCustodialActionRouterAPI, Router {
         let interactor = WalletActionScreenInteractor(
             balanceType: .nonCustodial,
             currency: currency,
-            service: dataProviding.balance[currency]
+            service: dataProviding.balance[currency.currency]
         )
         let presenter = NonCustodialActionScreenPresenter(using: interactor, stateService: stateService)
         let controller = WalletActionScreenViewController(using: presenter)

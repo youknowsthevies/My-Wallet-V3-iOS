@@ -10,15 +10,16 @@ import Foundation
 import NetworkKit
 import RxSwift
 
+// TODO: Currently does not support crypto -> crypto / fiat to crypto.
 public protocol PriceClientAPI {
 
-    func priceSeries(of cryptoCurrency: CryptoCurrency, in fiatCurrency: FiatCurrency, start: String, scale: String) -> Single<[PriceInFiat]>
+    func priceSeries(of baseCurrencyCode: String, in quoteCurrencyCode: String, start: String, scale: String) -> Single<[PriceQuoteAtTimeResponse]>
 
     /// Fetches the price of the given `CryptoCurrency` in the specific timestamp
-    /// - parameter cryptoCurrency: The `CryptoCurrency` of which price will be fetched.
-    /// - parameter fiatCurrency: The `FiatCurrency` in which the price will be represented.
+    /// - parameter baseCurrencyCode: The currency code of which price will be fetched.
+    /// - parameter fiatCurrency: The currency code in which the price will be represented.
     /// - parameter timestamp: The Unix Time timestamp of required moment. A nil value gets the current price.
-    func price(for cryptoCurrency: CryptoCurrency, in fiatCurrency: FiatCurrency, at timestamp: UInt64?) -> Single<PriceInFiat>
+    func price(for baseCurrencyCode: String, in quoteCurrencyCode: String, at timestamp: UInt64?) -> Single<PriceQuoteAtTimeResponse>
 }
 
 /// Class for interacting with Blockchain's Service-Price backend service.
@@ -43,11 +44,11 @@ final class PriceClient: PriceClientAPI {
             )
         }
         static func price(at timestamp: UInt64?,
-                          fiatCurrency: FiatCurrency,
-                          cryptoCurrency: CryptoCurrency) -> (path: [String], query: [URLQueryItem]) {
+                          baseCurrencyCode: String,
+                          quoteCurrencyCode: String) -> (path: [String], query: [URLQueryItem]) {
             var items = [
-                URLQueryItem(name: "base", value: cryptoCurrency.code),
-                URLQueryItem(name: "quote", value: fiatCurrency.code)
+                URLQueryItem(name: "base", value: baseCurrencyCode),
+                URLQueryItem(name: "quote", value: quoteCurrencyCode)
             ]
             if let timestamp = timestamp {
                 items.append(URLQueryItem(name: "time", value: "\(timestamp)"))
@@ -71,19 +72,35 @@ final class PriceClient: PriceClientAPI {
 
     // MARK: - APIClientAPI
 
-    func priceSeries(of cryptoCurrency: CryptoCurrency, in fiatCurrency: FiatCurrency, start: String, scale: String) -> Single<[PriceInFiat]> {
-        let data = Endpoint.priceSeries(base: cryptoCurrency.code, quote: fiatCurrency.code, start: start, scale: scale)
-        guard let request = requestBuilder.get(path: data.path, parameters: data.query) else {
-            return .error(NetworkRequest.NetworkError.generic)
-        }
+    func priceSeries(of baseCurrencyCode: String,
+                     in quoteCurrencyCode: String,
+                     start: String,
+                     scale: String) -> Single<[PriceQuoteAtTimeResponse]> {
+        let data = Endpoint.priceSeries(
+            base: baseCurrencyCode,
+            quote: quoteCurrencyCode,
+            start: start,
+            scale: scale
+        )
+        let request = requestBuilder.get(
+            path: data.path,
+            parameters: data.query
+        )!
         return communicator.perform(request: request)
     }
 
-    func price(for cryptoCurrency: CryptoCurrency, in fiatCurrency: FiatCurrency, at timestamp: UInt64?) -> Single<PriceInFiat> {
-        let data = Endpoint.price(at: timestamp, fiatCurrency: fiatCurrency, cryptoCurrency: cryptoCurrency)
-        guard let request = requestBuilder.get(path: data.path, parameters: data.query) else {
-            return .error(NetworkRequest.NetworkError.generic)
-        }
+    func price(for baseCurrencyCode: String,
+               in quoteCurrencyCode: String,
+               at timestamp: UInt64?) -> Single<PriceQuoteAtTimeResponse> {
+        let data = Endpoint.price(
+            at: timestamp,
+            baseCurrencyCode: baseCurrencyCode,
+            quoteCurrencyCode: quoteCurrencyCode
+        )
+        let request = requestBuilder.get(
+            path: data.path,
+            parameters: data.query
+        )!
         return communicator.perform(request: request)
     }
 }

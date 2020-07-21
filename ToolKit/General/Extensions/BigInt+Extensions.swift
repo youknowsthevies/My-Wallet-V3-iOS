@@ -16,3 +16,28 @@ extension BigInt {
 extension BigUInt {
     public static let zero = BigUInt(0)
 }
+
+extension BigInt {
+    public func decimalDivision(divisor: BigInt) -> Decimal {
+        let (quotient, remainder) = quotientAndRemainder(dividingBy: divisor)
+        return Decimal(string: String(quotient))!
+            + (Decimal(string: String(remainder))! / Decimal(string: String(divisor))!)
+    }
+
+    /// Assuming `self` is a minor value. Converting it to major.
+    /// Note that doing so may cause the returned value to lose precision,
+    /// therefore we should avoid using it for anything other than to display data.
+    /// - Parameters:
+    ///   - maxDecimalPlaces: maximum decimal places allowed
+    /// - Returns: A major value (Decimal)
+    public func toDisplayMajor(maxDecimalPlaces: Int) -> Decimal {
+        let divisor = BigInt(10).power(maxDecimalPlaces)
+        let majorValue = decimalDivision(divisor: divisor)
+        return majorValue.roundTo(places: maxDecimalPlaces)
+    }
+    
+    public func toMinor(maxDecimalPlaces: Int) -> BigInt {
+        let minorDecimal = self * BigInt(10).power(maxDecimalPlaces)
+        return minorDecimal
+    }
+}

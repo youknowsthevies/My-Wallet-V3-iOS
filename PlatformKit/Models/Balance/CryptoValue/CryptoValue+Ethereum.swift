@@ -12,7 +12,7 @@ import BigInt
 
 extension CryptoValue {
     public static var etherZero: CryptoValue {
-        zero(assetType: .ethereum)
+        zero(currency: .ethereum)
     }
 
     public static func etherFromWei(string wei: String) -> CryptoValue? {

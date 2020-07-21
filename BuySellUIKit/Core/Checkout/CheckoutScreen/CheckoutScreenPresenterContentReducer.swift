@@ -89,7 +89,7 @@ final class CheckoutScreenContentReducer {
             } else {
                 return LocalizedString.Title.checkout
             }
-        case .bankTransfer:
+        case .bankTransfer, .funds:
             if data.order.isPendingConfirmation {
                 return LocalizedString.Title.checkout
             } else {
@@ -107,7 +107,7 @@ final class CheckoutScreenContentReducer {
             } else {
                 title = "\(LocalizedSummary.buyButtonPrefix)\(data.cryptoCurrency.displayCode)"
             }
-        case .bankTransfer:
+        case .bankTransfer, .funds:
             if data.order.isPendingConfirmation {
                 title = "\(LocalizedSummary.buyButtonPrefix)\(data.cryptoCurrency.displayCode)"
             } else {
@@ -122,7 +122,8 @@ final class CheckoutScreenContentReducer {
         case (.card, true):
             return nil
         case (.card, false),
-             (.bankTransfer, _):
+             (.bankTransfer, _),
+             (.funds, _):
             return .cancel(with: LocalizationConstants.cancel)
         }
     }
@@ -153,11 +154,15 @@ final class CheckoutScreenContentReducer {
         )
 
         let localizedPaymentMethod: String
-        if let card = data.card {
-            localizedPaymentMethod = "\(card.label) \(card.displaySuffix)"
-        } else {
+        switch data.paymentMethod {
+        case .funds:
+            localizedPaymentMethod = "\(LocalizedLineItem.Funds.prefix) \(data.fee.currency.code) \(LocalizedLineItem.Funds.suffix)"
+        case .card:
+            localizedPaymentMethod = "\(data.card!.label) \(data.card!.displaySuffix)"
+        case .bankTransfer:
             localizedPaymentMethod = LocalizedLineItem.bankTransfer
         }
+
         paymentMethodLineItemCellPresenter.interactor.description.stateRelay.accept(
             .loaded(next: .init(text: localizedPaymentMethod))
         )
@@ -238,7 +243,25 @@ final class CheckoutScreenContentReducer {
                 .separator,
                 .staticLabel(CheckoutScreenContentReducer.notice(data: data))
             ]
-
+        case (.funds, _, _):
+            
+            cells = [
+                .label(cryptoAmountLabelPresenter),
+                .badges(badgesModel),
+                .separator,
+                .lineItem(orderIdLineItemCellPresenter),
+                .separator,
+                .lineItem(dateLineItemCellPresenter),
+                .separator,
+                .lineItem(totalCostLineItemCellPresenter),
+                .separator,
+                .lineItem(buyingFeeLineItemCellPresenter),
+                .separator,
+                .lineItem(paymentMethodLineItemCellPresenter),
+                .separator,
+                .staticLabel(CheckoutScreenContentReducer.notice(data: data))
+            ]
+            
         case (.bankTransfer, _, true):
 
             // MARK: Cells Setup
@@ -274,8 +297,8 @@ extension BuySellKit.PaymentMethod.MethodType {
     fileprivate func checkoutNotice(cryptoCurrency: CryptoCurrency) -> String {
         typealias LocalizedString = LocalizationConstants.SimpleBuy.Checkout
         switch self {
-        case .card:
-            return LocalizedString.cardNotice
+        case .card, .funds:
+            return LocalizedString.finalAmountChangeNotice
         case .bankTransfer:
             return "\(LocalizedString.BankNotice.prefix) \(cryptoCurrency.displayCode) \(LocalizedString.BankNotice.suffix)"
         }

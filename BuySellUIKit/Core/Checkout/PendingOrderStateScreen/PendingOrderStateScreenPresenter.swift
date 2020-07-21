@@ -27,7 +27,7 @@ final class PendingOrderStateScreenPresenter: PendingStatePresenterAPI {
             .asDriver()
             .compactMap { $0 }
     }
-     
+         
     private let viewModelRelay = BehaviorRelay<PendingStateViewModel?>(value: nil)
     private let stateService: PendingOrderCompletionStateServiceAPI
     private let interactor: PendingOrderStateScreenInteractor
@@ -52,9 +52,11 @@ final class PendingOrderStateScreenPresenter: PendingStatePresenterAPI {
         self.interactor = interactor
         viewModelRelay.accept(
             PendingStateViewModel(
-                compositeStatusViewType: .overlay(
-                    baseImageName: PendingStateViewModel.Image.cutsom(cryptoCurrency.logoImageName).name,
-                    rightViewType: .loader
+                compositeStatusViewType: .composite(
+                    .init(
+                        baseViewType: .image(PendingStateViewModel.Image.cutsom(cryptoCurrency.logoImageName).name),
+                        sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter)
+                    )
                 ),
                 title: "\(LocalizedString.Loading.titlePrefix) \(amount)",
                 subtitle: LocalizedString.Loading.subtitle
@@ -86,9 +88,11 @@ final class PendingOrderStateScreenPresenter: PendingStatePresenterAPI {
             }
             .disposed(by: disposeBag)
         let viewModel = PendingStateViewModel(
-            compositeStatusViewType: .overlay(
-                baseImageName: PendingStateViewModel.Image.cutsom(cryptoCurrency.logoImageName).name,
-                rightViewType: .image(PendingStateViewModel.Image.circleError.name)
+            compositeStatusViewType: .composite(
+                .init(
+                    baseViewType: .image(PendingStateViewModel.Image.cutsom(cryptoCurrency.logoImageName).name),
+                    sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.circleError.name), position: .radiusDistanceFromCenter)
+                )
             ),
             title: LocalizationConstants.ErrorScreen.title,
             subtitle: LocalizationConstants.ErrorScreen.subtitle,
@@ -105,9 +109,11 @@ final class PendingOrderStateScreenPresenter: PendingStatePresenterAPI {
             }
             .disposed(by: disposeBag)
         let viewModel = PendingStateViewModel(
-            compositeStatusViewType: .overlay(
-                baseImageName: PendingStateViewModel.Image.cutsom(cryptoCurrency.logoImageName).name,
-                rightViewType: .image(PendingStateViewModel.Image.clock.name)
+            compositeStatusViewType: .composite(
+                .init(
+                    baseViewType: .image(PendingStateViewModel.Image.cutsom(cryptoCurrency.logoImageName).name),
+                    sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.clock.name), position: .radiusDistanceFromCenter)
+                )
             ),
             title: "\(amount) \(LocalizedString.Timeout.titleSuffix)",
             subtitle: LocalizedString.Timeout.subtitle,
@@ -124,9 +130,11 @@ final class PendingOrderStateScreenPresenter: PendingStatePresenterAPI {
             }
             .disposed(by: disposeBag)
         let viewModel = PendingStateViewModel(
-            compositeStatusViewType: .overlay(
-                baseImageName: PendingStateViewModel.Image.cutsom(cryptoCurrency.logoImageName).name,
-                rightViewType: .image("v-success-icon")
+            compositeStatusViewType: .composite(
+                .init(
+                    baseViewType: .image(PendingStateViewModel.Image.cutsom(cryptoCurrency.logoImageName).name),
+                    sideViewAttributes: .init(type: .image("v-success-icon"), position: .radiusDistanceFromCenter)
+                )
             ),
             title: "\(amount) \(LocalizedString.Success.titleSuffix)",
             subtitle: "\(LocalizedString.Success.Subtitle.prefix) \(cryptoCurrency.name) \(LocalizedString.Success.Subtitle.suffix)",

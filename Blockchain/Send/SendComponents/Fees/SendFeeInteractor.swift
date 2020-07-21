@@ -16,13 +16,13 @@ final class SendFeeInteractor: SendFeeInteracting {
     // MARK: - Exposed Properties
     
     /// Streams the calculation state for the fee
-    var calculationState: Observable<FiatCryptoPairCalculationState> {
+    var calculationState: Observable<MoneyValuePairCalculationState> {
         calculationStateRelay.asObservable()
     }
     
     // MARK: - Private Properties
     
-    private let calculationStateRelay = BehaviorRelay<FiatCryptoPairCalculationState>(value: .calculating)
+    private let calculationStateRelay = BehaviorRelay<MoneyValuePairCalculationState>(value: .calculating)
     private let disposeBag = DisposeBag()
     
     // MARK: - Services
@@ -43,8 +43,8 @@ final class SendFeeInteractor: SendFeeInteracting {
         // Combine the latest fee and exchange rate and continuous stream status updates
         Observable
             .combineLatest(feeService.fee, exchangeService.fiatPrice)
-            .map { (fee, rate) -> FiatCryptoPairCalculationState in
-                .value(FiatCryptoPair(crypto: fee, exchangeRate: rate))
+            .map { (fee, rate) -> MoneyValuePairCalculationState in
+                .value(MoneyValuePair(base: fee, exchangeRate: rate))
             }
             .startWith(.calculating)
             .bindAndCatch(to: calculationStateRelay)

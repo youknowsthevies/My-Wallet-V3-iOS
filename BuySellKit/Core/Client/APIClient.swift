@@ -19,7 +19,8 @@ typealias SimpleBuyClientAPI = EligibilityClientAPI &
                                OrderCreationClientAPI &
                                CardOrderConfirmationClientAPI &
                                QuoteClientAPI &
-                               PaymentMethodsClientAPI
+                               PaymentMethodsClientAPI &
+                               BeneficiariesClientAPI
 
 /// Simple-Buy network client
 final class APIClient: SimpleBuyClientAPI {
@@ -40,6 +41,7 @@ final class APIClient: SimpleBuyClientAPI {
         
     private enum Path {
         static let paymentMethods = [ "payments", "methods" ]
+        static let beneficiaries = [ "payments", "beneficiaries" ]
         static let supportedPairs = [ "simple-buy", "pairs" ]
         static let suggestedAmounts = [ "simple-buy", "amounts" ]
         static let trades = [ "simple-buy", "trades" ]
@@ -58,6 +60,16 @@ final class APIClient: SimpleBuyClientAPI {
     public init(dependencies: Network.Dependencies = .retail) {
         self.communicator = dependencies.communicator
         self.requestBuilder = RequestBuilder(networkConfig: dependencies.blockchainAPIConfig)
+    }
+    
+    // MARK: - BeneficiariesClientAPI
+    
+    var beneficiaries: Single<[BeneficiaryResponse]> {
+        let request = requestBuilder.get(
+            path: Path.beneficiaries,
+            authenticated: true
+        )!
+        return communicator.perform(request: request)
     }
     
     // MARK: - EligibilityClientAPI

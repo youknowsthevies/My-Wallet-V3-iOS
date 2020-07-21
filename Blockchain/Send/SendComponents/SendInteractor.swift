@@ -168,11 +168,11 @@ final class SendInteractor: SendInteracting {
             }
         
         let value = amountInteractor.calculationState
-            .map { $0.value?.crypto }
+            .map { $0.value?.base }
             .take(1)
             .asSingle()
             .map { value -> CryptoValue in
-                guard let value = value else { throw InteractionError.nullifiedCryptoAmount }
+                guard let value = value?.cryptoValue else { throw InteractionError.nullifiedCryptoAmount }
                 return value
             }
         

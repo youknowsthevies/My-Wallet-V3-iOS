@@ -16,12 +16,15 @@ extension AnalyticsEvents {
         public enum PaymentMethod: String {
             case card
             case bank
+            case funds
             case newCard
             
             var string: String {
                 switch self {
                 case .card:
                     return "CARD"
+                case .funds:
+                    return "FUNDS"
                 case .bank:
                     return "BANK"
                 case .newCard:

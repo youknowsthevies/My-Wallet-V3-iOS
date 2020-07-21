@@ -49,7 +49,7 @@ final class ActivityServiceContainer: ActivityServiceContaining {
     init(fiatCurrency: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          balanceProviding: BalanceProviding = DataProvider.default.balance,
          exchangeProviding: ExchangeProviding = DataProvider.default.exchange,
-         activityProviding: ActivityProviding = DataProvider.default.activity) {
+         activityProviding: ActivityProviding = ActivityServiceProvider.default.activity) {
         self.selectionServiceAPI = WalletPickerSelectionService(defaultSelection: .all)
         self.fiatCurrency = fiatCurrency
         self.balanceProviding = balanceProviding

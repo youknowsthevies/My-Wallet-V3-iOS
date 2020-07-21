@@ -8,11 +8,13 @@
 
 import ToolKit
 
-/// Calculation state with an associated `AssetFiatCryptoBalancePairs`
-public typealias AssetFiatCryptoBalanceCalculationState = ValueCalculationState<AssetFiatCryptoBalancePairs>
+/// Calculation state with an associated `MoneyValueBalancePairs`.
+/// It represents the calculation state of the total balance.
+public typealias MoneyBalancePairsCalculationState = ValueCalculationState<MoneyValueBalancePairs>
 
-/// Calculation state with an associated `FiatCryptoPair`
-public typealias FiatCryptoPairCalculationState = ValueCalculationState<FiatCryptoPair>
+/// Calculation state with an associated `MoneyValuePair`
+/// It represents the calculation state of base and quote amounts.
+public typealias MoneyValuePairCalculationState = ValueCalculationState<MoneyValuePair>
 
 /// Calculation state with an associated `FiatValue`
 public typealias FiatValueCalculationState = ValueCalculationState<FiatValue>

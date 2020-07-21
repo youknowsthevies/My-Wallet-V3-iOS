@@ -59,7 +59,7 @@ final class CustodyWithdrawalScreenInteractor {
     private lazy var setup: Void = {
         Observable
             .combineLatest(
-                balanceFetching.trading.balanceObservable,
+                balanceFetching.trading.balanceMoneyObservable,
                 setupInteractor.state,
                 submissionInteractor.state
             )

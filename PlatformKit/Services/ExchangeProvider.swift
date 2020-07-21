@@ -10,7 +10,7 @@
 public protocol ExchangeProviding: class {
     
     /// Returns the exchange service
-    subscript(currency: CryptoCurrency) -> PairExchangeServiceAPI { get }
+    subscript(currency: Currency) -> PairExchangeServiceAPI { get }
     
     /// Refreshes all the exchange rates
     func refresh()
@@ -18,30 +18,42 @@ public protocol ExchangeProviding: class {
 
 public final class ExchangeProvider: ExchangeProviding {
     
+    public subscript(currency: Currency) -> PairExchangeServiceAPI {
+        services[currency.currency]!
+    }
+    
     public subscript(currency: CryptoCurrency) -> PairExchangeServiceAPI {
-        services[currency]!
+        services[currency.currency]!
+    }
+    
+    public subscript(currency: FiatCurrency) -> PairExchangeServiceAPI {
+        services[currency.currency]!
     }
     
     // MARK: - Services
     
-    private var services: [CryptoCurrency: PairExchangeServiceAPI] = [:]
+    private var services: [CurrencyType: PairExchangeServiceAPI] = [:]
     
     // MARK: - Setup
     
-    public init(algorand: PairExchangeServiceAPI,
+    public init(fiats: [FiatCurrency: PairExchangeServiceAPI],
+                algorand: PairExchangeServiceAPI,
                 ether: PairExchangeServiceAPI,
                 pax: PairExchangeServiceAPI,
                 stellar: PairExchangeServiceAPI,
                 bitcoin: PairExchangeServiceAPI,
                 bitcoinCash: PairExchangeServiceAPI,
                 tether: PairExchangeServiceAPI) {
-        services[.algorand] = algorand
-        services[.ethereum] = ether
-        services[.pax] = pax
-        services[.stellar] = stellar
-        services[.bitcoin] = bitcoin
-        services[.bitcoinCash] = bitcoinCash
-        services[.tether] = tether
+        for (currency, service) in fiats {
+            services[.fiat(currency)] = service
+        }
+        services[.crypto(.algorand)] = algorand
+        services[.crypto(.ethereum)] = ether
+        services[.crypto(.pax)] = pax
+        services[.crypto(.stellar)] = stellar
+        services[.crypto(.bitcoin)] = bitcoin
+        services[.crypto(.bitcoinCash)] = bitcoinCash
+        services[.crypto(.tether)] = tether
     }
     
     public func refresh() {

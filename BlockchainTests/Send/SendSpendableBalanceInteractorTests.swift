@@ -31,38 +31,38 @@ final class SendSpendableBalanceInteractorTests: XCTestCase {
         let fee = feeValue(by: "1")
         let interactor = self.interactor(for: asset, balance: balance, feeState: .value(fee))
         let state = try interactor.calculationState.toBlocking().first()!
-        XCTAssertEqual(state.value?.crypto, try balance - fee.crypto)
+        XCTAssertEqual(state.value?.base.cryptoValue, try balance - fee.base.cryptoValue!)
     }
     
     func testSpendableBalanceEqualToFee() throws {
         let fee = feeValue(by: "100")
         let interactor = self.interactor(for: asset, balance: balance, feeState: .value(fee))
         let state = try interactor.calculationState.toBlocking().first()!
-        XCTAssertEqual(state.value?.crypto, try balance - fee.crypto)
+        XCTAssertEqual(state.value?.base.cryptoValue, try balance - fee.base.cryptoValue!)
     }
     
     func testSpendableBalanceLowerThanFee() throws {
         let fee = feeValue(by: "101")
         let interactor = self.interactor(for: asset, balance: balance, feeState: .value(fee))
         let state = try interactor.calculationState.toBlocking().first()!
-        XCTAssertEqual(state.value?.crypto, .zero(assetType: asset))
+        XCTAssertEqual(state.value?.base.cryptoValue, CryptoValue.zero(currency: asset))
     }
     
     // MARK: - Accessors
     
-    private func feeValue(by amount: String) -> FiatCryptoPair {
+    private func feeValue(by amount: String) -> MoneyValuePair {
         let fiatFee = FiatValue.create(amountString: amount, currencyCode: currencyCode)
         let cryptoFee = CryptoValue.createFromMajorValue(string: amount, assetType: asset)!
-        let fee = FiatCryptoPair(crypto: cryptoFee, fiat: fiatFee)
+        let fee = MoneyValuePair(base: cryptoFee.moneyValue, quote: fiatFee.moneyValue)
         return fee
     }
     
     private func interactor(for asset: CryptoCurrency,
                             balance: CryptoValue,
-                            feeState: FiatCryptoPairCalculationState) -> SendSpendableBalanceInteracting {
+                            feeState: MoneyValuePairCalculationState) -> SendSpendableBalanceInteracting {
         let exchangeRate = FiatValue.create(amountString: "1", currencyCode: "USD")
         return SendSpendableBalanceInteractor(
-            balanceFetcher: MockAccountBalanceFetcher(expectedBalance: balance),
+            balanceFetcher: MockAccountBalanceFetcher(expectedBalance: balance.moneyValue),
             feeInteractor: MockSendFeeInteractor(expectedState: feeState),
             exchangeService: MockPairExchangeService(expectedValue: exchangeRate)
         )

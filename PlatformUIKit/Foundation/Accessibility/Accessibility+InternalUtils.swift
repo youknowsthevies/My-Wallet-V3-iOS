@@ -110,6 +110,13 @@ extension Accessibility.Identifier {
     }
 }
 
+public extension Accessibility.Identifier {
+    struct AnnouncementCard {
+        static let prefix = "AnnouncementCard"
+        public static let badge = "\(prefix).badge"
+    }
+}
+
 extension Accessibility.Identifier {
     struct MnemonicTextView {
         static let prefix = "MnemonicTextView."

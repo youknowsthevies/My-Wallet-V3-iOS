@@ -13,13 +13,16 @@ import RxSwift
 /// Provider of balance services and total balance in `FiatValue`
 public protocol BalanceProviding: class {
     
-    subscript(currency: CryptoCurrency) -> AssetBalanceFetching { get }
+    subscript(currency: CurrencyType) -> AssetBalanceFetching { get }
     
     /// Streams the total fiat balance in the wallet
     var fiatBalance: Observable<FiatValueCalculationState> { get }
     
     /// Streams the fiat balances
-    var fiatBalances: Observable<AssetFiatCryptoBalanceCalculationStates> { get }
+    var fiatBalances: Observable<MoneyBalancePairsCalculationStates> { get }
+    
+    /// Streams the balances of the fiat based currencies
+    var fiatFundsBalances: Observable<MoneyBalancePairsCalculationStates> { get }
     
     /// Triggers a refresh on the balances
     func refresh()
@@ -38,57 +41,66 @@ public final class BalanceProvider: BalanceProviding {
     }
         
     /// Calculates all balances in `WalletBalance`
-    public var fiatBalances: Observable<AssetFiatCryptoBalanceCalculationStates> {
-        Observable
-            .combineLatest(
-                services[.ethereum]!.calculationState,
-                services[.pax]!.calculationState,
-                services[.stellar]!.calculationState,
-                services[.bitcoin]!.calculationState,
-                services[.bitcoinCash]!.calculationState,
-                services[.algorand]!.calculationState,
-                services[.tether]!.calculationState
-            ) { (ethereum: $0, pax: $1, stellar: $2, bitcoin: $3, bitcoinCash: $4, algorand: $5, tether: $6) }
+    public var fiatBalances: Observable<MoneyBalancePairsCalculationStates> {
+        let calculationStates = [
+            services[.crypto(.ethereum)]!.calculationState,
+            services[.crypto(.pax)]!.calculationState,
+            services[.crypto(.stellar)]!.calculationState,
+            services[.crypto(.bitcoin)]!.calculationState,
+            services[.crypto(.bitcoinCash)]!.calculationState,
+            services[.crypto(.algorand)]!.calculationState,
+            services[.crypto(.tether)]!.calculationState,
+            services[.fiat(.GBP)]!.calculationState,
+            services[.fiat(.EUR)]!.calculationState
+        ]
+        return Observable
+            .combineLatest(calculationStates)
+            .map { (ethereum: $0[0], pax: $0[1], stellar: $0[2], bitcoin: $0[3], bitcoinCash: $0[4], algorand: $0[5], tether: $0[6], gbp: $0[7], eur: $0[8]) }
             .map { states in
-                AssetFiatCryptoBalanceCalculationStates(
+                MoneyBalancePairsCalculationStates(
+                    identifier: "total-balance",
                     statePerCurrency: [
-                        .ethereum: states.ethereum,
-                        .pax: states.pax,
-                        .stellar: states.stellar,
-                        .bitcoin: states.bitcoin,
-                        .bitcoinCash: states.bitcoinCash,
-                        .algorand: states.algorand,
-                        .tether: states.tether
+                        .crypto(.ethereum): states.ethereum,
+                        .crypto(.pax): states.pax,
+                        .crypto(.stellar): states.stellar,
+                        .crypto(.bitcoin): states.bitcoin,
+                        .crypto(.bitcoinCash): states.bitcoinCash,
+                        .crypto(.algorand): states.algorand,
+                        .crypto(.tether): states.tether,
+                        .fiat(.GBP): states.gbp,
+                        .fiat(.EUR): states.eur
                     ]
                 )
             }
             .share()
     }
     
-    public subscript(currency: CryptoCurrency) -> AssetBalanceFetching {
-        services[currency]!
+    public var fiatFundsBalances: Observable<MoneyBalancePairsCalculationStates> {
+        fiatBalances.map { $0.fiatBaseStates }
+    }
+
+    public subscript(currency: Currency) -> AssetBalanceFetching {
+        services[currency.currency]!
+    }
+    
+    public subscript(currencyType: CurrencyType) -> AssetBalanceFetching {
+        services[currencyType]!
     }
     
     // MARK: - Services
     
-    private var services: [CryptoCurrency: AssetBalanceFetching] = [:]
+    private var services: [CurrencyType: AssetBalanceFetching] = [:]
     
     // MARK: - Setup
     
-    public init(algorand: AssetBalanceFetching,
-                ether: AssetBalanceFetching,
-                pax: AssetBalanceFetching,
-                stellar: AssetBalanceFetching,
-                bitcoin: AssetBalanceFetching,
-                bitcoinCash: AssetBalanceFetching,
-                tether: AssetBalanceFetching) {
-        services[.algorand] = algorand
-        services[.ethereum] = ether
-        services[.pax] = pax
-        services[.stellar] = stellar
-        services[.bitcoin] = bitcoin
-        services[.bitcoinCash] = bitcoinCash
-        services[.tether] = tether
+    public init(fiats: [FiatCurrency: AssetBalanceFetching],
+                cryptos: [CryptoCurrency: AssetBalanceFetching]) {
+        for (currency, service) in fiats {
+            services[currency.currency] = service
+        }
+        for (currency, service) in cryptos {
+            services[currency.currency] = service
+        }
     }
     
     public func refresh() {

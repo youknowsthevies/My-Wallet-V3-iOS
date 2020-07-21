@@ -24,6 +24,7 @@ public enum AnnouncementType: String, Codable {
     case tether = "tether"
     case bitpay = "bitpay"
     case kycAirdrop = "kyc_airdrop"
+    case cashIdentity = "cash_identity"
 
     /// The key indentifying the announcement in cache
     var key: AnnouncementRecord.Key {
@@ -60,6 +61,8 @@ public enum AnnouncementType: String, Codable {
             return .simpleBuyPendingTransaction
         case .simpleBuyKYCIncomplete:
             return .simpleBuyKYCIncomplete
+        case .cashIdentity:
+            return .cashIdentity
         }
     }
 }

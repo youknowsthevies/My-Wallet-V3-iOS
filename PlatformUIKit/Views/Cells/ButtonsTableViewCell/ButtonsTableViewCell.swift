@@ -8,9 +8,9 @@
 
 import UIKit
 
-class ButtonsTableViewCell: UITableViewCell {
+public final class ButtonsTableViewCell: UITableViewCell {
 
-    var models: [ButtonViewModel] = [] {
+    public var models: [ButtonViewModel] = [] {
         willSet {
             stackView.removeSubviews()
         }
@@ -28,7 +28,7 @@ class ButtonsTableViewCell: UITableViewCell {
         buttonView.layout(dimension: .height, to: 48)
     }
 
-    override func prepareForReuse() {
+    public override func prepareForReuse() {
         super.prepareForReuse()
         models = []
     }

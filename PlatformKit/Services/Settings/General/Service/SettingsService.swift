@@ -142,7 +142,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
             .asCompletable()
     }
     
-    @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencySettingsServiceAPI`")
+    @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencyServiceAPI`")
     public var legacyCurrency: FiatCurrency? {
         settingsRelay.value?.currency
     }

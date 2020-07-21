@@ -33,7 +33,7 @@ extension LabeledButtonViewStyle {
             textColor: .secondary
         )
     }
-    public static var currencyTooLow: LabeledButtonViewStyle {
+    public static var currencyOutOfBounds: LabeledButtonViewStyle {
         .init(
             backgroundColor: .lightRedBackground,
             font: .main(.semibold, 14),
@@ -41,6 +41,6 @@ extension LabeledButtonViewStyle {
         )
     }
     public static var currencyTooHigh: LabeledButtonViewStyle {
-        .currencyTooLow
+        .currencyOutOfBounds
     }
 }

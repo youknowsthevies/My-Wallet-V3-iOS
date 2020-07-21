@@ -91,6 +91,7 @@ final class DashboardViewController: BaseScreenViewController {
         tableView.estimatedRowHeight = 80
         tableView.rowHeight = UITableView.automaticDimension
         tableView.register(AnnouncementTableViewCell.self)
+        tableView.register(FiatCustodialBalancesTableViewCell.self)
         tableView.register(NoticeTableViewCell.self)
         tableView.registerNibCell(TotalBalanceTableViewCell.self)
         tableView.registerNibCell(HistoricalBalanceTableViewCell.self)
@@ -108,18 +109,36 @@ final class DashboardViewController: BaseScreenViewController {
     
     private func execute(action: DashboardCollectionAction) {
         switch action {
-        case .announcement(let announcementAction):
-            execute(announcementAction: announcementAction)
-        case .notice(let state):
-            execute(noticeState: state)
+        case .announcement(let action):
+            execute(announcementAction: action)
+        case .notice(let action):
+            execute(noticeAction: action)
+        case .fiatBalance(let action):
+            execute(fiatBalanceAction: action)
         }
     }
     
-    private func execute(noticeState: NoticeDisplayAction) {
-        // Available cell after balance
-        let index = presenter.indexByCellType[.balance]! + 1
+    private func execute(fiatBalanceAction: DashboardItemDisplayAction<FiatBalanceCollectionViewPresenter>) {
+        let previousCellIndex = (presenter.indexByCellType[.notice] ?? presenter.indexByCellType[.totalBalance]!)
+        let index = previousCellIndex + 1
         let indexPaths = [IndexPath(item: index, section: 0)]
-        switch noticeState {
+        switch fiatBalanceAction {
+        case .show where !presenter.fiatBalanceState.isVisible:
+            tableView.insertRows(at: indexPaths, with: .automatic)
+            presenter.fiatBalanceState = .visible(index: index)
+        case .hide where presenter.fiatBalanceState.isVisible:
+            tableView.deleteRows(at: indexPaths, with: .automatic)
+            presenter.fiatBalanceState = .hidden
+        default:
+            break
+        }
+    }
+    
+    private func execute(noticeAction: DashboardItemDisplayAction<NoticeViewModel>) {
+        let previousCellIndex = presenter.indexByCellType[.totalBalance]!
+        let index = previousCellIndex + 1
+        let indexPaths = [IndexPath(item: index, section: 0)]
+        switch noticeAction {
         case .show where !presenter.noticeState.isVisible:
             tableView.insertRows(at: indexPaths, with: .automatic)
             presenter.noticeState = .visible(index: index)
@@ -202,7 +221,9 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
         switch type {
         case .announcement:
             cell = announcementCell(for: indexPath)
-        case .balance:
+        case .fiatCustodialBalances:
+            cell = fiatCustodialBalancesCell(for: indexPath)
+        case .totalBalance:
             cell = balanceCell(for: indexPath)
         case .crypto(let currency):
             cell = assetCell(for: indexPath, currency: currency)
@@ -217,8 +238,9 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
         let type = presenter.cellArrangement[indexPath.row]
         switch type {
         case .announcement,
+             .fiatCustodialBalances,
              .notice,
-             .balance:
+             .totalBalance:
             break
         case .crypto(let currency):
             router.showDetailsScreen(for: currency)
@@ -226,6 +248,12 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
     }
         
     // MARK: - Accessors
+    
+    private func fiatCustodialBalancesCell(for indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeue(FiatCustodialBalancesTableViewCell.self, for: indexPath)
+        cell.presenter = presenter.fiatBalanceCollectionViewPresenter
+        return cell
+    }
     
     private func announcementCell(for indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeue(AnnouncementTableViewCell.self, for: indexPath)

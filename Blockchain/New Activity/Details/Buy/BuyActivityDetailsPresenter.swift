@@ -74,6 +74,8 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
             paymentMethod = LocalizedLineItem.bankTransfer
         case .card:
             paymentMethod = LocalizedLineItem.creditOrDebitCard
+        case .funds:
+            paymentMethod = "\(LocalizedLineItem.Funds.prefix) \(event.fiatValue.currencyCode) \(LocalizedLineItem.Funds.suffix)"
         }
         let date = DateFormatter.elegantDateFormatter.string(from: event.creationDate)
 
@@ -131,6 +133,8 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
     func viewDidLoad() {
         switch event.paymentMethod {
         case .bankTransfer:
+            break
+        case .funds:
             break
         case .card(let paymentMethodId):
             interactor

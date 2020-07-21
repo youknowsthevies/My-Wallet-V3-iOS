@@ -24,8 +24,8 @@ final class EthereumActivityDetailsInteractor {
     init(wallet: EthereumWalletBridgeAPI = WalletManager.shared.wallet.ethereum,
          fiatCurrencySettings: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          priceService: PriceServiceAPI = PriceService(),
-         serviceProvider: ETHServiceProvider = ETHServiceProvider.shared) {
-        self.detailsService = serviceProvider.services.activityDetails
+         detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> = ActivityServiceProvider.default.ethereumDetails) {
+        self.detailsService = detailsService
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService
         self.wallet = wallet
@@ -52,7 +52,7 @@ final class EthereumActivityDetailsInteractor {
                 price.asObservable(),
                 memo.asObservable()
             )
-            .map { EthereumActivityDetailsViewModel(details: $0, price: $1?.priceInFiat, memo: $2) }
+            .map { EthereumActivityDetailsViewModel(details: $0, price: $1?.moneyValue.fiatValue, memo: $2) }
     }
     
     // MARK: - Private Functions
@@ -61,7 +61,7 @@ final class EthereumActivityDetailsInteractor {
         wallet.memo(for: identifier)
     }
     
-    private func price(at date: Date) -> Single<PriceInFiatValue> {
+    private func price(at date: Date) -> Single<PriceQuoteAtTime> {
         fiatCurrencySettings
             .fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) in
@@ -69,9 +69,9 @@ final class EthereumActivityDetailsInteractor {
             }
     }
 
-    private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceInFiatValue> {
+    private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceQuoteAtTime> {
         priceService.price(
-            for: .ethereum,
+            for: CurrencyType.crypto(CryptoCurrency.ethereum),
             in: fiatCurrency,
             at: date
         )

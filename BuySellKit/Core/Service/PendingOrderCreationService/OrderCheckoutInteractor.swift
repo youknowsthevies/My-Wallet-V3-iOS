@@ -12,14 +12,14 @@ public final class OrderCheckoutInteractor {
     
     // MARK: - Properties
     
-    private let bankInteractor: BankOrderCheckoutInteractor
+    private let fundsAndBankInteractor: FundsAndBankOrderCheckoutInteractor
     private let cardInteractor: CardOrderCheckoutInteractor
 
     // MARK: - Setup
     
-    public init(bankInteractor: BankOrderCheckoutInteractor,
+    public init(fundsAndBankInteractor: FundsAndBankOrderCheckoutInteractor,
                 cardInteractor: CardOrderCheckoutInteractor) {
-        self.bankInteractor = bankInteractor
+        self.fundsAndBankInteractor = fundsAndBankInteractor
         self.cardInteractor = cardInteractor
     }
     
@@ -27,8 +27,8 @@ public final class OrderCheckoutInteractor {
         switch checkoutData.order.paymentMethod {
         case .card:
             return cardInteractor.prepare(using: checkoutData)
-        case .bankTransfer:
-            return bankInteractor.prepare(using: checkoutData)
+        case .bankTransfer, .funds:
+            return fundsAndBankInteractor.prepare(using: checkoutData)
         }
     }
     
@@ -36,8 +36,8 @@ public final class OrderCheckoutInteractor {
         switch order.paymentMethod {
         case .card:
             return cardInteractor.prepare(using: order)
-        case .bankTransfer:
-            return bankInteractor.prepare(using: order)
+        case .bankTransfer, .funds:
+            return fundsAndBankInteractor.prepare(using: order)
         }
     }
 }

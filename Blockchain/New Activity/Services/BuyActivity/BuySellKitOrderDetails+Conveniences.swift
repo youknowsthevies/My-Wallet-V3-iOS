@@ -11,6 +11,17 @@ import PlatformKit
 
 extension BuyActivityItemEvent {
     init(with orderDetails: OrderDetails) {
+        
+        let paymentMethod: PaymentMethod
+        switch orderDetails.paymentMethod {
+        case .bankTransfer:
+            paymentMethod = .bankTransfer
+        case .card:
+            paymentMethod = .card(paymentMethodId: orderDetails.paymentMethodId)
+        case .funds:
+            paymentMethod = .funds
+        }
+        
         self.init(
             identifier: orderDetails.identifier,
             creationDate: orderDetails.creationDate ?? Date(),
@@ -18,7 +29,7 @@ extension BuyActivityItemEvent {
             fiatValue: orderDetails.fiatValue,
             cryptoValue: orderDetails.cryptoValue,
             fee: orderDetails.fee ?? FiatValue.zero(currency: orderDetails.fiatValue.currencyType),
-            paymentMethod: orderDetails.isBankWire ? .bankTransfer : .card(paymentMethodId: orderDetails.paymentMethodId)
+            paymentMethod: paymentMethod
         )
     }
 }

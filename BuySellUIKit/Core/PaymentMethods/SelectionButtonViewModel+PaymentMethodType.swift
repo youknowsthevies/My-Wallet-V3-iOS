@@ -19,13 +19,13 @@ extension SelectionButtonViewModel {
     
     // MARK: - Setup
     
-    convenience init(with paymentMethodType: PaymentMethodType) {
+    convenience init(with paymentMethodType: PaymentMethodType?) {
         self.init()
         let leadingContent: SelectionButtonViewModel.LeadingContentType?
         let title: String
         let accessibilityContent: AccessibilityContent
         switch paymentMethodType {
-        case .suggested(let method):
+        case .some(.suggested(let method)):
             switch method.type {
             case .card:
                 leadingContent = .image(
@@ -38,24 +38,26 @@ extension SelectionButtonViewModel {
                     )
                 )
                 title = LocalizedString.Types.cardTitle
-            case .bankTransfer:
+            case .funds:
                 leadingContent = .image(
                     .init(
-                        name: "icon-bank",
+                        name: "icon-deposit-cash",
                         background: .lightBlueBackground,
-                        offset: 4,
+                        offset: 8,
                         cornerRadius: .round,
                         size: .init(edge: 32)
                     )
                 )
-                title = LocalizedString.Types.bankWireTitle
+                title = LocalizedString.DepositCash.title
+            case .bankTransfer:
+                fatalError("Bank transfer is not a valid payment method anymore")
             }
             subtitleRelay.accept("\(method.max.toDisplayString()) \(LocalizedString.Types.limitSubtitle)")
             accessibilityContent = AccessibilityContent(
-                id: method.type.rawValue,
+                id: method.type.rawType.rawValue,
                 label: title
             )
-        case .card(let data):
+        case .some(.card(let data)):
             if let thumbnail = data.type.thumbnail {
                 leadingContent = .image(
                     .init(
@@ -76,6 +78,38 @@ extension SelectionButtonViewModel {
             )
             let limit = "\(data.topLimitDisplayValue) \(LocalizedString.Types.limitSubtitle)"
             subtitleRelay.accept(limit)
+        case .some(.account(let balance)):
+            leadingContent = .image(
+                .init(
+                    name: balance.baseCurrency.logoImageName,
+                    background: .fiat,
+                    offset: 4,
+                    cornerRadius: .value(8),
+                    size: .init(edge: 32)
+                )
+            )
+            title = balance.baseCurrency.name
+            subtitleRelay.accept(balance.baseCurrency.code)
+            accessibilityContent = AccessibilityContent(
+                id: Accessibility.Identifier.SimpleBuy.BuyScreen.selectPaymentMethodLabel,
+                label: title
+            )
+        case .none: // No preferred payment method type
+            leadingContent = .image(
+                .init(
+                    name: "icon-plus",
+                    background: .lightBlueBackground,
+                    offset: 4,
+                    cornerRadius: .round,
+                    size: .init(edge: 32)
+                )
+            )
+            title = LocalizedString.Types.selectCashOrCard
+            subtitleRelay.accept(nil)
+            accessibilityContent = AccessibilityContent(
+                id: Accessibility.Identifier.SimpleBuy.BuyScreen.selectPaymentMethodLabel,
+                label: title
+            )
         }
         accessibilityContentRelay.accept(accessibilityContent)
         leadingContentTypeRelay.accept(leadingContent)

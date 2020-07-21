@@ -10,7 +10,7 @@ import PlatformKit
 import RxCocoa
 import RxSwift
 
-final class BitcoinCashAssetBalanceFetcher: AccountBalanceFetching {
+final class BitcoinCashAssetBalanceFetcher: CryptoAccountBalanceFetching {
     
     // MARK: - Exposed Properties
     
@@ -19,11 +19,16 @@ final class BitcoinCashAssetBalanceFetcher: AccountBalanceFetching {
     }
     
     var balance: Single<CryptoValue> {
-        .just(.bitcoinCashFromSatoshis(int: Int(wallet.getBchBalance())))
+        Single
+            .just(CryptoValue.bitcoinCashFromSatoshis(int: Int(wallet.getBchBalance())))
     }
     
     var balanceObservable: Observable<CryptoValue> {
         balanceRelay.asObservable()
+    }
+    
+    var balanceMoneyObservable: Observable<MoneyValue> {
+        balanceObservable.map(\.moneyValue)
     }
     
     let balanceFetchTriggerRelay = PublishRelay<Void>()

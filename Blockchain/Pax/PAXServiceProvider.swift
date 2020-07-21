@@ -13,7 +13,6 @@ import PlatformKit
 import RxSwift
 
 protocol PAXDependencies {
-    var activity: ActivityItemEventServiceAPI { get }
     var assetAccountRepository: ERC20AssetAccountRepository<PaxToken> { get }
     var historicalTransactionService: AnyERC20HistoricalTransactionService<PaxToken> { get }
     var paxService: ERC20Service<PaxToken> { get }
@@ -27,14 +26,11 @@ struct PAXServices: PAXDependencies {
     let paxService: ERC20Service<PaxToken>
     let walletService: EthereumWalletServiceAPI
     let feeService: EthereumFeeServiceAPI
-    let activity: ActivityItemEventServiceAPI
     
     init(wallet: Wallet = WalletManager.shared.wallet,
          feeService: EthereumFeeServiceAPI = EthereumFeeService.shared,
          walletService: EthereumWalletServiceAPI = EthereumWalletService.shared,
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         simpleBuyOrdersAPI: BuySellKit.OrdersServiceAPI = ServiceProvider.default.ordersDetails,
-         swapActivityAPI: SwapActivityServiceAPI = SwapServiceProvider.default.activity) {
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings) {
         self.feeService = feeService
         let service = ERC20AssetAccountDetailsService<PaxToken>(with: wallet.ethereum, accountClient: ERC20AccountAPIClient<PaxToken>())
         self.assetAccountRepository = ERC20AssetAccountRepository(service: service)
@@ -42,17 +38,6 @@ struct PAXServices: PAXDependencies {
         let ethereumAssetAccountRepository: EthereumAssetAccountRepository = EthereumAssetAccountRepository(
             service: EthereumAssetAccountDetailsService(
                 with: wallet.ethereum
-            )
-        )
-        
-        activity = ActivityItemEventService(
-            transactional: TransactionalActivityItemEventService(
-                fetcher: AnyERC20TransactionalActivityItemEventsService<PaxToken>(transactionsService: historicalTransactionService)
-            ),
-            buy: BuyActivityItemEventService(currency: .pax, service: simpleBuyOrdersAPI),
-            swap: SwapActivityItemEventService(
-                fetcher: AnyERC20SwapActivityItemEventsService<PaxToken>(service: swapActivityAPI),
-                fiatCurrencyProvider: fiatCurrencyService
             )
         )
         

@@ -79,7 +79,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
     }
 
     public var amount: CryptoValue {
-        CryptoValue.createFromMajorValue(string: amountString, assetType: .stellar) ?? .zero(assetType: .stellar)
+        CryptoValue.createFromMajorValue(string: amountString, assetType: .stellar) ?? .zero(currency: .stellar)
     }
 
     private var amountString: String {

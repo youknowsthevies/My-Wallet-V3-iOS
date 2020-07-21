@@ -16,7 +16,8 @@ import ToolKit
 public final class AnnouncementCardViewModel {
 
     // MARK: - Types
-
+    
+    public typealias AccessibilityId = Accessibility.Identifier.AnnouncementCard
     public typealias DidAppear = () -> Void
     
     /// The priority under which the announcement should show
@@ -75,8 +76,136 @@ public final class AnnouncementCardViewModel {
         
     }
     
+    public enum BadgeImage {
+        case hidden
+        case visible(BadgeImageViewModel, CGSize)
+        
+        public init(imageName: String,
+                    contentColor: UIColor = .defaultBadge,
+                    backgroundColor: UIColor = .lightBadgeBackground,
+                    cornerRadius: BadgeImageViewModel.CornerRadius = .value(8.0),
+                    accessibilitySuffix: String = "\(AccessibilityId.badge)",
+                    size: CGSize) {
+            self = .visible(
+                .primary(
+                    with: imageName,
+                    contentColor: contentColor,
+                    backgroundColor: backgroundColor,
+                    cornerRadius: cornerRadius,
+                    accessibilityIdSuffix: accessibilitySuffix),
+                size
+            )
+        }
+        
+        var verticalPadding: CGFloat {
+            switch self {
+            case .hidden:
+                return 0.0
+            case .visible:
+                return 16.0
+            }
+        }
+        
+        var size: CGSize {
+            switch self {
+            case .hidden:
+                return .zero
+            case .visible(_, let value):
+                return value
+            }
+        }
+        
+        var viewModel: BadgeImageViewModel? {
+            switch self {
+            case .hidden:
+                return nil
+            case .visible(let value, _):
+                return value
+            }
+        }
+        
+        var isVisible: Bool {
+            switch self {
+            case .hidden:
+                return false
+            case .visible:
+                return true
+            }
+        }
+    }
+    
+    public enum Image {
+        case hidden
+        case visible(ImageDescriptor)
+        
+        public init(name: String,
+                    size: CGSize = CGSize(width: 40, height: 40),
+                    tintColor: UIColor? = nil,
+                    bundle: Bundle = .main) {
+            self = .visible(
+                .init(name: name,
+                      size: size,
+                      tintColor: tintColor,
+                      bundle: bundle)
+            )
+        }
+        
+        var verticalPadding: CGFloat {
+            switch self {
+            case .hidden:
+                return 0.0
+            case .visible:
+                return 16.0
+            }
+        }
+        
+        var size: CGSize {
+            switch self {
+            case .hidden:
+                return .zero
+            case .visible(let value):
+                return value.size
+            }
+        }
+        
+        var tintColor: UIColor? {
+            switch self {
+            case .hidden:
+                return nil
+            case .visible(let value):
+                return value.tintColor
+            }
+        }
+        
+        var isVisible: Bool {
+            switch self {
+            case .hidden:
+                return false
+            case .visible:
+                return true
+            }
+        }
+        
+        var uiImage: UIImage? {
+            switch self {
+            case .hidden:
+                return nil
+            case .visible(let descriptor):
+                return UIImage(named: descriptor.name,
+                               in: descriptor.bundle,
+                               compatibleWith: .none)
+                    .map { value in
+                        if descriptor.tintColor != nil {
+                            return value.withRenderingMode(.alwaysTemplate)
+                        }
+                        return value
+                }
+            }
+        }
+    }
+    
     /// The image descriptor
-    public struct Image {
+    public struct ImageDescriptor {
         let name: String
         let size: CGSize
         let tintColor: UIColor?
@@ -153,6 +282,7 @@ public final class AnnouncementCardViewModel {
     
     let type: AnnouncementType?
     let interaction: Interaction
+    let badgeImage: BadgeImage
     let contentAlignment: Alignment
     let background: Background
     let border: Border
@@ -203,6 +333,7 @@ public final class AnnouncementCardViewModel {
     public init(type: AnnouncementType? = nil,
                 presentation: Presentation = .regular,
                 interaction: Interaction = .none,
+                badgeImage: BadgeImage = .hidden,
                 contentAlignment: Alignment = .natural,
                 background: Background = .white,
                 border: Border = .bottomSeparator(.mediumBorder),
@@ -215,6 +346,7 @@ public final class AnnouncementCardViewModel {
         self.type = type
         self.presentation = presentation
         self.interaction = interaction
+        self.badgeImage = badgeImage
         self.contentAlignment = contentAlignment
         self.background = background
         self.border = border

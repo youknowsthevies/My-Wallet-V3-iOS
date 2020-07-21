@@ -83,6 +83,7 @@ public final class CardListService: CardListServiceAPI {
             .do(onSuccess: { [weak self] cardList in
                 self?.cardsRelay.accept(cardList)
             })
+            .catchErrorJustReturn([])
     }
     
     public func doesCardExist(number: String, expiryMonth: String, expiryYear: String) -> Single<Bool> {

@@ -14,12 +14,11 @@ public struct CustodialBalanceResponse: Decodable {
 
     struct Balance: Decodable {
         let available: String
-        let pending: String
     }
 
     // MARK: - Properties
 
-    private let balances: [String: Balance]
+    let balances: [String: Balance]
 
     // MARK: - Init
 
@@ -34,7 +33,7 @@ public struct CustodialBalanceResponse: Decodable {
 
     // MARK: - Subscript
 
-    subscript(currency: CryptoCurrency) -> Balance? {
-        balances[currency.rawValue]
+    subscript(currencyCode: String) -> Balance? {
+        balances[currencyCode]
     }
 }

@@ -53,8 +53,9 @@ final class PaymentMethodsScreenViewController: BaseScreenViewController {
     }
         
     private func setupTableView() {
-        tableView.register(SelectionButtonTableViewCell.self)
+        tableView.register(ExplainedActionTableViewCell.self)
         tableView.registerNibCell(LinkedCardTableViewCell.self)
+        tableView.register(FiatCustodialBalanceTableViewCell.self)
         tableView.allowsSelection = false
         tableView.separatorInset = .zero
         tableView.tableFooterView = UIView()
@@ -97,12 +98,21 @@ extension PaymentMethodsScreenViewController: UITableViewDelegate, UITableViewDa
             return suggestedPaymentMethodCell(for: indexPath, viewModel: viewModel)
         case .linkedCard(let presenter):
             return linkedCardTableViewCell(for: indexPath, presenter: presenter)
+        case .account(let presenter):
+            return accountTableViewCell(for: indexPath, presenter: presenter)
         }
     }
     
+    private func accountTableViewCell(for indexPath: IndexPath,
+                                      presenter: FiatCustodialBalanceViewPresenter) -> UITableViewCell {
+        let cell = tableView.dequeue(FiatCustodialBalanceTableViewCell.self, for: indexPath)
+        cell.presenter = presenter
+        return cell
+    }
+    
     private func suggestedPaymentMethodCell(for indexPath: IndexPath,
-                                            viewModel: SelectionButtonViewModel) -> UITableViewCell {
-        let cell = tableView.dequeue(SelectionButtonTableViewCell.self, for: indexPath)
+                                            viewModel: ExplainedActionViewModel) -> UITableViewCell {
+        let cell = tableView.dequeue(ExplainedActionTableViewCell.self, for: indexPath)
         cell.viewModel = viewModel
         return cell
     }

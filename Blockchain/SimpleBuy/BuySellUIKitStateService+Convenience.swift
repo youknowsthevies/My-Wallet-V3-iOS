@@ -16,10 +16,10 @@ extension BuySellUIKit.StateService {
     static func make() -> BuySellUIKit.StateServiceAPI {
         BuySellUIKit.StateService(
             uiUtilityProvider: UIUtilityProvider.default,
-            pendingOrderDetailsService: ServiceProvider.default.pendingOrderDetails,
-            supportedPairsInteractor: ServiceProvider.default.supportedPairsInteractor,
+            pendingOrderDetailsService: DataProvider.default.buySell.pendingOrderDetails,
+            supportedPairsInteractor: DataProvider.default.buySell.supportedPairsInteractor,
             kycTiersService: KYCServiceProvider.default.tiers,
-            cache: ServiceProvider.default.cache,
+            cache: DataProvider.default.buySell.cache,
             userInformationServiceProvider: UserInformationServiceProvider.default
         )
     }

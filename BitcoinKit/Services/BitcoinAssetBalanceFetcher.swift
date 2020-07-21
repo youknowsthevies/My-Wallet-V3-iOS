@@ -10,7 +10,7 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-public final class BitcoinAssetBalanceFetcher: AccountBalanceFetching {
+public final class BitcoinAssetBalanceFetcher: CryptoAccountBalanceFetching {
     
     public typealias Bridge = BitcoinWalletBridgeAPI
         
@@ -26,7 +26,7 @@ public final class BitcoinAssetBalanceFetcher: AccountBalanceFetching {
                 self.client.balances(for: activeAccounts)
             }
             .map { balances -> CryptoValue in
-                BitcoinBalances(addresses: balances).total
+                BitcoinBalances(balances: balances).total
             }
     }
     
@@ -36,6 +36,10 @@ public final class BitcoinAssetBalanceFetcher: AccountBalanceFetching {
             .asObservable()
     }
     
+    public var balanceMoneyObservable: Observable<MoneyValue> {
+        balanceObservable.map(\.moneyValue)
+    }
+        
     public let balanceFetchTriggerRelay = PublishRelay<Void>()
     
     // MARK: - Private Properties
@@ -93,14 +97,14 @@ struct BitcoinBalances {
     
     private let addresses: [String: CryptoValue]
     
-    init(addresses: BitcoinBalanceResponse) {
-        let addresses = addresses.compactMapValues { item -> CryptoValue? in
-            CryptoValue(minor: "\(item.finalBalance)", cryptoCurreny: .bitcoin)
+    init(balances: BitcoinBalanceResponse) {
+        let balanceByAddress = balances.compactMapValues { item -> CryptoValue? in
+            CryptoValue(minor: "\(item.finalBalance)", cryptoCurrency: .bitcoin)
         }
-        let totalBalance = try? addresses
+        let totalBalance = try? balanceByAddress
             .values
             .reduce(CryptoValue.bitcoinZero, +)
-        self.addresses = addresses
+        self.addresses = balanceByAddress
         self.total = totalBalance ?? CryptoValue.bitcoinZero
     }
     

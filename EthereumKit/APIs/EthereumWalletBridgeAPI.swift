@@ -21,7 +21,7 @@ public protocol EthereumWalletAccountBridgeAPI: class {
     func save(keyPair: EthereumKeyPair, label: String) -> Completable
 }
 
-public protocol EthereumWalletBridgeAPI: AccountBalanceFetching {
+public protocol EthereumWalletBridgeAPI: CryptoAccountBalanceFetching {
     var name: Single<String> { get }
     var address: Single<EthereumAddress> { get }
     var account: Single<EthereumAssetAccount> { get }

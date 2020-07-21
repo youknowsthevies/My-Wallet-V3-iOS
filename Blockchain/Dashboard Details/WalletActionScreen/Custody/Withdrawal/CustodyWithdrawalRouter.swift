@@ -79,7 +79,7 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI, Router {
     private func showWithdrawalScreen() {
         let interactor = CustodyWithdrawalScreenInteractor(
             withdrawalService: custodialAPI.withdrawal,
-            balanceFetching: dataProviding.balance[currency],
+            balanceFetching: dataProviding.balance[currency.currency],
             currency: currency,
             accountRepository: AssetAccountRepository.shared
         )

@@ -9,23 +9,32 @@
 import NetworkKit
 import RxSwift
 
-public typealias CustodialClientAPI = TradingBalanceClientAPI &
-                                      CustodyWithdrawalClientAPI
+public protocol TradingBalanceClientAPI: class {
+    var balance: Single<CustodialBalanceResponse?> { get }
+    func balance(for currency: String) -> Single<CustodialBalanceResponse?>
+}
+
+public typealias CustodialClientAPI = TradingBalanceClientAPI & CustodyWithdrawalClientAPI
 
 public final class CustodialClient: CustodialClientAPI {
     
     // MARK: - Types
     
-    enum ClientError: Error {
-        case unknown
-    }
-        
     private enum Path {
         static let withdrawal = ["payments", "withdrawals"]
         static let custodialBalance = [ "accounts", "simplebuy" ]
     }
     
     // MARK: - Properties
+    
+    public var balance: Single<CustodialBalanceResponse?> {
+        let path = Path.custodialBalance
+        let request = requestBuilder.get(
+            path: path,
+            authenticated: true
+        )!
+        return communicator.performOptional(request: request, responseType: CustodialBalanceResponse.self)
+    }
     
     private let requestBuilder: RequestBuilder
     private let communicator: NetworkCommunicatorAPI
@@ -41,9 +50,10 @@ public final class CustodialClient: CustodialClientAPI {
 
     public func balance(for currency: String) -> Single<CustodialBalanceResponse?> {
         let path = Path.custodialBalance
-        guard let request = requestBuilder.get(path: path, authenticated: true) else {
-            return Single.error(ClientError.unknown)
-        }
+        let request = requestBuilder.get(
+            path: path,
+            authenticated: true
+        )!
         return communicator.performOptional(request: request, responseType: CustodialBalanceResponse.self)
     }
     
@@ -57,7 +67,7 @@ public final class CustodialClient: CustodialClientAPI {
             body: try? withdrawalRequest.encode(),
             headers: headers,
             authenticated: true
-            )!
+        )!
         return communicator.perform(request: request)
     }
 }

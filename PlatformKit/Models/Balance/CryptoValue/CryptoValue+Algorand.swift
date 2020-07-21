@@ -13,7 +13,7 @@ import Foundation
 
 extension CryptoValue {
     public static var algorandZero: CryptoValue {
-        zero(assetType: .algorand)
+        zero(currency: .algorand)
     }
 
     public static func algorand(minor: BigInt) -> CryptoValue {

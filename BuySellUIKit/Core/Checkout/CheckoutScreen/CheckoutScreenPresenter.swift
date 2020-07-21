@@ -124,7 +124,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
         contentReducer.transferDetailsButtonViewModel?
             .tapRelay
             .bindAndCatch(weak: self) { (self) in
-                self.stateService.transferDetails(with: self.interactor.checkoutData)
+                self.stateService.bankTransferDetails(with: self.interactor.checkoutData)
             }
             .disposed(by: disposeBag)
     }

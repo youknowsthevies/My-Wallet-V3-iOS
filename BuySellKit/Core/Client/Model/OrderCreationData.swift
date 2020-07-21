@@ -27,6 +27,7 @@ struct OrderPayload {
         public enum Partner {
             case everyPay(customerUrl: String)
             case bank
+            case funds
         }
         
         struct Attributes: Encodable {
@@ -44,7 +45,7 @@ struct OrderPayload {
             switch partner {
             case .everyPay(customerUrl: let url):
                 attributes = Attributes(everypay: .init(customerUrl: url))
-            case .bank:
+            case .bank, .funds:
                 attributes = nil
             }
             self.action = action
@@ -66,7 +67,7 @@ struct OrderPayload {
         let action: Order.Action
         let input: Input
         let output: Output
-        let paymentType: String
+        let paymentType: PaymentMethodPayloadType
         let paymentMethodId: String?
 
         init(action: Order.Action,
@@ -76,7 +77,7 @@ struct OrderPayload {
              paymentMethodId: String? = nil) {
             self.action = action
             self.paymentMethodId = paymentMethodId
-            self.paymentType = paymentType.rawValue
+            self.paymentType = paymentType.rawType
             input = .init(
                 symbol: fiatValue.currencyCode,
                 amount: fiatValue.string

@@ -22,7 +22,7 @@ public protocol AssetBalanceFetching {
     var savings: CustodialAccountBalanceFetching { get }
         
     /// The calculation state of the asset balance
-    var calculationState: Observable<AssetFiatCryptoBalanceCalculationState> { get }
+    var calculationState: Observable<MoneyBalancePairsCalculationState> { get }
     
     /// Trigger a refresh on the balance and exchange rate
     func refresh()
@@ -37,29 +37,29 @@ public final class AssetBalanceFetcher: AssetBalanceFetching {
     public let savings: CustodialAccountBalanceFetching
     
     /// The balance
-    public var calculationState: Observable<AssetFiatCryptoBalanceCalculationState> {
+    public var calculationState: Observable<MoneyBalancePairsCalculationState> {
         _ = setup
         return calculationStateRelay.asObservable()
     }
     
-    private let calculationStateRelay = BehaviorRelay<AssetFiatCryptoBalanceCalculationState>(value: .calculating)
+    private let calculationStateRelay = BehaviorRelay<MoneyBalancePairsCalculationState>(value: .calculating)
     private let exchange: PairExchangeServiceAPI
     private let disposeBag = DisposeBag()
     
     private lazy var setup: Void = {
         Observable
             .combineLatest(
-                wallet.balanceObservable,
-                trading.balanceObservable,
-                savings.balanceObservable,
+                wallet.balanceMoneyObservable,
+                trading.balanceMoneyObservable,
+                savings.balanceMoneyObservable,
                 exchange.fiatPrice
             )
             .map {
-                let fiatPrice = $0.3
-                return .init(
-                    wallet: FiatCryptoPair(crypto: $0.0, exchangeRate: fiatPrice),
-                    trading: FiatCryptoPair(crypto: $0.1, exchangeRate: fiatPrice),
-                    savings: FiatCryptoPair(crypto: $0.2, exchangeRate: fiatPrice)
+                let fiatPrice = $0.3.moneyValue
+                return MoneyValueBalancePairs(
+                    wallet: try MoneyValuePair(base: $0.0, exchangeRate: fiatPrice),
+                    trading: try MoneyValuePair(base: $0.1, exchangeRate: fiatPrice),
+                    savings: try MoneyValuePair(base: $0.2, exchangeRate: fiatPrice)
                 )
             }
             .map { .value($0) }

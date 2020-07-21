@@ -34,7 +34,7 @@ public final class Router: RouterAPI, PlatformUIKit.Router {
     private let serviceProvider: ServiceProviderAPI
     private let cardServiceProvider: CardServiceProviderAPI
     private let userInformationProvider: UserInformationServiceProviding
-    private let cryptoSelectionService: SelectionServiceAPI
+    private let cryptoSelectionService: SelectionServiceAPI & CryptoCurrencyServiceAPI
     private let exchangeProvider: ExchangeProviding
     
     private var addCardStateService: AddCardStateService!
@@ -141,8 +141,10 @@ public final class Router: RouterAPI, PlatformUIKit.Router {
             showPendingOrderCompletionScreen(for: orderId, cryptoValue: amount)
         case .paymentMethods:
             showPaymentMethodsScreen()
-        case .transferDetails(let data):
-            showTransferDetailScreen(with: data)
+        case .bankTransferDetails(let data):
+            showBankTransferDetailScreen(with: data)
+        case .fundsTransferDetails(let currency, isOriginPaymentMethods: let isOriginPaymentMethods):
+            showFundsTransferDetailsScreen(with: currency, shouldDismissModal: isOriginPaymentMethods)
         case .transferCancellation(let data):
             showTransferCancellation(with: data)
         case .kyc:
@@ -164,7 +166,7 @@ public final class Router: RouterAPI, PlatformUIKit.Router {
         // Therefore, do nothing.
         case .kyc, .selectFiat, .changeFiat, .unsupportedFiat, .addCard:
             break
-        case .paymentMethods:
+        case .paymentMethods, .bankTransferDetails, .fundsTransferDetails:
             topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
         default:
             dismiss()
@@ -306,7 +308,8 @@ public final class Router: RouterAPI, PlatformUIKit.Router {
     
     private func showPaymentMethodsScreen() {
         let interactor = PaymentMethodsScreenInteractor(
-            service: serviceProvider.paymentMethodTypes
+            paymentMethodTypesService: serviceProvider.paymentMethodTypes,
+            fiatCurrencyService: serviceProvider.settings
         )
         let presenter = PaymentMethodsScreenPresenter(
             interactor: interactor,
@@ -332,8 +335,8 @@ public final class Router: RouterAPI, PlatformUIKit.Router {
     }
     
     /// Shows the checkout details screen
-    private func showTransferDetailScreen(with data: CheckoutData) {
-        let interactor = TransferDetailScreenInteractor(
+    private func showBankTransferDetailScreen(with data: CheckoutData) {
+        let interactor = BankTransferDetailScreenInteractor(
             checkoutData: data,
             cancellationService: serviceProvider.orderCancellation
         )
@@ -343,7 +346,7 @@ public final class Router: RouterAPI, PlatformUIKit.Router {
             webViewServiceAPI: UIApplication.shared
         )
         
-        let presenter = TransferDetailScreenPresenter(
+        let presenter = BankTransferDetailScreenPresenter(
             webViewRouter: webViewRouter,
             analyticsRecorder: recordingProvider.analytics,
             interactor: interactor,
@@ -351,6 +354,36 @@ public final class Router: RouterAPI, PlatformUIKit.Router {
         )
         let viewController = DetailsScreenViewController(presenter: presenter)
         present(viewController: viewController)
+    }
+    
+    private func showFundsTransferDetailsScreen(with fiatCurrency: FiatCurrency, shouldDismissModal: Bool) {
+        let interactor = InteractiveFundsTransferDetailsInteractor(
+            paymentAccountService: serviceProvider.paymentAccount,
+            fiatCurrency: fiatCurrency
+        )
+        
+        let navigationController = UINavigationController()
+        
+        let webViewRouter = WebViewRouter(
+            topMostViewControllerProvider: navigationController,
+            webViewServiceAPI: UIApplication.shared
+        )
+        
+        let presenter = FundsTransferDetailScreenPresenter(
+            webViewRouter: webViewRouter,
+            analyticsRecorder: recordingProvider.analytics,
+            interactor: interactor,
+            stateService: stateService
+        )
+        let viewController = DetailsScreenViewController(presenter: presenter)
+        navigationController.viewControllers = [viewController]
+        if shouldDismissModal {
+            topMostViewControllerProvider.topMostViewController?.dismiss(animated: true) { [weak self] in
+                self?.navigationControllerAPI?.present(navigationController, animated: true, completion: nil)
+            }
+        } else {
+            navigationControllerAPI?.present(navigationController, animated: true, completion: nil)
+        }
     }
     
     /// Shows the cancellation modal
@@ -376,12 +409,12 @@ public final class Router: RouterAPI, PlatformUIKit.Router {
     private func showCheckoutScreen(with data: CheckoutData) {
         
         let orderInteractor = OrderCheckoutInteractor(
-            bankInteractor: .init(
+            fundsAndBankInteractor: FundsAndBankOrderCheckoutInteractor(
                 paymentAccountService: serviceProvider.paymentAccount,
                 orderQuoteService: serviceProvider.orderQuote,
                 orderCreationService: serviceProvider.orderCreation
             ),
-            cardInteractor: .init(
+            cardInteractor: CardOrderCheckoutInteractor(
                 cardListService: cardServiceProvider.cardList,
                 orderQuoteService: serviceProvider.orderQuote,
                 orderCreationService: serviceProvider.orderCreation
@@ -480,10 +513,10 @@ public final class Router: RouterAPI, PlatformUIKit.Router {
             kycTiersService: kycServiceProvider.tiers,
             exchangeProvider: exchangeProvider,
             fiatCurrencyService: serviceProvider.settings,
+            cryptoCurrencySelectionService: cryptoSelectionService,
             pairsService: serviceProvider.supportedPairsInteractor,
             eligibilityService: serviceProvider.eligibility,
             paymentMethodTypesService: serviceProvider.paymentMethodTypes,
-            cryptoCurrencySelectionService: cryptoSelectionService,
             orderCreationService: serviceProvider.orderCreation,
             suggestedAmountsService: serviceProvider.suggestedAmounts
         )

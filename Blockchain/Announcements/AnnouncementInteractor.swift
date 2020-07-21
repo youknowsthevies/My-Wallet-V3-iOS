@@ -84,7 +84,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
          exchangeService: ExchangeService = .shared,
          infoService: GeneralInformationService = UserInformationServiceProvider.default.general,
          paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = PAXServiceProvider.shared.services.assetAccountRepository,
-         simpleBuyServiceProvider: ServiceProviderAPI = ServiceProvider.default) {
+         simpleBuyServiceProvider: ServiceProviderAPI = DataProvider.default.buySell) {
         self.repository = repository
         self.wallet = wallet
         self.dataRepository = dataRepository

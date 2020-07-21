@@ -20,7 +20,7 @@ public protocol AssetBalanceChangeProviding: class {
     var prices: HistoricalFiatPriceServiceAPI { get }
     
     /// The measured change over a time period
-    var calculationState: Observable<AssetFiatCryptoBalanceCalculationState> { get }
+    var calculationState: Observable<MoneyBalancePairsCalculationState> { get }
 }
 
 public final class AssetBalanceChangeProvider: AssetBalanceChangeProviding {
@@ -30,14 +30,15 @@ public final class AssetBalanceChangeProvider: AssetBalanceChangeProviding {
     public let balance: AssetBalanceFetching
     public let prices: HistoricalFiatPriceServiceAPI
     
-    public var calculationState: Observable<AssetFiatCryptoBalanceCalculationState> {
+    public var calculationState: Observable<MoneyBalancePairsCalculationState> {
         _ = setup
         return calculationStateRelay.asObservable()
     }
     
     // MARK: - Private Accessors
     
-    private let calculationStateRelay = BehaviorRelay<AssetFiatCryptoBalanceCalculationState>(value: .calculating)
+    private let cryptoCurrency: CryptoCurrency
+    private let calculationStateRelay = BehaviorRelay<MoneyBalancePairsCalculationState>(value: .calculating)
     private let disposeBag = DisposeBag()
     
     private lazy var setup: Void = {
@@ -70,8 +71,16 @@ public final class AssetBalanceChangeProvider: AssetBalanceChangeProviding {
     // MARK: - Setup
     
     public init(balance: AssetBalanceFetching,
-                prices: HistoricalFiatPriceServiceAPI) {
+                prices: HistoricalFiatPriceServiceAPI,
+                cryptoCurrency: CryptoCurrency) {
+        self.cryptoCurrency = cryptoCurrency
         self.balance = balance
         self.prices = prices
+    }
+}
+
+extension AssetBalanceChangeProvider: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        "AssetBalanceChangeProvider for \(cryptoCurrency.code)"
     }
 }

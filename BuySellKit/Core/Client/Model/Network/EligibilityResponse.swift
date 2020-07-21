@@ -9,4 +9,3 @@
 struct EligibilityResponse: Decodable {
     let eligible: Bool
 }
-

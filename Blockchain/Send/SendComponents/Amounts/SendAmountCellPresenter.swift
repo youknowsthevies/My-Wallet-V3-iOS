@@ -44,13 +44,13 @@ final class SendAmountCellPresenter {
     /// Total fiat: amount + fee
     var totalFiat: Observable<String> {
         interactor.total
-            .map { $0.fiat.toDisplayString(includeSymbol: true) }
+            .map { $0.quote.toDisplayString(includeSymbol: true) }
     }
     
     /// Total crypto: amount + fee
     var totalCrypto: Observable<String> {
         interactor.total
-            .map { $0.crypto.toDisplayString(includeSymbol: true) }
+            .map { $0.base.toDisplayString(includeSymbol: true) }
     }
     
     private var currentlyUpdatedField = CurrentlyUpdatedField.none
@@ -85,14 +85,14 @@ final class SendAmountCellPresenter {
         
         // Bind taps on max spendable amount to crypto
         spendableBalancePresenter.spendableBalanceTap
-            .map { $0.crypto }
+            .map { $0.base }
             .map { $0.toDisplayString(includeSymbol: false) }
             .bindAndCatch(to: cryptoValueRelay)
             .disposed(by: disposeBag)
         
         // Bind taps on max spendable amount to fiat
         spendableBalancePresenter.spendableBalanceTap
-            .map { $0.fiat }
+            .map { $0.quote }
             .map { $0.toDisplayString(includeSymbol: false) }
             .bindAndCatch(to: fiatValueRelay)
             .disposed(by: disposeBag)
@@ -106,13 +106,13 @@ final class SendAmountCellPresenter {
         
         let transferredValue = Observable
             .combineLatest(interactor.calculationState, fiatCurrencyChange)
-            .map { (state, fiatCurrency) -> FiatCryptoPair in
+            .map { (state, fiatCurrency) -> MoneyValuePair in
                 if let value = state.value {
                     return value
                 } else {
                     return .zero(
-                        of: asset,
-                        fiatCurrencyCode: fiatCurrency.code
+                        baseCurrency: asset.currency,
+                        quoteCurrency: fiatCurrency.currency
                     )
                 }
             }
@@ -125,7 +125,7 @@ final class SendAmountCellPresenter {
             .do(onNext: { [weak self] _ in
                 self?.currentlyUpdatedField = .none
             })
-            .map { $0.crypto }
+            .map { $0.base }
             .map { $0.amount > 0 ? $0.toDisplayString(includeSymbol: false) : "" }
             .bindAndCatch(to: cryptoValueRelay)
             .disposed(by: disposeBag)
@@ -137,7 +137,7 @@ final class SendAmountCellPresenter {
             .do(onNext: { [weak self] _ in
                 self?.currentlyUpdatedField = .none
             })
-            .map { $0.fiat }
+            .map { $0.quote }
             .map { $0.amount > 0 ? $0.toDisplayString(includeSymbol: false) : "" }
             .bindAndCatch(to: fiatValueRelay)
             .disposed(by: disposeBag)

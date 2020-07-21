@@ -28,7 +28,12 @@ public struct AssetPieChart {
             let asset: CryptoCurrency
             
             /// Percentage that the asset takes off the total
-            let percentage: FiatValue
+            let percentage: Double
+            
+            init(asset: CryptoCurrency, percentage: MoneyValue) {
+                self.asset = asset
+                self.percentage = Double(truncating: percentage.majorValue as NSNumber)
+            }
         }
 
         /// A presentation value
@@ -45,7 +50,7 @@ public struct AssetPieChart {
             public init(value: Interaction) {
                 debugDescription = value.asset.displayCode
                 color = value.asset.brandColor
-                percentage = Double(truncating: value.percentage.amount as NSNumber)
+                percentage = value.percentage
             }
         }
     }

@@ -21,6 +21,7 @@ public struct BuyActivityItemEvent: Tokenized {
     public enum PaymentMethod {
         case card(paymentMethodId: String?)
         case bankTransfer
+        case funds
     }
 
     public var token: String {

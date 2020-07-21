@@ -34,6 +34,8 @@ public final class ServiceProvider: ServiceProviderAPI {
     public let orderQuote: OrderQuoteServiceAPI
     public let paymentAccount: PaymentAccountServiceAPI
     
+    public let beneficiaries: BeneficiariesServiceAPI
+    
     public let settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI
     public let dataRepository: DataRepositoryAPI
 
@@ -46,6 +48,7 @@ public final class ServiceProvider: ServiceProviderAPI {
                             settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI,
                             dataRepository: DataRepositoryAPI,
                             tiersService: KYCTiersServiceAPI,
+                            balanceProvider: BalanceProviding,
                             featureFetcher: FeatureFetching) {
         self.init(cardServiceProvider: cardServiceProvider,
                   recordingProvider: recordingProvider,
@@ -55,6 +58,7 @@ public final class ServiceProvider: ServiceProviderAPI {
                   settings: settings,
                   dataRepository: dataRepository,
                   tiersService: tiersService,
+                  balanceProvider: balanceProvider,
                   featureFetcher: featureFetcher)
     }
     
@@ -66,6 +70,7 @@ public final class ServiceProvider: ServiceProviderAPI {
          settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI,
          dataRepository: DataRepositoryAPI,
          tiersService: KYCTiersServiceAPI,
+         balanceProvider: BalanceProviding,
          featureFetcher: FeatureFetching) {
         
         cache = EventCache(cacheSuite: cacheSuite)
@@ -84,6 +89,9 @@ public final class ServiceProvider: ServiceProviderAPI {
         )
         ordersDetails = OrdersService(
             analyticsRecorder: recordingProvider.analytics,
+            client: simpleBuyClient
+        )
+        beneficiaries = BeneficiariesService(
             client: simpleBuyClient
         )
         eligibility = EligibilityService(
@@ -127,7 +135,8 @@ public final class ServiceProvider: ServiceProviderAPI {
         )
         paymentMethodTypes = PaymentMethodTypesService(
             paymentMethodsService: paymentMethods,
-            cardListService: cardServiceProvider.cardList
+            cardListService: cardServiceProvider.cardList,
+            balanceProvider: balanceProvider
         )
         supportedCurrencies = SupportedCurrenciesService(
             featureFetcher: featureFetcher,
@@ -141,8 +150,8 @@ public final class ServiceProvider: ServiceProviderAPI {
     
     public func orderCreation(for paymentMethod: PaymentMethod.MethodType) -> PendingOrderCreationServiceAPI {
         switch paymentMethod {
-        case .bankTransfer:
-            return BankOrderCreationService(
+        case .funds:
+            return FundsAndBankOrderCreationService(
                 paymentAccountService: paymentAccount,
                 orderQuoteService: orderQuote,
                 orderCreationService: orderCreation
@@ -152,6 +161,8 @@ public final class ServiceProvider: ServiceProviderAPI {
                 orderQuoteService: orderQuote,
                 orderCreationService: orderCreation
             )
+        case .bankTransfer:
+            fatalError("Bank order creation is not available")
         }
     }
 }

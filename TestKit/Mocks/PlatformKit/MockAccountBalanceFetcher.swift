@@ -19,21 +19,21 @@ public final class MockAccountBalanceFetcher: AccountBalanceFetching {
 
     // MARK: - PropertiesEthereumKitTests Group
 
-    public var balance: Single<CryptoValue> {
+    public var balanceMoney: Single<MoneyValue> {
         Single.just(expectedBalance)
     }
 
-    public var balanceObservable: Observable<CryptoValue> {
-        balance.asObservable()
+    public var balanceMoneyObservable: Observable<MoneyValue> {
+        balanceMoney.asObservable()
     }
 
     public let balanceFetchTriggerRelay = PublishRelay<Void>()
 
-    private let expectedBalance: CryptoValue
+    private let expectedBalance: MoneyValue
 
     // MARK: - Setup
 
-    public init(expectedBalance: CryptoValue) {
+    public init(expectedBalance: MoneyValue) {
         self.expectedBalance = expectedBalance
     }
 }

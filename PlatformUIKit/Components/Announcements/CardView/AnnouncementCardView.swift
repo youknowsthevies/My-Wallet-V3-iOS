@@ -23,12 +23,15 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
     @IBOutlet private var dismissButton: UIButton!
     @IBOutlet private var buttonsStackView: UIStackView!
     @IBOutlet private var buttonPlaceholderSeparatorView: UIView!
+    @IBOutlet private var badgeImageView: BadgeImageView!
+    @IBOutlet private var badgeView: BadgeView!
     
     @IBOutlet private var bottomSeparatorView: UIView!
     
+    @IBOutlet private var titleToThumbnailImageView: NSLayoutConstraint!
+    @IBOutlet private var titleToBadgeImageView: NSLayoutConstraint!
     @IBOutlet private var imageViewLeadingToSuperviewConstraint: NSLayoutConstraint!
     @IBOutlet private var imageViewCenterInSuperviewConstraint: NSLayoutConstraint!
-    @IBOutlet private var titleToImageConstraint: NSLayoutConstraint!
     @IBOutlet private var stackViewToBottomConstraint: NSLayoutConstraint!
     
     private let disposeBag = DisposeBag()
@@ -58,6 +61,10 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
         thumbImageView.image = viewModel.image.uiImage
         thumbImageView.tintColor = viewModel.image.tintColor
         thumbImageView.layout(size: viewModel.image.size)
+        if let viewModel = viewModel.badgeImage.viewModel {
+            badgeImageView.viewModel = viewModel
+        }
+        badgeImageView.layout(size: viewModel.badgeImage.size)
         titleLabel.text = viewModel.title
         titleLabel.textColor = .titleText
         descriptionLabel.text = viewModel.description
@@ -111,13 +118,25 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
     
     private func fixPositions() {
         if viewModel.title == nil {
-            titleToImageConstraint.constant = 0
+            titleToThumbnailImageView.constant = 0
+            titleToBadgeImageView.constant = 0
         }
+        
+        if !viewModel.image.isVisible {
+            thumbImageView.removeFromSuperview()
+        }
+        
+        if !viewModel.badgeImage.isVisible {
+            badgeImageView.removeFromSuperview()
+        }
+        
         if viewModel.buttons.isEmpty {
             stackViewToBottomConstraint.constant = 0
         } else { // Remove placeholder view since there are actual buttons
             buttonPlaceholderSeparatorView.removeFromSuperview()
         }
+        
+        titleToBadgeImageView.constant = viewModel.badgeImage.verticalPadding
         
         switch viewModel.contentAlignment {
         case .center:

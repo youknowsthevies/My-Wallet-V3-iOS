@@ -10,17 +10,19 @@ import PlatformKit
 import RxSwift
 
 final class PriceServiceMock: PriceServiceAPI {
+    
+    func price(for baseCurrency: Currency, in quoteCurrency: Currency) -> Single<PriceQuoteAtTime> {
+        .just(priceQuoteAtTime)
+    }
+    
+    func price(for baseCurrency: Currency, in quoteCurrency: Currency, at date: Date?) -> Single<PriceQuoteAtTime> {
+        .just(priceQuoteAtTime)
+    }
+    
 
     var historicalPriceSeries: HistoricalPriceSeries = HistoricalPriceSeries(currency: .bitcoin, prices: [.empty])
-    var priceInFiatValue: PriceInFiatValue = PriceInFiat.empty.toPriceInFiatValue(fiatCurrency: .USD)
+    var priceQuoteAtTime: PriceQuoteAtTime!
 
-    func price(for cryptoCurrency: CryptoCurrency, in fiatCurrency: FiatCurrency) -> Single<PriceInFiatValue> {
-        .just(priceInFiatValue)
-    }
-
-    func price(for cryptoCurrency: CryptoCurrency, in fiatCurrency: FiatCurrency, at date: Date) -> Single<PriceInFiatValue> {
-        .just(priceInFiatValue)
-    }
 
     func priceSeries(within window: PriceWindow, of cryptoCurrency: CryptoCurrency, in fiatCurrency: FiatCurrency) -> Single<HistoricalPriceSeries> {
         .just(historicalPriceSeries)

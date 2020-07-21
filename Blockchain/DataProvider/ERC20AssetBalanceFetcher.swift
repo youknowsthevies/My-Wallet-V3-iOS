@@ -12,7 +12,7 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-final class ERC20AssetBalanceFetcher<Token: ERC20Token>: AccountBalanceFetching {
+final class ERC20AssetBalanceFetcher<Token: ERC20Token>: CryptoAccountBalanceFetching {
 
     // MARK: - Exposed Properties
 
@@ -34,7 +34,11 @@ final class ERC20AssetBalanceFetcher<Token: ERC20Token>: AccountBalanceFetching 
         _ = setup
         return balanceRelay.asObservable()
     }
-
+    
+    var balanceMoneyObservable: Observable<MoneyValue> {
+        balanceObservable.map(\.moneyValue)
+    }
+    
     let balanceFetchTriggerRelay = PublishRelay<Void>()
     
     // MARK: - Private Properties

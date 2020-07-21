@@ -17,7 +17,8 @@ public struct LabelContent: Equatable {
         text.isEmpty
     }
 
-    let text: String
+    public var text: String
+    
     let font: UIFont
     let color: Color
     let alignment: NSTextAlignment

@@ -13,10 +13,10 @@ public struct HistoricalPriceSeries {
         
     /// The difference in percentage between the latest price to the first price
     public let delta: Double
-    public let prices: [PriceInFiat]
+    public let prices: [PriceQuoteAtTimeResponse]
     public let fiatChange: Decimal
     
-    public init(currency: CryptoCurrency, prices: [PriceInFiat]) {
+    public init(currency: CryptoCurrency, prices: [PriceQuoteAtTimeResponse]) {
         self.currency = currency
         self.prices = prices
         if let first = prices.first, let latest = prices.last {

@@ -9,14 +9,12 @@
 import Foundation
 import NetworkKit
 import RxSwift
+import ToolKit
 
 public protocol PriceServiceAPI {
-
-    func price(for cryptoCurrency: CryptoCurrency, in fiatCurrency: FiatCurrency) -> Single<PriceInFiatValue>
-    func price(for cryptoCurrency: CryptoCurrency, in fiatCurrency: FiatCurrency, at date: Date) -> Single<PriceInFiatValue>
-    func priceSeries(within window: PriceWindow,
-                     of cryptoCurrency: CryptoCurrency,
-                     in fiatCurrency: FiatCurrency) -> Single<HistoricalPriceSeries>
+    func price(for baseCurrency: Currency, in quoteCurrency: Currency) -> Single<PriceQuoteAtTime>
+    func price(for baseCurrency: Currency, in quoteCurrency: Currency, at date: Date?) -> Single<PriceQuoteAtTime>
+    func priceSeries(within window: PriceWindow, of baseCurrency: CryptoCurrency, in quoteCurrency: FiatCurrency) -> Single<HistoricalPriceSeries>
 }
 
 public class PriceService: PriceServiceAPI {
@@ -32,34 +30,77 @@ public class PriceService: PriceServiceAPI {
     public init(client: PriceClientAPI) {
         self.client = client
     }
-
-    public func price(for cryptoCurrency: CryptoCurrency, in fiatCurrency: FiatCurrency) -> Single<PriceInFiatValue> {
-        client
-            .price(for: cryptoCurrency, in: fiatCurrency, at: nil)
-            .map { $0.toPriceInFiatValue(fiatCurrency: fiatCurrency) }
+    
+    public func price(for baseCurrency: Currency,
+                      in quoteCurrency: Currency) -> Single<PriceQuoteAtTime> {
+        self.price(for: baseCurrency, in: quoteCurrency, at: nil)
     }
+    
+    public func price(for baseCurrency: Currency,
+                      in quoteCurrency: Currency,
+                      at date: Date? = nil) -> Single<PriceQuoteAtTime> {
+        guard baseCurrency.code != quoteCurrency.code else {
+            return .just(
+                PriceQuoteAtTime(
+                    timestamp: date ?? Date(),
+                    volume24h: nil,
+                    moneyValue: (try? MoneyValue(major: "1", currency: quoteCurrency.code)) ?? .zero(quoteCurrency.currency)
+                )
+            )
+        }
+        if baseCurrency.isFiatCurrency && quoteCurrency.isFiatCurrency {
+            return self.price(for: FiatCurrency(code: baseCurrency.code)!, in: FiatCurrency(code: quoteCurrency.code)!, at: date)
+        }
 
-    public func price(for cryptoCurrency: CryptoCurrency, in fiatCurrency: FiatCurrency, at date: Date) -> Single<PriceInFiatValue> {
-        client
-            .price(for: cryptoCurrency, in: fiatCurrency, at: UInt64(date.timeIntervalSince1970))
-            .map { $0.toPriceInFiatValue(fiatCurrency: fiatCurrency) }
+        var timestamp: UInt64?
+        if let date = date {
+            timestamp = UInt64(date.timeIntervalSince1970)
+        }
+        return client
+            .price(for: baseCurrency.code, in: quoteCurrency.code, at: timestamp)
+            .map { try PriceQuoteAtTime(response: $0, currency: quoteCurrency) }
     }
-
+    
+    private func price(for baseCurrency: FiatCurrency,
+                       in quoteCurrency: FiatCurrency,
+                       at date: Date? = nil) -> Single<PriceQuoteAtTime> {
+        var timestamp: UInt64?
+        if let date = date {
+            timestamp = UInt64(date.timeIntervalSince1970)
+        }
+        let conversionCurrency = CryptoCurrency.bitcoin
+        let basePrice = client
+            .price(for: conversionCurrency.code, in: baseCurrency.code, at: timestamp)
+        let quotePrice = client
+            .price(for: conversionCurrency.code, in: quoteCurrency.code, at: timestamp)
+        
+        return Single
+            .zip(basePrice, quotePrice)
+            .map { (basePrice, quotePrice) in
+                let price = basePrice.price != 0 ? quotePrice.price / basePrice.price : 0
+                return PriceQuoteAtTime(
+                    timestamp: basePrice.timestamp,
+                    volume24h: basePrice.volume24h,
+                    moneyValue: try MoneyValue(major: "\(price)", currency: quoteCurrency.code)
+                )
+            }
+    }
+    
     public func priceSeries(within window: PriceWindow,
-                            of cryptoCurrency: CryptoCurrency,
-                            in fiatCurrency: FiatCurrency) -> Single<HistoricalPriceSeries> {
+                            of baseCurrency: CryptoCurrency,
+                            in quoteCurrency: FiatCurrency) -> Single<HistoricalPriceSeries> {
         let start: TimeInterval = window.timeIntervalSince1970(
-            cryptoCurrency: cryptoCurrency,
+            cryptoCurrency: baseCurrency,
             calendar: .current,
             date: Date()
         )
         return client
             .priceSeries(
-                of: cryptoCurrency,
-                in: fiatCurrency,
+                of: baseCurrency.code,
+                in: quoteCurrency.code,
                 start: String(Int(start)),
                 scale: String(window.scale)
             )
-            .map { HistoricalPriceSeries(currency: cryptoCurrency, prices: $0) }
+            .map { HistoricalPriceSeries(currency: baseCurrency, prices: $0) }
     }
 }

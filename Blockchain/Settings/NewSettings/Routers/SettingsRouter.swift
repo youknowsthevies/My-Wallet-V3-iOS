@@ -56,7 +56,7 @@ final class SettingsRouter: SettingsRouterAPI {
          topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
          alertPresenter: AlertViewPresenter = AlertViewPresenter.shared,
          cardsServiceProvider: CardServiceProviderAPI = CardServiceProvider.default,
-         simpleBuyServiceProvider: ServiceProviderAPI = ServiceProvider.default,
+         simpleBuyServiceProvider: ServiceProviderAPI = DataProvider.default.buySell,
          currencyRouting: CurrencyRouting,
          tabSwapping: TabSwapping) {
         self.simpleBuyServiceProvider = simpleBuyServiceProvider
@@ -140,7 +140,7 @@ final class SettingsRouter: SettingsRouterAPI {
             addCardRouter = AddCardRouter(
                 stateService: stateService,
                 cardServiceProvider: CardServiceProvider.default,
-                simpleBuyServiceProvider: ServiceProvider.default,
+                simpleBuyServiceProvider: simpleBuyServiceProvider,
                 recordingProvider: RecordingProvider.default,
                 routingType: .modal
             )

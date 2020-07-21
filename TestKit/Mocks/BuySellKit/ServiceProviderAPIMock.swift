@@ -54,6 +54,11 @@ final class ServiceProviderAPIMock: ServiceProviderAPI {
     var ordersDetails: OrdersServiceAPI {
         underlyingOrdersDetails
     }
+    
+    var underlyingBeneficiaries: BeneficiariesServiceAPI!
+    var beneficiaries: BeneficiariesServiceAPI {
+        underlyingBeneficiaries
+    }
 
     var underlyingSettings: (FiatCurrencySettingsServiceAPI & SettingsServiceAPI)!
     var settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI {

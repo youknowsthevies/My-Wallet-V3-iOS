@@ -13,7 +13,7 @@ public final class NoticeView: UIView {
     // MARK: - IBOutlet Properties
     
     private let imageView = UIImageView()
-    private let label = UILabel()
+    private let stackView = UIStackView()
     
     private var topAlignmentConstraint: NSLayoutConstraint!
     private var centerAlignmentConstraint: NSLayoutConstraint!
@@ -24,7 +24,21 @@ public final class NoticeView: UIView {
         didSet {
             guard let viewModel = viewModel else { return }
             imageView.set(viewModel.imageViewContent)
-            label.content = viewModel.labelContent
+            stackView.arrangedSubviews.forEach { subview in
+                stackView.removeArrangedSubview(subview)
+            }
+            
+            viewModel.labelContents
+                .map {
+                    let label = UILabel()
+                    label.content = $0
+                    label.numberOfLines = 0
+                    return label
+                }
+                .forEach {
+                    stackView.addArrangedSubview($0)
+                }
+            
             switch viewModel.verticalAlignment {
             case .center:
                 topAlignmentConstraint.priority = .defaultLow
@@ -50,21 +64,24 @@ public final class NoticeView: UIView {
     }
         
     private func setup() {
+        stackView.axis = .vertical
+        stackView.distribution = .fill
+        stackView.alignment = .leading
+        stackView.spacing = 4
+        
         imageView.contentMode = .scaleAspectFit
-        label.font = .main(.medium, 12)
-        label.textColor = .descriptionText
-        label.numberOfLines = 0
         
         addSubview(imageView)
-        addSubview(label)
+        addSubview(stackView)
         
         imageView.layoutToSuperview(.leading)
         imageView.layout(size: .init(edge: 20))
         
-        topAlignmentConstraint = imageView.layout(to: .top, of: label, priority: .penultimateHigh)
-        centerAlignmentConstraint = imageView.layout(to: .centerY, of: label, priority: .defaultLow)
+        topAlignmentConstraint = imageView.layout(to: .top, of: stackView, priority: .penultimateHigh)
+        centerAlignmentConstraint = imageView.layout(to: .centerY, of: stackView, priority: .defaultLow)
 
-        label.layout(edge: .leading, to: .trailing, of: imageView, offset: 18)
-        label.layoutToSuperview(.top, .bottom, .trailing)
+        stackView.layout(edge: .leading, to: .trailing, of: imageView, offset: 18)
+        stackView.layoutToSuperview(axis: .vertical, priority: .penultimateHigh)
+        stackView.layoutToSuperview(.trailing)
     }
 }

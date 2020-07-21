@@ -52,7 +52,7 @@ struct SendServiceContainer: SendServiceContaining {
         
         switch asset {
         case .ethereum:
-            exchange = DataProvider.default.exchange[.ethereum]
+            exchange = DataProvider.default.exchange[CurrencyType.crypto(.ethereum)]
             sourceAccountProvider = EtherSendSourceAccountProvider()
             balance = WalletManager.shared.wallet.ethereum
         case .algorand, .bitcoin, .bitcoinCash, .pax, .stellar, .tether:

@@ -11,32 +11,16 @@ import EthereumKit
 import PlatformKit
 
 struct ETHServices: ETHDependencies {
-    let activity: ActivityItemEventServiceAPI
-    let activityDetails: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails>
+
     let assetAccountRepository: EthereumAssetAccountRepository
     let qrMetadataFactory: EthereumQRMetadataFactory
     let repository: EthereumWalletAccountRepository
     let transactionService: EthereumHistoricalTransactionService
 
     init(wallet: Wallet = WalletManager.shared.wallet,
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         simpleBuyOrdersAPI: BuySellKit.OrdersServiceAPI = ServiceProvider.default.ordersDetails,
-         swapActivityAPI: SwapActivityServiceAPI = SwapServiceProvider.default.activity) {
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings) {
         transactionService = EthereumHistoricalTransactionService(
             with: wallet.ethereum
-        )
-        activity = ActivityItemEventService(
-            transactional: TransactionalActivityItemEventService(
-                fetcher: EthereumTransactionalActivityItemEventsService(transactionsService: transactionService)
-            ),
-            buy: BuyActivityItemEventService(currency: .ethereum, service: simpleBuyOrdersAPI),
-            swap: SwapActivityItemEventService(
-                fetcher: EthereumSwapActivityItemEventsService(service: swapActivityAPI),
-                fiatCurrencyProvider: fiatCurrencyService
-            )
-        )
-        activityDetails = .init(
-            api: EthereumActivityItemEventDetailsFetcher(transactionService: transactionService)
         )
         assetAccountRepository = EthereumAssetAccountRepository(
             service: EthereumAssetAccountDetailsService(

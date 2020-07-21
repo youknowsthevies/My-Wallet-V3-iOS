@@ -8,8 +8,26 @@
 
 import PlatformKit
 
+extension CurrencyType {
+    public var logoImageName: String {
+        switch self {
+        case .crypto(let currency):
+            return currency.logoImageName
+        case .fiat(let currency):
+            return currency.logoImageName
+        }
+    }
+}
+
 extension FiatCurrency {
     public var logoImageName: String {
-        fatalError("\(#function) has not been implemented yet")
+        switch self {
+        case .GBP:
+            return "icon-gbp"
+        case .EUR:
+            return "icon-eur"
+        default:
+            fatalError("Currency \(self.code) does not have a logo image")
+        }
     }
 }

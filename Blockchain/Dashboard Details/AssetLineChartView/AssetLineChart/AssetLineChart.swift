@@ -32,7 +32,7 @@ struct AssetLineChart {
             let currency: CryptoCurrency
             
             /// Prices for the dataset
-            let prices: [PriceInFiat]
+            let prices: [PriceQuoteAtTimeResponse]
         }
 
         /// A presentation value

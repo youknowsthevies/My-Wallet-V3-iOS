@@ -19,7 +19,7 @@ final class SendAmountInteractor: SendAmountInteracting {
     
     /// The amount calculation state.
     /// This state may being indicating of `.calculating`, `.invalid`, `.value`
-    var calculationState: Observable<FiatCryptoPairCalculationState> {
+    var calculationState: Observable<MoneyValuePairCalculationState> {
         _ = setup
         return calculationStateRelay.asObservable()
     }
@@ -32,11 +32,11 @@ final class SendAmountInteractor: SendAmountInteracting {
         let amount = calculationState
             .map { [weak self] state -> CryptoValue? in
                 guard let self = self else { return nil }
-                return state.value?.crypto ?? CryptoValue.zero(assetType: self.asset)
+                return state.value?.base.cryptoValue ?? CryptoValue.zero(currency: self.asset)
             }
             .compactMap { $0 }
         let spendableBalance = spendableBalanceInteractor.balance
-            .map { $0.crypto }
+            .map { $0.base.cryptoValue! }
         return Observable
             .combineLatest(amount, spendableBalance)
             .map { (amount, spendableBalance) -> AmountBalanceRatio in
@@ -51,7 +51,7 @@ final class SendAmountInteractor: SendAmountInteracting {
     }
 
     /// Streams the total of amount + fee represented as both fiat and crypto.
-    var total: Observable<FiatCryptoPair> {
+    var total: Observable<MoneyValuePair> {
         _ = setup
         let amount = calculationState
             .compactMap { $0.value }
@@ -59,7 +59,7 @@ final class SendAmountInteractor: SendAmountInteracting {
             .compactMap { $0.value }
         return Observable
             .combineLatest(amount, fee)
-            .map { amount, fee -> FiatCryptoPair in
+            .map { amount, fee -> MoneyValuePair in
                 try amount + fee
             }
     }
@@ -80,7 +80,7 @@ final class SendAmountInteractor: SendAmountInteracting {
     
     // MARK: - Accessors
     
-    private let calculationStateRelay = BehaviorRelay<FiatCryptoPairCalculationState>(value: .invalid(.empty))
+    private let calculationStateRelay = BehaviorRelay<MoneyValuePairCalculationState>(value: .invalid(.empty))
     private let disposeBag = DisposeBag()
     
     private let latestFiatRelay = PublishRelay<String>()
@@ -118,7 +118,7 @@ final class SendAmountInteractor: SendAmountInteracting {
 
         Observable
             .combineLatest(unwrappedCrypto, exchangeService.fiatPrice)
-            .map { FiatCryptoPair(crypto: $0.0, exchangeRate: $0.1) }
+            .map { MoneyValuePair(base: $0.0, exchangeRate: $0.1) }
             .map { $0.isZero ? .invalid(.empty) : .value($0) }
             .catchErrorJustReturn(.calculating)
             .bindAndCatch(to: calculationStateRelay)
@@ -137,7 +137,7 @@ final class SendAmountInteractor: SendAmountInteracting {
             .map { FiatValue.create(amountString: $0.0, currencyCode: $0.1.code) }
         Observable
             .combineLatest(currentFiat, exchangeService.fiatPrice)
-            .map { FiatCryptoPair(fiat: $0, priceInFiat: $1, cryptoCurrency: asset) }
+            .map { MoneyValuePair(fiat: $0, priceInFiat: $1, cryptoCurrency: asset, usesFiatAsBase: false) }
             .map { $0.isZero ? .invalid(.empty) : .value($0) }
             .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
             .bindAndCatch(to: calculationStateRelay)

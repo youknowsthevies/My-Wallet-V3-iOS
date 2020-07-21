@@ -62,3 +62,5 @@ public enum ValueCalculationState<Value> {
         }
     }
 }
+
+extension ValueCalculationState: Equatable where Value: Equatable {}

@@ -69,8 +69,8 @@ final class EligibilityService: EligibilityServiceAPI {
                         self.client.isEligible(
                             for: currency.code,
                             methods: [
-                                PaymentMethod.MethodType.RawValue.bankTransfer,
-                                PaymentMethod.MethodType.RawValue.card
+                                PaymentMethodPayloadType.bankTransfer.rawValue,
+                                PaymentMethodPayloadType.card.rawValue
                             ]
                         )
                     }

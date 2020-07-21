@@ -15,18 +15,21 @@ public struct CheckoutInteractionData {
     public let exchangeRate: FiatValue?
     public let card: CardData?
     public let orderId: String
+    public let paymentMethod: PaymentMethod.MethodType
     
     public init(time: Date?,
                 fee: FiatValue,
                 amount: CryptoValue,
                 exchangeRate: FiatValue?,
                 card: CardData?,
-                orderId: String) {
+                orderId: String,
+                paymentMethod: PaymentMethod.MethodType) {
         self.time = time
         self.fee = fee
         self.amount = amount
         self.exchangeRate = exchangeRate
         self.card = card
         self.orderId = orderId
+        self.paymentMethod = paymentMethod
     }
 }

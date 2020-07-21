@@ -11,11 +11,10 @@ import RxCocoa
 import RxRelay
 import RxSwift
 
-/// TODO: Handle `CryptoValue` as well
-public final class CurrencyLabeledButtonViewModel: NSObject, LabeledButtonViewModelAPI {
+public final class CurrencyLabeledButtonViewModel: LabeledButtonViewModelAPI {
 
     // MARK: - Types
-
+    
     private typealias AccessibilityId = Accessibility.Identifier.LabeledButtonCollectionView
     public typealias Element = Decimal
 
@@ -28,7 +27,7 @@ public final class CurrencyLabeledButtonViewModel: NSObject, LabeledButtonViewMo
         let amount = self.amount
         return tapRelay
             .asSignal()
-            .map { amount.amount }
+            .map { amount }
     }
 
     /// Streams the content of the relay
@@ -42,19 +41,35 @@ public final class CurrencyLabeledButtonViewModel: NSObject, LabeledButtonViewMo
     // MARK: - Private Properties
 
     private let contentRelay = BehaviorRelay<ButtonContent>(value: .empty)
-    private let amount: FiatValue
+    private let amount: Decimal
 
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
-    public init(amount: FiatValue,
-                suffix: String? = nil,
-                style: LabeledButtonViewStyle = .currency,
-                accessibilityId: String) {
-        let amountString = amount.toDisplayString(includeSymbol: true, format: .shortened)
+    public convenience init(amount: MoneyValue,
+                            suffix: String? = nil,
+                            style: LabeledButtonViewStyle = .currency,
+                            accessibilityId: String) {
+        let amountString = amount.toDisplayString(includeSymbol: true)
         let text = [amountString, suffix].compactMap { $0 }.joined(separator: " ")
-        let buttonContent = ButtonContent(
+        let buttonContent = Self.buttonContent(from: style, text: text, amountString: amountString, accessibilityId: accessibilityId)
+        self.init(amount: amount.majorValue, style: style, buttonContent: buttonContent)
+    }
+    
+    private init(amount: Decimal,
+                 style: LabeledButtonViewStyle,
+                 buttonContent: ButtonContent) {
+        self.amount = amount
+        backgroundColor = style.backgroundColor
+        contentRelay.accept(buttonContent)
+    }
+    
+    private static func buttonContent(from style: LabeledButtonViewStyle,
+                                      text: String,
+                                      amountString: String,
+                                      accessibilityId: String) -> ButtonContent {
+        ButtonContent(
             text: text,
             font: style.font,
             color: style.textColor,
@@ -66,8 +81,5 @@ public final class CurrencyLabeledButtonViewModel: NSObject, LabeledButtonViewMo
                 label: .value(amountString)
             )
         )
-        self.amount = amount
-        backgroundColor = style.backgroundColor
-        contentRelay.accept(buttonContent)
     }
 }

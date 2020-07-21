@@ -10,12 +10,38 @@ import RxCocoa
 import RxRelay
 import RxSwift
 
+// MARK: - Base Protocol
+
 /// This protocol defines a single responsibility requirement for an account balance fetching
-public protocol AccountBalanceFetching: class {
+public protocol AccountBalanceFetching: AnyObject {
     var balanceType: BalanceType { get }
-    var balance: Single<CryptoValue> { get }
-    var balanceObservable: Observable<CryptoValue> { get }
+    var balanceMoney: Single<MoneyValue> { get }
+    var balanceMoneyObservable: Observable<MoneyValue> { get }
     var balanceFetchTriggerRelay: PublishRelay<Void> { get }
+}
+
+// MARK: - Crypto Protocol
+
+public protocol CryptoAccountBalanceFetching: AccountBalanceFetching {
+    var balance: Single<CryptoValue> { get }
+}
+
+extension CryptoAccountBalanceFetching {
+    public var balanceMoney: Single<MoneyValue> {
+        balance.map(\.moneyValue)
+    }
+}
+
+// MARK: - Fiat Protocol
+
+public protocol FiatAccountBalanceFetching: AccountBalanceFetching {
+    var balance: Single<FiatValue> { get }
+}
+
+extension FiatAccountBalanceFetching {
+    public var balanceMoney: Single<MoneyValue> {
+        balance.map(\.moneyValue)
+    }
 }
 
 public protocol CustodialAccountBalanceFetching: AccountBalanceFetching {
@@ -24,21 +50,27 @@ public protocol CustodialAccountBalanceFetching: AccountBalanceFetching {
 }
 
 /// AccountBalanceFetching implementation representing a absent account.
-public final class AbsentAccountBalanceFetching: AccountBalanceFetching {
-    public let balanceType: BalanceType = .nonCustodial
+public final class AbsentAccountBalanceFetching: CustodialAccountBalanceFetching {
+    
+    public let balanceType: BalanceType
 
-    public var balance: Single<CryptoValue> {
-        balanceObservable.take(1).asSingle()
+    public var balanceMoney: Single<MoneyValue> {
+        balanceMoneyObservable.take(1).asSingle()
+    }
+    
+    public var isFunded: Observable<Bool> {
+        .just(false)
     }
 
-    public var balanceObservable: Observable<CryptoValue> {
+    public var balanceMoneyObservable: Observable<MoneyValue> {
         balanceRelay.asObservable()
     }
 
     public let balanceFetchTriggerRelay: PublishRelay<Void> = .init()
-    private let balanceRelay: BehaviorRelay<CryptoValue>
+    private let balanceRelay: BehaviorRelay<MoneyValue>
 
-    public init(cryptoCurrency: CryptoCurrency) {
-        balanceRelay = BehaviorRelay(value: CryptoValue.zero(assetType: cryptoCurrency))
+    public init(currencyType: CurrencyType, balanceType: BalanceType) {
+        balanceRelay = BehaviorRelay(value: .zero(currencyType))
+        self.balanceType = balanceType
     }
 }

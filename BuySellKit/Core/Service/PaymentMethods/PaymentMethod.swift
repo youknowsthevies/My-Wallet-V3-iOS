@@ -8,15 +8,16 @@
 
 import PlatformKit
 
+public enum PaymentMethodPayloadType: String, CaseIterable, Encodable {
+    case card = "PAYMENT_CARD"
+    case bankTransfer = "BANK_ACCOUNT"
+    case funds = "FUNDS"
+}
+
 /// The available payment methods
 public struct PaymentMethod: Equatable {
-    
-    public enum MethodType: Equatable {
         
-        enum RawValue {
-            static let card = "PAYMENT_CARD"
-            static let bankTransfer = "BANK_ACCOUNT"
-        }
+    public enum MethodType: Equatable {
         
         /// Card payment method
         case card(Set<CardType>)
@@ -24,52 +25,78 @@ public struct PaymentMethod: Equatable {
         /// Bank transfer payment method
         case bankTransfer
         
+        /// Funds payment method
+        case funds(CurrencyType)
+        
         public var isCard: Bool {
             switch self {
             case .card:
                 return true
-            case .bankTransfer:
+            case .bankTransfer, .funds:
                 return false
             }
         }
         
-        public var rawValue: String {
+        public var isFunds: Bool {
             switch self {
-            case .card:
-                return RawValue.card
-            case .bankTransfer:
-                return RawValue.bankTransfer
+            case .funds:
+                return true
+            case .bankTransfer, .card:
+                return false
             }
         }
         
-        public init?(rawValue: String, subTypes: [String]) {
-            switch rawValue {
-            case RawValue.card:
+        public var isBankTransfer: Bool {
+            switch self {
+            case .bankTransfer:
+                return true
+            case .funds, .card:
+                return false
+            }
+        }
+        
+        public var rawType: PaymentMethodPayloadType {
+            switch self {
+            case .card:
+                return .card
+            case .bankTransfer:
+                return .bankTransfer
+            case .funds:
+                return .funds
+            }
+        }
+        
+        public init?(type: PaymentMethodPayloadType, subTypes: [String], currency: FiatCurrency) {
+            switch type {
+            case .card:
                 let cardTypes = Set(subTypes.compactMap { CardType(rawValue: $0) })
                 /// Addition validation - make sure that if `.card` is returned
                 /// at least one sub type is included. e.g: "VISA".
                 guard !cardTypes.isEmpty else { return nil }
                 self = .card(cardTypes)
-            case RawValue.bankTransfer:
+            case .bankTransfer:
                 self = .bankTransfer
-            default:
-                return nil
+            case .funds:
+                guard CustodialLocallySupportedFiatCurrencies.fiatCurrencies.contains(currency) else {
+                    return nil
+                }
+                self = .funds(currency.currency)
             }
         }
         
-        public init?(rawValue: String) {
-            switch rawValue {
-            case RawValue.card:
+        public init(type: PaymentMethodPayloadType, currency: FiatCurrency) {
+            switch type {
+            case .card:
                 self = .card([])
-            case RawValue.bankTransfer:
+            case .bankTransfer:
                 self = .bankTransfer
-            default:
-                return nil
+            case .funds:
+                self = .funds(currency.currency)
             }
         }
         
         public static func == (lhs: Self, rhs: Self) -> Bool {
-            lhs.rawValue == rhs.rawValue
+            lhs.rawType == rhs.rawType
         }
     }
 
@@ -83,14 +110,21 @@ public struct PaymentMethod: Equatable {
     public let min: FiatValue
     
     init?(currency: String, method: PaymentMethodsResponse.Method) {
-        guard let currency = FiatCurrency(code: currency) else {
-            return nil
-        }
-        guard let type = MethodType(rawValue: method.type, subTypes: method.subTypes) else {
+        // Preferrably use the payment method's currency
+        let rawCurrency = method.currency ?? currency
+        guard let currency = FiatCurrency(code: rawCurrency) else {
             return nil
         }
         
-        self.type = type
+        // Make sure the take exists
+        guard let rawType = PaymentMethodPayloadType(rawValue: method.type) else {
+            return nil
+        }
+        
+        guard let methodType = MethodType(type: rawType, subTypes: method.subTypes, currency: currency) else {
+            return nil
+        }
+        self.type = methodType
         min = FiatValue(minor: method.limits.min, currency: currency)
         max = FiatValue(minor: method.limits.max, currency: currency)
     }
@@ -111,5 +145,9 @@ extension Array where Element == PaymentMethod {
                 )
             }
         append(contentsOf: methods)
+    }
+    
+    var funds: [PaymentMethod] {
+        filter { $0.type.isFunds }
     }
 }

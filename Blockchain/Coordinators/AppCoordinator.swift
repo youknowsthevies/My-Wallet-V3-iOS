@@ -476,6 +476,14 @@ extension AppCoordinator: CurrencyRouting {
     }
 }
 
+extension AppCoordinator: CashIdentityVerificationAnnouncementRouting {
+    func showCashIdentityVerificationScreen() {
+        let presenter = CashIdentityVerificationPresenter()
+        let controller = CashIdentityVerificationViewController(presenter: presenter)
+        tabControllerManager.tabViewController.showCashIdentityVerificatonController(controller)
+    }
+}
+
 // MARK: - DevSupporting
 
 extension AppCoordinator: DevSupporting {

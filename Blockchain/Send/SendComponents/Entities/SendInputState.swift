@@ -60,8 +60,8 @@ extension SendInputState {
         self = .invalid(StateError(error: error))
     }
     
-    init(amountCalculationState: FiatCryptoPairCalculationState,
-         feeCalculationState: FiatCryptoPairCalculationState,
+    init(amountCalculationState: MoneyValuePairCalculationState,
+         feeCalculationState: MoneyValuePairCalculationState,
          sourceAccountState: SendSourceAccountState,
          destinationAccountState: SendDestinationAccountState,
          amountBalanceRatio: AmountBalanceRatio) {

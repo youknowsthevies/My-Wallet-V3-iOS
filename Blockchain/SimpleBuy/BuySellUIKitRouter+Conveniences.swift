@@ -14,7 +14,7 @@ extension BuySellUIKit.Router {
     
     convenience init(stateService: BuySellUIKit.StateServiceAPI) {
         self.init(
-            serviceProvider: ServiceProvider.default,
+            serviceProvider: DataProvider.default.buySell,
             cardServiceProvider: CardServiceProvider.default,
             userInformationProvider: UserInformationServiceProvider.default,
             stateService: stateService,

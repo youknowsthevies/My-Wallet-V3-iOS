@@ -10,7 +10,7 @@
 
 extension CryptoValue {
     public static var paxZero: CryptoValue {
-        zero(assetType: .pax)
+        zero(currency: .pax)
     }
     
     public static func paxFromMajor(string pax: String) -> CryptoValue? {
