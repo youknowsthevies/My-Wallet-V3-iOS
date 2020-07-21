@@ -153,7 +153,8 @@ class KYCPageTypeTests: XCTestCase {
             tags: Tags(),
             tiers: nil,
             needsDocumentResubmission: nil,
-            productsUsed: NabuUser.ProductsUsed(exchange: false)
+            productsUsed: NabuUser.ProductsUsed(exchange: false),
+            settings: NabuUserSettings(mercuryEmailVerified: false)
         )
     }
 }

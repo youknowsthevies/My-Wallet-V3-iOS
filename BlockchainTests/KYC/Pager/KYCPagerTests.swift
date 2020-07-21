@@ -71,7 +71,8 @@ class KYCPagerTests: XCTestCase {
             tags: nil,
             tiers: tiers,
             needsDocumentResubmission: nil,
-            productsUsed: NabuUser.ProductsUsed(exchange: false)
+            productsUsed: NabuUser.ProductsUsed(exchange: false),
+            settings: NabuUserSettings(mercuryEmailVerified: false)
         )
     }
 }
