@@ -25,7 +25,7 @@ public struct FiatValue {
         BigInt(stringLiteral: string)
     }
     
-    public var majorValue: Decimal {
+    public var displayMajorValue: Decimal {
         minorAmount.toDisplayMajor(maxDecimalPlaces: currency.maxDecimalPlaces)
     }
         

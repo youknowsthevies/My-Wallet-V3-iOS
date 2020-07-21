@@ -36,7 +36,7 @@ final class ERC20AssetBalanceFetcher<Token: ERC20Token>: CryptoAccountBalanceFet
     }
     
     var balanceMoneyObservable: Observable<MoneyValue> {
-        balanceObservable.map(\.moneyValue)
+        balanceObservable.moneyValue
     }
     
     let balanceFetchTriggerRelay = PublishRelay<Void>()

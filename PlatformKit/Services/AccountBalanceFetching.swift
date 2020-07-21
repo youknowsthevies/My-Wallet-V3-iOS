@@ -28,7 +28,7 @@ public protocol CryptoAccountBalanceFetching: AccountBalanceFetching {
 
 extension CryptoAccountBalanceFetching {
     public var balanceMoney: Single<MoneyValue> {
-        balance.map(\.moneyValue)
+        balance.moneyValue
     }
 }
 
@@ -40,7 +40,7 @@ public protocol FiatAccountBalanceFetching: AccountBalanceFetching {
 
 extension FiatAccountBalanceFetching {
     public var balanceMoney: Single<MoneyValue> {
-        balance.map(\.moneyValue)
+        balance.moneyValue
     }
 }
 

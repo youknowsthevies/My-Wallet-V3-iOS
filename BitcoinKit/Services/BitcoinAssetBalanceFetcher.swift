@@ -37,7 +37,7 @@ public final class BitcoinAssetBalanceFetcher: CryptoAccountBalanceFetching {
     }
     
     public var balanceMoneyObservable: Observable<MoneyValue> {
-        balanceObservable.map(\.moneyValue)
+        balanceObservable.moneyValue
     }
         
     public let balanceFetchTriggerRelay = PublishRelay<Void>()

@@ -292,7 +292,7 @@ class TradeExecutionService: TradeExecutionAPI {
                         paymentMemo = .text(value)
                     }
                     
-                    let fee = stellarFee.regular.majorValue
+                    let fee = stellarFee.regular.displayMajorValue
                                         
                     self.pendingXlmPaymentOperation = StellarPaymentOperation(
                         destinationAccountId: orderTransactionLegacy.to,

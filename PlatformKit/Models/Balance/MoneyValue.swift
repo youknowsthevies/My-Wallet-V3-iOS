@@ -109,12 +109,12 @@ public struct MoneyValue: Money, Hashable, Equatable {
         }
     }
     
-    public var majorValue: Decimal {
+    public var displayMajorValue: Decimal {
         switch value {
         case .crypto(let cryptoValue):
-            return cryptoValue.majorValue
+            return cryptoValue.displayMajorValue
         case .fiat(let fiatValue):
-            return fiatValue.majorValue
+            return fiatValue.displayMajorValue
         }
     }
     
@@ -231,8 +231,8 @@ public struct MoneyValue: Money, Hashable, Equatable {
     }
     
     public func convert(using exchangeRate: MoneyValue) throws -> MoneyValue {
-        let exchangeRateAmount = exchangeRate.majorValue
-        let majorDecimal = majorValue * exchangeRateAmount
+        let exchangeRateAmount = exchangeRate.displayMajorValue
+        let majorDecimal = displayMajorValue * exchangeRateAmount
         let major = "\(majorDecimal)"
         return try MoneyValue(major: major, currency: exchangeRate.currencyType.code)
     }

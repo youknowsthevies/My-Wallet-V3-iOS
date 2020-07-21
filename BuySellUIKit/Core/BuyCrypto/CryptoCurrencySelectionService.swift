@@ -16,8 +16,7 @@ import ToolKit
 final class CryptoCurrencySelectionService: SelectionServiceAPI, CryptoCurrencyServiceAPI {
     
     var dataSource: Observable<[SelectionItemViewModel]> {
-        _ = setup
-        return service.pairs
+        service.pairs
             .map { $0.cryptoCurrencies }
             .take(1)
             .map { $0.map(\.selectionItem) }
@@ -26,20 +25,17 @@ final class CryptoCurrencySelectionService: SelectionServiceAPI, CryptoCurrencyS
     let selectedDataRelay: BehaviorRelay<SelectionItemViewModel>
     
     var selectedData: Observable<SelectionItemViewModel> {
-        _ = setup
-        return selectedDataRelay.distinctUntilChanged()
+        selectedDataRelay.distinctUntilChanged()
     }
     
     var cryptoCurrencyObservable: Observable<CryptoCurrency> {
-        _ = setup
-        return cryptoCurrencyRelay
+        cryptoCurrencyRelay
             .asObservable()
             .distinctUntilChanged()
     }
     
     var cryptoCurrency: Single<CryptoCurrency> {
-        _ = setup
-        return cryptoCurrencyObservable
+        cryptoCurrencyObservable
             .take(1)
             .asSingle()
     }
@@ -52,18 +48,16 @@ final class CryptoCurrencySelectionService: SelectionServiceAPI, CryptoCurrencyS
     
     private let cryptoCurrencyRelay: BehaviorRelay<CryptoCurrency>
     private let disposeBag = DisposeBag()
-        
-    private lazy var setup: Void = {
-        selectedData
-            .map {  CryptoCurrency(code: $0.id)! }
-            .bindAndCatch(to: cryptoCurrencyRelay)
-            .disposed(by: disposeBag)
-    }()
-    
+            
     init(service: SupportedPairsInteractorServiceAPI, defaultSelectedData: CryptoCurrency) {
         self.service = service
         selectedDataRelay = BehaviorRelay(value: defaultSelectedData.selectionItem)
         cryptoCurrencyRelay = BehaviorRelay(value: defaultSelectedData)
+        
+        selectedData
+            .map {  CryptoCurrency(code: $0.id)! }
+            .bindAndCatch(to: cryptoCurrencyRelay)
+            .disposed(by: disposeBag)
     }
 }
 

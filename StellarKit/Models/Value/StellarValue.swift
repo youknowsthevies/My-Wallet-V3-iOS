@@ -17,10 +17,10 @@ public struct StellarValue {
     public let value: CryptoValue
     
     public func stroops() throws -> Int {
-        guard value.majorValue < Decimal(Int32.max / 10^7) else {
+        guard value.displayMajorValue < Decimal(Int32.max / 10^7) else {
             throw StellarValueError.integerOverflow
         }
-        let stroops: Int = NSDecimalNumber(decimal: value.majorValue)
+        let stroops: Int = NSDecimalNumber(decimal: value.displayMajorValue)
             .multiplying(
                 byPowerOf10: 7,
                 withBehavior: NSDecimalNumberHandler(

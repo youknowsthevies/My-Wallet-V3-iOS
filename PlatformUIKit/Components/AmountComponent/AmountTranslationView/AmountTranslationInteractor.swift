@@ -36,7 +36,7 @@ public final class AmountTranslationInteractor {
         case maxLimitExceeded(MoneyValuePair)
         case minLimitExceeded(MoneyValuePair)
     }
-    
+        
     // MARK: - Properties
     
     /// Fiat interactor
@@ -100,9 +100,7 @@ public final class AmountTranslationInteractor {
     )
     
     /// The amount as `CryptoValue`
-    private let cryptoAmountRelay = BehaviorRelay<MoneyValue>(
-        value: .zero(CryptoCurrency.default)
-    )
+    private let cryptoAmountRelay: BehaviorRelay<MoneyValue>
     
     // MARK: - Injected
     
@@ -120,7 +118,8 @@ public final class AmountTranslationInteractor {
                 cryptoCurrencyService: CryptoCurrencyServiceAPI,
                 exchangeProvider: ExchangeProviding,
                 defaultFiatCurrency: FiatCurrency = .default,
-                defaultCryptoCurrency: CryptoCurrency = .default) {
+                defaultCryptoCurrency: CryptoCurrency = .bitcoin) {
+        cryptoAmountRelay = BehaviorRelay(value: .zero(defaultCryptoCurrency))
         fiatInteractor = InputAmountLabelInteractor(currency: defaultFiatCurrency)
         cryptoInteractor = InputAmountLabelInteractor(currency: defaultCryptoCurrency)
         self.fiatCurrencyService = fiatCurrencyService
@@ -218,7 +217,7 @@ public final class AmountTranslationInteractor {
                 
         pairFromFiatInput
             .map { $0.quote }
-            .map { "\($0.majorValue)" }
+            .map { "\($0.displayMajorValue)" }
             .bind(to: cryptoInteractor.scanner.rawInputRelay)
             .disposed(by: disposeBag)
 

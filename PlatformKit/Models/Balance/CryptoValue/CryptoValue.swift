@@ -31,7 +31,7 @@ public struct CryptoValue: Crypto, Hashable, Equatable {
 extension CryptoValue {
         
     /// The major value of the crypto (e.g. BTC, ETH, etc.)
-    public var majorValue: Decimal {
+    public var displayMajorValue: Decimal {
         amount.toDisplayMajor(maxDecimalPlaces: currencyType.maxDecimalPlaces)
     }
     
@@ -75,7 +75,7 @@ extension CryptoValue {
     }
 
     public func convertToFiatValue(exchangeRate: FiatValue) -> FiatValue {
-        let conversionAmount = majorValue * exchangeRate.amount
+        let conversionAmount = displayMajorValue * exchangeRate.amount
         return FiatValue.create(amount: conversionAmount, currency: exchangeRate.currencyType)
     }
 }

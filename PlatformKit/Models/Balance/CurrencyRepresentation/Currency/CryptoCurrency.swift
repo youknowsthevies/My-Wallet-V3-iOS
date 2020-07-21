@@ -32,8 +32,6 @@ public enum CryptoCurrency: String, Currency, Codable, CaseIterable {
 // MARK: - Currency
 
 extension CryptoCurrency {
-
-    public static let `default` = CryptoCurrency.bitcoin
     
     public var hasNonCustodialTradeSupport: Bool {
         switch self {

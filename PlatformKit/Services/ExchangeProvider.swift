@@ -37,23 +37,13 @@ public final class ExchangeProvider: ExchangeProviding {
     // MARK: - Setup
     
     public init(fiats: [FiatCurrency: PairExchangeServiceAPI],
-                algorand: PairExchangeServiceAPI,
-                ether: PairExchangeServiceAPI,
-                pax: PairExchangeServiceAPI,
-                stellar: PairExchangeServiceAPI,
-                bitcoin: PairExchangeServiceAPI,
-                bitcoinCash: PairExchangeServiceAPI,
-                tether: PairExchangeServiceAPI) {
+                cryptos: [CryptoCurrency: PairExchangeServiceAPI]) {
         for (currency, service) in fiats {
             services[.fiat(currency)] = service
         }
-        services[.crypto(.algorand)] = algorand
-        services[.crypto(.ethereum)] = ether
-        services[.crypto(.pax)] = pax
-        services[.crypto(.stellar)] = stellar
-        services[.crypto(.bitcoin)] = bitcoin
-        services[.crypto(.bitcoinCash)] = bitcoinCash
-        services[.crypto(.tether)] = tether
+        for (currency, service) in cryptos {
+            services[.crypto(currency)] = service
+        }
     }
     
     public func refresh() {

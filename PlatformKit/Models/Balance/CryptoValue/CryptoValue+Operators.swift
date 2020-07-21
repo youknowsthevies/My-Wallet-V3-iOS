@@ -91,7 +91,7 @@ extension CryptoValue {
         guard percentageChange != 0 else {
             return .zero(currency: currencyType)
         }
-        let majorAmount = majorValue / Decimal(percentageChange)
+        let majorAmount = displayMajorValue / Decimal(percentageChange)
         return CryptoValue(major: "\(majorAmount)", cryptoCurrency: currencyType)!
     }
 }

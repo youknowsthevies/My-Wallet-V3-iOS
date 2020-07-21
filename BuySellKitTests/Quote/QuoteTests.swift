@@ -18,7 +18,7 @@ final class SimpleBuyQuoteTests: XCTestCase {
         for this in sut {
             XCTAssertNotNil(this.quote)
             XCTAssertFalse(this.quote.estimatedAmount.isZero, "\(this.locale) has zero estimatedAmount")
-            XCTAssertEqual(this.quote.fee.majorValue, 12.5, "\(this.locale) fee major value should be 12.5")
+            XCTAssertEqual(this.quote.fee.displayMajorValue, 12.5, "\(this.locale) fee major value should be 12.5")
         }
     }
 }

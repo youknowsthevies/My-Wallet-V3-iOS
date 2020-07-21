@@ -68,7 +68,7 @@ class CryptoFormatter {
 
     func format(value: CryptoValue, withPrecision precision: CryptoPrecision = CryptoPrecision.short, includeSymbol: Bool = false) -> String {
         let formatter = (precision == .short) ? shortFormatter : longFormatter
-        var formattedString = formatter.string(from: NSDecimalNumber(decimal: value.majorValue)) ?? "\(value.majorValue)"
+        var formattedString = formatter.string(from: NSDecimalNumber(decimal: value.displayMajorValue)) ?? "\(value.displayMajorValue)"
         if includeSymbol {
             formattedString += " " + value.currencyType.displayCode
         }

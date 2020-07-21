@@ -56,7 +56,7 @@ public struct Quote {
         guard let estimatedAmount = CryptoValue.createFromMajorValue(string: "\(majorEstimatedAmount)", assetType: cryptoCurrency, locale: .US)
             else { throw SetupError.createFromMajorValue }
         self.estimatedAmount = estimatedAmount
-        let feeAmountMinor = feeRateMinor * estimatedAmount.majorValue
+        let feeAmountMinor = feeRateMinor * estimatedAmount.displayMajorValue
         /// Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
         self.fee = FiatValue(minor: "\(feeAmountMinor)", currency: amount.currencyType, locale: .US)
         self.time = time

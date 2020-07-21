@@ -52,36 +52,17 @@ final class DataProvider: DataProviding {
             )
         }
         
-        self.exchange = ExchangeProvider(
-            fiats: fiatExchangeServices,
-            algorand: PairExchangeService(
-                cryptoCurrency: CryptoCurrency.algorand,
-                fiatCurrencyService: fiatCurrencyService
-            ),
-            ether: PairExchangeService(
-                cryptoCurrency: CryptoCurrency.ethereum,
-                fiatCurrencyService: fiatCurrencyService
-            ),
-            pax: PairExchangeService(
-                cryptoCurrency: CryptoCurrency.pax,
-                fiatCurrencyService: fiatCurrencyService
-            ),
-            stellar: PairExchangeService(
-                cryptoCurrency: CryptoCurrency.stellar,
-                fiatCurrencyService: fiatCurrencyService
-            ),
-            bitcoin: PairExchangeService(
-                cryptoCurrency: CryptoCurrency.bitcoin,
-                fiatCurrencyService: fiatCurrencyService
-            ),
-            bitcoinCash: PairExchangeService(
-                cryptoCurrency: CryptoCurrency.bitcoinCash,
-                fiatCurrencyService: fiatCurrencyService
-            ),
-            tether: PairExchangeService(
-                cryptoCurrency: .tether,
+        var cryptoExchangeServices: [CryptoCurrency: PairExchangeServiceAPI] = [:]
+        for cryptoCurrency in CryptoCurrency.allCases {
+            cryptoExchangeServices[cryptoCurrency] = PairExchangeService(
+                currency: cryptoCurrency,
                 fiatCurrencyService: fiatCurrencyService
             )
+        }
+        
+        self.exchange = ExchangeProvider(
+            fiats: fiatExchangeServices,
+            cryptos: cryptoExchangeServices
         )
 
         let algorandHistoricalFiatService = HistoricalFiatPriceService(

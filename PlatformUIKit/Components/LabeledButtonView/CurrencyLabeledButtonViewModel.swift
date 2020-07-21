@@ -54,7 +54,7 @@ public final class CurrencyLabeledButtonViewModel: LabeledButtonViewModelAPI {
         let amountString = amount.toDisplayString(includeSymbol: true)
         let text = [amountString, suffix].compactMap { $0 }.joined(separator: " ")
         let buttonContent = Self.buttonContent(from: style, text: text, amountString: amountString, accessibilityId: accessibilityId)
-        self.init(amount: amount.majorValue, style: style, buttonContent: buttonContent)
+        self.init(amount: amount.displayMajorValue, style: style, buttonContent: buttonContent)
     }
     
     private init(amount: Decimal,

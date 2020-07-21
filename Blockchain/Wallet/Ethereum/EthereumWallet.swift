@@ -36,7 +36,7 @@ class EthereumWallet: NSObject {
     }
     
     var balanceMoneyObservable: Observable<MoneyValue> {
-        balanceObservable.map(\.moneyValue)
+        balanceObservable.moneyValue
     }
     
     let balanceFetchTriggerRelay = PublishRelay<Void>()
@@ -398,7 +398,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
             .map { $0.balance }
             // TODO: This side effect is necessary for backward compat. since the relevant JS logic has been removed
             .do(onSuccess: { [weak self] cryptoValue in
-                self?.legacyEthBalance = NSDecimalNumber(decimal: cryptoValue.majorValue)
+                self?.legacyEthBalance = NSDecimalNumber(decimal: cryptoValue.displayMajorValue)
             })
     }
 

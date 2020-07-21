@@ -212,11 +212,11 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
                     return
                 }
                 
-                let feeInXlm: Decimal = fee.regular.majorValue
+                let feeInXlm: Decimal = fee.regular.displayMajorValue
                 
-                self.modelInterface.updateBaseReserve(ledger.baseReserveInXlm?.majorValue)
+                self.modelInterface.updateBaseReserve(ledger.baseReserveInXlm?.displayMajorValue)
                 self.modelInterface.updateFee(feeInXlm)
-                self.modelInterface.updatePrice(price.moneyValue.majorValue)
+                self.modelInterface.updatePrice(price.moneyValue.displayMajorValue)
                 self.interface.apply(updates: [.feeAmountLabelText])
             }, onError: { [unowned self] error in
                 Logger.shared.error(error.localizedDescription)
@@ -457,10 +457,10 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
         .subscribe(onSuccess: { [weak self] price, ledger, account in
             guard let this = self else { return }
             this.showMinimumBalanceView(
-                latestPrice: price.moneyValue.majorValue,
-                fee: ledger.baseFeeInXlm?.majorValue ?? this.services.ledger.fallbackBaseFee,
-                balance: account.assetAccount.balance.majorValue,
-                baseReserve: ledger.baseReserveInXlm?.majorValue ?? this.services.ledger.fallbackBaseReserve
+                latestPrice: price.moneyValue.displayMajorValue,
+                fee: ledger.baseFeeInXlm?.displayMajorValue ?? this.services.ledger.fallbackBaseFee,
+                balance: account.assetAccount.balance.displayMajorValue,
+                baseReserve: ledger.baseReserveInXlm?.displayMajorValue ?? this.services.ledger.fallbackBaseReserve
             )
         }, onError: { [weak self] _ in
             guard let this = self else { return }
@@ -561,7 +561,7 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
                             .stellarAmountText(stellarMaxString),
                             .fiatAmountText(fiatMaxString)
                         ])
-                        self?.onXLMEntry(stellarMaxString, latestPrice: price.moneyValue.majorValue)
+                        self?.onXLMEntry(stellarMaxString, latestPrice: price.moneyValue.displayMajorValue)
                     }
                 )
                 self?.interface.apply(updates: [
