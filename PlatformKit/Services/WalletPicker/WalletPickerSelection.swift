@@ -6,14 +6,12 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
-
-enum WalletPickerSelection {
+public enum WalletPickerSelection {
     case all
     case nonCustodial(CryptoCurrency)
     case custodial(CryptoCurrency)
-    
-    var currency: CryptoCurrency? {
+
+    public var currency: CryptoCurrency? {
         switch self {
         case .nonCustodial(let currency),
              .custodial(let currency):
@@ -25,7 +23,7 @@ enum WalletPickerSelection {
 }
 
 extension WalletPickerSelection: Equatable {
-    static func ==(lhs: WalletPickerSelection, rhs: WalletPickerSelection) -> Bool {
+    public static func ==(lhs: WalletPickerSelection, rhs: WalletPickerSelection) -> Bool {
         switch (lhs, rhs) {
         case (.nonCustodial(let left), .nonCustodial(let right)):
             return left == right

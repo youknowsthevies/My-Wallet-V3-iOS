@@ -6,13 +6,13 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
+import Localization
 import RxCocoa
 import RxDataSources
 import RxSwift
 import ToolKit
 
-final class WalletPickerScreenViewController: BaseScreenViewController {
+public final class WalletPickerScreenViewController: BaseScreenViewController {
     
     // MARK: - Types
     
@@ -20,7 +20,7 @@ final class WalletPickerScreenViewController: BaseScreenViewController {
     
     // MARK: - Private IBOutlets
     
-    @IBOutlet private var tableView: UITableView!
+    private var tableView: UITableView!
     
     // MARK: - Private Properties
     
@@ -29,9 +29,9 @@ final class WalletPickerScreenViewController: BaseScreenViewController {
     
     // MARK: - Setup
     
-    init(presenter: WalletPickerScreenPresenter) {
+    public init(presenter: WalletPickerScreenPresenter) {
         self.presenter = presenter
-        super.init(nibName: WalletPickerScreenViewController.objectName, bundle: nil)
+        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
@@ -40,7 +40,7 @@ final class WalletPickerScreenViewController: BaseScreenViewController {
     
     // MARK: - Lifecycle
     
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         title = LocalizationConstants.settings
         setupTableView()
@@ -58,12 +58,17 @@ final class WalletPickerScreenViewController: BaseScreenViewController {
     }
     
     private func setupTableView() {
+        tableView = UITableView(frame: .zero, style: .grouped)
         tableView.delegate = self
         tableView.backgroundColor = .white
         tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = UITableView.automaticDimension
         tableView.separatorColor = .clear
+        tableView.alwaysBounceVertical = true
         tableView.registerNibCell(CurrentBalanceTableViewCell.self)
         tableView.registerNibCell(WalletBalanceTableViewCell.self)
+        view.addSubview(tableView)
+        tableView.layoutToSuperview(.top, .bottom, .leading, .trailing)
         
         let dataSource = RxDataSource(configureCell: { [weak self] _, _, indexPath, item in
             guard let self = self else { return UITableViewCell() }

@@ -7,13 +7,12 @@
 //
 
 import PlatformKit
-import PlatformUIKit
 import RxSwift
 import UIKit
 
-final class CurrentBalanceTableViewCell: UITableViewCell {
+public final class CurrentBalanceTableViewCell: UITableViewCell {
     
-    var presenter: CurrentBalanceCellPresenter! {
+    public var presenter: CurrentBalanceCellPresenter! {
         willSet {
             disposeBag = DisposeBag()
         }
@@ -81,7 +80,7 @@ final class CurrentBalanceTableViewCell: UITableViewCell {
     
     // MARK: - Lifecycle
        
-    override func awakeFromNib() {
+    override public func awakeFromNib() {
         super.awakeFromNib()
         separatorView.backgroundColor = .lightBorder
         assetBalanceView.shimmer(
@@ -90,7 +89,7 @@ final class CurrentBalanceTableViewCell: UITableViewCell {
         )
     }
        
-    override func prepareForReuse() {
+    override public func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil
     }

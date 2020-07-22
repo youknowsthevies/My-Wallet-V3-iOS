@@ -12,11 +12,6 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-protocol WalletPickerSelectionServiceAPI: class {
-    var selectedDataRelay: BehaviorRelay<WalletPickerSelection> { get }
-    var selectedData: Observable<WalletPickerSelection> { get }
-}
-
 final class ActivityScreenInteractor {
     
     typealias State = ValueCalculationState<[ActivityItemInteractor]>

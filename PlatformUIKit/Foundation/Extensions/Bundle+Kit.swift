@@ -8,7 +8,5 @@
 
 extension Bundle {
     private class PlatformUIKitBundle { }
-    public static var platformUIKit: Bundle {
-        Bundle(for: PlatformUIKitBundle.self)
-    }
+    public static let platformUIKit: Bundle = Bundle(for: PlatformUIKitBundle.self)
 }

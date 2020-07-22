@@ -7,9 +7,12 @@
 //
 
 import PlatformKit
-import PlatformUIKit
 
-final class WalletBalanceCellInteractor {
+public protocol WalletBalanceCellInteracting {
+    var balanceViewInteractor: WalletBalanceViewInteractor { get }
+}
+
+final class WalletBalanceCellInteractor: WalletBalanceCellInteracting {
     
     let balanceViewInteractor: WalletBalanceViewInteractor
     

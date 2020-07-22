@@ -6,7 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
+import Localization
 import RxDataSources
 import RxSwift
 
@@ -90,7 +90,7 @@ enum WalletPickerCellItem: IdentifiableType {
                 self = .balance(.nonCustodial(presenter))
             }
         case .total(let interactor):
-            self = .total(.init(interactor: interactor))
+            self = .total(WalletBalanceCellPresenter(interactor: interactor))
         }
     }
 }

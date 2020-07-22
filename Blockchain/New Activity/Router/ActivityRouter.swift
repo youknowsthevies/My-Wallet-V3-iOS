@@ -29,16 +29,23 @@ final class ActivityRouter: ActivityRouterAPI {
     
     func showWalletSelectionScreen() {
         let balanceProviding = serviceContainer.balanceProviding
-        
+
+        func cellInteractorProvider(for cryptoCurrency: CryptoCurrency) -> WalletPickerCellInteractorProviding {
+            WalletPickerCellInteractorProvider(
+                balanceFetcher: balanceProviding[.crypto(cryptoCurrency)],
+                currency: cryptoCurrency,
+                isEnabled: CryptoCurrency.allEnabled.contains(cryptoCurrency)
+            )
+        }
         let interactor = WalletPickerScreenInteractor(
             balanceProviding: balanceProviding,
-            tether: .init(balanceFetcher: balanceProviding[.crypto(.tether)], currency: .tether),
-            algorand: .init(balanceFetcher: balanceProviding[.crypto(.algorand)], currency: .algorand),
-            ether: .init(balanceFetcher: balanceProviding[.crypto(.ethereum)], currency: .ethereum),
-            pax: .init(balanceFetcher: balanceProviding[.crypto(.pax)], currency: .pax),
-            stellar: .init(balanceFetcher: balanceProviding[.crypto(.stellar)], currency: .stellar),
-            bitcoin: .init(balanceFetcher: balanceProviding[.crypto(.bitcoin)], currency: .bitcoin),
-            bitcoinCash: .init(balanceFetcher: balanceProviding[.crypto(.bitcoinCash)], currency: .bitcoinCash),
+            tether: cellInteractorProvider(for: .tether),
+            algorand: cellInteractorProvider(for: .algorand),
+            ethereum: cellInteractorProvider(for: .ethereum),
+            pax: cellInteractorProvider(for: .pax),
+            stellar: cellInteractorProvider(for: .stellar),
+            bitcoin: cellInteractorProvider(for: .bitcoin),
+            bitcoinCash: cellInteractorProvider(for: .bitcoinCash),
             selectionService: serviceContainer.selectionServiceAPI
         )
         

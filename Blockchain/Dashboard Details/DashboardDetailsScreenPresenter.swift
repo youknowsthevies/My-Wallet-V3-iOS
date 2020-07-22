@@ -319,7 +319,7 @@ final class DashboardDetailsScreenPresenter {
         }
     
         return CurrentBalanceCellPresenter(
-            interactor: .init(
+            interactor: CurrentBalanceCellInteractor(
                 balanceFetching: interactor.balanceFetcher,
                 balanceType: balanceType
             ),

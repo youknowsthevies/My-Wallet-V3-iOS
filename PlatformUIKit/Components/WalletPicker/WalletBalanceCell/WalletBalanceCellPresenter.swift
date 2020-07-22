@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Localization
 import PlatformKit
-import PlatformUIKit
 import RxCocoa
 import RxSwift
 
@@ -49,10 +49,10 @@ final class WalletBalanceCellPresenter {
     
     // MARK: - Private Properties
     
-    private let interactor: WalletBalanceCellInteractor
+    private let interactor: WalletBalanceCellInteracting
     private let imageViewVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     
-    init(interactor: WalletBalanceCellInteractor) {
+    init(interactor: WalletBalanceCellInteracting) {
         self.interactor = interactor
         self.walletBalanceViewPresenter = WalletBalanceViewPresenter(
             interactor: interactor.balanceViewInteractor

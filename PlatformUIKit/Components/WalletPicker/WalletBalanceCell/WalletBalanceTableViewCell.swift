@@ -7,7 +7,6 @@
 //
 
 import PlatformKit
-import PlatformUIKit
 import RxSwift
 
 final class WalletBalanceTableViewCell: UITableViewCell {

@@ -6,14 +6,14 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Localization
 import PlatformKit
-import PlatformUIKit
 import RxCocoa
 import RxSwift
 
-final class CurrentBalanceCellPresenter {
+public final class CurrentBalanceCellPresenter {
     
-    typealias DescriptionValue = () -> Observable<String>
+    public typealias DescriptionValue = () -> Observable<String>
     
     private typealias LocalizedString = LocalizationConstants.DashboardDetails.BalanceCell
     
@@ -63,19 +63,19 @@ final class CurrentBalanceCellPresenter {
     private let iconImageViewContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
     private let titleRelay = BehaviorRelay<String>(value: "")
     private let descriptionRelay = BehaviorRelay<String>(value: "")
-    private let interactor: CurrentBalanceCellInteractor
+    private let interactor: CurrentBalanceCellInteracting
     private let descriptionValue: DescriptionValue
     
     private let disposeBag = DisposeBag()
     
-    init(interactor: CurrentBalanceCellInteractor,
-         descriptionValue: @escaping DescriptionValue,
-         currency: CryptoCurrency,
-         alignment: UIStackView.Alignment,
-         separatorVisibility: Visibility = .hidden,
-         titleAccessibilitySuffix: String,
-         descriptionAccessibilitySuffix: String,
-         descriptors: DashboardAsset.Value.Presentation.AssetBalance.Descriptors) {
+    public init(interactor: CurrentBalanceCellInteracting,
+                descriptionValue: @escaping DescriptionValue,
+                currency: CryptoCurrency,
+                alignment: UIStackView.Alignment,
+                separatorVisibility: Visibility = .hidden,
+                titleAccessibilitySuffix: String,
+                descriptionAccessibilitySuffix: String,
+                descriptors: DashboardAsset.Value.Presentation.AssetBalance.Descriptors) {
         self.titleAccessibilitySuffix = titleAccessibilitySuffix
         self.descriptionAccessibilitySuffix = descriptionAccessibilitySuffix
         separatorVisibilityRelay.accept(separatorVisibility)
@@ -93,7 +93,7 @@ final class CurrentBalanceCellPresenter {
             iconImageViewContentRelay.accept(.empty)
             titleRelay.accept(currency.name)
         case .custodial(.trading):
-            iconImageViewContentRelay.accept(ImageViewContent(imageName: "icon_custody_lock"))
+            iconImageViewContentRelay.accept(ImageViewContent(imageName: "icon_custody_lock", bundle: Bundle.platformUIKit))
             titleRelay.accept(LocalizedString.Title.trading)
         case .custodial(.savings):
             iconImageViewContentRelay.accept(.empty)

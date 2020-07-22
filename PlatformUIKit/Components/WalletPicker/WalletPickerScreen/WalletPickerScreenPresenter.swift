@@ -6,12 +6,13 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
+import Localization
+import PlatformKit
 import RxCocoa
 import RxRelay
 import RxSwift
 
-final class WalletPickerScreenPresenter {
+public final class WalletPickerScreenPresenter {
     
     // MARK: - Navigation Properties
     
@@ -36,7 +37,7 @@ final class WalletPickerScreenPresenter {
     private let sectionRelay = BehaviorRelay<[WalletPickerCellItem]>(value: [])
     private let disposeBag = DisposeBag()
     
-    init(interactor: WalletPickerScreenInteractor) {
+    public init(interactor: WalletPickerScreenInteractor) {
         self.interactor = interactor
         
         interactor

@@ -7,17 +7,18 @@
 //
 
 import PlatformKit
+import PlatformUIKit
 
 protocol WalletActionScreenInteracting: class {
     var currency: CryptoCurrency { get }
     var balanceType: BalanceType { get }
-    var balanceCellInteractor: CurrentBalanceCellInteractor { get }
+    var balanceCellInteractor: CurrentBalanceCellInteracting { get }
 }
 
 final class WalletActionScreenInteractor: WalletActionScreenInteracting {
     let balanceType: BalanceType
     let currency: CryptoCurrency
-    let balanceCellInteractor: CurrentBalanceCellInteractor
+    let balanceCellInteractor: CurrentBalanceCellInteracting
     
     // MARK: - Init
     
@@ -26,7 +27,7 @@ final class WalletActionScreenInteractor: WalletActionScreenInteracting {
          service: AssetBalanceFetching) {
         self.currency = currency
         self.balanceType = balanceType
-        self.balanceCellInteractor = .init(
+        self.balanceCellInteractor = CurrentBalanceCellInteractor(
             balanceFetching: service,
             balanceType: balanceType
         )
