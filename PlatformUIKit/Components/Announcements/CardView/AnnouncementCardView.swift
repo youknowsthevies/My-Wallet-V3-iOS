@@ -24,7 +24,6 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
     @IBOutlet private var buttonsStackView: UIStackView!
     @IBOutlet private var buttonPlaceholderSeparatorView: UIView!
     @IBOutlet private var badgeImageView: BadgeImageView!
-    @IBOutlet private var badgeView: BadgeView!
     
     @IBOutlet private var bottomSeparatorView: UIView!
     

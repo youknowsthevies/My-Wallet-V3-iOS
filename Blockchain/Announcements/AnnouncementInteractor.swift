@@ -58,15 +58,21 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                  hasTrades,
                  countries,
                  repository.authenticatorType,
-                 Single.zip(isSimpleBuyAvailable, simpleBuyOrderDetails))
+                 Single.zip(
+                     isSimpleBuyAvailable,
+                     simpleBuyOrderDetails,
+                     simpleBuyServiceProvider.beneficiaries.hasLinkedBank
+                 )
+            )
             .subscribeOn(SerialDispatchQueueScheduler(internalSerialQueueName: dispatchQueueName))
             .observeOn(MainScheduler.instance)
             .map { (arg) -> AnnouncementPreliminaryData in
-                let (user, tiers, hasTrades, countries, authenticatorType, (isSimpleBuyAvailable, pendingOrderDetails)) = arg
+                let (user, tiers, hasTrades, countries, authenticatorType, (isSimpleBuyAvailable, pendingOrderDetails, hasLinkedBanks)) = arg
                 return AnnouncementPreliminaryData(
                     user: user,
                     tiers: tiers,
                     hasTrades: hasTrades,
+                    hasLinkedBanks: hasLinkedBanks,
                     countries: countries,
                     authenticatorType: authenticatorType,
                     pendingOrderDetails: pendingOrderDetails,

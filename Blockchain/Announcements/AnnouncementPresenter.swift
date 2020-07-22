@@ -114,8 +114,13 @@ final class AnnouncementPresenter {
         for type in metadata.order {
             let announcement: Announcement
             switch type {
-            case .cashIdentity:
+            case .fiatFundsNoKYC:
                 announcement = cashAnnouncement(isKYCVerified: preliminaryData.tiers.isTier2Approved)
+            case .fiatFundsKYC:
+                announcement = fiatFundsLinkBank(
+                    isKYCVerified: preliminaryData.tiers.isTier2Approved,
+                    hasLinkedBanks: preliminaryData.hasLinkedBanks
+                )
             case .verifyEmail:
                 announcement = verifyEmail(user: preliminaryData.user)
             case .walletIntro:
@@ -324,6 +329,17 @@ extension AnnouncementPresenter {
             dismiss: hideAnnouncement,
             action: { [weak cashIdentityVerificationRouter] in
                 cashIdentityVerificationRouter?.showCashIdentityVerificationScreen()
+            })
+    }
+    
+    /// Cash Support Announcement for users who have KYC'd
+    /// and have not linked a bank.
+    private func fiatFundsLinkBank(isKYCVerified: Bool, hasLinkedBanks: Bool) -> Announcement {
+        FiatFundsLinkBankAnnouncement(
+            shouldShowLinkBankAnnouncement: isKYCVerified && !hasLinkedBanks,
+            dismiss: hideAnnouncement,
+            action: { [weak cashIdentityVerificationRouter] in
+                // TODO: Route to bank linking
             })
     }
     

@@ -36,7 +36,8 @@ extension AnnouncementRecord {
         case exchange = "announcement-cache-pit"
         case bitpay = "announcement-cache-bitpay"
         case resubmitDocuments = "announcement-cache-resubmit-documents"
-        case cashIdentity = "announcement-cash-cache-identity"
+        case fiatFundsKYC = "announcement-cache-fiat-funds-kyc"
+        case fiatFundsNoKYC = "announcement-cache-fiat-funds-no-kyc"
     }
     
     @available(*, deprecated, message: "`LegacyKey` was superseded by `Key` and is not being used anymore.")

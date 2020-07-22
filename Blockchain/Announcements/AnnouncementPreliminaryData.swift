@@ -18,6 +18,8 @@ struct AnnouncementPreliminaryData {
     /// User tiers information
     let tiers: KYC.UserTiers
     
+    let hasLinkedBanks: Bool
+    
     /// Whether the wallet has trades or not
     let hasTrades: Bool
     
@@ -50,6 +52,7 @@ struct AnnouncementPreliminaryData {
     init(user: NabuUser,
          tiers: KYC.UserTiers,
          hasTrades: Bool,
+         hasLinkedBanks: Bool,
          countries: Countries,
          simpleBuyEventCache: EventCache = DataProvider.default.buySell.cache,
          authenticatorType: AuthenticatorType,
@@ -58,6 +61,7 @@ struct AnnouncementPreliminaryData {
         self.user = user
         self.tiers = tiers
         self.hasTrades = hasTrades
+        self.hasLinkedBanks = hasLinkedBanks
         self.simpleBuyEventCache = simpleBuyEventCache
         self.authenticatorType = authenticatorType
         self.pendingOrderDetails = pendingOrderDetails

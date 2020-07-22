@@ -1569,6 +1569,14 @@ public enum LocalizationConstants {
             public static let badgeName = NSLocalizedString("NEW", comment: "NEW")
             public static let learnMore = NSLocalizedString("Learn More", comment: "Learn More")
         }
+        public struct FiatFundsLinkBank {
+            public static let title = NSLocalizedString("Link a Bank to Buy Crypto", comment: "Link a Bank to Buy Crypto")
+            public static let description = NSLocalizedString(
+                "Hold cash in your Blockchain.com Wallet. Deposit and Withdraw at anytime.",
+                comment: "Hold cash in your Blockchain.com Wallet. Deposit and Withdraw at anytime."
+            )
+            public static let linkABank = NSLocalizedString("Link a Bank", comment: "Link a Bank")
+        }
         public struct Bitpay {
             public static let description = NSLocalizedString(
                 "With BitPay, you can now use your Blockchain wallet for purchases with supporting retailers.",
