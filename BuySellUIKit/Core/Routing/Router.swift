@@ -148,7 +148,9 @@ public final class Router: RouterAPI, PlatformUIKit.Router {
         case .transferCancellation(let data):
             showTransferCancellation(with: data)
         case .kyc:
-            showKYC()
+            showKYC(afterDismissal: true)
+        case .kycBeforeCheckout:
+            showKYC(afterDismissal: false)
         case .pendingKycApproval, .ineligible:
             /// Show pending KYC approval for `ineligible` state as well, since the expected poll result would be
             /// ineligible anyway
@@ -309,7 +311,8 @@ public final class Router: RouterAPI, PlatformUIKit.Router {
     private func showPaymentMethodsScreen() {
         let interactor = PaymentMethodsScreenInteractor(
             paymentMethodTypesService: serviceProvider.paymentMethodTypes,
-            fiatCurrencyService: serviceProvider.settings
+            fiatCurrencyService: serviceProvider.settings,
+            kycTiers: kycServiceProvider.tiers
         )
         let presenter = PaymentMethodsScreenPresenter(
             interactor: interactor,
@@ -481,7 +484,7 @@ public final class Router: RouterAPI, PlatformUIKit.Router {
         present(viewController: viewController, using: .navigationFromCurrent)
     }
     
-    private func showKYC() {
+    private func showKYC(afterDismissal: Bool) {
         guard let kycRootViewController = navigationControllerAPI as? UIViewController else {
             return
         }
@@ -504,7 +507,13 @@ public final class Router: RouterAPI, PlatformUIKit.Router {
             .bindAndCatch(to: stateService.previousRelay)
             .disposed(by: kycDisposeBag)
         
-        kycRouter.start(from: kycRootViewController, tier: .tier2, parentFlow: .simpleBuy)
+        if afterDismissal {
+            topMostViewControllerProvider.topMostViewController?.dismiss(animated: true) { [weak self] in
+                self?.kycRouter.start(from: kycRootViewController, tier: .tier2, parentFlow: .simpleBuy)
+            }
+        } else {
+            kycRouter.start(from: kycRootViewController, tier: .tier2, parentFlow: .simpleBuy)
+        }
     }
     
     /// Shows buy-crypto screen using a specified presentation type

@@ -36,6 +36,7 @@ public protocol CheckoutServiceAPI: RoutingPreviousStateEmitterAPI {
 
 public protocol PaymentMethodsStateAPI: RoutingPreviousStateEmitterAPI {
     func showFundsTransferDetails(for fiatCurrency: FiatCurrency)
+    func kyc()
 }
 
 public protocol ElibilityRelayAPI: RoutingPreviousStateEmitterAPI {

@@ -49,17 +49,24 @@ final class PaymentMethodsScreenInteractor {
             }
     }
     
+    var isUserEligibleForFunds: Single<Bool> {
+        kycTiers.tiers.map(\.isTier2Approved)
+    }
+    
     // MARK: - Injected
     
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
+    private let kycTiers: KYCTiersServiceAPI
     
     // MARK: - Setup
     
     init(paymentMethodTypesService: PaymentMethodTypesServiceAPI,
-         fiatCurrencyService: FiatCurrencyServiceAPI) {
+         fiatCurrencyService: FiatCurrencyServiceAPI,
+         kycTiers: KYCTiersServiceAPI) {
         self.paymentMethodTypesService = paymentMethodTypesService
         self.fiatCurrencyService = fiatCurrencyService
+        self.kycTiers = kycTiers
     }
     
     func select(method: PaymentMethodType) {

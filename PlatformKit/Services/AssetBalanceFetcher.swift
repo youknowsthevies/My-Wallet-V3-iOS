@@ -50,17 +50,34 @@ public final class AssetBalanceFetcher: AssetBalanceFetching {
         Observable
             .combineLatest(
                 wallet.balanceMoneyObservable,
-                trading.balanceMoneyObservable,
-                savings.balanceMoneyObservable,
+                trading.fundsState,
+                savings.fundsState,
                 exchange.fiatPrice
             )
-            .map {
-                let fiatPrice = $0.3.moneyValue
-                return MoneyValueBalancePairs(
-                    wallet: try MoneyValuePair(base: $0.0, exchangeRate: fiatPrice),
-                    trading: try MoneyValuePair(base: $0.1, exchangeRate: fiatPrice),
-                    savings: try MoneyValuePair(base: $0.2, exchangeRate: fiatPrice)
-                )
+            .map { payload in
+                let (walletBalance, trading, savings, exchangeRate) = payload
+                let fiatPrice = exchangeRate.moneyValue
+                
+                let baseCurrencyType = walletBalance.currencyType
+                let quoteCurrencyType = fiatPrice.currencyType
+
+                switch baseCurrencyType {
+                case .fiat:
+                    switch trading {
+                    case .present(let tradingBalance):
+                        return MoneyValueBalancePairs(trading: try MoneyValuePair(base: tradingBalance, exchangeRate: fiatPrice))
+                    case .absent:
+                        return MoneyValueBalancePairs(baseCurrency: baseCurrencyType, quoteCurrency: quoteCurrencyType)
+                    }
+                case .crypto:
+                    let tradingBalance = trading.balance ?? .zero(baseCurrencyType)
+                    let savingBalance = savings.balance ?? .zero(baseCurrencyType)
+                    return MoneyValueBalancePairs(
+                        wallet: try MoneyValuePair(base: walletBalance, exchangeRate: fiatPrice),
+                        trading: try MoneyValuePair(base: tradingBalance, exchangeRate: fiatPrice),
+                        savings: try MoneyValuePair(base: savingBalance, exchangeRate: fiatPrice)
+                    )
+                }
             }
             .map { .value($0) }
             .startWith(.calculating)

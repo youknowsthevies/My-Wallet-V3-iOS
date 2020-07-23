@@ -78,7 +78,10 @@ public final class StateService: StateServiceAPI {
         case addCard(CheckoutData)
         
         /// During KYC process
-        case kyc(CheckoutData)
+        case kycBeforeCheckout(CheckoutData)
+        
+        /// KYC
+        case kyc
         
         /// Pending KYC approval
         case pendingKycApproval(CheckoutData)
@@ -225,7 +228,7 @@ public final class StateService: StateServiceAPI {
                 action: .next(to: state),
                 states: states.states(byAppending: state)
             )
-        case .kyc(let data):
+        case .kycBeforeCheckout(let data):
             state = .pendingKycApproval(data)
             apply(
                 action: .next(to: state),
@@ -259,7 +262,7 @@ public final class StateService: StateServiceAPI {
                 action: .dismiss,
                 states: states.states(byAppending: state)
             )
-        case .buy, .checkout, .paymentMethods, .selectFiat, .addCard, .authorizeCard, .pendingOrderCompleted, .ineligible:
+        case .kyc, .buy, .checkout, .paymentMethods, .selectFiat, .addCard, .authorizeCard, .pendingOrderCompleted, .ineligible:
             fatalError("\(#function) should not get called with \(states.current). use `CheckoutServiceAPI` instead")
         }
     }
@@ -440,10 +443,19 @@ extension StateService {
     }
     
     public func kyc(with checkoutData: CheckoutData) {
-        let states = statesRelay.value.states(byAppending: .kyc(checkoutData))
+        let states = statesRelay.value.states(byAppending: .kycBeforeCheckout(checkoutData))
         apply(action: .next(to: states.current), states: states)
     }
 
+    public func kyc() {
+        let currentState = statesRelay.value.current
+        if currentState.isPaymentMethods {
+            statesRelay.accept(statesRelay.value.statesByRemovingLast())
+        }
+        let states = statesRelay.value.states(byAppending: .kyc)
+        apply(action: .next(to: states.current), states: states)
+    }
+    
     public func ineligible(with checkoutData: CheckoutData) {
         let states = statesRelay.value.states(byAppending: .pendingKycApproval(checkoutData))
         apply(action: .next(to: states.current), states: states)
@@ -565,6 +577,8 @@ extension StateService.State: CustomDebugStringConvertible {
             suffix = "payment-methods"
         case .addCard:
             suffix = "add-card"
+        case .kycBeforeCheckout:
+            suffix = "kyc-before-checkout"
         case .kyc:
             suffix = "kyc"
         case .pendingKycApproval:

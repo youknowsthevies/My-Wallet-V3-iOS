@@ -47,6 +47,9 @@ extension FiatAccountBalanceFetching {
 public protocol CustodialAccountBalanceFetching: AccountBalanceFetching {
     /// Indicates, based on the data provided by the API, if the user has funded this account in the past.
     var isFunded: Observable<Bool> { get }
+    
+    /// Returns the funds state
+    var fundsState: Observable<AccountBalanceState<MoneyValue>> { get }
 }
 
 /// AccountBalanceFetching implementation representing a absent account.
@@ -60,6 +63,10 @@ public final class AbsentAccountBalanceFetching: CustodialAccountBalanceFetching
     
     public var isFunded: Observable<Bool> {
         .just(false)
+    }
+    
+    public var fundsState: Observable<AccountBalanceState<MoneyValue>> {
+        .just(.absent)
     }
 
     public var balanceMoneyObservable: Observable<MoneyValue> {

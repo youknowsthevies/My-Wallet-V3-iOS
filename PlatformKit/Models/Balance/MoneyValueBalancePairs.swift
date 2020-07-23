@@ -11,7 +11,7 @@
 /// This allows for a total pairs that represents
 /// the users balance across all `BalanceTypes`.
 public struct MoneyValueBalancePairs: Equatable {
-    
+        
     /// The base currency type - either crypto or fiat
     public let baseCurrency: CurrencyType
     
@@ -19,7 +19,12 @@ public struct MoneyValueBalancePairs: Equatable {
     public let quoteCurrency: CurrencyType
     
     public subscript(balanceType: BalanceType) -> MoneyValuePair {
-        moneyPairs[balanceType]!
+        moneyPairs[balanceType] ?? MoneyValuePair(base: .zero(baseCurrency), quote: .zero(quoteCurrency))
+    }
+    
+    /// Returns true if no balance is present
+    public var isAbsent: Bool {
+        moneyPairs.isEmpty
     }
     
     // MARK: - Services
@@ -53,6 +58,21 @@ public struct MoneyValueBalancePairs: Equatable {
         moneyPairs[.nonCustodial] = wallet
         moneyPairs[.custodial(.trading)] = trading
         moneyPairs[.custodial(.savings)] = savings
+    }
+    
+    public init(trading: MoneyValuePair) {
+        baseCurrency = trading.base.currencyType
+        quoteCurrency = trading.quote.currencyType
+        moneyPairs[.custodial(.trading)] = trading
+    }
+    
+    /// Init' with an absent state -
+    /// - Parameters:
+    ///   - baseCurrency: The base currency type
+    ///   - quoteCurrency: The quote currency type
+    public init(baseCurrency: CurrencyType, quoteCurrency: CurrencyType) {
+        self.baseCurrency = baseCurrency
+        self.quoteCurrency = quoteCurrency
     }
 }
 

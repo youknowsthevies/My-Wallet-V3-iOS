@@ -135,6 +135,7 @@ public final class ServiceProvider: ServiceProviderAPI {
         )
         paymentMethodTypes = PaymentMethodTypesService(
             paymentMethodsService: paymentMethods,
+            fiatCurrencyService: settings,
             cardListService: cardServiceProvider.cardList,
             balanceProvider: balanceProvider
         )

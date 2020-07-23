@@ -127,7 +127,7 @@ final class PaymentMethodsScreenPresenter {
                         self.stateService.previousRelay.accept(())
                     case .funds(.fiat(let currency)):
                         event = .funds
-                        self.stateService.showFundsTransferDetails(for: currency)
+                        self.showFundsTransferDetailsIfNeeded(for: currency)
                     case .funds(.crypto):
                         fatalError("Funds with crypto currency is not a possible state")
                     case .card:
@@ -177,5 +177,23 @@ final class PaymentMethodsScreenPresenter {
         }
         
         return cellType
+    }
+    
+    private func showFundsTransferDetailsIfNeeded(for currency: FiatCurrency) {
+        interactor.isUserEligibleForFunds
+            .handleLoaderForLifecycle(loader: loadingViewPresenter)
+            .observeOn(MainScheduler.instance)
+            .subscribe(onSuccess: { [weak self] isEligibile in
+                if isEligibile {
+                    self?.stateService.showFundsTransferDetails(for: currency)
+                } else {
+                    self?.stateService.kyc()
+                }
+                
+            }, onError: { error in
+                Logger.shared.error(error)
+            })
+            .disposed(by: disposeBag)
+        
     }
 }

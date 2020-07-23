@@ -83,8 +83,13 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     /// Preferred payment method
     let preferredPaymentMethodTypeRelay = BehaviorRelay<PaymentMethodType?>(value: nil)
     var preferredPaymentMethodType: Observable<PaymentMethodType?> {
-        preferredPaymentMethodTypeRelay
-            .flatMap(weak: self) { (self, preferredMethod) in
+        Observable
+            .combineLatest(
+                preferredPaymentMethodTypeRelay,
+                fiatCurrencyService.fiatCurrencyObservable
+            )
+            .flatMap(weak: self) { (self, payload) in
+                let (preferredMethod, fiatCurrecy) = payload
                 if let preferredMethod = preferredMethod {
                     return .just(preferredMethod)
                 } else {
@@ -94,8 +99,8 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                                 switch type {
                                 case .card(let card):
                                     return card.state.isActive
-                                case .account:
-                                    return true
+                                case .account(let balance):
+                                    return balance.baseCurrency == fiatCurrecy.currency
                                 case .suggested(let method):
                                     return !method.type.isBankTransfer
                                 }
@@ -110,6 +115,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     
     // MARK: - Injected
     
+    private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let paymentMethodsService: PaymentMethodsServiceAPI
     private let cardListService: CardListServiceAPI
     private let balanceProvider: BalanceProviding
@@ -117,9 +123,11 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     // MARK: - Setup
     
     init(paymentMethodsService: PaymentMethodsServiceAPI,
+         fiatCurrencyService: FiatCurrencyServiceAPI,
          cardListService: CardListServiceAPI,
          balanceProvider: BalanceProviding) {
         self.paymentMethodsService = paymentMethodsService
+        self.fiatCurrencyService = fiatCurrencyService
         self.cardListService = cardListService
         self.balanceProvider = balanceProvider
     }
@@ -181,6 +189,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         
         let balances = balances.all
             .compactMap { $0.value }
+            .filter { !$0.isAbsent }
             .filter { fundsCurrencies.contains($0.baseCurrency) }
             .map { PaymentMethodType.account($0) }
         

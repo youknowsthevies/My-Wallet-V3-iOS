@@ -35,6 +35,16 @@ public final class CustodialMoneyBalanceFetcher: CustodialAccountBalanceFetching
         _ = setup
         return balanceRelay.map { $0 != nil }
     }
+    
+    public var fundsState: Observable<AccountBalanceState<MoneyValue>> {
+        isFunded
+            .flatMap(weak: self) { (self, isFunded) in
+                guard isFunded else {
+                    return .just(.absent)
+                }
+                return self.balanceMoneyObservable.map { .present($0) }
+            }
+    }
 
     public var balanceFetchTriggerRelay: PublishRelay<Void> {
         _ = setup
