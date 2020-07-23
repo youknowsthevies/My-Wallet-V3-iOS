@@ -6,39 +6,30 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
+import NetworkKit
 import RxSwift
 import ToolKit
-import NetworkKit
 
-public class NabuAuthenticator: AuthenticatorAPI {
+final class NabuAuthenticator: AuthenticatorAPI {
         
     @available(*, deprecated, message: "This is deprecated. Don't use this.")
-    public var token: Single<String> {
+    var token: Single<String> {
         authenticationExecutor.token
     }
     
-    private let offlineTokenRepository: NabuOfflineTokenRepositoryAPI
-    private let authenticationExecutor: NabuAuthenticationExecutorAPI
+    @LazyInject private var authenticationExecutor: NabuAuthenticationExecutorAPI
     
-    public init(offlineTokenRepository: NabuOfflineTokenRepositoryAPI,
-                authenticationExecutor: NabuAuthenticationExecutorAPI) {
-        self.offlineTokenRepository = offlineTokenRepository
-        self.authenticationExecutor = authenticationExecutor
-    }
-    
-    public func authenticate<Response>(_ singleFunction: @escaping (String) -> Single<Response>) -> Single<Response> {
+    func authenticate<Response>(_ singleFunction: @escaping (String) -> Single<Response>) -> Single<Response> {
         authenticationExecutor.authenticate(singleFunction: singleFunction)
     }
     
     @available(*, deprecated, message: "Don't use this.")
-    public func authenticateWithResult<ResponseType: Decodable, ErrorResponseType: Error & Decodable>(
+    func authenticateWithResult<ResponseType: Decodable, ErrorResponseType: Error & Decodable>(
         _ singleFunction: @escaping (String) -> Single<Result<ResponseType, ErrorResponseType>>
     ) -> Single<Result<ResponseType, ErrorResponseType>> {
         let mappedSingle: (String) -> Single<ResponseType> = { token in
-            singleFunction(token)
-                .flatMap { result -> Single<ResponseType> in
-                    result.single
-                }
+            singleFunction(token).flatMap(\.single)
         }
         return authenticationExecutor
             .authenticate(singleFunction: mappedSingle)

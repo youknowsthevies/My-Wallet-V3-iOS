@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -19,10 +20,10 @@ public final class BitcoinHistoricalTransactionService: TokenizedHistoricalTrans
     private let bridge: BitcoinWalletBridgeAPI
     
     public convenience init(bridge: BitcoinWalletBridgeAPI) {
-        self.init(with: APIClient(), bridge: bridge)
+        self.init(with: resolve(), bridge: bridge)
     }
     
-    init(with client: APIClient, bridge: BitcoinWalletBridgeAPI) {
+    init(with client: APIClientAPI, bridge: BitcoinWalletBridgeAPI) {
         self.client = client
         self.bridge = bridge
     }

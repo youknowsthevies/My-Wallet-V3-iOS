@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import PlatformUIKit
@@ -33,7 +34,7 @@ class ExchangeCreatePresenter {
     weak var interface: ExchangeCreateInterface?
 
     init(interactor: ExchangeCreateInteractor,
-         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared) {
+         analyticsRecorder: AnalyticsEventRecording = resolve()) {
         self.interactor = interactor
         self.analyticsRecorder = analyticsRecorder
         self.feedback = UINotificationFeedbackGenerator()

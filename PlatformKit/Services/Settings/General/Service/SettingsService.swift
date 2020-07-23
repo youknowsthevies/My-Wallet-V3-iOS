@@ -6,22 +6,23 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxRelay
 import RxSwift
 import ToolKit
 
-public final class SettingsService: SettingsServiceAPI {
+final class SettingsService: SettingsServiceAPI {
     
     // MARK: - Exposed Properties
     
     /// Streams the first available settings element
-    public var valueSingle: Single<WalletSettings> {
+    var valueSingle: Single<WalletSettings> {
         valueObservable
             .take(1)
             .asSingle()
     }
     
-    public var valueObservable: Observable<WalletSettings> {
+    var valueObservable: Observable<WalletSettings> {
         settingsRelay
             .flatMap(weak: self) { (self, settings) -> Observable<WalletSettings> in
                 guard let settings = settings else {
@@ -38,13 +39,14 @@ public final class SettingsService: SettingsServiceAPI {
     private let credentialsRepository: CredentialsRepositoryAPI
     
     private let settingsRelay = BehaviorRelay<WalletSettings?>(value: nil)
-    
     private let disposeBag = DisposeBag()
+    private let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
+    private let semaphore = DispatchSemaphore(value: 1)
         
     // MARK: - Setup
     
-    public init(client: SettingsClientAPI,
-                credentialsRepository: CredentialsRepositoryAPI) {
+    init(client: SettingsClientAPI = resolve(),
+         credentialsRepository: CredentialsRepositoryAPI = resolve()) {
         self.client = client
         self.credentialsRepository = credentialsRepository
         
@@ -54,11 +56,8 @@ public final class SettingsService: SettingsServiceAPI {
     }
     
     // MARK: - Public Methods
-    
-    private let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
-    private let semaphore = DispatchSemaphore(value: 1)
         
-    public func fetch(force: Bool) -> Single<WalletSettings> {
+    func fetch(force: Bool) -> Single<WalletSettings> {
         Single
             .create(weak: self) { (self, observer) -> Disposable in
                 self.semaphore.wait()
@@ -105,7 +104,7 @@ public final class SettingsService: SettingsServiceAPI {
 
 extension SettingsService: FiatCurrencySettingsServiceAPI {
 
-    public var fiatCurrencyObservable: Observable<FiatCurrency> {
+    var fiatCurrencyObservable: Observable<FiatCurrency> {
         valueObservable
             .map { settings -> FiatCurrency in
                 guard let currency = FiatCurrency(rawValue: settings.fiatCurrency) else {
@@ -116,7 +115,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
             .distinctUntilChanged()
     }
     
-    public var fiatCurrency: Single<FiatCurrency> {
+    var fiatCurrency: Single<FiatCurrency> {
         valueSingle
             .map { settings -> FiatCurrency in
                 guard let currency = settings.currency else {
@@ -126,7 +125,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
             }
     }
     
-    public func update(currency: FiatCurrency, context: FlowContext) -> Completable {
+    func update(currency: FiatCurrency, context: FlowContext) -> Completable {
         credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.update(
@@ -143,7 +142,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
     }
     
     @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencyServiceAPI`")
-    public var legacyCurrency: FiatCurrency? {
+    var legacyCurrency: FiatCurrency? {
         settingsRelay.value?.currency
     }
 }
@@ -152,11 +151,11 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
 
 extension SettingsService: EmailSettingsServiceAPI {
 
-    public var email: Single<String> {
+    var email: Single<String> {
         valueSingle.map { $0.email }
     }
     
-    public func update(email: String, context: FlowContext?) -> Completable {
+    func update(email: String, context: FlowContext?) -> Completable {
         credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.update(
@@ -172,7 +171,7 @@ extension SettingsService: EmailSettingsServiceAPI {
 // MARK: - LastTransactionSettingsUpdateServiceAPI
 
 extension SettingsService: LastTransactionSettingsUpdateServiceAPI {
-    public func updateLastTransaction() -> Completable {
+    func updateLastTransaction() -> Completable {
         credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.updateLastTransactionTime(
@@ -190,7 +189,7 @@ extension SettingsService: LastTransactionSettingsUpdateServiceAPI {
 // MARK: - EmailNotificationSettingsServiceAPI
 
 extension SettingsService: EmailNotificationSettingsServiceAPI {
-    public func emailNotifications(enabled: Bool) -> Completable {
+    func emailNotifications(enabled: Bool) -> Completable {
         credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.emailNotifications(
@@ -209,7 +208,7 @@ extension SettingsService: EmailNotificationSettingsServiceAPI {
 // MARK: - MobileSettingsServiceAPI
 
 extension SettingsService: MobileSettingsServiceAPI {
-    public func update(mobileNumber: String) -> Completable {
+    func update(mobileNumber: String) -> Completable {
         credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.update(
@@ -225,7 +224,7 @@ extension SettingsService: MobileSettingsServiceAPI {
         .asCompletable()
     }
     
-    public func verify(with code: String) -> Completable {
+    func verify(with code: String) -> Completable {
         credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.verifySMS(
@@ -244,7 +243,7 @@ extension SettingsService: MobileSettingsServiceAPI {
 // MARK: - SMSTwoFactorSettingsServiceAPI
 
 extension SettingsService: SMSTwoFactorSettingsServiceAPI {
-    public func smsTwoFactorAuthentication(enabled: Bool) -> Completable {
+    func smsTwoFactorAuthentication(enabled: Bool) -> Completable {
         credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.smsTwoFactorAuthentication(

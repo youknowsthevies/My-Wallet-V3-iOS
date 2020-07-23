@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
@@ -85,7 +86,7 @@ final class EthereumActivityDetailsPresenter: DetailsScreenPresenterAPI {
          event: TransactionalActivityItemEvent,
          router: ActivityRouterAPI,
          interactor: EthereumActivityDetailsInteractor = .init(),
-         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared,
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          messageRecorder: MessageRecording = CrashlyticsRecorder()) {
         precondition(event.currency == .ethereum, "Using EthereumActivityDetailsPresenter with \(event.currency) event.")
         self.alertViewPresenter = alertViewPresenter

@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import PlatformUIKit
@@ -45,7 +46,7 @@ final class SendSpendableBalanceViewPresenter {
     
     init(asset: CryptoCurrency,
          interactor: SendSpendableBalanceInteracting,
-         analyticsRecorder: AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
+         analyticsRecorder: AnalyticsEventRelayRecording = resolve()) {
         self.interactor = interactor
         self.analyticsRecorder = analyticsRecorder
         

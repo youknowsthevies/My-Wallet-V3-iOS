@@ -8,11 +8,8 @@
 
 import RxSwift
 
-/// TODO: Make `SettingsClientAPI` private when all information services are
-/// provided by `UserInformationServiceProvider`.
-
 /// Protocol definition for interacting with the `WalletSettings` object.
-public protocol SettingsClientAPI: class {
+protocol SettingsClientAPI: class {
     
     /// Fetches the wallet settings from the backend.
     /// - Parameter guid: The wallet identifier that must be valid.

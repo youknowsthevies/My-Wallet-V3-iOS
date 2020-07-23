@@ -9,6 +9,7 @@
 import Foundation
 import RxSwift
 import ToolKit
+import DIKit
 
 public protocol NetworkCommunicatorAPI {
     
@@ -21,12 +22,11 @@ public protocol NetworkCommunicatorAPI {
     func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType>
     
     func perform<ResponseType: Decodable>(request: NetworkRequest) -> Single<ResponseType>
+    
     func performOptional<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType?>
 }
 
-final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRecordable & Authenticatable {
-    
-    public static let shared = Network.Dependencies.default.communicator
+final class NetworkCommunicator: NetworkCommunicatorAPI {
     
     private var eventRecorder: AnalyticsEventRecording?
     private var authenticator: AuthenticatorAPI?
@@ -35,46 +35,38 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
     private let session: URLSession
     private let sessionHandler: NetworkSessionDelegateAPI
     
-    init(session: URLSession,
-         sessionDelegate: SessionDelegateAPI,
-         sessionHandler: NetworkSessionDelegateAPI = NetworkCommunicatorSessionHandler(),
-         scheduler: ConcurrentDispatchQueueScheduler = ConcurrentDispatchQueueScheduler(qos: .background)) {
+    init(session: URLSession = resolve(),
+         sessionDelegate: SessionDelegateAPI = resolve(),
+         sessionHandler: NetworkSessionDelegateAPI = resolve(),
+         scheduler: ConcurrentDispatchQueueScheduler = resolve(tag: DIKitContext.network),
+         eventRecorder: AnalyticsEventRecording? = nil,
+         authenticator: AuthenticatorAPI? = nil) {
         self.session = session
         self.sessionHandler = sessionHandler
         self.scheduler = scheduler
-        
-        sessionDelegate.delegate = sessionHandler
-    }
-    
-    // MARK: - Recordable
-    
-    public func use(eventRecorder: AnalyticsEventRecording) {
         self.eventRecorder = eventRecorder
-    }
-    
-    // MARK: - Authenticator
-    
-    public func use(authenticator: AuthenticatorAPI) {
         self.authenticator = authenticator
+
+        sessionDelegate.delegate = sessionHandler
     }
     
     // MARK: - NetworkCommunicatorAPI
     
-    public func perform(request: NetworkRequest) -> Completable {
+    func perform(request: NetworkRequest) -> Completable {
         perform(request: request, responseType: EmptyNetworkResponse.self)
     }
     
-    public func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Completable {
+    func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Completable {
         let requestSingle: Single<ResponseType> = executeAndHandleAuth(request: request)
         return requestSingle.asCompletable()
     }
     
-    public func performOptional<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType?> {
+    func performOptional<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType?> {
         executeAndHandleAuth(request: request)
     }
 
     @available(*, deprecated, message: "Don't use this")
-    public func perform<ResponseType: Decodable, ErrorResponseType: Error & Decodable>(request: NetworkRequest, responseType: ResponseType.Type, errorResponseType: ErrorResponseType.Type) -> Single<Result<ResponseType, ErrorResponseType>> {
+    func perform<ResponseType: Decodable, ErrorResponseType: Error & Decodable>(request: NetworkRequest, responseType: ResponseType.Type, errorResponseType: ErrorResponseType.Type) -> Single<Result<ResponseType, ErrorResponseType>> {
         guard request.authenticated else {
             return privatePerform(request: request)
         }
@@ -91,13 +83,15 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
         }
     }
     
-    public func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType> {
+    func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType> {
         executeAndHandleAuth(request: request)
     }
     
-    public func perform<ResponseType: Decodable>(request: NetworkRequest) -> Single<ResponseType> {
+    func perform<ResponseType: Decodable>(request: NetworkRequest) -> Single<ResponseType> {
         executeAndHandleAuth(request: request)
     }
+    
+    // MARK: - Private methods
     
     private func executeAndHandleAuth<ResponseType: Decodable>(request: NetworkRequest) -> Single<ResponseType> {
         guard request.authenticated else {
@@ -182,23 +176,6 @@ final public class NetworkCommunicator: NetworkCommunicatorAPI, AnalyticsEventRe
     }
 }
 
-class NetworkCommunicatorSessionHandler: NetworkSessionDelegateAPI {
-    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping AuthChallengeHandler) {
-        guard BlockchainAPI.shared.shouldPinCertificate else {
-            completionHandler(.performDefaultHandling, nil)
-            return
-        }
-        
-        let host = challenge.protectionSpace.host
-        Logger.shared.info("Received challenge from \(host)")
-        
-        if BlockchainAPI.PartnerHosts.allCases.contains(where: { $0.rawValue == host }) {
-            completionHandler(.performDefaultHandling, nil)
-        } else {
-            CertificatePinner.shared.didReceive(challenge, completion: completionHandler)
-        }
-    }
-}
 
 extension PrimitiveSequence where Trait == SingleTrait, Element == Result<ServerResponse, NetworkCommunicatorError> {
     fileprivate func recordErrors(on recorder: AnalyticsEventRecording?, request: NetworkRequest, errorMapper: @escaping (NetworkRequest, NetworkCommunicatorError) -> AnalyticsEvent?) -> Single<Element> {

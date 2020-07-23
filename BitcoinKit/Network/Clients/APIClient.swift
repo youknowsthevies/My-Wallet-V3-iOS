@@ -9,6 +9,7 @@
 import NetworkKit
 import PlatformKit
 import RxSwift
+import DIKit
 
 enum APIClientError: Error {
     case unknown
@@ -39,16 +40,14 @@ final class APIClient: APIClientAPI {
     }
 
     private let communicator: NetworkCommunicatorAPI
-    private let config: Network.Config
     private let requestBuilder: RequestBuilder
     
     // MARK: - Init
 
-    init(communicator: NetworkCommunicatorAPI = Network.Dependencies.default.communicator,
-                config: Network.Config = Network.Dependencies.default.blockchainAPIConfig) {
+    init(communicator: NetworkCommunicatorAPI = resolve(),
+         requestBuilder: RequestBuilder = resolve()) {
         self.communicator = communicator
-        self.config = config
-        self.requestBuilder = RequestBuilder(networkConfig: config)
+        self.requestBuilder = requestBuilder
     }
     
     // MARK: - APIClientAPI

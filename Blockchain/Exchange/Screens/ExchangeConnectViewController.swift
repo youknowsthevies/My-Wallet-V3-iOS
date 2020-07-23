@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import PlatformUIKit
@@ -23,7 +24,7 @@ class ExchangeConnectViewController: UIViewController, NavigatableView {
     // MARK: Private Properties
     
     private let bag: DisposeBag = DisposeBag()
-    private let analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
+    private let analyticsRecorder: AnalyticsEventRecording = resolve()
     
     // MARK: Private IBOutlets
     

@@ -33,7 +33,7 @@ final class TransferCancellationScreenPresenter {
     
     // MARK: - Private Properties
     
-    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let uiUtilityProvider: UIUtilityProviderAPI
     private let stateService: StateServiceAPI
     private let interactor: TransferCancellationInteractor
@@ -42,7 +42,7 @@ final class TransferCancellationScreenPresenter {
     init(stateService: StateServiceAPI,
          currency: CryptoCurrency,
          uiUtilityProvider: UIUtilityProviderAPI = UIUtilityProvider.default,
-         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording,
+         analyticsRecorder: AnalyticsEventRecorderAPI,
          interactor: TransferCancellationInteractor) {
         self.analyticsRecorder = analyticsRecorder
         self.interactor = interactor

@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import EthereumKit
 import PlatformKit
 import PlatformUIKit
@@ -111,7 +112,7 @@ extension ReceiveCryptoViewController {
         let receiveViewController = ReceiveCryptoViewController.makeFromStoryboard()
         let crypto = CryptoCurrency(legacyAssetType: legacyAssetType)
         receiveViewController.viewModel = ReceiveCryptoViewModelProvider.shared.provide(for: crypto)
-        receiveViewController.use(eventRecorder: AnalyticsEventRecorder.shared)
+        receiveViewController.use(eventRecorder: resolve())
         return receiveViewController
     }
 

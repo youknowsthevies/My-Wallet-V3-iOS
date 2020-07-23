@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -31,7 +32,7 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
     
     init(provider: BiometryProviding,
          settingsAuthenticating: AppSettingsAuthenticating,
-         analyticsRecording: AnalyticsEventRecording = AnalyticsEventRecorder.shared) {
+         analyticsRecording: AnalyticsEventRecording = resolve()) {
         interactor = BiometrySwitchViewInteractor(provider: provider,
                                                   authenticationCoordinator: .shared,
                                                   settingsAuthenticating: settingsAuthenticating)

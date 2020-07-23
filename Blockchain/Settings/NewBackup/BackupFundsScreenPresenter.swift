@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformUIKit
 import RxSwift
 import ToolKit
@@ -55,7 +56,7 @@ final class BackupFundsScreenPresenter {
     
     // MARK: - Private Properties
     
-    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let disposeBag = DisposeBag()
     private let entry: BackupRouterEntry
     private unowned let stateService: BackupRouterStateServiceAPI
@@ -69,7 +70,7 @@ final class BackupFundsScreenPresenter {
     
     init(stateService: BackupRouterStateServiceAPI,
          entry: BackupRouterEntry,
-         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService
         self.entry = entry

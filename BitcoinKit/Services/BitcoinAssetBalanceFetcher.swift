@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -72,16 +73,16 @@ public final class BitcoinAssetBalanceFetcher: CryptoAccountBalanceFetching {
     // MARK: - Injected
     
     private let bridge: Bridge
-    private let client: APIClient
+    private let client: APIClientAPI
     private let repository: BitcoinWalletAccountRepository
     
     // MARK: - Setup
     
     public convenience init(bridge: Bridge) {
-        self.init(bridge: bridge, client: APIClient())
+        self.init(bridge: bridge, client: resolve())
     }
     
-    init(bridge: Bridge, client: APIClient) {
+    init(bridge: Bridge, client: APIClientAPI) {
         self.bridge = bridge
         self.client = client
         

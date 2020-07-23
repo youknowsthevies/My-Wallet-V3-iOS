@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -79,7 +80,7 @@ final class FiatFundsLinkBankAnnouncement: OneTimeAnnouncement & ActionableAnnou
     
     init(shouldShowLinkBankAnnouncement: Bool,
          cacheSuite: CacheSuite = UserDefaults.standard,
-         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
+         analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {

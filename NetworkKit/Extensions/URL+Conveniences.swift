@@ -8,10 +8,10 @@
 
 import Foundation
 
-public extension URL {
+extension URL {
     
     /// Returns the query arguments of this URL as a key-value pair
-    var queryArgs: [String: String] {
+    public var queryArgs: [String: String] {
         guard let query = self.query else {
             return [:]
         }
@@ -20,7 +20,7 @@ public extension URL {
     }
 
     @available(*, deprecated, message: "This is deprecated. Use `-------` property instead")
-    static func endpoint(_ baseURL: URL, pathComponents: [String]?, queryParameters: [String: String]?) -> URL? {
+    public static func endpoint(_ baseURL: URL, pathComponents: [String]?, queryParameters: [String: String]?) -> URL? {
         guard var mutableBaseURL: URL = (baseURL as NSURL).copy() as? URL else { return nil }
         
         if let pathComponents = pathComponents {

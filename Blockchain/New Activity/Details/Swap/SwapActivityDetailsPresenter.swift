@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
@@ -60,7 +61,7 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
     // MARK: - Init
 
     init(event: SwapActivityItemEvent,
-         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
             knownValue: event.amounts.withdrawal.toDisplayString(includeSymbol: true),
             descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)

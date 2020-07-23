@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import PlatformUIKit
@@ -149,7 +150,7 @@ final class SendDestinationAccountCellPresenter {
     // MARK: - Setup
     
     init(interactor: SendDestinationAccountInteracting,
-         analyticsRecorder: AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
+         analyticsRecorder: AnalyticsEventRelayRecording = resolve()) {
         asset = interactor.asset
         self.analyticsRecorder = analyticsRecorder
         self.interactor = interactor

@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import RxSwift
 
@@ -52,9 +53,10 @@ public final class TwoFAWalletClient: TwoFAWalletClientAPI {
 
     // MARK: - Setup
     
-    public init(dependencies: Network.Dependencies = .wallet) {
-        communicator = dependencies.communicator
-        requestBuilder = TwoFARequestBuilder(requestBuilder: dependencies.requestBuilder)
+    public init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.wallet),
+                requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
+        self.communicator = communicator
+        self.requestBuilder = TwoFARequestBuilder(requestBuilder: requestBuilder)
     }
     
     // MARK: - API

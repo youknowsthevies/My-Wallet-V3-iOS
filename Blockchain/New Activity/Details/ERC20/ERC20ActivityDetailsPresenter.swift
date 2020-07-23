@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
@@ -76,7 +77,7 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
          event: TransactionalActivityItemEvent,
          router: ActivityRouterAPI,
          interactor: ERC20ActivityDetailsInteractor,
-         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.alertViewPresenter = alertViewPresenter
         self.event = event
         self.interactor = interactor

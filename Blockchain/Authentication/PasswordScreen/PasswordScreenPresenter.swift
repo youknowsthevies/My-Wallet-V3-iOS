@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
@@ -57,7 +58,7 @@ final class PasswordScreenPresenter {
     
     init(authenticationCoordinator: AuthenticationCoordinator = .shared,
          alertPresenter: AlertViewPresenter = .shared,
-         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
+         analyticsRecorder: AnalyticsEventRecording = resolve(),
          interactor: PasswordScreenInteracting,
          confirmHandler: @escaping ConfirmHandler,
          dismissHandler: @escaping DismissHandler) {

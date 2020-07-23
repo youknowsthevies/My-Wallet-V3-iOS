@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import PlatformKit
 import RxSwift
@@ -57,9 +58,10 @@ final class APIClient: SimpleBuyClientAPI {
 
     // MARK: - Setup
     
-    public init(dependencies: Network.Dependencies = .retail) {
-        self.communicator = dependencies.communicator
-        self.requestBuilder = RequestBuilder(networkConfig: dependencies.blockchainAPIConfig)
+    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+        self.communicator = communicator
+        self.requestBuilder = requestBuilder
     }
     
     // MARK: - BeneficiariesClientAPI

@@ -59,11 +59,11 @@ public final class CardUpdateService: CardUpdateServiceAPI {
     
     // MARK: - Setup
     
-    public init(dataRepository: DataRepositoryAPI,
-                cardClient: CardClientAPI,
-                everyPayClient: EveryPayClientAPI,
-                fiatCurrencyService: FiatCurrencySettingsServiceAPI,
-                analyticsRecorder: AnalyticsEventRecording) {
+    init(dataRepository: DataRepositoryAPI,
+         cardClient: CardClientAPI,
+         everyPayClient: EveryPayClientAPI,
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI,
+         analyticsRecorder: AnalyticsEventRecording) {
         self.dataRepository = dataRepository
         self.cardClient = cardClient
         self.everyPayClient = everyPayClient

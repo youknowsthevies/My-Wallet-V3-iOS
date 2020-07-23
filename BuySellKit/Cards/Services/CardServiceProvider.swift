@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import ToolKit
 
@@ -28,15 +29,29 @@ public final class CardServiceProvider: CardServiceProviderAPI {
     
     // MARK: - Setup
     
-    // MARK: - Setup
+    public convenience init(wallet: ReactiveWalletAPI,
+                            dataRepository: DataRepositoryAPI,
+                            featureFetcher: FeatureFetching,
+                            analyticsRecorder: AnalyticsEventRecording,
+                            fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
+        self.init(
+            cardClient: resolve(),
+            everyPayClient: resolve(),
+            wallet: wallet,
+            dataRepository: dataRepository,
+            featureFetcher: featureFetcher,
+            analyticsRecorder: analyticsRecorder,
+            fiatCurrencyService: fiatCurrencyService
+        )
+    }
     
-    public init(cardClient: CardClientAPI,
-                everyPayClient: EveryPayClientAPI,
-                wallet: ReactiveWalletAPI,
-                dataRepository: DataRepositoryAPI,
-                featureFetcher: FeatureFetching,
-                analyticsRecorder: AnalyticsEventRecording,
-                fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
+    init(cardClient: CardClientAPI,
+         everyPayClient: EveryPayClientAPI,
+         wallet: ReactiveWalletAPI,
+         dataRepository: DataRepositoryAPI,
+         featureFetcher: FeatureFetching,
+         analyticsRecorder: AnalyticsEventRecording,
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
         self.cardClient = cardClient
         self.everyPayClient = everyPayClient
         self.dataRepository = dataRepository

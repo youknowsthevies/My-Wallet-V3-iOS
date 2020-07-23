@@ -6,11 +6,19 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 import ToolKit
 
-@objc
-final public class CertificatePinner: NSObject {
+@objc public protocol CertificatePinnerAPI {
+    
+    var certificateData: Data? { get }
+    
+    func pinCertificateIfNeeded()
+    
+    func didReceive(_ challenge: URLAuthenticationChallenge, completion: @escaping AuthChallengeHandler)
+}
+
+final class CertificatePinner: CertificatePinnerAPI {
 
     // MARK: - Types
 
@@ -20,39 +28,29 @@ final public class CertificatePinner: NSObject {
     }
 
     // MARK: - Properties
-
-    /// The instance variable used to access functions of the `CertificatePinner` class.
-    @objc public static let shared = CertificatePinner()
-
-    /// Path to the local certificate file
-    private lazy var localCertificatePath: String? = {
-        Bundle(for: CertificatePinner.self).path(forResource: "blockchain", ofType: "der")
-    }()
-
-    /// Path to the local certificate file
-    @objc public var certificateData: NSData? {
-        guard let localCertificatePath = self.localCertificatePath else {
+    
+    /// Certificate Data
+    var certificateData: Data? {
+        guard let certificateURL = localCertificateURL else {
             return nil
         }
-        return NSData(contentsOfFile: localCertificatePath)
+        return try? Data(contentsOf: certificateURL)
     }
+    
+    /// Path to the local certificate file
+    private lazy var localCertificateURL: URL? = {
+        Bundle(for: CertificatePinner.self).url(forResource:"blockchain", withExtension: "der")
+    }()
     
     private let session: URLSession
 
     // MARK: - Initialization
 
-    //: Prevent outside objects from creating their own instances of this class.
-    override public init() {
-        self.session = Network.Dependencies.default.session
-        super.init()
-    }
-
-    init(session: URLSession) {
+    init(session: URLSession = resolve()) {
         self.session = session
-        super.init()
     }
 
-    public func pinCertificateIfNeeded() {
+    func pinCertificateIfNeeded() {
         guard BlockchainAPI.shared.shouldPinCertificate else {
             return
         }
@@ -66,8 +64,7 @@ final public class CertificatePinner: NSObject {
         task.resume()
     }
 
-    @objc
-    public func didReceive(_ challenge: URLAuthenticationChallenge, completion: @escaping AuthChallengeHandler) {
+    func didReceive(_ challenge: URLAuthenticationChallenge, completion: @escaping AuthChallengeHandler) {
         respond(to: challenge, completion: completion)
     }
 
@@ -78,7 +75,7 @@ final public class CertificatePinner: NSObject {
         guard
             let serverTrust = challenge.protectionSpace.serverTrust,
             let certificateData = self.certificateData,
-            let localCertificate = SecCertificateCreateWithData(kCFAllocatorDefault, certificateData),
+            let localCertificate = SecCertificateCreateWithData(kCFAllocatorDefault, certificateData as NSData),
             SecTrustCreateWithCertificates(localCertificate, policy, &localTrust) == errSecSuccess
         else {
             Logger.shared.error(CertificatePinnerError.failedPreValidation)

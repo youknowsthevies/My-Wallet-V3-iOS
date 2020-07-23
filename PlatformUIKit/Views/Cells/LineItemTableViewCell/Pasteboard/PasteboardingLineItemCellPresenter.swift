@@ -72,7 +72,7 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
     // MARK: - Private Properties
     
     private let disposeBag = DisposeBag()
-    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     public var interactor: LineItemCellInteracting
 
@@ -80,7 +80,7 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
     
     public init(input: Input,
                 pasteboard: Pasteboarding = UIPasteboard.general,
-                analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording,
+                analyticsRecorder: AnalyticsEventRecorderAPI,
                 accessibilityIdPrefix: String) {
         self.analyticsRecorder = analyticsRecorder
         pasteboardValue = input.description

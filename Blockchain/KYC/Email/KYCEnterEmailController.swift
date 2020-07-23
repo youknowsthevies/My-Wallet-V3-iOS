@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import PlatformUIKit
@@ -38,7 +39,7 @@ class KYCEnterEmailController: KYCBaseViewController, BottomButtonContainerView,
         VerifyEmailPresenter(view: self)
     }()
     
-    private let analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
+    private let analyticsRecorder: AnalyticsEventRecording = resolve()
 
     // MARK: KYCBaseViewController
 

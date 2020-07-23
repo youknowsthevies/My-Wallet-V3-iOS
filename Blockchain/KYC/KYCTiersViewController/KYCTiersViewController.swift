@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import PlatformUIKit
@@ -34,7 +35,7 @@ class KYCTiersViewController: UIViewController {
     fileprivate var coordinator: KYCTiersCoordinator!
     private let loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared
     fileprivate var disposable: Disposable?
-    private let analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
+    private let analyticsRecorder: AnalyticsEventRecording = resolve()
     
     // MARK: Public Properties
     

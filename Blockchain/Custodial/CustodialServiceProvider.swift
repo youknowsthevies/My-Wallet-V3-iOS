@@ -20,13 +20,9 @@ final class CustodialServiceProvider: CustodialServiceProviderAPI {
         
     // MARK: - Setup
     
-    init(client: CustodialClientAPI = CustodialClient()) {
-        self.balance = TradingBalanceService(
-            client: client
-        )
-        self.withdrawal = CustodyWithdrawalRequestService(
-            client: client
-        )
+    init() {
+        self.balance = TradingBalanceService()
+        self.withdrawal = CustodyWithdrawalRequestService()
     }
 }
 

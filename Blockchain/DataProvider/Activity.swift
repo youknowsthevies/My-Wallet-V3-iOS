@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import BuySellKit
 import ERC20Kit
 import EthereumKit
@@ -41,7 +42,7 @@ final class ActivityServiceProvider: ActivityServiceProviderAPI {
          tetherServices: TetherDependencies = TetherServiceProvider.shared.services,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          simpleBuyOrdersAPI: BuySellKit.OrdersServiceAPI = DataProvider.default.buySell.ordersDetails,
-         swapActivityAPI: SwapActivityServiceAPI = SwapServiceProvider.default.activity) {
+         swapActivityAPI: SwapActivityServiceAPI = resolve()) {
         let pax: ActivityItemEventServiceAPI = ActivityItemEventService(
             transactional: TransactionalActivityItemEventService(
                 fetcher: AnyERC20TransactionalActivityItemEventsService<PaxToken>(

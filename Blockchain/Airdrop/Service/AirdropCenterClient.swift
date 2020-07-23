@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import PlatformKit
 import RxSwift
@@ -39,8 +40,9 @@ final class AirdropCenterClient: AirdropCenterClientAPI {
     
     // MARK: - Setup
     
-    init(dependencies: Network.Dependencies = .retail) {
-        communicator = dependencies.communicator
-        requestBuilder = dependencies.requestBuilder
+    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+        self.communicator = communicator
+        self.requestBuilder = requestBuilder
     }
 }

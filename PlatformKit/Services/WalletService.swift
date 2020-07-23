@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 import NetworkKit
 import RxSwift
 
@@ -32,7 +32,7 @@ public class WalletService: WalletOptionsAPI {
     
     // MARK: - Public
     
-    public init(communicator: NetworkCommunicatorAPI = NetworkCommunicator.shared) {
+    public init(communicator: NetworkCommunicatorAPI = resolve()) {
         self.communicator = communicator
     }
     

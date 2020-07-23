@@ -9,5 +9,5 @@
 public protocol RecordingProviderAPI: AnyObject {
     var message: MessageRecording { get }
     var error: ErrorRecording { get }
-    var analytics: AnalyticsEventRecording & AnalyticsEventRelayRecording { get }
+    var analytics: AnalyticsEventRecorderAPI { get }
 }

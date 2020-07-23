@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -15,14 +16,14 @@ public final class BitcoinCashHistoricalTransactionService: TokenizedHistoricalT
     public typealias Model = BitcoinCashHistoricalTransaction
     public typealias PageModel = PageResult<Model>
     
-    private let client: APIClient
+    private let client: APIClientAPI
     private let bridge: BitcoinCashWalletBridgeAPI
     
     public convenience init(bridge: BitcoinCashWalletBridgeAPI) {
-        self.init(with: APIClient(), bridge: bridge)
+        self.init(with: resolve(), bridge: bridge)
     }
     
-    init(with client: APIClient, bridge: BitcoinCashWalletBridgeAPI) {
+    init(with client: APIClientAPI, bridge: BitcoinCashWalletBridgeAPI) {
         self.client = client
         self.bridge = bridge
     }

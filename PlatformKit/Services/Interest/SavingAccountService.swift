@@ -39,9 +39,13 @@ public class SavingAccountService: SavingAccountServiceAPI {
     }()
     
     // MARK: - Setup
+    
+    public convenience init(custodialFeatureFetcher: CustodialFeatureFetching) {
+        self.init(client: SavingsAccountClient(), custodialFeatureFetcher: custodialFeatureFetcher)
+    }
 
-    public init(client: SavingsAccountClientAPI = SavingsAccountClient(),
-                custodialFeatureFetcher: CustodialFeatureFetching) {
+    init(client: SavingsAccountClientAPI,
+         custodialFeatureFetcher: CustodialFeatureFetching) {
         self.client = client
         self.custodialFeatureFetcher = custodialFeatureFetcher
         self.cachedValue = CachedValue(configuration: .onSubscription())

@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxCocoa
 import RxRelay
@@ -185,7 +186,7 @@ extension ManualPairingInteractor {
         fileprivate let analyticsRecorder: AnalyticsEventRecording
         fileprivate let errorRecorder: ErrorRecording
         
-        init(analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
+        init(analyticsRecorder: AnalyticsEventRecording = resolve(),
              errorRecorder: ErrorRecording = CrashlyticsRecorder(),
              walletPayloadClient: WalletPayloadClientAPI = WalletPayloadClient(),
              twoFAWalletClient: TwoFAWalletClientAPI = TwoFAWalletClient(),

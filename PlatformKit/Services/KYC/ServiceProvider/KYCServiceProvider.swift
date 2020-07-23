@@ -20,7 +20,11 @@ public final class KYCServiceProvider: KYCServiceProviderAPI {
     
     // MARK: - Setup
     
-    public init(client: KYCClientAPI = KYCClient()) {
+    public convenience init() {
+        self.init(client: KYCClient())
+    }
+    
+    init(client: KYCClientAPI) {
         user = NabuUserService(client: client)
         tiers = KYCTiersService(client: client)
     }

@@ -133,7 +133,7 @@
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:URL];
     request.HTTPMethod = @"POST";
 
-    NSURLSessionDataTask *dataTask = [[[NetworkDependenciesObjc sharedInstance] session] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    NSURLSessionDataTask *dataTask = [NetworkDependenciesObjc.session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (error) {
             DLog(@"Error saving address input: %@", [error localizedDescription]);
         }

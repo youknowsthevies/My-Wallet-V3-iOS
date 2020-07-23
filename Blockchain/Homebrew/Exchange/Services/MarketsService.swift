@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import PlatformKit
 import RxCocoa
@@ -53,7 +54,7 @@ protocol ExchangeMarketsAPI {
 class MarketsService {
 
     private let restMessageSubject = PublishSubject<Conversion>()
-    private let authentication: NabuServiceProviderAPI
+    private let authenticator: AuthenticatorAPI
     private let socketManager: SocketManager
     private let cachedExchangeRates = BehaviorRelay<ExchangeRates?>(value: nil)
     private let cachedTradingPairs = BehaviorRelay<ExchangeTradingPairs?>(value: nil)
@@ -69,12 +70,10 @@ class MarketsService {
     
     private let communicator: NetworkCommunicatorAPI
     
-    init(
-        authenticationService: NabuServiceProviderAPI = NabuServiceProvider.default,
-        socketManager: SocketManager = SocketManager.shared,
-        communicator: NetworkCommunicatorAPI = Network.Dependencies.retail.communicator
-    ) {
-        self.authentication = authenticationService
+    init(authenticator: AuthenticatorAPI = resolve(),
+         socketManager: SocketManager = SocketManager.shared,
+         communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail)) {
+        self.authenticator = authenticator
         self.socketManager = socketManager
         self.communicator = communicator
     }
@@ -270,8 +269,7 @@ private extension MarketsService {
     }
 
     func authenticateSocket() {
-        let authenticationDisposable = authentication
-            .authenticator
+        let authenticationDisposable = authenticator
             .token
             .map { token -> Subscription<AuthSubscribeParams> in
                 let params = AuthSubscribeParams(type: "auth", token: token)

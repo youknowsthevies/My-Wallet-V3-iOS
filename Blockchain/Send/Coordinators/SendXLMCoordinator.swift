@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import PlatformUIKit
@@ -41,7 +42,7 @@ class SendXLMCoordinator {
         interface: SendXLMInterface,
         modelInterface: SendXLMModelInterface,
         exchangeAddressPresenter: SendExchangeAddressStatePresenter,
-        analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
+        analyticsRecorder: AnalyticsEventRecording = resolve()
     ) {
         self.serviceProvider = serviceProvider
         self.interface = interface

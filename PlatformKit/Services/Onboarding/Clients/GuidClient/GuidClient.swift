@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import RxSwift
 
@@ -25,9 +26,10 @@ public final class GuidClient: GuidClientAPI {
     
     // MARK: - Setup
     
-    public init(dependencies: Network.Dependencies = .wallet) {
-        self.requestBuilder = GuidRequestBuilder(requestBuilder: dependencies.requestBuilder)
-        self.communicator = dependencies.communicator
+    public init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.wallet),
+                requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
+        self.communicator = communicator
+        self.requestBuilder = GuidRequestBuilder(requestBuilder: requestBuilder)
     }
     
     /// Fetches the `GUID`

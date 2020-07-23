@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 import NetworkKit
 import PlatformKit
 import RxSwift
@@ -28,7 +28,7 @@ class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
     
     init(blockchainRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
          campaignComposer: CampaignComposer = CampaignComposer(),
-         clientAPI: ExchangeClientAPI = ExchangeClient(communicatorAPI: Network.Dependencies.retail.communicator)) {
+         clientAPI: ExchangeClientAPI = ExchangeClient(communicatorAPI: resolve(tag: DIKitContext.retail))) {
         self.blockchainRepository = blockchainRepository
         self.campaignComposer = campaignComposer
         self.client = clientAPI

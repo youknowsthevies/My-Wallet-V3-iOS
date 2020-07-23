@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -68,7 +69,7 @@ final class AlgorandAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
     // MARK: - Setup
 
     init(cacheSuite: CacheSuite = UserDefaults.standard,
-         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
+         analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {

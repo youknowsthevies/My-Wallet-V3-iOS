@@ -6,41 +6,19 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import ToolKit
+import NetworkKit
 
 public protocol NabuServiceProviderAPI: AnyObject {
-    var authenticator: NabuAuthenticator { get }
+    var authenticator: AuthenticatorAPI { get }
     var walletSynchronizer: WalletNabuSynchronizerServiceAPI { get }
     var jwtToken: JWTServiceAPI { get }
 }
 
 public final class NabuServiceProvider: NabuServiceProviderAPI {
     
-    public let authenticator: NabuAuthenticator
-    public let walletSynchronizer: WalletNabuSynchronizerServiceAPI
-    public let jwtToken: JWTServiceAPI
-    
-    public init(jwtClient: JWTClientAPI,
-                updateWalletInformationClient: UpdateWalletInformationClientAPI,
-                walletRepository: WalletRepositoryAPI,
-                settingsService: SettingsServiceAPI,
-                deviceInfo: DeviceInfo) {
-        jwtToken = JWTService(
-            client: jwtClient,
-            credentialsRepository: walletRepository
-        )
-        authenticator = NabuAuthenticator(
-            offlineTokenRepository: walletRepository,
-            authenticationExecutor: NabuAuthenticationExecutor(
-                settingsService: settingsService,
-                jwtService: jwtToken,
-                credentialsRepository: walletRepository,
-                deviceInfo: deviceInfo
-            )
-        )
-        walletSynchronizer = WalletNabuSynchronizerService(
-            jwtService: jwtToken,
-            updateUserInformationClient: updateWalletInformationClient
-        )
-    }
+    @Inject public var authenticator: AuthenticatorAPI
+    @Inject public var walletSynchronizer: WalletNabuSynchronizerServiceAPI
+    @Inject public var jwtToken: JWTServiceAPI
 }

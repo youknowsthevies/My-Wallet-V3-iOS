@@ -159,7 +159,7 @@ public enum TransactionalLineItem: Hashable {
 
     public func defaultCopyablePresenter(
         analyticsEvent: AnalyticsEvent? = nil,
-        analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording,
+        analyticsRecorder: AnalyticsEventRecorderAPI,
         accessibilityIdPrefix: String
     ) -> PasteboardingLineItemCellPresenter {
 

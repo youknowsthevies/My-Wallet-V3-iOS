@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import BigInt
 import ERC20Kit
 import EthereumKit
@@ -50,7 +51,7 @@ class SendPaxCoordinator {
         priceService: PriceServiceAPI = PriceService(),
         exchangeAddressPresenter: SendExchangeAddressStatePresenter,
         bus: WalletActionEventBus = WalletActionEventBus.shared,
-        analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
+        analyticsRecorder: AnalyticsEventRecording = resolve()
     ) {
         self.interface = interface
         self.calculator = SendPaxCalculator(erc20Service: serviceProvider.services.paxService)

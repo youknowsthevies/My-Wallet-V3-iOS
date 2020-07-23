@@ -29,7 +29,7 @@ public struct NetworkRequest {
         case formUrlEncoded = "application/x-www-form-urlencoded"
     }
     
-    public var URLRequest: URLRequest {
+    var URLRequest: URLRequest {
         
         if authenticated && headers?[HttpHeaderField.authorization] == nil {
             fatalError("Missing Autentication Header")
@@ -97,7 +97,7 @@ public struct NetworkRequest {
         self.recordErrors = recordErrors
     }
     
-    public mutating func add(authenticationToken: String) {
+    mutating func add(authenticationToken: String) {
         if headers == nil {
             headers = [:]
         }
@@ -119,21 +119,6 @@ public struct NetworkRequest {
                 request.httpBody = data
             }
         }
-    }
-    
-    @available(*, deprecated, message: "Don't use this, instance methods will _probably_ be added to NetworkCommunicator")
-    public static func POST(url: URL, body: Data?) -> NetworkRequest {
-        self.init(endpoint: url, method: .post, body: body)
-    }
-    
-    @available(*, deprecated, message: "Don't use this, instance methods will _probably_ be added to NetworkCommunicator")
-    public static func PUT(url: URL, body: Data?) -> NetworkRequest {
-        self.init(endpoint: url, method: .put, body: body)
-    }
-    
-    @available(*, deprecated, message: "Don't use this, instance methods will _probably_ be added to NetworkCommunicator")
-    public static func DELETE(url: URL) -> NetworkRequest {
-        self.init(endpoint: url, method: .delete, body: nil)
     }
 }
 

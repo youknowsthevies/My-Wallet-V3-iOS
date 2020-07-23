@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import RxSwift
 
@@ -22,7 +23,7 @@ public protocol SwapActivityClientAPI {
 
 public typealias SwapClientAPI = SwapActivityClientAPI
 
-public final class SwapClient: SwapClientAPI {
+final class SwapClient: SwapClientAPI {
     
     private enum Parameter {
         static let before = "before"
@@ -42,14 +43,15 @@ public final class SwapClient: SwapClientAPI {
     
     // MARK: - Setup
     
-    public init(dependencies: Network.Dependencies = .retail) {
-        self.communicator = dependencies.communicator
-        self.requestBuilder = RequestBuilder(networkConfig: dependencies.blockchainAPIConfig)
+    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+        self.communicator = communicator
+        self.requestBuilder = requestBuilder
     }
     
     // MARK: - SwapActivityClientAPI
     
-    public func fetchActivity(from date: Date,
+    func fetchActivity(from date: Date,
                               fiatCurrency: String,
                               cryptoCurrency: CryptoCurrency,
                               limit: Int) -> Single<[SwapActivityItemEvent]> {
@@ -80,7 +82,7 @@ public final class SwapClient: SwapClientAPI {
         return communicator.perform(request: request)
     }
     
-    public func fetchActivity(from date: Date, fiatCurrency: String) -> Single<[SwapActivityItemEvent]> {
+    func fetchActivity(from date: Date, fiatCurrency: String) -> Single<[SwapActivityItemEvent]> {
         let parameters = [
             URLQueryItem(
                 name: Parameter.before,

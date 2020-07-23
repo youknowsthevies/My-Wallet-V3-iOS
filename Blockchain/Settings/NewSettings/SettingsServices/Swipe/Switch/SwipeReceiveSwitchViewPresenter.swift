@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -30,7 +31,7 @@ final class SwipeReceiveSwitchViewPresenter: SwitchViewPresenting {
     private let disposeBag = DisposeBag()
     
     init(appSettings: BlockchainSettings.App,
-         analyticsRecording: AnalyticsEventRecording = AnalyticsEventRecorder.shared) {
+         analyticsRecording: AnalyticsEventRecording = resolve()) {
         interactor = SwipeReceiveSwitchViewInteractor(
             appSettings: appSettings
         )

@@ -6,36 +6,39 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import ToolKit
 
 extension TabControllerManager {
     
+    private var analyticsEventRecorder: AnalyticsEventRecording { resolve() }
+    
     @objc
     func recordSwapTabItemClick() {
-        AnalyticsEventRecorder.shared.record(
+        analyticsEventRecorder.record(
             event: AnalyticsEvents.Swap.swapTabItemClick
         )
     }
     
     @objc
     func recordSendTabItemClick() {
-        AnalyticsEventRecorder.shared.record(
+        analyticsEventRecorder.record(
             event: AnalyticsEvents.Send.sendTabItemClick
         )
     }
     
     @objc
     func recordActivityTabItemClick() {
-        AnalyticsEventRecorder.shared.record(
+        analyticsEventRecorder.record(
             event: AnalyticsEvents.Transactions.transactionsTabItemClick
         )
     }
     
     @objc
     func recordRequestTabItemClick() {
-        AnalyticsEventRecorder.shared.record(
+        analyticsEventRecorder.record(
             event: AnalyticsEvents.Request.requestTabItemClick
         )
     }

@@ -17,4 +17,4 @@ github "RxSwiftCommunity/RxDataSources" ~> 4.0
 github "socketio/socket.io-client-swift" == 15.0.0
 github "thisisalexmcgregor/stellar-ios-mac-sdk" "blockchain"
 github "thisisalexmcgregor/web3swift" "blockchain"
-github "Liftric/DIKit"
+github "Liftric/DIKit" "master"

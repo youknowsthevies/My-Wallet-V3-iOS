@@ -7,6 +7,7 @@
 //
 
 import NetworkKit
+import ToolKit
 import RxSwift
 
 enum CommunicatorMockError: Error {
@@ -14,7 +15,7 @@ enum CommunicatorMockError: Error {
 }
 
 class MockNetworkCommunicator: NetworkCommunicatorAPI {
-
+    
     var response: (filename: String, bundle: Bundle)?
 
     func perform(request: NetworkRequest) -> Completable {
@@ -40,6 +41,14 @@ class MockNetworkCommunicator: NetworkCommunicatorAPI {
     
     func performOptional<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType?> {
         decode()
+    }
+    
+    func use(eventRecorder: AnalyticsEventRecording) {
+        
+    }
+    
+    func use(authenticator: AuthenticatorAPI) {
+        
     }
 
     private func decode<ResponseType: Decodable>() -> Single<ResponseType> {

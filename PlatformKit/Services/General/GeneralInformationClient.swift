@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import RxSwift
 
@@ -13,7 +14,7 @@ public protocol GeneralInformationClientAPI: AnyObject {
     var countries: Single<[CountryData]> { get }
 }
 
-public final class GeneralInformationClient: GeneralInformationClientAPI {
+final class GeneralInformationClient: GeneralInformationClientAPI {
     
     // MARK: - Types
     
@@ -41,8 +42,9 @@ public final class GeneralInformationClient: GeneralInformationClientAPI {
 
     // MARK: - Setup
     
-    public init(dependencies: Network.Dependencies = .retail) {
-        self.communicator = dependencies.communicator
-        self.requestBuilder = RequestBuilder(networkConfig: dependencies.blockchainAPIConfig)
+    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+        self.communicator = communicator
+        self.requestBuilder = requestBuilder
     }
 }

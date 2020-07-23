@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -39,7 +40,7 @@ final class AutoPairingScreenInteractor {
             jsContextProvider: WalletManager.shared
         ),
          walletFetcher: PairingWalletFetching = AuthenticationCoordinator.shared,
-         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared) {
+         analyticsRecorder: AnalyticsEventRecording = resolve()) {
         self.service = service
         self.analyticsRecorder = analyticsRecorder
         self.walletFetcher = walletFetcher

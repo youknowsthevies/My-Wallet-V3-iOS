@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import RxSwift
 
@@ -19,7 +20,7 @@ public protocol NabuAuthenticationClientAPI: AnyObject {
     func recoverUser(offlineToken: NabuOfflineTokenResponse, jwt: String) -> Completable
 }
 
-public final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
+final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
     
     // MARK: - Types
     
@@ -42,16 +43,17 @@ public final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
 
     // MARK: - Setup
     
-    public init(dependencies: Network.Dependencies = .retail) {
-        self.communicator = dependencies.communicator
-        self.requestBuilder = RequestBuilder(networkConfig: dependencies.blockchainAPIConfig)
+    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+        self.communicator = communicator
+        self.requestBuilder = requestBuilder
     }
         
-    public func sessionToken(for guid: String,
-                             userToken: String,
-                             userIdentifier: String,
-                             deviceId: String,
-                             email: String) -> Single<NabuSessionTokenResponse> {
+    func sessionToken(for guid: String,
+                          userToken: String,
+                          userIdentifier: String,
+                          deviceId: String,
+                          email: String) -> Single<NabuSessionTokenResponse> {
         
         let headers: [String: String] = [
             HttpHeaderField.appVersion: Bundle.applicationVersion ?? "",
@@ -77,7 +79,7 @@ public final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
         return communicator.perform(request: request)
     }
     
-    public func recoverUser(offlineToken: NabuOfflineTokenResponse, jwt: String) -> Completable {
+    func recoverUser(offlineToken: NabuOfflineTokenResponse, jwt: String) -> Completable {
         let request = requestBuilder.post(
             path: Path.recover(userId: offlineToken.userId),
             body: try? JWTPayload(jwt: jwt).encode(),

@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import EthereumKit
 import NetworkKit
 import PlatformKit
@@ -29,10 +30,11 @@ public final class ERC20AccountAPIClient<Token: ERC20Token>: ERC20AccountAPIClie
 
     private let communicator: NetworkCommunicatorAPI
     private let requestBuilder: RequestBuilder
-
-    public init(dependencies: Network.Dependencies = .default) {
-        self.communicator = dependencies.communicator
-        self.requestBuilder = RequestBuilder(networkConfig: dependencies.blockchainAPIConfig)
+    
+    public init(communicator: NetworkCommunicatorAPI = resolve(),
+                requestBuilder: RequestBuilder = resolve()) {
+        self.communicator = communicator
+        self.requestBuilder = requestBuilder
     }
 
     public func fetchTransactions(from address: String, page: String) -> Single<ERC20TransfersResponse<Token>> {

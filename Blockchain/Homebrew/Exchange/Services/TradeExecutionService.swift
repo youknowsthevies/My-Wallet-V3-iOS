@@ -7,6 +7,7 @@
 //
 
 import BitcoinKit
+import DIKit
 import ERC20Kit
 import EthereumKit
 import Foundation
@@ -113,7 +114,7 @@ class TradeExecutionService: TradeExecutionAPI {
         ethereumWallet: EthereumWalletBridgeAPI = WalletManager.shared.wallet.ethereum,
         wallet: WalletAPI,
         dependencies: TradeExecutionServiceDependenciesAPI,
-        communicator: NetworkCommunicatorAPI = Network.Dependencies.retail.communicator
+        communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail)
         ) {
         self.ethereumWallet = ethereumWallet
         self.wallet = wallet

@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxDataSources
 import RxSwift
 import ToolKit
@@ -24,7 +25,7 @@ struct SettingsCellViewModel {
     let analyticsRecorder: AnalyticsEventRecording
     
     init(cellType: SettingsSectionType.CellType,
-         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared) {
+         analyticsRecorder: AnalyticsEventRecording = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.cellType = cellType
     }

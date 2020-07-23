@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 import ToolKit
 
@@ -46,8 +47,12 @@ public class TradingBalanceService: TradingBalanceServiceAPI {
     }()
     
     // MARK: - Setup
+    
+    public convenience init() {
+        self.init(client: resolve())
+    }
 
-    public init(client: CustodialClientAPI) {
+    init(client: CustodialClientAPI) {
         self.client = client
         cachedValue = CachedValue(configuration: .onSubscription())        
     }

@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformUIKit
 import RxSwift
 import ToolKit
@@ -63,12 +64,12 @@ final class CustodyInformationScreenPresenter {
     
     // MARK: - Private Properties
     
-    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let disposeBag = DisposeBag()
     private unowned let stateService: CustodyActionStateServiceAPI
     
     init(stateService: CustodyActionStateServiceAPI,
-         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.stateService = stateService
         self.analyticsRecorder = analyticsRecorder
         

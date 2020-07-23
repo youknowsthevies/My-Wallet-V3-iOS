@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import ToolKit
 
 final class RecordingProvider: RecordingProviderAPI {
@@ -16,13 +17,13 @@ final class RecordingProvider: RecordingProviderAPI {
     
     let message: MessageRecording
     let error: ErrorRecording
-    let analytics: AnalyticsEventRecording & AnalyticsEventRelayRecording
+    let analytics: AnalyticsEventRecorderAPI
     
     // MARK: - Setup
     
     init(message: MessageRecording = CrashlyticsRecorder(),
          error: ErrorRecording = CrashlyticsRecorder(),
-         analytics: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
+         analytics: AnalyticsEventRecorderAPI = resolve()) {
         self.message = message
         self.error = error
         self.analytics = analytics

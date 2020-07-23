@@ -25,7 +25,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     private let wallet: WalletProtocol
     private let dataRepository: BlockchainDataRepository
     private let tiersService: KYCTiersServiceAPI
-    private let infoService: GeneralInformationService
+    private let infoService: GeneralInformationServiceAPI
     private let exchangeService: ExchangeService
     private let repository: AuthenticatorRepositoryAPI
     private let simpleBuyServiceProvider: ServiceProviderAPI
@@ -88,7 +88,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
          dataRepository: BlockchainDataRepository = .shared,
          tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
          exchangeService: ExchangeService = .shared,
-         infoService: GeneralInformationService = UserInformationServiceProvider.default.general,
+         infoService: GeneralInformationServiceAPI = UserInformationServiceProvider.default.general,
          paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = PAXServiceProvider.shared.services.assetAccountRepository,
          simpleBuyServiceProvider: ServiceProviderAPI = DataProvider.default.buySell) {
         self.repository = repository

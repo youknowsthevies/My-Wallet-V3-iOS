@@ -9,7 +9,7 @@
 import Foundation
 
 extension URLRequest {
-    public init(url: URL, method: HTTPMethod) {
+    init(url: URL, method: HTTPMethod) {
         self.init(url: url)
         self.httpMethod = method.rawValue
     }

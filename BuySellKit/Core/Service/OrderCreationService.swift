@@ -48,7 +48,7 @@ final class OrderCreationService: OrderCreationServiceAPI {
             paymentType: candidateOrderDetails.paymentMethod.method,
             paymentMethodId: candidateOrderDetails.paymentMethodId
         )
-        let creation = self.client
+        let creation = client
             .create(
                 order: data,
                 createPendingOrder: true

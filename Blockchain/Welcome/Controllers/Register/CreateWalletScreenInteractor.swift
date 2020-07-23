@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -42,7 +43,7 @@ final class CreateWalletScreenInteractor: NSObject {
     // MARK: - Setup
     
     init(reachability: InternetReachabilityAPI = InternetReachability(),
-         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
+         analyticsRecorder: AnalyticsEventRecording =  resolve(),
          authenticationCoordinator: AuthenticationCoordinator = .shared,
          walletManager: WalletManager = .shared,
          wallet: Wallet = WalletManager.shared.wallet) {

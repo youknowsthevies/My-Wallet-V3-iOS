@@ -6,15 +6,16 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 
 public protocol JWTServiceAPI: AnyObject {
     var token: Single<String> { get }
 }
 
-public final class JWTService: JWTServiceAPI {
+final class JWTService: JWTServiceAPI {
     
-    public var token: Single<String> {
+    var token: Single<String> {
         credentialsRepository.credentials
             .flatMap(weak: self) { (self, payload) in
                 self.client.requestJWT(guid: payload.guid, sharedKey: payload.sharedKey)
@@ -24,7 +25,8 @@ public final class JWTService: JWTServiceAPI {
     private let client: JWTClientAPI
     private let credentialsRepository: CredentialsRepositoryAPI
     
-    public init(client: JWTClientAPI, credentialsRepository: CredentialsRepositoryAPI) {
+    init(client: JWTClientAPI = resolve(),
+         credentialsRepository: CredentialsRepositoryAPI = resolve()) {
         self.client = client
         self.credentialsRepository = credentialsRepository
     }

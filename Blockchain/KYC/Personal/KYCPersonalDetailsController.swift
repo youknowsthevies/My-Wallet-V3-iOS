@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import ToolKit
@@ -43,7 +44,7 @@ final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormV
     // MARK: Private Properties
 
     fileprivate var detailsCoordinator: PersonalDetailsCoordinator!
-    private let analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
+    private let analyticsRecorder: AnalyticsEventRecording = resolve()
 
     private var user: NabuUser?
 

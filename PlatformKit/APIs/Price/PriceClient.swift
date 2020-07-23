@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import DIKit
 import NetworkKit
 import RxSwift
 
@@ -64,8 +65,8 @@ final class PriceClient: PriceClientAPI {
 
     // MARK: - Init
 
-    init(communicator: NetworkCommunicatorAPI = Network.Dependencies.default.communicator,
-         requestBuilder: RequestBuilder = RequestBuilder(networkConfig: Network.Dependencies.default.blockchainAPIConfig)) {
+    init(communicator: NetworkCommunicatorAPI = resolve(),
+         requestBuilder: RequestBuilder = resolve()) {
         self.communicator = communicator
         self.requestBuilder = requestBuilder
     }

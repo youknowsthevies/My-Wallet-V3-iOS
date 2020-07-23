@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -69,7 +70,7 @@ class SideMenuPresenter {
         featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
         exchangeConfiguration: AppFeatureConfiguration = AppFeatureConfigurator.shared.configuration(for: .exchangeLinking),
         onboardingSettings: BlockchainSettings.Onboarding = .shared,
-        analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
+        analyticsRecorder: AnalyticsEventRecording = resolve()
     ) {
         self.view = view
         self.wallet = wallet

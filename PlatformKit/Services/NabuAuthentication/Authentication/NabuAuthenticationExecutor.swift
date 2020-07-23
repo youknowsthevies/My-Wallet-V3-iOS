@@ -6,16 +6,21 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
+import NetworkKit
 import RxSwift
 import ToolKit
-import NetworkKit
 
 public protocol NabuAuthenticationExecutorAPI {
+    
     var token: Single<String> { get }
+    
     func authenticate<Response>(singleFunction: @escaping (String) -> Single<Response>) -> Single<Response>
 }
 
-public class NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
+class NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
+    
+    typealias CredentialsRepository = CredentialsRepositoryAPI & NabuOfflineTokenRepositoryAPI
     
     private struct Token {
         let sessionToken: NabuSessionTokenResponse
@@ -23,13 +28,13 @@ public class NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
     }
     
     @available(*, deprecated, message: "This is deprecated. Don't use this.")
-    public var token: Single<String> {
+    var token: Single<String> {
         getToken().map(\.sessionToken.token)
     }
     
     private let store: NabuTokenStore
     private let userCreationClient: UserCreationClientAPI
-    private let credentialsRepository: CredentialsRepositoryAPI & NabuOfflineTokenRepositoryAPI
+    private let credentialsRepository: CredentialsRepository
     private let deviceInfo: DeviceInfo
     private let jwtService: JWTServiceAPI
     private let authenticationClient: NabuAuthenticationClientAPI
@@ -38,13 +43,13 @@ public class NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
     private let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
     private let semaphore = DispatchSemaphore(value: 1)
     
-    public init(userCreationClient: UserCreationClientAPI = UserCreationClient(),
-                store: NabuTokenStore = NabuTokenStore(),
-                settingsService: SettingsServiceAPI,
-                jwtService: JWTServiceAPI,
-                authenticationClient: NabuAuthenticationClientAPI = NabuAuthenticationClient(),
-                credentialsRepository: CredentialsRepositoryAPI & NabuOfflineTokenRepositoryAPI,
-                deviceInfo: DeviceInfo) {
+    init(userCreationClient: UserCreationClientAPI = resolve(),
+         store: NabuTokenStore = resolve(),
+         settingsService: SettingsServiceAPI = resolve(),
+         jwtService: JWTServiceAPI = resolve(),
+         authenticationClient: NabuAuthenticationClientAPI = resolve(),
+         credentialsRepository: CredentialsRepository = resolve(),
+         deviceInfo: DeviceInfo = resolve()) {
         self.userCreationClient = userCreationClient
         self.store = store
         self.settingsService = settingsService
@@ -54,7 +59,7 @@ public class NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
         self.deviceInfo = deviceInfo
     }
     
-    public func authenticate<Response>(singleFunction: @escaping (String) -> Single<Response>) -> Single<Response> {
+    func authenticate<Response>(singleFunction: @escaping (String) -> Single<Response>) -> Single<Response> {
         getToken()
             .flatMap(weak: self) { (self, payload) -> Single<Response> in
                 singleFunction(payload.sessionToken.token)

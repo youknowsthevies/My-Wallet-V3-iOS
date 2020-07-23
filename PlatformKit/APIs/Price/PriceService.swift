@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import NetworkKit
 import RxSwift
@@ -24,7 +25,7 @@ public class PriceService: PriceServiceAPI {
     // MARK: - Setup
 
     public convenience init() {
-        self.init(client: PriceClient())
+        self.init(client: resolve())
     }
 
     public init(client: PriceClientAPI) {

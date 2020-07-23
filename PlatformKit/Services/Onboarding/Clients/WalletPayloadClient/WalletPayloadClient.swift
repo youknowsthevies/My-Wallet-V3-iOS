@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import RxSwift
 
@@ -130,9 +131,10 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
 
     // MARK: - Setup
 
-    public init(dependencies: Network.Dependencies = .wallet) {
-        self.requestBuilder = WalletPayloadRequestBuilder(requestBuilder: dependencies.requestBuilder)
-        self.communicator = dependencies.communicator
+    public init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.wallet),
+                requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
+        self.communicator = communicator
+        self.requestBuilder = WalletPayloadRequestBuilder(requestBuilder: requestBuilder)
     }
     
     // MARK: - API

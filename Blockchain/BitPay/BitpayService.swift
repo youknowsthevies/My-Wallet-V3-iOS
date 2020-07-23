@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
@@ -48,9 +49,9 @@ final class BitpayService: BitpayServiceProtocol {
     
     static let shared = BitpayService()
     
-    init(recorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
+    init(recorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-         network: NetworkCommunicatorAPI = NetworkCommunicator.shared,
+         network: NetworkCommunicatorAPI = resolve(),
          cacheSuite: CacheSuite = UserDefaults.standard) {
         self.recorder = recorder
         self.network = network

@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import StellarKit
@@ -45,7 +46,7 @@ struct ExchangeServices: ExchangeDependencies {
             dependencies: TradeExecutionService.Dependencies()
         )
         tradeLimits = TradeLimitsService()
-        analyticsRecorder = AnalyticsEventRecorder.shared
+        analyticsRecorder = resolve()
         fiatCurrencySettingsService = UserInformationServiceProvider.default.settings
     }
 }

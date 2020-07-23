@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import BuySellKit
 import ERC20Kit
 import PlatformKit
@@ -16,7 +17,7 @@ struct TetherServices: TetherDependencies {
     
     init(wallet: Wallet = WalletManager.shared.wallet,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         swapActivityAPI: SwapActivityServiceAPI = SwapServiceProvider.default.activity) {
+         swapActivityAPI: SwapActivityServiceAPI = resolve()) {
         historicalTransactionService = AnyERC20HistoricalTransactionService<TetherToken>(bridge: wallet.ethereum)
         let assetAccountService = ERC20AssetAccountDetailsService<TetherToken>(
             with: wallet.ethereum,

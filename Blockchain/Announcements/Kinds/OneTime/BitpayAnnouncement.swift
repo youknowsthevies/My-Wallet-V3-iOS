@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import ToolKit
@@ -49,7 +50,7 @@ final class BitpayAnnouncement: OneTimeAnnouncement {
     // MARK: - Setup
     
     init(cacheSuite: CacheSuite = UserDefaults.standard,
-         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
+         analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction) {
         self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)

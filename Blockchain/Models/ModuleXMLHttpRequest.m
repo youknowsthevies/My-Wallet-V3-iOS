@@ -88,7 +88,7 @@
     NSHTTPURLResponse* response;
     NSError* error;
     if ([Reachability hasInternetConnection]) {
-        NSData* data = [NSURLSession sendSynchronousRequest:req session:[[NetworkDependenciesObjc sharedInstance] session] returningResponse:&response error:&error sessionDescription:req.URL.host];
+        NSData* data = [NSURLSession sendSynchronousRequest:req session:NetworkDependenciesObjc.session returningResponse:&response error:&error sessionDescription:req.URL.host];
         status = [response statusCode];
         self.responseText = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
         _responseHeaders = response.allHeaderFields;

@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import PlatformKit
 import RxSwift
@@ -33,7 +34,7 @@ final class RemoteNotificationNetworkService {
     
     // MARK: - Setup
     
-    init(communicator: NetworkCommunicatorAPI = NetworkCommunicator.shared) {
+    init(communicator: NetworkCommunicatorAPI = resolve()) {
         self.communicator = communicator
     }
 }

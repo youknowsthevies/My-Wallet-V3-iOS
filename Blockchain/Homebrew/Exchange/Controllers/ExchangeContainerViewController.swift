@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import NetworkKit
 import PlatformKit
@@ -26,7 +27,7 @@ class ExchangeContainerViewController: BaseNavigationController {
     private var tiersViewController: KYCTiersViewController?
     private let loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared
     private let kycSettings: KYCSettingsAPI = KYCSettings.shared
-    private let analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
+    private let analyticsRecorder: AnalyticsEventRecording = resolve()
     
     // MARK: Lifecycle
     
