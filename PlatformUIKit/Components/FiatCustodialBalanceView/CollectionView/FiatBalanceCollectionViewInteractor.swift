@@ -33,24 +33,35 @@ public final class FiatBalanceCollectionViewInteractor {
     
     // MARK: - Injected Properties
     
+    private let featureFetcher: FeatureFetching
     private let balanceProvider: BalanceProviding
     
     // MARK: - Accessors
     
     let interactorsStateRelay = BehaviorRelay<State>(value: .invalid(.empty))
     private let disposeBag = DisposeBag()
+    
     private lazy var setup: Void = {
-        balanceProvider.fiatFundsBalances
+        Observable
+            .combineLatest(
+                featureFetcher.fetchBool(for: .simpleBuyFundsEnabled).asObservable(),
+                balanceProvider.fiatFundsBalances
+            )
+            .filter { $0.0 }
+            .map { $0.1 }
             .filter { $0.isValue } // All balances must contain value to load
             .map { Array.init(balancePairsCalculationStates: $0) }
             .map { .value($0) }
             .startWith(.calculating)
+            .catchErrorJustReturn(.invalid(.empty))
             .bindAndCatch(to: interactorsStateRelay)
             .disposed(by: disposeBag)
     }()
     
-    public init(balanceProvider: BalanceProviding) {
+    public init(balanceProvider: BalanceProviding,
+                featureFetcher: FeatureFetching) {
         self.balanceProvider = balanceProvider
+        self.featureFetcher = featureFetcher
     }
 }
 

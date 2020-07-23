@@ -26,9 +26,11 @@ final class DashboardFiatBalancesInteractor {
         
     // MARK: - Setup
     
-    init(balanceProvider: BalanceProviding) {
+    init(balanceProvider: BalanceProviding,
+         featureFetcher: FeatureFetching) {
         fiatBalanceCollectionViewInteractor = FiatBalanceCollectionViewInteractor(
-            balanceProvider: balanceProvider
+            balanceProvider: balanceProvider,
+            featureFetcher: featureFetcher
         )
     }
 }

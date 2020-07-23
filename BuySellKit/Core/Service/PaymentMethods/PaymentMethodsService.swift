@@ -113,16 +113,29 @@ final class PaymentMethodsService: PaymentMethodsServiceAPI {
                     .asObservable()
             }
             .flatMap(weak: self) { (self, methods) -> Observable<[PaymentMethod]> in
-                self.featureFetcher.fetchBool(for: .simpleBuyCardsEnabled)
-                    .map { isEnabled in
-                        guard !isEnabled else { return methods }
-                        return methods.filter { !$0.type.isCard }
-                    }
-                    .asObservable()
+                self.filterPaymentMethods(methods: methods).asObservable()
             }
             .distinctUntilChanged()
             .do(onNext: { [weak self] paymentMethods in
                 self?.paymentMethodsRelay.accept(paymentMethods)
             })
+    }
+    
+    private func filterPaymentMethods(methods: [PaymentMethod]) -> Single<[PaymentMethod]> {
+        Single
+            .zip(
+                featureFetcher.fetchBool(for: .simpleBuyCardsEnabled),
+                featureFetcher.fetchBool(for: .simpleBuyFundsEnabled)
+            )
+            .map { isCardsEnabled, isFundsEnabled in
+                var methods = methods
+                if !isCardsEnabled {
+                    methods = methods.filter { !$0.type.isCard }
+                }
+                if !isFundsEnabled {
+                    methods = methods.filter { !$0.type.isFunds }
+                }
+                return methods
+            }
     }
 }

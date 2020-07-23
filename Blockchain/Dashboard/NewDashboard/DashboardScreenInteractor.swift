@@ -34,6 +34,7 @@ final class DashboardScreenInteractor {
          historicalProvider: HistoricalFiatPriceProviding = DataProvider.default.historicalPrices,
          balanceChangeProvider: BalanceChangeProviding = DataProvider.default.balanceChange,
          lockboxRepository: LockboxRepositoryAPI = LockboxRepository(),
+         featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
          reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
          userPropertyInteractor: AnalyticsUserPropertyInteractor = AnalyticsUserPropertyInteractor()) {
         self.historicalProvider = historicalProvider
@@ -50,7 +51,8 @@ final class DashboardScreenInteractor {
             )
         }
         fiatBalancesInteractor = DashboardFiatBalancesInteractor(
-            balanceProvider: balanceProvider
+            balanceProvider: balanceProvider,
+            featureFetcher: featureFetcher
         )
     }
     

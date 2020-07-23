@@ -336,9 +336,9 @@ extension AnnouncementPresenter {
     /// and have not linked a bank.
     private func fiatFundsLinkBank(isKYCVerified: Bool, hasLinkedBanks: Bool) -> Announcement {
         FiatFundsLinkBankAnnouncement(
-            shouldShowLinkBankAnnouncement: isKYCVerified && !hasLinkedBanks,
+            shouldShowLinkBankAnnouncement: false, // TODO: remove `false` and uncomment this: isKYCVerified && !hasLinkedBanks,
             dismiss: hideAnnouncement,
-            action: { [weak cashIdentityVerificationRouter] in
+            action: {
                 // TODO: Route to bank linking
             })
     }
