@@ -142,10 +142,10 @@ public class NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
                 guard unauthenticated else {
                     return Single.error(error)
                 }
-                return self.refreshToken(offlineToken: offlineToken)
-                    .flatMap { offlineToken -> Single<Response> in
-                        self.clearAccessToken()
-                            .flatMapSingle { () -> Single<Response> in
+                return self.clearAccessToken()
+                    .flatMapSingle {
+                        self.refreshToken(offlineToken: offlineToken)
+                            .flatMap { offlineToken -> Single<Response> in
                                 singleFunction(offlineToken.token)
                             }
                     }

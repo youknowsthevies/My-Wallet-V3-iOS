@@ -25,6 +25,7 @@ public final class NabuTokenStore {
     func invalidate() -> Completable {
         Completable.create(weak: self) { (self, observer) -> Disposable in
             self.sessionTokenData.mutate { $0 = nil }
+            observer(.completed)
             return Disposables.create()
         }
     }

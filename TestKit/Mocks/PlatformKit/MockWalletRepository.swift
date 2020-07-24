@@ -24,7 +24,9 @@ final class MockWalletRepository: WalletRepositoryAPI {
     var payload: Single<String?> { .just(expectedPayload) }
     var sharedKey: Single<String?> { .just(expectedSharedKey) }
     var password: Single<String?> { .just(expectedPassword) }
-    var guid: Single<String?> { .just(expectedGuid) }
+    var guid: Single<String?> {
+        .just(expectedGuid)
+    }
     var authenticatorType: Single<AuthenticatorType> { .just(expectedAuthenticatorType) }
     var offlineTokenResponse: Single<NabuOfflineTokenResponse> {
         expectedOfflineTokenResponse.single
