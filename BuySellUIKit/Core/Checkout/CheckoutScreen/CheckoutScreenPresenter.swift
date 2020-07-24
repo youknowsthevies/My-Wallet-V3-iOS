@@ -97,9 +97,12 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
             }
             .disposed(by: disposeBag)
         
-        contentReducer.continueButtonViewModel
-            .tapRelay
-            .map { _ in AnalyticsEvent.sbCheckoutConfirm }
+    
+        contentReducer.continueButtonViewModel.tapRelay
+            .withLatestFrom(Observable.just(interactor.checkoutData))
+            .map { checkoutData in
+                AnalyticsEvent.sbCheckoutConfirm(paymentMethod: checkoutData.order.paymentMethod.analyticsParameter)
+            }
             .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
 
@@ -135,15 +138,17 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
             .handleLoaderForLifecycle(loader: uiUtilityProvider.loader, style: .circle)
             .subscribe(
                 onSuccess: { [weak self] data in
-                    self?.contentReducer.setupDidSucceed(with: data)
+                    guard let self = self else { return }
+                    self.analyticsRecorder.record(
+                        event: AnalyticsEvent.sbCheckoutShown(paymentMethod: data.paymentMethod.analyticsParameter)
+                    )
+                    self.contentReducer.setupDidSucceed(with: data)
                 },
                 onError: { [weak self] _ in
                     self?.setupDidFail()
                 }
             )
             .disposed(by: disposeBag)
-        
-        analyticsRecorder.record(event: AnalyticsEvent.sbCheckoutShown)
     }
 
     private func cancel() {

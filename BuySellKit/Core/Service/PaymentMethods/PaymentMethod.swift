@@ -7,6 +7,7 @@
 //
 
 import PlatformKit
+import ToolKit
 
 public enum PaymentMethodPayloadType: String, CaseIterable, Encodable {
     case card = "PAYMENT_CARD"
@@ -61,6 +62,17 @@ public struct PaymentMethod: Equatable {
                 return .card
             case .bankTransfer:
                 return .bankTransfer
+            case .funds:
+                return .funds
+            }
+        }
+        
+        public var analyticsParameter: AnalyticsEvents.SimpleBuy.PaymentMethod {
+            switch self {
+            case .card:
+                return .card
+            case .bankTransfer:
+                return .bank
             case .funds:
                 return .funds
             }

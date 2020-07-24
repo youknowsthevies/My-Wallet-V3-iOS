@@ -169,7 +169,8 @@ final class BuyCryptoScreenPresenter {
             .map {
                 AnalyticsEvent.sbBuyFormConfirmClick(
                     currencyCode: $0.fiatValue.currencyCode,
-                    amount: $0.fiatValue.toDisplayString()
+                    amount: $0.fiatValue.toDisplayString(),
+                    paymentMethod: $0.paymentMethod.method.analyticsParameter
                 )
             }
             .bindAndCatch(to: analyticsRecorder.recordRelay)

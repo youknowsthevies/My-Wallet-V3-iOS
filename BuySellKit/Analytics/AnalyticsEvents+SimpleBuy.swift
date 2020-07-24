@@ -44,7 +44,7 @@ extension AnalyticsEvents {
         case sbWantToBuyButtonSkip
         case sbWantToBuyScreenError
         case sbBuyFormShown
-        case sbBuyFormConfirmClick(currencyCode: String, amount: String)
+        case sbBuyFormConfirmClick(currencyCode: String, amount: String, paymentMethod: PaymentMethod)
         case sbBuyFormConfirmSuccess
         case sbBuyFormCryptoChanged(asset: CryptoCurrency)
         case sbBuyFormMinFailure
@@ -58,11 +58,11 @@ extension AnalyticsEvents {
         case sbKycManualReview
         case sbKycPending
         case sbPostKycNotEligible
-        case sbCheckoutShown
-        case sbCheckoutConfirm
+        case sbCheckoutShown(paymentMethod: PaymentMethod)
+        case sbCheckoutConfirm(paymentMethod: PaymentMethod)
         case sbCheckoutCancel
         case sbCheckoutCancelPrompt
-        case sbCheckoutCancelConfirmed
+        case sbCheckoutCancelConfirmed(paymentMethod: PaymentMethod)
         case sbCheckoutCancelGoBack
         case sbBankDetailsShown(currencyCode: String)
         case sbBankDetailsCopied(bankName: String)
@@ -279,6 +279,13 @@ extension AnalyticsEvents {
         }
 
         public var params: [String : String]? {
+            
+            enum Name {
+                static let paymentMethod = "paymentMethod"
+                static let currency = "currency"
+                static let amount = "amount"
+            }
+            
             switch self {
             case .sbCheckoutCompleted(status: let status):
                 return ["status": status.rawValue]
@@ -288,15 +295,24 @@ extension AnalyticsEvents {
                  .sbPendingModalShown(currencyCode: let currencyCode),
                  .sbBuyFormFiatChanged(currencyCode: let currencyCode),
                  .sbCurrencySelected(currencyCode: let currencyCode):
-                return ["currency": currencyCode]
+                return [Name.currency : currencyCode]
             case .sbTradingWalletSend(asset: let currency),
                  .sbTradingWalletClicked(asset: let currency),
                  .sbWithdrawalScreenShown(asset: let currency),
                  .sbWithdrawalScreenClicked(asset: let currency):
                 return ["asset": currency.rawValue]
-            case .sbBuyFormConfirmClick(currencyCode: let currencyCode, amount: let amount):
-                return ["currency": currencyCode,
-                        "amount": amount]
+            case .sbBuyFormConfirmClick(currencyCode: let currencyCode, amount: let amount, paymentMethod: let method):
+                return [
+                    Name.currency : currencyCode,
+                    Name.amount : amount,
+                    Name.paymentMethod : method.string
+                ]
+            case .sbCheckoutShown(paymentMethod: let method):
+                return [ Name.paymentMethod : method.string ]
+            case .sbCheckoutCancelConfirmed(paymentMethod: let method):
+                return [ Name.paymentMethod : method.string ]
+            case .sbCheckoutConfirm(paymentMethod: let method):
+                return [ Name.paymentMethod : method.string ]
             case .sbBankDetailsCopied(bankName: let bankName):
                 return ["bank field name": bankName]
             default:
