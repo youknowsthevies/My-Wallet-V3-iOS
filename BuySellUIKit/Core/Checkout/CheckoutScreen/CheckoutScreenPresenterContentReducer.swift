@@ -158,7 +158,7 @@ final class CheckoutScreenContentReducer {
         case .funds:
             localizedPaymentMethod = "\(LocalizedLineItem.Funds.prefix) \(data.fee.currency.code) \(LocalizedLineItem.Funds.suffix)"
         case .card:
-            localizedPaymentMethod = "\(data.card!.label) \(data.card!.displaySuffix)"
+            localizedPaymentMethod = "\(data.card?.label ?? "") \(data.card?.displaySuffix ?? "")"
         case .bankTransfer:
             localizedPaymentMethod = LocalizedLineItem.bankTransfer
         }

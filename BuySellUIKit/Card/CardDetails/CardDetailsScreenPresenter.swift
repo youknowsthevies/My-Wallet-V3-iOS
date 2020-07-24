@@ -232,6 +232,7 @@ final class CardDetailsScreenPresenter {
         
         buttonTapped
             .compactMap { $0.successData }
+            .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, payload) in
                 if payload.isExist {
                     self.errorRelay.accept(.cardAlreadySaved)
