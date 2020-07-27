@@ -105,7 +105,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
         tableView.dataSource = self
                 
         presenter.refresh
-            .bindAndCatch(weak: tableView) { $0.reloadData() }
+            .emit(weak: tableView) { $0.reloadData() }
             .disposed(by: disposeBag)
     }
     
