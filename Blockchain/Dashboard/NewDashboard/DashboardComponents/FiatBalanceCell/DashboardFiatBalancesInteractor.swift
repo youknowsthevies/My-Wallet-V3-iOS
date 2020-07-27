@@ -10,15 +10,14 @@ import RxSwift
 import PlatformKit
 import PlatformUIKit
 import BuySellKit
+import BuySellUIKit
 
 final class DashboardFiatBalancesInteractor {
     
-    var shouldAppear: Single<Bool> {
+    var shouldAppear: Observable<Bool> {
         fiatBalanceCollectionViewInteractor.interactorsState
             .compactMap { $0.value }
             .map { $0.count > 0 }
-            .take(1)
-            .asSingle()
             .catchErrorJustReturn(false)
     }
     
@@ -28,10 +27,12 @@ final class DashboardFiatBalancesInteractor {
     
     init(balanceProvider: BalanceProviding,
          featureFetcher: FeatureFetching,
+         paymentMethodsService: PaymentMethodsServiceAPI,
          enabledCurrenciesService: EnabledCurrenciesService) {
         fiatBalanceCollectionViewInteractor = FiatBalanceCollectionViewInteractor(
             balanceProvider: balanceProvider,
             enabledCurrenciesService: enabledCurrenciesService,
+            paymentMethodsService: paymentMethodsService,
             featureFetcher: featureFetcher
         )
     }

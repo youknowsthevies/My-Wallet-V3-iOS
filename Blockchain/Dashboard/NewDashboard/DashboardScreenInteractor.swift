@@ -35,6 +35,7 @@ final class DashboardScreenInteractor {
     init(balanceProvider: BalanceProviding = DataProvider.default.balance,
          historicalProvider: HistoricalFiatPriceProviding = DataProvider.default.historicalPrices,
          balanceChangeProvider: BalanceChangeProviding = DataProvider.default.balanceChange,
+         paymentMethodsService: PaymentMethodsServiceAPI = DataProvider.default.buySell.paymentMethods,
          enabledCurrenciesService: EnabledCurrenciesService = resolve(),
          lockboxRepository: LockboxRepositoryAPI = LockboxRepository(),
          featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
@@ -57,6 +58,7 @@ final class DashboardScreenInteractor {
         fiatBalancesInteractor = DashboardFiatBalancesInteractor(
             balanceProvider: balanceProvider,
             featureFetcher: featureFetcher,
+            paymentMethodsService: paymentMethodsService,
             enabledCurrenciesService: enabledCurrenciesService
         )
     }

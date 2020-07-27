@@ -28,24 +28,7 @@ final class PaymentMethodsScreenInteractor {
             )
             .map { payload in
                 let (methods, fiatCurrency) = payload
-                return methods
-                    .filter { type in
-                        switch type {
-                        case .card(let data):
-                            return data.state == .active
-                        case .suggested(let method):
-                            switch method.type {
-                            case .bankTransfer:
-                                return false
-                            case .card, .funds(fiatCurrency.currency):
-                                return true
-                            case .funds:
-                                return false
-                            }
-                        case .account(let pairs):
-                            return pairs.base.currencyType == fiatCurrency.currency
-                        }
-                    }
+                return methods.filterValidForBuy(currentWalletCurrency: fiatCurrency)
             }
     }
     

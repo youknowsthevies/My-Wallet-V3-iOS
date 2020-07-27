@@ -166,7 +166,18 @@ extension Array where Element == PaymentMethod {
         append(contentsOf: methods)
     }
     
-    var funds: [PaymentMethod] {
+    public var funds: [PaymentMethod] {
         filter { $0.type.isFunds }
+    }
+    
+    public var fundsCurrencies: [CurrencyType] {
+        compactMap { method in
+            switch method.type {
+            case .funds(let currency):
+                return currency
+            default:
+                return nil
+            }
+        }
     }
 }

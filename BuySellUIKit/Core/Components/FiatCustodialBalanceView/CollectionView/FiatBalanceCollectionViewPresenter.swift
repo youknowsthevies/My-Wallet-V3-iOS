@@ -49,6 +49,11 @@ public final class FiatBalanceCollectionViewPresenter {
     public init(interactor: FiatBalanceCollectionViewInteractor) {
         self.interactor = interactor
     }
+    
+    public func refresh() {
+        _ = setup
+        interactor.refresh()
+    }
 }
 
 extension FiatBalanceCollectionViewPresenter: Equatable {

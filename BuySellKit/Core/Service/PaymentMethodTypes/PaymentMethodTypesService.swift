@@ -197,8 +197,8 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     }
 }
 
-private extension Array where Element == PaymentMethodType {
-    var cards: [CardData] {
+extension Array where Element == PaymentMethodType {
+    fileprivate var cards: [CardData] {
         compactMap { paymentMethod in
             switch paymentMethod {
             case .card(let data):
@@ -209,7 +209,7 @@ private extension Array where Element == PaymentMethodType {
         }
     }
     
-    var accounts: [MoneyValueBalancePairs] {
+    public var accounts: [MoneyValueBalancePairs] {
         compactMap { paymentMethod in
             switch paymentMethod {
             case .account(let balance):
@@ -218,6 +218,26 @@ private extension Array where Element == PaymentMethodType {
                 return nil
             }
         }
-        
+    }
+    
+    /// Returns the payment methods valid for buy usage
+    public func filterValidForBuy(currentWalletCurrency: FiatCurrency) -> [PaymentMethodType] {
+        filter { method in
+            switch method {
+            case .account(let pairs):
+                return !pairs.base.isZero && pairs.base.currencyType == currentWalletCurrency.currency
+            case .suggested(let paymentMethod):
+                switch paymentMethod.type {
+                case .bankTransfer:
+                    return false
+                case .funds(let currency):
+                    return currency == currentWalletCurrency.currency
+                case .card:
+                    return true
+                }
+            case .card(let data):
+                return data.state == .active
+            }
+        }
     }
 }

@@ -9,6 +9,7 @@
 import RxSwift
 import RxRelay
 import PlatformKit
+import BuySellKit
 import ToolKit
 
 public final class FiatBalanceCollectionViewInteractor {
@@ -35,7 +36,9 @@ public final class FiatBalanceCollectionViewInteractor {
     
     private let featureFetcher: FeatureFetching
     private let balanceProvider: BalanceProviding
+    private let paymentMethodsService: PaymentMethodsServiceAPI
     private let enabledCurrenciesService: EnabledCurrenciesService
+    private let refreshRelay = PublishRelay<Void>()
     
     // MARK: - Accessors
     
@@ -47,10 +50,13 @@ public final class FiatBalanceCollectionViewInteractor {
         Observable
             .combineLatest(
                 featureFetcher.fetchBool(for: .simpleBuyFundsEnabled).asObservable(),
-                balanceProvider.fiatFundsBalances
+                balanceProvider.fiatFundsBalances,
+                paymentMethodsService.paymentMethods.map { $0.fundsCurrencies },
+                refreshRelay.asObservable()
             )
             .filter { $0.0 }
-            .map { $0.1 }
+            .map { (balances: $0.1, funds: $0.2) }
+            .map { $0.balances.filter(by: $0.funds) }
             .filter { $0.isValue } // All balances must contain value to load
             .map {
                 Array.init(
@@ -67,10 +73,16 @@ public final class FiatBalanceCollectionViewInteractor {
     
     public init(balanceProvider: BalanceProviding,
                 enabledCurrenciesService: EnabledCurrenciesService,
+                paymentMethodsService: PaymentMethodsServiceAPI,
                 featureFetcher: FeatureFetching) {
         self.balanceProvider = balanceProvider
         self.featureFetcher = featureFetcher
+        self.paymentMethodsService = paymentMethodsService
         self.enabledCurrenciesService = enabledCurrenciesService
+    }
+    
+    public func refresh() {
+        refreshRelay.accept(())
     }
 }
 
