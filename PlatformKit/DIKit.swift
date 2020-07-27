@@ -26,6 +26,11 @@ extension DependencyContainer {
         
         factory { CustodialClient() as CustodialClientAPI }
         
+        factory { () -> CustodyWithdrawalClientAPI in
+            let custodialClient: CustodialClientAPI = DIKit.resolve()
+            return custodialClient as CustodyWithdrawalClientAPI
+        }
+        
         factory { PriceClient() as PriceClientAPI }
         
         factory { UpdateWalletInformationClient() as UpdateWalletInformationClientAPI }
