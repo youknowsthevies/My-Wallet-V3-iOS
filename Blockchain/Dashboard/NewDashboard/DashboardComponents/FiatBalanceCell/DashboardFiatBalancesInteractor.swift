@@ -27,9 +27,11 @@ final class DashboardFiatBalancesInteractor {
     // MARK: - Setup
     
     init(balanceProvider: BalanceProviding,
-         featureFetcher: FeatureFetching) {
+         featureFetcher: FeatureFetching,
+         enabledCurrenciesService: EnabledCurrenciesService) {
         fiatBalanceCollectionViewInteractor = FiatBalanceCollectionViewInteractor(
             balanceProvider: balanceProvider,
+            enabledCurrenciesService: enabledCurrenciesService,
             featureFetcher: featureFetcher
         )
     }

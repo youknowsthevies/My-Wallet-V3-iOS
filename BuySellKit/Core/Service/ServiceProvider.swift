@@ -49,6 +49,7 @@ public final class ServiceProvider: ServiceProviderAPI {
                             dataRepository: DataRepositoryAPI,
                             tiersService: KYCTiersServiceAPI,
                             balanceProvider: BalanceProviding,
+                            enabledFiatCurrencies: [FiatCurrency],
                             featureFetcher: FeatureFetching) {
         self.init(cardServiceProvider: cardServiceProvider,
                   recordingProvider: recordingProvider,
@@ -59,6 +60,7 @@ public final class ServiceProvider: ServiceProviderAPI {
                   dataRepository: dataRepository,
                   tiersService: tiersService,
                   balanceProvider: balanceProvider,
+                  enabledFiatCurrencies: enabledFiatCurrencies,
                   featureFetcher: featureFetcher)
     }
     
@@ -71,6 +73,7 @@ public final class ServiceProvider: ServiceProviderAPI {
          dataRepository: DataRepositoryAPI,
          tiersService: KYCTiersServiceAPI,
          balanceProvider: BalanceProviding,
+         enabledFiatCurrencies: [FiatCurrency],
          featureFetcher: FeatureFetching) {
         
         cache = EventCache(cacheSuite: cacheSuite)
@@ -131,6 +134,7 @@ public final class ServiceProvider: ServiceProviderAPI {
             tiersService: tiersService,
             reactiveWallet: wallet,
             featureFetcher: featureFetcher,
+            enabledFiatCurrencies: enabledFiatCurrencies,
             fiatCurrencyService: settings
         )
         paymentMethodTypes = PaymentMethodTypesService(

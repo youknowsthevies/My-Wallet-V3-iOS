@@ -199,7 +199,8 @@ final class DashboardScreenPresenter {
         self.announcmentPresenter = announcmentPresenter
         totalBalancePresenter = TotalBalanceViewPresenter(
             balanceProvider: interactor.balanceProvider,
-            balanceChangeProvider: interactor.balanceChangeProvider
+            balanceChangeProvider: interactor.balanceChangeProvider,
+            enabledCurrenciesService: interactor.enabledCurrenciesService
         )
         noticePresenter = DashboardNoticePresenter(
             interactor: .init(lockboxRepository: interactor.lockboxRepository)

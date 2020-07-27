@@ -11,6 +11,7 @@ import PlatformUIKit
 import RxSwift
 import RxRelay
 import BuySellKit
+import DIKit
 
 final class DashboardScreenInteractor {
     
@@ -25,6 +26,7 @@ final class DashboardScreenInteractor {
     
     let historicalBalanceInteractors: [HistoricalBalanceCellInteractor]
     let fiatBalancesInteractor: DashboardFiatBalancesInteractor
+    let enabledCurrenciesService: EnabledCurrenciesService
     
     // MARK: - Private Accessors
     
@@ -33,6 +35,7 @@ final class DashboardScreenInteractor {
     init(balanceProvider: BalanceProviding = DataProvider.default.balance,
          historicalProvider: HistoricalFiatPriceProviding = DataProvider.default.historicalPrices,
          balanceChangeProvider: BalanceChangeProviding = DataProvider.default.balanceChange,
+         enabledCurrenciesService: EnabledCurrenciesService = resolve(),
          lockboxRepository: LockboxRepositoryAPI = LockboxRepository(),
          featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
          reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
@@ -42,8 +45,9 @@ final class DashboardScreenInteractor {
         self.balanceChangeProvider = balanceChangeProvider
         self.lockboxRepository = lockboxRepository
         self.reactiveWallet = reactiveWallet
+        self.enabledCurrenciesService = enabledCurrenciesService
         self.userPropertyInteractor = userPropertyInteractor
-        historicalBalanceInteractors = CryptoCurrency.allEnabled.map {
+        historicalBalanceInteractors = enabledCurrenciesService.allEnabledCryptoCurrencies.map {
             HistoricalBalanceCellInteractor(
                 cryptoCurrency: $0,
                 historicalFiatPriceService: historicalProvider[$0],
@@ -52,7 +56,8 @@ final class DashboardScreenInteractor {
         }
         fiatBalancesInteractor = DashboardFiatBalancesInteractor(
             balanceProvider: balanceProvider,
-            featureFetcher: featureFetcher
+            featureFetcher: featureFetcher,
+            enabledCurrenciesService: enabledCurrenciesService
         )
     }
     

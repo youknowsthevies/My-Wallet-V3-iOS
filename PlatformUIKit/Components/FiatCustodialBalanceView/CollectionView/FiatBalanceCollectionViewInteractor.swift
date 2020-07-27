@@ -35,6 +35,7 @@ public final class FiatBalanceCollectionViewInteractor {
     
     private let featureFetcher: FeatureFetching
     private let balanceProvider: BalanceProviding
+    private let enabledCurrenciesService: EnabledCurrenciesService
     
     // MARK: - Accessors
     
@@ -42,6 +43,7 @@ public final class FiatBalanceCollectionViewInteractor {
     private let disposeBag = DisposeBag()
     
     private lazy var setup: Void = {
+        let enabledFiatCurrencies = enabledCurrenciesService.allEnabledFiatCurrencies
         Observable
             .combineLatest(
                 featureFetcher.fetchBool(for: .simpleBuyFundsEnabled).asObservable(),
@@ -50,7 +52,12 @@ public final class FiatBalanceCollectionViewInteractor {
             .filter { $0.0 }
             .map { $0.1 }
             .filter { $0.isValue } // All balances must contain value to load
-            .map { Array.init(balancePairsCalculationStates: $0) }
+            .map {
+                Array.init(
+                    balancePairsCalculationStates: $0,
+                    supportedFiatCurrencies: enabledFiatCurrencies
+                )
+            }
             .map { .value($0) }
             .startWith(.calculating)
             .catchErrorJustReturn(.invalid(.empty))
@@ -59,9 +66,11 @@ public final class FiatBalanceCollectionViewInteractor {
     }()
     
     public init(balanceProvider: BalanceProviding,
+                enabledCurrenciesService: EnabledCurrenciesService,
                 featureFetcher: FeatureFetching) {
         self.balanceProvider = balanceProvider
         self.featureFetcher = featureFetcher
+        self.enabledCurrenciesService = enabledCurrenciesService
     }
 }
 

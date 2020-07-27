@@ -21,7 +21,7 @@ public protocol Currency {
     var maxDisplayableDecimalPlaces: Int { get }
     var isFiatCurrency: Bool { get }
     var isCryptoCurrency: Bool { get }
-    var currency: CurrencyType { get }
+    var currency: CurrencyType { get }    
 }
 
 extension Currency {

@@ -12,6 +12,7 @@ import PlatformKit
 import BuySellKit
 import RxRelay
 import RxSwift
+import DIKit
 
 /// A container for common crypto services.
 /// Rule of thumb: If a service may be used by multiple clients,
@@ -36,16 +37,16 @@ final class DataProvider: DataProviding {
         
     /// BuySellKit service provider
     let buySell: BuySellKit.ServiceProviderAPI
-    
-    init(featureFetching: FeatureFetching = AppFeatureConfigurator.shared,
+        
+    init(featureFetching: FeatureFetching & FeatureConfiguring = AppFeatureConfigurator.shared,
          kycTierService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
          custodialClient: CustodialClientAPI = CustodialClient(),
          savingsAccountClient: SavingsAccountClientAPI = SavingsAccountClient(),
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         supportedCustodialFiatCurrencies: [FiatCurrency] = CustodialLocallySupportedFiatCurrencies.fiatCurrencies) {
-                
+         enabledCurrencies: EnabledCurrenciesService = resolve(),
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings) {
+        
         var fiatExchangeServices: [FiatCurrency: PairExchangeServiceAPI] = [:]
-        for fiatCurrency in supportedCustodialFiatCurrencies {
+        for fiatCurrency in enabledCurrencies.allEnabledFiatCurrencies {
             fiatExchangeServices[fiatCurrency] = PairExchangeService(
                 currency: fiatCurrency,
                 fiatCurrencyService: fiatCurrencyService
@@ -128,7 +129,7 @@ final class DataProvider: DataProviding {
         )
         
         var fiatBalanceFetchers: [FiatCurrency: AssetBalanceFetching] = [:]
-        for fiatCurrency in supportedCustodialFiatCurrencies {
+        for fiatCurrency in enabledCurrencies.allEnabledFiatCurrencies {
             let currencyType = CurrencyType.fiat(fiatCurrency)
             fiatBalanceFetchers[fiatCurrency] = AssetBalanceFetcher(
                 wallet: AbsentAccountBalanceFetching(
@@ -254,7 +255,7 @@ final class DataProvider: DataProviding {
         self.balance = balance
         
         balanceChange = BalanceChangeProvider(
-            currencies: CryptoCurrency.allEnabled,
+            currencies: enabledCurrencies.allEnabledCryptoCurrencies,
             ether: AssetBalanceChangeProvider(
                 balance: etherBalanceFetcher,
                 prices: historicalPrices[.ethereum],

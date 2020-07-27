@@ -25,12 +25,12 @@ public struct AssetPieChart {
         public struct Interaction: Equatable {
             
             /// The asset type
-            let asset: CryptoCurrency
+            let asset: CurrencyType
             
             /// Percentage that the asset takes off the total
             let percentage: Double
             
-            init(asset: CryptoCurrency, percentage: MoneyValue) {
+            init(asset: CurrencyType, percentage: MoneyValue) {
                 self.asset = asset
                 self.percentage = Double(truncating: percentage.displayMajorValue as NSNumber)
             }

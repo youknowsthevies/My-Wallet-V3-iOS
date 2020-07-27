@@ -64,6 +64,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     override init() {
         super.init()
         DependencyContainer.defined(by: modules {
+            DependencyContainer.enabledCurrenciesService;
             DependencyContainer.airdropRouter;
             DependencyContainer.appCoordinator;
             DependencyContainer.appFeatureConfigurator;

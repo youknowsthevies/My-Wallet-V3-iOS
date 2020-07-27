@@ -11,6 +11,9 @@ import PlatformUIKit
 import PlatformKit
 
 public extension DependencyContainer {
+    static var enabledCurrenciesService = module {
+        single { EnabledCurrenciesService(featureFetcher: AppFeatureConfigurator.shared) }
+    }
     static var appCoordinator = module {
         single { AppCoordinator() }
     }

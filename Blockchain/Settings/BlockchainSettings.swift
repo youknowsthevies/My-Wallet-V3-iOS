@@ -226,7 +226,7 @@ final class BlockchainSettings: NSObject {
             get {
                 let rawValue = defaults.integer(forKey: UserDefaults.Keys.selectedLegacyAssetType.rawValue)
                 guard let value = LegacyAssetType(rawValue: rawValue),
-                    CryptoCurrency.allEnabled.contains(CryptoCurrency(legacyAssetType: value)) else {
+                    enabledCurrenciesService.allEnabledCryptoCurrencies.contains(CryptoCurrency(legacyAssetType: value)) else {
                         return .bitcoin
                 }
                 return value
@@ -410,7 +410,11 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        override init() {
+        private let enabledCurrenciesService: EnabledCurrenciesService
+        
+        init(enabledCurrenciesService: EnabledCurrenciesService = resolve()) {
+            self.enabledCurrenciesService = enabledCurrenciesService
+            
             // Private initializer so that `shared` and `sharedInstance` are the only ways to
             // access an instance of this class.
             super.init()

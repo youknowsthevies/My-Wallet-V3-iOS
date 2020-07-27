@@ -78,7 +78,10 @@ public struct PaymentMethod: Equatable {
             }
         }
         
-        public init?(type: PaymentMethodPayloadType, subTypes: [String], currency: FiatCurrency) {
+        public init?(type: PaymentMethodPayloadType,
+                     subTypes: [String],
+                     currency: FiatCurrency,
+                     supportedFiatCurrencies: [FiatCurrency]) {
             switch type {
             case .card:
                 let cardTypes = Set(subTypes.compactMap { CardType(rawValue: $0) })
@@ -89,7 +92,7 @@ public struct PaymentMethod: Equatable {
             case .bankTransfer:
                 self = .bankTransfer
             case .funds:
-                guard CustodialLocallySupportedFiatCurrencies.fiatCurrencies.contains(currency) else {
+                guard supportedFiatCurrencies.contains(currency) else {
                     return nil
                 }
                 self = .funds(currency.currency)
@@ -121,7 +124,7 @@ public struct PaymentMethod: Equatable {
     /// The maximum value of payment using that method
     public let min: FiatValue
     
-    init?(currency: String, method: PaymentMethodsResponse.Method) {
+    init?(currency: String, method: PaymentMethodsResponse.Method, supportedFiatCurrencies: [FiatCurrency]) {
         // Preferrably use the payment method's currency
         let rawCurrency = method.currency ?? currency
         guard let currency = FiatCurrency(code: rawCurrency) else {
@@ -133,7 +136,10 @@ public struct PaymentMethod: Equatable {
             return nil
         }
         
-        guard let methodType = MethodType(type: rawType, subTypes: method.subTypes, currency: currency) else {
+        guard let methodType = MethodType(type: rawType,
+                                          subTypes: method.subTypes,
+                                          currency: currency,
+                                          supportedFiatCurrencies: supportedFiatCurrencies) else {
             return nil
         }
         self.type = methodType
@@ -147,13 +153,14 @@ public struct PaymentMethod: Equatable {
 }
 
 extension Array where Element == PaymentMethod {
-    init(response: PaymentMethodsResponse) {
+    init(response: PaymentMethodsResponse, supportedFiatCurrencies: [FiatCurrency]) {
         self.init()
         let methods = response.methods
             .compactMap {
                 PaymentMethod(
                     currency: response.currency,
-                    method: $0
+                    method: $0,
+                    supportedFiatCurrencies: supportedFiatCurrencies
                 )
             }
         append(contentsOf: methods)
