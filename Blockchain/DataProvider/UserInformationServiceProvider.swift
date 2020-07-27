@@ -6,39 +6,30 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 
 final class UserInformationServiceProvider: UserInformationServiceProviding {
     
     /// The default container
-    static let `default` = UserInformationServiceProvider()
+    @Inject static var `default`: UserInformationServiceProviding
     
     /// Persistent service that has access to the general wallet settings
-    let settings: SettingsServiceAPI &
-                  EmailSettingsServiceAPI &
-                  LastTransactionSettingsUpdateServiceAPI &
-                  EmailNotificationSettingsServiceAPI &
-                  FiatCurrencySettingsServiceAPI &
-                  MobileSettingsServiceAPI &
-                  SMSTwoFactorSettingsServiceAPI
+    let settings: CompleteSettingsServiceAPI
     
     /// Computes and returns an email verification service API
-    var emailVerification: EmailVerificationServiceAPI {
-        EmailVerificationService(
-            syncService: NabuServiceProvider.default.walletSynchronizer,
-            settingsService: settings
-        )
-    }
+    let emailVerification: EmailVerificationServiceAPI
     
-    let general: GeneralInformationService
+    let general: GeneralInformationServiceAPI
+    let walletSynchronizer: WalletNabuSynchronizerServiceAPI
     
-    init(repository: WalletRepositoryAPI = WalletManager.shared.repository,
-         informationClient: GeneralInformationClientAPI = GeneralInformationClient(),
-         settingsClient: SettingsClientAPI = SettingsClient()) {
-        settings = SettingsService(
-            client: settingsClient,
-            credentialsRepository: repository
-        )
-        general = GeneralInformationService(client: informationClient)
+    init(settingsService: CompleteSettingsServiceAPI = resolve(),
+         emailVerification: EmailVerificationServiceAPI = resolve(),
+         generalInformationService: GeneralInformationServiceAPI = resolve(),
+         walletSynchronizer: WalletNabuSynchronizerServiceAPI = resolve()) {
+        self.settings = settingsService
+        self.emailVerification = emailVerification
+        self.general = generalInformationService
+        self.walletSynchronizer = walletSynchronizer
     }
 }

@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -43,7 +44,7 @@ final class RecoverWalletScreenInteractor {
     
     init(authenticationCoordinator: AuthenticationCoordinator = .shared,
          passphrase: String,
-         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
+         analyticsRecorder: AnalyticsEventRecording = resolve(),
          reachability: InternetReachabilityAPI = InternetReachability(),
          walletManager: WalletManager = .shared,
          wallet: Wallet = WalletManager.shared.wallet) {

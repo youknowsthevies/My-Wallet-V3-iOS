@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import FirebaseAnalytics
 import PlatformKit
 import ToolKit
@@ -29,7 +30,7 @@ final class AnalyticsUserPropertyRecorder: UserPropertyRecording {
     // MARK: - Setup
     
     init(validator: AnalyticsUserPropertyValidator = AnalyticsUserPropertyValidator(),
-         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
+         analyticsRecorder: AnalyticsEventRecording = resolve(),
          logger: Logger = .shared) {
         self.validator = validator
         self.analyticsRecorder = analyticsRecorder

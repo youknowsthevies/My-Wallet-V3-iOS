@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -63,7 +64,7 @@ final class SimpleBuyFinishSignupAnnouncement: PersistentAnnouncement & Actionab
 
     init(canCompleteTier2: Bool,
          hasIncompleteBuyFlow: Bool,
-         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
+         analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          action: @escaping CardAnnouncementAction) {
         self.canCompleteTier2 = canCompleteTier2

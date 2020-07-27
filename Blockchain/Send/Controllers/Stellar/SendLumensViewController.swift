@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import PlatformUIKit
@@ -92,7 +93,7 @@ protocol SendXLMViewControllerDelegate: class {
     
     weak var delegate: SendXLMViewControllerDelegate?
     fileprivate var coordinator: SendXLMCoordinator!
-    private let analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
+    private let analyticsRecorder: AnalyticsEventRecording = resolve()
     private let alertViewPresenter: AlertViewPresenter = .shared
     fileprivate var trigger: ActionableTrigger?
     fileprivate var memo: StellarMemoType?

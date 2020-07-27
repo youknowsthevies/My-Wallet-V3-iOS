@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import ERC20Kit
 import EthereumKit
 import Foundation
@@ -77,7 +78,7 @@ class SendPaxViewController: UIViewController {
     private let alertViewPresenter: AlertViewPresenter = AlertViewPresenter.shared
     private let loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared
     private var qrScannerViewModel: QRCodeScannerViewModel<AddressQRCodeParser>?
-    private let analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
+    private let analyticsRecorder: AnalyticsEventRecording = resolve()
     
     private var maxAvailableTrigger: ActionableTrigger? {
         didSet {

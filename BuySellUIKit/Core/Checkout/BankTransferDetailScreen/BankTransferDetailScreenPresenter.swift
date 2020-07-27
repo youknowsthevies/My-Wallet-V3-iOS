@@ -49,7 +49,7 @@ final class BankTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Injected
 
-    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let webViewRouter: WebViewRouterAPI
     private let stateService: StateServiceAPI
     private let interactor: BankTransferDetailScreenInteractor
@@ -57,7 +57,7 @@ final class BankTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     // MARK: - Setup
 
     init(webViewRouter: WebViewRouterAPI,
-         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording,
+         analyticsRecorder: AnalyticsEventRecorderAPI,
          interactor: BankTransferDetailScreenInteractor,
          stateService: StateServiceAPI) {
         self.analyticsRecorder = analyticsRecorder
@@ -155,7 +155,7 @@ extension BankTransferDetailScreenPresenter {
         let termsTextViewModel: InteractableTextViewModel!
 
         init(data: CheckoutData,
-             analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording) {
+             analyticsRecorder: AnalyticsEventRecorderAPI) {
             typealias SummaryString = LocalizedString.Summary
             typealias TitleString = LocalizedString.Title
             let currency = data.order.fiatValue.currencyType
@@ -196,7 +196,7 @@ extension BankTransferDetailScreenPresenter {
 extension Array where Element == PaymentAccountProperty.Field {
     private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.TransferDetails
 
-    func transferDetailsCellsPresenting(analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording) -> [LineItemCellPresenting] {
+    func transferDetailsCellsPresenting(analyticsRecorder: AnalyticsEventRecorderAPI) -> [LineItemCellPresenting] {
 
         func isCopyable(field: TransactionalLineItem) -> Bool {
             switch field {

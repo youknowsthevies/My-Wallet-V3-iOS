@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 
 /// Client facing API for submitting a withdrawal.
@@ -23,7 +24,11 @@ public final class CustodyWithdrawalRequestService: CustodyWithdrawalServiceAPI 
     
     // MARK: - Init
     
-    public init(client: CustodyWithdrawalClientAPI = CustodialClient()) {
+    public convenience init() {
+        self.init(client: resolve())
+    }
+    
+    init(client: CustodyWithdrawalClientAPI) {
         self.client = client
     }
     

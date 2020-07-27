@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import PlatformKit
 import RxCocoa
@@ -23,7 +24,7 @@ class TradeLimitsService: TradeLimitsAPI {
     private let communicator: NetworkCommunicatorAPI
 
     init(socketManager: SocketManager = SocketManager.shared,
-         communicator: NetworkCommunicatorAPI = Network.Dependencies.retail.communicator) {
+         communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail)) {
         self.socketManager = socketManager
         self.communicator = communicator
         self.cachedLimitsTimer = Timer.scheduledTimer(withTimeInterval: clearCachedLimitsInterval, repeats: true) { [weak self] _ in

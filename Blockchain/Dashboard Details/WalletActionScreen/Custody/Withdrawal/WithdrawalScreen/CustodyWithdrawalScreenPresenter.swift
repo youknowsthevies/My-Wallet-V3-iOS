@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -64,7 +65,7 @@ final class CustodyWithdrawalScreenPresenter {
     
     // MARK: - Private Properties
     
-    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let activityIndicatorVisibilityRelay = BehaviorRelay<Visibility>(value: .visible)
     private let balanceViewVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let interactor: CustodyWithdrawalScreenInteractor
@@ -79,7 +80,7 @@ final class CustodyWithdrawalScreenPresenter {
          currency: CryptoCurrency,
          stateService: CustodyWithdrawalStateServiceAPI,
          loadingPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
-         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.loadingPresenter = loadingPresenter
         self.interactor = interactor

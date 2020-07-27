@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 import NetworkKit
 
@@ -13,7 +14,7 @@ public protocol JWTClientAPI: AnyObject {
     func requestJWT(guid: String, sharedKey: String) -> Single<String>
 }
 
-public final class JWTClient: JWTClientAPI {
+final class JWTClient: JWTClientAPI {
 
     // MARK: - Types
     
@@ -44,12 +45,13 @@ public final class JWTClient: JWTClientAPI {
 
     // MARK: - Setup
     
-    public init(dependencies: Network.Dependencies = .wallet) {
-        self.communicator = dependencies.communicator
-        self.requestBuilder = RequestBuilder(networkConfig: dependencies.blockchainAPIConfig)
+    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.wallet),
+         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
+        self.communicator = communicator
+        self.requestBuilder = requestBuilder
     }
     
-    public func requestJWT(guid: String, sharedKey: String) -> Single<String> {
+    func requestJWT(guid: String, sharedKey: String) -> Single<String> {
         let queryParameters = [
             URLQueryItem(
                 name: Parameter.guid,

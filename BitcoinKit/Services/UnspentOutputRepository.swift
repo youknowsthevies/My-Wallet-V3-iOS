@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -37,7 +38,9 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
     
     // MARK: - Init
     
-    init(with bridge: Bridge, client: APIClientAPI = APIClient(), scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()) {
+    init(with bridge: Bridge,
+         client: APIClientAPI = resolve(),
+         scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()) {
         self.bridge = bridge
         self.client = client
         

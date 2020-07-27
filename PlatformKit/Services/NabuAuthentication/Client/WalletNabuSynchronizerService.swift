@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 
 /// Protocol definition for a component that can synchronize state between the wallet
@@ -14,18 +15,18 @@ public protocol WalletNabuSynchronizerServiceAPI {
     func sync() -> Completable
 }
 
-public final class WalletNabuSynchronizerService: WalletNabuSynchronizerServiceAPI {
+final class WalletNabuSynchronizerService: WalletNabuSynchronizerServiceAPI {
 
     private let jwtService: JWTServiceAPI
     private let updateUserInformationClient: UpdateWalletInformationClientAPI
     
-    init(jwtService: JWTServiceAPI,
-         updateUserInformationClient: UpdateWalletInformationClientAPI) {
+    init(jwtService: JWTServiceAPI = resolve(),
+         updateUserInformationClient: UpdateWalletInformationClientAPI = resolve()) {
         self.jwtService = jwtService
         self.updateUserInformationClient = updateUserInformationClient
     }
 
-    public func sync() -> Completable {
+    func sync() -> Completable {
         jwtService.token
             .flatMapCompletable(weak: self) { (self, jwtToken) in
                 self.updateUserInformationClient.updateWalletInfo(jwtToken: jwtToken)

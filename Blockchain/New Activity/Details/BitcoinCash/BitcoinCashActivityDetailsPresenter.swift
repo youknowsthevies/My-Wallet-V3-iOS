@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
@@ -76,7 +77,7 @@ final class BitcoinCashActivityDetailsPresenter: DetailsScreenPresenterAPI {
          event: TransactionalActivityItemEvent,
          router: ActivityRouterAPI,
          interactor: BitcoinCashActivityDetailsInteractor = .init(),
-         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         precondition(event.currency == .bitcoinCash, "Using BitcoinCashActivityDetailsPresenter with \(event.currency) event.")
         self.alertViewPresenter = alertViewPresenter
         self.event = event

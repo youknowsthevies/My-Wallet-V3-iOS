@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import BigInt
 import PlatformKit
 import RxSwift
@@ -66,7 +67,7 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
     }
     
     private let bridge: Bridge
-    private let client: EthereumClientAPI
+    private let client: APIClientAPI
     private let feeService: EthereumFeeServiceAPI
     private let walletAccountRepository: EthereumWalletAccountRepositoryAPI
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
@@ -80,7 +81,7 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
                             transactionSendingService: EthereumTransactionSendingServiceAPI,
                             transactionValidationService: ValidateTransactionAPI) {
         self.init(with: bridge,
-                  client: APIClient(),
+                  client: resolve(),
                   feeService: feeService,
                   walletAccountRepository: walletAccountRepository,
                   transactionBuildingService: transactionBuildingService,
@@ -89,7 +90,7 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
     }
 
     public init(with bridge: Bridge,
-                client: EthereumClientAPI,
+                client: APIClientAPI,
                 feeService: EthereumFeeServiceAPI,
                 walletAccountRepository: EthereumWalletAccountRepositoryAPI,
                 transactionBuildingService: EthereumTransactionBuildingServiceAPI,

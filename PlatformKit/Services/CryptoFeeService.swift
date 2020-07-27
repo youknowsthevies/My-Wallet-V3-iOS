@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 import NetworkKit
 import RxSwift
 import ToolKit
@@ -23,7 +23,7 @@ public final class CryptoFeeService<T: TransactionFee & Decodable>: CryptoFeeSer
     private let communicator: NetworkCommunicatorAPI
     
     public init(apiUrl: String = BlockchainAPI.shared.apiUrl,
-                communicator: NetworkCommunicatorAPI = NetworkCommunicator.shared) {
+                communicator: NetworkCommunicatorAPI = resolve()) {
         self.apiUrl = apiUrl
         self.communicator = communicator
     }

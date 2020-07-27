@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -43,7 +44,7 @@ final class RemoteNotificationAuthorizer {
     // MARK: - Setup
     
     init(application: UIApplicationRemoteNotificationsAPI = UIApplication.shared,
-         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
+         analyticsRecorder: AnalyticsEventRecording = resolve(),
          userNotificationCenter: UNUserNotificationCenterAPI = UNUserNotificationCenter.current(),
          options: UNAuthorizationOptions = [.alert, .badge, .sound]) {
         self.application = application

@@ -8,8 +8,9 @@
 
 import NetworkKit
 import RxSwift
+import DIKit
 
-public final class SettingsClient: SettingsClientAPI {
+final class SettingsClient: SettingsClientAPI {
         
     /// Enumerates the API methods supported by the wallet settings endpoint.
     enum Method: String {
@@ -35,8 +36,8 @@ public final class SettingsClient: SettingsClientAPI {
 
     // MARK: - Setup
     
-    public init(apiCode: String = BlockchainAPI.Parameters.apiCode,
-                communicator: NetworkCommunicatorAPI = Network.Dependencies.default.communicator) {
+    init(apiCode: String = BlockchainAPI.Parameters.apiCode,
+         communicator: NetworkCommunicatorAPI = resolve()) {
         self.apiCode = apiCode
         self.communicator = communicator
     }
@@ -45,7 +46,7 @@ public final class SettingsClient: SettingsClientAPI {
     /// - Parameter guid: The wallet identifier that must be valid.
     /// - Parameter sharedKey: A shared key that must be valid.
     /// - Returns: a `Single` that wraps a `SettingsResponse`.
-    public func settings(by guid: String, sharedKey: String) -> Single<SettingsResponse> {
+    func settings(by guid: String, sharedKey: String) -> Single<SettingsResponse> {
         Single
             .create(weak: self) { (self, observer) -> Disposable in
                 let url = URL(string: BlockchainAPI.shared.walletSettingsUrl)!
@@ -74,7 +75,7 @@ public final class SettingsClient: SettingsClientAPI {
     /// - Parameter guid: The wallet identifier that must be valid.
     /// - Parameter sharedKey: A shared key that must be valid.
     /// - Returns: a `Completable`.
-    public func updateLastTransactionTime(guid: String, sharedKey: String) -> Completable {
+    func updateLastTransactionTime(guid: String, sharedKey: String) -> Completable {
         let currentTime = "\(Int(Date().timeIntervalSince1970))"
         return update(
             guid: guid,
@@ -84,7 +85,7 @@ public final class SettingsClient: SettingsClientAPI {
         )
     }
     
-    public func update(currency: String,
+    func update(currency: String,
                        context: FlowContext,
                        guid: String,
                        sharedKey: String) -> Completable {
@@ -103,7 +104,7 @@ public final class SettingsClient: SettingsClientAPI {
     /// - Parameter guid: The wallet identifier that must be valid.
     /// - Parameter sharedKey: A shared key that must be valid.
     /// - Returns: a `Completable`.
-    public func update(email: String,
+    func update(email: String,
                        context: FlowContext?,
                        guid: String,
                        sharedKey: String) -> Completable {
@@ -122,7 +123,7 @@ public final class SettingsClient: SettingsClientAPI {
     /// - Parameter guid: The wallet identifier that must be valid.
     /// - Parameter sharedKey: A shared key that must be valid.
     /// - Returns: a `Completable`.
-    public func update(smsNumber: String,
+    func update(smsNumber: String,
                        context: FlowContext?,
                        guid: String,
                        sharedKey: String) -> Completable {
@@ -135,7 +136,7 @@ public final class SettingsClient: SettingsClientAPI {
         )
     }
     
-    public func emailNotifications(enabled: Bool, guid: String, sharedKey: String) -> Completable {
+    func emailNotifications(enabled: Bool, guid: String, sharedKey: String) -> Completable {
         update(
             guid: guid,
             sharedKey: sharedKey,
@@ -151,7 +152,7 @@ public final class SettingsClient: SettingsClientAPI {
         )
     }
     
-    public func verifySMS(code: String, guid: String, sharedKey: String) -> Completable {
+    func verifySMS(code: String, guid: String, sharedKey: String) -> Completable {
         update(
             guid: guid,
             sharedKey: sharedKey,
@@ -160,7 +161,7 @@ public final class SettingsClient: SettingsClientAPI {
         )
     }
     
-    public func smsTwoFactorAuthentication(enabled: Bool, guid: String, sharedKey: String) -> Completable {
+    func smsTwoFactorAuthentication(enabled: Bool, guid: String, sharedKey: String) -> Completable {
         update(
             guid: guid,
             sharedKey: sharedKey,

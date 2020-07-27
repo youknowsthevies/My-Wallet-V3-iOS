@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import BuySellKit
 import PlatformKit
 import ToolKit
@@ -16,12 +17,10 @@ extension CardServiceProvider {
         
     convenience init() {
         self.init(
-            cardClient: CardClient(),
-            everyPayClient: EveryPayClient(),
             wallet: WalletManager.shared.reactiveWallet,
             dataRepository: BlockchainDataRepository.shared,
             featureFetcher: AppFeatureConfigurator.shared,
-            analyticsRecorder: AnalyticsEventRecorder.shared,
+            analyticsRecorder: resolve(),
             fiatCurrencyService: UserInformationServiceProvider.default.settings
         )
     }

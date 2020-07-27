@@ -53,7 +53,11 @@ public final class NabuUserService: NabuUserServiceAPI {
         
     // MARK: - Setup
     
-    public init(client: KYCClientAPI = KYCClient()) {
+    public convenience init() {
+        self.init(client: KYCClient())
+    }
+    
+    init(client: KYCClientAPI) {
         self.client = client
     }
     

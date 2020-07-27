@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import RxSwift
 
@@ -14,7 +15,7 @@ public protocol SavingsAccountClientAPI: AnyObject {
     func rate(for currency: String) -> Single<SavingsAccountInterestRateResponse>
 }
 
-public final class SavingsAccountClient: SavingsAccountClientAPI {
+final class SavingsAccountClient: SavingsAccountClientAPI {
     
     private enum Path {
         static let balance = [ "accounts", "savings" ]
@@ -32,14 +33,15 @@ public final class SavingsAccountClient: SavingsAccountClientAPI {
 
     // MARK: - Setup
 
-    public init(dependencies: Network.Dependencies = .retail) {
-        self.communicator = dependencies.communicator
-        self.requestBuilder = RequestBuilder(networkConfig: dependencies.blockchainAPIConfig)
+    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+        self.communicator = communicator
+        self.requestBuilder = requestBuilder
     }
 
     // MARK: - SavingsAccountClientAPI
     
-    public var balance: Single<SavingsAccountBalanceResponse?> {
+    var balance: Single<SavingsAccountBalanceResponse?> {
         let request = requestBuilder.get(
             path: Path.balance,
             authenticated: true
@@ -47,7 +49,7 @@ public final class SavingsAccountClient: SavingsAccountClientAPI {
         return communicator.performOptional(request: request, responseType: SavingsAccountBalanceResponse.self)
     }
     
-    public func rate(for currency: String) -> Single<SavingsAccountInterestRateResponse> {
+    func rate(for currency: String) -> Single<SavingsAccountInterestRateResponse> {
         let parameters = [
             URLQueryItem(
                 name: Parameter.ccy,

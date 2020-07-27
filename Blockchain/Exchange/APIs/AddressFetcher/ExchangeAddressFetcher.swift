@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 import NetworkKit
 import PlatformKit
 import RxSwift
@@ -113,7 +113,7 @@ final class ExchangeAddressFetcher: ExchangeAddressFetching {
     
     init(featureConfigurator: FeatureConfiguring = AppFeatureConfigurator.shared,
          repository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository(),
-         communicator: NetworkCommunicatorAPI = Network.Dependencies.retail.communicator,
+         communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
          urlPrefix: String = BlockchainAPI.shared.retailCoreUrl) {
         self.communicator = communicator
         self.repository = repository

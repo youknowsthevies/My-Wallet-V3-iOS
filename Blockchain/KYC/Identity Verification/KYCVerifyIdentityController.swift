@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import SafariServices
@@ -60,7 +61,7 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
 
     private var presenter: KYCVerifyIdentityPresenter!
     private let loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared
-    let analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
+    let analyticsRecorder: AnalyticsEventRecording = resolve()
     
     private var countrySupportedTrigger: ActionableTrigger!
 

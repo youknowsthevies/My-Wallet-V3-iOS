@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 
 public protocol SwapActivityServiceAPI: class {
@@ -20,31 +21,31 @@ extension SwapActivityServiceAPI {
     }
 }
 
-public final class SwapActivityService: SwapActivityServiceAPI {
+final class SwapActivityService: SwapActivityServiceAPI {
     
     private let client: SwapClientAPI
     private let fiatCurrencyProvider: FiatCurrencySettingsServiceAPI
     
-    public init(client: SwapClientAPI = SwapClient(),
-                fiatCurrencyProvider: FiatCurrencySettingsServiceAPI) {
+    init(client: SwapClientAPI = resolve(),
+         fiatCurrencyProvider: CompleteSettingsServiceAPI = resolve()) {
         self.fiatCurrencyProvider = fiatCurrencyProvider
         self.client = client
     }
     
-    public func fetchActivity(from date: Date) -> Single<[SwapActivityItemEvent]> {
+    func fetchActivity(from date: Date) -> Single<[SwapActivityItemEvent]> {
         fiatCurrencyProvider.fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<[SwapActivityItemEvent]> in
-                return self.client.fetchActivity(
+                self.client.fetchActivity(
                     from: date,
                     fiatCurrency: fiatCurrency.code
-            )
-        }
+                )
+            }
     }
     
-    public func fetchActivity(from date: Date, cryptoCurrency: CryptoCurrency) -> Single<[SwapActivityItemEvent]> {
+    func fetchActivity(from date: Date, cryptoCurrency: CryptoCurrency) -> Single<[SwapActivityItemEvent]> {
         fiatCurrencyProvider.fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<[SwapActivityItemEvent]> in
-                return self.client.fetchActivity(
+                self.client.fetchActivity(
                     from: date,
                     fiatCurrency: fiatCurrency.code,
                     cryptoCurrency: cryptoCurrency,

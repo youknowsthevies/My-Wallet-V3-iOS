@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import NetworkKit
 import PlatformKit
@@ -55,7 +56,7 @@ final class WalletIntroductionPresenter: NSObject {
         featureConfigurator: FeatureConfiguring = AppFeatureConfigurator.shared,
         onboardingSettings: BlockchainSettings.Onboarding = .shared,
         screen: WalletIntroductionLocation.Screen,
-        recorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
+        recorder: AnalyticsEventRecording = resolve()
         ) {
         self.featureConfigurator = featureConfigurator
         self.onboardingSettings = onboardingSettings

@@ -39,8 +39,6 @@ final class DataProvider: DataProviding {
     
     init(featureFetching: FeatureFetching = AppFeatureConfigurator.shared,
          kycTierService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
-         custodialClient: CustodialClientAPI = CustodialClient(),
-         savingsAccountClient: SavingsAccountClientAPI = SavingsAccountClient(),
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          supportedCustodialFiatCurrencies: [FiatCurrency] = CustodialLocallySupportedFiatCurrencies.fiatCurrencies) {
                 
@@ -112,14 +110,11 @@ final class DataProvider: DataProviding {
         )
                 
         let tradingBalanceStatesFetcher = CustodialBalanceStatesFetcher(
-            service: TradingBalanceService(
-                client: custodialClient
-            )
+            service: TradingBalanceService()
         )
         
         let savingsBalanceStatesFetcher = CustodialBalanceStatesFetcher(
             service: SavingAccountService(
-                client: savingsAccountClient,
                 custodialFeatureFetcher: CustodialFeatureFetcher(
                     tiersService: kycTierService,
                     featureFetching: featureFetching

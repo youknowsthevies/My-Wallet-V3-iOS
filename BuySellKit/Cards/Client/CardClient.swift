@@ -6,17 +6,18 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import RxSwift
 
-public typealias CardClientAPI = CardListClientAPI &
-                                 CardChargeClientAPI &
-                                 CardDeletionClientAPI &
-                                 CardActivationClientAPI &
-                                 CardDetailClientAPI &
-                                 CardAdditionClientAPI
+typealias CardClientAPI = CardListClientAPI &
+                          CardChargeClientAPI &
+                          CardDeletionClientAPI &
+                          CardActivationClientAPI &
+                          CardDetailClientAPI &
+                          CardAdditionClientAPI
 
-public final class CardClient: CardClientAPI {
+final class CardClient: CardClientAPI {
     
     // MARK: - Types
     
@@ -37,16 +38,17 @@ public final class CardClient: CardClientAPI {
 
     // MARK: - Setup
     
-    public init(dependencies: Network.Dependencies = .retail) {
-        self.communicator = dependencies.communicator
-        self.requestBuilder = RequestBuilder(networkConfig: dependencies.blockchainAPIConfig)
+    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+                requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+        self.communicator = communicator
+        self.requestBuilder = requestBuilder
     }
     
     // MARK: - CardListClientAPI
     
     /// Streams a list of available cards
     /// - Returns: A Single with `CardPayload` array
-    public var cardList: Single<[CardPayload]> {
+    var cardList: Single<[CardPayload]> {
         let path = Path.card
         let request = requestBuilder.get(
             path: path,
@@ -57,7 +59,7 @@ public final class CardClient: CardClientAPI {
     
     // MARK: - CardDetailClientAPI
         
-    public func getCard(by id: String) -> Single<CardPayload> {
+    func getCard(by id: String) -> Single<CardPayload> {
         let path = Path.card + [id]
         let request = requestBuilder.get(
             path: path,
@@ -68,7 +70,7 @@ public final class CardClient: CardClientAPI {
     
     // MARK: - CardDeletionClientAPI
 
-    public func deleteCard(by id: String) -> Completable {
+    func deleteCard(by id: String) -> Completable {
         let path = Path.card + [id]
         let request = requestBuilder.delete(
             path: path,
@@ -79,7 +81,7 @@ public final class CardClient: CardClientAPI {
     
     // MARK: - CardChargeClientAPI
     
-    public func chargeCard(by id: String) -> Completable {
+    func chargeCard(by id: String) -> Completable {
         let path = Path.card + [id, "charge"]
         let request = requestBuilder.post(
             path: path,
@@ -90,7 +92,7 @@ public final class CardClient: CardClientAPI {
     
     // MARK: - CardAdditionClientAPI
     
-    public func add(for currency: String,
+    func add(for currency: String,
                     email: String,
                     billingAddress: CardPayload.BillingAddress) -> Single<CardPayload> {
         struct RequestPayload: Encodable {
@@ -124,8 +126,7 @@ public final class CardClient: CardClientAPI {
     ///   - url: Everypay only - URL to return to after card verified
     ///   - token: Session token
     /// - Returns: The card details
-    public func activateCard(by id: String,
-                             url: String) -> Single<ActivateCardResponse.Partner> {
+    func activateCard(by id: String, url: String) -> Single<ActivateCardResponse.Partner> {
         
         struct Attributes: Encodable {
             struct EveryPay: Encodable {

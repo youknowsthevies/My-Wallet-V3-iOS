@@ -6,10 +6,13 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import ToolKit
 
 extension SendBitcoinViewController {
+    
+    private var analyticsEventRecorder: AnalyticsEventRecording { resolve() }
     
     private var asset: CryptoCurrency {
         CryptoCurrency(legacyAssetType: assetType)
@@ -17,56 +20,56 @@ extension SendBitcoinViewController {
     
     @objc
     func reportExchangeButtonClick() {
-        AnalyticsEventRecorder.shared.record(
+        analyticsEventRecorder.record(
             event: AnalyticsEvents.Send.sendFormExchangeButtonClick(asset: asset)
         )
     }
     
     @objc
     func reportFormUseBalanceClick() {
-        AnalyticsEventRecorder.shared.record(
+        analyticsEventRecorder.record(
             event: AnalyticsEvents.Send.sendFormUseBalanceClick(asset: asset)
         )
     }
     
     @objc
     func reportSendFormConfirmClick() {
-        AnalyticsEventRecorder.shared.record(
+        analyticsEventRecorder.record(
             event: AnalyticsEvents.Send.sendFormConfirmClick(asset: asset)
         )
     }
 
     @objc
     func reportSendFormConfirmSuccess() {
-        AnalyticsEventRecorder.shared.record(
+        analyticsEventRecorder.record(
             event: AnalyticsEvents.Send.sendFormConfirmSuccess(asset: asset)
         )
     }
     
     @objc
     func reportSendFormConfirmFailure() {
-        AnalyticsEventRecorder.shared.record(
+        analyticsEventRecorder.record(
             event: AnalyticsEvents.Send.sendFormConfirmFailure(asset: asset)
         )
     }
     
     @objc
     func reportSendSummaryConfirmClick() {
-        AnalyticsEventRecorder.shared.record(
+        analyticsEventRecorder.record(
             event: AnalyticsEvents.Send.sendSummaryConfirmClick(asset: asset)
         )
     }
     
     @objc
     func reportSendSummaryConfirmSuccess() {
-        AnalyticsEventRecorder.shared.record(
+        analyticsEventRecorder.record(
             event: AnalyticsEvents.Send.sendSummaryConfirmSuccess(asset: asset)
         )
     }
     
     @objc
     func reportSendSummaryConfirmFailure() {
-        AnalyticsEventRecorder.shared.record(
+        analyticsEventRecorder.record(
             event: AnalyticsEvents.Send.sendSummaryConfirmFailure(asset: asset)
         )
     }

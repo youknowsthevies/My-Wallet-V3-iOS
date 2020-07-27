@@ -16,3 +16,8 @@ public typealias WalletRepositoryAPI = SessionTokenRepositoryAPI
                                      & PayloadRepositoryAPI
                                      & NabuOfflineTokenRepositoryAPI
                                      & CredentialsRepositoryAPI
+
+public protocol WalletRepositoryProvider {
+    
+    var repository: WalletRepositoryAPI! { get }
+}

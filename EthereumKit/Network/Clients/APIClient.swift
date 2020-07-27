@@ -7,11 +7,12 @@
 //
 
 import BigInt
+import DIKit
 import NetworkKit
 import PlatformKit
 import RxSwift
 
-public protocol EthereumClientAPI: class {
+public protocol APIClientAPI: class {
 
     var latestBlock: Single<LatestBlockResponse> { get }
 
@@ -21,7 +22,7 @@ public protocol EthereumClientAPI: class {
     func balanceDetails(from address: String) -> Single<BalanceDetailsResponse>
 }
 
-final class APIClient: EthereumClientAPI {
+final class APIClient: APIClientAPI {
 
     // MARK: - Types
 
@@ -83,26 +84,24 @@ final class APIClient: EthereumClientAPI {
     // MARK: - Private Properties
 
     private let communicator: NetworkCommunicatorAPI
-    private let config: Network.Config
     private let requestBuilder: RequestBuilder
+    private let apiCode: String
 
     // MARK: - Setup
-
-    init(communicator: NetworkCommunicatorAPI, config: Network.Config) {
+    
+    init(communicator: NetworkCommunicatorAPI = resolve(),
+         requestBuilder: RequestBuilder = resolve(),
+         apiCode: APICode = resolve()) {
         self.communicator = communicator
-        self.config = config
-        self.requestBuilder = RequestBuilder(networkConfig: config)
-    }
-
-    convenience init(dependencies: Network.Dependencies = .default) {
-        self.init(communicator: dependencies.communicator, config: dependencies.blockchainAPIConfig)
+        self.requestBuilder = requestBuilder
+        self.apiCode = apiCode
     }
 
     /// Pushes a transaction
     func push(transaction: EthereumTransactionFinalised) -> Single<EthereumPushTxResponse> {
         let pushTxRequest = PushTxRequest(
             rawTx: transaction.rawTx,
-            api_code: config.apiCode
+            api_code: apiCode
         )
         let data = try? JSONEncoder().encode(pushTxRequest)
         guard let request = requestBuilder.post(

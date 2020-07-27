@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 import NetworkKit
 import PlatformKit
 import RxSwift
@@ -28,7 +28,7 @@ class HomebrewExchangeService: HomebrewExchangeAPI {
     
     private let communicator: NetworkCommunicatorAPI
     
-    init(communicator: NetworkCommunicatorAPI = Network.Dependencies.retail.communicator) {
+    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail)) {
         self.communicator = communicator
     }
     

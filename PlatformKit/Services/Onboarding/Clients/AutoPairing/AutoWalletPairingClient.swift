@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import RxSwift
 
@@ -14,13 +15,14 @@ public final class AutoWalletPairingClient: AutoWalletPairingClientAPI {
     // MARK: - Properties
     
     private let communicator: NetworkCommunicatorAPI
-    private let requestBuilder: RequestBuilder
+    private let requestBuilder: AutoWalletPairingClientRequestBuilder
     
     // MARK: - Setup
-
-    public init(dependencies: Network.Dependencies = .wallet) {
-        self.requestBuilder = RequestBuilder(requestBuilder: dependencies.requestBuilder)
-        self.communicator = dependencies.communicator
+    
+    public init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.wallet),
+                requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
+        self.communicator = communicator
+        self.requestBuilder = AutoWalletPairingClientRequestBuilder(requestBuilder: requestBuilder)
     }
         
     public func request(guid: String) -> Single<String> {
@@ -35,7 +37,7 @@ public final class AutoWalletPairingClient: AutoWalletPairingClientAPI {
 
 extension AutoWalletPairingClient {
     
-    private struct RequestBuilder {
+    private struct AutoWalletPairingClientRequestBuilder {
         
         // MARK: - Types
         
@@ -48,11 +50,11 @@ extension AutoWalletPairingClient {
         
         // MARK: - Builder
         
-        private let requestBuilder: NetworkKit.RequestBuilder
+        private let requestBuilder: RequestBuilder
 
         // MARK: - Setup
         
-        init(requestBuilder: NetworkKit.RequestBuilder) {
+        init(requestBuilder: RequestBuilder) {
             self.requestBuilder = requestBuilder
         }
         

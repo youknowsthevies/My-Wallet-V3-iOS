@@ -6,11 +6,12 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxRelay
 import RxSwift
 
 public final class EmailVerificationService: EmailVerificationServiceAPI {
-
+    
     // MARK: - Types
     
     private enum ServiceError: Error {
@@ -26,8 +27,8 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
 
     // MARK: - Setup
     
-    public init(syncService: WalletNabuSynchronizerServiceAPI,
-                settingsService: SettingsServiceAPI & EmailSettingsServiceAPI) {
+    init(syncService: WalletNabuSynchronizerServiceAPI = resolve(),
+         settingsService: CompleteSettingsServiceAPI = resolve()) {
         self.syncService = syncService
         self.settingsService = settingsService
     }
@@ -44,7 +45,7 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
     public func verifyEmail() -> Completable {
         start()
             .flatMapCompletable(weak: self) { (self, _) -> Completable in
-                return self.syncService.sync()
+                self.syncService.sync()
             }
     }
     

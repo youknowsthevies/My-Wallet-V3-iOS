@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import BuySellKit
 import PlatformKit
 import PlatformUIKit
@@ -87,7 +88,7 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
     // MARK: - Setup
 
     init(order: OrderDetails?,
-         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
+         analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          action: @escaping CardAnnouncementAction) {
         self.order = order

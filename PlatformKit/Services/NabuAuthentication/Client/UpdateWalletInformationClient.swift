@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 import NetworkKit
 
@@ -13,7 +14,7 @@ public protocol UpdateWalletInformationClientAPI: AnyObject {
     func updateWalletInfo(jwtToken: String) -> Completable
 }
 
-public final class UpdateWalletInformationClient: UpdateWalletInformationClientAPI {
+final class UpdateWalletInformationClient: UpdateWalletInformationClientAPI {
      
     private enum Path {
         static let updateWalletInfo = [ "users", "current", "walletInfo" ]
@@ -26,13 +27,13 @@ public final class UpdateWalletInformationClient: UpdateWalletInformationClientA
 
      // MARK: - Setup
       
-    public init(dependencies: Network.Dependencies = .retail) {
-        self.communicator = dependencies.communicator
-        self.requestBuilder = RequestBuilder(networkConfig: dependencies.blockchainAPIConfig)
-     
+    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+        self.communicator = communicator
+        self.requestBuilder = requestBuilder
     }
          
-    public func updateWalletInfo(jwtToken: String) -> Completable {
+    func updateWalletInfo(jwtToken: String) -> Completable {
         let payload = JWTPayload(jwt: jwtToken)
         let request = requestBuilder.put(
             path: Path.updateWalletInfo,

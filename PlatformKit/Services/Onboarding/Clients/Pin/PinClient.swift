@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import RxSwift
 
@@ -19,7 +20,7 @@ public final class PinClient: PinClientAPI {
     
     // MARK: - Setup
     
-    public init(network: NetworkCommunicatorAPI = NetworkCommunicator.shared) {
+    public init(network: NetworkCommunicatorAPI = resolve()) {
         self.network = network
     }
     

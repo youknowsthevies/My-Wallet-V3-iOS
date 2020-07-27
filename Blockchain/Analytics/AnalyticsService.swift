@@ -85,7 +85,3 @@ class AnalyticsService: AnalyticsServiceAPI {
         FirebaseConstants.reservedKeys.contains(key)
     }
 }
-
-extension AnalyticsEventRecorder {
-    static let shared = AnalyticsEventRecorder(analyticsService: AnalyticsService.shared)
-}

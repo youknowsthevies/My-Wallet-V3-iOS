@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import PlatformUIKit
@@ -133,7 +134,7 @@ final class SendPresenter {
     private unowned let router: SendRouter
     private let loader: LoadingViewPresenting
     private let interactor: SendInteracting
-    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     
     // MARK: - Accessors
     
@@ -147,7 +148,7 @@ final class SendPresenter {
     init(router: SendRouter,
          loader: LoadingViewPresenting = LoadingViewPresenter.shared,
          interactor: SendInteracting,
-         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.router = router
         self.loader = loader
         self.interactor = interactor

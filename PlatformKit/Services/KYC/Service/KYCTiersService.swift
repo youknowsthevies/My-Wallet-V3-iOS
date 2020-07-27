@@ -60,7 +60,11 @@ public final class KYCTiersService: KYCTiersServiceAPI {
     
     // MARK: - Setup
     
-    public init(client: KYCClientAPI = KYCClient()) {
+    public convenience init() {
+        self.init(client: KYCClient())
+    }
+    
+    init(client: KYCClientAPI) {
         self.client = client
     }
     

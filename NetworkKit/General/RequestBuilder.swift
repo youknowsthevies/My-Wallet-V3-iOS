@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 
 public class RequestBuilder {
 
@@ -24,7 +24,7 @@ public class RequestBuilder {
     
     private let networkConfig: Network.Config
     
-    public init(networkConfig: Network.Config) {
+    init(networkConfig: Network.Config = resolve()) {
         self.networkConfig = networkConfig
     }
     

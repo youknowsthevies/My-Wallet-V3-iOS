@@ -7,6 +7,7 @@
 //
 
 import BigInt
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -46,15 +47,15 @@ public final class EthereumHistoricalTransactionService: HistoricalTransactionAP
     private let cachedLatestBlock: CachedValue<Int>
     
     private let bridge: Bridge
-    private let client: EthereumClientAPI
+    private let client: APIClientAPI
 
     // MARK: - Init
 
     convenience public init(with bridge: Bridge) {
-        self.init(with: bridge, client: APIClient())
+        self.init(with: bridge, client: resolve())
     }
     
-    public init(with bridge: Bridge, client: EthereumClientAPI) {
+    public init(with bridge: Bridge, client: APIClientAPI) {
         self.bridge = bridge
         self.client = client
         self.cachedAccount = CachedValue<EthereumAssetAccount>(configuration: .onSubscription())
@@ -168,7 +169,7 @@ extension EthereumHistoricalTransactionService: HistoricalTransactionDetailsAPI 
                             accountAddress: tuple.0.accountAddress,
                             latestBlock: tuple.1
                         )
-                }
+                    }
             }
     }
 

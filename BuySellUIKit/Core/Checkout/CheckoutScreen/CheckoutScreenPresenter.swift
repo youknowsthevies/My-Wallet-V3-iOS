@@ -42,7 +42,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Injected
     
-    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let uiUtilityProvider: UIUtilityProviderAPI
     private let interactor: CheckoutScreenInteractor
     private unowned let stateService: StateService
@@ -56,7 +56,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
     
     init(stateService: StateService,
          uiUtilityProvider: UIUtilityProviderAPI = UIUtilityProvider.default,
-         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording,
+         analyticsRecorder: AnalyticsEventRecorderAPI,
          interactor: CheckoutScreenInteractor) {
         self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService

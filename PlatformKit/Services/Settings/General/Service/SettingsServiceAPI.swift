@@ -9,6 +9,14 @@
 import RxRelay
 import RxSwift
 
+public typealias CompleteSettingsServiceAPI = SettingsServiceAPI &
+                                              EmailSettingsServiceAPI &
+                                              LastTransactionSettingsUpdateServiceAPI &
+                                              EmailNotificationSettingsServiceAPI &
+                                              FiatCurrencySettingsServiceAPI &
+                                              MobileSettingsServiceAPI &
+                                              SMSTwoFactorSettingsServiceAPI
+
 public protocol SettingsServiceAPI: class {
     var valueSingle: Single<WalletSettings> { get }
     var valueObservable: Observable<WalletSettings> { get }

@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import PlatformUIKit
@@ -56,7 +57,7 @@ final class KYCResubmitIdentityController: KYCBaseViewController, ProgressableVi
 
     private var presenter: KYCVerifyIdentityPresenter!
     private let loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared
-    let analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
+    let analyticsRecorder: AnalyticsEventRecording = resolve()
     
     // MARK: - KYCCoordinatorDelegate
 

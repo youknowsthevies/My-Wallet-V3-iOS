@@ -106,60 +106,6 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
         memo = nil
     }
     
-    // MARK: Public
-    
-    public func fetchTransactionDetails(currencyCode: String) -> Single<ERC20HistoricalTransaction<Token>> {
-        Single
-            .zip(
-                transactionDetails,
-                historicalFiatPrice(with: currencyCode)
-            )
-            .map {
-                var output = self.make(from: self.direction, fee: $0.0.fee, memo: nil)
-                output.historicalFiatValue = self.amount.convertToFiatValue(exchangeRate: $0.1.moneyValue.fiatValue!)
-                return output
-            }
-    }
-    
-    // MARK: Private
-    
-    @available(*, deprecated, message: "Network Requests shouldn't be performed from models. This method should be replaced by a call to a Service e.g. ERC20Service")
-    private var transactionDetails: Single<ERC20TransactionDetails<Token>> {
-        guard let baseURL = URL(string: BlockchainAPI.shared.apiUrl) else {
-            return Single.error(NetworkError.generic(message: "Invalid URL"))
-        }
-        let components = ["v2", "eth", "data", "transaction", transactionHash]
-        guard let endpoint = URL.endpoint(baseURL, pathComponents: components, queryParameters: nil) else {
-            return Single.error(NetworkError.generic(message: "Invalid URL"))
-        }
-        return Network.Dependencies.default.communicator.perform(request: NetworkRequest(endpoint: endpoint, method: .get))
-    }
-    
-    // Provides price index (exchange rate) between supported cryptocurrency and fiat currency.
-    // This is how you populate the `historicalFiatValue`.
-    @available(*, deprecated, message: "Network Requests shouldn't be performed from models. This method should be replaced by a call to a Service e.g. ERC20Service")
-    public func historicalFiatPrice(with currencyCode: String) -> Single<PriceQuoteAtTime> {
-        guard let baseUrl = URL(string: BlockchainAPI.shared.servicePriceUrl) else {
-            return Single.error(NetworkError.generic(message: "URL is invalid."))
-        }
-        let parameters = ["base": Token.assetType.code,
-                          "quote": currencyCode,
-                          "start": "\(createdAt.timeIntervalSince1970)"]
-        
-        guard let url = URL.endpoint(
-            baseUrl,
-            pathComponents: ["index"],
-            queryParameters: parameters
-            ) else {
-                return Single.error(NetworkError.generic(message: "URL is invalid."))
-        }
-        return Network.Dependencies.default.communicator
-            .perform(request: NetworkRequest(endpoint: url, method: .get))
-            .map { (response: PriceQuoteAtTimeResponse) -> PriceQuoteAtTime in
-                try PriceQuoteAtTime(response: response, currency: CurrencyType(currency: currencyCode))
-            }
-    }
-    
     // MARK: Hashable
     
     public func hash(into hasher: inout Hasher) {

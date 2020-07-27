@@ -7,49 +7,63 @@
 //
 
 import DIKit
-import PlatformUIKit
+import ToolKit
 import PlatformKit
+import PlatformUIKit
 
-public extension DependencyContainer {
-    static var appCoordinator = module {
+extension DependencyContainer {
+    
+    // MARK: - Blockchain Module
+    
+    static var blockchain = module {
+        
         single { AppCoordinator() }
-    }
-    static var authenticationCoordinator = module {
+        
         single { AuthenticationCoordinator() }
-    }
-    static var blockchainSettingsApp = module {
+        
         single { BlockchainSettings.App() }
+        
         factory { () -> AppSettingsAPI in
             let app: BlockchainSettings.App = DIKit.resolve()
             return app as AppSettingsAPI
         }
+        
         factory { () -> AppSettingsAuthenticating in
             let app: BlockchainSettings.App = DIKit.resolve()
             return app as AppSettingsAuthenticating
         }
-    }
-    static var walletManager = module {
+        
         single { WalletManager() }
-    }
-    static var onboardingRouter = module {
+        
         single { OnboardingRouter() }
-    }
-    static var paymentPresenter = module {
+        
         factory { PaymentPresenter() }
-    }
-    static var topMostViewControllerProviding = module {
+        
         factory { UIApplication.shared as TopMostViewControllerProviding }
-    }
-    static var airdropRouter = module {
+        
         factory { AirdropRouter() as AirdropRouterAPI }
-    }
-    static var loadingViewPresenter = module {
+        
         single { LoadingViewPresenter() as LoadingViewPresenting }
-    }
-    static var appFeatureConfigurator = module {
+        
         single { AppFeatureConfigurator() }
-    }
-    static var deepLinkRouter = module {
+        
         factory { DeepLinkRouter() }
+        
+        factory { UIDevice.current as DeviceInfo }
+        
+        single { UserInformationServiceProvider() as UserInformationServiceProviding }
+        
+        factory { () -> SettingsServiceAPI in
+            let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
+            let settings = userInformationProvider.settings
+            return settings as SettingsServiceAPI
+        }
+        
+        factory { () -> WalletRepositoryProvider in
+            let walletManager: WalletManager = DIKit.resolve()
+            return walletManager as WalletRepositoryProvider
+        }
+        
+        single { AnalyticsService() as AnalyticsServiceAPI }
     }
 }

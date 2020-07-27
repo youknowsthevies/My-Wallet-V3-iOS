@@ -56,7 +56,7 @@ final class BuyCryptoScreenPresenter {
     )
     // MARK: - Injected
     
-    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let uiUtilityProvider: UIUtilityProviderAPI
     private let interactor: BuyCryptoScreenInteractor
 
@@ -70,7 +70,7 @@ final class BuyCryptoScreenPresenter {
     // MARK: - Setup
     
     init(uiUtilityProvider: UIUtilityProviderAPI = UIUtilityProvider.default,
-         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording,
+         analyticsRecorder: AnalyticsEventRecorderAPI,
          router: RouterAPI,
          stateService: CheckoutServiceAPI,
          interactor: BuyCryptoScreenInteractor) {

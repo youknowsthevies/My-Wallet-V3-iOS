@@ -13,6 +13,7 @@ import FirebaseDynamicLinks
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import EthereumKit
 import RxSwift
 import ToolKit
 import DIKit
@@ -64,17 +65,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     override init() {
         super.init()
         DependencyContainer.defined(by: modules {
-            DependencyContainer.airdropRouter;
-            DependencyContainer.appCoordinator;
-            DependencyContainer.appFeatureConfigurator;
-            DependencyContainer.authenticationCoordinator;
-            DependencyContainer.blockchainSettingsApp;
-            DependencyContainer.loadingViewPresenter;
-            DependencyContainer.onboardingRouter;
-            DependencyContainer.paymentPresenter;
-            DependencyContainer.topMostViewControllerProviding;
-            DependencyContainer.walletManager;
-            DependencyContainer.deepLinkRouter
+            DependencyContainer.toolKit;
+            DependencyContainer.networkKit;
+            DependencyContainer.platformKit;
+            DependencyContainer.ethereumKit;
+            DependencyContainer.bitcoinKit;
+            DependencyContainer.buySellKit;
+            DependencyContainer.blockchain
         })
     }
 
@@ -83,10 +80,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions
                      launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
-        /// `User-Agent` uses `UIDevice` which, given that it is a
-        /// `UIKit` class should not be in any of our frameworks other than `PlatformUIKit`
-        UserAgentProvider.shared.apply(deviceInfo: UIDevice.current)
         
         if ProcessInfo.processInfo.environmentBoolean(for: "automation_erase_data") == true {
             // If ProcessInfo environment contains "automation_erase_data": true, erase wallet and settings.
@@ -146,10 +139,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         // TODO: prevent any other data tasks from executing until cert is pinned
-        CertificatePinner.shared.pinCertificateIfNeeded()
-
-        Network.Dependencies.default.communicator.use(eventRecorder: AnalyticsEventRecorder.shared)
-        Network.Dependencies.retail.communicator.use(authenticator: NabuServiceProvider.default.authenticator)
+        let certificatePinner: CertificatePinnerAPI = resolve()
+        certificatePinner.pinCertificateIfNeeded()
         
         checkForNewInstall()
         
@@ -201,7 +192,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         appCoordinator.cleanupOnAppBackgrounded()
         AuthenticationCoordinator.shared.cleanupOnAppBackgrounded()
 
-        Network.Dependencies.default.session.reset {
+        let defaultSession: URLSession = resolve()
+        defaultSession.reset {
             Logger.shared.debug("URLSession reset completed.")
         }
     }

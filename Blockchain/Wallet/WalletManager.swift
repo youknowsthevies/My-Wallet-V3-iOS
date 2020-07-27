@@ -18,7 +18,7 @@ import ToolKit
  Manager object for operations to the Blockchain Wallet.
  */
 @objc
-class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI {
+class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, WalletRepositoryProvider {
     
     @Inject static var shared: WalletManager
     

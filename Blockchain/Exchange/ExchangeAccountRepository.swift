@@ -7,6 +7,7 @@
 //
 
 import BitcoinKit
+import DIKit
 import NetworkKit
 import PlatformKit
 import RxSwift
@@ -39,7 +40,7 @@ class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
     private let accountRepository: AssetAccountRepositoryAPI
     
     init(blockchainRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
-         clientAPI: ExchangeClientAPI = ExchangeClient(communicatorAPI: Network.Dependencies.retail.communicator),
+         clientAPI: ExchangeClientAPI = ExchangeClient(communicatorAPI: resolve(tag: DIKitContext.retail)),
          accountRepository: AssetAccountRepositoryAPI = AssetAccountRepository.shared) {
         self.blockchainRepository = blockchainRepository
         self.clientAPI = clientAPI
@@ -77,7 +78,7 @@ class ExchangeClient: ExchangeClientAPI {
     var communicatorAPI: NetworkCommunicatorAPI
     var appSettings: BlockchainSettings.App
     
-    init(communicatorAPI: NetworkCommunicatorAPI = Network.Dependencies.retail.communicator,
+    init(communicatorAPI: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
          settings: BlockchainSettings.App = BlockchainSettings.App.shared) {
         self.communicatorAPI = communicatorAPI
         self.appSettings = settings

@@ -32,14 +32,14 @@ final class KYCPendingPresenter: PendingStatePresenterAPI {
     private let disposeBag = DisposeBag()
     private let interactor: KYCPendingInteractor
     private unowned let stateService: RoutingStateEmitterAPI
-    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private var modelRelay: BehaviorRelay<PendingStateViewModel>!
 
     // MARK: - Setup
     
     init(stateService: RoutingStateEmitterAPI,
          interactor: KYCPendingInteractor,
-         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording) {
+         analyticsRecorder: AnalyticsEventRecorderAPI) {
         self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService
         self.interactor = interactor

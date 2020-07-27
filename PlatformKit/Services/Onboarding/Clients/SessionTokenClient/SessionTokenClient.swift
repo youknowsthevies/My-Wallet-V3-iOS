@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import RxSwift
 
@@ -45,7 +46,7 @@ public final class SessionTokenClient: SessionTokenClientAPI {
     
     // MARK: - Setup
     
-    public init(communicator: NetworkCommunicatorAPI = NetworkCommunicator.shared) {
+    public init(communicator: NetworkCommunicatorAPI = resolve()) {
         self.communicator = communicator
     }
 }

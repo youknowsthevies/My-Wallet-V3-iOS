@@ -6,15 +6,18 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import ToolKit
 
 extension AssetSelectorView {
     
+    private var analyticsEventRecorder: AnalyticsEventRecording { resolve() }
+    
     @objc
     func reportOpen() {
         let asset = CryptoCurrency(legacyAssetType: selectedAsset)
-        AnalyticsEventRecorder.shared.record(
+        analyticsEventRecorder.record(
             event: AnalyticsEvents.AssetSelection.assetSelectorOpen(asset: asset)
         )
     }
@@ -22,7 +25,7 @@ extension AssetSelectorView {
     @objc
     func reportClose() {
         let asset = CryptoCurrency(legacyAssetType: selectedAsset)
-        AnalyticsEventRecorder.shared.record(
+        analyticsEventRecorder.record(
             event: AnalyticsEvents.AssetSelection.assetSelectorClose(asset: asset)
         )
     }

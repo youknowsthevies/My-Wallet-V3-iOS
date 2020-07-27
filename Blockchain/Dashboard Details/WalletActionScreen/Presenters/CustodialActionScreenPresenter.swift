@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -58,7 +59,7 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
     private let swapButtonVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let activityButtonVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let sendToWalletVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
-    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let interactor: WalletActionScreenInteracting
     private let disposeBag = DisposeBag()
     
@@ -66,7 +67,7 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
     
     init(using interactor: WalletActionScreenInteracting,
          stateService: CustodyActionStateServiceAPI,
-         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording = AnalyticsEventRecorder.shared) {
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.interactor = interactor
         

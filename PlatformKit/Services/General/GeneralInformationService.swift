@@ -6,22 +6,28 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 import ToolKit
 
-public final class GeneralInformationService {
+public protocol GeneralInformationServiceAPI {
+    
+    var countries: Single<[CountryData]> { get }
+}
+
+final class GeneralInformationService: GeneralInformationServiceAPI {
     
     // MARK: - Exposed
     
     /// Provides the countries fetched from remote
-    public var countries: Single<[CountryData]> {
+    var countries: Single<[CountryData]> {
         countriesCachedValue.valueSingle
     }
     
     private let client: GeneralInformationClientAPI
     private let countriesCachedValue: CachedValue<[CountryData]>
     
-    public init(client: GeneralInformationClientAPI = GeneralInformationClient()) {
+    init(client: GeneralInformationClientAPI = resolve()) {
         self.client = client
         
         countriesCachedValue = .init(

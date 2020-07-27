@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import RxSwift
 import ToolKit
@@ -40,9 +41,10 @@ public final class EveryPayClient: EveryPayClientAPI {
 
     // MARK: - Setup
     
-    public init(dependencies: Network.Dependencies = .everypay) {
-        self.communicator = dependencies.communicator
-        self.requestBuilder = RequestBuilder(networkConfig: dependencies.blockchainAPIConfig)
+    public init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.everypay),
+                requestBuilder: RequestBuilder = resolve(tag: DIKitContext.everypay)) {
+        self.communicator = communicator
+        self.requestBuilder = requestBuilder
     }
     
     public func send(cardDetails: CardPartnerPayload.EveryPay.SendCardDetailsRequest.CardDetails,

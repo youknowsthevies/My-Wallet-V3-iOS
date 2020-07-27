@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import HDWalletKit
 import LibWally
 import PlatformKit
@@ -66,7 +67,7 @@ public final class BlockstackAccountRepository: BlockstackAccountAPI {
     // MARK: - Init
     
     public convenience init(with bridge: Bridge) {
-        self.init(with: bridge, client: APIClient(), addressDeriver: BlockstackAddressDeriver())
+        self.init(with: bridge, client: resolve(), addressDeriver: BlockstackAddressDeriver())
     }
     
     init(with bridge: Bridge, client: APIClientAPI, addressDeriver: BlockstackAddressDeriverAPI) {

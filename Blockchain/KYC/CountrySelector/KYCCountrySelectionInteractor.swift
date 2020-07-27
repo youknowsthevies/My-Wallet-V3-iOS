@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import PlatformKit
 import RxSwift
@@ -16,12 +17,12 @@ class KYCCountrySelectionInteractor {
     private let jwtService: JWTServiceAPI
     private let kycClient: KYCClientAPI
     
-    init(jwtService: JWTServiceAPI = NabuServiceProvider.default.jwtToken,
-         kycClient: KYCClientAPI = KYCClient()) {
+    init(jwtService: JWTServiceAPI = resolve(),
+         kycClient: KYCClientAPI = resolve()) {
         self.kycClient = kycClient
         self.jwtService = jwtService
     }
-
+    
     func selected(country: CountryData, shouldBeNotifiedWhenAvailable: Bool? = nil) -> Disposable {
         sendSelection(countryCode: country.code, shouldBeNotifiedWhenAvailable: shouldBeNotifiedWhenAvailable)
     }

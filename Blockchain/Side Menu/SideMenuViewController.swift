@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import PlatformUIKit
@@ -51,7 +52,7 @@ class SideMenuViewController: UIViewController {
     }
     
     private let recorder: ErrorRecording = CrashlyticsRecorder()
-    private let analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
+    private let analyticsRecorder: AnalyticsEventRecording = resolve()
 
     // MARK: - View Controller Lifecycle
 

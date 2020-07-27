@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import BuySellKit
 import BuySellUIKit
 import PlatformKit
@@ -52,7 +53,7 @@ final class SettingsRouter: SettingsRouterAPI {
     
     init(wallet: Wallet = WalletManager.shared.wallet,
          guidRepositoryAPI: GuidRepositoryAPI = WalletManager.shared.repository,
-         analyticsRecording: AnalyticsEventRecording = AnalyticsEventRecorder.shared,
+         analyticsRecording: AnalyticsEventRecording = resolve(),
          topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
          alertPresenter: AlertViewPresenter = AlertViewPresenter.shared,
          cardsServiceProvider: CardServiceProviderAPI = CardServiceProvider.default,

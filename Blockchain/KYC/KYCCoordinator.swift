@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
@@ -104,7 +105,7 @@ protocol KYCCoordinatorDelegate: class {
         appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
         kycSettings: KYCSettingsAPI = KYCSettings.shared,
         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
-        communicator: NetworkCommunicatorAPI = Network.Dependencies.retail.communicator
+        communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail)
     ) {
         self.webViewServiceAPI = webViewServiceAPI
         self.tiersService = tiersService

@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -35,7 +36,7 @@ final class KYCCountrySelectionController: KYCBaseViewController, ProgressableVi
         KYCCountrySelectionPresenter(view: self)
     }()
     
-    private let analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared
+    private let analyticsRecorder: AnalyticsEventRecording = resolve()
     private let informationService = UserInformationServiceProvider.default.general
     
     private let disposeBag = DisposeBag()

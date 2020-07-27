@@ -52,7 +52,7 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     
     // MARK: - Injected
 
-    private let analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let webViewRouter: WebViewRouterAPI
     private let stateService: StateServiceAPI
     private let interactor: FundsTransferDetailsInteractorAPI
@@ -60,7 +60,7 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     // MARK: - Setup
 
     init(webViewRouter: WebViewRouterAPI,
-         analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording,
+         analyticsRecorder: AnalyticsEventRecorderAPI,
          interactor: FundsTransferDetailsInteractorAPI,
          stateService: StateServiceAPI) {
         self.analyticsRecorder = analyticsRecorder
@@ -132,7 +132,7 @@ extension FundsTransferDetailScreenPresenter {
         let termsTextViewModel: InteractableTextViewModel!
 
         init(account: PaymentAccount,
-             analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording) {
+             analyticsRecorder: AnalyticsEventRecorderAPI) {
         
             typealias FundsString = LocalizedString.Funds
             

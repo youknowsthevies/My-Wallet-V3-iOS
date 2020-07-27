@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import PhoneNumberKit
 import PlatformKit
@@ -17,10 +18,10 @@ class KYCVerifyPhoneNumberInteractor {
     private let phoneNumberKit = PhoneNumberKit()
     private let wallet: Wallet
     private let walletSync: WalletNabuSynchronizerServiceAPI
-
+    
     init(
         wallet: Wallet = WalletManager.shared.wallet,
-        walletSync: WalletNabuSynchronizerServiceAPI = NabuServiceProvider.default.walletSynchronizer
+        walletSync: WalletNabuSynchronizerServiceAPI = resolve()
     ) {
         self.wallet = wallet
         self.walletSync = walletSync

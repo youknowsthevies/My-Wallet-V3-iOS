@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import BuySellKit
 import PlatformKit
 import RxRelay
@@ -49,7 +50,7 @@ final class RemoveCardScreenInteractor {
     
     init(cardListService: CardListServiceAPI,
          deletionService: CardDeletionServiceAPI,
-         eventRecorder: AnalyticsEventRecording = AnalyticsEventRecorder.shared) {
+         eventRecorder: AnalyticsEventRecording = resolve()) {
         self.cardListService = cardListService
         self.deletionService = deletionService
         self.eventRecorder = eventRecorder

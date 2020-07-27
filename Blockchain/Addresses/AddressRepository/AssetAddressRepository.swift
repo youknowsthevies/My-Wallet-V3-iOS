@@ -7,6 +7,7 @@
 //
 
 import BitcoinKit
+import DIKit
 import ERC20Kit
 import EthereumKit
 import NetworkKit
@@ -67,18 +68,21 @@ enum AssetAddressType {
     private let stellarWalletAccountRepository: StellarWalletAccountRepository
     private let paxAssetAccountRepository: ERC20AssetAccountRepository<PaxToken>
     private let tetherAssetAccountRepository: ERC20AssetAccountRepository<TetherToken>
+    private let urlSession: URLSession
     
     private let disposeBag = DisposeBag()
     
     init(walletManager: WalletManager = WalletManager.shared,
          stellarWalletRepository: StellarWalletAccountRepository = StellarWalletAccountRepository(with: WalletManager.shared.wallet),
          paxAssetAccountRepository: ERC20AssetAccountRepository<PaxToken> = PAXServiceProvider.shared.services.assetAccountRepository,
-         tetherAssetAccountRepository: ERC20AssetAccountRepository<TetherToken> = TetherServiceProvider.shared.services.assetAccountRepository
+         tetherAssetAccountRepository: ERC20AssetAccountRepository<TetherToken> = TetherServiceProvider.shared.services.assetAccountRepository,
+         urlSession: URLSession = resolve()
         ) {
         self.walletManager = walletManager
         self.stellarWalletAccountRepository = stellarWalletRepository
         self.paxAssetAccountRepository = paxAssetAccountRepository
         self.tetherAssetAccountRepository = tetherAssetAccountRepository
+        self.urlSession = urlSession
         super.init()
         self.walletManager.swipeAddressDelegate = self
     }
@@ -265,9 +269,7 @@ extension AssetAddressRepository {
                 return Disposables.create()
             }
             
-            // TODO: Inject
-            Network.Dependencies.default.session.sessionDescription = url.host
-            let task = Network.Dependencies.default.session.dataTask(with: url, completionHandler: { data, _, error in
+            let task = self.urlSession.dataTask(with: url, completionHandler: { data, _, error in
                 guard error == nil else {
                     single(.error(error!))
                     return
