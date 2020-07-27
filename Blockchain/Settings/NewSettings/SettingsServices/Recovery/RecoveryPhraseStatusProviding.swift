@@ -6,25 +6,30 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformUIKit
 import RxRelay
 import RxSwift
-
-protocol RecoveryPhraseStatusProviding {
-    var isRecoveryPhraseVerified: Observable<Bool> { get }
-    var fetchTriggerRelay: PublishRelay<Void> { get }
-}
 
 final class RecoveryPhraseStatusProvider: RecoveryPhraseStatusProviding {
     
     let fetchTriggerRelay = PublishRelay<Void>()
     
-    private let wallet: Wallet
-    
-    var isRecoveryPhraseVerified: Observable<Bool> {
-        Observable.combineLatest(Observable.just(wallet.isRecoveryPhraseVerified()), fetchTriggerRelay).map { $0.0 }
+    var isRecoveryPhraseVerifiedObservable: Observable<Bool> {
+        fetchTriggerRelay
+            .flatMap(weak: self) { (self, _) -> Observable<Bool> in
+                .just(self.wallet.isRecoveryPhraseVerified())
+            }
     }
+    
+    var isRecoveryPhraseVerified: Bool {
+        wallet.isRecoveryPhraseVerified()
+    }
+    
+    private let isVerified = PublishRelay<Bool>()
+    private let wallet: Wallet
     
     init(wallet: Wallet = WalletManager.shared.wallet) {
         self.wallet = wallet
+        isVerified.accept(wallet.isRecoveryPhraseVerified())
     }
 }

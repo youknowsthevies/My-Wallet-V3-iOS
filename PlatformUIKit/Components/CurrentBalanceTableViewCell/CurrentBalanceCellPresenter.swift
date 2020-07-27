@@ -21,8 +21,8 @@ public final class CurrentBalanceCellPresenter {
         iconImageViewContentRelay.asDriver()
     }
     
-    var imageViewContent: Driver<ImageViewContent> {
-        imageViewContentRelay.asDriver()
+    var badgeImageViewModel: Driver<BadgeImageViewModel> {
+        badgeRelay.asDriver()
     }
     
     /// Returns the description of the balance
@@ -40,14 +40,14 @@ public final class CurrentBalanceCellPresenter {
         separatorVisibilityRelay.asDriver()
     }
     
-    let titleAccessibilitySuffix: String
-    let descriptionAccessibilitySuffix: String
+    public let titleAccessibilitySuffix: String
+    public let descriptionAccessibilitySuffix: String
         
-    let currency: CryptoCurrency
-    var balanceType: BalanceType {
+    public let currency: CurrencyType
+    public var balanceType: BalanceType {
         interactor.balanceType
     }
-    let assetBalanceViewPresenter: AssetBalanceViewPresenter
+    public let assetBalanceViewPresenter: AssetBalanceViewPresenter
         
     // MARK: - Private Properties
     
@@ -58,6 +58,7 @@ public final class CurrentBalanceCellPresenter {
             .disposed(by: disposeBag)
     }()
     
+    private let badgeRelay = BehaviorRelay<BadgeImageViewModel>(value: .empty)
     private let separatorVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let imageViewContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
     private let iconImageViewContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
@@ -70,7 +71,7 @@ public final class CurrentBalanceCellPresenter {
     
     public init(interactor: CurrentBalanceCellInteracting,
                 descriptionValue: @escaping DescriptionValue,
-                currency: CryptoCurrency,
+                currency: CurrencyType,
                 alignment: UIStackView.Alignment,
                 separatorVisibility: Visibility = .hidden,
                 titleAccessibilitySuffix: String,
@@ -88,16 +89,38 @@ public final class CurrentBalanceCellPresenter {
         self.currency = currency
         self.descriptionValue = descriptionValue
         imageViewContentRelay.accept(ImageViewContent(imageName: currency.logoImageName))
-        switch interactor.balanceType {
-        case .nonCustodial:
-            iconImageViewContentRelay.accept(.empty)
+        
+        switch currency {
+        case .fiat(let fiatCurrency):
+            let badgeImageViewModel: BadgeImageViewModel = .primary(
+                with: fiatCurrency.logoImageName,
+                contentColor: .white,
+                backgroundColor: .fiat,
+                accessibilityIdSuffix: ""
+            )
+            badgeImageViewModel.marginOffsetRelay.accept(0)
+            badgeRelay.accept(badgeImageViewModel)
+        case .crypto(let cryptoCurrency):
+            let badgeImageViewModel: BadgeImageViewModel = .default(
+                with: cryptoCurrency.logoImageName,
+                cornerRadius: .round,
+                accessibilityIdSuffix: ""
+            )
+            badgeImageViewModel.marginOffsetRelay.accept(0)
+            badgeRelay.accept(badgeImageViewModel)
+        }
+        
+        switch (interactor.balanceType, currency) {
+        case (.nonCustodial, _):
             titleRelay.accept(currency.name)
-        case .custodial(.trading):
+        case (.custodial(.trading), .crypto):
             iconImageViewContentRelay.accept(ImageViewContent(imageName: "icon_custody_lock", bundle: Bundle.platformUIKit))
             titleRelay.accept(LocalizedString.Title.trading)
-        case .custodial(.savings):
+        case (.custodial(.savings), .crypto):
             iconImageViewContentRelay.accept(.empty)
             titleRelay.accept(LocalizedString.Title.savings)
+        case (.custodial, .fiat(let currency)):
+            titleRelay.accept(currency.name)
         }
     }
 }

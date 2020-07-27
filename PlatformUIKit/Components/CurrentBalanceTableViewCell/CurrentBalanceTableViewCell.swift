@@ -20,8 +20,8 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
             assetBalanceView.presenter = presenter?.assetBalanceViewPresenter
             guard let presenter = presenter else { return }
             
-            presenter.imageViewContent
-                .drive(thumbImageView.rx.content)
+            presenter.badgeImageViewModel
+                .drive(badgeImageView.rx.viewModel)
                 .disposed(by: disposeBag)
             
             presenter.iconImageViewContent
@@ -68,6 +68,7 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
     
     // MARK: - Private IBOutlets
 
+    @IBOutlet private var badgeImageView: BadgeImageView!
     @IBOutlet private var thumbImageView: UIImageView!
     @IBOutlet private var thumbSideImageView: UIImageView!
 
@@ -80,7 +81,7 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
     
     // MARK: - Lifecycle
        
-    override public func awakeFromNib() {
+    public override func awakeFromNib() {
         super.awakeFromNib()
         separatorView.backgroundColor = .lightBorder
         assetBalanceView.shimmer(
@@ -88,8 +89,8 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
             estimatedCryptoLabelSize: CGSize(width: 100, height: 14)
         )
     }
-       
-    override public func prepareForReuse() {
+
+    public override func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil
     }

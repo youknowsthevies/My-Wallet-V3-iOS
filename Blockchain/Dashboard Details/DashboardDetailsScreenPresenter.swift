@@ -324,7 +324,7 @@ final class DashboardDetailsScreenPresenter {
                 balanceType: balanceType
             ),
             descriptionValue: descriptionValue,
-            currency: currency,
+            currency: .crypto(currency),
             alignment: .trailing,
             titleAccessibilitySuffix: "\(AccessilbityId.CurrentBalanceCell.titleValue)",
             descriptionAccessibilitySuffix: "\(AccessilbityId.CurrentBalanceCell.descriptionValue)",

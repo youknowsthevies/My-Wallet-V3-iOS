@@ -59,7 +59,7 @@ enum WalletPickerCellItem: IdentifiableType {
                 let presenter: CurrentBalanceCellPresenter = .init(
                     interactor: interactor,
                     descriptionValue: descriptionValue,
-                    currency: currency,
+                    currency: .crypto(currency),
                     alignment: .trailing,
                     separatorVisibility: .visible,
                     titleAccessibilitySuffix: AccessibilityId.WalletCellItem.titleValue,
@@ -77,7 +77,7 @@ enum WalletPickerCellItem: IdentifiableType {
                 let presenter: CurrentBalanceCellPresenter = .init(
                     interactor: interactor,
                     descriptionValue: descriptionValue,
-                    currency: currency,
+                    currency: .crypto(currency),
                     alignment: .trailing,
                     separatorVisibility: .visible,
                     titleAccessibilitySuffix: AccessibilityId.WalletCellItem.titleValue,

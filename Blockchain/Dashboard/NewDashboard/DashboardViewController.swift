@@ -12,7 +12,7 @@ import RxCocoa
 import RxRelay
 import RxSwift
 
-/// A view controller that displays thr dashboard
+/// A view controller that displays the dashboard
 final class DashboardViewController: BaseScreenViewController {
 
     // MARK: - Outlets
@@ -31,10 +31,7 @@ final class DashboardViewController: BaseScreenViewController {
     // MARK: - Lazy Properties
 
     private lazy var router: DashboardRouter = {
-        .init(
-            currencyRouting: AppCoordinator.shared,
-            tabSwapping: AppCoordinator.shared
-        )
+        .init(routing: AppCoordinator.shared)
     }()
     
     // MARK: - Setup
@@ -115,6 +112,8 @@ final class DashboardViewController: BaseScreenViewController {
             execute(noticeAction: action)
         case .fiatBalance(let action):
             execute(fiatBalanceAction: action)
+        case .actionScreen(let action):
+            execute(walletScreenAction: action)
         }
     }
     
@@ -187,6 +186,11 @@ final class DashboardViewController: BaseScreenViewController {
         }
     }
     
+    private func execute(walletScreenAction: DashboardItemDisplayAction<CurrencyType>) {
+        guard case let .show(currencyType) = walletScreenAction else { return }
+        router.showWalletActionScreen(for: currencyType)
+    }
+    
     // MARK: - Navigation
     
     override func navigationBarLeadingButtonPressed() {
@@ -238,9 +242,9 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
         let type = presenter.cellArrangement[indexPath.row]
         switch type {
         case .announcement,
-             .fiatCustodialBalances,
              .notice,
-             .totalBalance:
+             .totalBalance,
+             .fiatCustodialBalances:
             break
         case .crypto(let currency):
             router.showDetailsScreen(for: currency)

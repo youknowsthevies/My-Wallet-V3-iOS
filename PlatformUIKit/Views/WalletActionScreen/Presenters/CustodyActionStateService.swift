@@ -7,41 +7,40 @@
 //
 
 import PlatformKit
-import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
 import ToolKit
 
-enum RoutingAction<A> {
-    case next(A)
-    case previous
-    case dismiss
+public protocol RecoveryPhraseStatusProviding {
+    var isRecoveryPhraseVerified: Bool { get }
+    var isRecoveryPhraseVerifiedObservable: Observable<Bool> { get }
+    var fetchTriggerRelay: PublishRelay<Void> { get }
 }
 
-protocol CustodyActionStateReceiverServiceAPI: class {
+public protocol CustodyActionStateReceiverServiceAPI: class {
         
     /// The action that should be executed, the `next` action
     /// is coupled with the current state
     var action: Observable<RoutingAction<CustodyActionState>> { get }
 }
 
-protocol CustodyActivityEmitterAPI: class {
+public protocol CustodyActivityEmitterAPI: class {
     var activityRelay: PublishRelay<Void> { get }
 }
 
-typealias CustodyActionStateServiceAPI = CustodyActionStateReceiverServiceAPI &
+public typealias CustodyActionStateServiceAPI = CustodyActionStateReceiverServiceAPI &
                                          RoutingNextStateEmitterAPI &
                                          CustodyActivityEmitterAPI &
                                          RoutingPreviousStateEmitterAPI
 
-final class CustodyActionStateService: CustodyActionStateServiceAPI {
-    typealias State = CustodyActionState
-    typealias Action = RoutingAction<State>
+public final class CustodyActionStateService: CustodyActionStateServiceAPI {
+    public typealias State = CustodyActionState
+    public typealias Action = RoutingAction<State>
 
     // MARK: - Types
             
-    struct States {
+    public struct States {
         
         /// The actual state of the flow
         let current: State
@@ -85,35 +84,35 @@ final class CustodyActionStateService: CustodyActionStateServiceAPI {
         cacheSuite.bool(forKey: Constant.introScreenShown)
     }
     
-    var states: Observable<States> {
+    public var states: Observable<States> {
         statesRelay.asObservable()
     }
     
-    var currentState: Observable<CustodyActionStateService.State> {
+    public var currentState: Observable<CustodyActionStateService.State> {
         states.map { $0.current }
     }
     
-    var action: Observable<Action> {
+    public var action: Observable<Action> {
         actionRelay
             .observeOn(MainScheduler.instance)
     }
     
-    let nextRelay = PublishRelay<Void>()
-    let previousRelay = PublishRelay<Void>()
-    let activityRelay = PublishRelay<Void>()
+    public let nextRelay = PublishRelay<Void>()
+    public let previousRelay = PublishRelay<Void>()
+    public let activityRelay = PublishRelay<Void>()
     
     private let statesRelay = BehaviorRelay<States>(value: .start)
     private let actionRelay = PublishRelay<Action>()
     private let cacheSuite: CacheSuite
-    private let wallet: Wallet
+    private let recoveryStatusProviding: RecoveryPhraseStatusProviding
     
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
-    init(cacheSuite: CacheSuite = UserDefaults.standard,
-         wallet: Wallet = WalletManager.shared.wallet) {
-        self.wallet = wallet
+    public init(cacheSuite: CacheSuite = UserDefaults.standard,
+                recoveryStatusProviding: RecoveryPhraseStatusProviding) {
+        self.recoveryStatusProviding = recoveryStatusProviding
         self.cacheSuite = cacheSuite
         
         nextRelay
@@ -145,17 +144,17 @@ final class CustodyActionStateService: CustodyActionStateServiceAPI {
             action = .next(state)
         case .introduction:
             cacheSuite.set(true, forKey: Constant.introScreenShown)
-            state = wallet.isRecoveryPhraseVerified() ? .withdrawal : .backupAfterIntroduction
+            state = recoveryStatusProviding.isRecoveryPhraseVerified ? .withdrawal : .backupAfterIntroduction
             action = .next(state)
         case .backupAfterIntroduction, .backup:
-            state = wallet.isRecoveryPhraseVerified() ? .withdrawalAfterBackup : .end
+            state = recoveryStatusProviding.isRecoveryPhraseVerified ? .withdrawalAfterBackup : .end
             action = .next(state)
         case .activity:
             state = .end
             action = .next(state)
         case .send:
             state = hasShownCustodyIntroductionScreen ? .backup : .introduction
-            state = wallet.isRecoveryPhraseVerified() ? .withdrawal : state
+            state = recoveryStatusProviding.isRecoveryPhraseVerified ? .withdrawal : state
             action = .next(state)
         case .withdrawal, .withdrawalAfterBackup:
             state = .end

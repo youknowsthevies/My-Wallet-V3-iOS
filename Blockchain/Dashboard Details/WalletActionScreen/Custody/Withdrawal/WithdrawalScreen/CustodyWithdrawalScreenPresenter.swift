@@ -19,7 +19,7 @@ final class CustodyWithdrawalScreenPresenter {
     
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias LocalizationID = LocalizationConstants.SimpleBuy.Withdrawal
-    private typealias AccessibilityId = Accessibility.Identifier.DashboardDetails.WalletActionSheet.Withdrawal
+    private typealias AccessibilityId = Accessibility.Identifier.WalletActionSheet.Withdrawal
     
     // MARK: - Navigation Properties
     

@@ -119,3 +119,14 @@ public final class BadgeImageView: UIView {
         }
     }
 }
+
+// MARK: - Rx
+
+public extension Reactive where Base: BadgeImageView {
+    var viewModel: Binder<BadgeImageViewModel> {
+        Binder(base) { view, viewModel in
+            view.viewModel = viewModel
+        }
+    }
+}
+

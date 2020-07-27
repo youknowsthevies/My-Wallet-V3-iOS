@@ -7,37 +7,36 @@
 //
 
 import PlatformKit
-import PlatformUIKit
 import RxRelay
 import RxSwift
 
-protocol NonCustodialActionRouterAPI: class {
+public protocol NonCustodialActionRouterAPI: class {
     func next(to state: NonCustodialActionState)
     func start(with currency: CryptoCurrency)
 }
 
-final class NonCustodialActionRouter: NonCustodialActionRouterAPI, Router {
+public final class NonCustodialActionRouter: NonCustodialActionRouterAPI, Router {
     
     // MARK: - `Router` Properties
     
-    weak var topMostViewControllerProvider: TopMostViewControllerProviding!
-    weak var navigationControllerAPI: NavigationControllerAPI?
+    public weak var topMostViewControllerProvider: TopMostViewControllerProviding!
+    public weak var navigationControllerAPI: NavigationControllerAPI?
     
     private var stateService: NonCustodialActionStateService!
-    private let dataProviding: DataProviding
-    private let tabSwapping: TabSwapping
+    private let balanceProviding: BalanceProviding
+    private let routing: CurrencyRouting & TabSwapping
     private let disposeBag = DisposeBag()
     private var currency: CryptoCurrency!
     
-    init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
-         dataProviding: DataProviding = DataProvider.default,
-         tabSwapping: TabSwapping) {
-        self.dataProviding = dataProviding
+    public init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
+                balanceProvider: BalanceProviding,
+                routing: CurrencyRouting & TabSwapping) {
+        self.balanceProviding = balanceProvider
         self.topMostViewControllerProvider = topMostViewControllerProvider
-        self.tabSwapping = tabSwapping
+        self.routing = routing
     }
     
-    func start(with currency: CryptoCurrency) {
+    public func start(with currency: CryptoCurrency) {
         // TODO: Would much prefer a different form of injection
         // but we build our `Routers` in the AppCoordinator
         self.currency = currency
@@ -56,7 +55,7 @@ final class NonCustodialActionRouter: NonCustodialActionRouterAPI, Router {
         stateService.nextRelay.accept(())
     }
     
-    func next(to state: NonCustodialActionState) {
+    public func next(to state: NonCustodialActionState) {
         /// Dismiss the `WalletScreenActionViewController`
         switch state {
         case .actions:
@@ -65,14 +64,18 @@ final class NonCustodialActionRouter: NonCustodialActionRouterAPI, Router {
             showSwapScreen()
         case .activity:
             showActivityScreen()
+        case .send:
+            showSendScreen()
+        case .receive:
+            showReceiveScreen()
         }
     }
     
     private func showNonCustodialActionScreen() {
         let interactor = WalletActionScreenInteractor(
             balanceType: .nonCustodial,
-            currency: currency,
-            service: dataProviding.balance[currency.currency]
+            currency: .crypto(currency),
+            service: balanceProviding[currency.currency]
         )
         let presenter = NonCustodialActionScreenPresenter(using: interactor, stateService: stateService)
         let controller = WalletActionScreenViewController(using: presenter)
@@ -85,7 +88,7 @@ final class NonCustodialActionRouter: NonCustodialActionRouterAPI, Router {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
             self.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
-            self.tabSwapping.switchTabToSwap()
+            self.routing.switchTabToSwap()
         }
     }
     
@@ -93,7 +96,23 @@ final class NonCustodialActionRouter: NonCustodialActionRouterAPI, Router {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
             self.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
-            self.tabSwapping.switchToActivity(currency: self.currency)
+            self.routing.switchToActivity(currency: self.currency)
+        }
+    }
+    
+    private func showReceiveScreen() {
+        dismissTopMost { [weak self] in
+            guard let self = self else { return }
+            self.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
+            self.routing.toReceive(self.currency)
+        }
+    }
+    
+    private func showSendScreen() {
+        dismissTopMost { [weak self] in
+            guard let self = self else { return }
+            self.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
+            self.routing.toSend(self.currency)
         }
     }
     

@@ -31,6 +31,8 @@ enum DashboardCollectionAction {
     
     /// Any action related to the custodial fiat balances
     case fiatBalance(DashboardItemDisplayAction<FiatBalanceCollectionViewPresenter>)
+    
+    case actionScreen(DashboardItemDisplayAction<CurrencyType>)
 }
 
 enum DashboardItemState {
@@ -256,6 +258,13 @@ final class DashboardScreenPresenter {
                 }
             })
             .map { .fiatBalance($0) }
+            .asObservable()
+            .bindAndCatch(to: actionRelay)
+            .disposed(by: disposeBag)
+        
+        fiatBalancePresenter
+            .tap
+            .map { .actionScreen($0) }
             .asObservable()
             .bindAndCatch(to: actionRelay)
             .disposed(by: disposeBag)

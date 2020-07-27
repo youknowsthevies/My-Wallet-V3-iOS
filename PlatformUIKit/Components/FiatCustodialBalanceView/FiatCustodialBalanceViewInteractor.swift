@@ -20,9 +20,12 @@ public final class FiatCustodialBalanceViewInteractor {
         return .just(currency)
     }
     
-    let balanceViewInteractor: FiatBalanceViewInteractor
+    public var identifier: String {
+        balance.debugDescription
+    }
     
-    private let balance: MoneyValueBalancePairs
+    let balanceViewInteractor: FiatBalanceViewInteractor
+    let balance: MoneyValueBalancePairs
     
     public init(balance: MoneyValueBalancePairs) {
         self.balance = balance

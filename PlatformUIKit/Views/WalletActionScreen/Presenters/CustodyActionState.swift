@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum CustodyActionState {
+public enum CustodyActionState {
     
     /// The start of the custody-send flow
     case start

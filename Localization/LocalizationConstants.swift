@@ -3222,6 +3222,51 @@ public enum LocalizationConstants {
             comment: "Error title shown when deep linking from a claim your XLM link."
         )
     }
+    
+    public struct WalletAction {
+        public struct Default {
+            public struct Deposit {
+                public static let title = NSLocalizedString("Deposit", comment: "Deposit")
+                public static let description = NSLocalizedString("Add %@ to your Interest Account", comment: "Add %@ to your Interest Account")
+            }
+            public struct Withdraw {
+                public static let title = NSLocalizedString("Withdraw", comment: "Withdraw")
+                public static let description = NSLocalizedString("Cashout to Your Bank", comment: "Cashout to Your Bank")
+            }
+            public struct Transfer {
+                public static let title = NSLocalizedString("Send", comment: "Send")
+                public static let description = NSLocalizedString("Transfer Between Your %@ Wallets", comment: "Transfer Between Your %@ Wallets")
+            }
+            public struct Interest {
+                public static let title = NSLocalizedString("Interest Summary", comment: "Interest Summary")
+                public static let description = NSLocalizedString("View your accrued %@ Interest", comment: "View your accrued %@ Interest")
+            }
+            public struct Activity {
+                public static let title = NSLocalizedString("Activity", comment: "Activity")
+                public static let description = NSLocalizedString("View All Transactions", comment: "View All Transactions")
+            }
+            public struct Send {
+                public static let title = NSLocalizedString("Send", comment: "Send")
+                public static let description = NSLocalizedString("Transfer %@ to Any Wallet", comment: "Transfer %@ to Any Wallet")
+            }
+            public struct Receive {
+                public static let title = NSLocalizedString("Receive", comment: "Receive")
+                public static let description = NSLocalizedString("Accept or Share Your %@ Address", comment: "Accept or Share Your %@ Address")
+            }
+            public struct Swap {
+                public static let title = NSLocalizedString("Swap", comment: "Swap")
+                public static let description = NSLocalizedString("Exchange %@ for Another Crypto", comment: "Exchange %@ for Another Crypto")
+            }
+            public struct Buy {
+                public static let title = NSLocalizedString("Buy", comment: "Buy")
+                public static let description = NSLocalizedString("Use your Card or Cash", comment: "Use your Card or Cash")
+            }
+            public struct Sell {
+                public static let title = NSLocalizedString("Sell", comment: "Sell")
+                public static let description = NSLocalizedString("Convert Your Crypto to Cash", comment: "Convert Your Crypto to Cash")
+            }
+        }
+    }
 
     public struct GeneralError {
         public static let loadingData = NSLocalizedString(

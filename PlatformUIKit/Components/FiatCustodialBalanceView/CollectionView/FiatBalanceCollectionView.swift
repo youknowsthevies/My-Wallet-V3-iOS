@@ -6,9 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
+import PlatformKit
 import RxCocoa
+import RxRelay
+import RxSwift
 
 final class FiatBalanceCollectionView: UICollectionView {
     
@@ -45,6 +46,12 @@ final class FiatBalanceCollectionView: UICollectionView {
                     }
                )
                .disposed(by: disposeBag)
+            
+            rx.modelSelected(FiatCustodialBalanceViewPresenter.self)
+                .subscribe(onNext: {
+                    presenter.selected(currencyType: $0.currencyType)
+                })
+                .disposed(by: disposeBag)
         }
     }
 

@@ -95,9 +95,11 @@ public final class WalletPickerScreenViewController: BaseScreenViewController {
                 case .balance(let balanceType):
                     switch balanceType {
                     case .custodial(let presenter):
-                        self.presenter.record(selection: .custodial(presenter.currency))
+                        guard case let .crypto(currency) = presenter.currency else { return }
+                        self.presenter.record(selection: .custodial(currency))
                     case .nonCustodial(let presenter):
-                        self.presenter.record(selection: .nonCustodial(presenter.currency))
+                        guard case let .crypto(currency) = presenter.currency else { return }
+                        self.presenter.record(selection: .nonCustodial(currency))
                     }
                 }
                 self.dismiss(animated: true, completion: nil)

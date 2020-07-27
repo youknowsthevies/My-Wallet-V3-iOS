@@ -6,9 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
+import PlatformKit
 import RxCocoa
+import RxRelay
+import RxSwift
 
 public final class FiatBalanceCollectionViewPresenter {
     
@@ -19,12 +20,18 @@ public final class FiatBalanceCollectionViewPresenter {
         return presentersRelay.asDriver()
     }
     
+    public var tap: Signal<CurrencyType> {
+        tapRelay
+            .asSignal()
+    }
+    
     // MARK: - Injected Properties
     
     private let interactor: FiatBalanceCollectionViewInteractor
     
     // MARK: - Accessors
     
+    private let tapRelay = PublishRelay<CurrencyType>()
     private let presentersRelay = BehaviorRelay<[FiatCustodialBalanceViewPresenter]>(value: [])
     private let disposeBag = DisposeBag()
     
@@ -48,6 +55,12 @@ public final class FiatBalanceCollectionViewPresenter {
     
     public init(interactor: FiatBalanceCollectionViewInteractor) {
         self.interactor = interactor
+    }
+    
+    // MARK: - Public
+    
+    public func selected(currencyType: CurrencyType) {
+        tapRelay.accept(currencyType)
     }
 }
 

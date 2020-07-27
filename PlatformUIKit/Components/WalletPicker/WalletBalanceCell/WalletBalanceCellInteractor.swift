@@ -12,11 +12,11 @@ public protocol WalletBalanceCellInteracting {
     var balanceViewInteractor: WalletBalanceViewInteractor { get }
 }
 
-final class WalletBalanceCellInteractor: WalletBalanceCellInteracting {
+public final class WalletBalanceCellInteractor: WalletBalanceCellInteracting {
     
-    let balanceViewInteractor: WalletBalanceViewInteractor
+    public let balanceViewInteractor: WalletBalanceViewInteractor
     
-    init(balanceViewInteractor: WalletBalanceViewInteractor) {
+    public init(balanceViewInteractor: WalletBalanceViewInteractor) {
         self.balanceViewInteractor = balanceViewInteractor
     }
 }

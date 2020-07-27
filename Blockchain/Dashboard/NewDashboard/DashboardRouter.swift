@@ -22,8 +22,7 @@ final class DashboardRouter: Router {
     // MARK: Private Properties
 
     private let disposeBag = DisposeBag()
-    private let currencyRouting: CurrencyRouting
-    private let tabSwapping: TabSwapping
+    private let routing: TabSwapping & CurrencyRouting
     private let recoveryVerifyingAPI: RecoveryPhraseVerifyingServiceAPI
     private let backupRouterAPI: BackupRouterAPI
     private let custodyActionRouterAPI: CustodyActionRouterAPI
@@ -31,22 +30,20 @@ final class DashboardRouter: Router {
     private let dataProvider: DataProvider
     private let userInformationServiceProvider: UserInformationServiceProviding
     
-    init(currencyRouting: CurrencyRouting,
+    init(routing: CurrencyRouting & TabSwapping,
          topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
          userInformationServiceProvider: UserInformationServiceProviding = UserInformationServiceProvider.default,
-         tabSwapping: TabSwapping,
          wallet: Wallet = WalletManager.shared.wallet,
          dataProvider: DataProvider = DataProvider.default,
          backupRouterAPI: BackupRouterAPI = BackupFundsCustodialRouter()) {
+        self.routing = routing
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.recoveryVerifyingAPI = RecoveryPhraseVerifyingService(wallet: wallet)
         self.userInformationServiceProvider = userInformationServiceProvider
         self.dataProvider = dataProvider
-        self.currencyRouting = currencyRouting
-        self.tabSwapping = tabSwapping
         self.backupRouterAPI = backupRouterAPI
-        self.custodyActionRouterAPI = CustodyActionRouter(backupRouterAPI: backupRouterAPI, tabSwapping: tabSwapping)
-        self.nonCustodialActionRouterAPI = NonCustodialActionRouter(tabSwapping: tabSwapping)
+        self.custodyActionRouterAPI = CustodyActionRouter(backupRouterAPI: backupRouterAPI, tabSwapping: AppCoordinator.shared)
+        self.nonCustodialActionRouterAPI = NonCustodialActionRouter(balanceProvider: dataProvider.balance, routing: routing)
         
         self.custodyActionRouterAPI
             .completionRelay
@@ -54,6 +51,10 @@ final class DashboardRouter: Router {
                 self.dataProvider.balance.refresh()
             }
             .disposed(by: disposeBag)
+    }
+    
+    func showWalletActionScreen(for currencyType: CurrencyType) {
+        custodyActionRouterAPI.start(with: currencyType)
     }
     
     func showDetailsScreen(for currency: CryptoCurrency) {
@@ -100,14 +101,14 @@ final class DashboardRouter: Router {
             break
         case .request(let currency):
             topMostViewControllerProvider?.topMostViewController?.dismiss(animated: true, completion: nil)
-            currencyRouting.toReceive(currency)
+            routing.toReceive(currency)
         case .send(let currency):
             topMostViewControllerProvider?.topMostViewController?.dismiss(animated: true, completion: nil)
-            currencyRouting.toSend(currency)
+            routing.toSend(currency)
         case .nonCustodial(let currency):
             nonCustodialActionRouterAPI.start(with: currency)
         case .trading(let currency):
-            custodyActionRouterAPI.start(with: currency)
+            custodyActionRouterAPI.start(with: .crypto(currency))
         case .savings:
             break
         }

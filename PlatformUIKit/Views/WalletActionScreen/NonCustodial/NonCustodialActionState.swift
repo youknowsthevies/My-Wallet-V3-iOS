@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum NonCustodialActionState {
+public enum NonCustodialActionState {
     
     /// Display action screen
     case actions
@@ -18,4 +18,10 @@ enum NonCustodialActionState {
     
     /// Route to activity
     case activity
+    
+    /// Route to send
+    case send
+    
+    /// Route to receive
+    case receive
 }

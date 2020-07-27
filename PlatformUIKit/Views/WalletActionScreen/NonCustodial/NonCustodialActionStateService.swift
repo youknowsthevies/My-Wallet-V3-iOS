@@ -7,8 +7,6 @@
 //
 
 import PlatformKit
-import PlatformUIKit
-import RxCocoa
 import RxRelay
 import RxSwift
 
@@ -19,18 +17,13 @@ protocol NonCustodialActionStateReceiverServiceAPI: class {
     var action: Observable<RoutingAction<NonCustodialActionState>> { get }
 }
 
-protocol NonCustodialSwapEmitterAPI: class {
-    var swapRelay: PublishRelay<Void> { get }
-}
-
-protocol NonCustodialActivityEmitterAPI: class {
-    var activityRelay: PublishRelay<Void> { get }
+protocol NonCustodialActionEmitterAPI: class {
+    var selectionRelay: PublishRelay<RoutingAction<NonCustodialActionState>> { get }
 }
 
 typealias NonCustodialActionStateServiceAPI = NonCustodialActionStateReceiverServiceAPI &
-                                              NonCustodialSwapEmitterAPI &
-                                              NonCustodialActivityEmitterAPI &
-                                              RoutingNextStateEmitterAPI
+                                              RoutingNextStateEmitterAPI &
+                                              NonCustodialActionEmitterAPI
 
 final class NonCustodialActionStateService: NonCustodialActionStateServiceAPI {
     
@@ -44,10 +37,8 @@ final class NonCustodialActionStateService: NonCustodialActionStateServiceAPI {
             .observeOn(MainScheduler.instance)
     }
     
-    let swapRelay = PublishRelay<Void>()
-    let activityRelay = PublishRelay<Void>()
     let nextRelay = PublishRelay<Void>()
-    
+    let selectionRelay = PublishRelay<Action>()
     private let actionRelay = PublishRelay<Action>()
     
     private let disposeBag = DisposeBag()
@@ -62,17 +53,10 @@ final class NonCustodialActionStateService: NonCustodialActionStateServiceAPI {
             }
             .disposed(by: disposeBag)
         
-        swapRelay
+        selectionRelay
             .observeOn(MainScheduler.instance)
-            .bindAndCatch(weak: self) { (self) in
-                self.apply(action: .next(.swap))
-            }
-            .disposed(by: disposeBag)
-        
-        activityRelay
-            .observeOn(MainScheduler.instance)
-            .bindAndCatch(weak: self) { (self) in
-                self.apply(action: .next(.activity))
+            .bindAndCatch(weak: self) { (self, action) in
+                self.apply(action: action)
             }
             .disposed(by: disposeBag)
     }

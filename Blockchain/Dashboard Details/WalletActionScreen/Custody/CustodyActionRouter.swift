@@ -6,18 +6,13 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import BuySellKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
-
-protocol CustodyActionRouterAPI: class {
-    func next(to state: CustodyActionStateService.State)
-    func previous()
-    func start(with currency: CryptoCurrency)
-    var completionRelay: PublishRelay<Void> { get }
-}
+import ToolKit
 
 final class CustodyActionRouter: CustodyActionRouterAPI, Router {
     
@@ -29,27 +24,24 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
     let completionRelay = PublishRelay<Void>()
     
     private var stateService: CustodyActionStateServiceAPI!
-    private let simpleBuyAPI: ServiceProviderAPI
-    private let appSettings: BlockchainSettings.App
     private let backupRouterAPI: BackupRouterAPI
     private let custodyWithdrawalRouter: CustodyWithdrawalRouterAPI
     private let dataProviding: DataProviding
-    private var currency: CryptoCurrency!
+    private var currency: CurrencyType!
     private let tabSwapping: TabSwapping
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let disposeBag = DisposeBag()
     
     init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
-         appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
          dataProviding: DataProviding = DataProvider.default,
-         simpleBuyAPI: ServiceProviderAPI = DataProvider.default.buySell,
          custodyWithdrawalRouter: CustodyWithdrawalRouterAPI = CustodyWithdrawalRouter(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          backupRouterAPI: BackupRouterAPI,
          tabSwapping: TabSwapping) {
+        self.analyticsRecorder = analyticsRecorder
         self.custodyWithdrawalRouter = custodyWithdrawalRouter
-        self.appSettings = appSettings
         self.dataProviding = dataProviding
         self.backupRouterAPI = backupRouterAPI
-        self.simpleBuyAPI = simpleBuyAPI
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.tabSwapping = tabSwapping
         
@@ -65,11 +57,11 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
             .disposed(by: disposeBag)
     }
     
-    func start(with currency: CryptoCurrency) {
+    func start(with currency: CurrencyType) {
         // TODO: Would much prefer a different form of injection
         // but we build our `Routers` in the AppCoordinator
         self.currency = currency
-        self.stateService = CustodyActionStateService()
+        self.stateService = CustodyActionStateService(recoveryStatusProviding: RecoveryPhraseStatusProvider())
         
         stateService.action
             .bindAndCatch(weak: self) { (self, action) in
@@ -112,12 +104,14 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
             /// has ended. `CustodyActionScreen` has been dismissed
             /// prior to `Backup`. There is no `topMost` screen that
             /// needs to be dismissed.
+            guard case let .crypto(currency) = currency else { return }
             custodyWithdrawalRouter.start(with: currency)
         case .withdrawal:
             /// The `topMost` screen is the `CustodyActionScreen`
+            guard case let .crypto(currency) = currency else { return }
             dismissTopMost { [weak self] in
                 guard let self = self else { return }
-                self.custodyWithdrawalRouter.start(with: self.currency)
+                self.custodyWithdrawalRouter.start(with: currency)
             }
         case .end:
             dismissTopMost()
@@ -125,12 +119,18 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
     }
     
     private func showSendCustody() {
+        if case let .crypto(cryptoCurrency) = currency {
+            analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbTradingWalletClicked(asset: cryptoCurrency))
+        }
         let interactor = WalletActionScreenInteractor(
             balanceType: .custodial(.trading),
             currency: currency,
             service: dataProviding.balance[currency.currency]
         )
-        let presenter = CustodialActionScreenPresenter(using: interactor, stateService: stateService)
+        let presenter = CustodialActionScreenPresenter(
+            using: interactor,
+            stateService: stateService
+        )
         let controller = WalletActionScreenViewController(using: presenter)
         controller.transitioningDelegate = sheetPresenter
         controller.modalPresentationStyle = .custom
@@ -138,10 +138,11 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
     }
 
     private func showActivityScreen() {
+        guard case let .crypto(currency) = currency else { return }
         dismissTopMost { [weak self] in
             guard let self = self else { return }
             self.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
-            self.tabSwapping.switchToActivity(currency: self.currency)
+            self.tabSwapping.switchToActivity(currency: currency)
         }
     }
 

@@ -10,7 +10,7 @@ import PlatformKit
 import RxCocoa
 import RxSwift
 
-public final class FiatCustodialBalanceViewPresenter {
+public final class FiatCustodialBalanceViewPresenter: Equatable {
     
     // MARK: - Types
     
@@ -52,6 +52,14 @@ public final class FiatCustodialBalanceViewPresenter {
         currencyCodeRelay.asDriver()
     }
     
+    var identifier: String {
+        interactor.identifier
+    }
+    
+    var currencyType: CurrencyType {
+        interactor.balance.base.currencyType
+    }
+    
     let tapRelay = PublishRelay<Void>()
     let respondsToTaps: Bool
     let presentationStyle: PresentationStyle
@@ -59,13 +67,14 @@ public final class FiatCustodialBalanceViewPresenter {
     private let badgeRelay = BehaviorRelay<BadgeImageViewModel>(value: .empty)
     private let currencyNameRelay = BehaviorRelay<LabelContent>(value: .empty)
     private let currencyCodeRelay = BehaviorRelay<LabelContent>(value: .empty)
-    
+    private let interactor: FiatCustodialBalanceViewInteractor
     private let disposeBag = DisposeBag()
     
     public init(interactor: FiatCustodialBalanceViewInteractor,
                 descriptors: Descriptors,
                 respondsToTaps: Bool,
                 presentationStyle: PresentationStyle) {
+        self.interactor = interactor
         self.respondsToTaps = respondsToTaps
         self.presentationStyle = presentationStyle
         fiatBalanceViewPresenter = FiatBalanceViewPresenter(
@@ -116,6 +125,12 @@ public final class FiatCustodialBalanceViewPresenter {
             .bindAndCatch(to: currencyNameRelay)
             .disposed(by: disposeBag)
         
+    }
+}
+
+public extension FiatCustodialBalanceViewPresenter {
+    static func ==(lhs: FiatCustodialBalanceViewPresenter, rhs: FiatCustodialBalanceViewPresenter) -> Bool {
+        lhs.interactor.balance == rhs.interactor.balance
     }
 }
 
