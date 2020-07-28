@@ -19,7 +19,7 @@ public struct MoneyBalancePairsCalculationStates {
     public subscript(currencyType: CurrencyType) -> MoneyBalancePairsCalculationState {
         statePerCurrency[currencyType]!
     }
-    
+
     /// Returns all the states
     public var all: [MoneyBalancePairsCalculationState] {
         Array(statePerCurrency.values)
@@ -81,6 +81,14 @@ public struct MoneyBalancePairsCalculationStates {
         self.identifier = identifier
         self.statePerCurrency = statePerCurrency
     }
+    
+    public func filter(by currencyTypes: [CurrencyType]) -> MoneyBalancePairsCalculationStates {
+        MoneyBalancePairsCalculationStates(
+            identifier: identifier,
+            statePerCurrency: statePerCurrency.filter { currencyTypes.contains($0.key) }
+        )
+    }
+    
 }
 
 extension MoneyBalancePairsCalculationStates: CustomDebugStringConvertible {

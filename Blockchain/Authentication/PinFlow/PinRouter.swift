@@ -9,6 +9,7 @@
 import PlatformKit
 import PlatformUIKit
 import ToolKit
+import DIKit
 
 /// PIN creation / changing / authentication. Responsible for routing screens during flow.
 final class PinRouter: NSObject {
@@ -38,12 +39,16 @@ final class PinRouter: NSObject {
     /// Swipe to receive configuration
     private let swipeToReceiveConfig: SwipeToReceiveConfiguring
     
+    private let enabledCryptoCurrencies: [CryptoCurrency]
+    
     // MARK: - Setup
     
     init(flow: PinRouting.Flow,
          swipeToReceiveConfig: SwipeToReceiveConfiguring = BlockchainSettings.App.shared,
+         enabledCurrenciesService: EnabledCurrenciesService = resolve(),
          recorder: Recording = CrashlyticsRecorder(),
          completion: PinRouting.RoutingType.Forward? = nil) {
+        enabledCryptoCurrencies = enabledCurrenciesService.allEnabledCryptoCurrencies
         self.flow = flow
         self.swipeToReceiveConfig = swipeToReceiveConfig
         self.recorder = recorder
@@ -119,10 +124,11 @@ extension PinRouter {
     /// Leads to authentication flow on logic.
     /// - parameter pinViewController: Pin view controller to be the first screen
     private func authenticateOnLogin(using pinViewController: UIViewController) {
+        let enabledCryptoCurrencies = self.enabledCryptoCurrencies
         let pinInput = LoginContainerViewController.Input.viewController(pinViewController)
         let addressInputs: [LoginContainerViewController.Input]
         if swipeToReceiveConfig.swipeToReceiveEnabled {
-            addressInputs = CryptoCurrency.allEnabled
+            addressInputs = enabledCryptoCurrencies
                 .filter { $0.hasNonCustodialTradeSupport }
                 .map { asset -> LoginContainerViewController.Input in
                     let interactor = AddressInteractor(asset: asset, addressType: .swipeToReceive)

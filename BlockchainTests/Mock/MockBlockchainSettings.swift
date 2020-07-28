@@ -9,6 +9,7 @@
 import Foundation
 
 @testable import Blockchain
+@testable import PlatformKit
 
 class MockBlockchainSettingsApp: BlockchainSettings.App {
     var mockDidAttemptToRouteForAirdrop: Bool = false
@@ -16,7 +17,7 @@ class MockBlockchainSettingsApp: BlockchainSettings.App {
     var mockGuid: String?
     var mockSharedKey: String?
 
-    override init() {
+    override init(enabledCurrenciesService: EnabledCurrenciesService) {
         super.init()
     }
 

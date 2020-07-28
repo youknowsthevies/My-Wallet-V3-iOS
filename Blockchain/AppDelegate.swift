@@ -71,7 +71,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             DependencyContainer.ethereumKit;
             DependencyContainer.bitcoinKit;
             DependencyContainer.buySellKit;
-            DependencyContainer.blockchain
+            DependencyContainer.blockchain;
         })
     }
 

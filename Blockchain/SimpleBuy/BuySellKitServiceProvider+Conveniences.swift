@@ -9,10 +9,12 @@
 import BuySellKit
 import PlatformKit
 import ToolKit
+import DIKit
 
 extension ServiceProvider {
         
-    convenience init(balanceProvider: BalanceProviding) {
+    convenience init(balanceProvider: BalanceProviding,
+                     enabledCurrenciesService: EnabledCurrenciesService = resolve()) {
         self.init(
             cardServiceProvider: CardServiceProvider.default,
             recordingProvider: RecordingProvider.default,
@@ -22,6 +24,7 @@ extension ServiceProvider {
             dataRepository: BlockchainDataRepository.shared,
             tiersService: KYCServiceProvider.default.tiers,
             balanceProvider: balanceProvider,
+            enabledFiatCurrencies: enabledCurrenciesService.allEnabledFiatCurrencies,
             featureFetcher: AppFeatureConfigurator.shared
         )
     }

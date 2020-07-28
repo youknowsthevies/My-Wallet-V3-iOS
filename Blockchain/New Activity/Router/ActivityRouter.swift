@@ -10,6 +10,7 @@ import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import SafariServices
+import DIKit
 
 final class ActivityRouter: ActivityRouterAPI {
 
@@ -18,12 +19,15 @@ final class ActivityRouter: ActivityRouterAPI {
 
     private let serviceContainer: ActivityServiceContaining
     private let blockchainAPI: BlockchainAPI
-
+    private let enabledCurrenciesService: EnabledCurrenciesService
+    
     init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
+         enabledCurrenciesService: EnabledCurrenciesService = resolve(),
          container: ActivityServiceContaining,
          blockchainAPI: BlockchainAPI = .shared) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.serviceContainer = container
+        self.enabledCurrenciesService = enabledCurrenciesService
         self.blockchainAPI = blockchainAPI
     }
     
@@ -34,7 +38,7 @@ final class ActivityRouter: ActivityRouterAPI {
             WalletPickerCellInteractorProvider(
                 balanceFetcher: balanceProviding[.crypto(cryptoCurrency)],
                 currency: cryptoCurrency,
-                isEnabled: CryptoCurrency.allEnabled.contains(cryptoCurrency)
+                isEnabled: enabledCurrenciesService.allEnabledCryptoCurrencies.contains(cryptoCurrency)
             )
         }
         let interactor = WalletPickerScreenInteractor(

@@ -93,9 +93,14 @@ final class BuyCryptoScreenInteractor {
     }
 
     var paymentMethodTypes: Observable<[PaymentMethodType]> {
-        paymentMethodTypesService.methodTypes
-            .map { methodType in
-                methodType.filter { !$0.method.isBankTransfer }
+        Observable
+            .combineLatest(
+                paymentMethodTypesService.methodTypes,
+                fiatCurrencyService.fiatCurrencyObservable
+            )
+            .map { payload in
+                let (methods, fiatCurrency) = payload
+                return methods.filterValidForBuy(currentWalletCurrency: fiatCurrency)
             }
             .catchErrorJustReturn([])
     }

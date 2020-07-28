@@ -7,9 +7,10 @@
 //
 
 import PlatformKit
-import RxCocoa
-import RxRelay
+import UIKit
+import PlatformUIKit
 import RxSwift
+import RxRelay
 
 final class FiatBalanceCollectionView: UICollectionView {
     

@@ -23,7 +23,7 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
     // MARK: - Private Accessors
     
     private lazy var setup: Void = {
-        let currencies = Observable.just(cryptoCurrencies)
+        let currencies = Observable.just(currencyTypes)
         Observable
             .combineLatest(balanceProvider.fiatBalances, balanceProvider.fiatBalance, currencies)
             .map { (balances, totalBalance, currencies) in
@@ -60,13 +60,13 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
     private let stateRelay = BehaviorRelay<AssetPieChart.State.Interaction>(value: .loading)
     private let disposeBag = DisposeBag()
 
-    private let cryptoCurrencies: [CryptoCurrency]
+    private let currencyTypes: [CurrencyType]
     private let balanceProvider: BalanceProviding
 
     // MARK: - Setup
     
-    public init(balanceProvider: BalanceProviding, cryptoCurrencies: [CryptoCurrency]) {
+    public init(balanceProvider: BalanceProviding, currencyTypes: [CurrencyType]) {
         self.balanceProvider = balanceProvider
-        self.cryptoCurrencies = cryptoCurrencies
+        self.currencyTypes = currencyTypes
     }    
 }

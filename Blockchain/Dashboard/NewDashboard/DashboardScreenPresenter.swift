@@ -8,6 +8,7 @@
 
 import PlatformKit
 import PlatformUIKit
+import BuySellUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
@@ -98,7 +99,7 @@ final class DashboardScreenPresenter {
             cellTypes.append(.fiatCustodialBalances)
         }
                 
-        let assetCells: [CellType] = CryptoCurrency.allCases.map { .crypto($0) }
+        let assetCells: [CellType] = interactor.enabledCryptoCurrencies.map { .crypto($0) }
         assetCells.forEach { cellTypes.append($0) }
         
         switch announcementCardArrangement {
@@ -201,7 +202,8 @@ final class DashboardScreenPresenter {
         self.announcmentPresenter = announcmentPresenter
         totalBalancePresenter = TotalBalanceViewPresenter(
             balanceProvider: interactor.balanceProvider,
-            balanceChangeProvider: interactor.balanceChangeProvider
+            balanceChangeProvider: interactor.balanceChangeProvider,
+            enabledCurrenciesService: interactor.enabledCurrenciesService
         )
         noticePresenter = DashboardNoticePresenter(
             interactor: .init(lockboxRepository: interactor.lockboxRepository)

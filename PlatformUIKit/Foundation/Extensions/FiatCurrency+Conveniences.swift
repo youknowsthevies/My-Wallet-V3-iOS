@@ -8,17 +8,6 @@
 
 import PlatformKit
 
-extension CurrencyType {
-    public var logoImageName: String {
-        switch self {
-        case .crypto(let currency):
-            return currency.logoImageName
-        case .fiat(let currency):
-            return currency.logoImageName
-        }
-    }
-}
-
 extension FiatCurrency {
     public var logoImageName: String {
         switch self {
@@ -30,4 +19,6 @@ extension FiatCurrency {
             fatalError("Currency \(self.code) does not have a logo image")
         }
     }
+    
+    public var brandColor: UIColor { .fiat }
 }
