@@ -17,5 +17,54 @@ extension DependencyContainer {
     
     static var blockchain = module {
         single { EnabledCurrenciesService(featureFetcher: AppFeatureConfigurator.shared) }
+        
+        single { AppCoordinator() }
+        
+        single { AuthenticationCoordinator() }
+        
+        single { BlockchainSettings.App() }
+        
+        factory { () -> AppSettingsAPI in
+            let app: BlockchainSettings.App = DIKit.resolve()
+            return app as AppSettingsAPI
+        }
+        
+        factory { () -> AppSettingsAuthenticating in
+            let app: BlockchainSettings.App = DIKit.resolve()
+            return app as AppSettingsAuthenticating
+        }
+        
+        single { WalletManager() }
+        
+        single { OnboardingRouter() }
+        
+        factory { PaymentPresenter() }
+        
+        factory { UIApplication.shared as TopMostViewControllerProviding }
+        
+        factory { AirdropRouter() as AirdropRouterAPI }
+        
+        single { LoadingViewPresenter() as LoadingViewPresenting }
+        
+        single { AppFeatureConfigurator() }
+        
+        factory { DeepLinkRouter() }
+        
+        factory { UIDevice.current as DeviceInfo }
+        
+        single { UserInformationServiceProvider() as UserInformationServiceProviding }
+        
+        factory { () -> SettingsServiceAPI in
+            let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
+            let settings = userInformationProvider.settings
+            return settings as SettingsServiceAPI
+        }
+        
+        factory { () -> WalletRepositoryProvider in
+            let walletManager: WalletManager = DIKit.resolve()
+            return walletManager as WalletRepositoryProvider
+        }
+        
+        single { AnalyticsService() as AnalyticsServiceAPI }
     }
 }
