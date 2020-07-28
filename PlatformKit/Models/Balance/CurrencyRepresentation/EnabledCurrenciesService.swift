@@ -10,8 +10,8 @@ import DIKit
 
 public final class EnabledCurrenciesService {
 
-    public let allEnabledCryptoCurrencies: [CryptoCurrency]
-    public var allEnabledFiatCurrencies: [FiatCurrency] = [.EUR, .GBP]
+    public let allEnabledCryptoCurrencies: [CryptoCurrency] = CryptoCurrency.allCases
+    public let allEnabledFiatCurrencies: [FiatCurrency] = [.EUR, .GBP]
     
     public var allEnabledCurrencyTypes: [CurrencyType] {
         let crypto = allEnabledCryptoCurrencies.map { $0.currency }
@@ -19,12 +19,9 @@ public final class EnabledCurrenciesService {
         return crypto + fiat
     }
     
+    private let featureFetcher: FeatureConfiguring & FeatureFetching
+    
     public init(featureFetcher: FeatureConfiguring & FeatureFetching) {
-        let allCases = CryptoCurrency.allCases
-        if featureFetcher.configuration(for: .tetherEnabled).isEnabled {
-            allEnabledCryptoCurrencies = allCases
-        } else {
-            allEnabledCryptoCurrencies = allCases.filter { $0 != .tether }
-        }
+        self.featureFetcher = featureFetcher
     }
 }

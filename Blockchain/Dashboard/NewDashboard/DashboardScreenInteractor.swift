@@ -28,6 +28,10 @@ final class DashboardScreenInteractor {
     let fiatBalancesInteractor: DashboardFiatBalancesInteractor
     let enabledCurrenciesService: EnabledCurrenciesService
     
+    var enabledCryptoCurrencies: [CryptoCurrency] {
+        enabledCurrenciesService.allEnabledCryptoCurrencies
+    }
+    
     // MARK: - Private Accessors
     
     private let disposeBag = DisposeBag()

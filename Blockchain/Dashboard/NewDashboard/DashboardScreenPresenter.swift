@@ -97,7 +97,7 @@ final class DashboardScreenPresenter {
             cellTypes.append(.fiatCustodialBalances)
         }
                 
-        let assetCells: [CellType] = CryptoCurrency.allCases.map { .crypto($0) }
+        let assetCells: [CellType] = interactor.enabledCryptoCurrencies.map { .crypto($0) }
         assetCells.forEach { cellTypes.append($0) }
         
         switch announcementCardArrangement {
