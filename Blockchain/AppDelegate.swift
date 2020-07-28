@@ -63,6 +63,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     override init() {
         super.init()
+        
+        FirebaseApp.configure()
+        
         DependencyContainer.defined(by: modules {
             DependencyContainer.enabledCurrenciesService;
             DependencyContainer.airdropRouter;
@@ -101,8 +104,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             // If isDebug build, and we are running unit test, skip rest of AppDelegate.
             return true
         }
-
-        FirebaseApp.configure()
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()

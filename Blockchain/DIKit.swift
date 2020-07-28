@@ -50,7 +50,9 @@ public extension DependencyContainer {
         single { LoadingViewPresenter() as LoadingViewPresenting }
     }
     static var appFeatureConfigurator = module {
-        single { AppFeatureConfigurator() }
+        single {
+            AppFeatureConfigurator()
+        }
     }
     static var deepLinkRouter = module {
         factory { DeepLinkRouter() }
