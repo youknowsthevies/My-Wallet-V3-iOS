@@ -73,11 +73,27 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
         }
         
         interactor.state
-            .compactMap { $0.value }
-            .bindAndCatch(weak: self) { (self, account) in
-                self.setup(account: account)
+            .bindAndCatch(weak: self) { (self, state) in
+                switch state {
+                case .invalid(.valueCouldNotBeCalculated):
+                    analyticsRecorder.record(
+                        event: AnalyticsEvents.SimpleBuy.sbLinkBankLoadingError(
+                            currencyCode: self.interactor.fiatCurrency.code
+                        )
+                    )
+                case .value(let account):
+                    self.setup(account: account)
+                case .calculating, .invalid(.empty):
+                    break
+                }
             }
             .disposed(by: disposeBag)
+    }
+    
+    func viewDidLoad() {
+        analyticsRecorder.record(
+            event: AnalyticsEvents.SimpleBuy.sbLinkBankScreenShown(currencyCode: interactor.fiatCurrency.code)
+        )
     }
     
     private func setup(account: PaymentAccount) {
@@ -202,5 +218,46 @@ extension FundsTransferDetailScreenPresenter {
                     )
                 }
         }
+    }
+}
+
+private extension Array where Element == PaymentAccountProperty.Field {
+    private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.TransferDetails
+
+    func transferDetailsCellsPresenting(analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording) -> [LineItemCellPresenting] {
+
+        func isCopyable(field: TransactionalLineItem) -> Bool {
+            switch field {
+            case .paymentAccountField(.accountNumber),
+                 .paymentAccountField(.iban),
+                 .paymentAccountField(.bankCode),
+                 .paymentAccountField(.sortCode):
+                return true
+            default:
+                return false
+            }
+        }
+
+        func analyticsEvent(field: TransactionalLineItem) -> AnalyticsEvents.SimpleBuy? {
+            switch field {
+            case .paymentAccountField:
+                return .sbLinkBankDetailsCopied
+            default:
+                return nil
+            }
+        }
+        
+        return map { TransactionalLineItem.paymentAccountField($0) }
+            .map { field in
+                if isCopyable(field: field) {
+                    return field.defaultCopyablePresenter(
+                        analyticsEvent: analyticsEvent(field: field),
+                        analyticsRecorder: analyticsRecorder,
+                        accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+                    )
+                } else {
+                    return field.defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
+                }
+            }
     }
 }
