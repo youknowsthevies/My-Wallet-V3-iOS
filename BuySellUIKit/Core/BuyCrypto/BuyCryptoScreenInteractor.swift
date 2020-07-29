@@ -261,9 +261,14 @@ final class BuyCryptoScreenInteractor {
                 case .card(let cardData):
                     maxFiatValue = cardData.topLimit
                     paymentMethodId = cardData.identifier
-                case .account(let balance):
+                case .account(let data):
+                    let maxQuoteFiatValue = data.balance.quote.fiatValue!
                     // Quote must be a fiat value
-                    maxFiatValue = balance.quote.fiatValue!
+                    if try maxQuoteFiatValue < data.topLimit {
+                        maxFiatValue = maxQuoteFiatValue
+                    } else {
+                        maxFiatValue = data.topLimit
+                    }
                     paymentMethodId = nil
                 case .suggested(let method):
                     guard method.max.currency == pair.maxFiatValue.currency else {

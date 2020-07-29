@@ -18,7 +18,7 @@ public enum PaymentMethodType: Equatable {
     case card(CardData)
     
     /// An account for an asset. Currency supports fiat
-    case account(MoneyValueBalancePairs)
+    case account(FundData)
     
     /// Suggested payment methods (e.g bank-wire / card)
     case suggested(PaymentMethod)
@@ -27,8 +27,8 @@ public enum PaymentMethodType: Equatable {
         switch self {
         case .card(let data):
             return .card([data.type])
-        case .account(let balance):
-            return .funds(balance.base.currencyType)
+        case .account(let data):
+            return .funds(data.balance.base.currencyType)
         case .suggested(let method):
             return method.type
         }
@@ -99,8 +99,8 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                                 switch type {
                                 case .card(let card):
                                     return card.state.isActive
-                                case .account(let balance):
-                                    return balance.baseCurrency == fiatCurrecy.currency
+                                case .account(let data):
+                                    return data.balance.baseCurrency == fiatCurrecy.currency
                                 case .suggested(let method):
                                     return !method.type.isBankTransfer
                                 }
@@ -162,12 +162,12 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     private func merge(paymentMethods: [PaymentMethod],
                        cards: [CardData],
                        balances: MoneyBalancePairsCalculationStates) -> [PaymentMethodType] {
-        let topLimit = (paymentMethods.first { $0.type.isCard })?.max
+        let topCardLimit = (paymentMethods.first { $0.type.isCard })?.max
         let cardTypes = cards
             .filter { $0.state.isUsable }
             .map { card in
                 var card = card
-                if let limit = topLimit {
+                if let limit = topCardLimit {
                     card.topLimit = limit
                 }
                 return card
@@ -187,10 +187,19 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 }
         )
         
+        let fundsMaxAmounts = paymentMethods
+            .filter { $0.type.isFunds }
+            .map { $0.max }
+        
         let balances = balances.all
             .compactMap { $0.value }
             .filter { !$0.isAbsent }
             .filter { fundsCurrencies.contains($0.baseCurrency) }
+            .map { balance in
+                let fundTopLimit = fundsMaxAmounts.first { balance.base.currencyType == $0.currency }!
+                let data = FundData(topLimit: fundTopLimit, balance: balance)
+                return data
+            }
             .map { PaymentMethodType.account($0) }
         
         return balances + cardTypes + suggestedMethods
@@ -198,6 +207,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
 }
 
 extension Array where Element == PaymentMethodType {
+
     fileprivate var cards: [CardData] {
         compactMap { paymentMethod in
             switch paymentMethod {
@@ -209,11 +219,11 @@ extension Array where Element == PaymentMethodType {
         }
     }
     
-    public var accounts: [MoneyValueBalancePairs] {
+    var accounts: [FundData] {
         compactMap { paymentMethod in
             switch paymentMethod {
-            case .account(let balance):
-                return balance
+            case .account(let data):
+                return data
             case .suggested, .card:
                 return nil
             }
@@ -224,8 +234,8 @@ extension Array where Element == PaymentMethodType {
     public func filterValidForBuy(currentWalletCurrency: FiatCurrency) -> [PaymentMethodType] {
         filter { method in
             switch method {
-            case .account(let pairs):
-                return !pairs.base.isZero && pairs.base.currencyType == currentWalletCurrency.currency
+            case .account(let data):
+                return !data.balance.base.isZero && data.balance.base.currencyType == currentWalletCurrency.currency
             case .suggested(let paymentMethod):
                 switch paymentMethod.type {
                 case .bankTransfer:

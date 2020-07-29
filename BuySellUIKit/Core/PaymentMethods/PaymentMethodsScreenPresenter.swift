@@ -157,9 +157,9 @@ final class PaymentMethodsScreenPresenter {
                 }
                 .disposed(by: disposeBag)
             cellType = .linkedCard(presenter)
-        case .account(let balance):
+        case .account(let data):
             let presenter = FiatCustodialBalanceViewPresenter(
-                interactor: interactor.custodialFiatBalanceViewInteractor(by: balance),
+                interactor: interactor.custodialFiatBalanceViewInteractor(by: data.balance),
                 descriptors: .paymentMethods(),
                 respondsToTaps: true,
                 presentationStyle: .plain
