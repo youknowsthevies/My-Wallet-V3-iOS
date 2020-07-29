@@ -8,8 +8,12 @@
 
 import Foundation
 
-public enum BalanceType: Hashable {
-    public enum CustodialType: String, Hashable {
+public enum BalanceType: Hashable, CaseIterable {
+    public static var allCases: [BalanceType] {
+        [.nonCustodial] + CustodialType.allCases.map { .custodial($0) }
+    }
+    
+    public enum CustodialType: String, Hashable, CaseIterable {
         case trading
         case savings
     }

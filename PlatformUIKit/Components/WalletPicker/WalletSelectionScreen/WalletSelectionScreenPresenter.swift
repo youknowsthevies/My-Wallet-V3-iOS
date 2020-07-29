@@ -1,8 +1,8 @@
 //
-//  WalletPickerScreenPresenter.swift
-//  Blockchain
+//  WalletSelectionScreenPresenter.swift
+//  PlatformUIKit
 //
-//  Created by Alex McGregor on 5/5/20.
+//  Created by Paulo on 28/07/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
@@ -12,20 +12,8 @@ import RxCocoa
 import RxRelay
 import RxSwift
 
-public final class WalletPickerScreenPresenter {
-    
-    // MARK: - Navigation Properties
-    
-    let trailingButton: Screen.Style.TrailingButton = .close
-    
-    let leadingButton: Screen.Style.LeadingButton = .none
-    
-    let titleViewStyle: Screen.Style.TitleView = .text(value: LocalizationConstants.WalletPicker.title)
-    
-    var barStyle: Screen.Style.Bar {
-        .darkContent()
-    }
-    
+public final class WalletSelectionScreenPresenter {
+
     var sectionObservable: Observable<[WalletPickerSectionViewModel]> {
         _ = setup
         return sectionRelay
@@ -48,7 +36,7 @@ public final class WalletPickerScreenPresenter {
             .bindAndCatch(to: sectionRelay)
             .disposed(by: disposeBag)
     }()
-
+    
     public init(showTotalBalance: Bool, interactor: WalletPickerInteractor) {
         self.interactor = interactor
         self.showTotalBalance = showTotalBalance

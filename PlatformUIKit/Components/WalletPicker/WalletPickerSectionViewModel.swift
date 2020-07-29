@@ -8,20 +8,22 @@
 
 import RxDataSources
 
-struct WalletPickerSectionViewModel {
-    var items: [WalletPickerCellItem]
+public struct WalletPickerSectionViewModel: SectionModelType {
+    public typealias Item = WalletPickerCellItem
+
+    public var items: [Item]
+
     var identity: AnyHashable {
         // There's only ever one `WalletPickerSectionViewModel`  section
         // so it must be a static string for an identifier.
         "WalletPickerSectionViewModel"
     }
-}
 
-extension WalletPickerSectionViewModel: SectionModelType {
-    typealias Item = WalletPickerCellItem
-    
-    init(original: WalletPickerSectionViewModel, items: [WalletPickerCellItem]) {
-        self = original
+    public init(original: WalletPickerSectionViewModel, items: [WalletPickerCellItem]) {
+        self.init(items: items)
+    }
+
+    public init(items: [WalletPickerCellItem]) {
         self.items = items
     }
 }

@@ -128,7 +128,6 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             .do(onNext: { payload in
                 print(payload)
             })
-            .debug("hdWalletDecoded", trimOutput: false)
     }
     
     var defaultWallet: Single<BitcoinWalletAccount> {

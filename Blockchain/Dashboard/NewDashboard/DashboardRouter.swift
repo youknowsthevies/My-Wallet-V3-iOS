@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
@@ -27,14 +27,14 @@ final class DashboardRouter: Router {
     private let backupRouterAPI: BackupRouterAPI
     private let custodyActionRouterAPI: CustodyActionRouterAPI
     private let nonCustodialActionRouterAPI: NonCustodialActionRouterAPI
-    private let dataProvider: DataProvider
+    private let dataProvider: DataProviding
     private let userInformationServiceProvider: UserInformationServiceProviding
     
     init(routing: CurrencyRouting & TabSwapping,
          topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
          userInformationServiceProvider: UserInformationServiceProviding = UserInformationServiceProvider.default,
          wallet: Wallet = WalletManager.shared.wallet,
-         dataProvider: DataProvider = DataProvider.default,
+         dataProvider: DataProviding = resolve(),
          backupRouterAPI: BackupRouterAPI = BackupFundsCustodialRouter()) {
         self.routing = routing
         self.topMostViewControllerProvider = topMostViewControllerProvider

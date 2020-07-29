@@ -65,5 +65,17 @@ extension DependencyContainer {
         }
         
         single { AnalyticsService() as AnalyticsServiceAPI }
+
+        single { DataProvider() }
+
+        factory { () -> DataProviding in
+            let provider: DataProvider = DIKit.resolve()
+            return provider as DataProviding
+        }
+
+        factory { () -> BalanceProviding in
+            let provider: DataProviding = DIKit.resolve()
+            return provider.balance
+        }
     }
 }

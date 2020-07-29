@@ -24,6 +24,7 @@ public final class WalletPickerCellInteractorProvider: WalletPickerCellInteracto
     private let interactorsRelay = BehaviorRelay<[WalletPickerCellInteractor]>(value: [])
     private let balanceFetcher: AssetBalanceFetching
     private let currency: CryptoCurrency
+    private let balanceTypes: [BalanceType]
     private let isEnabled: Bool
     private let disposeBag = DisposeBag()
 
@@ -36,7 +37,7 @@ public final class WalletPickerCellInteractorProvider: WalletPickerCellInteracto
             .isFunded
             .map(weak: self) { (self, isFunded) -> [CurrentBalanceCellInteracting] in
                 var result: [CurrentBalanceCellInteracting] = []
-                if self.currency.hasNonCustodialActivitySupport {
+                if self.currency.hasNonCustodialActivitySupport, self.balanceTypes.contains(.nonCustodial) {
                     result.append(
                         CurrentBalanceCellInteractor(
                             balanceFetching: self.balanceFetcher,
@@ -44,7 +45,7 @@ public final class WalletPickerCellInteractorProvider: WalletPickerCellInteracto
                         )
                     )
                 }
-                if isFunded {
+                if isFunded, self.balanceTypes.contains(.custodial(.trading)) {
                     result.append(
                         CurrentBalanceCellInteractor(
                             balanceFetching: self.balanceFetcher,
@@ -61,9 +62,13 @@ public final class WalletPickerCellInteractorProvider: WalletPickerCellInteracto
             .disposed(by: disposeBag)
     }()
     
-    public init(balanceFetcher: AssetBalanceFetching, currency: CryptoCurrency, isEnabled: Bool) {
+    public init(balanceFetcher: AssetBalanceFetching,
+                currency: CryptoCurrency,
+                isEnabled: Bool,
+                balanceTypes: [BalanceType] = BalanceType.allCases) {
         self.balanceFetcher = balanceFetcher
         self.currency = currency
         self.isEnabled = isEnabled
+        self.balanceTypes = balanceTypes
     }
 }

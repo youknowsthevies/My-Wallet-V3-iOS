@@ -9,14 +9,14 @@
 import UIKit
 
 extension UIViewController {
-    
+
     // Adds a child view controller and its view
     public func add(child: UIViewController) {
         addChild(child)
         view.addSubview(child.view)
         child.didMove(toParent: self)
     }
-    
+
     // Removes self from parent view controller. Also removes its view from the superview
     public func remove() {
         willMove(toParent: nil)

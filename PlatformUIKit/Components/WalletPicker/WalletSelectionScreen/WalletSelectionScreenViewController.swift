@@ -1,8 +1,8 @@
 //
 //  WalletPickerScreenViewController.swift
-//  Blockchain
+//  PlatformUIKit
 //
-//  Created by Alex McGregor on 5/5/20.
+//  Created by Paulo on 28/07/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
@@ -12,24 +12,24 @@ import RxDataSources
 import RxSwift
 import ToolKit
 
-public final class WalletPickerScreenViewController: BaseScreenViewController {
-    
+public final class WalletSelectionScreenViewController: UIViewController {
+
     // MARK: - Types
-    
+
     private typealias RxDataSource = RxTableViewSectionedReloadDataSource<WalletPickerSectionViewModel>
-    
+
     // MARK: - Private IBOutlets
-    
-    private var tableView: UITableView!
-    
+
+    private lazy var tableView: UITableView = UITableView(frame: .zero, style: .grouped)
+
     // MARK: - Private Properties
-    
-    private let presenter: WalletPickerScreenPresenter
+
+    private let presenter: WalletSelectionScreenPresenter
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
-    public init(presenter: WalletPickerScreenPresenter) {
+
+    public init(presenter: WalletSelectionScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
@@ -38,26 +38,15 @@ public final class WalletPickerScreenViewController: BaseScreenViewController {
     required init?(coder: NSCoder) { nil }
 
     // MARK: - Lifecycle
-    
+
     override public func viewDidLoad() {
         super.viewDidLoad()
-        title = LocalizationConstants.settings
         setupTableView()
-        setupNavigationBar()
     }
-    
+
     // MARK: - Private Functions
-    
-    private func setupNavigationBar() {
-        titleViewStyle = presenter.titleViewStyle
-        set(barStyle: presenter.barStyle,
-            leadingButtonStyle: presenter.leadingButton,
-            trailingButtonStyle: presenter.trailingButton
-        )
-    }
-    
+
     private func setupTableView() {
-        tableView = UITableView(frame: .zero, style: .grouped)
         tableView.backgroundColor = .white
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = UITableView.automaticDimension
@@ -67,7 +56,7 @@ public final class WalletPickerScreenViewController: BaseScreenViewController {
         tableView.registerNibCell(WalletBalanceTableViewCell.self)
         view.addSubview(tableView)
         tableView.layoutToSuperview(.top, .bottom, .leading, .trailing)
-        
+
         let dataSource = RxDataSource(configureCell: { [weak self] _, _, indexPath, item in
             guard let self = self else { return UITableViewCell() }
             let cell: UITableViewCell
@@ -80,11 +69,11 @@ public final class WalletPickerScreenViewController: BaseScreenViewController {
             cell.selectionStyle = .none
             return cell
         })
-        
+
         presenter.sectionObservable
             .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
-        
+
         tableView.rx.modelSelected(WalletPickerCellItem.self)
             .bindAndCatch(weak: self) { (self, model) in
                 switch model {

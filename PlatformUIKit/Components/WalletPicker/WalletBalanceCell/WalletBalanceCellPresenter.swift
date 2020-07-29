@@ -11,7 +11,7 @@ import PlatformKit
 import RxCocoa
 import RxSwift
 
-final class WalletBalanceCellPresenter {
+public final class WalletBalanceCellPresenter {
     
     typealias AccessibilityId = Accessibility.Identifier.Activity.WalletBalance
     

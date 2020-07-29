@@ -7,6 +7,7 @@
 //
 
 import BitcoinKit
+import DIKit
 import ERC20Kit
 import PlatformKit
 import BuySellKit
@@ -20,7 +21,7 @@ import RxSwift
 final class DataProvider: DataProviding {
         
     /// The default container
-    static let `default` = DataProvider()
+    @Inject static var `default`: DataProvider
     
     /// Historical service that provides past prices for a given asset type
     let historicalPrices: HistoricalFiatPriceProviding

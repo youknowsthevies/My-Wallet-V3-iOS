@@ -10,7 +10,7 @@ import Localization
 import RxDataSources
 import RxSwift
 
-enum WalletPickerCellItem: IdentifiableType {
+public enum WalletPickerCellItem: IdentifiableType {
     
     // MARK: - Types
     
@@ -18,7 +18,7 @@ enum WalletPickerCellItem: IdentifiableType {
     
     // MARK: - Properties
     
-    var identity: AnyHashable {
+    public var identity: AnyHashable {
         switch self {
         case .balance(let balanceType):
             let presenter = balanceType.presenter
@@ -30,7 +30,7 @@ enum WalletPickerCellItem: IdentifiableType {
         }
     }
     
-    enum BalanceType {
+    public enum BalanceType {
         case custodial(CurrentBalanceCellPresenter)
         case nonCustodial(CurrentBalanceCellPresenter)
         
@@ -47,7 +47,7 @@ enum WalletPickerCellItem: IdentifiableType {
     case total(WalletBalanceCellPresenter)
     case balance(BalanceType)
     
-    init(cellInteractor: WalletPickerCellInteractor) {
+    public init(cellInteractor: WalletPickerCellInteractor) {
         switch cellInteractor {
         case .balance(let interactor, let currency):
             // NOTE: `Interest` accounts are not handled here.

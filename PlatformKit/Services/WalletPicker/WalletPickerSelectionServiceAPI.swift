@@ -10,12 +10,12 @@ import RxCocoa
 import RxSwift
 
 public protocol WalletPickerSelectionServiceAPI: class {
-    var selectedDataRelay: BehaviorRelay<WalletPickerSelection> { get }
     var selectedData: Observable<WalletPickerSelection> { get }
+    func record(selection: WalletPickerSelection)
 }
 
 public final class WalletPickerSelectionService: WalletPickerSelectionServiceAPI {
-    public let selectedDataRelay: BehaviorRelay<WalletPickerSelection>
+    private let selectedDataRelay: BehaviorRelay<WalletPickerSelection>
 
     public var selectedData: Observable<WalletPickerSelection> {
         selectedDataRelay.distinctUntilChanged()
@@ -23,5 +23,23 @@ public final class WalletPickerSelectionService: WalletPickerSelectionServiceAPI
 
     public init(defaultSelection: WalletPickerSelection) {
         self.selectedDataRelay = BehaviorRelay(value: defaultSelection)
+    }
+
+    public func record(selection: WalletPickerSelection) {
+        selectedDataRelay.accept(selection)
+    }
+}
+
+public final class WalletSelectionService: WalletPickerSelectionServiceAPI {
+    private let selectedDataRelay = PublishRelay<WalletPickerSelection>()
+
+    public var selectedData: Observable<WalletPickerSelection> {
+        selectedDataRelay.asObservable()
+    }
+
+    public init() { }
+
+    public func record(selection: WalletPickerSelection) {
+        selectedDataRelay.accept(selection)
     }
 }

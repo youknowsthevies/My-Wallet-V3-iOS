@@ -1,5 +1,5 @@
 //
-//  WalletPickerScreenInteractor.swift
+//  WalletPickerInteractor.swift
 //  Blockchain
 //
 //  Created by Alex McGregor on 5/5/20.
@@ -10,9 +10,9 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-public final class WalletPickerScreenInteractor {
+public final class WalletPickerInteractor {
 
-    var interactors: Observable<[WalletPickerCellInteractor]> {
+    public var interactors: Observable<[WalletPickerCellInteractor]> {
         Observable.combineLatest(
                 totalWalletBalanceInteractor,
                 balanceCellInteractors
@@ -20,7 +20,7 @@ public final class WalletPickerScreenInteractor {
             .map { $0.0 + $0.1 }
     }
 
-    private var balanceCellInteractors: Observable<[WalletPickerCellInteractor]> {
+    public var balanceCellInteractors: Observable<[WalletPickerCellInteractor]> {
         Observable
             .combineLatest(
                 providers[.bitcoin]!.interactors,
@@ -43,8 +43,7 @@ public final class WalletPickerScreenInteractor {
         )
     }
 
-    let balanceProviding: BalanceProviding
-
+    private let balanceProviding: BalanceProviding
     private var providers: [CryptoCurrency: WalletPickerCellInteractorProviding] = [:]
     private let selectionService: WalletPickerSelectionServiceAPI
     private let disposeBag = DisposeBag()
@@ -69,7 +68,7 @@ public final class WalletPickerScreenInteractor {
         providers[.bitcoinCash] = bitcoinCash
     }
 
-    func record(selection: WalletPickerSelection) {
-        selectionService.selectedDataRelay.accept(selection)
+    public func record(selection: WalletPickerSelection) {
+        selectionService.record(selection: selection)
     }
 }

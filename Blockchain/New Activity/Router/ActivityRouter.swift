@@ -37,7 +37,7 @@ final class ActivityRouter: ActivityRouterAPI {
                 isEnabled: CryptoCurrency.allEnabled.contains(cryptoCurrency)
             )
         }
-        let interactor = WalletPickerScreenInteractor(
+        let interactor = WalletPickerInteractor(
             balanceProviding: balanceProviding,
             tether: cellInteractorProvider(for: .tether),
             algorand: cellInteractorProvider(for: .algorand),
@@ -49,7 +49,7 @@ final class ActivityRouter: ActivityRouterAPI {
             selectionService: serviceContainer.selectionServiceAPI
         )
         
-        let presenter = WalletPickerScreenPresenter(interactor: interactor)
+        let presenter = WalletPickerScreenPresenter(showTotalBalance: true, interactor: interactor)
         let controller = WalletPickerScreenViewController(presenter: presenter)
         present(viewController: controller)
     }
