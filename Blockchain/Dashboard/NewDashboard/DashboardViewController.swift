@@ -8,6 +8,7 @@
 
 import PlatformKit
 import PlatformUIKit
+import BuySellUIKit
 import RxCocoa
 import RxRelay
 import RxSwift

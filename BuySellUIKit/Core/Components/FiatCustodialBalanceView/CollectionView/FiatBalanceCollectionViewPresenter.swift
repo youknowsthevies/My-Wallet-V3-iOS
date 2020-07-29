@@ -62,6 +62,11 @@ public final class FiatBalanceCollectionViewPresenter {
     public func selected(currencyType: CurrencyType) {
         tapRelay.accept(currencyType)
     }
+    
+    public func refresh() {
+        _ = setup
+        interactor.refresh()
+    }
 }
 
 extension FiatBalanceCollectionViewPresenter: Equatable {

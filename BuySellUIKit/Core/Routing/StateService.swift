@@ -262,7 +262,9 @@ public final class StateService: StateServiceAPI {
                 action: .dismiss,
                 states: states.states(byAppending: state)
             )
-        case .kyc, .buy, .checkout, .paymentMethods, .selectFiat, .addCard, .authorizeCard, .pendingOrderCompleted, .ineligible:
+        case .kyc:
+            statesRelay.accept(states.statesByRemovingLast())
+        case .buy, .checkout, .paymentMethods, .selectFiat, .addCard, .authorizeCard, .pendingOrderCompleted, .ineligible:
             fatalError("\(#function) should not get called with \(states.current). use `CheckoutServiceAPI` instead")
         }
     }

@@ -8,6 +8,7 @@
 
 import PlatformKit
 import PlatformUIKit
+import BuySellUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
@@ -23,18 +24,28 @@ final class DashboardFiatBalancesPresenter {
     
     /// Streams only distinct actions
     var action: Driver<DashboardItemDisplayAction<FiatBalanceCollectionViewPresenter>> {
-        actionRelay
+        _ = setup
+        return actionRelay
             .asDriver()
             .distinctUntilChanged()
     }
     
     // MARK: - Private Properties
     
-    let actionRelay = BehaviorRelay<DashboardItemDisplayAction<FiatBalanceCollectionViewPresenter>>(value: .hide)
     private let selectionRelay = BehaviorRelay<DashboardItemDisplayAction<CurrencyType>>(value: .hide)
+    private let actionRelay = BehaviorRelay<DashboardItemDisplayAction<FiatBalanceCollectionViewPresenter>>(value: .hide)
+    
     private let fiatBalanceCollectionViewPresenter: FiatBalanceCollectionViewPresenter    
     private let interactor: DashboardFiatBalancesInteractor
     private let disposeBag = DisposeBag()
+    
+    private lazy var setup: Void = {
+        let fiatBalanceCollectionViewPresenter = self.fiatBalanceCollectionViewPresenter
+        interactor.shouldAppear
+            .map { $0 ? .show(fiatBalanceCollectionViewPresenter) : .hide }
+            .bindAndCatch(to: actionRelay)
+            .disposed(by: disposeBag)
+    }()
     
     // MARK: - Setup
     
@@ -53,18 +64,8 @@ final class DashboardFiatBalancesPresenter {
             })
             .disposed(by: disposeBag)
     }
-    
+
     func refresh() {
-        interactor.shouldAppear
-            .subscribe(onSuccess: { [weak self] shouldAppear in
-                if shouldAppear {
-                    self?.displayBalancesCollection()
-                }
-            })
-            .disposed(by: disposeBag)
-    }
-    
-    private func displayBalancesCollection() {
-        actionRelay.accept(.show(fiatBalanceCollectionViewPresenter))
+        fiatBalanceCollectionViewPresenter.refresh()
     }
 }

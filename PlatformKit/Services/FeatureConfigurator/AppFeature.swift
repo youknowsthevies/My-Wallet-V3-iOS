@@ -15,8 +15,6 @@ public enum AppFeature: Int, CaseIterable {
     case swipeToReceive
     case transferFundsFromImportedAddress
 
-    case tetherEnabled
-
     /// Sunriver
     case stellarAirdrop
     case stellarAirdropPopup
@@ -48,8 +46,6 @@ extension AppFeature {
     /// The remote key which determines if this feature is enabled or not
     public var remoteEnabledKey: String? {
         switch self {
-        case .tetherEnabled:
-            return "ios_tether_enabled"
         case .stellarAirdrop:
             return "ios_sunriver_airdrop_enabled"
         case .stellarAirdropPopup:

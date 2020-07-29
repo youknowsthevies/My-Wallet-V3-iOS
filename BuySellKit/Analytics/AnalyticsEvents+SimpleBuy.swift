@@ -98,6 +98,14 @@ extension AnalyticsEvents {
         case sbUnsupportedChangeCurrency
         case sbUnsupportedViewHome
         case sbCheckoutCompleted(status: CheckoutStatus)
+        case sbSettingsAddCardClicked
+        case sbRemoveBank
+        case sbLinkBankClicked
+        case sbSettingsNoInternet
+        case sbLinkBankLoadingError(currencyCode: String)
+        case sbLinkBankScreenShown(currencyCode: String)
+        case sbLinkBankDetailsCopied
+        case sbLinkBankEmailClicked
             
         public var name: String {
             switch self {
@@ -260,6 +268,30 @@ extension AnalyticsEvents {
             // Simple Buy - Currency selected (clicked on currency, 0.1)
             case .sbCurrencySelected:
                 return "sb_currency_selected"
+            // Simple Buy - Settings Add Card click (5.0/3.0(sell))
+            case .sbSettingsAddCardClicked:
+                return "sb_settings_add_card_clicked"
+            // Simple Buy - Remove Bank(3.5)
+            case .sbRemoveBank:
+                return "sb_remove_bank"
+            // Simple Buy - Link Bank clicked(3.0)
+            case .sbLinkBankClicked:
+                return "sb_link_bank_clicked"
+            // Simple Buy - settings no internet
+            case .sbSettingsNoInternet:
+                return "sb_settings_no_internet"
+            // Simple Buy - Link Bank loading error
+            case .sbLinkBankLoadingError:
+                return "sb_link_bank_loading_error"
+            // Simple Buy - Link Bank screen shown (3.1/3.2)
+            case .sbLinkBankScreenShown:
+                return "sb_link_bank_screen_shown"
+            // Simple Buy - Link Bank Details copied
+            case .sbLinkBankDetailsCopied:
+                return "sb_link_bank_details_copied"
+            // Simple Buy - Link Bank Email clicked
+            case .sbLinkBankEmailClicked:
+                return "sb_link_bank_email_clicked"
             // Simple Buy - Currency Not Supported (screen shown, 0.2)
             case .sbCurrencyUnsupported:
                 return "sb_currency_unsupported"
@@ -294,7 +326,9 @@ extension AnalyticsEvents {
             case .sbBankDetailsShown(currencyCode: let currencyCode),
                  .sbPendingModalShown(currencyCode: let currencyCode),
                  .sbBuyFormFiatChanged(currencyCode: let currencyCode),
-                 .sbCurrencySelected(currencyCode: let currencyCode):
+                 .sbCurrencySelected(currencyCode: let currencyCode),
+                 .sbLinkBankScreenShown(currencyCode:  let currencyCode),
+                 .sbLinkBankLoadingError(currencyCode: let currencyCode):
                 return [Name.currency : currencyCode]
             case .sbTradingWalletSend(asset: let currency),
                  .sbTradingWalletClicked(asset: let currency),

@@ -17,6 +17,7 @@ typealias FundsTransferDetailsInteractionState = ValueCalculationState<PaymentAc
 
 protocol FundsTransferDetailsInteractorAPI: AnyObject {
     var state: Observable<FundsTransferDetailsInteractionState> { get }
+    var fiatCurrency: FiatCurrency { get }
 }
 
 final class InteractiveFundsTransferDetailsInteractor: FundsTransferDetailsInteractorAPI {
@@ -27,8 +28,9 @@ final class InteractiveFundsTransferDetailsInteractor: FundsTransferDetailsInter
         paymentAccountRelay.compactMap { $0 }
     }
     
+    let fiatCurrency: FiatCurrency
+    
     private let paymentAccountService: PaymentAccountServiceAPI
-    private let fiatCurrency: FiatCurrency
     private let paymentAccountRelay = BehaviorRelay<FundsTransferDetailsInteractionState>(value: .invalid(.empty))
     private let disposeBag = DisposeBag()
     
@@ -45,22 +47,5 @@ final class InteractiveFundsTransferDetailsInteractor: FundsTransferDetailsInter
             .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
             .bindAndCatch(to: paymentAccountRelay)
             .disposed(by: disposeBag)
-    }
-}
-
-final class StaleFundsTransferDetailsInteractor: FundsTransferDetailsInteractorAPI {
-                
-    // MARK: - Exposed Properties
-    
-    var state: Observable<FundsTransferDetailsInteractionState> {
-        .just(.value(checkoutData.paymentAccount))
-    }
-
-    private let checkoutData: CheckoutData
-            
-    // MARK: - Setup
-    
-    init(checkoutData: CheckoutData) {
-        self.checkoutData = checkoutData
     }
 }

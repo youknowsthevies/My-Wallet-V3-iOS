@@ -92,16 +92,19 @@ final class CardDetailsScreenPresenter {
     private let stateService: AddCardStateService
     private let eventRecorder: AnalyticsEventRecording
     private let cardNumberValidator: CardNumberValidator
-    
+    private let loadingViewPresenter: LoadingViewPresenting
+
     // MARK: - Setup
     
     init(stateService: AddCardStateService,
          interactor: CardDetailsScreenInteractor,
+         loadingViewPresenter: LoadingViewPresenting = UIUtilityProvider.default.loader,
          eventRecorder: AnalyticsEventRecording,
          messageRecorder: MessageRecording) {
         self.interactor = interactor
         self.stateService = stateService
         self.eventRecorder = eventRecorder
+        self.loadingViewPresenter = loadingViewPresenter
         
         // Setup of the stored properties
         
@@ -210,6 +213,7 @@ final class CardDetailsScreenPresenter {
         let buttonTapped = buttonViewModel.tapRelay
             .withLatestFrom(dataRelay)
             .compactMap { $0 }
+            .show(loader: loadingViewPresenter, style: .circle)
             .flatMap(weak: self) { (self, cardData) in
                 interactor
                     .doesCardExist(
@@ -221,6 +225,7 @@ final class CardDetailsScreenPresenter {
                     .asObservable()
             }
             .mapToResult()
+            .hide(loader: loadingViewPresenter)
             .share(replay: 1)
         
         buttonTapped

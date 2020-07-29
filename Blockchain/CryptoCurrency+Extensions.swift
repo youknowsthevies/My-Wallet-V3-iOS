@@ -70,14 +70,6 @@ extension CryptoCurrency {
         }
     }
 
-    static let allEnabled: [CryptoCurrency] = {
-        let allCases = CryptoCurrency.allCases
-        if AppFeatureConfigurator.shared.configuration(for: .tetherEnabled).isEnabled {
-            return allCases
-        }
-        return allCases.filter { $0 != .tether }
-    }()
-
     init(legacyAssetType: LegacyAssetType) {
         switch legacyAssetType {
         case .algorand:

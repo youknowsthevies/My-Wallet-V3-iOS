@@ -74,8 +74,8 @@ final class BillingAddressScreenPresenter {
 
     let selectionButtonViewModel: SelectionButtonViewModel
     
-    var refresh: Observable<Void> {
-        refreshRelay.asObservable()
+    var refresh: Signal<Void> {
+        refreshRelay.asSignal()
     }
     
     var isValid: Driver<Bool> {

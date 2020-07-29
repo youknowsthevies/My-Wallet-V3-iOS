@@ -67,6 +67,7 @@ final class PaymentMethodsService: PaymentMethodsServiceAPI {
     private let client: PaymentMethodsClientAPI
     private let tiersService: KYCTiersServiceAPI
     private let featureFetcher: FeatureFetching
+    private let enabledFiatCurrencies: [FiatCurrency]
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     
     // MARK: - Setup
@@ -75,15 +76,18 @@ final class PaymentMethodsService: PaymentMethodsServiceAPI {
          tiersService: KYCTiersServiceAPI,
          reactiveWallet: ReactiveWalletAPI,
          featureFetcher: FeatureFetching,
+         enabledFiatCurrencies: [FiatCurrency],
          fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
         self.client = client
         self.tiersService = tiersService
         self.featureFetcher = featureFetcher
         self.fiatCurrencyService = fiatCurrencyService
+        self.enabledFiatCurrencies = enabledFiatCurrencies
     }
     
     func fetch() -> Observable<[PaymentMethod]> {
-        fiatCurrencyService.fiatCurrencyObservable
+        let enabledFiatCurrencies = self.enabledFiatCurrencies
+        return fiatCurrencyService.fiatCurrencyObservable
             .flatMap(weak: self) { (self, fiatCurrency) -> Observable<[PaymentMethod]> in
                 self.tiersService.fetchTiers()
                     .map { $0.isTier2Approved }
@@ -93,7 +97,12 @@ final class PaymentMethodsService: PaymentMethodsServiceAPI {
                             checkEligibility: isTier2Approved
                         )
                     }
-                    .map { Array<PaymentMethod>.init(response: $0) }
+                    .map {
+                        Array<PaymentMethod>.init(
+                            response: $0,
+                            supportedFiatCurrencies: enabledFiatCurrencies
+                        )
+                    }
                     .map { paymentMethods in
                         paymentMethods.filter {
                             switch $0.type {
@@ -104,9 +113,7 @@ final class PaymentMethodsService: PaymentMethodsServiceAPI {
                             case .bankTransfer:
                                 // Filter out bank transfer details from currencies we do not
                                 //  have local support/UI.
-                                return CustodialLocallySupportedFiatCurrencies
-                                    .fiatCurrencies
-                                    .contains($0.min.currencyType)
+                                return enabledFiatCurrencies.contains($0.min.currencyType)
                             }
                         }
                     }

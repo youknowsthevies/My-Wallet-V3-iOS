@@ -14,6 +14,7 @@ import RxCocoa
 import RxSwift
 import StellarKit
 import ToolKit
+import DIKit
 
 // TICKET: [IOS-2087] - Integrate PlatformKit Account Repositories and Deprecate AssetAccountRepository
 /// A repository for `AssetAccount` objects
@@ -35,15 +36,18 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     private let stellarAccountService: StellarAccountAPI
     private var cachedAccounts = BehaviorRelay<[AssetAccount]?>(value: nil)
     private let disposables = CompositeDisposable()
+    private let enabledCurrenciesService: EnabledCurrenciesService
 
     init(
         wallet: Wallet = WalletManager.shared.wallet,
         stellarServiceProvider: StellarServiceProvider = StellarServiceProvider.shared,
         paxServiceProvider: PAXServiceProvider = PAXServiceProvider.shared,
         ethereumServiceProvider: ETHServiceProvider = ETHServiceProvider.shared,
-        tetherServiceProvider: TetherServiceProvider = .shared
+        tetherServiceProvider: TetherServiceProvider = .shared,
+        enabledCurrenciesService: EnabledCurrenciesService = resolve()
     ) {
         self.wallet = wallet
+        self.enabledCurrenciesService = enabledCurrenciesService
         self.paxAccountRepository = paxServiceProvider.services.assetAccountRepository
         self.tetherAccountRepository = tetherServiceProvider.services.assetAccountRepository
         self.ethereumWalletService = paxServiceProvider.services.walletService
@@ -108,7 +112,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     }
 
     func fetchAccounts() -> Single<[AssetAccount]> {
-        let observables: [Observable<[AssetAccount]>] = CryptoCurrency.allEnabled.map {
+        let observables: [Observable<[AssetAccount]>] = enabledCurrenciesService.allEnabledCryptoCurrencies.map {
             accounts(for: $0, fromCache: false).asObservable()
         }
         return Single.create { observer -> Disposable in

@@ -16,6 +16,7 @@ extension DependencyContainer {
     // MARK: - Blockchain Module
     
     static var blockchain = module {
+        single { EnabledCurrenciesService(featureFetcher: AppFeatureConfigurator.shared) }
         
         single { AppCoordinator() }
         

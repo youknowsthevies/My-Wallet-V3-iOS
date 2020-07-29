@@ -42,10 +42,11 @@ extension FiatCustodialBalanceViewInteractor: Equatable {
 // MARK: - Array extension to populate balance pairs
 
 extension Array where Element == FiatCustodialBalanceViewInteractor {
-    init(balancePairsCalculationStates: MoneyBalancePairsCalculationStates) {
+    init(balancePairsCalculationStates: MoneyBalancePairsCalculationStates,
+         supportedFiatCurrencies: [FiatCurrency]) {
         self = balancePairsCalculationStates.all
             .compactMap { $0.value }
-            .filter { CustodialLocallySupportedFiatCurrencies.fiatCurrencies.contains($0.base.fiatValue!.currencyType) }
+            .filter { supportedFiatCurrencies.contains($0.base.fiatValue!.currencyType) }
             .sorted { $0.base.fiatValue!.currencyType.code < $1.base.fiatValue!.currencyType.code }
             .map { FiatCustodialBalanceViewInteractor(balance: $0) }
     }
