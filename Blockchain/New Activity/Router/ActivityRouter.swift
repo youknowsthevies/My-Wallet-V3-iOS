@@ -100,6 +100,6 @@ final class ActivityRouter: ActivityRouterAPI {
             activityItems: [(image.pngData() ?? Data())],
             applicationActivities: nil
         )
-        topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
+        navigationRouter.topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
     }
 }
