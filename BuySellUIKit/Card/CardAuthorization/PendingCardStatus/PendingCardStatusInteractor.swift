@@ -8,9 +8,10 @@
 
 import BuySellKit
 import PlatformKit
+import PlatformUIKit
 import RxSwift
 
-final class PendingCardStatusInteractor {
+final class PendingCardStatusInteractor: Interactor {
     
     // MARK: - Types
     
@@ -25,13 +26,16 @@ final class PendingCardStatusInteractor {
     private let cardId: String
     private let activationService: CardActivationServiceAPI
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
+    private let routingInteractor: CardRouterInteractor
 
     // MARK: - Setup
     
     init(cardId: String,
          activationService: CardActivationServiceAPI,
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI) {
+         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
+         routingInteractor: CardRouterInteractor) {
         self.cardId = cardId
+        self.routingInteractor = routingInteractor
         self.activationService = activationService
         self.paymentMethodTypesService = paymentMethodTypesService
     }
@@ -58,7 +62,14 @@ final class PendingCardStatusInteractor {
             }
     }
     
-    func stopPolling() -> Completable {
-        activationService.cancel
+    /// End the polling in confirmation state
+    /// - Parameter cardData: The data of the card
+    func endWithConfirmation(with cardData: CardData) {
+        routingInteractor.end(with: cardData)
+    }
+    
+    /// End the polling without confirmation 
+    func endWithoutConfirmation() {
+        routingInteractor.dismiss()
     }
 }

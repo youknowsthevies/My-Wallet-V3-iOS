@@ -9,7 +9,7 @@
 import PlatformUIKit
 import RxRelay
 
-protocol SettingsRouterAPI: Router, RoutingPreviousStateEmitterAPI {
+protocol SettingsRouterAPI: RoutingPreviousStateEmitterAPI {
     var actionRelay: PublishRelay<SettingsScreenAction> { get }
     func presentSettings()
 }

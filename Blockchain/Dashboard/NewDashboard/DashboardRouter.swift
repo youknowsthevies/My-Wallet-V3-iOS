@@ -12,16 +12,13 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-final class DashboardRouter: Router {
-
-    // MARK: Public Properties (Router)
-
-    var navigationControllerAPI: NavigationControllerAPI?
-    weak var topMostViewControllerProvider: TopMostViewControllerProviding!
+final class DashboardRouter {
 
     // MARK: Private Properties
 
     private let disposeBag = DisposeBag()
+
+    private let navigationRouter: NavigationRouterAPI
     private let routing: TabSwapping & CurrencyRouting
     private let recoveryVerifyingAPI: RecoveryPhraseVerifyingServiceAPI
     private let backupRouterAPI: BackupRouterAPI
@@ -31,13 +28,13 @@ final class DashboardRouter: Router {
     private let userInformationServiceProvider: UserInformationServiceProviding
     
     init(routing: CurrencyRouting & TabSwapping,
-         topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
+         navigationRouter: NavigationRouterAPI = NavigationRouter(),
          userInformationServiceProvider: UserInformationServiceProviding = UserInformationServiceProvider.default,
          wallet: Wallet = WalletManager.shared.wallet,
          dataProvider: DataProviding = resolve(),
          backupRouterAPI: BackupRouterAPI = BackupFundsCustodialRouter()) {
+        self.navigationRouter = navigationRouter
         self.routing = routing
-        self.topMostViewControllerProvider = topMostViewControllerProvider
         self.recoveryVerifyingAPI = RecoveryPhraseVerifyingService(wallet: wallet)
         self.userInformationServiceProvider = userInformationServiceProvider
         self.dataProvider = dataProvider
@@ -92,7 +89,7 @@ final class DashboardRouter: Router {
             .disposed(by: disposeBag)
         
         let controller = DashboardDetailsViewController(using: detailsPresenter)
-        present(viewController: controller, using: .modalOverTopMost)
+        navigationRouter.present(viewController: controller, using: .modalOverTopMost)
     }
     
     private func handle(action: DashboadDetailsAction) {
@@ -100,10 +97,10 @@ final class DashboardRouter: Router {
         case .buy:
             break
         case .request(let currency):
-            topMostViewControllerProvider?.topMostViewController?.dismiss(animated: true, completion: nil)
+            navigationRouter.topMostViewControllerProvider?.topMostViewController?.dismiss(animated: true, completion: nil)
             routing.toReceive(currency)
         case .send(let currency):
-            topMostViewControllerProvider?.topMostViewController?.dismiss(animated: true, completion: nil)
+            navigationRouter.topMostViewControllerProvider?.topMostViewController?.dismiss(animated: true, completion: nil)
             routing.toSend(currency)
         case .nonCustodial(let currency):
             nonCustodialActionRouterAPI.start(with: currency)

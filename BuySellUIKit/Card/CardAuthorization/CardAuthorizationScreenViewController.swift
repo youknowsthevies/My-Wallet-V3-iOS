@@ -49,11 +49,13 @@ final class CardAuthorizationScreenViewController: BaseScreenViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        presenter.viewDidLoad()
         setupNavigationBar()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        presenter.viewWillAppear()
         switch presenter.authorizationState {
         case .required(let urls):
             self.exitUrl = urls.exitLink
@@ -74,6 +76,11 @@ final class CardAuthorizationScreenViewController: BaseScreenViewController {
         case .required:
             break
         }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        presenter.viewDidDisappear()
     }
         
     private func setupNavigationBar() {

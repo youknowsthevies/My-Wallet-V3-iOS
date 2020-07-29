@@ -13,13 +13,10 @@ public protocol PendingStatePresenterAPI: class {
     var viewModel: Driver<PendingStateViewModel> { get }
     var pendingStatusViewEdgeSize: CGFloat { get }
     var pendingStatusViewSideContainerRatio: CGFloat { get }
-    func viewDidLoad()
 }
 
 extension PendingStatePresenterAPI {
     public var title: String { "" }
     public var pendingStatusViewSideContainerRatio: CGFloat { 0.35 }
     public var pendingStatusViewEdgeSize: CGFloat { 80 }
-
-    public func viewDidLoad() {}
 }

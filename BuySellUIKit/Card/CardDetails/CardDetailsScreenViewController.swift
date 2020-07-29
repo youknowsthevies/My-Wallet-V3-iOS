@@ -8,6 +8,7 @@
 
 import Localization
 import PlatformUIKit
+import ToolKit
 import RxSwift
 
 final class CardDetailsScreenViewController: BaseTableViewController {
@@ -31,14 +32,13 @@ final class CardDetailsScreenViewController: BaseTableViewController {
     }
     
     @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { nil }
 
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        presenter.viewDidLoad()
         setupNavigationBar()
         addButton(with: presenter.buttonViewModel)
         keyboardInteractionController = KeyboardInteractionController(
@@ -49,8 +49,7 @@ final class CardDetailsScreenViewController: BaseTableViewController {
         setupKeyboardObserver()
         
         presenter.error
-            .emit(onNext: { [weak self] error in
-                guard let self = self else { return }
+            .emit(weak: self) { (self, error) in
                 switch error {
                 case .cardAlreadySaved:
                     typealias LocalizedString = LocalizationConstants.CardDetailsScreen.Alert
@@ -64,19 +63,28 @@ final class CardDetailsScreenViewController: BaseTableViewController {
                 case .generic:
                     self.alertPresenter.error(in: self, action: nil)
                 }
-            })
+            }
             .disposed(by: disposeBag)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        presenter.viewWillAppear()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         keyboardObserver.setup()
-        presenter.viewDidAppear()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         keyboardObserver.remove()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        presenter.viewDidDisappear()
     }
     
     private func setupNavigationBar() {

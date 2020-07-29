@@ -42,6 +42,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        presenter.viewDidLoad()
         setupNavigationBar()
         addButton(with: presenter.buttonViewModel)
         keyboardInteractionController = KeyboardInteractionController(
@@ -59,6 +60,11 @@ final class BillingAddressScreenViewController: BaseTableViewController {
             .disposed(by: disposeBag)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        presenter.viewWillAppear()
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         keyboardObserver.setup()
@@ -67,6 +73,11 @@ final class BillingAddressScreenViewController: BaseTableViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         keyboardObserver.remove()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        presenter.viewDidDisappear()
     }
     
     private func setupNavigationBar() {

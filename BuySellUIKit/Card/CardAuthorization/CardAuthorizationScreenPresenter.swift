@@ -9,13 +9,10 @@
 import BuySellKit
 import Localization
 import PlatformKit
+import PlatformUIKit
 import ToolKit
 
-public protocol CardAuthorizationStateServiceAPI: class {
-    func cardAuthorized(with paymentMethodId: String)
-}
-
-final class CardAuthorizationScreenPresenter {
+final class CardAuthorizationScreenPresenter: Presenter {
     
     let title = LocalizationConstants.AuthorizeCardScreen.title
     
@@ -23,20 +20,22 @@ final class CardAuthorizationScreenPresenter {
         data.state
     }
     
-    private let stateService: CardAuthorizationStateServiceAPI
     private let eventRecorder: AnalyticsEventRecording
     
     private let data: PartnerAuthorizationData
     private var hasRedirected = false
     
+    private let interactor: CardAuthorizationScreenInteractor
+    
     // MARK: - Setup
     
-    init(stateService: CardAuthorizationStateServiceAPI,
+    init(interactor: CardAuthorizationScreenInteractor,
          data: PartnerAuthorizationData,
          eventRecorder: AnalyticsEventRecording) {
         self.eventRecorder = eventRecorder
-        self.stateService = stateService
+        self.interactor = interactor
         self.data = data
+        super.init(interactable: interactor)
     }
     
     func redirect() {
@@ -44,7 +43,7 @@ final class CardAuthorizationScreenPresenter {
         guard !hasRedirected else { return }
         hasRedirected = true
         self.eventRecorder.record(event: AnalyticsEvents.SimpleBuy.sbThreeDSecureComplete)
-        stateService.cardAuthorized(with: data.paymentMethodId)
+        interactor.cardAuthorized(with: data.paymentMethodId)
     }
 }
 

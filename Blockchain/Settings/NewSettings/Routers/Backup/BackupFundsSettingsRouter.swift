@@ -11,28 +11,22 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-final class BackupFundsSettingsRouter: BackupRouterAPI, Router {
+final class BackupFundsSettingsRouter: BackupRouterAPI {
     
     // MARK: - BackupRouterAPI
     
     let entry: BackupRouterEntry = .settings
     let completionRelay = PublishRelay<Void>()
     
-    // MARK: - `Router` Properties
-    
-    weak var topMostViewControllerProvider: TopMostViewControllerProviding!
-    weak var navigationControllerAPI: NavigationControllerAPI?
-    
     private var stateService: BackupRouterStateService!
+    private let navigationRouter: NavigationRouterAPI
     private let serviceProvider: BackupFundsServiceProviderAPI
     private let disposeBag = DisposeBag()
     
-    init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
-         services: BackupFundsServiceProviderAPI = BackupFundsServiceProvider.default,
-         navigationControllerAPI: NavigationControllerAPI?) {
-        self.navigationControllerAPI = navigationControllerAPI
+    init(navigationRouter: NavigationRouterAPI,
+         services: BackupFundsServiceProviderAPI = BackupFundsServiceProvider.default) {
+        self.navigationRouter = navigationRouter
         self.serviceProvider = services
-        self.topMostViewControllerProvider = topMostViewControllerProvider
     }
     
     func start() {
@@ -45,10 +39,10 @@ final class BackupFundsSettingsRouter: BackupRouterAPI, Router {
                 case .next(let state):
                     self.next(to: state)
                 case .complete:
-                    self.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
+                    self.navigationRouter.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
                     self.completionRelay.accept(())
                 case .dismiss:
-                    self.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
+                    self.navigationRouter.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
                 }
             }
             .disposed(by: disposeBag)
@@ -64,16 +58,16 @@ final class BackupFundsSettingsRouter: BackupRouterAPI, Router {
         case .recovery:
             let presenter = RecoveryPhraseScreenPresenter(stateService: stateService, serviceProvider: serviceProvider)
             let controller = RecoveryPhraseViewController(presenter: presenter)
-            navigationControllerAPI?.pushViewController(controller, animated: true)
+            navigationRouter.navigationControllerAPI?.pushViewController(controller, animated: true)
         case .verification:
             let presenter = VerifyBackupScreenPresenter(stateService: stateService, service: serviceProvider.recoveryPhraseVerifyingAPI)
             let controller = VerifyBackupViewController(presenter: presenter)
-            navigationControllerAPI?.pushViewController(controller, animated: true)
+            navigationRouter.navigationControllerAPI?.pushViewController(controller, animated: true)
         }
     }
     
     func previous() {
-        dismiss()
+        navigationRouter.dismiss()
     }
     
     // MARK: - Private Functions
@@ -84,7 +78,7 @@ final class BackupFundsSettingsRouter: BackupRouterAPI, Router {
         if #available(iOS 13.0, *) {
             controller.isModalInPresentation = true
         }
-        present(viewController: controller, using: presentationType)
+        navigationRouter.present(viewController: controller, using: presentationType)
     }
 }
 

@@ -158,30 +158,26 @@ public final class StateService: StateServiceAPI {
 
     public let cache: EventCache
     
-    private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
     private let uiUtilityProvider: UIUtilityProviderAPI
-    private let pendingOrderDetailsService: PendingOrderDetailsServiceAPI
     private let userInformationServiceProvider: UserInformationServiceProviding
     private let kycTiersService: KYCTiersServiceAPI
     private let statesRelay = BehaviorRelay<States>(value: .inactive)
     private let actionRelay = PublishRelay<Action>()
+    private let serviceProvider: ServiceProviderAPI
     
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
-    public init(uiUtilityProvider: UIUtilityProviderAPI,
-                pendingOrderDetailsService: PendingOrderDetailsServiceAPI,
-                supportedPairsInteractor: SupportedPairsInteractorServiceAPI,
+    public init(serviceProvider: ServiceProviderAPI,
+                uiUtilityProvider: UIUtilityProviderAPI,
                 kycTiersService: KYCTiersServiceAPI,
                 cache: EventCache,
                 userInformationServiceProvider: UserInformationServiceProviding) {
-    
+        self.serviceProvider = serviceProvider
         self.kycTiersService = kycTiersService
         self.userInformationServiceProvider = userInformationServiceProvider
-        self.supportedPairsInteractor = supportedPairsInteractor
         self.uiUtilityProvider = uiUtilityProvider
-        self.pendingOrderDetailsService = pendingOrderDetailsService
         self.cache = cache
         
         nextRelay
@@ -195,24 +191,26 @@ public final class StateService: StateServiceAPI {
             .disposed(by: disposeBag)
     }
     
-    public func addCardStateService(with checkoutData: CheckoutData) -> AddCardStateService {
-        let addCardStateService = AddCardStateService()
-        addCardStateService.completionCardData
-            .bind { [weak self] cardData in
-                guard let self = self else { return }
+    public func cardRoutingInteractor(with checkoutData: CheckoutData, cardServiceProvider: CardServiceProviderAPI) -> CardRouterInteractor {
+        let interactor = CardRouterInteractor(
+            buySellServiceProvider: serviceProvider,
+            cardServiceProvider: cardServiceProvider
+        )
+        interactor.completionCardData
+            .bindAndCatch(weak: self) { (self, cardData) in
                 let checkoutData = checkoutData.checkoutData(byAppending: cardData)
                 self.previous()
                 self.nextFromBuyCrypto(with: checkoutData)
             }
             .disposed(by: disposeBag)
         
-        addCardStateService.cancellation
-            .bind { [weak self] in
-                self?.previous()
+        interactor.cancellation
+            .bindAndCatch(weak: self) { (self) in
+                self.previous()
             }
             .disposed(by: disposeBag)
 
-        return addCardStateService
+        return interactor
     }
         
     // TODO: Look into reactive state machine
@@ -289,7 +287,7 @@ public final class StateService: StateServiceAPI {
         
     private func startFlow() {
         let cache = self.cache
-        let isFiatCurrencySupported: Single<Bool> = supportedPairsInteractor.pairs
+        let isFiatCurrencySupported: Single<Bool> = serviceProvider.supportedPairsInteractor.pairs
             .take(1)
             .asSingle()
             .map { !$0.pairs.isEmpty }
@@ -300,7 +298,7 @@ public final class StateService: StateServiceAPI {
                 
         Single
             .zip(
-                pendingOrderDetailsService.pendingOrderDetails,
+                serviceProvider.pendingOrderDetails.pendingOrderDetails,
                 isFiatCurrencySupported
             )
             .handleLoaderForLifecycle(

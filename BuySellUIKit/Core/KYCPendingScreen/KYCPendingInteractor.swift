@@ -13,7 +13,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class KYCPendingInteractor {
+final class KYCPendingInteractor: Interactor {
 
     // MARK: - Properties
 

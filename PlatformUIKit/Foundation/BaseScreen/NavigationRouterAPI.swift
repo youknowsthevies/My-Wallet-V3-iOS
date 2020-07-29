@@ -1,5 +1,5 @@
 //
-//  Router.swift
+//  NavigationRouterAPI.swift
 //  PlatformUIKit
 //
 //  Created by Daniel Huri on 30/01/2020.
@@ -23,7 +23,7 @@ public protocol RoutingNextStateEmitterAPI: class {
 /// Emits both previus and next state commands. Exposes a simple navigation API
 public typealias RoutingStateEmitterAPI = RoutingPreviousStateEmitterAPI & RoutingNextStateEmitterAPI
 
-public protocol Router: class {
+public protocol NavigationRouterAPI: AnyObject {
     var navigationControllerAPI: NavigationControllerAPI? { get set }
     var topMostViewControllerProvider: TopMostViewControllerProviding! { get }
     
@@ -33,9 +33,14 @@ public protocol Router: class {
     func dismiss(completion: (() -> Void)?)
     func dismiss(using presentationType: PresentationType)
     func dismiss()
+    
+    func pop(animated: Bool)
 }
 
-extension Router {
+public class NavigationRouter: NavigationRouterAPI {
+        
+    public weak var navigationControllerAPI: NavigationControllerAPI?
+    public weak var topMostViewControllerProvider: TopMostViewControllerProviding!
     
     public var defaultPresentationType: PresentationType {
         if navigationControllerAPI != nil {
@@ -54,6 +59,10 @@ extension Router {
         } else {
             return .navigationFromCurrent
         }
+    }
+    
+    public init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared) {
+        self.topMostViewControllerProvider = topMostViewControllerProvider
     }
     
     public func present(viewController: UIViewController) {
@@ -98,6 +107,10 @@ extension Router {
         case .navigation, .navigationFromCurrent:
             navigationControllerAPI?.popViewController(animated: true)
         }
+    }
+    
+    public func pop(animated: Bool) {
+        navigationControllerAPI!.popViewController(animated: true)
     }
 }
 

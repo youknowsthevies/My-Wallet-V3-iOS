@@ -100,7 +100,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
 }
 
 extension PrimitiveSequence where Trait == CompletableTrait, Element == Never {
-    public static func create<A: AnyObject>(weak object: A, subscribe: @escaping (A, Self.CompletableObserver) -> Disposable) -> RxSwift.PrimitiveSequence<Self.Trait, Self.Element> {
+    public static func create<A: AnyObject>(weak object: A, subscribe: @escaping (A, @escaping Self.CompletableObserver) -> Disposable) -> RxSwift.PrimitiveSequence<Self.Trait, Self.Element> {
         Completable.create { [weak object] observer -> Disposable in
             guard let object = object else {
                 observer(.error(ToolKitError.nullReference(A.self)))

@@ -11,23 +11,17 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-final class UpdateMobileRouter: Router {
-    
-    // MARK: - `Router` Properties
-    
-    weak var topMostViewControllerProvider: TopMostViewControllerProviding!
-    weak var navigationControllerAPI: NavigationControllerAPI?
+final class UpdateMobileRouter {
     
     private var stateService: UpdateMobileStateServiceAPI!
     private let serviceProvider: MobileSettingsServiceAPI & SettingsServiceAPI
+    private let navigationRouter: NavigationRouterAPI
     private let disposeBag = DisposeBag()
     
-    init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
-         navigationControllerAPI: NavigationControllerAPI?,
+    init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
          service: MobileSettingsServiceAPI & SettingsServiceAPI = UserInformationServiceProvider.default.settings) {
         self.serviceProvider = service
-        self.navigationControllerAPI = navigationControllerAPI
-        self.topMostViewControllerProvider = topMostViewControllerProvider
+        self.navigationRouter = navigationRouter
     }
     
     func start() {
@@ -50,7 +44,7 @@ final class UpdateMobileRouter: Router {
         case .start:
             break
         case .end:
-            navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
+            navigationRouter.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
         case .mobileNumber:
             showUpdateMobileScreen()
         case .codeEntry:
@@ -59,7 +53,7 @@ final class UpdateMobileRouter: Router {
     }
     
     func previous() {
-        dismiss()
+        navigationRouter.dismiss()
     }
     
     // MARK: - Private Functions
@@ -67,12 +61,12 @@ final class UpdateMobileRouter: Router {
     func showUpdateMobileScreen() {
         let presenter = UpdateMobileScreenPresenter(stateService: stateService, settingsAPI: serviceProvider)
         let controller = UpdateMobileScreenViewController(presenter: presenter)
-        present(viewController: controller)
+        navigationRouter.present(viewController: controller)
     }
     
     func showCodeEntryScreen() {
         let presenter = MobileCodeEntryScreenPresenter(stateService: stateService, service: serviceProvider)
         let controller = MobileCodeEntryViewController(presenter: presenter)
-        present(viewController: controller)
+        navigationRouter.present(viewController: controller)
     }
 }

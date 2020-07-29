@@ -11,7 +11,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-protocol BackupRouterAPI: class {
+protocol BackupRouterAPI: AnyObject {
     var completionRelay: PublishRelay<Void> { get }
     
     var entry: BackupRouterEntry { get }

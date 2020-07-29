@@ -1,5 +1,5 @@
 //
-//  AddCardStateService.swift
+//  CardRouterInteractor.swift
 //  Blockchain
 //
 //  Created by Daniel Huri on 31/03/2020.
@@ -8,11 +8,16 @@
 
 import BuySellKit
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
 
-public final class AddCardStateService: CardAuthorizationStateServiceAPI {
+public protocol CardAuthorizationRoutingInteractorAPI: class {
+    func cardAuthorized(with paymentMethodId: String)
+}
+
+public final class CardRouterInteractor: Interactor {
     
     // MARK: - Types
                 
@@ -110,21 +115,31 @@ public final class AddCardStateService: CardAuthorizationStateServiceAPI {
     private let actionRelay = PublishRelay<Action>()
     private let disposeBag = DisposeBag()
 
+    let buySellServiceProvider: ServiceProviderAPI
+    let cardServiceProvider: CardServiceProviderAPI
+    
     // MARK: - Setup
     
-    public init() {
+    public init(buySellServiceProvider: ServiceProviderAPI, cardServiceProvider: CardServiceProviderAPI) {
+        self.buySellServiceProvider = buySellServiceProvider
+        self.cardServiceProvider = cardServiceProvider
+    }
+            
+    // MARK: - Lifecycle
+    
+    public override func didBecomeActive() {
+        super.didBecomeActive()
+        
         previousRelay
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
-    }
-    
-    // MARK: - Basic Navigation
-    
-    public func start() {
+        
         let states = States(current: .cardDetails, previous: [.inactive])
         apply(action: .next(to: states.current), states: states)
     }
+    
+    // MARK: - Basic Navigation
     
     public func end(with data: CardData) {
         let states = statesRelay.value.states(byAppending: .completed(data))
@@ -135,6 +150,20 @@ public final class AddCardStateService: CardAuthorizationStateServiceAPI {
         let states = statesRelay.value.states(byAppending: .inactive)
         apply(action: .next(to: states.current), states: states)
     }
+    
+    // MARK: - Other Customized Navigation
+    
+    public func addBillingAddress(to cardData: CardData) {
+        let states = statesRelay.value.states(byAppending: .billingAddress(cardData))
+        apply(action: .next(to: states.current), states: states)
+    }
+    
+    public func authorizeCardAddition(with data: PartnerAuthorizationData) {
+        let states = statesRelay.value.states(byAppending: .authorization(data))
+        apply(action: .next(to: states.current), states: states)
+    }
+    
+    // MARK: - Accessors
     
     private func previous() {
         let last = statesRelay.value.current
@@ -154,18 +183,9 @@ public final class AddCardStateService: CardAuthorizationStateServiceAPI {
         statesRelay.accept(states)
     }
     
-    // MARK: - Other Customized Navigation
-    
-    public func addBillingAddress(to cardData: CardData) {
-        let states = statesRelay.value.states(byAppending: .billingAddress(cardData))
-        apply(action: .next(to: states.current), states: states)
-    }
-    
-    public func authorizeCardAddition(with data: PartnerAuthorizationData) {
-        let states = statesRelay.value.states(byAppending: .authorization(data))
-        apply(action: .next(to: states.current), states: states)
-    }
-    
+}
+
+extension CardRouterInteractor: CardAuthorizationRoutingInteractorAPI {
     public func cardAuthorized(with identifier: String) {
         let states = statesRelay.value.states(byAppending: .pendingCardState(cardId: identifier))
         apply(action: .next(to: states.current), states: states)

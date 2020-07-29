@@ -8,9 +8,10 @@
 
 import BuySellKit
 import PlatformKit
+import PlatformUIKit
 import RxSwift
 
-final class CardDetailsScreenInteractor {
+final class CardDetailsScreenInteractor: Interactor {
 
     // MARK: - Properties
     
@@ -20,16 +21,27 @@ final class CardDetailsScreenInteractor {
     
     private let paymentMethodsService: PaymentMethodsServiceAPI
     private let cardListService: CardListServiceAPI
+    private let routingInteractor: CardRouterInteractor
     
     // MARK: - Setup
     
-    init(paymentMethodsService: PaymentMethodsServiceAPI,
+    init(routingInteractor: CardRouterInteractor,
+         paymentMethodsService: PaymentMethodsServiceAPI,
          cardListService: CardListServiceAPI) {
+        self.routingInteractor = routingInteractor
         self.paymentMethodsService = paymentMethodsService
         self.cardListService = cardListService
     }
     
     func doesCardExist(number: String, expiryMonth: String, expiryYear: String) -> Single<Bool> {
         cardListService.doesCardExist(number: number, expiryMonth: expiryMonth, expiryYear: expiryYear)
+    }
+    
+    func addBillingAddress(to cardData: CardData) {
+        routingInteractor.addBillingAddress(to: cardData)
+    }
+    
+    func cancel() {
+        routingInteractor.previousRelay.accept(())
     }
 }

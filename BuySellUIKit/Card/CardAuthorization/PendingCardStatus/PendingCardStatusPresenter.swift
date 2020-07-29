@@ -12,7 +12,7 @@ import PlatformUIKit
 import RxCocoa
 import RxSwift
 
-final class PendingCardStatusPresenter: PendingStatePresenterAPI {
+final class PendingCardStatusPresenter: Presenter, PendingStatePresenterAPI {
     
     // MARK: - Types
     
@@ -27,16 +27,21 @@ final class PendingCardStatusPresenter: PendingStatePresenterAPI {
     }
      
     private let viewModelRelay = BehaviorRelay<PendingStateViewModel?>(value: nil)
-    private let stateService: AddCardStateService
     private let interactor: PendingCardStatusInteractor
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
-    init(stateService: AddCardStateService,
-         interactor: PendingCardStatusInteractor) {
-        self.stateService = stateService
+    init(interactor: PendingCardStatusInteractor) {
         self.interactor = interactor
+        super.init(interactable: interactor)
+    }
+    
+    // MARK: - Lifecycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
         viewModelRelay.accept(
             PendingStateViewModel(
                 compositeStatusViewType: .loader,
@@ -44,11 +49,7 @@ final class PendingCardStatusPresenter: PendingStatePresenterAPI {
                 subtitle: LocalizedString.LoadingScreen.subtitle
             )
         )
-    }
-    
-    // MARK: - Lifecycle
-    
-    func viewDidLoad() {
+        
         interactor.startPolling()
             .observeOn(MainScheduler.instance)
             .subscribe(
@@ -65,12 +66,12 @@ final class PendingCardStatusPresenter: PendingStatePresenterAPI {
     private func handle(state: PendingCardStatusInteractor.State) {
         switch state {
         case .active(let cardData):
-            self.stateService.end(with: cardData)
+            interactor.endWithConfirmation(with: cardData)
         case .inactive:
             let button = ButtonViewModel.primary(with: LocalizationConstants.ErrorScreen.button)
             button.tapRelay
                 .bindAndCatch(weak: self) { (self) in
-                    self.stateService.dismiss()
+                    self.interactor.endWithoutConfirmation()
                 }
                 .disposed(by: disposeBag)
             let viewModel = PendingStateViewModel(
@@ -84,7 +85,7 @@ final class PendingCardStatusPresenter: PendingStatePresenterAPI {
             let button = ButtonViewModel.primary(with: LocalizationConstants.ErrorScreen.button)
             button.tapRelay
                 .bindAndCatch(weak: self) { (self) in
-                    self.stateService.dismiss()
+                    self.interactor.endWithoutConfirmation()
                 }
                 .disposed(by: disposeBag)
             let viewModel = PendingStateViewModel(

@@ -11,34 +11,32 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-protocol CustodyWithdrawalRouterAPI: class {
+protocol CustodyWithdrawalRouterAPI: AnyObject {
     func next(to state: CustodyWithdrawalStateService.State)
     func previous()
     func start(with currency: CryptoCurrency)
     var completionRelay: PublishRelay<Void> { get }
 }
 
-final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI, Router {
+final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI {
     
     // MARK: - `Router` Properties
-    
-    weak var topMostViewControllerProvider: TopMostViewControllerProviding!
-    weak var navigationControllerAPI: NavigationControllerAPI?
     
     let completionRelay = PublishRelay<Void>()
     
     private var stateService: CustodyWithdrawalStateService!
     private let custodialAPI: CustodialServiceProviderAPI
     private let dataProviding: DataProviding
+    private let navigationRouter: NavigationRouterAPI
     private var currency: CryptoCurrency!
     private let disposeBag = DisposeBag()
     
-    init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
+    init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
          dataProviding: DataProviding = DataProvider.default,
          custodialAPI: CustodialServiceProviderAPI = CustodialServiceProvider.default) {
         self.dataProviding = dataProviding
         self.custodialAPI = custodialAPI
-        self.topMostViewControllerProvider = topMostViewControllerProvider
+        self.navigationRouter = navigationRouter
     }
     
     func start(with currency: CryptoCurrency) {
@@ -53,7 +51,7 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI, Router {
                 case .next(let state):
                     self.next(to: state)
                 case .dismiss:
-                    self.navigationControllerAPI?.dismiss(animated: true, completion: nil)
+                    self.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: nil)
                 }
             }
             .disposed(by: disposeBag)
@@ -69,7 +67,7 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI, Router {
         case .summary:
             showSummaryScreen()
         case .end:
-            topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: { [weak self] in
+            navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: { [weak self] in
                 guard let self = self else { return }
                 self.completionRelay.accept(())
             })
@@ -92,7 +90,7 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI, Router {
         if #available(iOS 13.0, *) {
             controller.isModalInPresentation = true
         }
-        present(viewController: controller, using: .modalOverTopMost)
+        navigationRouter.present(viewController: controller, using: .modalOverTopMost)
     }
     
     private func showSummaryScreen() {
@@ -102,10 +100,10 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI, Router {
             stateService: stateService
         )
         let controller = CustodyWithdrawalSummaryViewController(presenter: presenter)
-        present(viewController: controller)
+        navigationRouter.present(viewController: controller)
     }
     
     func previous() {
-        dismiss()
+        navigationRouter.dismiss()
     }
 }

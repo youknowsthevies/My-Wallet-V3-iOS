@@ -11,26 +11,22 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-final class BackupFundsCustodialRouter: BackupRouterAPI, Router {
+final class BackupFundsCustodialRouter: BackupRouterAPI {
     
     // MARK: - BackupRouterAPI
     
     let entry: BackupRouterEntry = .custody
     let completionRelay = PublishRelay<Void>()
     
-    // MARK: - `Router` Properties
-    
-    weak var topMostViewControllerProvider: TopMostViewControllerProviding!
-    weak var navigationControllerAPI: NavigationControllerAPI?
-    
+    private let navigationRouter: NavigationRouterAPI
     private var stateService: BackupRouterStateService!
     private let serviceProvider: BackupFundsServiceProviderAPI
     private let disposeBag = DisposeBag()
     
-    init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
+    init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
          services: BackupFundsServiceProviderAPI = BackupFundsServiceProvider.default) {
+        self.navigationRouter = navigationRouter
         self.serviceProvider = services
-        self.topMostViewControllerProvider = topMostViewControllerProvider
     }
     
     func start() {
@@ -43,9 +39,9 @@ final class BackupFundsCustodialRouter: BackupRouterAPI, Router {
                 case .next(let state):
                     self.next(to: state)
                 case .dismiss:
-                    self.navigationControllerAPI?.dismiss(animated: true, completion: nil)
+                    self.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: nil)
                 case .complete:
-                    self.navigationControllerAPI?.dismiss(animated: true, completion: { [weak self] in
+                    self.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: { [weak self] in
                         guard let self = self else { return }
                         self.completionRelay.accept(())
                     })
@@ -64,16 +60,16 @@ final class BackupFundsCustodialRouter: BackupRouterAPI, Router {
         case .recovery:
             let presenter = RecoveryPhraseScreenPresenter(stateService: stateService, serviceProvider: serviceProvider)
             let controller = RecoveryPhraseViewController(presenter: presenter)
-            navigationControllerAPI?.pushViewController(controller, animated: true)
+            navigationRouter.navigationControllerAPI?.pushViewController(controller, animated: true)
         case .verification:
             let presenter = VerifyBackupScreenPresenter(stateService: stateService, service: serviceProvider.recoveryPhraseVerifyingAPI)
             let controller = VerifyBackupViewController(presenter: presenter)
-            navigationControllerAPI?.pushViewController(controller, animated: true)
+            navigationRouter.navigationControllerAPI?.pushViewController(controller, animated: true)
         }
     }
     
     func previous() {
-        dismiss()
+        navigationRouter.dismiss()
     }
     
     // MARK: - Private Functions
@@ -84,6 +80,6 @@ final class BackupFundsCustodialRouter: BackupRouterAPI, Router {
         if #available(iOS 13.0, *) {
             controller.isModalInPresentation = true
         }
-        present(viewController: controller, using: presentationType)
+        navigationRouter.present(viewController: controller, using: presentationType)
     }
 }

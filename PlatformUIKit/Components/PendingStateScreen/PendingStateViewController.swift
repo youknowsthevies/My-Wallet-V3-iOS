@@ -24,32 +24,40 @@ public final class PendingStateViewController: BaseScreenViewController {
 
     // MARK: - Properties
 
-    private let presenter: PendingStatePresenterAPI
+    private let presenter: PendingStatePresenterAPI & Presenter
     private let disposeBag = DisposeBag()
 
     // MARK: - Init
 
-    public required init(presenter: PendingStatePresenterAPI) {
+    public required init(presenter: PendingStatePresenterAPI & Presenter) {
         self.presenter = presenter
         super.init(nibName: PendingStateViewController.objectName, bundle: .platformUIKit)
     }
 
     @available(*, unavailable)
-    public required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    public required init?(coder: NSCoder) { nil }
 
     // MARK: - Lifecycle
 
     public override func viewDidLoad() {
         super.viewDidLoad()
+        presenter.viewDidLoad()
         setupNavigationBar()
         setupCompositeStatusView()
         setupAccessibility()
         presenter.viewModel
             .drive(rx.viewModel)
             .disposed(by: disposeBag)
-        presenter.viewDidLoad()
+    }
+    
+    override public func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        presenter.viewWillAppear()
+    }
+    
+    override public func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        presenter.viewDidDisappear()
     }
     
     // MARK: - Setup

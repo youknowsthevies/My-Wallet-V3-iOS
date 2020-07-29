@@ -14,7 +14,7 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-final class PendingOrderStateScreenPresenter: PendingStatePresenterAPI {
+final class PendingOrderStateScreenPresenter: Presenter, PendingStatePresenterAPI {
     
     // MARK: - Types
     
@@ -50,6 +50,14 @@ final class PendingOrderStateScreenPresenter: PendingStatePresenterAPI {
         self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService
         self.interactor = interactor
+        super.init(interactable: interactor)
+    }
+        
+    // MARK: - Lifecycle
+    
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        
         viewModelRelay.accept(
             PendingStateViewModel(
                 compositeStatusViewType: .composite(
@@ -62,11 +70,7 @@ final class PendingOrderStateScreenPresenter: PendingStatePresenterAPI {
                 subtitle: LocalizedString.Loading.subtitle
             )
         )
-    }
-    
-    // MARK: - Lifecycle
-    
-    public func viewDidLoad() {
+        
         interactor.startPolling()
             .observeOn(MainScheduler.instance)
             .subscribe(
@@ -79,7 +83,7 @@ final class PendingOrderStateScreenPresenter: PendingStatePresenterAPI {
             )
             .disposed(by: disposeBag)
     }
-    
+        
     private func showError() {
         let button = ButtonViewModel.primary(with: LocalizedString.button)
         button.tapRelay

@@ -14,12 +14,9 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class CustodyActionRouter: CustodyActionRouterAPI, Router {
+final class CustodyActionRouter: CustodyActionRouterAPI {
     
     // MARK: - `Router` Properties
-    
-    weak var topMostViewControllerProvider: TopMostViewControllerProviding!
-    weak var navigationControllerAPI: NavigationControllerAPI?
     
     let completionRelay = PublishRelay<Void>()
     
@@ -27,22 +24,30 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
     private let backupRouterAPI: BackupRouterAPI
     private let custodyWithdrawalRouter: CustodyWithdrawalRouterAPI
     private let dataProviding: DataProviding
+
+    private let navigationRouter: NavigationRouterAPI
+
     private var currency: CurrencyType!
+
     private let tabSwapping: TabSwapping
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let disposeBag = DisposeBag()
     
-    init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
+    init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
+         appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
          dataProviding: DataProviding = DataProvider.default,
          custodyWithdrawalRouter: CustodyWithdrawalRouterAPI = CustodyWithdrawalRouter(),
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          backupRouterAPI: BackupRouterAPI,
          tabSwapping: TabSwapping) {
+        
+        self.navigationRouter = navigationRouter
         self.analyticsRecorder = analyticsRecorder
+
         self.custodyWithdrawalRouter = custodyWithdrawalRouter
         self.dataProviding = dataProviding
         self.backupRouterAPI = backupRouterAPI
-        self.topMostViewControllerProvider = topMostViewControllerProvider
+
         self.tabSwapping = tabSwapping
         
         self.backupRouterAPI
@@ -71,7 +76,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
                 case .next(let state):
                     self.next(to: state)
                 case .dismiss:
-                    self.navigationControllerAPI?.dismiss(animated: true, completion: nil)
+                    self.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: nil)
                 }
             }
             .disposed(by: disposeBag)
@@ -134,14 +139,14 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
         let controller = WalletActionScreenViewController(using: presenter)
         controller.transitioningDelegate = sheetPresenter
         controller.modalPresentationStyle = .custom
-        topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
+        navigationRouter.topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
     }
 
     private func showActivityScreen() {
         guard case let .crypto(currency) = currency else { return }
         dismissTopMost { [weak self] in
             guard let self = self else { return }
-            self.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
+            self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
             self.tabSwapping.switchToActivity(currency: currency)
         }
     }
@@ -152,15 +157,15 @@ final class CustodyActionRouter: CustodyActionRouterAPI, Router {
         if #available(iOS 13.0, *) {
             controller.isModalInPresentation = true
         }
-        present(viewController: controller, using: .modalOverTopMost)
+        navigationRouter.present(viewController: controller, using: .modalOverTopMost)
     }
     
     func previous() {
-        dismiss()
+        navigationRouter.dismiss()
     }
     
     private func dismissTopMost(completion: (() -> Void)? = nil) {
-        topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: completion)
+        navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: completion)
     }
     
     private lazy var sheetPresenter: BottomSheetPresenting = {

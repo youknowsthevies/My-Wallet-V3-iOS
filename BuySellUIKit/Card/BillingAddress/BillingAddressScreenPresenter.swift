@@ -15,7 +15,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class BillingAddressScreenPresenter {
+final class BillingAddressScreenPresenter: Presenter {
         
     // MARK: - Types
 
@@ -101,19 +101,16 @@ final class BillingAddressScreenPresenter {
     
     private let interactor: BillingAddressScreenInteractor
     private let countrySelectionRouter: SelectionRouterAPI
-    private let stateService: AddCardStateService
     private let loadingViewPresenter: LoadingViewPresenting
     private let eventRecorder: AnalyticsEventRecording
     private let messageRecorder: MessageRecording
 
     init(interactor: BillingAddressScreenInteractor,
          countrySelectionRouter: SelectionRouterAPI,
-         stateService: AddCardStateService,
          loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
          eventRecorder: AnalyticsEventRecording,
          messageRecorder: MessageRecording) {
         self.interactor = interactor
-        self.stateService = stateService
         self.countrySelectionRouter = countrySelectionRouter
         self.loadingViewPresenter = loadingViewPresenter
         self.eventRecorder = eventRecorder
@@ -123,6 +120,12 @@ final class BillingAddressScreenPresenter {
         selectionButtonViewModel.shouldShowSeparatorRelay.accept(true)
         
         buttonViewModel = .primary(with: LocalizedString.button)
+        
+        super.init(interactable: interactor)
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
         // 1. Country is selected
         // 2. `PresentationData` is regenerated
@@ -262,16 +265,9 @@ final class BillingAddressScreenPresenter {
                 style: .circle,
                 text: LocalizedString.linkingYourCard
             )
-            .mapToResult()
             .subscribe(
-                onSuccess: { [weak self] result in
-                    guard let self = self else { return }
-                    switch result {
-                    case .success(let data):
-                        self.stateService.authorizeCardAddition(with: data)
-                    case .failure:
-                        self.errorTriggerRelay.accept(())
-                    }
+                onError: { [weak errorTriggerRelay] _ in
+                    errorTriggerRelay?.accept(())
                 }
             )
             .disposed(by: disposeBag)
@@ -332,6 +328,6 @@ final class BillingAddressScreenPresenter {
     // MARK: - Navigation
     
     func previous() {
-        stateService.previousRelay.accept(())
+        interactor.previous()
     }
 }

@@ -27,11 +27,11 @@ final class SettingsRouter: SettingsRouterAPI {
     // MARK: - Routers
     
     private lazy var updateMobileRouter: UpdateMobileRouter = {
-        UpdateMobileRouter(navigationControllerAPI: navigationControllerAPI)
+        UpdateMobileRouter(navigationRouter: navigationRouter)
     }()
     
     private lazy var backupRouterAPI: BackupRouterAPI = {
-        BackupFundsSettingsRouter(navigationControllerAPI: navigationControllerAPI)
+        BackupFundsSettingsRouter(navigationRouter: navigationRouter)
     }()
     
     // MARK: - Private
@@ -41,29 +41,28 @@ final class SettingsRouter: SettingsRouterAPI {
     private let alertPresenter: AlertViewPresenter
     private let cardsServiceProvider: CardServiceProviderAPI
     private let simpleBuyServiceProvider: ServiceProviderAPI
-    private var addCardRouter: AddCardRouter!
+    private var cardRouter: CardRouter!
+    
+    private let navigationRouter: NavigationRouterAPI
     private unowned let currencyRouting: CurrencyRouting
     private unowned let tabSwapping: TabSwapping
-    
-    weak var navigationControllerAPI: NavigationControllerAPI?
-    weak var topMostViewControllerProvider: TopMostViewControllerProviding!
-    
+
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
     
     init(wallet: Wallet = WalletManager.shared.wallet,
          guidRepositoryAPI: GuidRepositoryAPI = WalletManager.shared.repository,
+         navigationRouter: NavigationRouterAPI = NavigationRouter(),
          analyticsRecording: AnalyticsEventRecording = resolve(),
-         topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
          alertPresenter: AlertViewPresenter = AlertViewPresenter.shared,
          cardsServiceProvider: CardServiceProviderAPI = CardServiceProvider.default,
          simpleBuyServiceProvider: ServiceProviderAPI = DataProvider.default.buySell,
          currencyRouting: CurrencyRouting,
          tabSwapping: TabSwapping) {
+        self.navigationRouter = navigationRouter
         self.simpleBuyServiceProvider = simpleBuyServiceProvider
         self.cardsServiceProvider = cardsServiceProvider
         self.alertPresenter = alertPresenter
-        self.topMostViewControllerProvider = topMostViewControllerProvider
         self.analyticsRecording = analyticsRecording
         self.currencyRouting = currencyRouting
         self.tabSwapping = tabSwapping
@@ -97,16 +96,16 @@ final class SettingsRouter: SettingsRouterAPI {
         let interactor = SettingsScreenInteractor()
         let presenter = SettingsScreenPresenter(interactor: interactor, router: self)
         let controller = SettingsViewController(presenter: presenter)
-        present(viewController: controller, using: .modalOverTopMost)
+        navigationRouter.present(viewController: controller, using: .modalOverTopMost)
     }
     
     func dismiss() {
-        guard let navController = navigationControllerAPI else { return }
+        guard let navController = navigationRouter.navigationControllerAPI else { return }
         if navController.viewControllersCount > 1 {
             navController.popViewController(animated: true)
         } else {
             navController.dismiss(animated: true, completion: nil)
-            navigationControllerAPI = nil
+            navigationRouter.navigationControllerAPI = nil
         }
     }
     
@@ -114,12 +113,12 @@ final class SettingsRouter: SettingsRouterAPI {
         switch action {
         case .showURL(let url):
             let controller = SFSafariViewController(url: url)
-            present(viewController: controller)
+            navigationRouter.present(viewController: controller)
         case .launchChangePassword:
             let interactor = ChangePasswordScreenInteractor()
             let presenter = ChangePasswordScreenPresenter(previousAPI: self, interactor: interactor)
             let controller = ChangePasswordViewController(presenter: presenter)
-            present(viewController: controller)
+            navigationRouter.present(viewController: controller)
         case .showRemoveCardScreen(let data):
             let presenter = RemoveCardScreenPresenter(
                 cardData: data,
@@ -129,24 +128,27 @@ final class SettingsRouter: SettingsRouterAPI {
             let controller = RemoveCardViewController(presenter: presenter)
             controller.transitioningDelegate = sheetPresenter
             controller.modalPresentationStyle = .custom
-            topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
+            navigationRouter.topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
         case .showAddCardScreen:
-            let stateService = AddCardStateService()
-            stateService
+            let interactor = CardRouterInteractor(
+                buySellServiceProvider: simpleBuyServiceProvider,
+                cardServiceProvider: cardsServiceProvider
+            )
+            interactor
                 .completionCardData
                 .mapToVoid()
                 .bindAndCatch(to: addCardCompletionRelay)
                 .disposed(by: disposeBag)
-            
-            addCardRouter = AddCardRouter(
-                stateService: stateService,
-                cardServiceProvider: CardServiceProvider.default,
-                simpleBuyServiceProvider: simpleBuyServiceProvider,
-                recordingProvider: RecordingProvider.default,
+            let builder = CardComponentBuilder(
+                routingInteractor: interactor,
+                recordingProvider: RecordingProvider.default
+            )
+            cardRouter = CardRouter(
+                interactor: interactor,
+                builder: builder,
                 routingType: .modal
             )
-            addCardRouter.setup()
-            stateService.start()
+            cardRouter.load()
         case .showAppStore:
             UIApplication.shared.openAppStore()
         case .showBackupScreen:
@@ -166,7 +168,7 @@ final class SettingsRouter: SettingsRouterAPI {
             let presenter = WebLoginScreenPresenter(service: WebLoginQRCodeService())
             let viewController = WebLoginScreenViewController(presenter: presenter)
             viewController.modalPresentationStyle = .overFullScreen
-            present(viewController: viewController)
+            navigationRouter.present(viewController: viewController)
         case .promptGuidCopy:
             guidRepositoryAPI.guid
                 .map(weak: self) { (self, value) -> String in
@@ -190,13 +192,13 @@ final class SettingsRouter: SettingsRouterAPI {
                     let cancelAction = UIAlertAction(title: LocalizationConstants.cancel, style: .cancel, handler: nil)
                     alert.addAction(cancelAction)
                     alert.addAction(copyAction)
-                    guard let navController = self.navigationControllerAPI as? UINavigationController else { return }
+                    guard let navController = self.navigationRouter.navigationControllerAPI as? UINavigationController else { return }
                     navController.present(alert, animated: true)
                 })
                 .disposed(by: disposeBag)
             
         case .launchKYC:
-            guard let navController = navigationControllerAPI as? UINavigationController else { return }
+            guard let navController = navigationRouter.navigationControllerAPI as? UINavigationController else { return }
             KYCTiersViewController
                 .routeToTiers(fromViewController: navController)
                 .disposed(by: disposeBag)
@@ -204,7 +206,7 @@ final class SettingsRouter: SettingsRouterAPI {
             guard let supportURL = URL(string: Constants.Url.exchangeSupport) else { return }
             let startPITCoordinator = { [weak self] in
                 guard let self = self else { return }
-                guard let navController = self.navigationControllerAPI as? UINavigationController else { return }
+                guard let navController = self.navigationRouter.navigationControllerAPI as? UINavigationController else { return }
                 ExchangeCoordinator.shared.start(from: navController)
             }
             let launchPIT = AlertAction(
@@ -231,7 +233,7 @@ final class SettingsRouter: SettingsRouterAPI {
                     block()
                 case .url(let support):
                     let controller = SFSafariViewController(url: support)
-                    self.present(viewController: controller)
+                    self.navigationRouter.present(viewController: controller)
                 case .dismiss,
                      .pop,
                      .payload:
@@ -243,7 +245,7 @@ final class SettingsRouter: SettingsRouterAPI {
             let interactor = UpdateEmailScreenInteractor()
             let presenter = UpdateEmailScreenPresenter(emailScreenInteractor: interactor)
             let controller = UpdateEmailScreenViewController(presenter: presenter)
-            present(viewController: controller)
+            navigationRouter.present(viewController: controller)
         case .showUpdateMobileScreen:
             updateMobileRouter.start()
         case .none:
@@ -263,7 +265,7 @@ final class SettingsRouter: SettingsRouterAPI {
         if #available(iOS 13.0, *) {
             viewController.isModalInPresentation = true
         }
-        present(viewController: viewController)
+        navigationRouter.present(viewController: viewController)
         
         interactor.selectedIdOnDismissal
             .map { FiatCurrency(code: $0)! }

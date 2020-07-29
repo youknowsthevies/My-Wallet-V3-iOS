@@ -27,7 +27,7 @@ public protocol CheckoutServiceAPI: RoutingPreviousStateEmitterAPI {
     func ineligible(with checkoutData: CheckoutData)
     func ineligible()
     func kyc(with checkoutData: CheckoutData)
-    func addCardStateService(with checkoutData: CheckoutData) -> AddCardStateService
+    func cardRoutingInteractor(with checkoutData: CheckoutData, cardServiceProvider: CardServiceProviderAPI) -> CardRouterInteractor
     func paymentMethods()
     func changeCurrency()
     func currencySelected()
@@ -83,7 +83,7 @@ public typealias StateServiceAPI = RoutingStateEmitterAPI &
                                    CheckoutServiceAPI &
                                    CancelTransferServiceAPI &
                                    CurrencySelectionServiceAPI &
-                                   CardAuthorizationStateServiceAPI &
+                                   CardAuthorizationRoutingInteractorAPI &
                                    PendingOrderCompletionStateServiceAPI &
                                    ElibilityRelayAPI &
                                    PaymentMethodsStateAPI

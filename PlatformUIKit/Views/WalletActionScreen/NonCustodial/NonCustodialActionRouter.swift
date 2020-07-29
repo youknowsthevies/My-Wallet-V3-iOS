@@ -15,24 +15,22 @@ public protocol NonCustodialActionRouterAPI: class {
     func start(with currency: CryptoCurrency)
 }
 
-public final class NonCustodialActionRouter: NonCustodialActionRouterAPI, Router {
+public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
     
     // MARK: - `Router` Properties
     
-    public weak var topMostViewControllerProvider: TopMostViewControllerProviding!
-    public weak var navigationControllerAPI: NavigationControllerAPI?
-    
     private var stateService: NonCustodialActionStateService!
     private let balanceProviding: BalanceProviding
+    private let navigationRouter: NavigationRouterAPI
     private let routing: CurrencyRouting & TabSwapping
     private let disposeBag = DisposeBag()
     private var currency: CryptoCurrency!
-    
-    public init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
+        
+    public init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
                 balanceProvider: BalanceProviding,
                 routing: CurrencyRouting & TabSwapping) {
         self.balanceProviding = balanceProvider
-        self.topMostViewControllerProvider = topMostViewControllerProvider
+        self.navigationRouter = navigationRouter
         self.routing = routing
     }
     
@@ -81,13 +79,13 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI, Router
         let controller = WalletActionScreenViewController(using: presenter)
         controller.transitioningDelegate = sheetPresenter
         controller.modalPresentationStyle = .custom
-        topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
+        navigationRouter.topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
     }
     
     private func showSwapScreen() {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
-            self.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
+            self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
             self.routing.switchTabToSwap()
         }
     }
@@ -95,7 +93,7 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI, Router
     private func showActivityScreen() {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
-            self.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
+            self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
             self.routing.switchToActivity(currency: self.currency)
         }
     }
@@ -103,7 +101,7 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI, Router
     private func showReceiveScreen() {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
-            self.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
+            self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
             self.routing.toReceive(self.currency)
         }
     }
@@ -111,13 +109,13 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI, Router
     private func showSendScreen() {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
-            self.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
+            self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
             self.routing.toSend(self.currency)
         }
     }
     
     private func dismissTopMost(completion: (() -> Void)? = nil) {
-        topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: completion)
+        navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: completion)
     }
     
     private lazy var sheetPresenter: BottomSheetPresenting = {

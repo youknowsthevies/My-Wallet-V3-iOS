@@ -15,7 +15,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class CardDetailsScreenPresenter {
+final class CardDetailsScreenPresenter: Presenter {
     
     // MARK: - Types
     
@@ -89,20 +89,17 @@ final class CardDetailsScreenPresenter {
     private let disposeBag = DisposeBag()
 
     private let interactor: CardDetailsScreenInteractor
-    private let stateService: AddCardStateService
     private let eventRecorder: AnalyticsEventRecording
     private let cardNumberValidator: CardNumberValidator
     private let loadingViewPresenter: LoadingViewPresenting
 
     // MARK: - Setup
     
-    init(stateService: AddCardStateService,
-         interactor: CardDetailsScreenInteractor,
+    init(interactor: CardDetailsScreenInteractor,
          loadingViewPresenter: LoadingViewPresenting = UIUtilityProvider.default.loader,
          eventRecorder: AnalyticsEventRecording,
          messageRecorder: MessageRecording) {
         self.interactor = interactor
-        self.stateService = stateService
         self.eventRecorder = eventRecorder
         self.loadingViewPresenter = loadingViewPresenter
         
@@ -172,14 +169,20 @@ final class CardDetailsScreenPresenter {
             verticalAlignment: .center
         )
         
+        super.init(interactable: interactor)
+    }
+        
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
         // Bind the stored properties
         
         let latestStatesObservable = Observable
             .combineLatest(
-                cardholderNameTextFieldViewModel.state,
-                cardNumberTextFieldViewModel.state,
-                cardExpiryTextFieldViewModel.state,
-                cardCVVTextFieldViewModel.state
+                textFieldViewModelByType[.cardholderName]!.state,
+                textFieldViewModelByType[.cardNumber]!.state,
+                textFieldViewModelByType[.expirationDate]!.state,
+                textFieldViewModelByType[.cardCVV]!.state
             )
             .map { (name: $0.0, number: $0.1, expiry: $0.2, cvv: $0.3) }
             .share(replay: 1)
@@ -215,7 +218,7 @@ final class CardDetailsScreenPresenter {
             .compactMap { $0 }
             .show(loader: loadingViewPresenter, style: .circle)
             .flatMap(weak: self) { (self, cardData) in
-                interactor
+                self.interactor
                     .doesCardExist(
                         number: cardData.number,
                         expiryMonth: cardData.month,
@@ -243,7 +246,7 @@ final class CardDetailsScreenPresenter {
                     self.errorRelay.accept(.cardAlreadySaved)
                 } else {
                     self.eventRecorder.record(event: AnalyticsEvent.sbCardInfoSet)
-                    self.stateService.addBillingAddress(to: payload.data)
+                    self.interactor.addBillingAddress(to: payload.data)
                 }
             }
             .disposed(by: disposeBag)
@@ -259,14 +262,15 @@ final class CardDetailsScreenPresenter {
             )
             .disposed(by: disposeBag)
     }
-        
-    func viewDidAppear() {
+    
+    override func viewWillAppear() {
+        super.viewWillAppear()
         eventRecorder.record(event: AnalyticsEvent.sbAddCardScreenShown)
     }
     
     // MARK: - Navigation
     
     func previous() {
-        stateService.previousRelay.accept(())
+        interactor.cancel()
     }
 }

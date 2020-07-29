@@ -8,9 +8,10 @@
 
 import BuySellKit
 import PlatformKit
+import PlatformUIKit
 import RxSwift
 
-final class PendingOrderStateScreenInteractor {
+final class PendingOrderStateScreenInteractor: Interactor {
         
     // MARK: - Properties
         

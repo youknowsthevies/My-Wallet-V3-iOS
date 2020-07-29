@@ -13,19 +13,18 @@ import SafariServices
 import DIKit
 
 final class ActivityRouter: ActivityRouterAPI {
-
-    weak var navigationControllerAPI: NavigationControllerAPI?
-    weak var topMostViewControllerProvider: TopMostViewControllerProviding!
-
+    
     private let serviceContainer: ActivityServiceContaining
     private let blockchainAPI: BlockchainAPI
+    private let navigationRouter: NavigationRouterAPI
+
     private let enabledCurrenciesService: EnabledCurrenciesService
     
-    init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
+    init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
          enabledCurrenciesService: EnabledCurrenciesService = resolve(),
          container: ActivityServiceContaining,
          blockchainAPI: BlockchainAPI = .shared) {
-        self.topMostViewControllerProvider = topMostViewControllerProvider
+        self.navigationRouter = navigationRouter
         self.serviceContainer = container
         self.enabledCurrenciesService = enabledCurrenciesService
         self.blockchainAPI = blockchainAPI
@@ -55,14 +54,14 @@ final class ActivityRouter: ActivityRouterAPI {
         
         let presenter = WalletPickerScreenPresenter(showTotalBalance: true, interactor: interactor)
         let controller = WalletPickerScreenViewController(presenter: presenter)
-        present(viewController: controller)
+        navigationRouter.present(viewController: controller)
     }
     
     func showTransactionScreen(with event: ActivityItemEvent) {
         let controller = DetailsScreenViewController(
             presenter: ActivityDetailsPresenterFactory.presenter(for: event, router: self)
         )
-        present(viewController: controller, using: .modalOverTopMost)
+        navigationRouter.present(viewController: controller, using: .modalOverTopMost)
     }
     
     func showBlockchainExplorer(for event: TransactionalActivityItemEvent) {
@@ -72,7 +71,7 @@ final class ActivityRouter: ActivityRouterAPI {
             else { return }
         let controller = SFSafariViewController(url: url)
         controller.modalPresentationStyle = .overFullScreen
-        topMostViewControllerProvider.topMostViewController?.present(
+        navigationRouter.topMostViewControllerProvider.topMostViewController?.present(
             controller,
             animated: true,
             completion: nil

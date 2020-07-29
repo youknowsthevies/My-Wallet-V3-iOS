@@ -9,18 +9,19 @@
 import BuySellKit
 import BuySellUIKit
 import PlatformKit
+import PlatformUIKit
 
 extension BuySellUIKit.Router {
     
     convenience init(stateService: BuySellUIKit.StateServiceAPI) {
         self.init(
+            navigationRouter: NavigationRouter(),
             serviceProvider: DataProvider.default.buySell,
             cardServiceProvider: CardServiceProvider.default,
             userInformationProvider: UserInformationServiceProvider.default,
             stateService: stateService,
             kycServiceProvider: KYCServiceProvider.default,
             recordingProvider: RecordingProvider.default,
-            topMostViewControllerProvider: UIApplication.shared,
             kycRouter: KYCCoordinator.shared,
             exchangeProvider: DataProvider.default.exchange
         )

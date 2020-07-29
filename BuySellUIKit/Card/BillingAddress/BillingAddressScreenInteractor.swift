@@ -12,7 +12,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-final class BillingAddressScreenInteractor {
+final class BillingAddressScreenInteractor: Interactor {
     
     // MARK: - Properties
     
@@ -33,36 +33,72 @@ final class BillingAddressScreenInteractor {
     
     let billingAddressRelay = BehaviorRelay<BillingAddress?>(value: nil)
     
+    private let userDataRepository: DataRepositoryAPI
     private let service: CardUpdateServiceAPI
     private let cardData: CardData    
-    private let disposeBag = DisposeBag()
+    private var disposeBag = DisposeBag()
+    
+    private let routingInteractor: CardRouterInteractor
     
     // MARK: - Setup
     
     init(cardData: CardData,
          service: CardUpdateServiceAPI,
-         userDataRepository: DataRepositoryAPI) {
+         userDataRepository: DataRepositoryAPI,
+         routingInteractor: CardRouterInteractor) {
         self.cardData = cardData
         self.service = service
+        self.userDataRepository = userDataRepository
+        self.routingInteractor = routingInteractor
         countrySelectionService = CountrySelectionService(defaultSelectedData: Country.current ?? .US)
+    }
+    
+    // MARK: - Interactor
+    
+    override func didBecomeActive() {
+        super.didBecomeActive()
+        disposeBag = DisposeBag()
         
         userDataRepository.userSingle
             .map { $0.address }
             .subscribe(
                 onSuccess: { [weak self] address in
                     guard let address = address else { return }
-                    self?.set(userAddress: address)
+                    self?.countrySelectionService.set(country: address.country)
                 }
             )
             .disposed(by: disposeBag)
     }
     
-    func add(billingAddress: BillingAddress) -> Single<PartnerAuthorizationData> {
-        let cardData = self.cardData.data(byAppending: billingAddress)
-        return service.add(card: cardData)
+    override func willResignActive() {
+        super.willResignActive()
+        disposeBag = DisposeBag()
     }
     
-    private func set(userAddress: UserAddress) {
-        countrySelectionService.set(country: userAddress.country)
+    /// Adds the billing address to the card
+    /// - Parameter billingAddress: The data of the billing address
+    /// - Returns: A completable indicating whether the op has been completed / error occured
+    func add(billingAddress: BillingAddress) -> Completable {
+        Completable
+            .create(weak: self) { (self, observer) in
+                let cardData = self.cardData.data(byAppending: billingAddress)
+                let disposable = self.service.add(card: cardData)
+                    .subscribe(
+                        onSuccess: { [weak self] data in
+                            self?.routingInteractor.authorizeCardAddition(with: data)
+                            observer(.completed)
+                        },
+                        onError: { error in
+                            observer(.error(error))
+                        }
+                    )
+                return Disposables.create {
+                    disposable.dispose()
+                }
+            }
+    }
+    
+    func previous() {
+        routingInteractor.previousRelay.accept(())
     }
 }

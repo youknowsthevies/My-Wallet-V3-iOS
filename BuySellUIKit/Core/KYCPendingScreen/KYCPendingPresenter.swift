@@ -13,7 +13,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class KYCPendingPresenter: PendingStatePresenterAPI {
+final class KYCPendingPresenter: Presenter, PendingStatePresenterAPI {
 
     // MARK: - Types
 
@@ -43,8 +43,12 @@ final class KYCPendingPresenter: PendingStatePresenterAPI {
         self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService
         self.interactor = interactor
+        super.init(interactable: interactor)
         modelRelay = BehaviorRelay(value: model(verificationState: .loading))
-
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         interactor
             .verificationState
             .takeWhile { $0 != .completed }
@@ -68,7 +72,7 @@ final class KYCPendingPresenter: PendingStatePresenterAPI {
 
         interactor.startPollingForGoldTier()
     }
-
+    
     private func model(verificationState: KYCPendingVerificationState) -> PendingStateViewModel {
         func actionButton(title: String) -> ButtonViewModel {
             let button = ButtonViewModel.primary(with: title)

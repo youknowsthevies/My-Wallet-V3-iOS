@@ -9,7 +9,7 @@
 import PlatformKit
 import PlatformUIKit
 
-protocol ActivityRouterAPI: Router {
+protocol ActivityRouterAPI: AnyObject {
     func showWalletSelectionScreen()
     func showTransactionScreen(with event: ActivityItemEvent)
     func showBlockchainExplorer(for event: TransactionalActivityItemEvent)
