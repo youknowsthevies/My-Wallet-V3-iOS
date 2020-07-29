@@ -13,4 +13,5 @@ protocol ActivityRouterAPI: AnyObject {
     func showWalletSelectionScreen()
     func showTransactionScreen(with event: ActivityItemEvent)
     func showBlockchainExplorer(for event: TransactionalActivityItemEvent)
+    func showActivityShareSheet(_ event: ActivityItemEvent)
 }

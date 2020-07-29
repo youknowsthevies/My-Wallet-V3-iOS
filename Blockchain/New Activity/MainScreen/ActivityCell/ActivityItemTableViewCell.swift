@@ -31,7 +31,6 @@ final class ActivityItemTableViewCell: UITableViewCell {
             presenter.descriptionLabelContent
                 .drive(descriptionLabel.rx.content)
                 .disposed(by: disposeBag)
-            
         }
     }
     

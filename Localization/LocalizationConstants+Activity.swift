@@ -27,6 +27,9 @@ extension LocalizationConstants.Activity.MainScreen {
         "Activity",
         comment: "Activity Screen: title"
     )
+    public struct MessageView {
+        public static let sharedWithBlockchain = NSLocalizedString("Shared With Blockchain", comment: "Shared With Blockchain")
+    }
     public struct Empty {
         public static let title = NSLocalizedString("You Have No Activity", comment: "You Have No Activity")
         public static let subtitle = NSLocalizedString("All your transactions will show up here.", comment: "All your transactions will show up here.")

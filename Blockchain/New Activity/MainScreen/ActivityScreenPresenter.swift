@@ -85,6 +85,7 @@ final class ActivityScreenPresenter {
             .map { [$0] }
     }
 
+    let longPressRelay: PublishRelay<ActivityItemViewModel> = .init()
     let selectedModelRelay: PublishRelay<ActivityCellItem> = .init()
     
     // MARK: - Injected
@@ -182,6 +183,12 @@ final class ActivityScreenPresenter {
             .bind { [weak self] model in
                 guard case let .activity(presenter) = model else { return }
                 self?.router.showTransactionScreen(with: presenter.viewModel.event)
+            }
+            .disposed(by: disposeBag)
+        
+        longPressRelay
+            .bind { [weak self] model in
+                self?.router.showActivityShareSheet(model.event)
             }
             .disposed(by: disposeBag)
     }

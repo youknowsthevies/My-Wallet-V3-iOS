@@ -30,13 +30,13 @@ final class ActivityScreenViewController: BaseScreenViewController {
     
     // MARK: - Injected
     
+    private let longPressRelay = BehaviorRelay<ActivityItemViewModel?>(value: nil)
     private let presenter: ActivityScreenPresenter
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
     
     init() {
-        // TODO: Presenter should be injected into the view as well as the `Router`.
         let services = ActivityServiceContainer()
         let router = ActivityRouter(container: services)
         let interactor = ActivityScreenInteractor(serviceContainer: services)
@@ -58,6 +58,23 @@ final class ActivityScreenViewController: BaseScreenViewController {
         setupTableView()
         setupEmptyState()
         presenter.refresh()
+        
+        let longPress = UILongPressGestureRecognizer()
+        longPress
+            .rx
+            .event
+            .compactMap { [weak self] gesture -> ActivityItemViewModel? in
+                guard let self = self else { return nil }
+                guard gesture.state == .began else { return nil }
+                let location = gesture.location(in: self.tableView)
+                guard let indexPath = self.tableView.indexPathForRow(at: location) else { return nil }
+                guard let cell = self.tableView.cellForRow(at: indexPath) as? ActivityItemTableViewCell else { return nil }
+                return cell.presenter.viewModel
+            }
+            .bind(to: presenter.longPressRelay)
+            .disposed(by: disposeBag)
+        
+        tableView.addGestureRecognizer(longPress)
     }
     
     override func viewDidAppear(_ animated: Bool) {

@@ -77,4 +77,29 @@ final class ActivityRouter: ActivityRouterAPI {
             completion: nil
         )
     }
+    
+    func showActivityShareSheet(_ event: ActivityItemEvent) {
+        let viewModel = ActivityMessageViewModel(
+            event: event,
+            qrCodeAPI: QRCodeWrapper()
+        )
+        guard let model = viewModel else { return }
+        let view = ActivityMessageView(
+            frame: .init(
+                origin: .zero,
+                size: .init(
+                    width: 275.0,
+                    height: 300.0
+                )
+            )
+        )
+        view.viewModel = model
+        
+        guard let image = view.imageRepresentation else { return }
+        let controller = UIActivityViewController(
+            activityItems: [(image.pngData() ?? Data())],
+            applicationActivities: nil
+        )
+        topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
+    }
 }
