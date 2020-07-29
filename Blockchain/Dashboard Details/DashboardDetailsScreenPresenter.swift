@@ -238,7 +238,7 @@ final class DashboardDetailsScreenPresenter {
     }
     
     private func setupWalletBalancePresenter() {
-        interactor.walletBalanceInteractor.exists
+        interactor.nonCustodialActivitySupported
             .filter { $0 }
             .take(1) // This to ensure the cell shows only once
             .map(weak: self) { (self, exists) in
@@ -259,7 +259,7 @@ final class DashboardDetailsScreenPresenter {
     }
         
     private func setupSavingsBalancePresenter() {
-        interactor.savingsBalanceInteractor.exists
+        interactor.custodialSavingsFunded
             .filter { $0 }
             .take(1) // This to ensure the cell shows only once
             .map(weak: self) { (self, exists) in
@@ -280,7 +280,7 @@ final class DashboardDetailsScreenPresenter {
     }
     
     private func setupTradingBalancePresenter() {
-        interactor.tradingBalanceInteractor.exists
+        interactor.custodialTradingFunded
             .filter { $0 }
             .take(1) // This to ensure the cell shows only once
             .map(weak: self) { (self, exists) in
@@ -308,8 +308,8 @@ final class DashboardDetailsScreenPresenter {
             case .nonCustodial:
                 return .just(LocalizedString.Description.nonCustodial)
             case .custodial(.savings):
-                return self.interactor.savingsAccountService
-                    .rate(for: self.currency)
+                return self.interactor
+                    .rate
                     .asObservable()
                     .compactMap { $0 }
                     .map { "\(LocalizedString.Description.savingsPrefix) \($0)\(LocalizedString.Description.savingsSuffix)" }

@@ -76,15 +76,22 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
         var actionPresenters: [DefaultWalletActionCellPresenter] = []
         
         switch currency {
-        case .crypto:
+        case .crypto(let crypto):
             actionPresenters.append(contentsOf: [
                 .init(currencyType: currency, action: .buy),
-                .init(currencyType: currency, action: .sell),
-                .init(currencyType: currency, action: .transfer),
-                .init(currencyType: currency, action: .activity)
+                .init(currencyType: currency, action: .sell)
             ])
-            if !interactor.balanceType.isSavings {
-                actionPresenters.append(.init(currencyType: currency, action: .activity))
+            let isTrading = interactor.balanceType.isTrading
+            let isSavings = interactor.balanceType.isSavings
+            if isTrading && crypto.hasNonCustodialWithdrawalSupport {
+                actionPresenters.append(
+                    .init(currencyType: currency, action: .transfer)
+                )
+            }
+            if !isSavings {
+                actionPresenters.append(
+                    .init(currencyType: currency, action: .activity)
+                )
             }
         case .fiat:
             actionPresenters.append(contentsOf: [

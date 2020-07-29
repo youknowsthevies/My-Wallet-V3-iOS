@@ -8,20 +8,40 @@
 
 import PlatformUIKit
 import PlatformKit
+import RxSwift
 
 final class DashboardDetailsScreenInteractor {
         
-    // MARK: - Properties
+    // MARK: - Public Properties
+    
+    var nonCustodialActivitySupported: Observable<Bool> {
+        walletBalanceInteractor.exists
+    }
+    
+    var custodialTradingFunded: Observable<Bool> {
+        tradingBalanceInteractor.exists
+    }
+    
+    var custodialSavingsFunded: Observable<Bool> {
+        savingsBalanceInteractor.exists
+    }
+    
+    var rate: Single<Double> {
+        savingsAccountService
+            .rate(for: currency)
+    }
     
     let priceServiceAPI: HistoricalFiatPriceServiceAPI
     let balanceFetcher: AssetBalanceFetching
+    
+    // MARK: - Private Properties
+    
+    private let walletBalanceInteractor: DashboardDetailsNonCustodialTypeInteractor
+    private let savingsBalanceInteractor: DashboardDetailsCustodialTypeInteractor
+    private let tradingBalanceInteractor: DashboardDetailsCustodialTypeInteractor
 
-    let savingsAccountService: SavingAccountServiceAPI
-
-    let walletBalanceInteractor: DashboardDetailsNonCustodialTypeInteractor
-    let savingsBalanceInteractor: DashboardDetailsCustodialTypeInteractor
-    let tradingBalanceInteractor: DashboardDetailsCustodialTypeInteractor
-
+    private let currency: CryptoCurrency
+    private let savingsAccountService: SavingAccountServiceAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     private let recoveryPhraseStatus: RecoveryPhraseStatusProviding
     
@@ -33,6 +53,7 @@ final class DashboardDetailsScreenInteractor {
          fiatCurrencyService: FiatCurrencySettingsServiceAPI,
          exchangeAPI: PairExchangeServiceAPI,
          wallet: Wallet = WalletManager.shared.wallet) {
+        self.currency = currency
         self.savingsAccountService = savingsAccountService
         self.priceServiceAPI = HistoricalFiatPriceService(
             cryptoCurrency: currency,

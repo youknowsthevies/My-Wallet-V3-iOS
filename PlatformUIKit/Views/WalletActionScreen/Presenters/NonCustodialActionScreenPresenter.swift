@@ -65,12 +65,31 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
         
         var actionCells: [WalletActionCellType] = [.balance(assetBalanceViewPresenter)]
         
-        let actionPresenters: [DefaultWalletActionCellPresenter] = [
-            .init(currencyType: currency, action: .send),
-            .init(currencyType: currency, action: .receive),
-            .init(currencyType: currency, action: .swap),
-            .init(currencyType: currency, action: .activity)
-        ]
+        guard case let .crypto(crypto) = currency else { return }
+        var actionPresenters: [DefaultWalletActionCellPresenter] = []
+        
+        let hasActivity = crypto.hasNonCustodialActivitySupport
+        let hasSwap = crypto.hasNonCustodialTradeSupport
+        let hasSend = crypto.hasNonCustodialWithdrawalSupport
+        
+        if hasSend {
+            actionPresenters.append(contentsOf: [
+                .init(currencyType: currency, action: .send),
+                .init(currencyType: currency, action: .receive)]
+            )
+        }
+        
+        if hasSwap {
+            actionPresenters.append(
+                .init(currencyType: currency, action: .swap)
+            )
+        }
+        
+        if hasActivity {
+            actionPresenters.append(
+                .init(currencyType: currency, action: .activity)
+            )
+        }
         
         actionCells.append(contentsOf: actionPresenters.map { .default($0) })
         sectionsRelay.accept([.init(items: actionCells)])

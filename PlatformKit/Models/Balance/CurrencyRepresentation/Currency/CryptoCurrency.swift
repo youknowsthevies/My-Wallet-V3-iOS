@@ -36,7 +36,7 @@ extension CryptoCurrency {
     public var hasNonCustodialTradeSupport: Bool {
         switch self {
         case .algorand,
-            .tether:
+             .tether:
             return false
         case .bitcoin,
              .bitcoinCash,
@@ -49,13 +49,13 @@ extension CryptoCurrency {
 
     public var hasNonCustodialWithdrawalSupport: Bool {
         switch self {
-        case .algorand:
+        case .algorand,
+             .tether:
             return false
         case .bitcoin,
              .bitcoinCash,
              .ethereum,
              .pax,
-             .tether,
              .stellar:
             return true
         }
