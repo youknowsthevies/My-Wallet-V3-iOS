@@ -88,13 +88,17 @@ public final class FiatCustodialBalanceView: UIView {
         badgeImageView.layoutToSuperview(.leading, offset: Spacing.outer)
                 
         stackView.layout(edge: .leading, to: .trailing, of: badgeImageView, offset: Spacing.inner)
-        stackView.layoutToSuperview(axis: .vertical, offset: Spacing.inner)
+        stackView.layoutToSuperview(axis: .vertical, offset: Spacing.inner, priority: .defaultHigh)
+        
+        fiatCurrencyCodeLabel.verticalContentHuggingPriority = .penultimateHigh
+        fiatCurrencyNameLabel.verticalContentHuggingPriority = .defaultHigh
+        
         for view in [fiatCurrencyNameLabel, fiatCurrencyCodeLabel] {
             stackView.addArrangedSubview(view)
         }
         
         fiatBalanceView.layoutToSuperview(axis: .vertical, offset: Spacing.inner)
-        fiatBalanceView.layoutToSuperview(.trailing, offset: -Spacing.outer)
+        fiatBalanceView.layoutToSuperview(.trailing, offset: -Spacing.outer, priority: .penultimateHigh)
     }
     
     @objc

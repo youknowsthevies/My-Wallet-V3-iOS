@@ -19,7 +19,7 @@ final class FiatBalanceCollectionView: UICollectionView {
     public class CollectionViewFlowLayout: UICollectionViewFlowLayout {
         override init() {
             super.init()
-            estimatedItemSize = CGSize(width: 256, height: 80)
+            estimatedItemSize = UICollectionViewFlowLayout.automaticSize
             minimumInteritemSpacing = 0
             minimumLineSpacing = 16
             scrollDirection = .horizontal
@@ -46,7 +46,7 @@ final class FiatBalanceCollectionView: UICollectionView {
                         cell.presenter = presenter
                     }
                )
-               .disposed(by: disposeBag)
+               .disposed(by: disposeBag)            
         }
     }
 
