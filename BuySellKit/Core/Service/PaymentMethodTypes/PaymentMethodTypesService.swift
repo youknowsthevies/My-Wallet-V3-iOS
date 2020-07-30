@@ -95,16 +95,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 } else {
                     return self.methodTypes.take(1)
                         .map { (types: [PaymentMethodType]) -> [PaymentMethodType] in
-                            types.filter { type in
-                                switch type {
-                                case .card(let card):
-                                    return card.state.isActive
-                                case .account(let balance):
-                                    return balance.baseCurrency == fiatCurrecy.currency
-                                case .suggested(let method):
-                                    return !method.type.isBankTransfer
-                                }
-                            }
+                            types.filterValidForBuy(currentWalletCurrency: fiatCurrecy)
                         }
                         .map { $0.first }
                         .asObservable()
