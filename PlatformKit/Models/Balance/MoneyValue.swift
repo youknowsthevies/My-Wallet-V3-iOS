@@ -19,12 +19,12 @@ public struct MoneyValue: Money, Hashable, Equatable {
         case fiat(FiatValue)
         case crypto(CryptoValue)
         
-        init(major amount: String, fiat fiatCurrency: FiatCurrency) throws {
-            self = .fiat(FiatValue.create(amountString: amount, currency: fiatCurrency))
+        init(major amount: String, fiat fiatCurrency: FiatCurrency, locale: Locale = .current) throws {
+            self = .fiat(FiatValue.create(amountString: amount, currency: fiatCurrency, locale: locale))
         }
         
-        init(major amount: String, crypto cryptoCurrency: CryptoCurrency) throws {
-            guard let cryptoValue = CryptoValue.createFromMajorValue(string: amount, assetType: cryptoCurrency) else {
+        init(major amount: String, crypto cryptoCurrency: CryptoCurrency, locale: Locale = .current) throws {
+            guard let cryptoValue = CryptoValue.createFromMajorValue(string: amount, assetType: cryptoCurrency, locale: locale) else {
                 throw MoneyValueError.invalidCryptoAmount
             }
             self = .crypto(cryptoValue)
@@ -139,13 +139,13 @@ public struct MoneyValue: Money, Hashable, Equatable {
     ///   - amount: the fiat or crypto amount in major units
     ///   - currency: the fiat or crypto currency
     /// - Throws: If the crypto of fiat currency is unknown or the amount is invalid this will throw
-    public init(major amount: String, currency: String) throws {
+    public init(major amount: String, currency: String, locale: Locale = .current) throws {
         let currency = try CurrencyType(currency: currency)
         switch currency {
         case .crypto(let cryptoCurrency):
-            self.value = try Value(major: amount, crypto: cryptoCurrency)
+            self.value = try Value(major: amount, crypto: cryptoCurrency, locale: locale)
         case .fiat(let fiatCurrency):
-            self.value = try Value(major: amount, fiat: fiatCurrency)
+            self.value = try Value(major: amount, fiat: fiatCurrency, locale: locale)
         }
     }
     

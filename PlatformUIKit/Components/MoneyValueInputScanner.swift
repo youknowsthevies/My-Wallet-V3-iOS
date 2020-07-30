@@ -153,6 +153,13 @@ public final class MoneyValueInputScanner {
     let internalInputRelay = BehaviorRelay(value: Input.empty)
     private let disposeBag = DisposeBag()
     
+    private lazy var formatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.decimalSeparator = Constant.decimalSeparator
+        return formatter
+    }()
+
     // MARK: - Setup
     
     public init(maxDigits: MaxDigits) {
@@ -183,6 +190,9 @@ public final class MoneyValueInputScanner {
     
     /// Resets the input to a single `0` character.
     public func reset(to string: String = "") {
+        guard let number = Decimal(string: string) else { return }
+        guard let string = formatter.string(from: number as NSNumber) else { return }
+        
         let components = string.split(separator: Character(Constant.decimalSeparator))
         let input: Input
         if components.isEmpty {

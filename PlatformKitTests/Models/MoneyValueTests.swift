@@ -43,4 +43,9 @@ final class MoneyValueChangeTests: XCTestCase {
         let result = try value.value(before: 0.5)
         XCTAssertEqual(result, expected)
     }
+    
+    func testMoneyValueInitializeWithMajor() throws {
+        let value = try MoneyValue(major: "0.072", currency: FiatCurrency.GBP.code, locale: .Posix)
+        XCTAssertEqual(value.displayMajorValue, 0.07)
+    }
 }
