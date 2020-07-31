@@ -10,21 +10,23 @@ import PlatformKit
 import RxSwift
 
 final class SettingsSectionsProvider {
-    
+        
     var states: Observable<SettingSectionsLoadingStates> {
         Observable
         .combineLatest(
             presenters[.about]!.state,
             presenters[.connect]!.state,
+            presenters[.banks]!.state,
             presenters[.cards]!.state,
             presenters[.security]!.state,
             presenters[.profile]!.state,
             presenters[.preferences]!.state
-        ) { (about: $0, connect: $1, cards: $2, security: $3, profile: $4, preferences: $5) }
+        ) { (about: $0, connect: $1, banks: $2, cards: $3, security: $4, profile: $5, preferences: $6) }
         .map { states in
                SettingSectionsLoadingStates(statePerSection: [
                 .about: states.about,
                 .connect: states.connect,
+                .banks: states.banks,
                 .cards: states.cards,
                 .security: states.security,
                 .profile: states.profile,
@@ -51,6 +53,7 @@ final class SettingsSectionsProvider {
     
     init(about: SettingsSectionPresenting,
          connect: SettingsSectionPresenting,
+         banks: SettingsSectionPresenting,
          cards: SettingsSectionPresenting,
          security: SettingsSectionPresenting,
          profile: SettingsSectionPresenting,
@@ -58,6 +61,7 @@ final class SettingsSectionsProvider {
         presenters[.profile] = profile
         presenters[.about] = about
         presenters[.connect] = connect
+        presenters[.banks] = banks
         presenters[.cards] = cards
         presenters[.security] = security
         presenters[.preferences] = preferences

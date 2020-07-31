@@ -1,5 +1,5 @@
 //
-//  RemoveCardViewController.swift
+//  RemovePaymentMethodViewController.swift
 //  Blockchain
 //
 //  Created by Alex McGregor on 4/9/20.
@@ -8,46 +8,45 @@
 
 import PlatformUIKit
 import RxSwift
+import ToolKit
 
-final class RemoveCardViewController: UIViewController {
+final class RemovePaymentMethodViewController: UIViewController {
     
     // MARK: - Private IBOutlets
     
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var descriptionLabel: UILabel!
     @IBOutlet private var badgeImageView: BadgeImageView!
-    @IBOutlet private var removeCardButtonView: ButtonView!
+    @IBOutlet private var buttonView: ButtonView!
     
     // MARK: - Injected
     
-    private let presenter: RemoveCardScreenPresenter
+    private let presenter: RemovePaymentMethodScreenPresenter
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
     
-    init(presenter: RemoveCardScreenPresenter) {
+    init(presenter: RemovePaymentMethodScreenPresenter) {
         self.presenter = presenter
-        super.init(nibName: RemoveCardViewController.objectName, bundle: nil)
+        super.init(nibName: RemovePaymentMethodViewController.objectName, bundle: nil)
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { unimplemented() }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        removeCardButtonView.viewModel = presenter.removeButtonViewModel
+        buttonView.viewModel = presenter.removeButtonViewModel
         badgeImageView.viewModel = presenter.badgeImageViewModel
         titleLabel.content = presenter.titleLabelContent
         descriptionLabel.content = presenter.descriptionLabelContent
         
-        presenter.dismissalRelay
-            .observeOn(MainScheduler.instance)
-            .bindAndCatch(weak: self) { (self) in
+        presenter.dismissal
+            .emit(weak: self) { (self) in
                 self.dismiss(animated: true, completion: nil)
             }
             .disposed(by: disposeBag)
         
+        presenter.viewDidLoad()
     }
 }

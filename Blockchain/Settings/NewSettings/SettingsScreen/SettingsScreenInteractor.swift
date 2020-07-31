@@ -20,7 +20,8 @@ final class SettingsScreenInteractor {
     let twoFactorVerificationBadgeInteractor: TwoFactorVerificationBadgeInteractor
     let preferredCurrencyBadgeInteractor: PreferredCurrencyBadgeInteractor
     let cardSectionInteractor: CardSettingsSectionInteractor
-    
+    let bankSectionInteractor: BanksSettingsSectionInteractor
+
     // MARK: - Services
 
     /// TODO: All interactors should be created inside this class,
@@ -68,9 +69,19 @@ final class SettingsScreenInteractor {
         self.settingsService = settingsService
         self.featureConfigurator = featureConfigurator
         self.emailNotificationsService = emailNotificationService
-        
+        tiersProviding = TierLimitsProvider(tiersService: tiersService)
+
         cardSectionInteractor = CardSettingsSectionInteractor(
-            service: simpleBuyService.paymentMethodTypes
+            featureFetcher: featureConfigurator,
+            paymentMethodTypesService: simpleBuyService.paymentMethodTypes,
+            tierLimitsProvider: tiersProviding
+        )
+        
+        bankSectionInteractor = BanksSettingsSectionInteractor(
+            beneficiariesService: simpleBuyService.beneficiaries,
+            featureFetcher: featureConfigurator,
+            paymentMethodTypesService: simpleBuyService.paymentMethodTypes,
+            tierLimitsProvider: tiersProviding
         )
         
         emailVerificationBadgeInteractor = EmailVerificationBadgeInteractor(
@@ -90,7 +101,6 @@ final class SettingsScreenInteractor {
         pitLinkingConfiguration = featureConfigurator.configuration(for: .exchangeLinking)
         simpleBuyCardsConfiguration = featureConfigurator.configuration(for: .simpleBuyCardsEnabled)
         swipeToReceiveConfiguration = featureConfigurator.configuration(for: .swipeToReceive)
-        tiersProviding = TierLimitsProvider(tiersService: tiersService)
         self.biometryProviding = BiometryProvider(settings: settingsAuthenticating, featureConfigurator: featureConfigurator)
         self.settingsAuthenticating = settingsAuthenticating
         self.pitConnnectionProviding = pitConnectionAPI

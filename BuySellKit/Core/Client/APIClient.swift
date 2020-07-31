@@ -43,6 +43,7 @@ final class APIClient: SimpleBuyClientAPI {
     private enum Path {
         static let paymentMethods = [ "payments", "methods" ]
         static let beneficiaries = [ "payments", "beneficiaries" ]
+        static let banks = ["payments", "banks"]
         static let supportedPairs = [ "simple-buy", "pairs" ]
         static let suggestedAmounts = [ "simple-buy", "amounts" ]
         static let trades = [ "simple-buy", "trades" ]
@@ -69,6 +70,15 @@ final class APIClient: SimpleBuyClientAPI {
     var beneficiaries: Single<[BeneficiaryResponse]> {
         let request = requestBuilder.get(
             path: Path.beneficiaries,
+            authenticated: true
+        )!
+        return communicator.perform(request: request)
+    }
+    
+    func deleteBank(by id: String) -> Completable {
+        let path = Path.banks + [id]
+        let request = requestBuilder.delete(
+            path: path,
             authenticated: true
         )!
         return communicator.perform(request: request)

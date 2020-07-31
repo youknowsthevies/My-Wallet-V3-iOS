@@ -11,7 +11,7 @@ import PlatformKit
 public protocol CardServiceProviderAPI: class {
         
     var cardList: CardListServiceAPI { get }
-    var cardDeletion: CardDeletionServiceAPI { get }
+    var cardDeletion: PaymentMethodDeletionServiceAPI { get }
     var cardUpdate: CardUpdateServiceAPI { get }
     
     /// This service is computed and is not kept as instance property of the provider

@@ -46,11 +46,16 @@ final class SettingsRouter: SettingsRouterAPI {
     private let navigationRouter: NavigationRouterAPI
     private unowned let currencyRouting: CurrencyRouting
     private unowned let tabSwapping: TabSwapping
-
+    private unowned let appCoordinator: AppCoordinator
+    
+    private let builder: SettingsBuilding
+    
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
     
-    init(wallet: Wallet = WalletManager.shared.wallet,
+    init(appCoordinator: AppCoordinator = AppCoordinator.shared,
+         builder: SettingsBuilding = SettingsBuilder(),
+         wallet: Wallet = WalletManager.shared.wallet,
          guidRepositoryAPI: GuidRepositoryAPI = WalletManager.shared.repository,
          navigationRouter: NavigationRouterAPI = NavigationRouter(),
          analyticsRecording: AnalyticsEventRecording = resolve(),
@@ -59,6 +64,8 @@ final class SettingsRouter: SettingsRouterAPI {
          simpleBuyServiceProvider: ServiceProviderAPI = DataProvider.default.buySell,
          currencyRouting: CurrencyRouting,
          tabSwapping: TabSwapping) {
+        self.appCoordinator = appCoordinator
+        self.builder = builder
         self.navigationRouter = navigationRouter
         self.simpleBuyServiceProvider = simpleBuyServiceProvider
         self.cardsServiceProvider = cardsServiceProvider
@@ -120,15 +127,15 @@ final class SettingsRouter: SettingsRouterAPI {
             let controller = ChangePasswordViewController(presenter: presenter)
             navigationRouter.present(viewController: controller)
         case .showRemoveCardScreen(let data):
-            let presenter = RemoveCardScreenPresenter(
-                cardData: data,
-                deletionService: cardsServiceProvider.cardDeletion,
-                cardListService: cardsServiceProvider.cardList
-            )
-            let controller = RemoveCardViewController(presenter: presenter)
-            controller.transitioningDelegate = sheetPresenter
-            controller.modalPresentationStyle = .custom
-            navigationRouter.topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
+            let viewController = builder.removeCardPaymentMethodViewController(cardData: data)
+            viewController.transitioningDelegate = sheetPresenter
+            viewController.modalPresentationStyle = .custom
+            navigationRouter.topMostViewControllerProvider.topMostViewController?.present(viewController, animated: true, completion: nil)
+        case .showRemoveBankScreen(let data):
+            let viewController = builder.removeBankPaymentMethodViewController(beneficiary: data)
+            viewController.transitioningDelegate = sheetPresenter
+            viewController.modalPresentationStyle = .custom
+            navigationRouter.topMostViewControllerProvider.topMostViewController?.present(viewController, animated: true, completion: nil)
         case .showAddCardScreen:
             let interactor = CardRouterInteractor(
                 buySellServiceProvider: simpleBuyServiceProvider,
@@ -149,6 +156,8 @@ final class SettingsRouter: SettingsRouterAPI {
                 routingType: .modal
             )
             cardRouter.load()
+        case .showAddBankScreen(let fiatCurrency):
+            appCoordinator.showFundTrasferDetails(fiatCurrency: fiatCurrency)
         case .showAppStore:
             UIApplication.shared.openAppStore()
         case .showBackupScreen:
@@ -297,7 +306,7 @@ final class SettingsRouter: SettingsRouterAPI {
             )
             .disposed(by: disposeBag)
     }
-    
+        
     private lazy var sheetPresenter: BottomSheetPresenting = {
         BottomSheetPresenting()
     }()

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -14,7 +14,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" rowHeight="97" id="WcT-ux-Lce" customClass="AddCardTableViewCell" customModule="Blockchain" customModuleProvider="target">
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" rowHeight="97" id="WcT-ux-Lce" customClass="AddPaymentMethodTableViewCell" customModule="Blockchain" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="414" height="97"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="WcT-ux-Lce" id="Rku-zh-Kv1">
@@ -22,7 +22,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rdp-Q0-CKc" customClass="BadgeImageView" customModule="PlatformUIKit">
-                        <rect key="frame" x="24" y="34.5" width="28" height="28"/>
+                        <rect key="frame" x="26" y="34.5" width="28" height="28"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="28" id="xdK-Ev-2lp"/>
@@ -30,7 +30,7 @@
                         </constraints>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add a Card" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eQg-kC-6xG">
-                        <rect key="frame" x="68" y="16" width="306" height="65"/>
+                        <rect key="frame" x="70" y="16" width="304" height="65"/>
                         <fontDescription key="fontDescription" name="Inter-Medium" family="Inter" pointSize="16"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -47,7 +47,7 @@
                     <constraint firstItem="eQg-kC-6xG" firstAttribute="top" secondItem="Rku-zh-Kv1" secondAttribute="top" constant="16" id="74s-Zg-DCG"/>
                     <constraint firstAttribute="trailing" secondItem="mga-It-Qo3" secondAttribute="trailing" constant="16" id="Lpa-GM-Hce"/>
                     <constraint firstItem="rdp-Q0-CKc" firstAttribute="centerY" secondItem="Rku-zh-Kv1" secondAttribute="centerY" id="RAG-up-CwA"/>
-                    <constraint firstItem="rdp-Q0-CKc" firstAttribute="leading" secondItem="Rku-zh-Kv1" secondAttribute="leading" constant="24" id="TE6-wA-D17"/>
+                    <constraint firstItem="rdp-Q0-CKc" firstAttribute="leading" secondItem="Rku-zh-Kv1" secondAttribute="leading" constant="26" id="TE6-wA-D17"/>
                     <constraint firstItem="mga-It-Qo3" firstAttribute="centerY" secondItem="eQg-kC-6xG" secondAttribute="centerY" id="ZKC-zn-LkA"/>
                     <constraint firstItem="eQg-kC-6xG" firstAttribute="leading" secondItem="rdp-Q0-CKc" secondAttribute="trailing" constant="16" id="lm4-3Q-luU"/>
                     <constraint firstItem="mga-It-Qo3" firstAttribute="leading" secondItem="eQg-kC-6xG" secondAttribute="trailing" constant="4" id="olf-d5-rXG"/>

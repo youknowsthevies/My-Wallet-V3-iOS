@@ -13,13 +13,13 @@ import PlatformUIKit
 
 extension BuySellUIKit.Router {
     
-    convenience init(stateService: BuySellUIKit.StateServiceAPI) {
+    convenience init(builder: BuySellUIKit.Buildable) {
         self.init(
             navigationRouter: NavigationRouter(),
             serviceProvider: DataProvider.default.buySell,
             cardServiceProvider: CardServiceProvider.default,
             userInformationProvider: UserInformationServiceProvider.default,
-            stateService: stateService,
+            builder: builder,
             kycServiceProvider: KYCServiceProvider.default,
             recordingProvider: RecordingProvider.default,
             kycRouter: KYCCoordinator.shared,

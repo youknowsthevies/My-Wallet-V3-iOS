@@ -17,6 +17,7 @@ public protocol PaymentMethodsServiceAPI: class {
     var paymentMethodsSingle: Single<[PaymentMethod]> { get }
     var supportedCardTypes: Single<Set<CardType>> { get }
     func fetch() -> Observable<[PaymentMethod]>
+    func refresh() -> Completable
 }
 
 final class PaymentMethodsService: PaymentMethodsServiceAPI {
@@ -85,6 +86,10 @@ final class PaymentMethodsService: PaymentMethodsServiceAPI {
         self.enabledFiatCurrencies = enabledFiatCurrencies
     }
     
+    func refresh() -> Completable {
+        fetch().ignoreElements()
+    }
+    
     func fetch() -> Observable<[PaymentMethod]> {
         let enabledFiatCurrencies = self.enabledFiatCurrencies
         return fiatCurrencyService.fiatCurrencyObservable
@@ -126,6 +131,7 @@ final class PaymentMethodsService: PaymentMethodsServiceAPI {
             .do(onNext: { [weak self] paymentMethods in
                 self?.paymentMethodsRelay.accept(paymentMethods)
             })
+            .share()
     }
     
     private func filterPaymentMethods(methods: [PaymentMethod]) -> Single<[PaymentMethod]> {

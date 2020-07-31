@@ -71,7 +71,7 @@ extension Accessibility.Identifier {
             public static let cardPrefix = "\(prefix)cardPrefix"
         }
 
-        public enum AddCardCell {
+        public enum AddPaymentMethodCell {
             private static let prefix = "\(Settings.prefix)AddCardCell."
             public static let disclaimer = "\(prefix)disclaimer"
         }
@@ -134,11 +134,12 @@ extension Accessibility.Identifier {
             public static let copyrightLabel = "\(prefix)copyrightLabel"
         }
 
-        public enum RemoveCard {
-            private static let prefix = "RemoveCardScreen."
-            public static let cardNameLabel = "\(prefix)cardNameLabel"
-            public static let cardPrefixLabel = "\(prefix)cardPrefixLabel"
-            public static let removeCardButton = "\(prefix)removeCardButton"
+        public enum RemovePaymentMethodScreen {
+            private static let prefix = "RemovePaymentMethodScreen."
+            public static let title = "\(prefix)titleLabel"
+            public static let badge = "\(prefix)badgeImageView"
+            public static let description = "\(prefix)descriptionLabel"
+            public static let button = "\(prefix)button"
         }
     }
 }

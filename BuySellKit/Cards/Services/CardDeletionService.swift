@@ -10,25 +10,30 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-public protocol CardDeletionServiceAPI: class {
-    /// Deletes a card with a given identifier
-    func deleteCard(by id: String) -> Completable
+public protocol PaymentMethodDeletionServiceAPI: AnyObject {
+    /// Deletes a payment-method with a given identifier
+    func delete(by id: String) -> Completable
 }
 
-public final class CardDeletionService: CardDeletionServiceAPI {
+final class CardDeletionService: PaymentMethodDeletionServiceAPI {
     
     // MARK: - Private Properties
     
     private let client: CardDeletionClientAPI
+    private let cardListService: CardListServiceAPI
     
     // MARK: - Setup
     
-    public init(client: CardDeletionClientAPI) {
+    init(client: CardDeletionClientAPI,
+         cardListService: CardListServiceAPI) {
+        self.cardListService = cardListService
         self.client = client
     }
     
-    public func deleteCard(by id: String) -> Completable {
-        self.client.deleteCard(by: id)
+    func delete(by id: String) -> Completable {
+        client
+            .deleteCard(by: id)
+            .andThen(cardListService.fetchCards())
+            .asCompletable()
     }
-    
 }

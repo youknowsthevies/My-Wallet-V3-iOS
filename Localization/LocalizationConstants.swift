@@ -1984,6 +1984,7 @@ public enum LocalizationConstants {
             public static let walletConnect = NSLocalizedString("Wallet Connect", comment: "Wallet Connect")
             public static let security = NSLocalizedString("Security", comment: "Security")
             public static let linkedCards = NSLocalizedString("Linked Cards", comment: "Linked Cards")
+            public static let linkedBanks = NSLocalizedString("Linked Banks", comment: "Linked Banks")
             public static let about = NSLocalizedString("About", comment: "About")
         }
         
@@ -2035,18 +2036,33 @@ public enum LocalizationConstants {
         public static let enableFaceID = NSLocalizedString("Enable Face ID", comment: "Enable Face ID")
         public static let swipeToReceive = NSLocalizedString("Swipe to Receive", comment: "Swipe to Receive")
         public static let expires = NSLocalizedString("Exp:", comment: "Abbreviation for Expiration")
-        public struct Cards {
-            public static let addACard = NSLocalizedString("Add a Card", comment: "Add a Card")
+        public struct Card {
+            public static let add = NSLocalizedString("Add a Card", comment: "Add a Card")
             public static let maximum = NSLocalizedString(
                 "You can have a maximum of three cards",
                 comment: "You can have a maximum of three cards"
             )
-            public static let removeCard = NSLocalizedString("Remove Card", comment: "Remove Card")
+            public static let remove = NSLocalizedString("Remove Card", comment: "Remove Card")
             public static let unverified = NSLocalizedString("You must have Gold Level verification status to add a credit card.", comment: "You must have Gold Level verification status to add a credit card.")
             public static let disabled = NSLocalizedString("Not currently available", comment: "Not currently available")
         }
+        
+        public struct Bank {
+            public static let addPrefix = NSLocalizedString("Add a", comment: "Add a")
+            public static let addSuffix = NSLocalizedString("Bank", comment: "Bank")
+
+            public static let maximum = NSLocalizedString(
+                "You can have a maximum of one bank per currency",
+                comment: "You can have a maximum of one bank per currency"
+            )
+            public static let remove = NSLocalizedString("Remove Bank", comment: "Remove Bank")
+            public static let unverified = NSLocalizedString("You must have Gold Level verification status to link a bank.", comment: "You must have Gold Level verification status to link a bank")
+            public static let disabled = NSLocalizedString("Not currently available", comment: "Not currently available")
+            
+            public static let dailyLimit = NSLocalizedString("Daily Limit", comment: "Daily Limit")
+        }
     
-    public struct RemoveCardScreen {
+        public struct RemoveCardScreen {
             public static let action = NSLocalizedString("Remove Card", comment: "Remove Card")
         }
         

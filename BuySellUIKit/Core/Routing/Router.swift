@@ -13,6 +13,14 @@ import PlatformUIKit
 import RxSwift
 import ToolKit
 
+public protocol RouterAPI: class {
+    func setup(startImmediately: Bool)
+    func start()
+    func next(to state: StateService.State)
+    func previous(from state: StateService.State)
+    func showCryptoSelectionScreen()
+}
+
 /// This object is used as a router for Simple-Buy flow
 public final class Router: RouterAPI {
     
@@ -41,13 +49,15 @@ public final class Router: RouterAPI {
     /// A general dispose bag
     private let disposeBag = DisposeBag()
     
+    private let builder: Buildable
+    
     // MARK: - Setup
     
     public init(navigationRouter: NavigationRouterAPI,
                 serviceProvider: ServiceProviderAPI,
                 cardServiceProvider: CardServiceProviderAPI,
                 userInformationProvider: UserInformationServiceProviding,
-                stateService: StateServiceAPI,
+                builder: Buildable,
                 kycServiceProvider: KYCServiceProviderAPI,
                 recordingProvider: RecordingProviderAPI,
                 kycRouter: KYCRouterAPI,
@@ -57,11 +67,13 @@ public final class Router: RouterAPI {
         self.serviceProvider = serviceProvider
         self.userInformationProvider = userInformationProvider
         self.cardServiceProvider = cardServiceProvider
-        self.stateService = stateService
+        self.stateService = builder.stateService
         self.kycServiceProvider = kycServiceProvider
         self.exchangeProvider = exchangeProvider
         self.kycRouter = kycRouter
                 
+        self.builder = builder
+        
         let cryptoSelectionService = CryptoCurrencySelectionService(
             service: serviceProvider.supportedPairsInteractor,
             defaultSelectedData: CryptoCurrency.bitcoin
@@ -84,7 +96,7 @@ public final class Router: RouterAPI {
     }
             
     /// Should be called once
-    public func start() {
+    public func setup(startImmediately: Bool) {
         stateService.action
             .bindAndCatch(weak: self) { (self, action) in
                 switch action {
@@ -97,7 +109,14 @@ public final class Router: RouterAPI {
                 }
             }
             .disposed(by: disposeBag)
-        stateService.nextRelay.accept(())
+        if startImmediately {
+            stateService.nextRelay.accept(())
+        }
+    }
+    
+    /// Should be called once
+    public func start() {
+        setup(startImmediately: true)
     }
     
     public func next(to state: StateService.State) {
@@ -363,32 +382,13 @@ public final class Router: RouterAPI {
     }
     
     private func showFundsTransferDetailsScreen(with fiatCurrency: FiatCurrency, shouldDismissModal: Bool) {
-        let interactor = InteractiveFundsTransferDetailsInteractor(
-            paymentAccountService: serviceProvider.paymentAccount,
-            fiatCurrency: fiatCurrency
-        )
-        
-        let navigationController = UINavigationController()
-        
-        let webViewRouter = WebViewRouter(
-            topMostViewControllerProvider: navigationController,
-            webViewServiceAPI: UIApplication.shared
-        )
-        
-        let presenter = FundsTransferDetailScreenPresenter(
-            webViewRouter: webViewRouter,
-            analyticsRecorder: recordingProvider.analytics,
-            interactor: interactor,
-            stateService: stateService
-        )
-        let viewController = DetailsScreenViewController(presenter: presenter)
-        navigationController.viewControllers = [viewController]
+        let viewController = builder.fundsTransferDetailsViewController(for: fiatCurrency)
         if shouldDismissModal {
             navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true) { [weak self] in
-                self?.navigationRouter.navigationControllerAPI?.present(navigationController, animated: true, completion: nil)
+                self?.navigationRouter.navigationControllerAPI?.present(viewController, animated: true, completion: nil)
             }
         } else {
-            navigationRouter.navigationControllerAPI?.present(navigationController, animated: true, completion: nil)
+            navigationRouter.present(viewController: viewController, using: .modalOverTopMost)
         }
     }
     

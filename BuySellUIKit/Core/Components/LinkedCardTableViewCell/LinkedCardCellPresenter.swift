@@ -10,6 +10,7 @@ import BuySellKit
 import Localization
 import PlatformKit
 import PlatformUIKit
+import RxDataSources
 import RxCocoa
 import RxRelay
 import RxSwift
@@ -105,5 +106,17 @@ public final class LinkedCardCellPresenter {
             alignment: .right,
             accessibility: .id(AccessibilityIDs.cardPrefix)
         )
+    }
+}
+
+extension LinkedCardCellPresenter: IdentifiableType {
+    public var identity: String {
+        cardData.identifier
+    }
+}
+
+extension LinkedCardCellPresenter: Equatable {
+    public static func == (lhs: LinkedCardCellPresenter, rhs: LinkedCardCellPresenter) -> Bool {
+        lhs.cardData == rhs.cardData
     }
 }

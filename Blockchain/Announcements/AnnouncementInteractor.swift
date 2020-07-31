@@ -61,7 +61,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                  Single.zip(
                      isSimpleBuyAvailable,
                      simpleBuyOrderDetails,
-                     simpleBuyServiceProvider.beneficiaries.hasLinkedBank
+                     simpleBuyServiceProvider.beneficiaries.hasLinkedBank.take(1).asSingle()
                  )
             )
             .subscribeOn(SerialDispatchQueueScheduler(internalSerialQueueName: dispatchQueueName))

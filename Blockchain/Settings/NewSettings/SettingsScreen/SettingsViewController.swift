@@ -80,7 +80,8 @@ final class SettingsViewController: BaseScreenViewController {
         tableView.registerNibCell(ClipboardTableViewCell.self)
         tableView.registerNibCell(BadgeTableViewCell.self)
         tableView.registerNibCell(PlainTableViewCell.self)
-        tableView.registerNibCell(AddCardTableViewCell.self)
+        tableView.registerNibCell(AddPaymentMethodTableViewCell.self)
+        tableView.register(LinkedBankTableViewCell.self)
         tableView.registerNibCell(LinkedCardTableViewCell.self)
         tableView.register(SettingsSkeletonTableViewCell.self)
         tableView.registerHeaderView(TableHeaderView.objectName)
@@ -99,10 +100,19 @@ final class SettingsViewController: BaseScreenViewController {
                 switch type {
                 case .skeleton:
                     cell = self.skeletonCell(for: indexPath)
-                case .addCard(let presenter):
-                    cell = self.addCardCell(for: indexPath, presenter: presenter)
-                case .linkedCard(let presenter):
+                case .add(let presenter):
+                    cell = self.addPaymentMethodCell(for: indexPath, presenter: presenter)
+                case .linked(let presenter):
                     cell = self.linkedCardCell(for: indexPath, presenter: presenter)
+                }
+            case .banks(let type):
+                switch type {
+                case .skeleton:
+                    cell = self.skeletonCell(for: indexPath)
+                case .add(let presenter):
+                    cell = self.addPaymentMethodCell(for: indexPath, presenter: presenter)
+                case .linked(let viewModel):
+                    cell = self.linkedBankCell(for: indexPath, viewModel: viewModel)
                 }
             case .switch(_, let presenter):
                 cell = self.switchCell(for: indexPath, presenter: presenter)
@@ -166,8 +176,8 @@ extension SettingsViewController: UITableViewDelegate {
         return cell
     }
     
-    private func addCardCell(for indexPath: IndexPath, presenter: AddCardCellPresenter) -> AddCardTableViewCell {
-        let cell = tableView.dequeue(AddCardTableViewCell.self, for: indexPath)
+    private func addPaymentMethodCell(for indexPath: IndexPath, presenter: AddPaymentMethodCellPresenter) -> AddPaymentMethodTableViewCell {
+        let cell = tableView.dequeue(AddPaymentMethodTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
@@ -176,6 +186,13 @@ extension SettingsViewController: UITableViewDelegate {
                                 presenter: LinkedCardCellPresenter) -> LinkedCardTableViewCell {
         let cell = tableView.dequeue(LinkedCardTableViewCell.self, for: indexPath)
         cell.presenter = presenter
+        return cell
+    }
+
+    private func linkedBankCell(for indexPath: IndexPath,
+                                viewModel: LinkedBankViewModel) -> LinkedBankTableViewCell {
+        let cell = tableView.dequeue(LinkedBankTableViewCell.self, for: indexPath)
+        cell.viewModel = viewModel
         return cell
     }
     

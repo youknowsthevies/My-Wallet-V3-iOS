@@ -22,10 +22,8 @@ public struct MoneyValueBalancePairs: Equatable {
         moneyPairs[balanceType] ?? MoneyValuePair(base: .zero(baseCurrency), quote: .zero(quoteCurrency))
     }
     
-    /// Returns true if no balance is present
-    public var isAbsent: Bool {
-        moneyPairs.isEmpty
-    }
+    /// Returns true in case the balance is absent
+    public let isAbsent: Bool
     
     // MARK: - Services
     
@@ -58,12 +56,14 @@ public struct MoneyValueBalancePairs: Equatable {
         moneyPairs[.nonCustodial] = wallet
         moneyPairs[.custodial(.trading)] = trading
         moneyPairs[.custodial(.savings)] = savings
+        isAbsent = false
     }
     
     public init(trading: MoneyValuePair) {
         baseCurrency = trading.base.currencyType
         quoteCurrency = trading.quote.currencyType
         moneyPairs[.custodial(.trading)] = trading
+        isAbsent = false
     }
     
     /// Init' with an absent state -
@@ -73,6 +73,7 @@ public struct MoneyValueBalancePairs: Equatable {
     public init(baseCurrency: CurrencyType, quoteCurrency: CurrencyType) {
         self.baseCurrency = baseCurrency
         self.quoteCurrency = quoteCurrency
+        isAbsent = true
     }
 }
 

@@ -19,6 +19,8 @@ extension SettingsSectionType {
             return LocalizationConstants.Settings.Section.security
         case .cards:
             return LocalizationConstants.Settings.Section.linkedCards
+        case .banks:
+            return LocalizationConstants.Settings.Section.linkedBanks
         case .about:
             return LocalizationConstants.Settings.Section.about
         }

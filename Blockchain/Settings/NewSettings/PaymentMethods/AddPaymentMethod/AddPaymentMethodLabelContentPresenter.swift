@@ -12,7 +12,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-final class AddCardLabelContentPresenter: LabelContentPresenting {
+final class AddPaymentMethodLabelContentPresenter: LabelContentPresenting {
     
     typealias PresentationState = LabelContent.State.Presentation
     
@@ -26,17 +26,8 @@ final class AddCardLabelContentPresenter: LabelContentPresenting {
     let interactor: LabelContentInteracting
     private let disposeBag = DisposeBag()
     
-    init(paymentMethodTypesService: BuySellKit.PaymentMethodTypesServiceAPI,
-         tierLimitsProviding: TierLimitsProviding,
-         featureFeatcher: FeatureFetching) {
-        
-        let interactor = AddCardLabelContentInteractor(
-            paymentMethodTypesService: paymentMethodTypesService,
-            tierLimitsProviding: tierLimitsProviding,
-            featureFetcher: featureFeatcher
-        )
+    init(interactor: AddPaymentMethodLabelContentInteractor) {
         self.interactor = interactor
-
         Observable
             .combineLatest(
                 interactor.state,

@@ -48,6 +48,9 @@ public final class CardListService: CardListServiceAPI {
     private let featureFetcher: FeatureFetching
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     
+    private let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
+    private let semaphore = DispatchSemaphore(value: 1)
+    
     // MARK: - Setup
     
     public init(client: CardListClientAPI,
@@ -71,19 +74,48 @@ public final class CardListService: CardListServiceAPI {
             .map { $0.filter { $0.identifier == identifier }.first }
     }
     
-    public func fetchCards() -> Single<[CardData]> {
-        featureFetcher.fetchBool(for: .simpleBuyCardsEnabled)
-            .flatMap(weak: self) { (self, enabled) -> Single<[CardPayload]> in
-                guard enabled else {
-                    return .just([])
-                }
-                return self.client.cardList
+    private func createFetchSingle() -> Single<[CardData]> {
+        let cardsRelay = self.cardsRelay
+        return cardsRelay
+            .take(1)
+            .asSingle()
+            .flatMap(weak: self) { (self, cards: [CardData]?) in
+                guard cards == nil else { return Single.just(cards!) }
+                return self.featureFetcher.fetchBool(for: .simpleBuyCardsEnabled)
+                    .flatMap(weak: self) { (self, enabled) -> Single<[CardPayload]> in
+                        guard enabled else {
+                            return .just([])
+                        }
+                        return self.client.cardList
+                    }
+                    .map { Array<CardData>.init(response: $0) }
+                    .do(onSuccess: { (cards: [CardData]) in
+                        cardsRelay.accept(cards)
+                    })
+                    .catchErrorJustReturn([])
             }
-            .map { Array<CardData>.init(response: $0) }
-            .do(onSuccess: { [weak self] cardList in
-                self?.cardsRelay.accept(cardList)
-            })
-            .catchErrorJustReturn([])
+    }
+    
+    public func fetchCards() -> Single<[CardData]> {
+        Single
+            .create(weak: self) { (self, observer) -> Disposable in
+                self.semaphore.wait()
+                
+                let disposable = self.createFetchSingle()
+                    .subscribe { event in
+                        switch event {
+                        case .success(let value):
+                            observer(.success(value))
+                        case .error(let error):
+                            observer(.error(error))
+                        }
+                    }
+                return Disposables.create {
+                    disposable.dispose()
+                    self.semaphore.signal()
+                }
+            }
+            .subscribeOn(scheduler)
     }
     
     public func doesCardExist(number: String, expiryMonth: String, expiryYear: String) -> Single<Bool> {

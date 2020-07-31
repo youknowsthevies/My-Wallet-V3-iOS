@@ -95,9 +95,6 @@ public final class ServiceProvider: ServiceProviderAPI {
             analyticsRecorder: recordingProvider.analytics,
             client: simpleBuyClient
         )
-        beneficiaries = BeneficiariesService(
-            client: simpleBuyClient
-        )
         eligibility = EligibilityService(
             client: simpleBuyClient,
             reactiveWallet: wallet,
@@ -143,6 +140,11 @@ public final class ServiceProvider: ServiceProviderAPI {
             fiatCurrencyService: settings,
             cardListService: cardServiceProvider.cardList,
             balanceProvider: balanceProvider
+        )
+        beneficiaries = BeneficiariesService(
+            client: simpleBuyClient,
+            featureFetcher: featureFetcher,
+            paymentMethodTypesService: paymentMethodTypes
         )
         supportedCurrencies = SupportedCurrenciesService(
             featureFetcher: featureFetcher,

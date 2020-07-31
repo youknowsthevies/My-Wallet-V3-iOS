@@ -16,7 +16,7 @@ public final class CardServiceProvider: CardServiceProviderAPI {
     
     public let cardList: CardListServiceAPI
     public let cardUpdate: CardUpdateServiceAPI
-    public let cardDeletion: CardDeletionServiceAPI
+    public let cardDeletion: PaymentMethodDeletionServiceAPI
     public var cardActivation: CardActivationServiceAPI {
         CardActivationService(
             client: cardClient
@@ -63,7 +63,8 @@ public final class CardServiceProvider: CardServiceProviderAPI {
             fiatCurrencyService: fiatCurrencyService
         )
         cardDeletion = CardDeletionService(
-            client: cardClient
+            client: cardClient,
+            cardListService: cardList
         )
         cardUpdate = CardUpdateService(
             dataRepository: dataRepository,

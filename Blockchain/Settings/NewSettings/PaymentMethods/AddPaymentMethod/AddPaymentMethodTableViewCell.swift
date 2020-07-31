@@ -1,5 +1,5 @@
 //
-//  AddCardTableViewCell.swift
+//  AddPaymentMethodTableViewCell.swift
 //  Blockchain
 //
 //  Created by Alex McGregor on 3/24/20.
@@ -11,16 +11,17 @@ import PlatformUIKit
 import RxCocoa
 import RxSwift
 
-final class AddCardTableViewCell: UITableViewCell {
+final class AddPaymentMethodTableViewCell: UITableViewCell {
     
     // MARK: - Public Properites
     
-    var presenter: AddCardCellPresenter! {
+    var presenter: AddPaymentMethodCellPresenter! {
         willSet {
             disposeBag = DisposeBag()
         }
         didSet {
             guard let presenter = presenter else { return }
+            
             presenter.badgeImagePresenter.state
                 .compactMap { $0 }
                 .bindAndCatch(to: rx.viewModel)
@@ -69,7 +70,7 @@ final class AddCardTableViewCell: UITableViewCell {
 
 // MARK: - Rx
 
-extension Reactive where Base: AddCardTableViewCell {
+extension Reactive where Base: AddPaymentMethodTableViewCell {
     var viewModel: Binder<LoadingState<BadgeImageViewModel>> {
         Binder(base) { view, state in
             switch state {

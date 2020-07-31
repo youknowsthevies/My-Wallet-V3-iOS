@@ -1,0 +1,36 @@
+//
+//  LinkedBankTableViewCell.swift
+//  BuySellUIKit
+//
+//  Created by Daniel on 16/07/2020.
+//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+import PlatformUIKit
+
+public final class LinkedBankTableViewCell: UITableViewCell {
+    
+    // MARK: - Public Properites
+    
+    public var viewModel: LinkedBankViewModel! {
+        didSet {
+            linkedBankView.viewModel = viewModel
+        }
+    }
+    
+    // MARK: - Private Properties
+    
+    private let linkedBankView = LinkedBankView()
+    
+    // MARK: - Setup
+    
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        contentView.addSubview(linkedBankView)
+        linkedBankView.fillSuperview()
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { nil }
+}
+

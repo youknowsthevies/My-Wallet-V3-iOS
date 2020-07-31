@@ -70,7 +70,12 @@ public class NavigationRouter: NavigationRouterAPI {
     }
 
     private func presentModal(viewController: UIViewController, in parent: ViewControllerAPI) {
-        let navigationController = UINavigationController(rootViewController: viewController)
+        let navigationController: UINavigationController
+        if let navController = viewController as? UINavigationController {
+            navigationController = navController
+        } else {
+            navigationController = UINavigationController(rootViewController: viewController)
+        }
         DispatchQueue.main.async { [weak self] in
             parent.present(navigationController, animated: true, completion: nil)
             self?.navigationControllerAPI = navigationController

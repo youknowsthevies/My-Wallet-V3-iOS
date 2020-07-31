@@ -32,9 +32,19 @@ extension SettingsSectionType.CellType {
             switch type {
             case .skeleton:
                 return .none
-            case .linkedCard(let presenter):
+            case .linked(let presenter):
                 return .showRemoveCardScreen(presenter.cardData)
-            case .addCard(let presenter):
+            case .add(let presenter):
+                guard !presenter.isLoading else { return .none }
+                return presenter.action
+            }
+        case .banks(let type):
+            switch type {
+            case .skeleton:
+                return .none
+            case .linked(let presenter):
+                return .showRemoveBankScreen(presenter.data)
+            case .add(let presenter):
                 guard !presenter.isLoading else { return .none }
                 return presenter.action
             }

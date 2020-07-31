@@ -16,8 +16,9 @@ enum SettingsSectionType: Int, Equatable {
     case preferences = 2
     case connect = 3
     case security = 4
-    case cards = 5
-    case about = 6
+    case banks = 5
+    case cards = 6
+    case about = 7
     
     enum CellType: Equatable, IdentifiableType {
         
@@ -25,6 +26,8 @@ enum SettingsSectionType: Int, Equatable {
             switch self {
             case .badge(let type, _):
                 return type.rawValue
+            case .banks(let type):
+                return type.identity
             case .cards(let type):
                 return type.identity
             case .clipboard(let type):
@@ -56,7 +59,8 @@ enum SettingsSectionType: Int, Equatable {
         case badge(BadgeCellType, BadgeCellPresenting)
         case `switch`(SwitchCellType, SwitchCellPresenting)
         case clipboard(ClipboardCellType)
-        case cards(CardsCellType)
+        case cards(LinkedPaymentMethodCellType<AddPaymentMethodCellPresenter, LinkedCardCellPresenter>)
+        case banks(LinkedPaymentMethodCellType<AddPaymentMethodCellPresenter, LinkedBankViewModel>)
         case plain(PlainCellType)
         
         enum BadgeCellType: String {
@@ -78,33 +82,33 @@ enum SettingsSectionType: Int, Equatable {
         enum ClipboardCellType: String {
             case walletID
         }
-        
-        enum CardsCellType: Equatable, IdentifiableType {
-            
+
+        /// Any payment method can get under this category
+        enum LinkedPaymentMethodCellType<AddNewCellPresenter: IdentifiableType, LinkedCellPresenter: Equatable & IdentifiableType>: Equatable, IdentifiableType {
             var identity: AnyHashable {
                 switch self {
                 case .skeleton(let index):
                     return "skeleton.\(index)"
-                case .addCard:
-                    return "addCard"
-                case .linkedCard(let value):
-                    return value.cardData.identifier
+                case .add(let presenter):
+                    return presenter.identity
+                case .linked(let presenter):
+                    return presenter.identity
                 }
             }
             
             case skeleton(Int)
-            case linkedCard(LinkedCardCellPresenter)
-            case addCard(AddCardCellPresenter)
+            case linked(LinkedCellPresenter)
+            case add(AddNewCellPresenter)
             
-            static func == (lhs: SettingsSectionType.CellType.CardsCellType,
-                            rhs: SettingsSectionType.CellType.CardsCellType) -> Bool {
+            static func == (lhs: SettingsSectionType.CellType.LinkedPaymentMethodCellType<AddNewCellPresenter, LinkedCellPresenter>,
+                            rhs: SettingsSectionType.CellType.LinkedPaymentMethodCellType<AddNewCellPresenter, LinkedCellPresenter>) -> Bool {
                 switch (lhs, rhs) {
                 case (.skeleton(let left), .skeleton(let right)):
                     return left == right
-                case (.linkedCard(let left), .linkedCard(let right)):
-                    return left.cardData.identifier == right.cardData.identifier
-                case (.addCard, .addCard):
-                    return true
+                case (.linked(let left), .linked(let right)):
+                    return left == right
+                case (.add(let lhsPresenter), .add(let rhsPresenter)):
+                    return lhsPresenter.identity == rhsPresenter.identity
                 default:
                     return false
                 }

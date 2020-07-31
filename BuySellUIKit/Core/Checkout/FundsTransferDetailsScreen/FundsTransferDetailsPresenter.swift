@@ -71,12 +71,18 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
         navigationBarTrailingButtonAction = .custom {
             stateService.previousRelay.accept(())
         }
+    }
+    
+    func viewDidLoad() {
+        analyticsRecorder.record(
+            event: AnalyticsEvents.SimpleBuy.sbLinkBankScreenShown(currencyCode: interactor.fiatCurrency.code)
+        )
         
         interactor.state
             .bindAndCatch(weak: self) { (self, state) in
                 switch state {
                 case .invalid(.valueCouldNotBeCalculated):
-                    analyticsRecorder.record(
+                    self.analyticsRecorder.record(
                         event: AnalyticsEvents.SimpleBuy.sbLinkBankLoadingError(
                             currencyCode: self.interactor.fiatCurrency.code
                         )
@@ -88,12 +94,6 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
                 }
             }
             .disposed(by: disposeBag)
-    }
-    
-    func viewDidLoad() {
-        analyticsRecorder.record(
-            event: AnalyticsEvents.SimpleBuy.sbLinkBankScreenShown(currencyCode: interactor.fiatCurrency.code)
-        )
     }
     
     private func setup(account: PaymentAccount) {

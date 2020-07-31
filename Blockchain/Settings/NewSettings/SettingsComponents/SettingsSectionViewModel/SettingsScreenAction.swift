@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import PlatformKit
 
 /// This enum aggregates possible action types that can be done in the dashboard
 enum SettingsScreenAction {
@@ -23,6 +24,8 @@ enum SettingsScreenAction {
     case showUpdateMobileScreen
     case showURL(URL)
     case showRemoveCardScreen(CardData)
+    case showRemoveBankScreen(Beneficiary)
     case showAddCardScreen
+    case showAddBankScreen(FiatCurrency)
     case none
 }

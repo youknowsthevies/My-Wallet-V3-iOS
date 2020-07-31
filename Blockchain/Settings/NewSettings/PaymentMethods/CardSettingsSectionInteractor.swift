@@ -16,46 +16,59 @@ final class CardSettingsSectionInteractor {
     
     typealias State = ValueCalculationState<[CardData]>
     
-    enum CardSettingsSectionError: Error {
-        case notSupported
-    }
-    
     var state: Observable<State> {
         _ = setup
         return stateRelay
             .asObservable()
     }
     
+    let addPaymentMethodInteractor: AddPaymentMethodInteractor
+    
     private lazy var setup: Void = {
-        featureFetching
+        featureFetcher
             .fetchBool(for: .simpleBuyCardsEnabled)
             .asObservable()
             .flatMap(weak: self) { (self, enabled) -> Observable<State> in
                 guard enabled else { return .just(.invalid(.empty)) }
                 return self.cards.map { values -> State in
-                    return .value(values)
+                    .value(values)
                 }
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()
-    
+        
     private let stateRelay = BehaviorRelay<State>(value: .invalid(.empty))
-    private let featureFetching: FeatureFetching
-    private let service: BuySellKit.PaymentMethodTypesServiceAPI
     private let disposeBag = DisposeBag()
     
     private var cards: Observable<[CardData]> {
-        service.cards
+        paymentMethodTypesService.cards
             .map { $0.filter { $0.state == .active || $0.state == .expired } }
             .catchErrorJustReturn([])
     }
 
+    // MARK: - Injected
+    
+    private let featureFetcher: FeatureFetching
+    private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
+    private let tierLimitsProvider: TierLimitsProviding
+    
     // MARK: - Setup
     
-    init(featureFetching: FeatureFetching = AppFeatureConfigurator.shared,
-         service: BuySellKit.PaymentMethodTypesServiceAPI) {
-        self.featureFetching = featureFetching
-        self.service = service
+    init(featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
+         paymentMethodTypesService: PaymentMethodTypesServiceAPI = DataProvider.default.buySell.paymentMethodTypes,
+         tierLimitsProvider: TierLimitsProviding) {
+        self.featureFetcher = featureFetcher
+        self.paymentMethodTypesService = paymentMethodTypesService
+        self.tierLimitsProvider = tierLimitsProvider
+        
+        addPaymentMethodInteractor = AddPaymentMethodInteractor(
+            paymentMethod: .card,
+            addNewInteractor: AddCardInteractor(
+                paymentMethodTypesService: paymentMethodTypesService
+            ),
+            tiersLimitsProvider: tierLimitsProvider,
+            featureFetcher: featureFetcher
+        )
     }
 }

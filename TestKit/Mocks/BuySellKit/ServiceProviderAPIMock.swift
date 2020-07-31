@@ -60,6 +60,11 @@ final class ServiceProviderAPIMock: ServiceProviderAPI {
         underlyingBeneficiaries
     }
 
+    var underlyingBeneficiariesDeletion: PaymentMethodDeletionServiceAPI!
+    var beneficiariesDeletion: PaymentMethodDeletionServiceAPI {
+        underlyingBeneficiariesDeletion
+    }
+    
     var underlyingSettings: (FiatCurrencySettingsServiceAPI & SettingsServiceAPI)!
     var settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI {
         underlyingSettings

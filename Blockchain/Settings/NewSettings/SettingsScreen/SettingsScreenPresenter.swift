@@ -60,6 +60,7 @@ final class SettingsScreenPresenter {
     
     private let aboutSectionPresenter: AboutSectionPresenter
     private let cardsSectionPresenter: CardsSectionPresenter
+    private let banksSectionPresenter: BanksSectionPresenter
     private let securitySectionPresenter: SecuritySectionPresenter
     private let profileSectionPresenter: ProfileSectionPresenter
     private let preferencesSectionPresenter: PreferencesSectionPresenter
@@ -69,35 +70,35 @@ final class SettingsScreenPresenter {
     
     init(interactor: SettingsScreenInteractor = SettingsScreenInteractor(),
          router: SettingsRouterAPI) {
-        self.aboutSectionPresenter = AboutSectionPresenter()
+        aboutSectionPresenter = AboutSectionPresenter()
         
-        self.connectPresenter = .init(
+        connectPresenter = .init(
             featureConfiguration: interactor.pitLinkingConfiguration,
             exchangeConnectionStatusProvider: interactor.pitConnnectionProviding
         )
         
-        self.securitySectionPresenter = .init(
+        securitySectionPresenter = .init(
             smsTwoFactorService: interactor.smsTwoFactorService,
             biometryProvider: interactor.biometryProviding,
             settingsAuthenticater: interactor.settingsAuthenticating,
             recoveryPhraseStatusProvider: interactor.recoveryPhraseStatusProviding
         )
         
-        self.cardsSectionPresenter = .init(
-            interactor: interactor.cardSectionInteractor,
-            paymentMethodTypesService: interactor.simpleBuyService.paymentMethodTypes,
-            tierLimitsProviding: interactor.tiersProviding,
-            featureConfiguration: interactor.simpleBuyCardsConfiguration,
-            featureFetcher: interactor.featureConfigurator
+        cardsSectionPresenter = CardsSectionPresenter(
+            interactor: interactor.cardSectionInteractor
         )
         
-        self.profileSectionPresenter = .init(
+        banksSectionPresenter = BanksSectionPresenter(
+            interactor: interactor.bankSectionInteractor
+        )
+        
+        profileSectionPresenter = .init(
             tiersLimitsProvider: interactor.tiersProviding,
             emailVerificationInteractor: interactor.emailVerificationBadgeInteractor,
             mobileVerificationInteractor: interactor.mobileVerificationBadgeInteractor
         )
         
-        self.preferencesSectionPresenter = .init(
+        preferencesSectionPresenter = .init(
             emailNotificationService: interactor.emailNotificationsService,
             preferredCurrencyBadgeInteractor: interactor.preferredCurrencyBadgeInteractor
         )
@@ -105,6 +106,7 @@ final class SettingsScreenPresenter {
         sectionsProvider = SettingsSectionsProvider(
             about: aboutSectionPresenter,
             connect: connectPresenter,
+            banks: banksSectionPresenter,
             cards: cardsSectionPresenter,
             security: securitySectionPresenter,
             profile: profileSectionPresenter,
@@ -120,13 +122,14 @@ final class SettingsScreenPresenter {
     // MARK: - Private
     
     private func setup() {
-        // Bind notices
+        
         actionRelay
             .bindAndCatch(to: router.actionRelay)
             .disposed(by: disposeBag)
         
         sectionsProvider
             .sections
+            .observeOn(MainScheduler.instance)
             .map { $0.map { $0.sectionType } }
             .bindAndCatch(to: sectionRelay)
             .disposed(by: disposeBag)

@@ -73,10 +73,10 @@ extension CardPayload {
         let number: String
         
         /// e.g `10`
-        let month: String
+        let month: String?
         
         /// e.g `2021`
-        let year: String
+        let year: String?
         
         /// e.g: `MASTERCARD`
         let type: String
@@ -181,11 +181,18 @@ extension CardPayload.CardDetails: Decodable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         number = try values.decode(String.self, forKey: .number)
-        let month = try values.decode(Int.self, forKey: .expireMonth)
-        self.month = String(format: "%02d", month)
         
-        let year = try values.decode(Int.self, forKey: .expireYear)
-        self.year = "\(year)"
+        if let month = try values.decodeIfPresent(Int.self, forKey: .expireMonth) {
+            self.month = String(format: "%02d", month)
+        } else {
+            self.month = nil
+        }
+        
+        if let year = try values.decodeIfPresent(Int.self, forKey: .expireYear) {
+            self.year = "\(year)"
+        } else {
+            self.year = nil
+        }
         
         type = try values.decode(String.self, forKey: .type)
         label = try values.decodeIfPresent(String.self, forKey: .label) ?? ""

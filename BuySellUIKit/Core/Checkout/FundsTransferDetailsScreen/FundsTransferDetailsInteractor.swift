@@ -25,7 +25,8 @@ final class InteractiveFundsTransferDetailsInteractor: FundsTransferDetailsInter
     // MARK: - Properties
     
     var state: Observable<FundsTransferDetailsInteractionState> {
-        paymentAccountRelay.compactMap { $0 }
+        _ = setup
+        return paymentAccountRelay.compactMap { $0 }
     }
     
     let fiatCurrency: FiatCurrency
@@ -34,12 +35,7 @@ final class InteractiveFundsTransferDetailsInteractor: FundsTransferDetailsInter
     private let paymentAccountRelay = BehaviorRelay<FundsTransferDetailsInteractionState>(value: .invalid(.empty))
     private let disposeBag = DisposeBag()
     
-    // MARK: - Setup
-    
-    init(paymentAccountService: PaymentAccountServiceAPI, fiatCurrency: FiatCurrency) {
-        self.paymentAccountService = paymentAccountService
-        self.fiatCurrency = fiatCurrency
-        
+    private lazy var setup: Void = {
         paymentAccountService.paymentAccount(for: fiatCurrency)
             .asObservable()
             .map { .value($0) }
@@ -47,5 +43,12 @@ final class InteractiveFundsTransferDetailsInteractor: FundsTransferDetailsInter
             .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
             .bindAndCatch(to: paymentAccountRelay)
             .disposed(by: disposeBag)
+    }()
+    
+    // MARK: - Setup
+    
+    init(paymentAccountService: PaymentAccountServiceAPI, fiatCurrency: FiatCurrency) {
+        self.paymentAccountService = paymentAccountService
+        self.fiatCurrency = fiatCurrency
     }
 }

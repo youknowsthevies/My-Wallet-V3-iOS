@@ -336,8 +336,13 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
 
     /// Starts Simple Buy flow.
     @objc func handleBuyCrypto() {
-        let stateService = BuySellUIKit.StateService.make()
-        simpleBuyRouter = BuySellUIKit.Router(stateService: stateService)
+        let builder = BuySellUIKit.Builder(
+            fiatCurrencyService: UserInformationServiceProvider.default.settings,
+            serviceProvider: DataProvider.default.buySell,
+            stateService: BuySellUIKit.StateService.make(),
+            recordingProvider: RecordingProvider.default
+        )
+        simpleBuyRouter = BuySellUIKit.Router(builder: builder)
         simpleBuyRouter.start()
     }
     
@@ -346,8 +351,30 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         guard !stateService.cache[.hasShownIntroScreen] else {
             return
         }
-        simpleBuyRouter = BuySellUIKit.Router(stateService: stateService)
+        
+        let builder = BuySellUIKit.Builder(
+            fiatCurrencyService: UserInformationServiceProvider.default.settings,
+            serviceProvider: DataProvider.default.buySell,
+            stateService: stateService,
+            recordingProvider: RecordingProvider.default
+        )
+        
+        simpleBuyRouter = BuySellUIKit.Router(builder: builder)
         simpleBuyRouter.start()
+    }
+    
+    func showFundTrasferDetails(fiatCurrency: FiatCurrency) {
+        let stateService = BuySellUIKit.StateService.make()
+        let builder = BuySellUIKit.Builder(
+            fiatCurrencyService: UserInformationServiceProvider.default.settings,
+            serviceProvider: DataProvider.default.buySell,
+            stateService: stateService,
+            recordingProvider: RecordingProvider.default
+        )
+        
+        simpleBuyRouter = BuySellUIKit.Router(builder: builder)
+        simpleBuyRouter.setup(startImmediately: false)
+        stateService.showFundsTransferDetails(for: fiatCurrency)
     }
 }
 

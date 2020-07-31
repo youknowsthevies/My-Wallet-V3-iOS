@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -11,8 +11,8 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RemoveCardViewController" customModule="Blockchain" customModuleProvider="target">
             <connections>
                 <outlet property="badgeImageView" destination="d8y-vb-hTc" id="3xm-41-f2w"/>
+                <outlet property="buttonView" destination="P4W-aW-aOg" id="fnU-BE-I6N"/>
                 <outlet property="descriptionLabel" destination="uz3-wX-6RF" id="hUJ-Jh-wmY"/>
-                <outlet property="removeCardButtonView" destination="P4W-aW-aOg" id="P4z-jE-0w0"/>
                 <outlet property="titleLabel" destination="LA6-2Q-Mp1" id="KkA-Au-qsl"/>
                 <outlet property="view" destination="iN0-l3-epB" id="pWy-Xo-dQv"/>
             </connections>
