@@ -56,7 +56,7 @@ public final class FiatCustodialBalancesTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(collectionView)
         collectionView.fillSuperview()
-        collectionView.layout(dimension: .height, to: 112)
+        collectionView.layout(dimension: .height, to: 112, priority: .penultimateHigh)
         
         contentView.addSubview(separatorView)
         separatorView.backgroundColor = .lightBorder

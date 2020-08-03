@@ -26,7 +26,7 @@ extension PriceQuoteAtTime {
     ///   - currency: The conversion currency of the quote
     /// - Throws: Money value initialization error.
     public init(response: PriceQuoteAtTimeResponse, currency: Currency) throws {
-        self.moneyValue = try MoneyValue(major: "\(response.price)", currency: currency.code)
+        self.moneyValue = try MoneyValue(major: "\(response.price)", currency: currency.code, locale: .Posix)
         self.volume24h = response.volume24h
         self.timestamp = response.timestamp
     }
