@@ -89,7 +89,7 @@ extension SelectionButtonViewModel {
                 )
             )
             title = data.balance.baseCurrency.name
-            subtitleRelay.accept(data.balance.baseCurrency.code)
+            subtitleRelay.accept("\(data.balance.base.toDisplayString(includeSymbol: true)) \(LocalizedString.Types.available)")
             accessibilityContent = AccessibilityContent(
                 id: Accessibility.Identifier.SimpleBuy.BuyScreen.selectPaymentMethodLabel,
                 label: title

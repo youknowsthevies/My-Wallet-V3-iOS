@@ -108,6 +108,10 @@ extension LocalizationConstants.SimpleBuy {
                 "Limit",
                 comment: "Simple Buy: Payment method selection screen: type subtitle (max amount limit)"
             )
+            public static let available = NSLocalizedString(
+                "Available",
+                comment: "Simple Buy: Payment method selection screen: funds type subtitle (max amount limit)"
+            )
             public static let selectCashOrCard = NSLocalizedString(
                 "Select Cash or Card",
                 comment: "Simple Buy: Payment method selection screen: select cash or card"
