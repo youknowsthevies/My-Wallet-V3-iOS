@@ -14,6 +14,7 @@ public enum ActivityItemEvent: Tokenized {
     // Buy
     case buy(BuyActivityItemEvent)
     // TODO: Sell
+    case fiat(FiatActivityItemEvent)
 
     /// The `Status` of an activity item.
     public enum EventStatus {
@@ -31,6 +32,7 @@ public enum ActivityItemEvent: Tokenized {
             // and if possible `Swap`.
             case swap(SwapActivityItemEvent.EventStatus)
             case buy(BuyActivityItemEvent.EventStatus)
+            case fiat(FiatActivityItemEvent.EventStatus)
         }
         
         /// The event is pending confirmation
@@ -42,9 +44,6 @@ public enum ActivityItemEvent: Tokenized {
         case product(ProductEventStatus)
     }
     
-    // TODO: Each model may handle pagination differently
-    // e.g. some models may be paged by means of a date
-    // and others a unique ID (Stellar).
     public var token: String {
         switch self {
         case .buy(let event):
@@ -52,6 +51,8 @@ public enum ActivityItemEvent: Tokenized {
         case .swap(let event):
             return event.identifier
         case .transactional(let event):
+            return event.identifier
+        case .fiat(let event):
             return event.identifier
         }
     }
@@ -64,6 +65,8 @@ public enum ActivityItemEvent: Tokenized {
             return swap.date
         case .transactional(let transaction):
             return transaction.creationDate
+        case .fiat(let fiat):
+            return fiat.date
         }
     }
 }
@@ -80,20 +83,25 @@ extension ActivityItemEvent: Hashable {
         case .transactional(let event):
             hasher.combine("transactional")
             hasher.combine(event)
+        case .fiat(let event):
+            hasher.combine("fiat")
+            hasher.combine(event)
         }
     }
 }
 
 extension ActivityItemEvent {
     
-    public var amount: CryptoValue {
+    public var amount: MoneyValue {
         switch self {
         case .buy(let event):
-            return event.cryptoValue
+            return .init(cryptoValue: event.cryptoValue)
         case .swap(let event):
-            return event.amounts.deposit
+            return .init(cryptoValue: event.amounts.deposit)
         case .transactional(let event):
-            return event.amount
+            return .init(cryptoValue: event.amount)
+        case .fiat(let event):
+            return .init(fiatValue: event.fiatValue)
         }
     }
     
@@ -104,6 +112,8 @@ extension ActivityItemEvent {
         case .swap(let event):
             return event.identifier
         case .transactional(let event):
+            return event.identifier
+        case .fiat(let event):
             return event.identifier
         }
     }
@@ -125,6 +135,8 @@ extension ActivityItemEvent {
                     )
                 )
             }
+        case .fiat(let event):
+            return .product(.fiat(event.status))
         }
     }
 }
@@ -137,6 +149,8 @@ extension ActivityItemEvent: Equatable {
         case (.transactional(let left), .transactional(let right)):
             return left == right
         case (.buy(let left), .buy(let right)):
+            return left == right
+        case (.fiat(let left), .fiat(let right)):
             return left == right
         default:
             return false

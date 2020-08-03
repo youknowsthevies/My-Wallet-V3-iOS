@@ -14,6 +14,7 @@ public final class ServiceProvider: ServiceProviderAPI {
     
     // MARK: - Properties
 
+    public let fiatActivity: FiatActivityItemEventFetcherAPI
     public let eligibility: EligibilityServiceAPI
     public let orderCancellation: OrderCancellationServiceAPI
     public var orderCompletion: PendingOrderCompletionServiceAPI {
@@ -90,6 +91,10 @@ public final class ServiceProvider: ServiceProviderAPI {
             client: simpleBuyClient,
             reactiveWallet: wallet,
             fiatCurrencySettingsService: settings
+        )
+        
+        fiatActivity = OrdersFiatActivityItemEventService(
+            service: OrdersActivityEventService(client: simpleBuyClient)
         )
         ordersDetails = OrdersService(
             analyticsRecorder: recordingProvider.analytics,

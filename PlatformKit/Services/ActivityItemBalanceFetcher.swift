@@ -34,13 +34,18 @@ public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
     
     private let calculationStateRelay = BehaviorRelay<MoneyValuePairCalculationState>(value: .calculating)
     private let disposeBag = DisposeBag()
-    private let cryptoValue: CryptoValue
+    private let moneyValue: MoneyValue
 
     private lazy var setup: Void = {
         exchange
             .fiatPrice
             .map(weak: self) { (self, fiatPrice) -> MoneyValuePair in
-                MoneyValuePair(base: self.cryptoValue, exchangeRate: fiatPrice)
+                do {
+                    let pair = try MoneyValuePair(base: self.moneyValue, exchangeRate: .init(fiatValue: fiatPrice))
+                    return pair
+                } catch {
+                    return MoneyValuePair.zero(baseCurrency: self.moneyValue.currencyType, quoteCurrency: .fiat(fiatPrice.currencyType))
+                }
             }
             .map { .value($0) }
             .startWith(.calculating)
@@ -51,13 +56,12 @@ public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
 
     // MARK: - Private Properties
         
-    public init(exchange: PairExchangeServiceAPI, cryptoValue: CryptoValue) {
+    public init(exchange: PairExchangeServiceAPI, moneyValue: MoneyValue) {
         self.exchange = exchange
-        self.cryptoValue = cryptoValue
+        self.moneyValue = moneyValue
     }
     
     public func refresh() {
         exchange.fetchTriggerRelay.accept(())
     }
 }
-

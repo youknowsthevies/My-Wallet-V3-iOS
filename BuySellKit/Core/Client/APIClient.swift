@@ -21,7 +21,8 @@ typealias SimpleBuyClientAPI = EligibilityClientAPI &
                                CardOrderConfirmationClientAPI &
                                QuoteClientAPI &
                                PaymentMethodsClientAPI &
-                               BeneficiariesClientAPI
+                               BeneficiariesClientAPI &
+                               OrdersActivityClientAPI
 
 /// Simple-Buy network client
 final class APIClient: SimpleBuyClientAPI {
@@ -41,6 +42,7 @@ final class APIClient: SimpleBuyClientAPI {
     }
         
     private enum Path {
+        static let transactions = ["payments", "transactions"]
         static let paymentMethods = [ "payments", "methods" ]
         static let beneficiaries = [ "payments", "beneficiaries" ]
         static let banks = ["payments", "banks"]
@@ -152,6 +154,24 @@ final class APIClient: SimpleBuyClientAPI {
         let request = requestBuilder.get(
             path: Path.supportedPairs,
             parameters: queryParameters
+        )!
+        return communicator.perform(request: request)
+    }
+    
+    // MARK: - OrdersActivityClientAPI
+    
+    func activityResponse(fiatCurrency: FiatCurrency) -> Single<OrdersActivityResponse> {
+        let path = Path.transactions
+        let parameters = [
+            URLQueryItem(
+                name: Parameter.currency,
+                value: fiatCurrency.code
+            )
+        ]
+        let request = requestBuilder.get(
+            path: path,
+            parameters: parameters,
+            authenticated: true
         )!
         return communicator.perform(request: request)
     }

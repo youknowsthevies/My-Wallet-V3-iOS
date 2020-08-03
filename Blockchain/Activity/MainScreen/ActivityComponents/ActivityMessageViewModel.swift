@@ -67,7 +67,7 @@ final class ActivityMessageViewModel {
             accessibility: .none
         )
         
-        guard let url = blockchainAPI.transactionDetailURL(for: event.identifier, cryptoCurrency: event.amount.currencyType) else { return nil }
+        guard let url = blockchainAPI.transactionDetailURL(for: event.identifier, cryptoCurrency: transaction.currency) else { return nil }
         image = qrCodeAPI.qrCode(from: url)?.image
         logoImage = .init(
             imageName: "logo-blockchain",

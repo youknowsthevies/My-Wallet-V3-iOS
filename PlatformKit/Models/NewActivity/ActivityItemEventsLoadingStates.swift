@@ -15,8 +15,8 @@ public struct ActivityItemEventsLoadingStates {
     // MARK: - Properties
         
     /// Returns `ActivityItemEventsLoadingState` for a given `CryptoCurrency`
-    public subscript(cyptoCurrency: CryptoCurrency) -> ActivityItemEventsLoadingState {
-        statePerCurrency[cyptoCurrency]!
+    public subscript(currencyType: CurrencyType) -> ActivityItemEventsLoadingState {
+        statePerCurrency[currencyType]!
     }
     
     /// Returns all the states
@@ -42,11 +42,11 @@ public struct ActivityItemEventsLoadingStates {
     
     // MARK: - Private Properties
     
-    private var statePerCurrency: [CryptoCurrency: ActivityItemEventsLoadingState] = [:]
+    private var statePerCurrency: [CurrencyType: ActivityItemEventsLoadingState] = [:]
     
     // MARK: - Setup
     
-    public init(statePerCurrency: [CryptoCurrency: ActivityItemEventsLoadingState]) {
+    public init(statePerCurrency: [CurrencyType: ActivityItemEventsLoadingState]) {
         self.statePerCurrency = statePerCurrency
     }
 }

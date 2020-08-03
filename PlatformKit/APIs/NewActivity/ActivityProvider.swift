@@ -10,12 +10,11 @@ import RxSwift
 
 public protocol ActivityProviding: class {
     /// Returns the activity service
-    subscript(currency: CryptoCurrency) -> ActivityItemEventServiceAPI { get }
+    subscript(currency: CurrencyType) -> ActivityItemEventServiceAPI { get }
+    subscript(fiatCurrency: FiatCurrency) -> FiatItemEventServiceAPI { get }
+    subscript(cryptoCurrency: CryptoCurrency) -> CryptoItemEventServiceAPI { get }
     
-    var buyActivityItems: Observable<ActivityItemEventsLoadingStates> { get }
-    var swapActivityItems: Observable<ActivityItemEventsLoadingStates> { get }
     var activityItems: Observable<ActivityItemEventsLoadingState> { get }
-    var transactionalActivityItems: Observable<ActivityItemEventsLoadingStates> { get }
     
     func refresh()
 }
@@ -24,100 +23,32 @@ public final class ActivityProvider: ActivityProviding {
     
     // MARK: - Public Properties
     
-    public subscript(currency: CryptoCurrency) -> ActivityItemEventServiceAPI {
+    public subscript(currency: CurrencyType) -> ActivityItemEventServiceAPI {
         services[currency]!
+    }
+    
+    public subscript(cryptoCurrency: CryptoCurrency) -> CryptoItemEventServiceAPI {
+        services[.crypto(cryptoCurrency)] as! CryptoItemEventServiceAPI
+    }
+    
+    public subscript(fiatCurrency: FiatCurrency) -> FiatItemEventServiceAPI {
+        services[.fiat(fiatCurrency)] as! FiatItemEventServiceAPI
     }
     
     // MARK: - Services
     
-    private var services: [CryptoCurrency: ActivityItemEventServiceAPI] = [:]
+    private var services: [CurrencyType: ActivityItemEventServiceAPI] = [:]
     
     // MARK: - Setup
     
-    public init(algorand: ActivityItemEventServiceAPI,
-                ether: ActivityItemEventServiceAPI,
-                pax: ActivityItemEventServiceAPI,
-                stellar: ActivityItemEventServiceAPI,
-                bitcoin: ActivityItemEventServiceAPI,
-                bitcoinCash: ActivityItemEventServiceAPI,
-                tether: ActivityItemEventServiceAPI) {
-        services[.algorand] = algorand
-        services[.ethereum] = ether
-        services[.pax] = pax
-        services[.stellar] = stellar
-        services[.bitcoin] = bitcoin
-        services[.bitcoinCash] = bitcoinCash
-        services[.tether] = tether
-    }
-    
-    public var buyActivityItems: Observable<ActivityItemEventsLoadingStates> {
-        Observable.combineLatest(
-            services[.ethereum]!.buy.state,
-            services[.pax]!.buy.state,
-            services[.stellar]!.buy.state,
-            services[.bitcoin]!.buy.state,
-            services[.bitcoinCash]!.buy.state,
-            services[.algorand]!.buy.state,
-            services[.tether]!.buy.state
-        ) { (ethereum: $0, pax: $1, stellar: $2, bitcoin: $3, bitcoinCash: $4, algorand: $5, tether: $6) }
-        .map { states in
-            ActivityItemEventsLoadingStates(
-                statePerCurrency: [
-                    .ethereum: states.ethereum,
-                    .pax: states.pax,
-                    .stellar: states.stellar,
-                    .bitcoin: states.bitcoin,
-                    .bitcoinCash: states.bitcoinCash,
-                    .algorand: states.algorand,
-                    .tether: states.tether
-                ]
-            )
+    public init(fiats: [FiatCurrency: ActivityItemEventServiceAPI],
+                cryptos: [CryptoCurrency: ActivityItemEventServiceAPI]) {
+        for (currency, service) in fiats {
+            services[currency.currency] = service
         }
-        .share()
-    }
-    
-    public var swapActivityItems: Observable<ActivityItemEventsLoadingStates> {
-        Observable.combineLatest(
-            services[.ethereum]!.swap.state,
-            services[.pax]!.swap.state,
-            services[.stellar]!.swap.state,
-            services[.bitcoin]!.swap.state,
-            services[.bitcoinCash]!.swap.state
-        )
-        .map {
-            ActivityItemEventsLoadingStates(
-                statePerCurrency: [
-                    .ethereum: $0.0,
-                    .pax: $0.1,
-                    .stellar: $0.2,
-                    .bitcoin: $0.3,
-                    .bitcoinCash: $0.4
-                ]
-            )
+        for (currency, service) in cryptos {
+            services[currency.currency] = service
         }
-        .share()
-    }
-    
-    public var transactionalActivityItems: Observable<ActivityItemEventsLoadingStates> {
-        Observable.combineLatest(
-            services[.ethereum]!.transactional.state,
-            services[.pax]!.transactional.state,
-            services[.stellar]!.transactional.state,
-            services[.bitcoin]!.transactional.state,
-            services[.bitcoinCash]!.transactional.state
-        )
-        .map {
-            ActivityItemEventsLoadingStates(
-                statePerCurrency: [
-                    .ethereum: $0.0,
-                    .pax: $0.1,
-                    .stellar: $0.2,
-                    .bitcoin: $0.3,
-                    .bitcoinCash: $0.4
-                ]
-            )
-        }
-        .share()
     }
     
     public var activityItems: Observable<ActivityItemEventsLoadingState> {
@@ -130,20 +61,24 @@ public final class ActivityProvider: ActivityProviding {
     
     private var activityItemsLoadingStates: Observable<ActivityItemEventsLoadingStates> {
         Observable.combineLatest(
-            services[.ethereum]!.activityLoadingStateObservable,
-            services[.pax]!.activityLoadingStateObservable,
-            services[.stellar]!.activityLoadingStateObservable,
-            services[.bitcoin]!.activityLoadingStateObservable,
-            services[.bitcoinCash]!.activityLoadingStateObservable
+            services[.fiat(.GBP)]!.activityLoadingStateObservable,
+            services[.fiat(.EUR)]!.activityLoadingStateObservable,
+            services[.crypto(.ethereum)]!.activityLoadingStateObservable,
+            services[.crypto(.pax)]!.activityLoadingStateObservable,
+            services[.crypto(.stellar)]!.activityLoadingStateObservable,
+            services[.crypto(.bitcoin)]!.activityLoadingStateObservable,
+            services[.crypto(.bitcoinCash)]!.activityLoadingStateObservable
         )
         .map {
             ActivityItemEventsLoadingStates(
                 statePerCurrency: [
-                    .ethereum: $0.0,
-                    .pax: $0.1,
-                    .stellar: $0.2,
-                    .bitcoin: $0.3,
-                    .bitcoinCash: $0.4
+                    .fiat(.GBP): $0.0,
+                    .fiat(.EUR): $0.1,
+                    .crypto(.ethereum): $0.2,
+                    .crypto(.pax): $0.3,
+                    .crypto(.stellar): $0.4,
+                    .crypto(.bitcoin): $0.5,
+                    .crypto(.bitcoinCash): $0.6
                 ]
             )
         }

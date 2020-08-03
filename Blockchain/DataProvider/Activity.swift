@@ -42,8 +42,9 @@ final class ActivityServiceProvider: ActivityServiceProviderAPI {
          tetherServices: TetherDependencies = TetherServiceProvider.shared.services,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          simpleBuyOrdersAPI: BuySellKit.OrdersServiceAPI = DataProvider.default.buySell.ordersDetails,
+         simpleBuyActivityService: FiatActivityItemEventFetcherAPI = DataProvider.default.buySell.fiatActivity,
          swapActivityAPI: SwapActivityServiceAPI = resolve()) {
-        let pax: ActivityItemEventServiceAPI = ActivityItemEventService(
+        let pax: ActivityItemEventServiceAPI = CryptoEventService(
             transactional: TransactionalActivityItemEventService(
                 fetcher: AnyERC20TransactionalActivityItemEventsService<PaxToken>(
                     transactionsService: paxServices.historicalTransactionService
@@ -56,7 +57,7 @@ final class ActivityServiceProvider: ActivityServiceProviderAPI {
             )
         )
         
-        let ethereum: ActivityItemEventServiceAPI = ActivityItemEventService(
+        let ethereum: ActivityItemEventServiceAPI = CryptoEventService(
             transactional: TransactionalActivityItemEventService(
                 fetcher: EthereumTransactionalActivityItemEventsService(transactionsService: ethServices.transactionService)
             ),
@@ -70,7 +71,7 @@ final class ActivityServiceProvider: ActivityServiceProviderAPI {
             api: EthereumActivityItemEventDetailsFetcher(transactionService: ethServices.transactionService)
         )
         
-        let stellar: ActivityItemEventServiceAPI = ActivityItemEventService(
+        let stellar: ActivityItemEventServiceAPI = CryptoEventService(
             transactional: TransactionalActivityItemEventService(
                 fetcher: StellarTransactionalActivityItemEventsService(repository: stellarServices.repository)
             ),
@@ -87,7 +88,7 @@ final class ActivityServiceProvider: ActivityServiceProviderAPI {
         bitcoinDetails = AnyActivityItemEventDetailsFetcher(
             api: BitcoinActivityItemEventDetailsFetcher(transactionService: bitcoinServices.transactions)
         )
-        let bitcoin: ActivityItemEventServiceAPI = ActivityItemEventService(
+        let bitcoin: ActivityItemEventServiceAPI = CryptoEventService(
             transactional: TransactionalActivityItemEventService(
                 fetcher: BitcoinTransactionalActivityItemEventsService(transactionsService: bitcoinServices.transactions)
             ),
@@ -98,7 +99,7 @@ final class ActivityServiceProvider: ActivityServiceProviderAPI {
             )
         )
         
-        let bitcoinCash: ActivityItemEventServiceAPI = ActivityItemEventService(
+        let bitcoinCash: ActivityItemEventServiceAPI = CryptoEventService(
             transactional: TransactionalActivityItemEventService(
                 fetcher: BitcoinCashTransactionalActivityItemEventsService(transactionsService: bitcoinCashServices.transactions)
             ),
@@ -112,13 +113,13 @@ final class ActivityServiceProvider: ActivityServiceProviderAPI {
             api: BitcoinCashActivityItemEventDetailsFetcher(transactionService: bitcoinCashServices.transactions)
         )
         
-        let algorand = ActivityItemEventService(
+        let algorand = CryptoEventService(
             transactional: EmptyTransactionalActivityItemEventService(),
             buy: BuyActivityItemEventService(currency: .algorand, service: simpleBuyOrdersAPI),
             swap: EmptySwapActivityItemEventService()
         )
         
-        let tether = ActivityItemEventService(
+        let tether = CryptoEventService(
             transactional: TransactionalActivityItemEventService(
                 fetcher: AnyERC20TransactionalActivityItemEventsService<TetherToken>(transactionsService: tetherServices.historicalTransactionService)
             ),
@@ -129,14 +130,33 @@ final class ActivityServiceProvider: ActivityServiceProviderAPI {
             )
         )
         
+        let euroFiatActivity = FiatActivityItemEventService(
+            fetcher: simpleBuyActivityService,
+            fiatCurrency: .EUR
+        )
+        
+        let gbpFiatActivity = FiatActivityItemEventService(
+            fetcher: simpleBuyActivityService,
+            fiatCurrency: .GBP
+        )
+        
+        let euro = FiatEventService(fiat: euroFiatActivity)
+        let gbp = FiatEventService(fiat: gbpFiatActivity)
+        
         activity = ActivityProvider(
-            algorand: algorand,
-            ether: ethereum,
-            pax: pax,
-            stellar: stellar,
-            bitcoin: bitcoin,
-            bitcoinCash: bitcoinCash,
-            tether: tether
+            fiats: [
+                .EUR: euro,
+                .GBP: gbp
+            ],
+            cryptos: [
+                .algorand : algorand,
+                .ethereum: ethereum,
+                .pax: pax,
+                .stellar: stellar,
+                .bitcoin: bitcoin,
+                .bitcoinCash: bitcoinCash,
+                .tether: tether
+            ]
         )
     }
 }

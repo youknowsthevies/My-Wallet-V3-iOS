@@ -59,6 +59,8 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             case .send:
                 text = LocalizationStrings.send + " \(event.currency.displayCode)"
             }
+        case .fiat(let event):
+            text = LocalizationStrings.deposit + " \(event.fiatValue.currencyCode)"
         }
         return .init(
             text: text,
@@ -107,6 +109,8 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             return orderDetails.cryptoValue.currencyType.brandColor
         case .swap(let event):
             return event.pair.from.brandColor
+        case .fiat(let event):
+            return .fiat
         case .transactional(let event):
             switch event.status {
             case .complete:
@@ -127,6 +131,16 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
         switch event {
         case .buy:
             return "plus-icon"
+        case .fiat(let event):
+            let type = event.type
+            switch type {
+            case .deposit:
+                return "deposit-icon"
+            case .withdrawal:
+                return "Withdrawal"
+            case .unknown:
+                return ""
+            }
         case .swap:
             return "swap-icon"
         case .transactional(let event):

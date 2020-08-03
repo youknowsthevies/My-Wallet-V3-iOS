@@ -1,5 +1,5 @@
 //
-//  ActivityItemEventServiceAPI.swift
+//  CryptoEventService.swift
 //  Blockchain
 //
 //  Created by Alex McGregor on 5/4/20.
@@ -10,7 +10,7 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-final class ActivityItemEventService: ActivityItemEventServiceAPI {
+final class CryptoEventService: CryptoItemEventServiceAPI {
     
     var activityEvents: Single<[ActivityItemEvent]> {
         let transactions: Single<[ActivityItemEvent]> = transactional

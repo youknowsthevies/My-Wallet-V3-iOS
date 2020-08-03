@@ -45,7 +45,7 @@ final class ActivityItemPresenter: IdentifiableType {
         )
         assetBalanceViewPresenter = AssetBalanceViewPresenter(
             alignment: .trailing,
-            interactor: interactor.balanceViewInteracting,
+            interactor: interactor.balanceViewInteractor,
             descriptors: viewModel.descriptors
         )
         descriptionRelay.accept(viewModel.descriptionLabelContent)

@@ -11,16 +11,17 @@ import PlatformUIKit
 
 final class ActivityItemInteractor {
     
-    let balanceViewInteracting: ActivityItemBalanceViewInteractor
+    let balanceViewInteractor: AssetBalanceViewInteracting
     let event: ActivityItemEvent
     
     init(exchangeAPI: PairExchangeServiceAPI,
+         assetBalanceFetcher: AssetBalanceFetching,
          activityItemEvent: ActivityItemEvent) {
         self.event = activityItemEvent
-        balanceViewInteracting = .init(
+        balanceViewInteractor = ActivityItemBalanceViewInteractor.init(
             activityItemBalanceFetching: ActivityItemBalanceFetcher(
                 exchange: exchangeAPI,
-                cryptoValue: activityItemEvent.amount
+                moneyValue: event.amount
             )
         )
     }

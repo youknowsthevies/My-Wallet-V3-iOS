@@ -92,7 +92,13 @@ final class ActivityScreenInteractor {
         
         serviceContainer
             .activityEventsLoadingState
-            .map { .init(with: $0, exchangeProviding: serviceContainer.exchangeProviding) }
+            .map {
+                .init(
+                    with: $0,
+                    exchangeProviding: serviceContainer.exchangeProviding,
+                    balanceProviding: serviceContainer.balanceProviding
+                )
+            }
             .startWith(.calculating)
             .catchErrorJustReturn(.invalid(.empty))
             .bindAndCatch(to: stateRelay)
@@ -108,13 +114,21 @@ fileprivate extension ActivityScreenInteractor.State {
     
     /// Initializer that receives the loading state and
     /// maps it to `self`
-    init(with state: ActivityItemEventsLoadingState, exchangeProviding: ExchangeProviding) {
+    init(with state: ActivityItemEventsLoadingState,
+         exchangeProviding: ExchangeProviding,
+         balanceProviding: BalanceProviding) {
         switch state {
         case .loading:
             self = .calculating
         case .loaded(let value):
             let sorted = value.sorted(by: { $0.creationDate.compare($1.creationDate) == .orderedDescending })
-            let interactors: [ActivityItemInteractor] = sorted.map { ActivityItemInteractor(exchangeAPI: exchangeProviding[$0.amount.currencyType], activityItemEvent: $0) }
+            let interactors: [ActivityItemInteractor] = sorted.map {
+                ActivityItemInteractor(
+                    exchangeAPI: exchangeProviding[$0.amount.currencyType],
+                    assetBalanceFetcher: balanceProviding[$0.amount.currencyType],
+                    activityItemEvent: $0
+                )
+            }
             self = interactors.count > 0 ? .value(interactors) : .invalid(.empty)
         }
     }

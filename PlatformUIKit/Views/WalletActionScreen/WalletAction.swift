@@ -35,9 +35,9 @@ public enum WalletAction: IdentifiableType {
     var imageName: String {
         switch self {
         case .deposit:
-            return "Deposit"
+            return "deposit-icon"
         case .withdraw:
-            return "Deposit"
+            return "deposit-icon"
         case .transfer:
             return "send-icon"
         case .interest:

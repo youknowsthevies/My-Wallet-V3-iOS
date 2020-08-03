@@ -10,6 +10,7 @@ import PlatformKit
 
 public protocol ServiceProviderAPI: class {
     var eligibility: EligibilityServiceAPI { get }
+    var fiatActivity: FiatActivityItemEventFetcherAPI { get }
     var orderCancellation: OrderCancellationServiceAPI { get }
     var orderCompletion: PendingOrderCompletionServiceAPI { get }
     var orderConfirmation: OrderConfirmationServiceAPI { get }
