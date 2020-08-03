@@ -37,6 +37,8 @@ extension DependencyContainer {
         
         factory { JWTClient() as JWTClientAPI }
         
+        factory { KYCClient() as KYCClientAPI }
+
         factory { UserCreationClient() as UserCreationClientAPI }
         
         factory { NabuAuthenticationClient() as NabuAuthenticationClientAPI }

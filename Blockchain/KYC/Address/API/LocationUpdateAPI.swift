@@ -9,6 +9,7 @@
 import NetworkKit
 import PlatformKit
 import RxSwift
+import DIKit
 
 enum LocationUpdateError: Error {
     case noPostalCode
@@ -20,7 +21,7 @@ enum LocationUpdateError: Error {
 final class LocationUpdateService {
     private let client: KYCClientAPI
     
-    init(client: KYCClientAPI = KYCClient()) {
+    init(client: KYCClientAPI = resolve()) {
         self.client = client
     }
 

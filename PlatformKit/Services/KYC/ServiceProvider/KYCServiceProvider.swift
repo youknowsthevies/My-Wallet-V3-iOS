@@ -6,6 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
+
 public final class KYCServiceProvider: KYCServiceProviderAPI {
 
     // MARK: - Properties
@@ -21,7 +23,7 @@ public final class KYCServiceProvider: KYCServiceProviderAPI {
     // MARK: - Setup
     
     public convenience init() {
-        self.init(client: KYCClient())
+        self.init(client: resolve())
     }
     
     init(client: KYCClientAPI) {

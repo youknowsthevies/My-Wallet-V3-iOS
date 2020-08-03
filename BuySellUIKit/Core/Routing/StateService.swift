@@ -35,7 +35,7 @@ public final class StateService: StateServiceAPI {
         /// Maps the instance of `States` into a new instance where the appended
         /// state is the current
         func states(byAppending state: State) -> States {
-            States(
+            return States(
                 current: state,
                 previous: previous + [current]
             )
@@ -45,7 +45,7 @@ public final class StateService: StateServiceAPI {
         /// state is trimmed off. In case `previous` is an empty array, `current` will be
         /// `.inactive`.
         func statesByRemovingLast() -> States {
-            States(
+            return States(
                 current: previous.last ?? .inactive,
                 previous: previous.dropLast()
             )
@@ -163,6 +163,7 @@ public final class StateService: StateServiceAPI {
     private let kycTiersService: KYCTiersServiceAPI
     private let statesRelay = BehaviorRelay<States>(value: .inactive)
     private let actionRelay = PublishRelay<Action>()
+    private let recordingProvider: RecordingProviderAPI
     private let serviceProvider: ServiceProviderAPI
     
     private let disposeBag = DisposeBag()
@@ -171,6 +172,7 @@ public final class StateService: StateServiceAPI {
     
     public init(serviceProvider: ServiceProviderAPI,
                 uiUtilityProvider: UIUtilityProviderAPI,
+                recordingProvider: RecordingProviderAPI,
                 kycTiersService: KYCTiersServiceAPI,
                 cache: EventCache,
                 userInformationServiceProvider: UserInformationServiceProviding) {
@@ -178,6 +180,7 @@ public final class StateService: StateServiceAPI {
         self.kycTiersService = kycTiersService
         self.userInformationServiceProvider = userInformationServiceProvider
         self.uiUtilityProvider = uiUtilityProvider
+        self.recordingProvider = recordingProvider
         self.cache = cache
         
         nextRelay
@@ -224,13 +227,13 @@ public final class StateService: StateServiceAPI {
             state = .selectFiat
             apply(
                 action: .next(to: state),
-                states: states.states(byAppending: state)
+                states: self.states(byAppending: state)
             )
         case .kycBeforeCheckout(let data):
             state = .pendingKycApproval(data)
             apply(
                 action: .next(to: state),
-                states: states.states(byAppending: state)
+                states: self.states(byAppending: state)
             )
         case .pendingKycApproval(let data):
             // After KYC - add card if necessary or go to checkout for bank transfer
@@ -247,7 +250,7 @@ public final class StateService: StateServiceAPI {
             }
             apply(
                 action: .next(to: state),
-                states: states.states(byAppending: state)
+                states: self.states(byAppending: state)
             )
         case .bankTransferDetails,
              .fundsTransferDetails,
@@ -258,18 +261,18 @@ public final class StateService: StateServiceAPI {
             state = .inactive
             apply(
                 action: .dismiss,
-                states: states.states(byAppending: state)
+                states: self.states(byAppending: state)
             )
         case .kyc:
-            statesRelay.accept(states.statesByRemovingLast())
+            statesRelay.accept(statesByRemovingLast())
         case .buy, .checkout, .paymentMethods, .selectFiat, .addCard, .authorizeCard, .pendingOrderCompleted, .ineligible:
-            fatalError("\(#function) should not get called with \(states.current). use `CheckoutServiceAPI` instead")
+            fatalError("\(#function) was called with unhandled state \(states.current.debugDescription). The previous states are: \(states.previous.debugDescription)")
         }
     }
     
     private func previous() {
         let last = statesRelay.value.current
-        let states = statesRelay.value.statesByRemovingLast()
+        let states = statesByRemovingLast()
         let current = states.current
         let action: Action
         switch (last, current) {
@@ -368,7 +371,7 @@ public final class StateService: StateServiceAPI {
                     
                     self.apply(
                         action: .next(to: state),
-                        states: self.statesRelay.value.states(byAppending: state)
+                        states: self.states(byAppending: state)
                     )
                 },
                 onError: { [weak uiUtilityProvider] error in
@@ -394,6 +397,16 @@ public final class StateService: StateServiceAPI {
             break
         }
     }
+    
+    private func statesByRemovingLast() -> States {
+        recordingProvider.message.record("removing state: \(statesRelay.value.current.debugDescription)")
+        return statesRelay.value.statesByRemovingLast()
+    }
+    
+    private func states(byAppending state: State) -> States {
+        recordingProvider.message.record("appending state: \(state.debugDescription)")
+        return statesRelay.value.states(byAppending: state)
+    }
 }
 
 // MARK: - PaymentMethods
@@ -403,9 +416,9 @@ extension StateService {
     public func showFundsTransferDetails(for fiatCurrency: FiatCurrency) {
         let currentState = statesRelay.value.current
         if currentState.isPaymentMethods {
-            statesRelay.accept(statesRelay.value.statesByRemovingLast())
+            statesRelay.accept(statesByRemovingLast())
         }
-        let states = statesRelay.value.states(
+        let states = self.states(
             byAppending: .fundsTransferDetails(
                 currency: fiatCurrency,
                 isOriginPaymentMethods: currentState.isPaymentMethods
@@ -420,7 +433,7 @@ extension StateService {
 extension StateService {
     
     public func ineligible(with currency: FiatCurrency) {
-        let states = statesRelay.value.states(byAppending: .unsupportedFiat(currency))
+        let states = self.states(byAppending: .unsupportedFiat(currency))
         apply(action: .next(to: states.current), states: states)
     }
 }
@@ -438,46 +451,46 @@ extension StateService {
             state = .checkout(checkoutData)
         }
 
-        let states = statesRelay.value.states(byAppending: state)
+        let states = self.states(byAppending: state)
         apply(action: .next(to: states.current), states: states)
     }
     
     public func kyc(with checkoutData: CheckoutData) {
-        let states = statesRelay.value.states(byAppending: .kycBeforeCheckout(checkoutData))
+        let states = self.states(byAppending: .kycBeforeCheckout(checkoutData))
         apply(action: .next(to: states.current), states: states)
     }
 
     public func kyc() {
         let currentState = statesRelay.value.current
         if currentState.isPaymentMethods {
-            statesRelay.accept(statesRelay.value.statesByRemovingLast())
+            statesRelay.accept(statesByRemovingLast())
         }
-        let states = statesRelay.value.states(byAppending: .kyc)
+        let states = self.states(byAppending: .kyc)
         apply(action: .next(to: states.current), states: states)
     }
     
     public func ineligible(with checkoutData: CheckoutData) {
-        let states = statesRelay.value.states(byAppending: .pendingKycApproval(checkoutData))
+        let states = self.states(byAppending: .pendingKycApproval(checkoutData))
         apply(action: .next(to: states.current), states: states)
     }
     
     public func ineligible() {
-        let states = statesRelay.value.states(byAppending: .ineligible)
+        let states = self.states(byAppending: .ineligible)
         apply(action: .next(to: states.current), states: states)
     }
 
     public func paymentMethods() {
-        let states = statesRelay.value.states(byAppending: .paymentMethods)
+        let states = self.states(byAppending: .paymentMethods)
         apply(action: .next(to: states.current), states: states)
     }
     
     public func changeCurrency() {
-        let states = statesRelay.value.states(byAppending: .changeFiat)
+        let states = self.states(byAppending: .changeFiat)
         apply(action: .next(to: states.current), states: states)
     }
 
     public func bankTransferDetails(with checkoutData: CheckoutData) {
-        let states = statesRelay.value.states(byAppending: .bankTransferDetails(checkoutData))
+        let states = self.states(byAppending: .bankTransferDetails(checkoutData))
         apply(action: .next(to: states.current), states: states)
     }
 }
@@ -486,13 +499,13 @@ extension StateService {
 
 extension StateService {
     public func currencySelected() {
-        let states = statesRelay.value.states(byAppending: .buy)
+        let states = self.states(byAppending: .buy)
         apply(action: .next(to: states.current), states: states)
     }
     
     public func reselectCurrency() {
         previousRelay.accept(())
-        let states = statesRelay.value.states(byAppending: .selectFiat)
+        let states = self.states(byAppending: .selectFiat)
         apply(action: .next(to: states.current), states: states)
     }
 }
@@ -515,14 +528,14 @@ extension StateService {
             state = .authorizeCard(order: checkoutData.order)
         }
         
-        let states = statesRelay.value.states(byAppending: state)
+        let states = self.states(byAppending: state)
         apply(action: .next(to: state), states: states)
     }
 }
 
 extension StateService {
     public func cancelTransfer(with checkoutData: CheckoutData) {
-        let states = statesRelay.value.states(byAppending: .transferCancellation(checkoutData))
+        let states = self.states(byAppending: .transferCancellation(checkoutData))
         apply(action: .next(to: states.current), states: states)
     }
 }
@@ -532,7 +545,7 @@ extension StateService {
         guard case .authorizeCard(order: let order) = statesRelay.value.current else {
             return
         }
-        let states = statesRelay.value.states(
+        let states = self.states(
             byAppending: .pendingOrderCompleted(
                 amount: order.cryptoValue,
                 orderId: order.identifier
@@ -544,7 +557,7 @@ extension StateService {
 
 extension StateService {
     public func orderCompleted() {
-        let states = statesRelay.value.states(byAppending: .inactive)
+        let states = self.states(byAppending: .inactive)
         apply(action: .next(to: states.current), states: states)
     }
     
@@ -553,7 +566,7 @@ extension StateService {
         let state = State.checkout(checkoutData)
         self.apply(
             action: .next(to: state),
-            states: self.statesRelay.value.states(byAppending: state)
+            states: self.states(byAppending: state)
         )
     }
 }

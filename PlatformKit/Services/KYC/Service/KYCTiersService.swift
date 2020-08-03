@@ -8,6 +8,7 @@
 
 import RxSwift
 import ToolKit
+import DIKit
 
 public protocol KYCTiersServiceAPI: class {
     
@@ -61,7 +62,7 @@ public final class KYCTiersService: KYCTiersServiceAPI {
     // MARK: - Setup
     
     public convenience init() {
-        self.init(client: KYCClient())
+        self.init(client: resolve())
     }
     
     init(client: KYCClientAPI) {

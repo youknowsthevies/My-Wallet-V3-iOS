@@ -8,6 +8,7 @@
 
 import RxSwift
 import ToolKit
+import DIKit
 
 public protocol NabuUserServiceAPI: AnyObject {
     var user: Single<NabuUser> { get }
@@ -54,7 +55,7 @@ public final class NabuUserService: NabuUserServiceAPI {
     // MARK: - Setup
     
     public convenience init() {
-        self.init(client: KYCClient())
+        self.init(client: resolve())
     }
     
     init(client: KYCClientAPI) {

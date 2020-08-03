@@ -8,12 +8,13 @@
 
 import PlatformKit
 import RxSwift
+import DIKit
 
 final class KYCStateSelectionInteractor {
 
     private let client: KYCClientAPI
     
-    init(client: KYCClientAPI = KYCClient()) {
+    init(client: KYCClientAPI = resolve()) {
         self.client = client
     }
     

@@ -10,6 +10,7 @@ import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import DIKit
 
 protocol KYCVerifyIdentityInput: class {
     func submitVerification(
@@ -39,7 +40,7 @@ class KYCVerifyIdentityInteractor {
 
     private var disposable: Disposable?
 
-    init(client: KYCClientAPI = KYCClient(),
+    init(client: KYCClientAPI = resolve(),
          loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared) {
         self.loadingViewPresenter = loadingViewPresenter
         self.client = client

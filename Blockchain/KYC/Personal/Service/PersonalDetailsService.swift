@@ -9,12 +9,13 @@
 import NetworkKit
 import PlatformKit
 import RxSwift
+import DIKit
 
 final class PersonalDetailsService {
 
     private let client: KYCClientAPI
     
-    init(client: KYCClientAPI = KYCClient()) {
+    init(client: KYCClientAPI = resolve()) {
         self.client = client
     }
 

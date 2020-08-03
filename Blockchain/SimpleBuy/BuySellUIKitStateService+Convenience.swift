@@ -17,6 +17,7 @@ extension BuySellUIKit.StateService {
         BuySellUIKit.StateService(
             serviceProvider: DataProvider.default.buySell,
             uiUtilityProvider: UIUtilityProvider.default,
+            recordingProvider: RecordingProvider.default,
             kycTiersService: KYCServiceProvider.default.tiers,
             cache: DataProvider.default.buySell.cache,
             userInformationServiceProvider: UserInformationServiceProvider.default
