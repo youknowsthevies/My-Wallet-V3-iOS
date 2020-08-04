@@ -16,3 +16,15 @@ public protocol CryptoFeeServiceAPI {
     /// into the JS. Only `Swap` uses priority fees.
     var fees: Single<FeeType> { get }
 }
+
+public struct AnyCryptoFeeService<FeeType: TransactionFee & Decodable>: CryptoFeeServiceAPI {
+
+    private let _fees: () -> Single<FeeType>
+    public var fees: Single<FeeType> {
+        _fees()
+    }
+
+    public init<API: CryptoFeeServiceAPI>(service: API) where API.FeeType == FeeType {
+        self._fees = { service.fees }
+    }
+}

@@ -21,7 +21,7 @@ class EthereumWalletServiceTests: XCTestCase {
     
     var bridge: EthereumWalletBridgeMock!
     var client: EthereumAPIClientMock!
-    var feeService: EthereumFeeServiceMock!
+    var feeService: AnyCryptoFeeService<EthereumTransactionFee>!
     
     var transactionBuilder: EthereumTransactionBuilder!
     var transactionSigner: EthereumTransactionSignerAPI!
@@ -49,7 +49,9 @@ class EthereumWalletServiceTests: XCTestCase {
         
         bridge = EthereumWalletBridgeMock()
         client = EthereumAPIClientMock()
-        feeService = EthereumFeeServiceMock()
+        feeService = AnyCryptoFeeService(
+            service: CryptoFeeServiceMock<EthereumTransactionFee>(underlyingFees: .default)
+        )
         
         transactionBuilder = EthereumTransactionBuilder.shared
         transactionSigner = EthereumTransactionSigner.shared
@@ -225,7 +227,9 @@ class EthereumWalletServiceTests: XCTestCase {
             gasLimit: Int(MockEthereumWalletTestData.Transaction.gasLimit),
             gasLimitContract: Int(MockEthereumWalletTestData.Transaction.gasLimitContract)
         )
-        feeService.feesValue = Single.just(fee)
+        feeService = AnyCryptoFeeService(
+            service: CryptoFeeServiceMock<EthereumTransactionFee>(underlyingFees: fee)
+        )
 
         client.balanceDetailsValue = .just(BalanceDetailsResponse(balance: "0.02", nonce: 1))
         

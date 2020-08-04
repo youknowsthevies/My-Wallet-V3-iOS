@@ -17,7 +17,7 @@ protocol PAXDependencies {
     var historicalTransactionService: AnyERC20HistoricalTransactionService<PaxToken> { get }
     var paxService: ERC20Service<PaxToken> { get }
     var walletService: EthereumWalletServiceAPI { get }
-    var feeService: EthereumFeeServiceAPI { get }
+    var feeService: AnyCryptoFeeService<EthereumTransactionFee> { get }
 }
 
 struct PAXServices: PAXDependencies {
@@ -25,10 +25,10 @@ struct PAXServices: PAXDependencies {
     let historicalTransactionService: AnyERC20HistoricalTransactionService<PaxToken>
     let paxService: ERC20Service<PaxToken>
     let walletService: EthereumWalletServiceAPI
-    let feeService: EthereumFeeServiceAPI
-    
+    let feeService: AnyCryptoFeeService<EthereumTransactionFee>
+
     init(wallet: Wallet = WalletManager.shared.wallet,
-         feeService: EthereumFeeServiceAPI = EthereumFeeService.shared,
+         feeService: AnyCryptoFeeService<EthereumTransactionFee> = AnyCryptoFeeService(service: CryptoFeeService<EthereumTransactionFee>.shared),
          walletService: EthereumWalletServiceAPI = EthereumWalletService.shared,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings) {
         self.feeService = feeService
@@ -66,7 +66,7 @@ final class PAXServiceProvider {
 extension EthereumWalletService {
     public static let shared = EthereumWalletService(
         with: WalletManager.shared.wallet.ethereum,
-        feeService: EthereumFeeService.shared,
+        feeService: AnyCryptoFeeService(service: CryptoFeeService<EthereumTransactionFee>.shared),
         walletAccountRepository: ETHServiceProvider.shared.repository,
         transactionBuildingService: EthereumTransactionBuildingService.shared,
         transactionSendingService: EthereumTransactionSendingService.shared,
@@ -77,7 +77,7 @@ extension EthereumWalletService {
 extension EthereumTransactionSendingService {
     static let shared = EthereumTransactionSendingService(
         with: WalletManager.shared.wallet.ethereum,
-        feeService: EthereumFeeService.shared,
+        feeService: AnyCryptoFeeService(service: CryptoFeeService<EthereumTransactionFee>.shared),
         transactionBuilder: EthereumTransactionBuilder.shared,
         transactionSigner: EthereumTransactionSigner.shared,
         transactionEncoder: EthereumTransactionEncoder.shared
@@ -86,14 +86,14 @@ extension EthereumTransactionSendingService {
 
 extension EthereumTransactionValidationService {
     static let shared = EthereumTransactionValidationService(
-        with: EthereumFeeService.shared,
+        with: AnyCryptoFeeService(service: CryptoFeeService<EthereumTransactionFee>.shared),
         repository: ETHServiceProvider.shared.assetAccountRepository
     )
 }
 
 extension EthereumTransactionBuildingService {
     static let shared = EthereumTransactionBuildingService(
-        with: EthereumFeeService.shared, 
+        with: AnyCryptoFeeService(service: CryptoFeeService<EthereumTransactionFee>.shared),
         repository: ETHServiceProvider.shared.assetAccountRepository
     )
 }

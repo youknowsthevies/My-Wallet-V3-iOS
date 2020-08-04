@@ -6,41 +6,33 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import DIKit
 import NetworkKit
 import RxSwift
 import ToolKit
 
-public final class CryptoFeeService<T: TransactionFee & Decodable>: CryptoFeeServiceAPI {
-    public var fees: Single<T> {
-        getFees().do(onError: { error in
-            Logger.shared.error(error)
-        })
-        .catchErrorJustReturn(T.default)
+public final class CryptoFeeService<FeeType: TransactionFee & Decodable>: CryptoFeeServiceAPI {
+
+    // MARK: - CryptoFeeServiceAPI
+
+    public var fees: Single<FeeType> {
+        client.fees
+            .do(onError: { error in
+                Logger.shared.error(error)
+            })
+            .catchErrorJustReturn(FeeType.default)
     }
-    
-    private let apiUrl: String
-    private let communicator: NetworkCommunicatorAPI
-    
-    public init(apiUrl: String = BlockchainAPI.shared.apiUrl,
-                communicator: NetworkCommunicatorAPI = resolve()) {
-        self.apiUrl = apiUrl
-        self.communicator = communicator
+
+    // MARK: - Private Properties
+
+    private let client: CryptoFeeClient<FeeType>
+
+    // MARK: - Init
+
+    init(client: CryptoFeeClient<FeeType>) {
+        self.client = client
     }
-    
-    private func getFees() -> Single<T> {
-        guard let baseURL = URL(string: apiUrl) else {
-            return .error(PlatformKitError.default)
-        }
-        
-        guard let endpoint = URL.endpoint(
-            baseURL,
-            pathComponents: ["mempool", "fees", T.cryptoType.pathComponent],
-            queryParameters: nil
-        ) else {
-            return .error(PlatformKitError.default)
-        }
-        let request = NetworkRequest(endpoint: endpoint, method: .get)
-        return communicator.perform(request: request)
+
+    public convenience init() {
+        self.init(client: CryptoFeeClient<FeeType>())
     }
 }

@@ -35,7 +35,7 @@ class ERC20ServiceTests: XCTestCase {
     var ethereumAssetAccountDetailsService: EthereumAssetAccountDetailsService!
     var ethereumAssetAccountRepository: EthereumAssetAccountRepository!
     
-    var feeService: EthereumFeeServiceMock!
+    var feeService: AnyCryptoFeeService<EthereumTransactionFee>!
     var subject: ERC20Service<PaxToken>!
     
     override func setUp() {
@@ -64,8 +64,9 @@ class ERC20ServiceTests: XCTestCase {
         ethereumAssetAccountRepository = EthereumAssetAccountRepository(
             service: ethereumAssetAccountDetailsService
         )
-        
-        feeService = EthereumFeeServiceMock()
+        feeService = AnyCryptoFeeService(
+            service: CryptoFeeServiceMock<EthereumTransactionFee>(underlyingFees: .default)
+        )
         subject = ERC20Service(
             with: erc20Bridge,
             assetAccountRepository: assetAccountRepository,
@@ -173,7 +174,9 @@ class ERC20ServiceTests: XCTestCase {
             gasLimit: Int(MockEthereumWalletTestData.Transaction.gasLimit),
             gasLimitContract: Int(MockEthereumWalletTestData.Transaction.gasLimitContract)
         )
-        feeService.feesValue = Single.just(fee)
+        feeService = AnyCryptoFeeService(
+            service: CryptoFeeServiceMock<EthereumTransactionFee>(underlyingFees: fee)
+        )
         
         ethereumAPIAccountClient.balanceDetailsValue = .just(BalanceDetailsResponse(balance: "0.01", nonce: 1))
          

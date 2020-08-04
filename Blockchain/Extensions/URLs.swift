@@ -10,20 +10,12 @@ import Foundation
 
 extension URL {
 
-    /// Returns the query arguments of this URL as a key-value pair
-    var queryArgs: [String: String] {
-        guard let query = self.query else {
-            return [:]
-        }
-
-        return query.queryArgs
-    }
-
     /// Attempts to launch this URL
     func launch() {
         UIApplication.shared.open(self, options: [:])
     }
 
+    @available(*, deprecated, message: "Use `RequestBuilder` instead")
     public static func endpoint(_ baseURL: URL, pathComponents: [String]? = nil, queryParameters: [String: String]? = nil) -> URL? {
         guard var mutableBaseURL: URL = (baseURL as NSURL).copy() as? URL else { return nil }
 

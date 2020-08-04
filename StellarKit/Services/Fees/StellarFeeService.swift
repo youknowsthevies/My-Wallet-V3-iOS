@@ -25,6 +25,6 @@ public class StellarFeeService: StellarFeeServiceAPI {
     }
 }
 
-public extension CryptoFeeService where T == StellarTransactionFee {
-    static let shared: CryptoFeeService<T> = CryptoFeeService<T>()
+public extension CryptoFeeService where FeeType == StellarTransactionFee {
+    static let shared: CryptoFeeService<FeeType> = CryptoFeeService<FeeType>()
 }

@@ -16,23 +16,22 @@ public protocol EthereumTransactionBuildingServiceAPI {
 }
 
 public class EthereumTransactionBuildingService: EthereumTransactionBuildingServiceAPI {
-    private let feeService: EthereumFeeServiceAPI
+    private let feeService: AnyCryptoFeeService<EthereumTransactionFee>
     private let repository: EthereumAssetAccountRepository
     
-    public init(with feeService: EthereumFeeServiceAPI,
+    public init(with feeService: AnyCryptoFeeService<EthereumTransactionFee>,
                 repository: EthereumAssetAccountRepository) {
         self.feeService = feeService
         self.repository = repository
     }
     
     public func buildTransaction(with amount: EthereumValue, to: EthereumAddress) -> Single<EthereumTransactionCandidate> {
-        Single.zip(feeService.fees, balance)
-            .flatMap { tuple -> Single<EthereumTransactionCandidate> in
-                let (fee, balanceSigned) = tuple
+        Single.zip(feeService.fees, balance) { (fees: $0, balance: $1) }
+            .map { data -> EthereumTransactionCandidate in
                 let value: BigUInt = BigUInt(amount.amount)
-                let gasPrice = BigUInt(fee.regular.amount)
-                let gasLimit = BigUInt(fee.gasLimit)
-                let balance = BigUInt(balanceSigned.amount)
+                let gasPrice = BigUInt(data.fees.regular.amount)
+                let gasLimit = BigUInt(data.fees.gasLimit)
+                let balance = BigUInt(data.balance.amount)
                 let transactionFee = gasPrice * gasLimit
                 
                 guard transactionFee < balance else {
@@ -45,15 +44,14 @@ public class EthereumTransactionBuildingService: EthereumTransactionBuildingServ
                     throw EthereumKitValidationError.insufficientFunds
                 }
                 
-                let transaction = EthereumTransactionCandidate(
+                return EthereumTransactionCandidate(
                     to: to,
-                    gasPrice: BigUInt(fee.regular.amount),
-                    gasLimit: BigUInt(fee.gasLimit),
+                    gasPrice: BigUInt(data.fees.regular.amount),
+                    gasLimit: BigUInt(data.fees.gasLimit),
                     value: value,
                     data: Data()
                 )
-                return Single.just(transaction)
-        }
+            }
     }
     
     private var balance: Single<CryptoValue> {

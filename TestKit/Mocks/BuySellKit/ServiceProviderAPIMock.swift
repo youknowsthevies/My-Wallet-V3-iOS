@@ -12,7 +12,11 @@ import RxSwift
 @testable import ToolKit
 
 final class ServiceProviderAPIMock: ServiceProviderAPI {
-    
+    var underlyingFiatActivity: FiatActivityItemEventFetcherAPI!
+    var fiatActivity: FiatActivityItemEventFetcherAPI {
+        underlyingFiatActivity
+    }
+
     var underlyingOrderCompletion: PendingOrderCompletionServiceAPI!
     var orderCompletion: PendingOrderCompletionServiceAPI {
         underlyingOrderCompletion

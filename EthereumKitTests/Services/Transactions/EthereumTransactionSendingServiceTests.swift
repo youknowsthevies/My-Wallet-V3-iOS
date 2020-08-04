@@ -20,7 +20,7 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
     
     var bridge: EthereumWalletBridgeMock!
     var client: EthereumAPIClientMock!
-    var feeService: EthereumFeeServiceMock!
+    var feeService: AnyCryptoFeeService<EthereumTransactionFee>!
     
     var transactionBuilder: EthereumTransactionBuilder!
     var transactionSigner: EthereumTransactionSigner!
@@ -36,7 +36,9 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
 
         bridge = EthereumWalletBridgeMock()
         client = EthereumAPIClientMock()
-        feeService = EthereumFeeServiceMock()
+        feeService = AnyCryptoFeeService(
+            service: CryptoFeeServiceMock<EthereumTransactionFee>(underlyingFees: .default)
+        )
         
         transactionBuilder = EthereumTransactionBuilder.shared
         transactionSigner = EthereumTransactionSigner.shared

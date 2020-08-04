@@ -11,10 +11,10 @@ import PlatformKit
 import RxSwift
 
 public class EthereumTransactionValidationService: ValidateTransactionAPI {
-    private let feeService: EthereumFeeServiceAPI
+    private let feeService: AnyCryptoFeeService<EthereumTransactionFee>
     private let repository: EthereumAssetAccountRepository
     
-    public init(with feeService: EthereumFeeServiceAPI,
+    public init(with feeService: AnyCryptoFeeService<EthereumTransactionFee>,
                 repository: EthereumAssetAccountRepository) {
         self.feeService = feeService
         self.repository = repository

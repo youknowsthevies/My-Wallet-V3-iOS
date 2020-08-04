@@ -1,5 +1,5 @@
 //
-//  CryptoFeeService.swift
+//  FeeService.swift
 //  Blockchain
 //
 //  Created by Jack on 27/03/2019.
@@ -73,31 +73,14 @@ public final class FeeService: FeeServiceAPI {
     }
 }
 
-extension CryptoFeeService where T == BitcoinTransactionFee {
-    static let shared: CryptoFeeService<T> = CryptoFeeService<T>()
+extension CryptoFeeService where FeeType == BitcoinTransactionFee {
+    static let shared: CryptoFeeService<FeeType> = CryptoFeeService<FeeType>()
 }
 
-extension CryptoFeeService where T == BitcoinCashTransactionFee {
-    static let shared: CryptoFeeService<T> = CryptoFeeService<T>()
+extension CryptoFeeService where FeeType == BitcoinCashTransactionFee {
+    static let shared: CryptoFeeService<FeeType> = CryptoFeeService<FeeType>()
 }
 
-class EthereumFeeService: EthereumFeeServiceAPI {
-    
-    static let shared: EthereumFeeService = EthereumFeeService()
-    
-    // MARK: Public Properties
-    
-    var fees: Single<EthereumTransactionFee> {
-        cryptoFeeService.fees
-    }
-    
-    private let cryptoFeeService: CryptoFeeService<EthereumTransactionFee>
-    
-    init(cryptoFeeService: CryptoFeeService<EthereumTransactionFee> = CryptoFeeService<EthereumTransactionFee>.shared) {
-        self.cryptoFeeService = cryptoFeeService
-    }
-}
-
-extension CryptoFeeService where T == EthereumTransactionFee {
-    static let shared: CryptoFeeService<T> = CryptoFeeService<T>()
+extension CryptoFeeService where FeeType == EthereumTransactionFee {
+    static let shared: CryptoFeeService<FeeType> = CryptoFeeService<FeeType>()
 }

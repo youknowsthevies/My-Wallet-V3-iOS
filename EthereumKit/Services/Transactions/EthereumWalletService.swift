@@ -68,14 +68,14 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
     
     private let bridge: Bridge
     private let client: APIClientAPI
-    private let feeService: EthereumFeeServiceAPI
+    private let feeService: AnyCryptoFeeService<EthereumTransactionFee>
     private let walletAccountRepository: EthereumWalletAccountRepositoryAPI
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
     private let transactionSendingService: EthereumTransactionSendingServiceAPI
     private let transactionValidationService: ValidateTransactionAPI
 
     public convenience init(with bridge: Bridge,
-                            feeService: EthereumFeeServiceAPI,
+                            feeService: AnyCryptoFeeService<EthereumTransactionFee>,
                             walletAccountRepository: EthereumWalletAccountRepositoryAPI,
                             transactionBuildingService: EthereumTransactionBuildingServiceAPI,
                             transactionSendingService: EthereumTransactionSendingServiceAPI,
@@ -91,7 +91,7 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
 
     public init(with bridge: Bridge,
                 client: APIClientAPI,
-                feeService: EthereumFeeServiceAPI,
+                feeService: AnyCryptoFeeService<EthereumTransactionFee>,
                 walletAccountRepository: EthereumWalletAccountRepositoryAPI,
                 transactionBuildingService: EthereumTransactionBuildingServiceAPI,
                 transactionSendingService: EthereumTransactionSendingServiceAPI,

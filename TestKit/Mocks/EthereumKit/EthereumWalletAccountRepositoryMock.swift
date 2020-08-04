@@ -77,11 +77,3 @@ class EthereumAPIClientMock: APIClientAPI {
         return pushTransactionValue
     }
 }
-
-class EthereumFeeServiceMock: EthereumFeeServiceAPI {
-    
-    var feesValue = Single.just(EthereumTransactionFee.default)
-    var fees: Single<EthereumTransactionFee> {
-        feesValue
-    }
-}

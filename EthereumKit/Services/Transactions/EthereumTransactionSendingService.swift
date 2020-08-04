@@ -12,10 +12,6 @@ import PlatformKit
 import RxSwift
 import web3swift
 
-public protocol EthereumFeeServiceAPI {
-    var fees: Single<EthereumTransactionFee> { get }
-}
-
 public enum EthereumTransactionCreationServiceError: Error {
     case transactionHashingError
     case nullReferenceError
@@ -31,14 +27,14 @@ public final class EthereumTransactionSendingService: EthereumTransactionSending
     
     private let bridge: Bridge
     private let client: APIClientAPI
-    private let feeService: EthereumFeeServiceAPI
+    private let feeService: AnyCryptoFeeService<EthereumTransactionFee>
     private let transactionBuilder: EthereumTransactionBuilderAPI
     private let transactionSigner: EthereumTransactionSignerAPI
     private let transactionEncoder: EthereumTransactionEncoderAPI
 
     public convenience init(
         with bridge: Bridge,
-        feeService: EthereumFeeServiceAPI,
+        feeService: AnyCryptoFeeService<EthereumTransactionFee>,
         transactionBuilder: EthereumTransactionBuilderAPI,
         transactionSigner: EthereumTransactionSignerAPI,
         transactionEncoder: EthereumTransactionEncoderAPI) {
@@ -55,7 +51,7 @@ public final class EthereumTransactionSendingService: EthereumTransactionSending
     public init(
         with bridge: Bridge,
         client: APIClientAPI,
-        feeService: EthereumFeeServiceAPI,
+        feeService: AnyCryptoFeeService<EthereumTransactionFee>,
         transactionBuilder: EthereumTransactionBuilderAPI,
         transactionSigner: EthereumTransactionSignerAPI,
         transactionEncoder: EthereumTransactionEncoderAPI) {

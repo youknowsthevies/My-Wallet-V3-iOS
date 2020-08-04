@@ -50,8 +50,8 @@ final class SendFeeService: SendFeeServicing {
             .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
             .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
             .map { fee -> CryptoValue in
-                let gasPrice = BigUInt(fee.priority.amount)
-                let gasLimit = BigUInt(fee.gasLimitContract)
+                let gasPrice = BigUInt(fee.regular.amount)
+                let gasLimit = BigUInt(fee.gasLimit)
                 let cost = gasPrice * gasLimit
                 if let value = CryptoValue.etherFromWei(string: "\(cost)") {
                     return value
@@ -65,12 +65,12 @@ final class SendFeeService: SendFeeServicing {
     // MARK: - Injected
     
     private let asset: CryptoCurrency
-    private let ethereumService: EthereumFeeServiceAPI
+    private let ethereumService: CryptoFeeService<EthereumTransactionFee>
     
     // MARK: - Setup
     
     init(asset: CryptoCurrency,
-         ethereumService: EthereumFeeServiceAPI = EthereumFeeService.shared) {
+         ethereumService: CryptoFeeService<EthereumTransactionFee> = .shared) {
         self.asset = asset
         self.ethereumService = ethereumService
     }    

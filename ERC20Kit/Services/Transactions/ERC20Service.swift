@@ -109,12 +109,12 @@ public class ERC20Service<Token: ERC20Token>: ERC20API, ERC20TransactionEvaluati
     private let bridge: ERC20BridgeAPI
     private let assetAccountRepository: ERC20AssetAccountRepository<Token>
     private let ethereumAssetAccountRepository: EthereumAssetAccountRepository
-    private let feeService: EthereumFeeServiceAPI
+    private let feeService: AnyCryptoFeeService<EthereumTransactionFee>
 
     public init(with bridge: ERC20BridgeAPI,
                 assetAccountRepository: ERC20AssetAccountRepository<Token>,
                 ethereumAssetAccountRepository: EthereumAssetAccountRepository,
-                feeService: EthereumFeeServiceAPI) {
+                feeService: AnyCryptoFeeService<EthereumTransactionFee>) {
         self.bridge = bridge
         self.assetAccountRepository = assetAccountRepository
         self.ethereumAssetAccountRepository = ethereumAssetAccountRepository
