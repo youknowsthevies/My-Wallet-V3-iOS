@@ -38,6 +38,10 @@ public extension UIColor {
         static let closeButton = grey400
     }
     
+    enum TodayExtension {
+        public static let background = grey900
+    }
+    
     // Backgrounds & Borders
 
     static let background = grey000

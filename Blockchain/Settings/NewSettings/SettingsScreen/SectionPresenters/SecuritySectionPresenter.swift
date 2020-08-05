@@ -25,6 +25,7 @@ final class SecuritySectionPresenter: SettingsSectionPresenting {
                             .init(cellType: .badge(.recoveryPhrase, recoveryCellPresenter)),
                             .init(cellType: .plain(.changePIN)),
                             .init(cellType: .switch(.bioAuthentication, bioAuthenticationCellPresenter)),
+                            .init(cellType: .switch(.balanceSyncing, balanceSyncingCellPresenter)),
                             .init(cellType: .switch(.swipeToReceive, swipeToReceiveCellPresenter))
                         ]
                     )
@@ -36,16 +37,19 @@ final class SecuritySectionPresenter: SettingsSectionPresenting {
     private let recoveryCellPresenter: RecoveryStatusCellPresenter
     private let bioAuthenticationCellPresenter: BioAuthenticationSwitchCellPresenter
     private let smsTwoFactorSwitchCellPresenter: SMSTwoFactorSwitchCellPresenter
+    private let balanceSyncingCellPresenter: BalanceSharingSwitchCellPresenter
     private let swipeToReceiveCellPresenter: SwipeReceiveSwitchCellPresenter
     
     init(smsTwoFactorService: SMSTwoFactorSettingsServiceAPI,
          biometryProvider: BiometryProviding,
          settingsAuthenticater: AppSettingsAuthenticating,
          recoveryPhraseStatusProvider: RecoveryPhraseStatusProviding,
+         balanceSharingService: BalanceSharingSettingsServiceAPI,
          appSettings: BlockchainSettings.App = BlockchainSettings.App.shared) {
         self.smsTwoFactorSwitchCellPresenter = .init(service: smsTwoFactorService)
         self.bioAuthenticationCellPresenter = .init(biometryProviding: biometryProvider, appSettingsAuthenticating: settingsAuthenticater)
         self.recoveryCellPresenter = .init(recoveryStatusProviding: recoveryPhraseStatusProvider)
         self.swipeToReceiveCellPresenter = .init(appSettings: appSettings)
+        self.balanceSyncingCellPresenter = BalanceSharingSwitchCellPresenter(service: balanceSharingService)
     }
 }

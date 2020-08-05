@@ -194,8 +194,8 @@ public struct DashboardAsset {
                     }
                     
                     let contentOptions: ContentOptions
-                    let priceFontSize: CGFloat
-                    let changeFontSize: CGFloat
+                    let priceFont: UIFont
+                    let changeFont: UIFont
                     let accessibilityIdSuffix: String
                 }
                 
@@ -215,7 +215,7 @@ public struct DashboardAsset {
                     let fiatPrice = value.fiatValue.toDisplayString(includeSymbol: true)
                     price = LabelContent(
                         text: fiatPrice,
-                        font: .main(.semibold, descriptors.priceFontSize),
+                        font: descriptors.priceFont,
                         color: .dashboardAssetTitle,
                         accessibility: .init(
                             id: .value("\(AccessibilityId.fiatBalanceLabelFormat)\(descriptors.accessibilityIdSuffix)")
@@ -243,7 +243,7 @@ public struct DashboardAsset {
                         fiatChange = NSAttributedString(
                             LabelContent(
                                 text: "\(sign)\(fiat)\(suffix)",
-                                font: .main(.medium, descriptors.changeFontSize),
+                                font: descriptors.changeFont,
                                 color: color
                             )
                         )
@@ -267,7 +267,7 @@ public struct DashboardAsset {
                         percentageChange = NSAttributedString(
                             LabelContent(
                                 text: "\(prefix)\(percentageString)%\(suffix)",
-                                font: .main(.medium, descriptors.changeFontSize),
+                                font: descriptors.changeFont,
                                 color: color
                             )
                         )
@@ -278,7 +278,7 @@ public struct DashboardAsset {
                     let period = NSAttributedString(
                         LabelContent(
                             text: " \(value.time.string)",
-                            font: .main(.medium, descriptors.changeFontSize),
+                            font: descriptors.changeFont,
                             color: .mutedText
                         )
                     )
@@ -296,8 +296,8 @@ extension DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
     public static var balance: DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
         .init(
             contentOptions: [.fiat, .percentage],
-            priceFontSize: 24,
-            changeFontSize: 14,
+            priceFont: .main(.semibold, 24.0),
+            changeFont: .main(.medium, 14.0),
             accessibilityIdSuffix: Accessibility.Identifier.Dashboard.TotalBalanceCell.valueLabelSuffix
         )
     }
@@ -308,8 +308,18 @@ extension DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
                                   changeFontSize: CGFloat = 14.0) -> DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
         .init(
             contentOptions: [.percentage],
-            priceFontSize: priceFontSize,
-            changeFontSize: changeFontSize,
+            priceFont: .main(.semibold, priceFontSize),
+            changeFont: .main(.medium, changeFontSize),
+            accessibilityIdSuffix: accessibilityIdSuffix
+        )
+    }
+    
+    /// Returns a descriptor for widget asset price
+    public static func widget(accessibilityIdSuffix: String) -> DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
+        .init(
+            contentOptions: [.fiat],
+            priceFont: .systemFont(ofSize: 16.0, weight: .semibold),
+            changeFont: .systemFont(ofSize: 12.0, weight: .semibold),
             accessibilityIdSuffix: accessibilityIdSuffix
         )
     }

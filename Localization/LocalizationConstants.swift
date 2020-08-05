@@ -2021,6 +2021,7 @@ public enum LocalizationConstants {
         You currently have email notifications enabled. Changing your email will disable email notifications.
         """, comment: "")
         public static let twoFactorAuthentication = NSLocalizedString("2-Step Verification", comment: "2-Step Verification")
+        public static let balanceSharing = NSLocalizedString("Sync My Portfolio", comment: "Sync My Portfolio")
         public static let cookiePolicy = NSLocalizedString("Cookie Policy", comment: "Cookie Policy")
         public static let allRightsReserved = NSLocalizedString("All rights reserved.", comment: "All rights reserved")
         public static let useBiometricsAsPin = NSLocalizedString("Use %@ as PIN", comment: "")
@@ -3237,6 +3238,13 @@ public enum LocalizationConstants {
             "Oh no!",
             comment: "Error title shown when deep linking from a claim your XLM link."
         )
+    }
+    
+    public struct TodayExtension {
+        public struct Headers {
+            public static let prices = NSLocalizedString("Prices", comment: "Prices")
+            public static let balance = NSLocalizedString("Wallet Balance", comment: "Wallet Balance")
+        }
     }
     
     public struct WalletAction {

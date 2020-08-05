@@ -71,6 +71,7 @@ public final class WalletPickerScreenViewController: BaseScreenViewController {
         let dataSource = RxDataSource(configureCell: { [weak self] _, _, indexPath, item in
             guard let self = self else { return UITableViewCell() }
             let cell: UITableViewCell
+            
             switch item {
             case .balance(let balanceType):
                 cell = self.balanceCell(for: indexPath, presenter: balanceType.presenter)

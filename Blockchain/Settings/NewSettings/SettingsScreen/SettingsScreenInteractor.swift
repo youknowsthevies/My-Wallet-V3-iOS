@@ -35,6 +35,7 @@ final class SettingsScreenInteractor {
     let emailNotificationsService: SettingsServiceAPI & EmailNotificationSettingsServiceAPI
     
     let pitConnnectionProviding: PITConnectionStatusProviding
+    let balanceSharingService: BalanceSharingSettingsServiceAPI
     let tiersProviding: TierLimitsProviding
     let settingsAuthenticating: AppSettingsAuthenticating
     let biometryProviding: BiometryProviding
@@ -61,7 +62,9 @@ final class SettingsScreenInteractor {
          tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
          wallet: Wallet = WalletManager.shared.wallet,
          cardsService: CardServiceProviderAPI = CardServiceProvider.default,
-         simpleBuyService: ServiceProviderAPI = DataProvider.default.buySell) {
+         simpleBuyService: ServiceProviderAPI = DataProvider.default.buySell,
+         balanceProviding: BalanceProviding = DataProvider.default.balance,
+         balanceChangeProviding: BalanceChangeProviding = DataProvider.default.balanceChange) {
         self.simpleBuyService = simpleBuyService
         self.cardsService = cardsService
         self.smsTwoFactorService = smsTwoFactorService
@@ -69,6 +72,13 @@ final class SettingsScreenInteractor {
         self.settingsService = settingsService
         self.featureConfigurator = featureConfigurator
         self.emailNotificationsService = emailNotificationService
+        
+        self.balanceSharingService = PortfolioSyncingService(
+            balanceProviding: balanceProviding,
+            balanceChangeProviding: balanceChangeProviding,
+            fiatCurrencyProviding: fiatCurrencyService
+        )
+        
         tiersProviding = TierLimitsProvider(tiersService: tiersService)
 
         cardSectionInteractor = CardSettingsSectionInteractor(

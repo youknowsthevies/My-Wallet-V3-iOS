@@ -75,6 +75,7 @@ enum SettingsSectionType: Int, Equatable {
         enum SwitchCellType: String {
             case sms2FA
             case emailNotifications
+            case balanceSyncing
             case bioAuthentication
             case swipeToReceive
         }

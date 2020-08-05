@@ -100,4 +100,3 @@ public final class AssetBalanceTypeViewInteractor: AssetBalanceTypeViewInteracti
         self.assetBalanceFetching = assetBalanceFetching
     }
 }
-

@@ -67,6 +67,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         FirebaseApp.configure()
         
+        // swiftlint:disable trailing_semicolon
         DependencyContainer.defined(by: modules {
             DependencyContainer.toolKit;
             DependencyContainer.networkKit;
@@ -76,6 +77,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             DependencyContainer.buySellKit;
             DependencyContainer.blockchain;
         })
+        // swiftlint:enable trailing_semicolon
     }
 
     // MARK: - Lifecycle Methods
@@ -201,6 +203,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var backgroundTaskTimer = BackgroundTaskTimer(invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier(identifier: UIBackgroundTaskIdentifier.invalid))
     func applicationDidEnterBackground(_ application: UIApplication) {
+        DataProvider.default.syncing.sync()
         backgroundTaskTimer.begin(application) { [weak self] in
             self?.delayedApplicationDidEnterBackground(application)
         }

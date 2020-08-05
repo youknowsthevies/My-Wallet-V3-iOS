@@ -25,4 +25,8 @@ public protocol DataProviding: class {
     /// This service is wallet agnostic and provides the
     /// market prices over a given duration
     var historicalPrices: HistoricalFiatPriceProviding { get }
+    
+    /// The syncing service used for syncing the user's balance to the file system
+    /// should they opt into balance syncing. 
+    var syncing: PortfolioSyncingService { get }
 }

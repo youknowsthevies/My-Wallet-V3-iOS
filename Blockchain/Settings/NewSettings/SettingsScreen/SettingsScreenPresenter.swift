@@ -81,7 +81,8 @@ final class SettingsScreenPresenter {
             smsTwoFactorService: interactor.smsTwoFactorService,
             biometryProvider: interactor.biometryProviding,
             settingsAuthenticater: interactor.settingsAuthenticating,
-            recoveryPhraseStatusProvider: interactor.recoveryPhraseStatusProviding
+            recoveryPhraseStatusProvider: interactor.recoveryPhraseStatusProviding,
+            balanceSharingService: interactor.balanceSharingService
         )
         
         cardsSectionPresenter = CardsSectionPresenter(

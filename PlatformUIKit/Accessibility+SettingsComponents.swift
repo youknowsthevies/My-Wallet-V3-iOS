@@ -61,6 +61,9 @@ extension Accessibility.Identifier {
             public enum TwoStepVerification {
                 public static let title = "\(SettingsCell.prefix)TwoStepVerification"
             }
+            public enum BalanceSharing {
+                public static let title = "\(SettingsCell.prefix)BalanceSharing"
+            }
         }
 
         public enum LinkedCardCell {
@@ -82,6 +85,7 @@ extension Accessibility.Identifier {
             public static let BioSwitchView = "\(prefix)BioSwitchView"
             public static let swipeToReceive = "\(prefix)swipeToReceiveSwitchView"
             public static let twoFactorSwitchView = "\(prefix)twoFactorSwitchView"
+            public static let balanceSync = "\(prefix)balanceSyncSwitchView"
         }
 
         public enum ChangePassword {

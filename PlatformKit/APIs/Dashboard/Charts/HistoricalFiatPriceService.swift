@@ -65,7 +65,7 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
     private let exchangeAPI: PairExchangeServiceAPI
     
     /// The currency service
-    private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
+    private let fiatCurrencyService: FiatCurrencyServiceAPI
     
     /// The associated asset
     private let cryptoCurrency: CryptoCurrency
@@ -107,7 +107,7 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
     public init(cryptoCurrency: CryptoCurrency,
                 exchangeAPI: PairExchangeServiceAPI,
                 priceService: PriceServiceAPI = PriceService(),
-                fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
+                fiatCurrencyService: FiatCurrencyServiceAPI) {
         self.exchangeAPI = exchangeAPI
         self.cryptoCurrency = cryptoCurrency
         self.priceService = priceService

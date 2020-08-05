@@ -39,6 +39,8 @@ final class DataProvider: DataProviding {
     /// BuySellKit service provider
     let buySell: BuySellKit.ServiceProviderAPI
     
+    let syncing: PortfolioSyncingService
+    
     init(featureFetching: FeatureFetching & FeatureConfiguring = AppFeatureConfigurator.shared,
          kycTierService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
@@ -289,6 +291,11 @@ final class DataProvider: DataProviding {
             )
         )
         
+        syncing = .init(
+            balanceProviding: balance,
+            balanceChangeProviding: balanceChange,
+            fiatCurrencyProviding: fiatCurrencyService
+        )
         buySell = BuySellKit.ServiceProvider(balanceProvider: balance)
     }
 }

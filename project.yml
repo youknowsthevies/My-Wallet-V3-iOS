@@ -186,6 +186,7 @@ targets:
     - embed: false
       framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
     - target: PlatformUIKit
+    - target: TodayExtension
     - target: PlatformKit
     - target: BuySellKit
     - target: BuySellUIKit
@@ -652,6 +653,26 @@ targets:
     - path: TestKit
       type: folder
     type: bundle
+  TodayExtension:
+    dependencies:
+    - sdk: NotificationCenter.framework
+    - target: PlatformKit
+    - target: PlatformUIKit
+    - target: ToolKit
+    - target: NetworkKit
+    - carthage: RxCocoa
+    - carthage: RxSwift
+    - carthage: RxRelay
+    - carthage: RxDataSources
+    - carthage: DIKit
+    - carthage: Differentiator
+    platform: iOS
+    type: app-extension
+    settings:
+        base:
+            PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.TodayExtension
+    sources:
+        - TodayExtension
   ToolKit:
     dependencies:
     - carthage: BigInt

@@ -50,6 +50,23 @@ class SMSTwoFactorSwitchCellPresenter: SwitchCellPresenting {
     }
 }
 
+class BalanceSharingSwitchCellPresenter: SwitchCellPresenting {
+    
+    private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell
+    
+    let accessibility: Accessibility = .id(AccessibilityId.BalanceSharing.title)
+    let labelContentPresenting: LabelContentPresenting
+    let switchViewPresenting: SwitchViewPresenting
+    
+    init(service: BalanceSharingSettingsServiceAPI) {
+        labelContentPresenting = DefaultLabelContentPresenter(
+            knownValue: LocalizationConstants.Settings.balanceSharing,
+            descriptors: .settings
+        )
+        switchViewPresenting = BalanceSharingSwitchViewPresenter(service: service)
+    }
+}
+
 class BioAuthenticationSwitchCellPresenter: SwitchCellPresenting {
     
     private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell

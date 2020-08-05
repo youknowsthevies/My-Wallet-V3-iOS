@@ -56,6 +56,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     private let dataRepository: BlockchainDataRepository
     private let walletManager: WalletManager
     private let fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
+    private let sharedContainter: SharedContainerUserDefaults
 
     private let deepLinkRouter: DeepLinkRouter
     
@@ -81,6 +82,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
 
     init(fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          appSettings: BlockchainSettings.App = .shared,
+         sharedContainter: SharedContainerUserDefaults = .default,
          onboardingSettings: BlockchainSettings.Onboarding = .shared,
          wallet: Wallet = WalletManager.shared.wallet,
          alertPresenter: AlertViewPresenter = AlertViewPresenter.shared,
@@ -89,20 +91,21 @@ extension AuthenticationCoordinator: PairingWalletFetching {
          dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
          deepLinkRouter: DeepLinkRouter = DeepLinkRouter(),
          remoteNotificationServiceContainer: RemoteNotificationServiceContainer = .default) {
-       self.fiatCurrencySettingsService = fiatCurrencySettingsService
-       self.appSettings = appSettings
-       self.onboardingSettings = onboardingSettings
-       self.wallet = wallet
-       self.alertPresenter = alertPresenter
-       self.walletManager = walletManager
-       self.dataRepository = dataRepository
-       self.deepLinkRouter = deepLinkRouter
-       self.loadingViewPresenter = loadingViewPresenter
-       remoteNotificationAuthorizer = remoteNotificationServiceContainer.authorizer
-       remoteNotificationTokenSender = remoteNotificationServiceContainer.tokenSender
-       super.init()
-       self.walletManager.secondPasswordDelegate = self
-       self.walletManager.authDelegate = self
+        self.sharedContainter = sharedContainter
+        self.fiatCurrencySettingsService = fiatCurrencySettingsService
+        self.appSettings = appSettings
+        self.onboardingSettings = onboardingSettings
+        self.wallet = wallet
+        self.alertPresenter = alertPresenter
+        self.walletManager = walletManager
+        self.dataRepository = dataRepository
+        self.deepLinkRouter = deepLinkRouter
+        self.loadingViewPresenter = loadingViewPresenter
+        remoteNotificationAuthorizer = remoteNotificationServiceContainer.authorizer
+        remoteNotificationTokenSender = remoteNotificationServiceContainer.tokenSender
+        super.init()
+        self.walletManager.secondPasswordDelegate = self
+        self.walletManager.authDelegate = self
     }
     
     /// Authentication handler - this should not be in AuthenticationCoordinator
@@ -227,6 +230,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         
         SocketManager.shared.disconnectAll()
         StellarServiceProvider.shared.tearDown()
+        sharedContainter.reset()
         appSettings.reset()
         onboardingSettings.reset()
                         

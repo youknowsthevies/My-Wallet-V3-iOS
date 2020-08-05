@@ -52,7 +52,7 @@ public struct Biometry {
         
         /// Initializes with error, expects the error to have `code`
         /// compatible code to `LAError.Code.rawValue`
-        init(with error: Error) {
+        public init(with error: Error) {
             let code = (error as NSError).code
             self.init(with: code)
         }
