@@ -19,6 +19,9 @@ public protocol BeneficiariesServiceAPI: PaymentMethodDeletionServiceAPI {
     /// Keeps updating a new value of whether the user has at least one linked bank
     var hasLinkedBank: Observable<Bool> { get }
     
+    /// Streams the available currencies for bank linkage
+    var availableCurrenciesForBankLinkage: Observable<Set<FiatCurrency>> { get }
+    
     /// Fetch beneficiaries once, but other subscribers to `beneficiaries` would get the new value
     func fetch() -> Observable<[Beneficiary]>
 }
@@ -40,6 +43,19 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
         
     var hasLinkedBank: Observable<Bool> {
         beneficiaries.map { !$0.isEmpty }
+    }
+    
+    var availableCurrenciesForBankLinkage: Observable<Set<FiatCurrency>> {
+        Observable
+            .combineLatest(
+                beneficiaries,
+                paymentMethodTypesService.methodTypes
+            )
+            .map { (beneficiaries, methodTypes) in
+                let exisiting = beneficiaries.map(\.currency)
+                let suggested = methodTypes.suggestedFunds
+                return suggested.subtracting(exisiting)
+            }
     }
 
     private let beneficiariesRelay = BehaviorRelay<[Beneficiary]?>(value: nil)
@@ -69,7 +85,7 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
             .andThen(self.fetch())
             .ignoreElements()
     }
-    
+        
     // MARK: - Private
         
     private func performFetch() -> Observable<[Beneficiary]> {

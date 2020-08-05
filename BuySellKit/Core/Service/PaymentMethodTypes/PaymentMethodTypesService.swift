@@ -51,9 +51,7 @@ public protocol PaymentMethodTypesServiceAPI {
     var methodTypes: Observable<[PaymentMethodType]> { get }
         
     var cards: Observable<[CardData]> { get }
-    
-    var availableCurrenciesForBankLinkage: Observable<Set<FiatCurrency>> { get }
-    
+        
     var preferredPaymentMethodTypeRelay: BehaviorRelay<PaymentMethodType?> { get }
     
     var preferredPaymentMethodType: Observable<PaymentMethodType?> { get }
@@ -81,15 +79,6 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     
     var cards: Observable<[CardData]> {
         methodTypes.map { $0.cards }
-    }
-    
-    var availableCurrenciesForBankLinkage: Observable<Set<FiatCurrency>> {
-        methodTypes
-            .map { types in
-                let exisiting = Set(types.accounts.compactMap { FiatCurrency(code: $0.balance.baseCurrency.code) })
-                let suggested = types.suggestedFunds
-                return suggested.subtracting(exisiting)
-            }
     }
     
     /// Preferred payment method
