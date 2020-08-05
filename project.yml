@@ -190,6 +190,8 @@ targets:
     - target: PlatformKit
     - target: BuySellKit
     - target: BuySellUIKit
+    - target: InterestKit
+    - target: InterestUIKit
     - target: ToolKit
     - target: NetworkKit
     - target: StellarKit
@@ -351,6 +353,66 @@ targets:
     - group: BlockchainTests/TestKit
       path: TestKit/Mocks/StellarKit
     type: bundle.unit-test
+  InterestKit:
+    dependencies:
+    - target: PlatformKit
+    - target: NetworkKit
+    - target: ToolKit
+    - carthage: DIKit
+    - carthage: RxSwift
+    - carthage: RxRelay
+    scheme:
+      testTargets:
+      - InterestKitTests
+    templates:
+    - Framework
+  InterestKitTests:
+    dependencies:
+    - target: InterestKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/InterestKit
+    templates:
+    - FrameworkTest
+  InterestUIKit:
+    dependencies:
+    - target: InterestKit
+    - target: PlatformUIKit
+    - target: PlatformKit
+    - target: CommonCryptoKit
+    - target: NetworkKit
+    - target: ToolKit
+    - carthage: DIKit
+    - carthage: RxSwift
+    - carthage: RxRelay
+    - carthage: RxCocoa
+    scheme:
+      testTargets:
+      - InterestUIKitTests
+    templates:
+    - Framework
+  InterestUIKitTests:
+    dependencies:
+    - target: InterestUIKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformUIKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/InterestKit
+    templates:
+    - FrameworkTest
   BuySellKit:
     dependencies:
     - target: PlatformKit
