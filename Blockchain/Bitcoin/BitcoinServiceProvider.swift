@@ -19,7 +19,7 @@ struct BitcoinServices: BitcoinDependencies {
 
     init(bridge: BitcoinWalletBridgeAPI = WalletManager.shared.wallet.bitcoin) {
         transactions = .init(
-            bridge: bridge
+            bridge: .init(with: bridge)
         )
     }
 }

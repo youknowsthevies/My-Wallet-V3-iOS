@@ -17,22 +17,24 @@ public final class BitcoinHistoricalTransactionService: TokenizedHistoricalTrans
     public typealias PageModel = PageResult<Model>
     
     private let client: APIClientAPI
-    private let bridge: BitcoinWalletBridgeAPI
+    private let bridge: BitcoinWalletAccountRepository
     
-    public convenience init(bridge: BitcoinWalletBridgeAPI) {
+    public convenience init(bridge: BitcoinWalletAccountRepository) {
         self.init(with: resolve(), bridge: bridge)
     }
     
-    init(with client: APIClientAPI, bridge: BitcoinWalletBridgeAPI) {
+    init(with client: APIClientAPI, bridge: BitcoinWalletAccountRepository) {
         self.client = client
         self.bridge = bridge
     }
     
     public func fetchTransactions(token: String?, size: Int) -> Single<PageModel> {
-        bridge.defaultWallet.flatMap(weak: self) { (self, walletAccount) -> Single<PageModel> in
-            self.client.bitcoinMultiAddress(for: walletAccount.publicKey)
-                .map { $0.transactions }
-                .map { PageModel(hasNextPage: false, items: $0) }
+        bridge.activeAccounts
+            .map { accounts in accounts.map(\.publicKey) }
+            .flatMap(weak: self) { (self, addresses) -> Single<PageModel> in
+                self.client.bitcoinMultiAddress(for: addresses)
+                    .map(\.transactions)
+                    .map { PageModel(hasNextPage: false, items: $0) }
         }
     }
 }

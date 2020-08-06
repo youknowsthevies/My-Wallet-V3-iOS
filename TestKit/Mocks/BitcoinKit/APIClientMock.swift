@@ -17,7 +17,7 @@ class APIClientMock: APIClientAPI {
         balancesValue
     }
     
-    func bitcoinMultiAddress(for address: String) -> Single<BitcoinMultiAddressResponse> {
+    func bitcoinMultiAddress(for addresses: [String]) -> Single<BitcoinMultiAddressResponse> {
         Single.error(APIClientError.unknown)
     }
     

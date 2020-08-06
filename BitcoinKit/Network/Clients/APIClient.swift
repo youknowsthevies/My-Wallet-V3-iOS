@@ -17,7 +17,7 @@ enum APIClientError: Error {
 
 protocol APIClientAPI {
     func unspentOutputs(addresses: [String]) -> Single<UnspentOutputsResponse>
-    func bitcoinMultiAddress(for address: String) -> Single<BitcoinMultiAddressResponse>
+    func bitcoinMultiAddress(for addresses: [String]) -> Single<BitcoinMultiAddressResponse>
     func bitcoinCashMultiAddress(for address: String) -> Single<BitcoinCashMultiAddressResponse>
     func balances(for addresses: [String]) -> Single<BitcoinBalanceResponse>
 }
@@ -87,11 +87,12 @@ final class APIClient: APIClientAPI {
         return communicator.perform(request: request)
     }
     
-    func bitcoinMultiAddress(for address: String) -> Single<BitcoinMultiAddressResponse> {
+    func bitcoinMultiAddress(for addresses: [String]) -> Single<BitcoinMultiAddressResponse> {
+        let value = addresses.joined(separator: "|")
         let parameters = [
             URLQueryItem(
                 name: "active",
-                value: address
+                value: value
             )
         ]
         
