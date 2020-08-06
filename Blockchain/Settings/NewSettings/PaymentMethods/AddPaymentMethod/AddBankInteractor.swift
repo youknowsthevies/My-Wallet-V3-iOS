@@ -12,20 +12,20 @@ import RxSwift
 
 final class AddBankInteractor: AddSpecificPaymentMethodInteractorAPI {
     
-    private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
+    private let beneficiariesService: BeneficiariesServiceAPI
     private let fiatCurrency: FiatCurrency
     
     var isAbleToAddNew: Observable<Bool> {
         let fiatCurrency = self.fiatCurrency
-        return paymentMethodTypesService.availableCurrenciesForBankLinkage
+        return beneficiariesService.availableCurrenciesForBankLinkage
             .map { $0.contains(fiatCurrency) }
             .catchErrorJustReturn(false)
             .share(replay: 1)
     }
     
-    init(paymentMethodTypesService: PaymentMethodTypesServiceAPI,
+    init(beneficiariesService: BeneficiariesServiceAPI,
          fiatCurrency: FiatCurrency) {
         self.fiatCurrency = fiatCurrency
-        self.paymentMethodTypesService = paymentMethodTypesService
+        self.beneficiariesService = beneficiariesService
     }
 }

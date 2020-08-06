@@ -193,7 +193,14 @@ public final class MoneyValueInputScanner {
         guard let number = Decimal(string: string) else { return }
         guard let string = formatter.string(from: number as NSNumber) else { return }
         
-        let components = string.split(separator: Character(Constant.decimalSeparator))
+        let components: [String] = string
+            .split(separator: Character(Constant.decimalSeparator))
+            .map { component in
+                var component = String(component)
+                component.removeAll(where: { !CharacterSet.decimalDigits.contains($0) })
+                return component
+            }
+        
         let input: Input
         if components.isEmpty {
             input = .placeholderZero

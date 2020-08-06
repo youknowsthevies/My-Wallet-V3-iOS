@@ -64,7 +64,8 @@ final class BanksSettingsSectionInteractor {
                 AddPaymentMethodInteractor(
                     paymentMethod: .bank($0),
                     addNewInteractor: AddBankInteractor(
-                        paymentMethodTypesService: paymentMethodTypesService, fiatCurrency: $0
+                        beneficiariesService: beneficiariesService,
+                        fiatCurrency: $0
                     ),
                     tiersLimitsProvider: tierLimitsProvider,
                     featureFetcher: featureFetcher
