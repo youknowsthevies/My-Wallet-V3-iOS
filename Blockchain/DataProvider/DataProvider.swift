@@ -7,13 +7,13 @@
 //
 
 import BitcoinKit
+import BuySellKit
 import DIKit
 import ERC20Kit
+import InterestKit
 import PlatformKit
-import BuySellKit
 import RxRelay
 import RxSwift
-import DIKit
 
 /// A container for common crypto services.
 /// Rule of thumb: If a service may be used by multiple clients,

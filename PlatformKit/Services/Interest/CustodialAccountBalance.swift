@@ -1,5 +1,5 @@
 //
-//  SavingsAccount.swift
+//  CustodialAccountBalance.swift
 //  PlatformKit
 //
 //  Created by Daniel Huri on 18/05/2020.
@@ -11,14 +11,12 @@ import Foundation
 public struct CustodialAccountBalance: Equatable {
 
     let available: MoneyValue
-
-    init?(currency: CryptoCurrency, response: SavingsAccountBalanceResponse.Details) {
-        guard let balance = response.balance else { return nil }
-        let available = CryptoValue(minor: balance, cryptoCurrency: currency) ?? .zero(currency: currency)
-        self.available = available.moneyValue
-    }
     
     init(currency: CurrencyType, response: CustodialBalanceResponse.Balance) {
         self.available = (try? MoneyValue(minor: response.available, currency: currency.code)) ?? .zero(currency)
+    }
+    
+    public init(available: MoneyValue) {
+        self.available = available
     }
 }

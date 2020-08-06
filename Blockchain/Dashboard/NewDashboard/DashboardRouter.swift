@@ -7,6 +7,7 @@
 //
 
 import DIKit
+import InterestKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay

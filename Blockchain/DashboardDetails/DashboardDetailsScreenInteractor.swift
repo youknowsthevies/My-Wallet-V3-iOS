@@ -6,8 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
+import InterestKit
 import PlatformKit
+import PlatformUIKit
 import RxSwift
 
 final class DashboardDetailsScreenInteractor {

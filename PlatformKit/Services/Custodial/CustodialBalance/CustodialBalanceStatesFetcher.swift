@@ -72,9 +72,9 @@ public final class CustodialBalanceStatesFetcher: CustodialBalanceStatesFetcherA
     
     // MARK: Init
 
-    init(custodialType: BalanceType.CustodialType,
-         fetch: @escaping Fetch,
-         scheduler: SchedulerType) {
+    public init(custodialType: BalanceType.CustodialType,
+                fetch: @escaping Fetch,
+                scheduler: SchedulerType) {
         self.balanceRelay = BehaviorRelay(value: .absent)
         self.balanceType = .custodial(custodialType)
         self.scheduler = scheduler
@@ -94,15 +94,6 @@ extension CustodialBalanceStatesFetcher {
                             scheduler: SchedulerType = ConcurrentDispatchQueueScheduler(qos: .background)) {
         self.init(
             custodialType: .trading,
-            fetch: { service.fetchBalances() },
-            scheduler: scheduler
-        )
-    }
-    
-    public convenience init(service: SavingAccountServiceAPI,
-                            scheduler: SchedulerType = ConcurrentDispatchQueueScheduler(qos: .background)) {
-        self.init(
-            custodialType: .savings,
             fetch: { service.fetchBalances() },
             scheduler: scheduler
         )
