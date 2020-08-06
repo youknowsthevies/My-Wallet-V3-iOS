@@ -152,6 +152,11 @@ public struct ButtonViewModel {
     public let imageName = BehaviorRelay<String?>(value: nil)
     
     /// Streams events when the component is being tapped
+    public var tap: Signal<Void> {
+        tapRelay.asSignal()
+    }
+    
+    /// Streams events when the component is being tapped
     public let tapRelay = PublishRelay<Void>()
     
     /// The image corresponding to `imageName`, rendered as template

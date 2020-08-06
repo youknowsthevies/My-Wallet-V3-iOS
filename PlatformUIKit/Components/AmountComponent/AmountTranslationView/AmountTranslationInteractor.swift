@@ -66,7 +66,7 @@ public final class AmountTranslationInteractor {
     }
     
     /// The active input relay
-    public let activeInputRelay = BehaviorRelay<ActiveAmountInput>(value: .fiat)
+    public let activeInputRelay: BehaviorRelay<ActiveAmountInput>
     
     /// A relay responsible for accepting deletion events for the active input
     public let deleteLastRelay = PublishRelay<Void>()
@@ -118,7 +118,9 @@ public final class AmountTranslationInteractor {
                 cryptoCurrencyService: CryptoCurrencyServiceAPI,
                 exchangeProvider: ExchangeProviding,
                 defaultFiatCurrency: FiatCurrency = .default,
-                defaultCryptoCurrency: CryptoCurrency = .bitcoin) {
+                defaultCryptoCurrency: CryptoCurrency = .bitcoin,
+                initialActiveInput: ActiveAmountInput) {
+        activeInputRelay = BehaviorRelay(value: initialActiveInput)
         cryptoAmountRelay = BehaviorRelay(value: .zero(defaultCryptoCurrency))
         fiatInteractor = InputAmountLabelInteractor(currency: defaultFiatCurrency)
         cryptoInteractor = InputAmountLabelInteractor(currency: defaultCryptoCurrency)

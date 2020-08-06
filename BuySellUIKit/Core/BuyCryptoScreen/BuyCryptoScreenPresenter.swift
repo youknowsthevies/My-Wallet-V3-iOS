@@ -1,0 +1,239 @@
+//
+//  BuyCryptoScreenPresenter.swift
+//  BuySellUIKit
+//
+//  Created by Daniel on 04/08/2020.
+//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+import BuySellKit
+import Localization
+import PlatformKit
+import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
+import ToolKit
+
+final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
+    
+    // MARK: - Properties
+        
+    private let stateService: CheckoutServiceAPI
+    private let router: RouterAPI
+    private let interactor: BuyCryptoScreenInteractor
+    
+    private let disposeBag = DisposeBag()
+    
+    init(uiUtilityProvider: UIUtilityProviderAPI = UIUtilityProvider.default,
+         analyticsRecorder: AnalyticsEventRecorderAPI,
+         router: RouterAPI,
+         stateService: CheckoutServiceAPI,
+         interactor: BuyCryptoScreenInteractor) {
+        self.interactor = interactor
+        self.stateService = stateService
+        self.router = router
+        super.init(
+            uiUtilityProvider: uiUtilityProvider,
+            analyticsRecorder: analyticsRecorder,
+            backwardsNavigation: {
+                stateService.previousRelay.accept(())
+            },
+            displayBundle: .buy,
+            interactor: interactor
+        )
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        topSelectionButtonViewModel.tap
+            .emit(weak: self) { (self) in
+                self.router.showCryptoSelectionScreen()
+            }
+            .disposed(by: disposeBag)
+        
+        // Payment Method Selection Button Setup
+        
+        Observable
+            .combineLatest(
+                interactor.preferredPaymentMethodType,
+                interactor.paymentMethodTypes.map { $0.count }
+            )
+            .bindAndCatch(weak: self) { (self, payload) in
+                self.setup(preferredPaymentMethodType: payload.0, methodCount: payload.1)
+            }
+            .disposed(by: disposeBag)
+        
+        /// Additional binding
+        
+        struct CTAData {
+            let kycState: KycState
+            let isSimpleBuyEligible: Bool
+            let candidateOrderDetails: CandidateOrderDetails
+        }
+        
+        let ctaObservable = continueButtonTapped
+            .asObservable()
+            .withLatestFrom(interactor.candidateOrderDetails)
+            .compactMap { $0 }
+            .show(loader: uiUtilityProvider.loader, style: .circle)
+            .flatMap(weak: interactor) { (interactor, candidateOrderDetails) in
+                Observable
+                    .zip(
+                        interactor.currentKycState.asObservable(),
+                        interactor.currentEligibilityState
+                    )
+                    .map { (currentKycState, currentEligibilityState) -> Result<CTAData, Error> in
+                        switch (currentKycState, currentEligibilityState) {
+                        case (.success(let kycState), .success(let isSimpleBuyEligible)):
+                            let ctaData = CTAData(
+                                kycState: kycState,
+                                isSimpleBuyEligible: isSimpleBuyEligible,
+                                candidateOrderDetails: candidateOrderDetails
+                            )
+                            return .success(ctaData)
+                        case (.failure(let error), .success):
+                            return .failure(error)
+                        case (.success, .failure(let error)):
+                            return .failure(error)
+                        case (.failure(let error), .failure):
+                            return .failure(error)
+                        }
+                    }
+            }
+            .share()
+        
+        ctaObservable
+            .compactMap { result -> CandidateOrderDetails? in
+                guard case let .success(data) = result else { return nil }
+                return data.candidateOrderDetails
+            }
+            .map(weak: self) { (self, candidateOrderDetails) in
+                
+                self.displayBundle.events.confirmTapped(
+                    candidateOrderDetails.fiatValue.currency,
+                    candidateOrderDetails.fiatValue.moneyValue,
+                    [AnalyticsEvents.SimpleBuy.ParameterName.paymentMethod : candidateOrderDetails.paymentMethod.method.analyticsParameter.string ]
+                )
+            }
+            .bindAndCatch(to: analyticsRecorder.recordRelay)
+            .disposed(by: disposeBag)
+            
+        ctaObservable
+            .map(weak: self) { (self, result) -> AnalyticsEvent in
+                switch result {
+                case .success:
+                    return self.displayBundle.events.confirmSuccess
+                case .failure:
+                    return self.displayBundle.events.confirmFailure
+                }
+            }
+            .bindAndCatch(to: analyticsRecorder.recordRelay)
+            .disposed(by: disposeBag)
+        
+        ctaObservable
+            .observeOn(MainScheduler.instance)
+            .bindAndCatch(weak: self) { (self, result) in
+                switch result {
+                case .success(let data):
+                    switch (data.kycState, data.isSimpleBuyEligible) {
+                    case (.completed, false):
+                        self.uiUtilityProvider.loader.hide()
+                        self.stateService.ineligible()
+                    case (.completed, true):
+                        self.createOrder(from: data.candidateOrderDetails) { [weak self] checkoutData in
+                            self?.uiUtilityProvider.loader.hide()
+                            self?.stateService.nextFromBuyCrypto(with: checkoutData)
+                        }
+                    case (.shouldComplete, _):
+                        self.createOrder(from: data.candidateOrderDetails) { [weak self] checkoutData in
+                            self?.uiUtilityProvider.loader.hide()
+                            self?.stateService.kyc(with: checkoutData)
+                        }
+                    }
+                case .failure:
+                    self.handleError()
+                }
+            }
+            .disposed(by: disposeBag)
+        
+        interactor.selectedCryptoCurrency
+            .flatMap(weak: self) { (self, cryptoCurrency) -> Observable<String?> in
+                self.subtitleForCryptoCurrencyPicker(cryptoCurrency: cryptoCurrency)
+            }
+            .bindAndCatch(to: topSelectionButtonViewModel.subtitleRelay)
+            .disposed(by: disposeBag)
+        
+        // Bind to the pairs the user is able to buy
+        
+        interactor.pairsCalculationState
+            .handle(loadingViewPresenter: uiUtilityProvider.loader)
+            .bindAndCatch(weak: self) { (self, state) in
+                guard case .invalid(.valueCouldNotBeCalculated) = state else {
+                    return
+                }
+                self.handleError()
+            }
+            .disposed(by: disposeBag)
+    }
+    
+    // MARK: - Private methods
+
+    
+    private func createOrder(from candidateOrderDetails: CandidateOrderDetails,
+                             with completion: @escaping (CheckoutData) -> Void) {
+        interactor.createOrder(from: candidateOrderDetails)
+            .observeOn(MainScheduler.instance)
+            .subscribe(
+                onSuccess: completion,
+                onError: { [weak self] error in
+                    self?.handleError()
+                }
+            )
+            .disposed(by: disposeBag)
+    }
+    
+    private func subtitleForCryptoCurrencyPicker(cryptoCurrency: CryptoCurrency) -> Observable<String?> {
+        guard deviceType != .superCompact else {
+            return .just(nil)
+        }
+        return Observable
+            .combineLatest(
+                interactor.exchangeProvider[cryptoCurrency].fiatPrice,
+                Observable.just(cryptoCurrency)
+            )
+            .map { payload -> String in
+                let tuple: (fiat: FiatValue, crypto: CryptoCurrency) = payload
+                return "1 \(tuple.crypto.displayCode) = \(tuple.fiat.toDisplayString()) \(tuple.fiat.currencyCode)"
+            }
+    }
+    
+    private func setup(preferredPaymentMethodType: PaymentMethodType?, methodCount: Int) {
+        let viewModel = SelectionButtonViewModel(with: preferredPaymentMethodType)
+        if deviceType == .superCompact {
+            viewModel.subtitleRelay.accept(nil)
+        }
+        
+        let trailingImageViewContent: ImageViewContent
+        if methodCount > 1 {
+            trailingImageViewContent = ImageViewContent(
+                imageName: "icon-disclosure-down-small"
+            )
+            viewModel.isButtonEnabledRelay.accept(true)
+        } else {
+            trailingImageViewContent = .empty
+            viewModel.isButtonEnabledRelay.accept(false)
+        }
+        
+        viewModel.trailingImageViewContentRelay.accept(trailingImageViewContent)
+
+        viewModel.tap
+            .emit(weak: self) { (self) in
+                self?.stateService.paymentMethods()
+            }
+            .disposed(by: disposeBag)
+        
+        bottomAuxiliaryViewModelStateRelay.accept(.selection(viewModel))
+    }
+}

@@ -19,7 +19,7 @@ extension AnalyticsEvents {
             case funds
             case newCard
             
-            var string: String {
+            public var string: String {
                 switch self {
                 case .card:
                     return "CARD"
@@ -39,14 +39,20 @@ extension AnalyticsEvents {
             case timeout = "TIMEOUT"
         }
         
+        public enum ParameterName {
+            public static let paymentMethod = "paymentMethod"
+            static let currency = "currency"
+            static let amount = "amount"
+        }
+        
         case sbWantToBuyScreenShown
         case sbWantToBuyButtonClicked
         case sbWantToBuyButtonSkip
         case sbWantToBuyScreenError
         case sbBuyFormShown
-        case sbBuyFormConfirmClick(currencyCode: String, amount: String, paymentMethod: PaymentMethod)
+        case sbBuyFormConfirmClick(currencyCode: String, amount: String, additionalParameters: [String: String])
         case sbBuyFormConfirmSuccess
-        case sbBuyFormCryptoChanged(asset: CryptoCurrency)
+        case sbBuyFormCryptoChanged(asset: String)
         case sbBuyFormMinFailure
         case sbBuyFormMinClicked
         case sbBuyFormMaxFailure
@@ -312,12 +318,6 @@ extension AnalyticsEvents {
 
         public var params: [String : String]? {
             
-            enum Name {
-                static let paymentMethod = "paymentMethod"
-                static let currency = "currency"
-                static let amount = "amount"
-            }
-            
             switch self {
             case .sbCheckoutCompleted(status: let status):
                 return ["status": status.rawValue]
@@ -329,24 +329,24 @@ extension AnalyticsEvents {
                  .sbCurrencySelected(currencyCode: let currencyCode),
                  .sbLinkBankScreenShown(currencyCode:  let currencyCode),
                  .sbLinkBankLoadingError(currencyCode: let currencyCode):
-                return [Name.currency : currencyCode]
+                return [ParameterName.currency : currencyCode]
             case .sbTradingWalletSend(asset: let currency),
                  .sbTradingWalletClicked(asset: let currency),
                  .sbWithdrawalScreenShown(asset: let currency),
                  .sbWithdrawalScreenClicked(asset: let currency):
                 return ["asset": currency.rawValue]
-            case .sbBuyFormConfirmClick(currencyCode: let currencyCode, amount: let amount, paymentMethod: let method):
-                return [
-                    Name.currency : currencyCode,
-                    Name.amount : amount,
-                    Name.paymentMethod : method.string
+            case .sbBuyFormConfirmClick(currencyCode: let currencyCode, amount: let amount, additionalParameters: let additionalParameters):
+                let parameters =  [
+                    ParameterName.currency : currencyCode,
+                    ParameterName.amount : amount,
                 ]
+                return parameters + additionalParameters 
             case .sbCheckoutShown(paymentMethod: let method):
-                return [ Name.paymentMethod : method.string ]
+                return [ ParameterName.paymentMethod : method.string ]
             case .sbCheckoutCancelConfirmed(paymentMethod: let method):
-                return [ Name.paymentMethod : method.string ]
+                return [ ParameterName.paymentMethod : method.string ]
             case .sbCheckoutConfirm(paymentMethod: let method):
-                return [ Name.paymentMethod : method.string ]
+                return [ ParameterName.paymentMethod : method.string ]
             case .sbBankDetailsCopied(bankName: let bankName):
                 return ["bank field name": bankName]
             default:

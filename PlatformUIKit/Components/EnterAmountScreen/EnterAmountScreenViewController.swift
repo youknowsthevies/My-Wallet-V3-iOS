@@ -1,5 +1,5 @@
 //
-//  BuyCryptoScreenViewController.swift
+//  EnterAmountScreenViewController.swift
 //  Blockchain
 //
 //  Created by Daniel Huri on 21/01/2020.
@@ -7,13 +7,13 @@
 //
 
 import PlatformKit
-import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
 
-/// A screen that allows the end-user to specify the amount of crypto he wishes to buy
-final class BuyCryptoScreenViewController: BaseScreenViewController {
+/// A screen that allows the end-user to specify an amount for an asset or account
+/// Designed to be used in Buy, Sell, Swap & Send.
+public final class EnterAmountScreenViewController: BaseScreenViewController {
 
     // MARK: - Types
 
@@ -21,46 +21,45 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
         enum SuperCompact {
             static let digitPadHeight: CGFloat = 216
             static let continueButtonViewBottomOffset: CGFloat = 16
-            static let selectionButtonHeight: CGFloat = 48
-            static let paymentMethodSelectionBottomOffset: CGFloat = 8
+            static let topSelectionViewHeight: CGFloat = 48
+            static let bottomAuxiliaryViewOffset: CGFloat = 8
         }
         enum Standard {
-            static let selectionButtonHeight: CGFloat = 78
+            static let topSelectionViewHeight: CGFloat = 78
         }
     }
     
     // MARK: - Properties
     
-    private let paymentMethodSeparatorView = TitledSeparatorView()
-    private let assetSelectionButtonView = SelectionButtonView()
+    private let topSelectionButtonView = SelectionButtonView()
     private var amountTranslationView: AmountTranslationView!
-    private let paymentMethodSelectionButtonView = SelectionButtonView()
+    private let bottomAuxiliaryItemSeparatorView = TitledSeparatorView()
+    private let bottomSelectionButtonView = SelectionButtonView()
     private let continueButtonView = ButtonView()
     private let digitPadView = DigitPadView()
 
-    private var assetSelectionViewHeightConstraint: NSLayoutConstraint!
-    private var paymentMethodSelectionViewHeightConstraint: NSLayoutConstraint!
+    private var topSelectionViewHeightConstraint: NSLayoutConstraint!
+    private var bottomSelectionButtonViewHeightConstraint: NSLayoutConstraint!
     private var digitPadHeightConstraint: NSLayoutConstraint!
     private var continueButtonTopConstraint: NSLayoutConstraint!
     private var digitPadSeparatorTopConstraint: NSLayoutConstraint!
 
     // MARK: - Injected
     
-    private let presenter: BuyCryptoScreenPresenter
+    private let presenter: EnterAmountScreenPresenter
     private let disposeBag = DisposeBag()
     
     // MARK: - Lifecycle
     
-    init(presenter: BuyCryptoScreenPresenter) {
+    public init(presenter: EnterAmountScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { nil }
     
-    override func loadView() {
+    public override func loadView() {
         view = UIView()
         view.backgroundColor = .white
                 
@@ -68,33 +67,33 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
 
         amountTranslationView = AmountTranslationView(presenter: presenter.amountTranslationPresenter)
         
-        view.addSubview(assetSelectionButtonView)
+        view.addSubview(topSelectionButtonView)
         view.addSubview(amountTranslationView)
-        view.addSubview(paymentMethodSeparatorView)
-        view.addSubview(paymentMethodSelectionButtonView)
+        view.addSubview(bottomAuxiliaryItemSeparatorView)
+        view.addSubview(bottomSelectionButtonView)
         view.addSubview(continueButtonView)
         view.addSubview(digitPadTopSeparatorView)
         view.addSubview(digitPadView)
         
-        assetSelectionButtonView.layoutToSuperview(.top, usesSafeAreaLayoutGuide: true)
-        assetSelectionButtonView.layoutToSuperview(.leading, .trailing)
-        assetSelectionViewHeightConstraint = assetSelectionButtonView.layout(dimension: .height, to: 78)
+        topSelectionButtonView.layoutToSuperview(.top, usesSafeAreaLayoutGuide: true)
+        topSelectionButtonView.layoutToSuperview(axis: .horizontal)
+        topSelectionViewHeightConstraint = topSelectionButtonView.layout(dimension: .height, to: 78)
         
         amountTranslationView.layoutToSuperview(axis: .horizontal)
-        amountTranslationView.layout(edge: .top, to: .bottom, of: assetSelectionButtonView)
+        amountTranslationView.layout(edge: .top, to: .bottom, of: topSelectionButtonView)
 
-        paymentMethodSeparatorView.layout(edge: .top, to: .bottom, of: amountTranslationView)
-        paymentMethodSeparatorView.layoutToSuperview(.leading, offset: 24, priority: .defaultHigh)
-        paymentMethodSeparatorView.layoutToSuperview(.trailing)
+        bottomAuxiliaryItemSeparatorView.layout(edge: .top, to: .bottom, of: amountTranslationView)
+        bottomAuxiliaryItemSeparatorView.layoutToSuperview(.leading, offset: 24, priority: .defaultHigh)
+        bottomAuxiliaryItemSeparatorView.layoutToSuperview(.trailing)
 
-        paymentMethodSelectionButtonView.layoutToSuperview(.leading, .trailing)
-        paymentMethodSelectionButtonView.layout(
+        bottomSelectionButtonView.layoutToSuperview(.leading, .trailing)
+        bottomSelectionButtonView.layout(
             edge: .top,
             to: .bottom,
-            of: paymentMethodSeparatorView,
+            of: bottomAuxiliaryItemSeparatorView,
             priority: .defaultLow
         )
-        paymentMethodSelectionViewHeightConstraint = paymentMethodSelectionButtonView.layout(
+        bottomSelectionButtonViewHeightConstraint = bottomSelectionButtonView.layout(
             dimension: .height,
             to: 78
         )
@@ -103,7 +102,7 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
         continueButtonTopConstraint = continueButtonView.layout(
             edge: .top,
             to: .bottom,
-            of: paymentMethodSelectionButtonView,
+            of: bottomSelectionButtonView,
             offset: 16
         )
         continueButtonView.layout(dimension: .height, to: 48)
@@ -125,18 +124,29 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
         digitPadTopSeparatorView.backgroundColor = presenter.separatorColor
     }
     
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         digitPadView.viewModel = presenter.digitPadViewModel
         continueButtonView.viewModel = presenter.continueButtonViewModel
-        assetSelectionButtonView.viewModel = presenter.assetSelectionButtonViewModel
-        paymentMethodSeparatorView.viewModel = presenter.paymentMethodSeparatorViewModel
-        setupPaymentMethodSelectionButtonView()
-        presenter.refresh()
+        topSelectionButtonView.viewModel = presenter.topSelectionButtonViewModel
+        bottomAuxiliaryItemSeparatorView.viewModel = presenter.bottomAuxiliaryItemSeparatorViewModel
+        setupBottomAuxiliaryView()
+        presenter.viewDidLoad()
     }
     
-    override func viewWillLayoutSubviews() {
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        presenter.viewWillAppear()
+        setupNavigationBar()
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        presenter.viewDidDisappear()
+    }
+    
+    public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         /// NOTE: This must be in `viewWillLayoutSubviews`
         /// This is a special treatment due to the manner view controllers
@@ -146,15 +156,10 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
             digitPadHeightConstraint.constant = Constant.SuperCompact.digitPadHeight
             digitPadSeparatorTopConstraint.constant = Constant.SuperCompact.continueButtonViewBottomOffset
             if view.bounds.height <= UIDevice.PhoneHeight.se.rawValue {
-                continueButtonTopConstraint.constant = Constant.SuperCompact.paymentMethodSelectionBottomOffset
-                assetSelectionViewHeightConstraint.constant = Constant.SuperCompact.selectionButtonHeight
+                continueButtonTopConstraint.constant = Constant.SuperCompact.bottomAuxiliaryViewOffset
+                topSelectionViewHeightConstraint.constant = Constant.SuperCompact.topSelectionViewHeight
             }
         }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        setupNavigationBar()
     }
     
     // MARK: - Setup
@@ -164,32 +169,30 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
         setStandardDarkContentStyle()
     }
         
-    private func setupPaymentMethodSelectionButtonView() {
-        presenter.paymentMethodSelectionButtonViewModelState
+    private func setupBottomAuxiliaryView() {
+        presenter.bottomAuxiliaryViewModelState
             .drive(
                 onNext: { [weak self] state in
-                    self?.paymentMethodStateDidChange(to: state)
+                    self?.bottomAuxiliaryViewModelStateDidChange(to: state)
                 }
            )
            .disposed(by: disposeBag)
     }
     
-    private func paymentMethodStateDidChange(
-        to state: BuyCryptoScreenPresenter.PaymentMethodSelectionButtonViewModelState
-    ) {
+    private func bottomAuxiliaryViewModelStateDidChange(to state: EnterAmountScreenPresenter.BottomAuxiliaryViewModelState) {
         let height: CGFloat
         let visibility: Visibility
         switch state {
         case .hidden:
             height = 0.5
             visibility = .hidden
-        case .visible(let viewModel):
-            paymentMethodSelectionButtonView.viewModel = viewModel
+        case .selection(let viewModel):
+            bottomSelectionButtonView.viewModel = viewModel
             visibility = .visible
             if presenter.deviceType == .superCompact {
-                height = Constant.SuperCompact.selectionButtonHeight
+                height = Constant.SuperCompact.topSelectionViewHeight
             } else {
-                height = Constant.Standard.selectionButtonHeight
+                height = Constant.Standard.topSelectionViewHeight
             }
         }
         UIView.animate(
@@ -199,9 +202,9 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
             initialSpringVelocity: 0,
             options: [.beginFromCurrentState, .curveEaseOut],
             animations: {
-                self.paymentMethodSeparatorView.alpha = visibility.defaultAlpha
-                self.paymentMethodSelectionButtonView.alpha = visibility.defaultAlpha
-                self.paymentMethodSelectionViewHeightConstraint.constant = height
+                self.bottomAuxiliaryItemSeparatorView.alpha = visibility.defaultAlpha
+                self.bottomSelectionButtonView.alpha = visibility.defaultAlpha
+                self.bottomSelectionButtonViewHeightConstraint.constant = height
             },
             completion: nil
         )
@@ -209,11 +212,11 @@ final class BuyCryptoScreenViewController: BaseScreenViewController {
     
     // MARK: - Navigation
     
-    override func navigationBarLeadingButtonPressed() {
+    public override func navigationBarLeadingButtonPressed() {
         presenter.previous()
     }
     
-    override func navigationBarTrailingButtonPressed() {
+    public override func navigationBarTrailingButtonPressed() {
         presenter.previous()
     }
 }

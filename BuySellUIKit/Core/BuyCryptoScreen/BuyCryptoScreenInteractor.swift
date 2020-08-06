@@ -1,5 +1,5 @@
 //
-//  BuyCryptoScreenInteractor.swift
+//  EnterAmountScreenInteractor.swift
 //  Blockchain
 //
 //  Created by Daniel Huri on 23/01/2020.
@@ -13,7 +13,7 @@ import ToolKit
 import RxRelay
 import RxSwift
 
-final class BuyCryptoScreenInteractor {
+final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor, EnterAmountScreenInteractorAPI {
 
     // MARK: - Types
     
@@ -41,15 +41,22 @@ final class BuyCryptoScreenInteractor {
             }
         }
     }
+    
+    // MARK: - Properties
 
     /// Exposes a stream of the currently selected `CryptoCurrency` value
-    var selectedCryptoCurrency: Observable<CryptoCurrency> {
+    public var selectedCryptoCurrency: Observable<CryptoCurrency> {
         cryptoCurrencySelectionService.selectedData.map { $0.cryptoCurrency }.asObservable()
     }
     
     /// The state of the screen with associated data
     var state: Observable<State> {
         stateRelay.asObservable()
+    }
+    
+    /// Whether the state of the screen is valid
+    var hasValidState: Observable<Bool> {
+        state.map { $0.isValid }
     }
     
     /// The (optional) data, in case the state's value is `inBounds`.
@@ -110,15 +117,8 @@ final class BuyCryptoScreenInteractor {
     }
     
     // MARK: - Dependencies
-    
-    /// Amount translation interactor
-    let amountTranslationInteractor: AmountTranslationInteractor
-    
-    let exchangeProvider: ExchangeProviding
-    let fiatCurrencyService: FiatCurrencyServiceAPI
-    private let cryptoCurrencySelectionService: SelectionServiceAPI & CryptoCurrencyServiceAPI
+        
     private let kycTiersService: KYCTiersServiceAPI
-
     private let suggestedAmountsService: SuggestedAmountsServiceAPI
     private let pairsService: SupportedPairsInteractorServiceAPI
     private let eligibilityService: EligibilityServiceAPI
@@ -155,18 +155,21 @@ final class BuyCryptoScreenInteractor {
         self.suggestedAmountsService = suggestedAmountsService
         self.eligibilityService = eligibilityService
         self.paymentMethodTypesService = paymentMethodTypesService
-        self.fiatCurrencyService = fiatCurrencyService
-        self.cryptoCurrencySelectionService = cryptoCurrencySelectionService
         self.orderCreationService = orderCreationService
-        self.exchangeProvider = exchangeProvider
-
-        amountTranslationInteractor = AmountTranslationInteractor(
+        super.init(
+            exchangeProvider: exchangeProvider,
             fiatCurrencyService: fiatCurrencyService,
-            cryptoCurrencyService: cryptoCurrencySelectionService,
-            exchangeProvider: exchangeProvider
+            cryptoCurrencySelectionService: cryptoCurrencySelectionService,
+            initialActiveInput: .fiat
         )
-        // Begin with fiat as active input
-        amountTranslationInteractor.activeInputRelay.accept(.fiat)
+    }
+    
+    // MARK: - Interactor
+    
+    func didLoad() {
+        let exchangeProvider = self.exchangeProvider
+        let cryptoCurrencySelectionService = self.cryptoCurrencySelectionService
+        let fiatCurrencyService = self.fiatCurrencyService
         
         state
             .flatMapLatest(weak: self) { (self, state) -> Observable<AmountTranslationInteractor.State> in
@@ -307,12 +310,11 @@ final class BuyCryptoScreenInteractor {
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-    }
-    
-    /// Triggers a refresh
-    func refresh() {
+        
         suggestedAmountsService.refresh()
     }
+
+    // MARK: - Actions
     
     func createOrder(from candidate: CandidateOrderDetails) -> Single<CheckoutData> {
         orderCreationService.create(using: candidate)

@@ -544,7 +544,7 @@ public final class Router: RouterAPI {
             stateService: stateService,
             interactor: interactor
         )
-        let viewController = BuyCryptoScreenViewController(presenter: presenter)
+        let viewController = EnterAmountScreenViewController(presenter: presenter)
         
         navigationRouter.present(viewController: viewController)
     }

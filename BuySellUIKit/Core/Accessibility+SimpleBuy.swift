@@ -21,7 +21,6 @@ extension Accessibility.Identifier {
             private static let prefix = "Buy."
             static let minimumBuy = "\(prefix)MinimumBuy"
             static let maximumBuy = "\(prefix)MaximumBuy"
-            static let trailingActionButton = "\(prefix)TraillingActionButton"
             static let paymentMethodTitle = "\(prefix)paymentMethodTitle"
             static let selectPaymentMethodLabel = "\(prefix)selectPaymentMethodLabel"
         }
