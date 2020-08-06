@@ -91,12 +91,20 @@ settingGroups:
       PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain
     groups:
     - base_signing
+  debug_signing_today_extension:
+    base:
+      CODE_SIGN_IDENTITY: iPhone Developer
+      PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain.TodayExtension
   release_signing:
     base:
       CODE_SIGN_IDENTITY: iPhone Distribution
       PROVISIONING_PROFILE_SPECIFIER: match AppStore com.rainydayapps.Blockchain
     groups:
     - base_signing
+  release_signing_today_extension:
+    base:
+      CODE_SIGN_IDENTITY: iPhone Distribution
+      PROVISIONING_PROFILE_SPECIFIER: match AppStore com.rainydayapps.Blockchain.TodayExtension
 settings:
   base:
     CODE_SIGN_STYLE: Manual
@@ -353,66 +361,6 @@ targets:
     - group: BlockchainTests/TestKit
       path: TestKit/Mocks/StellarKit
     type: bundle.unit-test
-  InterestKit:
-    dependencies:
-    - target: PlatformKit
-    - target: NetworkKit
-    - target: ToolKit
-    - carthage: DIKit
-    - carthage: RxSwift
-    - carthage: RxRelay
-    scheme:
-      testTargets:
-      - InterestKitTests
-    templates:
-    - Framework
-  InterestKitTests:
-    dependencies:
-    - target: InterestKit
-    sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/InterestKit
-    templates:
-    - FrameworkTest
-  InterestUIKit:
-    dependencies:
-    - target: InterestKit
-    - target: PlatformUIKit
-    - target: PlatformKit
-    - target: CommonCryptoKit
-    - target: NetworkKit
-    - target: ToolKit
-    - carthage: DIKit
-    - carthage: RxSwift
-    - carthage: RxRelay
-    - carthage: RxCocoa
-    scheme:
-      testTargets:
-      - InterestUIKitTests
-    templates:
-    - Framework
-  InterestUIKitTests:
-    dependencies:
-    - target: InterestUIKit
-    sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformUIKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/InterestKit
-    templates:
-    - FrameworkTest
   BuySellKit:
     dependencies:
     - target: PlatformKit
@@ -564,6 +512,62 @@ targets:
     - target: HDWalletKit
     templates:
     - FrameworkTest
+  InterestKit:
+    dependencies:
+    - target: PlatformKit
+    - target: NetworkKit
+    - target: ToolKit
+    - carthage: DIKit
+    - carthage: RxSwift
+    - carthage: RxRelay
+    scheme:
+      testTargets:
+      - InterestKitTests
+    templates:
+    - Framework
+  InterestKitTests:
+    dependencies:
+    - target: InterestKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    templates:
+    - FrameworkTest
+  InterestUIKit:
+    dependencies:
+    - target: InterestKit
+    - target: PlatformUIKit
+    - target: PlatformKit
+    - target: CommonCryptoKit
+    - target: NetworkKit
+    - target: ToolKit
+    - carthage: DIKit
+    - carthage: RxSwift
+    - carthage: RxRelay
+    - carthage: RxCocoa
+    scheme:
+      testTargets:
+      - InterestUIKitTests
+    templates:
+    - Framework
+  InterestUIKitTests:
+    dependencies:
+    - target: InterestUIKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformUIKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    templates:
+    - FrameworkTest
   Localization:
     templates:
     - Framework
@@ -589,13 +593,13 @@ targets:
         PIN_CERTIFICATE: $(PIN_CERTIFICATE)
         RETAIL_CORE_SOCKET_URL: $(RETAIL_CORE_SOCKET_URL)
         RETAIL_CORE_URL: $(RETAIL_CORE_URL)
+        SWIFTY_BEAVER_APP_ID: $(SWIFTY_BEAVER_APP_ID)
+        SWIFTY_BEAVER_APP_KEY: $(SWIFTY_BEAVER_APP_KEY)
+        SWIFTY_BEAVER_APP_SECRET: $(SWIFTY_BEAVER_APP_SECRET)
         WALLET_SERVER: $(WALLET_SERVER)
         WEBSOCKET_SERVER: $(WEBSOCKET_SERVER)
         WEBSOCKET_SERVER_BCH: $(WEBSOCKET_SERVER_BCH)
         WEBSOCKET_SERVER_ETH: $(WEBSOCKET_SERVER_ETH)
-        SWIFTY_BEAVER_APP_ID: $(SWIFTY_BEAVER_APP_ID)
-        SWIFTY_BEAVER_APP_SECRET: $(SWIFTY_BEAVER_APP_SECRET)
-        SWIFTY_BEAVER_APP_KEY: $(SWIFTY_BEAVER_APP_KEY)
     platform: iOS
     postCompileScripts:
     - name: Get SSL Certificate
@@ -729,12 +733,30 @@ targets:
     - carthage: DIKit
     - carthage: Differentiator
     platform: iOS
-    type: app-extension
     settings:
-        base:
-            PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.TodayExtension
+      base:
+        CODE_SIGN_STYLE: Manual
+        DEVELOPMENT_TEAM: NZ6PH75U7K
+        PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.TodayExtension
+      configs:
+        Debug Dev:
+          groups:
+          - debug_signing_today_extension
+        Debug Production:
+          groups:
+          - debug_signing_today_extension
+        Debug Staging:
+          groups:
+          - debug_signing_today_extension
+        Release:
+          groups:
+          - release_signing_today_extension
+        Release Staging:
+          groups:
+          - release_signing_today_extension
     sources:
-        - TodayExtension
+    - TodayExtension
+    type: app-extension
   ToolKit:
     dependencies:
     - carthage: BigInt

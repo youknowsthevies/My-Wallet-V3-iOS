@@ -13,7 +13,7 @@ import ToolKit
 import RxRelay
 import RxSwift
 
-final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor, EnterAmountScreenInteractorAPI {
+final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
 
     // MARK: - Types
     
@@ -45,7 +45,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor, EnterAmountS
     // MARK: - Properties
 
     /// Exposes a stream of the currently selected `CryptoCurrency` value
-    public var selectedCryptoCurrency: Observable<CryptoCurrency> {
+    public override var selectedCryptoCurrency: Observable<CryptoCurrency> {
         cryptoCurrencySelectionService.selectedData.map { $0.cryptoCurrency }.asObservable()
     }
     
@@ -55,7 +55,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor, EnterAmountS
     }
     
     /// Whether the state of the screen is valid
-    var hasValidState: Observable<Bool> {
+    public override var hasValidState: Observable<Bool> {
         state.map { $0.isValid }
     }
     
@@ -166,7 +166,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor, EnterAmountS
     
     // MARK: - Interactor
     
-    func didLoad() {
+    public override func didLoad() {
         let exchangeProvider = self.exchangeProvider
         let cryptoCurrencySelectionService = self.cryptoCurrencySelectionService
         let fiatCurrencyService = self.fiatCurrencyService

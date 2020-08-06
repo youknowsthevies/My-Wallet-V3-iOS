@@ -60,7 +60,7 @@ open class EnterAmountScreenPresenter: Presenter {
     public let analyticsRecorder: AnalyticsEventRecorderAPI
     public let displayBundle: DisplayBundle
     
-    private let interactor: EnterAmountScreenInteractor & EnterAmountScreenInteractorAPI
+    private let interactor: EnterAmountScreenInteractor
     private let backwardsNavigation: () -> Void
     
     // MARK: - Accessors
@@ -73,7 +73,7 @@ open class EnterAmountScreenPresenter: Presenter {
                 analyticsRecorder: AnalyticsEventRecorderAPI,
                 backwardsNavigation: @escaping () -> Void,
                 displayBundle: DisplayBundle,
-                interactor: EnterAmountScreenInteractor & EnterAmountScreenInteractorAPI) {
+                interactor: EnterAmountScreenInteractor) {
         self.analyticsRecorder = analyticsRecorder
         self.uiUtilityProvider = uiUtilityProvider
         self.interactor = interactor

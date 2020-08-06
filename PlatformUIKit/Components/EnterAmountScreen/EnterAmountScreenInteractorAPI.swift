@@ -8,6 +8,7 @@
 
 import RxSwift
 import PlatformKit
+import ToolKit
 
 /// API for interaction of enter amount screen
 public protocol EnterAmountScreenInteractorAPI: AnyObject {
@@ -16,8 +17,27 @@ public protocol EnterAmountScreenInteractorAPI: AnyObject {
     func didLoad()
 }
 
-open class EnterAmountScreenInteractor: Interactor {
-    
+open class EnterAmountScreenInteractor: Interactor, EnterAmountScreenInteractorAPI {
+
+    /// Must be implemented - decides whether the interactor has a valid state.
+    /// if streams `true`, then the CTA button would become enabled.
+    /// `super.hasValidState` must not be called by the subclass.
+    open var hasValidState: Observable<Bool> {
+        unimplemented()
+    }
+
+    /// Must be implemented - selected currency
+    /// `super.selectedCryptoCurrency` must not be called by the subclass.
+    open var selectedCryptoCurrency: Observable<CryptoCurrency> {
+        unimplemented()
+    }
+
+    /// Any one time initialization performed when the bound view controller appears.
+    /// `super.didLoad` must not be called by the subclass.
+    open func didLoad() {
+        unimplemented()
+    }
+
     // MARK: - Injected
     
     public let exchangeProvider: ExchangeProviding
