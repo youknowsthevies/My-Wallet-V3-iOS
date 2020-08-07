@@ -10,7 +10,7 @@ import RxSwift
 import ToolKit
 import NetworkKit
 
-public final class NabuTokenStore {
+final class NabuTokenStore {
     
     private let sessionTokenData = Atomic<NabuSessionTokenResponse?>(nil)
     
@@ -20,6 +20,12 @@ public final class NabuTokenStore {
     
     var requiresRefresh: Single<Bool> {
         .just(sessionTokenData.value == nil)
+    }
+    
+    init() {
+        NotificationCenter.when(.logout) { [weak self] _ in
+            self?.sessionTokenData.mutate { $0 = nil }
+        }
     }
     
     func invalidate() -> Completable {
@@ -37,11 +43,5 @@ public final class NabuTokenStore {
                 observer(.success(sessionTokenData))
                 return Disposables.create()
             }
-    }
-    
-    public init() {
-        NotificationCenter.when(.logout) { [weak self] _ in
-            self?.sessionTokenData.mutate { $0 = nil }
-        }
     }
 }
