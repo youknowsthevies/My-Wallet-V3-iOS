@@ -49,7 +49,7 @@ extension DependencyContainer {
         
         single { NabuAuthenticationExecutor() as NabuAuthenticationExecutorAPI }
         
-        single { NabuAuthenticator() as AuthenticatorAPI }
+        factory { NabuAuthenticator() as AuthenticatorAPI }
         
         factory { JWTService() as JWTServiceAPI }
         
