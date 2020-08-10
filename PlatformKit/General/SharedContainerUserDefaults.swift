@@ -27,8 +27,7 @@ public final class SharedContainerUserDefaults: UserDefaults {
     // MARK: - Rx
     
     private var portfolioObservable: Observable<Portfolio?> {
-        _ = setup
-        return portfolioRelay
+        portfolioRelay
             .asObservable()
     }
     
@@ -55,6 +54,7 @@ public final class SharedContainerUserDefaults: UserDefaults {
     
     public convenience init() {
         self.init(suiteName: SharedContainerUserDefaults.name)!
+        _ = setup
     }
     
     public var portfolioSyncEnabled: Observable<Bool> {

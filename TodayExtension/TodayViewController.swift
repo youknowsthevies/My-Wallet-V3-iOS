@@ -35,14 +35,14 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         // swiftlint:enable trailing_semicolon
     }()
     
-    private let tableView: SelfSizingTableView
+    private let tableView: UITableView
     private let presenter: TodayViewPresenter
     private let disposeBag = DisposeBag()
     
     init() {
         _ = Self.setupDependencies
         self.presenter = TodayViewPresenter()
-        self.tableView = SelfSizingTableView()
+        self.tableView = UITableView()
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -54,7 +54,6 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     override func loadView() {
         view = UIView()
-        view.backgroundColor = .white
     }
     
     override func viewDidLoad() {
