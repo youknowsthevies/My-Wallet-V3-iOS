@@ -22,24 +22,20 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LiD-8a-32n" customClass="TodayAssetPriceView" customModule="PlatformUIKit">
-                        <rect key="frame" x="70.5" y="8" width="327.5" height="116"/>
+                        <rect key="frame" x="70.5" y="8" width="327.5" height="114"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <constraints>
-                            <constraint firstAttribute="height" priority="250" constant="32" id="3e7-hN-pB4"/>
-                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="6" id="M8s-CY-Blo"/>
-                        </constraints>
                     </view>
                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="5xJ-S2-LTD">
-                        <rect key="frame" x="10" y="41.5" width="52.5" height="49"/>
+                        <rect key="frame" x="10" y="8" width="52.5" height="114"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F8R-ZR-0F8">
-                                <rect key="frame" x="0.0" y="0.0" width="52.5" height="24.5"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F8R-ZR-0F8">
+                                <rect key="frame" x="0.0" y="0.0" width="52.5" height="89.5"/>
                                 <fontDescription key="fontDescription" name="Inter-SemiBold" family="Inter" pointSize="20"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="37j-1z-hBA">
-                                <rect key="frame" x="0.0" y="24.5" width="52.5" height="24.5"/>
+                                <rect key="frame" x="0.0" y="89.5" width="52.5" height="24.5"/>
                                 <fontDescription key="fontDescription" name="Inter-SemiBold" family="Inter" pointSize="20"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -56,12 +52,14 @@
                 </subviews>
                 <constraints>
                     <constraint firstItem="efk-Co-oEw" firstAttribute="leading" secondItem="F8R-ZR-0F8" secondAttribute="leading" id="01J-Vx-Ofc"/>
+                    <constraint firstItem="5xJ-S2-LTD" firstAttribute="top" secondItem="odm-Ku-wHW" secondAttribute="top" constant="8" id="46F-tV-HcQ"/>
                     <constraint firstItem="efk-Co-oEw" firstAttribute="trailing" secondItem="LiD-8a-32n" secondAttribute="trailing" id="CSt-mo-a6v"/>
-                    <constraint firstItem="efk-Co-oEw" firstAttribute="top" secondItem="LiD-8a-32n" secondAttribute="bottom" constant="6" id="GBO-DC-FVk"/>
+                    <constraint firstItem="efk-Co-oEw" firstAttribute="top" secondItem="LiD-8a-32n" secondAttribute="bottom" constant="8" id="GBO-DC-FVk"/>
                     <constraint firstAttribute="bottom" secondItem="efk-Co-oEw" secondAttribute="bottom" constant="1" id="IZ5-v7-qqO"/>
                     <constraint firstItem="5xJ-S2-LTD" firstAttribute="leading" secondItem="odm-Ku-wHW" secondAttribute="leading" constant="10" id="Ykp-HD-C9M"/>
                     <constraint firstItem="LiD-8a-32n" firstAttribute="top" secondItem="odm-Ku-wHW" secondAttribute="top" constant="8" id="aLJ-gZ-kKi"/>
                     <constraint firstItem="5xJ-S2-LTD" firstAttribute="centerY" secondItem="LiD-8a-32n" secondAttribute="centerY" id="cfZ-yP-qSa"/>
+                    <constraint firstItem="efk-Co-oEw" firstAttribute="top" secondItem="5xJ-S2-LTD" secondAttribute="bottom" constant="8" id="eFe-c5-q0m"/>
                     <constraint firstAttribute="trailing" secondItem="LiD-8a-32n" secondAttribute="trailing" constant="16" id="tql-gz-ii7"/>
                     <constraint firstItem="LiD-8a-32n" firstAttribute="leading" secondItem="5xJ-S2-LTD" secondAttribute="trailing" constant="8" id="vL7-kD-AJR"/>
                 </constraints>

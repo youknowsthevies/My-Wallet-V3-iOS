@@ -35,14 +35,14 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         // swiftlint:enable trailing_semicolon
     }()
     
-    private let tableView: UITableView
+    private let tableView: SelfSizingTableView
     private let presenter: TodayViewPresenter
     private let disposeBag = DisposeBag()
     
     init() {
         _ = Self.setupDependencies
         self.presenter = TodayViewPresenter()
-        self.tableView = UITableView()
+        self.tableView = SelfSizingTableView()
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -67,7 +67,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         tableView.layoutToSuperview(axis: .horizontal, usesSafeAreaLayoutGuide: true)
         tableView.layoutToSuperview(axis: .vertical, usesSafeAreaLayoutGuide: true)
         tableView.backgroundColor = UIColor.TodayExtension.background
-        tableView.estimatedRowHeight = 80
+        tableView.estimatedRowHeight = 56
         tableView.estimatedSectionHeaderHeight = 32
         tableView.sectionHeaderHeight = UITableView.automaticDimension
         tableView.rowHeight = UITableView.automaticDimension
