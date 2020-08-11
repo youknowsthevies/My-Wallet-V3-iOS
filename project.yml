@@ -194,7 +194,6 @@ targets:
     - carthage: Differentiator
     - carthage: scrypt
     - carthage: secp256k1
-    - carthage: SocketIO
     - carthage: Starscream
     - carthage: stellarsdk
     - carthage: web3swift
