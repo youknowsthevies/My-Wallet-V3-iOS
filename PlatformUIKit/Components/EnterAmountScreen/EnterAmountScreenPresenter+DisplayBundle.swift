@@ -15,6 +15,17 @@ extension EnterAmountScreenPresenter {
     /// Contains localized strings, analytics events and accessibility identifiers
     public struct DisplayBundle {
         
+        public struct Colors {
+            public let digitPadTopSeparator: Color
+            public let bottomAuxiliaryItemSeparator: Color
+            
+            public init(digitPadTopSeparator: Color,
+                        bottomAuxiliaryItemSeparator: Color) {
+                self.digitPadTopSeparator = digitPadTopSeparator
+                self.bottomAuxiliaryItemSeparator = bottomAuxiliaryItemSeparator
+            }
+        }
+        
         public struct Events {
             public let didAppear: AnalyticsEvent
             public let minTapped: AnalyticsEvent
@@ -70,11 +81,16 @@ extension EnterAmountScreenPresenter {
         }
         
         public let strings: Strings
+        public let colors: Colors
         public let events: Events
         public let accessibilityIdentifiers: AccessibilityIdentifiers
         
-        public init(strings: Strings, events: Events, accessibilityIdentifiers: AccessibilityIdentifiers) {
+        public init(strings: Strings,
+                    colors: Colors,
+                    events: Events,
+                    accessibilityIdentifiers: AccessibilityIdentifiers) {
             self.strings = strings
+            self.colors = colors
             self.events = events
             self.accessibilityIdentifiers  = accessibilityIdentifiers
         }

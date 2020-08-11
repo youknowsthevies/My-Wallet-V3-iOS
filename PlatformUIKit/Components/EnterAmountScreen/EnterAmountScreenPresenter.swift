@@ -20,8 +20,11 @@ open class EnterAmountScreenPresenter: Presenter {
     /// The state of the bottom auxiliary view
     public enum BottomAuxiliaryViewModelState {
         
-        /// Visible - selection button
+        /// A selection button - used to show dropdowns
         case selection(SelectionButtonViewModel)
+        
+        /// Max available style button with available amount for spending and use-maximum button
+        case maxAvailable(SendAuxililaryViewPresenter)
         
         /// Hidden - nothing to present
         case hidden
@@ -32,7 +35,7 @@ open class EnterAmountScreenPresenter: Presenter {
     public let deviceType = DevicePresenter.type
     let title: String
     
-    var bottomAuxiliaryViewModelState: Driver<BottomAuxiliaryViewModelState> {
+    public var bottomAuxiliaryViewModelState: Driver<BottomAuxiliaryViewModelState> {
         bottomAuxiliaryViewModelStateRelay.asDriver()
     }
     
@@ -50,7 +53,6 @@ open class EnterAmountScreenPresenter: Presenter {
     
     let continueButtonViewModel: ButtonViewModel
     let amountTranslationPresenter: AmountTranslationPresenter
-    let separatorColor: Color = .lightBorder
     let bottomAuxiliaryItemSeparatorViewModel: TitledSeparatorViewModel
     let digitPadViewModel: DigitPadViewModel
 
@@ -82,6 +84,7 @@ open class EnterAmountScreenPresenter: Presenter {
         self.displayBundle = displayBundle
         bottomAuxiliaryItemSeparatorViewModel = TitledSeparatorViewModel(
             title: displayBundle.strings.bottomAuxiliaryItemSeparatorTitle,
+            separatorColor: displayBundle.colors.bottomAuxiliaryItemSeparator,
             accessibilityId: displayBundle.accessibilityIdentifiers.bottomAuxiliaryItemSeparatorTitle
         )
         amountTranslationPresenter = AmountTranslationPresenter(
@@ -118,7 +121,7 @@ open class EnterAmountScreenPresenter: Presenter {
             .bindAndCatch(to: continueButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
-        interactor.selectedCryptoCurrency
+        interactor.selectedCurrencyType
             .map {
                 .image(
                     .init(
@@ -133,19 +136,19 @@ open class EnterAmountScreenPresenter: Presenter {
             .bindAndCatch(to: topSelectionButtonViewModel.leadingContentTypeRelay)
             .disposed(by: disposeBag)
 
-        interactor.selectedCryptoCurrency
+        interactor.selectedCurrencyType
             .map { $0.name }
             .bindAndCatch(to: topSelectionButtonViewModel.titleRelay)
             .disposed(by: disposeBag)
 
-        interactor.selectedCryptoCurrency
+        interactor.selectedCurrencyType
             .map { .init(id: $0.displayCode, label: $0.name) }
             .bindAndCatch(to: topSelectionButtonViewModel.accessibilityContentRelay)
             .disposed(by: disposeBag)
 
         let displayBundle = self.displayBundle
         
-        interactor.selectedCryptoCurrency
+        interactor.selectedCurrencyType
             .map { displayBundle.events.sourceAccountChanged($0.code) }
             .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)

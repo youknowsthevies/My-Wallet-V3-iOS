@@ -205,10 +205,11 @@ extension ButtonViewModel {
         contentColor: UIColor = .white,
         borderColor: UIColor = .clear,
         cornerRadius: CGFloat = 8,
+        font: UIFont = .main(.semibold, 16),
         accessibilityId: String = Accessibility.Identifier.General.mainCTAButton
         ) -> ButtonViewModel {
         var viewModel = ButtonViewModel(
-            font: .main(.semibold, 16),
+            font: font,
             cornerRadius: cornerRadius,
             accessibility: .init(id: .value(accessibilityId))
         )
@@ -228,10 +229,11 @@ extension ButtonViewModel {
         contentColor: UIColor = .primaryButton,
         borderColor: UIColor = .mediumBorder,
         cornerRadius: CGFloat = 8,
+        font: UIFont = .main(.semibold, 16),
         accessibilityId: String = Accessibility.Identifier.General.secondaryCTAButton
         ) -> ButtonViewModel {
         var viewModel = ButtonViewModel(
-            font: .main(.semibold, 16),
+            font: font,
             cornerRadius: cornerRadius,
             accessibility: .init(id: .value(accessibilityId))
         )

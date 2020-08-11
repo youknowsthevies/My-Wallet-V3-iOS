@@ -45,8 +45,8 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     // MARK: - Properties
 
     /// Exposes a stream of the currently selected `CryptoCurrency` value
-    public override var selectedCryptoCurrency: Observable<CryptoCurrency> {
-        cryptoCurrencySelectionService.selectedData.map { $0.cryptoCurrency }.asObservable()
+   override var selectedCurrencyType: Observable<CurrencyType> {
+        cryptoCurrencySelectionService.selectedData.map { $0.cryptoCurrency.currency }.asObservable()
     }
     
     /// The state of the screen with associated data
@@ -55,8 +55,8 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     }
     
     /// Whether the state of the screen is valid
-    public override var hasValidState: Observable<Bool> {
-        state.map { $0.isValid }
+    override var hasValidState: Observable<Bool> {
+        state.map(\.isValid)
     }
     
     /// The (optional) data, in case the state's value is `inBounds`.
@@ -166,7 +166,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     
     // MARK: - Interactor
     
-    public override func didLoad() {
+    override func didLoad() {
         let exchangeProvider = self.exchangeProvider
         let cryptoCurrencySelectionService = self.cryptoCurrencySelectionService
         let fiatCurrencyService = self.fiatCurrencyService

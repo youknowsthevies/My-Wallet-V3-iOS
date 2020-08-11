@@ -25,6 +25,10 @@ extension Accessibility.Identifier {
             static let selectPaymentMethodLabel = "\(prefix)selectPaymentMethodLabel"
         }
         
+        enum SellScreen {
+            private static let prefix = "Sell."
+        }
+        
         enum PaymentMethodsScreen {
             private static let prefix = "PaymentMethods."
             static let addCard = "\(prefix)AddCard"

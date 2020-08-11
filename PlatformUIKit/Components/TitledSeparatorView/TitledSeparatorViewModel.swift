@@ -11,13 +11,13 @@ public struct TitledSeparatorViewModel {
     let separatorColor: Color
     let accessibility: Accessibility
     
-    public init(title: String, accessibilityId: String) {
+    public init(title: String, separatorColor: Color, accessibilityId: String) {
         titleLabelContent = LabelContent(
             text: title,
             font: .main(.semibold, 12),
             color: .titleText
         )
-        separatorColor = .lightBorder
+        self.separatorColor = separatorColor
         accessibility = .id(accessibilityId)
     }
 }

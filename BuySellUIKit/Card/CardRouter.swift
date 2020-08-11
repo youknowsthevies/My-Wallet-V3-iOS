@@ -16,12 +16,7 @@ import ToolKit
 public final class CardRouter: PlatformUIKit.Router<CardRouterInteractor> {
     
     // MARK: - Types
-    
-    public enum RoutingType {
-        case modal
-        case embed(inside: NavigationControllerAPI)
-    }
-    
+
     // MARK: - Private Properties
 
     private let routingType: RoutingType

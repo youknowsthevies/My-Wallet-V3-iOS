@@ -1,8 +1,8 @@
 //
-//  DisplayBundle.swift
+//  Sell+DisplayBundle.swift
 //  BuySellUIKit
 //
-//  Created by Daniel on 04/08/2020.
+//  Created by Daniel on 05/08/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
@@ -13,20 +13,25 @@ import PlatformUIKit
 
 extension EnterAmountScreenPresenter.DisplayBundle {
     
-    static var buy: EnterAmountScreenPresenter.DisplayBundle {
+    static func sell(cryptoCurrency: CryptoCurrency) -> EnterAmountScreenPresenter.DisplayBundle {
         
-        typealias LocalizedString = LocalizationConstants.SimpleBuy.BuyCryptoScreen
+        typealias LocalizedString = LocalizationConstants.SimpleBuy.SellCryptoScreen
         typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
-        typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.BuyScreen
+        typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.SellScreen
         
         return EnterAmountScreenPresenter.DisplayBundle(
             strings: Strings(
-                title: LocalizedString.title,
+                title: "\(LocalizedString.titlePrefix) \(cryptoCurrency.code)",
                 ctaButton: LocalizedString.ctaButton,
-                bottomAuxiliaryItemSeparatorTitle: LocalizedString.paymentMethodTitle,
-                useMin: LocalizedString.LimitView.Min.useMin,
-                useMax: LocalizedString.LimitView.Max.useMax
+                bottomAuxiliaryItemSeparatorTitle: "",
+                useMin: "",
+                useMax: LocalizedString.useMax
             ),
+            colors: Colors(
+                digitPadTopSeparator: .lightBorder,
+                bottomAuxiliaryItemSeparator: .clear
+            ),
+            // TODO: Daniel - Events
             events: Events(
                 didAppear: AnalyticsEvent.sbBuyFormShown,
                 minTapped: AnalyticsEvent.sbBuyFormMinClicked,
@@ -43,8 +48,9 @@ extension EnterAmountScreenPresenter.DisplayBundle {
                 sourceAccountChanged: { AnalyticsEvent.sbBuyFormCryptoChanged(asset: $0) }
             ),
             accessibilityIdentifiers: AccessibilityIdentifiers(
-                bottomAuxiliaryItemSeparatorTitle: AccessibilityId.paymentMethodTitle
+                bottomAuxiliaryItemSeparatorTitle: ""
             )
         )
     }
 }
+

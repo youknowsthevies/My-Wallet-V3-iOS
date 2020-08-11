@@ -167,6 +167,32 @@ extension LocalizationConstants.SimpleBuy {
             }
         }
     }
+    public enum SellCryptoScreen {
+        public static let from = NSLocalizedString(
+            "From: My %@ Trading Account",
+            comment: "Sell Crypto: `from` wallet format"
+        )
+        public static let to = NSLocalizedString(
+            "To: My %@ Account",
+            comment: "Sell Crypto: `to` wallet format"
+        )
+        public static let titlePrefix = NSLocalizedString(
+            "Sell",
+            comment: "Sell Crypto screen title prefix"
+        )
+        public static let ctaButton = NSLocalizedString(
+            "Continue",
+            comment: "Sell Crypto Screen - CTA button"
+        )
+        public static let available = NSLocalizedString(
+            "Available",
+            comment: "Sell Crypto Screen - Available balance title"
+        )
+        public static let useMax = NSLocalizedString(
+            "Sell Max",
+            comment: "Simple Buy: Sell Crypto Screen - Amount too high suffix"
+        )
+    }
     public enum IntroScreen {
         public enum BuyCard {
             public static let title = NSLocalizedString(

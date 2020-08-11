@@ -124,6 +124,14 @@ extension CurrencyType: Currency {
         }
         return true        
     }
+    
+    public var cryptoCurrency: CryptoCurrency? {
+        CryptoCurrency(code: code)
+    }
+    
+    public var fiatCurrency: FiatCurrency? {
+        FiatCurrency(code: code)
+    }
 }
 
 extension CryptoCurrency {

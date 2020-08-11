@@ -16,6 +16,11 @@ extension Accessibility {
 
 public extension Accessibility.Identifier {
     
+    enum ContentLabelView {
+        static let title = "ContentLabelView.title"
+        static let description = "ContentLabelView.description"
+    }
+    
     /// General accessibility
     struct General {
         

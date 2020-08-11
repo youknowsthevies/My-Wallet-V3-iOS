@@ -21,7 +21,7 @@ public struct MoneyValueBalancePairs: Equatable {
     public subscript(balanceType: BalanceType) -> MoneyValuePair {
         moneyPairs[balanceType] ?? MoneyValuePair(base: .zero(baseCurrency), quote: .zero(quoteCurrency))
     }
-    
+        
     /// Returns true in case the balance is absent
     public let isAbsent: Bool
     

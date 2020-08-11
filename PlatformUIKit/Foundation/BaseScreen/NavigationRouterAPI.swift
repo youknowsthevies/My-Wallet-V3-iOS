@@ -37,6 +37,11 @@ public protocol NavigationRouterAPI: AnyObject {
     func pop(animated: Bool)
 }
 
+public enum RoutingType {
+    case modal
+    case embed(inside: NavigationControllerAPI)
+}
+
 public class NavigationRouter: NavigationRouterAPI {
         
     public weak var navigationControllerAPI: NavigationControllerAPI?

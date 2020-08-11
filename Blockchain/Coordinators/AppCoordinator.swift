@@ -37,7 +37,8 @@ import RxSwift
 
     @Inject var airdropRouter: AirdropRouterAPI
     private var settingsRouterAPI: SettingsRouterAPI?
-    private var simpleBuyRouter: BuySellUIKit.RouterAPI!
+    private var buyRouter: BuySellUIKit.RouterAPI!
+    private var sellRouter: BuySellUIKit.SellRouter!
     private var backupRouter: BackupRouterAPI?
     
     // MARK: - UIViewController Properties
@@ -334,7 +335,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         sideMenuViewController = nil
     }
 
-    /// Starts Simple Buy flow.
+    /// Starts Buy Crypto flow.
     @objc func handleBuyCrypto() {
         let builder = BuySellUIKit.Builder(
             fiatCurrencyService: UserInformationServiceProvider.default.settings,
@@ -342,8 +343,24 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
             stateService: BuySellUIKit.StateService.make(),
             recordingProvider: RecordingProvider.default
         )
-        simpleBuyRouter = BuySellUIKit.Router(builder: builder)
-        simpleBuyRouter.start()
+        buyRouter = BuySellUIKit.Router(builder: builder)
+        buyRouter.start()
+    }
+    
+    /// Starts Sell Crypto flow
+    @objc func handleSellCrypto() {
+        
+        let builder = BuySellUIKit.SellBuilder(
+            routerInteractor: SellRouterInteractor(),
+            analyticsRecorder: resolve(),
+            recorderProvider: RecordingProvider.default,
+            userInformationProvider: resolve(),
+            buySellServiceProvider: DataProvider.default.buySell,
+            exchangeProvider: DataProvider.default.exchange,
+            balanceProvider: DataProvider.default.balance
+        )
+        sellRouter = BuySellUIKit.SellRouter(builder: builder)
+        sellRouter.load()
     }
     
     func startSimpleBuyAtLogin() {
@@ -359,8 +376,8 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
             recordingProvider: RecordingProvider.default
         )
         
-        simpleBuyRouter = BuySellUIKit.Router(builder: builder)
-        simpleBuyRouter.start()
+        buyRouter = BuySellUIKit.Router(builder: builder)
+        buyRouter.start()
     }
     
     func showFundTrasferDetails(fiatCurrency: FiatCurrency) {
@@ -372,8 +389,8 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
             recordingProvider: RecordingProvider.default
         )
         
-        simpleBuyRouter = BuySellUIKit.Router(builder: builder)
-        simpleBuyRouter.setup(startImmediately: false)
+        buyRouter = BuySellUIKit.Router(builder: builder)
+        buyRouter.setup(startImmediately: false)
         stateService.showFundsTransferDetails(for: fiatCurrency)
     }
 }

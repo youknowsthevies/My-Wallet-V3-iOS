@@ -182,7 +182,6 @@ public final class CardRouterInteractor: Interactor {
         actionRelay.accept(action)
         statesRelay.accept(states)
     }
-    
 }
 
 extension CardRouterInteractor: CardAuthorizationRoutingInteractorAPI {

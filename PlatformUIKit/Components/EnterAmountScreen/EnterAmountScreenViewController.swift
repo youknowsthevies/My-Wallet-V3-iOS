@@ -34,12 +34,12 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
     private let topSelectionButtonView = SelectionButtonView()
     private var amountTranslationView: AmountTranslationView!
     private let bottomAuxiliaryItemSeparatorView = TitledSeparatorView()
-    private let bottomSelectionButtonView = SelectionButtonView()
+    private let bottomAuxiliaryView = UIView()
     private let continueButtonView = ButtonView()
     private let digitPadView = DigitPadView()
 
     private var topSelectionViewHeightConstraint: NSLayoutConstraint!
-    private var bottomSelectionButtonViewHeightConstraint: NSLayoutConstraint!
+    private var bottomAuxiliaryButtonViewHeightConstraint: NSLayoutConstraint!
     private var digitPadHeightConstraint: NSLayoutConstraint!
     private var continueButtonTopConstraint: NSLayoutConstraint!
     private var digitPadSeparatorTopConstraint: NSLayoutConstraint!
@@ -70,7 +70,7 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
         view.addSubview(topSelectionButtonView)
         view.addSubview(amountTranslationView)
         view.addSubview(bottomAuxiliaryItemSeparatorView)
-        view.addSubview(bottomSelectionButtonView)
+        view.addSubview(bottomAuxiliaryView)
         view.addSubview(continueButtonView)
         view.addSubview(digitPadTopSeparatorView)
         view.addSubview(digitPadView)
@@ -86,23 +86,23 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
         bottomAuxiliaryItemSeparatorView.layoutToSuperview(.leading, offset: 24, priority: .defaultHigh)
         bottomAuxiliaryItemSeparatorView.layoutToSuperview(.trailing)
 
-        bottomSelectionButtonView.layoutToSuperview(.leading, .trailing)
-        bottomSelectionButtonView.layout(
+        bottomAuxiliaryView.layoutToSuperview(.leading, .trailing)
+        bottomAuxiliaryView.layout(
             edge: .top,
             to: .bottom,
             of: bottomAuxiliaryItemSeparatorView,
             priority: .defaultLow
         )
-        bottomSelectionButtonViewHeightConstraint = bottomSelectionButtonView.layout(
+        bottomAuxiliaryButtonViewHeightConstraint = bottomAuxiliaryView.layout(
             dimension: .height,
-            to: 78
+            to: 1
         )
         
         continueButtonView.layoutToSuperview(axis: .horizontal, offset: 24, priority: .penultimateHigh)
         continueButtonTopConstraint = continueButtonView.layout(
             edge: .top,
             to: .bottom,
-            of: bottomSelectionButtonView,
+            of: bottomAuxiliaryView,
             offset: 16
         )
         continueButtonView.layout(dimension: .height, to: 48)
@@ -121,7 +121,7 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
         digitPadView.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true)
         digitPadHeightConstraint = digitPadView.layout(dimension: .height, to: 260, priority: .penultimateHigh)
                 
-        digitPadTopSeparatorView.backgroundColor = presenter.separatorColor
+        digitPadTopSeparatorView.backgroundColor = presenter.displayBundle.colors.digitPadTopSeparator
     }
     
     public override func viewDidLoad() {
@@ -182,18 +182,32 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
     private func bottomAuxiliaryViewModelStateDidChange(to state: EnterAmountScreenPresenter.BottomAuxiliaryViewModelState) {
         let height: CGFloat
         let visibility: Visibility
+        var subviewsToRemove: [UIView]
         switch state {
         case .hidden:
             height = 0.5
             visibility = .hidden
+            subviewsToRemove = bottomAuxiliaryView.subviews
         case .selection(let viewModel):
-            bottomSelectionButtonView.viewModel = viewModel
+            let selectionButtonView = SelectionButtonView()
+            bottomAuxiliaryView.addSubview(selectionButtonView)
+            selectionButtonView.fillSuperview()
+            selectionButtonView.viewModel = viewModel
             visibility = .visible
             if presenter.deviceType == .superCompact {
                 height = Constant.SuperCompact.topSelectionViewHeight
             } else {
                 height = Constant.Standard.topSelectionViewHeight
             }
+            subviewsToRemove = []
+        case .maxAvailable(let presenter):
+            let sendAuxiliaryView = SendAuxiliaryView()
+            sendAuxiliaryView.presenter = presenter
+            bottomAuxiliaryView.addSubview(sendAuxiliaryView)
+            sendAuxiliaryView.fillSuperview()
+            visibility = .visible
+            height = Constant.Standard.topSelectionViewHeight
+            subviewsToRemove = []
         }
         UIView.animate(
             withDuration: 0.25,
@@ -203,10 +217,12 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
             options: [.beginFromCurrentState, .curveEaseOut],
             animations: {
                 self.bottomAuxiliaryItemSeparatorView.alpha = visibility.defaultAlpha
-                self.bottomSelectionButtonView.alpha = visibility.defaultAlpha
-                self.bottomSelectionButtonViewHeightConstraint.constant = height
+                self.bottomAuxiliaryView.alpha = visibility.defaultAlpha
+                self.bottomAuxiliaryButtonViewHeightConstraint.constant = height
             },
-            completion: nil
+            completion: { _ in
+                subviewsToRemove.forEach { $0.removeFromSuperview() }
+            }
         )
     }
     

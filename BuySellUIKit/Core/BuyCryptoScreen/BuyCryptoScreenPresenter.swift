@@ -158,7 +158,8 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             }
             .disposed(by: disposeBag)
         
-        interactor.selectedCryptoCurrency
+        interactor.selectedCurrencyType
+            .map { $0.cryptoCurrency! }
             .flatMap(weak: self) { (self, cryptoCurrency) -> Observable<String?> in
                 self.subtitleForCryptoCurrencyPicker(cryptoCurrency: cryptoCurrency)
             }
@@ -179,7 +180,6 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
     }
     
     // MARK: - Private methods
-
     
     private func createOrder(from candidateOrderDetails: CandidateOrderDetails,
                              with completion: @escaping (CheckoutData) -> Void) {

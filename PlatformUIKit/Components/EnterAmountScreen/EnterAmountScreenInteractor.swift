@@ -13,12 +13,12 @@ import ToolKit
 /// API for interaction of enter amount screen
 public protocol EnterAmountScreenInteractorAPI: AnyObject {
     var hasValidState: Observable<Bool> { get }
-    var selectedCryptoCurrency: Observable<CryptoCurrency> { get }
+    var selectedCurrencyType: Observable<CurrencyType> { get }
     func didLoad()
 }
 
 open class EnterAmountScreenInteractor: Interactor, EnterAmountScreenInteractorAPI {
-
+    
     /// Must be implemented - decides whether the interactor has a valid state.
     /// if streams `true`, then the CTA button would become enabled.
     /// `super.hasValidState` must not be called by the subclass.
@@ -28,7 +28,7 @@ open class EnterAmountScreenInteractor: Interactor, EnterAmountScreenInteractorA
 
     /// Must be implemented - selected currency
     /// `super.selectedCryptoCurrency` must not be called by the subclass.
-    open var selectedCryptoCurrency: Observable<CryptoCurrency> {
+    open var selectedCurrencyType: Observable<CurrencyType> {
         unimplemented()
     }
 
@@ -37,7 +37,7 @@ open class EnterAmountScreenInteractor: Interactor, EnterAmountScreenInteractorA
     open func didLoad() {
         unimplemented()
     }
-
+    
     // MARK: - Injected
     
     public let exchangeProvider: ExchangeProviding
