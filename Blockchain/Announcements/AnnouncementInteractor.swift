@@ -64,7 +64,6 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                      simpleBuyServiceProvider.beneficiaries.hasLinkedBank.take(1).asSingle()
                  )
             )
-            .subscribeOn(SerialDispatchQueueScheduler(internalSerialQueueName: dispatchQueueName))
             .observeOn(MainScheduler.instance)
             .map { (arg) -> AnnouncementPreliminaryData in
                 let (user, tiers, hasTrades, countries, authenticatorType, (isSimpleBuyAvailable, pendingOrderDetails, hasLinkedBanks)) = arg
