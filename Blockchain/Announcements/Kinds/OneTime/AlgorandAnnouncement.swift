@@ -15,12 +15,14 @@ import ToolKit
 
 /// Announcement that introduces Algorand asset
 final class AlgorandAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
+
+    private typealias LocalizedString = LocalizationConstants.AnnouncementCards.Algorand
     
     // MARK: - Properties
     
     var viewModel: AnnouncementCardViewModel {
         let button = ButtonViewModel.primary(
-            with: LocalizationConstants.AnnouncementCards.Algorand.ctaButton,
+            with: LocalizedString.ctaButton,
             background: .algorand
         )
         button.tapRelay
@@ -36,8 +38,8 @@ final class AlgorandAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
         return AnnouncementCardViewModel(
             type: type,
             image: AnnouncementCardViewModel.Image(name: CryptoCurrency.algorand.filledImageSmallName),
-            title: LocalizationConstants.AnnouncementCards.Algorand.title,
-            description: LocalizationConstants.AnnouncementCards.Algorand.description,
+            title: LocalizedString.title,
+            description: LocalizedString.description,
             buttons: [button],
             dismissState: .dismissible { [weak self] in
                 guard let self = self else { return }
@@ -61,14 +63,13 @@ final class AlgorandAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
     
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
-    
     let action: CardAnnouncementAction
 
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
 
-    init(cacheSuite: CacheSuite = UserDefaults.standard,
+    init(cacheSuite: CacheSuite = resolve(),
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,

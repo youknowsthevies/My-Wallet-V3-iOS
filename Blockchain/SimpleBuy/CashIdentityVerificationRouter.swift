@@ -6,15 +6,16 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformUIKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 final class CashIdentityVerificationRouter {
     
     private weak var topMostViewControllerProvider: TopMostViewControllerProviding!
     
-    init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared) {
+    init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve()) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
     }
     

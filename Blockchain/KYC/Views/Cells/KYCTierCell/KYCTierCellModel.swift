@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 import PlatformKit
 import PlatformUIKit
 
@@ -121,7 +121,7 @@ extension KYCTierCellModel {
     
     static func model(
         from userTier: KYC.UserTier,
-        appSettings: BlockchainSettings.App = BlockchainSettings.App.shared
+        appSettings: BlockchainSettings.App = resolve()
     ) -> KYCTierCellModel? {
         let value = approvalStatusFromTierState(userTier.state)
         guard let limits = userTier.limits else { return nil }

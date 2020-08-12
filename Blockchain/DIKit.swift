@@ -39,11 +39,9 @@ extension DependencyContainer {
         single { OnboardingRouter() }
         
         factory { PaymentPresenter() }
-        
-        factory { UIApplication.shared as TopMostViewControllerProviding }
-        
+
         factory { AirdropRouter() as AirdropRouterAPI }
-        
+
         single { LoadingViewPresenter() as LoadingViewPresenting }
         
         single { AppFeatureConfigurator() }
@@ -78,5 +76,11 @@ extension DependencyContainer {
             let provider: DataProviding = DIKit.resolve()
             return provider.balance
         }
+
+        factory { () -> JSContextProviderAPI in
+            let walletManager: WalletManager = DIKit.resolve()
+            return walletManager as JSContextProviderAPI
+        }
+
     }
 }

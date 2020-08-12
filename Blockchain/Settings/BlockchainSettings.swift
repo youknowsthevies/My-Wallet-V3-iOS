@@ -6,30 +6,29 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import BuySellKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
 import ToolKit
-import DIKit
 
 /**
  Settings for the current user.
  All settings are written and read from NSUserDefaults.
-*/
+ */
 @objc
 final class BlockchainSettings: NSObject {
+
     // MARK: - App
 
     @objc(BlockchainSettingsApp)
-    class App: NSObject, AppSettingsAPI, ReactiveAppSettingsAuthenticating, AppSettingsAuthenticating, SwipeToReceiveConfiguring {
+    class App: NSObject, AppSettingsAPI, AppSettingsAuthenticating, SwipeToReceiveConfiguring {
 
         @Inject @objc static var shared: App
 
-        private lazy var defaults: UserDefaults = {
-            UserDefaults.standard
-        }()
+        @LazyInject private var defaults: CacheSuite
 
         // MARK: - Properties
 
@@ -42,7 +41,7 @@ final class BlockchainSettings: NSObject {
          - Important:
          This setting **should** be set reset upon logging the user out of the application.
          */
-        @objc var appBecameActiveCount: Int {
+        var appBecameActiveCount: Int {
             get {
                 defaults.integer(forKey: UserDefaults.Keys.appBecameActiveCount.rawValue)
             }
@@ -51,7 +50,7 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        @objc var didRequestCameraPermissions: Bool {
+        var didRequestCameraPermissions: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.didRequestCameraPermissions.rawValue)
             }
@@ -60,7 +59,7 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        @objc var didRequestMicrophonePermissions: Bool {
+        var didRequestMicrophonePermissions: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.didRequestMicrophonePermissions.rawValue)
             }
@@ -69,7 +68,7 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        @objc var didRequestNotificationPermissions: Bool {
+        var didRequestNotificationPermissions: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.didRequestNotificationPermissions.rawValue)
             }
@@ -87,7 +86,7 @@ final class BlockchainSettings: NSObject {
          - Important:
          The encryption key is generated from the pin created by the user.
          legacyEncryptedPinPassword is required for wallets that created a PIN prior to Homebrew release - see IOS-1537
-        */
+         */
         var encryptedPinPassword: String? {
             get {
                 defaults.string(forKey: UserDefaults.Keys.encryptedPinPassword.rawValue) ??
@@ -108,7 +107,7 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        @objc var pin: String? {
+        var pin: String? {
             get {
                 KeychainItemWrapper.pinFromKeychain()
             }
@@ -121,11 +120,11 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        @objc var isPinSet: Bool {
+        var isPinSet: Bool {
             pinKey != nil && encryptedPinPassword != nil
         }
 
-        @objc var pinKey: String? {
+        var pinKey: String? {
             get {
                 defaults.string(forKey: UserDefaults.Keys.pinKey.rawValue)
             }
@@ -168,7 +167,7 @@ final class BlockchainSettings: NSObject {
         }
 
         /// The first 5 characters of SHA256 hash of the user's password
-        @objc var passwordPartHash: String? {
+        var passwordPartHash: String? {
             get {
                 defaults.string(forKey: UserDefaults.Keys.passwordPartHash.rawValue)
             }
@@ -187,7 +186,7 @@ final class BlockchainSettings: NSObject {
          - SeeAlso:
          [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/user-interaction/authentication)
          */
-        @objc var biometryEnabled: Bool {
+        var biometryEnabled: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.biometryEnabled.rawValue)
             }
@@ -244,7 +243,7 @@ final class BlockchainSettings: NSObject {
 
          The default of this setting is `true`.
          */
-        @objc var swipeToReceiveEnabled: Bool {
+        var swipeToReceiveEnabled: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.swipeToReceiveEnabled.rawValue)
             }
@@ -309,7 +308,7 @@ final class BlockchainSettings: NSObject {
 
          - Note:
          This value is set to `true` if the user has chosen to write an app review or not to be asked again.
-        */
+         */
         var dontAskUserToShowAppReviewPrompt: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.dontAskUserToShowAppReviewPrompt.rawValue)
@@ -411,12 +410,10 @@ final class BlockchainSettings: NSObject {
         }
 
         private let enabledCurrenciesService: EnabledCurrenciesService
-        
+
         init(enabledCurrenciesService: EnabledCurrenciesService = resolve()) {
             self.enabledCurrenciesService = enabledCurrenciesService
-            
-            // Private initializer so that `shared` and `sharedInstance` are the only ways to
-            // access an instance of this class.
+
             super.init()
 
             defaults.register(defaults: [
@@ -432,8 +429,8 @@ final class BlockchainSettings: NSObject {
         /**
          Resets app-specific settings back to their initial value.
          - Note:
-           This function will not reset any settings which are derived from wallet options.
-        */
+         This function will not reset any settings which are derived from wallet options.
+         */
         func reset() {
             // TICKET: IOS-1365 - Finish UserDefaults refactor (tickets, documentation, linter issues)
             // TODO: - reset all appropriate settings upon logging out
@@ -448,9 +445,8 @@ final class BlockchainSettings: NSObject {
 
             KYCSettings.shared.reset()
             AnnouncementRecorder.reset()
-
             DataProvider.default.buySell.cache.reset()
-        
+
             Logger.shared.info("Application settings have been reset.")
         }
 
@@ -492,7 +488,7 @@ final class BlockchainSettings: NSObject {
     // MARK: - App
 
     /// Encapsulates all onboarding-related settings for the user
-    class Onboarding {
+    final class Onboarding {
         static let shared: Onboarding = Onboarding()
 
         private lazy var defaults: UserDefaults = {
@@ -521,7 +517,7 @@ final class BlockchainSettings: NSObject {
          This value is set to `true` if the application is running for the first time.
 
          This setting is currently not used for anything else.
-        */
+         */
         var firstRun: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.firstRun.rawValue)
@@ -536,9 +532,5 @@ final class BlockchainSettings: NSObject {
         func reset() {
             walletIntroLatestLocation = nil
         }
-    }
-    private override init() {
-        // Private initializer so that an instance of BLockchainSettings can't be created
-        super.init()
     }
 }

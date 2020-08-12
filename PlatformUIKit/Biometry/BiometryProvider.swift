@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import LocalAuthentication
 import Localization
 import PlatformKit
@@ -77,7 +78,7 @@ public final class BiometryProvider: BiometryProviding {
     
     // MARK: - Setup
     
-    public init(settings: AppSettingsAuthenticating,
+    public init(settings: AppSettingsAuthenticating = resolve(),
                 featureConfigurator: FeatureConfiguring) {
         self.settings = settings
         self.featureConfigurator = featureConfigurator

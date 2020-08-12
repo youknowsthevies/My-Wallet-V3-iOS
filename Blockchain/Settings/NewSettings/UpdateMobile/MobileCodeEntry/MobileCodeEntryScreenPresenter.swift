@@ -45,7 +45,7 @@ final class MobileCodeEntryScreenPresenter {
     // MARK: - Init
     
     init(stateService: UpdateMobileStateServiceAPI,
-         service: MobileSettingsServiceAPI & SettingsServiceAPI,
+         service: MobileSettingsServiceAPI,
          loadingViewPresenting: LoadingViewPresenting = LoadingViewPresenter.shared) {
         self.interactor = MobileCodeEntryInteractor(service: service)
         self.stateService = stateService

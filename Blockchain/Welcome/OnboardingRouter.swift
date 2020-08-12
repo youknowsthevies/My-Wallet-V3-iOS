@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
@@ -48,7 +49,7 @@ final class OnboardingRouter: OnboardingRouterStateProviding {
     
     // MARK: - Setup
     
-    init(webViewServiceAPI: WebViewServiceAPI = UIApplication.shared) {
+    init(webViewServiceAPI: WebViewServiceAPI = resolve()) {
         self.webViewServiceAPI = webViewServiceAPI
     }
     

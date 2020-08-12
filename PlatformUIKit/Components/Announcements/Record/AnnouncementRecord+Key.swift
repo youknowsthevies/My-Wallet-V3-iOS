@@ -11,7 +11,7 @@ extension AnnouncementRecord {
     public enum Key: String, CaseIterable {
         
         // MARK: - Persistent
-        
+
         case walletIntro = "announcement-cache-wallet-intro"
         case verifyEmail = "announcement-cache-email-verification"
         case blockstackAirdropRegisteredMini = "announcement-cache-stx-registered-airdrop-mini"

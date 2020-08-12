@@ -79,7 +79,7 @@ final class KycAirdropAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
     
     init(canCompleteTier2: Bool,
          isKycSupported: Bool,
-         cacheSuite: CacheSuite = UserDefaults.standard,
+         cacheSuite: CacheSuite = resolve(),
          reappearanceTimeInterval: TimeInterval,
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),

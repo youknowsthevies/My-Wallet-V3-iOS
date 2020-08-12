@@ -16,8 +16,8 @@ public extension CompositeDisposable {
 
 public extension ObservableType {
     func optional() -> Observable<Element?> {
-        self.asObservable().map { e -> Element? in
-            e
+        map { element -> Element? in
+            element
         }
     }
     
@@ -28,8 +28,8 @@ public extension ObservableType {
 
 public extension PrimitiveSequenceType where Trait == SingleTrait {
     func optional() -> Single<Element?> {
-        self.map { e -> Element? in
-            e
+        map { element -> Element? in
+            element
         }
     }
     

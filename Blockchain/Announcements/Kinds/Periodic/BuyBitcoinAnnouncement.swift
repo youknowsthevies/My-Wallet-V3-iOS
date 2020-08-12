@@ -72,7 +72,7 @@ final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
     // MARK: - Setup
     
     init(isEnabled: Bool,
-         cacheSuite: CacheSuite = UserDefaults.standard,
+         cacheSuite: CacheSuite = resolve(),
          reappearanceTimeInterval: TimeInterval,
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),

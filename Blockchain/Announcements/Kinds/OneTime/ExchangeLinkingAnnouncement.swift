@@ -75,7 +75,7 @@ final class ExchangeLinkingAnnouncement: OneTimeAnnouncement & ActionableAnnounc
     // MARK: - Setup
     
     init(shouldShowExchangeAnnouncement: Bool,
-         cacheSuite: CacheSuite = UserDefaults.standard,
+         cacheSuite: CacheSuite = resolve(),
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,

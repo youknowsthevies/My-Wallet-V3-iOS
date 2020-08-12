@@ -61,8 +61,7 @@ public final class Builder: Buildable {
         let navigationController = UINavigationController()
         
         let webViewRouter = WebViewRouter(
-            topMostViewControllerProvider: navigationController,
-            webViewServiceAPI: UIApplication.shared
+            topMostViewControllerProvider: navigationController
         )
         
         let presenter = FundsTransferDetailScreenPresenter(

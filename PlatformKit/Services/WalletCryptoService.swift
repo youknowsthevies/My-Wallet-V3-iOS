@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 import ToolKit
 
@@ -21,11 +22,11 @@ public protocol WalletCryptoServiceAPI: class {
     func encrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String>
 }
 
-public final class WalletCryptoService: WalletCryptoServiceAPI {
+final class WalletCryptoService: WalletCryptoServiceAPI {
 
     // MARK: - Types
 
-    public enum ServiceError: Error {
+    enum ServiceError: Error {
         case emptyResult
         case failed
     }
@@ -41,15 +42,15 @@ public final class WalletCryptoService: WalletCryptoServiceAPI {
 
     // MARK: - Setup
 
-    public init(jsContextProvider: JSContextProviderAPI) {
+    init(jsContextProvider: JSContextProviderAPI = resolve()) {
         self.jsContextProvider = jsContextProvider
     }
 
-    // MARK: - Public methods
+    // MARK: - Methods
 
     /// Receives a `KeyDataPair` and decrypt `data` using `key`
     /// - Parameter pair: A pair of key and data used in the decription process.
-    public func decrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String> {
+    func decrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String> {
         Single
             .create(weak: self) { (self, observer) -> Disposable in
                 do {
@@ -70,7 +71,7 @@ public final class WalletCryptoService: WalletCryptoServiceAPI {
 
     /// Receives a `KeyDataPair` and encrypt `data` using `key`.
     /// - Parameter pair: A pair of key and data used in the encription process.
-    public func encrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String> {
+    func encrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String> {
         Single
             .create(weak: self) { (self, observer) -> Disposable in
                 do {

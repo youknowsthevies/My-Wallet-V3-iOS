@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxRelay
 
 /// Emits a command to return to the previous state
@@ -66,7 +67,7 @@ public class NavigationRouter: NavigationRouterAPI {
         }
     }
     
-    public init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared) {
+    public init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve()) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
     }
     

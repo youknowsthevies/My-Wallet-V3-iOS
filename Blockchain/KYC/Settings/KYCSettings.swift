@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 import PlatformKit
 import ToolKit
 
@@ -14,14 +14,14 @@ import ToolKit
 class KYCSettings: NSObject, KYCSettingsAPI {
     static let shared = KYCSettings()
 
-    private let userDefaults: UserDefaults
+    private let cacheSuite: CacheSuite
 
     @objc class func sharedInstance() -> KYCSettings {
         shared
     }
 
-    init(userDefaults: UserDefaults = UserDefaults.standard) {
-        self.userDefaults = userDefaults
+    init(cacheSuite: CacheSuite = resolve()) {
+        self.cacheSuite = cacheSuite
     }
 
     /**
@@ -38,30 +38,30 @@ class KYCSettings: NSObject, KYCSettingsAPI {
      */
     @objc var isCompletingKyc: Bool {
         get {
-            userDefaults.bool(forKey: UserDefaults.Keys.isCompletingKyc.rawValue)
+            cacheSuite.bool(forKey: UserDefaults.Keys.isCompletingKyc.rawValue)
         }
         set {
-            userDefaults.set(newValue, forKey: UserDefaults.Keys.isCompletingKyc.rawValue)
+            cacheSuite.set(newValue, forKey: UserDefaults.Keys.isCompletingKyc.rawValue)
         }
     }
 
     var latestKycPage: KYCPageType? {
         get {
-            let page = userDefaults.integer(forKey: UserDefaults.Keys.kycLatestPage.rawValue)
+            let page = cacheSuite.integer(forKey: UserDefaults.Keys.kycLatestPage.rawValue)
             return KYCPageType(rawValue: page)
         }
         set {
             if newValue == nil {
-                userDefaults.set(nil, forKey: UserDefaults.Keys.kycLatestPage.rawValue)
+                cacheSuite.set(nil, forKey: UserDefaults.Keys.kycLatestPage.rawValue)
                 return
             }
 
-            let previousPage = userDefaults.integer(forKey: UserDefaults.Keys.kycLatestPage.rawValue)
+            let previousPage = cacheSuite.integer(forKey: UserDefaults.Keys.kycLatestPage.rawValue)
             guard let newPage = newValue, previousPage < newPage.rawValue else {
                 Logger.shared.warning("\(newValue?.rawValue ?? 0) is not less than \(previousPage) for 'latestKycPage'.")
                 return
             }
-            userDefaults.set(newPage.rawValue, forKey: UserDefaults.Keys.kycLatestPage.rawValue)
+            cacheSuite.set(newPage.rawValue, forKey: UserDefaults.Keys.kycLatestPage.rawValue)
         }
     }
 

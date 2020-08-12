@@ -49,7 +49,7 @@ final class BitpayAnnouncement: OneTimeAnnouncement {
 
     // MARK: - Setup
     
-    init(cacheSuite: CacheSuite = UserDefaults.standard,
+    init(cacheSuite: CacheSuite = resolve(),
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction) {

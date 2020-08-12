@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
@@ -32,7 +33,7 @@ final class SettingsScreenInteractor {
     let cardsService: CardServiceProviderAPI
     let simpleBuyService: ServiceProviderAPI
     let smsTwoFactorService: SMSTwoFactorSettingsServiceAPI
-    let emailNotificationsService: SettingsServiceAPI & EmailNotificationSettingsServiceAPI
+    let emailNotificationsService: EmailNotificationSettingsServiceAPI
     
     let pitConnnectionProviding: PITConnectionStatusProviding
     let balanceSharingService: BalanceSharingSettingsServiceAPI
@@ -55,10 +56,10 @@ final class SettingsScreenInteractor {
          settingsService: SettingsServiceAPI = UserInformationServiceProvider.default.settings,
          smsTwoFactorService: SMSTwoFactorSettingsServiceAPI = UserInformationServiceProvider.default.settings,
          emailNotificationService: EmailNotificationSettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
+         appSettings: BlockchainSettings.App = resolve(),
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          pitConnectionAPI: PITConnectionStatusProviding = PITConnectionStatusProvider(),
-         settingsAuthenticating: AppSettingsAuthenticating = BlockchainSettings.App.shared,
+         settingsAuthenticating: AppSettingsAuthenticating = resolve(),
          tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
          wallet: Wallet = WalletManager.shared.wallet,
          cardsService: CardServiceProviderAPI = CardServiceProvider.default,

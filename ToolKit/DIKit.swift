@@ -25,5 +25,7 @@ extension DependencyContainer {
             let recorder: AnalyticsEventRecorderAPI = DIKit.resolve()
             return recorder as AnalyticsEventRelayRecording
         }
+
+        factory { UserDefaults.standard as CacheSuite }
     }
 }

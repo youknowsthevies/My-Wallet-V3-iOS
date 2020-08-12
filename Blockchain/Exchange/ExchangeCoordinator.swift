@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
@@ -38,7 +38,7 @@ class ExchangeCoordinator {
          authenticator: ExchangeAccountAuthenticatorAPI = ExchangeAccountAuthenticator(),
          loadingIndicatorAPI: LoadingViewPresenting = LoadingViewPresenter.shared,
          campaignComposer: CampaignComposer = CampaignComposer(),
-         appSettings: BlockchainSettings.App = BlockchainSettings.App.shared) {
+         appSettings: BlockchainSettings.App = resolve()) {
         self.repository = repository
         self.campaignComposer = campaignComposer
         self.authenticator = authenticator

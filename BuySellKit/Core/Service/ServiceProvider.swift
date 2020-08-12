@@ -46,7 +46,7 @@ public final class ServiceProvider: ServiceProviderAPI {
     public convenience init(cardServiceProvider: CardServiceProviderAPI,
                             recordingProvider: RecordingProviderAPI,
                             wallet: ReactiveWalletAPI,
-                            cacheSuite: CacheSuite,
+                            cacheSuite: CacheSuite = resolve(),
                             settings: FiatCurrencySettingsServiceAPI & SettingsServiceAPI,
                             dataRepository: DataRepositoryAPI,
                             tiersService: KYCTiersServiceAPI,

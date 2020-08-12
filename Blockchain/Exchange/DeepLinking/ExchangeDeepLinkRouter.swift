@@ -6,12 +6,12 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 
 class ExchangeDeepLinkRouter: DeepLinkRouting {
     
     private let appSettings: BlockchainSettings.App
-    init(appSettings: BlockchainSettings.App = BlockchainSettings.App.shared) {
+    init(appSettings: BlockchainSettings.App = resolve()) {
         self.appSettings = appSettings
     }
     

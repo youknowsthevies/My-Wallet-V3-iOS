@@ -57,4 +57,3 @@ final class SwipeReceiveSwitchViewPresenter: SwitchViewPresenting {
             .disposed(by: disposeBag)
     }
 }
-

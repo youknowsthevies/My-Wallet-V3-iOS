@@ -43,7 +43,7 @@ final class UpdateMobileScreenInteractor {
     private let interactionStateRelay = BehaviorRelay<InteractionState>(value: .ready)
     private let disposeBag = DisposeBag()
     
-    init(service: UpdateMobileSettingsServiceAPI & SettingsServiceAPI) {
+    init(service: UpdateMobileSettingsServiceAPI) {
         triggerRelay
             .withLatestFrom(contentRelay)
             .do(onNext: { [weak self] _ in

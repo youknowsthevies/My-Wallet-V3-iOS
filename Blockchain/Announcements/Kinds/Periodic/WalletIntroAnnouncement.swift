@@ -76,7 +76,7 @@ final class WalletIntroAnnouncement: PeriodicAnnouncement & RemovableAnnouncemen
     private let disposeBag = DisposeBag()
     // MARK: - Setup
     
-    init(cacheSuite: CacheSuite = UserDefaults.standard,
+    init(cacheSuite: CacheSuite = resolve(),
          reappearanceTimeInterval: TimeInterval,
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),

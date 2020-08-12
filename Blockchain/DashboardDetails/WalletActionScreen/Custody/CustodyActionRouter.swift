@@ -34,7 +34,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
     private let disposeBag = DisposeBag()
     
     init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
-         appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
+         appSettings: BlockchainSettings.App = resolve(),
          dataProviding: DataProviding = DataProvider.default,
          custodyWithdrawalRouter: CustodyWithdrawalRouterAPI = CustodyWithdrawalRouter(),
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),

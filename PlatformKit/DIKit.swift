@@ -86,5 +86,7 @@ extension DependencyContainer {
         single { EmailVerificationService() as EmailVerificationServiceAPI }
         
         factory { SwapActivityService() as SwapActivityServiceAPI }
+
+        factory { WalletCryptoService() as WalletCryptoServiceAPI }
     }
 }

@@ -74,7 +74,7 @@ final class SwapAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {
     // MARK: - Setup
     
     init(hasTrades: Bool,
-         cacheSuite: CacheSuite = UserDefaults.standard,
+         cacheSuite: CacheSuite = resolve(),
          reappearanceTimeInterval: TimeInterval,
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),

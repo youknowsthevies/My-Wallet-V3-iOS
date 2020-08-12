@@ -14,12 +14,12 @@ import RxSwift
 final class UpdateMobileRouter {
     
     private var stateService: UpdateMobileStateServiceAPI!
-    private let serviceProvider: MobileSettingsServiceAPI & SettingsServiceAPI
+    private let serviceProvider: MobileSettingsServiceAPI
     private let navigationRouter: NavigationRouterAPI
     private let disposeBag = DisposeBag()
     
     init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
-         service: MobileSettingsServiceAPI & SettingsServiceAPI = UserInformationServiceProvider.default.settings) {
+         service: MobileSettingsServiceAPI = UserInformationServiceProvider.default.settings) {
         self.serviceProvider = service
         self.navigationRouter = navigationRouter
     }

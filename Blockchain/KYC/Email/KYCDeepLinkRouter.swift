@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
+import DIKit
 
 /// Router for handling the KYC verify email flow
 class KYCDeepLinkRouter: DeepLinkRouting {
@@ -16,7 +16,7 @@ class KYCDeepLinkRouter: DeepLinkRouting {
     private let kycCoordinator: KYCCoordinator
 
     init(
-        appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
+        appSettings: BlockchainSettings.App = resolve(),
         kycSettings: KYCSettingsAPI = KYCSettings.shared,
         kycCoordinator: KYCCoordinator = KYCCoordinator.shared
     ) {

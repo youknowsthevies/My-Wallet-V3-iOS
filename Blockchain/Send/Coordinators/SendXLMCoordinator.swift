@@ -518,13 +518,15 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
             latestPrice: latestPrice,
             fee: fee,
             balance: balance,
-            baseReserve: baseReserve
-        ) { viewController in
-            UIApplication.shared.openSafari(
-                url: Constants.Url.stellarMinimumBalanceInfo,
-                from: viewController
-            )
-        }
+            baseReserve: baseReserve,
+            buttonAction: { viewController in
+                let webViewServiceAPI: WebViewServiceAPI = resolve()
+                webViewServiceAPI.openSafari(
+                    url: Constants.Url.stellarMinimumBalanceInfo,
+                    from: viewController
+                )
+            }
+        )
         let viewController = InformationViewController.make(viewModel: viewModel)
         let navigationController = BCNavigationController(rootViewController: viewController, title: LocalizationConstants.Stellar.minimumBalance)
         navigationController.modalPresentationStyle = .fullScreen

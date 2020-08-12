@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Localization
 import RxSwift
 import ToolKit
@@ -26,7 +27,7 @@ public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
     
     // MARK: - Setup
     
-    private init(topMostViewControllerProvider: TopMostViewControllerProviding = UIApplication.shared,
+    private init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
                  loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.loadingViewPresenter = loadingViewPresenter

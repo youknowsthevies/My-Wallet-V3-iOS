@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -35,12 +36,10 @@ final class PasswordRequiredScreenInteractor {
     
     // MARK: - Setup
     
-    init(walletPayloadService: WalletPayloadServiceAPI = WalletPayloadService(
-        repository: WalletManager.shared.repository
-        ),
-         walletManager: WalletManager = .shared,
+    init(walletPayloadService: WalletPayloadServiceAPI = WalletPayloadService(repository: resolve()),
+         walletManager: WalletManager = resolve(),
          walletFetcher: PairingWalletFetching = AuthenticationCoordinator.shared,
-         appSettings: BlockchainSettings.App = .shared) {
+         appSettings: BlockchainSettings.App = resolve()) {
         self.walletPayloadService = walletPayloadService
         self.walletManager = walletManager
         self.walletFetcher = walletFetcher

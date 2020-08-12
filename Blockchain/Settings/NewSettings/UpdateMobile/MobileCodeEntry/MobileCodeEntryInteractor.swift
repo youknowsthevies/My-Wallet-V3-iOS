@@ -96,7 +96,7 @@ final class MobileCodeEntryInteractor {
     private let stateRelay = BehaviorRelay<InteractionState>(value: .ready)
     private let disposeBag = DisposeBag()
     
-    init(service: MobileSettingsServiceAPI & SettingsServiceAPI) {
+    init(service: MobileSettingsServiceAPI) {
         verificationInteractor = VerifyCodeEntryInteractor(service: service)
         updateMobileInteractor = UpdateMobileScreenInteractor(service: service)
         

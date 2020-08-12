@@ -19,7 +19,7 @@ class PinScreenPresenterTests: XCTestCase {
 
     private let flowProvider: MainFlowProviding = AppCoordinator.shared
     private var biometryProvider: BiometryProviding!
-    private var appSettings: (AppSettingsAuthenticating & SwipeToReceiveConfiguring)!
+    private var appSettings: MockAppSettings!
 
     override func setUp() {
         super.setUp()

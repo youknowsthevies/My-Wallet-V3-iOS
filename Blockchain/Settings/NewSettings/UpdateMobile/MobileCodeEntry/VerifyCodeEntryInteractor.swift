@@ -39,11 +39,11 @@ final class VerifyCodeEntryInteractor {
     
     // MARK: - Private Accessors
     
-    private let service: MobileSettingsServiceAPI & SettingsServiceAPI
+    private let service: VerifyMobileSettingsServiceAPI
     private let interactionStateRelay = BehaviorRelay<InteractionState>(value: .ready)
     private let disposeBag = DisposeBag()
     
-    init(service: MobileSettingsServiceAPI & SettingsServiceAPI) {
+    init(service: VerifyMobileSettingsServiceAPI) {
         self.service = service
         triggerRelay
             .bindAndCatch(weak: self, onNext: { (self) in

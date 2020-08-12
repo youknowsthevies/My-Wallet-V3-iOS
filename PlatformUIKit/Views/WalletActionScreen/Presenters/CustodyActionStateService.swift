@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxCocoa
 import RxRelay
@@ -110,7 +111,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
     
     // MARK: - Setup
     
-    public init(cacheSuite: CacheSuite = UserDefaults.standard,
+    public init(cacheSuite: CacheSuite = resolve(),
                 recoveryStatusProviding: RecoveryPhraseStatusProviding) {
         self.recoveryStatusProviding = recoveryStatusProviding
         self.cacheSuite = cacheSuite

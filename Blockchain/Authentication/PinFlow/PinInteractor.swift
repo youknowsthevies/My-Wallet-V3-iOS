@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -38,13 +38,12 @@ final class PinInteractor: PinInteracting {
          pinClient: PinClientAPI = PinClient(),
          maintenanceService: MaintenanceServicing = WalletService.shared,
          wallet: WalletProtocol = WalletManager.shared.wallet,
-         appSettings: AppSettingsAuthenticating & ReactiveAppSettingsAuthenticating = BlockchainSettings.App.shared,
-         jsContextProvider: JSContextProviderAPI = WalletManager.shared,
+         appSettings: AppSettingsAuthenticating = resolve(),
          recorder: ErrorRecording = CrashlyticsRecorder(),
          walletPayloadClient: WalletPayloadClientAPI = WalletPayloadClient(),
-         walletRepository: WalletRepositoryAPI = WalletManager.shared.repository) {
+         walletRepository: WalletRepositoryAPI = resolve(),
+         walletCryptoService: WalletCryptoServiceAPI = resolve()) {
         loginService = PinLoginService(
-            jsContextProvider: jsContextProvider,
             settings: appSettings,
             service: WalletPayloadService(
                 client: walletPayloadClient,
@@ -58,7 +57,7 @@ final class PinInteractor: PinInteracting {
         self.wallet = wallet
         self.appSettings = appSettings
         self.recorder = recorder
-        self.walletCryptoService = WalletCryptoService(jsContextProvider: jsContextProvider)
+        self.walletCryptoService = walletCryptoService
     }
     
     // MARK: - API
@@ -98,7 +97,7 @@ final class PinInteractor: PinInteracting {
                     .map { [weak self] response -> String in
                         guard let self = self else { throw PinError.unretainedSelf }
                         return try self.pinValidationStatus(from: response)
-                }
+                    }
             }
             .catchError { error in
                 throw PinError.map(from: error)

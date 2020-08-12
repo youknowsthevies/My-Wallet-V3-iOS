@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -27,7 +28,7 @@ final class AnalyticsUserPropertyInteractor {
     init(recorder: UserPropertyRecording = AnalyticsUserPropertyRecorder(),
          balanceProvider: BalanceProviding = DataProvider.default.balance,
          tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
-         walletRepository: WalletRepositoryAPI = WalletManager.shared.repository,
+         walletRepository: WalletRepositoryAPI = resolve(),
          dataRepository: BlockchainDataRepository = .shared) {
         self.recorder = recorder
         self.dataRepository = dataRepository

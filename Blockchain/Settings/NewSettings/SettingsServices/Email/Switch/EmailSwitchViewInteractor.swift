@@ -24,11 +24,11 @@ class EmailSwitchViewInteractor: SwitchViewInteracting {
     
     var switchTriggerRelay = PublishRelay<Bool>()
     
-    private let service: EmailNotificationSettingsServiceAPI & SettingsServiceAPI
+    private let service: EmailNotificationSettingsServiceAPI
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
 
-    init(service: EmailNotificationSettingsServiceAPI & SettingsServiceAPI) {
+    init(service: EmailNotificationSettingsServiceAPI) {
         self.service = service
         
         service.valueObservable

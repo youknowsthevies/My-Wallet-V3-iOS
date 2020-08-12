@@ -22,10 +22,6 @@ public protocol GuidRepositoryAPI: class {
 
 public extension GuidRepositoryAPI {
     var hasGuid: Single<Bool> {
-        guid
-            .map { guid in
-                guard let guid = guid else { return false }
-                return !guid.isEmpty
-            }
+        guid.map { $0?.isEmpty == false }
     }
 }

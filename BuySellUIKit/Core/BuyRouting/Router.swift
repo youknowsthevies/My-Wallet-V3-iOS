@@ -367,8 +367,7 @@ public final class Router: RouterAPI {
         )
         
         let webViewRouter = WebViewRouter(
-            topMostViewControllerProvider: navigationRouter.topMostViewControllerProvider,
-            webViewServiceAPI: UIApplication.shared
+            topMostViewControllerProvider: navigationRouter.topMostViewControllerProvider
         )
         
         let presenter = BankTransferDetailScreenPresenter(

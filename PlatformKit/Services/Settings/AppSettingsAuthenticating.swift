@@ -7,45 +7,86 @@
 //
 
 import RxSwift
+import ToolKit
 
-enum AppSettingsCacheError: Error {
-    case missingEncryptedPinPassword
-}
-
-@objc
 public protocol AppSettingsAPI: class {
-    @objc var sharedKey: String? { get set }
-    @objc var guid: String? { get set }
+    var sharedKey: String? { get set }
+    var guid: String? { get set }
 }
 
-// TICKET: https://blockchain.atlassian.net/browse/IOS-2738
-// TODO: Refactor BlockchainSettings.App/Onboarding to support Rx and be thread-safe
-/// Serves any authentication logic that should be extracted from the app settings
-@objc
-public protocol AppSettingsAuthenticating: class {
-    @objc var pin: String? { get set }
-    @objc var pinKey: String? { get set }
-    @objc var biometryEnabled: Bool { get set }
-    @objc var passwordPartHash: String? { get set }
-    @objc var encryptedPinPassword: String? { get set }
-}
-
-// TICKET: https://blockchain.atlassian.net/browse/IOS-2738
-// TODO: Refactor BlockchainSettings.App/Onboarding to support Rx and be thread-safe
-public protocol ReactiveAppSettingsAuthenticating: AppSettingsAuthenticating {
-    var encryptedPinPasswordSingle: Single<String> { get }
-}
-
-extension ReactiveAppSettingsAuthenticating {
-    public var encryptedPinPasswordSingle: Single<String> {
-        Single
-            .create(weak: self) { (self, observer) in
-                guard let encryptedPinPassword = self.encryptedPinPassword else {
-                    observer(.error(AppSettingsCacheError.missingEncryptedPinPassword))
-                    return Disposables.create()
-                }
-                observer(.success(encryptedPinPassword))
-                return Disposables.create()
+extension AppSettingsAPI {
+    /// Streams the GUID if exists
+    public var guid: Single<String?> {
+        Single.deferred { [weak self] in
+            guard let self = self else {
+                return .error(ToolKitError.nullReference(Self.self))
             }
+            return .just(self.guid)
+        }
+    }
+
+    /// Streams the shared key if exists
+    public var sharedKey: Single<String?> {
+        Single.deferred { [weak self] in
+            guard let self = self else {
+                return .error(ToolKitError.nullReference(Self.self))
+            }
+            return .just(self.sharedKey)
+        }
+    }
+}
+
+public protocol AppSettingsAuthenticating: class {
+    var pin: String? { get set }
+    var pinKey: String? { get set }
+    var biometryEnabled: Bool { get set }
+    var passwordPartHash: String? { get set }
+    var encryptedPinPassword: String? { get set }
+}
+
+extension AppSettingsAuthenticating {
+    public var pin: Single<String?> {
+        Single.deferred { [weak self] in
+            guard let self = self else {
+                return .error(ToolKitError.nullReference(Self.self))
+            }
+            return .just(self.pin)
+        }
+    }
+
+    public var pinKey: Single<String?> {
+        Single.deferred { [weak self] in
+            guard let self = self else {
+                return .error(ToolKitError.nullReference(Self.self))
+            }
+            return .just(self.pinKey)
+        }
+    }
+
+    public var biometryEnabled: Single<Bool> {
+        Single.deferred { [weak self] in
+            guard let self = self else {
+                return .error(ToolKitError.nullReference(Self.self))
+            }
+            return .just(self.biometryEnabled)
+        }
+    }
+
+    public var passwordPartHash: Single<String?> {
+        Single.deferred { [weak self] in
+            guard let self = self else {
+                return .error(ToolKitError.nullReference(Self.self))
+            }
+            return .just(self.passwordPartHash)
+        }
+    }
+
+    public var encryptedPinPassword: Single<String?> {
+        Single.deferred { [weak self] in
+            guard let self = self else {
+                return .error(ToolKitError.nullReference(Self.self))
+            }
+            return .just(self.encryptedPinPassword)
+        }
     }
 }

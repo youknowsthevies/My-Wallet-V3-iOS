@@ -14,16 +14,17 @@ public typealias CompleteSettingsServiceAPI = SettingsServiceAPI &
                                               LastTransactionSettingsUpdateServiceAPI &
                                               EmailNotificationSettingsServiceAPI &
                                               FiatCurrencySettingsServiceAPI &
-                                              MobileSettingsServiceAPI &
-                                              SMSTwoFactorSettingsServiceAPI
+                                              UpdateMobileSettingsServiceAPI &
+                                              SMSTwoFactorSettingsServiceAPI &
+                                              VerifyMobileSettingsServiceAPI
 
-public protocol SettingsServiceAPI: class {
+public protocol SettingsServiceAPI: AnyObject {
     var valueSingle: Single<WalletSettings> { get }
     var valueObservable: Observable<WalletSettings> { get }
     func fetch(force: Bool) -> Single<WalletSettings>
 }
 
-public protocol LastTransactionSettingsUpdateServiceAPI: class {
+public protocol LastTransactionSettingsUpdateServiceAPI: AnyObject {
     func updateLastTransaction() -> Completable
 }
 
@@ -49,4 +50,6 @@ public protocol SMSTwoFactorSettingsServiceAPI: SettingsServiceAPI {
     func smsTwoFactorAuthentication(enabled: Bool) -> Completable
 }
 
-public protocol MobileSettingsServiceAPI: UpdateMobileSettingsServiceAPI, VerifyMobileSettingsServiceAPI, SettingsServiceAPI { }
+public typealias MobileSettingsServiceAPI = UpdateMobileSettingsServiceAPI &
+                                            VerifyMobileSettingsServiceAPI &
+                                            SettingsServiceAPI

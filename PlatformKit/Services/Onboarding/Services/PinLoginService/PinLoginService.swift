@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 import ToolKit
 
@@ -26,15 +27,15 @@ public final class PinLoginService: PinLoginServiceAPI {
 
     // MARK: - Properties
 
-    private let settings: ReactiveAppSettingsAuthenticating
+    private let settings: AppSettingsAuthenticating
     private let service: WalletPayloadServiceAPI
     private let walletRepository: PasscodeRepositoryAPI
     private let walletCryptoService: WalletCryptoServiceAPI
     
     // MARK: - Setup
     
-    public init(jsContextProvider: JSContextProviderAPI,
-                settings: ReactiveAppSettingsAuthenticating,
+    public init(jsContextProvider: JSContextProviderAPI = resolve(),
+                settings: AppSettingsAuthenticating,
                 service: WalletPayloadServiceAPI,
                 walletRepository: PasscodeRepositoryAPI) {
         self.service = service
@@ -89,14 +90,14 @@ public final class PinLoginService: PinLoginServiceAPI {
     }
 
     private var encryptedPinPassword: Single<String> {
-        Single.create(weak: self) { (self, observer) -> Disposable in
-            if let encryptedPassword = self.settings.encryptedPinPassword {
-                observer(.success(encryptedPassword))
-            } else {
-                observer(.error(ServiceError.missingEncryptedPassword))
+        settings
+            .encryptedPinPassword
+            .map {
+                guard let encryptedPinPassword = $0 else {
+                    throw ServiceError.missingEncryptedPassword
+                }
+                return encryptedPinPassword
             }
-            return Disposables.create()
-        }
     }
 
     /// Decrypt the password using the PIN decryption key

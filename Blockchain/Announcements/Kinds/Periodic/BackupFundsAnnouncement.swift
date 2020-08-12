@@ -71,7 +71,7 @@ final class BackupFundsAnnouncement: PeriodicAnnouncement & ActionableAnnounceme
     // MARK: - Setup
     
     init(shouldBackupFunds: Bool,
-         cacheSuite: CacheSuite = UserDefaults.standard,
+         cacheSuite: CacheSuite = resolve(),
          reappearanceTimeInterval: TimeInterval,
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),

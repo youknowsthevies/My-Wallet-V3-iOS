@@ -79,7 +79,7 @@ class ExchangeClient: ExchangeClientAPI {
     var appSettings: BlockchainSettings.App
     
     init(communicatorAPI: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
-         settings: BlockchainSettings.App = BlockchainSettings.App.shared) {
+         settings: BlockchainSettings.App = resolve()) {
         self.communicatorAPI = communicatorAPI
         self.appSettings = settings
     }

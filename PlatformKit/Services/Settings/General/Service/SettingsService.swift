@@ -205,9 +205,9 @@ extension SettingsService: EmailNotificationSettingsServiceAPI {
     }
 }
 
-// MARK: - MobileSettingsServiceAPI
+// MARK: - UpdateMobileSettingsServiceAPI
 
-extension SettingsService: MobileSettingsServiceAPI {
+extension SettingsService: UpdateMobileSettingsServiceAPI {
     func update(mobileNumber: String) -> Completable {
         credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
@@ -223,7 +223,11 @@ extension SettingsService: MobileSettingsServiceAPI {
         }
         .asCompletable()
     }
-    
+}
+
+// MARK: - VerifyMobileSettingsServiceAPI
+
+extension SettingsService: VerifyMobileSettingsServiceAPI {
     func verify(with code: String) -> Completable {
         credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in

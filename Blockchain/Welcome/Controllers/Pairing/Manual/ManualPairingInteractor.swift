@@ -193,7 +193,7 @@ extension ManualPairingInteractor {
              guidClient: GuidClientAPI = GuidClient(),
              smsClient: SMSClientAPI = SMSClient(),
              sessionTokenClient: SessionTokenClientAPI = SessionTokenClient(),
-             walletRepository: WalletRepositoryAPI = WalletManager.shared.repository,
+             walletRepository: WalletRepositoryAPI = resolve(),
              wallet: Wallet = WalletManager.shared.wallet,
              walletFetcher: PairingWalletFetching = AuthenticationCoordinator.shared) {
             self.wallet = wallet

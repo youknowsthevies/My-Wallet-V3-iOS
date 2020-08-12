@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxCocoa
 import RxRelay
 import RxSwift
@@ -32,7 +33,7 @@ public final class WebViewRouter: WebViewRouterAPI {
     // MARK: - Setup
     
     public init(topMostViewControllerProvider: TopMostViewControllerProviding,
-                webViewServiceAPI: WebViewServiceAPI) {
+                webViewServiceAPI: WebViewServiceAPI = resolve()) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.webViewServiceAPI = webViewServiceAPI
         

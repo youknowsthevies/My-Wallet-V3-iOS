@@ -10,13 +10,7 @@ import Foundation
 
 public protocol UserInformationServiceProviding: class {
     
-    var settings: SettingsServiceAPI &
-                  EmailSettingsServiceAPI &
-                  LastTransactionSettingsUpdateServiceAPI &
-                  EmailNotificationSettingsServiceAPI &
-                  MobileSettingsServiceAPI &
-                  FiatCurrencySettingsServiceAPI &
-                  SMSTwoFactorSettingsServiceAPI { get }
+    var settings: CompleteSettingsServiceAPI { get }
     
     var emailVerification: EmailVerificationServiceAPI { get }
     var general: GeneralInformationServiceAPI { get }

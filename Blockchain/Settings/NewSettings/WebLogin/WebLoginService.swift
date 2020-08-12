@@ -7,6 +7,7 @@
 //
 
 import CommonCryptoKit
+import DIKit
 import NetworkKit
 import PlatformKit
 import RxCocoa
@@ -44,8 +45,8 @@ final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
 
     public init(
         autoPairing: AutoWalletPairingClientAPI = AutoWalletPairingClient(),
-        walletCryptoService: WalletCryptoServiceAPI = WalletCryptoService(jsContextProvider: WalletManager.shared),
-        walletRepository: WalletRepositoryAPI = WalletManager.shared.repository
+        walletCryptoService: WalletCryptoServiceAPI = resolve(),
+        walletRepository: WalletRepositoryAPI = resolve()
     ) {
         self.autoPairing = autoPairing
         self.walletCryptoService = walletCryptoService
@@ -55,8 +56,8 @@ final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
     private var guid: Single<String> {
         walletRepository
             .guid
-            .map(weak: self) { (self, guid: String?) -> String in
-                guard let guid = guid else {
+            .map {
+                guard let guid = $0 else {
                     throw MissingCredentialsError.guid
                 }
                 return guid

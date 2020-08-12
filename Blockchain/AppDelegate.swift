@@ -7,6 +7,7 @@
 //
 
 import BitcoinKit
+import DIKit
 import Firebase
 import FirebaseCrashlytics
 import FirebaseDynamicLinks
@@ -16,7 +17,6 @@ import PlatformUIKit
 import EthereumKit
 import RxSwift
 import ToolKit
-import DIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -72,6 +72,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             DependencyContainer.toolKit;
             DependencyContainer.networkKit;
             DependencyContainer.platformKit;
+            DependencyContainer.platformUIKit;
             DependencyContainer.ethereumKit;
             DependencyContainer.bitcoinKit;
             DependencyContainer.buySellKit;
@@ -128,17 +129,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         navigationBarAppearance.tintColor = defaultBarStyle.tintColor
 
         if isDebug {
+            let cacheSuite: CacheSuite = resolve()
+
             let securityReminderKey = UserDefaults.DebugKeys.securityReminderTimer.rawValue
-            UserDefaults.standard.removeObject(forKey: securityReminderKey)
+            cacheSuite.removeObject(forKey: securityReminderKey)
 
             let appReviewPromptKey = UserDefaults.DebugKeys.appReviewPromptCount.rawValue
-            UserDefaults.standard.removeObject(forKey: appReviewPromptKey)
+            cacheSuite.removeObject(forKey: appReviewPromptKey)
 
             let zeroTickerKey = UserDefaults.DebugKeys.simulateZeroTicker.rawValue
-            UserDefaults.standard.set(false, forKey: zeroTickerKey)
+            cacheSuite.set(false, forKey: zeroTickerKey)
 
             let simulateSurgeKey = UserDefaults.DebugKeys.simulateSurge.rawValue
-            UserDefaults.standard.set(false, forKey: simulateSurgeKey)
+            cacheSuite.set(false, forKey: simulateSurgeKey)
         }
 
         // TODO: prevent any other data tasks from executing until cert is pinned

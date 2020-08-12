@@ -34,24 +34,12 @@ extension UIViewController: TopMostViewControllerProviding {
     /// Returns the top-most visibly presented UIViewController in this UIViewController's hierarchy
     @objc
     public var topMostViewController: UIViewController? {
-        presentedViewController?.topMostViewController ?? self
-    }
-}
-
-// MARK: - UINavigationController
-
-extension UINavigationController {
-    override public var topMostViewController: UIViewController? {
-        self
-    }
-}
-
-// MARK: - UIAlertController
-
-extension UIAlertController {
-
-    /// Overridden so that UIAlertControllers will never show up as the `topMostViewController`.
-    override public var topMostViewController: UIViewController? {
-        presentedViewController?.topMostViewController
+        if self is UIAlertController {
+            return presentedViewController?.topMostViewController
+        } else if self is UINavigationController {
+            return self
+        } else {
+            return presentedViewController?.topMostViewController ?? self
+        }
     }
 }

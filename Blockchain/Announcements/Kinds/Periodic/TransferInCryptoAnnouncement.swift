@@ -74,7 +74,7 @@ final class TransferInCryptoAnnouncement: PeriodicAnnouncement & ActionableAnnou
     // MARK: - Setup
     
     init(isKycSupported: Bool,
-         cacheSuite: CacheSuite = UserDefaults.standard,
+         cacheSuite: CacheSuite = resolve(),
          reappearanceTimeInterval: TimeInterval,
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),

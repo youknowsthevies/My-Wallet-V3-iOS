@@ -7,7 +7,8 @@
 //
 // Please keep the keys sorted alphabetically (:
 
-import Foundation
+import DIKit
+import ToolKit
 
 extension UserDefaults {
 
@@ -65,13 +66,15 @@ extension UserDefaults {
         case walletIntroLatestLocation
         case custodySendInterstitialViewed
     }
+}
 
+extension CacheSuite {
     func migrateLegacyKeysIfNeeded() {
-        migrateBool(fromKey: "touchIDEnabled", toKey: Keys.biometryEnabled.rawValue)
+        migrateBool(fromKey: "touchIDEnabled", toKey: UserDefaults.Keys.biometryEnabled.rawValue)
     }
 
     private func migrateBool(fromKey: String, toKey: String) {
-        guard let value = self.object(forKey: fromKey) as? Bool else { return }
+        guard let value = object(forKey: fromKey) as? Bool else { return }
         self.set(value, forKey: toKey)
         self.removeObject(forKey: fromKey)
     }

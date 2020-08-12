@@ -7,6 +7,7 @@
 //
 
 @testable import Blockchain
+import DIKit
 import PlatformKit
 import RxBlocking
 import RxSwift
@@ -16,14 +17,20 @@ import XCTest
 class WalletCryptoServiceTests: XCTestCase {
 
     var walletManager: WalletManager!
-    var service: WalletCryptoService!
+    var service: WalletCryptoServiceAPI!
     
     override func setUp() {
         super.setUp()
         // Force JS initialization before hand
-        walletManager = WalletManager.shared
+        let container = modules {
+            DependencyContainer.platformKit;
+            DependencyContainer.blockchain;
+        }
+        let walletManager: WalletManager = container.resolve()
         _ = walletManager.fetchJSContext()
-        service = WalletCryptoService(jsContextProvider: walletManager)
+        let service: WalletCryptoServiceAPI = container.resolve()
+        self.walletManager = walletManager
+        self.service = service
     }
     
     func testDecryption() {

@@ -11,23 +11,30 @@ import Foundation
 @testable import Blockchain
 import PlatformKit
 
-class MockAppSettings: ReactiveAppSettingsAuthenticating, AppSettingsAuthenticating, SwipeToReceiveConfiguring {
-    @objc var pin: String?
-    @objc var pinKey: String?
-    @objc var biometryEnabled: Bool
-    @objc var passwordPartHash: String?
-    @objc var encryptedPinPassword: String?
-    @objc var swipeToReceiveEnabled = false
-    
+class MockAppSettings: AppSettingsAuthenticating, SwipeToReceiveConfiguring, AppSettingsAPI {
+
+    var sharedKey: String?
+    var guid: String?
+    var pin: String?
+    var pinKey: String?
+    var biometryEnabled: Bool
+    var passwordPartHash: String?
+    var encryptedPinPassword: String?
+    var swipeToReceiveEnabled: Bool = false
+
     init(pin: String? = nil,
          pinKey: String? = nil,
          biometryEnabled: Bool = false,
          passwordPartHash: String? = nil,
-         encryptedPinPassword: String? = nil) {
+         encryptedPinPassword: String? = nil,
+         sharedKey: String? = nil,
+         guid: String? = nil) {
         self.pin = pin
         self.pinKey = pinKey
         self.biometryEnabled = biometryEnabled
         self.passwordPartHash = passwordPartHash
         self.encryptedPinPassword = encryptedPinPassword
+        self.sharedKey = sharedKey
+        self.guid = guid
     }
 }

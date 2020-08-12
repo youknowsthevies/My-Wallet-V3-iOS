@@ -64,7 +64,7 @@ final class UpdateMobileScreenPresenter {
     private let disposeBag = DisposeBag()
     
     init(stateService: UpdateMobileStateServiceAPI,
-         settingsAPI: MobileSettingsServiceAPI & SettingsServiceAPI = UserInformationServiceProvider.default.settings,
+         settingsAPI: MobileSettingsServiceAPI = UserInformationServiceProvider.default.settings,
          loadingViewPresenting: LoadingViewPresenting = LoadingViewPresenter.shared) {
         self.stateService = stateService
         textField = .init(

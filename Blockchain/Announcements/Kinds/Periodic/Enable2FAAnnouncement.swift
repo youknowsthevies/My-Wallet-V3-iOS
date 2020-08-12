@@ -74,7 +74,7 @@ final class Enable2FAAnnouncement: PeriodicAnnouncement & ActionableAnnouncement
     // MARK: - Setup
     
     init(shouldEnable2FA: Bool,
-         cacheSuite: CacheSuite = UserDefaults.standard,
+         cacheSuite: CacheSuite = resolve(),
          reappearanceTimeInterval: TimeInterval,
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),

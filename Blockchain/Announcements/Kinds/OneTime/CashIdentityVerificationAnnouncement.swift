@@ -85,7 +85,7 @@ final class CashIdentityVerificationAnnouncement: OneTimeAnnouncement & Actionab
     // MARK: - Setup
     
     init(shouldShowCashIdentityAnnouncement: Bool,
-         cacheSuite: CacheSuite = UserDefaults.standard,
+         cacheSuite: CacheSuite = resolve(),
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,

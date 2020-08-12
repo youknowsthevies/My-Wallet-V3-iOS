@@ -100,9 +100,9 @@ protocol KYCCoordinatorDelegate: class {
     }
 
     init(
-        webViewServiceAPI: WebViewServiceAPI = UIApplication.shared,
+        webViewServiceAPI: WebViewServiceAPI = resolve(),
         tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
-        appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
+        appSettings: BlockchainSettings.App = resolve(),
         kycSettings: KYCSettingsAPI = KYCSettings.shared,
         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
         communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail)

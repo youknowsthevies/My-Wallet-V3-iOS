@@ -52,7 +52,7 @@ final class BitpayService: BitpayServiceProtocol {
     init(recorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          network: NetworkCommunicatorAPI = resolve(),
-         cacheSuite: CacheSuite = UserDefaults.standard) {
+         cacheSuite: CacheSuite = resolve()) {
         self.recorder = recorder
         self.network = network
         self.announcementRecorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)

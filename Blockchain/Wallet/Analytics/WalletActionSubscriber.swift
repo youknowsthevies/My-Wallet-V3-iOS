@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -24,7 +25,7 @@ class WalletActionSubscriber {
     private let disposeBag = DisposeBag()
     
     init(
-        appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
+        appSettings: BlockchainSettings.App = resolve(),
         bus: WalletActionEventBus = WalletActionEventBus.shared,
         lastTransactionUpdateService: LastTransactionSettingsUpdateServiceAPI = UserInformationServiceProvider.default.settings
     ) {

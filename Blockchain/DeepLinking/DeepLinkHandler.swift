@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Firebase
 import PlatformKit
 import ToolKit
@@ -14,7 +15,7 @@ class DeepLinkHandler {
 
     private let appSettings: BlockchainSettings.App
 
-    init(appSettings: BlockchainSettings.App = BlockchainSettings.App.shared) {
+    init(appSettings: BlockchainSettings.App = resolve()) {
         self.appSettings = appSettings
     }
 

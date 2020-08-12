@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import ToolKit
 
@@ -28,7 +29,7 @@ public final class AnnouncementRecorder {
     
     // MARK: - Setup
     
-    public init(cache: CacheSuite = UserDefaults.standard,
+    public init(cache: CacheSuite = resolve(),
                 errorRecorder: ErrorRecording) {
         self.errorRecorder = errorRecorder
         self.cache = cache
@@ -40,27 +41,26 @@ public final class AnnouncementRecorder {
 extension AnnouncementRecorder {
     
     /// Perform one time migration of announcement keys
-    public static func migrate(errorRecorder: ErrorRecording) {
-        let userDefaults = UserDefaults.standard
-        
+    public static func migrate(errorRecorder: ErrorRecording, cache: CacheSuite = resolve()) {
         struct KeyCategoryPair {
             let legacyKey: AnnouncementRecord.LegacyKey
             let category: AnnouncementRecord.Category
         }
         
         [KeyCategoryPair(legacyKey: .shouldHidePITLinkingCard, category: .oneTime)]
-            .filter { userDefaults.value(forKey: $0.legacyKey.rawValue) as? Bool ?? false }
+            .filter { cache.bool(forKey: $0.legacyKey.rawValue) }
             .filter { $0.legacyKey.key != nil }
             .forEach {
-                let recorder = AnnouncementRecorder(cache: userDefaults, errorRecorder: errorRecorder)
+                let recorder = AnnouncementRecorder(cache: cache, errorRecorder: errorRecorder)
                 recorder[$0.legacyKey.key!].markDismissed(category: $0.category)
             }
     }
     
     /// Resets the announcements entirely by clearing any announcements from user defaults
     public static func reset() {
+        let cacheSuite: CacheSuite = resolve()
         for key in AnnouncementRecord.Key.allCases {
-            UserDefaults.standard.removeObject(forKey: key.rawValue)
+            cacheSuite.removeObject(forKey: key.rawValue)
         }
     }
 }

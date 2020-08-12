@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
+import DIKit
 
 /// Router for handling the KYC document resubmission flow
 class KYCResubmitIdentityRouter: DeepLinkRouting {
@@ -15,7 +15,7 @@ class KYCResubmitIdentityRouter: DeepLinkRouting {
     private let kycCoordinator: KYCCoordinator
 
     init(
-        appSettings: BlockchainSettings.App = BlockchainSettings.App.shared,
+        appSettings: BlockchainSettings.App = resolve(),
         kycCoordinator: KYCCoordinator = KYCCoordinator.shared
     ) {
         self.appSettings = appSettings

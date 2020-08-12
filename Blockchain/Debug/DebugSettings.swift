@@ -6,7 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
+import ToolKit
 
 @objc
 class DebugSettings: NSObject {
@@ -92,10 +93,7 @@ class DebugSettings: NSObject {
         }
     }
 
-    private lazy var defaults: UserDefaults = {
-        UserDefaults.standard
-    }()
+    @LazyInject private var defaults: CacheSuite
 
-    private override init() {
-    }
+    private override init() { }
 }

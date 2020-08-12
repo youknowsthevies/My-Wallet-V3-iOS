@@ -30,7 +30,7 @@ final class EmailSwitchViewPresenter: SwitchViewPresenting {
     private let interactor: SwitchViewInteracting
     private let disposeBag = DisposeBag()
     
-    init(service: EmailNotificationSettingsServiceAPI & SettingsServiceAPI,
+    init(service: EmailNotificationSettingsServiceAPI,
          analyticsRecording: AnalyticsEventRecording = resolve()) {
         interactor = EmailSwitchViewInteractor(service: service)
         

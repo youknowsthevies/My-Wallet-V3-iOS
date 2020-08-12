@@ -65,22 +65,12 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     
     /// Streams the GUID if exists
     var guid: Single<String?> {
-        Single.deferred { [weak self] in
-            guard let self = self else {
-                return .error(ToolKitError.nullReference(Self.self))
-            }
-            return .just(self.settings.guid)
-        }
+        settings.guid
     }
 
     /// Streams the shared key if exists
     var sharedKey: Single<String?> {
-        Single.deferred { [weak self] in
-            guard let self = self else {
-                return .error(ToolKitError.nullReference(Self.self))
-            }
-            return .just(self.settings.sharedKey)
-        }
+        settings.sharedKey
     }
 
     /// Streams the password if exists

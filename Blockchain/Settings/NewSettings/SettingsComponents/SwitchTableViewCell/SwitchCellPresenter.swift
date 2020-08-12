@@ -24,7 +24,7 @@ class EmailNotificationsSwitchCellPresenter: SwitchCellPresenting {
     let labelContentPresenting: LabelContentPresenting
     let switchViewPresenting: SwitchViewPresenting
     
-    init(service: EmailNotificationSettingsServiceAPI & SettingsServiceAPI) {
+    init(service: EmailNotificationSettingsServiceAPI) {
         labelContentPresenting = DefaultLabelContentPresenter(
             knownValue: LocalizationConstants.Settings.emailNotifications,
             descriptors: .settings
@@ -33,14 +33,15 @@ class EmailNotificationsSwitchCellPresenter: SwitchCellPresenting {
     }
 }
 
+
 class SMSTwoFactorSwitchCellPresenter: SwitchCellPresenting {
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell
-    
+
     let accessibility: Accessibility = .id(AccessibilityId.TwoStepVerification.title)
     let labelContentPresenting: LabelContentPresenting
     let switchViewPresenting: SwitchViewPresenting
-    
+
     init(service: SMSTwoFactorSettingsServiceAPI & SettingsServiceAPI) {
         labelContentPresenting = DefaultLabelContentPresenter(
             knownValue: LocalizationConstants.Settings.twoFactorAuthentication,

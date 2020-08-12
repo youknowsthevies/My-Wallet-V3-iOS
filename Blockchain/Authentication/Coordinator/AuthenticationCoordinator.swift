@@ -81,7 +81,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
    // MARK: - Initializer
 
     init(fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         appSettings: BlockchainSettings.App = .shared,
+         appSettings: BlockchainSettings.App = resolve(),
          sharedContainter: SharedContainerUserDefaults = .default,
          onboardingSettings: BlockchainSettings.Onboarding = .shared,
          wallet: Wallet = WalletManager.shared.wallet,

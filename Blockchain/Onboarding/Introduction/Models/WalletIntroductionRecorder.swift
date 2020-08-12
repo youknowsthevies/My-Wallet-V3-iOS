@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import ToolKit
 
@@ -16,7 +17,7 @@ final class WalletIntroductionRecorder {
     
     // MARK: - Properties
     
-    private let cache: UserDefaults
+    private let cache: CacheSuite
     
     /// Key subscript for an entry
     subscript(key: String) -> Entry {
@@ -25,7 +26,7 @@ final class WalletIntroductionRecorder {
     
     // MARK: - Setup
     
-    init(cache: UserDefaults = UserDefaults.standard) {
+    init(cache: CacheSuite = resolve()) {
         self.cache = cache
     }
 }
