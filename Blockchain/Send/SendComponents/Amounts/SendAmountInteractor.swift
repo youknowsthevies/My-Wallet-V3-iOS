@@ -134,7 +134,10 @@ final class SendAmountInteractor: SendAmountInteracting {
         // Observe fiat price by combining the latest fiat amount, currency code, and exchange rate
         let currentFiat = Observable
             .combineLatest(latestFiat, fiatCurrencyService.fiatCurrencyObservable)
-            .map { FiatValue.create(amountString: $0.0, currencyCode: $0.1.code) }
+            .map { (amount, currency) -> FiatValue in
+                FiatValue.create(amountString: amount, currency: currency)
+            }
+        
         Observable
             .combineLatest(currentFiat, exchangeService.fiatPrice)
             .map { MoneyValuePair(fiat: $0, priceInFiat: $1, cryptoCurrency: asset, usesFiatAsBase: false) }
