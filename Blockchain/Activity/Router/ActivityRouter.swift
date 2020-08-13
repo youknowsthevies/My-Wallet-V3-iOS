@@ -96,10 +96,12 @@ final class ActivityRouter: ActivityRouterAPI {
         view.viewModel = model
         
         guard let image = view.imageRepresentation else { return }
+        guard let root = navigationRouter.topMostViewControllerProvider.topMostViewController else { return }
         let controller = UIActivityViewController(
-            activityItems: [(image.pngData() ?? Data())],
+            activityItems: [ImageActivityItemSource(image: image)],
             applicationActivities: nil
         )
-        navigationRouter.topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
+        
+        root.present(controller, animated: true, completion: nil)
     }
 }

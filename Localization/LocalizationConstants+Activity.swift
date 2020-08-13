@@ -14,6 +14,7 @@ import Foundation
 
 extension LocalizationConstants {
     public enum Activity {
+        public enum Message { }
         public enum Details { }
         public enum MainScreen { }
         public enum Pax { }
@@ -48,6 +49,12 @@ extension LocalizationConstants.Activity.MainScreen {
         public static let receive = NSLocalizedString("Receive", comment: "Receive")
         public static let sell = NSLocalizedString("Sell", comment: "Sell")
     }
+}
+
+// MARK: - MessageView
+
+extension LocalizationConstants.Activity.Message {
+    public static let name = NSLocalizedString("My Transaction", comment: "My Transaction")
 }
 
 // MARK: Pax
