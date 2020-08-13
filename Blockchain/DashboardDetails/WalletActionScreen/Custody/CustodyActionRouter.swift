@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import DIKit
 import BuySellKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
@@ -104,6 +104,8 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
             showSendCustody()
         case .activity:
             showActivityScreen()
+        case .buy:
+            showBuy()
         case .withdrawalAfterBackup:
             /// `Backup` has already been dismissed as `Backup`
             /// has ended. `CustodyActionScreen` has been dismissed
@@ -148,6 +150,15 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
             guard let self = self else { return }
             self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
             self.tabSwapping.switchToActivity(currency: currency)
+        }
+    }
+    
+    private func showBuy() {
+        dismissTopMost { [weak self] in
+            guard let self = self else { return }
+            self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: {
+                AppCoordinator.shared.handleBuyCrypto()
+            })
         }
     }
 

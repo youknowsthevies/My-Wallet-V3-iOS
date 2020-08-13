@@ -30,6 +30,9 @@ public enum CustodyActionState {
     /// Route to activity
     case activity
     
+    /// Route to buy
+    case buy
+    
     /// The withdrawal custodial funds screen
     case withdrawal
     

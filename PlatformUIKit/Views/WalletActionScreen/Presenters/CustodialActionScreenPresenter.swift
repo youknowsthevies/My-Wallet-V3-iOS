@@ -78,8 +78,7 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
         switch currency {
         case .crypto(let crypto):
             actionPresenters.append(contentsOf: [
-                .init(currencyType: currency, action: .buy),
-                .init(currencyType: currency, action: .sell)
+                .init(currencyType: currency, action: .buy)
             ])
             let isTrading = interactor.balanceType.isTrading
             let isSavings = interactor.balanceType.isSavings
@@ -106,6 +105,8 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
             .bind { model in
                 guard case let .default(presenter) = model else { return }
                 switch presenter.action {
+                case .buy:
+                    stateService.buyRelay.accept(())
                 case .activity:
                     stateService.activityRelay.accept(())
                 case .transfer:

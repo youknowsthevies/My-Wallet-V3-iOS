@@ -30,9 +30,14 @@ public protocol CustodyActivityEmitterAPI: class {
     var activityRelay: PublishRelay<Void> { get }
 }
 
+public protocol CustodyBuyEmitterAPI: class {
+    var buyRelay: PublishRelay<Void> { get }
+}
+
 public typealias CustodyActionStateServiceAPI = CustodyActionStateReceiverServiceAPI &
                                          RoutingNextStateEmitterAPI &
                                          CustodyActivityEmitterAPI &
+                                         CustodyBuyEmitterAPI &
                                          RoutingPreviousStateEmitterAPI
 
 public final class CustodyActionStateService: CustodyActionStateServiceAPI {
@@ -101,6 +106,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
     public let nextRelay = PublishRelay<Void>()
     public let previousRelay = PublishRelay<Void>()
     public let activityRelay = PublishRelay<Void>()
+    public let buyRelay = PublishRelay<Void>()
     
     private let statesRelay = BehaviorRelay<States>(value: .start)
     private let actionRelay = PublishRelay<Action>()
@@ -133,6 +139,14 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
                 self.apply(action: .next(.activity), states: nextStates)
             }
             .disposed(by: disposeBag)
+        
+        buyRelay
+            .observeOn(MainScheduler.instance)
+            .bindAndCatch(weak: self) { (self) in
+                let nextStates = self.statesRelay.value.states(byAppending: .buy)
+                self.apply(action: .next(.buy), states: nextStates)
+            }
+            .disposed(by: disposeBag)
     }
     
     private func next() {
@@ -150,17 +164,15 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
         case .backupAfterIntroduction, .backup:
             state = recoveryStatusProviding.isRecoveryPhraseVerified ? .withdrawalAfterBackup : .end
             action = .next(state)
-        case .activity:
-            state = .end
-            action = .next(state)
         case .send:
             state = hasShownCustodyIntroductionScreen ? .backup : .introduction
             state = recoveryStatusProviding.isRecoveryPhraseVerified ? .withdrawal : state
             action = .next(state)
-        case .withdrawal, .withdrawalAfterBackup:
-            state = .end
-            action = .next(state)
-        case .end:
+        case .activity,
+             .buy,
+             .withdrawal,
+             .withdrawalAfterBackup,
+             .end:
             state = .end
             action = .next(state)
         }
