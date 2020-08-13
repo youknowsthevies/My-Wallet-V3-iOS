@@ -27,6 +27,7 @@ final class PasswordRequiredScreenInteractor {
     private let walletFetcher: PairingWalletFetching
     private let appSettings: BlockchainSettings.App
     private let walletManager: WalletManager
+    private let credentialsStore: CredentialsStoreAPI
     
     /// TODO: Consider the various of error types from the service layer,
     /// translate them into a interaction layer errors
@@ -39,11 +40,13 @@ final class PasswordRequiredScreenInteractor {
     init(walletPayloadService: WalletPayloadServiceAPI = WalletPayloadService(repository: resolve()),
          walletManager: WalletManager = resolve(),
          walletFetcher: PairingWalletFetching = AuthenticationCoordinator.shared,
-         appSettings: BlockchainSettings.App = resolve()) {
+         appSettings: BlockchainSettings.App = resolve(),
+         credentialsStore: CredentialsStoreAPI = resolve()) {
         self.walletPayloadService = walletPayloadService
         self.walletManager = walletManager
         self.walletFetcher = walletFetcher
         self.appSettings = appSettings
+        self.credentialsStore = credentialsStore
     }
     
     /// Authenticates the wallet
@@ -63,5 +66,6 @@ final class PasswordRequiredScreenInteractor {
     func forget() {
         walletManager.forgetWallet()
         appSettings.clear()
+        credentialsStore.erase()
     }
 }

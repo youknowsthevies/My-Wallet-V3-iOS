@@ -137,7 +137,7 @@ extension AnalyticsEvents {
             }
         }
     }
-        
+    
     // MARK: - Wallet Intro Flow
     
     enum WalletIntro: AnalyticsEvent {
@@ -177,7 +177,7 @@ extension AnalyticsEvents {
     }
     
     // MARK: - Bitpay
-
+    
     enum Bitpay: AnalyticsEvent {
         case bitpayPaymentSuccess
         case bitpayPaymentFailure(error: Error?)
@@ -185,7 +185,7 @@ extension AnalyticsEvents {
         case bitpayUrlScanned(asset: CryptoCurrency)
         case bitpayUrlPasted(asset: CryptoCurrency)
         case bitpayUrlDeeplink(asset: CryptoCurrency)
-
+        
         var name: String {
             switch self {
             // User successfully pays a Bitpay payment request
@@ -208,7 +208,7 @@ extension AnalyticsEvents {
                 return "bitpay_url_deeplink"
             }
         }
-
+        
         var params: [String : String]? {
             switch self {
             case .bitpayUrlDeeplink(asset: let asset),
@@ -421,7 +421,7 @@ extension AnalyticsEvents {
             }
         }
     }
-        
+    
     // MARK: - Transactions flow
     
     enum Transactions: AnalyticsEvent {
@@ -526,6 +526,7 @@ extension AnalyticsEvents {
         case settingsWebWalletLoginClick
         case settingsSwapLimitClicked
         case settingsSwipeToReceiveSwitch(value: Bool)
+        case settingsCloudBackupSwitch(value: Bool)
         case settingsWalletIdCopyClick
         case settingsWalletIdCopied
         case settingsEmailNotifSwitch(value: Bool)
@@ -556,6 +557,8 @@ extension AnalyticsEvents {
             // Settings - swipe to receive switch clicked
             case .settingsSwipeToReceiveSwitch:
                 return "settings_swipe_to_receive_switch"
+            case .settingsCloudBackupSwitch:
+                return "settings_cloud_backup_switch"
             // Settings - wallet id copy clicked
             case .settingsWalletIdCopyClick:
                 return "settings_wallet_id_copy_click"

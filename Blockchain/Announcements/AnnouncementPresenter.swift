@@ -31,7 +31,9 @@ final class AnnouncementPresenter {
     private let wallet: Wallet
     private let kycSettings: KYCSettingsAPI
     private let reactiveWallet: ReactiveWalletAPI
+    private let topMostViewControllerProvider: TopMostViewControllerProviding
     private let interactor: AnnouncementInteracting
+    private let webViewServiceAPI: WebViewServiceAPI
     
     // MARK: - Rx
 
@@ -51,6 +53,7 @@ final class AnnouncementPresenter {
     // MARK: - Setup
     
     init(interactor: AnnouncementInteracting = AnnouncementInteractor(),
+         topMostViewControllerProvider: TopMostViewControllerProviding = DIKit.resolve(),
          featureConfigurator: FeatureConfiguring = AppFeatureConfigurator.shared,
          featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
          airdropRouter: AirdropRouterAPI = AppCoordinator.shared.airdropRouter,
@@ -60,8 +63,11 @@ final class AnnouncementPresenter {
          kycCoordinator: KYCCoordinator = .shared,
          reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
          kycSettings: KYCSettingsAPI = KYCSettings.shared,
+         webViewServiceAPI: WebViewServiceAPI = DIKit.resolve(),
          wallet: Wallet = WalletManager.shared.wallet) {
         self.interactor = interactor
+        self.webViewServiceAPI = webViewServiceAPI
+        self.topMostViewControllerProvider = topMostViewControllerProvider
         self.appCoordinator = appCoordinator
         self.cashIdentityVerificationRouter = cashIdentityVerificationRouter
         self.exchangeCoordinator = exchangeCoordinator
@@ -114,6 +120,8 @@ final class AnnouncementPresenter {
         for type in metadata.order {
             let announcement: Announcement
             switch type {
+            case .cloudBackup:
+                announcement = cloudBackupAnnouncement
             case .fiatFundsNoKYC:
                 announcement = cashAnnouncement(isKYCVerified: preliminaryData.tiers.isTier2Approved)
             case .fiatFundsKYC:
@@ -350,6 +358,27 @@ extension AnnouncementPresenter {
             action: { [weak cashIdentityVerificationRouter] in
                 cashIdentityVerificationRouter?.showCashIdentityVerificationScreen()
             })
+    }
+
+    /// Cash Support Announcement for users who have not KYC'd
+    private var cloudBackupAnnouncement: Announcement {
+        CloudBackupAnnouncement(
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
+            },
+            action: { [weak self] in
+                guard let self = self else {
+                    return
+                }
+                guard let topMostViewController = self.topMostViewControllerProvider.topMostViewController else {
+                    return
+                }
+                self.webViewServiceAPI.openSafari(
+                    url: "https://support.blockchain.com/hc/en-us/articles/360046143432",
+                    from: topMostViewController
+                )
+            }
+        )
     }
     
     /// Cash Support Announcement for users who have KYC'd

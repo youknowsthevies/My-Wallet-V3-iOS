@@ -87,6 +87,10 @@ extension DependencyContainer {
         
         factory { SwapActivityService() as SwapActivityServiceAPI }
 
+        factory { CredentialsStore() as CredentialsStoreAPI }
+
+        factory { NSUbiquitousKeyValueStore.default as UbiquitousKeyValueStore }
+
         factory { WalletCryptoService() as WalletCryptoServiceAPI }
     }
 }

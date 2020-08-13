@@ -48,6 +48,7 @@ extension UserDefaults {
         case isCompletingKyc = "shouldShowKYCAnnouncementCard"
         case didTapOnAirdropDeepLink
         case swipeToReceiveEnabled = "swipeToReceive"
+        case cloudBackupEnabled
         case selectedLegacyAssetType = "assetType"
         case symbolLocal
         case hasSeenAirdropJoinWaitlistCard

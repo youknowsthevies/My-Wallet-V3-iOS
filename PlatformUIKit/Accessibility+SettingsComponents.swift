@@ -57,12 +57,17 @@ extension Accessibility.Identifier {
             public enum Currency {
                 public static let title = "\(SettingsCell.prefix)PreferredCurrency"
             }
-            
+
             public enum TwoStepVerification {
                 public static let title = "\(SettingsCell.prefix)TwoStepVerification"
             }
+
             public enum BalanceSharing {
                 public static let title = "\(SettingsCell.prefix)BalanceSharing"
+            }
+
+            public enum CloudBackup {
+                public static let title = "\(SettingsCell.prefix)CloudBackup"
             }
         }
 
@@ -86,6 +91,7 @@ extension Accessibility.Identifier {
             public static let swipeToReceive = "\(prefix)swipeToReceiveSwitchView"
             public static let twoFactorSwitchView = "\(prefix)twoFactorSwitchView"
             public static let balanceSync = "\(prefix)balanceSyncSwitchView"
+            public static let cloudBackup = "\(prefix)cloudBackup"
         }
 
         public enum ChangePassword {

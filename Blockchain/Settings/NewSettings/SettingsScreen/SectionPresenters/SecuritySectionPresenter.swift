@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
@@ -21,6 +22,7 @@ final class SecuritySectionPresenter: SettingsSectionPresenting {
                         sectionType: sectionType,
                         items: [
                             .init(cellType: .switch(.sms2FA, smsTwoFactorSwitchCellPresenter)),
+                            .init(cellType: .switch(.cloudBackup, cloudBackupSwitchCellPresenter)),
                             .init(cellType: .plain(.changePassword)),
                             .init(cellType: .badge(.recoveryPhrase, recoveryCellPresenter)),
                             .init(cellType: .plain(.changePIN)),
@@ -38,18 +40,35 @@ final class SecuritySectionPresenter: SettingsSectionPresenting {
     private let bioAuthenticationCellPresenter: BioAuthenticationSwitchCellPresenter
     private let smsTwoFactorSwitchCellPresenter: SMSTwoFactorSwitchCellPresenter
     private let balanceSyncingCellPresenter: BalanceSharingSwitchCellPresenter
+    private let cloudBackupSwitchCellPresenter: CloudBackupSwitchCellPresenter
     private let swipeToReceiveCellPresenter: SwipeReceiveSwitchCellPresenter
     
     init(smsTwoFactorService: SMSTwoFactorSettingsServiceAPI,
+         credentialsStore: CredentialsStoreAPI,
          biometryProvider: BiometryProviding,
          settingsAuthenticater: AppSettingsAuthenticating,
          recoveryPhraseStatusProvider: RecoveryPhraseStatusProviding,
          balanceSharingService: BalanceSharingSettingsServiceAPI,
-         appSettings: BlockchainSettings.App = BlockchainSettings.App.shared) {
-        self.smsTwoFactorSwitchCellPresenter = .init(service: smsTwoFactorService)
-        self.bioAuthenticationCellPresenter = .init(biometryProviding: biometryProvider, appSettingsAuthenticating: settingsAuthenticater)
-        self.recoveryCellPresenter = .init(recoveryStatusProviding: recoveryPhraseStatusProvider)
-        self.swipeToReceiveCellPresenter = .init(appSettings: appSettings)
-        self.balanceSyncingCellPresenter = BalanceSharingSwitchCellPresenter(service: balanceSharingService)
+         appSettings: BlockchainSettings.App = resolve()) {
+        self.smsTwoFactorSwitchCellPresenter = SMSTwoFactorSwitchCellPresenter(
+            service: smsTwoFactorService
+        )
+        self.bioAuthenticationCellPresenter = BioAuthenticationSwitchCellPresenter(
+            biometryProviding: biometryProvider,
+            appSettingsAuthenticating: settingsAuthenticater
+        )
+        self.recoveryCellPresenter = RecoveryStatusCellPresenter(
+            recoveryStatusProviding: recoveryPhraseStatusProvider
+        )
+        self.swipeToReceiveCellPresenter = SwipeReceiveSwitchCellPresenter(
+            appSettings: appSettings
+        )
+        self.balanceSyncingCellPresenter = BalanceSharingSwitchCellPresenter(
+            service: balanceSharingService
+        )
+        self.cloudBackupSwitchCellPresenter = CloudBackupSwitchCellPresenter(
+            appSettings: appSettings,
+            credentialsStore: credentialsStore
+        )
     }
 }

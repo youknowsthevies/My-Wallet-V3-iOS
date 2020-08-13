@@ -21,6 +21,7 @@ public enum AnnouncementType: String, Codable {
     case resubmitDocuments = "kyc_resubmit"
     case swap = "swap"
     case algorand = "algorand"
+    case cloudBackup = "cloud_backup"
     case tether = "tether"
     case bitpay = "bitpay"
     case kycAirdrop = "kyc_airdrop"
@@ -30,6 +31,8 @@ public enum AnnouncementType: String, Codable {
     /// The key indentifying the announcement in cache
     var key: AnnouncementRecord.Key {
         switch self {
+        case .cloudBackup:
+            return .cloudBackup
         case .walletIntro:
             return .walletIntro
         case .verifyEmail:

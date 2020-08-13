@@ -34,6 +34,7 @@ import RxSwift
     @Inject private var paymentPresenter: PaymentPresenter
     @Inject private var loadingViewPresenter: LoadingViewPresenting
     @LazyInject private var appFeatureConfigurator: AppFeatureConfigurator
+    @LazyInject private var credentialsStore: CredentialsStoreAPI
 
     @Inject var airdropRouter: AirdropRouterAPI
     private var settingsRouterAPI: SettingsRouterAPI?
@@ -76,15 +77,55 @@ import RxSwift
         window.rootViewController = slidingViewController
         tabControllerManager.dashBoardClicked(nil)
     }
+
+    func syncPinKeyWithICloud() {
+        // In order to login to wallet, we need to know:
+        // GUID                 - To look up the wallet
+        // SharedKey            - To be able to read/write to the wallet db record (payload, settings, etc)
+        // EncryptedPinPassword - To decrypt the wallet
+        // PinKey               - Used in conjunction with the user's PIN to retrieve decryption key to the EncryptedPinPassword (EncryptedWalletPassword)
+        // PIN                  - Provided by the user or retrieved from secure enclave if Face/TouchID is enabled
+
+        // In this method, we backup/restore the pinKey - which is essentially the identifier of the PIN.
+        // Upon successful PIN authentication, we will backup/restore the remaining wallet details: guid, sharedKey, encryptedPinPassword.
+        // The backup/restore of guid and sharedKey requires an encryption/decryption step when backing up and restoring respectively.
+        // The key used to encrypt/decrypt the guid and sharedKey is provided in the response to a successful PIN auth attempt.
+
+        guard !blockchainSettings.isPairedWithWallet else {
+            // Wallet is Paired, we do not need to restore.
+            // We will back up after pin authentication
+            return
+        }
+
+        if blockchainSettings.pinKey == nil,
+            blockchainSettings.encryptedPinPassword == nil,
+            blockchainSettings.guid == nil,
+            blockchainSettings.sharedKey == nil {
+
+            credentialsStore.synchronize()
+
+            // Attempt to restore the pinKey from iCloud
+            if let pinData = credentialsStore.pinData() {
+                blockchainSettings.pinKey = pinData.pinKey
+                blockchainSettings.encryptedPinPassword = pinData.encryptedPinPassword
+            }
+        }
+    }
     
     @objc func start() {
         appFeatureConfigurator.initialize()
 
-        // Display welcome screen if no wallet is authenticated
-        if blockchainSettings.guid == nil || blockchainSettings.sharedKey == nil {
-            onboardingRouter.start()
-        } else {
+        // Try to restore wallet details from iCloud
+        syncPinKeyWithICloud()
+
+        if blockchainSettings.guid != nil, blockchainSettings.sharedKey != nil {
+            // Original flow
             AuthenticationCoordinator.shared.start()
+        } else if blockchainSettings.pinKey != nil, blockchainSettings.encryptedPinPassword != nil {
+            // iCloud restoration flow
+            AuthenticationCoordinator.shared.start()
+        } else {
+            onboardingRouter.start()
         }
     }
 

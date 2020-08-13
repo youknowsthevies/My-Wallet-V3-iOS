@@ -6,9 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import ToolKit
 
 protocol SwitchCellPresenting {
     var accessibility: Accessibility { get }
@@ -33,6 +35,26 @@ class EmailNotificationsSwitchCellPresenter: SwitchCellPresenting {
     }
 }
 
+class CloudBackupSwitchCellPresenter: SwitchCellPresenting {
+
+    private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell.CloudBackup
+    private typealias LocalizedString = LocalizationConstants.Settings
+
+    let accessibility: Accessibility = .id(AccessibilityId.title)
+    let labelContentPresenting: LabelContentPresenting
+    let switchViewPresenting: SwitchViewPresenting
+
+    init(appSettings: BlockchainSettings.App, credentialsStore: CredentialsStoreAPI) {
+        labelContentPresenting = DefaultLabelContentPresenter(
+            knownValue: LocalizationConstants.Settings.cloudBackup,
+            descriptors: .settings
+        )
+        switchViewPresenting = CloudBackupSwitchViewPresenter(
+            appSettings: appSettings,
+            credentialsStore: credentialsStore
+        )
+    }
+}
 
 class SMSTwoFactorSwitchCellPresenter: SwitchCellPresenting {
 

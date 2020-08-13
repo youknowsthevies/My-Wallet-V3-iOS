@@ -40,6 +40,7 @@ final class SettingsScreenInteractor {
     let tiersProviding: TierLimitsProviding
     let settingsAuthenticating: AppSettingsAuthenticating
     let biometryProviding: BiometryProviding
+    let credentialsStore: CredentialsStoreAPI
     let appSettings: BlockchainSettings.App
     let featureConfigurator: FeatureFetching & FeatureConfiguring
     let recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
@@ -52,6 +53,7 @@ final class SettingsScreenInteractor {
     private let disposeBag = DisposeBag()
     
     init(repository: BlockchainDataRepository = BlockchainDataRepository.shared,
+         credentialsStore: CredentialsStoreAPI = resolve(),
          featureConfigurator: FeatureFetching & FeatureConfiguring = AppFeatureConfigurator.shared,
          settingsService: SettingsServiceAPI = UserInformationServiceProvider.default.settings,
          smsTwoFactorService: SMSTwoFactorSettingsServiceAPI = UserInformationServiceProvider.default.settings,
@@ -116,6 +118,7 @@ final class SettingsScreenInteractor {
         self.settingsAuthenticating = settingsAuthenticating
         self.pitConnnectionProviding = pitConnectionAPI
         self.recoveryPhraseStatusProviding = RecoveryPhraseStatusProvider(wallet: wallet)
+        self.credentialsStore = credentialsStore
     }
     
     func refresh() {

@@ -1532,6 +1532,20 @@ public enum LocalizationConstants {
                 comment: "Algorand announcement card CTA button title"
             )
         }
+        public struct CloudBackup {
+            public static let title = NSLocalizedString(
+                "Introducing Cloud Backups",
+                comment: "Cloud Backup announcement card title"
+            )
+            public static let description = NSLocalizedString(
+                "You can now backup your wallet securely to the cloud. You can opt-out of backups in your wallet settings.",
+                comment: "Cloud Backup announcement card description"
+            )
+            public static let ctaButton = NSLocalizedString(
+                "Learn more",
+                comment: "Cloud Backup announcement card CTA button title"
+            )
+        }
         public struct Tether {
             public static let title = NSLocalizedString(
                 "Say Hello to Tether!",
@@ -2022,6 +2036,7 @@ public enum LocalizationConstants {
         """, comment: "")
         public static let twoFactorAuthentication = NSLocalizedString("2-Step Verification", comment: "2-Step Verification")
         public static let balanceSharing = NSLocalizedString("Sync My Portfolio", comment: "Sync My Portfolio")
+        public static let cloudBackup = NSLocalizedString("Cloud Backup", comment: "Cloud Backup")
         public static let cookiePolicy = NSLocalizedString("Cookie Policy", comment: "Cookie Policy")
         public static let allRightsReserved = NSLocalizedString("All rights reserved.", comment: "All rights reserved")
         public static let useBiometricsAsPin = NSLocalizedString("Use %@ as PIN", comment: "")

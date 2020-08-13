@@ -42,8 +42,11 @@ public protocol AppSettingsAuthenticating: class {
     var biometryEnabled: Bool { get set }
     var passwordPartHash: String? { get set }
     var encryptedPinPassword: String? { get set }
+    var isPairedWithWallet: Bool { get }
 }
 
+// TICKET: https://blockchain.atlassian.net/browse/IOS-2738
+// TODO: Refactor BlockchainSettings.App/Onboarding Rx code to be thread-safe
 extension AppSettingsAuthenticating {
     public var pin: Single<String?> {
         Single.deferred { [weak self] in
@@ -87,6 +90,15 @@ extension AppSettingsAuthenticating {
                 return .error(ToolKitError.nullReference(Self.self))
             }
             return .just(self.encryptedPinPassword)
+        }
+    }
+
+    public var isPairedWithWallet: Single<Bool> {
+        Single.deferred { [weak self] in
+            guard let self = self else {
+                return .error(ToolKitError.nullReference(Self.self))
+            }
+            return .just(self.isPairedWithWallet)
         }
     }
 }

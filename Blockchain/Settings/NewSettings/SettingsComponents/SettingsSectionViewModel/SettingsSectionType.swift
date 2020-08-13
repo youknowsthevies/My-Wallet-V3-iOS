@@ -73,6 +73,7 @@ enum SettingsSectionType: Int, Equatable {
         }
         
         enum SwitchCellType: String {
+            case cloudBackup
             case sms2FA
             case emailNotifications
             case balanceSyncing

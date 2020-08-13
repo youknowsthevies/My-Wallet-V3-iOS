@@ -47,11 +47,13 @@ class PinScreenPresenterTests: XCTestCase {
         let forward: PinRouting.RoutingType.Forward = { input in
             XCTAssertEqual(input.password, interactor.expectedPassword)
         }
+
         let presenter = PinScreenPresenter(useCase: useCase,
                                            flow: flow,
                                            interactor: interactor,
                                            biometryProvider: biometryProvider,
                                            appSettings: appSettings,
+                                           credentialsStore: CredentialsStoreAPIMock(),
                                            forwardRouting: forward)
         presenter.reset(to: "5740")
         
@@ -76,6 +78,7 @@ class PinScreenPresenterTests: XCTestCase {
                                            interactor: interactor,
                                            biometryProvider: biometryProvider,
                                            appSettings: appSettings,
+                                           credentialsStore: CredentialsStoreAPIMock(),
                                            forwardRouting: forward)
         presenter.reset(to: "5740")
         
@@ -105,6 +108,7 @@ class PinScreenPresenterTests: XCTestCase {
                                            interactor: interactor,
                                            biometryProvider: biometryProvider,
                                            appSettings: appSettings,
+                                           credentialsStore: CredentialsStoreAPIMock(),
                                            forwardRouting: forward)
         presenter.reset(to: "5740")
         
@@ -126,6 +130,7 @@ class PinScreenPresenterTests: XCTestCase {
                                            interactor: interactor,
                                            biometryProvider: biometryProvider,
                                            appSettings: appSettings,
+                                           credentialsStore: CredentialsStoreAPIMock(),
                                            forwardRouting: forward)
         presenter.reset(to: Pin.invalid.toString)
         
@@ -154,6 +159,7 @@ class PinScreenPresenterTests: XCTestCase {
                                            interactor: interactor,
                                            biometryProvider: biometryProvider,
                                            appSettings: appSettings,
+                                           credentialsStore: CredentialsStoreAPIMock(),
                                            forwardRouting: forward)
         presenter.reset(to: selectedPin.toString)
         
@@ -179,6 +185,7 @@ class PinScreenPresenterTests: XCTestCase {
                                            interactor: interactor,
                                            biometryProvider: biometryProvider,
                                            appSettings: appSettings,
+                                           credentialsStore: CredentialsStoreAPIMock(),
                                            backwardRouting: backward,
                                            forwardRouting: forward)
         
@@ -208,6 +215,7 @@ class PinScreenPresenterTests: XCTestCase {
                                            interactor: interactor,
                                            biometryProvider: biometryProvider,
                                            appSettings: appSettings,
+                                           credentialsStore: CredentialsStoreAPIMock(),
                                            forwardRouting: forward)
         presenter.reset(to: pin)
         
@@ -229,6 +237,7 @@ class PinScreenPresenterTests: XCTestCase {
                                            interactor: interactor,
                                            biometryProvider: biometryProvider,
                                            appSettings: appSettings,
+                                           credentialsStore: CredentialsStoreAPIMock(),
                                            forwardRouting: forward)
         presenter.reset(to: previousPin.toString)
         

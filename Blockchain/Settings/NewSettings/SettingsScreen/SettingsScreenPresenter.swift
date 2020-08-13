@@ -79,6 +79,7 @@ final class SettingsScreenPresenter {
         
         securitySectionPresenter = .init(
             smsTwoFactorService: interactor.smsTwoFactorService,
+            credentialsStore: interactor.credentialsStore,
             biometryProvider: interactor.biometryProviding,
             settingsAuthenticater: interactor.settingsAuthenticating,
             recoveryPhraseStatusProvider: interactor.recoveryPhraseStatusProviding,

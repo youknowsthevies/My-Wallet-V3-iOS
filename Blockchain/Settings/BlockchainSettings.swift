@@ -24,11 +24,18 @@ final class BlockchainSettings: NSObject {
     // MARK: - App
 
     @objc(BlockchainSettingsApp)
-    class App: NSObject, AppSettingsAPI, AppSettingsAuthenticating, SwipeToReceiveConfiguring {
+    class App: NSObject, AppSettingsAPI, AppSettingsAuthenticating, SwipeToReceiveConfiguring, CloudBackupConfiguring {
 
         @Inject @objc static var shared: App
 
         @LazyInject private var defaults: CacheSuite
+
+        var isPairedWithWallet: Bool {
+            guid != nil
+                && sharedKey != nil
+                && pinKey != nil
+                && encryptedPinPassword != nil
+        }
 
         // MARK: - Properties
 
@@ -236,6 +243,23 @@ final class BlockchainSettings: NSObject {
         }
 
         /**
+         Determines if the application should back up credentials to iCloud.
+
+         - Note:
+         The value of this setting is controlled by a switch on the settings screen.
+
+         The default of this setting is `true`.
+         */
+        var cloudBackupEnabled: Bool {
+            get {
+                defaults.bool(forKey: UserDefaults.Keys.cloudBackupEnabled.rawValue)
+            }
+            set {
+                defaults.set(newValue, forKey: UserDefaults.Keys.cloudBackupEnabled.rawValue)
+            }
+        }
+
+        /**
          Determines if the application should allow access to swipe-to-receive on the pin screen.
 
          - Note:
@@ -418,6 +442,7 @@ final class BlockchainSettings: NSObject {
 
             defaults.register(defaults: [
                 UserDefaults.Keys.swipeToReceiveEnabled.rawValue: true,
+                UserDefaults.Keys.cloudBackupEnabled.rawValue: true,
                 UserDefaults.Keys.selectedLegacyAssetType.rawValue: LegacyAssetType.bitcoin.rawValue
             ])
             migratePasswordAndPinIfNeeded()

@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import LocalAuthentication
 import PlatformKit
 import PlatformUIKit
@@ -21,6 +22,12 @@ private enum PinScreenPresenterError: Error {
 final class PinScreenPresenter {
 
     // MARK: - Types
+
+    typealias Settings = AppSettingsAPI &
+                         AppSettingsAuthenticating &
+                         SwipeToReceiveConfiguring &
+                         CloudBackupConfiguring
+
     // MARK: - Properties
     
     var trailingButton: Screen.Style.TrailingButton {
@@ -102,8 +109,9 @@ final class PinScreenPresenter {
     
     private let interactor: PinInteracting
     private let recorder: Recording
-    private let appSettings: AppSettingsAuthenticating & SwipeToReceiveConfiguring
+    private let appSettings: Settings
     private let biometryProvider: BiometryProviding
+    private let credentialsStore: CredentialsStoreAPI
 
     // MARK: - View Models
     
@@ -127,11 +135,11 @@ final class PinScreenPresenter {
          flow: PinRouting.Flow,
          interactor: PinInteracting = PinInteractor(),
          biometryProvider: BiometryProviding = BiometryProvider(
-            settings: BlockchainSettings.App.shared,
             featureConfigurator: AppFeatureConfigurator.shared
          ),
-         appSettings: AppSettingsAuthenticating & SwipeToReceiveConfiguring = BlockchainSettings.App.shared,
+         appSettings: Settings = BlockchainSettings.App.shared,
          recorder: Recording = CrashlyticsRecorder(),
+         credentialsStore: CredentialsStoreAPI = resolve(),
          backwardRouting: PinRouting.RoutingType.Backward? = nil,
          forwardRouting: @escaping PinRouting.RoutingType.Forward) {
         self.useCase = useCase
@@ -142,6 +150,7 @@ final class PinScreenPresenter {
         self.biometryProvider = biometryProvider
         self.backwardRouting = backwardRouting
         self.forwardRouting = forwardRouting
+        self.credentialsStore = credentialsStore
 
         let emptyPinColor: UIColor
         let buttonHighlightColor: UIColor
@@ -247,7 +256,7 @@ extension PinScreenPresenter {
             logout()
         }
     }
-    
+
     // TODO: Display an overlay for the pin
     func trailingButtonPressed() {}
 }
@@ -356,11 +365,15 @@ extension PinScreenPresenter {
             self.isProcessingRelay.accept(true)
             
             // Create the pin in the remote store
-            self.interactor.create(using: payload)
+            self.interactor
+                .create(using: payload)
                 .observeOn(MainScheduler.instance)
                 .do(onDispose: { [weak self] in
                     self?.isProcessingRelay.accept(false)
                 })
+                .flatMap(weak: self) { (self) in
+                    self.backupCredentials(pinDecryptionKey: keyPair.value)
+                }
                 .subscribe(
                     onCompleted: {
                         completable(.completed)
@@ -374,7 +387,7 @@ extension PinScreenPresenter {
         }
     }
     
-    // Invoked when user is authenticating himself using his PIN, before selecting a new one
+    /// Invoked when user is authenticating himself using his PIN, before selecting a new one
     func verifyPinBeforeChanging() -> Completable {
         
         // Pin MUST NOT be nil at that point as it accompanies the use-case.
@@ -400,21 +413,73 @@ extension PinScreenPresenter {
             return Disposables.create()
         }
     }
-    
-    // Invoked when user is authenticating himself using pin or biometrics
+
+    /// Invoked when user is authenticating himself using pin or biometrics.
     func authenticatePin() -> Completable {
         verify()
             .observeOn(MainScheduler.instance)
             .flatMap(weak: self) { (self, pinDecryptionKey) -> Single<String> in
-                self.interactor.password(from: pinDecryptionKey)
+                self.backupOrRestoreCredentials(pinDecryptionKey: pinDecryptionKey)
+                    .andThen(.just(pinDecryptionKey))
             }
-            .do(onSuccess: { [weak self] password in
-                self?.forwardRouting(.authentication(password: password))
-            },
-            onDispose: { [weak self] in
-                self?.isProcessingRelay.accept(false)
-            })
+            .flatMapCompletable(weak: self) { (self, pinDecryptionKey) -> Completable in
+                self.authenticatePin(pinDecryptionKey: pinDecryptionKey)
+            }
+    }
+
+    /// Invoked during Pin Authentication.
+    /// Proceeds with pin authentication using pinDecryptionKey to decrypt password.
+    private func authenticatePin(pinDecryptionKey: String) -> Completable {
+        self.interactor
+            .password(from: pinDecryptionKey)
+            .do(
+                onSuccess: { [weak self] password in
+                    self?.forwardRouting(.authentication(password: password))
+                },
+                onDispose: { [weak self] in
+                    self?.isProcessingRelay.accept(false)
+                }
+            )
             .asCompletable()
+    }
+
+    /// Invoked during Pin Authentication.
+    /// Under the 'regular' flow, `isPairedWithWallet` is already true.
+    /// Backup credentials to iCloud if `isPairedWithWallet.
+    /// Restore wallet guid and sharedKey from iCloud if `isPairedWithWallet` is false.
+    private func backupOrRestoreCredentials(pinDecryptionKey: String) -> Completable {
+        if shouldBackupCredentials {
+            // Wallet is paired, back up credentials.
+            return credentialsStore.backup(pinDecryptionKey: pinDecryptionKey)
+        } else {
+            // Wallet is not paired, attempt to retrieve wallet details from iCloud
+            return credentialsStore
+                .walletData(pinDecryptionKey: pinDecryptionKey)
+                .do(
+                    onSuccess: { [weak self] (data) in
+                        // Restore everything to settings so the app can progress normally
+                        self?.appSettings.guid = data.guid
+                        self?.appSettings.sharedKey = data.sharedKey
+                    }
+                )
+                .asCompletable()
+                // Ignore any error regading restoring from iCloud
+                .catchError { _ in .empty() }
+        }
+    }
+
+    private var shouldBackupCredentials: Bool {
+        appSettings.isPairedWithWallet && appSettings.cloudBackupEnabled
+    }
+
+    /// Invoked during Second Pin Validation.
+    /// Backup credentials to iCloud if `isPairedWithWallet.
+    private func backupCredentials(pinDecryptionKey: String) -> Completable {
+        if shouldBackupCredentials {
+            return credentialsStore.backup(pinDecryptionKey: pinDecryptionKey)
+        } else {
+            return .empty()
+        }
     }
 }
 
@@ -426,6 +491,7 @@ extension PinScreenPresenter {
     func logout() {
         interactor.hasLogoutAttempted = true
         flow.logoutRouting?()
+        credentialsStore.erase()
     }
     
     // Should be called after setting pin successfully
@@ -436,7 +502,7 @@ extension PinScreenPresenter {
     // MARK: - Pin Validation
     
     /// Validates if the pin is correct, by generating payload (i.e. pin code and pin key combination)
-    /// - Returns: Single warpping the pin decryption key
+    /// - Returns: Single wrapping the pin decryption key
     private func verify() -> Single<String> {
         guard Reachability.hasInternetConnection() else {
             let reset = { [weak self] () -> Void in
