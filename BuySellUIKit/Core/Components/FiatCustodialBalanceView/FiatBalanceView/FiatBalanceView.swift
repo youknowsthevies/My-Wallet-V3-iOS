@@ -74,6 +74,7 @@ public final class FiatBalanceView: UIView {
         addSubview(stackView)
         stackView.axis = .vertical
         stackView.fillSuperview()
+        stackView.distribution = .fillProportionally
         for view in [quoteLabel, baseLabel] {
             stackView.addArrangedSubview(view)
         }
@@ -132,7 +133,7 @@ public final class FiatBalanceView: UIView {
             stackView.addArrangedSubview(baseLabel)
         case .hidden:
             quoteLabel.content = .empty
-            stackView.removeArrangedSubview(quoteLabel)
+            quoteLabel.isHidden = true
         }
     }
 }
