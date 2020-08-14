@@ -14,7 +14,7 @@ import Localization
 /// models to a separate framework called `BalanceKit`.
 /// This should be used a replacement for `AssetType` which is currently defined
 /// in the app target.
-public enum CryptoCurrency: String, Currency, Codable, CaseIterable {
+public enum CryptoCurrency: String, Currency, Codable, CaseIterable, Comparable {
     case bitcoin = "BTC"
     case ethereum = "ETH"
     case bitcoinCash = "BCH"
@@ -32,6 +32,30 @@ public enum CryptoCurrency: String, Currency, Codable, CaseIterable {
 // MARK: - Currency
 
 extension CryptoCurrency {
+
+    public static func < (lhs: CryptoCurrency, rhs: CryptoCurrency) -> Bool {
+        lhs.integerValue < rhs.integerValue
+    }
+
+    // Helper value for `Comparable` conformance.
+    private var integerValue: Int {
+        switch self {
+        case .bitcoin:
+            return 0
+        case .ethereum:
+            return 1
+        case .bitcoinCash:
+            return 2
+        case .stellar:
+            return 3
+        case .algorand:
+            return 4
+        case .pax:
+            return 5
+        case .tether:
+            return 6
+        }
+    }
     
     public var hasNonCustodialTradeSupport: Bool {
         switch self {

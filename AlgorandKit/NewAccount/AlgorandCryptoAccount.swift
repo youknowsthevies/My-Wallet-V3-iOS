@@ -1,71 +1,60 @@
 //
-//  ERC20CryptoAccount.swift
-//  ERC20Kit
+//  AlgorandCryptoAccount.swift
+//  AlgorandKit
 //
-//  Created by Paulo on 07/08/2020.
+//  Created by Paulo on 14/08/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
 import DIKit
-import EthereumKit
 import Localization
 import PlatformKit
 import RxSwift
 import ToolKit
 
-final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
+class AlgorandCryptoAccount: CryptoNonCustodialAccount {
     private typealias LocalizedString = LocalizationConstants.Account
-    
+
     let id: String
     let label: String
-    let asset: CryptoCurrency = Token.assetType
+    let asset: CryptoCurrency = .algorand
     let isDefault: Bool = true
-    
+
     var receiveAddress: Single<ReceiveAddress> {
         unimplemented()
     }
-    
+
     var sendState: Single<SendState> {
         unimplemented()
     }
-    
+
     var balance: Single<MoneyValue> {
-        balanceService
-            .balance(for: EthereumAddress(stringLiteral: id))
-            .map(\.moneyValue)
-            .do(onSuccess: { [weak self] (value: MoneyValue) in
-                self?.atomicIsFunded.mutate { $0 = value.isPositive }
-            })
+        unimplemented()
     }
-    
+
     var actions: AvailableActions {
-        [.viewActivity]
+        []
     }
-    
+
     var isFunded: Bool {
         atomicIsFunded.value
     }
-    
-    private let bridge: EthereumWalletBridgeAPI
-    private let balanceService: ERC20BalanceService<Token>
+
     private let exchangeService: PairExchangeServiceAPI
     private let atomicIsFunded: Atomic<Bool> = .init(false)
     
     init(id: String,
-         dataProviding: DataProviding = resolve(),
-         bridge: EthereumWalletBridgeAPI = resolve(),
-         balanceService: ERC20BalanceService<Token> = resolve()) {
+         label: String?,
+         dataProviding: DataProviding = resolve()) {
         self.id = id
-        self.label = String(format: LocalizedString.myAccount, Token.name)
-        self.bridge = bridge
-        self.exchangeService = dataProviding.exchange[Token.assetType]
-        self.balanceService = balanceService
+        self.label = label ?? String(format: LocalizedString.myAccount, CryptoCurrency.algorand.name)
+        self.exchangeService = dataProviding.exchange[.algorand]
     }
-    
+
     func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {
         unimplemented()
     }
-    
+
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
         Single
             .zip(

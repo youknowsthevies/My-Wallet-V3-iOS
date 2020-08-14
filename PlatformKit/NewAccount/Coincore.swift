@@ -21,6 +21,7 @@ final public class Coincore {
         Single
             .zip(
                 assetMap
+                    .sorted(by: { $0.key < $1.key })
                     .map { $0.value }
                     .map { asset in asset.accountGroup(filter: .all) }
             )

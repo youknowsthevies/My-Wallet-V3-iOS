@@ -89,14 +89,10 @@ extension DependencyContainer {
 
         single { () -> Coincore in
             Coincore(
-                assetMap: [
-                    .bitcoin: DIKit.resolve(tag: CryptoCurrency.bitcoin),
-                    .bitcoinCash: DIKit.resolve(tag: CryptoCurrency.bitcoinCash),
-                    .ethereum: DIKit.resolve(tag: CryptoCurrency.ethereum),
-                    .stellar: DIKit.resolve(tag: CryptoCurrency.stellar),
-                    .pax: DIKit.resolve(tag: CryptoCurrency.pax),
-                    .tether: DIKit.resolve(tag: CryptoCurrency.tether)
-                ]
+                assetMap: CryptoCurrency.allCases.reduce(into: [CryptoCurrency: CryptoAsset](), { (result, this) in
+                    let asset: CryptoAsset = DIKit.resolve(tag: this)
+                    result[this] = asset
+                })
             )
         }
 

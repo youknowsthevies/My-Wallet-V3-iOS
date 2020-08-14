@@ -55,7 +55,7 @@ final class StellarAsset: CryptoAsset {
     private var allAccountsGroup: Single<AccountGroup> {
         let asset = self.asset
         return Single
-            .zip(custodialGroup, interestGroup, nonCustodialGroup)
+            .zip(nonCustodialGroup, custodialGroup, interestGroup)
             .map { CryptoAccountNonCustodialGroup(asset: asset, accounts: $0.0.accounts + $0.1.accounts + $0.2.accounts) }
     }
 
