@@ -11,6 +11,10 @@ public protocol ExchangeProviding: class {
     
     /// Returns the exchange service
     subscript(currency: Currency) -> PairExchangeServiceAPI { get }
+
+    subscript(currency: CryptoCurrency) -> PairExchangeServiceAPI { get }
+
+    subscript(currency: FiatCurrency) -> PairExchangeServiceAPI { get }
     
     /// Refreshes all the exchange rates
     func refresh()

@@ -9,27 +9,10 @@
 import BigInt
 import PlatformKit
 
-/// TODO: `BalanceDetails` can likely be re-used for other asset types for native
-/// balance fetching.
-public struct BalanceDetailsResponse {
+public struct BalanceDetailsResponse: Decodable {
     let balance: String
     let nonce: UInt64
-}
 
-extension BalanceDetailsResponse: Decodable {
-    enum CodingKeys: String, CodingKey {
-        case balance
-        case nonce
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        balance = try values.decode(String.self, forKey: .balance)
-        nonce = try values.decode(UInt64.self, forKey: .nonce)
-    }
-}
-
-extension BalanceDetailsResponse {
     var cryptoValue: CryptoValue {
         CryptoValue.createFromMinorValue(BigInt(balance) ?? BigInt(0), assetType: .ethereum)
     }

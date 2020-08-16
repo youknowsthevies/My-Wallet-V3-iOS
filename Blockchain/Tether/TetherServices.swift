@@ -15,14 +15,9 @@ struct TetherServices: TetherDependencies {
     let assetAccountRepository: ERC20AssetAccountRepository<TetherToken>
     let historicalTransactionService: AnyERC20HistoricalTransactionService<TetherToken>
     
-    init(wallet: Wallet = WalletManager.shared.wallet,
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         swapActivityAPI: SwapActivityServiceAPI = resolve()) {
+    init(assetAccountRepository: ERC20AssetAccountRepository<TetherToken> = resolve(),
+         wallet: Wallet = WalletManager.shared.wallet) {
+        self.assetAccountRepository = assetAccountRepository
         historicalTransactionService = AnyERC20HistoricalTransactionService<TetherToken>(bridge: wallet.ethereum)
-        let assetAccountService = ERC20AssetAccountDetailsService<TetherToken>(
-            with: wallet.ethereum,
-            accountClient: ERC20AccountAPIClient<TetherToken>()
-        )
-        assetAccountRepository = ERC20AssetAccountRepository(service: assetAccountService)
     }
 }

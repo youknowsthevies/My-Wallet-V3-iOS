@@ -36,7 +36,7 @@ final class PinInteractor: PinInteracting {
     
     init(credentialsProvider: WalletCredentialsProviding = WalletManager.shared.legacyRepository,
          pinClient: PinClientAPI = PinClient(),
-         maintenanceService: MaintenanceServicing = WalletService.shared,
+         maintenanceService: MaintenanceServicing = resolve(),
          wallet: WalletProtocol = WalletManager.shared.wallet,
          appSettings: AppSettingsAuthenticating = resolve(),
          recorder: ErrorRecording = CrashlyticsRecorder(),

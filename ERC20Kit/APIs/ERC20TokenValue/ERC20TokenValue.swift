@@ -19,6 +19,10 @@ public struct ERC20TokenValue<Token: ERC20Token>: Crypto {
     public var value: CryptoValue {
         crypto.value
     }
+
+    public var moneyValue: MoneyValue {
+        value.moneyValue
+    }
     
     private let crypto: Crypto
     

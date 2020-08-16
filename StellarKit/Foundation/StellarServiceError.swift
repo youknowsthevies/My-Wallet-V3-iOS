@@ -17,9 +17,10 @@ public protocol StellarServiceError: Error {
 
 /// `StellarAccountError` is a `TransactionValidationError` as all cases should cause
 /// a transaction to be invalid.
-public enum StellarAccountError: StellarServiceError, TransactionValidationError, Equatable {
+public enum StellarAccountError: StellarServiceError, TransactionValidationError {
     case noDefaultAccount
     case noXLMAccount
+    case unableToSaveNewAccount
 }
 
 extension StellarAccountError {
@@ -29,25 +30,15 @@ extension StellarAccountError {
             return "noXLMAccount"
         case .noDefaultAccount:
             return "noDefaultAccount"
-        }
-    }
-}
-
-extension StellarAccountError {
-    public static func ==(lhs: StellarAccountError, rhs: StellarAccountError) -> Bool {
-        switch (lhs, rhs) {
-        case (.noDefaultAccount, .noDefaultAccount),
-             (.noXLMAccount, .noXLMAccount):
-            return true
-        default:
-            return false
+        case .unableToSaveNewAccount:
+            return "unableToSaveNewAccount"
         }
     }
 }
 
 /// `StellarFundsError` is a `TransactionValidationError` as all cases should cause
 /// a transaction to be invalid.
-public enum StellarFundsError: StellarServiceError, TransactionValidationError, Equatable {
+public enum StellarFundsError: StellarServiceError, TransactionValidationError {
     case insufficientFundsForNewAccount
     case insufficientFunds
 }
@@ -59,18 +50,6 @@ extension StellarFundsError {
             return "insufficientFundsForNewAccount"
         case .insufficientFunds:
             return "insufficientFunds"
-        }
-    }
-}
-
-extension StellarFundsError {
-    public static func ==(lhs: StellarFundsError, rhs: StellarFundsError) -> Bool {
-        switch (lhs, rhs) {
-        case (.insufficientFundsForNewAccount, .insufficientFundsForNewAccount),
-             (.insufficientFunds, .insufficientFunds):
-            return true
-        default:
-            return false
         }
     }
 }

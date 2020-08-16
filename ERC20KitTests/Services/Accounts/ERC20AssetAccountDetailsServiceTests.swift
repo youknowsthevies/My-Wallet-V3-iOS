@@ -30,7 +30,7 @@ class ERC20AssetAccountDetailsServiceTests: XCTestCase {
         accountClient = ERC20AccountAPIClientMock()
         subject = ERC20AssetAccountDetailsService<PaxToken>(
             with: bridge,
-            service: AnyERC20BalanceService(with: bridge, accountClient: accountClient)
+            service: ERC20BalanceService(with: bridge, accountClient: accountClient)
         )
     }
 

@@ -101,6 +101,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             .waitUntilInitializedSingle
             .flatMap { memo }
     }
+
     var hdWallet: Single<PayloadBitcoinHDWallet> {
         reactiveWallet
             .waitUntilInitializedSingle

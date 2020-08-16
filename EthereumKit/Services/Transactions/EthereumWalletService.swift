@@ -33,7 +33,6 @@ public protocol EthereumWalletServiceAPI {
 }
 
 public final class EthereumWalletService: EthereumWalletServiceAPI {
-    public typealias Bridge = EthereumWalletBridgeAPI
     
     public var fetchHistoryIfNeeded: Single<Void> {
         bridge.history
@@ -66,7 +65,7 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
         walletAccountRepository.keyPair.asObservable().asSingle()
     }
     
-    private let bridge: Bridge
+    private let bridge: EthereumWalletBridgeAPI
     private let client: APIClientAPI
     private let feeService: AnyCryptoFeeService<EthereumTransactionFee>
     private let walletAccountRepository: EthereumWalletAccountRepositoryAPI
@@ -74,23 +73,8 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
     private let transactionSendingService: EthereumTransactionSendingServiceAPI
     private let transactionValidationService: ValidateTransactionAPI
 
-    public convenience init(with bridge: Bridge,
-                            feeService: AnyCryptoFeeService<EthereumTransactionFee>,
-                            walletAccountRepository: EthereumWalletAccountRepositoryAPI,
-                            transactionBuildingService: EthereumTransactionBuildingServiceAPI,
-                            transactionSendingService: EthereumTransactionSendingServiceAPI,
-                            transactionValidationService: ValidateTransactionAPI) {
-        self.init(with: bridge,
-                  client: resolve(),
-                  feeService: feeService,
-                  walletAccountRepository: walletAccountRepository,
-                  transactionBuildingService: transactionBuildingService,
-                  transactionSendingService: transactionSendingService,
-                  transactionValidationService: transactionValidationService)
-    }
-
-    public init(with bridge: Bridge,
-                client: APIClientAPI,
+    public init(with bridge: EthereumWalletBridgeAPI = resolve(),
+                client: APIClientAPI = resolve(),
                 feeService: AnyCryptoFeeService<EthereumTransactionFee>,
                 walletAccountRepository: EthereumWalletAccountRepositoryAPI,
                 transactionBuildingService: EthereumTransactionBuildingServiceAPI,

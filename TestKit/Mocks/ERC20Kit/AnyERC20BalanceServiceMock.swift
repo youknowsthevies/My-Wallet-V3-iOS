@@ -12,7 +12,7 @@ import EthereumKit
 import PlatformKit
 import RxSwift
 
-public class AnyERC20BalanceServiceMock<Token: ERC20Token>: ERC20BalanceServiceAPI {
+public class ERC20BalanceServiceMock<Token: ERC20Token>: ERC20BalanceServiceAPI {
     var balanceResponse: Single<ERC20TokenValue<Token>> = Single.just(.zero())
 
     public var balanceForDefaultAccount: Single<ERC20TokenValue<Token>> {

@@ -7,15 +7,20 @@
 //
 
 import DIKit
-import ToolKit
+import BitcoinKit
+import ERC20Kit
+import EthereumKit
 import PlatformKit
 import PlatformUIKit
+import StellarKit
+import ToolKit
 
 extension DependencyContainer {
     
     // MARK: - Blockchain Module
     
     static var blockchain = module {
+
         single { EnabledCurrenciesService(featureFetcher: AppFeatureConfigurator.shared) }
         
         single { AppCoordinator() }
@@ -35,6 +40,16 @@ extension DependencyContainer {
         }
         
         single { WalletManager() }
+
+        factory { () -> ReactiveWalletAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return manager.reactiveWallet
+        }
+
+        factory { () -> MnemonicAccessAPI in
+            let walletManager: WalletManager = DIKit.resolve()
+            return walletManager.wallet as MnemonicAccessAPI
+        }
         
         single { OnboardingRouter() }
         
@@ -45,6 +60,11 @@ extension DependencyContainer {
         single { LoadingViewPresenter() as LoadingViewPresenting }
         
         single { AppFeatureConfigurator() }
+
+        factory { () -> FeatureFetching in
+            let featureFetching: AppFeatureConfigurator = DIKit.resolve()
+            return featureFetching
+        }
         
         factory { DeepLinkRouter() }
         
@@ -82,5 +102,60 @@ extension DependencyContainer {
             return walletManager as JSContextProviderAPI
         }
 
+        // MARK: - Ethereum Wallet
+
+        factory { () -> EthereumWallet in
+            let manager: WalletManager = DIKit.resolve()
+            return manager.wallet.ethereum
+        }
+
+        factory { () -> ERC20BridgeAPI in
+            let ethereum: EthereumWallet = DIKit.resolve()
+            return ethereum
+        }
+
+        factory { () -> EthereumWalletBridgeAPI in
+            let ethereum: EthereumWallet = DIKit.resolve()
+            return ethereum
+        }
+
+        factory { () -> EthereumWalletAccountBridgeAPI in
+            let ethereum: EthereumWallet = DIKit.resolve()
+            return ethereum
+        }
+
+        factory(tag: CryptoCurrency.ethereum) { () -> MnemonicAccessAPI in
+            let ethereum: EthereumWallet = DIKit.resolve()
+            return ethereum
+        }
+
+        factory(tag: CryptoCurrency.ethereum) { () -> PasswordAccessAPI in
+            let ethereum: EthereumWallet = DIKit.resolve()
+            return ethereum
+        }
+
+        factory(tag: CryptoCurrency.ethereum) { () -> SecondPasswordPromptable in
+            let ethereum: EthereumWallet = DIKit.resolve()
+            return ethereum
+        }
+
+        factory(tag: CryptoCurrency.ethereum) { () -> CryptoAccountBalanceFetching in
+            let ethereum: EthereumWallet = DIKit.resolve()
+            return ethereum
+        }
+
+        // MARK: - Stellar Wallet
+
+        factory { () -> StellarWalletBridgeAPI in
+            let walletManager: WalletManager = DIKit.resolve()
+            return walletManager.wallet as StellarWalletBridgeAPI
+        }
+
+        // MARK: - Bitcoin Wallet
+
+        factory { () -> BitcoinWalletBridgeAPI in
+            let walletManager: WalletManager = DIKit.resolve()
+            return walletManager.wallet.bitcoin
+        }
     }
 }

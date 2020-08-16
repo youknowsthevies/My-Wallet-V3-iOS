@@ -15,5 +15,7 @@ extension DependencyContainer {
     public static var bitcoinKit = module {
         
         factory { APIClient() as APIClientAPI }
+
+        factory { BitcoinWalletAccountRepository() }
     }
 }

@@ -17,28 +17,26 @@ protocol UnspentOutputRepositoryAPI {
 }
 
 final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
+
+    // MARK: - Properties
     
-    public typealias Bridge = BitcoinWalletBridgeAPI
-    
-    // MARK: - Public properties
-    
-    public var unspentOutputs: Single<UnspentOutputs> {
+    var unspentOutputs: Single<UnspentOutputs> {
         cachedUnspentOutputs.valueSingle
     }
     
-    public var fetchUnspentOutputs: Single<UnspentOutputs> {
+    var fetchUnspentOutputs: Single<UnspentOutputs> {
         cachedUnspentOutputs.fetchValue
     }
     
     // MARK: - Private properties
-    
-    private let bridge: Bridge
+
+    private let bridge: BitcoinWalletBridgeAPI
     private let client: APIClientAPI
     private let cachedUnspentOutputs: CachedValue<UnspentOutputs>
     
     // MARK: - Init
     
-    init(with bridge: Bridge,
+    init(with bridge: BitcoinWalletBridgeAPI = resolve(),
          client: APIClientAPI = resolve(),
          scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()) {
         self.bridge = bridge

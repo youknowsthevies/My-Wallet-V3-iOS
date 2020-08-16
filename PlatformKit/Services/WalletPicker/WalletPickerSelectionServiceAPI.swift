@@ -29,17 +29,3 @@ public final class WalletPickerSelectionService: WalletPickerSelectionServiceAPI
         selectedDataRelay.accept(selection)
     }
 }
-
-public final class WalletSelectionService: WalletPickerSelectionServiceAPI {
-    private let selectedDataRelay = PublishRelay<WalletPickerSelection>()
-
-    public var selectedData: Observable<WalletPickerSelection> {
-        selectedDataRelay.asObservable()
-    }
-
-    public init() { }
-
-    public func record(selection: WalletPickerSelection) {
-        selectedDataRelay.accept(selection)
-    }
-}

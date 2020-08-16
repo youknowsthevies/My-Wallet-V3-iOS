@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxCocoa
 import RxSwift
@@ -14,13 +15,13 @@ public protocol StellarConfigurationAPI {
     var configuration: Single<StellarConfiguration> { get }
 }
 
-public protocol StellarWalletOptionsBridgeAPI: class {
-    var stellarConfigurationDomain: Single<String?> { get }
-}
+final class StellarConfigurationService: StellarConfigurationAPI {
 
-final public class StellarConfigurationService: StellarConfigurationAPI {
-    
-    public var configuration: Single<StellarConfiguration> {
+    // MARK: Private Static Properties
+
+    private static let refreshInterval: TimeInterval = 60.0 * 60.0 // 1h
+
+     var configuration: Single<StellarConfiguration> {
         Single.deferred { [unowned self] in
             guard let cachedValue = self.cachedConfiguration.value, !self.shouldRefresh else {
                 return self.fetchConfiguration
@@ -59,21 +60,7 @@ final public class StellarConfigurationService: StellarConfigurationAPI {
     
     private let bridgeAPI: StellarWalletOptionsBridgeAPI
     
-    // MARK: Private Static Properties
-    
-    private static let refreshInterval: TimeInterval = 60.0 * 60.0 // 1h
-    
-    public static let shared: StellarConfigurationService = StellarConfigurationService(bridge: WalletService.shared)
-    
-    public init(bridge: StellarWalletOptionsBridgeAPI = WalletService.shared) {
+    init(bridge: StellarWalletOptionsBridgeAPI = resolve()) {
         self.bridgeAPI = bridge
-    }
-}
-
-extension WalletService: StellarWalletOptionsBridgeAPI {
-    public var stellarConfigurationDomain: Single<String?> {
-        walletOptions.map { value -> String? in
-            value.domains?.stellarHorizon
-        }
     }
 }

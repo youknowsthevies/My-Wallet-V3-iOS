@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -83,10 +84,9 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
 
     init(currency: CryptoCurrency,
          service: BuySellKit.OrdersServiceAPI,
-         tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
-         featureFetching: FeatureFetching = AppFeatureConfigurator.shared) {
+         custodialFeatureFetching: CustodialFeatureFetching = resolve()) {
         self.currency = currency
         self.service = service
-        custodialFeatureFetching = CustodialFeatureFetcher(tiersService: tiersService, featureFetching: featureFetching)
+        self.custodialFeatureFetching = custodialFeatureFetching
     }
 }

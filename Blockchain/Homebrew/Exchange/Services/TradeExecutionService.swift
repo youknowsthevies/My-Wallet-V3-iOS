@@ -19,7 +19,7 @@ import ToolKit
 
 protocol TradeExecutionServiceDependenciesAPI {
     var assetAccountRepository: AssetAccountRepositoryAPI { get }
-    var erc20AccountRepository: AnyERC20AssetAccountRepository<PaxToken> { get }
+    var erc20AccountRepository: ERC20AssetAccountRepository<PaxToken> { get }
     var erc20Service: AnyERC20Service<PaxToken> { get }
     var ethereumWalletService: EthereumWalletServiceAPI { get }
     var feeService: FeeServiceAPI { get }
@@ -27,7 +27,7 @@ protocol TradeExecutionServiceDependenciesAPI {
 }
 
 class TradeExecutionService: TradeExecutionAPI {
-        
+    
     // MARK: Models
     
     struct Dependencies: TradeExecutionServiceDependenciesAPI {
@@ -40,8 +40,8 @@ class TradeExecutionService: TradeExecutionAPI {
             AnyERC20Service<PaxToken>(paxServiceProvider.services.paxService)
         }
         
-        var erc20AccountRepository: AnyERC20AssetAccountRepository<PaxToken> {
-            AnyERC20AssetAccountRepository<PaxToken>(paxServiceProvider.services.assetAccountRepository)
+        var erc20AccountRepository: ERC20AssetAccountRepository<PaxToken> {
+            resolve()
         }
         
         var ethereumWalletService: EthereumWalletServiceAPI {
@@ -111,7 +111,7 @@ class TradeExecutionService: TradeExecutionAPI {
     // MARK: Init
     
     init(
-        ethereumWallet: EthereumWalletBridgeAPI = WalletManager.shared.wallet.ethereum,
+        ethereumWallet: EthereumWalletBridgeAPI = resolve(),
         wallet: WalletAPI,
         dependencies: TradeExecutionServiceDependenciesAPI,
         communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail)

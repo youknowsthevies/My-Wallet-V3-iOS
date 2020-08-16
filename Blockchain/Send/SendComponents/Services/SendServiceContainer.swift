@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import EthereumKit
 import Foundation
 import PlatformKit
@@ -54,7 +55,7 @@ struct SendServiceContainer: SendServiceContaining {
         case .ethereum:
             exchange = DataProvider.default.exchange[CurrencyType.crypto(.ethereum)]
             sourceAccountProvider = EtherSendSourceAccountProvider()
-            balance = WalletManager.shared.wallet.ethereum
+            balance = { () -> CryptoAccountBalanceFetching in resolve(tag: asset) }()
         case .algorand, .bitcoin, .bitcoinCash, .pax, .stellar, .tether:
             fatalError("\(#function) is not implemented for \(asset)")
         }

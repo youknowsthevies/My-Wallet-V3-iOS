@@ -7,6 +7,7 @@
 //
 
 import BigInt
+import DIKit
 import ERC20Kit
 import EthereumKit
 import Foundation
@@ -89,7 +90,7 @@ class EthereumWallet: NSObject {
     }
     
     init(schedulerType: SchedulerType = MainScheduler.instance,
-         walletOptionsService: WalletOptionsAPI = WalletService.shared,
+         walletOptionsService: WalletOptionsAPI = resolve(),
          wallet: WalletAPI,
          dispatcher: Dispatcher = EthereumJSInteropDispatcher.shared) {
         self.schedulerType = schedulerType

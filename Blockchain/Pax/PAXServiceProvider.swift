@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import ERC20Kit
 import EthereumKit
 import PlatformKit
@@ -27,13 +28,12 @@ struct PAXServices: PAXDependencies {
     let walletService: EthereumWalletServiceAPI
     let feeService: AnyCryptoFeeService<EthereumTransactionFee>
 
-    init(wallet: Wallet = WalletManager.shared.wallet,
+    init(assetAccountRepository: ERC20AssetAccountRepository<PaxToken> = resolve(),
+         wallet: Wallet = WalletManager.shared.wallet,
          feeService: AnyCryptoFeeService<EthereumTransactionFee> = AnyCryptoFeeService(service: CryptoFeeService<EthereumTransactionFee>.shared),
-         walletService: EthereumWalletServiceAPI = EthereumWalletService.shared,
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings) {
+         walletService: EthereumWalletServiceAPI = EthereumWalletService.shared) {
+        self.assetAccountRepository = assetAccountRepository
         self.feeService = feeService
-        let service = ERC20AssetAccountDetailsService<PaxToken>(with: wallet.ethereum, accountClient: ERC20AccountAPIClient<PaxToken>())
-        self.assetAccountRepository = ERC20AssetAccountRepository(service: service)
         self.historicalTransactionService = AnyERC20HistoricalTransactionService<PaxToken>(bridge: wallet.ethereum)
         let ethereumAssetAccountRepository: EthereumAssetAccountRepository = EthereumAssetAccountRepository(
             service: EthereumAssetAccountDetailsService(

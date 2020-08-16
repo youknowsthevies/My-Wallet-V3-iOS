@@ -25,3 +25,5 @@ public protocol AssetAccountRepositoryAPI {
     /// `AssetAccountDetails`.
     func currentAssetAccountDetails(fromCache: Bool) -> Single<Details>
 }
+
+// TODO: AnyAssetAccountRepositoryAPI, make ERC20AssetAccountRepository private

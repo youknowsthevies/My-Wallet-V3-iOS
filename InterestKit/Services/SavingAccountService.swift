@@ -6,26 +6,20 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
 
-public protocol SavingAccountServiceAPI: AnyObject {
-    var balances: Single<CustodialAccountBalanceStates> { get }
-    func fetchBalances() -> Single<CustodialAccountBalanceStates>
-    func balance(for currency: CryptoCurrency) -> Single<CustodialAccountBalanceState>
-    func rate(for currency: CryptoCurrency) -> Single<Double>
-}
-
-public class SavingAccountService: SavingAccountServiceAPI {
+class SavingAccountService: SavingAccountServiceAPI {
     
     // MARK: - Public Properties
     
-    public var balances: Single<CustodialAccountBalanceStates> {
+    var balances: Single<CustodialAccountBalanceStates> {
         _ = setup
         return cachedValue.valueSingle
     }
-        
+
     // MARK: - Private Properties
     
     private let client: SavingsAccountClientAPI
@@ -40,13 +34,9 @@ public class SavingAccountService: SavingAccountServiceAPI {
     }()
     
     // MARK: - Setup
-    
-    public convenience init(custodialFeatureFetcher: CustodialFeatureFetching) {
-        self.init(client: SavingsAccountClient(), custodialFeatureFetcher: custodialFeatureFetcher)
-    }
 
-    init(client: SavingsAccountClientAPI,
-         custodialFeatureFetcher: CustodialFeatureFetching) {
+    init(client: SavingsAccountClientAPI = resolve(),
+         custodialFeatureFetcher: CustodialFeatureFetching = resolve()) {
         self.client = client
         self.custodialFeatureFetcher = custodialFeatureFetcher
         self.cachedValue = CachedValue(configuration: .onSubscription())
@@ -54,7 +44,7 @@ public class SavingAccountService: SavingAccountServiceAPI {
 
     // MARK: - Public Methods
 
-    public func balance(for currency: CryptoCurrency) -> Single<CustodialAccountBalanceState> {
+    func balance(for currency: CryptoCurrency) -> Single<CustodialAccountBalanceState> {
         balances.map { $0[currency.currency] }
     }
 
@@ -75,12 +65,12 @@ public class SavingAccountService: SavingAccountServiceAPI {
             .catchErrorJustReturn(.empty)
     }
 
-    public func fetchBalances() -> Single<CustodialAccountBalanceStates> {
+    func fetchBalances() -> Single<CustodialAccountBalanceStates> {
         _ = setup
         return cachedValue.fetchValue
     }
     
-    public func rate(for currency: CryptoCurrency) -> Single<Double> {
+    func rate(for currency: CryptoCurrency) -> Single<Double> {
         client.rate(for: currency.rawValue)
             .map { $0.rate }
     }

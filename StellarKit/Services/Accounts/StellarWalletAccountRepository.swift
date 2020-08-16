@@ -6,27 +6,30 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 
 public protocol StellarWalletAccountRepositoryAPI {
     var defaultAccount: StellarWalletAccount? { get }
-    
+
     func initializeMetadataMaybe() -> Maybe<StellarWalletAccount>
     func loadKeyPair() -> Maybe<StellarKeyPair>
 }
 
-open class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletAccountRepositoryAPI, WalletAccountInitializer, KeyPairProviderAPI {
+public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletAccountRepositoryAPI, WalletAccountInitializer, KeyPairProviderAPI {
     public typealias Account = StellarWalletAccount
     public typealias Pair = StellarKeyPair
     public typealias WalletAccount = StellarWalletAccount
-    public typealias Bridge = StellarWalletBridgeAPI & MnemonicAccessAPI
+
+    private let bridge: StellarWalletBridgeAPI
+    private let mnemonicAccessAPI: MnemonicAccessAPI
+    private let deriver: StellarKeyPairDeriver = StellarKeyPairDeriver()
     
-    fileprivate let bridge: Bridge
-    fileprivate let deriver: StellarKeyPairDeriver = StellarKeyPairDeriver()
-    
-    public init(with bridge: Bridge) {
+    init(bridge: StellarWalletBridgeAPI = resolve(),
+         mnemonicAccessAPI: MnemonicAccessAPI = resolve()) {
         self.bridge = bridge
+        self.mnemonicAccessAPI = mnemonicAccessAPI
     }
     
     public func initializeMetadataMaybe() -> Maybe<WalletAccount> {
@@ -36,16 +39,17 @@ open class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, Wa
     }
     
     /// The default `StellarWallet`, will be nil if it has not yet been initialized
-    open var defaultAccount: WalletAccount? {
+    public var defaultAccount: StellarWalletAccount? {
         accounts().first
     }
     
-    open func accounts() -> [WalletAccount] {
+    func accounts() -> [WalletAccount] {
         bridge.stellarWallets()
     }
     
     public func loadKeyPair() -> Maybe<Pair> {
-        bridge.mnemonicPromptingIfNeeded
+        mnemonicAccessAPI
+            .mnemonicPromptingIfNeeded
             .flatMap { [unowned self] mnemonic -> Maybe<Pair> in
                 self.deriver.derive(input: StellarKeyDerivationInput(mnemonic: mnemonic)).maybe
             }
@@ -61,25 +65,36 @@ open class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, Wa
     }
     
     private func createAndSaveStellarAccount() -> Maybe<WalletAccount> {
-        loadKeyPair().do(onNext: { [unowned self] stellarKeyPair in
-            self.save(keyPair: stellarKeyPair)
-        })
-        .map { keyPair -> Account in
-            // TODO: Need to localize this
-            return Account(
-                index: 0,
-                publicKey: keyPair.accountID,
-                label: "My Stellar Wallet",
-                archived: false
-            )
-        }
+        loadKeyPair()
+            .flatMap(weak: self) { (self, keyPair) -> Maybe<Pair> in
+                self.save(keyPair: keyPair)
+                    .andThen(Maybe.just(keyPair))
+            }
+            .map { keyPair -> Account in
+                Account(
+                    index: 0,
+                    publicKey: keyPair.accountID,
+                    label: "My Stellar Wallet",
+                    archived: false
+                )
+            }
     }
-    
-    private func save(keyPair: Pair) {
-        // TODO: Need to localize this
-        bridge.save(keyPair: keyPair, label: "My Stellar Wallet") { errorMessage in
-            // TODO: Need to localize this
-            print(errorMessage ?? "")
+
+    private func save(keyPair: Pair) -> Completable {
+        Completable.create(weak: self) { (self, observer) -> Disposable in
+            self.bridge.save(
+                keyPair: keyPair,
+                label: "My Stellar Wallet",
+                completion: { error in
+                    switch error {
+                    case .none:
+                        observer(.completed)
+                    case .some:
+                        observer(.error(StellarAccountError.unableToSaveNewAccount))
+                    }
+                }
+            )
+            return Disposables.create()
         }
     }
 }

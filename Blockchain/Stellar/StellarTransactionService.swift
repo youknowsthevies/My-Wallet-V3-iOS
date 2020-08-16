@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import RxSwift
@@ -32,7 +33,7 @@ class StellarTransactionService: StellarTransactionAPI {
     private let configurationService: StellarConfigurationAPI
     private let accounts: StellarAccountAPI
     private let repository: StellarWalletAccountRepositoryAPI
-    private let walletService: WalletService
+    private let walletService: WalletOptionsAPI
 
     private let bag = DisposeBag()
 
@@ -40,7 +41,7 @@ class StellarTransactionService: StellarTransactionAPI {
         configurationService: StellarConfigurationAPI,
         accounts: StellarAccountAPI,
         repository: StellarWalletAccountRepositoryAPI,
-        walletService: WalletService = WalletService.shared
+        walletService: WalletOptionsAPI = resolve()
     ) {
         self.configurationService = configurationService
         self.accounts = accounts

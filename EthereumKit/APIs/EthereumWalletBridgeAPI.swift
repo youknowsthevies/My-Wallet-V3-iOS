@@ -10,11 +10,11 @@ import BigInt
 import PlatformKit
 import RxSwift
 
-///// `Wallet.m` needs to be injected into much of the `WalletRepository` type classes.
-///// The reason is we still heavily rely on `My-Wallet-V3`. We don't want to bring this into
-///// `PlatformKit` as a dependency. So, we have `Wallet.m` conform to protocols that we need
-///// and inject it in as a dependency. Frequently we'll use the term `bridge` as a way of
-///// describing this.
+/// `Wallet.m` needs to be injected into much of the `WalletRepository` type classes.
+/// The reason is we still heavily rely on `My-Wallet-V3`. We don't want to bring this into
+/// `PlatformKit` as a dependency. So, we have `Wallet.m` conform to protocols that we need
+/// and inject it in as a dependency. Frequently we'll use the term `bridge` as a way of
+/// describing this.
 public protocol EthereumWalletAccountBridgeAPI: class {
     var wallets: Single<[EthereumWalletAccount]> { get }
     

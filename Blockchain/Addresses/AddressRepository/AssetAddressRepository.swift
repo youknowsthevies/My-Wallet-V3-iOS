@@ -73,7 +73,7 @@ enum AssetAddressType {
     private let disposeBag = DisposeBag()
     
     init(walletManager: WalletManager = WalletManager.shared,
-         stellarWalletRepository: StellarWalletAccountRepository = StellarWalletAccountRepository(with: WalletManager.shared.wallet),
+         stellarWalletRepository: StellarWalletAccountRepository = resolve(),
          paxAssetAccountRepository: ERC20AssetAccountRepository<PaxToken> = PAXServiceProvider.shared.services.assetAccountRepository,
          tetherAssetAccountRepository: ERC20AssetAccountRepository<TetherToken> = TetherServiceProvider.shared.services.assetAccountRepository,
          urlSession: URLSession = resolve()

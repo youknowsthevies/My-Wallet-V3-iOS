@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 
@@ -32,7 +33,7 @@ final class LaunchAnnouncementInteractor {
     
     // MARK: - Setup
     
-    init(walletOptionsAPI: WalletOptionsAPI = WalletService.shared) {
+    init(walletOptionsAPI: WalletOptionsAPI = resolve()) {
         self.walletOptionsAPI = walletOptionsAPI
     }
 }

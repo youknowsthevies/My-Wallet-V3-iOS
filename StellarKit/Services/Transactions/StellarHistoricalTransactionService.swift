@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 import stellarsdk
@@ -32,7 +33,7 @@ final class StellarHistoricalTransactionService: TokenizedHistoricalTransactionA
     private let repository: StellarWalletAccountRepositoryAPI
     private let disposeBag = DisposeBag()
     
-    init(configurationService: StellarConfigurationAPI = StellarConfigurationService.shared,
+    init(configurationService: StellarConfigurationAPI = resolve(),
          repository: StellarWalletAccountRepositoryAPI) {
         self.configurationService = configurationService
         self.repository = repository

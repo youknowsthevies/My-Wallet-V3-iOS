@@ -44,24 +44,24 @@ final class ReceiveCryptoViewModelProvider {
     static let shared = ReceiveCryptoViewModelProvider(
         ethAccountRepo: ETHServiceProvider.shared.repository,
         ethQRMetadataFactory: ETHServiceProvider.shared.qrMetadataFactory,
-        stellarAccountRepo: StellarWalletAccountRepository(with: WalletManager.shared.wallet),
+        stellarWalletAccountRepository: resolve(),
         stellarQRMetadataFactory: StellarQRMetadataFactory()
     )
 
     private let ethAccountRepo: EthereumWalletAccountRepository
     private let ethQRMetadataFactory: EthereumQRMetadataFactory
-    private let stellarAccountRepo: StellarWalletAccountRepository
+    private let stellarWalletAccountRepository: StellarWalletAccountRepository
     private let stellarQRMetadataFactory: StellarQRMetadataFactory
 
     init(
         ethAccountRepo: EthereumWalletAccountRepository,
         ethQRMetadataFactory: EthereumQRMetadataFactory,
-        stellarAccountRepo: StellarWalletAccountRepository,
+        stellarWalletAccountRepository: StellarWalletAccountRepository,
         stellarQRMetadataFactory: StellarQRMetadataFactory
     ) {
         self.ethAccountRepo = ethAccountRepo
         self.ethQRMetadataFactory = ethQRMetadataFactory
-        self.stellarAccountRepo = stellarAccountRepo
+        self.stellarWalletAccountRepository = stellarWalletAccountRepository
         self.stellarQRMetadataFactory = stellarQRMetadataFactory
     }
 
@@ -95,7 +95,7 @@ final class ReceiveCryptoViewModelProvider {
                     cryptoCurrency: cryptoCurrency
                 ),
                 walletInitializer: AnyWalletAccountInitializer(
-                    initializer: stellarAccountRepo
+                    initializer: stellarWalletAccountRepository
                 ),
                 factory: AnyCryptoAssetQRMetadataFactory(
                     factory: stellarQRMetadataFactory

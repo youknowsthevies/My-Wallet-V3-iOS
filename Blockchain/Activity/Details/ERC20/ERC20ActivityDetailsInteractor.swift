@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import EthereumKit
 import PlatformKit
 import RxSwift
@@ -22,7 +23,7 @@ final class ERC20ActivityDetailsInteractor {
     
     // MARK: - Init
 
-    init(wallet: EthereumWalletBridgeAPI = WalletManager.shared.wallet.ethereum,
+    init(wallet: EthereumWalletBridgeAPI = resolve(),
          fiatCurrencySettings: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          priceService: PriceServiceAPI = PriceService(),
          detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> = ActivityServiceProvider.default.ethereumDetails,

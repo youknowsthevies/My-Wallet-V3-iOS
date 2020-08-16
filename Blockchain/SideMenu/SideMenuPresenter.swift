@@ -55,7 +55,7 @@ class SideMenuPresenter {
     // MARK: - Services
     
     private let wallet: Wallet
-    private let walletService: WalletService
+    private let walletService: WalletOptionsAPI
     private let reactiveWallet: ReactiveWalletAPI
     private let exchangeConfiguration: AppFeatureConfiguration
     private let analyticsRecorder: AnalyticsEventRecording
@@ -65,7 +65,7 @@ class SideMenuPresenter {
     init(
         view: SideMenuView,
         wallet: Wallet = WalletManager.shared.wallet,
-        walletService: WalletService = WalletService.shared,
+        walletService: WalletOptionsAPI = resolve(),
         reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
         featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
         exchangeConfiguration: AppFeatureConfiguration = AppFeatureConfigurator.shared.configuration(for: .exchangeLinking),

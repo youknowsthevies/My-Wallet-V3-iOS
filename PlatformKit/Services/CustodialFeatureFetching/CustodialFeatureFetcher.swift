@@ -6,9 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 
-public final class CustodialFeatureFetcher: CustodialFeatureFetching {
+final class CustodialFeatureFetcher: CustodialFeatureFetching {
 
     // MARK: Private Properties
 
@@ -17,15 +18,15 @@ public final class CustodialFeatureFetcher: CustodialFeatureFetching {
     
     // MARK: Init
     
-    public init(tiersService: KYCTiersServiceAPI,
-                featureFetching: FeatureFetching) {
+    init(tiersService: KYCTiersServiceAPI = resolve(),
+         featureFetching: FeatureFetching = resolve()) {
         self.tiersService = tiersService
         self.featureFetching = featureFetching
     }
 
     // MARK: Public Methods (CustodialFeatureFetching)
 
-    public func featureEnabled(for key: AppFeature) -> Single<Bool> {
+    func featureEnabled(for key: AppFeature) -> Single<Bool> {
         guard let requiredState = requiredTierStatus(for: key) else {
             return featureFetching.fetchBool(for: key)
         }

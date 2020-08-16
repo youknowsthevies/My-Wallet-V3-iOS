@@ -62,7 +62,6 @@ class SendXLMCoordinator {
         case insufficientFundsForNewAccount
         case insufficientFunds
         case noStellarAccount
-        case noXLMAccount
     }
     
     // MARK: Private Functions
@@ -96,8 +95,7 @@ class SendXLMCoordinator {
         case .insufficientFunds:
             // TODO
             break
-        case .noStellarAccount,
-             .noXLMAccount:
+        case .noStellarAccount:
             let trigger = ActionableTrigger(text: "Minimum of", CTA: "1 XLM", secondary: "needed for new accounts.") {
                 // TODO: On `1 XLM` selection, show the minimum balance screen.
             }
@@ -177,8 +175,10 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
                 guard let serviceError = error as? StellarAccountError else { return }
                 switch serviceError {
                 case .noXLMAccount:
-                    this.handle(internalEvent: .noXLMAccount)
+                    this.handle(internalEvent: .noStellarAccount)
                 case .noDefaultAccount:
+                    this.handle(internalEvent: .noStellarAccount)
+                case .unableToSaveNewAccount:
                     this.handle(internalEvent: .noStellarAccount)
                 }
                 this.handle(internalEvent: .insufficientFunds)

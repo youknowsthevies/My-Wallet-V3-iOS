@@ -7,6 +7,7 @@
 //
 
 import BitcoinKit
+import DIKit
 import BuySellKit
 import PlatformKit
 
@@ -17,9 +18,9 @@ protocol BitcoinDependencies {
 struct BitcoinServices: BitcoinDependencies {
     let transactions: BitcoinHistoricalTransactionService
 
-    init(bridge: BitcoinWalletBridgeAPI = WalletManager.shared.wallet.bitcoin) {
-        transactions = .init(
-            bridge: .init(with: bridge)
+    init(repository: BitcoinWalletAccountRepository = resolve()) {
+        transactions = BitcoinHistoricalTransactionService(
+            repository: repository
         )
     }
 }

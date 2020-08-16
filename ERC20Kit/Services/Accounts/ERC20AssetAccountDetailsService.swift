@@ -6,29 +6,23 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import EthereumKit
 import PlatformKit
 import RxSwift
 
-public class ERC20AssetAccountDetailsService<Token: ERC20Token>: AssetAccountDetailsAPI {
+class ERC20AssetAccountDetailsService<Token: ERC20Token>: AssetAccountDetailsAPI {
 
     private let bridge: EthereumWalletBridgeAPI
-    private let service: AnyERC20BalanceService<Token>
+    private let service: ERC20BalanceService<Token>
 
-    public convenience init<C: ERC20AccountAPIClientAPI>(with bridge: EthereumWalletBridgeAPI, accountClient: C) where C.Token == Token {
-        self.init(
-            with: bridge,
-            service: AnyERC20BalanceService<Token>(with: bridge, accountClient: accountClient)
-        )
-    }
-
-    public init(with bridge: EthereumWalletBridgeAPI, service: AnyERC20BalanceService<Token>) {
+    init(with bridge: EthereumWalletBridgeAPI = resolve(), service: ERC20BalanceService<Token> = resolve()) {
         self.bridge = bridge
         self.service = service
     }
 
     // TODO: IOS-3217 Method should use accountID parameter
-    public func accountDetails(for accountID: String) -> Single<ERC20AssetAccountDetails> {
+    func accountDetails(for accountID: String) -> Single<ERC20AssetAccountDetails> {
         bridge.address
             .flatMap(weak: self) { (self, address) -> Single<(address: EthereumAddress, balance: CryptoValue)> in
                 self.service.balance(for: address).map { (address, $0.value) }

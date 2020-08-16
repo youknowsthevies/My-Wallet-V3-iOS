@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxCocoa
 import RxSwift
@@ -97,7 +98,7 @@ public class StellarLedgerService: StellarLedgerAPI {
     private let ledgersServiceValue: LedgersServiceAPI?
     
     public init(
-        configurationService: StellarConfigurationAPI = StellarConfigurationService.shared,
+        configurationService: StellarConfigurationAPI = resolve(),
         ledgersService: LedgersServiceAPI? = nil,
         feeService: StellarFeeServiceAPI = StellarFeeService.shared) {
         self.ledgersServiceValue = ledgersService

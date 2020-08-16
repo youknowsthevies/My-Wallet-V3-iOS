@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import RxSwift
 import StellarKit
@@ -23,13 +24,14 @@ struct StellarServices: StellarDependenciesAPI {
     let walletActionEventBus: WalletActionEventBus
 
     init(
-        configurationService: StellarConfigurationAPI = StellarConfigurationService.shared,
+        configurationService: StellarConfigurationAPI = resolve(),
         wallet: Wallet = WalletManager.shared.wallet,
         eventBus: WalletActionEventBus = WalletActionEventBus.shared,
-        xlmFeeService: StellarFeeServiceAPI = StellarFeeService.shared
+        xlmFeeService: StellarFeeServiceAPI = StellarFeeService.shared,
+        repository: StellarWalletAccountRepositoryAPI = resolve()
     ) {
         walletActionEventBus = eventBus
-        repository = StellarWalletAccountRepository(with: wallet)
+        self.repository = repository
         ledger = StellarLedgerService(
             configurationService: configurationService,
             feeService: xlmFeeService

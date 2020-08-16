@@ -21,6 +21,8 @@ class TradeExecutionServiceDependenciesMock: TradeExecutionServiceDependenciesAP
     var feeService: FeeServiceAPI = FeeServiceMock()
     var stellar: StellarDependenciesAPI = StellarDependenciesMock()
     var erc20Service: AnyERC20Service<PaxToken> = AnyERC20Service<PaxToken>(PaxERC20ServiceMock())
-    var erc20AccountRepository: AnyERC20AssetAccountRepository<PaxToken> = AnyERC20AssetAccountRepository<PaxToken>(ERC20AssetAccountRepositoryMock())
+    var erc20AccountRepository: ERC20AssetAccountRepository<PaxToken> = ERC20AssetAccountRepository<PaxToken>(
+        service: AnyAssetAccountDetailsAPI(service: ERC20AssetAccountDetailsAPIMock())
+    )
     var ethereumWalletService: EthereumWalletServiceAPI = EthereumWalletServiceMock()
 }

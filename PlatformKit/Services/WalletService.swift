@@ -10,9 +10,7 @@ import DIKit
 import NetworkKit
 import RxSwift
 
-public class WalletService: WalletOptionsAPI {
-    
-    public static let shared: WalletService = WalletService()
+class WalletService: WalletOptionsAPI {
     
     // MARK: - Private Properties
     
@@ -22,7 +20,8 @@ public class WalletService: WalletOptionsAPI {
         guard let url = URL(string: BlockchainAPI.shared.walletOptionsUrl) else {
             return Single.error(NetworkCommunicatorError.clientError(.failedRequest(description: "Invalid URL")))
         }
-        return communicator.perform(request: NetworkRequest(endpoint: url, method: .get))
+        return communicator
+            .perform(request: NetworkRequest(endpoint: url, method: .get))
             .do(onSuccess: { [weak self] in
                 self?.cachedWalletOptions.value = $0
             })
@@ -32,13 +31,13 @@ public class WalletService: WalletOptionsAPI {
     
     // MARK: - Public
     
-    public init(communicator: NetworkCommunicatorAPI = resolve()) {
+    init(communicator: NetworkCommunicatorAPI = resolve()) {
         self.communicator = communicator
     }
     
     /// A Single returning the WalletOptions which contains dynamic flags for configuring the app.
     /// If WalletOptions has already been fetched, this property will return the cached value
-    public var walletOptions: Single<WalletOptions> {
+    var walletOptions: Single<WalletOptions> {
         Single.deferred { [unowned self] in
             guard let cachedValue = self.cachedWalletOptions.value else {
                 return self.networkFetchedWalletOptions
@@ -47,7 +46,7 @@ public class WalletService: WalletOptionsAPI {
         }
     }
     
-    public var serverUnderMaintenanceMessage: Single<String?> {
+    var serverUnderMaintenanceMessage: Single<String?> {
         walletOptions.map { options in
             if options.downForMaintenance {
                 // TODO

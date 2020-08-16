@@ -9,7 +9,7 @@
 @testable import Blockchain
 import RxBlocking
 import RxSwift
-import StellarKit
+@testable import StellarKit
 import XCTest
 
 private class MockLedgerService: StellarLedgerAPI {
@@ -43,7 +43,10 @@ class StellarAccountServiceTests: XCTestCase {
         accountService = StellarAccountService(
             configurationService: StellarConfigurationServiceMock(),
             ledgerService: ledgerService,
-            repository: StellarWalletAccountRepository(with: MockStellarBridge())
+            repository: StellarWalletAccountRepository(
+                bridge: StellarWalletBridgeMock(),
+                mnemonicAccessAPI: MnemonicAccessMock()
+            )
         )
     }
 

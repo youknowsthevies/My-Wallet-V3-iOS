@@ -11,9 +11,9 @@ import NetworkKit
 import ToolKit
 
 extension DependencyContainer {
-    
+
     // MARK: - PlatformKit Module
-     
+
     public static var platformKit = module {
         
         // MARK: - Clients
@@ -86,6 +86,30 @@ extension DependencyContainer {
         single { EmailVerificationService() as EmailVerificationServiceAPI }
         
         factory { SwapActivityService() as SwapActivityServiceAPI }
+
+        single { () -> Coincore in
+            Coincore(
+                assetMap: [
+                    .ethereum: DIKit.resolve(tag: CryptoCurrency.ethereum),
+                    .tether: DIKit.resolve(tag: CryptoCurrency.tether),
+                    .pax: DIKit.resolve(tag: CryptoCurrency.pax),
+                    .stellar: DIKit.resolve(tag: CryptoCurrency.stellar)
+                ]
+            )
+        }
+
+        single { KYCTiersService() as KYCTiersServiceAPI }
+
+        factory { CustodialFeatureFetcher() as CustodialFeatureFetching }
+
+        single { () -> WalletOptionsAPI in
+            WalletService()
+        }
+
+        factory { () -> MaintenanceServicing in
+            let service: WalletOptionsAPI = DIKit.resolve()
+            return service
+        }
 
         factory { CredentialsStore() as CredentialsStoreAPI }
 

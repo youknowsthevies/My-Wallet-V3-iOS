@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import EthereumKit
 import PlatformKit
 import RxSwift
@@ -17,15 +18,21 @@ public protocol ERC20BalanceServiceAPI {
     func balance(for address: EthereumAddress) -> Single<ERC20TokenValue<Token>>
 }
 
-public class AnyERC20BalanceService<Token: ERC20Token>: ERC20BalanceServiceAPI {
+public class ERC20BalanceService<Token: ERC20Token>: ERC20BalanceServiceAPI {
     private let bridge: EthereumWalletBridgeAPI
     private let accountClient: AnyERC20AccountAPIClient<Token>
 
     init<APIClient: ERC20AccountAPIClientAPI>(
-        with bridge: EthereumWalletBridgeAPI,
-        accountClient: APIClient) where APIClient.Token == Token {
+        with bridge: EthereumWalletBridgeAPI = resolve(),
+        accountClient: APIClient = resolve() ) where APIClient.Token == Token {
         self.bridge = bridge
         self.accountClient = AnyERC20AccountAPIClient(accountAPIClient: accountClient)
+    }
+
+    init(with bridge: EthereumWalletBridgeAPI = resolve(),
+         accountClient: AnyERC20AccountAPIClient<Token> = resolve() ) {
+        self.bridge = bridge
+        self.accountClient = accountClient
     }
 
     public var balanceForDefaultAccount: Single<ERC20TokenValue<Token>> {

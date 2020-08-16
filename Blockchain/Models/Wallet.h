@@ -28,7 +28,6 @@
 @class Transaction,
        JSValue,
        JSContext,
-       ExchangeRate,
        OrderTransactionLegacy,
        BitcoinWallet,
        EthereumWallet,

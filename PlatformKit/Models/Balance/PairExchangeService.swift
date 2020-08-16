@@ -50,10 +50,18 @@ public final class PairExchangeService: PairExchangeServiceAPI {
             }
             // There MUST be a fiat value here
             .map { $0.moneyValue.fiatValue! }
-            .catchErrorJustReturn(.zero(currency: fiatCurrencyService.legacyCurrency ?? .default))
+            .catchError(weak: self) { (self, _) -> Observable<FiatValue> in
+                self.zero
+            }
             .distinctUntilChanged()
             .share(replay: 1)
     }()
+
+    private var zero: Observable<FiatValue> {
+        fiatCurrencyService
+            .fiatCurrencyObservable
+            .map { FiatValue.zero(currency: $0) }
+    }
     
     /// A trigger for a fetch
     public let fetchTriggerRelay = PublishRelay<Void>()

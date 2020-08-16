@@ -6,14 +6,13 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 
 public final class BitcoinWalletAccountRepository: WalletAccountRepositoryAPI {
     
     public typealias Account = BitcoinWalletAccount
-
-    public typealias Bridge = BitcoinWalletBridgeAPI
 
     // MARK: - Properties
 
@@ -41,11 +40,11 @@ public final class BitcoinWalletAccountRepository: WalletAccountRepositoryAPI {
         }
     }
 
-    private let bridge: Bridge
+    private let bridge: BitcoinWalletBridgeAPI
 
     // MARK: - Init
-    
-    public init(with bridge: Bridge) {
+
+    init(bridge: BitcoinWalletBridgeAPI = resolve()) {
         self.bridge = bridge
     }
 }

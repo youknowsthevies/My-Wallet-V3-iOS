@@ -11,9 +11,8 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-public final class BitcoinAssetBalanceFetcher: CryptoAccountBalanceFetching {
-    
-    public typealias Bridge = BitcoinWalletBridgeAPI
+/// Fetches balance of all wallets
+public final class BitcoinAllAccountsBalanceFetcher: CryptoAccountBalanceFetching {
         
     // MARK: - Exposed Properties
     
@@ -71,24 +70,19 @@ public final class BitcoinAssetBalanceFetcher: CryptoAccountBalanceFetching {
     private let disposeBag = DisposeBag()
     
     // MARK: - Injected
-    
-    private let bridge: Bridge
+
     private let client: APIClientAPI
     private let repository: BitcoinWalletAccountRepository
     
     // MARK: - Setup
     
-    public convenience init(bridge: Bridge) {
-        self.init(bridge: bridge, client: resolve())
+    public convenience init() {
+        self.init(repository: resolve(), client: resolve())
     }
     
-    init(bridge: Bridge, client: APIClientAPI) {
-        self.bridge = bridge
+    init(repository: BitcoinWalletAccountRepository, client: APIClientAPI) {
+        self.repository = repository
         self.client = client
-        
-        repository = BitcoinWalletAccountRepository(
-            with: bridge
-        )
     }
 }
 

@@ -1,12 +1,12 @@
 //
 //  ERC20AssetBalanceFetcher.swift
-//  Blockchain
+//  ERC20Kit
 //
 //  Created by Daniel Huri on 29/10/2019.
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ERC20Kit
+import DIKit
 import EthereumKit
 import PlatformKit
 import RxRelay
@@ -34,15 +34,15 @@ final class ERC20AssetBalanceFetcher<Token: ERC20Token>: CryptoAccountBalanceFet
         _ = setup
         return balanceRelay.asObservable()
     }
-    
+
     var balanceMoneyObservable: Observable<MoneyValue> {
         balanceObservable.moneyValue
     }
-    
+
     let balanceFetchTriggerRelay = PublishRelay<Void>()
-    
+
     // MARK: - Private Properties
-    
+
     private lazy var setup: Void = {
         Observable
             .combineLatest(
@@ -69,17 +69,13 @@ final class ERC20AssetBalanceFetcher<Token: ERC20Token>: CryptoAccountBalanceFet
     private let assetAccountRepository: ERC20AssetAccountRepository<Token>
 
     private unowned let reactiveWallet: ReactiveWalletAPI
-    
+
     // MARK: - Setup
 
-    init(wallet: EthereumWalletBridgeAPI = WalletManager.shared.wallet.ethereum,
-         reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet) {
+    init(assetAccountRepository: ERC20AssetAccountRepository<Token> = resolve(),
+         reactiveWallet: ReactiveWalletAPI = resolve()) {
 
-        let service = ERC20AssetAccountDetailsService<Token>(
-            with: wallet,
-            accountClient: ERC20AccountAPIClient<Token>()
-        )
         self.reactiveWallet = reactiveWallet
-        assetAccountRepository = ERC20AssetAccountRepository(service: service)
+        self.assetAccountRepository = assetAccountRepository
     }
 }

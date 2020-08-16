@@ -49,12 +49,16 @@ class ERC20ServiceTests: XCTestCase {
         ethereumAPIAccountClient = EthereumAPIClientMock()
         accountAPIClient = ERC20AccountAPIClientMock()
         ethereumWalletBridge = ERC20EthereumWalletBridgeMock()
+
+        let balanceService = ERC20BalanceService<PaxToken>(with: ethereumWalletBridge, accountClient: accountAPIClient)
+
         assetAccountDetailsService = ERC20AssetAccountDetailsService(
             with: ethereumWalletBridge,
-            accountClient: accountAPIClient
+            service: balanceService
         )
+
         assetAccountRepository = ERC20AssetAccountRepository(
-            service: assetAccountDetailsService
+            service: AnyAssetAccountDetailsAPI(service: assetAccountDetailsService)
         )
         
         ethereumAssetAccountDetailsService = EthereumAssetAccountDetailsService(

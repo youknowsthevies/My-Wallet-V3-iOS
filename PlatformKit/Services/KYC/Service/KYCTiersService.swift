@@ -19,11 +19,11 @@ public protocol KYCTiersServiceAPI: class {
     func fetchTiers() -> Single<KYC.UserTiers>
 }
 
-public final class KYCTiersService: KYCTiersServiceAPI {
+final class KYCTiersService: KYCTiersServiceAPI {
     
     // MARK: - Exposed Properties
     
-    public var tiers: Single<KYC.UserTiers> {
+    var tiers: Single<KYC.UserTiers> {
         _ = setup
         return Single
             .create(weak: self) { (self, observer) -> Disposable in
@@ -44,7 +44,7 @@ public final class KYCTiersService: KYCTiersServiceAPI {
             }
             .subscribeOn(scheduler)
     }
-        
+
     // MARK: - Private Properties
     
     private let cachedTiers = CachedValue<KYC.UserTiers>(configuration: .onSubscription())
@@ -60,16 +60,12 @@ public final class KYCTiersService: KYCTiersServiceAPI {
     private let client: KYCClientAPI
     
     // MARK: - Setup
-    
-    public convenience init() {
-        self.init(client: resolve())
-    }
-    
-    init(client: KYCClientAPI) {
+
+    init(client: KYCClientAPI = resolve()) {
         self.client = client
     }
     
-    public func fetchTiers() -> Single<KYC.UserTiers> {
+    func fetchTiers() -> Single<KYC.UserTiers> {
         _  = setup
         return cachedTiers.fetchValue
     }

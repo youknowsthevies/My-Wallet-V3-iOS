@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import RxCocoa
@@ -63,13 +64,13 @@ class StellarAccountService: StellarAccountAPI {
     private let configurationService: StellarConfigurationAPI
     private let ledgerService: StellarLedgerAPI
     private let repository: StellarWalletAccountRepositoryAPI
-    private let walletOptionsAPI: WalletService
+    private let walletOptionsAPI: WalletOptionsAPI
 
     init(
         configurationService: StellarConfigurationAPI,
         ledgerService: StellarLedgerAPI,
         repository: StellarWalletAccountRepositoryAPI,
-        walletService: WalletService = WalletService.shared
+        walletService: WalletOptionsAPI = resolve()
     ) {
         self.configurationService = configurationService
         self.ledgerService = ledgerService

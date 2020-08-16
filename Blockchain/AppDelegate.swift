@@ -72,9 +72,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             DependencyContainer.toolKit;
             DependencyContainer.networkKit;
             DependencyContainer.platformKit;
+            DependencyContainer.interestKit;
             DependencyContainer.platformUIKit;
             DependencyContainer.ethereumKit;
+            DependencyContainer.erc20Kit;
             DependencyContainer.bitcoinKit;
+            DependencyContainer.stellarKit;
             DependencyContainer.buySellKit;
             DependencyContainer.blockchain;
         })

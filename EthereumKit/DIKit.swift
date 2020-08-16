@@ -7,7 +7,7 @@
 //
 
 import DIKit
-import NetworkKit
+import PlatformKit
 
 extension DependencyContainer {
     
@@ -16,5 +16,9 @@ extension DependencyContainer {
     public static var ethereumKit = module {
         
         factory { APIClient() as APIClientAPI }
+
+        factory(tag: CryptoCurrency.ethereum) { EthereumAsset() as CryptoAsset }
+
+        factory { EthereumAccountBalanceService() as EthereumAccountBalanceServiceAPI }
     }
 }

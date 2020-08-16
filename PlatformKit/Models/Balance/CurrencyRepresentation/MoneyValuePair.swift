@@ -34,18 +34,21 @@ public struct MoneyValuePair: Equatable {
     }
     
     public init(base: MoneyValue, exchangeRate: MoneyValue) throws {
-        self.base = base
-        self.quote = try base.convert(using: exchangeRate)
+        self.init(
+            base: base,
+            quote: try base.convert(using: exchangeRate)
+        )
     }
-    
+
     public init(base: CryptoValue, exchangeRate: FiatValue) {
-        self.base = base.moneyValue
-        self.quote = base.convertToFiatValue(exchangeRate: exchangeRate).moneyValue
+        self.init(
+            base: base.moneyValue,
+            quote: base.convertToFiatValue(exchangeRate: exchangeRate).moneyValue
+        )
     }
         
     public init(base: CryptoValue, quote: FiatValue) {
-        self.base = base.moneyValue
-        self.quote = quote.moneyValue
+        self.init(base: base.moneyValue, quote: quote.moneyValue)
     }
     
     public init(fiat: FiatValue, priceInFiat: FiatValue, cryptoCurrency: CryptoCurrency, usesFiatAsBase: Bool) {

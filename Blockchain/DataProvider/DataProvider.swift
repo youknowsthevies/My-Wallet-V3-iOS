@@ -118,12 +118,7 @@ final class DataProvider: DataProviding {
         )
         
         let savingsBalanceStatesFetcher = CustodialBalanceStatesFetcher(
-            service: SavingAccountService(
-                custodialFeatureFetcher: CustodialFeatureFetcher(
-                    tiersService: kycTierService,
-                    featureFetching: featureFetching
-                )
-            )
+            service: { () -> SavingAccountServiceAPI in resolve() }()
         )
         
         var fiatBalanceFetchers: [FiatCurrency: AssetBalanceFetching] = [:]
@@ -161,8 +156,9 @@ final class DataProvider: DataProviding {
             ),
             exchange: exchange[CurrencyType.crypto(.algorand)]
         )
+
         let etherBalanceFetcher = AssetBalanceFetcher(
-            wallet: WalletManager.shared.wallet.ethereum,
+            wallet: { () -> CryptoAccountBalanceFetching in resolve(tag: CryptoCurrency.ethereum) }(),
             trading: CustodialMoneyBalanceFetcher(
                 currencyType: CryptoCurrency.ethereum.currency,
                 fetcher: tradingBalanceStatesFetcher
@@ -175,7 +171,7 @@ final class DataProvider: DataProviding {
         )
 
         let paxBalanceFetcher = AssetBalanceFetcher(
-            wallet: ERC20AssetBalanceFetcher<PaxToken>(),
+            wallet: { () -> CryptoAccountBalanceFetching in resolve(tag: CryptoCurrency.pax) }(),
             trading: CustodialMoneyBalanceFetcher(
                 currencyType: CryptoCurrency.pax.currency,
                 fetcher: tradingBalanceStatesFetcher
@@ -187,7 +183,7 @@ final class DataProvider: DataProviding {
             exchange: exchange[CurrencyType.crypto(.pax)]
         )
         let tetherBalanceFetcher = AssetBalanceFetcher(
-            wallet: ERC20AssetBalanceFetcher<TetherToken>(),
+            wallet: { () -> CryptoAccountBalanceFetching in resolve(tag: CryptoCurrency.tether) }(),
             trading: CustodialMoneyBalanceFetcher(
                 currencyType: CryptoCurrency.tether.currency,
                 fetcher: tradingBalanceStatesFetcher
@@ -211,7 +207,7 @@ final class DataProvider: DataProviding {
             exchange: exchange[CurrencyType.crypto(.stellar)]
         )
         let bitcoinBalanceFetcher = AssetBalanceFetcher(
-            wallet: BitcoinAssetBalanceFetcher(bridge: WalletManager.shared.wallet.bitcoin),
+            wallet: BitcoinAllAccountsBalanceFetcher(),
             trading: CustodialMoneyBalanceFetcher(
                 currencyType: CryptoCurrency.bitcoin.currency,
                 fetcher: tradingBalanceStatesFetcher
