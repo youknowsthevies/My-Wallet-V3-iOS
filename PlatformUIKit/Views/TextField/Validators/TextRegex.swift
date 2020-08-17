@@ -9,7 +9,7 @@
 import Foundation
 
 enum TextRegex: String {
-    case cardholderName = "^.{1,22}$"
+    case cardholderName = "^.{2,26}$" // 2-26 characters as defined in `ISO/IEC 7813`: https://en.wikipedia.org/wiki/ISO/IEC_7813#Track_1
     case cvv = "^[0-9]{3,4}$"
     case cardExpirationDate = "^((0[1-9])|(1[0-2]))/[2-9][0-9]$"
     case walletIdentifier = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
