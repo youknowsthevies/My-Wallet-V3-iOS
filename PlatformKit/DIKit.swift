@@ -15,7 +15,17 @@ extension DependencyContainer {
     // MARK: - PlatformKit Module
 
     public static var platformKit = module {
-        
+
+        factory { () -> BalanceProviding in
+            let provider: DataProviding = DIKit.resolve()
+            return provider.balance
+        }
+
+        factory { () -> ExchangeProviding in
+            let provider: DataProviding = DIKit.resolve()
+            return provider.exchange
+        }
+
         // MARK: - Clients
         
         factory { SettingsClient() as SettingsClientAPI }

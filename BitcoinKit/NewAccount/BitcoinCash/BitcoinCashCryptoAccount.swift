@@ -52,12 +52,12 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     init(id: String,
          label: String?,
          isDefault: Bool,
-         dataProviding: DataProviding = resolve(),
+         exchangeProviding: ExchangeProviding = resolve(),
          balanceService: BalanceServiceAPI = resolve()) {
         self.id = id
         self.label = label ?? String(format: LocalizedString.myAccount, CryptoCurrency.bitcoinCash.name)
         self.isDefault = isDefault
-        self.exchangeService = dataProviding.exchange[.bitcoinCash]
+        self.exchangeService = exchangeProviding[.bitcoinCash]
         self.balanceService = balanceService
     }
 

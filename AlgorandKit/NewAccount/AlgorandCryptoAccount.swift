@@ -18,7 +18,7 @@ class AlgorandCryptoAccount: CryptoNonCustodialAccount {
     let id: String
     let label: String
     let asset: CryptoCurrency = .algorand
-    let isDefault: Bool = true
+    let isDefault: Bool = false
 
     var receiveAddress: Single<ReceiveAddress> {
         .error(ReceiveAddressError.notSupported)
@@ -45,10 +45,10 @@ class AlgorandCryptoAccount: CryptoNonCustodialAccount {
     
     init(id: String,
          label: String?,
-         dataProviding: DataProviding = resolve()) {
+         exchangeProviding: ExchangeProviding = resolve()) {
         self.id = id
         self.label = label ?? String(format: LocalizedString.myAccount, CryptoCurrency.algorand.name)
-        self.exchangeService = dataProviding.exchange[.algorand]
+        self.exchangeService = exchangeProviding[.algorand]
     }
 
     func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {

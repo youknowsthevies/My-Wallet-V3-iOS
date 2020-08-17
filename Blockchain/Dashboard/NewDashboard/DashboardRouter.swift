@@ -25,28 +25,31 @@ final class DashboardRouter {
     private let backupRouterAPI: BackupRouterAPI
     private let custodyActionRouterAPI: CustodyActionRouterAPI
     private let nonCustodialActionRouterAPI: NonCustodialActionRouterAPI
-    private let dataProvider: DataProviding
     private let userInformationServiceProvider: UserInformationServiceProviding
+    private let balanceProviding: BalanceProviding
+    private let exchangeProviding: ExchangeProviding
     
     init(routing: CurrencyRouting & TabSwapping,
          navigationRouter: NavigationRouterAPI = NavigationRouter(),
          userInformationServiceProvider: UserInformationServiceProviding = UserInformationServiceProvider.default,
          wallet: Wallet = WalletManager.shared.wallet,
-         dataProvider: DataProviding = resolve(),
+         balanceProviding: BalanceProviding = resolve(),
+         exchangeProviding: ExchangeProviding = resolve(),
          backupRouterAPI: BackupRouterAPI = BackupFundsCustodialRouter()) {
         self.navigationRouter = navigationRouter
         self.routing = routing
         self.recoveryVerifyingAPI = RecoveryPhraseVerifyingService(wallet: wallet)
         self.userInformationServiceProvider = userInformationServiceProvider
-        self.dataProvider = dataProvider
+        self.balanceProviding = balanceProviding
+        self.exchangeProviding = exchangeProviding
         self.backupRouterAPI = backupRouterAPI
         self.custodyActionRouterAPI = CustodyActionRouter(backupRouterAPI: backupRouterAPI, tabSwapping: AppCoordinator.shared)
-        self.nonCustodialActionRouterAPI = NonCustodialActionRouter(balanceProvider: dataProvider.balance, routing: routing)
+        self.nonCustodialActionRouterAPI = NonCustodialActionRouter(balanceProvider: balanceProviding, routing: routing)
         
         self.custodyActionRouterAPI
             .completionRelay
             .bindAndCatch(weak: self) { (self) in
-                self.dataProvider.balance.refresh()
+                self.balanceProviding.refresh()
             }
             .disposed(by: disposeBag)
     }
@@ -59,13 +62,13 @@ final class DashboardRouter {
         // TODO: Move away from the routing layer - phase II of savings
         let savingsRatesService: SavingAccountServiceAPI = resolve()
         
-        let balanceFetcher = dataProvider.balance[.crypto(currency)]
+        let balanceFetcher = balanceProviding[.crypto(currency)]
         let detailsInteractor = DashboardDetailsScreenInteractor(
             currency: currency,
             balanceFetcher: balanceFetcher,
             savingsAccountService: savingsRatesService,
             fiatCurrencyService: userInformationServiceProvider.settings,
-            exchangeAPI: dataProvider.exchange[currency]
+            exchangeAPI: exchangeProviding[currency]
         )
         /// FIXME: The dashboard model is not reactive to fiat currency change - at the tap
         /// time we may not have the fiat currency fetched - that can lead to a crash if the fiat is not set.

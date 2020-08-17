@@ -45,11 +45,12 @@ public class CryptoTradingAccount: CryptoAccount {
     private let disposeBag = DisposeBag()
 
     public init(asset: CryptoCurrency,
-                dataProviding: DataProviding = resolve()) {
+                balanceProviding: BalanceProviding = resolve(),
+                exchangeProviding: ExchangeProviding = resolve()) {
         self.label = String(format: LocalizedString.myTradingAccount, asset.name)
         self.asset = asset
-        self.exchangeService = dataProviding.exchange[asset]
-        self.balanceAPI = dataProviding.balance[asset.currency].trading
+        self.exchangeService = exchangeProviding[asset]
+        self.balanceAPI = balanceProviding[asset.currency].trading
         balanceAPI
             .isFunded
             .subscribe(onNext: { [weak self] isFunded in

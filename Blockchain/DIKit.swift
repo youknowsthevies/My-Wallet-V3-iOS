@@ -92,11 +92,6 @@ extension DependencyContainer {
             return provider as DataProviding
         }
 
-        factory { () -> BalanceProviding in
-            let provider: DataProviding = DIKit.resolve()
-            return provider.balance
-        }
-
         factory { () -> JSContextProviderAPI in
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager as JSContextProviderAPI

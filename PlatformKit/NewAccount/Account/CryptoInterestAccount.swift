@@ -28,35 +28,34 @@ public class CryptoInterestAccount: CryptoAccount {
     }
 
     public var balance: Single<MoneyValue> {
-        let asset = self.asset
-        return balanceAPI
-            .balance(for: asset)
-            .do(onSuccess: { [weak self] (state: CustodialAccountBalanceState) in
-                let isFunded: Bool = state != .absent
-                self?.atomicIsFunded.mutate { $0 = isFunded }
-            })
-            .map { $0.balance?.available ?? MoneyValue.zero(asset) }
+        balanceAPI.balanceMoney
     }
 
     public var actions: AvailableActions {
-        []
+        [.viewActivity]
     }
 
     public var isFunded: Bool {
         atomicIsFunded.value
     }
 
-    private let balanceAPI: SavingAccountServiceAPI
+    private let balanceAPI: CustodialAccountBalanceFetching
     private let exchangeService: PairExchangeServiceAPI
     private let atomicIsFunded: Atomic<Bool> = .init(false)
+    private let disposeBag = DisposeBag()
 
     public init(asset: CryptoCurrency,
-                dataProviding: DataProviding = resolve(),
-                balanceAPI: SavingAccountServiceAPI = resolve()) {
+                balanceProviding: BalanceProviding = resolve(),
+                exchangeProviding: ExchangeProviding = resolve()) {
         self.label = String(format: LocalizedString.myInterestAccount, asset.name)
         self.asset = asset
-        self.exchangeService = dataProviding.exchange[asset]
-        self.balanceAPI = balanceAPI
+        self.exchangeService = exchangeProviding[asset]
+        self.balanceAPI = balanceProviding[asset.currency].savings
+        balanceAPI.isFunded
+            .subscribe(onNext: { [weak self] isFunded in
+                self?.atomicIsFunded.mutate { $0 = isFunded }
+            })
+            .disposed(by: disposeBag)
     }
 
     public func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {

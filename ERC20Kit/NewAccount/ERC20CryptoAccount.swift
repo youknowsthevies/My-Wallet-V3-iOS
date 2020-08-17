@@ -52,13 +52,13 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
     private let atomicIsFunded: Atomic<Bool> = .init(false)
     
     init(id: String,
-         dataProviding: DataProviding = resolve(),
+         exchangeProviding: ExchangeProviding = resolve(),
          bridge: EthereumWalletBridgeAPI = resolve(),
          balanceService: ERC20BalanceService<Token> = resolve()) {
         self.id = id
         self.label = String(format: LocalizedString.myAccount, Token.name)
         self.bridge = bridge
-        self.exchangeService = dataProviding.exchange[Token.assetType]
+        self.exchangeService = exchangeProviding[Token.assetType]
         self.balanceService = balanceService
     }
     

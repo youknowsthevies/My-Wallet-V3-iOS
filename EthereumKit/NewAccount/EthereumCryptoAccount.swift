@@ -52,12 +52,12 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
 
     init(id: String,
          label: String? = nil,
-         dataProviding: DataProviding = resolve(),
+         exchangeProviding: ExchangeProviding = resolve(),
          bridge: EthereumWalletBridgeAPI = resolve(),
          balanceService: EthereumAccountBalanceServiceAPI = resolve()) {
         self.id = id
         self.bridge = bridge
-        self.exchangeService = dataProviding.exchange[.ethereum]
+        self.exchangeService = exchangeProviding[.ethereum]
         self.balanceService = balanceService
         self.label = label ?? String(format: LocalizedString.myAccount, CryptoCurrency.ethereum.name)
     }
