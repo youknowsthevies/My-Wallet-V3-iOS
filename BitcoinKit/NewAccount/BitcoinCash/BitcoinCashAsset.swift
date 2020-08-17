@@ -49,7 +49,7 @@ class BitcoinCashAsset: CryptoAsset {
     }
 
     private var custodialGroup: Single<AccountGroup> {
-         .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
+        .just(CryptoAccountCustodialGroup(asset: asset, accounts: [CryptoTradingAccount(asset: asset)]))
     }
 
     private var interestGroup: Single<AccountGroup> {

@@ -21,11 +21,11 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     let isDefault: Bool
 
     var receiveAddress: Single<ReceiveAddress> {
-        unimplemented()
+        .error(ReceiveAddressError.notSupported)
     }
 
     var sendState: Single<SendState> {
-        unimplemented()
+        .just(.notSupported)
     }
 
     var balance: Single<MoneyValue> {

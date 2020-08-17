@@ -22,11 +22,11 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
     let isDefault: Bool = true
     
     var receiveAddress: Single<ReceiveAddress> {
-        unimplemented()
+        .error(ReceiveAddressError.notSupported)
     }
     
     var sendState: Single<SendState> {
-        unimplemented()
+        .just(.notSupported)
     }
     
     var balance: Single<MoneyValue> {

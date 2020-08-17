@@ -20,7 +20,7 @@ public class NullFiatAccount : FiatAccount {
     }
 
     public var receiveAddress: Single<ReceiveAddress> {
-        unimplemented()
+        .error(ReceiveAddressError.notSupported)
     }
 
     public var isDefault: Bool {
@@ -28,7 +28,7 @@ public class NullFiatAccount : FiatAccount {
     }
 
     public var sendState: Single<SendState> {
-        unimplemented()
+        .just(.notSupported)
     }
 
     public func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {

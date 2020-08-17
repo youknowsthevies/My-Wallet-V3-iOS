@@ -58,22 +58,24 @@ final class EthereumAsset: CryptoAsset {
     }
 
     private var custodialGroup: Single<AccountGroup> {
-         .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
+        .just(CryptoAccountCustodialGroup(asset: asset, accounts: [CryptoTradingAccount(asset: asset)]))
     }
 
     private var interestGroup: Single<AccountGroup> {
-        Single
-            .just(CryptoInterestAccount(asset: .ethereum))
-            .map { CryptoAccountCustodialGroup(asset: .ethereum, accounts: [$0]) }
+        let asset = self.asset
+        return Single
+            .just(CryptoInterestAccount(asset: asset))
+            .map { CryptoAccountCustodialGroup(asset: asset, accounts: [$0]) }
     }
 
     private var nonCustodialGroup: Single<AccountGroup> {
-        walletAccountBridge.wallets
+        let asset = self.asset
+        return walletAccountBridge.wallets
             .map { wallets -> [SingleAccount] in
                 wallets.map { EthereumCryptoAccount(id: $0.publicKey, label: $0.label) }
             }
             .map { accounts -> AccountGroup in
-                CryptoAccountNonCustodialGroup(asset: .ethereum, accounts: accounts)
+                CryptoAccountNonCustodialGroup(asset: asset, accounts: accounts)
             }
     }
 }

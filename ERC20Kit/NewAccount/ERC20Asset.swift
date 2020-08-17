@@ -58,7 +58,7 @@ final class ERC20Asset<Token: ERC20Token>: CryptoAsset {
     }
 
     private var custodialGroup: Single<AccountGroup> {
-         .just(CryptoAccountCustodialGroup(asset: Token.assetType, accounts: []))
+        .just(CryptoAccountCustodialGroup(asset: Token.assetType, accounts: [CryptoTradingAccount(asset: Token.assetType)]))
     }
 
     private var interestGroup: Single<AccountGroup> {

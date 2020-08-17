@@ -60,19 +60,21 @@ final class StellarAsset: CryptoAsset {
     }
 
     private var custodialGroup: Single<AccountGroup> {
-         .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
+        .just(CryptoAccountCustodialGroup(asset: asset, accounts: [CryptoTradingAccount(asset: asset)]))
     }
 
     private var interestGroup: Single<AccountGroup> {
-        Single
-            .just(CryptoInterestAccount(asset: .stellar))
-            .map { CryptoAccountCustodialGroup(asset: .stellar, accounts: [$0]) }
+        let asset = self.asset
+        return Single
+            .just(CryptoInterestAccount(asset: asset))
+            .map { CryptoAccountCustodialGroup(asset: asset, accounts: [$0]) }
     }
 
     private var nonCustodialGroup: Single<AccountGroup> {
-        defaultAccount
+        let asset = self.asset
+        return defaultAccount
             .map { account -> AccountGroup in
-                CryptoAccountNonCustodialGroup(asset: .stellar, accounts: [account])
+                CryptoAccountNonCustodialGroup(asset: asset, accounts: [account])
             }
     }
 }

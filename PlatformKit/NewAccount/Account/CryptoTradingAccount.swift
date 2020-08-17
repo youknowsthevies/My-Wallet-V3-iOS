@@ -1,8 +1,8 @@
 //
-//  CryptoInterestAccount.swift
+//  CryptoTradingAccount.swift
 //  PlatformKit
 //
-//  Created by Paulo on 07/08/2020.
+//  Created by Paulo on 14/08/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
@@ -11,10 +11,10 @@ import Localization
 import RxSwift
 import ToolKit
 
-public class CryptoInterestAccount: CryptoAccount {
+public class CryptoTradingAccount: CryptoAccount {
     private typealias LocalizedString = LocalizationConstants.Account
 
-    public lazy var id: String = "CryptoInterestAccount." + asset.code
+    public lazy var id: String = "CryptoTradingAccount." + asset.code
     public let label: String
     public let asset: CryptoCurrency
     public let isDefault: Bool = false
@@ -28,35 +28,34 @@ public class CryptoInterestAccount: CryptoAccount {
     }
 
     public var balance: Single<MoneyValue> {
-        let asset = self.asset
-        return balanceAPI
-            .balance(for: asset)
-            .do(onSuccess: { [weak self] (state: CustodialAccountBalanceState) in
-                let isFunded: Bool = state != .absent
-                self?.atomicIsFunded.mutate { $0 = isFunded }
-            })
-            .map { $0.balance?.available ?? MoneyValue.zero(asset) }
+        balanceAPI.balanceMoney
     }
 
     public var actions: AvailableActions {
-        []
+        [.viewActivity]
     }
 
     public var isFunded: Bool {
         atomicIsFunded.value
     }
 
-    private let balanceAPI: SavingAccountServiceAPI
+    private let balanceAPI: CustodialAccountBalanceFetching
     private let exchangeService: PairExchangeServiceAPI
     private let atomicIsFunded: Atomic<Bool> = .init(false)
+    private let disposeBag = DisposeBag()
 
     public init(asset: CryptoCurrency,
-                dataProviding: DataProviding = resolve(),
-                balanceAPI: SavingAccountServiceAPI = resolve()) {
-        self.label = String(format: LocalizedString.myInterestAccount, asset.name)
+                dataProviding: DataProviding = resolve()) {
+        self.label = String(format: LocalizedString.myTradingAccount, asset.name)
         self.asset = asset
         self.exchangeService = dataProviding.exchange[asset]
-        self.balanceAPI = balanceAPI
+        self.balanceAPI = dataProviding.balance[asset.currency].trading
+        balanceAPI
+            .isFunded
+            .subscribe(onNext: { [weak self] isFunded in
+                self?.atomicIsFunded.mutate { $0 = isFunded }
+            })
+            .disposed(by: disposeBag)
     }
 
     public func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {
