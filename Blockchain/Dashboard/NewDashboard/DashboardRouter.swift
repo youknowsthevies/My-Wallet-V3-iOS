@@ -8,6 +8,7 @@
 
 import DIKit
 import InterestKit
+import InterestUIKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
@@ -57,13 +58,11 @@ final class DashboardRouter {
     
     func showDetailsScreen(for currency: CryptoCurrency) {
         // TODO: Move away from the routing layer - phase II of savings
-        let savingsRatesService: SavingAccountServiceAPI = resolve()
-        
+
         let balanceFetcher = dataProvider.balance[.crypto(currency)]
         let detailsInteractor = DashboardDetailsScreenInteractor(
             currency: currency,
             balanceFetcher: balanceFetcher,
-            savingsAccountService: savingsRatesService,
             fiatCurrencyService: userInformationServiceProvider.settings,
             exchangeAPI: dataProvider.exchange[currency]
         )
@@ -103,8 +102,20 @@ final class DashboardRouter {
             nonCustodialActionRouterAPI.start(with: currency)
         case .trading(let currency):
             custodyActionRouterAPI.start(with: .crypto(currency))
-        case .savings:
-            break
+        case .savings(let currency):
+            let interactor = InterestAccountDetailsScreenInteractor(
+                cryptoCurrency: currency,
+                assetBalanceFetching: dataProvider.balance[.crypto(currency)]
+            )
+            let presenter = InterestAccountDetailsScreenPresenter(interactor: interactor)
+            let controller = InterestAccountDetailsViewController(presenter: presenter)
+            controller.transitioningDelegate = sheetPresenter
+            controller.modalPresentationStyle = .custom
+            navigationRouter.topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
         }
     }
+    
+    private lazy var sheetPresenter: BottomSheetPresenting = {
+        BottomSheetPresenting(ignoresBackroundTouches: false)
+    }()
 }

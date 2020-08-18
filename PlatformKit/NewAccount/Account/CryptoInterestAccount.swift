@@ -7,49 +7,58 @@
 //
 
 import DIKit
+import Localization
 import RxSwift
 import ToolKit
-import Localization
 
 public class CryptoInterestAccount: CryptoAccount {
     private typealias LocalizedString = LocalizationConstants.Account
 
+    public lazy var id: String = "CryptoInterestAccount." + asset.code
+    public let label: String
     public let asset: CryptoCurrency
+    public let isDefault: Bool = false
 
     public var receiveAddress: Single<ReceiveAddress> {
         .error(ReceiveAddressError.notSupported)
     }
 
-    public let isDefault: Bool = false
-
     public var sendState: Single<SendState> {
         .just(.notSupported)
     }
 
-    public func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {
-        unimplemented()
-    }
-
-    public lazy var id: String = "CryptoInterestAccount" + asset.code
-
-    public let label: String
-
     public var balance: Single<MoneyValue> {
-        let asset = self.asset
-        return balanceAPI
-            .balance(for: asset)
-            .do(onSuccess: { [weak self] (state: CustodialAccountBalanceState) in
-                let isFunded: Bool = state != .absent
-                self?.atomicIsFunded.mutate { $0 = isFunded }
-            })
-            .map { $0.balance?.available ?? MoneyValue.zero(asset) }
+        balanceAPI.balanceMoney
     }
 
-    public var actions: AvailableActions = []
+    public var actions: AvailableActions {
+        []
+    }
 
-    private let atomicIsFunded: Atomic<Bool> = .init(false)
     public var isFunded: Bool {
         atomicIsFunded.value
+    }
+
+    private let balanceAPI: CustodialAccountBalanceFetching
+    private let exchangeService: PairExchangeServiceAPI
+    private let atomicIsFunded: Atomic<Bool> = .init(false)
+    private let disposeBag = DisposeBag()
+
+    public init(asset: CryptoCurrency,
+                dataProviding: DataProviding = resolve()) {
+        self.label = String(format: LocalizedString.myInterestAccount, asset.name)
+        self.asset = asset
+        self.exchangeService = dataProviding.exchange[asset]
+        self.balanceAPI = dataProviding.balance[asset.currency].savings
+        balanceAPI.isFunded
+            .subscribe(onNext: { [weak self] isFunded in
+                self?.atomicIsFunded.mutate { $0 = isFunded }
+            })
+            .disposed(by: disposeBag)
+    }
+
+    public func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {
+        unimplemented()
     }
 
     public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
@@ -60,17 +69,5 @@ public class CryptoInterestAccount: CryptoAccount {
             ) { (exchangeRate: $0, balance: $1) }
             .map { try MoneyValuePair(base: $0.balance, exchangeRate: $0.exchangeRate.moneyValue) }
             .map(\.quote)
-    }
-
-    private let balanceAPI: SavingAccountServiceAPI
-    private let exchangeService: PairExchangeServiceAPI
-
-    public init(asset: CryptoCurrency,
-                dataProviding: DataProviding = resolve(),
-                balanceAPI: SavingAccountServiceAPI = resolve()) {
-        self.label = String(format: LocalizedString.myInterestAccount, asset.name)
-        self.asset = asset
-        self.exchangeService = dataProviding.exchange[asset]
-        self.balanceAPI = balanceAPI
     }
 }

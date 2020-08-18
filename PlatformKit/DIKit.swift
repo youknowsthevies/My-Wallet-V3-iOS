@@ -84,6 +84,12 @@ extension DependencyContainer {
         }
         
         // MARK: - Services
+
+        single { EnabledCurrenciesService() as EnabledCurrenciesServiceAPI }
+        
+        factory { KYCServiceProvider() as KYCServiceProviderAPI }
+        
+        single { NabuUserService() as NabuUserServiceAPI }
         
         single { SettingsService() as CompleteSettingsServiceAPI }
         
@@ -124,5 +130,7 @@ extension DependencyContainer {
         factory { NSUbiquitousKeyValueStore.default as UbiquitousKeyValueStore }
 
         factory { WalletCryptoService() as WalletCryptoServiceAPI }
+
+        factory { TradingBalanceService() as TradingBalanceServiceAPI }
     }
 }

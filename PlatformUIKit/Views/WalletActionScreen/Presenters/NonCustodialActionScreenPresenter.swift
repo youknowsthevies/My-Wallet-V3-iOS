@@ -54,7 +54,6 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
             interactor: interactor.balanceCellInteractor,
             descriptionValue: descriptionValue,
             currency:  interactor.currency,
-            alignment: .trailing,
             titleAccessibilitySuffix: "\(Accessibility.Identifier.DashboardDetails.CurrentBalanceCell.titleValue)",
             descriptionAccessibilitySuffix: "\(Accessibility.Identifier.DashboardDetails.CurrentBalanceCell.descriptionValue)",
             descriptors: .default(

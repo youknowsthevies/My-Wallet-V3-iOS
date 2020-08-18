@@ -433,9 +433,9 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        private let enabledCurrenciesService: EnabledCurrenciesService
+        private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
 
-        init(enabledCurrenciesService: EnabledCurrenciesService = resolve()) {
+        init(enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()) {
             self.enabledCurrenciesService = enabledCurrenciesService
 
             super.init()

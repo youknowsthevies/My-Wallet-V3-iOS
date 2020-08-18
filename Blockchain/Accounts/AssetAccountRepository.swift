@@ -36,7 +36,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     private let stellarAccountService: StellarAccountAPI
     private var cachedAccounts = BehaviorRelay<[AssetAccount]?>(value: nil)
     private let disposables = CompositeDisposable()
-    private let enabledCurrenciesService: EnabledCurrenciesService
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
 
     init(
         wallet: Wallet = WalletManager.shared.wallet,
@@ -44,7 +44,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         paxServiceProvider: PAXServiceProvider = PAXServiceProvider.shared,
         ethereumServiceProvider: ETHServiceProvider = ETHServiceProvider.shared,
         tetherServiceProvider: TetherServiceProvider = .shared,
-        enabledCurrenciesService: EnabledCurrenciesService = resolve()
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
     ) {
         self.wallet = wallet
         self.enabledCurrenciesService = enabledCurrenciesService

@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import ToolKit
 
@@ -20,8 +21,8 @@ final class CustodialServiceProvider: CustodialServiceProviderAPI {
         
     // MARK: - Setup
     
-    init() {
-        self.balance = TradingBalanceService()
+    init(balance: TradingBalanceServiceAPI = resolve()) {
+        self.balance = balance
         self.withdrawal = CustodyWithdrawalRequestService()
     }
 }

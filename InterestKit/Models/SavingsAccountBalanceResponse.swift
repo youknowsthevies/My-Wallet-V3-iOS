@@ -12,15 +12,9 @@ public struct SavingsAccountBalanceResponse: Decodable {
 
     public static let empty = SavingsAccountBalanceResponse()
 
-    // MARK: - Types
-
-    public struct Details: Decodable {
-        let balance: String?
-    }
-
     // MARK: - Properties
 
-    let balances: [String: Details]
+    let balances: [String: SavingsAccountBalanceDetails]
 
     // MARK: - Init
 
@@ -30,12 +24,12 @@ public struct SavingsAccountBalanceResponse: Decodable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        balances = try container.decode([String: Details].self)
+        balances = try container.decode([String: SavingsAccountBalanceDetails].self)
     }
 
     // MARK: - Subscript
 
-    subscript(currency: CryptoCurrency) -> Details? {
+    subscript(currency: CryptoCurrency) -> SavingsAccountBalanceDetails? {
         balances[currency.rawValue]
     }
 }

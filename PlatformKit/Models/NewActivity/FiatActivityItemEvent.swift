@@ -80,11 +80,6 @@ public struct FiatActivityItemEvent: Decodable, Tokenized {
         let eventValue = try values.decode(String.self, forKey: .type)
         type = EventType(rawValue: eventValue) ?? .unknown
     }
-    
-    private struct SymbolValue: Decodable {
-        let symbol: String
-        let value: String
-    }
 }
 
 extension FiatActivityItemEvent: Hashable {

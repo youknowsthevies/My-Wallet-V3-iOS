@@ -33,7 +33,7 @@ final class TotalBalanceViewPresenter {
     
     init(balanceProvider: BalanceProviding,
          balanceChangeProvider: BalanceChangeProviding,
-         enabledCurrenciesService: EnabledCurrenciesService) {
+         enabledCurrenciesService: EnabledCurrenciesServiceAPI) {
         let balanceInteractor = BalanceChangeViewInteractor(
             balanceProvider: balanceProvider,
             balanceChangeProvider: balanceChangeProvider

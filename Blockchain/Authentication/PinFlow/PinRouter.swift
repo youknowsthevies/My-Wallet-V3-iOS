@@ -45,7 +45,7 @@ final class PinRouter: NSObject {
     
     init(flow: PinRouting.Flow,
          swipeToReceiveConfig: SwipeToReceiveConfiguring = BlockchainSettings.App.shared,
-         enabledCurrenciesService: EnabledCurrenciesService = resolve(),
+         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
          recorder: Recording = CrashlyticsRecorder(),
          completion: PinRouting.RoutingType.Forward? = nil) {
         enabledCryptoCurrencies = enabledCurrenciesService.allEnabledCryptoCurrencies

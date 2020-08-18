@@ -17,7 +17,7 @@ class MockBlockchainSettingsApp: BlockchainSettings.App {
     var mockGuid: String?
     var mockSharedKey: String?
 
-    override init(enabledCurrenciesService: EnabledCurrenciesService) {
+    override init(enabledCurrenciesService: EnabledCurrenciesServiceAPI) {
         super.init()
     }
 

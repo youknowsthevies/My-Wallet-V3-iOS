@@ -1583,6 +1583,20 @@ public enum LocalizationConstants {
             public static let badgeName = NSLocalizedString("NEW", comment: "NEW")
             public static let learnMore = NSLocalizedString("Learn More", comment: "Learn More")
         }
+        public struct InterestIdentityVerification {
+            public static let title = NSLocalizedString("Earn 9.0% Interest", comment: "Earn 4.5% Interest")
+            public struct Description {
+                public static let kycd = NSLocalizedString(
+                    "Start earning up to 9.0% interest on your crypto.",
+                    comment: "Start earning up to 9.0% interest on your crypto."
+                )
+                public static let notKYCd = NSLocalizedString(
+                    "Verify your identitys and start earning up to 9.0% interest on your crypto.",
+                    comment: "Verify your identity and start earning up to 9.0% interest on your crypto."
+                )
+            }
+            public static let learnMore = NSLocalizedString("Learn More", comment: "Learn More")
+        }
         public struct FiatFundsLinkBank {
             public static let title = NSLocalizedString("Link a Bank to Buy Crypto", comment: "Link a Bank to Buy Crypto")
             public static let description = NSLocalizedString(

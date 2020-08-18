@@ -26,6 +26,7 @@ final class AnnouncementPresenter {
     private let featureFetcher: FeatureFetching
     private let airdropRouter: AirdropRouterAPI
     private let cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting
+    private let interestIdentityVerificationRouter: InterestIdentityVerificationAnnouncementRouting
     private let kycCoordinator: KYCCoordinator
     private let exchangeCoordinator: ExchangeCoordinator
     private let wallet: Wallet
@@ -58,6 +59,7 @@ final class AnnouncementPresenter {
          featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
          airdropRouter: AirdropRouterAPI = AppCoordinator.shared.airdropRouter,
          cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting = AppCoordinator.shared,
+         interestIdentityVerificationRouter: InterestIdentityVerificationAnnouncementRouting = AppCoordinator.shared,
          appCoordinator: AppCoordinator = .shared,
          exchangeCoordinator: ExchangeCoordinator = .shared,
          kycCoordinator: KYCCoordinator = .shared,
@@ -69,6 +71,7 @@ final class AnnouncementPresenter {
         self.webViewServiceAPI = webViewServiceAPI
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.appCoordinator = appCoordinator
+        self.interestIdentityVerificationRouter = interestIdentityVerificationRouter
         self.cashIdentityVerificationRouter = cashIdentityVerificationRouter
         self.exchangeCoordinator = exchangeCoordinator
         self.kycCoordinator = kycCoordinator
@@ -122,6 +125,8 @@ final class AnnouncementPresenter {
             switch type {
             case .cloudBackup:
                 announcement = cloudBackupAnnouncement
+            case .interestFunds:
+                announcement = interestAnnouncement(isKYCVerified: preliminaryData.tiers.isTier2Approved)
             case .fiatFundsNoKYC:
                 announcement = cashAnnouncement(isKYCVerified: preliminaryData.tiers.isTier2Approved)
             case .fiatFundsKYC:
@@ -379,6 +384,16 @@ extension AnnouncementPresenter {
                 )
             }
         )
+    }
+    
+    /// Interest Account Announcement for users who have not KYC'd
+    private func interestAnnouncement(isKYCVerified: Bool) -> Announcement {
+        InterestIdentityVerificationAnnouncement(
+            isKYCVerified: isKYCVerified,
+            dismiss: hideAnnouncement,
+            action: { [weak interestIdentityVerificationRouter] in
+                interestIdentityVerificationRouter?.showInterestDashboardAnnouncementScreen(isKYCVerfied: isKYCVerified)
+            })
     }
     
     /// Cash Support Announcement for users who have KYC'd

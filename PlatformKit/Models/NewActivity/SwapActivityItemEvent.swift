@@ -148,11 +148,6 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
         }
     }
 
-    private struct SymbolValue: Decodable {
-        let symbol: String
-        let value: String
-    }
-
     enum CodingKeys: String, CodingKey {
         case identifier = "id"
         case status = "state"

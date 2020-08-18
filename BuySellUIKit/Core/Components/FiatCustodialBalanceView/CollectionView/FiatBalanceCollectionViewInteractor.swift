@@ -37,7 +37,7 @@ public final class FiatBalanceCollectionViewInteractor {
     private let featureFetcher: FeatureFetching
     private let balanceProvider: BalanceProviding
     private let paymentMethodsService: PaymentMethodsServiceAPI
-    private let enabledCurrenciesService: EnabledCurrenciesService
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let refreshRelay = PublishRelay<Void>()
     
     // MARK: - Accessors
@@ -72,7 +72,7 @@ public final class FiatBalanceCollectionViewInteractor {
     }()
     
     public init(balanceProvider: BalanceProviding,
-                enabledCurrenciesService: EnabledCurrenciesService,
+                enabledCurrenciesService: EnabledCurrenciesServiceAPI,
                 paymentMethodsService: PaymentMethodsServiceAPI,
                 featureFetcher: FeatureFetching) {
         self.balanceProvider = balanceProvider

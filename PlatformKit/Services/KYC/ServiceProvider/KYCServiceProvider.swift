@@ -26,7 +26,7 @@ public final class KYCServiceProvider: KYCServiceProviderAPI {
         self.init(client: resolve())
     }
     
-    init(client: KYCClientAPI) {
+    init(client: KYCClientAPI = resolve()) {
         user = NabuUserService(client: client)
         tiers = KYCTiersService(client: client)
     }

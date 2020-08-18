@@ -19,7 +19,7 @@ final class CustodialFeatureFetcher: CustodialFeatureFetching {
     // MARK: Init
     
     init(tiersService: KYCTiersServiceAPI = resolve(),
-         featureFetching: FeatureFetching = resolve()) {
+                featureFetching: FeatureFetching = resolve()) {
         self.tiersService = tiersService
         self.featureFetching = featureFetching
     }
