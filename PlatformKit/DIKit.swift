@@ -46,8 +46,14 @@ extension DependencyContainer {
         // MARK: - Authentication
         
         single { NabuTokenStore() }
-        
+
         single { NabuAuthenticationExecutor() as NabuAuthenticationExecutorAPI }
+
+        factory { () -> NabuAuthenticationExecutorProvider in
+            return { () -> NabuAuthenticationExecutorAPI in
+                DIKit.resolve()
+            }
+        }
         
         factory { NabuAuthenticator() as AuthenticatorAPI }
         

@@ -12,13 +12,20 @@ import RxSwift
 import ToolKit
 
 final class NabuAuthenticator: AuthenticatorAPI {
-        
+
     @available(*, deprecated, message: "This is deprecated. Don't use this.")
     var token: Single<String> {
         authenticationExecutor.token
     }
     
-    @LazyInject private var authenticationExecutor: NabuAuthenticationExecutorAPI
+    private let authenticationExecutorProvider: NabuAuthenticationExecutorProvider
+    private var authenticationExecutor: NabuAuthenticationExecutorAPI {
+        authenticationExecutorProvider()
+    }
+
+    init(authenticationExecutorProvider: @escaping NabuAuthenticationExecutorProvider = resolve()) {
+        self.authenticationExecutorProvider = authenticationExecutorProvider
+    }
     
     func authenticate<Response>(_ singleFunction: @escaping (String) -> Single<Response>) -> Single<Response> {
         authenticationExecutor.authenticate(singleFunction: singleFunction)
