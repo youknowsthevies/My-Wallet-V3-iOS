@@ -15,6 +15,7 @@ extension DependencyContainer {
     // MARK: - PlatformKit Module
 
     public static var platformKit = module {
+        // MARK: - BalanceProviding
 
         factory { () -> BalanceProviding in
             let provider: DataProviding = DIKit.resolve()
