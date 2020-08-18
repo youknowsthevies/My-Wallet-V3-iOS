@@ -90,10 +90,12 @@ extension DependencyContainer {
         single { () -> Coincore in
             Coincore(
                 assetMap: [
+                    .bitcoin: DIKit.resolve(tag: CryptoCurrency.bitcoin),
+                    .bitcoinCash: DIKit.resolve(tag: CryptoCurrency.bitcoinCash),
                     .ethereum: DIKit.resolve(tag: CryptoCurrency.ethereum),
-                    .tether: DIKit.resolve(tag: CryptoCurrency.tether),
+                    .stellar: DIKit.resolve(tag: CryptoCurrency.stellar),
                     .pax: DIKit.resolve(tag: CryptoCurrency.pax),
-                    .stellar: DIKit.resolve(tag: CryptoCurrency.stellar)
+                    .tether: DIKit.resolve(tag: CryptoCurrency.tether)
                 ]
             )
         }

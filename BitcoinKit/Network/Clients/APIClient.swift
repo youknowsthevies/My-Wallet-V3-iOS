@@ -18,8 +18,9 @@ enum APIClientError: Error {
 protocol APIClientAPI {
     func unspentOutputs(addresses: [String]) -> Single<UnspentOutputsResponse>
     func bitcoinMultiAddress(for addresses: [String]) -> Single<BitcoinMultiAddressResponse>
+    func bitcoinBalances(for addresses: [String]) -> Single<BitcoinBalanceResponse>
     func bitcoinCashMultiAddress(for address: String) -> Single<BitcoinCashMultiAddressResponse>
-    func balances(for addresses: [String]) -> Single<BitcoinBalanceResponse>
+    func bitcoinCashBalances(for addresses: [String]) -> Single<BitcoinBalanceResponse>
 }
 
 final class APIClient: APIClientAPI {
@@ -36,6 +37,7 @@ final class APIClient: APIClientAPI {
         struct BitcoinCash {
             static let base = [ "bch" ]
             static let multiaddress = base + [ "multiaddr" ]
+            static let balance = base + [ "balance" ]
         }
     }
 
@@ -86,6 +88,22 @@ final class APIClient: APIClientAPI {
         }
         return communicator.perform(request: request)
     }
+
+    func bitcoinCashBalances(for addresses: [String]) -> Single<BitcoinBalanceResponse> {
+        let addresses = addresses.joined(separator: "|")
+        let parameters = [
+            URLQueryItem(
+                name: "active",
+                value: "\(addresses)"
+            )
+        ]
+        let request = requestBuilder.get(
+            path: Endpoint.BitcoinCash.balance,
+            parameters: parameters,
+            recordErrors: true
+        )!
+        return communicator.perform(request: request)
+    }
     
     func bitcoinMultiAddress(for addresses: [String]) -> Single<BitcoinMultiAddressResponse> {
         let value = addresses.joined(separator: "|")
@@ -106,7 +124,7 @@ final class APIClient: APIClientAPI {
         return communicator.perform(request: request)
     }
     
-    func balances(for addresses: [String]) -> Single<BitcoinBalanceResponse> {
+    func bitcoinBalances(for addresses: [String]) -> Single<BitcoinBalanceResponse> {
         let addresses = addresses.joined(separator: "|")
         let parameters = [
             URLQueryItem(

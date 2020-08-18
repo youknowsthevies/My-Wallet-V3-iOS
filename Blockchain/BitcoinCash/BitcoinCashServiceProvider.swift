@@ -8,6 +8,7 @@
 
 import BitcoinKit
 import BuySellKit
+import DIKit
 import PlatformKit
 
 protocol BitcoinCashDependencies {
@@ -17,8 +18,8 @@ protocol BitcoinCashDependencies {
 struct BitcoinCashServices: BitcoinCashDependencies {
     let transactions: BitcoinCashHistoricalTransactionService
 
-    init(bridge: BitcoinCashWalletBridgeAPI = BitcoinCashWallet()) {
-        transactions = .init(
+    init(bridge: BitcoinCashWalletBridgeAPI = resolve()) {
+        transactions = BitcoinCashHistoricalTransactionService(
             bridge: bridge
         )
     }

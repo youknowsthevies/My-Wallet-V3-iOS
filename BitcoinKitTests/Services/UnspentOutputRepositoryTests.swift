@@ -47,7 +47,7 @@ class UnspentOutputRepositoryTests: XCTestCase {
         
         let expectedUnspents = UnspentOutputs(outputs: [])
         
-        client.unspentOutputsValue = Single.just(UnspentOutputsResponse(unspent_outputs: []))
+        client.underlyingUnspentOutputs = .just(UnspentOutputsResponse(unspent_outputs: []))
         
         // Arrange
         let unspentOutputsObservable = subject

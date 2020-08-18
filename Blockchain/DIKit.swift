@@ -157,5 +157,7 @@ extension DependencyContainer {
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.wallet.bitcoin
         }
+
+        single { BitcoinCashWallet() as BitcoinCashWalletBridgeAPI }
     }
 }

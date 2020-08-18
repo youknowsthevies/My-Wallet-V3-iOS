@@ -2247,11 +2247,12 @@ MyWalletPhone.bch = {
     },
         
     getDefaultBCHAccount : function() {
-        var label = MyWallet.wallet.bch.defaultAccount.label;
-        var account = {
-            "label": label,
-            "xpub": MyWallet.wallet.bch.defaultAccount.xpub,
-            "index": MyWallet.wallet.bch.defaultAccountIdx
+        const defaultAccount = MyWallet.wallet.bch.defaultAccount;
+        const account = {
+            "label": defaultAccount.label,
+            "xpub": defaultAccount.xpub,
+            "index": defaultAccount.index,
+            "archived": defaultAccount.archived
         }
         return JSON.stringify(account)
     },
@@ -2295,6 +2296,18 @@ MyWalletPhone.bch = {
             var prefix = 'bitcoincash:';
             return Helpers.toBitcoinCash(address).slice(prefix.length);
         });
+    },
+
+    getAllAccounts : function() {
+        const accounts = MyWallet.wallet.bch.accounts.map(function(account) {
+            return {
+                "label": account.label,
+                "xpub": account.xpub,
+                "index": account.index,
+                "archived": account.archived
+            };
+        });
+        return JSON.stringify(accounts)
     },
 
     isArchived : function(index) {

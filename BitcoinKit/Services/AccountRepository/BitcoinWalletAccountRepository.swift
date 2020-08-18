@@ -10,31 +10,21 @@ import DIKit
 import PlatformKit
 import RxSwift
 
-public final class BitcoinWalletAccountRepository: WalletAccountRepositoryAPI {
+final class BitcoinWalletAccountRepository: WalletAccountRepositoryAPI {
     
-    public typealias Account = BitcoinWalletAccount
+    typealias Account = BitcoinWalletAccount
 
     // MARK: - Properties
 
-    /**
-     The default HD Account is automatically selected when first viewing the features below in Discussion:
-
-     Send - selected as the "From"
-
-     Request - selected as the "To"
-
-     Transfer All - selected as the "To".
-
-     */
-    public var defaultAccount: Single<BitcoinWalletAccount> {
+    var defaultAccount: Single<BitcoinWalletAccount> {
         bridge.defaultWallet
     }
     
-    public var accounts: Single<[BitcoinWalletAccount]> {
+    var accounts: Single<[BitcoinWalletAccount]> {
         bridge.wallets
     }
     
-    public var activeAccounts: Single<[BitcoinWalletAccount]> {
+    var activeAccounts: Single<[BitcoinWalletAccount]> {
         accounts.map { accounts in
             accounts.filter(\.isActive)
         }

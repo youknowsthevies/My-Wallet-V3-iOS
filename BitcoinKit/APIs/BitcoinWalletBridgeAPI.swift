@@ -38,10 +38,9 @@ public struct PayloadBitcoinWalletAccount: Codable {
 }
 
 public protocol BitcoinWalletBridgeAPI: AnyObject {
-    /// If an imported address or HD account is active, it means that it is not archived.
-    
+
     // MARK: - Wallet Account
-    
+
     var defaultWallet: Single<BitcoinWalletAccount> { get }
 
     var wallets: Single<[BitcoinWalletAccount]> { get }

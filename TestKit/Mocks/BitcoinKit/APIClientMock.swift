@@ -11,24 +11,28 @@ import Foundation
 import RxSwift
 
 class APIClientMock: APIClientAPI {
-    
-    var balancesValue: Single<BitcoinBalanceResponse> = Single.error(NSError())
-    func balances(for addresses: [String]) -> Single<BitcoinBalanceResponse> {
-        balancesValue
-    }
-    
+    var underlyingBitcoinMultiAddress: Single<BitcoinMultiAddressResponse> = .error(APIClientError.unknown)
     func bitcoinMultiAddress(for addresses: [String]) -> Single<BitcoinMultiAddressResponse> {
-        Single.error(APIClientError.unknown)
+        underlyingBitcoinMultiAddress
     }
-    
+
+    var underlyingBitcoinBalances: Single<BitcoinBalanceResponse> = .error(APIClientError.unknown)
+    func bitcoinBalances(for addresses: [String]) -> Single<BitcoinBalanceResponse> {
+        underlyingBitcoinBalances
+    }
+
+    var underlyingBitcoinCashMultiAddress: Single<BitcoinCashMultiAddressResponse> = .error(APIClientError.unknown)
     func bitcoinCashMultiAddress(for address: String) -> Single<BitcoinCashMultiAddressResponse> {
-        Single.error(APIClientError.unknown)
+        underlyingBitcoinCashMultiAddress
     }
-    
-    var lastUnspentOutputAddresses: [String]?
-    var unspentOutputsValue: Single<UnspentOutputsResponse> = Single.error(NSError())
+
+    var underlyingBitcoinCashBalances: Single<BitcoinBalanceResponse> = .error(APIClientError.unknown)
+    func bitcoinCashBalances(for addresses: [String]) -> Single<BitcoinBalanceResponse> {
+        underlyingBitcoinCashBalances
+    }
+
+    var underlyingUnspentOutputs: Single<UnspentOutputsResponse> = .error(APIClientError.unknown)
     func unspentOutputs(addresses: [String]) -> Single<UnspentOutputsResponse> {
-        lastUnspentOutputAddresses = addresses
-        return unspentOutputsValue
+        underlyingUnspentOutputs
     }
 }

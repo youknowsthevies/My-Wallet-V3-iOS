@@ -18,10 +18,8 @@ protocol BitcoinDependencies {
 struct BitcoinServices: BitcoinDependencies {
     let transactions: BitcoinHistoricalTransactionService
 
-    init(repository: BitcoinWalletAccountRepository = resolve()) {
-        transactions = BitcoinHistoricalTransactionService(
-            repository: repository
-        )
+    init(transactions: BitcoinHistoricalTransactionService = resolve()) {
+        self.transactions = transactions
     }
 }
 
@@ -38,7 +36,7 @@ final class BitcoinServiceProvider {
     init(services: BitcoinDependencies) {
         self.services = services
     }
-        
+
     var transactions: BitcoinHistoricalTransactionService {
         services.transactions
     }

@@ -10,4 +10,5 @@ import RxSwift
 
 public protocol BitcoinCashWalletBridgeAPI {
     var defaultWallet: Single<BitcoinCashWalletAccount> { get }
+    var wallets: Single<[BitcoinCashWalletAccount]> { get }
 }

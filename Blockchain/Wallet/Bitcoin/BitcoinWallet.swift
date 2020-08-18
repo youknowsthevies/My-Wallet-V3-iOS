@@ -111,26 +111,14 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             .flatMap(weak: self) { (self, secondPassword) -> Single<String> in
                 self.hdWallet(secondPassword: secondPassword)
             }
-            .do(onNext: { hdWalletString in
-                print(hdWalletString)
-            })
             .map(weak: self) { (self, hdWalletString) -> PayloadBitcoinHDWallet in
                 guard let data = hdWalletString.data(using: .utf8) else {
                     throw WalletError.unknown
                 }
-                let decodedHDWallet: PayloadBitcoinHDWallet
-                do {
-                    decodedHDWallet = try JSONDecoder().decode(PayloadBitcoinHDWallet.self, from: data)
-                } catch {
-                    throw error
-                }
-                return decodedHDWallet
+                return try JSONDecoder().decode(PayloadBitcoinHDWallet.self, from: data)
             }
-            .do(onNext: { payload in
-                print(payload)
-            })
     }
-    
+
     var defaultWallet: Single<BitcoinWalletAccount> {
         reactiveWallet
             .waitUntilInitializedSingle
@@ -138,20 +126,23 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
                 self.secondPasswordIfAccountCreationNeeded
             }
             .flatMap(weak: self) { (self, secondPassword) -> Single<BitcoinWalletAccount> in
-                self.bitcoinWallets(secondPassword: secondPassword)
-                    .flatMap { wallets -> Single<BitcoinWalletAccount> in
-                        self.defaultWalletIndex(secondPassword: secondPassword)
-                            .map { index -> BitcoinWalletAccount in
-                                guard let defaultWallet = wallets[safe: index] else {
-                                    throw WalletError.unknown
-                                }
-                                return defaultWallet
-                            }
+                self.defaultWallet(secondPassword: secondPassword)
+            }
+    }
+
+    private func defaultWallet(secondPassword: String?) -> Single<BitcoinWalletAccount> {
+        bitcoinWallets(secondPassword: secondPassword)
+            .flatMap { wallets -> Single<BitcoinWalletAccount> in
+                self.defaultWalletIndex(secondPassword: secondPassword)
+                    .map { index -> BitcoinWalletAccount in
+                        guard let defaultWallet = wallets[safe: index] else {
+                            throw WalletError.unknown
+                        }
+                        return defaultWallet
                     }
             }
-
     }
-    
+
     var wallets: Single<[BitcoinWalletAccount]> {
         secondPasswordIfAccountCreationNeeded
             .flatMap(weak: self) { (self, secondPassword) -> Single<[BitcoinWalletAccount]> in
@@ -162,18 +153,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
     }
     
     private func bitcoinWallets(secondPassword: String?) -> Single<[BitcoinWalletAccount]> {
-        Single<String>.create(weak: self) { (self, observer) -> Disposable in
-                guard let wallet = self.wallet else {
-                    observer(.error(WalletError.notInitialized))
-                    return Disposables.create()
-                }
-                wallet.bitcoinWallets(with: secondPassword, success: { accounts in
-                    observer(.success(accounts))
-                }, error: { errorMessage in
-                    observer(.error(WalletError.unknown))
-                })
-                return Disposables.create()
-            }
+        bitcoinLegacyWallets(secondPassword: secondPassword)
             .flatMap(weak: self) { (self, legacyWallets) -> Single<[BitcoinWalletAccount]> in
                 guard let data = legacyWallets.data(using: .utf8) else {
                     throw WalletError.unknown
@@ -186,9 +166,8 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
                 }
                 let decodedWallets = decodedLegacyWallets
                     .enumerated()
-                    .map { arg -> BitcoinWalletAccount in
-                        let (index, legacyAccount) = arg
-                        return BitcoinWalletAccount(
+                    .map { (index, legacyAccount) -> BitcoinWalletAccount in
+                        BitcoinWalletAccount(
                             index: index,
                             publicKey: legacyAccount.xpub,
                             label: legacyAccount.label,
@@ -198,20 +177,35 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
                 return Single.just(decodedWallets)
             }
     }
+
+    private func bitcoinLegacyWallets(secondPassword: String?) -> Single<String> {
+        Single<String>.create(weak: self) { (self, observer) -> Disposable in
+            guard let wallet = self.wallet else {
+                observer(.error(WalletError.notInitialized))
+                return Disposables.create()
+            }
+            wallet.bitcoinWallets(
+                with: secondPassword,
+                success: { accounts in observer(.success(accounts)) },
+                error: { errorMessage in observer(.error(WalletError.unknown)) }
+            )
+            return Disposables.create()
+        }
+    }
     
     private func hdWallet(secondPassword: String?) -> Single<String> {
         Single<String>.create(weak: self) { (self, observer) -> Disposable in
-                guard let wallet = self.wallet else {
-                    observer(.error(WalletError.notInitialized))
-                    return Disposables.create()
-                }
-                wallet.hdWallet(with: secondPassword, success: { wallet in
-                    observer(.success(wallet))
-                }, error: { errorMessage in
-                    observer(.error(WalletError.unknown))
-                })
+            guard let wallet = self.wallet else {
+                observer(.error(WalletError.notInitialized))
                 return Disposables.create()
             }
+            wallet.hdWallet(
+                with: secondPassword,
+                success: { wallet in observer(.success(wallet)) },
+                error: { errorMessage in observer(.error(WalletError.unknown)) }
+            )
+            return Disposables.create()
+        }
     }
     
     private func defaultWalletIndex(secondPassword: String?) -> Single<Int> {

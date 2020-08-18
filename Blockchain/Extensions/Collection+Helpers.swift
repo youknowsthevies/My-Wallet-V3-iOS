@@ -12,7 +12,7 @@ extension Collection {
 
     /// Allows safe indexing into this collection. If the provided index is within
     /// bounds, the item will be returned, otherwise, nil.
-    subscript (safe index: Index) -> Element? {
+    subscript(safe index: Index) -> Element? {
         guard indices.contains(index) else {
             return nil
         }

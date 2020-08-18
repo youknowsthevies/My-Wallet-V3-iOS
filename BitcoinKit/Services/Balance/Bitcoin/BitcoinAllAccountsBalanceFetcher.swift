@@ -1,5 +1,5 @@
 //
-//  BitcoinAssetBalanceFetcher.swift
+//  BitcoinAllAccountsBalanceFetcher.swift
 //  Blockchain
 //
 //  Created by Daniel Huri on 31/10/2019.
@@ -22,11 +22,8 @@ public final class BitcoinAllAccountsBalanceFetcher: CryptoAccountBalanceFetchin
     
     public var balance: Single<CryptoValue> {
         activeAccountAddresses
-            .flatMap(weak: self) { (self, activeAccounts) -> Single<BitcoinBalanceResponse> in
-                self.client.balances(for: activeAccounts)
-            }
-            .map { balances -> CryptoValue in
-                BitcoinBalances(balances: balances).total
+            .flatMap(weak: self) { (self, activeAccounts) -> Single<CryptoValue> in
+                self.balanceService.bitcoinBalances(for: activeAccounts)
             }
     }
     
@@ -71,39 +68,17 @@ public final class BitcoinAllAccountsBalanceFetcher: CryptoAccountBalanceFetchin
     
     // MARK: - Injected
 
-    private let client: APIClientAPI
+    private let balanceService: BalanceServiceAPI
     private let repository: BitcoinWalletAccountRepository
     
     // MARK: - Setup
     
     public convenience init() {
-        self.init(repository: resolve(), client: resolve())
+        self.init(repository: resolve(), balanceService: resolve())
     }
     
-    init(repository: BitcoinWalletAccountRepository, client: APIClientAPI) {
+    init(repository: BitcoinWalletAccountRepository, balanceService: BalanceServiceAPI) {
         self.repository = repository
-        self.client = client
-    }
-}
-
-struct BitcoinBalances {
-    
-    let total: CryptoValue
-    
-    private let addresses: [String: CryptoValue]
-    
-    init(balances: BitcoinBalanceResponse) {
-        let balanceByAddress = balances.compactMapValues { item -> CryptoValue? in
-            CryptoValue(minor: "\(item.finalBalance)", cryptoCurrency: .bitcoin)
-        }
-        let totalBalance = try? balanceByAddress
-            .values
-            .reduce(CryptoValue.bitcoinZero, +)
-        self.addresses = balanceByAddress
-        self.total = totalBalance ?? CryptoValue.bitcoinZero
-    }
-    
-    func balance(for account: BitcoinWalletAccount) -> CryptoValue? {
-        addresses[account.publicKey]
+        self.balanceService = balanceService
     }
 }

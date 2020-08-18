@@ -43,7 +43,7 @@ public class BitcoinJSInteropDispatcher: BitcoinJSInteropDispatcherAPI {
 extension BitcoinJSInteropDispatcher: BitcoinJSInteropDelegateAPI {
     
     public func didGetDefaultWalletIndex(_ walletIndex: JSValue) {
-        guard let walletIndexInt = walletIndex.toNumber()?.intValue else {
+        guard let walletIndexInt: Int = walletIndex.toNumber()?.intValue else {
             getDefaultWalletIndex.sendFailure(.unknown)
             return
         }
@@ -55,7 +55,7 @@ extension BitcoinJSInteropDispatcher: BitcoinJSInteropDelegateAPI {
     }
     
     public func didGetAccounts(_ accounts: JSValue) {
-        guard let accountsString = accounts.toString() as? String else {
+        guard let accountsString: String = accounts.toString() else {
             getAccounts.sendFailure(.unknown)
             return
         }
@@ -67,7 +67,7 @@ extension BitcoinJSInteropDispatcher: BitcoinJSInteropDelegateAPI {
     }
     
     public func didGetHDWallet(_ wallet: JSValue) {
-        guard let walletString = wallet.toString() as? String else {
+        guard let walletString: String = wallet.toString() else {
             getHDWallet.sendFailure(.unknown)
             return
         }
@@ -79,7 +79,7 @@ extension BitcoinJSInteropDispatcher: BitcoinJSInteropDelegateAPI {
     }
     
     private func sendFailure<T>(dispatcher: Dispatcher<T>, errorMessage: JSValue) {
-        guard let message = errorMessage.toString() else {
+        guard let message: String = errorMessage.toString() else {
             dispatcher.sendFailure(.unknown)
             return
         }

@@ -7,6 +7,7 @@
 //
 
 import DIKit
+import PlatformKit
 
 extension DependencyContainer {
     
@@ -16,6 +17,20 @@ extension DependencyContainer {
         
         factory { APIClient() as APIClientAPI }
 
+        factory { BalanceService() as BalanceServiceAPI }
+
+        // MARK: - Bitcoin
+
         factory { BitcoinWalletAccountRepository() }
+
+        factory(tag: CryptoCurrency.bitcoin) { BitcoinAsset() as CryptoAsset }
+
+        factory { BitcoinHistoricalTransactionService() }
+
+        // MARK: - Bitcoin Cash
+
+        factory { BitcoinCashWalletAccountRepository() }
+
+        factory(tag: CryptoCurrency.bitcoinCash) { BitcoinCashAsset() as CryptoAsset }
     }
 }

@@ -12,22 +12,18 @@ import RxSwift
 import ToolKit
 
 public final class BitcoinHistoricalTransactionService: TokenizedHistoricalTransactionAPI {
-    
+
     public typealias Model = BitcoinHistoricalTransaction
     public typealias PageModel = PageResult<Model>
-    
+
     private let client: APIClientAPI
     private let repository: BitcoinWalletAccountRepository
-    
-    public convenience init(repository: BitcoinWalletAccountRepository) {
-        self.init(with: resolve(), repository: repository)
-    }
-    
-    init(with client: APIClientAPI, repository: BitcoinWalletAccountRepository) {
+
+    init(with client: APIClientAPI = resolve(), repository: BitcoinWalletAccountRepository = resolve()) {
         self.client = client
         self.repository = repository
     }
-    
+
     public func fetchTransactions(token: String?, size: Int) -> Single<PageModel> {
         repository.activeAccounts
             .map { accounts in accounts.map(\.publicKey) }

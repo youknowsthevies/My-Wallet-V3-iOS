@@ -35,3 +35,14 @@ extension AccountGroup {
         accounts.map(\.actions).reduce(into: AvailableActions()) { $0.formUnion($1) }
     }
 }
+
+public enum AccountGroupError: Error {
+    case noBalance
+
+    var localizedDescription: String {
+        switch self {
+        case .noBalance:
+            return "No unified balance for All Wallets meta account"
+        }
+    }
+}

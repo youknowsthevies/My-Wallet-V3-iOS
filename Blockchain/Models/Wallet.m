@@ -2253,15 +2253,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 # pragma mark - Bitcoin cash
 
-- (NSDictionary * _Nullable)fetchDefaultBCHAccount
-{
-    if ([self isInitialized] && [self hasBchAccount]) {
-        NSString *value = [[self.context evaluateScript:@"MyWalletPhone.bch.getDefaultBCHAccount()"] toString];
-        return [value getJSONObject];
-    }
-    return nil;
-}
-
 - (NSString *)fromBitcoinCash:(NSString *)address
 {
     return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.fromBitcoinCash(\"%@\")", [address escapedForJS]]] toString];

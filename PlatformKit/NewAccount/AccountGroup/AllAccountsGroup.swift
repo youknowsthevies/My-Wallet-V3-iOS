@@ -1,5 +1,5 @@
 //
-//  AllWalletsAccountGroup.swift
+//  AllAccountsGroup.swift
 //  PlatformKit
 //
 //  Created by Paulo on 05/08/2020.
@@ -12,17 +12,6 @@ import ToolKit
 /// An `AccountGroup` cointaining all accounts.
 final class AllAccountsGroup: AccountGroup {
 
-    enum AllAccountsGroupError: Error {
-        case noBalance
-
-        var localizedDescription: String {
-            switch self {
-            case .noBalance:
-                return "No unified balance for All Wallets meta account"
-            }
-        }
-    }
-
     let actions: AvailableActions = [.viewActivity]
 
     let accounts: [SingleAccount]
@@ -32,7 +21,7 @@ final class AllAccountsGroup: AccountGroup {
     let label: String = "All Wallets"
 
     var balance: Single<MoneyValue> {
-        .error(AllAccountsGroupError.noBalance)
+        .error(AccountGroupError.noBalance)
     }
 
     let isFunded: Bool = true

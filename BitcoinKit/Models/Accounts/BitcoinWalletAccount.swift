@@ -9,15 +9,15 @@
 import PlatformKit
 
 public struct BitcoinWalletAccount: WalletAccount, Codable, Hashable {
-    
+
     public let index: Int
-    
+
     public let publicKey: String
-    
+
     public var label: String?
-    
+
     public var archived: Bool
-    
+
     public init(index: Int,
                 publicKey: String,
                 label: String?,

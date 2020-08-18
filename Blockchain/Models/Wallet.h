@@ -279,7 +279,6 @@
 - (BOOL)hasEthAccount;
 
 // Bitcoin Cash
-- (NSDictionary * _Nullable)fetchDefaultBCHAccount;
 - (NSString *)fromBitcoinCash:(NSString *)address;
 - (NSString *)toBitcoinCash:(NSString *)address includePrefix:(BOOL)includePrefix;
 - (void)getBitcoinCashHistoryAndRates;
