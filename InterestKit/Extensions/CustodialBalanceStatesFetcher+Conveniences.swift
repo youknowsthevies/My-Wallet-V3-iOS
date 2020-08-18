@@ -10,11 +10,11 @@ import PlatformKit
 import RxSwift
 
 extension CustodialBalanceStatesFetcher {
-    public convenience init(service: SavingAccountServiceAPI,
+    public convenience init(savingAccountService: SavingAccountServiceAPI,
                             scheduler: SchedulerType = ConcurrentDispatchQueueScheduler(qos: .background)) {
         self.init(
             custodialType: .savings,
-            fetch: { service.fetchBalances() },
+            fetch: { savingAccountService.fetchBalances() },
             scheduler: scheduler
         )
     }

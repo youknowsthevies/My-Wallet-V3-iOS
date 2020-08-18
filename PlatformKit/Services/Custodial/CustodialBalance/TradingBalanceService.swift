@@ -16,11 +16,11 @@ public protocol TradingBalanceServiceAPI: AnyObject {
     func fetchBalances() -> Single<CustodialAccountBalanceStates>
 }
 
-public class TradingBalanceService: TradingBalanceServiceAPI {
+class TradingBalanceService: TradingBalanceServiceAPI {
 
-    // MARK: - Public Properties
+    // MARK: - Properties
     
-    public var balances: Single<CustodialAccountBalanceStates> {
+    var balances: Single<CustodialAccountBalanceStates> {
         _ = setup
         return cachedValue.valueSingle
     }
@@ -47,19 +47,15 @@ public class TradingBalanceService: TradingBalanceServiceAPI {
     }()
     
     // MARK: - Setup
-    
-    public convenience init() {
-        self.init(client: resolve())
-    }
 
-    init(client: CustodialClientAPI) {
+    init(client: CustodialClientAPI = resolve()) {
         self.client = client
         cachedValue = CachedValue(configuration: .onSubscription())        
     }
 
-    // MARK: - Public Methods
+    // MARK: - Methods
 
-    public func balance(for currencyType: CurrencyType) -> Single<CustodialAccountBalanceState> {
+    func balance(for currencyType: CurrencyType) -> Single<CustodialAccountBalanceState> {
         client
             .balance(for: currencyType.code)
             .map { response -> CustodialAccountBalanceState in
@@ -75,7 +71,7 @@ public class TradingBalanceService: TradingBalanceServiceAPI {
             .catchErrorJustReturn(.absent)
     }
     
-    public func fetchBalances() -> Single<CustodialAccountBalanceStates> {
+    func fetchBalances() -> Single<CustodialAccountBalanceStates> {
         _ = setup
         return cachedValue.fetchValue
     }

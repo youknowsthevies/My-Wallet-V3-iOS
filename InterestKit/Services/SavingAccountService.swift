@@ -11,9 +11,18 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
+public protocol SavingAccountServiceAPI: AnyObject {
+    var balances: Single<CustodialAccountBalanceStates> { get }
+    func fetchBalances() -> Single<CustodialAccountBalanceStates>
+    func details(for currency: CryptoCurrency) -> Single<ValueCalculationState<SavingsAccountBalanceDetails>>
+    func balance(for currency: CryptoCurrency) -> Single<CustodialAccountBalanceState>
+    func rate(for currency: CryptoCurrency) -> Single<Double>
+    func limits(for currency: CryptoCurrency) -> Single<SavingsAccountLimits?>
+}
+
 class SavingAccountService: SavingAccountServiceAPI {
     
-    // MARK: - Public Properties
+    // MARK: - Properties
     
     var balances: Single<CustodialAccountBalanceStates> {
         _ = setup
@@ -23,6 +32,7 @@ class SavingAccountService: SavingAccountServiceAPI {
     // MARK: - Private Properties
     
     private let client: SavingsAccountClientAPI
+    private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let custodialFeatureFetcher: CustodialFeatureFetching
     private let cachedValue: CachedValue<CustodialAccountBalanceStates>
 
@@ -36,26 +46,50 @@ class SavingAccountService: SavingAccountServiceAPI {
     // MARK: - Setup
 
     init(client: SavingsAccountClientAPI = resolve(),
+         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
          custodialFeatureFetcher: CustodialFeatureFetching = resolve()) {
         self.client = client
+        self.fiatCurrencyService = fiatCurrencyService
         self.custodialFeatureFetcher = custodialFeatureFetcher
         self.cachedValue = CachedValue(configuration: .onSubscription())
     }
 
-    // MARK: - Public Methods
+    // MARK: - Methods
+    
+    func limits(for currency: CryptoCurrency) -> Single<SavingsAccountLimits?> {
+        fiatCurrencyService
+            .fiatCurrency
+            .flatMap(weak: self) { (self, fiatCurrency) in
+                self.client.limits(fiatCurrency: fiatCurrency)
+            }
+            .map { $0[currency] }
+    }
+    
+    func details(for currency: CryptoCurrency) -> Single<ValueCalculationState<SavingsAccountBalanceDetails>> {
+        fetchBalancesResponse()
+            .map { (response) -> ValueCalculationState<SavingsAccountBalanceDetails> in
+                guard let details = response[currency] else { return .invalid(.empty) }
+                return .value(details)
+            }
+    }
 
     func balance(for currency: CryptoCurrency) -> Single<CustodialAccountBalanceState> {
         balances.map { $0[currency.currency] }
     }
 
     private func fetchBalancesResponse() -> Single<SavingsAccountBalanceResponse> {
-        custodialFeatureFetcher
-            .featureEnabled(for: .interestAccountEnabled)
-            .flatMap(weak: self) { (self, interestAccountEnabled) in
+        Single.zip(
+                custodialFeatureFetcher
+                    .featureEnabled(for: .interestAccountEnabled),
+                fiatCurrencyService.fiatCurrency
+            )
+            .flatMap(weak: self) { (self, values) in
+                let interestAccountEnabled = values.0
+                let fiatCurrency = values.1
                 guard interestAccountEnabled else {
                     return Single.just(.empty)
                 }
-                return self.client.balance.map { balance in
+                return self.client.balance(with: fiatCurrency).map { balance in
                     guard let balance = balance else {
                         return .empty
                     }

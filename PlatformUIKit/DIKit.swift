@@ -13,6 +13,7 @@ extension DependencyContainer {
     // MARK: - PlatformUIKit Module
 
     public static var platformUIKit = module {
+        single { LoadingViewPresenter() as LoadingViewPresenting }
 
         factory { UIApplication.shared as TopMostViewControllerProviding }
 

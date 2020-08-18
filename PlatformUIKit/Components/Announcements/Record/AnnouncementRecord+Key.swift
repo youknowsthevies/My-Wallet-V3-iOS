@@ -39,6 +39,7 @@ extension AnnouncementRecord {
         case fiatFundsKYC = "announcement-cache-fiat-funds-kyc"
         case fiatFundsNoKYC = "announcement-cache-fiat-funds-no-kyc"
         case cloudBackup = "announcement-cache-cloud-backup"
+        case interestFunds = "announcement-cache-interest-funds"
     }
     
     @available(*, deprecated, message: "`LegacyKey` was superseded by `Key` and is not being used anymore.")

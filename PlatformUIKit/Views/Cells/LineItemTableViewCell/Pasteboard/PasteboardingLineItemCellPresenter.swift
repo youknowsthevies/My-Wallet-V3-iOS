@@ -60,6 +60,10 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
         imageRelay.asDriver()
     }
     
+    public var identifier: String {
+        pasteboardValue
+    }
+    
     /// The background color relay
     let imageRelay = BehaviorRelay<UIImage?>(value: #imageLiteral(resourceName: "clipboard"))
     

@@ -8,6 +8,8 @@
 
 import BuySellUIKit
 import DIKit
+import InterestKit
+import InterestUIKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
@@ -546,6 +548,28 @@ extension AppCoordinator: CashIdentityVerificationAnnouncementRouting {
         let presenter = CashIdentityVerificationPresenter()
         let controller = CashIdentityVerificationViewController(presenter: presenter)
         tabControllerManager.tabViewController.showCashIdentityVerificatonController(controller)
+    }
+}
+
+extension AppCoordinator: InterestIdentityVerificationAnnouncementRouting {
+    func showInterestDashboardAnnouncementScreen(isKYCVerfied: Bool) {
+        var presenter: InterestDashboardAnnouncementPresenting
+        let router: InterestDashboardAnnouncementRouter = .init(
+            topMostViewControllerProvider: resolve(),
+            routerAPI: KYCCoordinator.shared,
+            navigationRouter: NavigationRouter()
+        )
+        if isKYCVerfied {
+            presenter = InterestDashboardAnnouncementScreenPresenter(
+                router: router
+            )
+        } else {
+            presenter = InterestIdentityVerificationScreenPresenter(
+                router: router
+            )
+        }
+        let controller = InterestDashboardAnnouncementViewController(presenter: presenter)
+        tabControllerManager.tabViewController.showInterestIdentityVerificationScreen(controller)
     }
 }
 

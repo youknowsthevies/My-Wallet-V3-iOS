@@ -20,25 +20,39 @@ extension DependencyContainer {
     // MARK: - Blockchain Module
     
     static var blockchain = module {
-
-        single { EnabledCurrenciesService(featureFetcher: AppFeatureConfigurator.shared) }
         
         single { AppCoordinator() }
         
         single { AuthenticationCoordinator() }
+
+        single { OnboardingRouter() }
         
+        factory { PaymentPresenter() }
+
+        factory { AirdropRouter() as AirdropRouterAPI }
+
+        factory { DeepLinkRouter() }
+        
+        factory { UIDevice.current as DeviceInfo }
+
+        single { AnalyticsService() as AnalyticsServiceAPI }
+
+        // MARK: - BlockchainSettings.App
+
         single { BlockchainSettings.App() }
-        
+
         factory { () -> AppSettingsAPI in
             let app: BlockchainSettings.App = DIKit.resolve()
             return app as AppSettingsAPI
         }
-        
+
         factory { () -> AppSettingsAuthenticating in
             let app: BlockchainSettings.App = DIKit.resolve()
             return app as AppSettingsAuthenticating
         }
-        
+
+        // MARK: - WalletManager
+
         single { WalletManager() }
 
         factory { () -> ReactiveWalletAPI in
@@ -50,51 +64,57 @@ extension DependencyContainer {
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.wallet as MnemonicAccessAPI
         }
-        
-        single { OnboardingRouter() }
-        
-        factory { PaymentPresenter() }
 
-        factory { AirdropRouter() as AirdropRouterAPI }
+        factory { () -> WalletRepositoryProvider in
+            let walletManager: WalletManager = DIKit.resolve()
+            return walletManager as WalletRepositoryProvider
+        }
 
-        single { LoadingViewPresenter() as LoadingViewPresenting }
-        
+        factory { () -> JSContextProviderAPI in
+            let walletManager: WalletManager = DIKit.resolve()
+            return walletManager as JSContextProviderAPI
+        }
+
+        // MARK: - AppFeatureConfigurator
+
         single { AppFeatureConfigurator() }
+
+        factory { () -> FeatureConfiguring in
+            let featureFetching: AppFeatureConfigurator = DIKit.resolve()
+            return featureFetching
+        }
 
         factory { () -> FeatureFetching in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching
         }
-        
-        factory { DeepLinkRouter() }
-        
-        factory { UIDevice.current as DeviceInfo }
-        
+
+        factory { () -> FeatureVariantFetching in
+            let featureFetching: AppFeatureConfigurator = DIKit.resolve()
+            return featureFetching
+        }
+
+        // MARK: - UserInformationServiceProvider
+
         single { UserInformationServiceProvider() as UserInformationServiceProviding }
-        
+
         factory { () -> SettingsServiceAPI in
             let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
-            let settings = userInformationProvider.settings
-            return settings as SettingsServiceAPI
+            return userInformationProvider.settings
         }
-        
-        factory { () -> WalletRepositoryProvider in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager as WalletRepositoryProvider
+
+        factory { () -> FiatCurrencyServiceAPI in
+            let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
+            return userInformationProvider.settings
         }
-        
-        single { AnalyticsService() as AnalyticsServiceAPI }
+
+        // MARK: - DataProvider
 
         single { DataProvider() }
 
         factory { () -> DataProviding in
             let provider: DataProvider = DIKit.resolve()
             return provider as DataProviding
-        }
-
-        factory { () -> JSContextProviderAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager as JSContextProviderAPI
         }
 
         // MARK: - Ethereum Wallet

@@ -57,8 +57,14 @@ extension DependencyContainer {
         // MARK: - Authentication
         
         single { NabuTokenStore() }
-        
+
         single { NabuAuthenticationExecutor() as NabuAuthenticationExecutorAPI }
+
+        factory { () -> NabuAuthenticationExecutorProvider in
+            return { () -> NabuAuthenticationExecutorAPI in
+                DIKit.resolve()
+            }
+        }
         
         factory { NabuAuthenticator() as AuthenticatorAPI }
         
@@ -89,6 +95,12 @@ extension DependencyContainer {
         }
         
         // MARK: - Services
+
+        single { EnabledCurrenciesService() as EnabledCurrenciesServiceAPI }
+        
+        factory { KYCServiceProvider() as KYCServiceProviderAPI }
+        
+        single { NabuUserService() as NabuUserServiceAPI }
         
         single { SettingsService() as CompleteSettingsServiceAPI }
         
@@ -125,5 +137,7 @@ extension DependencyContainer {
         factory { NSUbiquitousKeyValueStore.default as UbiquitousKeyValueStore }
 
         factory { WalletCryptoService() as WalletCryptoServiceAPI }
+
+        factory { TradingBalanceService() as TradingBalanceServiceAPI }
     }
 }

@@ -26,7 +26,7 @@ class CustodialMoneyBalanceFetcherTests: XCTestCase {
         /// TestScheduler with `0.001` resolution (milliseconds)
         scheduler = TestScheduler(initialClock: 0, resolution: 0.001, simulateProcessingDelay: false)
         api = TradingBalanceServiceAPIMock()
-        sut = CustodialBalanceStatesFetcher(service: api, scheduler: scheduler)
+        sut = CustodialBalanceStatesFetcher(tradingBalanceService: api, scheduler: scheduler)
         sut.setupIfNeeded()
     }
 

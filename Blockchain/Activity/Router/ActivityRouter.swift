@@ -18,10 +18,10 @@ final class ActivityRouter: ActivityRouterAPI {
     private let blockchainAPI: BlockchainAPI
     private let navigationRouter: NavigationRouterAPI
 
-    private let enabledCurrenciesService: EnabledCurrenciesService
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     
     init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
-         enabledCurrenciesService: EnabledCurrenciesService = resolve(),
+         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
          container: ActivityServiceContaining,
          blockchainAPI: BlockchainAPI = .shared) {
         self.navigationRouter = navigationRouter

@@ -52,7 +52,7 @@ final class BanksSettingsSectionInteractor {
     init(beneficiariesService: BeneficiariesServiceAPI,
          featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
          paymentMethodTypesService: PaymentMethodTypesServiceAPI = DataProvider.default.buySell.paymentMethodTypes,
-         enabledCurrenciesService: EnabledCurrenciesService = resolve(),
+         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
          tierLimitsProvider: TierLimitsProviding) {
         self.beneficiariesService = beneficiariesService
         self.featureFetcher = featureFetcher

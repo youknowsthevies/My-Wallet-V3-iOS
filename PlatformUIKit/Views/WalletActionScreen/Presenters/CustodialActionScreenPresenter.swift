@@ -62,7 +62,6 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
             interactor: interactor.balanceCellInteractor,
             descriptionValue: descriptionValue,
             currency: interactor.currency,
-            alignment: .trailing,
             titleAccessibilitySuffix: "\(Accessibility.Identifier.CurrentBalanceCell.title)",
             descriptionAccessibilitySuffix: "\(Accessibility.Identifier.CurrentBalanceCell.description)",
             descriptors: .default(

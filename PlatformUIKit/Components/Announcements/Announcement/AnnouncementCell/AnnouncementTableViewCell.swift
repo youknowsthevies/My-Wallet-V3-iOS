@@ -6,14 +6,12 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
-
-final class AnnouncementTableViewCell: UITableViewCell {
+public final class AnnouncementTableViewCell: UITableViewCell {
 
     // MARK: - Lifecycle
 
     /// Set custom spacing
-    var bottomSpacing: CGFloat {
+    public var bottomSpacing: CGFloat {
         set {
             bottomSpacingConstraint.constant = -newValue
         }
@@ -27,7 +25,7 @@ final class AnnouncementTableViewCell: UITableViewCell {
     /// A view that represents the announcement
     private var cardView: AnnouncementCardViewConforming!
     
-    var viewModel: AnnouncementCardViewModel! {
+    public var viewModel: AnnouncementCardViewModel! {
         didSet {
             guard let viewModel = viewModel else { return }
             switch viewModel.presentation {
@@ -44,7 +42,7 @@ final class AnnouncementTableViewCell: UITableViewCell {
         
     // MARK: - Lifecycle
     
-    override func prepareForReuse() {
+    public override func prepareForReuse() {
         super.prepareForReuse()
         cardView.removeFromSuperview()
         cardView = nil

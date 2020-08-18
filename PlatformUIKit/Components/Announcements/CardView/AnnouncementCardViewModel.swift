@@ -39,16 +39,21 @@ public final class AnnouncementCardViewModel {
         
         /// The background image
         let imageName: String?
+        
+        let bundle: Bundle
 
         /// Computes the `UIImage` out of `imageName`
         var image: UIImage? {
             guard let imageName = imageName else { return nil }
-            return UIImage(named: imageName)
+            return UIImage(named: imageName,
+                           in: bundle,
+                           compatibleWith: .none)
         }
         
-        public init(color: UIColor = .clear, imageName: String? = nil) {
+        public init(color: UIColor = .clear, imageName: String? = nil, bundle: Bundle = .main) {
             self.imageName = imageName
             self.color = color
+            self.bundle = bundle
         }
     }
     
@@ -87,12 +92,12 @@ public final class AnnouncementCardViewModel {
                     accessibilitySuffix: String = "\(AccessibilityId.badge)",
                     size: CGSize) {
             self = .visible(
-                .primary(
+                .template(
                     with: imageName,
-                    contentColor: contentColor,
+                    templateColor: contentColor,
                     backgroundColor: backgroundColor,
-                    cornerRadius: cornerRadius,
-                    accessibilityIdSuffix: accessibilitySuffix),
+                    accessibilityIdSuffix: accessibilitySuffix
+                ),
                 size
             )
         }

@@ -9,6 +9,7 @@
 import Localization
 import PlatformKit
 import RxCocoa
+import RxDataSources
 import RxSwift
 
 public final class CurrentBalanceCellPresenter {
@@ -38,6 +39,10 @@ public final class CurrentBalanceCellPresenter {
     
     var separatorVisibility: Driver<Visibility> {
         separatorVisibilityRelay.asDriver()
+    }
+    
+    var identifier: String {
+        "\(balanceType.description).\(currency.name)"
     }
     
     public let titleAccessibilitySuffix: String
@@ -72,7 +77,6 @@ public final class CurrentBalanceCellPresenter {
     public init(interactor: CurrentBalanceCellInteracting,
                 descriptionValue: @escaping DescriptionValue,
                 currency: CurrencyType,
-                alignment: UIStackView.Alignment,
                 separatorVisibility: Visibility = .hidden,
                 titleAccessibilitySuffix: String,
                 descriptionAccessibilitySuffix: String,
@@ -82,7 +86,7 @@ public final class CurrentBalanceCellPresenter {
         separatorVisibilityRelay.accept(separatorVisibility)
         self.interactor = interactor
         self.assetBalanceViewPresenter = AssetBalanceViewPresenter(
-            alignment: alignment,
+            alignment: .trailing,
             interactor: interactor.assetBalanceViewInteractor,
             descriptors: descriptors
         )

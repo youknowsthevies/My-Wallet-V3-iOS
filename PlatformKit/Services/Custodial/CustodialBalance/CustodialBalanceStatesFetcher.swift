@@ -90,11 +90,11 @@ public final class CustodialBalanceStatesFetcher: CustodialBalanceStatesFetcherA
 
 extension CustodialBalanceStatesFetcher {
     
-    public convenience init(service: TradingBalanceServiceAPI,
+    public convenience init(tradingBalanceService: TradingBalanceServiceAPI,
                             scheduler: SchedulerType = ConcurrentDispatchQueueScheduler(qos: .background)) {
         self.init(
             custodialType: .trading,
-            fetch: { service.fetchBalances() },
+            fetch: { tradingBalanceService.fetchBalances() },
             scheduler: scheduler
         )
     }

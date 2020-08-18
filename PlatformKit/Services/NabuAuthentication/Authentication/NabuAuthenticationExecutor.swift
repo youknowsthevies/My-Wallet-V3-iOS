@@ -18,6 +18,8 @@ public protocol NabuAuthenticationExecutorAPI {
     func authenticate<Response>(singleFunction: @escaping (String) -> Single<Response>) -> Single<Response>
 }
 
+public typealias NabuAuthenticationExecutorProvider = () -> NabuAuthenticationExecutorAPI
+
 class NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
     
     typealias CredentialsRepository = CredentialsRepositoryAPI & NabuOfflineTokenRepositoryAPI

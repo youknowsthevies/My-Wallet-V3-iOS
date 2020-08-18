@@ -8,20 +8,26 @@
 
 import DIKit
 
-public final class EnabledCurrenciesService {
+public protocol EnabledCurrenciesServiceAPI {
+    var allEnabledCryptoCurrencies: [CryptoCurrency] { get }
+    var allEnabledFiatCurrencies: [FiatCurrency] { get }
+    var allEnabledCurrencyTypes: [CurrencyType] { get }
+}
 
-    public let allEnabledCryptoCurrencies: [CryptoCurrency] = CryptoCurrency.allCases
-    public let allEnabledFiatCurrencies: [FiatCurrency] = [.EUR, .GBP]
+final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
+
+    let allEnabledCryptoCurrencies: [CryptoCurrency] = CryptoCurrency.allCases
+    let allEnabledFiatCurrencies: [FiatCurrency] = [.EUR, .GBP]
     
-    public var allEnabledCurrencyTypes: [CurrencyType] {
+    var allEnabledCurrencyTypes: [CurrencyType] {
         let crypto = allEnabledCryptoCurrencies.map { $0.currency }
         let fiat = allEnabledFiatCurrencies.map { $0.currency }
         return crypto + fiat
     }
     
-    private let featureFetcher: FeatureConfiguring & FeatureFetching
+    private let featureFetcher: FeatureConfiguring
     
-    public init(featureFetcher: FeatureConfiguring & FeatureFetching) {
+    init(featureFetcher: FeatureConfiguring = resolve()) {
         self.featureFetcher = featureFetcher
     }
 }

@@ -14,9 +14,8 @@ extension DependencyContainer {
     // MARK: - BuySellKit Module
 
     public static var interestKit = module {
+        factory { SavingsAccountClient() as SavingsAccountClientAPI }
 
         factory { SavingAccountService() as SavingAccountServiceAPI }
-
-        factory { SavingsAccountClient() as SavingsAccountClientAPI }
     }
 }

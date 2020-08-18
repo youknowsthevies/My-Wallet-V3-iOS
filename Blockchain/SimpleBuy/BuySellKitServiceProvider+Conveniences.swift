@@ -14,7 +14,7 @@ import DIKit
 extension ServiceProvider {
         
     convenience init(balanceProvider: BalanceProviding,
-                     enabledCurrenciesService: EnabledCurrenciesService = resolve()) {
+                     enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()) {
         self.init(
             cardServiceProvider: CardServiceProvider.default,
             recordingProvider: RecordingProvider.default,

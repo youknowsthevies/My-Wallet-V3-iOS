@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import InterestKit
 import PlatformKit
 import PlatformUIKit
@@ -50,7 +51,7 @@ final class DashboardDetailsScreenInteractor {
     
     init(currency: CryptoCurrency,
          balanceFetcher: AssetBalanceFetching,
-         savingsAccountService: SavingAccountServiceAPI,
+         savingsAccountService: SavingAccountServiceAPI = resolve(),
          fiatCurrencyService: FiatCurrencySettingsServiceAPI,
          exchangeAPI: PairExchangeServiceAPI,
          wallet: Wallet = WalletManager.shared.wallet) {

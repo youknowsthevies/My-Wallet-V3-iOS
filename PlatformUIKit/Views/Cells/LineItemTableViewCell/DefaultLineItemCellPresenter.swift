@@ -26,6 +26,8 @@ public final class DefaultLineItemCellInteractor: LineItemCellInteracting {
 public final class DefaultLineItemCellPresenter: LineItemCellPresenting {
 
     // MARK: - Properties
+    
+    public let identifier: String
 
     public var image: Driver<UIImage?> {
         imageRelay.asDriver()
@@ -53,7 +55,10 @@ public final class DefaultLineItemCellPresenter: LineItemCellPresenting {
 
     // MARK: - Init
 
-    public init(interactor: DefaultLineItemCellInteractor, accessibilityIdPrefix: String) {
+    public init(interactor: DefaultLineItemCellInteractor,
+                accessibilityIdPrefix: String,
+                identifier: String = "") {
+        self.identifier = identifier
         self.interactor = interactor
         titleLabelContentPresenter = DefaultLabelContentPresenter(
             interactor: interactor.title,
