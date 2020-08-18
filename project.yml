@@ -157,7 +157,7 @@ targets:
     - carthage: RxSwift
     scheme:
       testTargets:
-      - BitcoinKitTests
+      - AlgorandKitTests
     templates:
     - Framework
   AlgorandKitTests:
