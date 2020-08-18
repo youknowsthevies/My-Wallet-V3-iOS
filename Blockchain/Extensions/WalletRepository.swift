@@ -53,6 +53,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     private let authenticatorTypeRelay = BehaviorRelay<AuthenticatorType>(value: .standard)
     private let sessionTokenRelay = BehaviorRelay<String?>(value: nil)
     private let passwordRelay = BehaviorRelay<String?>(value: nil)
+    private let reactiveWallet: ReactiveWalletAPI
 
     // MARK: - Properties
     
@@ -87,8 +88,11 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     }
 
     var offlineTokenResponse: Single<NabuOfflineTokenResponse> {
-        Single
-            .zip(userId, offlineToken)
+        reactiveWallet
+            .waitUntilInitializedSingle
+            .flatMap(weak: self) { (self, _) in
+                Single.zip(self.userId, self.offlineToken)
+            }
             .map { payload -> (userId: String, offlineToken: String) in
                 guard let userId = payload.0 else {
                     throw MissingCredentialsError.userId
@@ -136,9 +140,10 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     
     // MARK: - Setup
     
-    init(jsContextProvider: JSContextProviderAPI, settings: AppSettingsAPI) {
+    init(jsContextProvider: JSContextProviderAPI, settings: AppSettingsAPI, reactiveWallet: ReactiveWalletAPI) {
         self.jsContextProvider = jsContextProvider
         self.settings = settings
+        self.reactiveWallet = reactiveWallet
         super.init()
     }
     
