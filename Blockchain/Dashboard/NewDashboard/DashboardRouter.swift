@@ -108,7 +108,7 @@ final class DashboardRouter {
         case .savings(let currency):
             let interactor = InterestAccountDetailsScreenInteractor(
                 cryptoCurrency: currency,
-                assetBalanceFetching: dataProvider.balance[.crypto(currency)]
+                assetBalanceFetching: balanceProviding[.crypto(currency)]
             )
             let presenter = InterestAccountDetailsScreenPresenter(interactor: interactor)
             let controller = InterestAccountDetailsViewController(presenter: presenter)
