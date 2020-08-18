@@ -28,7 +28,7 @@ public class CryptoTradingAccount: CryptoAccount {
     }
 
     public var balance: Single<MoneyValue> {
-        balanceAPI.balanceMoney
+        balanceFetching.balanceMoney
     }
 
     public var actions: AvailableActions {
@@ -39,7 +39,7 @@ public class CryptoTradingAccount: CryptoAccount {
         atomicIsFunded.value
     }
 
-    private let balanceAPI: CustodialAccountBalanceFetching
+    private let balanceFetching: CustodialAccountBalanceFetching
     private let exchangeService: PairExchangeServiceAPI
     private let atomicIsFunded: Atomic<Bool> = .init(false)
     private let disposeBag = DisposeBag()
@@ -50,8 +50,8 @@ public class CryptoTradingAccount: CryptoAccount {
         self.label = String(format: LocalizedString.myTradingAccount, asset.name)
         self.asset = asset
         self.exchangeService = exchangeProviding[asset]
-        self.balanceAPI = balanceProviding[asset.currency].trading
-        balanceAPI
+        self.balanceFetching = balanceProviding[asset.currency].trading
+        balanceFetching
             .isFunded
             .subscribe(onNext: { [weak self] isFunded in
                 self?.atomicIsFunded.mutate { $0 = isFunded }
