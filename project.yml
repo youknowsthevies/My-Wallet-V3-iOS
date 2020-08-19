@@ -290,9 +290,6 @@ targets:
     - carthage: GoogleDataTransport
       findFrameworks: false
       linkType: static
-    - carthage: GoogleDataTransportCCTSupport
-      findFrameworks: false
-      linkType: static
     - carthage: GoogleUtilities
       findFrameworks: false
       linkType: static
