@@ -222,7 +222,6 @@
 - (void)verifyMobileNumber:(NSString *)code success:(void (^ _Nonnull)(void))success error: (void (^ _Nonnull)(void))error;
 - (void)enableTwoStepVerificationForSMS;
 - (void)disableTwoStepVerification;
-- (void)changePassword:(NSString *)changedPassword;
 - (BOOL)isCorrectPassword:(NSString *)inputedPassword;
 - (void)enableEmailNotifications;
 - (void)disableEmailNotifications;
@@ -295,11 +294,6 @@
 
 // Exchange
 - (void)createEthAccountForExchange:(NSString *)secondPassword;
-
-// Retail Core
-- (void)updateKYCUserCredentialsWithUserId:(NSString *)userId lifetimeToken:(NSString *)lifetimeToken success:(void (^ _Nonnull)(NSString *_Nonnull))success error: (void (^ _Nonnull)(NSString *_Nullable))error;
-- (NSString *_Nullable)KYCUserId;
-- (NSString *_Nullable)KYCLifetimeToken;
 
 // Lockbox
 - (NSArray *_Nonnull)getLockboxDevices;

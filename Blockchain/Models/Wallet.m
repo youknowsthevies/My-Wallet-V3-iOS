@@ -625,14 +625,6 @@ NSString * const kLockboxInvitation = @"lockbox";
         [weakSelf on_change_two_step_error];
     };
 
-    self.context[@"objc_on_change_password_success"] = ^() {
-        [weakSelf on_change_password_success];
-    };
-
-    self.context[@"objc_on_change_password_error"] = ^() {
-        [weakSelf on_change_password_error];
-    };
-
     self.context[@"objc_on_resend_verification_email_success"] = ^() {
         [weakSelf on_resend_verification_email_success];
     };
@@ -1254,15 +1246,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     [self.context evaluateScript:@"MyWalletPhone.unsetTwoFactor()"];
-}
-
-- (void)changePassword:(NSString *)changedPassword
-{
-    if (![self isInitialized]) {
-        return;
-    }
-
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.changePassword(\"%@\")", [changedPassword escapedForJS]]];
 }
 
 - (BOOL)isCorrectPassword:(NSString *)inputedPassword
@@ -2074,39 +2057,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 }
 
 # pragma mark - Retail Core
-
-- (void)updateKYCUserCredentialsWithUserId:(NSString *)userId lifetimeToken:(NSString *)lifetimeToken success:(void (^)(NSString *))success error: (void (^)(NSString *))error
-{
-    if ([self isInitialized]) {
-        self.context[@"objc_updateUserCredentials_success"] = success;
-        self.context[@"objc_updateUserCredentials_error"] = error;
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.KYC.updateUserCredentials(\"%@\", \"%@\")", [userId escapedForJS], [lifetimeToken escapedForJS]]];
-    }
-}
-
-- (NSString *_Nullable)KYCUserId
-{
-    if ([self isInitialized]) {
-        JSValue *userId = [self.context evaluateScript:@"MyWalletPhone.KYC.userId()"];
-        if ([userId isNull] || [userId isUndefined]) return nil;
-        NSString *userIdString = [userId toString];
-        return userIdString.length > 0 ? userIdString : nil;
-    }
-    return nil;
-}
-
-- (NSString *_Nullable)KYCLifetimeToken
-{
-    if ([self isInitialized]) {
-        JSValue *lifetimeToken = [self.context evaluateScript:@"MyWalletPhone.KYC.lifetimeToken()"];
-        if ([lifetimeToken isNull] || [lifetimeToken isUndefined]) return nil;
-        NSString *tokenString = [lifetimeToken toString];
-        return tokenString.length > 0 ? tokenString : nil;
-    }
-    return nil;
-}
-
-
 
 - (void)createOrderPaymentWithOrderTransaction:(OrderTransactionLegacy *_Nonnull)orderTransaction completion:(void (^ _Nonnull)(void))completion success:(void (^)(NSString *_Nonnull))success error:(void (^ _Nonnull)(NSString *_Nonnull))error
 {
@@ -2964,18 +2914,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 {
     DLog(@"on_change_two_step_error");
     [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_KEY_CHANGE_TWO_STEP_ERROR object:nil];
-}
-
-- (void)on_change_password_success
-{
-    DLog(@"on_change_password_success");
-    [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_KEY_CHANGE_PASSWORD_SUCCESS object:nil];
-}
-
-- (void)on_change_password_error
-{
-    DLog(@"on_change_password_error");
-    [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_KEY_CHANGE_PASSWORD_ERROR object:nil];
 }
 
 - (void)on_get_history_success
