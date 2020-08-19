@@ -9,11 +9,11 @@
 import RxSwift
 import ToolKit
 
-public class NullFiatAccount : FiatAccount {
+public class NullFiatAccount: FiatAccount {
 
     public let id: String = "NullFiatAccount"
 
-    public var fiatCurrency: String {
+    public var fiatCurrency: FiatCurrency {
         unimplemented()
     }
 

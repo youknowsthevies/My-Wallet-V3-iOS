@@ -8,7 +8,7 @@
 
 import RxSwift
 
-public protocol CryptoAccount : SingleAccount {
+public protocol CryptoAccount: SingleAccount {
     var asset: CryptoCurrency { get }
     var feeAsset: CryptoCurrency? { get }
 }

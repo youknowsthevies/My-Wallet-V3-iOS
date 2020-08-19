@@ -9,7 +9,7 @@
 import RxSwift
 import ToolKit
 
-public class NullCryptoAccount : CryptoAccount {
+public class NullCryptoAccount: CryptoAccount {
 
     public let id: String = "NullCryptoAccount"
 
