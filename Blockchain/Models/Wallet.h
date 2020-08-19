@@ -34,7 +34,7 @@
        WalletRepository,
        EtherTransaction;
 
-@interface Wallet : NSObject <UIWebViewDelegate, SRWebSocketDelegate>
+@interface Wallet : NSObject <SRWebSocketDelegate>
 
 // Core Wallet Init Properties
 @property (readonly, nonatomic) JSContext *context;

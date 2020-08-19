@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SafariServices
 
 class LockboxViewController: UIViewController {
 
@@ -106,10 +107,9 @@ class LockboxViewController: UIViewController {
     }
 
     private func launchWebViewController(url: String, title: String) {
-        let viewController = SettingsWebViewController()
-        viewController.urlTargetString = url
-        let navigationController = BCNavigationController(rootViewController: viewController, title: title)
-        present(navigationController, animated: true)
+        guard let value = URL(string: url) else { return }
+        let controller = SFSafariViewController(url: value)
+        present(controller, animated: true)
     }
 
     private func addShadow(to cardLayer: CALayer) {

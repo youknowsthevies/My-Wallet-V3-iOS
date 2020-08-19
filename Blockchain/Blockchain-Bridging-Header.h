@@ -28,7 +28,6 @@
 #import "Wallet.h"
 
 // Settings
-#import "SettingsWebViewController.h"
 #import "KeychainItemWrapper+SwipeAddresses.h"
 
 #import "FromToView.h"
