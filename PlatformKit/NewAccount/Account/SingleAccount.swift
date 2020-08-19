@@ -16,3 +16,17 @@ public protocol SingleAccount : BlockchainAccount {
     var sendState: Single<SendState> { get }
     func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor>
 }
+
+public extension SingleAccount {
+    var receiveAddress: Single<ReceiveAddress> {
+        .error(ReceiveAddressError.notSupported)
+    }
+
+    var sendState: Single<SendState> {
+        .just(.notSupported)
+    }
+
+    func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {
+        unimplemented()
+    }
+}

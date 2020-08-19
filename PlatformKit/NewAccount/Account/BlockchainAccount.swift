@@ -22,3 +22,9 @@ public protocol BlockchainAccount {
 
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue>
 }
+
+public extension BlockchainAccount {
+    var isFunded: Bool {
+        unimplemented()
+    }
+}

@@ -20,14 +20,6 @@ class AlgorandCryptoAccount: CryptoNonCustodialAccount {
     let asset: CryptoCurrency = .algorand
     let isDefault: Bool = false
 
-    var receiveAddress: Single<ReceiveAddress> {
-        .error(ReceiveAddressError.notSupported)
-    }
-    
-    var sendState: Single<SendState> {
-        .just(.notSupported)
-    }
-    
     var balance: Single<MoneyValue> {
         unimplemented()
     }
@@ -36,12 +28,7 @@ class AlgorandCryptoAccount: CryptoNonCustodialAccount {
         []
     }
 
-    var isFunded: Bool {
-        atomicIsFunded.value
-    }
-
     private let exchangeService: PairExchangeServiceAPI
-    private let atomicIsFunded: Atomic<Bool> = .init(false)
     
     init(id: String,
          label: String?,
@@ -49,10 +36,6 @@ class AlgorandCryptoAccount: CryptoNonCustodialAccount {
         self.id = id
         self.label = label ?? String(format: LocalizedString.myAccount, CryptoCurrency.algorand.name)
         self.exchangeService = exchangeProviding[.algorand]
-    }
-
-    func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {
-        unimplemented()
     }
 
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {

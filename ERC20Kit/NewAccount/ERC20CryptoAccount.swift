@@ -20,36 +20,20 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
     let label: String
     let asset: CryptoCurrency = Token.assetType
     let isDefault: Bool = true
-    
-    var receiveAddress: Single<ReceiveAddress> {
-        .error(ReceiveAddressError.notSupported)
-    }
-    
-    var sendState: Single<SendState> {
-        .just(.notSupported)
-    }
-    
+
     var balance: Single<MoneyValue> {
         balanceService
             .balance(for: EthereumAddress(stringLiteral: id))
             .map(\.moneyValue)
-            .do(onSuccess: { [weak self] (value: MoneyValue) in
-                self?.atomicIsFunded.mutate { $0 = value.isPositive }
-            })
     }
     
     var actions: AvailableActions {
         [.viewActivity]
     }
-    
-    var isFunded: Bool {
-        atomicIsFunded.value
-    }
-    
+
     private let bridge: EthereumWalletBridgeAPI
     private let balanceService: ERC20BalanceService<Token>
     private let exchangeService: PairExchangeServiceAPI
-    private let atomicIsFunded: Atomic<Bool> = .init(false)
     
     init(id: String,
          exchangeProviding: ExchangeProviding = resolve(),
@@ -61,11 +45,7 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
         self.exchangeService = exchangeProviding[Token.assetType]
         self.balanceService = balanceService
     }
-    
-    func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {
-        unimplemented()
-    }
-    
+
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
         Single
             .zip(

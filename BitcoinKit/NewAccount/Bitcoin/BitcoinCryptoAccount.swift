@@ -20,34 +20,18 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     let asset: CryptoCurrency = .bitcoin
     let isDefault: Bool
 
-    var receiveAddress: Single<ReceiveAddress> {
-        .error(ReceiveAddressError.notSupported)
-    }
-
-    var sendState: Single<SendState> {
-        .just(.notSupported)
-    }
-
     var balance: Single<MoneyValue> {
         balanceService
             .bitcoinBalance(for: id)
             .moneyValue
-            .do(onSuccess: { [weak self] value in
-                self?.atomicIsFunded.mutate { $0 = value.isPositive }
-            })
     }
 
     var actions: AvailableActions {
         [.viewActivity]
     }
 
-    var isFunded: Bool {
-        atomicIsFunded.value
-    }
-
     private let exchangeService: PairExchangeServiceAPI
     private let balanceService: BalanceServiceAPI
-    private let atomicIsFunded: Atomic<Bool> = .init(false)
 
     init(id: String,
          label: String?,
@@ -59,10 +43,6 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
         self.isDefault = isDefault
         self.exchangeService = exchangeProviding[.bitcoin]
         self.balanceService = balanceService
-    }
-
-    func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {
-        unimplemented()
     }
 
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {

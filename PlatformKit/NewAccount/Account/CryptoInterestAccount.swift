@@ -19,14 +19,6 @@ public class CryptoInterestAccount: CryptoAccount {
     public let asset: CryptoCurrency
     public let isDefault: Bool = false
 
-    public var receiveAddress: Single<ReceiveAddress> {
-        .error(ReceiveAddressError.notSupported)
-    }
-
-    public var sendState: Single<SendState> {
-        .just(.notSupported)
-    }
-
     public var balance: Single<MoneyValue> {
         balanceFetching.balanceMoney
     }
@@ -35,14 +27,8 @@ public class CryptoInterestAccount: CryptoAccount {
         [.viewActivity]
     }
 
-    public var isFunded: Bool {
-        atomicIsFunded.value
-    }
-
     private let balanceFetching: CustodialAccountBalanceFetching
     private let exchangeService: PairExchangeServiceAPI
-    private let atomicIsFunded: Atomic<Bool> = .init(false)
-    private let disposeBag = DisposeBag()
 
     public init(asset: CryptoCurrency,
                 balanceProviding: BalanceProviding = resolve(),
@@ -51,15 +37,6 @@ public class CryptoInterestAccount: CryptoAccount {
         self.asset = asset
         self.exchangeService = exchangeProviding[asset]
         self.balanceFetching = balanceProviding[asset.currency].savings
-        balanceFetching.isFunded
-            .subscribe(onNext: { [weak self] isFunded in
-                self?.atomicIsFunded.mutate { $0 = isFunded }
-            })
-            .disposed(by: disposeBag)
-    }
-
-    public func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {
-        unimplemented()
     }
 
     public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {

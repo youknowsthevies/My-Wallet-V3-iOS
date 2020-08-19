@@ -11,27 +11,13 @@ import ToolKit
 
 public class NullFiatAccount : FiatAccount {
 
-    public var id: String {
-        ""
-    }
+    public let id: String = "NullFiatAccount"
 
     public var fiatCurrency: String {
         unimplemented()
     }
 
-    public var receiveAddress: Single<ReceiveAddress> {
-        .error(ReceiveAddressError.notSupported)
-    }
-
     public var isDefault: Bool {
-        unimplemented()
-    }
-
-    public var sendState: Single<SendState> {
-        .just(.notSupported)
-    }
-
-    public func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {
         unimplemented()
     }
 
@@ -44,10 +30,6 @@ public class NullFiatAccount : FiatAccount {
     }
 
     public var actions: AvailableActions {
-        unimplemented()
-    }
-
-    public var isFunded: Bool {
         unimplemented()
     }
 
