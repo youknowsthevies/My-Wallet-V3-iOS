@@ -1,8 +1,8 @@
 //
-//  BitcoinCashCryptoAccount.swift
-//  BitcoinKit
+//  AlgorandCryptoAccount.swift
+//  AlgorandKit
 //
-//  Created by Paulo on 12/08/2020.
+//  Created by Paulo on 14/08/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
@@ -12,37 +12,30 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
+class AlgorandCryptoAccount: CryptoNonCustodialAccount {
     private typealias LocalizedString = LocalizationConstants.Account
 
     let id: String
     let label: String
-    let asset: CryptoCurrency = .bitcoinCash
-    let isDefault: Bool
+    let asset: CryptoCurrency = .algorand
+    let isDefault: Bool = false
 
     var balance: Single<MoneyValue> {
-        balanceService
-            .bitcoinCashBalance(for: id)
-            .moneyValue
+        unimplemented()
     }
 
     var actions: AvailableActions {
-        [.viewActivity]
+        []
     }
 
     private let exchangeService: PairExchangeServiceAPI
-    private let balanceService: BalanceServiceAPI
-
+    
     init(id: String,
          label: String?,
-         isDefault: Bool,
-         exchangeProviding: ExchangeProviding = resolve(),
-         balanceService: BalanceServiceAPI = resolve()) {
+         exchangeProviding: ExchangeProviding = resolve()) {
         self.id = id
-        self.label = label ?? String(format: LocalizedString.myAccount, CryptoCurrency.bitcoinCash.name)
-        self.isDefault = isDefault
-        self.exchangeService = exchangeProviding[.bitcoinCash]
-        self.balanceService = balanceService
+        self.label = label ?? String(format: LocalizedString.myAccount, CryptoCurrency.algorand.name)
+        self.exchangeService = exchangeProviding[.algorand]
     }
 
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {

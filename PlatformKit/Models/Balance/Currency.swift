@@ -136,15 +136,13 @@ extension CurrencyType: Currency {
 
 extension CryptoCurrency {
     public var currency: CurrencyType {
-        // swiftlint:disable:next force_try
-        try! CurrencyType(currency: self.rawValue)
+        .crypto(self)
     }
 }
 
 extension FiatCurrency {
     public var currency: CurrencyType {
-        // swiftlint:disable:next force_try
-        try! CurrencyType(currency: self.rawValue)
+        .fiat(self)
     }
 }
 

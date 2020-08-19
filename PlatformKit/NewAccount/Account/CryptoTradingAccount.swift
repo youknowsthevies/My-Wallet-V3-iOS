@@ -1,8 +1,8 @@
 //
-//  CryptoInterestAccount.swift
+//  CryptoTradingAccount.swift
 //  PlatformKit
 //
-//  Created by Paulo on 07/08/2020.
+//  Created by Paulo on 14/08/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
@@ -11,10 +11,10 @@ import Localization
 import RxSwift
 import ToolKit
 
-public class CryptoInterestAccount: CryptoAccount {
+public class CryptoTradingAccount: CryptoAccount {
     private typealias LocalizedString = LocalizationConstants.Account
 
-    public lazy var id: String = "CryptoInterestAccount." + asset.code
+    public lazy var id: String = "CryptoTradingAccount." + asset.code
     public let label: String
     public let asset: CryptoCurrency
     public let isDefault: Bool = false
@@ -33,10 +33,10 @@ public class CryptoInterestAccount: CryptoAccount {
     public init(asset: CryptoCurrency,
                 balanceProviding: BalanceProviding = resolve(),
                 exchangeProviding: ExchangeProviding = resolve()) {
-        self.label = String(format: LocalizedString.myInterestAccount, asset.name)
+        self.label = String(format: LocalizedString.myTradingAccount, asset.name)
         self.asset = asset
         self.exchangeService = exchangeProviding[asset]
-        self.balanceFetching = balanceProviding[asset.currency].savings
+        self.balanceFetching = balanceProviding[asset.currency].trading
     }
 
     public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {

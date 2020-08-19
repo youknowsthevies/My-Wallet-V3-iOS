@@ -9,10 +9,25 @@
 import RxSwift
 import ToolKit
 
-public protocol SingleAccount : BlockchainAccount {
-    var receiveAddress: Single<ReceiveAddress> { get }
-    var isDefault: Bool { get }
+public protocol SingleAccount: BlockchainAccount {
 
+    var isDefault: Bool { get }
+    var receiveAddress: Single<ReceiveAddress> { get }
     var sendState: Single<SendState> { get }
+
     func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor>
+}
+
+public extension SingleAccount {
+    var receiveAddress: Single<ReceiveAddress> {
+        .error(ReceiveAddressError.notSupported)
+    }
+
+    var sendState: Single<SendState> {
+        .just(.notSupported)
+    }
+
+    func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {
+        unimplemented()
+    }
 }

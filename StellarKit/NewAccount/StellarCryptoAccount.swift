@@ -20,34 +20,18 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
     let asset: CryptoCurrency = .stellar
     let isDefault: Bool = true
 
-    var receiveAddress: Single<ReceiveAddress> {
-        unimplemented()
-    }
-
-    var sendState: Single<SendState> {
-        unimplemented()
-    }
-
     var balance: Single<MoneyValue> {
         accountDetailsService
             .accountDetails(for: id)
             .map(\.balance.moneyValue)
-            .do(onSuccess: { [weak self] (value: MoneyValue) in
-                self?.atomicIsFunded.mutate { $0 = value.isPositive }
-            })
     }
 
     var actions: AvailableActions {
         [.viewActivity]
     }
 
-    var isFunded: Bool {
-        atomicIsFunded.value
-    }
-
     private let accountDetailsService: AnyAssetAccountDetailsAPI<StellarAssetAccountDetails>
     private let exchangeService: PairExchangeServiceAPI
-    private let atomicIsFunded: Atomic<Bool> = .init(false)
 
     init(id: String,
          label: String? = nil,
@@ -57,10 +41,6 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
         self.label = label ?? String(format: LocalizedString.myAccount, CryptoCurrency.stellar.name)
         self.accountDetailsService = accountDetailsService
         self.exchangeService = dataProviding.exchange[.stellar]
-    }
-
-    func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {
-        unimplemented()
     }
 
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {

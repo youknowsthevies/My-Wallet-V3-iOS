@@ -15,7 +15,18 @@ extension DependencyContainer {
     // MARK: - PlatformKit Module
 
     public static var platformKit = module {
-        
+        // MARK: - BalanceProviding
+
+        factory { () -> BalanceProviding in
+            let provider: DataProviding = DIKit.resolve()
+            return provider.balance
+        }
+
+        factory { () -> ExchangeProviding in
+            let provider: DataProviding = DIKit.resolve()
+            return provider.exchange
+        }
+
         // MARK: - Clients
         
         factory { SettingsClient() as SettingsClientAPI }
@@ -101,14 +112,10 @@ extension DependencyContainer {
 
         single { () -> Coincore in
             Coincore(
-                assetMap: [
-                    .bitcoin: DIKit.resolve(tag: CryptoCurrency.bitcoin),
-                    .bitcoinCash: DIKit.resolve(tag: CryptoCurrency.bitcoinCash),
-                    .ethereum: DIKit.resolve(tag: CryptoCurrency.ethereum),
-                    .stellar: DIKit.resolve(tag: CryptoCurrency.stellar),
-                    .pax: DIKit.resolve(tag: CryptoCurrency.pax),
-                    .tether: DIKit.resolve(tag: CryptoCurrency.tether)
-                ]
+                assetMap: CryptoCurrency.allCases.reduce(into: [CryptoCurrency: CryptoAsset](), { (result, tag) in
+                    let asset: CryptoAsset = DIKit.resolve(tag: tag)
+                    result[tag] = asset
+                })
             )
         }
 

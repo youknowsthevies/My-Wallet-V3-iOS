@@ -9,29 +9,15 @@
 import RxSwift
 import ToolKit
 
-public class NullCryptoAccount : CryptoAccount {
+public class NullCryptoAccount: CryptoAccount {
 
-    public var id: String {
-        ""
-    }
+    public let id: String = "NullCryptoAccount"
 
     public var asset: CryptoCurrency {
         unimplemented()
     }
 
-    public var receiveAddress: Single<ReceiveAddress> {
-        unimplemented()
-    }
-
     public var isDefault: Bool {
-        unimplemented()
-    }
-
-    public var sendState: Single<SendState> {
-        unimplemented()
-    }
-
-    public func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {
         unimplemented()
     }
 
@@ -44,10 +30,6 @@ public class NullCryptoAccount : CryptoAccount {
     }
 
     public var actions: AvailableActions {
-        unimplemented()
-    }
-
-    public var isFunded: Bool {
         unimplemented()
     }
 

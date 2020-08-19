@@ -8,11 +8,9 @@
 
 import DIKit
 import PlatformKit
-import RxCocoa
+import RxRelay
 import RxSwift
 import stellarsdk
-
-// TODO: This should be moved to `StellarKit`
 
 public class StellarLedgerService: StellarLedgerAPI {
 

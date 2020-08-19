@@ -21,10 +21,6 @@ public class CryptoAccountCustodialGroup: AccountGroup {
 
     public let accounts: [SingleAccount]
 
-    public var isFunded: Bool {
-        accounts.map(\.isFunded).contains(true)
-    }
-
     public var balance: Single<MoneyValue> {
         if accounts.isEmpty {
             return .just(.zero(asset))

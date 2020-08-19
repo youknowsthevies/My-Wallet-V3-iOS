@@ -9,29 +9,15 @@
 import RxSwift
 import ToolKit
 
-public class NullFiatAccount : FiatAccount {
+public class NullFiatAccount: FiatAccount {
 
-    public var id: String {
-        ""
-    }
+    public let id: String = "NullFiatAccount"
 
-    public var fiatCurrency: String {
-        unimplemented()
-    }
-
-    public var receiveAddress: Single<ReceiveAddress> {
+    public var fiatCurrency: FiatCurrency {
         unimplemented()
     }
 
     public var isDefault: Bool {
-        unimplemented()
-    }
-
-    public var sendState: Single<SendState> {
-        unimplemented()
-    }
-
-    public func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {
         unimplemented()
     }
 
@@ -44,10 +30,6 @@ public class NullFiatAccount : FiatAccount {
     }
 
     public var actions: AvailableActions {
-        unimplemented()
-    }
-
-    public var isFunded: Bool {
         unimplemented()
     }
 

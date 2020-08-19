@@ -117,11 +117,6 @@ extension DependencyContainer {
             return provider as DataProviding
         }
 
-        factory { () -> BalanceProviding in
-            let provider: DataProviding = DIKit.resolve()
-            return provider.balance
-        }
-
         // MARK: - Ethereum Wallet
 
         factory { () -> EthereumWallet in

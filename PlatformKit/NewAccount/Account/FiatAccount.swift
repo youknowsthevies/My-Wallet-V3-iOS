@@ -8,6 +8,6 @@
 
 import Foundation
 
-public protocol FiatAccount : SingleAccount {
-    var fiatCurrency: String { get }
+public protocol FiatAccount: SingleAccount {
+    var fiatCurrency: FiatCurrency { get }
 }

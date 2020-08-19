@@ -14,7 +14,7 @@ public protocol SendTarget {
 
 public protocol ReceiveAddress: SendTarget { }
 
-enum ReceiveAddressError: Error {
+public enum ReceiveAddressError: Error {
     case notSupported
 }
 

@@ -26,10 +26,7 @@ final class ERC20Asset<Token: ERC20Token>: CryptoAsset {
                 return wallet
             }
             .map { wallet -> SingleAccount in
-                ERC20CryptoAccount<Token>(
-                    id: wallet.publicKey,
-                    label: wallet.label
-                )
+                ERC20CryptoAccount<Token>(id: wallet.publicKey)
             }
     }
 
@@ -56,12 +53,12 @@ final class ERC20Asset<Token: ERC20Token>: CryptoAsset {
 
     private var allAccountsGroup: Single<AccountGroup> {
         Single
-            .zip(custodialGroup, interestGroup, nonCustodialGroup)
+            .zip(nonCustodialGroup, custodialGroup, interestGroup)
             .map { CryptoAccountNonCustodialGroup(asset: Token.assetType, accounts: $0.0.accounts + $0.1.accounts + $0.2.accounts) }
     }
 
     private var custodialGroup: Single<AccountGroup> {
-         .just(CryptoAccountCustodialGroup(asset: Token.assetType, accounts: []))
+        .just(CryptoAccountCustodialGroup(asset: Token.assetType, accounts: [CryptoTradingAccount(asset: Token.assetType)]))
     }
 
     private var interestGroup: Single<AccountGroup> {
@@ -73,7 +70,7 @@ final class ERC20Asset<Token: ERC20Token>: CryptoAsset {
     private var nonCustodialGroup: Single<AccountGroup> {
         walletAccountBridge.wallets
             .map { wallets -> [SingleAccount] in
-                wallets.map { ERC20CryptoAccount<Token>(id: $0.publicKey, label: $0.label) }
+                wallets.map { ERC20CryptoAccount<Token>(id: $0.publicKey) }
             }
             .map { accounts -> AccountGroup in
                 CryptoAccountNonCustodialGroup(asset: Token.assetType, accounts: accounts)

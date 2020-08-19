@@ -20,53 +20,32 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
     let label: String
     let asset: CryptoCurrency = Token.assetType
     let isDefault: Bool = true
-    
-    var receiveAddress: Single<ReceiveAddress> {
-        unimplemented()
-    }
-    
-    var sendState: Single<SendState> {
-        unimplemented()
-    }
-    
+
     var balance: Single<MoneyValue> {
         balanceService
             .balance(for: EthereumAddress(stringLiteral: id))
             .map(\.moneyValue)
-            .do(onSuccess: { [weak self] (value: MoneyValue) in
-                self?.atomicIsFunded.mutate { $0 = value.isPositive }
-            })
     }
     
     var actions: AvailableActions {
         [.viewActivity]
     }
-    
-    var isFunded: Bool {
-        atomicIsFunded.value
-    }
-    
+
     private let bridge: EthereumWalletBridgeAPI
     private let balanceService: ERC20BalanceService<Token>
     private let exchangeService: PairExchangeServiceAPI
-    private let atomicIsFunded: Atomic<Bool> = .init(false)
     
     init(id: String,
-         label: String? = nil,
-         dataProviding: DataProviding = resolve(),
+         exchangeProviding: ExchangeProviding = resolve(),
          bridge: EthereumWalletBridgeAPI = resolve(),
          balanceService: ERC20BalanceService<Token> = resolve()) {
         self.id = id
-        self.label = label ?? String(format: LocalizedString.myAccount, Token.name)
+        self.label = String(format: LocalizedString.myAccount, Token.name)
         self.bridge = bridge
-        self.exchangeService = dataProviding.exchange[Token.assetType]
+        self.exchangeService = exchangeProviding[Token.assetType]
         self.balanceService = balanceService
     }
-    
-    func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {
-        unimplemented()
-    }
-    
+
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
         Single
             .zip(

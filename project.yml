@@ -31,11 +31,19 @@ schemeTemplates:
     test:
       config: ${debugConfig}
       targets:
-      - name: BlockchainTests
+      - name: ToolKitTests
         randomExecutionOrder: true
-      - name: BitcoinKitTests
+      - name: NetworkKitTests
         randomExecutionOrder: true
       - name: CommonCryptoKitTests
+        randomExecutionOrder: true
+      - name: PlatformKitTests
+        randomExecutionOrder: true
+      - name: PlatformUIKitTests
+        randomExecutionOrder: true
+      - name: AlgorandKitTests
+        randomExecutionOrder: true
+      - name: BitcoinKitTests
         randomExecutionOrder: true
       - name: ERC20KitTests
         randomExecutionOrder: true
@@ -43,19 +51,13 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: HDWalletKitTests
         randomExecutionOrder: true
-      - name: NetworkKitTests
-        randomExecutionOrder: true
-      - name: PlatformKitTests
-        randomExecutionOrder: true
-      - name: PlatformUIKitTests
-        randomExecutionOrder: true
       - name: BuySellKitTests
         randomExecutionOrder: true
       - name: BuySellUIKitTests
         randomExecutionOrder: true
       - name: StellarKitTests
         randomExecutionOrder: true
-      - name: ToolKitTests
+      - name: BlockchainTests
         randomExecutionOrder: true
 schemes:
   Blockchain:
@@ -132,6 +134,7 @@ targetTemplates:
     type: framework
   FrameworkTest:
     dependencies:
+    - carthage: RxRelay
     - carthage: RxSwift
     - carthage: RxBlocking
     - carthage: RxTest
@@ -142,14 +145,43 @@ targetTemplates:
       path: TestKit/Utilities
     type: bundle.unit-test
 targets:
+  AlgorandKit:
+    dependencies:
+    - target: Localization
+    - target: PlatformKit
+    - target: ToolKit
+    - target: NetworkKit
+    - carthage: BigInt
+    - carthage: DIKit
+    - carthage: RxRelay
+    - carthage: RxSwift
+    scheme:
+      testTargets:
+      - AlgorandKitTests
+    templates:
+    - Framework
+  AlgorandKitTests:
+    dependencies:
+    - target: AlgorandKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    templates:
+    - FrameworkTest
   BitcoinKit:
     dependencies:
     - target: PlatformKit
     - target: HDWalletKit
     - target: ToolKit
     - target: NetworkKit
+    - target: Localization
     - carthage: BigInt
     - carthage: DIKit
+    - carthage: RxRelay
     - carthage: RxSwift
     - carthage: LibWally
     scheme:
@@ -211,6 +243,7 @@ targets:
     - target: InterestUIKit
     - target: ToolKit
     - target: NetworkKit
+    - target: AlgorandKit
     - target: StellarKit
     - target: EthereumKit
     - target: ERC20Kit
@@ -345,6 +378,7 @@ targets:
   BlockchainTests:
     dependencies:
     - target: Blockchain
+    - carthage: RxRelay
     - carthage: RxSwift
     - carthage: RxBlocking
     - carthage: RxTest
@@ -376,9 +410,10 @@ targets:
     - target: CommonCryptoKit
     - target: NetworkKit
     - target: ToolKit
+    - target: Localization
     - carthage: DIKit
-    - carthage: RxSwift
     - carthage: RxRelay
+    - carthage: RxSwift
     - carthage: RxCocoa
     scheme:
       testTargets:
@@ -407,9 +442,10 @@ targets:
     - target: CommonCryptoKit
     - target: NetworkKit
     - target: ToolKit
+    - target: Localization
     - carthage: DIKit
-    - carthage: RxSwift
     - carthage: RxRelay
+    - carthage: RxSwift
     - carthage: RxCocoa
     scheme:
       testTargets:
@@ -448,10 +484,12 @@ targets:
     - target: NetworkKit
     - target: EthereumKit
     - target: PlatformKit
+    - target: Localization
+    - target: ToolKit
     - carthage: DIKit
     - carthage: RxCocoa
-    - carthage: RxSwift
     - carthage: RxRelay
+    - carthage: RxSwift
     - carthage: BigInt
     - carthage: web3swift
     scheme:
@@ -479,6 +517,8 @@ targets:
     dependencies:
     - target: NetworkKit
     - target: PlatformKit
+    - target: Localization
+    - target: ToolKit
     - carthage: keccak
     - carthage: PromiseKit
     - carthage: BigInt
@@ -486,8 +526,8 @@ targets:
     - carthage: secp256k1
     - carthage: web3swift
     - carthage: scrypt
-    - carthage: RxSwift
     - carthage: RxRelay
+    - carthage: RxSwift
     scheme:
       testTargets:
       - EthereumKitTests
@@ -526,9 +566,10 @@ targets:
     - target: PlatformKit
     - target: NetworkKit
     - target: ToolKit
+    - target: Localization
     - carthage: DIKit
-    - carthage: RxSwift
     - carthage: RxRelay
+    - carthage: RxSwift
     scheme:
       testTargets:
       - InterestKitTests
@@ -554,9 +595,10 @@ targets:
     - target: CommonCryptoKit
     - target: NetworkKit
     - target: ToolKit
+    - target: Localization
     - carthage: DIKit
-    - carthage: RxSwift
     - carthage: RxRelay
+    - carthage: RxSwift
     - carthage: RxCocoa
     scheme:
       testTargets:
@@ -701,8 +743,10 @@ targets:
   StellarKit:
     dependencies:
     - target: PlatformKit
+    - target: Localization
+    - target: ToolKit
     - carthage: DIKit
-    - carthage: RxCocoa
+    - carthage: RxRelay
     - carthage: RxSwift
     - carthage: stellarsdk
     scheme:
@@ -735,6 +779,7 @@ targets:
     - target: PlatformUIKit
     - target: ToolKit
     - target: NetworkKit
+    - target: Localization
     - carthage: RxCocoa
     - carthage: RxSwift
     - carthage: RxRelay

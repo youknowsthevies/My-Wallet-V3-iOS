@@ -8,7 +8,7 @@
 
 import DIKit
 import PlatformKit
-import RxCocoa
+import RxRelay
 import RxSwift
 
 public protocol StellarConfigurationAPI {

@@ -8,7 +8,7 @@
 
 import RxSwift
 
-public protocol AccountGroup : BlockchainAccount {
+public protocol AccountGroup: BlockchainAccount {
     var accounts: [SingleAccount] { get }
 
     func includes(account: BlockchainAccount) -> Bool

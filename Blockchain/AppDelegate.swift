@@ -6,15 +6,16 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AlgorandKit
 import BitcoinKit
 import DIKit
+import EthereumKit
 import Firebase
 import FirebaseCrashlytics
 import FirebaseDynamicLinks
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
-import EthereumKit
 import RxSwift
 import ToolKit
 
@@ -74,6 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             DependencyContainer.platformKit;
             DependencyContainer.interestKit;
             DependencyContainer.platformUIKit;
+            DependencyContainer.algorandKit;
             DependencyContainer.ethereumKit;
             DependencyContainer.erc20Kit;
             DependencyContainer.bitcoinKit;

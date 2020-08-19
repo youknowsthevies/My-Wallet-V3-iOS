@@ -20,49 +20,29 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     let asset: CryptoCurrency = .bitcoin
     let isDefault: Bool
 
-    var receiveAddress: Single<ReceiveAddress> {
-        unimplemented()
-    }
-
-    var sendState: Single<SendState> {
-        unimplemented()
-    }
-
     var balance: Single<MoneyValue> {
         balanceService
             .bitcoinBalance(for: id)
             .moneyValue
-            .do(onSuccess: { [weak self] value in
-                self?.atomicIsFunded.mutate { $0 = value.isPositive }
-            })
     }
 
     var actions: AvailableActions {
         [.viewActivity]
     }
 
-    var isFunded: Bool {
-        atomicIsFunded.value
-    }
-
     private let exchangeService: PairExchangeServiceAPI
     private let balanceService: BalanceServiceAPI
-    private let atomicIsFunded: Atomic<Bool> = .init(false)
 
     init(id: String,
          label: String?,
          isDefault: Bool,
-         dataProviding: DataProviding = resolve(),
+         exchangeProviding: ExchangeProviding = resolve(),
          balanceService: BalanceServiceAPI = resolve()) {
         self.id = id
         self.label = label ?? String(format: LocalizedString.myAccount, CryptoCurrency.bitcoin.name)
         self.isDefault = isDefault
-        self.exchangeService = dataProviding.exchange[.bitcoin]
+        self.exchangeService = exchangeProviding[.bitcoin]
         self.balanceService = balanceService
-    }
-
-    func createSendProcessor(address: ReceiveAddress) -> Single<SendProcessor> {
-        unimplemented()
     }
 
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
