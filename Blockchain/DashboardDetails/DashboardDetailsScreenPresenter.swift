@@ -280,15 +280,9 @@ final class DashboardDetailsScreenPresenter {
     }
     
     private func setupTradingBalancePresenter() {
-        interactor.custodialTradingFunded
-            .filter { $0 }
-            .take(1) // This to ensure the cell shows only once
-            .map(weak: self) { (self, exists) in
-                guard exists else { return .hidden }
-                return .visible(
-                    self.balanceCellPresenter(for: .custodial(.trading))
-                )
-            }
+        Observable.just(
+            .visible(self.balanceCellPresenter(for: .custodial(.trading)))
+            )
             .bindAndCatch(to: tradingBalanceStateRelay)
             .disposed(by: disposeBag)
         

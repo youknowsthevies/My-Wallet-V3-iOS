@@ -20,10 +20,6 @@ final class DashboardDetailsScreenInteractor {
         walletBalanceInteractor.exists
     }
     
-    var custodialTradingFunded: Observable<Bool> {
-        tradingBalanceInteractor.exists
-    }
-    
     var custodialSavingsFunded: Observable<Bool> {
         savingsBalanceInteractor.exists
     }
