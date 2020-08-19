@@ -30,7 +30,8 @@ final class AssetLineChartPresenter {
     }
     
     private lazy var setup: Void = {
-        interactor.state
+        interactor
+            .state
             .map { .init(with: $0) }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum PriceWindow {
+public enum PriceWindow: Equatable {
     public enum TimelineInterval {
         case fifteenMinutes
         case oneHour
@@ -22,6 +22,25 @@ public enum PriceWindow {
     case month(TimelineInterval?)
     case year(TimelineInterval?)
     case all(TimelineInterval?)
+}
+
+public extension PriceWindow {
+    static func ==(lhs: PriceWindow, rhs: PriceWindow) -> Bool {
+        switch (lhs, rhs) {
+        case (.day(let left), .day(let right)):
+            return left == right
+        case (.week(let left), .week(let right)):
+            return left == right
+        case (.month(let left), .month(let right)):
+            return left == right
+        case (.year(let left), .year(let right)):
+            return left == right
+        case (.all(let left), .all(let right)):
+            return left == right
+        default:
+            return false
+        }
+    }
 }
 
 extension PriceWindow {

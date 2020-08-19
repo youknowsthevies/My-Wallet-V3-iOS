@@ -22,7 +22,9 @@ final class AssetLineChartInteractor: AssetLineChartInteracting {
     }
     
     private var window: Signal<PriceWindow> {
-        priceWindowRelay.asSignal()
+        priceWindowRelay
+            .distinctUntilChanged()
+            .asSignal(onErrorJustReturn: .day(.oneHour))
     }
     
     public let priceWindowRelay = PublishRelay<PriceWindow>()
