@@ -24,8 +24,6 @@ final class AllAccountsGroup: AccountGroup {
         .error(AccountGroupError.noBalance)
     }
 
-    let isFunded: Bool = true
-
     init(accounts: [SingleAccount]) {
         self.accounts = accounts
     }

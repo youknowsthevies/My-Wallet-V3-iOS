@@ -18,13 +18,13 @@ public protocol BlockchainAccount {
 
     var actions: AvailableActions { get }
 
-    var isFunded: Bool { get }
+    var isFunded: Single<Bool> { get }
 
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue>
 }
 
 public extension BlockchainAccount {
-    var isFunded: Bool {
+    var isFunded: Single<Bool> {
         unimplemented()
     }
 }
