@@ -66,6 +66,6 @@ final class DashboardFiatBalancesPresenter {
     }
 
     func refresh() {
-        fiatBalanceCollectionViewPresenter.refresh()
+        interactor.refresh()
     }
 }

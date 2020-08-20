@@ -35,7 +35,7 @@ public protocol CheckoutServiceAPI: RoutingPreviousStateEmitterAPI {
 }
 
 public protocol PaymentMethodsStateAPI: RoutingPreviousStateEmitterAPI {
-    func showFundsTransferDetails(for fiatCurrency: FiatCurrency)
+    func showFundsTransferDetails(for fiatCurrency: FiatCurrency, isOriginDeposit: Bool)
     func kyc()
 }
 

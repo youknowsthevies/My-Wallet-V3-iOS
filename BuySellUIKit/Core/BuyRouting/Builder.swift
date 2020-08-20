@@ -18,7 +18,7 @@ public protocol Buildable: AnyObject {
     var stateService: StateServiceAPI { get }
     
     func fundsTransferDetailsViewController() -> Single<UIViewController>
-    func fundsTransferDetailsViewController(for fiatCurrency: FiatCurrency) -> UIViewController
+    func fundsTransferDetailsViewController(for fiatCurrency: FiatCurrency, isOriginDeposit: Bool) -> UIViewController
 }
 
 public final class Builder: Buildable {
@@ -45,14 +45,14 @@ public final class Builder: Buildable {
     public func fundsTransferDetailsViewController() -> Single<UIViewController> {
         fiatCurrencyService.fiatCurrency
             .map(weak: self) { (self, fiatCurrency) in
-                self.fundsTransferDetailsViewController(for: fiatCurrency)
+                self.fundsTransferDetailsViewController(for: fiatCurrency, isOriginDeposit: false)
             }
     }
     
     /// Generates and returns the `DetailsScreenViewController` for funds transfer
     /// - Parameter fiatCurrency: The fiat currency for which the transfer details will be retrieved
     /// - Returns: A `DetailsScreenViewController` that shows the funds transfer details
-    public func fundsTransferDetailsViewController(for fiatCurrency: FiatCurrency) -> UIViewController {
+    public func fundsTransferDetailsViewController(for fiatCurrency: FiatCurrency, isOriginDeposit: Bool) -> UIViewController {
         let interactor = InteractiveFundsTransferDetailsInteractor(
             paymentAccountService: self.serviceProvider.paymentAccount,
             fiatCurrency: fiatCurrency
@@ -68,7 +68,8 @@ public final class Builder: Buildable {
             webViewRouter: webViewRouter,
             analyticsRecorder: self.recordingProvider.analytics,
             interactor: interactor,
-            stateService: self.stateService
+            stateService: self.stateService,
+            isOriginDeposit: isOriginDeposit
         )
         let viewController = DetailsScreenViewController(presenter: presenter)
         navigationController.viewControllers = [viewController]

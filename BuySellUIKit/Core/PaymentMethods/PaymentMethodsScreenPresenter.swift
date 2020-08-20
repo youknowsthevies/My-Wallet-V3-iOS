@@ -185,7 +185,7 @@ final class PaymentMethodsScreenPresenter {
             .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: { [weak self] isEligibile in
                 if isEligibile {
-                    self?.stateService.showFundsTransferDetails(for: currency)
+                    self?.stateService.showFundsTransferDetails(for: currency, isOriginDeposit: false)
                 } else {
                     self?.stateService.kyc()
                 }

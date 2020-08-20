@@ -106,6 +106,8 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
             showActivityScreen()
         case .buy:
             showBuy()
+        case .deposit:
+            showPaymentMethods()
         case .withdrawalAfterBackup:
             /// `Backup` has already been dismissed as `Backup`
             /// has ended. `CustodyActionScreen` has been dismissed
@@ -150,6 +152,13 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
             guard let self = self else { return }
             self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
             self.tabSwapping.switchToActivity(currency: currency)
+        }
+    }
+    
+    private func showPaymentMethods() {
+        guard case let .fiat(fiatCurrency) = currency else { return }
+        dismissTopMost {
+            AppCoordinator.shared.showFundTrasferDetails(fiatCurrency: fiatCurrency, isOriginDeposit: true)
         }
     }
     

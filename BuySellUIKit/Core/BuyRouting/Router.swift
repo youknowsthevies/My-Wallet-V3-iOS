@@ -157,8 +157,8 @@ public final class Router: RouterAPI {
             showPaymentMethodsScreen()
         case .bankTransferDetails(let data):
             showBankTransferDetailScreen(with: data)
-        case .fundsTransferDetails(let currency, isOriginPaymentMethods: let isOriginPaymentMethods):
-            showFundsTransferDetailsScreen(with: currency, shouldDismissModal: isOriginPaymentMethods)
+        case .fundsTransferDetails(let currency, isOriginPaymentMethods: let isOriginPaymentMethods, let isOriginDeposit):
+            showFundsTransferDetailsScreen(with: currency, shouldDismissModal: isOriginPaymentMethods, isOriginDeposit: isOriginDeposit)
         case .transferCancellation(let data):
             showTransferCancellation(with: data)
         case .kyc:
@@ -380,8 +380,8 @@ public final class Router: RouterAPI {
         navigationRouter.present(viewController: viewController)
     }
     
-    private func showFundsTransferDetailsScreen(with fiatCurrency: FiatCurrency, shouldDismissModal: Bool) {
-        let viewController = builder.fundsTransferDetailsViewController(for: fiatCurrency)
+    private func showFundsTransferDetailsScreen(with fiatCurrency: FiatCurrency, shouldDismissModal: Bool, isOriginDeposit: Bool) {
+        let viewController = builder.fundsTransferDetailsViewController(for: fiatCurrency, isOriginDeposit: isOriginDeposit)
         if shouldDismissModal {
             navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true) { [weak self] in
                 self?.navigationRouter.navigationControllerAPI?.present(viewController, animated: true, completion: nil)

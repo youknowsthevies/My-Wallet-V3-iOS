@@ -36,4 +36,8 @@ final class DashboardFiatBalancesInteractor {
             featureFetcher: featureFetcher
         )
     }
+    
+    func refresh() {
+        fiatBalanceCollectionViewInteractor.refresh()
+    }
 }
