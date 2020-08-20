@@ -9,8 +9,10 @@
 import RxSwift
 import ToolKit
 
+/// A BlockchainAccount that represents a single account, opposed to a collection of accounts.
 public protocol SingleAccount: BlockchainAccount {
 
+    var currencyType: CurrencyType { get }
     var isDefault: Bool { get }
     var receiveAddress: Single<ReceiveAddress> { get }
     var sendState: Single<SendState> { get }

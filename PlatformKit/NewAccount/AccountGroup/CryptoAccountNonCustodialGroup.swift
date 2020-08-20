@@ -9,7 +9,7 @@
 import Localization
 import RxSwift
 
-/// An `AccountGroup` cointaining only Non Custodial accounts.
+/// An `AccountGroup` containing only Non Custodial accounts.
 public class CryptoAccountNonCustodialGroup: AccountGroup {
     private typealias LocalizedString = LocalizationConstants.AccountGroup
     

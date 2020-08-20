@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// SendProcessor is responsible for validating and executing a trade.
 public protocol SendProcessor {
     
 }

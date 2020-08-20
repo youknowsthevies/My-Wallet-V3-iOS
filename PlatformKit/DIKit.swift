@@ -59,9 +59,9 @@ extension DependencyContainer {
         single { NabuTokenStore() }
 
         single { NabuAuthenticationExecutor() as NabuAuthenticationExecutorAPI }
-
+        
         factory { () -> NabuAuthenticationExecutorProvider in
-            return { () -> NabuAuthenticationExecutorAPI in
+            { () -> NabuAuthenticationExecutorAPI in
                 DIKit.resolve()
             }
         }
@@ -112,7 +112,7 @@ extension DependencyContainer {
 
         single { () -> Coincore in
             Coincore(
-                assetMap: CryptoCurrency.allCases.reduce(into: [CryptoCurrency: CryptoAsset](), { (result, tag) in
+                cryptoAssets: CryptoCurrency.allCases.reduce(into: [CryptoCurrency: CryptoAsset](), { (result, tag) in
                     let asset: CryptoAsset = DIKit.resolve(tag: tag)
                     result[tag] = asset
                 })

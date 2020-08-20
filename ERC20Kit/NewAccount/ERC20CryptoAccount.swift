@@ -40,7 +40,7 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
          bridge: EthereumWalletBridgeAPI = resolve(),
          balanceService: ERC20BalanceService<Token> = resolve()) {
         self.id = id
-        self.label = String(format: LocalizedString.myAccount, Token.name)
+        self.label = String(format: LocalizedString.myWallet, Token.name)
         self.bridge = bridge
         self.exchangeService = exchangeProviding[Token.assetType]
         self.balanceService = balanceService

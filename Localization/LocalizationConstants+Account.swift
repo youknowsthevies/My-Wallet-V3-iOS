@@ -10,9 +10,9 @@ import Foundation
 
 extension LocalizationConstants {
     public enum Account {
-        public static let myAccount = NSLocalizedString(
-            "My %@ Account",
-            comment: "Must contain %@. Used for naming accounts e.g. My Ethereum Account"
+        public static let myWallet = NSLocalizedString(
+            "My %@ Wallet",
+            comment: "Must contain %@. Used for naming wallets e.g. My Ethereum Wallet"
         )
 
         public static let myInterestAccount = NSLocalizedString(
@@ -27,9 +27,14 @@ extension LocalizationConstants {
     }
 
     public enum AccountGroup {
+        public static let allWallets = NSLocalizedString(
+            "All Wallets",
+            comment: "All Wallets"
+        )
+
         public static let myAccounts = NSLocalizedString(
             "My %@ Accounts",
-            comment: "Must contain %@. Used for naming accounts e.g. My Ethereum Account"
+            comment: "Must contain %@. Used for naming accounts e.g. My Ethereum Accounts"
         )
 
         public static let myInterestAccounts = NSLocalizedString(

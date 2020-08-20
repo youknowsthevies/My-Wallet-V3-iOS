@@ -8,6 +8,7 @@
 
 import RxSwift
 
+/// A `BlockchainAccount` that represents a collection of accounts, opposed to a single account.
 public protocol AccountGroup: BlockchainAccount {
     var accounts: [SingleAccount] { get }
 
@@ -38,11 +39,4 @@ extension AccountGroup {
 
 public enum AccountGroupError: Error {
     case noBalance
-
-    var localizedDescription: String {
-        switch self {
-        case .noBalance:
-            return "No unified balance for All Wallets meta account"
-        }
-    }
 }

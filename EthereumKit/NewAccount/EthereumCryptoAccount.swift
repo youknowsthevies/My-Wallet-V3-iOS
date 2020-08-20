@@ -43,7 +43,7 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
         self.bridge = bridge
         self.exchangeService = exchangeProviding[.ethereum]
         self.balanceService = balanceService
-        self.label = label ?? String(format: LocalizedString.myAccount, CryptoCurrency.ethereum.name)
+        self.label = label ?? String(format: LocalizedString.myWallet, CryptoCurrency.ethereum.name)
     }
 
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
@@ -55,6 +55,4 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
             .map { try MoneyValuePair(base: $0.balance, exchangeRate: $0.exchangeRate.moneyValue) }
             .map(\.quote)
     }
-
-
 }

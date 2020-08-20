@@ -11,3 +11,9 @@ import Foundation
 public protocol FiatAccount: SingleAccount {
     var fiatCurrency: FiatCurrency { get }
 }
+
+public extension FiatAccount {
+    var currencyType: CurrencyType {
+        fiatCurrency.currency
+    }
+}

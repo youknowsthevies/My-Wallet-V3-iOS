@@ -26,7 +26,7 @@ public enum AppFeature: Int, CaseIterable {
     /// Exchange announcement visibility
     case exchangeAnnouncement
 
-    /// The announcments
+    /// The announcements
     case announcements
 
     /// Is simple buy enabled

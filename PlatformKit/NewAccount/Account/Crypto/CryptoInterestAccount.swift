@@ -24,7 +24,7 @@ public class CryptoInterestAccount: CryptoAccount {
     }
 
     public var actions: AvailableActions {
-        [.viewActivity]
+        []
     }
 
     private let balanceFetching: CustodialAccountBalanceFetching

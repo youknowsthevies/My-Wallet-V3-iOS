@@ -38,7 +38,7 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
          accountDetailsService: AnyAssetAccountDetailsAPI<StellarAssetAccountDetails> = resolve(),
          dataProviding: DataProviding = resolve()) {
         self.id = id
-        self.label = label ?? String(format: LocalizedString.myAccount, CryptoCurrency.stellar.name)
+        self.label = label ?? String(format: LocalizedString.myWallet, CryptoCurrency.stellar.name)
         self.accountDetailsService = accountDetailsService
         self.exchangeService = dataProviding.exchange[.stellar]
     }

@@ -11,19 +11,23 @@ import ToolKit
 
 final public class Coincore {
 
-    private let assetMap: [CryptoCurrency: CryptoAsset]
+    // MARK: Private Properties
 
-    init(assetMap: [CryptoCurrency: CryptoAsset]) {
-        self.assetMap = assetMap
+    private let cryptoAssets: [CryptoCurrency: CryptoAsset]
+    private let fiatAsset: FiatAsset
+    private var allAssets: [Asset] {
+        [fiatAsset] + sortedCryptoAssets
     }
+    private var sortedCryptoAssets: [CryptoAsset] {
+        cryptoAssets.sorted(by: { $0.key < $1.key }).map { $0.value }
+    }
+
+    // MARK: Public Properties
 
     public var allAccounts: Single<AccountGroup> {
         Single
             .zip(
-                assetMap
-                    .sorted(by: { $0.key < $1.key })
-                    .map { $0.value }
-                    .map { asset in asset.accountGroup(filter: .all) }
+                allAssets.map { asset in asset.accountGroup(filter: .all) }
             )
             .map { accountGroups -> [SingleAccount] in
                 accountGroups.map { $0.accounts }.reduce([SingleAccount](), +)
@@ -31,5 +35,13 @@ final public class Coincore {
             .map { accounts -> AccountGroup in
                 AllAccountsGroup(accounts: accounts)
             }
+    }
+
+    // MARK: Setup
+
+    init(cryptoAssets: [CryptoCurrency: CryptoAsset],
+         fiatAsset: FiatAsset = FiatAsset()) {
+        self.cryptoAssets = cryptoAssets
+        self.fiatAsset = fiatAsset
     }
 }

@@ -29,7 +29,7 @@ public protocol Asset {
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup>
 }
 
-public protocol CryptoAsset : Asset {
+public protocol CryptoAsset: Asset {
     var asset: CryptoCurrency { get }
     var defaultAccount: Single<SingleAccount> { get }
 }

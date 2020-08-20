@@ -53,7 +53,7 @@ public struct MoneyBalancePairsCalculationStates {
         )
     }
     
-    /// Returns the total fiat calcuation state
+    /// Returns the total fiat calculation state
     public var totalFiat: FiatValueCalculationState {
         guard !isInvalid else {
             return .invalid(.valueCouldNotBeCalculated)

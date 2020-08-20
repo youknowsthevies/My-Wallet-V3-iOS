@@ -34,7 +34,7 @@ class AlgorandCryptoAccount: CryptoNonCustodialAccount {
          label: String?,
          exchangeProviding: ExchangeProviding = resolve()) {
         self.id = id
-        self.label = label ?? String(format: LocalizedString.myAccount, CryptoCurrency.algorand.name)
+        self.label = label ?? String(format: LocalizedString.myWallet, CryptoCurrency.algorand.name)
         self.exchangeService = exchangeProviding[.algorand]
     }
 
