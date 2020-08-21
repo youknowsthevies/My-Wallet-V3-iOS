@@ -94,8 +94,7 @@ extension SupportedPairs.Pair {
             return nil
         }
         self.cryptoCurrency = cryptoCurrency
-        
-        minFiatValue = .init(minor: response.buyMin, currency: fiatCurrency)
-        maxFiatValue = .init(minor: response.buyMax, currency: fiatCurrency)
+        self.minFiatValue = FiatValue.create(minor: response.buyMin, currency: fiatCurrency)!
+        self.maxFiatValue = FiatValue.create(minor: response.buyMax, currency: fiatCurrency)!
     }
 }

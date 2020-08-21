@@ -108,7 +108,7 @@ final class PaymentMethodsScreenPresenter {
                     thumbImage: "Icon-Creditcard",
                     title: LocalizedString.Card.title,
                     descriptions: [
-                        "\(method.max.toDisplayString()) \(LocalizedString.Card.descriptionLimit)",
+                        "\(method.max.displayString) \(LocalizedString.Card.descriptionLimit)",
                         LocalizedString.Card.descriptionInfo
                     ],
                     badgeTitle: LocalizedString.Card.badgeTitle,

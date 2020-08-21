@@ -43,12 +43,12 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
         history
     }
 
-    var fetchBalanceValue: Single<CryptoValue> = Single.just(CryptoValue.etherFromMajor(string: "2.0")!)
+    var fetchBalanceValue: Single<CryptoValue> = Single.just(CryptoValue.ether(major: "2.0")!)
     var fetchBalance: Single<CryptoValue> {
         fetchBalanceValue
     }
 
-    var balanceValue: Single<CryptoValue> = Single.just(CryptoValue.etherFromMajor(string: "2.0")!)
+    var balanceValue: Single<CryptoValue> = Single.just(CryptoValue.ether(major: "2.0")!)
     var balance: Single<CryptoValue> {
         balanceValue
     }

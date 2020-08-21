@@ -52,7 +52,7 @@ extension SelectionButtonViewModel {
             case .bankTransfer:
                 fatalError("Bank transfer is not a valid payment method anymore")
             }
-            subtitleRelay.accept("\(method.max.toDisplayString()) \(LocalizedString.Types.limitSubtitle)")
+            subtitleRelay.accept("\(method.max.displayString) \(LocalizedString.Types.limitSubtitle)")
             accessibilityContent = AccessibilityContent(
                 id: method.type.rawType.rawValue,
                 label: title

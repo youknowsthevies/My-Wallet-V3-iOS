@@ -17,10 +17,10 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
         switch self {
         case .accountCreated(let value):
             guard let fee = value.fee else { return nil }
-            return CryptoValue.lumensFromStroops(int: fee)
+            return CryptoValue.stellar(minor: fee)
         case .payment(let value):
             guard let fee = value.fee else { return nil }
-            return CryptoValue.lumensFromStroops(int: fee)
+            return CryptoValue.stellar(minor: fee)
         }
     }
     
@@ -79,7 +79,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
     }
 
     public var amount: CryptoValue {
-        CryptoValue.createFromMajorValue(string: amountString, assetType: .stellar) ?? .zero(currency: .stellar)
+        CryptoValue.create(majorDisplay: amountString, currency: .stellar) ?? .zero(currency: .stellar)
     }
 
     private var amountString: String {

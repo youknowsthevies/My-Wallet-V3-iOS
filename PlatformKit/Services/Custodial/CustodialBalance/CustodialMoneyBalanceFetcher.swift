@@ -28,7 +28,7 @@ public final class CustodialMoneyBalanceFetcher: CustodialAccountBalanceFetching
     public var balanceMoneyObservable: Observable<MoneyValue> {
         _ = setup
         let currencyType = self.currencyType
-        return balanceRelay.map { $0 ?? .zero(currencyType) }
+        return balanceRelay.map { $0 ?? .zero(currency: currencyType) }
     }
 
     public var isFunded: Observable<Bool> {

@@ -33,14 +33,14 @@ public struct StellarTransactionFee: TransactionFee, Decodable {
         let regularFee = try values.decode(Int.self, forKey: .regular)
         let priorityFee = try values.decode(Int.self, forKey: .priority)
 
-        guard let regularValue = CryptoValue.lumensFromStroops(string: String(regularFee)) else {
+        guard let regularValue = CryptoValue.stellar(minor: String(regularFee)) else {
             let context = DecodingError.Context(
                 codingPath: [CodingKeys.regular],
                 debugDescription: "Expected CryptoValue pair from \(regularFee)"
             )
             throw DecodingError.valueNotFound(Int.self, context)
         }
-        guard let priorityValue = CryptoValue.lumensFromStroops(string: String(priorityFee)) else {
+        guard let priorityValue = CryptoValue.stellar(minor: String(priorityFee)) else {
             let context = DecodingError.Context(
                 codingPath: [CodingKeys.priority],
                 debugDescription: "Expected CryptoValue pair from \(priorityFee)"
@@ -55,7 +55,7 @@ public struct StellarTransactionFee: TransactionFee, Decodable {
 
     public init(limits: TransactionFeeLimits, regular: Int, priority: Int) {
         self.limits = limits
-        self.regular = CryptoValue.lumensFromStroops(string: String(regular))!
-        self.priority = CryptoValue.lumensFromStroops(string: String(priority))!
+        self.regular = CryptoValue.stellar(minor: String(regular))!
+        self.priority = CryptoValue.stellar(minor: String(priority))!
     }
 }

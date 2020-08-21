@@ -189,7 +189,7 @@ class EthereumWalletServiceTests: XCTestCase {
     
     func test_building_amount_over_balance() throws {
         // Arrange
-        let cryptoValue = CryptoValue.etherFromMajor(string: "1.0")!
+        let cryptoValue = CryptoValue.ether(major: "1.0")!
         let ethereumValue = try EthereumValue(crypto: cryptoValue)
         let toAddress = EthereumKit.EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to)
 
@@ -213,7 +213,7 @@ class EthereumWalletServiceTests: XCTestCase {
     
     func test_sending_fees_over_balance() throws {
         // Arrange
-        let cryptoValue = CryptoValue.etherFromMajor(string: "0.01")!
+        let cryptoValue = CryptoValue.ether(major: "0.01")!
         let ethereumValue = try EthereumValue(crypto: cryptoValue)
         let toAddress = EthereumKit.EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to)
         let limits = TransactionFeeLimits(
@@ -366,7 +366,7 @@ class EthereumWalletServiceTests: XCTestCase {
     
     func test_failed_to_fetch_balance() throws {
         // Arrange
-        let cryptoValue = CryptoValue.etherFromMajor(string: "1.0")!
+        let cryptoValue = CryptoValue.ether(major: "1.0")!
         let ethereumValue = try EthereumValue(crypto: cryptoValue)
         let toAddress = EthereumKit.EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to)
         

@@ -143,8 +143,8 @@ public struct PaymentMethod: Equatable {
             return nil
         }
         self.type = methodType
-        min = FiatValue(minor: method.limits.min, currency: currency)
-        max = FiatValue(minor: method.limits.max, currency: currency)
+        self.min = FiatValue.create(minor: method.limits.min, currency: currency)!
+        self.max = FiatValue.create(minor: method.limits.max, currency: currency)!
     }
     
     public static func == (lhs: PaymentMethod, rhs: PaymentMethod) -> Bool {

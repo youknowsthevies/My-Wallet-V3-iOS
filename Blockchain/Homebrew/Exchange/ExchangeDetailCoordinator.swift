@@ -43,11 +43,8 @@ class ExchangeDetailCoordinator: NSObject {
             AssetAccountRepository.shared
         }
     }
-    fileprivate var fiatCurrencyCode: String = {
-        BlockchainSettings.App.shared.fiatCurrencyCode
-    }()
-    fileprivate var fiatCurrencySymbol: String = {
-        BlockchainSettings.App.shared.fiatCurrencySymbol
+    fileprivate var fiatCurrency: FiatCurrency = {
+        BlockchainSettings.App.shared.fiatCurrency
     }()
     fileprivate var bus: WalletActionEventBus = {
         WalletActionEventBus()
@@ -468,11 +465,11 @@ extension ExchangeDetailCoordinator {
             .subscribeOn(MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] payload in
                 guard let this = self else { return }
-                let code = this.fiatCurrencyCode
-                let minValue = FiatValue.create(amount: payload.0, currencyCode: code)
-                let maxValue = FiatValue.create(amount: payload.1, currencyCode: code)
-                let dailyValue = FiatValue.create(amount: payload.2 ?? 0, currencyCode: code)
-                let annualValue = FiatValue.create(amount: payload.3 ?? 0, currencyCode: code)
+                let fiatCurrency = this.fiatCurrency
+                let minValue = FiatValue.create(major: payload.0, currency: fiatCurrency)
+                let maxValue = FiatValue.create(major: payload.1, currency: fiatCurrency)
+                let dailyValue = FiatValue.create(major: payload.2 ?? 0, currency: fiatCurrency)
+                let annualValue = FiatValue.create(major: payload.3 ?? 0, currency: fiatCurrency)
                 
                 var alert: AlertModel
                 switch nabuError.code {
@@ -506,7 +503,7 @@ extension ExchangeDetailCoordinator {
     // MARK: AlertModel
     
     fileprivate func belowMinimumAlert(_ value: FiatValue) -> AlertModel {
-        let body = LocalizationConstants.Swap.marketMovementMinimum + " " + value.toDisplayString()
+        let body = LocalizationConstants.Swap.marketMovementMinimum + " " + value.displayString
         return AlertModel(
             headline: LocalizationConstants.Swap.marketsMoving,
             body: body,
@@ -516,7 +513,7 @@ extension ExchangeDetailCoordinator {
     }
     
     fileprivate func aboveMaximumAlert(_ value: FiatValue) -> AlertModel {
-        let body = LocalizationConstants.Swap.marketMovementMaximum + " " + value.toDisplayString()
+        let body = LocalizationConstants.Swap.marketMovementMaximum + " " + value.displayString
         return AlertModel(
             headline: LocalizationConstants.Swap.marketsMoving,
             body: body,
@@ -526,7 +523,7 @@ extension ExchangeDetailCoordinator {
     }
     
     fileprivate func aboveDailyAlert(_ value: FiatValue) -> AlertModel {
-        let body = LocalizationConstants.Swap.dailyAnnualLimitExceeded + " " + value.toDisplayString()
+        let body = LocalizationConstants.Swap.dailyAnnualLimitExceeded + " " + value.displayString
         return AlertModel(
             headline: LocalizationConstants.Swap.holdHorses,
             body: body,
@@ -536,7 +533,7 @@ extension ExchangeDetailCoordinator {
     }
     
     fileprivate func aboveAnnualAlert(_ value: FiatValue) -> AlertModel {
-        let body = LocalizationConstants.Swap.dailyAnnualLimitExceeded + " " + value.toDisplayString()
+        let body = LocalizationConstants.Swap.dailyAnnualLimitExceeded + " " + value.displayString
         return AlertModel(
             headline: LocalizationConstants.Swap.holdHorses,
             body: body,
@@ -611,7 +608,7 @@ extension ExchangeDetailCoordinator {
 extension ExchangeDetailCoordinator {
     fileprivate func tradingLimitInfo(info: @escaping (TradeLimits) -> Decimal) -> Maybe<Decimal> {
         tradeLimitsService.getTradeLimits(
-            withFiatCurrency: fiatCurrencyCode,
+            withFiatCurrency: fiatCurrency.code,
             ignoringCache: false).map { tradingLimits -> Decimal in
                 info(tradingLimits)
             }.asMaybe()
@@ -631,7 +628,7 @@ extension ExchangeDetailCoordinator {
     
     fileprivate func dailyAvailable() -> Maybe<Decimal?> {
         tradeLimitsService.getTradeLimits(
-            withFiatCurrency: fiatCurrencyCode,
+            withFiatCurrency: fiatCurrency.code,
             ignoringCache: false).asMaybe().map { limits -> Decimal? in
                 limits.daily?.available
         }
@@ -639,7 +636,7 @@ extension ExchangeDetailCoordinator {
     
     fileprivate func annualAvailable() -> Maybe<Decimal?> {
         tradeLimitsService.getTradeLimits(
-            withFiatCurrency: fiatCurrencyCode,
+            withFiatCurrency: fiatCurrency.code,
             ignoringCache: false).asMaybe().map { limits -> Decimal? in
                 limits.annual?.available
         }

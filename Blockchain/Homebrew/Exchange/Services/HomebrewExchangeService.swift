@@ -53,11 +53,11 @@ class HomebrewExchangeService: HomebrewExchangeAPI {
             return .error(HomebrewExchangeServiceError.generic)
         }
         let dateParameter = DateFormatter.iso8601Format.string(from: timestamp)
-        let userFiatCurrency = BlockchainSettings.App.shared.fiatCurrencyCode
+        let userFiatCurrency = BlockchainSettings.App.shared.fiatCurrency
         guard let endpoint = URL.endpoint(
             baseURL,
             pathComponents: ["trades"],
-            queryParameters: ["before": dateParameter, "userFiatCurrency": userFiatCurrency]
+            queryParameters: ["before": dateParameter, "userFiatCurrency": userFiatCurrency.code]
         ) else {
             return .error(HomebrewExchangeServiceError.generic)
         }

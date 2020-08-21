@@ -77,7 +77,7 @@ public final class AbsentAccountBalanceFetching: CustodialAccountBalanceFetching
     private let balanceRelay: BehaviorRelay<MoneyValue>
 
     public init(currencyType: CurrencyType, balanceType: BalanceType) {
-        balanceRelay = BehaviorRelay(value: .zero(currencyType))
+        balanceRelay = BehaviorRelay(value: .zero(currency: currencyType))
         self.balanceType = balanceType
     }
 }

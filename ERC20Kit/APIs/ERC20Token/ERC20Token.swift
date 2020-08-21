@@ -12,6 +12,7 @@ import PlatformKit
 import web3swift
 
 public protocol ERC20Token {
+    
     static var assetType: CryptoCurrency { get }
     static var name: String { get }
     static var metadataKey: String { get }
@@ -26,6 +27,7 @@ public protocol ERC20Token {
 }
 
 extension ERC20Token {
+    
     public static var name: String {
         assetType.name
     }
@@ -40,11 +42,11 @@ extension ERC20Token {
     }
 
     public static func cryptoValueFrom(minorValue: BigInt) -> ERC20TokenValue<Self>? {
-        try? ERC20TokenValue<Self>(crypto: CryptoValue.createFromMinorValue(minorValue, assetType: assetType))
+        try? ERC20TokenValue<Self>(crypto: CryptoValue.create(minor: minorValue, currency: assetType))
     }
 
     public static func cryptoValueFrom(majorValue: String) -> ERC20TokenValue<Self>? {
-        guard let cryptoValue = CryptoValue.createFromMajorValue(string: majorValue, assetType: assetType) else {
+        guard let cryptoValue = CryptoValue.create(major: majorValue, currency: assetType) else {
             return nil
         }
         return try? ERC20TokenValue<Self>(crypto: cryptoValue)
@@ -54,6 +56,6 @@ extension ERC20Token {
         guard let minorBigInt = BigInt(minorValue) else {
             return nil
         }
-        return try? ERC20TokenValue<Self>(crypto: CryptoValue.createFromMinorValue(minorBigInt, assetType: assetType))
+        return try? ERC20TokenValue<Self>(crypto: CryptoValue.create(minor: minorBigInt, currency: assetType))
     }
 }

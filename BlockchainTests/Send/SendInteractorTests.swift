@@ -281,9 +281,9 @@ final class SendInteractorTests: XCTestCase {
         pitAddressFetchResult: Result<ExchangeAddressFetcher.AddressResponseBody.State, ExchangeAddressFetcher.FetchingError>,
         transferExecutionResult: Result<Void, Error>
         ) -> SendInteracting {
-        let balance = CryptoValue.createFromMajorValue(string: balanceMajor, assetType: asset)!
-        let fee = CryptoValue.createFromMajorValue(string: feeMajor, assetType: asset)!
-        let exchange = FiatValue.create(amountString: fiatExchangeRate, currencyCode: "USD")
+        let balance = CryptoValue.create(major: balanceMajor, currency: asset)!
+        let fee = CryptoValue.create(major: feeMajor, currency: asset)!
+        let exchange = FiatValue.create(major: fiatExchangeRate, currency: .USD)!
         let services = MockSendServiceContainer(
             asset: asset,
             balance: balance,

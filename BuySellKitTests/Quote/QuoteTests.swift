@@ -37,7 +37,7 @@ extension SimpleBuyQuoteTests {
     
     private func createTestCase(locale: Locale) throws -> QuoteTestCase {
         let response = QuoteResponse(time: "2020-03-26T11:04:35.144Z", rate: "1000000", rateWithoutFee: "995000", fee: "5000")
-        let twoThousandFiveHundred = FiatValue(minor: "250000", currency: .GBP)
+        let twoThousandFiveHundred = FiatValue.create(minor: "250000", currency: .GBP)!
         let quote = try Quote(
             to: .bitcoin,
             amount: twoThousandFiveHundred,

@@ -74,6 +74,6 @@ extension String {
     }
 
     func appendCurrencySymbol() -> String {
-        BlockchainSettings.App.shared.fiatCurrencySymbol + self
+        BlockchainSettings.App.shared.fiatCurrency.symbol + self
     }
 }

@@ -230,7 +230,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
         /// One execption is the case of crypto pair change, where balance update is required.
         let volume = inputs.activeInputValue
         let fromAssetType = model.marketPair.pair.from
-        guard let cryptoValue = CryptoValue.createFromMajorValue(string: volume, assetType: fromAssetType) else { return }
+        guard let cryptoValue = CryptoValue.create(majorDisplay: volume, currency: fromAssetType) else { return }
         guard let modelCryptoValue = model.cryptoValue else { return }
         guard forcesUpdate || modelCryptoValue != cryptoValue else {
             return
@@ -280,8 +280,8 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
                 let cryptoFees = accountsAndFees.1
                 guard let account = accounts.filter({ $0.address.publicKey == address }).first else { return Observable.empty() }
                 
-                let fiatBalance = self.markets.fiatBalance(forCryptoValue: account.balance, fiatCurrencyCode: model.fiatCurrencyCode)
-                let fiatFee = self.markets.fiatBalance(forCryptoValue: cryptoFees, fiatCurrencyCode: model.fiatCurrencyCode)
+                let fiatBalance = self.markets.fiatBalance(forCryptoValue: account.balance, fiatCurrency: model.fiatCurrency)
+                let fiatFee = self.markets.fiatBalance(forCryptoValue: cryptoFees, fiatCurrency: model.fiatCurrency)
                 
                 return Observable.combineLatest(fiatBalance, fiatFee, Observable.just(account.balance), Observable.just(cryptoFees))
             }
@@ -580,13 +580,13 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
 
                             switch candidate {
                             case ..<minValue:
-                                let fiatValue = FiatValue.create(amount: minValue, currency: model.fiatCurrency)
+                                let fiatValue = FiatValue.create(major: minValue, currency: model.fiatCurrency)
                                 self.status = .error(.belowTradingLimit(fiatValue, fromAssetType))
                             case periodicLimit..<greatestFiniteMagnitude:
-                                let fiatValue = FiatValue.create(amount: daily ?? 0, currency: model.fiatCurrency)
+                                let fiatValue = FiatValue.create(major: daily ?? 0, currency: model.fiatCurrency)
                                 self.status = .error(.aboveTierLimit(fiatValue, fromAssetType))
                             case maxValue..<greatestFiniteMagnitude:
-                                let fiatValue = FiatValue.create(amount: maxValue, currency: model.fiatCurrency)
+                                let fiatValue = FiatValue.create(major: maxValue, currency: model.fiatCurrency)
                                 self.status = .error(.aboveTradingLimit(fiatValue, fromAssetType))
                             default:
                                 self.status = .valid
@@ -621,10 +621,9 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
         let volume = conversion.quote.currencyRatio.base.crypto.value
         let fromAssetType = model.marketPair.pair.from
         guard let cryptoVolume = CryptoValue
-            .createFromMajorValue(
-                string: volume,
-                assetType: fromAssetType,
-                locale: Locale(identifier: "en_US")
+            .create(
+                major: volume,
+                currency: fromAssetType
             ) else {
             return
         }
@@ -774,8 +773,8 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { (minimum, maximum) in
-                let minFiat = FiatValue.create(amount: minimum, currencyCode: model.fiatCurrencyCode)
-                let maxFiat = FiatValue.create(amount: maximum, currencyCode: model.fiatCurrencyCode)
+                let minFiat = FiatValue.create(major: minimum, currency: model.fiatCurrency)
+                let maxFiat = FiatValue.create(major: maximum, currency: model.fiatCurrency)
                 switch socketError.errorType {
                 case .currencyRatioError:
                     switch socketError.code {

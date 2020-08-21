@@ -70,8 +70,8 @@ public final class AssetBalanceFetcher: AssetBalanceFetching {
                         return MoneyValueBalancePairs(baseCurrency: baseCurrencyType, quoteCurrency: quoteCurrencyType)
                     }
                 case .crypto:
-                    let tradingBalance = trading.balance ?? .zero(baseCurrencyType)
-                    let savingBalance = savings.balance ?? .zero(baseCurrencyType)
+                    let tradingBalance = trading.balance ?? .zero(currency: baseCurrencyType)
+                    let savingBalance = savings.balance ?? .zero(currency: baseCurrencyType)
                     return MoneyValueBalancePairs(
                         wallet: try MoneyValuePair(base: walletBalance, exchangeRate: fiatPrice),
                         trading: try MoneyValuePair(base: tradingBalance, exchangeRate: fiatPrice),

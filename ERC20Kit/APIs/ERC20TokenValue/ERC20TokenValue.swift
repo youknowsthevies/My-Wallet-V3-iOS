@@ -16,6 +16,19 @@ public enum ERC20TokenValueError: Error {
 }
 
 public struct ERC20TokenValue<Token: ERC20Token>: Crypto {
+    
+    public var currency: CurrencyType {
+        .crypto(currencyType)
+    }
+    
+    public var currencyType: CryptoCurrency {
+        crypto.currencyType
+    }
+    
+    public var amount: BigInt {
+        crypto.amount
+    }
+    
     public var value: CryptoValue {
         crypto.value
     }

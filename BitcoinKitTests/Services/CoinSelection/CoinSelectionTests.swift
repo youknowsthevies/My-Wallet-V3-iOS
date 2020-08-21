@@ -36,7 +36,7 @@ class CoinSelectionTests: XCTestCase {
     }
     
     func test_ascent_draw_selection_with_change_output() throws {
-        let outputAmount = try BitcoinValue(crypto: CryptoValue.bitcoinFromSatoshis(int: 100_000))
+        let outputAmount = try BitcoinValue(crypto: CryptoValue.bitcoin(satoshis: 100_000))
         let coins = unspents([ 1, 20_000, 0, 0, 300_000, 50_000, 30_000 ])
         let strategy = AscentDrawSortingStrategy()
         let result = subject.select(inputs:
@@ -59,7 +59,7 @@ class CoinSelectionTests: XCTestCase {
     }
     
     func test_ascent_draw_selection_with_no_change_output() throws {
-        let outputAmount = try BitcoinValue(crypto: CryptoValue.bitcoinFromSatoshis(int: 472_000))
+        let outputAmount = try BitcoinValue(crypto: CryptoValue.bitcoin(satoshis: 472_000))
         let coins = unspents([ 200_000, 300_000, 500_000 ])
         let strategy = AscentDrawSortingStrategy()
         let result = subject.select(inputs:
@@ -81,7 +81,7 @@ class CoinSelectionTests: XCTestCase {
     }
     
     func test_descent_draw_selection_with_change_output() throws {
-        let outputAmount = try BitcoinValue(crypto: CryptoValue.bitcoinFromSatoshis(int: 100_000))
+        let outputAmount = try BitcoinValue(crypto: CryptoValue.bitcoin(satoshis: 100_000))
         let coins = unspents([ 1, 20_000, 0, 0, 300_000, 50_000, 30_000 ])
         let strategy = DescentDrawSortingStrategy()
         let result = subject.select(inputs:
@@ -102,7 +102,7 @@ class CoinSelectionTests: XCTestCase {
     }
     
     func test_descent_draw_selection_with_no_change_output() throws {
-        let outputAmount = try BitcoinValue(crypto: CryptoValue.bitcoinFromSatoshis(int: 485_000))
+        let outputAmount = try BitcoinValue(crypto: CryptoValue.bitcoin(satoshis: 485_000))
         let coins = unspents([ 200_000, 300_000, 500_000 ])
         let strategy = DescentDrawSortingStrategy()
         let result = subject.select(inputs:
@@ -162,7 +162,7 @@ class CoinSelectionTests: XCTestCase {
 
 private func unspents(_ values: [Int]) -> [UnspentOutput] {
     values.compactMap { value in
-        guard let bitcoinValue = try? BitcoinValue(crypto: CryptoValue.bitcoinFromSatoshis(int: abs(value))) else {
+        guard let bitcoinValue = try? BitcoinValue(crypto: CryptoValue.bitcoin(satoshis: abs(value))) else {
             return nil
         }
         return UnspentOutput.create(with: bitcoinValue)

@@ -11,15 +11,16 @@ import BigInt
 // MARK: - Bitcoin Cash
 
 extension CryptoValue {
+    
     public static var bitcoinCashZero: CryptoValue {
         zero(currency: .bitcoinCash)
     }
 
-    public static func bitcoinCashFromSatoshis(string satoshis: String) -> CryptoValue? {
-        createFromMinorValue(satoshis, assetType: .bitcoinCash)
+    public static func bitcoinCash(minorDisplay value: String) -> CryptoValue? {
+        create(minorDisplay: value, currency: .bitcoinCash)
     }
 
-    public static func bitcoinCashFromSatoshis(int satoshis: Int) -> CryptoValue {
-        CryptoValue(currencyType: .bitcoinCash, amount: BigInt(satoshis))
+    public static func bitcoinCash(satoshis: Int) -> CryptoValue {
+        CryptoValue(amount: BigInt(satoshis), currency: .bitcoinCash)
     }
 }

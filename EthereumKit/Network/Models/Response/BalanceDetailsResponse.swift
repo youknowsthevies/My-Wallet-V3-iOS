@@ -14,6 +14,6 @@ public struct BalanceDetailsResponse: Decodable {
     let nonce: UInt64
 
     var cryptoValue: CryptoValue {
-        CryptoValue.createFromMinorValue(BigInt(balance) ?? BigInt(0), assetType: .ethereum)
+        CryptoValue.create(minor: BigInt(balance) ?? BigInt(0), currency: .ethereum)
     }
 }

@@ -16,14 +16,14 @@ final class PortfolioCellPresenter {
     
     init(interactor: PortfolioCellInteractor) {
         balanceContent = .init(
-            text: interactor.balanceFiatValue.toDisplayString(),
+            text: interactor.balanceFiatValue.displayString,
             font: .systemFont(ofSize: 20.0, weight: .semibold),
             color: .white,
             alignment: .left,
             accessibility: .none
         )
         deltaContent = .init(
-            text: interactor.changeFiatValue.toDisplayString() + interactor.delta,
+            text: interactor.changeFiatValue.displayString + interactor.delta,
             font: .systemFont(ofSize: 12.0, weight: .medium),
             color: interactor.isPositive ? .positivePrice : .negativePrice,
             alignment: .left,

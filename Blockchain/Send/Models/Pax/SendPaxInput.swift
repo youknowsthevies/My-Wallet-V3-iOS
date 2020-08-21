@@ -28,6 +28,6 @@ struct SendPaxInput {
 extension SendPaxInput {
     static let empty = SendPaxInput(
         paxAmount: .zero(),
-        fiatAmount: .zero(currencyCode: BlockchainSettings.App.shared.fiatCurrencyCode)
+        fiatAmount: .zero(currency: BlockchainSettings.App.shared.fiatCurrency)!
     )
 }

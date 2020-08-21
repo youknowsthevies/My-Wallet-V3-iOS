@@ -56,7 +56,7 @@ public struct CardData {
     }
     
     public var topLimitDisplayValue: String {
-        topLimit.toDisplayString()
+        topLimit.displayString
     }
     
     public var suffix: String {

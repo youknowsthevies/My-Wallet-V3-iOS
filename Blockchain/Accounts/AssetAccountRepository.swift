@@ -296,13 +296,13 @@ extension AssetAccount {
         if assetType == .bitcoin || assetType == .bitcoinCash {
             let balanceLong = balanceFromWalletObject as? CUnsignedLongLong ?? 0
             let balanceDecimal = Decimal(balanceLong) / Decimal(Constants.Conversions.satoshi)
-            let balanceString = (balanceDecimal as NSDecimalNumber).description(withLocale: Locale.current)
+            let balanceString = (balanceDecimal as NSDecimalNumber).description(withLocale: Locale.Posix)
             let balanceBigUInt = BigUInt(balanceString, decimals: assetType.maxDecimalPlaces) ?? 0
             let balanceBigInt = BigInt(balanceBigUInt)
-            balance = CryptoValue.createFromMinorValue(balanceBigInt, assetType: assetType)
+            balance = CryptoValue.create(minor: balanceBigInt, currency: assetType)
         } else {
             let balanceString = balanceFromWalletObject as? String ?? "0"
-            balance = CryptoValue.createFromMajorValue(string: balanceString, assetType: assetType) ?? CryptoValue.zero(currency: assetType)
+            balance = CryptoValue.create(major: balanceString, currency: assetType) ?? CryptoValue.zero(currency: assetType)
         }
         return AssetAccount(
             index: index,

@@ -39,14 +39,14 @@ public enum CurrencyType: Equatable, Hashable {
     case crypto(CryptoCurrency)
     
     /// Instantiate a Currency type from a currency code (e.g. `EUR`, `BTC`)
-    /// - Parameter currency: a currency code, in the case of fiat any ISO 4217 code, for crypto any supported crypto
+    /// - Parameter code: a currency code, in the case of fiat any ISO 4217 code, for crypto any supported crypto
     /// - Throws: if the value is not a know fiat or crypto
-    public init(currency: String) throws {
-        if let cryptoCurrency = CryptoCurrency(code: currency) {
+    public init(code: String) throws {
+        if let cryptoCurrency = CryptoCurrency(code: code) {
             self = .crypto(cryptoCurrency)
             return
         }
-        if let fiatCurrency = FiatCurrency(code: currency) {
+        if let fiatCurrency = FiatCurrency(code: code) {
             self = .fiat(fiatCurrency)
             return
         }

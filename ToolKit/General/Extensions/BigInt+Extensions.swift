@@ -18,6 +18,7 @@ extension BigUInt {
 }
 
 extension BigInt {
+    
     public func decimalDivision(divisor: BigInt) -> Decimal {
         let (quotient, remainder) = quotientAndRemainder(dividingBy: divisor)
         return Decimal(string: String(quotient))!

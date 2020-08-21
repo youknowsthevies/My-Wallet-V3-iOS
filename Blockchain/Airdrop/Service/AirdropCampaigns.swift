@@ -107,7 +107,7 @@ struct AirdropCampaigns {
             let withdrawalAt: String
             
             var fiat: FiatValue {
-                FiatValue.create(amount: fiatValue / 100, currencyCode: fiatCurrency)
+                FiatValue.create(major: fiatValue / 100, currency: FiatCurrency(code: fiatCurrency)!)
             }
                     
             var withdrawalDate: Date! {
@@ -129,9 +129,9 @@ struct AirdropCampaigns {
                 guard let amount = BigInt("\(withdrawalQuantity)") else {
                     return nil
                 }
-                return CryptoValue.createFromMinorValue(
-                    amount,
-                    assetType: cryptoCurrency
+                return CryptoValue.create(
+                    minor: amount,
+                    currency: cryptoCurrency
                 )
             }
             

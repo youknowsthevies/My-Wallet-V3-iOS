@@ -12,15 +12,16 @@ import Foundation
 // MARK: - Algorand
 
 extension CryptoValue {
+    
     public static var algorandZero: CryptoValue {
         zero(currency: .algorand)
     }
 
     public static func algorand(minor: BigInt) -> CryptoValue {
-        .createFromMinorValue(minor, assetType: .algorand)
+        create(minor: minor, currency: .algorand)
     }
 
-    public static func algorand(major: String) -> CryptoValue! {
-        .createFromMajorValue(string: major, assetType: .algorand)
+    public static func algorand(majorDisplay: String) -> CryptoValue! {
+        create(majorDisplay: majorDisplay, currency: .algorand)
     }
 }

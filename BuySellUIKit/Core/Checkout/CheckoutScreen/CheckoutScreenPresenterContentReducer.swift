@@ -139,7 +139,7 @@ final class CheckoutScreenContentReducer {
             .loaded(next: .init(text: formattedTime))
         )
         buyingFeeLineItemCellPresenter.interactor.description.stateRelay.accept(
-            .loaded(next: .init(text: data.fee.toDisplayString()))
+            .loaded(next: .init(text: data.fee.displayString))
         )
 
         cryptoAmountLabelPresenter.interactor.stateRelay.accept(
@@ -172,7 +172,7 @@ final class CheckoutScreenContentReducer {
 
         // MARK: Presenters Setup
 
-        let totalCost = data.order.fiatValue.toDisplayString()
+        let totalCost = data.order.fiatValue.displayString
         totalCostLineItemCellPresenter.interactor.description.stateRelay.accept(
             .loaded(next: .init(text: totalCost))
         )

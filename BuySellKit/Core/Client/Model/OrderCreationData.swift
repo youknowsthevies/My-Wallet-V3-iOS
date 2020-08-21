@@ -80,7 +80,7 @@ struct OrderPayload {
             self.paymentType = paymentType.rawType
             input = .init(
                 symbol: fiatValue.currencyCode,
-                amount: fiatValue.string
+                amount: fiatValue.minorString
             )
             output = .init(symbol: cryptoCurrency.code)
             pair = "\(output.symbol)-\(input.symbol)"

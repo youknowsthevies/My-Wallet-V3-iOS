@@ -17,7 +17,7 @@ public enum CryptoPrecision {
     case long
 }
 
-class CryptoFormatterProvider {
+final class CryptoFormatterProvider {
 
     static let shared = CryptoFormatterProvider()
 
@@ -47,7 +47,8 @@ class CryptoFormatterProvider {
     }
 }
 
-class CryptoFormatter {
+final class CryptoFormatter {
+    
     private let shortFormatter: NumberFormatter
     private let longFormatter: NumberFormatter
     private let cryptoCurrency: CryptoCurrency
@@ -55,13 +56,13 @@ class CryptoFormatter {
     init(locale: Locale, cryptoCurrency: CryptoCurrency) {
         self.shortFormatter = NumberFormatter.cryptoFormatter(
             locale: locale,
-            minfractionDigits: 1,
-            maxfractionDigits: cryptoCurrency.maxDisplayableDecimalPlaces
+            minFractionDigits: 1,
+            maxFractionDigits: cryptoCurrency.maxDisplayableDecimalPlaces
         )
         self.longFormatter = NumberFormatter.cryptoFormatter(
             locale: locale,
-            minfractionDigits: 1,
-            maxfractionDigits: cryptoCurrency.maxDecimalPlaces
+            minFractionDigits: 1,
+            maxFractionDigits: cryptoCurrency.maxDecimalPlaces
         )
         self.cryptoCurrency = cryptoCurrency
     }
@@ -77,13 +78,13 @@ class CryptoFormatter {
 }
 
 extension NumberFormatter {
-    static func cryptoFormatter(locale: Locale, minfractionDigits: Int, maxfractionDigits: Int) -> NumberFormatter {
+    static func cryptoFormatter(locale: Locale, minFractionDigits: Int, maxFractionDigits: Int) -> NumberFormatter {
         let formatter = NumberFormatter()
         formatter.locale = locale
         formatter.numberStyle = .decimal
         formatter.usesGroupingSeparator = true
-        formatter.minimumFractionDigits = minfractionDigits
-        formatter.maximumFractionDigits = maxfractionDigits
+        formatter.minimumFractionDigits = minFractionDigits
+        formatter.maximumFractionDigits = maxFractionDigits
         formatter.roundingMode = .down
         return formatter
     }

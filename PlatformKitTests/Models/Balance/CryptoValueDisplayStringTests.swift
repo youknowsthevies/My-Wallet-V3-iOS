@@ -12,7 +12,7 @@ import XCTest
 
 class CryptoValueDisplayStringTests: XCTestCase {
     func testBTC() {
-        let minor: CryptoValue = CryptoValue.createFromMinorValue(BigInt("1"), assetType: .bitcoin)
+        let minor: CryptoValue = CryptoValue.create(minor: BigInt("1"), currency: .bitcoin)
         let cases: [(locale: Locale, string: String)] = [
             (.US, "0.00000001 BTC"),
             (.Canada, "0.00000001 BTC"),

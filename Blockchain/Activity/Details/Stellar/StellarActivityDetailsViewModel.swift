@@ -29,8 +29,8 @@ struct StellarActivityDetailsViewModel: Equatable {
         transactionHash = details.transactionHash
         cryptoAmount = details.cryptoAmount.toDisplayString(includeSymbol: true)
         if let price = price {
-            amount = "\(cryptoAmount) at \(price.toDisplayString())"
-            value = details.cryptoAmount.convertToFiatValue(exchangeRate: price).toDisplayString()
+            amount = "\(cryptoAmount) at \(price.displayString)"
+            value = details.cryptoAmount.convertToFiatValue(exchangeRate: price).displayString
         } else {
             amount = cryptoAmount
             value = ""

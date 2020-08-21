@@ -85,10 +85,10 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
         dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
-        totalCostPresenter = TransactionalLineItem.totalCost(event.fiatValue.toDisplayString()).defaultPresenter(
+        totalCostPresenter = TransactionalLineItem.totalCost(event.fiatValue.displayString).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
-        feePresenter = TransactionalLineItem.buyingFee(event.fee.toDisplayString()).defaultPresenter(
+        feePresenter = TransactionalLineItem.buyingFee(event.fee.displayString).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
         paymentMethodPresenter = TransactionalLineItem.paymentMethod(paymentMethod).defaultPresenter(

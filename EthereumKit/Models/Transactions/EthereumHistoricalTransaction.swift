@@ -73,7 +73,7 @@ public struct EthereumHistoricalTransaction: HistoricalTransaction {
             from: response.from,
             accountAddress: accountAddress
         )
-        self.amount = CryptoValue.etherFromMinor(string: response.value) ?? .etherZero
+        self.amount = CryptoValue.ether(minor: response.value) ?? .etherZero
         self.transactionHash = response.hash
         self.createdAt = response.createdAt
         self.fee = EthereumHistoricalTransaction.fee(
@@ -110,7 +110,7 @@ public struct EthereumHistoricalTransaction: HistoricalTransaction {
             return CryptoValue.etherZero
         }
         let fee = BigInt(stringLiteral: gasPrice) * BigInt(stringLiteral: gasUsed)
-        return CryptoValue.createFromMinorValue(fee, assetType: .ethereum)
+        return CryptoValue.create(minor: fee, currency: .ethereum)
     }
     
     private static func confirmations(latestBlock: Int, blockNumber: String?) -> Int {

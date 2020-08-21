@@ -108,11 +108,11 @@ class ERC20ServiceTests: XCTestCase {
             data: Data.fromHex(dataHexString)
         )
         
-        let cryptoValue = CryptoValue.etherFromMajor(string: "10.0")!
+        let cryptoValue = CryptoValue.ether(major: "10.0")!
         ethereumAPIAccountClient.balanceDetailsValue = Single.just(.init(balance: cryptoValue.amount.string(), nonce: 1))
         
         let to = EthereumKit.EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to)
-        let amountCrypto = CryptoValue.paxFromMajor(string: "1.0")!
+        let amountCrypto = CryptoValue.pax(major: "1.0")!
         let amount = try ERC20TokenValue<PaxToken>(crypto: amountCrypto)
         let transferObservable = subject.transfer(to: to, amount: amount).asObservable()
         
@@ -135,15 +135,15 @@ class ERC20ServiceTests: XCTestCase {
     func test_build_transfer_amount_over_token_balance() throws {
         // Arrange
         
-        let ethBalance = CryptoValue.etherFromMajor(string: "10.0")!
+        let ethBalance = CryptoValue.ether(major: "10.0")!
         ethereumAPIAccountClient.balanceDetailsValue = Single.just(.init(balance: ethBalance.amount.string(), nonce: 1))
 
         let accountResponse = ERC20AccountSummaryResponse<PaxToken>(
-            balance: CryptoValue.paxFromMajor(string: "0.1")!.amount.string(unitDecimals: 0)
+            balance: CryptoValue.pax(major: "0.1")!.amount.string(unitDecimals: 0)
         )
         accountAPIClient.fetchAccountSummaryResponse = Single<ERC20AccountSummaryResponse<PaxToken>>.just(accountResponse)
 
-        let cryptoValue = CryptoValue.paxFromMajor(string: "1.0")!
+        let cryptoValue = CryptoValue.pax(major: "1.0")!
         let amount = try ERC20TokenValue<PaxToken>(crypto: cryptoValue)
         let to = EthereumKit.EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to)
         
@@ -163,7 +163,7 @@ class ERC20ServiceTests: XCTestCase {
     
     func test_build_transfer_ethereum_fees_over_ethereum_balance() throws {
         // Arrange
-        let cryptoValue = CryptoValue.paxFromMajor(string: "1.00")!
+        let cryptoValue = CryptoValue.pax(major: "1.00")!
         let amount = try ERC20TokenValue<PaxToken>(crypto: cryptoValue)
         let to = EthereumKit.EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to)
 
@@ -200,7 +200,7 @@ class ERC20ServiceTests: XCTestCase {
     
     func test_failed_to_fetch_ether_balance() throws {
         // Arrange
-        let cryptoValue = CryptoValue.paxFromMajor(string: "1.00")!
+        let cryptoValue = CryptoValue.pax(major: "1.00")!
         let amount = try ERC20TokenValue<PaxToken>(crypto: cryptoValue)
         let to = EthereumKit.EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to)
 
@@ -222,7 +222,7 @@ class ERC20ServiceTests: XCTestCase {
     
     func test_failed_to_fetch_token_balance() throws {
         // Arrange
-        let cryptoValue = CryptoValue.paxFromMajor(string: "1.00")!
+        let cryptoValue = CryptoValue.pax(major: "1.00")!
         let amount = try ERC20TokenValue<PaxToken>(crypto: cryptoValue)
         let to = EthereumKit.EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to)
         

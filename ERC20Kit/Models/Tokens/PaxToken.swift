@@ -16,6 +16,6 @@ public struct PaxToken: ERC20Token {
 
     //swiftlint:disable:next force_try
     public static var smallestSpendableValue: ERC20TokenValue<PaxToken> = try! ERC20TokenValue<PaxToken>(
-        crypto: CryptoValue.createFromMajorValue(string: "0.01", assetType: assetType, locale: Locale.Posix)!
+        crypto: CryptoValue.create(major: "0.01", currency: .pax)!
     )
 }

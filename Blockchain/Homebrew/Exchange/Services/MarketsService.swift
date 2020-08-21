@@ -30,7 +30,7 @@ protocol ExchangeMarketsAPI {
     ///   - assetAccount: the AssetAccount
     ///   - fiatCurrencyCode: the currency code to compute the balance in (e.g. "USD")
     /// - Returns: an Observable returning the fiat balance
-    func fiatBalance(forCryptoValue cryptoValue: CryptoValue, fiatCurrencyCode: String) -> Observable<FiatValue>
+    func fiatBalance(forCryptoValue cryptoValue: CryptoValue, fiatCurrency: FiatCurrency) -> Observable<FiatValue>
 
     // TICKET: IOS-1663 - return exchange rates for pairs that are both servier and app
     // supported
@@ -206,17 +206,17 @@ extension MarketsService: ExchangeMarketsAPI {
         SocketManager.shared.send(message: message)
     }
 
-    func fiatBalance(forCryptoValue cryptoValue: CryptoValue, fiatCurrencyCode: String) -> Observable<FiatValue> {
+    func fiatBalance(forCryptoValue cryptoValue: CryptoValue, fiatCurrency: FiatCurrency) -> Observable<FiatValue> {
 
         // Don't need to get exchange rates if the account balance is 0
         guard cryptoValue.amount != 0 else {
-            return Observable.just(FiatValue.zero(currencyCode: fiatCurrencyCode))
+            return Observable.just(FiatValue.zero(currency: fiatCurrency))
         }
 
         return bestExchangeRates().map { rates in
             rates.convert(
                 balance: cryptoValue,
-                toCurrency: fiatCurrencyCode
+                toCurrency: fiatCurrency
             )
         }
     }

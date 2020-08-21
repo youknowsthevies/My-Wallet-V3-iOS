@@ -26,38 +26,37 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
     // MARK: - Private Properties
     
     private lazy var setup: Void = {
-        Observable
-        .combineLatest(balanceProvider.fiatBalance, balanceChangeProvider.change)
-        .throttle(.milliseconds(300), scheduler: MainScheduler.instance)
-        .map { (balance, change) -> PortfolioBalanceChange in
-            guard let currentBalance = balance.value else { return .zero }
-            guard change.containsValue else { return .zero }
-            guard let changeValue = change.totalFiat.value else { return .zero }
-            
-            let percentage: Decimal // in range [0...1]
-            if currentBalance.isZero {
-                percentage = 0
-            } else {
-                let previousBalance = try currentBalance - changeValue
+        Observable.combineLatest(balanceProvider.fiatBalance, balanceChangeProvider.change)
+            .throttle(.milliseconds(300), scheduler: MainScheduler.instance)
+            .map { (balance, change) -> PortfolioBalanceChange in
+                guard let currentBalance = balance.value else { return .zero }
+                guard change.containsValue else { return .zero }
+                guard let changeValue = change.totalFiat.value else { return .zero }
                 
-                /// `zero` shouldn't be possible but is handled in any case
-                /// in a wa that would not throw
-                if previousBalance.isZero {
+                let percentage: Decimal // in range [0...1]
+                if currentBalance.isZero {
                     percentage = 0
                 } else {
-                    let precentageFiat = try changeValue / previousBalance
-                    percentage = precentageFiat.amount
+                    let previousBalance = try currentBalance - changeValue
+                    
+                    /// `zero` shouldn't be possible but is handled in any case
+                    /// in a wa that would not throw
+                    if previousBalance.isZero {
+                        percentage = 0
+                    } else {
+                        let precentageFiat = try changeValue / previousBalance
+                        percentage = precentageFiat.displayMajorValue
+                    }
                 }
+                return .init(
+                    balance: currentBalance.displayMajorValue,
+                    changePercentage: percentage.doubleValue,
+                    change: changeValue.displayMajorValue
+                )
             }
-            return .init(
-                balance: currentBalance.amount,
-                changePercentage: percentage.doubleValue,
-                change: changeValue.amount
-            )
-        }
-        .catchErrorJustReturn(.zero)
-        .bindAndCatch(to: changeRelay)
-        .disposed(by: disposeBag)
+            .catchErrorJustReturn(.zero)
+            .bindAndCatch(to: changeRelay)
+            .disposed(by: disposeBag)
     }()
     
     private let balanceProvider: BalanceProviding

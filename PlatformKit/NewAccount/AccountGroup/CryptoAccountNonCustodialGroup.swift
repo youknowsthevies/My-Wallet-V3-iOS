@@ -23,12 +23,12 @@ public class CryptoAccountNonCustodialGroup: AccountGroup {
 
     public var balance: Single<MoneyValue> {
         if accounts.isEmpty {
-            return .just(.zero(asset))
+            return .just(.zero(currency: asset))
         }
         let asset = self.asset
         return Single.zip( accounts.map(\.balance) )
             .map { values -> MoneyValue in
-                try values.reduce(MoneyValue.zero(asset), +)
+                try values.reduce(MoneyValue.zero(currency: asset), +)
         }
     }
 

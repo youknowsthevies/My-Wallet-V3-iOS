@@ -62,8 +62,8 @@ public struct SavingsAccountLimits: Decodable {
         lockUpDuration = try values.decode(Double.self, forKey: .lockUpDuration)
         let withdrawal = try values.decode(Int64.self, forKey: .maxWithdrawalAmount)
         let deposit = try values.decode(Int.self, forKey: .minDepositAmount)
-        maxWithdrawalAmount = FiatValue(minor: BigInt(withdrawal), currency: currency)
-        minDepositAmount = FiatValue(minor: BigInt(deposit), currency: currency)
+        maxWithdrawalAmount = FiatValue.create(minor: BigInt(withdrawal), currency: currency)
+        minDepositAmount = FiatValue.create(minor: BigInt(deposit), currency: currency)
     }
 }
 

@@ -20,7 +20,7 @@ public struct SuggestedAmounts {
         amountsPerCurrency = response.amounts
             .reduce(into: [FiatCurrency: [FiatValue]]()) { result, element in
                 guard let currency = FiatCurrency(code: element.key) else { return }
-                result[currency] = element.value.map { FiatValue(minor: $0, currency: currency) }
+                result[currency] = element.value.map { FiatValue.create(minor: $0, currency: currency)! }
             }
     }
 }

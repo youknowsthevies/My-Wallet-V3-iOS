@@ -79,8 +79,8 @@ public struct MoneyValuePair: Equatable {
     }
     
     public static func zero(baseCurrency: CurrencyType, quoteCurrency: CurrencyType) -> MoneyValuePair {
-        let base = MoneyValue.zero(baseCurrency)
-        let quote = MoneyValue.zero(quoteCurrency)
+        let base = MoneyValue.zero(currency: baseCurrency)
+        let quote = MoneyValue.zero(currency: quoteCurrency)
         return MoneyValuePair(base: base, quote: quote)
     }
     

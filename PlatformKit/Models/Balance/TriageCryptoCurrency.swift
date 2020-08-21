@@ -71,8 +71,8 @@ public enum TriageCryptoCurrency: Equatable {
         
         let formatter = NumberFormatter.cryptoFormatter(
             locale: locale,
-            minfractionDigits: 1,
-            maxfractionDigits: maxDisplayableDecimalPlaces
+            minFractionDigits: 1,
+            maxFractionDigits: maxDisplayableDecimalPlaces
         )
         return formatter.string(from: NSDecimalNumber(decimal: majorValue)) ?? "\(majorValue)"
     }

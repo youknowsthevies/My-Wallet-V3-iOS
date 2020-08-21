@@ -139,15 +139,16 @@ struct ExchangeRates: SocketMessageCodable {
 }
 
 extension ExchangeRates {
-    func convert(balance: CryptoValue, toCurrency: String) -> FiatValue {
-        let fromCurrency = balance.currencyType.code
-        if let matchingPair = pairRate(fromCurrency: fromCurrency, toCurrency: toCurrency) {
-            let price: BigInt = BigInt(string: matchingPair.price, unitDecimals: 2) ?? 1
-            let conversion = price * balance.amount
-            let amountString = conversion.string(unitDecimals: balance.currencyType.maxDecimalPlaces + 2)
-            return FiatValue.create(amountString: amountString, currencyCode: toCurrency, locale: .US)
+    
+    func convert(balance: CryptoValue, toCurrency: FiatCurrency) -> FiatValue {
+        let fromCurrency = balance.currencyType
+        guard let matchingPair = pairRate(fromCurrency: fromCurrency.code, toCurrency: toCurrency.code) else {
+            return FiatValue.zero(currency: toCurrency)
         }
-        return FiatValue.zero(currencyCode: toCurrency)
+        let price = BigInt(string: matchingPair.price, unitDecimals: 2) ?? 1
+        let conversion = price * balance.amount
+        let amountString = conversion.string(unitDecimals: balance.currencyType.maxDecimalPlaces + 2)
+        return FiatValue.create(major: amountString, currency: toCurrency)!
     }
 
     func pairRate(fromCurrency: String, toCurrency: String) -> CurrencyPairRate? {

@@ -8,6 +8,7 @@
 
 import BigInt
 import PlatformKit
+import ToolKit
 
 struct QuoteResponse: Decodable {
     let time: String
@@ -51,16 +52,16 @@ public struct Quote {
         guard let feeRateMinor = Decimal(string: response.fee) else {
             throw SetupError.feeParsing
         }
-        let majorEstimatedAmount: Decimal = amount.minorAmount.decimalDivision(divisor: rate)
+        let majorEstimatedAmount: Decimal = amount.amount.decimalDivision(divisor: rate)
         /// Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
-        guard let estimatedAmount = CryptoValue.createFromMajorValue(string: "\(majorEstimatedAmount)", assetType: cryptoCurrency, locale: .US)
+        guard let estimatedAmount = CryptoValue.create(major: "\(majorEstimatedAmount)", currency: cryptoCurrency)
             else { throw SetupError.createFromMajorValue }
         self.estimatedAmount = estimatedAmount
         let feeAmountMinor = feeRateMinor * estimatedAmount.displayMajorValue
         /// Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
-        self.fee = FiatValue(minor: "\(feeAmountMinor)", currency: amount.currencyType, locale: .US)
+        self.fee = FiatValue.create(minor: "\(feeAmountMinor)", currency: amount.currencyType)!
         self.time = time
-        self.rate = FiatValue(minor: response.rate, currency: amount.currencyType)
+        self.rate = FiatValue.create(minor: response.rate, currency: amount.currencyType)!
     }
 }
 

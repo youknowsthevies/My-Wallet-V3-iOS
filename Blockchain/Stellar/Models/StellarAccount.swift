@@ -33,7 +33,7 @@ extension StellarAccount {
         let assetAccount = AssetAccount(
             index: 0,
             address: assetAddress,
-            balance: CryptoValue.lumensZero,
+            balance: CryptoValue.stellarZero,
             name: LocalizationConstants.Stellar.defaultLabelName
         )
         return StellarAccount(

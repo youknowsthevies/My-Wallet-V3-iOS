@@ -43,7 +43,7 @@ public final class PairExchangeService: PairExchangeServiceAPI {
                         PriceQuoteAtTime(
                             timestamp: Date(),
                             volume24h: nil,
-                            moneyValue: .zero(fiatCurrency)
+                            moneyValue: .zero(currency: fiatCurrency)
                         )
                     )
                     .asObservable()

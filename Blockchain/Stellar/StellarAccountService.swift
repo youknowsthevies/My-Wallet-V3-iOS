@@ -81,7 +81,7 @@ class StellarAccountService: StellarAccountAPI {
             .flatMapLatest(weak: self) { (self, _) in
                 self.balance.asObservable()
             }
-            .catchErrorJustReturn(CryptoValue.lumensZero)
+            .catchErrorJustReturn(CryptoValue.stellarZero)
             .bindAndCatch(to: balanceRelay)
             .disposed(by: disposeBag)
     }
@@ -191,7 +191,7 @@ class StellarAccountService: StellarAccountAPI {
                 guard let baseReserveInXlm = ledger.baseReserveInXlm else {
                     return Completable.empty()
                 }
-                guard let amountCrypto = CryptoValue.lumensFromMajor(string: (amount as NSDecimalNumber).description(withLocale: Locale.current) ) else {
+                guard let amountCrypto = CryptoValue.stellar(major: (amount as NSDecimalNumber).description(withLocale: Locale.Posix)) else {
                     return Completable.empty()
                 }
                 guard amountCrypto.amount >= baseReserveInXlm.amount * 2 else {
@@ -283,7 +283,7 @@ class StellarAccountService: StellarAccountAPI {
 extension AccountResponse {
     func toStellarAccount() -> StellarAccount {
         let totalBalanceDecimal = balances.reduce(Decimal(0)) { $0 + (Decimal(string: $1.balance) ?? 0) }
-        let totalBalance = CryptoValue.lumensFromMajor(string: (totalBalanceDecimal as NSDecimalNumber).description(withLocale: Locale.current)) ?? CryptoValue.lumensZero
+        let totalBalance = CryptoValue.stellar(major: (totalBalanceDecimal as NSDecimalNumber).description(withLocale: Locale.Posix)) ?? CryptoValue.stellarZero
         let assetAddress = AssetAddressFactory.create(
             fromAddressString: accountId,
             assetType: .stellar

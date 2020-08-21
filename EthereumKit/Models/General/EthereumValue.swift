@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BigInt
 import PlatformKit
 
 enum EthereumValueError: Error {
@@ -13,6 +14,15 @@ enum EthereumValueError: Error {
 }
 
 public struct EthereumValue: Crypto {
+    
+    public let currency: CurrencyType = .crypto(.ethereum)
+    
+    public let currencyType: CryptoCurrency = .ethereum
+    
+    public var amount: BigInt {
+        crypto.amount
+    }
+    
     public var value: CryptoValue {
         crypto.value
     }
