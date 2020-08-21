@@ -51,7 +51,7 @@ public final class DefaultWalletActionCellPresenter {
         case .deposit:
             switch currencyType {
             case .crypto:
-                description = .init(format: LocalizationId.Deposit.Crypto.description, currencyType.symbol)
+                description = String(format: LocalizationId.Deposit.Crypto.description, currencyType.symbol)
             case .fiat:
                 description = LocalizationId.Deposit.Fiat.description
             }
