@@ -124,6 +124,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
     // MARK: - Setup
     
     public init(cacheSuite: CacheSuite = resolve(),
+                kycTiersService: KYCTiersServiceAPI = resolve(),
                 recoveryStatusProviding: RecoveryPhraseStatusProviding) {
         self.recoveryStatusProviding = recoveryStatusProviding
         self.cacheSuite = cacheSuite
@@ -148,9 +149,15 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
         
         depositRelay
             .observeOn(MainScheduler.instance)
-            .bindAndCatch(weak: self) { (self) in
-                let nextStates = self.statesRelay.value.states(byAppending: .activity)
-                self.apply(action: .next(.deposit), states: nextStates)
+            .flatMap {
+                kycTiersService
+                .fetchTiers()
+                .asObservable()
+            }
+            .map { $0.isTier2Approved }
+            .bindAndCatch(weak: self) { (self, isKYCApproved) in
+                let nextStates = self.statesRelay.value.states(byAppending: .deposit(isKYCApproved: isKYCApproved))
+                self.apply(action: .next(.deposit(isKYCApproved: isKYCApproved)), states: nextStates)
             }
             .disposed(by: disposeBag)
         

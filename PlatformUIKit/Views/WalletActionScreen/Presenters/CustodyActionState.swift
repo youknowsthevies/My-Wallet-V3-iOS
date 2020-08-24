@@ -31,7 +31,7 @@ public enum CustodyActionState {
     case activity
     
     /// Route to fiat deposit
-    case deposit
+    case deposit(isKYCApproved: Bool)
     
     /// Route to buy
     case buy
