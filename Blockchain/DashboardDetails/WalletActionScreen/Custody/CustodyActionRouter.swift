@@ -106,8 +106,13 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
             showActivityScreen()
         case .buy:
             showBuy()
-        case .deposit:
-            showPaymentMethods()
+        case .deposit(isKYCApproved: let value):
+            switch value {
+            case true:
+                showPaymentMethods()
+            case false:
+                showCashIdentityViewController()
+            }
         case .withdrawalAfterBackup:
             /// `Backup` has already been dismissed as `Backup`
             /// has ended. `CustodyActionScreen` has been dismissed
@@ -152,6 +157,13 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
             guard let self = self else { return }
             self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
             self.tabSwapping.switchToActivity(currency: currency)
+        }
+    }
+    
+    private func showCashIdentityViewController() {
+        guard case .fiat = currency else { return }
+        dismissTopMost {
+            AppCoordinator.shared.showCashIdentityVerificationScreen()
         }
     }
     
