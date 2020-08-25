@@ -19,8 +19,8 @@ import ToolKit
 
 protocol TradeExecutionServiceDependenciesAPI {
     var assetAccountRepository: AssetAccountRepositoryAPI { get }
-    var erc20AccountRepository: ERC20AssetAccountRepository<PaxToken> { get }
-    var erc20Service: AnyERC20Service<PaxToken> { get }
+    var paxAccountRepository: ERC20AssetAccountRepository<PaxToken> { get }
+    var paxService: AnyERC20Service<PaxToken> { get }
     var ethereumWalletService: EthereumWalletServiceAPI { get }
     var feeService: FeeServiceAPI { get }
     var stellar: StellarDependenciesAPI { get }
@@ -31,33 +31,31 @@ class TradeExecutionService: TradeExecutionAPI {
     // MARK: Models
     
     struct Dependencies: TradeExecutionServiceDependenciesAPI {
+
         let assetAccountRepository: AssetAccountRepositoryAPI
         let feeService: FeeServiceAPI
         let stellar: StellarDependenciesAPI
-        private let paxServiceProvider: PAXServiceProvider
-        
-        var erc20Service: AnyERC20Service<PaxToken> {
-            AnyERC20Service<PaxToken>(paxServiceProvider.services.paxService)
-        }
-        
-        var erc20AccountRepository: ERC20AssetAccountRepository<PaxToken> {
-            resolve()
-        }
-        
+        let paxService: AnyERC20Service<PaxToken>
+        let paxAccountRepository: ERC20AssetAccountRepository<PaxToken>
         var ethereumWalletService: EthereumWalletServiceAPI {
             paxServiceProvider.services.walletService
         }
-        
+
+        private let paxServiceProvider: PAXServiceProvider
+
         init(
+            paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = resolve(),
             repository: AssetAccountRepositoryAPI = AssetAccountRepository.shared,
             cryptoFeeService: FeeServiceAPI = FeeService.shared,
             xlmServiceProvider: StellarServiceProvider = StellarServiceProvider.shared,
             serviceProvider: PAXServiceProvider = PAXServiceProvider.shared
         ) {
+            self.paxAccountRepository = paxAccountRepository
             assetAccountRepository = repository
             feeService = cryptoFeeService
             self.stellar = xlmServiceProvider.services
             self.paxServiceProvider = serviceProvider
+            paxService = AnyERC20Service<PaxToken>(paxServiceProvider.services.paxService)
         }
     }
     
@@ -313,11 +311,11 @@ class TradeExecutionService: TradeExecutionAPI {
             else {
                 return
             }
-            dependencies.erc20Service.evaluate(amount: tokenValue)
+            dependencies.paxService.evaluate(amount: tokenValue)
                 .subscribeOn(MainScheduler.instance)
                 .observeOn(MainScheduler.asyncInstance)
                 .flatMap(weak: self, { (self, _) -> Single<EthereumTransactionCandidate> in
-                    self.dependencies.erc20Service.transfer(to: address, amount: tokenValue)
+                    self.dependencies.paxService.transfer(to: address, amount: tokenValue)
                 })
                 .observeOn(MainScheduler.instance)
                 .subscribe(onSuccess: { [weak self] candidate in
@@ -551,7 +549,7 @@ class TradeExecutionService: TradeExecutionAPI {
         Result { try ERC20TokenValue<Token>(crypto: volume) }
             .single
             .flatMap(weak: self) { (self, tokenValue) -> Single<TransactionValidationResult> in
-                self.dependencies.erc20Service.validateCryptoAmount(amount: tokenValue)
+                self.dependencies.paxService.validateCryptoAmount(amount: tokenValue)
             }
     }
 
@@ -806,7 +804,7 @@ private extension TradeExecutionService {
                 .map { $0.address.publicKey }
         }
         if assetType == .pax {
-            return dependencies.erc20AccountRepository.assetAccountDetails
+            return dependencies.paxAccountRepository.assetAccountDetails
                 .map { $0.account.accountAddress }
         }
         guard let receiveAddress = wallet.getReceiveAddress(forAccount: account, assetType: assetType.legacy) else {
