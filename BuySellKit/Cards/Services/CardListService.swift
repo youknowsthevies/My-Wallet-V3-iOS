@@ -50,7 +50,6 @@ public final class CardListService: CardListServiceAPI {
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     
     private let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
-    private let semaphore = DispatchSemaphore(value: 1)
     
     // MARK: - Setup
     
@@ -100,7 +99,6 @@ public final class CardListService: CardListServiceAPI {
     public func fetchCards() -> Single<[CardData]> {
         Single
             .create(weak: self) { (self, observer) -> Disposable in
-                
                 let disposable = self.createFetchSingle()
                     .subscribe { event in
                         switch event {
