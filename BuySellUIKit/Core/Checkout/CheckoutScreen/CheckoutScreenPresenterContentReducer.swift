@@ -295,12 +295,14 @@ final class CheckoutScreenContentReducer {
 
 extension BuySellKit.PaymentMethod.MethodType {
     fileprivate func checkoutNotice(cryptoCurrency: CryptoCurrency) -> String {
-        typealias LocalizedString = LocalizationConstants.SimpleBuy.Checkout
+        typealias LocalizedString = LocalizationConstants.SimpleBuy.Checkout.Notice
         switch self {
-        case .card, .funds:
-            return LocalizedString.finalAmountChangeNotice
+        case .card:
+            return LocalizedString.cards
+        case .funds:
+            return LocalizedString.funds
         case .bankTransfer:
-            return "\(LocalizedString.BankNotice.prefix) \(cryptoCurrency.displayCode) \(LocalizedString.BankNotice.suffix)"
+            return "\(LocalizedString.BankTransfer.prefix) \(cryptoCurrency.displayCode) \(LocalizedString.BankTransfer.suffix)"
         }
     }
 }

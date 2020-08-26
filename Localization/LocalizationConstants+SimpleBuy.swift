@@ -458,21 +458,29 @@ extension LocalizationConstants.SimpleBuy {
             )
         }
 
-        public enum BankNotice {
-            public static let prefix = NSLocalizedString(
-                "Once we receive your funds, we’ll start your",
-                comment: "Simple buy: checkout screen notice label prefix"
-            )
-            public static let suffix = NSLocalizedString(
-                "buy order. Note, your final amount might change to due market activity. Fees may apply.",
-                comment: "Simple buy: checkout screen notice label suffix"
-            )
-        }
+        public enum Notice {
 
-        public static let finalAmountChangeNotice = NSLocalizedString(
-            "Your final amount may change due to market activity",
-            comment: "Simple buy: checkout screen notice label for card"
-        )
+            public static let funds = NSLocalizedString(
+                "Your final amount may change due to market activity.",
+                comment: "Simple buy: checkout screen notice label for funds"
+            )
+
+            public static let cards = NSLocalizedString(
+                "Your final amount might change due to market activity. An initial hold period of 7 days will be applied to your funds.",
+                comment: "Simple buy: checkout screen notice label for cards"
+            )
+
+            public enum BankTransfer {
+                public static let prefix = NSLocalizedString(
+                    "Once we receive your funds, we’ll start your",
+                    comment: "Simple buy: checkout screen notice label prefix"
+                )
+                public static let suffix = NSLocalizedString(
+                    "buy order. Note, your final amount might change to due market activity. Fees may apply.",
+                    comment: "Simple buy: checkout screen notice label suffix"
+                )
+            }
+        }
 
         public enum PendingOrderScreen {
             public enum Loading {
