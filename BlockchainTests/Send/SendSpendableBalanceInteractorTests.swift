@@ -18,8 +18,8 @@ final class SendSpendableBalanceInteractorTests: XCTestCase {
     // MARK: - Properties
     
     private let asset = CryptoCurrency.ethereum
-    private let currencyCode = "USD"
-    private lazy var balance = CryptoValue.createFromMajorValue(string: "100", assetType: asset)!
+    private let currency = FiatCurrency.USD
+    private lazy var balance = CryptoValue.create(major: "100", currency: asset)!
     
     func testSpendableBalanceWhenFeeIsCalculating() throws {
         let interactor = self.interactor(for: asset, balance: balance, feeState: .calculating)
@@ -51,8 +51,8 @@ final class SendSpendableBalanceInteractorTests: XCTestCase {
     // MARK: - Accessors
     
     private func feeValue(by amount: String) -> MoneyValuePair {
-        let fiatFee = FiatValue.create(amountString: amount, currencyCode: currencyCode)
-        let cryptoFee = CryptoValue.createFromMajorValue(string: amount, assetType: asset)!
+        let fiatFee = FiatValue.create(major: amount, currency: currency)!
+        let cryptoFee = CryptoValue.create(major: amount, currency: asset)!
         let fee = MoneyValuePair(base: cryptoFee.moneyValue, quote: fiatFee.moneyValue)
         return fee
     }
@@ -60,7 +60,7 @@ final class SendSpendableBalanceInteractorTests: XCTestCase {
     private func interactor(for asset: CryptoCurrency,
                             balance: CryptoValue,
                             feeState: MoneyValuePairCalculationState) -> SendSpendableBalanceInteracting {
-        let exchangeRate = FiatValue.create(amountString: "1", currencyCode: "USD")
+        let exchangeRate = FiatValue.create(major: "1", currency: .USD)!
         return SendSpendableBalanceInteractor(
             balanceFetcher: MockAccountBalanceFetcher(expectedBalance: balance.moneyValue),
             feeInteractor: MockSendFeeInteractor(expectedState: feeState),

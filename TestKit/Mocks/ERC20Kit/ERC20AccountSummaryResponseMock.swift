@@ -12,7 +12,7 @@ import PlatformKit
 extension ERC20AccountSummaryResponse where Token == PaxToken {
     static var accountResponseMock: ERC20AccountSummaryResponse {
         ERC20AccountSummaryResponse(
-            balance: CryptoValue.paxFromMajor(string: "2.0")!.amount.string(unitDecimals: 0)
+            balance: CryptoValue.pax(major: "2.0")!.amount.string(unitDecimals: 0)
         )
     }
 }

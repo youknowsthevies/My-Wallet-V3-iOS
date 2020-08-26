@@ -22,7 +22,7 @@ print(s + "\n}")
 ```
 */
 
-/// An implementation of ISO 4217 currency codes
+/// An implementation of `ISO 4217` currency codes
 public enum FiatCurrency: String, Currency, Codable, CaseIterable {
     
     /// Andorran Peseta
@@ -946,7 +946,7 @@ extension FiatCurrency {
 
 extension FiatCurrency {
     
-    /// The code of the currency. e.g USD, GBP, EUR
+    /// The code of the currency. e.g `USD`, `GBP`, `EUR`
     public var code: String { rawValue }
     
     public var displayCode: String { code }
@@ -963,8 +963,42 @@ extension FiatCurrency {
         return locale.localizedString(forCurrencyCode: code) ?? ""
     }
     
-    // TODO: Modify for other currencies
-    public var maxDecimalPlaces: Int { 2 }
+    /// The number of decimal places as specified in `ISO 4217`
+    public var maxDecimalPlaces: Int {
+        switch self {
+        case .XOF,
+             .BIF,
+             .XAF,
+             .CLP,
+             .KMF,
+             .DJF,
+             .XPF,
+             .GNF,
+             .ISK,
+             .JPY,
+             .KRW,
+             .PYG,
+             .RWF,
+             .UGX,
+             .UYI,
+             .VUV,
+             .VND:
+            return 0
+        case .BHD,
+             .IQD,
+             .JOD,
+             .KWD,
+             .LYD,
+             .OMR,
+             .TND:
+            return 3
+        case .CLF:
+            return 4
+        default:
+            return 2
+        }
+    }
+    
     public var maxDisplayableDecimalPlaces: Int { maxDecimalPlaces }
     
     public init?(code: String) {

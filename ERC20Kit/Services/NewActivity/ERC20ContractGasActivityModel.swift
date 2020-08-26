@@ -34,7 +34,7 @@ public struct ERC20ContractGasActivityModel {
         guard let hexAmount = hexAmount,
             let decimalAmount = BigInt(hexAmount, radix: 16)
             else { return nil }
-        return CryptoValue.createFromMinorValue(decimalAmount, assetType: cryptoCurrency)
+        return CryptoValue.create(minor: decimalAmount, currency: cryptoCurrency)
     }
 
     private static func token(address: EthereumAddress) -> CryptoCurrency? {

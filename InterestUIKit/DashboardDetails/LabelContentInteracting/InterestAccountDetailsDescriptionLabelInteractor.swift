@@ -26,7 +26,7 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
                 .asObservable()
                 .map { $0.value }
                 .compactMap { $0?.totalInterest }
-                .compactMap { CryptoValue.createFromMinorValue($0, assetType: self.cryptoCurrency) }
+                .compactMap { CryptoValue.create(minor: $0, currency: self.cryptoCurrency) }
                 .map { $0.toDisplayString(includeSymbol: true) }
                 .map { .loaded(next: .init(text: $0)) }
                 .bind(to: stateRelay)
@@ -62,7 +62,7 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
                 .asObservable()
                 .map { $0.value }
                 .compactMap { $0?.pendingDeposit }
-                .compactMap { CryptoValue.createFromMinorValue($0, assetType: self.cryptoCurrency) }
+                .compactMap { CryptoValue.create(minor: $0, currency: self.cryptoCurrency) }
                 .map { $0.toDisplayString(includeSymbol: true) }
                 .map { .loaded(next: .init(text: $0)) }
                 .bind(to: stateRelay)

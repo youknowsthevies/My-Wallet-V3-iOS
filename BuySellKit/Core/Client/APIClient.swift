@@ -283,7 +283,7 @@ final class APIClient: SimpleBuyClientAPI {
             ),
             URLQueryItem(
                 name: Parameter.amount,
-                value: amount.string
+                value: amount.minorString
             )
         ]
         let path = Path.quote

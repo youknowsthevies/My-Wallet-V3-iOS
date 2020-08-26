@@ -57,7 +57,7 @@ fileprivate struct BitcoinBalances {
     init(response: BitcoinBalanceResponse, cryptoCurrency: CryptoCurrency) {
         precondition(cryptoCurrency == .bitcoin || cryptoCurrency == .bitcoinCash)
         balances = response.compactMapValues { item -> CryptoValue? in
-            CryptoValue(minor: "\(item.finalBalance)", cryptoCurrency: cryptoCurrency)
+            CryptoValue.create(minor: "\(item.finalBalance)", currency: cryptoCurrency)
         }
         total = (try? balances
             .values

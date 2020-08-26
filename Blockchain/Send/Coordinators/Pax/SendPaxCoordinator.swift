@@ -93,7 +93,7 @@ extension SendPaxCoordinator {
             let gasPrice = BigUInt(etherFee.priority.amount)
             let gasLimit = BigUInt(etherFee.gasLimitContract)
             let fee = gasPrice * gasLimit
-            self.etherFee = CryptoValue.etherFromWei(string: "\(fee)")
+            self.etherFee = CryptoValue.ether(minor: "\(fee)")
             self.balance = balance
         }
         
@@ -155,10 +155,10 @@ extension SendPaxCoordinator {
             .asObservable()
             .asSingle()
 
-        let currencyCode = BlockchainSettings.App.shared.fiatCurrencyCode
+        let fiatCurrency = BlockchainSettings.App.shared.fiatCurrency
         return Single.zip(
-            priceAPI.price(for: CryptoCurrency.ethereum, in: FiatCurrency(code: currencyCode)!),
-            priceAPI.price(for: CryptoCurrency.pax, in: FiatCurrency(code: currencyCode)!),
+            priceAPI.price(for: CryptoCurrency.ethereum, in: fiatCurrency),
+            priceAPI.price(for: CryptoCurrency.pax, in: fiatCurrency),
             fees,
             balance
         )
@@ -237,8 +237,8 @@ extension SendPaxCoordinator: SendPaxViewControllerDelegate {
             .disposed(by: bag)
         calculator.handle(event: .resume)
         
-        let fiatCurrencyCode = BlockchainSettings.App.shared.fiatCurrencyCode
-        interface.apply(updates: [.fiatCurrencyLabel(fiatCurrencyCode)])
+        let fiatCurrency = BlockchainSettings.App.shared.fiatCurrency
+        interface.apply(updates: [.fiatCurrencyLabel(fiatCurrency.code)])
         
         // TODO: Check ETH balance to cover fees. Only fees.
         // Don't care how much PAX they are sending.

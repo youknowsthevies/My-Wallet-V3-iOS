@@ -55,7 +55,7 @@ class TradeExecutionServiceTests: XCTestCase {
         let from = AssetAccount(
             index: 0,
             address: address,
-            balance: CryptoValue.paxFromMajor(string: "16.64306683")!,
+            balance: CryptoValue.pax(major: "16.64306683")!,
             name: "My PAX Wallet"
         )
         
@@ -69,7 +69,7 @@ class TradeExecutionServiceTests: XCTestCase {
         let to = AssetAccount(
             index: 0,
             address: toAddress,
-            balance: CryptoValue.etherFromMajor(string: "1.0")!,
+            balance: CryptoValue.ether(major: "1.0")!,
             name: "My ETH Wallet"
         )
         
@@ -81,7 +81,7 @@ class TradeExecutionServiceTests: XCTestCase {
                     fromAddressString: "0xe408d13921dbcd1cbcb69840e4da465ba07b7e5e",
                     assetType: .ethereum
                 ),
-                balance: CryptoValue.etherFromMajor(string: "1.0")!,
+                balance: CryptoValue.ether(major: "1.0")!,
                 name: "My ETH Wallet"
             ),
             from: AssetAccount(
@@ -90,7 +90,7 @@ class TradeExecutionServiceTests: XCTestCase {
                     fromAddressString: "0xe408d13921dbcd1cbcb69840e4da465ba07b7e5e",
                     assetType: .pax
                 ),
-                balance: CryptoValue.paxFromMajor(string: "16.64306683")!,
+                balance: CryptoValue.pax(major: "16.64306683")!,
                 name: "My PAX Wallet"
             ),
             to: AssetAddressFactory.create(

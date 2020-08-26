@@ -319,12 +319,12 @@ extension SendPaxViewController: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard let text = textField.text, !text.isEmpty else { return }
         if textField == cryptoAmountTextField {
-            let value = CryptoValue.paxFromMajor(string: text)
+            let value = CryptoValue.pax(majorDisplay: text)
             delegate?.onPaxEntry(value)
         }
         if textField == fiatAmountTextField {
-            let currencyCode = BlockchainSettings.App.shared.fiatCurrencyCode
-            let value = FiatValue.create(amountString: text, currencyCode: currencyCode)
+            let currency = BlockchainSettings.App.shared.fiatCurrency
+            let value = FiatValue.create(major: text, currency: currency)!
             delegate?.onFiatEntry(value)
         }
     }
@@ -345,12 +345,12 @@ extension SendPaxViewController: UITextFieldDelegate {
             delegate?.onAddressEntry(replacementInput)
         }
         if textField == cryptoAmountTextField {
-            let value = CryptoValue.paxFromMajor(string: replacementInput)
+            let value = CryptoValue.pax(majorDisplay: replacementInput)
             delegate?.onPaxEntry(value)
         }
         if textField == fiatAmountTextField {
-            let currencyCode = BlockchainSettings.App.shared.fiatCurrencyCode
-            let value = FiatValue.create(amountString: replacementInput, currencyCode: currencyCode)
+            let fiatCurrency = BlockchainSettings.App.shared.fiatCurrency
+            let value = FiatValue.create(majorDisplay: replacementInput, currency: fiatCurrency)!
             delegate?.onFiatEntry(value)
         }
         return true
@@ -473,7 +473,7 @@ extension SendPaxViewController {
 
             guard
                 let amount = assetURL.payload.amount,
-                let value = CryptoValue.paxFromMajor(string: amount)
+                let value = CryptoValue.pax(major: amount)
             else {
                 return
             }

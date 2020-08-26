@@ -31,7 +31,7 @@ public extension StellarAssetAccountDetails {
         
         return StellarAssetAccountDetails(
             account: account,
-            balance: CryptoValue.lumensFromMajor(int: 0)
+            balance: CryptoValue.stellar(major: 0)
         )
     }
 }
@@ -54,7 +54,7 @@ public extension AccountResponse {
         
         return StellarAssetAccountDetails(
             account: account,
-            balance: CryptoValue.lumensFromMajor(string: "\(totalBalance)") ?? .zero(currency: .stellar)
+            balance: CryptoValue.stellar(major: "\(totalBalance)") ?? .zero(currency: .stellar)
         )
     }
 }

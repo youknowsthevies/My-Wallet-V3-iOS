@@ -57,7 +57,7 @@ extension MarketsModel {
     }
     
     var cryptoValue: CryptoValue? {
-        CryptoValue.createFromMajorValue(string: volume, assetType: pair.from)
+        CryptoValue.create(majorDisplay: volume, currency: pair.from)
     }
 }
 

@@ -46,12 +46,12 @@ extension StellarLedger: Equatable {
 public extension StellarLedger {
     var baseFeeInXlm: CryptoValue? {
         guard let baseFeeInStroops = baseFeeInStroops else { return nil }
-        return CryptoValue.lumensFromStroops(int: baseFeeInStroops)
+        return CryptoValue.stellar(minor: baseFeeInStroops)
     }
     
     var baseReserveInXlm: CryptoValue? {
         guard let baseReserveInStroops = baseReserveInStroops else { return nil }
-        return CryptoValue.lumensFromStroops(int: baseReserveInStroops)
+        return CryptoValue.stellar(minor: baseReserveInStroops)
     }
 }
 

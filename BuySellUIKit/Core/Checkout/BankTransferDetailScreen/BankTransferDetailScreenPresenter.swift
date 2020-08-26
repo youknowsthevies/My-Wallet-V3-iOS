@@ -115,7 +115,7 @@ final class BankTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
         )
 
         let totalCost = TransactionalLineItem
-            .totalCost(interactor.checkoutData.order.fiatValue.toDisplayString())
+            .totalCost(interactor.checkoutData.order.fiatValue.displayString)
             .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
 
         cells.append(.staticLabel(summary))

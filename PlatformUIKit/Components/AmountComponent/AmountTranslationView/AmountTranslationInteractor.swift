@@ -96,7 +96,7 @@ public final class AmountTranslationInteractor {
     
     /// The amount as `FiatValue`
     private let fiatAmountRelay = BehaviorRelay<MoneyValue>(
-        value: .zero(FiatCurrency.default)
+        value: .zero(currency: FiatCurrency.default)
     )
     
     /// The amount as `CryptoValue`
@@ -121,7 +121,7 @@ public final class AmountTranslationInteractor {
                 defaultCryptoCurrency: CryptoCurrency = .bitcoin,
                 initialActiveInput: ActiveAmountInput) {
         activeInputRelay = BehaviorRelay(value: initialActiveInput)
-        cryptoAmountRelay = BehaviorRelay(value: .zero(defaultCryptoCurrency))
+        cryptoAmountRelay = BehaviorRelay(value: .zero(currency: defaultCryptoCurrency))
         fiatInteractor = InputAmountLabelInteractor(currency: defaultFiatCurrency)
         cryptoInteractor = InputAmountLabelInteractor(currency: defaultCryptoCurrency)
         self.fiatCurrencyService = fiatCurrencyService
@@ -179,7 +179,7 @@ public final class AmountTranslationInteractor {
                                 if amount.isEmpty {
                                     amount = "0"
                                 }
-                                let fiatValue = FiatValue.create(amountString: amount, currency: pricePerMajor.currencyType)
+                                let fiatValue = FiatValue.create(major: amount, currency: pricePerMajor.currencyType)!
                                 let pair = MoneyValuePair(
                                     fiat: fiatValue,
                                     priceInFiat: pricePerMajor,
@@ -209,7 +209,7 @@ public final class AmountTranslationInteractor {
                                 if amount.isEmpty {
                                     amount = "0"
                                 }
-                                let cryptoValue = CryptoValue(major: amount, cryptoCurrency: currency)!
+                                let cryptoValue = CryptoValue.create(majorDisplay: amount, currency: currency)!
                                 return MoneyValuePair(base: cryptoValue, exchangeRate: exchangeRate)
                              }
                      }

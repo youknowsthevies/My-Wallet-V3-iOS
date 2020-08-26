@@ -12,14 +12,14 @@ public struct Portfolio: Codable {
     
     public var balanceFiatValue: FiatValue {
         FiatValue.create(
-            amount: balanceChange.balance,
+            major: balanceChange.balance,
             currency: fiatCurrency
         )
     }
     
     public var changeFiatValue: FiatValue {
         FiatValue.create(
-            amount: balanceChange.change,
+            major: balanceChange.change,
             currency: fiatCurrency
         )
     }
@@ -62,6 +62,6 @@ public struct Portfolio: Codable {
 
 public extension Portfolio.Account {
     var cryptoValue: CryptoValue {
-        CryptoValue.createFromMinorValue(balance, assetType: currency) ?? CryptoValue.zero(currency: currency)
+        CryptoValue.create(minor: balance, currency: currency) ?? CryptoValue.zero(currency: currency)
     }
 }

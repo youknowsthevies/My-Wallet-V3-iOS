@@ -74,7 +74,7 @@ public final class PortfolioAccountBalanceFetching {
                     let delta = response.historicalPrices.delta
                     let currentPrice = response.currentFiatValue
                     let fiatChange = FiatValue.create(
-                        amount: response.historicalPrices.fiatChange,
+                        major: response.historicalPrices.fiatChange,
                         currency: response.currentFiatValue.currencyType
                     )
                     let account = PortfolioAccount(

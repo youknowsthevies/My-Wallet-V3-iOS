@@ -41,9 +41,9 @@ class StellarTradeLimitsService: StellarTradeLimitsAPI {
             .asSingle()
             .map { ledger, accountDetails, minRequired -> CryptoValue in
                 let balanceInXlm = accountDetails.assetAccount.balance
-                let fees = ledger.baseFeeInXlm ?? CryptoValue.lumensZero
-                let maxSpendable = (try? balanceInXlm - fees - minRequired) ?? CryptoValue.lumensZero
-                return maxSpendable.amount > CryptoValue.lumensZero.amount ? maxSpendable : CryptoValue.lumensZero
+                let fees = ledger.baseFeeInXlm ?? CryptoValue.stellarZero
+                let maxSpendable = (try? balanceInXlm - fees - minRequired) ?? CryptoValue.stellarZero
+                return maxSpendable.amount > CryptoValue.stellarZero.amount ? maxSpendable : CryptoValue.stellarZero
             }
     }
 
@@ -56,8 +56,8 @@ class StellarTradeLimitsService: StellarTradeLimitsAPI {
             .asSingle()
             .map { ledger, accountResponse -> CryptoValue in
                 let multiplier = BigInt(UInt(UInt(2) + accountResponse.subentryCount))
-                let value: BigInt = multiplier * (ledger.baseReserveInXlm ?? CryptoValue.lumensZero).amount
-                return CryptoValue.createFromMinorValue(value, assetType: .stellar)
+                let value: BigInt = multiplier * (ledger.baseReserveInXlm ?? CryptoValue.stellarZero).amount
+                return CryptoValue.create(minor: value, currency: .stellar)
             }
     }
 

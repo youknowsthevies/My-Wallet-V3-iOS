@@ -44,7 +44,7 @@ public final class BalanceChangeViewInteractor: AssetPriceViewInteracting {
                         percentage = 0
                     } else {
                         let precentageFiat = try changeValue / previousBalance
-                        percentage = precentageFiat.amount
+                        percentage = precentageFiat.displayMajorValue
                     }
                 }
                 return .loaded(

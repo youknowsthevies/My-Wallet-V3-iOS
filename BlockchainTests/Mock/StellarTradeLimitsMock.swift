@@ -14,11 +14,11 @@ class StellarTradeLimitsMock: StellarTradeLimitsAPI {
     typealias AccountID = String
 
     func maxSpendableAmount(for accountId: AccountID) -> Single<CryptoValue> {
-        Single.just(CryptoValue.lumensZero)
+        Single.just(CryptoValue.stellarZero)
     }
 
     func minRequiredRemainingAmount(for accountId: AccountID) -> Single<CryptoValue> {
-        Single.just(CryptoValue.lumensZero)
+        Single.just(CryptoValue.stellarZero)
     }
 
     func isSpendable(amount: CryptoValue, for accountId: AccountID) -> Single<Bool> {

@@ -22,7 +22,7 @@ extension AccountGroup {
                 accounts.map { $0.fiatBalance(fiatCurrency: fiatCurrency) }
             )
             .map { moneyValues -> MoneyValue in
-                try moneyValues.reduce(into: try MoneyValue(major: 0, currencyType: .fiat(fiatCurrency))) { (result, this) in
+                try moneyValues.reduce(into: MoneyValue.zero(currency: fiatCurrency)) { (result, this) in
                     try result += this
                 }
             }

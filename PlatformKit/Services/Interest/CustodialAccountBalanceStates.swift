@@ -42,7 +42,7 @@ extension CustodialAccountBalanceStates {
     
     init(response: CustodialBalanceResponse) {
         for balanceResponse in response.balances {
-            guard let currencyType = try? CurrencyType(currency: balanceResponse.key) else { continue }
+            guard let currencyType = try? CurrencyType(code: balanceResponse.key) else { continue }
             let accountBalance = CustodialAccountBalance(currency: currencyType, response: balanceResponse.value)
             balances[currencyType] = .present(accountBalance)
         }

@@ -13,7 +13,7 @@ public struct CustodialAccountBalance: Equatable {
     let available: MoneyValue
     
     init(currency: CurrencyType, response: CustodialBalanceResponse.Balance) {
-        self.available = (try? MoneyValue(minor: response.available, currency: currency.code)) ?? .zero(currency)
+        self.available = MoneyValue.create(minor: response.available, currency: currency) ?? .zero(currency: currency)
     }
     
     public init(available: MoneyValue) {

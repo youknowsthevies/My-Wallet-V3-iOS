@@ -61,7 +61,7 @@ final class SendSpendableBalanceInteractor: SendSpendableBalanceInteracting {
             .map { (balance, exchangeRate, fee) -> MoneyValuePair in
                 // Addition cannot fail as the fee and balance use the same underlying asset
                 var spendableBalance = try balance - fee
-                let zero = MoneyValue.zero(spendableBalance.currencyType)
+                let zero = MoneyValue.zero(currency: spendableBalance.currencyType)
                 if try spendableBalance < zero {
                     spendableBalance = zero
                 }

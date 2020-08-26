@@ -40,6 +40,6 @@ struct SendPaxViewModel {
     }
     
     var description: String {
-        "address: \(addressStatus) \n paxAmount: \(paxAmount.toDisplayString(includeSymbol: false, locale: Locale.current)) \n \(fiatAmount.toDisplayString()) \n internalError: \(String(describing: internalError))"
+        "address: \(addressStatus) \n paxAmount: \(paxAmount.toDisplayString(includeSymbol: false, locale: Locale.current)) \n \(fiatAmount.displayString) \n internalError: \(String(describing: internalError))"
     }
 }

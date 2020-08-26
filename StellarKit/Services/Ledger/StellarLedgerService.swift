@@ -15,7 +15,7 @@ import stellarsdk
 public class StellarLedgerService: StellarLedgerAPI {
 
     public let fallbackBaseReserve: Decimal = 0.5
-    public let fallbackBaseFee: Decimal = CryptoValue.lumensFromStroops(int: StellarTransactionFee.defaultLimits.min).displayMajorValue
+    public let fallbackBaseFee: Decimal = CryptoValue.stellar(minor: StellarTransactionFee.defaultLimits.min).displayMajorValue
     
     public var current: Observable<StellarLedger> {
         fetchLedgerStartingWithCache(

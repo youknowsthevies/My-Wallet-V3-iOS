@@ -205,7 +205,7 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
         guard let depositCryptoCurrency = CryptoCurrency(code: deposit.symbol) else {
             throw SwapActivityItemEventError.decodingError
         }
-        guard let depositCryptoValue = CryptoValue.createFromMajorValue(string: deposit.value, assetType: depositCryptoCurrency) else {
+        guard let depositCryptoValue = CryptoValue.create(major: deposit.value, currency: depositCryptoCurrency) else {
             throw SwapActivityItemEventError.decodingError
         }
 
@@ -213,7 +213,7 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
         guard let withdrawalCryptoCurrency = CryptoCurrency(code: withdrawal.symbol) else {
             throw SwapActivityItemEventError.decodingError
         }
-        guard let withdrawalCryptoValue = CryptoValue.createFromMajorValue(string: withdrawal.value, assetType: withdrawalCryptoCurrency) else {
+        guard let withdrawalCryptoValue = CryptoValue.create(major: withdrawal.value, currency: withdrawalCryptoCurrency) else {
             throw SwapActivityItemEventError.decodingError
         }
         
@@ -221,9 +221,9 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
         guard let withdrawalFeeCryptoCurrency = CryptoCurrency(code: withdrawalFee.symbol) else {
             throw SwapActivityItemEventError.decodingError
         }
-        guard let withdrawalFeeCryptoValue = CryptoValue.createFromMajorValue(
-            string: withdrawalFee.value,
-            assetType: withdrawalFeeCryptoCurrency) else {
+        guard let withdrawalFeeCryptoValue = CryptoValue.create(
+            major: withdrawalFee.value,
+            currency: withdrawalFeeCryptoCurrency) else {
             throw SwapActivityItemEventError.decodingError
         }
         
@@ -231,7 +231,7 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
         guard let fiatCurrency = FiatCurrency(code: fiatValueContainer.symbol) else {
             throw SwapActivityItemEventError.decodingError
         }
-        let fiatValue = FiatValue.create(amountString: fiatValueContainer.value, currency: fiatCurrency, locale: .US)
+        let fiatValue = FiatValue.create(major: fiatValueContainer.value, currency: fiatCurrency)!
 
         self.amounts = Amounts(deposit: depositCryptoValue, withdrawal: withdrawalCryptoValue, withdrawalFee: withdrawalFeeCryptoValue, fiatValue: fiatValue)
         depositTxHash = try values.decodeIfPresent(String.self, forKey: .depositTxHash)

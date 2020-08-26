@@ -15,7 +15,6 @@ public struct SavingsAccountBalanceDetails: Decodable {
     public let totalInterest: String?
     public let pendingWithdrawal: String?
     public let pendingDeposit: String?
-    public let fiatAmount: SymbolValue?
     
     private enum CodingKeys: String, CodingKey {
         case balance
@@ -23,7 +22,6 @@ public struct SavingsAccountBalanceDetails: Decodable {
         case totalInterest
         case pendingWithdrawal
         case pendingDeposit
-        case fiatAmount
     }
     
     public init(from decoder: Decoder) throws {
@@ -34,16 +32,5 @@ public struct SavingsAccountBalanceDetails: Decodable {
         pendingInterest = try values.decodeIfPresent(String.self, forKey: .pendingInterest)
         pendingWithdrawal = try values.decodeIfPresent(String.self, forKey: .pendingWithdrawal)
         totalInterest = try values.decodeIfPresent(String.self, forKey: .totalInterest)
-        fiatAmount = try values.decodeIfPresent(SymbolValue.self, forKey: .fiatAmount)
-    }
-}
-
-public extension SavingsAccountBalanceDetails {
-    var fiatValue: FiatValue? {
-        guard let amount = fiatAmount else { return nil }
-        guard let fiatCurrency = FiatCurrency(code: amount.symbol) else {
-            return nil
-        }
-        return .create(amountString: amount.value, currency: fiatCurrency)
     }
 }

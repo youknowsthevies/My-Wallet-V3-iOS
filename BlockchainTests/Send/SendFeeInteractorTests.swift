@@ -16,14 +16,14 @@ import XCTest
 // Asset agnostic tests for spendable balance interaction layer
 final class SendFeeInteractorTests: XCTestCase {
 
-    private let currencyCode = "USD"
+    private let currency: FiatCurrency = .USD
     private let asset = CryptoCurrency.ethereum
     
     private var interactor: SendFeeInteracting {
-        let fee = CryptoValue.createFromMajorValue(string: "1", assetType: asset)!
+        let fee = CryptoValue.create(major: "1", currency: asset)!
         let feeService = MockSendFeeService(expectedValue: fee)
         
-        let fiatExchangeRate = FiatValue.create(amountString: "1", currencyCode: currencyCode)
+        let fiatExchangeRate = FiatValue.create(major: "1", currency: currency)!
         let exchangeService = MockPairExchangeService(expectedValue: fiatExchangeRate)
         return SendFeeInteractor(
             feeService: feeService,

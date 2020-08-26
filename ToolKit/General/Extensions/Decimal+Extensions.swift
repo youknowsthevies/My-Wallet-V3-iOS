@@ -7,32 +7,22 @@
 //
 
 extension Decimal {
+    
     public var doubleValue: Double {
         (self as NSDecimalNumber).doubleValue
     }
 
     public func roundTo(places: Int) -> Decimal {
-        guard places >= 0 else {
-            return self
-        }
-
-        let decimalInString = "\(self)"
-        guard let peroidIndex = decimalInString.firstIndex(of: ".") else {
-            return self
-        }
-
-        let startIndex = decimalInString.startIndex
-        let maxIndex = decimalInString.endIndex
-
-        if places == 0 {
-            let roundedString = String(decimalInString[startIndex..<peroidIndex])
-            return Decimal(string: roundedString) ?? self
-        }
-
-        guard let endIndex = decimalInString.index(peroidIndex, offsetBy: places+1, limitedBy: maxIndex) else {
-            return self
-        }
-        let roundedString = String(decimalInString[startIndex..<endIndex])
-        return Decimal(string: roundedString) ?? self
+        let roundingBehaviour = NSDecimalNumberHandler(
+            roundingMode: .bankers,
+            scale: Int16(places),
+            raiseOnExactness: true,
+            raiseOnOverflow: true,
+            raiseOnUnderflow: true,
+            raiseOnDivideByZero: true
+        )
+        let rounded = (self as NSDecimalNumber)
+            .rounding(accordingToBehavior: roundingBehaviour)
+        return rounded as Decimal
     }
 }

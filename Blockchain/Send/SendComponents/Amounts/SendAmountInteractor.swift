@@ -104,7 +104,7 @@ final class SendAmountInteractor: SendAmountInteracting {
         let asset = self.asset
         let currentCrypto = latestCryptoRelay
             .map { $0.isEmpty ? "0" : $0 }
-            .map { CryptoValue.createFromMajorValue(string: $0, assetType: asset) }
+            .map { CryptoValue.create(majorDisplay: $0, currency: asset) }
         
         currentCrypto
             .filter { $0 == nil }
@@ -135,7 +135,7 @@ final class SendAmountInteractor: SendAmountInteracting {
         let currentFiat = Observable
             .combineLatest(latestFiat, fiatCurrencyService.fiatCurrencyObservable)
             .map { (amount, currency) -> FiatValue in
-                FiatValue.create(amountString: amount, currency: currency)
+                FiatValue.create(major: amount, currency: currency)!
             }
         
         Observable

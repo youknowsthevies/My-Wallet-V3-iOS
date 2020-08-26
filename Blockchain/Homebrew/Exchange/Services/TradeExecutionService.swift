@@ -307,7 +307,7 @@ class TradeExecutionService: TradeExecutionAPI {
             disposables.insertWithDiscardableResult(disposable)
         } else if assetType == .pax {
             guard
-                let cryptoValue = CryptoValue.createFromMajorValue(string: orderTransactionLegacy.amount, assetType: .pax, locale: Locale.US),
+                let cryptoValue = CryptoValue.create(major: orderTransactionLegacy.amount, currency: .pax),
                 let tokenValue = try? ERC20TokenValue<PaxToken>.init(crypto: cryptoValue),
                 let address = EthereumAccountAddress(rawValue: orderTransactionLegacy.to)?.ethereumAddress
             else {
@@ -324,7 +324,7 @@ class TradeExecutionService: TradeExecutionAPI {
                     guard let self = self else { return }
                     self.ethereumTransactionCandidate = candidate
                     let feeAmount = candidate.gasLimit * candidate.gasPrice
-                    let wei = CryptoValue.etherFromWei(string: "\(feeAmount)")
+                    let wei = CryptoValue.ether(minor: "\(feeAmount)")
                     createOrderPaymentSuccess(wei?.toDisplayString(includeSymbol: false) ?? "0")
                 }, onError: { erc20Error in
                     // TODO: Better error messaging
@@ -339,7 +339,7 @@ class TradeExecutionService: TradeExecutionAPI {
                 .disposed(by: bag)
         } else if assetType == .ethereum {
             guard
-                let cryptoValue = CryptoValue.createFromMajorValue(string: orderTransactionLegacy.amount, assetType: .ethereum, locale: Locale.US),
+                let cryptoValue = CryptoValue.create(major: orderTransactionLegacy.amount, currency: .ethereum),
                 let ethereumValue = try? EthereumValue(crypto: cryptoValue),
                 let address = EthereumAccountAddress(rawValue: orderTransactionLegacy.to)?.ethereumAddress
                 else {
@@ -352,7 +352,7 @@ class TradeExecutionService: TradeExecutionAPI {
                     guard let self = self else { return }
                     self.ethereumTransactionCandidate = candidate
                     let feeAmount = candidate.gasLimit * candidate.gasPrice
-                    let wei = CryptoValue.etherFromWei(string: "\(feeAmount)")
+                    let wei = CryptoValue.ether(minor: "\(feeAmount)")
                     createOrderPaymentSuccess(wei?.toDisplayString(includeSymbol: false) ?? "0")
                     }, onError: { ethereumError in
                         Logger.shared.error(ethereumError)

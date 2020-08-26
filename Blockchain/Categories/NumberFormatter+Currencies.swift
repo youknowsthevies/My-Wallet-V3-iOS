@@ -98,7 +98,7 @@ extension NumberFormatter {
         arabicIndicDigitToDigitMap
             .reduce(value) { (result, tuple) -> String in
                 result.replacingOccurrences(of: tuple.key, with: tuple.value)
-        }
+            }
     }
 
     /// Removes a arabic decimal separator (Unicode U+066B) if it is present.

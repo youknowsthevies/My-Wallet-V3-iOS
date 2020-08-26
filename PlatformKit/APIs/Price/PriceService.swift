@@ -45,7 +45,7 @@ public class PriceService: PriceServiceAPI {
                 PriceQuoteAtTime(
                     timestamp: date ?? Date(),
                     volume24h: nil,
-                    moneyValue: (try? MoneyValue(major: "1", currency: quoteCurrency.code)) ?? .zero(quoteCurrency.currency)
+                    moneyValue: MoneyValue.create(major: "1", currency: quoteCurrency.currency) ?? .zero(currency: quoteCurrency.currency)
                 )
             )
         }
@@ -82,7 +82,7 @@ public class PriceService: PriceServiceAPI {
                 return PriceQuoteAtTime(
                     timestamp: basePrice.timestamp,
                     volume24h: basePrice.volume24h,
-                    moneyValue: try MoneyValue(major: "\(price)", currency: quoteCurrency.code)
+                    moneyValue: MoneyValue.create(major: "\(price)", currency: quoteCurrency.currency)!
                 )
             }
     }

@@ -76,7 +76,7 @@ public struct FiatActivityItemEvent: Decodable, Tokenized {
             throw FiatActivityItemEventError.decodingError
         }
         
-        fiatValue = FiatValue.create(amountString: fiatValueContainer.value, currency: fiatCurrency)
+        fiatValue = FiatValue.create(major: fiatValueContainer.value, currency: fiatCurrency)!
         let eventValue = try values.decode(String.self, forKey: .type)
         type = EventType(rawValue: eventValue) ?? .unknown
     }

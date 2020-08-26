@@ -12,14 +12,14 @@ import XCTest
 
 class StellarValueTests: XCTestCase {
     func test_initialisation() {
-        let cryptoValue = CryptoValue.etherFromMajor(string: "1000.0")!
+        let cryptoValue = CryptoValue.ether(major: "1000.0")!
         XCTAssertThrowsError(try StellarValue(value: cryptoValue)) { error in
             XCTAssertEqual(error as! StellarValueError, StellarValueError.notAStellarValue)
         }
     }
 
     func test_overflow_check() {
-        let cryptoValue = CryptoValue.lumensFromMajor(int: 99999999999)
+        let cryptoValue = CryptoValue.stellar(major: 99999999999)
         let subject = try? StellarValue(value: cryptoValue)
         XCTAssertNotNil(subject)
         XCTAssertThrowsError(try subject?.stroops()) { error in
@@ -28,7 +28,7 @@ class StellarValueTests: XCTestCase {
     }
     
     func test_conversion() {
-        let cryptoValue = CryptoValue.lumensFromMajor(int: 100000)
+        let cryptoValue = CryptoValue.stellar(major: 100000)
         let subject = try? StellarValue(value: cryptoValue)
         XCTAssertNotNil(subject)
         XCTAssertNoThrow(try subject?.stroops())

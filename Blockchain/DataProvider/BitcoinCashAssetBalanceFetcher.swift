@@ -20,7 +20,7 @@ final class BitcoinCashAssetBalanceFetcher: CryptoAccountBalanceFetching {
     
     var balance: Single<CryptoValue> {
         Single
-            .just(CryptoValue.bitcoinCashFromSatoshis(int: Int(wallet.getBchBalance())))
+            .just(CryptoValue.bitcoinCash(satoshis: Int(wallet.getBchBalance())))
     }
     
     var balanceObservable: Observable<CryptoValue> {

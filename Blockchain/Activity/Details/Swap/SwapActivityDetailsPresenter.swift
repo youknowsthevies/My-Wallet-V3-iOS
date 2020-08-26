@@ -69,7 +69,7 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
         dateCreatedPresenter = TransactionalLineItem.date(DateFormatter.elegantDateFormatter.string(from: event.date))
             .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
         valuePresenter = TransactionalLineItem
-            .value(event.amounts.fiatValue.toDisplayString())
+            .value(event.amounts.fiatValue.displayString)
             .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
         amountFromPresenter = TransactionalLineItem
             .amount(event.amounts.deposit.toDisplayString(includeSymbol: true))

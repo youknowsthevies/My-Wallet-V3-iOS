@@ -53,7 +53,7 @@ final class SendFeeService: SendFeeServicing {
                 let gasPrice = BigUInt(fee.regular.amount)
                 let gasLimit = BigUInt(fee.gasLimit)
                 let cost = gasPrice * gasLimit
-                if let value = CryptoValue.etherFromWei(string: "\(cost)") {
+                if let value = CryptoValue.ether(minor: "\(cost)") {
                     return value
                 } else {
                     throw MoneyValuePairCalculationState.CalculationError.valueCouldNotBeCalculated

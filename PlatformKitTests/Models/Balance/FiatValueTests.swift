@@ -14,90 +14,106 @@ class FiatValueTests: XCTestCase {
 
     func testInitalization() {
         XCTAssertEqual(
-            10,
-            FiatValue(minor: "1000", currency: .USD).amount
+            1000,
+            FiatValue.create(minor: "1000", currency: .USD).amount
         )
         
         XCTAssertEqual(
-            0.01,
-            FiatValue(minor: "1", currency: .USD).amount
+            "0.01",
+            FiatValue.create(minor: "1", currency: .USD)?.toDisplayString(includeSymbol: false)
         )
         
         XCTAssertEqual(
-            80000,
-            FiatValue(minor: "8000000", currency: .USD).amount
+            8000000,
+            FiatValue.create(minor: "8000000", currency: .USD).amount
         )
     }
     
     func testUSDDecimalPlaces() {
         XCTAssertEqual(
             2,
-            FiatValue.create(amountString: "1.00", currencyCode: "USD").maxDecimalPlaces
+            FiatValue.create(major: "1.00", currency: .USD)!.maxDecimalPlaces
         )
     }
 
     func testJPYDecimalPlaces() {
         XCTAssertEqual(
             0,
-            FiatValue.create(amountString: "1.000000", currencyCode: "JPY").maxDecimalPlaces
+            FiatValue.create(major: "1.000000", currency: .JPY)!.maxDecimalPlaces
         )
     }
 
     func testSymbol() {
-        let usdValue = FiatValue(currencyCode: "USD", amount: 0)
+        let usdValue = FiatValue.zero(currencyCode: "USD")!
         XCTAssertEqual("$", usdValue.symbol)
 
-        let eurValue = FiatValue(currencyCode: "EUR", amount: 0)
+        let eurValue = FiatValue.zero(currencyCode:"EUR")!
         XCTAssertEqual("€", eurValue.symbol)
     }
 
     func testIsZero() {
-        XCTAssertTrue(FiatValue.create(amountString: "0", currencyCode: "USD").isZero)
+        XCTAssertTrue(FiatValue.create(major: "0", currency: .USD)!.isZero)
     }
 
     func testIsPositive() {
-        XCTAssertTrue(FiatValue.create(amountString: "1.00", currencyCode: "USD").isPositive)
+        XCTAssertTrue(FiatValue.create(major: "1.00", currency: .USD)!.isPositive)
     }
 
     func testNotPositive() {
-        XCTAssertFalse(FiatValue.create(amountString: "-1.00", currencyCode: "USD").isPositive)
+        XCTAssertFalse(FiatValue.create(major: "-1.00", currency: .USD)!.isPositive)
     }
 
-    func testAddition() {
+    func testAddition() throws {
         XCTAssertEqual(
-            FiatValue.create(amountString: "3.00", currencyCode: "USD"),
-            try FiatValue.create(amountString: "2.00", currencyCode: "USD") + FiatValue.create(amountString: "1.00", currencyCode: "USD")
+            FiatValue.create(major: "3.00", currency: .USD),
+            try FiatValue.create(major: "2.00", currency: .USD)! + FiatValue.create(major: "1.00", currency: .USD)!
         )
     }
 
-    func testSubtraction() {
+    func testSubtraction() throws {
         XCTAssertEqual(
-            FiatValue.create(amountString: "1.00", currencyCode: "USD"),
-            try FiatValue.create(amountString: "3.00", currencyCode: "USD") - FiatValue.create(amountString: "2.00", currencyCode: "USD")
+            FiatValue.create(major: "1.00", currency: .USD),
+            try FiatValue.create(major: "3.00", currency: .USD)! - FiatValue.create(major: "2.00", currency: .USD)!
         )
     }
 
-    func testMultiplication() {
-        XCTAssertEqual(
-            FiatValue.create(amountString: "9.00", currencyCode: "USD"),
-            try FiatValue.create(amountString: "3.00", currencyCode: "USD") * FiatValue.create(amountString: "3.00", currencyCode: "USD")
-        )
+    func testMultiplication() throws {
+        let expected = FiatValue.create(major: "9.00", currency: .USD)!
+        let value = FiatValue.create(major: "3.00", currency: .USD)!
+        let result = try value * value
+        XCTAssertEqual(expected, result)
+    }
+    
+    func testDivision() throws {
+        let expected = FiatValue.create(major: "1.00", currency: .USD)!
+        let value = FiatValue.create(major: "3.00", currency: .USD)!
+        let result = try value / value
+        XCTAssertEqual(expected, result)
+    }
+    
+    func testMinorString() {
+        let expected100MillionMajor = "10000000000"
+        let value100MillionMajor = FiatValue.create(major: "100000000.00", currency: .USD)!
+        XCTAssertEqual(expected100MillionMajor, value100MillionMajor.minorString)
+        
+        let expected1Minor = "1"
+        let value1Minor = FiatValue.create(minor: "1", currency: .USD)!
+        XCTAssertEqual(expected1Minor, value1Minor.minorString)
     }
 
     func testEquatable() {
         XCTAssertEqual(
-            FiatValue.create(amountString: "9.00", currencyCode: "USD"),
-            FiatValue.create(amountString: "9.00", currencyCode: "USD")
+            FiatValue.create(major: "9.00", currency: .USD),
+            FiatValue.create(major: "9.00", currency: .USD)
         )
     }
 
     func testConvertToCryptoValue() {
-        let amount = FiatValue.create(amountString: "4,000.00", currencyCode: "USD")
-        let exchangeRate = FiatValue.create(amountString: "8,000.00", currencyCode: "USD")
-        XCTAssertEqual(
-            amount.convertToCryptoValue(exchangeRate: exchangeRate, cryptoCurrency: .bitcoin),
-            CryptoValue.createFromMajorValue(string: "0.5", assetType: .bitcoin)!
-        )
+        let expected = CryptoValue.create(major: "0.5", currency: .bitcoin)!
+        let amount = FiatValue.create(major: "4,000.00", currency: .USD)!
+        let exchangeRate = FiatValue.create(major: "8,000.00", currency: .USD)!
+        let result = amount.convertToCryptoValue(exchangeRate: exchangeRate, cryptoCurrency: .bitcoin)
+        XCTAssertEqual(expected, result)
     }
 
     // MARK: toDisplayString tests
@@ -105,7 +121,7 @@ class FiatValueTests: XCTestCase {
     func testDisplayUSDinUS() {
         XCTAssertEqual(
             "$1.00",
-            FiatValue.create(amountString: "1.00", currencyCode: "USD")
+            FiatValue.create(major: "1.00", currency: .USD)!
                 .toDisplayString(locale: Locale.US)
         )
     }
@@ -113,7 +129,7 @@ class FiatValueTests: XCTestCase {
     func testDisplayUSDinUSWithoutSymbol() {
         XCTAssertEqual(
             "1.00",
-            FiatValue.create(amountString: "1.00", currencyCode: "USD")
+            FiatValue.create(major: "1.00", currency: .USD)!
                 .toDisplayString(includeSymbol: false, locale: Locale.US)
         )
     }
@@ -121,7 +137,7 @@ class FiatValueTests: XCTestCase {
     func testDisplayUSDinCanada() {
         XCTAssertEqual(
             "US$1.00",
-            FiatValue.create(amountString: "1.00", currencyCode: "USD")
+            FiatValue.create(major: "1.00", currency: .USD)!
                 .toDisplayString(locale: Locale.Canada)
         )
     }
@@ -129,7 +145,7 @@ class FiatValueTests: XCTestCase {
     func testDisplayUSDinFrance() {
         XCTAssertEqual(
             "1,00 $US",
-            FiatValue.create(amountString: "1.00", currencyCode: "USD")
+            FiatValue.create(major: "1.00", currency: .USD)!
                 .toDisplayString(locale: Locale.France)
         )
     }
@@ -137,7 +153,7 @@ class FiatValueTests: XCTestCase {
     func testDisplayCADinUS() {
         XCTAssertEqual(
             "CA$1.00",
-            FiatValue.create(amountString: "1.00", currencyCode: "CAD")
+            FiatValue.create(major: "1.00", currency: .CAD)!
                 .toDisplayString(locale: Locale.US)
         )
     }
@@ -145,7 +161,7 @@ class FiatValueTests: XCTestCase {
     func testDisplayCADinCanada() {
         XCTAssertEqual(
             "$1.00",
-            FiatValue.create(amountString: "1.00", currencyCode: "CAD")
+            FiatValue.create(major: "1.00", currency: .CAD)!
                 .toDisplayString(locale: Locale.Canada)
         )
     }
@@ -153,7 +169,7 @@ class FiatValueTests: XCTestCase {
     func testDisplayYENinUS() {
         XCTAssertEqual(
             "¥1",
-            FiatValue.create(amountString: "1.00", currencyCode: "JPY")
+            FiatValue.create(major: "1.00", currency: .JPY)!
                 .toDisplayString(locale: Locale.US)
         )
     }
@@ -161,7 +177,7 @@ class FiatValueTests: XCTestCase {
     func testDisplayYENinUSNoSymbol() {
         XCTAssertEqual(
             "1",
-            FiatValue.create(amountString: "1.00", currencyCode: "JPY")
+            FiatValue.create(major: "1.00", currency: .JPY)!
                 .toDisplayString(includeSymbol: false, locale: Locale.US)
         )
     }
@@ -169,7 +185,7 @@ class FiatValueTests: XCTestCase {
     func testDisplayYENinCanada() {
         XCTAssertEqual(
             "JP¥1",
-            FiatValue.create(amountString: "1.00", currencyCode: "JPY")
+            FiatValue.create(major: "1.00", currency: .JPY)!
                 .toDisplayString(locale: Locale.Canada)
         )
     }
@@ -177,20 +193,20 @@ class FiatValueTests: XCTestCase {
     func testDisplayYenInJapan() {
         XCTAssertEqual(
             "¥1",
-            FiatValue.create(amountString: "1.00", currencyCode: "JPY")
+            FiatValue.create(major: "1.00", currency: .JPY)!
                 .toDisplayString(locale: Locale.US)
         )
     }
     
     func testValueIncrease() {
-        let current = FiatValue(minor: "1100", currency: .USD) // $USD 11.00
+        let current = FiatValue.create(minor: "1100", currency: .USD)! // $USD 11.00
         let before = current.value(before: 0.1) // before 10% increase
-        XCTAssertTrue(before.minorAmount == 1000)
+        XCTAssertTrue(before.amount == 1000)
     }
     
     func testValueDecrease() {
-        let current = FiatValue(minor: "12000", currency: .USD) // $USD 120.00
+        let current = FiatValue.create(minor: "12000", currency: .USD)! // $USD 120.00
         let before = current.value(before: -0.2) // before 20% decrease
-        XCTAssertTrue(before.minorAmount == 15000)
+        XCTAssertTrue(before.amount == 15000)
     }
 }

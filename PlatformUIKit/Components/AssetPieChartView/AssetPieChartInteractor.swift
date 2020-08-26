@@ -34,7 +34,7 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
                 let total = MoneyValue(fiatValue: totalFiatValue)
                 
                 guard total.isPositive else {
-                    let zero = MoneyValue.zero(total.currencyType)
+                    let zero = MoneyValue.zero(currency: total.currencyType)
                     let states = currencies.map { AssetPieChart.Value.Interaction(asset: $0, percentage: zero) }
                     return .loaded(next: states)
                 }

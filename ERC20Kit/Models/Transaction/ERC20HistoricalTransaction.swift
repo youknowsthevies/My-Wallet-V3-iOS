@@ -86,7 +86,7 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
         let timestampString = try values.decode(String.self, forKey: .timestamp)
         transactionHash = try values.decode(String.self, forKey: .transactionHash)
         let amountString = try values.decode(String.self, forKey: .value)
-        self.amount = CryptoValue.createFromMinorValue(amountString, assetType: Token.assetType) ?? CryptoValue.zero(currency: Token.assetType)
+        self.amount = CryptoValue.create(minor: amountString, currency: Token.assetType) ?? CryptoValue.zero(currency: Token.assetType)
         fromAddress = EthereumAddress(stringLiteral: from)
         toAddress = EthereumAddress(stringLiteral: to)
         if let timeSinceEpoch = Double(timestampString) {
@@ -128,7 +128,7 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
 
         fileprivate var fee: CryptoValue {
             let amount = gasUsed * gasPrice
-            return CryptoValue.createFromMinorValue(amount, assetType: .ethereum)
+            return CryptoValue.create(minor: amount, currency: .ethereum)
         }
 
         // MARK: Decodable

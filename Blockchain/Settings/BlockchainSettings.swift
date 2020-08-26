@@ -158,19 +158,19 @@ final class BlockchainSettings: NSObject {
                 }
             }
         }
-
+        
         @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencySettingsServiceAPI`")
         @objc var fiatCurrencySymbol: String {
-            UserInformationServiceProvider.default.settings.legacyCurrency?.symbol ?? "$"
+            fiatCurrency.symbol
         }
-
+        
         @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencySettingsServiceAPI`")
-        @objc var fiatCurrencyCode: String {
-            UserInformationServiceProvider.default.settings.legacyCurrency?.code ?? "USD"
+        var fiatCurrency: FiatCurrency {
+            FiatCurrency(code: UserInformationServiceProvider.default.settings.legacyCurrency?.code ?? "USD")!
         }
 
         @objc func fiatSymbolFromCode(currencyCode: String) -> String? {
-            FiatCurrency(code: currencyCode)?.symbol ?? ""
+            FiatCurrency(code: currencyCode)?.symbol
         }
 
         /// The first 5 characters of SHA256 hash of the user's password

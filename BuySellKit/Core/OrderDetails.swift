@@ -128,7 +128,7 @@ public struct OrderDetails {
         guard let cryptoCurrency = CryptoCurrency(rawValue: response.outputCurrency) else {
             return nil
         }
-        guard let cryptoValue = CryptoValue(minor: response.outputQuantity, cryptoCurrency: cryptoCurrency) else {
+        guard let cryptoValue = CryptoValue.create(minor: response.outputQuantity, currency: cryptoCurrency) else {
             return nil
         }
         guard let paymentType = PaymentMethodPayloadType(rawValue: response.paymentType) else {
@@ -136,7 +136,11 @@ public struct OrderDetails {
         }
         
         identifier = response.id
-        fiatValue = FiatValue(minor: response.inputQuantity, currency: fiatCurrency)
+        
+        guard let fiatValue = FiatValue.create(minor: response.inputQuantity, currency: fiatCurrency) else {
+            return nil
+        }
+        self.fiatValue = fiatValue
         self.cryptoValue = cryptoValue
         self.state = state
         self.paymentMethod = PaymentMethod.MethodType(type: paymentType, currency: fiatValue.currencyType)
@@ -144,11 +148,11 @@ public struct OrderDetails {
         authorizationData = PartnerAuthorizationData(orderPayloadResponse: response)
         
         if let price = response.price {
-            self.price = FiatValue(minor: price, currency: fiatCurrency)
+            self.price = FiatValue.create(minor: price, currency: fiatCurrency)
         }
         
         if let fee = response.fee {
-            self.fee = FiatValue(minor: fee, currency: fiatCurrency)
+            self.fee = FiatValue.create(minor: fee, currency: fiatCurrency)
         }
 
         creationDate = DateFormatter.utcSessionDateFormat.date(from: response.updatedAt)

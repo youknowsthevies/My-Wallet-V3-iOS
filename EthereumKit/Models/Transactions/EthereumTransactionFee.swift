@@ -38,14 +38,14 @@ public struct EthereumTransactionFee: TransactionFee, Decodable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let regularFee = try values.decode(Int.self, forKey: .regular)
         let priorityFee = try values.decode(Int.self, forKey: .priority)
-        guard let regularValue = CryptoValue.etherFromGwei(string: String(regularFee)) else {
+        guard let regularValue = CryptoValue.ether(gwei: String(regularFee)) else {
             let context = DecodingError.Context(
                 codingPath: [CodingKeys.regular],
                 debugDescription: "Expected CryptoValue pair from \(regularFee)"
             )
             throw DecodingError.valueNotFound(Int.self, context)
         }
-        guard let priorityValue = CryptoValue.etherFromGwei(string: String(priorityFee)) else {
+        guard let priorityValue = CryptoValue.ether(gwei: String(priorityFee)) else {
             let context = DecodingError.Context(
                 codingPath: [CodingKeys.priority],
                 debugDescription: "Expected CryptoValue pair from \(priorityFee)"
@@ -62,8 +62,8 @@ public struct EthereumTransactionFee: TransactionFee, Decodable {
 
     init(limits: TransactionFeeLimits, regular: Int, priority: Int, gasLimit: Int, gasLimitContract: Int) {
         self.limits = limits
-        self.regular = CryptoValue.etherFromGwei(string: String(regular))!
-        self.priority = CryptoValue.etherFromGwei(string: String(priority))!
+        self.regular = CryptoValue.ether(gwei: String(regular))!
+        self.priority = CryptoValue.ether(gwei: String(priority))!
         self.gasLimit = gasLimit
         self.gasLimitContract = gasLimitContract
     }

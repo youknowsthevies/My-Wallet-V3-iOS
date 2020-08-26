@@ -51,7 +51,7 @@ class ExchangeInputViewModel {
                 value += "0"
             }
             guard includingSymbol == true else { return value }
-            let fiat = BlockchainSettings.App.shared.fiatCurrencySymbol + value
+            let fiat = BlockchainSettings.App.shared.fiatCurrency.symbol + value
             return fiat
         case .nonfiat(let assetType):
             var value = dropped.map({ $0.value }).joined()
@@ -67,13 +67,13 @@ class ExchangeInputViewModel {
     func fiatValue() -> FiatValue? {
         guard inputType == .fiat else { return nil }
         let value = components.map({ $0.value }).joined()
-        return FiatValue.create(amountString: value, currencyCode: BlockchainSettings.App.shared.fiatCurrencyCode)
+        return FiatValue.create(major: value, currency: BlockchainSettings.App.shared.fiatCurrency)!
     }
     
     func cryptoValue() -> CryptoValue? {
         guard case let .nonfiat(currency) = inputType else { return nil }
         let value = components.map({ $0.value }).joined()
-        return CryptoValue.createFromMajorValue(string: value, assetType: currency)
+        return CryptoValue.create(majorDisplay: value, currency: currency)
     }
     
     func canAppend(character: Character) -> Bool {

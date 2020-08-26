@@ -19,7 +19,7 @@ public struct MoneyValueBalancePairs: Equatable {
     public let quoteCurrency: CurrencyType
     
     public subscript(balanceType: BalanceType) -> MoneyValuePair {
-        moneyPairs[balanceType] ?? MoneyValuePair(base: .zero(baseCurrency), quote: .zero(quoteCurrency))
+        moneyPairs[balanceType] ?? MoneyValuePair(base: .zero(currency: baseCurrency), quote: .zero(currency: quoteCurrency))
     }
         
     /// Returns true in case the balance is absent
@@ -88,13 +88,13 @@ public extension MoneyValueBalancePairs {
     /// The total value for the base currency
     var base: MoneyValue {
         let total = moneyPairs.values.map { $0.base.amount }.reduce(0, +)
-        return (try? MoneyValue(minor: total, currency: baseCurrency.code)) ?? .zero(baseCurrency)
+        return MoneyValue.create(minor: total, currency: baseCurrency.currency)
     }
     
     /// The total value for the quote currency
     var quote: MoneyValue {
         let total = moneyPairs.values.map { $0.quote.amount }.reduce(0, +)
-        return (try? MoneyValue(minor: total, currency: quoteCurrency.code)) ?? .zero(quoteCurrency)
+        return MoneyValue.create(minor: total, currency: quoteCurrency.currency)
     }
     
     /// `true` if `self` is zero.
