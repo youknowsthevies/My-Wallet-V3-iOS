@@ -36,7 +36,7 @@ public final class CardListService: CardListServiceAPI {
                 }
                 return .just(cardData)
             }
-            .share(replay: 1, scope: .forever)
+            .share(replay: 1, scope: .whileConnected)
             .distinctUntilChanged()
     }
     
