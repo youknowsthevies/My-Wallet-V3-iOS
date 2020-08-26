@@ -36,6 +36,7 @@ public final class CardListService: CardListServiceAPI {
                 }
                 return .just(cardData)
             }
+            .share(replay: 1, scope: .forever)
             .distinctUntilChanged()
     }
     
@@ -99,7 +100,6 @@ public final class CardListService: CardListServiceAPI {
     public func fetchCards() -> Single<[CardData]> {
         Single
             .create(weak: self) { (self, observer) -> Disposable in
-                self.semaphore.wait()
                 
                 let disposable = self.createFetchSingle()
                     .subscribe { event in
@@ -112,7 +112,6 @@ public final class CardListService: CardListServiceAPI {
                     }
                 return Disposables.create {
                     disposable.dispose()
-                    self.semaphore.signal()
                 }
             }
             .subscribeOn(scheduler)
