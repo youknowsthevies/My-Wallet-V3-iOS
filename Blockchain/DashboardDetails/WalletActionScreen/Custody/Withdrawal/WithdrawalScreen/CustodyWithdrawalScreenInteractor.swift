@@ -13,7 +13,7 @@ import RxSwift
 
 final class CustodyWithdrawalScreenInteractor {
     
-    enum InteractionState {
+    enum InteractionState: Equatable {
         
         /// The necessary data for the withdrawal is being fetched
         case settingUp
@@ -28,7 +28,7 @@ final class CustodyWithdrawalScreenInteractor {
         case submitted
         
         /// There was an error submitting the withdrawal
-        case error
+        case error(WithdrawalError)
         
         /// The user has a zero balance
         case insufficientFunds
@@ -79,8 +79,8 @@ final class CustodyWithdrawalScreenInteractor {
                     return .submitting
                 case (.loaded, .value):
                     return .submitted
-                case (.loaded, .failed):
-                    return .error
+                case (.loaded, .failed(let error)):
+                    return .error(error)
                 default:
                     return .settingUp
                 }

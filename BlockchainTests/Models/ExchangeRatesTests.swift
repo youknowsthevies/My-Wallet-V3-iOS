@@ -24,9 +24,8 @@ class ExchangeRatesTests: XCTestCase {
     func test_convert() {
         let balanceString = "16.64306683"
         let balanceCrypto = CryptoValue.paxFromMajor(string: balanceString)!
-        let toCurrency = "CAD"
         let rates: ExchangeRates = Fixtures.load(name: "rates", in: Bundle(for: ExchangeRatesTests.self))!
-        let conversion = rates.convert(balance: balanceCrypto, toCurrency: toCurrency)
+        let conversion = rates.convert(balance: balanceCrypto, toCurrency: "CAD")
         let expectedConversion = Decimal(string: "21.8024175473")!
         XCTAssertEqual(conversion.amount, expectedConversion)
     }

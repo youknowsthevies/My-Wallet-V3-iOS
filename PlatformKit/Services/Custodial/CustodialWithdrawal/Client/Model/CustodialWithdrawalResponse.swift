@@ -41,8 +41,14 @@ public struct CustodialWithdrawalResponse: Decodable {
         userId = try values.decode(String.self, forKey: .user)
         let amountContainer = try values.nestedContainer(keyedBy: CodingKeys.self, forKey: .amount)
         let symbol = try amountContainer.decode(String.self, forKey: .symbol)
+        guard let currency = CryptoCurrency(rawValue: symbol) else {
+            throw DecodingError.dataCorruptedError(
+                forKey: .symbol,
+                in: values,
+                debugDescription: "CryptoCurrency not recognised."
+            )
+        }
         let value = try amountContainer.decode(String.self, forKey: .value)
-        guard let currency = CryptoCurrency(rawValue: symbol) else { throw PlatformKitError.default}
         cryptoValue = CryptoValue.createFromMajorValue(string: value, assetType: currency) ?? CryptoValue.zero(currency: currency)
     }
 }

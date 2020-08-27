@@ -29,9 +29,12 @@ protocol CustodyWithdrawalStateEmitterServiceAPI: class {
     
     /// Move to the next state
     var nextRelay: PublishRelay<Void> { get }
-    
+
     /// Move to the previous state
     var previousRelay: PublishRelay<Void> { get }
+
+    /// Move to the webview state
+    var webviewRelay: PublishRelay<URL> { get }
 }
 
 typealias CustodyWithdrawalStateServiceAPI = CustodyWithdrawalStateReceiverServiceAPI &
@@ -85,7 +88,10 @@ final class CustodyWithdrawalStateService: CustodyWithdrawalStateServiceAPI {
         
         /// Custody summary screen after a withdrawal
         case summary
-        
+
+        /// Displaying a web view
+        case webview(url: URL)
+
         /// ~Fin~
         case end
     }
@@ -113,6 +119,7 @@ final class CustodyWithdrawalStateService: CustodyWithdrawalStateServiceAPI {
     
     let nextRelay = PublishRelay<Void>()
     let previousRelay = PublishRelay<Void>()
+    let webviewRelay = PublishRelay<URL>()
     let completionRelay = BehaviorRelay<CustodyWithdrawalStatus>(value: .unknown)
     
     private let statesRelay = BehaviorRelay<States>(value: .start)
@@ -137,6 +144,17 @@ final class CustodyWithdrawalStateService: CustodyWithdrawalStateServiceAPI {
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
+
+        webviewRelay
+            .observeOn(MainScheduler.instance)
+            .bindAndCatch(weak: self) { (self, url) in
+                let state: State = .webview(url: url)
+                let states = self.statesRelay.value
+                let action: Action = .next(state)
+                let nextStates = states.states(byAppending: state)
+                self.apply(action: action, states: nextStates)
+            }
+            .disposed(by: disposeBag)
     }
     
     private func next() {
@@ -151,6 +169,9 @@ final class CustodyWithdrawalStateService: CustodyWithdrawalStateServiceAPI {
             state = .summary
             action = .next(state)
         case .summary:
+            state = .end
+            action = .next(state)
+        case .webview:
             state = .end
             action = .next(state)
         case .end:

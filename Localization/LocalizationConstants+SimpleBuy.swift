@@ -44,11 +44,20 @@ extension LocalizationConstants.SimpleBuy {
         }
 
         public enum SummaryFailure {
-            public static let title = NSLocalizedString("Oops!", comment: "Oops!")
-            public static let description = NSLocalizedString(
-                "Something went wrong. Please go back and try again.",
-                comment: "Something went wrong. Please go back and try again."
-            )
+            public enum Unknown {
+                public static let title = NSLocalizedString("Oops!", comment: "Oops!")
+                public static let description = NSLocalizedString(
+                    "Something went wrong. Please go back and try again.",
+                    comment: "Something went wrong. Please go back and try again."
+                )
+            }
+            public enum WithdrawLocked {
+                public static let title = NSLocalizedString("Funds Locked", comment: "Funds Locked")
+                public static let description = NSLocalizedString(
+                    "Your crypto will be available to be withdrawn within 7 days.",
+                    comment: "Your crypto will be available to be withdrawn within 7 days."
+                )
+            }
             public static let action = NSLocalizedString("OK", comment: "OK")
         }
     }

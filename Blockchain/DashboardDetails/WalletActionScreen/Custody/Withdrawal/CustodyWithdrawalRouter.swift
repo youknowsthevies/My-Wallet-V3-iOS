@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
@@ -25,18 +26,21 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI {
     let completionRelay = PublishRelay<Void>()
     
     private var stateService: CustodyWithdrawalStateService!
-    private let custodialAPI: CustodialServiceProviderAPI
+    private let custodialServiceProvider: CustodialServiceProviderAPI
     private let dataProviding: DataProviding
     private let navigationRouter: NavigationRouterAPI
+    private let webViewService: WebViewServiceAPI
     private var currency: CryptoCurrency!
     private let disposeBag = DisposeBag()
     
     init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
          dataProviding: DataProviding = DataProvider.default,
-         custodialAPI: CustodialServiceProviderAPI = CustodialServiceProvider.default) {
+         custodialServiceProvider: CustodialServiceProviderAPI = CustodialServiceProvider.default,
+         webViewService: WebViewServiceAPI = resolve()) {
         self.dataProviding = dataProviding
-        self.custodialAPI = custodialAPI
+        self.custodialServiceProvider = custodialServiceProvider
         self.navigationRouter = navigationRouter
+        self.webViewService = webViewService
     }
     
     func start(with currency: CryptoCurrency) {
@@ -71,12 +75,16 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI {
                 guard let self = self else { return }
                 self.completionRelay.accept(())
             })
+        case .webview(let url):
+            if let topMostViewController = navigationRouter.topMostViewControllerProvider.topMostViewController {
+                webViewService.openSafari(url: url, from: topMostViewController)
+            }
         }
     }
     
     private func showWithdrawalScreen() {
         let interactor = CustodyWithdrawalScreenInteractor(
-            withdrawalService: custodialAPI.withdrawal,
+            withdrawalService: custodialServiceProvider.withdrawal,
             balanceFetching: dataProviding.balance[currency.currency],
             currency: currency,
             accountRepository: AssetAccountRepository.shared

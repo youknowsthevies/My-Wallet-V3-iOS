@@ -16,7 +16,7 @@ final class CustodyWithdrawalSummaryViewController: BaseScreenViewController {
     
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var titleLabel: UILabel!
-    @IBOutlet private var descriptionLabel: UILabel!
+    @IBOutlet private var descriptionTextView: InteractableTextView!
     @IBOutlet private var actionButtonView: ButtonView!
     
     // MARK: - Private Properties
@@ -50,9 +50,9 @@ final class CustodyWithdrawalSummaryViewController: BaseScreenViewController {
         presenter.titleLabelDriver
             .drive(titleLabel.rx.content)
             .disposed(by: disposeBag)
-        
+
         presenter.descriptionLabelDriver
-            .drive(descriptionLabel.rx.content)
+            .drive(descriptionTextView.rx.viewModel)
             .disposed(by: disposeBag)
         
         actionButtonView.viewModel = presenter.actionViewModel
