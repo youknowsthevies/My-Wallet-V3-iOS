@@ -107,7 +107,6 @@ final class CustodyWithdrawalScreenInteractor {
     private let setupInteractor: CustodyWithdrawalSetupInteractor
     private let submissionInteractor: CustodyWithdrawalSubmissionInteractor
     private let disposeBag = DisposeBag()
-    private let tradingBalanceService: TradingBalanceServiceAPI
 
     init(withdrawalService: CustodyWithdrawalServiceAPI,
          currency: CryptoCurrency,
@@ -131,6 +130,5 @@ final class CustodyWithdrawalScreenInteractor {
             accountRepository: accountRepository
         )
         submissionInteractor = CustodyWithdrawalSubmissionInteractor(withdrawalService: withdrawalService)
-        self.tradingBalanceService = tradingBalanceService
     }
 }
