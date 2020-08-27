@@ -49,7 +49,7 @@ public protocol CustodialAccountBalanceFetching: AccountBalanceFetching {
     var isFunded: Observable<Bool> { get }
     
     /// Returns the funds state
-    var fundsState: Observable<AccountBalanceState<MoneyValue>> { get }
+    var fundsState: Observable<AccountBalanceState<CustodialAccountBalance>> { get }
 }
 
 /// AccountBalanceFetching implementation representing a absent account.
@@ -65,7 +65,7 @@ public final class AbsentAccountBalanceFetching: CustodialAccountBalanceFetching
         .just(false)
     }
     
-    public var fundsState: Observable<AccountBalanceState<MoneyValue>> {
+    public var fundsState: Observable<AccountBalanceState<CustodialAccountBalance>> {
         .just(.absent)
     }
 
