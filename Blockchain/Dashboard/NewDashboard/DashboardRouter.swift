@@ -112,7 +112,7 @@ final class DashboardRouter {
             )
             let presenter = InterestAccountDetailsScreenPresenter(interactor: interactor)
             let controller = InterestAccountDetailsViewController(presenter: presenter)
-            navigationRouter.topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
+            navigationRouter.present(viewController: controller, using: .modalOverTopMost)
         }
     }
 }

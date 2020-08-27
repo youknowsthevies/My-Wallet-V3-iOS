@@ -10,7 +10,7 @@ import PlatformUIKit
 import RxDataSources
 import RxSwift
 
-public final class InterestAccountDetailsViewController: UIViewController {
+public final class InterestAccountDetailsViewController: BaseScreenViewController {
     
     // MARK: - Types
     
@@ -42,6 +42,7 @@ public final class InterestAccountDetailsViewController: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
+        setupNavigationBar()
     }
     
     private func setupTableView() {
@@ -75,6 +76,13 @@ public final class InterestAccountDetailsViewController: UIViewController {
         presenter.sectionObservable
             .bind(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
+    }
+    
+    private func setupNavigationBar() {
+        set(barStyle: presenter.barStyle,
+            leadingButtonStyle: presenter.leadingButton,
+            trailingButtonStyle: presenter.trailingButton)
+        titleViewStyle = presenter.titleView
     }
 }
 
