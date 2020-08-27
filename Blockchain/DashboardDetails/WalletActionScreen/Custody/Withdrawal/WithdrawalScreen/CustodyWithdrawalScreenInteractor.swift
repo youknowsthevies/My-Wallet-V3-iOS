@@ -82,7 +82,6 @@ final class CustodyWithdrawalScreenInteractor {
                     return .settingUp
                 }
             }
-            .startWith(.settingUp)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
 
