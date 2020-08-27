@@ -57,12 +57,9 @@ class TradingBalanceService: TradingBalanceServiceAPI {
 
     func balance(for currencyType: CurrencyType) -> Single<CustodialAccountBalanceState> {
         client
-            .balance(for: currencyType.code)
+            .balance(for: currencyType)
             .map { response -> CustodialAccountBalanceState in
-                guard let response = response else {
-                    return .absent
-                }
-                guard let balance = response[currencyType.code] else {
+                guard let balance = response?[currencyType] else {
                     return .absent
                 }
                 let accountBalance = CustodialAccountBalance(currency: currencyType, response: balance)

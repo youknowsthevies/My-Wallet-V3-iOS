@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
@@ -59,21 +60,17 @@ final class CustodyWithdrawalScreenInteractor {
     private lazy var setup: Void = {
         Observable
             .combineLatest(
-                balanceFetching.trading.balanceMoneyObservable,
                 setupInteractor.state,
                 submissionInteractor.state
-            )
+            ) { (setupState: $0, submissionState: $1) }
             .map { payload -> InteractionState in
-                let amount = payload.0
-                let setupState = payload.1
-                let submissionState = payload.2
-                guard !amount.isZero else {
-                    return .insufficientFunds
-                }
-                switch (setupState, submissionState) {
+                switch (payload.setupState, payload.submissionState) {
                 case (.loading, .ready):
                     return .settingUp
-                case (.loaded, .ready):
+                case (.loaded(let value), .ready):
+                    if !value.withdrawableBalance.isPositive {
+                        return .insufficientFunds
+                    }
                     return .loaded
                 case (.loaded, .calculating):
                     return .submitting
@@ -87,13 +84,13 @@ final class CustodyWithdrawalScreenInteractor {
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-        
+
         let payloadObservable = setupInteractor.state.compactMap { $0.value }
         
         withdrawalRelay
             .withLatestFrom(payloadObservable)
             .map { value -> (CryptoValue, String) in
-                (value.balance, value.destination)
+                (value.withdrawableBalance, value.destination)
             }
             .bindAndCatch(weak: self, onNext: { (self, values) in
                 self.submissionInteractor.submitWithdrawal(
@@ -103,26 +100,32 @@ final class CustodyWithdrawalScreenInteractor {
             })
             .disposed(by: disposeBag)
     }()
-    
+
     private let stateRelay = BehaviorRelay<InteractionState>(value: .settingUp)
-    
-    private let balanceFetching: AssetBalanceFetching
+
     private let setupInteractor: CustodyWithdrawalSetupInteractor
     private let submissionInteractor: CustodyWithdrawalSubmissionInteractor
     private let disposeBag = DisposeBag()
-    
+
     init(withdrawalService: CustodyWithdrawalServiceAPI,
-         balanceFetching: AssetBalanceFetching,
          currency: CryptoCurrency,
-         accountRepository: AssetAccountRepositoryAPI) {
-        self.balanceFetching = balanceFetching
+         balanceFetching: AssetBalanceFetching,
+         tradingBalanceService: TradingBalanceServiceAPI = resolve(),
+         accountRepository: AssetAccountRepositoryAPI,
+         exchangeProviding: ExchangeProviding = resolve()) {
+        let withdrawableAssetBalanceFetcher = WithdrawableAssetBalanceFetcher(
+            cryptoCurrency: currency,
+            trading: balanceFetching.trading,
+            savings: balanceFetching.savings,
+            exchange: exchangeProviding[currency]
+        )
         assetBalanceInteractor = AssetBalanceTypeViewInteractor(
-            assetBalanceFetching: balanceFetching,
+            assetBalanceFetching: withdrawableAssetBalanceFetcher,
             balanceType: .custodial(.trading)
         )
         setupInteractor = CustodyWithdrawalSetupInteractor(
             currency: currency,
-            balanceFetching: balanceFetching,
+            tradingBalanceService: tradingBalanceService,
             accountRepository: accountRepository
         )
         submissionInteractor = CustodyWithdrawalSubmissionInteractor(withdrawalService: withdrawalService)

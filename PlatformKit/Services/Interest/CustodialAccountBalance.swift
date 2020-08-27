@@ -10,13 +10,16 @@ import Foundation
 
 public struct CustodialAccountBalance: Equatable {
 
-    let available: MoneyValue
+    public let available: MoneyValue
+    public let withdrawable: MoneyValue
     
     init(currency: CurrencyType, response: CustodialBalanceResponse.Balance) {
         self.available = (try? MoneyValue(minor: response.available, currency: currency.code)) ?? .zero(currency)
+        self.withdrawable = (try? MoneyValue(minor: response.withdrawable, currency: currency.code)) ?? .zero(currency)
     }
     
-    public init(available: MoneyValue) {
+    public init(available: MoneyValue, withdrawable: MoneyValue) {
         self.available = available
+        self.withdrawable = withdrawable
     }
 }
