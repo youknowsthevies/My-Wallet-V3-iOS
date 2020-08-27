@@ -30,6 +30,10 @@ public protocol CustodyActivityEmitterAPI: class {
     var activityRelay: PublishRelay<Void> { get }
 }
 
+public protocol CustodyDepositEmitterAPI: class {
+    var depositRelay: PublishRelay<Void> { get }
+}
+
 public protocol CustodyBuyEmitterAPI: class {
     var buyRelay: PublishRelay<Void> { get }
 }
@@ -38,6 +42,7 @@ public typealias CustodyActionStateServiceAPI = CustodyActionStateReceiverServic
                                          RoutingNextStateEmitterAPI &
                                          CustodyActivityEmitterAPI &
                                          CustodyBuyEmitterAPI &
+                                         CustodyDepositEmitterAPI &
                                          RoutingPreviousStateEmitterAPI
 
 public final class CustodyActionStateService: CustodyActionStateServiceAPI {
@@ -106,6 +111,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
     public let nextRelay = PublishRelay<Void>()
     public let previousRelay = PublishRelay<Void>()
     public let activityRelay = PublishRelay<Void>()
+    public let depositRelay = PublishRelay<Void>()
     public let buyRelay = PublishRelay<Void>()
     
     private let statesRelay = BehaviorRelay<States>(value: .start)
@@ -118,6 +124,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
     // MARK: - Setup
     
     public init(cacheSuite: CacheSuite = resolve(),
+                kycTiersService: KYCTiersServiceAPI = resolve(),
                 recoveryStatusProviding: RecoveryPhraseStatusProviding) {
         self.recoveryStatusProviding = recoveryStatusProviding
         self.cacheSuite = cacheSuite
@@ -137,6 +144,20 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
             .bindAndCatch(weak: self) { (self) in
                 let nextStates = self.statesRelay.value.states(byAppending: .activity)
                 self.apply(action: .next(.activity), states: nextStates)
+            }
+            .disposed(by: disposeBag)
+        
+        depositRelay
+            .observeOn(MainScheduler.instance)
+            .flatMap {
+                kycTiersService
+                .fetchTiers()
+                .asObservable()
+            }
+            .map { $0.isTier2Approved }
+            .bindAndCatch(weak: self) { (self, isKYCApproved) in
+                let nextStates = self.statesRelay.value.states(byAppending: .deposit(isKYCApproved: isKYCApproved))
+                self.apply(action: .next(.deposit(isKYCApproved: isKYCApproved)), states: nextStates)
             }
             .disposed(by: disposeBag)
         
@@ -171,6 +192,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
         case .activity,
              .buy,
              .withdrawal,
+             .deposit,
              .withdrawalAfterBackup,
              .end:
             state = .end

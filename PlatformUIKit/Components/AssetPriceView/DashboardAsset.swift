@@ -162,12 +162,16 @@ public struct DashboardAsset {
                         accessibility: descriptors.fiatAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
                     )
                     
-                    cryptoBalance = LabelContent(
-                        text: value.cryptoValue.toDisplayString(includeSymbol: true, locale: .current),
-                        font: descriptors.cryptoFont,
-                        color: descriptors.cryptoTextColor,
-                        accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
-                    )
+                    if value.cryptoValue == value.fiatValue {
+                        cryptoBalance = .empty
+                    } else {
+                        cryptoBalance = LabelContent(
+                            text: value.cryptoValue.toDisplayString(includeSymbol: true, locale: .current),
+                            font: descriptors.cryptoFont,
+                            color: descriptors.cryptoTextColor,
+                            accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
+                        )
+                    }
                 }
             }
             

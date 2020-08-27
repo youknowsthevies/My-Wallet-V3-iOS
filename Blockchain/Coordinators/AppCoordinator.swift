@@ -423,7 +423,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         buyRouter.start()
     }
     
-    func showFundTrasferDetails(fiatCurrency: FiatCurrency) {
+    func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool) {
         let stateService = BuySellUIKit.StateService.make()
         let builder = BuySellUIKit.Builder(
             fiatCurrencyService: UserInformationServiceProvider.default.settings,
@@ -434,7 +434,10 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         
         buyRouter = BuySellUIKit.Router(builder: builder)
         buyRouter.setup(startImmediately: false)
-        stateService.showFundsTransferDetails(for: fiatCurrency)
+        stateService.showFundsTransferDetails(
+            for: fiatCurrency,
+            isOriginDeposit: isOriginDeposit
+        )
     }
 }
 

@@ -6,7 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 public enum CustodyActionState {
     
@@ -29,6 +29,9 @@ public enum CustodyActionState {
 
     /// Route to activity
     case activity
+    
+    /// Route to fiat deposit
+    case deposit(isKYCApproved: Bool)
     
     /// Route to buy
     case buy

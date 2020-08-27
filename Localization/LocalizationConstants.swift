@@ -3280,7 +3280,12 @@ public enum LocalizationConstants {
         public struct Default {
             public struct Deposit {
                 public static let title = NSLocalizedString("Deposit", comment: "Deposit")
-                public static let description = NSLocalizedString("Add %@ to your Interest Account", comment: "Add %@ to your Interest Account")
+                public struct Crypto {
+                    public static let description = NSLocalizedString("Add %@ to your Interest Account", comment: "Add %@ to your Interest Account")
+                }
+                public struct Fiat {
+                    public static let description = NSLocalizedString("Add Cash from Your Bank", comment: "Add Cash from Your Bank")
+                }
             }
             public struct Withdraw {
                 public static let title = NSLocalizedString("Withdraw", comment: "Withdraw")

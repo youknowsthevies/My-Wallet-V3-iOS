@@ -96,7 +96,7 @@ public final class StateService: StateServiceAPI {
         case bankTransferDetails(CheckoutData)
 
         /// Funds transfer details
-        case fundsTransferDetails(currency: FiatCurrency, isOriginPaymentMethods: Bool)
+        case fundsTransferDetails(currency: FiatCurrency, isOriginPaymentMethods: Bool, isOriginDeposit: Bool)
         
         /// The user authorized his card payment and should now be referred to partner
         case authorizeCard(order: OrderDetails)
@@ -245,7 +245,8 @@ public final class StateService: StateServiceAPI {
             case .funds:
                 state = .fundsTransferDetails(
                     currency: data.order.fiatValue.currencyType,
-                    isOriginPaymentMethods: false
+                    isOriginPaymentMethods: false,
+                    isOriginDeposit: false
                 )
             }
             apply(
@@ -413,7 +414,7 @@ public final class StateService: StateServiceAPI {
 
 extension StateService {
     
-    public func showFundsTransferDetails(for fiatCurrency: FiatCurrency) {
+    public func showFundsTransferDetails(for fiatCurrency: FiatCurrency, isOriginDeposit: Bool) {
         let currentState = statesRelay.value.current
         if currentState.isPaymentMethods {
             statesRelay.accept(statesByRemovingLast())
@@ -421,7 +422,8 @@ extension StateService {
         let states = self.states(
             byAppending: .fundsTransferDetails(
                 currency: fiatCurrency,
-                isOriginPaymentMethods: currentState.isPaymentMethods
+                isOriginPaymentMethods: currentState.isPaymentMethods,
+                isOriginDeposit: isOriginDeposit
             )
         )
         apply(action: .next(to: states.current), states: states)

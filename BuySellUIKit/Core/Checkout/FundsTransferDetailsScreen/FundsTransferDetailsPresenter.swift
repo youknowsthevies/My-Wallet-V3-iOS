@@ -52,6 +52,7 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     
     // MARK: - Injected
 
+    private let isOriginDeposit: Bool
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let webViewRouter: WebViewRouterAPI
     private let stateService: StateServiceAPI
@@ -62,11 +63,13 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     init(webViewRouter: WebViewRouterAPI,
          analyticsRecorder: AnalyticsEventRecorderAPI,
          interactor: FundsTransferDetailsInteractorAPI,
-         stateService: StateServiceAPI) {
+         stateService: StateServiceAPI,
+         isOriginDeposit: Bool) {
         self.analyticsRecorder = analyticsRecorder
         self.webViewRouter = webViewRouter
         self.interactor = interactor
         self.stateService = stateService
+        self.isOriginDeposit = isOriginDeposit
         
         navigationBarTrailingButtonAction = .custom {
             stateService.previousRelay.accept(())
@@ -99,6 +102,7 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     private func setup(account: PaymentAccount) {
         let contentReducer = ContentReducer(
             account: account,
+            isOriginDeposit: isOriginDeposit,
             analyticsRecorder: analyticsRecorder
         )
 
@@ -148,11 +152,17 @@ extension FundsTransferDetailScreenPresenter {
         let termsTextViewModel: InteractableTextViewModel!
 
         init(account: PaymentAccount,
+             isOriginDeposit: Bool,
              analyticsRecorder: AnalyticsEventRecorderAPI) {
         
             typealias FundsString = LocalizedString.Funds
             
-            title = "\(FundsString.Title.addBankPrefix) \(account.currency) \(FundsString.Title.addBankSuffix) "
+            if isOriginDeposit {
+                title = "\(FundsString.Title.depositPrefix) \(account.currency)"
+            } else {
+                title = "\(FundsString.Title.addBankPrefix) \(account.currency) \(FundsString.Title.addBankSuffix) "
+            }
+            
             lineItems = account.fields.transferDetailsCellsPresenting(analyticsRecorder: analyticsRecorder)
 
             let font = UIFont.main(.medium, 12)

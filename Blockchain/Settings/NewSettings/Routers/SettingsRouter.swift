@@ -157,7 +157,7 @@ final class SettingsRouter: SettingsRouterAPI {
             )
             cardRouter.load()
         case .showAddBankScreen(let fiatCurrency):
-            appCoordinator.showFundTrasferDetails(fiatCurrency: fiatCurrency)
+            appCoordinator.showFundTrasferDetails(fiatCurrency: fiatCurrency, isOriginDeposit: false)
         case .showAppStore:
             UIApplication.shared.openAppStore()
         case .showBackupScreen:

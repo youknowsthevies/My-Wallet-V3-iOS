@@ -257,6 +257,10 @@ extension LocalizationConstants.SimpleBuy {
                     "Bank",
                     comment: "Bank"
                 )
+                public static let depositPrefix = NSLocalizedString(
+                    "Deposit",
+                    comment: "Deposit"
+                )
             }
             public enum Notice {
                 public enum BankTransferOnly {

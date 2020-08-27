@@ -110,6 +110,8 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
                     stateService.activityRelay.accept(())
                 case .transfer:
                     stateService.nextRelay.accept(())
+                case .deposit:
+                    stateService.depositRelay.accept(())
                 default:
                     break
                 }

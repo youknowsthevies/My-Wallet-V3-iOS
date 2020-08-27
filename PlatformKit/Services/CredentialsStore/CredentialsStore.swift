@@ -54,6 +54,7 @@ final class CredentialsStore: CredentialsStoreAPI {
 
     func erase() {
         store.set(nil, forKey: Keys.data.rawValue)
+        synchronize()
     }
 
     func backup(pinDecryptionKey: String) -> Completable {
