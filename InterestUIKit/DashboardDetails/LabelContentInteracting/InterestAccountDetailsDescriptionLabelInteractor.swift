@@ -29,7 +29,7 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
                 .compactMap { CryptoValue.createFromMinorValue($0, assetType: self.cryptoCurrency) }
                 .map { $0.toDisplayString(includeSymbol: true) }
                 .map { .loaded(next: .init(text: $0)) }
-                .bind(to: stateRelay)
+                .bindAndCatch(to: stateRelay)
                 .disposed(by: disposeBag)
         }()
         
@@ -65,7 +65,7 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
                 .compactMap { CryptoValue.createFromMinorValue($0, assetType: self.cryptoCurrency) }
                 .map { $0.toDisplayString(includeSymbol: true) }
                 .map { .loaded(next: .init(text: $0)) }
-                .bind(to: stateRelay)
+                .bindAndCatch(to: stateRelay)
                 .disposed(by: disposeBag)
         }()
         
@@ -99,7 +99,7 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
                 .map { $0.value }
                 .compactMap { $0?.lockupDescription }
                 .map { .loaded(next: .init(text: $0)) }
-                .bind(to: stateRelay)
+                .bindAndCatch(to: stateRelay)
                 .disposed(by: disposeBag)
         }()
         
@@ -168,7 +168,7 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
             let next = components.date ?? Date()
             Observable.just(DateFormatter.long.string(from: next))
                 .map { .loaded(next: .init(text: $0)) }
-                .bind(to: stateRelay)
+                .bindAndCatch(to: stateRelay)
                 .disposed(by: disposeBag)
         }()
         
