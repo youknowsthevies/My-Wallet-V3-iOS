@@ -1591,7 +1591,7 @@ public enum LocalizationConstants {
                     comment: "Start earning up to 9.0% interest on your crypto."
                 )
                 public static let notKYCd = NSLocalizedString(
-                    "Verify your identitys and start earning up to 9.0% interest on your crypto.",
+                    "Verify your identity and start earning up to 9.0% interest on your crypto.",
                     comment: "Verify your identity and start earning up to 9.0% interest on your crypto."
                 )
             }
