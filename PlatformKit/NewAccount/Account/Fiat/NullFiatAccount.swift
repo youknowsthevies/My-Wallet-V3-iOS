@@ -17,6 +17,10 @@ public class NullFiatAccount: FiatAccount {
         unimplemented()
     }
 
+    public var balanceType: BalanceType {
+        unimplemented()
+    }
+
     public var isDefault: Bool {
         unimplemented()
     }

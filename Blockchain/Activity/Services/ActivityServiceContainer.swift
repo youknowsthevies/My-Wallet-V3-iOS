@@ -16,19 +16,20 @@ protocol ActivityServiceContaining {
     var exchangeProviding: ExchangeProviding { get }
     var fiatCurrency: FiatCurrencySettingsServiceAPI { get }
     var activity: Observable<ActivityItemEventServiceAPI> { get }
-    var selectionServiceAPI: WalletPickerSelectionServiceAPI { get }
+    var selectionService: WalletPickerSelectionServiceAPI { get }
+    var accountSelectionService: AccountSelectionServiceAPI { get }
 }
 
 final class ActivityServiceContainer: ActivityServiceContaining {
     var asset: Observable<CryptoCurrency> {
-        selectionServiceAPI
+        selectionService
             .selectedData
             .compactMap { $0.currency }
     }
     
     var activityEventsLoadingState: Observable<ActivityItemEventsLoadingState> {
-        eventsRelay
-            .asObservable()
+        _ = setup
+        return eventsRelay.asObservable()
     }
     
     var activity: Observable<ActivityItemEventServiceAPI> {
@@ -40,32 +41,41 @@ final class ActivityServiceContainer: ActivityServiceContaining {
     let activityProviding: ActivityProviding
     let balanceProviding: BalanceProviding
     let fiatCurrency: FiatCurrencySettingsServiceAPI
-    let selectionServiceAPI: WalletPickerSelectionServiceAPI
+    let selectionService: WalletPickerSelectionServiceAPI
+    let accountSelectionService: AccountSelectionServiceAPI
     let exchangeProviding: ExchangeProviding
     
     private let eventsRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
     private let disposeBag = DisposeBag()
-    
-    init(fiatCurrency: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         balanceProviding: BalanceProviding = DataProvider.default.balance,
-         exchangeProviding: ExchangeProviding = DataProvider.default.exchange,
-         activityProviding: ActivityProviding = ActivityServiceProvider.default.activity) {
-        self.selectionServiceAPI = WalletPickerSelectionService(defaultSelection: .all)
-        self.fiatCurrency = fiatCurrency
-        self.balanceProviding = balanceProviding
-        self.exchangeProviding = exchangeProviding
-        self.activityProviding = activityProviding
-        
-        selectionServiceAPI
+    private lazy var setup: Void = {
+        accountSelectionService
             .selectedData
-            .do(afterNext: { _ in activityProviding.refresh() })
-            .flatMapLatest { selection -> Observable<ActivityItemEventsLoadingState> in
+            .map { account -> WalletPickerSelection in
+                if let account: CryptoAccount = account as? CryptoAccount {
+                    switch account.balanceType {
+                    case .custodial:
+                        return .custodial(account.asset)
+                    case .nonCustodial:
+                        return .nonCustodial(account.asset)
+                    }
+                }
+                return .all
+            }
+            .bind { [weak self] selection in
+                self?.selectionService.record(selection: selection)
+            }
+            .disposed(by: disposeBag)
+
+        selectionService
+            .selectedData
+            .do(afterNext: { [weak self] _ in self?.activityProviding.refresh() })
+            .flatMapLatest(weak: self) { (self, selection) -> Observable<ActivityItemEventsLoadingState> in
                 switch selection {
                 case .all:
-                    return activityProviding.activityItems
+                    return self.activityProviding.activityItems
                 case .nonCustodial(let currency):
-                    let transactional = activityProviding[currency].transactional
-                    let swap = activityProviding[currency].swap
+                    let transactional = self.activityProviding[currency].transactional
+                    let swap = self.activityProviding[currency].swap
                     return Observable.combineLatest(
                             transactional.state,
                             swap.state
@@ -74,10 +84,22 @@ final class ActivityServiceContainer: ActivityServiceContaining {
                             [states.1, states.0].reduce()
                         }
                 case .custodial(let currency):
-                    return activityProviding[currency].buy.state
+                    return self.activityProviding[currency].buy.state
                 }
             }
             .bindAndCatch(to: eventsRelay)
             .disposed(by: disposeBag)
+    }()
+    
+    init(fiatCurrency: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
+         balanceProviding: BalanceProviding = DataProvider.default.balance,
+         exchangeProviding: ExchangeProviding = DataProvider.default.exchange,
+         activityProviding: ActivityProviding = ActivityServiceProvider.default.activity) {
+        self.selectionService = WalletPickerSelectionService(defaultSelection: .all)
+        self.accountSelectionService = AccountSelectionService()
+        self.fiatCurrency = fiatCurrency
+        self.balanceProviding = balanceProviding
+        self.exchangeProviding = exchangeProviding
+        self.activityProviding = activityProviding
     }
 }

@@ -17,10 +17,13 @@ public protocol AccountGroup: BlockchainAccount {
 
 extension AccountGroup {
     public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
-        Single
-            .zip(
-                accounts.map { $0.fiatBalance(fiatCurrency: fiatCurrency) }
-            )
+        let balances: [Single<MoneyValue>] = accounts
+            .map { account in
+                account
+                    .fiatBalance(fiatCurrency: fiatCurrency)
+                    .catchErrorJustReturn(.zero(currency: fiatCurrency))
+            }
+        return Single.zip(balances)
             .map { moneyValues -> MoneyValue in
                 try moneyValues.reduce(into: MoneyValue.zero(currency: fiatCurrency)) { (result, this) in
                     try result += this

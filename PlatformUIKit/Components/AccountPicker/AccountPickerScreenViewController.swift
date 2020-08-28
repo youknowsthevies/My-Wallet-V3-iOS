@@ -1,35 +1,34 @@
 //
-//  WalletPickerScreenViewController.swift
+//  AccountPickerScreenViewController.swift
 //  PlatformUIKit
 //
-//  Created by Paulo on 28/07/2020.
+//  Created by Paulo on 05/08/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Localization
 import RxCocoa
 import RxDataSources
 import RxSwift
 import ToolKit
 
-public final class WalletSelectionScreenViewController: UIViewController {
+public final class AccountPickerScreenViewController: BaseScreenViewController {
 
     // MARK: - Types
 
-    private typealias RxDataSource = RxTableViewSectionedReloadDataSource<WalletPickerSectionViewModel>
+    private typealias RxDataSource = RxTableViewSectionedReloadDataSource<AccountPickerSectionViewModel>
 
     // MARK: - Private IBOutlets
 
-    private lazy var tableView: UITableView = UITableView(frame: .zero, style: .grouped)
+    private var tableView: UITableView!
 
     // MARK: - Private Properties
 
-    private let presenter: WalletSelectionScreenPresenter
+    private let presenter: AccountPickerScreenPresenter
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
-    public init(presenter: WalletSelectionScreenPresenter) {
+    public init(presenter: AccountPickerScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
@@ -42,29 +41,39 @@ public final class WalletSelectionScreenViewController: UIViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
+        setupNavigationBar()
     }
 
     // MARK: - Private Functions
 
+    private func setupNavigationBar() {
+        titleViewStyle = presenter.titleViewStyle
+        set(barStyle: presenter.barStyle,
+            leadingButtonStyle: presenter.leadingButton,
+            trailingButtonStyle: presenter.trailingButton
+        )
+    }
+
     private func setupTableView() {
+        tableView = UITableView(frame: .zero, style: .grouped)
         tableView.backgroundColor = .white
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = UITableView.automaticDimension
         tableView.separatorColor = .clear
         tableView.alwaysBounceVertical = true
         tableView.registerNibCell(CurrentBalanceTableViewCell.self)
-        tableView.registerNibCell(WalletBalanceTableViewCell.self)
+        tableView.registerNibCell(AccountGroupBalanceTableViewCell.self)
         view.addSubview(tableView)
         tableView.layoutToSuperview(.top, .bottom, .leading, .trailing)
 
         let dataSource = RxDataSource(configureCell: { [weak self] _, _, indexPath, item in
             guard let self = self else { return UITableViewCell() }
             let cell: UITableViewCell
-            switch item {
-            case .balance(let balanceType):
-                cell = self.balanceCell(for: indexPath, presenter: balanceType.presenter)
-            case .total(let presenter):
+            switch item.presenter {
+            case .accountGroup(let presenter):
                 cell = self.totalBalanceCell(for: indexPath, presenter: presenter)
+            case .singleAccount(let presenter):
+                cell = self.balanceCell(for: indexPath, presenter: presenter)
             }
             cell.selectionStyle = .none
             return cell
@@ -74,36 +83,23 @@ public final class WalletSelectionScreenViewController: UIViewController {
             .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
 
-        tableView.rx.modelSelected(WalletPickerCellItem.self)
+        tableView.rx.modelSelected(AccountPickerCellItem.self)
             .bindAndCatch(weak: self) { (self, model) in
-                switch model {
-                case .total:
-                    self.presenter.record(selection: .all)
-                case .balance(let balanceType):
-                    switch balanceType {
-                    case .custodial(let presenter):
-                        guard case let .crypto(currency) = presenter.currency else { return }
-                        self.presenter.record(selection: .custodial(currency))
-                    case .nonCustodial(let presenter):
-                        guard case let .crypto(currency) = presenter.currency else { return }
-                        self.presenter.record(selection: .nonCustodial(currency))
-                    }
-                }
+                self.presenter.record(selection: model.account)
                 self.dismiss(animated: true, completion: nil)
             }
             .disposed(by: disposeBag)
     }
 
-    private func balanceCell(for indexPath: IndexPath, presenter: CurrentBalanceCellPresenter) -> CurrentBalanceTableViewCell {
+    private func balanceCell(for indexPath: IndexPath, presenter: CurrentBalanceCellPresenting) -> UITableViewCell {
         let cell = tableView.dequeue(CurrentBalanceTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
 
-    private func totalBalanceCell(for indexPath: IndexPath, presenter: WalletBalanceCellPresenter) -> WalletBalanceTableViewCell {
-        let cell = tableView.dequeue(WalletBalanceTableViewCell.self, for: indexPath)
+    private func totalBalanceCell(for indexPath: IndexPath, presenter: AccountGroupBalanceCellPresenter) -> AccountGroupBalanceTableViewCell {
+        let cell = tableView.dequeue(AccountGroupBalanceTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
 }
-

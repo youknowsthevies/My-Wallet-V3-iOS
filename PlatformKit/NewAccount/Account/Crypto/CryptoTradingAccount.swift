@@ -18,6 +18,7 @@ public class CryptoTradingAccount: CryptoAccount {
     public let label: String
     public let asset: CryptoCurrency
     public let isDefault: Bool = false
+    public let balanceType: BalanceType = .custodial(.trading)
 
     public var balance: Single<MoneyValue> {
         balanceFetching.balanceMoney
@@ -33,7 +34,7 @@ public class CryptoTradingAccount: CryptoAccount {
     public init(asset: CryptoCurrency,
                 balanceProviding: BalanceProviding = resolve(),
                 exchangeProviding: ExchangeProviding = resolve()) {
-        self.label = String(format: LocalizedString.myTradingAccount, asset.name)
+        self.label = asset.defaultTradeWalletName
         self.asset = asset
         self.exchangeService = exchangeProviding[asset]
         self.balanceFetching = balanceProviding[asset.currency].trading

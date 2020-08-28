@@ -22,28 +22,23 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
     let isDefault: Bool = true
 
     var balance: Single<MoneyValue> {
-        balanceService
-            .balance(for: EthereumAddress(stringLiteral: id))
-            .map(\.moneyValue)
+        balanceFetching.balanceMoney
     }
     
     var actions: AvailableActions {
         [.viewActivity]
     }
 
-    private let bridge: EthereumWalletBridgeAPI
-    private let balanceService: ERC20BalanceService<Token>
+    private let balanceFetching: AccountBalanceFetching
     private let exchangeService: PairExchangeServiceAPI
     
     init(id: String,
-         exchangeProviding: ExchangeProviding = resolve(),
-         bridge: EthereumWalletBridgeAPI = resolve(),
-         balanceService: ERC20BalanceService<Token> = resolve()) {
+         balanceProviding: BalanceProviding = resolve(),
+         exchangeProviding: ExchangeProviding = resolve()) {
         self.id = id
-        self.label = String(format: LocalizedString.myWallet, Token.name)
-        self.bridge = bridge
+        self.label = Token.assetType.defaultWalletName
         self.exchangeService = exchangeProviding[Token.assetType]
-        self.balanceService = balanceService
+        self.balanceFetching = balanceProviding[Token.assetType.currency].wallet
     }
 
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {

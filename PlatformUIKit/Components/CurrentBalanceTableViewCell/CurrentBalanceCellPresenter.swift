@@ -12,32 +12,32 @@ import RxCocoa
 import RxDataSources
 import RxSwift
 
-public final class CurrentBalanceCellPresenter {
+public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
     
     public typealias DescriptionValue = () -> Observable<String>
     
     private typealias LocalizedString = LocalizationConstants.DashboardDetails.BalanceCell
     
-    var iconImageViewContent: Driver<ImageViewContent> {
+    public var iconImageViewContent: Driver<ImageViewContent> {
         iconImageViewContentRelay.asDriver()
     }
     
-    var badgeImageViewModel: Driver<BadgeImageViewModel> {
+    public var badgeImageViewModel: Driver<BadgeImageViewModel> {
         badgeRelay.asDriver()
     }
     
     /// Returns the description of the balance
-    var title: Driver<String> {
+    public var title: Driver<String> {
         titleRelay.asDriver()
     }
     
     /// Returns the description of the balance
-    var description: Driver<String> {
+    public var description: Driver<String> {
         _ = setup
         return descriptionRelay.asDriver()
     }
     
-    var separatorVisibility: Driver<Visibility> {
+    public var separatorVisibility: Driver<Visibility> {
         separatorVisibilityRelay.asDriver()
     }
     
@@ -65,7 +65,6 @@ public final class CurrentBalanceCellPresenter {
     
     private let badgeRelay = BehaviorRelay<BadgeImageViewModel>(value: .empty)
     private let separatorVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
-    private let imageViewContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
     private let iconImageViewContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
     private let titleRelay = BehaviorRelay<String>(value: "")
     private let descriptionRelay = BehaviorRelay<String>(value: "")
@@ -92,8 +91,7 @@ public final class CurrentBalanceCellPresenter {
         )
         self.currency = currency
         self.descriptionValue = descriptionValue
-        imageViewContentRelay.accept(ImageViewContent(imageName: currency.logoImageName))
-        
+
         switch currency {
         case .fiat(let fiatCurrency):
             let badgeImageViewModel: BadgeImageViewModel = .primary(

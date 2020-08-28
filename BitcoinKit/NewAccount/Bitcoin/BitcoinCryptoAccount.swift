@@ -39,7 +39,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
          exchangeProviding: ExchangeProviding = resolve(),
          balanceService: BalanceServiceAPI = resolve()) {
         self.id = id
-        self.label = label ?? String(format: LocalizedString.myWallet, CryptoCurrency.bitcoin.name)
+        self.label = label ?? CryptoCurrency.bitcoin.defaultWalletName
         self.isDefault = isDefault
         self.exchangeService = exchangeProviding[.bitcoin]
         self.balanceService = balanceService

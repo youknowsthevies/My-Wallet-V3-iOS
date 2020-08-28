@@ -10,6 +10,7 @@ import DIKit
 import Localization
 import RxSwift
 import ToolKit
+
 public class FiatCustodialAccount: FiatAccount {
     private typealias LocalizedString = LocalizationConstants.Account
 
@@ -18,6 +19,7 @@ public class FiatCustodialAccount: FiatAccount {
     public let isDefault: Bool = true
     public let label: String
     public let fiatCurrency: FiatCurrency
+    public let balanceType: BalanceType = .custodial(.trading)
 
     public var balance: Single<MoneyValue> {
         balanceProviding[currencyType]

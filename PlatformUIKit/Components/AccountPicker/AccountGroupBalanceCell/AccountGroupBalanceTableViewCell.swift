@@ -9,9 +9,9 @@
 import PlatformKit
 import RxSwift
 
-final class WalletBalanceTableViewCell: UITableViewCell {
+final class AccountGroupBalanceTableViewCell: UITableViewCell {
     
-    var presenter: WalletBalanceCellPresenter! {
+    var presenter: AccountGroupBalanceCellPresenter! {
         didSet {
             disposeBag = DisposeBag()
             guard let presenter = presenter else { return }

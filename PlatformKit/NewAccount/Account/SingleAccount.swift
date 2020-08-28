@@ -13,6 +13,7 @@ import ToolKit
 public protocol SingleAccount: BlockchainAccount {
 
     var currencyType: CurrencyType { get }
+    var balanceType: BalanceType { get }
     var isDefault: Bool { get }
     var receiveAddress: Single<ReceiveAddress> { get }
     var sendState: Single<SendState> { get }

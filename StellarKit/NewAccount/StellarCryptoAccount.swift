@@ -17,30 +17,31 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
 
     let id: String
     let label: String
-    let asset: CryptoCurrency = .stellar
+    let asset: CryptoCurrency
     let isDefault: Bool = true
 
     var balance: Single<MoneyValue> {
-        accountDetailsService
-            .accountDetails(for: id)
-            .map(\.balance.moneyValue)
+        balanceFetching
+            .balanceMoney
     }
 
     var actions: AvailableActions {
         [.viewActivity]
     }
 
-    private let accountDetailsService: AnyAssetAccountDetailsAPI<StellarAssetAccountDetails>
+    private let balanceFetching: AccountBalanceFetching
     private let exchangeService: PairExchangeServiceAPI
 
     init(id: String,
          label: String? = nil,
-         accountDetailsService: AnyAssetAccountDetailsAPI<StellarAssetAccountDetails> = resolve(),
-         dataProviding: DataProviding = resolve()) {
+         balanceProviding: BalanceProviding = resolve(),
+         exchangeProviding: ExchangeProviding = resolve()) {
+        let asset = CryptoCurrency.stellar
+        self.asset = asset
         self.id = id
-        self.label = label ?? String(format: LocalizedString.myWallet, CryptoCurrency.stellar.name)
-        self.accountDetailsService = accountDetailsService
-        self.exchangeService = dataProviding.exchange[.stellar]
+        self.label = label ?? asset.defaultWalletName
+        self.balanceFetching = balanceProviding[asset.currency].wallet
+        self.exchangeService = exchangeProviding[asset]
     }
 
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {

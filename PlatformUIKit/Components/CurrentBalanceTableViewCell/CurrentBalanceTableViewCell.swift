@@ -12,7 +12,7 @@ import UIKit
 
 public final class CurrentBalanceTableViewCell: UITableViewCell {
     
-    public var presenter: CurrentBalanceCellPresenter! {
+    public var presenter: CurrentBalanceCellPresenting! {
         willSet {
             disposeBag = DisposeBag()
         }

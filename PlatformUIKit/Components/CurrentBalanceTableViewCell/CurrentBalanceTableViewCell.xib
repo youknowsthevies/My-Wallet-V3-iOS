@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -33,7 +33,7 @@
                         </constraints>
                     </view>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_custody_lock" translatesAutoresizingMaskIntoConstraints="NO" id="Rtr-vJ-wJL">
-                        <rect key="frame" x="48" y="45" width="16" height="16"/>
+                        <rect key="frame" x="44" y="41" width="16" height="16"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="16" id="VQP-P4-NQU"/>
                             <constraint firstAttribute="width" constant="16" id="dsP-56-qVW"/>
@@ -75,17 +75,17 @@
                 <constraints>
                     <constraint firstItem="OMZ-H4-1mp" firstAttribute="top" secondItem="bPF-ao-Awj" secondAttribute="top" constant="16" id="6CD-ZY-5th"/>
                     <constraint firstItem="OMZ-H4-1mp" firstAttribute="leading" secondItem="QbD-zK-xKA" secondAttribute="trailing" constant="16" id="9LT-64-az7"/>
+                    <constraint firstItem="Rtr-vJ-wJL" firstAttribute="bottom" secondItem="QbD-zK-xKA" secondAttribute="bottom" constant="4" id="Dg9-1L-O6O"/>
                     <constraint firstItem="QbD-zK-xKA" firstAttribute="centerY" secondItem="OMZ-H4-1mp" secondAttribute="centerY" id="YBr-iR-FY4"/>
                     <constraint firstAttribute="trailing" secondItem="s9X-t0-Jrx" secondAttribute="trailing" constant="24" id="Zbt-tf-ZIy"/>
                     <constraint firstItem="s9X-t0-Jrx" firstAttribute="centerY" secondItem="OMZ-H4-1mp" secondAttribute="centerY" id="ehS-Ev-ItU"/>
                     <constraint firstItem="QbD-zK-xKA" firstAttribute="leading" secondItem="bPF-ao-Awj" secondAttribute="leading" constant="24" id="hco-py-nPv"/>
                     <constraint firstItem="Wbi-Wz-8j3" firstAttribute="leading" secondItem="bPF-ao-Awj" secondAttribute="leading" id="iT7-K2-NdR"/>
-                    <constraint firstItem="Rtr-vJ-wJL" firstAttribute="centerY" secondItem="QbD-zK-xKA" secondAttribute="bottom" id="jaw-yl-arx"/>
                     <constraint firstAttribute="bottom" secondItem="Wbi-Wz-8j3" secondAttribute="bottom" id="lMp-U2-NS1"/>
                     <constraint firstAttribute="trailing" secondItem="Wbi-Wz-8j3" secondAttribute="trailing" id="mRp-bD-KEO"/>
                     <constraint firstItem="s9X-t0-Jrx" firstAttribute="leading" secondItem="OMZ-H4-1mp" secondAttribute="trailing" id="n9U-kX-xl9"/>
                     <constraint firstItem="Wbi-Wz-8j3" firstAttribute="top" secondItem="OMZ-H4-1mp" secondAttribute="bottom" constant="16" id="qKD-sP-UOX"/>
-                    <constraint firstItem="Rtr-vJ-wJL" firstAttribute="centerX" secondItem="QbD-zK-xKA" secondAttribute="trailing" id="qW5-pD-e6C"/>
+                    <constraint firstItem="Rtr-vJ-wJL" firstAttribute="trailing" secondItem="QbD-zK-xKA" secondAttribute="trailing" constant="4" id="vqh-EN-uL1"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>

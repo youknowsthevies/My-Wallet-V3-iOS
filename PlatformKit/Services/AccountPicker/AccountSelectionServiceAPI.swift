@@ -1,0 +1,52 @@
+//
+//  AccountPickerSelectionService.swift
+//  PlatformKit
+//
+//  Created by Paulo on 06/08/2020.
+//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+import RxCocoa
+import RxSwift
+
+/// A interface for a service used to select a `BlockchainAccount`.
+public protocol AccountSelectionServiceAPI: class {
+    var selectedData: Observable<BlockchainAccount> { get }
+    func record(selection: BlockchainAccount)
+}
+
+/// `AccountPickerSelectionService` is a `AccountSelectionServiceAPI` that contains
+/// a pre-selected value and stream `selectedData` only if it is distinct from the previous value.
+public final class AccountPickerSelectionService: AccountSelectionServiceAPI {
+    private let selectedDataRelay: BehaviorRelay<BlockchainAccount>
+
+    public var selectedData: Observable<BlockchainAccount> {
+        selectedDataRelay
+            .distinctUntilChanged(\.id)
+    }
+
+    public init(defaultSelection: BlockchainAccount) {
+        self.selectedDataRelay = BehaviorRelay(value: defaultSelection)
+    }
+
+    public func record(selection: BlockchainAccount) {
+        selectedDataRelay.accept(selection)
+    }
+}
+
+/// `AccountSelectionService` is a `AccountSelectionServiceAPI` backed
+/// by a `PublishRelay`, meaning it doesn't have a pre-definied value nor it 'replays' the last known value
+/// on subscription.
+public class AccountSelectionService: AccountSelectionServiceAPI {
+    public var selectedData: Observable<BlockchainAccount> {
+        selectedDataRelay.asObservable()
+    }
+
+    private let selectedDataRelay = PublishRelay<BlockchainAccount>()
+
+    public func record(selection: BlockchainAccount) {
+        selectedDataRelay.accept(selection)
+    }
+
+    public init() { }
+}

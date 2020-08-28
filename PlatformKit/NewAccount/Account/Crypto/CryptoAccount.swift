@@ -7,6 +7,7 @@
 //
 
 import RxSwift
+import ToolKit
 
 public protocol CryptoAccount: SingleAccount {
     var asset: CryptoCurrency { get }

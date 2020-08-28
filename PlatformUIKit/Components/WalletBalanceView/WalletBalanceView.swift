@@ -9,6 +9,8 @@
 import RxCocoa
 import RxSwift
 
+/// View composed of two labels in a UIStackVew
+/// To label displays a fiat value, bottom label displays currency code.
 public final class WalletBalanceView: UIView {
     
     // MARK: - Injected

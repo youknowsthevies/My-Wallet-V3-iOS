@@ -80,7 +80,7 @@ final class ActivityScreenInteractor {
     // MARK: - Private Properties
     
     private var selectionService: WalletPickerSelectionServiceAPI {
-        serviceContainer.selectionServiceAPI
+        serviceContainer.selectionService
     }
     
     private let stateRelay = BehaviorRelay<State>(value: .invalid(.empty))

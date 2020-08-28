@@ -11,18 +11,18 @@ import Foundation
 extension LocalizationConstants {
     public enum Account {
         public static let myWallet = NSLocalizedString(
-            "My %@ Wallet",
-            comment: "Must contain %@. Used for naming wallets e.g. My Ethereum Wallet"
+            "%@ Wallet",
+            comment: "Must contain %@. Used for naming wallets e.g. Ethereum Wallet"
         )
 
-        public static let myInterestAccount = NSLocalizedString(
-            "My %@ Interest Account",
-            comment: "Must contain %@. Used for naming interest account e.g. My Ethereum Interest Account"
+        public static let myInterestWallet = NSLocalizedString(
+            "%@ Interest Wallet",
+            comment: "Must contain %@. Used for naming interest account e.g. Ethereum Interest Wallet"
         )
 
-        public static let myTradingAccount = NSLocalizedString(
-            "My %@ Trading Account",
-            comment: "Must contain %@. Used for naming trading accounts e.g. My Ethereum Trading Account"
+        public static let myTradeAccount = NSLocalizedString(
+            "%@ Trade Wallet",
+            comment: "Must contain %@. Used for naming trading accounts e.g. Ethereum Trade Wallet"
         )
     }
 
@@ -32,24 +32,14 @@ extension LocalizationConstants {
             comment: "All Wallets"
         )
 
-        public static let myAccounts = NSLocalizedString(
-            "My %@ Accounts",
-            comment: "Must contain %@. Used for naming accounts e.g. My Ethereum Accounts"
+        public static let myWallets = NSLocalizedString(
+            "%@ Wallets",
+            comment: "Must contain %@. Used for naming accounts e.g. Ethereum Wallets"
         )
 
-        public static let myInterestAccounts = NSLocalizedString(
-            "My %@ Interest Accounts",
-            comment: "Must contain %@. Used for naming interest account e.g. My Ethereum Interest Accounts"
-        )
-
-        public static let myTradingAccounts = NSLocalizedString(
-            "My %@ Trading Accounts",
-            comment: "Must contain %@. Used for naming trading accounts e.g. My Ethereum Trading Accounts"
-        )
-
-        public static let myCustodialAccounts = NSLocalizedString(
-            "My %@ Custodial Accounts",
-            comment: "Must contain %@. Used for naming trading accounts e.g. My Ethereum Custodial Accounts"
+        public static let myCustodialWallets = NSLocalizedString(
+            "%@ Custodial Accounts",
+            comment: "Must contain %@. Used for naming trading accounts e.g. Ethereum Custodial Wallets"
         )
     }
 }

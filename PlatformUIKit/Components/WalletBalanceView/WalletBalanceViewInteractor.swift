@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -31,31 +32,52 @@ public final class WalletBalanceViewInteractor {
     // MARK: - Public Properties
     
     var state: Observable<InteractionState> {
-        stateRelay.asObservable()
+        _ = setup
+        return stateRelay.asObservable()
     }
     
     // MARK: - Private Properties
     
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
-    
+    private let stateObservableProvider: () -> Observable<InteractionState>
+    private lazy var setup: Void = {
+        stateObservableProvider()
+            .bindAndCatch(to: self.stateRelay)
+                .disposed(by: self.disposeBag)
+    }()
+
     // MARK: - Setup
-    
+
     public init(balanceProviding: BalanceProviding) {
-        balanceProviding.fiatBalance
-            .map { state -> InteractionState in
-                switch state {
-                case .calculating, .invalid:
-                    return .loading
-                case .value(let result):
-                    return .loaded(
-                        next: .init(
-                            fiatValue: result
+        stateObservableProvider = {
+            balanceProviding
+                .fiatBalance
+                .map { state -> InteractionState in
+                    switch state {
+                    case .calculating, .invalid:
+                        return .loading
+                    case .value(let result):
+                        return .loaded(
+                            next: WalletBalance(fiatValue: result)
                         )
-                    )
+                    }
                 }
-            }
-            .bindAndCatch(to: stateRelay)
-            .disposed(by: disposeBag)
+        }
+    }
+
+    public init(account: BlockchainAccount,
+                fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
+        stateObservableProvider = {
+            fiatCurrencyService.fiatCurrencyObservable
+                .flatMap { fiatCurrency in
+                    account.fiatBalance(fiatCurrency: fiatCurrency).asObservable()
+                }
+                .map { moneyValue -> InteractionState in
+                    .loaded(next: WalletBalance(fiatValue: moneyValue.fiatValue!))
+                }
+                .startWith(.loading)
+                .catchErrorJustReturn(.loading)
+        }
     }
 }

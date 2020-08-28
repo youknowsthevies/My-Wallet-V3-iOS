@@ -17,6 +17,10 @@ public class NullCryptoAccount: CryptoAccount {
         unimplemented()
     }
 
+    public var balanceType: BalanceType {
+        unimplemented()
+    }
+
     public var isDefault: Bool {
         unimplemented()
     }

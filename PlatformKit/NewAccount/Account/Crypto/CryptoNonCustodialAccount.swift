@@ -7,3 +7,9 @@
 //
 
 public protocol CryptoNonCustodialAccount: CryptoAccount { }
+
+extension CryptoNonCustodialAccount {
+    public var balanceType: BalanceType {
+        .nonCustodial
+    }
+}

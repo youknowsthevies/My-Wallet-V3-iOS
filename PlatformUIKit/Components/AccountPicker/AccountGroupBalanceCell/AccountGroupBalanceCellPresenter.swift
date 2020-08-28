@@ -11,11 +11,11 @@ import PlatformKit
 import RxCocoa
 import RxSwift
 
-public final class WalletBalanceCellPresenter {
+final class AccountGroupBalanceCellPresenter {
     
     typealias AccessibilityId = Accessibility.Identifier.Activity.WalletBalance
     
-    // MARK: - Public Properties
+    // MARK: - Properties
     
     /// Returns the `Description`
     var description: Driver<LabelContent> {
@@ -34,7 +34,7 @@ public final class WalletBalanceCellPresenter {
     var title: Driver<LabelContent> {
         Driver.just(
             LabelContent.init(
-                text: LocalizationConstants.Activity.MainScreen.Item.allWallets,
+                text: account.label,
                 font: .main(.semibold, 16.0),
                 color: .titleText,
                 alignment: .left,
@@ -48,11 +48,13 @@ public final class WalletBalanceCellPresenter {
     let walletBalanceViewPresenter: WalletBalanceViewPresenter
     
     // MARK: - Private Properties
-    
-    private let interactor: WalletBalanceCellInteracting
+
+    private let account: AccountGroup
+    private let interactor: AccountGroupBalanceCellInteractor
     private let imageViewVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     
-    init(interactor: WalletBalanceCellInteracting) {
+    init(account: AccountGroup, interactor: AccountGroupBalanceCellInteractor) {
+        self.account = account
         self.interactor = interactor
         self.walletBalanceViewPresenter = WalletBalanceViewPresenter(
             interactor: interactor.balanceViewInteractor

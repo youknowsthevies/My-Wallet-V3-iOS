@@ -34,7 +34,7 @@ public class CryptoAccountNonCustodialGroup: AccountGroup {
 
     public init(asset: CryptoCurrency, accounts: [SingleAccount]) {
         self.asset = asset
-        self.label = String(format: LocalizedString.myAccounts, asset.name)
+        self.label = String(format: LocalizedString.myWallets, asset.name)
         self.accounts = accounts
     }
 }

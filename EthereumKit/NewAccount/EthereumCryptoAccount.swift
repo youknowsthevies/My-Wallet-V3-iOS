@@ -17,33 +17,30 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
 
     let id: String
     let label: String
-    let asset: CryptoCurrency = .ethereum
+    let asset: CryptoCurrency
     let isDefault: Bool = true
 
     var balance: Single<MoneyValue> {
-        balanceService
-            .balance(for: id)
-            .map(\.moneyValue)
+        balanceFetching.balanceMoney
     }
 
     var actions: AvailableActions {
         [.viewActivity]
     }
 
-    private let bridge: EthereumWalletBridgeAPI
-    private let balanceService: EthereumAccountBalanceServiceAPI
+    private let balanceFetching: AccountBalanceFetching
     private let exchangeService: PairExchangeServiceAPI
 
     init(id: String,
          label: String? = nil,
-         exchangeProviding: ExchangeProviding = resolve(),
-         bridge: EthereumWalletBridgeAPI = resolve(),
-         balanceService: EthereumAccountBalanceServiceAPI = resolve()) {
+         balanceProviding: BalanceProviding = resolve(),
+         exchangeProviding: ExchangeProviding = resolve()) {
+        let asset = CryptoCurrency.ethereum
+        self.asset = asset
         self.id = id
-        self.bridge = bridge
-        self.exchangeService = exchangeProviding[.ethereum]
-        self.balanceService = balanceService
-        self.label = label ?? String(format: LocalizedString.myWallet, CryptoCurrency.ethereum.name)
+        self.exchangeService = exchangeProviding[asset]
+        self.balanceFetching = balanceProviding[asset.currency].wallet
+        self.label = label ?? asset.defaultWalletName
     }
 
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {

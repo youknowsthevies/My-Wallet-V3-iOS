@@ -6,11 +6,13 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import RxRelay
+import RxSwift
 import SafariServices
-import DIKit
 
 final class ActivityRouter: ActivityRouterAPI {
     
@@ -29,34 +31,17 @@ final class ActivityRouter: ActivityRouterAPI {
         self.enabledCurrenciesService = enabledCurrenciesService
         self.blockchainAPI = blockchainAPI
     }
-    
-    func showWalletSelectionScreen() {
-        let balanceProviding = serviceContainer.balanceProviding
 
-        func cellInteractorProvider(for cryptoCurrency: CryptoCurrency) -> WalletPickerCellInteractorProviding {
-            WalletPickerCellInteractorProvider(
-                balanceFetcher: balanceProviding[.crypto(cryptoCurrency)],
-                currency: cryptoCurrency,
-                isEnabled: enabledCurrenciesService.allEnabledCryptoCurrencies.contains(cryptoCurrency)
-            )
-        }
-        let interactor = WalletPickerInteractor(
-            balanceProviding: balanceProviding,
-            tether: cellInteractorProvider(for: .tether),
-            algorand: cellInteractorProvider(for: .algorand),
-            ethereum: cellInteractorProvider(for: .ethereum),
-            pax: cellInteractorProvider(for: .pax),
-            stellar: cellInteractorProvider(for: .stellar),
-            bitcoin: cellInteractorProvider(for: .bitcoin),
-            bitcoinCash: cellInteractorProvider(for: .bitcoinCash),
-            selectionService: serviceContainer.selectionServiceAPI
+    func showWalletSelectionScreen() {
+        let interactor = AccountPickerScreenInteractor(
+            action: .viewActivity,
+            selectionService: serviceContainer.accountSelectionService
         )
-        
-        let presenter = WalletPickerScreenPresenter(showTotalBalance: true, interactor: interactor)
-        let controller = WalletPickerScreenViewController(presenter: presenter)
+        let presenter = AccountPickerScreenPresenter(showTotalBalance: true, interactor: interactor)
+        let controller = AccountPickerScreenViewController(presenter: presenter)
         navigationRouter.present(viewController: controller)
     }
-    
+
     func showTransactionScreen(with event: ActivityItemEvent) {
         let controller = DetailsScreenViewController(
             presenter: ActivityDetailsPresenterFactory.presenter(for: event, router: self)
