@@ -119,6 +119,7 @@ extension URLSessionConfiguration {
             HttpHeaderField.userAgent: userAgentProvider.userAgent!
         ]
         sessionConfiguration.waitsForConnectivity = true
+        sessionConfiguration.timeoutIntervalForResource = 300
         return sessionConfiguration
     }
 }
