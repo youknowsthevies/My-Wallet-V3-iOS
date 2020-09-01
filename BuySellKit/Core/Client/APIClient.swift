@@ -30,6 +30,7 @@ final class APIClient: SimpleBuyClientAPI {
     // MARK: - Types
         
     fileprivate enum Parameter {
+        static let product = "product"
         static let currency = "currency"
         static let fiatCurrency = "fiatCurrency"
         static let currencyPair = "currencyPair"
@@ -52,6 +53,10 @@ final class APIClient: SimpleBuyClientAPI {
         static let paymentAccount = [ "payments", "accounts", "simplebuy" ]
         static let quote = [ "simple-buy", "quote" ]
         static let eligible = [ "simple-buy", "eligible" ]
+    }
+    
+    private enum Constants {
+        static let simpleBuyProduct = "SIMPLE_BUY"
     }
     
     // MARK: - Properties
@@ -166,6 +171,10 @@ final class APIClient: SimpleBuyClientAPI {
             URLQueryItem(
                 name: Parameter.currency,
                 value: fiatCurrency.code
+            ),
+            URLQueryItem(
+                name: Parameter.product,
+                value: Constants.simpleBuyProduct
             )
         ]
         let request = requestBuilder.get(
