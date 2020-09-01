@@ -12,7 +12,7 @@ import RxSwift
 
 public protocol TradingBalanceClientAPI: class {
     var balance: Single<CustodialBalanceResponse?> { get }
-    func balance(for currency: String) -> Single<CustodialBalanceResponse?>
+    func balance(for currencyType: CurrencyType) -> Single<CustodialBalanceResponse?>
 }
 
 public typealias CustodialClientAPI = TradingBalanceClientAPI & CustodyWithdrawalClientAPI
@@ -50,13 +50,8 @@ final class CustodialClient: CustodialClientAPI {
     
     // MARK: - TradingBalanceClientAPI
 
-    func balance(for currency: String) -> Single<CustodialBalanceResponse?> {
-        let path = Path.custodialBalance
-        let request = requestBuilder.get(
-            path: path,
-            authenticated: true
-        )!
-        return communicator.performOptional(request: request, responseType: CustodialBalanceResponse.self)
+    func balance(for currencyType: CurrencyType) -> Single<CustodialBalanceResponse?> {
+        balance
     }
     
     // MARK: - CustodyWithdrawalClientAPI

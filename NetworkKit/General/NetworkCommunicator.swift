@@ -176,7 +176,6 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     }
 }
 
-
 extension PrimitiveSequence where Trait == SingleTrait, Element == Result<ServerResponse, NetworkCommunicatorError> {
     fileprivate func recordErrors(on recorder: AnalyticsEventRecording?, request: NetworkRequest, errorMapper: @escaping (NetworkRequest, NetworkCommunicatorError) -> AnalyticsEvent?) -> Single<Element> {
         guard request.recordErrors else { return self }

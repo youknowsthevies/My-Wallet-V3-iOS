@@ -17,7 +17,7 @@ final class CustodyWithdrawalSubmissionInteractor {
         case ready
         case calculating
         case value(CustodialWithdrawalResponse)
-        case failed
+        case failed(WithdrawalError)
     }
     
     // MARK: - Public Properties
@@ -43,7 +43,12 @@ final class CustodyWithdrawalSubmissionInteractor {
             .map(weak: self, { (self, response) -> InteractionState in
                 .value(response)
             })
-            .catchErrorJustReturn(.failed)
+            .catchError { error -> Observable<InteractionState> in
+                guard let withdrawalError = error as? WithdrawalError else {
+                    return .just(.failed(WithdrawalError.unknown))
+                }
+                return .just(.failed(withdrawalError))
+            }
             .startWith(.calculating)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)

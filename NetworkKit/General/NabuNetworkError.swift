@@ -11,10 +11,10 @@ import Foundation
 /// Describes an error returned by Nabu
 public struct NabuNetworkError: Codable, Error {
     public let code: NabuNetworkErrorCode
-    public let type: NabuNetworkErrorType
+    public let type: String
     public let description: String
     
-    public init(code: NabuNetworkErrorCode, type: NabuNetworkErrorType = .internalServerError, description: String = "demo") {
+    public init(code: NabuNetworkErrorCode, type: String, description: String) {
         self.code = code
         self.type = type
         self.description = description
@@ -99,6 +99,12 @@ public enum NabuNetworkErrorCode: Int, Codable {
     case campaignWithdrawalFailed = 59
     case tradeForceExecuteError = 60
     case campaignInfoAlreadyUsed = 61
+
+    /// Buy-Sell Error Code
+    case invalidPaymentMethod = 135
+
+    /// Custodial Withdrawal Error Code
+    case withdrawalLocked = 152
 }
 
 public enum NabuNetworkErrorType: String, Codable {

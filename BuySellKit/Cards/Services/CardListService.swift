@@ -36,6 +36,7 @@ public final class CardListService: CardListServiceAPI {
                 }
                 return .just(cardData)
             }
+            .share(replay: 1, scope: .whileConnected)
             .distinctUntilChanged()
     }
     
@@ -49,7 +50,6 @@ public final class CardListService: CardListServiceAPI {
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     
     private let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
-    private let semaphore = DispatchSemaphore(value: 1)
     
     // MARK: - Setup
     
@@ -99,8 +99,6 @@ public final class CardListService: CardListServiceAPI {
     public func fetchCards() -> Single<[CardData]> {
         Single
             .create(weak: self) { (self, observer) -> Disposable in
-                self.semaphore.wait()
-                
                 let disposable = self.createFetchSingle()
                     .subscribe { event in
                         switch event {
@@ -112,7 +110,6 @@ public final class CardListService: CardListServiceAPI {
                     }
                 return Disposables.create {
                     disposable.dispose()
-                    self.semaphore.signal()
                 }
             }
             .subscribeOn(scheduler)

@@ -16,6 +16,24 @@ public final class InterestAccountDetailsScreenPresenter {
     private typealias LocalizationId = LocalizationConstants.Interest.Screen.AccountDetails
     private typealias AccessibilityId = Accessibility.Identifier.Interest.Dashboard.InterestDetails
     
+    // MARK: - Navigation Properties
+    
+    var trailingButton: Screen.Style.TrailingButton {
+        .none
+    }
+    
+    var leadingButton: Screen.Style.LeadingButton {
+        .close
+    }
+    
+    var titleView: Screen.Style.TitleView {
+        .text(value: interactor.cryptoCurrency.name)
+    }
+    
+    var barStyle: Screen.Style.Bar {
+        .lightContent()
+    }
+    
     var sectionObservable: Observable<[DetailSectionViewModel]> {
         interactor
             .interactors

@@ -15,13 +15,13 @@ import Foundation
 public struct CustodialWithdrawalRequest: Encodable {
     public let address: String
     public let cryptoValue: CryptoValue
-    
+
     enum CodingKeys: String, CodingKey {
         case address
         case currency
         case amount
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         let currency = cryptoValue.code
