@@ -26,7 +26,7 @@ class ExchangeRatesTests: XCTestCase {
         let balanceString = "16.64306683"
         let balanceCrypto = CryptoValue.create(major: balanceString, currency: .pax)!
         let rates: ExchangeRates = Fixtures.load(name: "rates", in: Bundle(for: ExchangeRatesTests.self))!
-        let conversion: FiatValue = rates.convert(balance: balanceCrypto, toCurrency: FiatCurrency(rawValue: "CAD") ?? FiatCurrency.CAD)
+        let conversion: FiatValue = rates.convert(balance: balanceCrypto, toCurrency: FiatCurrency.CAD)
         XCTAssertEqual(conversion.toDisplayString(includeSymbol: false), "21.80")
     }
 }
