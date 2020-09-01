@@ -14,6 +14,7 @@ public struct CustodialBalanceResponse: Decodable {
 
     struct Balance: Decodable {
         let available: String
+        let withdrawable: String
     }
 
     // MARK: - Properties
@@ -33,7 +34,7 @@ public struct CustodialBalanceResponse: Decodable {
 
     // MARK: - Subscript
 
-    subscript(currencyCode: String) -> Balance? {
-        balances[currencyCode]
+    subscript(currencyType: CurrencyType) -> Balance? {
+        balances[currencyType.code]
     }
 }

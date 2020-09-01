@@ -10,14 +10,16 @@
 
 extension CustodialBalanceResponse {
 
-    static let mockJson = """
+        static let mockJson = """
     {
       "BTC": {
         "available": "0",
+        "withdrawable": "0",
         "pending": "0"
       },
       "ETH": {
         "available": "100",
+        "withdrawable": "100",
         "pending": "100"
       }
     }

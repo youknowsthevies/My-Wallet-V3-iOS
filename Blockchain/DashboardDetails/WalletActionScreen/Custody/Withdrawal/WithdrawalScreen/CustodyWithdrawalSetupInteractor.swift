@@ -19,7 +19,10 @@ final class CustodyWithdrawalSetupInteractor {
     
     struct Value {
         /// The users available balance
-        let balance: CryptoValue
+        let totalBalance: CryptoValue
+
+        /// The users available balance
+        let withdrawableBalance: CryptoValue
         
         /// The users noncustodial address
         let destination: String
@@ -41,7 +44,7 @@ final class CustodyWithdrawalSetupInteractor {
     // MARK: - Setup
     
     init(currency: CryptoCurrency,
-         balanceFetching: AssetBalanceFetching,
+         tradingBalanceService: TradingBalanceServiceAPI,
          accountRepository: AssetAccountRepositoryAPI) {
         let accountAddress: Single<String> = accountRepository
             .defaultAccount(for: currency)
@@ -50,26 +53,29 @@ final class CustodyWithdrawalSetupInteractor {
                 fatalError("No \(currency.code) address, error: \(error)")
             }
         
-        Observable
-            .combineLatest(
-                balanceFetching.calculationState,
-                accountAddress.asObservable()
+        Single
+            .zip(
+                tradingBalanceService.balance(for: currency.currency),
+                accountAddress
             )
             .map(weak: self) { (self, payload) -> InteractionState in
-                let calculationState = payload.0
+                let balance = payload.0
                 let destination = payload.1
-                switch calculationState {
-                case .value(let balancePairs):
-                    return .loaded(
-                        next: .init(
-                            balance: balancePairs[.custodial(.trading)].base.cryptoValue!,
+                switch balance {
+                case .absent:
+                    return .loading
+                case .present(let balance):
+                    return InteractionState.loaded(
+                        next: Value(
+                            totalBalance: balance.available.cryptoValue!,
+                            withdrawableBalance: balance.withdrawable.cryptoValue!,
                             destination: destination
                         )
                     )
-                case .calculating, .invalid:
-                    return .loading
                 }
             }
+            .asObservable()
+            .startWith(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }

@@ -44,16 +44,15 @@ public enum HTTPRequestServerError: HTTPRequestError {
         switch self {
         case .badResponse:
             return nil
-        case .badStatusCode(code: let code, error: _, message: _):
+        case .badStatusCode(code: let code, _, _):
             return code
         }
     }
     
     public var nabuError: NabuNetworkError? {
         switch self {
-        case .badStatusCode(code: _, error: let value, message: _):
-            guard let nabuError = value as? NabuNetworkError else { return nil }
-            return nabuError
+        case .badStatusCode(_, error: let error, _):
+            return error as? NabuNetworkError
         case .badResponse:
             return nil
         }

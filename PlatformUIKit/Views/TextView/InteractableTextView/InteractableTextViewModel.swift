@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import RxCocoa
 import RxRelay
 import RxSwift
 
@@ -16,6 +17,11 @@ public struct TitledLink {
 
 /// A view model for `InteractableTextView`
 public struct InteractableTextViewModel {
+    public static let empty: InteractableTextViewModel = InteractableTextViewModel(
+        inputs: [],
+        textStyle: .init(color: .textFieldText, font: .main(.medium, 14.0)),
+        linkStyle: .init(color: .linkableText, font: .main(.bold, 14.0))
+    )
     
     /// A style for text or link
     public struct Style {
@@ -63,5 +69,11 @@ public struct InteractableTextViewModel {
         self.linkStyle = linkStyle
         self.lineSpacing = lineSpacing
         self.alignment = alignment
+    }
+}
+
+public extension Reactive where Base: InteractableTextView {
+    var viewModel: Binder<InteractableTextViewModel> {
+        Binder(base) { $0.viewModel = $1 }
     }
 }

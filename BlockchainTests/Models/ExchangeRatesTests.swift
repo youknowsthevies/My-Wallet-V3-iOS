@@ -7,6 +7,7 @@
 //
 
 @testable import Blockchain
+import BigInt
 import ERC20Kit
 import PlatformKit
 import XCTest
@@ -23,11 +24,9 @@ class ExchangeRatesTests: XCTestCase {
 
     func test_convert() {
         let balanceString = "16.64306683"
-        let balanceCrypto = CryptoValue.pax(major: balanceString)!
-        let toCurrency: FiatCurrency = .CAD
+        let balanceCrypto = CryptoValue.create(major: balanceString, currency: .pax)!
         let rates: ExchangeRates = Fixtures.load(name: "rates", in: Bundle(for: ExchangeRatesTests.self))!
-        let conversion = rates.convert(balance: balanceCrypto, toCurrency: toCurrency)
-        let expectedConversion = "21.80"
-        XCTAssertEqual(conversion.toDisplayString(includeSymbol: false), expectedConversion)
+        let conversion: FiatValue = rates.convert(balance: balanceCrypto, toCurrency: FiatCurrency.CAD)
+        XCTAssertEqual(conversion.toDisplayString(includeSymbol: false), "21.80")
     }
 }

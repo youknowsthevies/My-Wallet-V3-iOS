@@ -28,21 +28,23 @@ public final class CustodialMoneyBalanceFetcher: CustodialAccountBalanceFetching
     public var balanceMoneyObservable: Observable<MoneyValue> {
         _ = setup
         let currencyType = self.currencyType
-        return balanceRelay.map { $0 ?? .zero(currency: currencyType) }
+        return balanceRelay
+            .map { $0?.available }
+            .map { $0 ?? .zero(currency: currencyType)  }
     }
 
     public var isFunded: Observable<Bool> {
-        _ = setup
-        return balanceRelay.map { $0 != nil }
+        fundsState.map { $0 != .absent }
     }
     
-    public var fundsState: Observable<AccountBalanceState<MoneyValue>> {
-        isFunded
-            .flatMap(weak: self) { (self, isFunded) in
-                guard isFunded else {
-                    return .just(.absent)
+    public var fundsState: Observable<AccountBalanceState<CustodialAccountBalance>> {
+        _ = setup
+        return balanceRelay
+            .map { balance -> AccountBalanceState<CustodialAccountBalance> in
+                guard let balance = balance else {
+                    return .absent
                 }
-                return self.balanceMoneyObservable.map { .present($0) }
+                return .present(balance)
             }
     }
 
@@ -53,7 +55,7 @@ public final class CustodialMoneyBalanceFetcher: CustodialAccountBalanceFetching
 
     // MARK: - Private Properties
 
-    private let balanceRelay: BehaviorRelay<MoneyValue?>
+    private let balanceRelay: BehaviorRelay<CustodialAccountBalance?>
     private let currencyType: CurrencyType
     private let disposeBag = DisposeBag()
     private let fetcher: CustodialBalanceStatesFetcherAPI
@@ -61,7 +63,7 @@ public final class CustodialMoneyBalanceFetcher: CustodialAccountBalanceFetching
     private lazy var setup: Void = {
         let currencyType = self.currencyType
         fetcher.balanceStatesObservable
-            .map { $0[currencyType].balance?.available }
+            .map { $0[currencyType].balance }
             .catchErrorJustReturn(nil)
             .bindAndCatch(to: balanceRelay)
             .disposed(by: disposeBag)

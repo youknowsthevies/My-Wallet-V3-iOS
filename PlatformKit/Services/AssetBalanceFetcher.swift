@@ -65,13 +65,15 @@ public final class AssetBalanceFetcher: AssetBalanceFetching {
                 case .fiat:
                     switch trading {
                     case .present(let tradingBalance):
-                        return MoneyValueBalancePairs(trading: try MoneyValuePair(base: tradingBalance, exchangeRate: fiatPrice))
+                        return MoneyValueBalancePairs(
+                            trading: try MoneyValuePair(base: tradingBalance.available, exchangeRate: fiatPrice)
+                        )
                     case .absent:
                         return MoneyValueBalancePairs(baseCurrency: baseCurrencyType, quoteCurrency: quoteCurrencyType)
                     }
                 case .crypto:
-                    let tradingBalance = trading.balance ?? .zero(currency: baseCurrencyType)
-                    let savingBalance = savings.balance ?? .zero(currency: baseCurrencyType)
+                    let tradingBalance = trading.balance?.available ?? .zero(currency: baseCurrencyType)
+                    let savingBalance = savings.balance?.available ?? .zero(currency: baseCurrencyType)
                     return MoneyValueBalancePairs(
                         wallet: try MoneyValuePair(base: walletBalance, exchangeRate: fiatPrice),
                         trading: try MoneyValuePair(base: tradingBalance, exchangeRate: fiatPrice),
@@ -100,6 +102,88 @@ public final class AssetBalanceFetcher: AssetBalanceFetching {
     
     public func refresh() {
         wallet.balanceFetchTriggerRelay.accept(())
+        trading.balanceFetchTriggerRelay.accept(())
+        savings.balanceFetchTriggerRelay.accept(())
+        exchange.fetchTriggerRelay.accept(())
+    }
+}
+
+/// A `AssetBalanceFetching` for withdrawable amounts.
+public final class WithdrawableAssetBalanceFetcher: AssetBalanceFetching {
+
+    // MARK: - Properties
+
+    public let wallet: AccountBalanceFetching
+    public let trading: CustodialAccountBalanceFetching
+    public let savings: CustodialAccountBalanceFetching
+
+    /// The balance
+    public var calculationState: Observable<MoneyBalancePairsCalculationState> {
+        _ = setup
+        return calculationStateRelay.asObservable()
+    }
+
+    private let calculationStateRelay = BehaviorRelay<MoneyBalancePairsCalculationState>(value: .calculating)
+    private let exchange: PairExchangeServiceAPI
+    private let disposeBag = DisposeBag()
+    private let cryptoCurrency: CryptoCurrency
+
+    private lazy var setup: Void = {
+        let baseCurrencyType: CurrencyType = cryptoCurrency.currency
+        Observable
+            .combineLatest(
+                trading.fundsState,
+                savings.fundsState,
+                exchange.fiatPrice
+            )
+            .map { payload in
+                let (trading, savings, exchangeRate) = payload
+                let fiatPrice = exchangeRate.moneyValue
+
+                let quoteCurrencyType = fiatPrice.currencyType
+
+                switch baseCurrencyType {
+                case .fiat:
+                    switch trading {
+                    case .present(let tradingBalance):
+                        return MoneyValueBalancePairs(
+                            trading: try MoneyValuePair(base: tradingBalance.withdrawable, exchangeRate: fiatPrice)
+                        )
+                    case .absent:
+                        return MoneyValueBalancePairs(baseCurrency: baseCurrencyType, quoteCurrency: quoteCurrencyType)
+                    }
+                case .crypto:
+                    let tradingBalance = trading.balance?.withdrawable ?? .zero(currency: baseCurrencyType)
+                    let savingBalance = savings.balance?.withdrawable ?? .zero(currency: baseCurrencyType)
+                    return MoneyValueBalancePairs(
+                        wallet: .zero(baseCurrency: baseCurrencyType, quoteCurrency: fiatPrice.currencyType),
+                        trading: try MoneyValuePair(base: tradingBalance, exchangeRate: fiatPrice),
+                        savings: try MoneyValuePair(base: savingBalance, exchangeRate: fiatPrice)
+                    )
+                }
+            }
+            .map { .value($0) }
+            .startWith(.calculating)
+            .catchErrorJustReturn(.calculating)
+            .bindAndCatch(to: calculationStateRelay)
+            .disposed(by: disposeBag)
+    }()
+
+    // MARK: - Setup
+
+    public init(cryptoCurrency: CryptoCurrency,
+                trading: CustodialAccountBalanceFetching,
+                savings: CustodialAccountBalanceFetching,
+                exchange: PairExchangeServiceAPI) {
+        self.cryptoCurrency = cryptoCurrency
+        // `wallet` doesn't support 'withdrawable'
+        self.wallet = AbsentAccountBalanceFetching(currencyType: cryptoCurrency.currency, balanceType: .nonCustodial)
+        self.trading = trading
+        self.savings = savings
+        self.exchange = exchange
+    }
+
+    public func refresh() {
         trading.balanceFetchTriggerRelay.accept(())
         savings.balanceFetchTriggerRelay.accept(())
         exchange.fetchTriggerRelay.accept(())

@@ -138,9 +138,20 @@ final class CustodyWithdrawalScreenPresenter {
                 }
             })
             .disposed(by: disposeBag)
-        
+
         stateObservable
-            .filter { $0 == .submitted || $0 == .error }
+            .filter { state in
+                switch state {
+                case .error,
+                    .submitted:
+                    return true
+                case .insufficientFunds,
+                     .loaded,
+                     .settingUp,
+                     .submitting:
+                    return false
+                }
+            }
             .do(onNext: { [weak self] state in
                 guard let self = self else { return }
                 switch state {
@@ -156,8 +167,8 @@ final class CustodyWithdrawalScreenPresenter {
                 switch value {
                 case .submitted:
                     return .successful
-                case .error:
-                    return .failed
+                case .error(let error):
+                    return .failed(error)
                 case .loaded, .settingUp, .submitting, .insufficientFunds:
                     return .unknown
                 }
