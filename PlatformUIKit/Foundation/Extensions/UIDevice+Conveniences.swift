@@ -8,7 +8,7 @@
 
 import Foundation
 
-final public class DevicePresenter {
+public final class DevicePresenter {
     public enum DeviceType: Int, Comparable {
         case superCompact = 1 // SE
         case compact = 2 // 8

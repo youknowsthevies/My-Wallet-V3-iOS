@@ -64,6 +64,9 @@ extension Screen.Style {
         /// Textual view
         case text(value: String)
 
+        /// Custom view
+        case view(value: UIView)
+
         /// Visual image based view. Only the width can be customized
         case image(name: String, width: CGFloat)
 

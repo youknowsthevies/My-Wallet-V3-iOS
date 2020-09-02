@@ -110,6 +110,8 @@ public struct SegmentedViewModel {
     
     /// Items for selection
     public let items: [Item]
+
+    public let defaultSelectedSegmentIndex: Int
     
     /// Observe the button enabled state
     public let isEnabledRelay = BehaviorRelay<Bool>(value: true)
@@ -186,10 +188,12 @@ public struct SegmentedViewModel {
     
     /// - parameter cornerRadius: corner radius of the component
     /// - parameter accessibility: accessibility for the view
-    public init(isMomentary: Bool = true,
-                cornerRadius: CGFloat = 4,
+    public init(isMomentary: Bool,
+                cornerRadius: CGFloat,
+                defaultSelectedSegmentIndex: Int,
                 accessibility: Accessibility,
                 items: [Item]) {
+        self.defaultSelectedSegmentIndex = defaultSelectedSegmentIndex
         self.isMomentary = isMomentary
         self.cornerRadius = cornerRadius
         self.accessibility = accessibility
@@ -210,25 +214,34 @@ public struct SegmentedViewModel {
     
     /// Set the theme using a mild fade animation
     public func animate(theme: Theme) {
-        UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseOut, .allowUserInteraction], animations: {
-            self.backgroundColorRelay.accept(theme.backgroundColor)
-            self.borderColorRelay.accept(theme.borderColor)
-            self.contentColorRelay.accept(theme.contentColor)
-        }, completion: nil)
+        UIView.animate(
+            withDuration: 0.25,
+            delay: 0,
+            options: [.curveEaseOut, .allowUserInteraction],
+            animations: {
+                self.backgroundColorRelay.accept(theme.backgroundColor)
+                self.borderColorRelay.accept(theme.borderColor)
+                self.contentColorRelay.accept(theme.contentColor)
+            }
+        )
     }
 }
 
 extension SegmentedViewModel {
     
-    /// Returns a primary segemented control
+    /// Returns a primary segmented control
     public static func primary(
         items: [Item],
+        isMomentary: Bool,
+        defaultSelectedSegmentIndex: Int = 1,
         background: UIColor = .primaryButton,
         cornerRadius: CGFloat = 8,
         accessibilityId: String = Accessibility.Identifier.General.primarySegmentedControl
         ) -> SegmentedViewModel {
         var viewModel = SegmentedViewModel(
+            isMomentary: isMomentary,
             cornerRadius: cornerRadius,
+            defaultSelectedSegmentIndex: defaultSelectedSegmentIndex,
             accessibility: .init(id: .value(accessibilityId)),
             items: items
         )
@@ -246,12 +259,16 @@ extension SegmentedViewModel {
     /// Returns a white segmented control
     public static func `plain`(
         items: [Item],
+        isMomentary: Bool,
+        defaultSelectedSegmentIndex: Int = 1,
         background: UIColor = .white,
         cornerRadius: CGFloat = 8,
         accessibilityId: String = Accessibility.Identifier.General.primarySegmentedControl
         ) -> SegmentedViewModel {
         var viewModel = SegmentedViewModel(
+            isMomentary: isMomentary,
             cornerRadius: cornerRadius,
+            defaultSelectedSegmentIndex: defaultSelectedSegmentIndex,
             accessibility: .init(id: .value(accessibilityId)),
             items: items
         )
@@ -268,13 +285,15 @@ extension SegmentedViewModel {
     
     public static func `default`(
         items: [Item],
-        isMomentary: Bool = true,
+        isMomentary: Bool,
+        defaultSelectedSegmentIndex: Int = 1,
         cornerRadius: CGFloat = 8,
         accessibilityId: String = Accessibility.Identifier.General.primarySegmentedControl
         ) -> SegmentedViewModel {
         var viewModel = SegmentedViewModel(
             isMomentary: isMomentary,
             cornerRadius: cornerRadius,
+            defaultSelectedSegmentIndex: defaultSelectedSegmentIndex,
             accessibility: .init(id: .value(accessibilityId)),
             items: items
         )
@@ -292,13 +311,15 @@ extension SegmentedViewModel {
     /// with a `UISegmentedControl` pre-iOS 13.
     public static func legacy(
         items: [Item],
-        isMomentary: Bool = true,
+        isMomentary: Bool,
+        defaultSelectedSegmentIndex: Int = 1,
         cornerRadius: CGFloat = 8,
         accessibilityId: String = Accessibility.Identifier.General.primarySegmentedControl
         ) -> SegmentedViewModel {
         var viewModel = SegmentedViewModel(
             isMomentary: isMomentary,
             cornerRadius: cornerRadius,
+            defaultSelectedSegmentIndex: defaultSelectedSegmentIndex,
             accessibility: .init(id: .value(accessibilityId)),
             items: items
         )

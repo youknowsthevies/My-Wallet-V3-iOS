@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import BuySellUIKit
@@ -15,10 +16,6 @@ import RxSwift
 
 protocol QRScannerRouting: class {
     func routeToQrScanner()
-}
-
-protocol DrawerRouting: class {
-    func toggleSideMenu()
 }
 
 /// This enum aggregates possible action types that can be done in the dashboard
@@ -193,7 +190,7 @@ final class DashboardScreenPresenter {
     // MARK: - Setup
     
     init(interactor: DashboardScreenInteractor = DashboardScreenInteractor(),
-         drawerRouter: DrawerRouting = AppCoordinator.shared,
+         drawerRouter: DrawerRouting = resolve(),
          qrScannerRouter: QRScannerRouting = AppCoordinator.shared,
          announcmentPresenter: AnnouncementPresenter = AnnouncementPresenter()) {
         self.interactor = interactor

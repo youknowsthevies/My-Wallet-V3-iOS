@@ -2002,7 +2002,8 @@ public enum LocalizationConstants {
     }
 
     public struct WalletPicker {
-        public static let title = NSLocalizedString("Select a Wallet", comment: "Select a Wallet")
+        public static let title = selectAWallet
+        public static let selectAWallet = NSLocalizedString("Select a Wallet", comment: "Select a Wallet")
     }
 
     public struct Settings {

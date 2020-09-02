@@ -189,6 +189,9 @@ open class BaseScreenViewController: UIViewController {
             view.layout(size: CGSize(width: width, height: Constant.titleViewHeight))
             navigationItem.titleView = view
             navigationItem.title = nil
+        case .view(value: let titleView):
+            navigationItem.title = nil
+            navigationItem.titleView = titleView
         case .none:
             navigationItem.titleView = nil
             navigationItem.title = nil

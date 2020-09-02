@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -104,7 +105,7 @@ final class ActivityScreenPresenter {
     init(router: ActivityRouterAPI,
          interactor: ActivityScreenInteractor,
          qrScannerRouter: QRScannerRouting = AppCoordinator.shared,
-         drawerRouter: DrawerRouting = AppCoordinator.shared) {
+         drawerRouter: DrawerRouting = resolve()) {
         self.qrScannerRouter = qrScannerRouter
         self.drawerRouter = drawerRouter
         self.router = router

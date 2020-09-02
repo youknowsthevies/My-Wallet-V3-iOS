@@ -16,15 +16,23 @@ public final class AccountPickerScreenPresenter {
 
     // MARK: - Navigation Properties
 
-    let trailingButton: Screen.Style.TrailingButton = .close
+    var trailingButton: Screen.Style.TrailingButton {
+        navigationModel.trailingButton
+    }
 
-    let leadingButton: Screen.Style.LeadingButton = .none
+    var leadingButton: Screen.Style.LeadingButton {
+        navigationModel.leadingButton
+    }
 
-    let titleViewStyle: Screen.Style.TitleView = .text(value: LocalizationConstants.WalletPicker.title)
+    var titleViewStyle: Screen.Style.TitleView {
+        navigationModel.titleViewStyle
+    }
 
     var barStyle: Screen.Style.Bar {
-        .darkContent()
+        navigationModel.barStyle
     }
+
+    let headerModel: AccountPickerHeaderModel?
 
     var sectionObservable: Observable<[AccountPickerSectionViewModel]> {
         _ = setup
@@ -34,10 +42,10 @@ public final class AccountPickerScreenPresenter {
             .asObservable()
     }
 
+    private let navigationModel: ScreenNavigationModel
     private let interactor: AccountPickerScreenInteractor
     private let sectionRelay = BehaviorRelay<[AccountPickerCellItem]>(value: [])
     private let disposeBag = DisposeBag()
-    private let showTotalBalance: Bool
 
     private lazy var setup: Void = {
         interactor.interactors
@@ -50,9 +58,12 @@ public final class AccountPickerScreenPresenter {
             .disposed(by: disposeBag)
     }()
 
-    public init(showTotalBalance: Bool, interactor: AccountPickerScreenInteractor) {
+    public init(interactor: AccountPickerScreenInteractor,
+                headerModel: AccountPickerHeaderModel?,
+                navigationModel: ScreenNavigationModel) {
+        self.headerModel = headerModel
         self.interactor = interactor
-        self.showTotalBalance = showTotalBalance
+        self.navigationModel = navigationModel
     }
 
     func record(selection: BlockchainAccount) {

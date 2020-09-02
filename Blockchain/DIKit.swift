@@ -21,8 +21,6 @@ extension DependencyContainer {
     
     static var blockchain = module {
         
-        single { AppCoordinator() }
-        
         single { AuthenticationCoordinator() }
 
         single { OnboardingRouter() }
@@ -36,6 +34,15 @@ extension DependencyContainer {
         factory { UIDevice.current as DeviceInfo }
 
         single { AnalyticsService() as AnalyticsServiceAPI }
+
+        // MARK: - AppCoordinator
+
+        single { AppCoordinator() }
+
+        factory { () -> DrawerRouting in
+            let app: AppCoordinator = DIKit.resolve()
+            return app as DrawerRouting
+        }
 
         // MARK: - BlockchainSettings.App
 

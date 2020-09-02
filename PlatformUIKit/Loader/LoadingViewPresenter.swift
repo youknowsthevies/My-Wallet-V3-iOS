@@ -12,7 +12,7 @@ import ToolKit
 import UIKit
 
 /// Presenter in charge of displaying a loading overlay, that entirely covers the current context
-@objc final public class LoadingViewPresenter: NSObject, LoadingViewPresenting {
+@objc public final class LoadingViewPresenter: NSObject, LoadingViewPresenting {
 
     // MARK: - Types
     

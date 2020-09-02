@@ -34,11 +34,16 @@ final class ActivityRouter: ActivityRouterAPI {
 
     func showWalletSelectionScreen() {
         let interactor = AccountPickerScreenInteractor(
+            singleAccountsOnly: false,
             action: .viewActivity,
             selectionService: serviceContainer.accountSelectionService
         )
-        let presenter = AccountPickerScreenPresenter(showTotalBalance: true, interactor: interactor)
-        let controller = AccountPickerScreenViewController(presenter: presenter)
+        let presenter = AccountPickerScreenPresenter(
+            interactor: interactor,
+            headerModel: nil,
+            navigationModel: ScreenNavigationModel.AccountPicker.modal
+        )
+        let controller = AccountPickerScreenModalViewController(presenter: presenter)
         navigationRouter.present(viewController: controller)
     }
 

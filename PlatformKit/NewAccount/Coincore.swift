@@ -9,7 +9,7 @@
 import RxSwift
 import ToolKit
 
-final public class Coincore {
+public final class Coincore {
 
     // MARK: Private Properties
 

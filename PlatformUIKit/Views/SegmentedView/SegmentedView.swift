@@ -11,14 +11,10 @@ import RxRelay
 import RxSwift
 import UIKit
 
-/// The standard wallet `UISegmentedControl` containerView.
+/// The standard wallet `UISegmentedControl`.
 /// - see also: [SegmentedViewModel](x-source-tag://SegmentedViewModel).
-public final class SegmentedView: UIView {
-    
-    // MARK: - UI Properties
-    
-    @IBOutlet private var segmentedControl: UISegmentedControl!
-    
+public final class SegmentedView: UISegmentedControl {
+
     // MARK: - Rx
     
     private var disposeBag = DisposeBag()
@@ -39,12 +35,12 @@ public final class SegmentedView: UIView {
             
             // Bind backgroundColor
             viewModel.backgroundColor
-                .drive(segmentedControl.rx.backgroundImageFillColor)
+                .drive(rx.backgroundImageFillColor)
                 .disposed(by: disposeBag)
             
             // Set the divider color
             viewModel.dividerColor
-                .drive(segmentedControl.rx.dividerColor)
+                .drive(rx.dividerColor)
                 .disposed(by: disposeBag)
             
             // Set the text attributes
@@ -58,7 +54,7 @@ public final class SegmentedView: UIView {
                     }
                     return attributes
                 }
-                .drive(segmentedControl.rx.normalTextAttributes)
+                .drive(rx.normalTextAttributes)
                 .disposed(by: disposeBag)
             
             Driver
@@ -71,7 +67,7 @@ public final class SegmentedView: UIView {
                     }
                     return attributes
                 }
-                .drive(segmentedControl.rx.selectedTextAttributes)
+                .drive(rx.selectedTextAttributes)
                 .disposed(by: disposeBag)
             
             // Bind border color
@@ -81,7 +77,7 @@ public final class SegmentedView: UIView {
             
             // Bind view model enabled indication to button
             viewModel.isEnabled
-                .drive(segmentedControl.rx.isEnabled)
+                .drive(rx.isEnabled)
                 .disposed(by: disposeBag)
             
             // Bind opacity
@@ -89,42 +85,45 @@ public final class SegmentedView: UIView {
                 .drive(rx.alpha)
                 .disposed(by: disposeBag)
             
-            segmentedControl.rx.value
+            rx.value
                 .bindAndCatch(to: viewModel.tapRelay)
                 .disposed(by: disposeBag)
-                
-            segmentedControl.isMomentary = viewModel.isMomentary
+
+            isMomentary = viewModel.isMomentary
             
-            segmentedControl.removeAllSegments()
+            removeAllSegments()
             viewModel.items.enumerated().forEach {
                 switch $1.content {
                 case .imageName(let imageName):
-                    segmentedControl.insertSegment(with: UIImage(named: imageName), at: $0, animated: false)
+                    insertSegment(with: UIImage(named: imageName), at: $0, animated: false)
                 case .title(let title):
-                    segmentedControl.insertSegment(withTitle: title, at: $0, animated: false)
+                    insertSegment(withTitle: title, at: $0, animated: false)
                 }
             }
             
-            guard segmentedControl.isMomentary == false else { return }
-            segmentedControl.selectedSegmentIndex = 1
-            segmentedControl.sendActions(for: .valueChanged)
+            guard isMomentary == false else { return }
+            selectedSegmentIndex = viewModel.defaultSelectedSegmentIndex
+            sendActions(for: .valueChanged)
         }
     }
     
     // MARK: - Setup
+
+    public convenience init() {
+        self.init(frame: .zero)
+    }
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setup()
     }
     
     private func setup() {
-        fromNib()
         layer.borderWidth = 1
     }
 }

@@ -15,7 +15,7 @@ import ToolKit
 /// Note that though this API is very similar to that of the Loader, this
 /// `PulseAnimationView` isn't necessarily meant for loading, but rather an on-boarding
 /// tutorial. It servers as a CTA when the user creats a wallet for the first time. 
-@objc final public class PulseViewPresenter: NSObject, PulseViewPresenting {
+@objc public final class PulseViewPresenter: NSObject, PulseViewPresenting {
     
     // MARK: - Types
     

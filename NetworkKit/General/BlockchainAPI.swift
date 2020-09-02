@@ -17,7 +17,7 @@ import Foundation
  */
 
 @objc
-final public class BlockchainAPI: NSObject {
+public final class BlockchainAPI: NSObject {
 
     // MARK: - Properties
 

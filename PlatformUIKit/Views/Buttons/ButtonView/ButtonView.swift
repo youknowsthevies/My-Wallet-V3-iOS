@@ -13,7 +13,7 @@ import UIKit
 /// The standard wallet button.
 /// Typically located at the bottom of a context, used as primary / secondary CTA buttons.
 /// - see also: [ButtonViewModel](x-source-tag://ButtonViewModel).
-final public class ButtonView: UIView {
+public final class ButtonView: UIView {
     
     // MARK: - UI Properties
     

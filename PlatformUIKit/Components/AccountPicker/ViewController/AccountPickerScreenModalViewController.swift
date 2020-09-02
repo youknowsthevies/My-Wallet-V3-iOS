@@ -1,8 +1,8 @@
 //
-//  AccountPickerScreenViewController.swift
+//  AccountPickerScreenModalViewController.swift
 //  PlatformUIKit
 //
-//  Created by Paulo on 05/08/2020.
+//  Created by Paulo on 28/08/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
@@ -11,7 +11,7 @@ import RxDataSources
 import RxSwift
 import ToolKit
 
-public final class AccountPickerScreenViewController: BaseScreenViewController {
+public final class AccountPickerScreenModalViewController: BaseScreenViewController {
 
     // MARK: - Types
 
@@ -65,8 +65,9 @@ public final class AccountPickerScreenViewController: BaseScreenViewController {
         tableView.registerNibCell(AccountGroupBalanceTableViewCell.self)
         view.addSubview(tableView)
         tableView.layoutToSuperview(.top, .bottom, .leading, .trailing)
+        tableView.delegate = self
 
-        let dataSource = RxDataSource(configureCell: { [weak self] _, _, indexPath, item in
+        let dataSource = RxDataSource(configureCell: { [weak self] dataSource, tableView, indexPath, item in
             guard let self = self else { return UITableViewCell() }
             let cell: UITableViewCell
             switch item.presenter {
@@ -101,5 +102,20 @@ public final class AccountPickerScreenViewController: BaseScreenViewController {
         let cell = tableView.dequeue(AccountGroupBalanceTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
+    }
+}
+
+extension AccountPickerScreenModalViewController: UITableViewDelegate {
+    public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard section == 0, let headerModel = presenter.headerModel else { return nil }
+        let frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: AccountPickerHeaderModel.defaultHeight)
+        let headerView = AccountPickerHeaderView(frame: frame)
+        headerView.model = headerModel
+        return headerView
+    }
+
+    public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        guard section == 0, presenter.headerModel != nil else { return 0 }
+        return AccountPickerHeaderModel.defaultHeight
     }
 }
