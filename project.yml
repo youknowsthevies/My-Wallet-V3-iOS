@@ -212,6 +212,7 @@ targets:
       Release Staging: Config/BlockchainConfig/Blockchain-Staging.xcconfig
     dependencies:
     - sdk: libicucore.tbd
+    - sdk: AdSupport.framework
     - carthage: BigInt
     - carthage: Charts
     - carthage: DIKit
