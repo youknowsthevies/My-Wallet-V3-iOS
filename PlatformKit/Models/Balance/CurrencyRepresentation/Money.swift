@@ -12,6 +12,7 @@ public protocol Money {
     
     var isZero: Bool { get }
     var isPositive: Bool { get }
+    var isZeroOrPositive: Bool { get }
     
     /// The maximum number of decimal places supported by the money
     var maxDecimalPlaces: Int { get }
@@ -24,4 +25,10 @@ public protocol Money {
     /// - Parameter includeSymbol: whether or not the symbol should be included in the string
     /// - Returns: the displayable String
     func toDisplayString(includeSymbol: Bool, locale: Locale) -> String
+}
+
+extension Money {
+    public var isZeroOrPositive: Bool {
+        isZero || isPositive
+    }
 }

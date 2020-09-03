@@ -171,7 +171,7 @@ fileprivate struct CustodyWithdrawalSummaryErrorViewModel {
                     .text(string: error.localizedDescription),
                     .text(string: " "),
                     .url(string: LocalizationConstants.learnMore,
-                         url: "https://support.blockchain.com/hc/en-us/articles/360048200392")
+                         url: Constants.Url.withdrawalLockArticle)
                 ]
             )
             image = #imageLiteral(resourceName: "icon_clock_filled")

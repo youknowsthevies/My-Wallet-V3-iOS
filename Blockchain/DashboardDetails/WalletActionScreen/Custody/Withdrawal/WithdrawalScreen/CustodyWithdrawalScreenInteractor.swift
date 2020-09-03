@@ -13,14 +13,14 @@ import RxRelay
 import RxSwift
 
 final class CustodyWithdrawalScreenInteractor {
-    
+
     enum InteractionState: Equatable {
         
         /// The necessary data for the withdrawal is being fetched
         case settingUp
         
         /// The data for the withdrawal to be submitted is loaded
-        case loaded
+        case loaded(CustodyWithdrawalSetupInteractor.Value)
         
         /// The withdrawal is being submitted
         case submitting
@@ -35,7 +35,10 @@ final class CustodyWithdrawalScreenInteractor {
         case insufficientFunds
         
         var isReady: Bool {
-            self == .loaded
+            if case .loaded = self {
+                return true
+            }
+            return false
         }
         
         var isSubmitting: Bool {
@@ -71,7 +74,7 @@ final class CustodyWithdrawalScreenInteractor {
                     if !value.withdrawableBalance.isPositive {
                         return .insufficientFunds
                     }
-                    return .loaded
+                    return .loaded(value)
                 case (.loaded, .calculating):
                     return .submitting
                 case (.loaded, .value):

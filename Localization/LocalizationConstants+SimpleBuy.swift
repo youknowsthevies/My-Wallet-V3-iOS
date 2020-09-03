@@ -21,14 +21,26 @@ extension LocalizationConstants.SimpleBuy {
             comment: "Send to"
         )
         public enum Description {
-            public static let prefix = NSLocalizedString(
-                "At this time, Blockchain.com only allows sending your total amount from your",
-                comment: "At this time, Blockchain.com only allows sending your total amount from your"
-            )
-            public static let suffix = NSLocalizedString(
-                "trading wallet",
-                comment: "trading wallet"
-            )
+            public enum Top {
+                public static let prefix = NSLocalizedString(
+                    "At this time, Blockchain.com only allows you to send funds to your",
+                    comment: "At this time, Blockchain.com only allows you to send funds to your"
+                )
+                public static let suffix = NSLocalizedString(
+                    "wallet.",
+                    comment: "wallet"
+                )
+            }
+            public enum Bottom {
+                public static let withdrawable = NSLocalizedString(
+                    "Your available balance to withdraw is %@.",
+                    comment: "Your available balance to withdraw is %@."
+                )
+                public static let remaining = NSLocalizedString(
+                    "The remaining balance %@ will be available to be withdrawn within 7 days.",
+                    comment: "The remaining balance %@ will be available to be withdrawn within 7 days."
+                )
+            }
         }
 
         public static let action = NSLocalizedString("Send", comment: "Send")

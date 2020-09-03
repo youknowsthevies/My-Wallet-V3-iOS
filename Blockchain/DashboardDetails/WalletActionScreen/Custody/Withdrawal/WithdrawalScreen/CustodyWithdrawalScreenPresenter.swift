@@ -58,13 +58,18 @@ final class CustodyWithdrawalScreenPresenter {
     var balanceViewVisibility: Driver<Visibility> {
         balanceViewVisibilityRelay.asDriver()
     }
-    
+
+    var descriptionTextView: Driver<InteractableTextViewModel> {
+        descriptionTextViewRelay.asDriver()
+    }
+
     let descriptionLabel: LabelContent
     let sendButtonViewModel: ButtonViewModel
     let assetBalanceViewPresenter: AssetBalanceViewPresenter
     
     // MARK: - Private Properties
-    
+
+    private let descriptionTextViewRelay = BehaviorRelay<InteractableTextViewModel>(value: .empty)
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let activityIndicatorVisibilityRelay = BehaviorRelay<Visibility>(value: .visible)
     private let balanceViewVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
@@ -86,15 +91,7 @@ final class CustodyWithdrawalScreenPresenter {
         self.interactor = interactor
         self.currency = currency
         self.stateService = stateService
-        
-        self.descriptionLabel = .init(
-            text: "\(LocalizationConstants.SimpleBuy.Withdrawal.Description.prefix) \(currency.displayCode) \(LocalizationConstants.SimpleBuy.Withdrawal.Description.suffix)",
-            font: .main(.medium, 12.0),
-            color: .descriptionText,
-            alignment: .center,
-            accessibility: .none
-        )
-        
+        self.sendButtonViewModel = .primary(with: LocalizationID.action)
         self.assetBalanceViewPresenter = AssetBalanceViewPresenter(
             alignment: .center,
             interactor: interactor.assetBalanceInteractor,
@@ -107,16 +104,71 @@ final class CustodyWithdrawalScreenPresenter {
                 cryptoAccessibility: .id(AccessibilityId.cryptoValue)
             )
         )
-        
-        self.sendButtonViewModel = .primary(with: LocalizationID.action)
+        self.descriptionLabel = LabelContent(
+            text: "\(LocalizationID.Description.Top.prefix) \(currency.displayCode) \(LocalizationID.Description.Top.suffix)",
+            font: .main(.medium, 12.0),
+            color: .titleText,
+            alignment: .center,
+            accessibility: .none
+        )
         
         let stateObservable = interactor.state
-        
+
+        stateObservable
+            .map { state -> CustodyWithdrawalSetupInteractor.Value? in
+                switch state {
+                case .error,
+                     .submitted,
+                     .insufficientFunds,
+                     .settingUp,
+                     .submitting:
+                    return nil
+                case .loaded(let value):
+                    return value
+                }
+            }
+            .compactMap { $0 }
+            .map { value -> [InteractableTextViewModel.Input] in
+                let withdrawable = String(format: LocalizationID.Description.Bottom.withdrawable,
+                                          value.withdrawableBalance.toDisplayString(includeSymbol: true))
+                var inputs: [InteractableTextViewModel.Input] = [
+                    .text(string: withdrawable)
+                ]
+                if value.remaining.isPositive {
+                    let remaining = String(format: LocalizationID.Description.Bottom.remaining,
+                                           value.remaining.toDisplayString(includeSymbol: true))
+                    inputs += [
+                        .text(string: " \(remaining) \n"),
+                        .url(string: LocalizationConstants.learnMore,
+                             url: Constants.Url.withdrawalLockArticle)
+                    ]
+
+                }
+                return inputs
+            }
+            .map(weak: self) { (self, inputs) -> InteractableTextViewModel in
+                let model = InteractableTextViewModel(
+                    inputs: inputs,
+                    textStyle: .init(color: .textFieldText, font: .main(.medium, 12.0)),
+                    linkStyle: .init(color: .linkableText, font: .main(.bold, 12.0)),
+                    alignment: .center
+                )
+
+                model.tap
+                    .bindAndCatch(weak: self) { (self, data) in
+                        self.stateService.webviewRelay.accept(data.url)
+                    }
+                    .disposed(by: self.disposeBag)
+                return model
+            }
+            .bindAndCatch(to: descriptionTextViewRelay)
+            .disposed(by: disposeBag)
+
         stateObservable
             .map { $0 == .settingUp ? .visible : .hidden }
             .bindAndCatch(to: activityIndicatorVisibilityRelay)
             .disposed(by: disposeBag)
-        
+
         stateObservable
             .map { $0 != .settingUp ? .visible : .hidden }
             .bindAndCatch(to: balanceViewVisibilityRelay)

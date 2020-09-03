@@ -17,7 +17,7 @@ final class CustodyWithdrawalSetupInteractor {
     
     // MARK: - InteractionState Model
     
-    struct Value {
+    struct Value: Equatable {
         /// The users available balance
         let totalBalance: CryptoValue
 
@@ -26,6 +26,16 @@ final class CustodyWithdrawalSetupInteractor {
         
         /// The users noncustodial address
         let destination: String
+
+        var remaining: CryptoValue {
+            guard let result = try? totalBalance - withdrawableBalance else {
+                return CryptoValue.zero(currency: totalBalance.currencyType)
+            }
+            guard result.isZeroOrPositive else {
+                return CryptoValue.zero(currency: totalBalance.currencyType)
+            }
+            return result
+        }
     }
     
     // MARK: - Public Properties

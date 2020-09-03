@@ -122,6 +122,7 @@ struct Constants {
         static let englishUS = "en_US"
     }
     struct Url {
+        static let withdrawalLockArticle = "https://support.blockchain.com/hc/en-us/articles/360048200392"
         static let blockchainHome = "https://www.blockchain.com"
         static let privacyPolicy = blockchainHome + "/privacy"
         static let cookiesPolicy = blockchainHome + "/legal/cookies"
