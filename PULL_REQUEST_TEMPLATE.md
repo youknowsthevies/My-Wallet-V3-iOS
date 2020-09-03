@@ -4,7 +4,11 @@
 
 ## Description
 
-*Describe in detail how you achieved the objective*
+Describe in detail how you achieved the objective*
+
+## Key Classes
+
+*Our `VIPER` architecture is prone to larger pull requests. If possible, list key classes that need a more thorough review or where the bulk of the logic is. 👀* 
 
 ## How to Test
 
