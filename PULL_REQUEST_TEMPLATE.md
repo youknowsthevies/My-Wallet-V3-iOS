@@ -4,7 +4,7 @@
 
 ## Description
 
-Describe in detail how you achieved the objective*
+*Describe in detail how you achieved the objective*
 
 ## Key Classes
 
