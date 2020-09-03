@@ -2050,7 +2050,7 @@ public enum LocalizationConstants {
         You currently have email notifications enabled. Changing your email will disable email notifications.
         """, comment: "")
         public static let twoFactorAuthentication = NSLocalizedString("2-Step Verification", comment: "2-Step Verification")
-        public static let balanceSharing = NSLocalizedString("Sync My Portfolio", comment: "Sync My Portfolio")
+        public static let balanceSharing = NSLocalizedString("Sync My Widget Portfolio", comment: "Sync My Portfolio")
         public static let cloudBackup = NSLocalizedString("Cloud Backup", comment: "Cloud Backup")
         public static let cookiePolicy = NSLocalizedString("Cookie Policy", comment: "Cookie Policy")
         public static let allRightsReserved = NSLocalizedString("All rights reserved.", comment: "All rights reserved")
