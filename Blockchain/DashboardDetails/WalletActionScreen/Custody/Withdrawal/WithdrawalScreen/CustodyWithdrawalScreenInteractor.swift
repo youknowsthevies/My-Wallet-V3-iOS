@@ -32,7 +32,7 @@ final class CustodyWithdrawalScreenInteractor {
         case error(WithdrawalError)
         
         /// The user has a zero balance
-        case insufficientFunds
+        case insufficientFunds(CustodyWithdrawalSetupInteractor.Value)
         
         var isReady: Bool {
             if case .loaded = self {
@@ -72,7 +72,7 @@ final class CustodyWithdrawalScreenInteractor {
                     return .settingUp
                 case (.loaded(let value), .ready):
                     if !value.withdrawableBalance.isPositive {
-                        return .insufficientFunds
+                        return .insufficientFunds(value)
                     }
                     return .loaded(value)
                 case (.loaded, .calculating):

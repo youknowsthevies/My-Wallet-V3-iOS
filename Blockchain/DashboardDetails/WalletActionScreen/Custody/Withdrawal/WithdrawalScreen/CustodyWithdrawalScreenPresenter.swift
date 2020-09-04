@@ -119,15 +119,19 @@ final class CustodyWithdrawalScreenPresenter {
                 switch state {
                 case .error,
                      .submitted,
-                     .insufficientFunds,
                      .settingUp,
                      .submitting:
                     return nil
-                case .loaded(let value):
+                case .insufficientFunds(let value),
+                     .loaded(let value):
                     return value
                 }
             }
             .compactMap { $0 }
+            .filter { value in
+                // Only display message if user has any totalBalance.
+                value.totalBalance.isPositive
+            }
             .map { value -> [InteractableTextViewModel.Input] in
                 let withdrawable = String(format: LocalizationID.Description.Bottom.withdrawable,
                                           value.withdrawableBalance.toDisplayString(includeSymbol: true))
