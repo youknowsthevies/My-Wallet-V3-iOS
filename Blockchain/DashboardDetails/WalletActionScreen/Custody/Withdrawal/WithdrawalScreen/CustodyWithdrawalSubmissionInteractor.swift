@@ -39,16 +39,17 @@ final class CustodyWithdrawalSubmissionInteractor {
     }
     
     func submitWithdrawal(cryptoValue: CryptoValue, destination: String) {
-        withdrawalService.makeWithdrawal(amount: cryptoValue, destination: destination).asObservable()
-            .map(weak: self, { (self, response) -> InteractionState in
+        withdrawalService.makeWithdrawal(amount: cryptoValue, destination: destination)
+            .map { response -> InteractionState in
                 .value(response)
-            })
-            .catchError { error -> Observable<InteractionState> in
+            }
+            .catchError { error -> Single<InteractionState> in
                 guard let withdrawalError = error as? WithdrawalError else {
                     return .just(.failed(WithdrawalError.unknown))
                 }
                 return .just(.failed(withdrawalError))
             }
+            .asObservable()
             .startWith(.calculating)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)

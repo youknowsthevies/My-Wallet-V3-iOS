@@ -17,7 +17,7 @@ final class CustodyWithdrawalSetupInteractor {
     
     // MARK: - InteractionState Model
     
-    struct Value {
+    struct Value: Equatable {
         /// The users available balance
         let totalBalance: CryptoValue
 
@@ -26,6 +26,16 @@ final class CustodyWithdrawalSetupInteractor {
         
         /// The users noncustodial address
         let destination: String
+
+        var remaining: CryptoValue {
+            guard let result = try? totalBalance - withdrawableBalance else {
+                return CryptoValue.zero(currency: totalBalance.currencyType)
+            }
+            guard result.isZeroOrPositive else {
+                return CryptoValue.zero(currency: totalBalance.currencyType)
+            }
+            return result
+        }
     }
     
     // MARK: - Public Properties
@@ -57,23 +67,24 @@ final class CustodyWithdrawalSetupInteractor {
             .zip(
                 tradingBalanceService.balance(for: currency.currency),
                 accountAddress
-            )
-            .map(weak: self) { (self, payload) -> InteractionState in
-                let balance = payload.0
-                let destination = payload.1
-                switch balance {
+            ) { (balanceState: $0, destination: $1) }
+            .map { payload -> Value in
+                switch payload.balanceState {
                 case .absent:
-                    return .loading
+                    return Value(
+                        totalBalance: .zero(currency: currency),
+                        withdrawableBalance: .zero(currency: currency),
+                        destination: payload.destination
+                    )
                 case .present(let balance):
-                    return InteractionState.loaded(
-                        next: Value(
-                            totalBalance: balance.available.cryptoValue!,
-                            withdrawableBalance: balance.withdrawable.cryptoValue!,
-                            destination: destination
-                        )
+                    return Value(
+                        totalBalance: balance.available.cryptoValue!,
+                        withdrawableBalance: balance.withdrawable.cryptoValue!,
+                        destination: payload.destination
                     )
                 }
             }
+            .map { InteractionState.loaded(next: $0) }
             .asObservable()
             .startWith(.loading)
             .bindAndCatch(to: stateRelay)

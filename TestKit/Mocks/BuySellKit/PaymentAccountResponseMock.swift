@@ -26,7 +26,7 @@ extension CustodialBalanceResponse {
         balances: [
             "BTC": Balance(available: "0", withdrawable: "0"),
             "BCH": Balance(available: "0", withdrawable: "0"),
-            "ETH": Balance(available: "200000", withdrawable: "2000000"),
+            "ETH": Balance(available: "200000", withdrawable: "0"),
             "PAX": Balance(available: "0", withdrawable: "0"),
             "XLM": Balance(available: "0", withdrawable: "0"),
             "ALGO": Balance(available: "0", withdrawable: "0")

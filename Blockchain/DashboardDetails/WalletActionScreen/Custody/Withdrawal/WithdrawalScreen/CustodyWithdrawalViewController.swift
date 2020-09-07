@@ -9,6 +9,7 @@
 import PlatformUIKit
 import RxCocoa
 import RxSwift
+import ToolKit
 
 final class CustodyWithdrawalViewController: BaseScreenViewController {
     
@@ -17,6 +18,7 @@ final class CustodyWithdrawalViewController: BaseScreenViewController {
     @IBOutlet private var activityIndicatorView: UIActivityIndicatorView!
     @IBOutlet private var assetBalanceView: AssetBalanceView!
     @IBOutlet private var descriptionLabel: UILabel!
+    @IBOutlet private var descriptionTextView: InteractableTextView!
     @IBOutlet private var sendButtonView: ButtonView!
     
     // MARK: - Private Properties
@@ -28,17 +30,19 @@ final class CustodyWithdrawalViewController: BaseScreenViewController {
     
     init(presenter: CustodyWithdrawalScreenPresenter) {
         self.presenter = presenter
-        super.init(nibName: CustodyWithdrawalViewController.objectName, bundle: nil)
+        super.init(nibName: CustodyWithdrawalViewController.objectName, bundle: CustodyWithdrawalViewController.bundle)
     }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+
+    required init?(coder: NSCoder) { unimplemented() }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         assetBalanceView.presenter = presenter.assetBalanceViewPresenter
         descriptionLabel.content = presenter.descriptionLabel
+        presenter.descriptionTextView
+            .drive(descriptionTextView.rx.viewModel)
+            .disposed(by: disposeBag)
+
         titleViewStyle = presenter.titleView
         sendButtonView.viewModel = presenter.sendButtonViewModel
         set(barStyle: presenter.barStyle,
