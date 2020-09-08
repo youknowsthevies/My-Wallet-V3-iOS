@@ -33,6 +33,8 @@ public final class AccountPickerScreenPresenter {
     }
 
     let headerModel: AccountPickerHeaderModel?
+    
+    let shouldDismissOnSelection: Bool
 
     var sectionObservable: Observable<[AccountPickerSectionViewModel]> {
         _ = setup
@@ -60,10 +62,12 @@ public final class AccountPickerScreenPresenter {
 
     public init(interactor: AccountPickerScreenInteractor,
                 headerModel: AccountPickerHeaderModel?,
-                navigationModel: ScreenNavigationModel) {
+                navigationModel: ScreenNavigationModel,
+                shouldDismissOnSelection: Bool = true) {
         self.headerModel = headerModel
         self.interactor = interactor
         self.navigationModel = navigationModel
+        self.shouldDismissOnSelection = shouldDismissOnSelection
     }
 
     func record(selection: BlockchainAccount) {

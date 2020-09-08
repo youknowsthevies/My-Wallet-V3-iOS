@@ -1,17 +1,16 @@
 {
   "images" : [
     {
-      "filename" : "icon-gbp.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "icon-gbp@2x.png",
+      "filename" : "menu-icon-sell@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "icon-gbp@3x.png",
+      "filename" : "menu-icon-sell@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

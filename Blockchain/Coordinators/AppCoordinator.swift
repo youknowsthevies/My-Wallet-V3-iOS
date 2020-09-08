@@ -269,8 +269,10 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
             handleAirdrops()
         case .logout:
             handleLogout()
-        case .simpleBuy:
+        case .buy:
             handleBuyCrypto()
+        case .sell:
+            handleSellCrypto()
         case .exchange:
             handleExchange()
         case .lockbox:
@@ -392,9 +394,9 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     
     /// Starts Sell Crypto flow
     @objc func handleSellCrypto() {
-        
         let builder = BuySellUIKit.SellBuilder(
-            routerInteractor: SellRouterInteractor(),
+            routerInteractor: SellRouterInteractor(accountSelectionService: DataProvider.default.buySell.accountSelectionService),
+            kycServiceProvider: resolve(),
             analyticsRecorder: resolve(),
             recorderProvider: RecordingProvider.default,
             userInformationProvider: resolve(),

@@ -19,11 +19,17 @@ public final class SendAuxiliaryView: UIView {
         didSet {
             maxButtonView.viewModel = presenter?.maxButtonViewModel
             availableBalanceView.presenter = presenter?.availableBalanceContentViewPresenter
+            
+            presenter
+                .maxButtonVisibility
+                .drive(maxButtonView.rx.visibility)
+                .disposed(by: disposeBag)
         }
     }
     
     private let availableBalanceView: ContentLabelView
     private let maxButtonView: ButtonView
+    private let disposeBag = DisposeBag()
         
     public init() {
         availableBalanceView = ContentLabelView()

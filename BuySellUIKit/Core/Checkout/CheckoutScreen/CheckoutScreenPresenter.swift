@@ -15,10 +15,7 @@ import RxSwift
 import ToolKit
 
 final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
-
-    typealias StateService = ConfirmCheckoutServiceAPI &
-                             TransferDetailsServiceAPI &
-                             CancelTransferServiceAPI
+    
     // MARK: - Types
     
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
@@ -45,27 +42,25 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let uiUtilityProvider: UIUtilityProviderAPI
     private let interactor: CheckoutScreenInteractor
-    private unowned let stateService: StateService
+    private let checkoutRouting: CheckoutRoutingInteracting
 
     // MARK: - Private Properties
     
     private let disposeBag = DisposeBag()
-    private let contentReducer: CheckoutScreenContentReducer
+    private let contentReducer: CheckoutScreenContentReducing
 
     // MARK: - Setup
     
-    init(stateService: StateService,
+    init(checkoutRouting: CheckoutRoutingInteracting,
+         contentReducer: CheckoutScreenContentReducing,
          uiUtilityProvider: UIUtilityProviderAPI = UIUtilityProvider.default,
          analyticsRecorder: AnalyticsEventRecorderAPI,
          interactor: CheckoutScreenInteractor) {
         self.analyticsRecorder = analyticsRecorder
-        self.stateService = stateService
+        self.checkoutRouting = checkoutRouting
         self.uiUtilityProvider = uiUtilityProvider
         self.interactor = interactor
-
-        // MARK: Content Reducer
-
-        contentReducer = CheckoutScreenContentReducer(data: interactor.checkoutData)
+        self.contentReducer = contentReducer
 
         // MARK: Nav Bar
 
@@ -90,20 +85,11 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
             .bindAndCatch(weak: self) { (self, result) in
                 switch result {
                 case .success(let data):
-                    self.stateService.confirmCheckout(with: data.0, isOrderNew: data.1)
+                    self.checkoutRouting.actionRelay.accept(.confirm(data.0, isOrderNew: data.1))
                 case .failure:
                     self.uiUtilityProvider.alert.error(in: nil, action: nil)
                 }
             }
-            .disposed(by: disposeBag)
-        
-    
-        contentReducer.continueButtonViewModel.tapRelay
-            .withLatestFrom(Observable.just(interactor.checkoutData))
-            .map { checkoutData in
-                AnalyticsEvent.sbCheckoutConfirm(paymentMethod: checkoutData.order.paymentMethod.analyticsParameter)
-            }
-            .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
 
         contentReducer.cancelButtonViewModel?
@@ -113,22 +99,11 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
             }
             .disposed(by: disposeBag)
 
-        contentReducer.cancelButtonViewModel?
-            .tapRelay
-            .map(weak: self) { (self, _) in
-                if self.interactor.checkoutData.isPendingDepositBankWire {
-                    return AnalyticsEvent.sbPendingModalCancelClick
-                }
-                return AnalyticsEvent.sbCheckoutCancel
-            }
-            .bindAndCatch(to: analyticsRecorder.recordRelay)
-            .disposed(by: disposeBag)
-
         contentReducer.transferDetailsButtonViewModel?
             .tapRelay
-            .bindAndCatch(weak: self) { (self) in
-                self.stateService.bankTransferDetails(with: self.interactor.checkoutData)
-            }
+            .withLatestFrom(Observable.just(interactor.checkoutData))
+            .map { .bankTransferDetails($0) }
+            .bindAndCatch(to: checkoutRouting.actionRelay)
             .disposed(by: disposeBag)
     }
 
@@ -153,7 +128,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
 
     private func cancel() {
         if interactor.checkoutData.isPendingDepositBankWire {
-            stateService.cancelTransfer(with: interactor.checkoutData)
+            checkoutRouting.actionRelay.accept(.cancel(interactor.checkoutData))
         } else {
             interactor.cancelIfPossible()
                 .handleLoaderForLifecycle(loader: uiUtilityProvider.loader, style: .circle)
@@ -163,7 +138,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
                         if wasCancelled {
                             self.analyticsRecorder.record(event: AnalyticsEvent.sbCheckoutCancelGoBack)
                         }
-                        self.stateService.previousRelay.accept(())
+                        self.checkoutRouting.previousRelay.accept(())
                     }
                 )
                 .disposed(by: disposeBag)
@@ -180,7 +155,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
 
     var navigationBarTrailingButtonAction: DetailsScreen.BarButtonAction {
         .custom { [weak self] in
-            self?.stateService.previousRelay.accept(())
+            self?.checkoutRouting.previousRelay.accept(())
         }
     }
     

@@ -17,6 +17,8 @@ public enum AssetFilter {
 
 public enum AssetAction {
     case viewActivity
+    case deposit
+    case sell
     case send
     case receive
     case swap

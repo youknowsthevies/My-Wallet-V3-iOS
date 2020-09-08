@@ -105,6 +105,7 @@ public class NavigationRouter: NavigationRouterAPI {
     
     public func dismiss(completion: (() -> Void)?) {
         navigationControllerAPI?.dismiss(animated: true, completion: completion)
+        DispatchQueue.main.async { }
     }
     
     public func dismiss() {

@@ -96,7 +96,7 @@ final class PaymentMethodsScreenPresenter {
             let viewModel: ExplainedActionViewModel
             switch method.type {
             case .funds:
-                viewModel = .init(
+                viewModel = ExplainedActionViewModel(
                     thumbImage: "icon-deposit-cash",
                     title: LocalizedString.DepositCash.title,
                     descriptions: [LocalizedString.DepositCash.description],
@@ -104,7 +104,7 @@ final class PaymentMethodsScreenPresenter {
                     uniqueAccessibilityIdentifier: AccessibilityId.depositCash
                 )
             case .card:
-                viewModel = .init(
+                viewModel = ExplainedActionViewModel(
                     thumbImage: "Icon-Creditcard",
                     title: LocalizedString.Card.title,
                     descriptions: [

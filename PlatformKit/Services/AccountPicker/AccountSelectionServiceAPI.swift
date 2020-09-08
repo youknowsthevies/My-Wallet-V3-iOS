@@ -10,7 +10,7 @@ import RxCocoa
 import RxSwift
 
 /// A interface for a service used to select a `BlockchainAccount`.
-public protocol AccountSelectionServiceAPI: class {
+public protocol AccountSelectionServiceAPI: AnyObject {
     var selectedData: Observable<BlockchainAccount> { get }
     func record(selection: BlockchainAccount)
 }
@@ -35,7 +35,7 @@ public final class AccountPickerSelectionService: AccountSelectionServiceAPI {
 }
 
 /// `AccountSelectionService` is a `AccountSelectionServiceAPI` backed
-/// by a `PublishRelay`, meaning it doesn't have a pre-definied value nor it 'replays' the last known value
+/// by a `PublishRelay`, meaning it doesn't have a pre-defined value nor it 'replays' the last known value
 /// on subscription.
 public class AccountSelectionService: AccountSelectionServiceAPI {
     public var selectedData: Observable<BlockchainAccount> {

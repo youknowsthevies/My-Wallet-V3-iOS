@@ -115,7 +115,7 @@ final class BankTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
         )
 
         let totalCost = TransactionalLineItem
-            .totalCost(interactor.checkoutData.order.fiatValue.displayString)
+            .totalCost(interactor.checkoutData.order.inputValue.displayString)
             .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
 
         cells.append(.staticLabel(summary))
@@ -138,7 +138,7 @@ final class BankTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     // MARK: - View Life Cycle
 
     func viewDidLoad() {
-        let currencyCode = interactor.checkoutData.order.fiatValue.currencyCode
+        let currencyCode = interactor.checkoutData.order.inputValue.currencyCode
         analyticsRecorder.record(event: AnalyticsEvent.sbBankDetailsShown(currencyCode: currencyCode))
     }
 }
@@ -158,33 +158,44 @@ extension BankTransferDetailScreenPresenter {
              analyticsRecorder: AnalyticsEventRecorderAPI) {
             typealias SummaryString = LocalizedString.Summary
             typealias TitleString = LocalizedString.Title
-            let currency = data.order.fiatValue.currencyType
+            let currency = data.order.inputValue.currencyType
             let currencyString = "\(currency.name) (\(currency.symbol))"
 
             title = TitleString.checkout
-            switch data.order.fiatValue.currencyType {
-            case .USD, .GBP:
-                summary = "\(SummaryString.GbpAndUsd.prefix) \(currencyString) \(SummaryString.GbpAndUsd.suffix)"
-            default:
+            switch data.order.inputValue.currencyType {
+            case .crypto:
                 summary = "\(SummaryString.AnyFiat.prefix) \(currencyString) \(SummaryString.AnyFiat.suffix)"
+            case .fiat(let fiatType):
+                switch fiatType {
+                case .USD,
+                     .GBP:
+                    summary = "\(SummaryString.GbpAndUsd.prefix) \(currencyString) \(SummaryString.GbpAndUsd.suffix)"
+                default:
+                    summary = "\(SummaryString.AnyFiat.prefix) \(currencyString) \(SummaryString.AnyFiat.suffix)"
+                }
             }
 
             let account = data.paymentAccount!
             lineItems = account.fields.transferDetailsCellsPresenting(analyticsRecorder: analyticsRecorder)
 
             switch currency {
-            case .GBP:
-                typealias LinkString = LocalizedString.TermsLink.GBP
-                let font = UIFont.main(.medium, 12)
-                termsTextViewModel = InteractableTextViewModel(
-                    inputs: [
-                        .text(string: LinkString.prefix),
-                        .url(string: LinkString.link, url: TermsUrlLink.gbp),
-                        .text(string: LinkString.suffix)
-                    ],
-                    textStyle: .init(color: .descriptionText, font: font),
-                    linkStyle: .init(color: .linkableText, font: font)
-                )
+            case .fiat(let fiatType):
+                switch fiatType {
+                case .GBP:
+                    typealias LinkString = LocalizedString.TermsLink.GBP
+                    let font = UIFont.main(.medium, 12)
+                    termsTextViewModel = InteractableTextViewModel(
+                        inputs: [
+                            .text(string: LinkString.prefix),
+                            .url(string: LinkString.link, url: TermsUrlLink.gbp),
+                            .text(string: LinkString.suffix)
+                        ],
+                        textStyle: .init(color: .descriptionText, font: font),
+                        linkStyle: .init(color: .linkableText, font: font)
+                    )
+                default:
+                    termsTextViewModel = nil
+                }
             default:
                 termsTextViewModel = nil
             }

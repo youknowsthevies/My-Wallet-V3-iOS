@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BuySellKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
@@ -28,7 +29,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
     // MARK: - Types
     
     enum State {
-        case inBounds
+        case inBounds(data: CandidateOrderDetails)
         case tooHigh(max: MoneyValue)
         case empty
                 
@@ -62,6 +63,34 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
     var state: Observable<State> {
         stateRelay.asObservable()
     }
+    
+    /// Streams a `KycState` indicating whether the user should complete KYC
+    var currentKycState: Single<Result<KycState, Error>> {
+        kycTiersService.fetchTiers()
+            .map { $0.isTier2Approved }
+            .mapToResult(successMap: { $0 ? .completed : .shouldComplete })
+    }
+    
+    /// Streams a boolean indicating whether the user is eligible to Simple Buy
+    var currentEligibilityState: Observable<Result<Bool, Error>> {
+        eligibilityService
+            .fetch()
+            .mapToResult()
+    }
+    
+    /// The (optional) data, in case the state's value is `inBounds`.
+    /// `nil` otherwise.
+    var candidateOrderDetails: Observable<CandidateOrderDetails?> {
+        state
+            .map { state in
+                switch state {
+                case .inBounds(data: let data):
+                    return data
+                default:
+                    return nil
+                }
+            }
+    }
 
     // MARK: - Interactors
     
@@ -74,17 +103,26 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
     
     // MARK: - Accessors
     
+    private let eligibilityService: EligibilityServiceAPI
+    private let kycTiersService: KYCTiersServiceAPI
+    private let orderCreationService: OrderCreationServiceAPI
     private let stateRelay: BehaviorRelay<State>
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
-    init(data: SellCryptoInteractionData,
+    init(kycTiersService: KYCTiersServiceAPI,
+         eligibilityService: EligibilityServiceAPI,
+         data: SellCryptoInteractionData,
          exchangeProvider: ExchangeProviding,
          balanceProvider: BalanceProviding,
          fiatCurrencyService: FiatCurrencyServiceAPI,
          cryptoCurrencySelectionService: CryptoCurrencyServiceAPI & SelectionServiceAPI,
-         initialActiveInput: ActiveAmountInput) {
+         initialActiveInput: ActiveAmountInput,
+         orderCreationService: OrderCreationServiceAPI) {
+        self.eligibilityService = eligibilityService
+        self.kycTiersService = kycTiersService
+        self.orderCreationService = orderCreationService
         self.data = data
         self.balanceProvider = balanceProvider
         stateRelay = BehaviorRelay(value: .empty)
@@ -118,28 +156,44 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
                 }
             }
             .share(replay: 1)
-
+        
         auxiliaryViewInteractor.resetToMaxAmount
             .withLatestFrom(balance)
-            .map { $0.quote }
-            .map { $0.isZero ? .empty : .inBounds }
+            .map { ($0.base, $0.quote) }
+            .map { (base, quote) -> State in
+                guard !quote.isZero else { return .empty }
+                guard let fiat = quote.fiatValue else { return .empty }
+                guard let crypto = base.cryptoValue else { return .empty }
+                return .inBounds(data: .init(fiatValue: fiat, cryptoValue: crypto))
+            }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-    
+        
         Observable
             .combineLatest(
                 amountTranslationInteractor.fiatAmount,
+                amountTranslationInteractor.cryptoAmount,
                 balance,
                 fiatCurrencyService.fiatCurrencyObservable
             )
-            .map { (amount, balance, fiatCurrency) -> State in
-                guard !amount.isZero else {
+            .map { (fiatAmount, cryptoAmount, balance, fiatCurrency) -> State in
+                guard !fiatAmount.isZero else {
                     return .empty
                 }
-                guard try amount <= balance.quote else {
+                guard try fiatAmount <= balance.quote else {
                     return .tooHigh(max: balance.quote)
                 }
-                return .inBounds
+                guard let fiat = fiatAmount.fiatValue else {
+                    return .empty
+                }
+                guard let crypto = cryptoAmount.cryptoValue else {
+                    return .empty
+                }
+                let data: CandidateOrderDetails = .sell(
+                    fiatValue: fiat,
+                    cryptoValue: crypto
+                )
+                return .inBounds(data: data)
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
@@ -181,5 +235,11 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
             }
             .bindAndCatch(to: amountTranslationInteractor.stateRelay)
             .disposed(by: disposeBag)
+    }
+    
+    // MARK: - Actions
+    
+    func createOrder(from candidate: CandidateOrderDetails) -> Single<CheckoutData> {
+        orderCreationService.create(using: candidate)
     }
 }

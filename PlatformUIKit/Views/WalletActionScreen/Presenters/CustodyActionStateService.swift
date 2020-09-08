@@ -38,10 +38,15 @@ public protocol CustodyBuyEmitterAPI: class {
     var buyRelay: PublishRelay<Void> { get }
 }
 
+public protocol CustodySellEmitterAPI: class {
+    var sellRelay: PublishRelay<Void> { get }
+}
+
 public typealias CustodyActionStateServiceAPI = CustodyActionStateReceiverServiceAPI &
                                          RoutingNextStateEmitterAPI &
                                          CustodyActivityEmitterAPI &
                                          CustodyBuyEmitterAPI &
+                                         CustodySellEmitterAPI &
                                          CustodyDepositEmitterAPI &
                                          RoutingPreviousStateEmitterAPI
 
@@ -112,6 +117,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
     public let previousRelay = PublishRelay<Void>()
     public let activityRelay = PublishRelay<Void>()
     public let depositRelay = PublishRelay<Void>()
+    public let sellRelay = PublishRelay<Void>()
     public let buyRelay = PublishRelay<Void>()
     
     private let statesRelay = BehaviorRelay<States>(value: .start)
@@ -168,6 +174,14 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
                 self.apply(action: .next(.buy), states: nextStates)
             }
             .disposed(by: disposeBag)
+        
+        sellRelay
+            .observeOn(MainScheduler.instance)
+            .bindAndCatch(weak: self) { (self) in
+                let nextStates = self.statesRelay.value.states(byAppending: .sell)
+                self.apply(action: .next(.sell), states: nextStates)
+            }
+            .disposed(by: disposeBag)
     }
     
     private func next() {
@@ -191,6 +205,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
             action = .next(state)
         case .activity,
              .buy,
+             .sell,
              .withdrawal,
              .deposit,
              .withdrawalAfterBackup,

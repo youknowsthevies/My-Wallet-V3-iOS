@@ -473,6 +473,10 @@ extension LocalizationConstants.SimpleBuy {
                 "Buy ",
                 comment: "Simple buy checkout screen - buy button prefix"
             )
+            public static let sellButtonPrefix = NSLocalizedString(
+                "Sell ",
+                comment: "Simple buy checkout screen - sell button prefix"
+            )
             public static let continueButtonPrefix = NSLocalizedString(
                 "OK",
                 comment: "Simple buy checkout screen - continue button"
@@ -509,20 +513,41 @@ extension LocalizationConstants.SimpleBuy {
 
         public enum PendingOrderScreen {
             public enum Loading {
-                public static let titlePrefix = NSLocalizedString(
-                    "Buying",
-                    comment: "Simple buy: final screen title prefix: Buying 0.00525688 BTC"
-                )
-                public static let subtitle = NSLocalizedString(
-                    "We’re completing your purchase now.",
-                    comment: "Simple buy: final screen subtitle: We’re completing your purchase now."
-                )
+                public enum Buy {
+                    public static let titlePrefix = NSLocalizedString(
+                        "Buying",
+                        comment: "Simple buy: final screen title prefix: Buying 0.00525688 BTC"
+                    )
+                    public static let subtitle = NSLocalizedString(
+                        "We’re completing your purchase now.",
+                        comment: "Simple buy: final screen subtitle: We’re completing your purchase now."
+                    )
+                }
+                public enum Sell {
+                    public static let titlePrefix = NSLocalizedString(
+                        "Selling",
+                        comment: "Simple buy: final screen title prefix: Buying 0.00525688 BTC"
+                    )
+                    public static let subtitle = NSLocalizedString(
+                        "We’re completing your sell now.",
+                        comment: "Simple buy: final screen subtitle: We’re completing your purchase now."
+                    )
+                }
             }
             public enum Success {
-                public static let titleSuffix = NSLocalizedString(
-                    "Purchased",
-                    comment: "Simple buy: final screen title suffix: E.G 0.0052568 BTC Purchased"
-                )
+                public enum Buy {
+                    public static let titleSuffix = NSLocalizedString(
+                        "Purchased",
+                        comment: "Simple buy: final screen title suffix: E.G 0.0052568 BTC Purchased"
+                    )
+                }
+                public enum Sell {
+                    public static let titleSuffix = NSLocalizedString(
+                        "Sold",
+                        comment: "Simple buy: final screen title suffix: E.G 0.0052568 BTC Sold"
+                    )
+                    public static let cash = NSLocalizedString("Cash", comment: "Cash")
+                }
                 public enum Subtitle {
                     public static let prefix = NSLocalizedString(
                         "Your",
@@ -535,10 +560,18 @@ extension LocalizationConstants.SimpleBuy {
                 }
             }
             public enum Timeout {
-                public static let titleSuffix = NSLocalizedString(
-                    "Buy In Progress",
-                    comment: "Pending active card error screen: title"
-                )
+                public enum Buy {
+                    public static let titleSuffix = NSLocalizedString(
+                        "Buy In Progress",
+                        comment: "Pending active card error screen: title"
+                    )
+                }
+                public enum Sell {
+                    public static let titleSuffix = NSLocalizedString(
+                        "Sell In Progress",
+                        comment: "Pending active card error screen: title"
+                    )
+                }
                 public static let subtitle = NSLocalizedString(
                     "We’ll notify you when your order is complete.",
                     comment: "Pending active card error screen: subtitle"

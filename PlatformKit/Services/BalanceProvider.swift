@@ -51,11 +51,12 @@ public final class BalanceProvider: BalanceProviding {
             services[.crypto(.algorand)]!.calculationState,
             services[.crypto(.tether)]!.calculationState,
             services[.fiat(.GBP)]!.calculationState,
-            services[.fiat(.EUR)]!.calculationState
+            services[.fiat(.EUR)]!.calculationState,
+            services[.fiat(.USD)]!.calculationState
         ]
         return Observable
             .combineLatest(calculationStates)
-            .map { (ethereum: $0[0], pax: $0[1], stellar: $0[2], bitcoin: $0[3], bitcoinCash: $0[4], algorand: $0[5], tether: $0[6], gbp: $0[7], eur: $0[8]) }
+            .map { (ethereum: $0[0], pax: $0[1], stellar: $0[2], bitcoin: $0[3], bitcoinCash: $0[4], algorand: $0[5], tether: $0[6], gbp: $0[7], eur: $0[8], usd: $0[9]) }
             .map { states in
                 MoneyBalancePairsCalculationStates(
                     identifier: "total-balance",
@@ -68,7 +69,8 @@ public final class BalanceProvider: BalanceProviding {
                         .crypto(.algorand): states.algorand,
                         .crypto(.tether): states.tether,
                         .fiat(.GBP): states.gbp,
-                        .fiat(.EUR): states.eur
+                        .fiat(.EUR): states.eur,
+                        .fiat(.USD): states.usd
                     ]
                 )
             }

@@ -83,9 +83,9 @@ public final class FiatCustodialBalanceView: UIView {
         button.addTargetForTouchDown(self, selector: #selector(touchDown))
         button.addTargetForTouchUp(self, selector: #selector(touchUp))
         
-        badgeImageView.layout(size: .init(edge: Sizing.badge))
+        badgeImageView.layout(size: .edge(Sizing.badge))
         badgeImageView.layoutToSuperview(.centerY)
-        badgeImageView.layoutToSuperview(.leading, offset: Spacing.outer)
+        badgeImageView.layoutToSuperview(.leading, offset: Spacing.inner)
                 
         stackView.layout(edge: .leading, to: .trailing, of: badgeImageView, offset: Spacing.inner)
         stackView.layoutToSuperview(axis: .vertical, offset: Spacing.inner, priority: .defaultHigh)

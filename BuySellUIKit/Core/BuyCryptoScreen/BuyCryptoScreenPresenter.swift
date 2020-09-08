@@ -110,11 +110,11 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 return data.candidateOrderDetails
             }
             .map(weak: self) { (self, candidateOrderDetails) in
-                
-                self.displayBundle.events.confirmTapped(
+                let paymentMethod = candidateOrderDetails.paymentMethod?.method
+                return self.displayBundle.events.confirmTapped(
                     candidateOrderDetails.fiatValue.currency,
                     candidateOrderDetails.fiatValue.moneyValue,
-                    [AnalyticsEvents.SimpleBuy.ParameterName.paymentMethod : candidateOrderDetails.paymentMethod.method.analyticsParameter.string ]
+                    [AnalyticsEvents.SimpleBuy.ParameterName.paymentMethod : (paymentMethod?.analyticsParameter.string) ?? ""]
                 )
             }
             .bindAndCatch(to: analyticsRecorder.recordRelay)

@@ -151,7 +151,7 @@ class SideMenuPresenter {
         }
 
         if showSimpleBuy {
-            items.append(.simpleBuy)
+            items.append(contentsOf: [.buy, .sell])
         }
 
         items += [.support, .airdrops, .settings]

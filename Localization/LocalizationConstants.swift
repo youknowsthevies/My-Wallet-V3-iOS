@@ -1873,6 +1873,10 @@ public enum LocalizationConstants {
             "Buy Crypto",
             comment: "Item displayed on the side menu of the app for when the user wants to buy crypto."
         )
+        public static let sellCrypto = NSLocalizedString(
+            "Sell Crypto",
+            comment: "Item displayed on the side menu of the app for when the user wants to sell crypto."
+        )
         public static let addresses = NSLocalizedString(
             "Addresses",
             comment: "Item displayed on the side menu of the app for when the user wants to view their crypto addresses."

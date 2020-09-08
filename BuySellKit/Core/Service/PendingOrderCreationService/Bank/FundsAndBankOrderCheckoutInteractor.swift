@@ -6,13 +6,17 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformKit
 import RxSwift
 
 public final class FundsAndBankOrderCheckoutInteractor {
     
+    typealias InteractionData = Single<(interactionData: CheckoutInteractionData, checkoutData: CheckoutData)>
+    
     private enum InteractionError: Error {
         case missingOrderFee
         case orderIsNotPendingDepositBankTransfer
+        case unsupportedQuoteParameters
         
         var localizedDescription: String {
             switch self {
@@ -20,6 +24,8 @@ public final class FundsAndBankOrderCheckoutInteractor {
                 return "Order fee is missing"
             case .orderIsNotPendingDepositBankTransfer:
                 return "Order is not a pending deposit bank transfer"
+            case .unsupportedQuoteParameters:
+                return "Order must have parameters for fetching quote"
             }
         }
     }
@@ -39,18 +45,24 @@ public final class FundsAndBankOrderCheckoutInteractor {
     /// 1. Fetch the payment account matching the order currency and append it to the checkout data
     /// 2. Fetch the quote and append it to the result.
     /// The order must be created beforehand and present in the checkout data.
-    func prepare(using checkoutData: CheckoutData) -> Single<(interactionData: CheckoutInteractionData, checkoutData: CheckoutData)> {
+    func prepare(using checkoutData: CheckoutData, action: Order.Action) -> InteractionData {
+        guard let fiat = checkoutData.fiatValue else {
+            return Single.error(InteractionError.unsupportedQuoteParameters)
+        }
+        guard let crypto = checkoutData.cryptoValue else {
+            return Single.error(InteractionError.unsupportedQuoteParameters)
+        }
         let quote = orderQuoteService
             .getQuote(
-               for: .buy,
-               cryptoCurrency: checkoutData.order.cryptoValue.currencyType,
-               fiatValue: checkoutData.order.fiatValue
+               for: action,
+               cryptoCurrency: crypto.currencyType,
+               fiatValue: fiat
             )
 
         let finalCheckoutData: Single<CheckoutData>
         if checkoutData.order.paymentMethod.isBankTransfer {
             finalCheckoutData = paymentAccountService
-                .paymentAccount(for: checkoutData.order.fiatValue.currencyType)
+                .paymentAccount(for: fiat.currencyType)
                 .map { checkoutData.checkoutData(byAppending: $0) }
         } else {
             finalCheckoutData = Single.just(checkoutData)
@@ -64,9 +76,9 @@ public final class FundsAndBankOrderCheckoutInteractor {
             .map { (payload: (quote: Quote, checkoutData: CheckoutData)) in
                 let interactionData = CheckoutInteractionData(
                     time: payload.quote.time,
-                    fee: payload.checkoutData.order.fee ?? payload.quote.fee,
-                    amount: payload.quote.estimatedAmount,
-                    exchangeRate: payload.quote.rate,
+                    fee: payload.checkoutData.order.fee ?? MoneyValue(fiatValue: payload.quote.fee),
+                    amount: MoneyValue(cryptoValue: payload.quote.estimatedAmount),
+                    exchangeRate: MoneyValue(fiatValue: payload.quote.rate),
                     card: nil,
                     orderId: payload.checkoutData.order.identifier,
                     paymentMethod: checkoutData.order.paymentMethod
@@ -89,7 +101,7 @@ public final class FundsAndBankOrderCheckoutInteractor {
             CheckoutInteractionData(
                 time: order.creationDate,
                 fee: fee,
-                amount: order.cryptoValue,
+                amount: order.outputValue,
                 exchangeRate: nil,
                 card: nil,
                 orderId: order.identifier,

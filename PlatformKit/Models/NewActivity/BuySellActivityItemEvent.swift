@@ -28,8 +28,8 @@ public struct BuyActivityItemEvent: Tokenized {
         identifier
     }
     
-    public var cryptoCurrency: CryptoCurrency {
-        cryptoValue.currencyType
+    public var currencyType: CurrencyType {
+        outputValue.currencyType
     }
     
     public let status: EventStatus
@@ -39,22 +39,22 @@ public struct BuyActivityItemEvent: Tokenized {
 
     public let creationDate: Date
 
-    public let fiatValue: FiatValue
-    public let cryptoValue: CryptoValue
-    public var fee: FiatValue
+    public let inputValue: MoneyValue
+    public let outputValue: MoneyValue
+    public var fee: MoneyValue
     
     public init(identifier: String,
                 creationDate: Date,
                 status: EventStatus,
-                fiatValue: FiatValue,
-                cryptoValue: CryptoValue,
-                fee: FiatValue,
+                inputValue: MoneyValue,
+                outputValue: MoneyValue,
+                fee: MoneyValue,
                 paymentMethod: PaymentMethod) {
         self.creationDate = creationDate
         self.identifier = identifier
         self.status = status
-        self.fiatValue = fiatValue
-        self.cryptoValue = cryptoValue
+        self.inputValue = inputValue
+        self.outputValue = outputValue
         self.fee = fee
         self.paymentMethod = paymentMethod
     }

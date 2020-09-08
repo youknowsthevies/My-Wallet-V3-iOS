@@ -151,14 +151,15 @@ public final class Router: RouterAPI {
             showCheckoutScreen(with: data)
         case .authorizeCard(let data):
             showCardAuthorization(with: data)
-        case .pendingOrderCompleted(amount: let amount, orderId: let orderId):
-            showPendingOrderCompletionScreen(for: orderId, cryptoValue: amount)
+        case .pendingOrderCompleted(orderDetails: let orderDetails):
+            showPendingOrderCompletionScreen(for: orderDetails)
         case .paymentMethods:
             showPaymentMethodsScreen()
         case .bankTransferDetails(let data):
             showBankTransferDetailScreen(with: data)
         case .fundsTransferDetails(let currency, isOriginPaymentMethods: let isOriginPaymentMethods, let isOriginDeposit):
-            showFundsTransferDetailsScreen(with: currency, shouldDismissModal: isOriginPaymentMethods, isOriginDeposit: isOriginDeposit)
+            guard let fiatCurrency = currency.fiatCurrency else { return }
+            showFundsTransferDetailsScreen(with: fiatCurrency, shouldDismissModal: isOriginPaymentMethods, isOriginDeposit: isOriginDeposit)
         case .transferCancellation(let data):
             showTransferCancellation(with: data)
         case .kyc:
@@ -399,8 +400,11 @@ public final class Router: RouterAPI {
         )
         
         let presenter = TransferCancellationScreenPresenter(
-            stateService: stateService,
-            currency: data.cryptoCurrency,
+            routingInteractor: BuyTransferCancellationRoutingInteractor(
+                stateService: stateService,
+                analyticsRecorder: recordingProvider.analytics
+            ),
+            currency: data.outputCurrency,
             analyticsRecorder: recordingProvider.analytics,
             interactor: interactor
         )
@@ -412,29 +416,38 @@ public final class Router: RouterAPI {
     
     /// Shows the checkout screen
     private func showCheckoutScreen(with data: CheckoutData) {
-        
-        let orderInteractor = OrderCheckoutInteractor(
-            fundsAndBankInteractor: FundsAndBankOrderCheckoutInteractor(
-                paymentAccountService: serviceProvider.paymentAccount,
-                orderQuoteService: serviceProvider.orderQuote,
-                orderCreationService: serviceProvider.orderCreation
-            ),
-            cardInteractor: CardOrderCheckoutInteractor(
-                cardListService: cardServiceProvider.cardList,
-                orderQuoteService: serviceProvider.orderQuote,
-                orderCreationService: serviceProvider.orderCreation
+        let orderInteractor: OrderCheckoutInteracting
+        switch data.order.paymentMethod {
+        case .card:
+            orderInteractor = BuyOrderCardCheckoutInteractor(
+                cardInteractor: CardOrderCheckoutInteractor(
+                    cardListService: cardServiceProvider.cardList,
+                    orderQuoteService: serviceProvider.orderQuote,
+                    orderCreationService: serviceProvider.orderCreation
+                )
             )
-        )
+        case .funds, .bankTransfer:
+            orderInteractor = BuyOrderFundsCheckoutInteractor(
+                fundsAndBankInteractor: FundsAndBankOrderCheckoutInteractor(
+                    paymentAccountService: serviceProvider.paymentAccount,
+                    orderQuoteService: serviceProvider.orderQuote,
+                    orderCreationService: serviceProvider.orderCreation
+                )
+            )
+        }
 
         let interactor = CheckoutScreenInteractor(
-            cardListService: cardServiceProvider.cardList,
             confirmationService: serviceProvider.orderConfirmation,
             cancellationService: serviceProvider.orderCancellation,
             orderCheckoutInterator: orderInteractor,
             checkoutData: data
         )
         let presenter = CheckoutScreenPresenter(
-            stateService: stateService,
+            checkoutRouting: BuyCheckoutRoutingInteractor(
+                analyticsRecorder: recordingProvider.analytics,
+                stateService: stateService
+            ),
+            contentReducer: BuyCheckoutScreenContentReducer(data: data),
             analyticsRecorder: recordingProvider.analytics,
             interactor: interactor
         )
@@ -442,14 +455,13 @@ public final class Router: RouterAPI {
         navigationRouter.present(viewController: viewController)
     }
     
-    private func showPendingOrderCompletionScreen(for orderId: String, cryptoValue: CryptoValue) {
+    private func showPendingOrderCompletionScreen(for orderDetails: OrderDetails) {
         let interactor = PendingOrderStateScreenInteractor(
-            orderId: orderId,
-            amount: cryptoValue,
+            orderDetails: orderDetails,
             service: serviceProvider.orderCompletion
         )
         let presenter = PendingOrderStateScreenPresenter(
-            stateService: stateService,
+            routingInteractor: BuyPendingOrderRoutingInteractor(stateService: stateService),
             analyticsRecorder: recordingProvider.analytics,
             interactor: interactor
         )

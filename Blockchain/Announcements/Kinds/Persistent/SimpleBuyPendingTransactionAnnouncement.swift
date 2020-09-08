@@ -35,7 +35,7 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
             .disposed(by: disposeBag)
 
         let orderDetails = order!
-        let assetCode = orderDetails.cryptoValue.currencyType.displayCode
+        let assetCode = orderDetails.outputValue.currencyType.displayCode
         
         let imageName: String
         let title: String

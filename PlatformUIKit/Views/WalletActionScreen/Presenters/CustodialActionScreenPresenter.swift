@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Localization
 import PlatformKit
 import RxCocoa
@@ -40,14 +41,17 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
     private let swapButtonVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let activityButtonVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let sendToWalletVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let interactor: WalletActionScreenInteracting
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
     public init(using interactor: WalletActionScreenInteracting,
+                enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
                 stateService: CustodyActionStateServiceAPI) {
         self.interactor = interactor
+        self.enabledCurrenciesService = enabledCurrenciesService
         
         let descriptionValue: () -> Observable<String> = {
             switch interactor.currency {
@@ -77,7 +81,8 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
         switch currency {
         case .crypto(let crypto):
             actionPresenters.append(contentsOf: [
-                .init(currencyType: currency, action: .buy)
+                .init(currencyType: currency, action: .buy),
+                .init(currencyType: currency, action: .sell)
             ])
             let isTrading = interactor.balanceType.isTrading
             let isSavings = interactor.balanceType.isSavings
@@ -91,10 +96,11 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
                     .init(currencyType: currency, action: .activity)
                 )
             }
-        case .fiat:
-            actionPresenters.append(contentsOf: [
-                .init(currencyType: currency, action: .deposit)
-            ])
+        case .fiat(let fiatCurrency):
+            guard enabledCurrenciesService.depositEnabledFiatCurrencies.contains(fiatCurrency) else {
+                break
+            }
+            actionPresenters.append(DefaultWalletActionCellPresenter(currencyType: currency, action: .deposit))
         }
         
         actionCells.append(contentsOf: actionPresenters.map { .default($0) })
@@ -106,6 +112,8 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
                 switch presenter.action {
                 case .buy:
                     stateService.buyRelay.accept(())
+                case .sell:
+                    stateService.sellRelay.accept(())
                 case .activity:
                     stateService.activityRelay.accept(())
                 case .transfer:

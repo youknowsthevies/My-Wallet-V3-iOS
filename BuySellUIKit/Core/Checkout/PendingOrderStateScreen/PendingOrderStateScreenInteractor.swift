@@ -15,22 +15,30 @@ final class PendingOrderStateScreenInteractor: Interactor {
         
     // MARK: - Properties
         
-    let amount: CryptoValue
+    var amount: MoneyValue {
+        isBuy ? orderDetails.outputValue : orderDetails.inputValue
+    }
     
-    private let orderId: String
+    var isBuy: Bool {
+        orderDetails.isBuy
+    }
+    
+    var outputCurrencyType: CurrencyType {
+        orderDetails.outputValue.currencyType
+    }
+    
+    private let orderDetails: OrderDetails
     private let service: PendingOrderCompletionServiceAPI
 
     // MARK: - Setup
     
-    init(orderId: String,
-         amount: CryptoValue,
+    init(orderDetails: OrderDetails,
          service: PendingOrderCompletionServiceAPI) {
-        self.orderId = orderId
-        self.amount = amount
+        self.orderDetails = orderDetails
         self.service = service
     }
     
     func startPolling() -> Single<PolledOrder> {
-        service.waitForFinalizedState(of: orderId)
+        service.waitForFinalizedState(of: orderDetails.identifier)
     }
 }

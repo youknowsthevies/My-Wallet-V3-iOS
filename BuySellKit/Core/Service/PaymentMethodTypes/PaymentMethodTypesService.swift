@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxRelay
 import RxSwift
 import ToolKit
@@ -106,7 +107,8 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     }
     
     // MARK: - Injected
-    
+
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let paymentMethodsService: PaymentMethodsServiceAPI
     private let cardListService: CardListServiceAPI
@@ -114,10 +116,12 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         
     // MARK: - Setup
     
-    init(paymentMethodsService: PaymentMethodsServiceAPI,
+    init(enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+         paymentMethodsService: PaymentMethodsServiceAPI,
          fiatCurrencyService: FiatCurrencyServiceAPI,
          cardListService: CardListServiceAPI,
          balanceProvider: BalanceProviding) {
+        self.enabledCurrenciesService = enabledCurrenciesService
         self.paymentMethodsService = paymentMethodsService
         self.fiatCurrencyService = fiatCurrencyService
         self.cardListService = cardListService
@@ -165,8 +169,23 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 return card
             }
             .map { PaymentMethodType.card($0) }
-        let suggestedMethods = paymentMethods.map { PaymentMethodType.suggested($0) }
-        
+        let suggestedMethods = paymentMethods
+            .filter { paymentMethod -> Bool in
+                switch paymentMethod.type {
+                case .bankTransfer,
+                     .card:
+                    return true
+                case .funds(let currency):
+                    switch currency {
+                    case .crypto:
+                        return true
+                    case .fiat(let fiatCurrency):
+                        return enabledCurrenciesService.depositEnabledFiatCurrencies.contains(fiatCurrency)
+                    }
+                }
+            }
+            .map { PaymentMethodType.suggested($0) }
+
         let fundsCurrencies = Set(
             paymentMethods
                 .compactMap { method -> CurrencyType? in

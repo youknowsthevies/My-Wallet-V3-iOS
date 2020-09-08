@@ -104,6 +104,8 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
             showSendCustody()
         case .activity:
             showActivityScreen()
+        case .sell:
+            showSell()
         case .buy:
             showBuy()
         case .deposit(isKYCApproved: let value):
@@ -179,6 +181,15 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
             guard let self = self else { return }
             self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: {
                 AppCoordinator.shared.handleBuyCrypto()
+            })
+        }
+    }
+    
+    private func showSell() {
+        dismissTopMost { [weak self] in
+            guard let self = self else { return }
+            self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: {
+                AppCoordinator.shared.handleSellCrypto()
             })
         }
     }

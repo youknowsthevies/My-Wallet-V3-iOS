@@ -15,6 +15,8 @@ extension FiatCurrency {
             return "icon-gbp"
         case .EUR:
             return "icon-eur"
+        case .USD:
+            return "icon-usd"
         default:
             fatalError("Currency \(self.code) does not have a logo image")
         }

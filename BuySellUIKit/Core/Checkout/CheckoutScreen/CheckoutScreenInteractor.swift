@@ -26,20 +26,17 @@ final class CheckoutScreenInteractor {
         
     // MARK: - Services
     
-    private let orderCheckoutInterator: OrderCheckoutInteractor
+    private let orderCheckoutInterator: OrderCheckoutInteracting
     private let cancellationService: OrderCancellationServiceAPI
     private let confirmationService: OrderConfirmationServiceAPI
-    private let cardListService: CardListServiceAPI
     
     // MARK: - Setup
     
-    init(cardListService: CardListServiceAPI,
-         confirmationService: OrderConfirmationServiceAPI,
+    init(confirmationService: OrderConfirmationServiceAPI,
          cancellationService: OrderCancellationServiceAPI,
-         orderCheckoutInterator: OrderCheckoutInteractor,
+         orderCheckoutInterator: OrderCheckoutInteracting,
          checkoutData: CheckoutData) {
         self.orderCheckoutInterator = orderCheckoutInterator
-        self.cardListService = cardListService
         self.confirmationService = confirmationService
         self.cancellationService = cancellationService
         self.checkoutData = checkoutData

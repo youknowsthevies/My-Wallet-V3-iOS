@@ -12,6 +12,8 @@ import RxSwift
 @testable import ToolKit
 
 final class ServiceProviderAPIMock: ServiceProviderAPI {
+    var accountSelectionService: AccountSelectionService = AccountSelectionService()
+    
     var underlyingFiatActivity: FiatActivityItemEventFetcherAPI!
     var fiatActivity: FiatActivityItemEventFetcherAPI {
         underlyingFiatActivity

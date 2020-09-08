@@ -35,18 +35,18 @@ final class TransferCancellationScreenPresenter {
     
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let uiUtilityProvider: UIUtilityProviderAPI
-    private let stateService: StateServiceAPI
+    private let routingInteractor: TransferOrderRoutingInteracting
     private let interactor: TransferCancellationInteractor
     private let disposeBag = DisposeBag()
     
-    init(stateService: StateServiceAPI,
-         currency: CryptoCurrency,
+    init(routingInteractor: TransferOrderRoutingInteracting,
+         currency: CurrencyType,
          uiUtilityProvider: UIUtilityProviderAPI = UIUtilityProvider.default,
          analyticsRecorder: AnalyticsEventRecorderAPI,
          interactor: TransferCancellationInteractor) {
         self.analyticsRecorder = analyticsRecorder
         self.interactor = interactor
-        self.stateService = stateService
+        self.routingInteractor = routingInteractor
         self.uiUtilityProvider = uiUtilityProvider
         
         titleContent = .init(
@@ -76,7 +76,7 @@ final class TransferCancellationScreenPresenter {
         noButtonViewModel.tapRelay
             .bindAndCatch(weak: self) { (self) in
                 self.analyticsRecorder.record(event: AnalyticsEvent.sbCancelOrderGoBack)
-                self.stateService.previousRelay.accept(())
+                self.routingInteractor.previousRelay.accept(())
             }
             .disposed(by: disposeBag)
         
@@ -99,7 +99,7 @@ final class TransferCancellationScreenPresenter {
             .mapToVoid()
             .bindAndCatch(weak: self) { (self) in
                 self.analyticsRecorder.record(event: AnalyticsEvent.sbCancelOrderConfirmed)
-                self.stateService.nextRelay.accept(())
+                self.routingInteractor.nextRelay.accept(())
             }
             .disposed(by: disposeBag)
 

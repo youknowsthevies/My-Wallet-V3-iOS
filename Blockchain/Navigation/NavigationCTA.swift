@@ -18,7 +18,7 @@ extension NavigationCTA {
     var image: UIImage? {
         switch self {
         case .dismiss:
-            return #imageLiteral(resourceName: "close.png")
+            return #imageLiteral(resourceName: "close")
         case .help:
             return UIImage(named: "ios_icon_more")
         case .none:

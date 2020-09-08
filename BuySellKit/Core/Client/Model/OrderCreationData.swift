@@ -67,23 +67,33 @@ struct OrderPayload {
         let action: Order.Action
         let input: Input
         let output: Output
-        let paymentType: PaymentMethodPayloadType
+        let paymentType: PaymentMethodPayloadType?
         let paymentMethodId: String?
 
         init(action: Order.Action,
              fiatValue: FiatValue,
-             for cryptoCurrency: CryptoCurrency,
-             paymentType: PaymentMethod.MethodType,
+             cryptoValue: CryptoValue,
+             paymentType: PaymentMethod.MethodType? = nil,
              paymentMethodId: String? = nil) {
             self.action = action
             self.paymentMethodId = paymentMethodId
-            self.paymentType = paymentType.rawType
-            input = .init(
-                symbol: fiatValue.currencyCode,
-                amount: fiatValue.minorString
-            )
-            output = .init(symbol: cryptoCurrency.code)
-            pair = "\(output.symbol)-\(input.symbol)"
+            self.paymentType = paymentType?.rawType
+            switch action {
+            case .buy:
+                input = .init(
+                    symbol: fiatValue.currencyCode,
+                    amount: fiatValue.minorString
+                )
+                output = .init(symbol: cryptoValue.currency.code)
+                pair = "\(output.symbol)-\(input.symbol)"
+            case .sell:
+                input = .init(
+                    symbol: cryptoValue.code,
+                    amount: "\(cryptoValue.amount)"
+                )
+                output = .init(symbol: fiatValue.currencyCode)
+                pair = "\(cryptoValue.currency.code)-\(fiatValue.currencyCode)"
+            }
         }
     }
     

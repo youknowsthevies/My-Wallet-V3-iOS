@@ -75,7 +75,7 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .card:
             paymentMethod = LocalizedLineItem.creditOrDebitCard
         case .funds:
-            paymentMethod = "\(LocalizedLineItem.Funds.prefix) \(event.fiatValue.currencyCode) \(LocalizedLineItem.Funds.suffix)"
+            paymentMethod = "\(LocalizedLineItem.Funds.prefix) \(event.inputValue.currencyCode) \(LocalizedLineItem.Funds.suffix)"
         }
         let date = DateFormatter.elegantDateFormatter.string(from: event.creationDate)
 
@@ -85,7 +85,7 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
         dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
-        totalCostPresenter = TransactionalLineItem.totalCost(event.fiatValue.displayString).defaultPresenter(
+        totalCostPresenter = TransactionalLineItem.totalCost(event.inputValue.displayString).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
         feePresenter = TransactionalLineItem.buyingFee(event.fee.displayString).defaultPresenter(
@@ -95,7 +95,7 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
         cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
-            knownValue: event.cryptoValue.toDisplayString(includeSymbol: true),
+            knownValue: event.outputValue.toDisplayString(includeSymbol: true),
             descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
         badgesModel.badgesRelay.accept([statusBadge])

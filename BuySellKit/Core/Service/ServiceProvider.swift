@@ -14,6 +14,7 @@ public final class ServiceProvider: ServiceProviderAPI {
     
     // MARK: - Properties
 
+    public let accountSelectionService: AccountSelectionService
     public let fiatActivity: FiatActivityItemEventFetcherAPI
     public let eligibility: EligibilityServiceAPI
     public let orderCancellation: OrderCancellationServiceAPI
@@ -78,6 +79,7 @@ public final class ServiceProvider: ServiceProviderAPI {
          enabledFiatCurrencies: [FiatCurrency],
          featureFetcher: FeatureFetching) {
         
+        accountSelectionService = AccountSelectionService()
         cache = EventCache(cacheSuite: cacheSuite)
         
         supportedPairs = SupportedPairsService(client: simpleBuyClient)

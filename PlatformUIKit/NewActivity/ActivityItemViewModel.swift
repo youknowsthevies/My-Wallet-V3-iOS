@@ -48,7 +48,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
         var text = ""
         switch event {
         case .buy(let orderDetails):
-            text = "\(LocalizationStrings.buy) \(orderDetails.cryptoValue.currencyType.name)"
+            text = "\(LocalizationStrings.buy) \(orderDetails.outputValue.currencyType.name)"
         case .swap(let event):
             let pair = event.pair
             text = "\(LocalizationStrings.swap) \(pair.from.displayCode) -> \(pair.to.displayCode)"
@@ -106,7 +106,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
     public var eventColor: UIColor {
         switch event {
         case .buy(let orderDetails):
-            return orderDetails.cryptoValue.currencyType.brandColor
+            return orderDetails.outputValue.currencyType.brandColor
         case .swap(let event):
             return event.pair.from.brandColor
         case .fiat(let event):

@@ -15,7 +15,7 @@ public class FiatCustodialAccount: FiatAccount {
     private typealias LocalizedString = LocalizationConstants.Account
 
     public let id: String
-    public let actions: AvailableActions = []
+    public let actions: AvailableActions = [.deposit]
     public let isDefault: Bool = true
     public let label: String
     public let fiatCurrency: FiatCurrency

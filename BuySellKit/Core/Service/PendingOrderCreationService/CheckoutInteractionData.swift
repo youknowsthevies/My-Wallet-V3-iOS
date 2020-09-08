@@ -10,17 +10,17 @@ import PlatformKit
 
 public struct CheckoutInteractionData {
     public let time: Date?
-    public let fee: FiatValue
-    public let amount: CryptoValue
-    public let exchangeRate: FiatValue?
+    public let fee: MoneyValue
+    public let amount: MoneyValue
+    public let exchangeRate: MoneyValue?
     public let card: CardData?
     public let orderId: String
     public let paymentMethod: PaymentMethod.MethodType
     
     public init(time: Date?,
-                fee: FiatValue,
-                amount: CryptoValue,
-                exchangeRate: FiatValue?,
+                fee: MoneyValue,
+                amount: MoneyValue,
+                exchangeRate: MoneyValue?,
                 card: CardData?,
                 orderId: String,
                 paymentMethod: PaymentMethod.MethodType) {

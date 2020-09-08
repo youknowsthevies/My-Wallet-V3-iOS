@@ -6,76 +6,151 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BigInt
 import Localization
 import PlatformKit
 import ToolKit
 
+/// `OrderDetails` is the primary model that should be accessed by
+/// `Buy`, `Sell`, etc. It has an internal `value` of type `OrderDetailsValue`.
+/// There is a `buy` and `sell` type.
 public struct OrderDetails {
-
-    typealias LocalizedString = LocalizationConstants.SimpleBuy.OrderState
-    // MARK: - Types
-
-    public enum State: String, CaseIterable {
+    
+    public typealias State = OrderDetailsState
+    
+    private enum OrderDetailsValue {
+        /// A `Buy` order
+        case buy(BuyOrderDetails)
         
-        /// Waiting for deposit to be matched
-        case pendingDeposit = "PENDING_DEPOSIT"
+        /// A `Sell` order
+        case sell(SellOrderDetails)
         
-        /// Orders created in this state if pending parameter passed
-        case pendingConfirmation = "PENDING_CONFIRMATION"
+        var isBuy: Bool {
+            guard case .buy = self else { return false }
+            return true
+        }
         
-        /// Order canceled no longer eligible to be matched or executed
-        case cancelled = "CANCELED"
-        
-        /// Order matched waiting to execute order
-        case depositMatched = "DEPOSIT_MATCHED"
-        
-        /// Order could not execute
-        case failed = "FAILED"
-        
-        /// Order did not receive deposit or execute in time (default expiration 14 days)
-        case expired = "EXPIRED"
-        
-        /// Order executed and done
-        case finished = "FINISHED"
-
-        public var localizedDescription: String {
+        var paymentMethodId: String? {
             switch self {
-            case .pendingDeposit:
-                return LocalizedString.waitingOnFunds
-            case .cancelled:
-                return LocalizedString.cancelled
-            case .depositMatched:
-                return LocalizedString.pending
-            case .expired:
-                return LocalizedString.expired
-            case .failed:
-                return LocalizedString.failed
-            case .finished:
-                return LocalizedString.finished
-            case .pendingConfirmation:
-                return LocalizedString.pending
+            case .buy(let buy):
+                return buy.paymentMethodId
+            case .sell:
+                return nil
+            }
+        }
+        
+        mutating func set(paymentId: String?) {
+            switch self {
+            case .buy(var buy):
+                buy.paymentMethodId = paymentId
+                self = .buy(buy)
+            case .sell:
+                break
             }
         }
     }
     
     // MARK: - Properties
     
-    public var paymentMethod: PaymentMethod.MethodType
+    public var isBuy: Bool {
+        _value.isBuy
+    }
+    
+    public var isSell: Bool {
+        !isBuy
+    }
+    
+    public var paymentMethod: PaymentMethod.MethodType {
+        switch _value {
+        case .buy(let buy):
+            return buy.paymentMethod
+        case .sell(let sell):
+            return sell.paymentMethod
+        }
+    }
 
-    public let creationDate: Date?
+    public var creationDate: Date? {
+        switch _value {
+        case .buy(let buy):
+            return buy.creationDate
+        case .sell(let sell):
+            return sell.creationDate
+        }
+    }
+    
+    /// The `MoneyValue` that you are submitting to the order
+    public var inputValue: MoneyValue {
+        switch _value {
+        case .buy(let buy):
+            return buy.fiatValue.moneyValue
+        case .sell(let sell):
+            return sell.cryptoValue.moneyValue
+        }
+    }
 
-    public let fiatValue: FiatValue
-    public let cryptoValue: CryptoValue
+    /// The `MoneyValue` that you are receiving from the order
+    public var outputValue: MoneyValue {
+        switch _value {
+        case .buy(let buy):
+            return buy.cryptoValue.moneyValue
+        case .sell(let sell):
+            return sell.fiatValue.moneyValue
+        }
+    }
     
-    public var price: FiatValue?
-    public var fee: FiatValue?
+    public var price: MoneyValue? {
+        switch _value {
+        case .buy(let buy):
+            return buy.price?.moneyValue
+        case .sell(let sell):
+            return sell.price?.moneyValue
+        }
+    }
     
-    public let identifier: String
+    public var fee: MoneyValue? {
+        switch _value {
+        case .buy(let buy):
+            return buy.fee?.moneyValue
+        case .sell:
+            return nil
+        }
+    }
     
-    public internal(set) var paymentMethodId: String?
+    public var identifier: String {
+        switch _value {
+        case .buy(let buy):
+            return buy.identifier
+        case .sell(let sell):
+            return sell.identifier
+        }
+    }
     
-    public let authorizationData: PartnerAuthorizationData?
-    public let state: State
+    public var paymentMethodId: String? {
+        set {
+            _value.set(paymentId: newValue)
+        }
+        get {
+            _value.paymentMethodId
+        }
+    }
+    
+    public var authorizationData: PartnerAuthorizationData? {
+        switch _value {
+        case .buy(let buy):
+            return buy.authorizationData
+        case .sell:
+            return nil
+        }
+    }
+    
+    public var state: State {
+        switch _value {
+        case .buy(let buy):
+            return buy.state
+        case .sell(let sell):
+            return sell.state
+        }
+    }
     
     public var isAwaitingAction: Bool {
         isPendingDepositBankWire || isPendingConfirmation || isPending3DSCardOrder
@@ -116,48 +191,22 @@ public struct OrderDetails {
         }
     }
     
+    // MARK: - Private Properties
+    
+    private var _value: OrderDetailsValue
+    
     // MARK: - Setup
     
     init?(recorder: AnalyticsEventRecording, response: OrderPayload.Response) {
-        guard let state = State(rawValue: response.state) else {
+        let outputCurrency = response.outputCurrency
+        if FiatCurrency(code: outputCurrency) != nil {
+            guard let sell = SellOrderDetails(recorder: recorder, response: response) else { return nil }
+            _value = .sell(sell)
+        } else if CryptoCurrency(rawValue: response.outputCurrency) != nil {
+            guard let buy = BuyOrderDetails(recorder: recorder, response: response) else { return nil }
+            _value = .buy(buy)
+        } else {
             return nil
-        }
-        guard let fiatCurrency = FiatCurrency(code: response.inputCurrency) else {
-            return nil
-        }
-        guard let cryptoCurrency = CryptoCurrency(rawValue: response.outputCurrency) else {
-            return nil
-        }
-        guard let cryptoValue = CryptoValue.create(minor: response.outputQuantity, currency: cryptoCurrency) else {
-            return nil
-        }
-        guard let paymentType = PaymentMethodPayloadType(rawValue: response.paymentType) else {
-            return nil
-        }
-        
-        identifier = response.id
-        
-        guard let fiatValue = FiatValue.create(minor: response.inputQuantity, currency: fiatCurrency) else {
-            return nil
-        }
-        self.fiatValue = fiatValue
-        self.cryptoValue = cryptoValue
-        self.state = state
-        self.paymentMethod = PaymentMethod.MethodType(type: paymentType, currency: fiatValue.currencyType)
-        self.paymentMethodId = response.paymentMethodId
-        authorizationData = PartnerAuthorizationData(orderPayloadResponse: response)
-        
-        if let price = response.price {
-            self.price = FiatValue.create(minor: price, currency: fiatCurrency)
-        }
-        
-        if let fee = response.fee {
-            self.fee = FiatValue.create(minor: fee, currency: fiatCurrency)
-        }
-
-        creationDate = DateFormatter.utcSessionDateFormat.date(from: response.updatedAt)
-        if creationDate == nil {
-            recorder.record(event: AnalyticsEvents.DebugEvent.updatedAtParsingError(date: response.updatedAt))
         }
     }
 }
@@ -168,7 +217,7 @@ extension Array where Element == OrderDetails {
     }
 }
 
-private extension AnalyticsEvents {
+extension AnalyticsEvents {
     enum DebugEvent: AnalyticsEvent {
         case updatedAtParsingError(date: String)
 

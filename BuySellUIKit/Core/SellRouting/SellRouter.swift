@@ -52,6 +52,8 @@ public final class SellRouter: PlatformUIKit.Router<SellRouterInteractor> {
                     self.previous(from: state)
                 case .next(to: let state):
                     self.next(to: state)
+                case .dismiss:
+                    self.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: nil)
                 }
             }
             .disposed(by: disposeBag)
@@ -67,12 +69,27 @@ public final class SellRouter: PlatformUIKit.Router<SellRouterInteractor> {
     
     private func next(to state: SellRouterInteractor.State) {
         switch state {
-        case .inactive:
-            fatalError("\(state.debugDescription) state must not be reached")
-        case .completed:
+        case .accountSelector:
+            navigateToAccountSelectorScreen()
+        case .fiatAccountSelector:
+            navigationRouter.dismiss { [weak self] in
+                guard let self = self else { return }
+                self.navigateToFiatAccountSelectorScreen()
+            }
+        case .checkout(let data):
+            navigationToCheckoutScreen(with: data)
+        case .cancel(let data):
+            break
+        case .pendingOrderCompleted(orderDetails: let orderDetails):
+            navigateToPendingScreen(orderDetails: orderDetails)
+        case .completed,
+             .inactive:
             break
         case .enterAmount(let data):
-            self.navigateToEnterAmountScreen(with: data)
+            navigationRouter.dismiss { [weak self] in
+                guard let self = self else { return }
+                self.navigateToEnterAmountScreen(with: data)
+            }
         }
     }
     
@@ -80,17 +97,46 @@ public final class SellRouter: PlatformUIKit.Router<SellRouterInteractor> {
         switch state {
         case .inactive:
             fatalError("\(state.debugDescription) state must not be reached")
-        case .enterAmount:
-            navigationRouter.dismiss()
-        case .completed:
+        case .enterAmount,
+             .checkout,
+             .completed,
+             .cancel,
+             .accountSelector,
+             .pendingOrderCompleted,
+             .fiatAccountSelector:
             navigationRouter.dismiss()
         }
     }
     
     // MARK: - Navigation Accessors
     
+    private func navigateToPendingScreen(orderDetails: OrderDetails) {
+        let viewController = builder.pendingScreenViewController(for: orderDetails)
+        navigationRouter.present(viewController: viewController)
+    }
+    
+    private func navigateToTransferCancellation(with data: CheckoutData) {
+        let viewController = builder.transferCancellationViewController(data: data)
+        navigationRouter.present(viewController: viewController)
+    }
+    
+    private func navigateToFiatAccountSelectorScreen() {
+        let viewController = builder.fiatAccountSelectionViewController()
+        navigationRouter.present(viewController: viewController, using: .modalOverTopMost)
+    }
+    
+    private func navigateToAccountSelectorScreen() {
+        let viewController = builder.accountSelectionViewController()
+        navigationRouter.present(viewController: viewController)
+    }
+    
     private func navigateToEnterAmountScreen(with data: SellCryptoInteractionData) {
         let viewController = builder.sellCryptoViewController(data: data)
+        navigationRouter.present(viewController: viewController, using: .modalOverTopMost)
+    }
+    
+    private func navigationToCheckoutScreen(with data: CheckoutData) {
+        let viewController = builder.checkoutScreenViewController(data: data)
         navigationRouter.present(viewController: viewController)
     }
 }

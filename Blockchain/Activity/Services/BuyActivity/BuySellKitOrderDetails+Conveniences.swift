@@ -26,9 +26,9 @@ extension BuyActivityItemEvent {
             identifier: orderDetails.identifier,
             creationDate: orderDetails.creationDate ?? Date(),
             status: orderDetails.eventStatus,
-            fiatValue: orderDetails.fiatValue,
-            cryptoValue: orderDetails.cryptoValue,
-            fee: orderDetails.fee ?? FiatValue.zero(currency: orderDetails.fiatValue.currencyType),
+            inputValue: orderDetails.inputValue,
+            outputValue: orderDetails.outputValue,
+            fee: orderDetails.fee ?? MoneyValue.zero(currency: orderDetails.inputValue.currencyType),
             paymentMethod: paymentMethod
         )
     }

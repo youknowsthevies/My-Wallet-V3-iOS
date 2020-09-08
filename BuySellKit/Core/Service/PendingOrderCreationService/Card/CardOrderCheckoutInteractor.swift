@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformKit
 import RxSwift
 
 public final class CardOrderCheckoutInteractor {
@@ -15,6 +16,8 @@ public final class CardOrderCheckoutInteractor {
         case missingFee
         case missingPaymentMethodId
         case missingPrice
+        case outputMustBeCrypto(CurrencyType)
+        case inputMustBeFiat(MoneyValue)
 
         var localizedDescription: String {
             switch self {
@@ -26,6 +29,10 @@ public final class CardOrderCheckoutInteractor {
                 return "Order payment method ID is missing"
             case .missingPrice:
                 return "Order price is missing"
+            case .outputMustBeCrypto(let type):
+                return "Order must be for crypto not: \(type)"
+            case .inputMustBeFiat(let value):
+                return "Order input must be in fiat, not: \(value)"
             }
         }
     }
@@ -47,12 +54,18 @@ public final class CardOrderCheckoutInteractor {
         guard let paymentMethodId = checkoutData.order.paymentMethodId else {
             fatalError(InteractionError.missingPaymentMethodId.localizedDescription)
         }
-        
+        /// `CardOrderCheckoutInteractor` is for purchasing `Crypto` and not `Fiat`.
+        guard let crypto = checkoutData.order.outputValue.cryptoValue else {
+            return Single.error(InteractionError.outputMustBeCrypto(checkoutData.outputCurrency))
+        }
+        guard let fiat = checkoutData.order.inputValue.fiatValue else {
+            return Single.error(InteractionError.inputMustBeFiat(checkoutData.order.inputValue))
+        }
        return orderQuoteService
             .getQuote(
                for: .buy,
-               cryptoCurrency: checkoutData.order.cryptoValue.currencyType,
-               fiatValue: checkoutData.order.fiatValue
+               cryptoCurrency: crypto.currencyType,
+               fiatValue: fiat
             )
             .flatMap(weak: self) { (self, quote) in
                 self.cardListService
@@ -60,9 +73,9 @@ public final class CardOrderCheckoutInteractor {
                     .map { card in
                         let interactionData = CheckoutInteractionData(
                             time: quote.time,
-                            fee: checkoutData.order.fee ?? quote.fee,
-                            amount: quote.estimatedAmount,
-                            exchangeRate: quote.rate,
+                            fee: checkoutData.order.fee ?? MoneyValue(fiatValue: quote.fee),
+                            amount: MoneyValue(cryptoValue: quote.estimatedAmount),
+                            exchangeRate: MoneyValue(fiatValue: quote.rate),
                             card: card,
                             orderId: checkoutData.order.identifier,
                             paymentMethod: checkoutData.order.paymentMethod
@@ -101,7 +114,7 @@ public final class CardOrderCheckoutInteractor {
                 CheckoutInteractionData(
                     time: order.creationDate,
                     fee: fee,
-                    amount: order.cryptoValue,
+                    amount: order.outputValue,
                     exchangeRate: price,
                     card: card,
                     orderId: order.identifier,

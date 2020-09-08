@@ -15,14 +15,21 @@ public final class SendAuxililaryViewPresenter {
     
     // MARK: - Properties
     
+    var maxButtonVisibility: Driver<Visibility> {
+        Driver.just(buttonVisibility)
+    }
+    
     let availableBalanceContentViewPresenter: ContentLabelViewPresenter
     let maxButtonViewModel: ButtonViewModel
     
+    private let buttonVisibility: Visibility
     private let disposeBag = DisposeBag()
     
     public init(interactor: SendAuxililaryViewInteractor,
                 availableBalanceTitle: String,
-                maxButtonTitle: String) {
+                maxButtonTitle: String,
+                maxButtonVisibility: Visibility = .visible) {
+        self.buttonVisibility = maxButtonVisibility
         availableBalanceContentViewPresenter = ContentLabelViewPresenter(
             title: availableBalanceTitle,
             interactor: interactor.availableBalanceContentViewInteractor

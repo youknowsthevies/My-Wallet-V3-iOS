@@ -11,24 +11,59 @@ import PlatformKit
 public struct CandidateOrderDetails {
     
     /// The payment method
-    public let paymentMethod: PaymentMethodType
+    public let paymentMethod: PaymentMethodType?
     
     /// Fiat value
     public let fiatValue: FiatValue
     
+    /// Crypto value
+    public let cryptoValue: CryptoValue
+    
     /// The currency type
     public let cryptoCurrency: CryptoCurrency
     
+    /// Whether the order is a `Buy` or a `Sell`
+    public let action: Order.Action
+    
     public let paymentMethodId: String?
     
-    public init(paymentMethod: PaymentMethodType,
+    public init(paymentMethod: PaymentMethodType? = nil,
+                action: Order.Action = .buy,
                 fiatValue: FiatValue,
-                cryptoCurrency: CryptoCurrency,
-                paymentMethodId: String?) {
+                cryptoValue: CryptoValue,
+                paymentMethodId: String? = nil) {
+        self.action = action
         self.paymentMethod = paymentMethod
         self.fiatValue = fiatValue
-        self.cryptoCurrency = cryptoCurrency
+        self.cryptoValue = cryptoValue
+        self.cryptoCurrency = cryptoValue.currencyType
         self.paymentMethodId = paymentMethodId
+    }
+    
+    public static func buy(paymentMethod: PaymentMethodType? = nil,
+                           fiatValue: FiatValue,
+                           cryptoValue: CryptoValue,
+                           paymentMethodId: String? = nil) -> CandidateOrderDetails {
+        .init(
+            paymentMethod: paymentMethod,
+            action: .buy,
+            fiatValue: fiatValue,
+            cryptoValue: cryptoValue,
+            paymentMethodId: paymentMethodId
+        )
+    }
+    
+    public static func sell(paymentMethod: PaymentMethodType? = nil,
+                            fiatValue: FiatValue,
+                            cryptoValue: CryptoValue,
+                            paymentMethodId: String? = nil) -> CandidateOrderDetails {
+        .init(
+            paymentMethod: paymentMethod,
+            action: .sell,
+            fiatValue: fiatValue,
+            cryptoValue: cryptoValue,
+            paymentMethodId: paymentMethodId
+        )
     }
 }
 
@@ -52,8 +87,32 @@ public struct CheckoutData {
         order.isPending3DSCardOrder
     }
         
-    public var cryptoCurrency: CryptoCurrency {
-        order.cryptoValue.currencyType
+    public var outputCurrency: CurrencyType {
+        order.outputValue.currencyType
+    }
+    
+    public var inputCurrency: CurrencyType {
+        order.inputValue.currencyType
+    }
+    
+    public var fiatValue: FiatValue? {
+        if let fiat = order.inputValue.fiatValue {
+            return fiat
+        }
+        if let fiat = order.outputValue.fiatValue {
+            return fiat
+        }
+        return nil
+    }
+    
+    public var cryptoValue: CryptoValue? {
+        if let crypto = order.inputValue.cryptoValue {
+            return crypto
+        }
+        if let crypto = order.outputValue.cryptoValue {
+            return crypto
+        }
+        return nil
     }
     
     /// `true` if the order is card but is undetermined

@@ -29,7 +29,7 @@ final class PendingOrderStateScreenPresenter: Presenter, PendingStatePresenterAP
     }
          
     private let viewModelRelay = BehaviorRelay<PendingStateViewModel?>(value: nil)
-    private let stateService: PendingOrderCompletionStateServiceAPI
+    private let routingInteractor: PendingOrderRoutingInteracting
     private let interactor: PendingOrderStateScreenInteractor
     private let analyticsRecorder: AnalyticsEventRecording
     private let disposeBag = DisposeBag()
@@ -38,17 +38,17 @@ final class PendingOrderStateScreenPresenter: Presenter, PendingStatePresenterAP
         interactor.amount.toDisplayString(includeSymbol: true)
     }
     
-    private var cryptoCurrency: CryptoCurrency {
+    private var currencyType: CurrencyType {
         interactor.amount.currencyType
     }
     
     // MARK: - Setup
     
-    init(stateService: PendingOrderCompletionStateServiceAPI,
+    init(routingInteractor: PendingOrderRoutingInteracting,
          analyticsRecorder: AnalyticsEventRecording,
          interactor: PendingOrderStateScreenInteractor) {
         self.analyticsRecorder = analyticsRecorder
-        self.stateService = stateService
+        self.routingInteractor = routingInteractor
         self.interactor = interactor
         super.init(interactable: interactor)
     }
@@ -57,17 +57,19 @@ final class PendingOrderStateScreenPresenter: Presenter, PendingStatePresenterAP
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
+        let isBuy = interactor.isBuy
+        let prefix = isBuy ? LocalizedString.Loading.Buy.titlePrefix : LocalizedString.Loading.Sell.titlePrefix
+        let subtitle = isBuy ? LocalizedString.Loading.Buy.subtitle : LocalizedString.Loading.Sell.subtitle
         viewModelRelay.accept(
             PendingStateViewModel(
                 compositeStatusViewType: .composite(
                     .init(
-                        baseViewType: .image(PendingStateViewModel.Image.cutsom(cryptoCurrency.logoImageName).name),
+                        baseViewType: .image(PendingStateViewModel.Image.cutsom(currencyType.logoImageName).name),
                         sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter)
                     )
                 ),
-                title: "\(LocalizedString.Loading.titlePrefix) \(amount)",
-                subtitle: LocalizedString.Loading.subtitle
+                title: "\(prefix) \(amount)",
+                subtitle: subtitle
             )
         )
         
@@ -87,14 +89,14 @@ final class PendingOrderStateScreenPresenter: Presenter, PendingStatePresenterAP
     private func showError() {
         let button = ButtonViewModel.primary(with: LocalizedString.button)
         button.tapRelay
-            .bindAndCatch(weak: self) { (self) in
-                self.stateService.orderCompleted()
-            }
+            .map { .completed }
+            .bindAndCatch(to: routingInteractor.stateRelay)
             .disposed(by: disposeBag)
+        
         let viewModel = PendingStateViewModel(
             compositeStatusViewType: .composite(
                 .init(
-                    baseViewType: .image(PendingStateViewModel.Image.cutsom(cryptoCurrency.logoImageName).name),
+                    baseViewType: .image(PendingStateViewModel.Image.cutsom(currencyType.logoImageName).name),
                     sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.circleError.name), position: .radiusDistanceFromCenter)
                 )
             ),
@@ -108,18 +110,19 @@ final class PendingOrderStateScreenPresenter: Presenter, PendingStatePresenterAP
     private func handleTimeout(order: OrderDetails) {
         let button = ButtonViewModel.primary(with: LocalizedString.button)
         button.tapRelay
-            .bindAndCatch(weak: self) { (self) in
-                self.stateService.orderPending(with: order)
-            }
+            .map { .pending(order) }
+            .bindAndCatch(to: routingInteractor.stateRelay)
             .disposed(by: disposeBag)
+        let title = interactor.isBuy ? LocalizedString.Timeout.Buy.titleSuffix : LocalizedString.Timeout.Sell.titleSuffix
+        
         let viewModel = PendingStateViewModel(
             compositeStatusViewType: .composite(
                 .init(
-                    baseViewType: .image(PendingStateViewModel.Image.cutsom(cryptoCurrency.logoImageName).name),
+                    baseViewType: .image(PendingStateViewModel.Image.cutsom(currencyType.logoImageName).name),
                     sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.clock.name), position: .radiusDistanceFromCenter)
                 )
             ),
-            title: "\(amount) \(LocalizedString.Timeout.titleSuffix)",
+            title: "\(amount) \(title)",
             subtitle: LocalizedString.Timeout.subtitle,
             button: button
         )
@@ -129,19 +132,20 @@ final class PendingOrderStateScreenPresenter: Presenter, PendingStatePresenterAP
     private func handleSuccess() {
         let button = ButtonViewModel.primary(with: LocalizedString.button)
         button.tapRelay
-            .bindAndCatch(weak: self) { (self) in
-                self.stateService.orderCompleted()
-            }
+            .map { .completed }
+            .bindAndCatch(to: routingInteractor.stateRelay)
             .disposed(by: disposeBag)
+        let suffix = interactor.isBuy ? LocalizedString.Success.Buy.titleSuffix : LocalizedString.Success.Sell.titleSuffix
+        let name = interactor.isBuy ? currencyType.name : LocalizedString.Success.Sell.cash
         let viewModel = PendingStateViewModel(
             compositeStatusViewType: .composite(
                 .init(
-                    baseViewType: .image(PendingStateViewModel.Image.cutsom(cryptoCurrency.logoImageName).name),
+                    baseViewType: .image(PendingStateViewModel.Image.cutsom(currencyType.logoImageName).name),
                     sideViewAttributes: .init(type: .image("v-success-icon"), position: .radiusDistanceFromCenter)
                 )
             ),
-            title: "\(amount) \(LocalizedString.Success.titleSuffix)",
-            subtitle: "\(LocalizedString.Success.Subtitle.prefix) \(cryptoCurrency.name) \(LocalizedString.Success.Subtitle.suffix)",
+            title: "\(amount) \(suffix)",
+            subtitle: "\(LocalizedString.Success.Subtitle.prefix) \(name) \(LocalizedString.Success.Subtitle.suffix)",
             button: button
         )
         self.viewModelRelay.accept(viewModel)
@@ -160,7 +164,7 @@ final class PendingOrderStateScreenPresenter: Presenter, PendingStatePresenterAP
             case .pendingConfirmation, .pendingDeposit, .depositMatched:
                 // This state is practically not possible by design since the app polls until
                 // the order is in one of the final states (success / error).
-                stateService.orderPending(with: order)
+                routingInteractor.stateRelay.accept(.pending(order))
             }
         case .timeout(let order):
             analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbCheckoutCompleted(status: .timeout))

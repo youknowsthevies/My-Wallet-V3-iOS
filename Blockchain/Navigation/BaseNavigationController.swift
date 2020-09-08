@@ -25,13 +25,13 @@ fileprivate extension NavigationCTAType {
         case .qrCode:
             return #imageLiteral(resourceName: "qr-code-icon").withRenderingMode(.alwaysTemplate)
         case .dismiss:
-            return #imageLiteral(resourceName: "close.png").withRenderingMode(.alwaysTemplate)
+            return #imageLiteral(resourceName: "close").withRenderingMode(.alwaysTemplate)
         case .menu:
             return #imageLiteral(resourceName: "drawer-icon").withRenderingMode(.alwaysTemplate)
         case .help:
-            return #imageLiteral(resourceName: "icon_menu.png").withRenderingMode(.alwaysTemplate)
+            return #imageLiteral(resourceName: "icon_menu").withRenderingMode(.alwaysTemplate)
         case .back:
-            return #imageLiteral(resourceName: "back_chevron_icon.png").withRenderingMode(.alwaysTemplate)
+            return #imageLiteral(resourceName: "back_chevron_icon").withRenderingMode(.alwaysTemplate)
         case .error:
             return #imageLiteral(resourceName: "error-triangle.pdf")
         case .activityIndicator:

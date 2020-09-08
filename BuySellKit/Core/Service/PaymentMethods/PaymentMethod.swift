@@ -99,14 +99,14 @@ public struct PaymentMethod: Equatable {
             }
         }
         
-        public init(type: PaymentMethodPayloadType, currency: FiatCurrency) {
+        public init(type: PaymentMethodPayloadType, currency: CurrencyType) {
             switch type {
             case .card:
                 self = .card([])
             case .bankTransfer:
                 self = .bankTransfer
             case .funds:
-                self = .funds(currency.currency)
+                self = .funds(currency)
             }
         }
         

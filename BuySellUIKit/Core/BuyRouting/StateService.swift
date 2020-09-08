@@ -96,7 +96,7 @@ public final class StateService: StateServiceAPI {
         case bankTransferDetails(CheckoutData)
 
         /// Funds transfer details
-        case fundsTransferDetails(currency: FiatCurrency, isOriginPaymentMethods: Bool, isOriginDeposit: Bool)
+        case fundsTransferDetails(currency: CurrencyType, isOriginPaymentMethods: Bool, isOriginDeposit: Bool)
         
         /// The user authorized his card payment and should now be referred to partner
         case authorizeCard(order: OrderDetails)
@@ -108,7 +108,7 @@ public final class StateService: StateServiceAPI {
         case pendingOrderDetails(CheckoutData)
 
         /// Purchase completed
-        case pendingOrderCompleted(amount: CryptoValue, orderId: String)
+        case pendingOrderCompleted(orderDetails: OrderDetails)
         
         /// Inactive state - no buy flow is performed at the moment
         case inactive
@@ -244,7 +244,7 @@ public final class StateService: StateServiceAPI {
                 state = .addCard(data)
             case .funds:
                 state = .fundsTransferDetails(
-                    currency: data.order.fiatValue.currencyType,
+                    currency: data.order.inputValue.currencyType,
                     isOriginPaymentMethods: false,
                     isOriginDeposit: false
                 )
@@ -337,8 +337,7 @@ public final class StateService: StateServiceAPI {
                             if orderDetails.is3DSConfirmedCardOrder {
                                 return .just(
                                     .pendingOrderCompleted(
-                                        amount: orderDetails.cryptoValue,
-                                        orderId: orderDetails.identifier
+                                        orderDetails: orderDetails
                                     )
                                 )
                             } else {
@@ -421,7 +420,7 @@ extension StateService {
         }
         let states = self.states(
             byAppending: .fundsTransferDetails(
-                currency: fiatCurrency,
+                currency: .fiat(fiatCurrency),
                 isOriginPaymentMethods: currentState.isPaymentMethods,
                 isOriginDeposit: isOriginDeposit
             )
@@ -520,7 +519,9 @@ extension StateService {
         let data = (checkoutData.order.paymentMethod, isOrderNew)
         switch data {
         case (.funds, true):
-            state = .pendingOrderCompleted(amount: checkoutData.order.cryptoValue, orderId: checkoutData.order.identifier)
+            state = .pendingOrderCompleted(
+                orderDetails: checkoutData.order
+            )
         case (.bankTransfer, true):
             state = .bankTransferDetails(checkoutData)
         case (.bankTransfer, false),
@@ -549,8 +550,7 @@ extension StateService {
         }
         let states = self.states(
             byAppending: .pendingOrderCompleted(
-                amount: order.cryptoValue,
-                orderId: order.identifier
+                orderDetails: order
             )
         )
         apply(action: .next(to: states.current), states: states)

@@ -142,6 +142,10 @@ extension LocalizationConstants.LineItem.Transactional {
         "Pending",
         comment: "Pending"
     )
+    public static let price = NSLocalizedString("Price", comment: "Price")
+    public static let total = NSLocalizedString("Total", comment: "Total")
+    public static let wallet = NSLocalizedString("Wallet", comment: "Wallet")
+    public static let tradingWallet = NSLocalizedString("Trading Wallet", comment: "Trading Wallet")
 }
 
 // MARK: Transactional.Copyable

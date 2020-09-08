@@ -1,5 +1,5 @@
 //
-//  CheckoutScreenPresenterContentReducer.swift
+//  BuyCheckoutScreenContentReducer.swift
 //  Blockchain
 //
 //  Created by Paulo on 06/05/2020.
@@ -15,7 +15,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class CheckoutScreenContentReducer {
+final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
 
     // MARK: - Types
 
@@ -74,7 +74,7 @@ final class CheckoutScreenContentReducer {
 
     private static func notice(data: CheckoutData) -> LabelContent {
         LabelContent(
-            text: data.order.paymentMethod.checkoutNotice(cryptoCurrency: data.cryptoCurrency),
+            text: data.order.paymentMethod.checkoutNotice(currencyType: data.outputCurrency),
             font: .main(.medium, 12),
             color: .descriptionText,
             accessibility: .id(AccessibilityLineItem.Base.disclaimerLabel)
@@ -105,11 +105,11 @@ final class CheckoutScreenContentReducer {
             if data.hasCardCheckoutMade {
                 title = data.isPending3DS ? LocalizedSummary.completePaymentButton : LocalizedSummary.continueButtonPrefix
             } else {
-                title = "\(LocalizedSummary.buyButtonPrefix)\(data.cryptoCurrency.displayCode)"
+                title = "\(LocalizedSummary.buyButtonPrefix)\(data.outputCurrency.displayCode)"
             }
         case .bankTransfer, .funds:
             if data.order.isPendingConfirmation {
-                title = "\(LocalizedSummary.buyButtonPrefix)\(data.cryptoCurrency.displayCode)"
+                title = "\(LocalizedSummary.buyButtonPrefix)\(data.outputCurrency.displayCode)"
             } else {
                 title = LocalizedSummary.continueButtonPrefix
             }
@@ -172,13 +172,13 @@ final class CheckoutScreenContentReducer {
 
         // MARK: Presenters Setup
 
-        let totalCost = data.order.fiatValue.displayString
+        let totalCost = data.order.inputValue.displayString
         totalCostLineItemCellPresenter.interactor.description.stateRelay.accept(
             .loaded(next: .init(text: totalCost))
         )
 
         fiatAmountLabelPresenter.interactor.stateRelay.accept(
-            .loaded(next: .init(text: "\(totalCost) \(LocalizedSummary.of) \(data.cryptoCurrency.displayCode)"))
+            .loaded(next: .init(text: "\(totalCost) \(LocalizedSummary.of) \(data.outputCurrency.displayCode)"))
         )
         
         let description = data.order.state.localizedDescription
@@ -189,12 +189,12 @@ final class CheckoutScreenContentReducer {
 
         // MARK: Title Setup
 
-        title = CheckoutScreenContentReducer.title(data: data)
+        title = BuyCheckoutScreenContentReducer.title(data: data)
 
         // MARK: Buttons Setup
 
-        continueButtonViewModel = CheckoutScreenContentReducer.continueButton(data: data)
-        cancelButtonViewModel = CheckoutScreenContentReducer.cancelButton(data: data)
+        continueButtonViewModel = BuyCheckoutScreenContentReducer.continueButton(data: data)
+        cancelButtonViewModel = BuyCheckoutScreenContentReducer.cancelButton(data: data)
         let badgesModel = MultiBadgeCellModel()
         badgesModel.badgesRelay.accept([statusBadge])
 
@@ -220,7 +220,7 @@ final class CheckoutScreenContentReducer {
                 .lineItem(totalCostLineItemCellPresenter),
                 .separator,
                 .lineItem(statusLineItemCellPresenter),
-                .staticLabel(CheckoutScreenContentReducer.notice(data: data))
+                .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
             ]
         case (.card, false, _),
              (.bankTransfer, _, false):
@@ -241,7 +241,7 @@ final class CheckoutScreenContentReducer {
                 .separator,
                 .lineItem(paymentMethodLineItemCellPresenter),
                 .separator,
-                .staticLabel(CheckoutScreenContentReducer.notice(data: data))
+                .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
             ]
         case (.funds, _, _):
             
@@ -259,7 +259,7 @@ final class CheckoutScreenContentReducer {
                 .separator,
                 .lineItem(paymentMethodLineItemCellPresenter),
                 .separator,
-                .staticLabel(CheckoutScreenContentReducer.notice(data: data))
+                .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
             ]
             
         case (.bankTransfer, _, true):
@@ -286,7 +286,7 @@ final class CheckoutScreenContentReducer {
                 .separator,
                 .lineItem(paymentMethodLineItemCellPresenter),
                 .separator,
-                .staticLabel(CheckoutScreenContentReducer.notice(data: data))
+                .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
             ]
         }
 
@@ -294,7 +294,7 @@ final class CheckoutScreenContentReducer {
 }
 
 extension BuySellKit.PaymentMethod.MethodType {
-    fileprivate func checkoutNotice(cryptoCurrency: CryptoCurrency) -> String {
+    fileprivate func checkoutNotice(currencyType: CurrencyType) -> String {
         typealias LocalizedString = LocalizationConstants.SimpleBuy.Checkout.Notice
         switch self {
         case .card:
@@ -302,7 +302,7 @@ extension BuySellKit.PaymentMethod.MethodType {
         case .funds:
             return LocalizedString.funds
         case .bankTransfer:
-            return "\(LocalizedString.BankTransfer.prefix) \(cryptoCurrency.displayCode) \(LocalizedString.BankTransfer.suffix)"
+            return "\(LocalizedString.BankTransfer.prefix) \(currencyType.displayCode) \(LocalizedString.BankTransfer.suffix)"
         }
     }
 }

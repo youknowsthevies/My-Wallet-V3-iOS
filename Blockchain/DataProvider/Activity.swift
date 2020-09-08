@@ -134,19 +134,26 @@ final class ActivityServiceProvider: ActivityServiceProviderAPI {
             fetcher: simpleBuyActivityService,
             fiatCurrency: .EUR
         )
-        
+
         let gbpFiatActivity = FiatActivityItemEventService(
             fetcher: simpleBuyActivityService,
             fiatCurrency: .GBP
         )
+
+        let usdFiatActivity = FiatActivityItemEventService(
+            fetcher: simpleBuyActivityService,
+            fiatCurrency: .USD
+        )
         
         let euro = FiatEventService(fiat: euroFiatActivity)
         let gbp = FiatEventService(fiat: gbpFiatActivity)
+        let usd = FiatEventService(fiat: usdFiatActivity)
         
         activity = ActivityProvider(
             fiats: [
                 .EUR: euro,
-                .GBP: gbp
+                .GBP: gbp,
+                .USD: usd
             ],
             cryptos: [
                 .algorand : algorand,

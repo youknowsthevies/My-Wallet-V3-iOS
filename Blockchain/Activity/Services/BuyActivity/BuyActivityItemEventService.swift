@@ -55,11 +55,11 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
             .orders
             .map(weak: self) { (self, orders) -> [OrderDetails] in
                 orders.filter {
-                    $0.cryptoValue.currencyType == self.currency
+                    $0.outputValue.currencyType == self.currencyType
                 }
             }
-            .map { items in items.filter { $0.cryptoValue.currencyType == self.currency } }
-            .map { items in items.map { BuyActivityItemEvent.init(with: $0) } }
+            .map { items in items.filter { $0.outputValue.currencyType == self.currencyType } }
+            .map { items in items.map { BuyActivityItemEvent(with: $0) } }
     }
 
     private lazy var setup: Void = {
@@ -77,7 +77,7 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
     
     private let stateRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
     private let buyActivityRelay = BehaviorRelay<[BuyActivityItemEvent]>(value: [])
-    private let currency: CryptoCurrency
+    private let currencyType: CurrencyType
     private let service: BuySellKit.OrdersServiceAPI
     private let disposeBag = DisposeBag()
     private let custodialFeatureFetching: CustodialFeatureFetching
@@ -85,7 +85,7 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
     init(currency: CryptoCurrency,
          service: BuySellKit.OrdersServiceAPI,
          custodialFeatureFetching: CustodialFeatureFetching = resolve()) {
-        self.currency = currency
+        self.currencyType = .crypto(currency)
         self.service = service
         self.custodialFeatureFetching = custodialFeatureFetching
     }

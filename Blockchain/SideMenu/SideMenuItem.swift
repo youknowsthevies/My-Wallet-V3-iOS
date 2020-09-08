@@ -16,7 +16,8 @@ enum SideMenuItem {
     typealias Title = String
     case accountsAndAddresses
     case backup
-    case simpleBuy
+    case buy
+    case sell
     case logout
     case airdrops
     case settings
@@ -35,7 +36,10 @@ extension SideMenuItem {
             return .sideNavAccountsAndAddresses
         case .backup:
             return .sideNavBackup
-        case .simpleBuy:
+        case .buy:
+            return .sideNavSimpleBuy
+        case .sell:
+            // TODO: Analytics Event
             return .sideNavSimpleBuy
         case .logout:
             return .sideNavLogout
@@ -62,8 +66,10 @@ extension SideMenuItem {
             return LocalizationConstants.SideMenu.addresses
         case .backup:
             return LocalizationConstants.SideMenu.backupFunds
-        case .simpleBuy:
+        case .buy:
             return LocalizationConstants.SideMenu.buyCrypto
+        case .sell:
+            return LocalizationConstants.SideMenu.sellCrypto
         case .logout:
             return LocalizationConstants.SideMenu.logout
         case .settings:
@@ -89,8 +95,10 @@ extension SideMenuItem {
             return "menu-icon-addresses"
         case .backup:
             return "menu-icon-backup"
-        case .simpleBuy:
+        case .buy:
             return "menu-icon-buy"
+        case .sell:
+            return "menu-icon-sell"
         case .logout:
             return "menu-icon-logout"
         case .airdrops:
@@ -118,7 +126,8 @@ extension SideMenuItem {
         switch self {
         case .accountsAndAddresses,
              .backup,
-             .simpleBuy,
+             .buy,
+             .sell,
              .logout,
              .settings,
              .support,

@@ -42,10 +42,10 @@ final class OrderCreationService: OrderCreationServiceAPI {
     
     func create(using candidateOrderDetails: CandidateOrderDetails) -> Single<CheckoutData> {
         let data = OrderPayload.Request(
-            action: .buy,
+            action: candidateOrderDetails.action,
             fiatValue: candidateOrderDetails.fiatValue,
-            for: candidateOrderDetails.cryptoCurrency,
-            paymentType: candidateOrderDetails.paymentMethod.method,
+            cryptoValue: candidateOrderDetails.cryptoValue,
+            paymentType: candidateOrderDetails.paymentMethod?.method,
             paymentMethodId: candidateOrderDetails.paymentMethodId
         )
         let creation = client

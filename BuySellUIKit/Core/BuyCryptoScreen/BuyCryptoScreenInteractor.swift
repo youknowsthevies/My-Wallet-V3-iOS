@@ -246,10 +246,11 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
             .combineLatest(
                 preferredPaymentMethod,
                 amountTranslationInteractor.fiatAmount.compactMap { $0.fiatValue },
+                amountTranslationInteractor.cryptoAmount.compactMap { $0.cryptoValue },
                 pairForCryptoCurrency,
                 fiatCurrencyService.fiatCurrencyObservable
             )
-            .map { (preferredPaymentMethod, amount, pair, currency) -> State in
+            .map { (preferredPaymentMethod, fiat, crypto, pair, currency) -> State in
                 
                 /// There must be a pair to compare to before calculation begins
                 guard let pair = pair else {
@@ -281,21 +282,21 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     paymentMethodId = nil
                 }
                 
-                guard amount.currencyType == minFiatValue.currencyType && amount.currencyType == maxFiatValue.currencyType else {
+                guard fiat.currencyType == minFiatValue.currencyType && fiat.currencyType == maxFiatValue.currencyType else {
                     return .empty(currency: currency)
                 }
                 
-                if amount.amount.isZero {
+                if fiat.amount.isZero {
                     return .empty(currency: currency)
-                } else if try amount > maxFiatValue {
+                } else if try fiat > maxFiatValue {
                     return .tooHigh(max: maxFiatValue)
-                } else if try amount < minFiatValue {
+                } else if try fiat < minFiatValue {
                     return .tooLow(min: minFiatValue)
                 }
-                let data = CandidateOrderDetails(
+                let data: CandidateOrderDetails = .buy(
                     paymentMethod: preferredPaymentMethod,
-                    fiatValue: amount,
-                    cryptoCurrency: pair.cryptoCurrency,
+                    fiatValue: fiat,
+                    cryptoValue: crypto,
                     paymentMethodId: paymentMethodId
                 )
                 

@@ -62,7 +62,7 @@ final class AccountPickerHeaderView: UIView {
 
         // MARK: Subtitle Label
 
-        subtitleLabel.layout(edge: .top, to: .bottom, of: titleLabel)
+        subtitleLabel.layout(edge: .top, to: .bottom, of: titleLabel, offset: 8)
         subtitleLabel.layoutToSuperview(axis: .horizontal, offset: 24)
 
         // MARK: Select a Wallet Label
@@ -82,10 +82,11 @@ final class AccountPickerHeaderView: UIView {
 
         fadeMask.colors = [
             UIColor.black.cgColor,
-            UIColor.black.withAlphaComponent(0.2).cgColor,
+            UIColor.black.withAlphaComponent(0.1).cgColor,
+            UIColor.black.withAlphaComponent(0).cgColor,
             UIColor.black.withAlphaComponent(0).cgColor
         ]
-        fadeMask.locations = [0, 0.7, 1]
+        fadeMask.locations = [0, 0.6, 0.9, 1]
         fadeMask.frame = bounds
         patternImageView.layer.mask = fadeMask
 
