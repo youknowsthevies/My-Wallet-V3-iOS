@@ -31,7 +31,7 @@ final class CustodyWithdrawalSetupInteractor {
             guard let result = try? totalBalance - withdrawableBalance else {
                 return CryptoValue.zero(currency: totalBalance.currencyType)
             }
-            guard result.isZeroOrPositive else {
+            guard result.isZero || result.isPositive else {
                 return CryptoValue.zero(currency: totalBalance.currencyType)
             }
             return result
