@@ -157,6 +157,7 @@ public final class MoneyValueInputScanner {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.decimalSeparator = Constant.decimalSeparator
+        formatter.maximumFractionDigits = 8
         return formatter
     }()
 
