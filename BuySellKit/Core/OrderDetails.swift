@@ -26,8 +26,12 @@ public struct OrderDetails {
         case sell(SellOrderDetails)
         
         var isBuy: Bool {
-            guard case .buy = self else { return false }
-            return true
+            switch self {
+            case .buy:
+                return true
+            case .sell:
+                return false
+            }
         }
         
         var paymentMethodId: String? {
@@ -198,15 +202,13 @@ public struct OrderDetails {
     // MARK: - Setup
     
     init?(recorder: AnalyticsEventRecording, response: OrderPayload.Response) {
-        let outputCurrency = response.outputCurrency
-        if FiatCurrency(code: outputCurrency) != nil {
-            guard let sell = SellOrderDetails(recorder: recorder, response: response) else { return nil }
-            _value = .sell(sell)
-        } else if CryptoCurrency(rawValue: response.outputCurrency) != nil {
+        switch response.side {
+        case .buy:
             guard let buy = BuyOrderDetails(recorder: recorder, response: response) else { return nil }
             _value = .buy(buy)
-        } else {
-            return nil
+        case .sell:
+            guard let sell = SellOrderDetails(recorder: recorder, response: response) else { return nil }
+            _value = .sell(sell)
         }
     }
 }

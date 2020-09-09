@@ -99,6 +99,10 @@ struct OrderPayload {
     }
     
     public struct Response: Decodable {
+        enum Side: String, Decodable {
+            case buy = "BUY"
+            case sell = "SELL"
+        }
         struct Attributes: Decodable {
             struct EveryPay: Decodable {
                 enum PaymentState: String, Decodable {
@@ -132,6 +136,7 @@ struct OrderPayload {
         
         let paymentType: String
         let paymentMethodId: String?
+        let side: Side
         let attributes: Attributes?
     }
 }
