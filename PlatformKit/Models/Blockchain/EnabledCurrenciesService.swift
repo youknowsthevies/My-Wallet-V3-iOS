@@ -18,7 +18,7 @@ public protocol EnabledCurrenciesServiceAPI {
 final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
 
     let allEnabledCryptoCurrencies: [CryptoCurrency] = CryptoCurrency.allCases
-    let allEnabledFiatCurrencies: [FiatCurrency] = [.EUR, .GBP, .USD]
+    let allEnabledFiatCurrencies: [FiatCurrency] = [.USD, .EUR, .GBP]
     let depositEnabledFiatCurrencies: [FiatCurrency] = [.EUR, .GBP]
     
     var allEnabledCurrencyTypes: [CurrencyType] {
