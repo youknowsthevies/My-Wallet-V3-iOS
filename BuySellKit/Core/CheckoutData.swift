@@ -18,25 +18,32 @@ public struct CandidateOrderDetails {
     
     /// Crypto value
     public let cryptoValue: CryptoValue
-    
-    /// The currency type
+
+    /// The Crypto Currency that is being traded
     public let cryptoCurrency: CryptoCurrency
+
+    /// The Fiat Currency that is being traded
+    /// This may be different from the fiat currency used to input the desired amount.
+    public let fiatCurrency: FiatCurrency
     
     /// Whether the order is a `Buy` or a `Sell`
     public let action: Order.Action
     
     public let paymentMethodId: String?
     
-    public init(paymentMethod: PaymentMethodType? = nil,
-                action: Order.Action = .buy,
-                fiatValue: FiatValue,
-                cryptoValue: CryptoValue,
-                paymentMethodId: String? = nil) {
+    private init(paymentMethod: PaymentMethodType?,
+                 action: Order.Action,
+                 fiatValue: FiatValue,
+                 fiatCurrency: FiatCurrency,
+                 cryptoValue: CryptoValue,
+                 cryptoCurrency: CryptoCurrency,
+                 paymentMethodId: String?) {
         self.action = action
         self.paymentMethod = paymentMethod
         self.fiatValue = fiatValue
+        self.fiatCurrency = fiatCurrency
         self.cryptoValue = cryptoValue
-        self.cryptoCurrency = cryptoValue.currencyType
+        self.cryptoCurrency = cryptoCurrency
         self.paymentMethodId = paymentMethodId
     }
     
@@ -44,24 +51,29 @@ public struct CandidateOrderDetails {
                            fiatValue: FiatValue,
                            cryptoValue: CryptoValue,
                            paymentMethodId: String? = nil) -> CandidateOrderDetails {
-        .init(
+        CandidateOrderDetails(
             paymentMethod: paymentMethod,
             action: .buy,
             fiatValue: fiatValue,
+            fiatCurrency: fiatValue.currencyType,
             cryptoValue: cryptoValue,
+            cryptoCurrency: cryptoValue.currencyType,
             paymentMethodId: paymentMethodId
         )
     }
     
     public static func sell(paymentMethod: PaymentMethodType? = nil,
                             fiatValue: FiatValue,
+                            destinationFiatCurrency: FiatCurrency,
                             cryptoValue: CryptoValue,
                             paymentMethodId: String? = nil) -> CandidateOrderDetails {
-        .init(
+        CandidateOrderDetails(
             paymentMethod: paymentMethod,
             action: .sell,
             fiatValue: fiatValue,
+            fiatCurrency: destinationFiatCurrency,
             cryptoValue: cryptoValue,
+            cryptoCurrency: cryptoValue.currencyType,
             paymentMethodId: paymentMethodId
         )
     }

@@ -14,7 +14,7 @@ import RxRelay
 
 public struct SellCryptoInteractionData {
 
-    // TODO: Daniel - Remove and replac with a real account
+    // TODO: Daniel - Remove and replace with a real account
     struct AnyAccount {
         let id: String
         let currencyType: CurrencyType
@@ -141,7 +141,8 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
     
     override func didLoad() {
         let sourceAccount = self.data.source
-        let sourceAccountCurrency = sourceAccount.currencyType.currency
+        let sourceAccountCurrency = sourceAccount.currencyType
+        let destinationAccountCurrency = data.destination.currencyType
         let exchangeProvider = self.exchangeProvider
         let amountTranslationInteractor = self.amountTranslationInteractor
 
@@ -164,7 +165,13 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
                 guard !quote.isZero else { return .empty }
                 guard let fiat = quote.fiatValue else { return .empty }
                 guard let crypto = base.cryptoValue else { return .empty }
-                return .inBounds(data: .init(fiatValue: fiat, cryptoValue: crypto))
+
+                let data = CandidateOrderDetails.sell(
+                    fiatValue: fiat,
+                    destinationFiatCurrency: destinationAccountCurrency.fiatCurrency!,
+                    cryptoValue: crypto
+                )
+                return .inBounds(data: data)
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
@@ -189,8 +196,9 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
                 guard let crypto = cryptoAmount.cryptoValue else {
                     return .empty
                 }
-                let data: CandidateOrderDetails = .sell(
+                let data = CandidateOrderDetails.sell(
                     fiatValue: fiat,
+                    destinationFiatCurrency: destinationAccountCurrency.fiatCurrency!,
                     cryptoValue: crypto
                 )
                 return .inBounds(data: data)
@@ -200,7 +208,9 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
         
         state
             .flatMapLatest { state -> Observable<AmountTranslationInteractor.State> in
-                amountTranslationInteractor.activeInputRelay.take(1).asSingle()
+                amountTranslationInteractor.activeInputRelay
+                    .take(1)
+                    .asSingle()
                     .flatMap { activeInput -> Single<AmountTranslationInteractor.State> in
                         switch state {
                         case .tooHigh(max: let moneyValue):

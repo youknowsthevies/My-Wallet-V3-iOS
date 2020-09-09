@@ -44,6 +44,7 @@ final class OrderCreationService: OrderCreationServiceAPI {
         let data = OrderPayload.Request(
             action: candidateOrderDetails.action,
             fiatValue: candidateOrderDetails.fiatValue,
+            fiatCurrency: candidateOrderDetails.fiatCurrency,
             cryptoValue: candidateOrderDetails.cryptoValue,
             paymentType: candidateOrderDetails.paymentMethod?.method,
             paymentMethodId: candidateOrderDetails.paymentMethodId
