@@ -19,6 +19,9 @@ public protocol SellBuilderAPI: AnyObject {
     
     var routerInteractor: SellRouterInteractor { get }
     
+    /// Start of `Sell` if the user has not completed KYC.
+    func sellIdentityIntroductionViewController() -> UIViewController
+    
     /// Start of `Sell`. Builds the account selection screen.
     func accountSelectionViewController() -> UIViewController
     
@@ -138,6 +141,12 @@ public final class SellBuilder: SellBuilderAPI {
         )
         let viewController = EnterAmountScreenViewController(presenter: presenter)
         return viewController
+    }
+    
+    public func sellIdentityIntroductionViewController() -> UIViewController {
+        let presenter = SellIdentityIntroductionPresenter(interactor: routerInteractor)
+        let controller = SellIdentityIntroductionViewController(presenter: presenter)
+        return controller
     }
     
     public func pendingScreenViewController(for orderDetails: OrderDetails) -> UIViewController {

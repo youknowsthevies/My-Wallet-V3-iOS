@@ -64,6 +64,13 @@ public final class SellRouterInteractor: Interactor {
         /// Inactive state - pre flow
         case inactive
         
+        /// An introduction screen that should show if the user
+        /// has not completed KYC
+        case introduction
+        
+        /// The user has not completed KYC
+        case kyc
+        
         /// Account Selection Screen
         case accountSelector
         
@@ -140,6 +147,8 @@ public final class SellRouterInteractor: Interactor {
             .disposed(by: disposeBag)
     }()
     
+    private let kycTiersService: KYCTiersServiceAPI
+    private let uiUtilityProvider: UIUtilityProviderAPI
     private let accountSelectionService: AccountSelectionServiceAPI
     private let statesRelay = BehaviorRelay<States>(value: .inactive)
     private let actionRelay = PublishRelay<Action>()
@@ -147,7 +156,11 @@ public final class SellRouterInteractor: Interactor {
     
     // MARK: - Setup
     
-    public init(accountSelectionService: AccountSelectionServiceAPI) {
+    public init(accountSelectionService: AccountSelectionServiceAPI,
+                uiUtilityProvider: UIUtilityProviderAPI,
+                kycTiersService: KYCTiersServiceAPI) {
+        self.uiUtilityProvider = uiUtilityProvider
+        self.kycTiersService = kycTiersService
         self.accountSelectionService = accountSelectionService
         super.init()
         _ = setup
@@ -163,13 +176,53 @@ public final class SellRouterInteractor: Interactor {
             .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
         
-        let states = States(current: .accountSelector, previous: [.inactive])
-        apply(action: .next(to: states.current), states: states)
+        kycTiersService
+            .fetchTiers()
+            .handleLoaderForLifecycle(
+                loader: uiUtilityProvider.loader,
+                style: .circle
+            )
+            .map { $0.isTier2Approved }
+            .map { isTier2Approved -> States in
+                let state: State = isTier2Approved ? .accountSelector : .introduction
+                let states = States(current: state, previous: [.inactive])
+                return states
+            }
+            .subscribe(onSuccess: { [weak self] (states) in
+                guard let self = self else { return }
+                self.apply(action: .next(to: states.current), states: states)
+            })
+            .disposed(by: disposeBag)
     }
     
     public override func willResignActive() {
         super.willResignActive()
         disposeBag = DisposeBag()
+    }
+    
+    public func nextFromIntroduction() {
+        let states = States(current: .kyc, previous: [.inactive])
+        apply(action: .next(to: states.current), states: states)
+    }
+    
+    public func nextFromKYC() {
+        kycTiersService
+            .fetchTiers()
+            .handleLoaderForLifecycle(
+                loader: uiUtilityProvider.loader,
+              style: .circle
+            )
+            .map { $0.isTier2Approved }
+            .map { isTier2Approved -> States in
+                let state: State = isTier2Approved ? .accountSelector : .inactive
+                let states = States(current: state, previous: [.inactive])
+                return states
+            }
+            .subscribe(onSuccess: { [weak self] (states) in
+                guard let self = self else { return }
+                self.apply(action: .next(to: states.current), states: states)
+            })
+            .disposed(by: disposeBag)
     }
     
     public func nextFromSellCrypto(checkoutData: CheckoutData) {
