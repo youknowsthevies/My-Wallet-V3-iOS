@@ -30,6 +30,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
     
     enum State {
         case inBounds(data: CandidateOrderDetails)
+        case tooLow(min: MoneyValue)
         case tooHigh(max: MoneyValue)
         case empty
                 
@@ -77,7 +78,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
             .fetch()
             .mapToResult()
     }
-    
+
     /// The (optional) data, in case the state's value is `inBounds`.
     /// `nil` otherwise.
     var candidateOrderDetails: Observable<CandidateOrderDetails?> {
@@ -100,18 +101,30 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
     
     let data: SellCryptoInteractionData
     private let balanceProvider: BalanceProviding
-    
-    // MARK: - Accessors
-    
     private let eligibilityService: EligibilityServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let orderCreationService: OrderCreationServiceAPI
+    private let pairsService: SupportedPairsInteractorServiceAPI
+
+    // MARK: - Accessors
+
+    /// Calculation state of the supported pairs
+    private var pairsCalculationState: Observable<BuyCryptoSupportedPairsCalculationState> {
+        pairsCalculationStateRelay.asObservable()
+    }
+
+    /// The fiat-crypto pairs
+    private let pairsCalculationStateRelay = BehaviorRelay<BuyCryptoSupportedPairsCalculationState>(
+        value: .invalid(.empty)
+    )
+
     private let stateRelay: BehaviorRelay<State>
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
     init(kycTiersService: KYCTiersServiceAPI,
+         pairsService: SupportedPairsInteractorServiceAPI,
          eligibilityService: EligibilityServiceAPI,
          data: SellCryptoInteractionData,
          exchangeProvider: ExchangeProviding,
@@ -121,6 +134,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
          initialActiveInput: ActiveAmountInput,
          orderCreationService: OrderCreationServiceAPI) {
         self.eligibilityService = eligibilityService
+        self.pairsService = pairsService
         self.kycTiersService = kycTiersService
         self.orderCreationService = orderCreationService
         self.data = data
@@ -138,7 +152,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
             initialActiveInput: initialActiveInput
         )
     }
-    
+
     override func didLoad() {
         let sourceAccount = self.data.source
         let sourceAccountCurrency = sourceAccount.currencyType
@@ -175,20 +189,48 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-        
+
+        pairsService.fetch()
+            .map { .value($0) }
+            .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
+            .startWith(.invalid(.empty))
+            .bindAndCatch(to: pairsCalculationStateRelay)
+            .disposed(by: disposeBag)
+
+        let pairs = pairsCalculationState
+            .compactMap { $0.value }
+
+        let pairForCryptoCurrency = Observable
+            .combineLatest(
+                pairs,
+                cryptoCurrencySelectionService.selectedData
+            )
+            .map { (pairs, item) -> SupportedPairs.Pair? in
+                pairs.pairs(per: item.cryptoCurrency).first
+            }
+
         Observable
             .combineLatest(
                 amountTranslationInteractor.fiatAmount,
                 amountTranslationInteractor.cryptoAmount,
                 balance,
-                fiatCurrencyService.fiatCurrencyObservable
+                fiatCurrencyService.fiatCurrencyObservable,
+                pairForCryptoCurrency
             )
-            .map { (fiatAmount, cryptoAmount, balance, fiatCurrency) -> State in
+            .map { (fiatAmount, cryptoAmount, balance, fiatCurrency, pair) -> State in
+                /// There must be a pair to compare to before calculation begins
+                guard let pair = pair else {
+                    return .empty
+                }
+                let minFiatValue = pair.minFiatValue.moneyValue
                 guard !fiatAmount.isZero else {
                     return .empty
                 }
                 guard try fiatAmount <= balance.quote else {
                     return .tooHigh(max: balance.quote)
+                }
+                guard try fiatAmount >= minFiatValue else {
+                    return .tooLow(min: minFiatValue)
                 }
                 guard let fiat = fiatAmount.fiatValue else {
                     return .empty
@@ -213,20 +255,23 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
                     .asSingle()
                     .flatMap { activeInput -> Single<AmountTranslationInteractor.State> in
                         switch state {
-                        case .tooHigh(max: let moneyValue):
+                        case .tooLow(min: let moneyValue),
+                             .tooHigh(max: let moneyValue):
                             return exchangeProvider[sourceAccountCurrency].fiatPrice
                                 .take(1)
                                 .asSingle()
-                                 .map { exchangeRate -> MoneyValuePair in
+                                .map { exchangeRate -> MoneyValuePair in
                                     MoneyValuePair(
                                         fiat: moneyValue.fiatValue!,
                                         priceInFiat: exchangeRate,
                                         cryptoCurrency: sourceAccountCurrency.cryptoCurrency!,
                                         usesFiatAsBase: activeInput == .fiat
                                     )
-                                 }
+                                }
                                 .map { pair -> AmountTranslationInteractor.State in
                                     switch state {
+                                    case .tooLow:
+                                        return .minLimitExceeded(pair)
                                     case .tooHigh:
                                         return .maxLimitExceeded(pair)
                                     case .empty:

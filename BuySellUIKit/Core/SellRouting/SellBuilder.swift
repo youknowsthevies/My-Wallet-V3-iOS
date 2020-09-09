@@ -122,6 +122,7 @@ public final class SellBuilder: SellBuilderAPI {
         )
         let interactor = SellCryptoScreenInteractor(
             kycTiersService: kycServiceProvider.tiers,
+            pairsService: buySellServiceProvider.supportedPairsInteractor,
             eligibilityService: buySellServiceProvider.eligibility,
             data: data,
             exchangeProvider: exchangeProvider,
