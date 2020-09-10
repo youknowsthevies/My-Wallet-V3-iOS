@@ -945,6 +945,10 @@ extension FiatCurrency {
 // MARK: - Currency
 
 extension FiatCurrency {
+
+    public static let maxDisplayableDecimalPlaces: Int = {
+        Self.allCases.map { $0.maxDisplayableDecimalPlaces }.max() ?? 0
+    }()
     
     /// The code of the currency. e.g `USD`, `GBP`, `EUR`
     public var code: String { rawValue }

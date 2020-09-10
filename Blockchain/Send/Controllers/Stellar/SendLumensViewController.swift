@@ -729,7 +729,7 @@ extension SendLumensViewController {
 
             var maxDecimalPlaces: Int?
             if amountField == stellarAmountField {
-                maxDecimalPlaces = NumberFormatter.stellarFractionDigits
+                maxDecimalPlaces = CryptoCurrency.stellar.maxDisplayableDecimalPlaces
             } else if amountField == fiatAmountField {
                 maxDecimalPlaces = NumberFormatter.localCurrencyFractionDigits
             }

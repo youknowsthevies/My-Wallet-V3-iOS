@@ -33,6 +33,10 @@ public enum CryptoCurrency: String, Currency, Codable, CaseIterable, Comparable 
 
 extension CryptoCurrency {
 
+    public static let maxDisplayableDecimalPlaces: Int = {
+        Self.allCases.map { $0.maxDisplayableDecimalPlaces }.max() ?? 0
+    }()
+
     public static func < (lhs: CryptoCurrency, rhs: CryptoCurrency) -> Bool {
         lhs.integerValue < rhs.integerValue
     }

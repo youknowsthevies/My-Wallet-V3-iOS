@@ -54,36 +54,32 @@ extension NumberFormatter {
         return formatter
     }()
 
-    // MARK: Digital Assets
-    static let assetFractionDigits: Int = 8
-    static let stellarFractionDigits: Int = 7
-
     // Example: 1234.12345678
     static let assetFormatter: NumberFormatter = {
         decimalStyleFormatter(withMinfractionDigits: 0,
-                                     maxfractionDigits: assetFractionDigits,
-                                     usesGroupingSeparator: false)
+                              maxfractionDigits: CryptoCurrency.maxDisplayableDecimalPlaces,
+                              usesGroupingSeparator: false)
     }()
 
     // TODO: genericize
     static let stellarFormatter: NumberFormatter = {
         decimalStyleFormatter(withMinfractionDigits: 0,
-                                     maxfractionDigits: stellarFractionDigits,
-                                     usesGroupingSeparator: false)
+                              maxfractionDigits: CryptoCurrency.stellar.maxDisplayableDecimalPlaces,
+                              usesGroupingSeparator: false)
     }()
 
     // Example: 1,234.12345678
     static let assetFormatterWithGroupingSeparator: NumberFormatter = {
         decimalStyleFormatter(withMinfractionDigits: 0,
-                                     maxfractionDigits: assetFractionDigits,
-                                     usesGroupingSeparator: true)
+                              maxfractionDigits: CryptoCurrency.maxDisplayableDecimalPlaces,
+                              usesGroupingSeparator: true)
     }()
 
     // Used to create QR code string from amount
     // Used to convert values from returned from APIs
     static let assetFormatterWithUSLocale: NumberFormatter = {
         let formatter = decimalStyleFormatter(withMinfractionDigits: 0,
-                                              maxfractionDigits: assetFractionDigits,
+                                              maxfractionDigits: CryptoCurrency.maxDisplayableDecimalPlaces,
                                               usesGroupingSeparator: false)
         formatter.locale = Locale(identifier: Constants.Locales.englishUS)
         return formatter
