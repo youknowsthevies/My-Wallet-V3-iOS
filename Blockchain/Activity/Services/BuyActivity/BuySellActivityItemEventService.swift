@@ -1,5 +1,5 @@
 //
-//  BuyActivityItemEventService.swift
+//  BuySellActivityItemEventService.swift
 //  Blockchain
 //
 //  Created by Alex McGregor on 6/8/20.
@@ -12,7 +12,7 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
+final class BuySellActivityItemEventService: BuySellActivityItemEventServiceAPI {
     
     var state: Observable<ActivityItemEventsLoadingState> {
         _ = setup
@@ -21,54 +21,57 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
             .asObservable()
     }
     
-    var buyActivityEvents: Single<[BuyActivityItemEvent]> {
+    var buySellActivityEvents: Single<[BuySellActivityItemEvent]> {
         _ = setup
-        return _buyActivityEvents
+        return _buySellActivityEvents
     }
     
-    var buyActivityObservable: Observable<[BuyActivityItemEvent]> {
+    var buySellActivityObservable: Observable<[BuySellActivityItemEvent]> {
         _ = setup
-        return _buyActivityObservable
+        return _buySellActivityObservable
     }
     
     let fetchTriggerRelay = PublishRelay<Void>()
     
-    private var _buyActivityEvents: Single<[BuyActivityItemEvent]> {
+    private var _buySellActivityEvents: Single<[BuySellActivityItemEvent]> {
         custodialFeatureFetching
             .featureEnabled(for: .simpleBuyEnabled)
             .flatMap(weak: self) { (self, simpleBuyEnabled) in
                 guard simpleBuyEnabled else {
                     return Single.just([])
                 }
-                return self.fetchBuyActivityEvents
+                return self.fetchBuySellActivityEvents
             }
     }
     
-    private var _buyActivityObservable: Observable<[BuyActivityItemEvent]> {
-        _buyActivityEvents
+    private var _buySellActivityObservable: Observable<[BuySellActivityItemEvent]> {
+        _buySellActivityEvents
             .catchErrorJustReturn([])
             .asObservable()
     }
     
-    private var fetchBuyActivityEvents: Single<[BuyActivityItemEvent]> {
+    private var fetchBuySellActivityEvents: Single<[BuySellActivityItemEvent]> {
         service
-            .orders
+            .fetchOrders()
             .map(weak: self) { (self, orders) -> [OrderDetails] in
                 orders.filter {
-                    $0.outputValue.currencyType == self.currencyType
+                    $0.outputValue.currencyType == self.currencyType || $0.inputValue.currencyType == self.currencyType
                 }
             }
-            .map { items in items.filter { $0.outputValue.currencyType == self.currencyType } }
-            .map { items in items.map { BuyActivityItemEvent(with: $0) } }
+            .map { items in items.map { BuySellActivityItemEvent(with: $0) } }
     }
 
     private lazy var setup: Void = {
-        Observable.combineLatest(
-                _buyActivityObservable,
-                fetchTriggerRelay
+        fetchTriggerRelay
+            .throttle(
+                .milliseconds(100),
+                scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
             )
-            .map { $0.0 }
-            .map { items in items.map { .buy($0) } }
+            .observeOn(MainScheduler.asyncInstance)
+            .flatMapLatest(weak: self) { (self, _) in
+                self._buySellActivityObservable
+            }
+            .map { items in items.map { .buySell($0) } }
             .map { .loaded(next: $0) }
             .catchErrorJustReturn(.loaded(next: []))
             .bindAndCatch(to: stateRelay)
@@ -76,7 +79,7 @@ final class BuyActivityItemEventService: BuyActivityItemEventServiceAPI {
     }()
     
     private let stateRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
-    private let buyActivityRelay = BehaviorRelay<[BuyActivityItemEvent]>(value: [])
+    private let buySellActivityRelay = BehaviorRelay<[BuySellActivityItemEvent]>(value: [])
     private let currencyType: CurrencyType
     private let service: BuySellKit.OrdersServiceAPI
     private let disposeBag = DisposeBag()

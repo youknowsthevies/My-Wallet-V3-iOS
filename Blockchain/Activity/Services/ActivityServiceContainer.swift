@@ -84,7 +84,7 @@ final class ActivityServiceContainer: ActivityServiceContaining {
                             [states.1, states.0].reduce()
                         }
                 case .custodial(let currency):
-                    return self.activityProviding[currency].buy.state
+                    return self.activityProviding[currency].buySell.state
                 }
             }
             .bindAndCatch(to: eventsRelay)

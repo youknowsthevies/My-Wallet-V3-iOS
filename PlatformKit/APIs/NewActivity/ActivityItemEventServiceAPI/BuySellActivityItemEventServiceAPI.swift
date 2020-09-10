@@ -1,5 +1,5 @@
 //
-//  BuyActivityItemEventServiceAPI.swift
+//  BuySellActivityItemEventServiceAPI.swift
 //  PlatformKit
 //
 //  Created by Alex McGregor on 6/9/20.
@@ -9,9 +9,9 @@
 import RxRelay
 import RxSwift
 
-public protocol BuyActivityItemEventServiceAPI {
-    var buyActivityEvents: Single<[BuyActivityItemEvent]> { get }
-    var buyActivityObservable: Observable<[BuyActivityItemEvent]> { get }
+public protocol BuySellActivityItemEventServiceAPI {
+    var buySellActivityEvents: Single<[BuySellActivityItemEvent]> { get }
+    var buySellActivityObservable: Observable<[BuySellActivityItemEvent]> { get }
     var state: Observable<ActivityItemEventsLoadingState> { get }
     
     /// Forces the service to fetch events.

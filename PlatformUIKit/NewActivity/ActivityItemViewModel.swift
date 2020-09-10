@@ -47,8 +47,10 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
     public var titleLabelContent: LabelContent {
         var text = ""
         switch event {
-        case .buy(let orderDetails):
-            text = "\(LocalizationStrings.buy) \(orderDetails.outputValue.currencyType.name)"
+        case .buySell(let orderDetails):
+            let prefix = orderDetails.isBuy ? LocalizationStrings.buy : LocalizationStrings.sell
+            let postfix = orderDetails.isBuy ? orderDetails.outputValue.currencyType.name : orderDetails.inputValue.currencyType.name
+            text = "\(prefix) \(postfix)"
         case .swap(let event):
             let pair = event.pair
             text = "\(LocalizationStrings.swap) \(pair.from.displayCode) -> \(pair.to.displayCode)"
@@ -105,11 +107,16 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
     /// The color of the `EventType` image.
     public var eventColor: UIColor {
         switch event {
-        case .buy(let orderDetails):
-            return orderDetails.outputValue.currencyType.brandColor
+        case .buySell(let orderDetails):
+            switch orderDetails.isBuy {
+            case true:
+                return orderDetails.outputValue.currencyType.brandColor
+            case false:
+                return orderDetails.inputValue.currencyType.brandColor
+            }
         case .swap(let event):
             return event.pair.from.brandColor
-        case .fiat(let event):
+        case .fiat:
             return .fiat
         case .transactional(let event):
             switch event.status {
@@ -129,8 +136,8 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
     /// The `imageName` for the `BadgeImageViewModel`
     public var imageName: String {
         switch event {
-        case .buy:
-            return "plus-icon"
+        case .buySell(let value):
+            return value.isBuy ? "plus-icon" : "minus-icon"
         case .fiat(let event):
             let type = event.type
             switch type {
