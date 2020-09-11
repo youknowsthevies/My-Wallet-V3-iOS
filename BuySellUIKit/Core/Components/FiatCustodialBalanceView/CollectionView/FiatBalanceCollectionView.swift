@@ -13,23 +13,7 @@ import RxSwift
 import RxRelay
 
 final class FiatBalanceCollectionView: UICollectionView {
-    
-    // MARK: - Types
-    
-    public class CollectionViewFlowLayout: UICollectionViewFlowLayout {
-        override init() {
-            super.init()
-            estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-            minimumInteritemSpacing = 0
-            minimumLineSpacing = 16
-            scrollDirection = .horizontal
-            sectionInset = UIEdgeInsets(top: 0, left: Spacing.outer, bottom: 0, right: Spacing.outer)
-        }
 
-        @available(*, unavailable)
-        required init?(coder aDecoder: NSCoder) { nil }
-    }
-   
     // MARK: - Injected
    
     public var presenter: FiatBalanceCollectionViewPresenter! {
@@ -56,20 +40,25 @@ final class FiatBalanceCollectionView: UICollectionView {
         }
     }
 
-    public let collectionViewFlowLayout: CollectionViewFlowLayout
+    public let collectionViewFlowLayout: UICollectionViewFlowLayout = {
+        let flow = UICollectionViewFlowLayout()
+        flow.estimatedItemSize = CGSize(width: 300, height: 70)
+        flow.minimumInteritemSpacing = 0
+        flow.minimumLineSpacing = 0
+        flow.scrollDirection = .horizontal
+        flow.sectionInset = .zero
+        return flow
+    }()
     
     // MARK: - Private Properties
     
     private var disposeBag = DisposeBag()
    
     // MARK: - Lifecycle
-   
+
     public init() {
-        let collectionViewFlowLayout = CollectionViewFlowLayout()
-        self.collectionViewFlowLayout = collectionViewFlowLayout
         super.init(frame: UIScreen.main.bounds, collectionViewLayout: collectionViewFlowLayout)
         backgroundColor = .clear
-        isPagingEnabled = true
         showsHorizontalScrollIndicator = false
         showsVerticalScrollIndicator = false
         contentInsetAdjustmentBehavior = .never

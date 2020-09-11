@@ -36,7 +36,8 @@ final class DashboardScreenInteractor {
     
     private let disposeBag = DisposeBag()
     
-    init(balanceProvider: BalanceProviding = DataProvider.default.balance,
+    init(tiersService: KYCTiersServiceAPI = resolve(),
+         balanceProvider: BalanceProviding = DataProvider.default.balance,
          historicalProvider: HistoricalFiatPriceProviding = DataProvider.default.historicalPrices,
          balanceChangeProvider: BalanceChangeProviding = DataProvider.default.balanceChange,
          paymentMethodsService: PaymentMethodsServiceAPI = DataProvider.default.buySell.paymentMethods,
@@ -60,6 +61,7 @@ final class DashboardScreenInteractor {
             )
         }
         fiatBalancesInteractor = DashboardFiatBalancesInteractor(
+            tiersService: tiersService,
             balanceProvider: balanceProvider,
             featureFetcher: featureFetcher,
             paymentMethodsService: paymentMethodsService,

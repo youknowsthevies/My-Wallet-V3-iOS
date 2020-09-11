@@ -159,7 +159,7 @@ import RxSwift
             viewController.underLeftViewController = self.sideMenuViewController
             viewController.topViewController = self.tabControllerManager
             self.slidingViewController = viewController
-            self.tabControllerManager.view.layoutIfNeeded()
+            self.tabControllerManager.loadViewIfNeeded()
             self.tabControllerManager.dashBoardClicked(nil)
             return viewController
         }
