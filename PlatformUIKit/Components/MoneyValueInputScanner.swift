@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformKit
 import RxRelay
 import RxSwift
 
@@ -157,6 +158,7 @@ public final class MoneyValueInputScanner {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.decimalSeparator = Constant.decimalSeparator
+        formatter.maximumFractionDigits = CurrencyType.maxDisplayableDecimalPlaces
         return formatter
     }()
 

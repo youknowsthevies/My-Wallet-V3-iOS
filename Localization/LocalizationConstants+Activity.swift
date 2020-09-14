@@ -79,9 +79,11 @@ extension LocalizationConstants.Activity.Details {
     public static let failed = NSLocalizedString("Failed", comment: "Failed")
     public static let refunded = NSLocalizedString("Refunded", comment: "Refunded")
     public static let replaced = NSLocalizedString("Replaced", comment: "Replaced")
+    public static let myWallet = NSLocalizedString("My %@ Wallet", comment: "My [Currency Code] Wallet")
 
     public enum Title {
         public static let buy = NSLocalizedString("Buy", comment: "Buy")
+        public static let sell = NSLocalizedString("Sell", comment: "Sell")
         public static let gas = NSLocalizedString("Gas", comment: "'Gas' title")
         public static let receive = NSLocalizedString("Receive", comment: "'Receive' title")
         public static let send = NSLocalizedString("Send", comment: "'Send' title")

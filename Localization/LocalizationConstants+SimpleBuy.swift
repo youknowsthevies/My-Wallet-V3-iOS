@@ -215,6 +215,37 @@ extension LocalizationConstants.SimpleBuy {
         )
     }
     public enum IntroScreen {
+        public enum Sell {
+            public static let title = NSLocalizedString("Sell Your Crypto", comment: "Sell Your Crypto")
+            public static let description = NSLocalizedString(
+                "Verify your identity and sell your crypto.",
+                comment: "Verify your identity and sell your crypto."
+            )
+            public static let verifyIdentity = NSLocalizedString("Verify My Identity", comment: "Verify My Identity")
+            public enum List {
+                public enum First {
+                    public static let title = NSLocalizedString("Verify Your Identity", comment: "Verify Your Identity")
+                    public static let description = NSLocalizedString(
+                        "To prevent identity theft or fraud, we’ll need to make sure it’s really you by uploading an ID.",
+                        comment: "To prevent identity theft or fraud, we’ll need to make sure it’s really you by uploading an ID."
+                    )
+                }
+                public enum Second {
+                    public static let title = NSLocalizedString("Sell Crypto for Cash", comment: "Sell Crypto for Cash")
+                    public static let description = NSLocalizedString(
+                        "Sell your crypto that you have purchased into your cash wallet.",
+                        comment: "Sell your crypto that you have purchased into your cash wallet."
+                    )
+                }
+                public enum Third {
+                    public static let title = NSLocalizedString("Buy Crypto with Cash", comment: "Buy Crypto with Cash")
+                    public static let description = NSLocalizedString(
+                        "Use your cash wallet as a payment method to buy BTC, ETH, XLM & more.",
+                        comment: "Use your cash wallet as a payment method to buy BTC, ETH, XLM & more."
+                    )
+                }
+            }
+        }
         public enum BuyCard {
             public static let title = NSLocalizedString(
                 "Own Crypto in a Few Minutes",
@@ -621,7 +652,7 @@ extension LocalizationConstants.SimpleBuy {
     public enum KYCScreen {
         public enum Ineligible {
             public static let title = NSLocalizedString(
-                "Blockchain.com Buy Coming Soon to Your Region",
+                "Coming Soon to Your Region",
                 comment: "Simple Buy KYC Screen - ineligible information: title label"
             )
             public static let subtitle = NSLocalizedString(

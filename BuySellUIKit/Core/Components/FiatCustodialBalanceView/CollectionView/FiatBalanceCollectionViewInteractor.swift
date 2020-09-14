@@ -33,7 +33,8 @@ public final class FiatBalanceCollectionViewInteractor {
     }
     
     // MARK: - Injected Properties
-    
+
+    private let tiersService: KYCTiersServiceAPI
     private let featureFetcher: FeatureFetching
     private let balanceProvider: BalanceProviding
     private let paymentMethodsService: PaymentMethodsServiceAPI
@@ -51,12 +52,12 @@ public final class FiatBalanceCollectionViewInteractor {
             .combineLatest(
                 featureFetcher.fetchBool(for: .simpleBuyFundsEnabled).asObservable(),
                 balanceProvider.fiatFundsBalances,
-                paymentMethodsService.paymentMethods.map { $0.fundsCurrencies },
+                tiersService.tiers.asObservable(),
                 refreshRelay.asObservable()
-            )
-            .filter { $0.0 }
-            .map { (balances: $0.1, funds: $0.2) }
-            .map { $0.balances.filter(by: $0.funds) }
+            ) { (enabled: $0, balances: $1, tiers: $2, refresh: $3) }
+            .filter { $0.enabled }
+            .filter { $0.tiers.isTier2Approved }
+            .map { $0.balances }
             .filter { $0.isValue } // All balances must contain value to load
             .map {
                 Array.init(
@@ -71,10 +72,12 @@ public final class FiatBalanceCollectionViewInteractor {
             .disposed(by: disposeBag)
     }()
     
-    public init(balanceProvider: BalanceProviding,
+    public init(tiersService: KYCTiersServiceAPI,
+                balanceProvider: BalanceProviding,
                 enabledCurrenciesService: EnabledCurrenciesServiceAPI,
                 paymentMethodsService: PaymentMethodsServiceAPI,
                 featureFetcher: FeatureFetching) {
+        self.tiersService = tiersService
         self.balanceProvider = balanceProvider
         self.featureFetcher = featureFetcher
         self.paymentMethodsService = paymentMethodsService

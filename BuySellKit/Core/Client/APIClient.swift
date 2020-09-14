@@ -208,8 +208,8 @@ final class APIClient: SimpleBuyClientAPI {
         return communicator.perform(request: request)
     }
     
-    func orderDetails(with identifer: String) -> Single<OrderPayload.Response> {
-        let path = Path.trades + [identifer]
+    func orderDetails(with identifier: String) -> Single<OrderPayload.Response> {
+        let path = Path.trades + [identifier]
         let request = requestBuilder.get(
             path: path,
             authenticated: true

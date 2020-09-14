@@ -8,7 +8,7 @@
 
 import Localization
 
-public struct BuyActivityItemEvent: Tokenized {
+public struct BuySellActivityItemEvent: Tokenized {
 
     public enum EventStatus {
         case pending
@@ -32,6 +32,7 @@ public struct BuyActivityItemEvent: Tokenized {
         outputValue.currencyType
     }
     
+    public let isBuy: Bool
     public let status: EventStatus
     public let paymentMethod: PaymentMethod
     
@@ -49,7 +50,9 @@ public struct BuyActivityItemEvent: Tokenized {
                 inputValue: MoneyValue,
                 outputValue: MoneyValue,
                 fee: MoneyValue,
+                isBuy: Bool,
                 paymentMethod: PaymentMethod) {
+        self.isBuy = isBuy
         self.creationDate = creationDate
         self.identifier = identifier
         self.status = status
@@ -60,14 +63,14 @@ public struct BuyActivityItemEvent: Tokenized {
     }
 }
 
-extension BuyActivityItemEvent: Hashable {
+extension BuySellActivityItemEvent: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(identifier)
     }
 }
 
-extension BuyActivityItemEvent: Equatable {
-    public static func == (lhs: BuyActivityItemEvent, rhs: BuyActivityItemEvent) -> Bool {
+extension BuySellActivityItemEvent: Equatable {
+    public static func == (lhs: BuySellActivityItemEvent, rhs: BuySellActivityItemEvent) -> Bool {
         lhs.identifier == rhs.identifier &&
             lhs.status == rhs.status
     }

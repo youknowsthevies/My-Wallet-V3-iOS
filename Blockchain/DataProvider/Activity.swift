@@ -50,7 +50,7 @@ final class ActivityServiceProvider: ActivityServiceProviderAPI {
                     transactionsService: paxServices.historicalTransactionService
                 )
             ),
-            buy: BuyActivityItemEventService(currency: .pax, service: simpleBuyOrdersAPI),
+            buySell: BuySellActivityItemEventService(currency: .pax, service: simpleBuyOrdersAPI),
             swap: SwapActivityItemEventService(
                 fetcher: AnyERC20SwapActivityItemEventsService<PaxToken>(service: swapActivityAPI),
                 fiatCurrencyProvider: fiatCurrencyService
@@ -61,7 +61,7 @@ final class ActivityServiceProvider: ActivityServiceProviderAPI {
             transactional: TransactionalActivityItemEventService(
                 fetcher: EthereumTransactionalActivityItemEventsService(transactionsService: ethServices.transactionService)
             ),
-            buy: BuyActivityItemEventService(currency: .ethereum, service: simpleBuyOrdersAPI),
+            buySell: BuySellActivityItemEventService(currency: .ethereum, service: simpleBuyOrdersAPI),
             swap: SwapActivityItemEventService(
                 fetcher: EthereumSwapActivityItemEventsService(service: swapActivityAPI),
                 fiatCurrencyProvider: fiatCurrencyService
@@ -75,7 +75,7 @@ final class ActivityServiceProvider: ActivityServiceProviderAPI {
             transactional: TransactionalActivityItemEventService(
                 fetcher: StellarTransactionalActivityItemEventsService(repository: stellarServices.repository)
             ),
-            buy: BuyActivityItemEventService(currency: .stellar, service: simpleBuyOrdersAPI),
+            buySell: BuySellActivityItemEventService(currency: .stellar, service: simpleBuyOrdersAPI),
             swap: SwapActivityItemEventService(
                 fetcher: StellarSwapActivityItemEventsService(service: swapActivityAPI),
                 fiatCurrencyProvider: fiatCurrencyService
@@ -92,7 +92,7 @@ final class ActivityServiceProvider: ActivityServiceProviderAPI {
             transactional: TransactionalActivityItemEventService(
                 fetcher: BitcoinTransactionalActivityItemEventsService(transactionsService: bitcoinServices.transactions)
             ),
-            buy: BuyActivityItemEventService(currency: .bitcoin, service: simpleBuyOrdersAPI),
+            buySell: BuySellActivityItemEventService(currency: .bitcoin, service: simpleBuyOrdersAPI),
             swap: SwapActivityItemEventService(
                 fetcher: BitcoinSwapActivityItemEventsService(service: swapActivityAPI),
                 fiatCurrencyProvider: fiatCurrencyService
@@ -103,7 +103,7 @@ final class ActivityServiceProvider: ActivityServiceProviderAPI {
             transactional: TransactionalActivityItemEventService(
                 fetcher: BitcoinCashTransactionalActivityItemEventsService(transactionsService: bitcoinCashServices.transactions)
             ),
-            buy: BuyActivityItemEventService(currency: .bitcoinCash, service: simpleBuyOrdersAPI),
+            buySell: BuySellActivityItemEventService(currency: .bitcoinCash, service: simpleBuyOrdersAPI),
             swap: SwapActivityItemEventService(
                 fetcher: BitcoinCashSwapActivityItemEventsService(service: swapActivityAPI),
                 fiatCurrencyProvider: fiatCurrencyService
@@ -115,7 +115,7 @@ final class ActivityServiceProvider: ActivityServiceProviderAPI {
         
         let algorand = CryptoEventService(
             transactional: EmptyTransactionalActivityItemEventService(),
-            buy: BuyActivityItemEventService(currency: .algorand, service: simpleBuyOrdersAPI),
+            buySell: BuySellActivityItemEventService(currency: .algorand, service: simpleBuyOrdersAPI),
             swap: EmptySwapActivityItemEventService()
         )
         
@@ -123,7 +123,7 @@ final class ActivityServiceProvider: ActivityServiceProviderAPI {
             transactional: TransactionalActivityItemEventService(
                 fetcher: AnyERC20TransactionalActivityItemEventsService<TetherToken>(transactionsService: tetherServices.historicalTransactionService)
             ),
-            buy: BuyActivityItemEventService(currency: .tether, service: simpleBuyOrdersAPI),
+            buySell: BuySellActivityItemEventService(currency: .tether, service: simpleBuyOrdersAPI),
             swap: SwapActivityItemEventService(
                 fetcher: AnyERC20SwapActivityItemEventsService<TetherToken>(service: swapActivityAPI),
                 fiatCurrencyProvider: fiatCurrencyService

@@ -1,5 +1,5 @@
 //
-//  BuyActivityDetailsPresenter.swift
+//  BuySellActivityDetailsPresenter.swift
 //  Blockchain
 //
 //  Created by Paulo on 09/06/2020.
@@ -13,7 +13,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
+final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Types
 
@@ -27,7 +27,7 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     let cells: [DetailsScreen.CellType]
 
-    let titleViewRelay: BehaviorRelay<Screen.Style.TitleView> = .init(value: .text(value: LocalizedString.Title.buy))
+    let titleViewRelay = BehaviorRelay<Screen.Style.TitleView>(value: .none)
 
     let navigationBarAppearance: DetailsScreen.NavigationBarAppearance = .defaultDark
 
@@ -39,8 +39,8 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Private Properties
 
-    private let event: BuyActivityItemEvent
-    private let interactor: BuyActivityDetailsInteractor
+    private let event: BuySellActivityItemEvent
+    private let interactor: BuySellActivityDetailsInteractor
     private let disposeBag: DisposeBag = .init()
 
     // MARK: Private Properties (Model Relay)
@@ -56,6 +56,8 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
     private let orderIDPresenter: LineItemCellPresenting
     private let dateCreatedPresenter: LineItemCellPresenting
     private let totalCostPresenter: LineItemCellPresenting
+    private let totalPresenter: LineItemCellPresenting
+    private let sendingToPresenter: LineItemCellPresenting
     private let feePresenter: LineItemCellPresenting
     private let paymentMethodPresenter: LineItemCellPresenting
 
@@ -64,9 +66,11 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
     private let badgesModel: MultiBadgeCellModel = .init()
     private let statusBadge: DefaultBadgeAssetPresenter = .init()
 
-    init(event: BuyActivityItemEvent, interactor: BuyActivityDetailsInteractor = .init()) {
+    init(event: BuySellActivityItemEvent, interactor: BuySellActivityDetailsInteractor = .init()) {
         self.interactor = interactor
         self.event = event
+        let title = event.isBuy ? LocalizedString.Title.buy : LocalizedString.Title.sell
+        titleViewRelay.accept(.text(value: title))
 
         let paymentMethod: String
         switch event.paymentMethod {
@@ -88,14 +92,25 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
         totalCostPresenter = TransactionalLineItem.totalCost(event.inputValue.displayString).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
+        totalPresenter = TransactionalLineItem.total(event.outputValue.displayString).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        let destination = String(
+            format: "\(LocalizedString.myWallet)",
+            event.outputValue.currencyType.code
+        )
+        sendingToPresenter = TransactionalLineItem.sendingTo(destination).defaultPresenter(
+             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
         feePresenter = TransactionalLineItem.buyingFee(event.fee.displayString).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
         paymentMethodPresenter = TransactionalLineItem.paymentMethod(paymentMethod).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
+        let amount = event.isBuy ? event.outputValue : event.inputValue
         cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
-            knownValue: event.outputValue.toDisplayString(includeSymbol: true),
+            knownValue: amount.toDisplayString(includeSymbol: true),
             descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
         badgesModel.badgesRelay.accept([statusBadge])
@@ -114,20 +129,39 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .map { .loaded(next: .init(text: $0)) }
             .bindAndCatch(to: paymentMethodPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
-
-        cells = [
-            .label(cryptoAmountLabelPresenter),
-            .badges(badgesModel),
-            .lineItem(orderIDPresenter),
-            .separator,
-            .lineItem(dateCreatedPresenter),
-            .separator,
-            .lineItem(totalCostPresenter),
-            .separator,
-            .lineItem(feePresenter),
-            .separator,
-            .lineItem(paymentMethodPresenter)
-        ]
+        
+        switch event.isBuy {
+        case true:
+            cells = [
+                .label(cryptoAmountLabelPresenter),
+                .badges(badgesModel),
+                .lineItem(orderIDPresenter),
+                .separator,
+                .lineItem(dateCreatedPresenter),
+                .separator,
+                .lineItem(totalCostPresenter),
+                .separator,
+                .lineItem(feePresenter),
+                .separator,
+                .lineItem(paymentMethodPresenter)
+            ]
+        case false:
+            cells = [
+                .label(cryptoAmountLabelPresenter),
+                .badges(badgesModel),
+                .lineItem(orderIDPresenter),
+                .separator,
+                .lineItem(dateCreatedPresenter),
+                .separator,
+                .lineItem(totalPresenter),
+                .separator,
+                .lineItem(sendingToPresenter),
+                .separator,
+                .lineItem(feePresenter),
+                .separator,
+                .lineItem(paymentMethodPresenter)
+            ]
+        }
     }
 
     func viewDidLoad() {
@@ -147,7 +181,7 @@ final class BuyActivityDetailsPresenter: DetailsScreenPresenterAPI {
     }
 }
 
-fileprivate extension BuyActivityItemEvent.EventStatus {
+fileprivate extension BuySellActivityItemEvent.EventStatus {
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.OrderState
     public var localizedDescription: String {
         switch self {

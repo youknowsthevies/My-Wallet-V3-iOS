@@ -72,6 +72,7 @@ struct OrderPayload {
 
         init(action: Order.Action,
              fiatValue: FiatValue,
+             fiatCurrency: FiatCurrency,
              cryptoValue: CryptoValue,
              paymentType: PaymentMethod.MethodType? = nil,
              paymentMethodId: String? = nil) {
@@ -80,24 +81,28 @@ struct OrderPayload {
             self.paymentType = paymentType?.rawType
             switch action {
             case .buy:
-                input = .init(
+                input = Input(
                     symbol: fiatValue.currencyCode,
                     amount: fiatValue.minorString
                 )
-                output = .init(symbol: cryptoValue.currency.code)
+                output = Output(symbol: cryptoValue.currency.code)
                 pair = "\(output.symbol)-\(input.symbol)"
             case .sell:
-                input = .init(
+                input = Input(
                     symbol: cryptoValue.code,
                     amount: "\(cryptoValue.amount)"
                 )
-                output = .init(symbol: fiatValue.currencyCode)
-                pair = "\(cryptoValue.currency.code)-\(fiatValue.currencyCode)"
+                output = Output(symbol: fiatCurrency.code)
+                pair = "\(input.symbol)-\(output.symbol)"
             }
         }
     }
     
     public struct Response: Decodable {
+        enum Side: String, Decodable {
+            case buy = "BUY"
+            case sell = "SELL"
+        }
         struct Attributes: Decodable {
             struct EveryPay: Decodable {
                 enum PaymentState: String, Decodable {
@@ -131,6 +136,7 @@ struct OrderPayload {
         
         let paymentType: String
         let paymentMethodId: String?
+        let side: Side
         let attributes: Attributes?
     }
 }

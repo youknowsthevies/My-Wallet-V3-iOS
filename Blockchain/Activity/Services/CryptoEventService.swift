@@ -18,9 +18,9 @@ final class CryptoEventService: CryptoItemEventServiceAPI {
             .map { items in items.map { .transactional($0) } }
             .catchErrorJustReturn([])
         
-        let buys: Single<[ActivityItemEvent]> = buy
-            .buyActivityEvents
-            .map { items in items.map { .buy($0) } }
+        let buySells: Single<[ActivityItemEvent]> = buySell
+            .buySellActivityEvents
+            .map { items in items.map { .buySell($0) } }
             .catchErrorJustReturn([])
         
         let swaps: Single<[ActivityItemEvent]> = swap
@@ -28,7 +28,7 @@ final class CryptoEventService: CryptoItemEventServiceAPI {
             .map { items in items.map { .swap($0) } }
             .catchErrorJustReturn([])
         
-        return Single.zip(transactions, buys, swaps).map { $0.0 + $0.1 + $0.2 }
+        return Single.zip(transactions, buySells, swaps).map { $0.0 + $0.1 + $0.2 }
     }
     
     var activityObservable: Observable<[ActivityItemEvent]> {
@@ -42,7 +42,7 @@ final class CryptoEventService: CryptoItemEventServiceAPI {
     }
     
     let transactional: TransactionalActivityItemEventServiceAPI
-    let buy: BuyActivityItemEventServiceAPI
+    let buySell: BuySellActivityItemEventServiceAPI
     let swap: SwapActivityItemEventServiceAPI
     
     // MARK: - Private Properties
@@ -54,7 +54,7 @@ final class CryptoEventService: CryptoItemEventServiceAPI {
         Observable
             .combineLatest(
                 transactional.state,
-                buy.state,
+                buySell.state,
                 swap.state
             )
             .map(weak: self) { (self, values) -> ActivityItemEventsLoadingState in
@@ -68,16 +68,16 @@ final class CryptoEventService: CryptoItemEventServiceAPI {
     // MARK: - Setup
     
     init(transactional: TransactionalActivityItemEventServiceAPI,
-         buy: BuyActivityItemEventServiceAPI,
+         buySell: BuySellActivityItemEventServiceAPI,
          swap: SwapActivityItemEventServiceAPI) {
         self.transactional = transactional
-        self.buy = buy
+        self.buySell = buySell
         self.swap = swap
     }
     
     func refresh() {
         transactional.fetchTriggerRelay.accept(())
-        buy.fetchTriggerRelay.accept(())
+        buySell.fetchTriggerRelay.accept(())
         swap.fetchTriggerRelay.accept(())
     }
 }

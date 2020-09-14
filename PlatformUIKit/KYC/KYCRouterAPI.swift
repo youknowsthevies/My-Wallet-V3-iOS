@@ -19,5 +19,6 @@ public protocol KYCRouterAPI: class {
     var tier2Finished: Observable<Void> { get }
     var kycStopped: Observable<KYC.Tier> { get }
     func start()
+    func start(tier: KYC.Tier)
     func start(from viewController: UIViewController, tier: KYC.Tier, parentFlow: KYCParentFlow)
 }

@@ -26,7 +26,9 @@ public enum TransactionalLineItem: Hashable {
     case paymentAccountField(PaymentAccountProperty.Field)
     case paymentMethod(_ content: String? = nil)
     case status(_ content: String? = nil)
+    case sendingTo(_ content: String? = nil)
     case totalCost(_ content: String? = nil)
+    case total(_ content: String? = nil)
     case from(_ content: String? = nil)
     case to(_ content: String? = nil)
     case gasFor(_ content: String? = nil)
@@ -56,10 +58,14 @@ public enum TransactionalLineItem: Hashable {
             return field.accessibilityID
         case .paymentMethod:
             return AccessibilityID.paymentMethod
+        case .sendingTo:
+            return AccessibilityID.sendingTo
         case .status:
             return AccessibilityID.status
         case .totalCost:
             return AccessibilityID.totalCost
+        case .total:
+            return AccessibilityID.total
         case .from:
             return AccessibilityID.from
         case .to:
@@ -80,6 +86,7 @@ public enum TransactionalLineItem: Hashable {
              .exchangeRate(let content),
              .orderId(let content),
              .paymentMethod(let content),
+             .sendingTo(let content),
              .status(let content),
              .to(let content),
              .from(let content),
@@ -88,7 +95,8 @@ public enum TransactionalLineItem: Hashable {
              .value(let content),
              .fee(let content),
              .for(let content),
-             .totalCost(let content):
+             .totalCost(let content),
+             .total(let content):
             return content
         case .paymentAccountField(let field):
             return field.content
@@ -119,8 +127,12 @@ public enum TransactionalLineItem: Hashable {
             return field.title
         case .paymentMethod:
             return LocalizedString.paymentMethod
+        case .sendingTo:
+            return LocalizedString.sendingTo
         case .status:
             return LocalizedString.status
+        case .total:
+            return LocalizedString.total
         case .totalCost:
             return LocalizedString.totalCost
         case .to:

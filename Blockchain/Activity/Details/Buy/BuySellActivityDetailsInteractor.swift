@@ -1,5 +1,5 @@
 //
-//  BuyActivityDetailsInteractor.swift
+//  BuySellActivityDetailsInteractor.swift
 //  Blockchain
 //
 //  Created by Paulo on 09/06/2020.
@@ -10,7 +10,7 @@ import BuySellKit
 import PlatformKit
 import RxSwift
 
-final class BuyActivityDetailsInteractor {
+final class BuySellActivityDetailsInteractor {
 
     private let cardListService: CardListServiceAPI
 

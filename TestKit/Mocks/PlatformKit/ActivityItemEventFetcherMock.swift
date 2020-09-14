@@ -14,7 +14,7 @@ class ActivityItemEventFetcherMock: ActivityItemEventServiceAPI {
     func refresh() {
         transactional.fetchTriggerRelay.accept(())
         swap.fetchTriggerRelay.accept(())
-        buy.fetchTriggerRelay.accept(())
+        buySell.fetchTriggerRelay.accept(())
     }
     
     var activityLoadingStateObservable: Observable<ActivityItemEventsLoadingState> {
@@ -23,7 +23,7 @@ class ActivityItemEventFetcherMock: ActivityItemEventServiceAPI {
     
     var fetchTriggerRelay = PublishRelay<Void>()
     
-    var buy: BuyActivityItemEventServiceAPI = BuyActivityItemEventFetcherMock()
+    var buySell: BuySellActivityItemEventServiceAPI = BuyActivityItemEventFetcherMock()
     var swap: SwapActivityItemEventServiceAPI = SwapActivityItemEventServiceMock()
     var transactional: TransactionalActivityItemEventServiceAPI = TransactionalActivityItemEventServiceMock()
     var transactionalActivityItemFetcher: TransactionalActivityItemEventFetcherAPI = TransactionalActivityItemEventFetcherMock()
@@ -49,17 +49,17 @@ class TransactionalActivityItemEventServiceMock: TransactionalActivityItemEventS
     let fetchTriggerRelay = PublishRelay<Void>()
 }
 
-class BuyActivityItemEventFetcherMock: BuyActivityItemEventServiceAPI {
+class BuyActivityItemEventFetcherMock: BuySellActivityItemEventServiceAPI {
     
-    var buyActivityObservable: Observable<[BuyActivityItemEvent]> {
-        buyActivityEvents.asObservable()
+    var buySellActivityObservable: Observable<[BuySellActivityItemEvent]> {
+        buySellActivityEvents.asObservable()
     }
     
     var state: Observable<ActivityItemEventsLoadingState> {
         Observable.just(.loading)
     }
     
-    var buyActivityEvents: Single<[BuyActivityItemEvent]> {
+    var buySellActivityEvents: Single<[BuySellActivityItemEvent]> {
         Single.just([])
     }
     

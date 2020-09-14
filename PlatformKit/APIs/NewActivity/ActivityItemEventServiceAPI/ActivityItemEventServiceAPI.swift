@@ -18,7 +18,7 @@ public protocol ActivityItemEventServiceAPI {
 
 public protocol CryptoItemEventServiceAPI: ActivityItemEventServiceAPI {
     var transactional: TransactionalActivityItemEventServiceAPI { get }
-    var buy: BuyActivityItemEventServiceAPI { get }
+    var buySell: BuySellActivityItemEventServiceAPI { get }
     var swap: SwapActivityItemEventServiceAPI { get }
 }
 

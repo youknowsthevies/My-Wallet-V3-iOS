@@ -322,8 +322,8 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     }
 }
 
-fileprivate extension SelectionItemViewModel {
-    
+extension SelectionItemViewModel {
+
     var cryptoCurrency: CryptoCurrency {
         CryptoCurrency(code: id)!
     }

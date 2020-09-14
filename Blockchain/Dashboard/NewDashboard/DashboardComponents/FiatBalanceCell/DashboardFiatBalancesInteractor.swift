@@ -25,11 +25,13 @@ final class DashboardFiatBalancesInteractor {
         
     // MARK: - Setup
     
-    init(balanceProvider: BalanceProviding,
+    init(tiersService: KYCTiersServiceAPI,
+         balanceProvider: BalanceProviding,
          featureFetcher: FeatureFetching,
          paymentMethodsService: PaymentMethodsServiceAPI,
          enabledCurrenciesService: EnabledCurrenciesServiceAPI) {
         fiatBalanceCollectionViewInteractor = FiatBalanceCollectionViewInteractor(
+            tiersService: tiersService,
             balanceProvider: balanceProvider,
             enabledCurrenciesService: enabledCurrenciesService,
             paymentMethodsService: paymentMethodsService,

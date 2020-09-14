@@ -304,14 +304,13 @@ public final class StateService: StateServiceAPI {
             .zip(
                 serviceProvider.pendingOrderDetails.pendingOrderDetails,
                 isFiatCurrencySupported
-            )
+            ) { (pendingOrderDetails: $0, isFiatCurrencySupported: $1) }
             .handleLoaderForLifecycle(
                 loader: uiUtilityProvider.loader,
                 style: .circle
             )
             .flatMap { data -> Single<State> in
-                let isFiatCurrencySupported = data.1
-                if let orderDetails = data.0 {
+                if let orderDetails = data.pendingOrderDetails {
                     let checkoutData = CheckoutData(order: orderDetails)
                     switch orderDetails.state {
                     /// If the order is in `pendingConfirmation` check if the user is tier two approved.
@@ -327,6 +326,10 @@ public final class StateService: StateServiceAPI {
                                 }
                                 // If the order is card but payment method id is missing - navigate to the main amount screen
                                 if checkoutData.isUnknownCardType {
+                                    return .buy
+                                }
+                                // If this is not a Buy order - navigate to the main amount screen
+                                guard checkoutData.order.isBuy else {
                                     return .buy
                                 }
                                 return .checkout(checkoutData)
@@ -351,7 +354,7 @@ public final class StateService: StateServiceAPI {
                     }
                 } else {
                     if cache[.hasShownIntroScreen] {
-                        return .just(isFiatCurrencySupported ? .buy : .selectFiat)
+                        return .just(data.isFiatCurrencySupported ? .buy : .selectFiat)
                     } else {
                         return .just(.intro)
                     }

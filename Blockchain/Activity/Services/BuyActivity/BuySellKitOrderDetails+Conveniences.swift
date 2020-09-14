@@ -9,7 +9,7 @@
 import BuySellKit
 import PlatformKit
 
-extension BuyActivityItemEvent {
+extension BuySellActivityItemEvent {
     init(with orderDetails: OrderDetails) {
         
         let paymentMethod: PaymentMethod
@@ -29,12 +29,13 @@ extension BuyActivityItemEvent {
             inputValue: orderDetails.inputValue,
             outputValue: orderDetails.outputValue,
             fee: orderDetails.fee ?? MoneyValue.zero(currency: orderDetails.inputValue.currencyType),
+            isBuy: orderDetails.isBuy,
             paymentMethod: paymentMethod
         )
     }
 }
 extension OrderDetails {
-    fileprivate var eventStatus: BuyActivityItemEvent.EventStatus {
+    fileprivate var eventStatus: BuySellActivityItemEvent.EventStatus {
         switch state {
         case .pendingDeposit,
              .pendingConfirmation,

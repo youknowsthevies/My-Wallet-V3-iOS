@@ -112,6 +112,10 @@ extension LocalizationConstants.LineItem.Transactional {
         "Payment Method",
         comment: "Payment Method"
     )
+    public static let sendingTo = NSLocalizedString(
+        "Sending to",
+        comment: "Sending to"
+    )
     public static let orderId = NSLocalizedString(
         "Transaction ID",
         comment: "Transaction ID"

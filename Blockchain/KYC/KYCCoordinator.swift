@@ -131,6 +131,10 @@ protocol KYCCoordinatorDelegate: class {
         }
         start(from: rootViewController)
     }
+    
+    func start(tier: KYC.Tier) {
+        startFrom(tier)
+    }
 
     func startFrom(_ tier: KYC.Tier = .tier1) {
         guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else {

@@ -7,12 +7,12 @@
 //
 
 import BuySellKit
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
 import RxSwift
 import ToolKit
-import DIKit
 
 public final class SellRouter: PlatformUIKit.Router<SellRouterInteractor> {
     
@@ -21,12 +21,17 @@ public final class SellRouter: PlatformUIKit.Router<SellRouterInteractor> {
     private let routingType: RoutingType
     private let navigationRouter: NavigationRouterAPI
     private let builder: SellBuilderAPI
+    private let kycRouter: KYCRouterAPI
     
+    /// A kyc subscription dispose bag
+    private var kycDisposeBag = DisposeBag()
     private let disposeBag = DisposeBag()
     
     public init(routingType: RoutingType = .modal,
                 navigationRouter: NavigationRouterAPI = NavigationRouter(),
+                kycRouter: KYCRouterAPI,
                 builder: SellBuilderAPI) {
+        self.kycRouter = kycRouter
         self.navigationRouter = navigationRouter
         self.routingType = routingType
         self.builder = builder
@@ -78,6 +83,13 @@ public final class SellRouter: PlatformUIKit.Router<SellRouterInteractor> {
             }
         case .checkout(let data):
             navigationToCheckoutScreen(with: data)
+        case .kyc:
+            navigationRouter.dismiss { [weak self] in
+                guard let self = self else { return }
+                self.showKYC()
+            }
+        case .introduction:
+            navigateToSellIntroductionScreen()
         case .cancel(let data):
             break
         case .pendingOrderCompleted(orderDetails: let orderDetails):
@@ -103,12 +115,43 @@ public final class SellRouter: PlatformUIKit.Router<SellRouterInteractor> {
              .cancel,
              .accountSelector,
              .pendingOrderCompleted,
-             .fiatAccountSelector:
+             .fiatAccountSelector,
+             .introduction,
+             .kyc:
             navigationRouter.dismiss()
         }
     }
     
     // MARK: - Navigation Accessors
+    
+    private func showKYC() {
+        kycDisposeBag = DisposeBag()
+        let stopped = kycRouter.kycStopped
+            .take(1)
+            .observeOn(MainScheduler.instance)
+            .share()
+        
+        stopped
+            .filter { $0 == .tier2 }
+            .mapToVoid()
+            .bindAndCatch(weak: self) { (self) in
+                self.interactor.nextFromKYC()
+            }
+            .disposed(by: kycDisposeBag)
+        
+        stopped
+            .filter { $0 != .tier2 }
+            .mapToVoid()
+            .bindAndCatch(to: interactor.previousRelay)
+            .disposed(by: kycDisposeBag)
+        
+        kycRouter.start(tier: .tier2)
+    }
+    
+    private func navigateToSellIntroductionScreen() {
+        let viewController = builder.sellIdentityIntroductionViewController()
+        navigationRouter.present(viewController: viewController)
+    }
     
     private func navigateToPendingScreen(orderDetails: OrderDetails) {
         let viewController = builder.pendingScreenViewController(for: orderDetails)

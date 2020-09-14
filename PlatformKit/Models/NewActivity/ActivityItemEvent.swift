@@ -12,8 +12,8 @@ public enum ActivityItemEvent: Tokenized {
     // Send/Receive
     case transactional(TransactionalActivityItemEvent)
     // Buy
-    case buy(BuyActivityItemEvent)
-    // TODO: Sell
+    case buySell(BuySellActivityItemEvent)
+    // Fiat
     case fiat(FiatActivityItemEvent)
 
     /// The `Status` of an activity item.
@@ -27,11 +27,8 @@ public enum ActivityItemEvent: Tokenized {
         }
         
         public enum ProductEventStatus {
-            // TODO: Account for `Sell`
-            // and consider combining buy and sell
-            // and if possible `Swap`.
             case swap(SwapActivityItemEvent.EventStatus)
-            case buy(BuyActivityItemEvent.EventStatus)
+            case buySell(BuySellActivityItemEvent.EventStatus)
             case fiat(FiatActivityItemEvent.EventStatus)
         }
         
@@ -46,7 +43,7 @@ public enum ActivityItemEvent: Tokenized {
     
     public var token: String {
         switch self {
-        case .buy(let event):
+        case .buySell(let event):
             return event.identifier
         case .swap(let event):
             return event.identifier
@@ -59,7 +56,7 @@ public enum ActivityItemEvent: Tokenized {
     
     public var creationDate: Date {
         switch self {
-        case .buy(let event):
+        case .buySell(let event):
             return event.creationDate
         case .swap(let swap):
             return swap.date
@@ -74,8 +71,8 @@ public enum ActivityItemEvent: Tokenized {
 extension ActivityItemEvent: Hashable {
     public func hash(into hasher: inout Hasher) {
         switch self {
-        case .buy(let event):
-            hasher.combine("buy")
+        case .buySell(let event):
+            hasher.combine("buySell")
             hasher.combine(event)
         case .swap(let event):
             hasher.combine("swap")
@@ -94,7 +91,7 @@ extension ActivityItemEvent {
     
     public var amount: MoneyValue {
         switch self {
-        case .buy(let event):
+        case .buySell(let event):
             return event.outputValue
         case .swap(let event):
             return .init(cryptoValue: event.amounts.deposit)
@@ -107,7 +104,7 @@ extension ActivityItemEvent {
     
     public var identifier: String {
         switch self {
-        case .buy(let event):
+        case .buySell(let event):
             return event.identifier
         case .swap(let event):
             return event.identifier
@@ -120,8 +117,8 @@ extension ActivityItemEvent {
     
     public var status: EventStatus {
         switch self {
-        case .buy(let event):
-            return .product(.buy(event.status))
+        case .buySell(let event):
+            return .product(.buySell(event.status))
         case .swap(let event):
             return .product(.swap(event.status))
         case .transactional(let event):
@@ -148,7 +145,7 @@ extension ActivityItemEvent: Equatable {
             return left == right
         case (.transactional(let left), .transactional(let right)):
             return left == right
-        case (.buy(let left), .buy(let right)):
+        case (.buySell(let left), .buySell(let right)):
             return left == right
         case (.fiat(let left), .fiat(let right)):
             return left == right

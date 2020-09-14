@@ -13,6 +13,8 @@ public enum CurrencyError: Error {
 }
 
 public protocol Currency {
+    /// The maximum  `maxDisplayableDecimalPlaces` between all possible currencies.
+    static var maxDisplayableDecimalPlaces: Int { get }
     var name: String { get }
     var code: String { get }
     var symbol: String { get }
@@ -55,6 +57,11 @@ public enum CurrencyType: Equatable, Hashable {
 }
 
 extension CurrencyType: Currency {
+
+    public static let maxDisplayableDecimalPlaces: Int = {
+        max(FiatCurrency.maxDisplayableDecimalPlaces, CryptoCurrency.maxDisplayableDecimalPlaces)
+    }()
+
     public var name: String {
         switch self {
         case .crypto(let cryptoCurrency):
