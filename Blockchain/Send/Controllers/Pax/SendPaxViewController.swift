@@ -349,8 +349,8 @@ extension SendPaxViewController: UITextFieldDelegate {
             delegate?.onPaxEntry(value)
         }
         if textField == fiatAmountTextField {
-            let fiatCurrency = BlockchainSettings.App.shared.fiatCurrency
-            let value = FiatValue.create(majorDisplay: replacementInput, currency: fiatCurrency)!
+            let fiatCurrency: FiatCurrency = BlockchainSettings.App.shared.fiatCurrency
+            let value = FiatValue.create(majorDisplay: replacementInput, currency: fiatCurrency) ?? .zero(currency: fiatCurrency)
             delegate?.onFiatEntry(value)
         }
         return true
