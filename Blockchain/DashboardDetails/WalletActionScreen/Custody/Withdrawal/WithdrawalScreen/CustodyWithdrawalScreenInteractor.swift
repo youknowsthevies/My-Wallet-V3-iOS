@@ -102,10 +102,12 @@ final class CustodyWithdrawalScreenInteractor {
                 )
             })
             .disposed(by: disposeBag)
+
+        withdrawableAssetBalanceFetcher.refresh()
     }()
 
     private let stateRelay = BehaviorRelay<InteractionState>(value: .settingUp)
-
+    private let withdrawableAssetBalanceFetcher: WithdrawableAssetBalanceFetcher
     private let setupInteractor: CustodyWithdrawalSetupInteractor
     private let submissionInteractor: CustodyWithdrawalSubmissionInteractor
     private let disposeBag = DisposeBag()
@@ -116,7 +118,7 @@ final class CustodyWithdrawalScreenInteractor {
          tradingBalanceService: TradingBalanceServiceAPI = resolve(),
          accountRepository: AssetAccountRepositoryAPI,
          exchangeProviding: ExchangeProviding = resolve()) {
-        let withdrawableAssetBalanceFetcher = WithdrawableAssetBalanceFetcher(
+        withdrawableAssetBalanceFetcher = WithdrawableAssetBalanceFetcher(
             cryptoCurrency: currency,
             trading: balanceFetching.trading,
             savings: balanceFetching.savings,
