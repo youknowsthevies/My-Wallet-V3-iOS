@@ -115,15 +115,6 @@ Firease/Prod/GoogleService-Info.plist
 Firease/Staging/GoogleService-Info.plist
 ```
 
-## Open the project in Xcode
-
-    $ open Blockchain.xcworkspace
-
-## Build the project
-
-    cmd-r
-
-
 ## XcodeGen
 
 ### Installing:
@@ -136,6 +127,13 @@ We are integrating XcodeGen and, despite still committing project files in git, 
 
     $ sh scripts/generate_projects.sh
 
+## Open the project in Xcode
+
+    $ open Blockchain.xcworkspace
+
+## Build the project
+
+    cmd-r
 
 # Contributing
 
