@@ -61,7 +61,7 @@ Install a recent ruby version:
 
 Then the project ruby dependencies (`fastlane`, etc.):
 
-    $ sudo gem install bundler
+    $ gem install bundler
     $ bundle install
 
 ## Install build dependencies (brew)
