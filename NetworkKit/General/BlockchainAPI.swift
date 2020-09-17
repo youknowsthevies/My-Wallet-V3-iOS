@@ -47,7 +47,7 @@ public final class BlockchainAPI: NSObject {
 
     public struct Parameters {
         /// The API code to be used when making network calls to the Blockchain API
-        public static let apiCode = "1770d5d9-bcea-4d28-ad21-6cbd5be018a8"
+        public static let apiCode = "35e77459-723f-48b0-8c9e-6e9e8f54fbd3"
     }
 
     // MARK: - Initialization
