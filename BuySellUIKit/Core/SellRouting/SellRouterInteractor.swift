@@ -160,6 +160,7 @@ public final class SellRouterInteractor: Interactor {
             .disposed(by: disposeBag)
     }()
     
+    private let eligibilityService: EligibilityServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let uiUtilityProvider: UIUtilityProviderAPI
     private let accountSelectionService: AccountSelectionServiceAPI
@@ -167,14 +168,15 @@ public final class SellRouterInteractor: Interactor {
     private let statesRelay = BehaviorRelay<States>(value: .inactive)
     private let actionRelay = PublishRelay<Action>()
     private var disposeBag = DisposeBag()
-    
     // MARK: - Setup
     
     public init(accountSelectionService: AccountSelectionServiceAPI,
+                eligibilityService: EligibilityServiceAPI,
                 uiUtilityProvider: UIUtilityProviderAPI,
                 kycTiersService: KYCTiersServiceAPI,
                 featureFetching: FeatureFetching) {
         self.uiUtilityProvider = uiUtilityProvider
+        self.eligibilityService = eligibilityService
         self.kycTiersService = kycTiersService
         self.featureFetching = featureFetching
         self.accountSelectionService = accountSelectionService
@@ -191,41 +193,48 @@ public final class SellRouterInteractor: Interactor {
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
-        
+
+        let eligibility: Single<Bool> = eligibilityService.fetch().take(1).asSingle()
+
         Single.zip(
                 kycTiersService.fetchTiers(),
                 featureFetching.fetchBool(for: .simpleBuyEnabled),
-                featureFetching.fetchBool(for: .simpleBuyFundsEnabled)
+                featureFetching.fetchBool(for: .simpleBuyFundsEnabled),
+                eligibility
             )
-            .map { (tiers: $0.0, isEnabled: ($0.1 && $0.2)) }
+            .map { (tiers: $0.0, isEnabled: ($0.1 && $0.2), eligible: $0.3) }
             .handleLoaderForLifecycle(
                 loader: uiUtilityProvider.loader,
                 style: .circle
             )
-            .map { (tiers: KYC.UserTiers, isEnabled: Bool) -> States in
+            .map { (tiers: KYC.UserTiers, isEnabled: Bool, eligible: Bool) -> State in
+                guard isEnabled else {
+                    // Feature is disabled
+                    return .ineligible
+                }
                 let status = tiers.tierAccountStatus(for: .tier2)
-                let state: State
-                switch (status, isEnabled) {
-                case (_, false):
-                    state = .ineligible
-                    /// The feature is enabled and the user is KYC approved
+                switch (status, eligible) {
+                case (.none, _):
+                    /// The user has not completed KYC
+                    return .introduction
                 case (.approved, true):
-                    state = .accountSelector
-                    /// The user has not completed KYC and the feature is enabled
-                case (.none, true):
-                    state = .introduction
-                    /// The feature is enabled but they have been rejected
-                case (.failed, true),
-                     (.expired, true):
-                    state = .verificationFailed
+                    /// The user is KYC approved and is eligible
+                    return .accountSelector
+                case (.approved, false):
+                    /// The user is KYC approved and is ineligible
+                    return .ineligible
+                case (.failed, _),
+                     (.expired, _):
+                    /// The user have been rejected
+                    return .verificationFailed
+                case (.underReview, _),
+                     (.pending, _):
                     /// If the user's KYC status is still under-review
                     /// or pending, we can just start KYC and it will show their status.
-                case (.underReview, true),
-                     (.pending, true):
-                    state = .kyc
+                    return .kyc
                 }
-                return States(current: state, previous: [.inactive])
             }
+            .map { States(current: $0, previous: [.inactive]) }
             .subscribe(onSuccess: { [weak self] (states) in
                 guard let self = self else { return }
                 self.apply(action: .next(to: states.current), states: states)
