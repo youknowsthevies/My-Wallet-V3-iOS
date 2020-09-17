@@ -1,5 +1,5 @@
 //
-//  MoneyValueTests.swift
+//  MoneyValueChangeTests.swift
 //  PlatformKitTests
 //
 //  Created by Daniel on 15/07/2020.
@@ -7,11 +7,10 @@
 //
 
 import XCTest
-
 @testable import PlatformKit
 
 final class MoneyValueChangeTests: XCTestCase {
-    
+
     // Test value before 10% increase
     func testFiatValueBefore10PercentIncrease() throws {
         let value = FiatValue.create(minor: "1500", currency: .GBP)!

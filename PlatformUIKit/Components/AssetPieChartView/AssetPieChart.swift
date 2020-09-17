@@ -32,7 +32,7 @@ public struct AssetPieChart {
             
             init(asset: CurrencyType, percentage: MoneyValue) {
                 self.asset = asset
-                self.percentage = Double(truncating: percentage.displayMajorValue as NSNumber)
+                self.percentage = percentage.displayMajorValue.doubleValue
             }
         }
 
