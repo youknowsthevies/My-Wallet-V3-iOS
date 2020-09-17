@@ -64,6 +64,19 @@ public final class SellRouterInteractor: Interactor {
         /// Inactive state - pre flow
         case inactive
         
+        /// The user is ineligible for `Sell`
+        case ineligible
+        
+        /// The user has been KYC rejected
+        case verificationFailed
+        
+        /// The SFScreenViewController showing the region availability URL
+        /// for an ineligible user
+        case ineligibilityURL
+        
+        /// The SFScreenViewController showing the form to contact support
+        case contactSupportURL
+        
         /// An introduction screen that should show if the user
         /// has not completed KYC
         case introduction
@@ -150,6 +163,7 @@ public final class SellRouterInteractor: Interactor {
     private let kycTiersService: KYCTiersServiceAPI
     private let uiUtilityProvider: UIUtilityProviderAPI
     private let accountSelectionService: AccountSelectionServiceAPI
+    private let featureFetching: FeatureFetching
     private let statesRelay = BehaviorRelay<States>(value: .inactive)
     private let actionRelay = PublishRelay<Action>()
     private var disposeBag = DisposeBag()
@@ -158,9 +172,11 @@ public final class SellRouterInteractor: Interactor {
     
     public init(accountSelectionService: AccountSelectionServiceAPI,
                 uiUtilityProvider: UIUtilityProviderAPI,
-                kycTiersService: KYCTiersServiceAPI) {
+                kycTiersService: KYCTiersServiceAPI,
+                featureFetching: FeatureFetching) {
         self.uiUtilityProvider = uiUtilityProvider
         self.kycTiersService = kycTiersService
+        self.featureFetching = featureFetching
         self.accountSelectionService = accountSelectionService
         super.init()
         _ = setup
@@ -176,17 +192,39 @@ public final class SellRouterInteractor: Interactor {
             .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
         
-        kycTiersService
-            .fetchTiers()
+        Single.zip(
+                kycTiersService.fetchTiers(),
+                featureFetching.fetchBool(for: .simpleBuyEnabled),
+                featureFetching.fetchBool(for: .simpleBuyFundsEnabled)
+            )
+            .map { (tiers: $0.0, isEnabled: ($0.1 && $0.2)) }
             .handleLoaderForLifecycle(
                 loader: uiUtilityProvider.loader,
                 style: .circle
             )
-            .map { $0.isTier2Approved }
-            .map { isTier2Approved -> States in
-                let state: State = isTier2Approved ? .accountSelector : .introduction
-                let states = States(current: state, previous: [.inactive])
-                return states
+            .map { (tiers: KYC.UserTiers, isEnabled: Bool) -> States in
+                let status = tiers.tierAccountStatus(for: .tier2)
+                let state: State
+                switch (status, isEnabled) {
+                case (_, false):
+                    state = .ineligible
+                    /// The feature is enabled and the user is KYC approved
+                case (.approved, true):
+                    state = .accountSelector
+                    /// The user has not completed KYC and the feature is enabled
+                case (.none, true):
+                    state = .introduction
+                    /// The feature is enabled but they have been rejected
+                case (.failed, true),
+                     (.expired, true):
+                    state = .verificationFailed
+                    /// If the user's KYC status is still under-review
+                    /// or pending, we can just start KYC and it will show their status.
+                case (.underReview, true),
+                     (.pending, true):
+                    state = .kyc
+                }
+                return States(current: state, previous: [.inactive])
             }
             .subscribe(onSuccess: { [weak self] (states) in
                 guard let self = self else { return }
@@ -200,21 +238,44 @@ public final class SellRouterInteractor: Interactor {
         disposeBag = DisposeBag()
     }
     
+    public func nextFromVerificationFailed() {
+        let states = States(current: .contactSupportURL, previous: [.inactive])
+        apply(action: .next(to: states.current), states: states)
+    }
+    
+    public func nextFromIneligible() {
+        let states = States(current: .ineligibilityURL, previous: [.inactive])
+        apply(action: .next(to: states.current), states: states)
+    }
+    
     public func nextFromIntroduction() {
         let states = States(current: .kyc, previous: [.inactive])
         apply(action: .next(to: states.current), states: states)
     }
     
     public func nextFromKYC() {
-        kycTiersService
-            .fetchTiers()
+        Single.zip(
+                kycTiersService.fetchTiers(),
+                featureFetching.fetchBool(for: .simpleBuyEnabled),
+                featureFetching.fetchBool(for: .simpleBuyFundsEnabled)
+            )
+            .map { (tiers: $0.0, isEnabled: ($0.1 && $0.2)) }
             .handleLoaderForLifecycle(
                 loader: uiUtilityProvider.loader,
               style: .circle
             )
-            .map { $0.isTier2Approved }
-            .map { isTier2Approved -> States in
-                let state: State = isTier2Approved ? .accountSelector : .inactive
+            .map { values -> States in
+                let isTier2Approved = values.tiers.isTier2Approved
+                let isEnabled = values.isEnabled
+                let state: State
+                switch (isTier2Approved, isEnabled) {
+                case (true, true):
+                    state = .accountSelector
+                case (_, false):
+                    state = .ineligible
+                case (false, true):
+                    state = .inactive
+                }
                 let states = States(current: state, previous: [.inactive])
                 return states
             }

@@ -398,7 +398,8 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
             routerInteractor: SellRouterInteractor(
                 accountSelectionService: DataProvider.default.buySell.accountSelectionService,
                 uiUtilityProvider: UIUtilityProvider.default,
-                kycTiersService: KYCServiceProvider.default.tiers
+                kycTiersService: KYCServiceProvider.default.tiers,
+                featureFetching: resolve()
             ),
             kycServiceProvider: resolve(),
             analyticsRecorder: resolve(),

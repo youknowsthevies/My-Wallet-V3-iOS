@@ -12,6 +12,7 @@ import Localization
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import SafariServices
 import ToolKit
 
 public final class SellRouter: PlatformUIKit.Router<SellRouterInteractor> {
@@ -84,12 +85,25 @@ public final class SellRouter: PlatformUIKit.Router<SellRouterInteractor> {
         case .checkout(let data):
             navigationToCheckoutScreen(with: data)
         case .kyc:
-            navigationRouter.dismiss { [weak self] in
-                guard let self = self else { return }
-                self.showKYC()
+            switch navigationRouter.navigationControllerAPI != nil {
+            case true:
+                navigationRouter.dismiss { [weak self] in
+                    guard let self = self else { return }
+                    self.showKYC()
+                }
+            case false:
+                showKYC()
             }
         case .introduction:
             navigateToSellIntroductionScreen()
+        case .ineligible:
+            navigateToIneligibleScreen()
+        case .verificationFailed:
+            navigateToVerificationFailedScreen()
+        case .ineligibilityURL:
+            navigateToIneligibilityPage()
+        case .contactSupportURL:
+            navigateToContactSupportPage()
         case .cancel(let data):
             break
         case .pendingOrderCompleted(orderDetails: let orderDetails):
@@ -117,7 +131,11 @@ public final class SellRouter: PlatformUIKit.Router<SellRouterInteractor> {
              .pendingOrderCompleted,
              .fiatAccountSelector,
              .introduction,
-             .kyc:
+             .kyc,
+             .ineligibilityURL,
+             .contactSupportURL,
+             .ineligible,
+             .verificationFailed:
             navigationRouter.dismiss()
         }
     }
@@ -146,6 +164,39 @@ public final class SellRouter: PlatformUIKit.Router<SellRouterInteractor> {
             .disposed(by: kycDisposeBag)
         
         kycRouter.start(tier: .tier2)
+    }
+    
+    private func navigateToVerificationFailedScreen() {
+        navigationRouter.present(viewController: builder.buySellKYCInvalidViewController())
+    }
+    
+    private func navigateToContactSupportPage() {
+        navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: { [weak self] in
+            guard let self = self else { return }
+            guard let top = self.navigationRouter.topMostViewControllerProvider.topMostViewController else { return }
+            guard let url = URL(string: "https://support.blockchain.com/hc/en-us/requests/new?ticket_form_id=360000186571") else { return }
+            let controller = SFSafariViewController(url: url)
+            controller.modalPresentationStyle = .overCurrentContext
+            top.present(controller, animated: true, completion: nil)
+        })
+    }
+    
+    private func navigateToIneligibilityPage() {
+        navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: { [weak self] in
+            guard let self = self else { return }
+            guard let top = self.navigationRouter.topMostViewControllerProvider.topMostViewController else { return }
+            guard let url = URL(string: "https://support.blockchain.com/hc/en-us/articles/360040015211-What-countries-are-supported-for-Buy-Crypto-") else { return }
+            let controller = SFSafariViewController(url: url)
+            controller.modalPresentationStyle = .overCurrentContext
+            top.present(controller, animated: true, completion: nil)
+        })
+    }
+    
+    private func navigateToIneligibleScreen() {
+        let viewController = builder.ineligibleViewController()
+        viewController.transitioningDelegate = sheetPresenter
+        viewController.modalPresentationStyle = .custom
+        navigationRouter.topMostViewControllerProvider.topMostViewController?.present(viewController, animated: true, completion: nil)
     }
     
     private func navigateToSellIntroductionScreen() {
@@ -182,4 +233,8 @@ public final class SellRouter: PlatformUIKit.Router<SellRouterInteractor> {
         let viewController = builder.checkoutScreenViewController(data: data)
         navigationRouter.present(viewController: viewController)
     }
+    
+    private lazy var sheetPresenter: BottomSheetPresenting = {
+        BottomSheetPresenting(ignoresBackroundTouches: false)
+    }()
 }

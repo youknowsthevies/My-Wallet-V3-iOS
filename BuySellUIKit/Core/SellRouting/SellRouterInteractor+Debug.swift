@@ -12,6 +12,14 @@ extension SellRouterInteractor.State: CustomDebugStringConvertible {
         switch self {
         case .inactive:
             return "inactive"
+        case .ineligible:
+            return "ineligible"
+        case .verificationFailed:
+            return "verificationFailed"
+        case .ineligibilityURL:
+            return "ineligibilityURL"
+        case .contactSupportURL:
+            return "contactSupportURL"
         case .introduction:
             return "introduction"
         case .kyc:
