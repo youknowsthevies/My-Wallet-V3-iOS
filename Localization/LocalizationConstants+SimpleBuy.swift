@@ -82,8 +82,8 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "Your available balance to withdraw is %@."
                 )
                 public static let remaining = NSLocalizedString(
-                    "The remaining balance %@ will be available to be withdrawn within 7 days.",
-                    comment: "The remaining balance %@ will be available to be withdrawn within 7 days."
+                    "The remaining balance %@ will be available to be withdrawn within 3 days.",
+                    comment: "The remaining balance %@ will be available to be withdrawn within 3 days."
                 )
             }
         }
@@ -111,8 +111,8 @@ extension LocalizationConstants.SimpleBuy {
             public enum WithdrawLocked {
                 public static let title = NSLocalizedString("Funds Locked", comment: "Funds Locked")
                 public static let description = NSLocalizedString(
-                    "Your crypto will be available to be withdrawn within 7 days.",
-                    comment: "Your crypto will be available to be withdrawn within 7 days."
+                    "Your crypto will be available to be withdrawn within 3 days.",
+                    comment: "Your crypto will be available to be withdrawn within 3 days."
                 )
             }
             public static let action = NSLocalizedString("OK", comment: "OK")
@@ -571,7 +571,7 @@ extension LocalizationConstants.SimpleBuy {
             )
 
             public static let cards = NSLocalizedString(
-                "Your final amount might change due to market activity. An initial hold period of 7 days will be applied to your funds.",
+                "Your final amount might change due to market activity. An initial hold period of 3 days will be applied to your funds.",
                 comment: "Simple buy: checkout screen notice label for cards"
             )
 
