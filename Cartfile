@@ -1,4 +1,4 @@
-binary "https://cdn.veriff.me/ios/carthage/VeriffSDK.json" == 3.3.0
+binary "https://cdn.veriff.me/ios/carthage/VeriffSDK.json" == 3.4.0
 binary "https://cdn.veriff.me/ios/carthage/VeriffWebRTC.json" == 1.0.1
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json" == 6.30.0
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseCrashlyticsBinary.json" == 6.30.0
@@ -15,5 +15,5 @@ github "marmelroy/PhoneNumberKit" ~> 3.2
 github "ReactiveX/RxSwift" ~> 5.1
 github "RxSwiftCommunity/RxDataSources" ~> 4.0
 github "thisisalexmcgregor/stellar-ios-mac-sdk" "blockchain"
-github "thisisalexmcgregor/web3swift" "blockchain"
+github "thisisalexmcgregor/web3swift" "paulo/IOS-3758/xcode-12-support"
 github "jackpooleybc/DIKit" "safe-property-wrappers"

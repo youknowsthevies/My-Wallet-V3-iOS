@@ -230,7 +230,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
 
         viewModel.tap
             .emit(weak: self) { (self) in
-                self?.stateService.paymentMethods()
+                self.stateService.paymentMethods()
             }
             .disposed(by: disposeBag)
         
