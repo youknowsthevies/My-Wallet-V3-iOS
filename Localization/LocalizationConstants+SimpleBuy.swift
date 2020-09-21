@@ -15,6 +15,51 @@ extension LocalizationConstants {
 }
 
 extension LocalizationConstants.SimpleBuy {
+    public enum IneligibleScreen {
+        public enum KYCInvalid { /* TODO */ }
+        public enum Country {
+            public static let title = NSLocalizedString("Sell Coming Soon for", comment: "Sell Coming Soon for")
+            public static let subtitle = NSLocalizedString(
+                "Currently, we don't support selling crypto in %@. We'll send you an update when we do.",
+                comment: "Currently, we don't support selling crypto in %@. We'll send you an update when we do."
+            )
+            public static let learnMore = NSLocalizedString("Learn More", comment: "Learn More")
+        }
+    }
+    public enum KYCInvalid {
+        public static let title = NSLocalizedString("Unable to Verify Your ID", comment: "")
+        public static let subtitle = NSLocalizedString("We were unable to verify your identity. This can happen for a few reasons.", comment: "")
+        public static let footer = NSLocalizedString("If you think this was a mistake or would like a manual review of your account, please contact support.", comment: "If you think this was a mistake or would like a manual review of your account, please contact support.")
+        public static let disclaimer = NSLocalizedString(
+            "If you think this was a mistake or would like a manual review of your account, please contact support.",
+            comment: "If you think this was a mistake or would like a manual review of your account, please contact support."
+        )
+        public static let button = NSLocalizedString("Contact Support", comment: "Contact Support")
+        public enum List {
+            public enum First {
+                public static let title = NSLocalizedString("Invalid ID", comment: "Invalid ID")
+                public static let description = NSLocalizedString(
+                    "The image or document uploaded did not match the requirements.",
+                    comment: "The image or document uploaded did not match the requirements."
+                )
+            }
+            public enum Second {
+                public static let title = NSLocalizedString("Information Mismatch", comment: "Information Mismatch")
+                public static let description = NSLocalizedString(
+                    "All information must appear exactly as it does on your legal documents. note: Please do not use a nickname.",
+                    comment: "All information must appear exactly as it does on your legal documents. note: Please do not use a nickname."
+                )
+            }
+            public enum Third {
+                public static let title = NSLocalizedString("Blocked by Local Laws", comment: "Blocked by Local Laws")
+                public static let description = NSLocalizedString(
+                    "At Blockchain.com, we strive to adhere to any and all local laws. Based on your location, we cannot allow the buying or selling digital currencies at this time.",
+                    comment: "At Blockchain.com, we strive to adhere to any and all local laws. Based on your location, we cannot allow the buying or selling digital currencies at this time."
+                )
+            }
+        }
+        
+    }
     public enum Withdrawal {
         public static let title = NSLocalizedString(
             "Send to",
@@ -37,8 +82,8 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "Your available balance to withdraw is %@."
                 )
                 public static let remaining = NSLocalizedString(
-                    "The remaining balance %@ will be available to be withdrawn within 7 days.",
-                    comment: "The remaining balance %@ will be available to be withdrawn within 7 days."
+                    "The remaining balance %@ will be available to be withdrawn within 3 days.",
+                    comment: "The remaining balance %@ will be available to be withdrawn within 3 days."
                 )
             }
         }
@@ -66,8 +111,8 @@ extension LocalizationConstants.SimpleBuy {
             public enum WithdrawLocked {
                 public static let title = NSLocalizedString("Funds Locked", comment: "Funds Locked")
                 public static let description = NSLocalizedString(
-                    "Your crypto will be available to be withdrawn within 7 days.",
-                    comment: "Your crypto will be available to be withdrawn within 7 days."
+                    "Your crypto will be available to be withdrawn within 3 days.",
+                    comment: "Your crypto will be available to be withdrawn within 3 days."
                 )
             }
             public static let action = NSLocalizedString("OK", comment: "OK")
@@ -526,7 +571,7 @@ extension LocalizationConstants.SimpleBuy {
             )
 
             public static let cards = NSLocalizedString(
-                "Your final amount might change due to market activity. An initial hold period of 7 days will be applied to your funds.",
+                "Your final amount might change due to market activity. An initial hold period of 3 days will be applied to your funds.",
                 comment: "Simple buy: checkout screen notice label for cards"
             )
 

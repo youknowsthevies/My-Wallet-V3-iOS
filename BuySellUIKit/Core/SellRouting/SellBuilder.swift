@@ -19,6 +19,15 @@ public protocol SellBuilderAPI: AnyObject {
     
     var routerInteractor: SellRouterInteractor { get }
     
+    /// Builds the `BuySellKYCInvalidViewController` screen.
+    /// Shown to users who have been rejected from KYC.
+    func buySellKYCInvalidViewController() -> UIViewController
+    
+    /// Builds the `ineligible` screen where the user is shown
+    /// that due to their KYC status or region, they are not eligible
+    /// for `Sell`
+    func ineligibleViewController() -> UIViewController
+    
     /// Start of `Sell` if the user has not completed KYC.
     func sellIdentityIntroductionViewController() -> UIViewController
     
@@ -84,6 +93,11 @@ public final class SellBuilder: SellBuilderAPI {
     }
     
     // MARK: - SellBuilderAPI
+    
+    public func buySellKYCInvalidViewController() -> UIViewController {
+        let presenter = BuySellKYCInvalidScreenPresenter(routerInteractor: routerInteractor)
+        return BuySellKYCInvalidViewController(presenter: presenter)
+    }
     
     public func accountSelectionViewController() -> UIViewController {
         let interactor = AccountPickerScreenInteractor(
@@ -210,6 +224,12 @@ public final class SellBuilder: SellBuilderAPI {
         )
         let viewController = DetailsScreenViewController(presenter: presenter)
         return viewController
+    }
+    
+    public func ineligibleViewController() -> UIViewController {
+        let presenter = BuySellIneligibleScreenPresenter(interactor: .init(dataRepositoryAPI: buySellServiceProvider.dataRepository), router: routerInteractor)
+        let controller = BuySellIneligibleRegionViewController(presenter: presenter)
+        return controller
     }
 }
 

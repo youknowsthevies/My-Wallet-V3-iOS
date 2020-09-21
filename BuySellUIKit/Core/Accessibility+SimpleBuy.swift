@@ -17,6 +17,19 @@ extension Accessibility.Identifier {
             static let themeBackgroundImageView = "\(prefix)themeBackgroundImageView"
         }
         
+        enum KYCInvalidScreen {
+            private static let prefix = "KYCInvalidScreen."
+            static let contactSupportButton = "\(prefix)contactSupportButton"
+            static let disclaimerLabel = "\(prefix)disclaimerLabel"
+        }
+        
+        enum IneligibleScreen {
+            private static let prefix = "IneligibleScreen."
+            static let title = "\(prefix)title"
+            static let subtitle = "\(prefix)subtitle"
+            static let learnMoreButton = "\(prefix)learnMoreButton"
+        }
+        
         enum BuyScreen {
             private static let prefix = "Buy."
             static let minimumBuy = "\(prefix)MinimumBuy"

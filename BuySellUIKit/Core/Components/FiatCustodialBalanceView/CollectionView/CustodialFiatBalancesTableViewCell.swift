@@ -8,8 +8,8 @@
 
 import UIKit
 import PlatformUIKit
-import RxSwift
 import RxCocoa
+import RxSwift
 import ToolKit
 
 /// A cell that contains a horizontal collection view with the fiat balances
@@ -28,6 +28,7 @@ public final class FiatCustodialBalancesTableViewCell: UITableViewCell {
                 .drive(weak: self) { (self, hasMultipleBalances) in
                     if hasMultipleBalances {
                         self.collectionView.collectionViewFlowLayout.minimumLineSpacing = Spacing.inner
+                        self.collectionView.collectionViewFlowLayout.minimumInteritemSpacing = Spacing.inner
                         self.collectionView.collectionViewFlowLayout.sectionInset = UIEdgeInsets(
                             top: 0,
                             left: Spacing.outer,
@@ -37,6 +38,7 @@ public final class FiatCustodialBalancesTableViewCell: UITableViewCell {
                         self.separatorView.isHidden = true
                     } else {
                         self.collectionView.collectionViewFlowLayout.minimumLineSpacing = 0
+                        self.collectionView.collectionViewFlowLayout.minimumInteritemSpacing = 0
                         self.collectionView.collectionViewFlowLayout.sectionInset = .zero
                         self.separatorView.isHidden = false
                     }
