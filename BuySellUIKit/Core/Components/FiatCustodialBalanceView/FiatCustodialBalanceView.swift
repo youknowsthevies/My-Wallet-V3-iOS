@@ -92,11 +92,13 @@ public final class FiatCustodialBalanceView: UIView {
         
         fiatCurrencyCodeLabel.verticalContentHuggingPriority = .penultimateHigh
         fiatCurrencyNameLabel.verticalContentHuggingPriority = .defaultHigh
+        fiatCurrencyNameLabel.horizontalContentCompressionResistancePriority = .defaultHigh
         
         for view in [fiatCurrencyNameLabel, fiatCurrencyCodeLabel] {
             stackView.addArrangedSubview(view)
         }
         
+        fiatBalanceView.layout(edge: .leading, to: .trailing, of: stackView, offset: Spacing.interItem)
         fiatBalanceView.layoutToSuperview(axis: .vertical, offset: Spacing.inner)
         fiatBalanceView.layoutToSuperview(.trailing, offset: -Spacing.outer, priority: .penultimateHigh)
     }

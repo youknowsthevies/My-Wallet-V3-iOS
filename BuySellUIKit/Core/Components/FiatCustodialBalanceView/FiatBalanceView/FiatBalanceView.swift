@@ -75,6 +75,11 @@ public final class FiatBalanceView: UIView {
         stackView.axis = .vertical
         stackView.fillSuperview()
         stackView.distribution = .fillProportionally
+        quoteLabel.horizontalContentCompressionResistancePriority = .fittingSizeLevel
+        quoteLabel.horizontalContentHuggingPriority = .fittingSizeLevel
+        quoteLabel.adjustsFontSizeToFitWidth = true
+        quoteLabel.minimumScaleFactor = 0.4
+        
         for view in [quoteLabel, baseLabel] {
             stackView.addArrangedSubview(view)
         }
@@ -129,6 +134,7 @@ public final class FiatBalanceView: UIView {
         switch presentation.quoteBalanceLabelContent {
         case .visible(let content):
             quoteLabel.content = content
+            quoteLabel.isHidden = false
             stackView.addArrangedSubview(quoteLabel)
             stackView.addArrangedSubview(baseLabel)
         case .hidden:
