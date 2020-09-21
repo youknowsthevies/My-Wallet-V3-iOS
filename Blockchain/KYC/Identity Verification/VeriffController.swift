@@ -17,7 +17,7 @@ protocol VeriffController: VeriffDelegate {
 
     func veriffCredentialsRequest()
 
-    func launchVeriffController(credentials: VeriffCredentials, version: String)
+    func launchVeriffController(credentials: VeriffCredentials)
 
     // Completion handlers
 
@@ -33,54 +33,45 @@ extension VeriffController where Self: UIViewController {
         Veriff.shared
     }
 
-    func launchVeriffController(credentials: VeriffCredentials, version: String) {
-
-        let token = credentials.key
-        let value = credentials.url
-        guard var url = URL(string: value) else { return }
-
-        /// Other clients have different SDK behaviors and expect that the
-        /// `sessionURL` include the `sessionToken` as a parameter. Also
-        /// some clients don't need the version number as a parameter. iOS
-        /// does, otherwise we get a server error.
-        if url.lastPathComponent != version {
-            var components = URLComponents(string: value)
-            components?.path = version
-            guard let modifiedURL = components?.url else { return }
-            url = modifiedURL
-        }
-        guard let config = VeriffConfiguration(sessionToken: token, sessionUrl: url.absoluteString) else {
-            return
-        }
-
-        veriff.set(configuration: config)
-
+    func launchVeriffController(credentials: VeriffCredentials) {
         veriff.delegate = self
-
-        veriff.startAuthentication()
+        veriff.startAuthentication(sessionUrl: credentials.url)
     }
 }
 
 extension VeriffController {
-    func onSession(result: VeriffResult, sessionToken: String) {
-        switch result.code {
-        case .UNABLE_TO_ACCESS_CAMERA:
-            onVeriffError(message: LocalizationConstants.Errors.cameraAccessDeniedMessage)
-        case .STATUS_ERROR_SESSION,
-             .STATUS_ERROR_NETWORK,
-             .STATUS_ERROR_UNKNOWN,
-             .UNSUPPORTED_SDK_VERSION:
-            onVeriffError(message: LocalizationConstants.Errors.genericError)
-        case .STATUS_DONE,
-             .STATUS_SUBMITTED:
-            // DONE: The client got declined while he was still using the SDK
-            // - this status can only occur if video_feature is used and FCM token is set.
-            // NO_IDENTIFICATION: The session status is finished from clients perspective.
+    func sessionDidEndWithResult(_ result: Veriff.Result) {
+
+        switch result.status {
+        case .error(let error):
+            onVeriffError(message: error.localizedErrorMessage)
+        case .done:
             onVeriffSubmissionCompleted()
-        case .STATUS_USER_CANCELED:
+        case .canceled:
             onVeriffCancelled()
-        case .UNABLE_TO_ACCESS_MICROPHONE:
-            onVeriffError(message: LocalizationConstants.Errors.microphoneAccessDeniedMessage)
+        @unknown default:
+            onVeriffCancelled()
+        }
+    }
+}
+
+extension Veriff.Error {
+    var localizedErrorMessage: String {
+        switch self {
+        case .cameraUnavailable:
+            return LocalizationConstants.Errors.cameraAccessDeniedMessage
+        case .microphoneUnavailable:
+            return LocalizationConstants.Errors.microphoneAccessDeniedMessage
+        case .deprecatedSDKVersion,
+             .localError,
+             .networkError,
+             .serverError,
+             .unknown,
+             .uploadError,
+             .videoFailed:
+            return LocalizationConstants.Errors.genericError
+        @unknown default:
+            return LocalizationConstants.Errors.genericError
         }
     }
 }

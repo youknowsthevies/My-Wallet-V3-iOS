@@ -49,8 +49,6 @@ final class KYCResubmitIdentityController: KYCBaseViewController, ProgressableVi
 
     // MARK: - Private Properties
 
-    private let veriffVersion: String = "/v1/"
-
     private let currentProvider = VerificationProviders.veriff
 
     private var countryCode: String?
@@ -158,7 +156,7 @@ extension KYCResubmitIdentityController: VeriffController {
     func veriffCredentialsRequest() {
         delegate?.createCredentials(onSuccess: { [weak self] credentials in
             guard let this = self else { return }
-            this.launchVeriffController(credentials: credentials, version: this.veriffVersion)
+            this.launchVeriffController(credentials: credentials)
         }, onError: { error in
             Logger.shared.error("Failed to get Veriff credentials. Error: \(error.localizedDescription)")
         })
