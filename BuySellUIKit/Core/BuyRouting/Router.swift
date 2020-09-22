@@ -11,6 +11,7 @@ import Localization
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import SafariServices
 import ToolKit
 
 public protocol RouterAPI: class {
@@ -166,6 +167,8 @@ public final class Router: RouterAPI {
             showKYC(afterDismissal: true)
         case .kycBeforeCheckout:
             showKYC(afterDismissal: false)
+        case .showURL(let url):
+            showSafariViewController(with: url)
         case .pendingKycApproval, .ineligible:
             /// Show pending KYC approval for `ineligible` state as well, since the expected poll result would be
             /// ineligible anyway
@@ -209,6 +212,16 @@ public final class Router: RouterAPI {
         /// The reason that it is called directly now is that the `Self` is not a RIBs based. Once BuySell's router
         /// moves into RIBs we will delete that like
         cardRouter.load()
+    }
+    
+    private func showSafariViewController(with url: URL) {
+        navigationRouter.dismiss { [weak self] in
+            guard let self = self else { return }
+            let controller = SFSafariViewController(url: url)
+            controller.modalPresentationStyle = .overFullScreen
+            guard let top = self.navigationRouter.topMostViewControllerProvider.topMostViewController else { return }
+            top.present(controller, animated: true, completion: nil)
+        }
     }
     
     private func showFiatCurrencyChangeScreen(selectedCurrency: FiatCurrency) {

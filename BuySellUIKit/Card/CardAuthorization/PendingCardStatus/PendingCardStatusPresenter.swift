@@ -20,6 +20,13 @@ final class PendingCardStatusPresenter: Presenter, PendingStatePresenterAPI {
     
     // MARK: - Properties
     
+    var tap: Observable<URL> {
+        viewModelRelay
+            .asObservable()
+            .compactMap { $0 }
+            .flatMap(\.tap)
+    }
+    
     var viewModel: Driver<PendingStateViewModel> {
         viewModelRelay
             .asDriver()

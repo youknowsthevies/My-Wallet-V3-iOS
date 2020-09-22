@@ -19,7 +19,7 @@ public final class PendingStateViewController: BaseScreenViewController {
 
     @IBOutlet private var actionButton: ButtonView!
     @IBOutlet private var titleLabel: UILabel!
-    @IBOutlet private var subtitleLabel: UILabel!
+    @IBOutlet private var subtitleTextView: InteractableTextView!
     private var compositeStatusView: CompositeStatusView!
 
     // MARK: - Properties
@@ -64,7 +64,7 @@ public final class PendingStateViewController: BaseScreenViewController {
 
     private func setupAccessibility() {
         titleLabel.accessibilityIdentifier = AccessibilityId.titleLabel
-        subtitleLabel.accessibilityIdentifier = AccessibilityId.subtitleLabel
+        subtitleTextView.accessibilityIdentifier = AccessibilityId.subtitleLabel
         actionButton.accessibilityIdentifier = AccessibilityId.button
     }
 
@@ -87,7 +87,7 @@ public final class PendingStateViewController: BaseScreenViewController {
 
     fileprivate func update(with model: PendingStateViewModel) {
         titleLabel.attributedText = model.title
-        subtitleLabel.attributedText = model.subtitle
+        subtitleTextView.viewModel = model.subtitleTextViewModel
         compositeStatusView.currentTypeRelay.accept(model.compositeStatusViewType)
         if let buttonModel = model.button {
             actionButton.viewModel = buttonModel

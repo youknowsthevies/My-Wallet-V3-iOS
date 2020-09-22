@@ -7,6 +7,7 @@
 //
 
 import RxCocoa
+import RxSwift
 
 public protocol PendingStatePresenterAPI: class {
     var title: String { get }

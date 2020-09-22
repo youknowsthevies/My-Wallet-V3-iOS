@@ -598,6 +598,7 @@ extension LocalizationConstants.SimpleBuy {
                         "We’re completing your purchase now.",
                         comment: "Simple buy: final screen subtitle: We’re completing your purchase now."
                     )
+                    public static let learnMore = NSLocalizedString("Learn More", comment: "Learn More")
                 }
                 public enum Sell {
                     public static let titlePrefix = NSLocalizedString(
@@ -616,6 +617,7 @@ extension LocalizationConstants.SimpleBuy {
                         "Purchased",
                         comment: "Simple buy: final screen title suffix: E.G 0.0052568 BTC Purchased"
                     )
+                    public static let learnMore = NSLocalizedString("Learn more", comment: "Learn more")
                 }
                 public enum Sell {
                     public static let titleSuffix = NSLocalizedString(
@@ -625,6 +627,12 @@ extension LocalizationConstants.SimpleBuy {
                     public static let cash = NSLocalizedString("Cash", comment: "Cash")
                 }
                 public enum Subtitle {
+                    public enum Buy {
+                        public static let subtitle = NSLocalizedString(
+                            "These funds will be available to sell into your %@ fiat wallet immediately, but you will not be able to send or withdraw these funds from Blockchain.com for up to 3 days.",
+                            comment: "These funds will be available to sell into your %@ fiat wallet immediately, but you will not be able to send or withdraw these funds from Blockchain.com for up to 3 days."
+                        )
+                    }
                     public static let prefix = NSLocalizedString(
                         "Your",
                         comment: "Simple buy: final screen subtitle prefix: Your Asset is now available in your Wallet."

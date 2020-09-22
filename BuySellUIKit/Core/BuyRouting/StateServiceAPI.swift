@@ -74,6 +74,10 @@ public protocol PendingOrderCompletionStateServiceAPI: class {
     func orderCompleted()
 }
 
+public protocol URLSelectionServiceAPI: class {
+    func show(url: URL)
+}
+
 /// A composition of all of Simple-Buy state-services
 public typealias StateServiceAPI = RoutingStateEmitterAPI &
                                    StateReceiverServiceAPI &
@@ -86,4 +90,5 @@ public typealias StateServiceAPI = RoutingStateEmitterAPI &
                                    CardAuthorizationRoutingInteractorAPI &
                                    PendingOrderCompletionStateServiceAPI &
                                    ElibilityRelayAPI &
+                                   URLSelectionServiceAPI &
                                    PaymentMethodsStateAPI

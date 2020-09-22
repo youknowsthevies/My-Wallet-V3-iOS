@@ -28,6 +28,7 @@ public final class SellPendingOrderRoutingInteractor: PendingOrderRoutingInterac
             .disposed(by: disposeBag)
     }()
     
+    public let tapRelay = PublishRelay<URL>()
     public let stateRelay = PublishRelay<PendingOrderState>()
     public let previousRelay = PublishRelay<Void>()
     

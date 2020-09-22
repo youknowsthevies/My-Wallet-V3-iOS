@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import RxSwift
 import ToolKit
 
 public struct PendingStateViewModel {
@@ -37,8 +38,15 @@ public struct PendingStateViewModel {
 
     let compositeStatusViewType: CompositeStatusViewType
     let title: NSAttributedString
-    let subtitle: NSAttributedString
+    let subtitleTextViewModel: InteractableTextViewModel
     let button: ButtonViewModel?
+    
+    /// Steams the url upon each tap
+    public var tap: Observable<URL> {
+        subtitleTextViewModel
+            .tap
+            .map(\.url)
+    }
     
     static private func title(_ string: String) -> NSAttributedString {
         NSAttributedString(
@@ -48,21 +56,32 @@ public struct PendingStateViewModel {
         )
     }
     
-    static private func subtitle(_ string: String) -> NSAttributedString {
-        NSAttributedString(
-            string,
-            font: .main(.regular, 14),
-            color: .descriptionText
-        )
-    }
-    
     public init(compositeStatusViewType: CompositeStatusViewType,
                 title: String,
                 subtitle: String,
+                interactibleText: String? = nil,
+                url: String? = nil,
                 button: ButtonViewModel? = nil) {
         self.compositeStatusViewType = compositeStatusViewType
         self.title = Self.title(title)
-        self.subtitle = Self.subtitle(subtitle)
+        var inputs: [InteractableTextViewModel.Input] = [.text(string: subtitle)]
+        if let interactableText = interactibleText, let url = url {
+            inputs.append(.url(string: interactableText, url: url))
+        }
+        
+        self.subtitleTextViewModel = .init(
+            inputs: inputs,
+            textStyle: .init(
+                color: .descriptionText,
+                font: .main(.regular, 14.0)
+            ),
+            linkStyle: .init(
+                color: .primaryButton,
+                font: .main(.regular, 14.0
+                )
+            ),
+            alignment: .center
+        )
         self.button = button
     }
 }

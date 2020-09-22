@@ -45,7 +45,7 @@ public final class StateService: StateServiceAPI {
         /// state is trimmed off. In case `previous` is an empty array, `current` will be
         /// `.inactive`.
         func statesByRemovingLast() -> States {
-            return States(
+            States(
                 current: previous.last ?? .inactive,
                 previous: previous.dropLast()
             )
@@ -82,6 +82,9 @@ public final class StateService: StateServiceAPI {
         
         /// KYC
         case kyc
+        
+        /// Show a given URL
+        case showURL(URL)
         
         /// Pending KYC approval
         case pendingKycApproval(CheckoutData)
@@ -258,6 +261,7 @@ public final class StateService: StateServiceAPI {
              .pendingOrderDetails,
              .transferCancellation,
              .unsupportedFiat,
+             .showURL,
              .changeFiat:
             state = .inactive
             apply(
@@ -442,6 +446,15 @@ extension StateService {
     }
 }
 
+// MARK: - URLSelectionServiceAPI
+
+extension StateService {
+    public func show(url: URL) {
+        let states = self.states(byAppending: .showURL(url))
+        apply(action: .next(to: states.current), states: states)
+    }
+}
+
 // MARK: - CheckoutServiceAPI
 
 extension StateService {
@@ -585,6 +598,8 @@ extension StateService.State: CustomDebugStringConvertible {
             suffix = "intro"
         case .selectFiat:
             suffix = "select-fiat"
+        case .showURL:
+            suffix = "show-url"
         case .unsupportedFiat:
             suffix = "unsupported-fiat"
         case .buy:

@@ -20,6 +20,13 @@ public final class BuyPendingOrderRoutingInteractor: PendingOrderRoutingInteract
             .bindAndCatch(to: stateService.previousRelay)
             .disposed(by: disposeBag)
         
+        tapRelay
+            .observeOn(MainScheduler.instance)
+            .bindAndCatch(weak: self) { (self, tap) in
+                self.handle(tap: tap)
+            }
+            .disposed(by: disposeBag)
+            
         stateRelay
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, state) in
@@ -28,6 +35,7 @@ public final class BuyPendingOrderRoutingInteractor: PendingOrderRoutingInteract
             .disposed(by: disposeBag)
     }()
     
+    public let tapRelay = PublishRelay<URL>()
     public let stateRelay = PublishRelay<PendingOrderState>()
     public let previousRelay = PublishRelay<Void>()
     
@@ -46,5 +54,9 @@ public final class BuyPendingOrderRoutingInteractor: PendingOrderRoutingInteract
         case .completed:
             stateService.orderCompleted()
         }
+    }
+    
+    public func handle(tap: URL) {
+        stateService.show(url: tap)
     }
 }

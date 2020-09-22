@@ -23,6 +23,10 @@ final class PendingOrderStateScreenInteractor: Interactor {
         orderDetails.isBuy
     }
     
+    var inputCurrencyType: CurrencyType {
+        orderDetails.inputValue.currencyType
+    }
+    
     var outputCurrencyType: CurrencyType {
         orderDetails.outputValue.currencyType
     }

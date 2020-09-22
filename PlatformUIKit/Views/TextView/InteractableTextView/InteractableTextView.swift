@@ -112,6 +112,7 @@ public final class InteractableTextView: UITextView {
     /// Limits user interaction to links by identifying the closest position of touch,
     /// verifying it as a link position.
     override public func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        guard bounds.contains(point) else { return false }
         guard let position = closestPosition(to: point) else { return false }
         guard let range = tokenizer.rangeEnclosingPosition(
                 position,

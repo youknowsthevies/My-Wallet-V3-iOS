@@ -24,6 +24,10 @@ final class KYCPendingPresenter: Presenter, PendingStatePresenterAPI {
     // MARK: - Properties
 
     let title = LocalizedString.title
+    
+    var tap: Observable<URL> {
+        .empty()
+    }
 
     var viewModel: Driver<PendingStateViewModel> {
         modelRelay.asDriver()

@@ -73,6 +73,13 @@ final class PendingOrderStateScreenPresenter: Presenter, PendingStatePresenterAP
             )
         )
         
+        viewModelRelay
+            .asObservable()
+            .compactMap { $0 }
+            .flatMap(\.tap)
+            .bindAndCatch(to: routingInteractor.tapRelay)
+            .disposed(by: disposeBag)
+        
         interactor.startPolling()
             .observeOn(MainScheduler.instance)
             .subscribe(
@@ -137,6 +144,14 @@ final class PendingOrderStateScreenPresenter: Presenter, PendingStatePresenterAP
             .disposed(by: disposeBag)
         let suffix = interactor.isBuy ? LocalizedString.Success.Buy.titleSuffix : LocalizedString.Success.Sell.titleSuffix
         let name = interactor.isBuy ? currencyType.name : LocalizedString.Success.Sell.cash
+        let buySubtitle = String(format: "\(LocalizedString.Success.Subtitle.Buy.subtitle)", interactor.inputCurrencyType.displayCode)
+        let subtitle = interactor.isBuy ? buySubtitle : "\(LocalizedString.Success.Subtitle.prefix) \(name) \(LocalizedString.Success.Subtitle.suffix)"
+        var interactibleText: String?
+        var url: String?
+        if interactor.isBuy {
+            interactibleText = "\n\(LocalizedString.Success.Buy.learnMore)"
+            url = "https://support.blockchain.com/hc/en-us/articles/360048200392"
+        }
         let viewModel = PendingStateViewModel(
             compositeStatusViewType: .composite(
                 .init(
@@ -145,7 +160,9 @@ final class PendingOrderStateScreenPresenter: Presenter, PendingStatePresenterAP
                 )
             ),
             title: "\(amount) \(suffix)",
-            subtitle: "\(LocalizedString.Success.Subtitle.prefix) \(name) \(LocalizedString.Success.Subtitle.suffix)",
+            subtitle: subtitle,
+            interactibleText: interactibleText,
+            url: url,
             button: button
         )
         self.viewModelRelay.accept(viewModel)
