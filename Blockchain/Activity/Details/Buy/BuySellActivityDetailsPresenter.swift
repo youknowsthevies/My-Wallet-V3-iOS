@@ -118,7 +118,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         statusBadge.interactor.stateRelay.accept(
             .loaded(
                 next: .init(
-                    type: .default(accessibilitySuffix: description),
+                    type: event.status == .failed ? .destructive : .default(accessibilitySuffix: description),
                     description: event.status.localizedDescription
                 )
             )
@@ -183,7 +183,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
 fileprivate extension BuySellActivityItemEvent.EventStatus {
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.OrderState
-    public var localizedDescription: String {
+    var localizedDescription: String {
         switch self {
         case .pending:
             return LocalizedString.pending

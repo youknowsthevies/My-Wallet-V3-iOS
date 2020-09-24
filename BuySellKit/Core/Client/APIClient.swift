@@ -56,7 +56,7 @@ final class APIClient: SimpleBuyClientAPI {
     }
     
     private enum Constants {
-        static let simpleBuyProduct = "SIMPLE_BUY"
+        static let simpleBuyProduct = "SIMPLEBUY"
     }
     
     // MARK: - Properties
@@ -165,9 +165,13 @@ final class APIClient: SimpleBuyClientAPI {
     
     // MARK: - OrdersActivityClientAPI
     
-    func activityResponse(fiatCurrency: FiatCurrency) -> Single<OrdersActivityResponse> {
+    func activityResponse(fiatCurrency: FiatCurrency, pendingOnly: Bool) -> Single<OrdersActivityResponse> {
         let path = Path.transactions
         let parameters = [
+            URLQueryItem(
+                name: Parameter.pendingOnly,
+                value: pendingOnly ? "true" : "false"
+            ),
             URLQueryItem(
                 name: Parameter.currency,
                 value: fiatCurrency.code

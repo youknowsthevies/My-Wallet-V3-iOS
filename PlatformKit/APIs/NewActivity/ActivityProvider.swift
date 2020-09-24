@@ -59,10 +59,25 @@ public final class ActivityProvider: ActivityProviding {
         services.values.forEach { $0.refresh() }
     }
     
-    private var activityItemsLoadingStates: Observable<ActivityItemEventsLoadingStates> {
+    private var fiatActivityItemsLoadingState: Observable<ActivityItemEventsLoadingStates> {
         Observable.combineLatest(
             services[.fiat(.GBP)]!.activityLoadingStateObservable,
             services[.fiat(.EUR)]!.activityLoadingStateObservable,
+            services[.fiat(.USD)]!.activityLoadingStateObservable
+        )
+        .map {
+            ActivityItemEventsLoadingStates(
+                statePerCurrency: [
+                    .fiat(.GBP): $0.0,
+                    .fiat(.EUR): $0.1,
+                    .fiat(.USD): $0.2
+                ]
+            )
+        }
+    }
+    
+    private var cryptoActivityItemsLoadingState: Observable<ActivityItemEventsLoadingStates> {
+        Observable.combineLatest(
             services[.crypto(.ethereum)]!.activityLoadingStateObservable,
             services[.crypto(.pax)]!.activityLoadingStateObservable,
             services[.crypto(.stellar)]!.activityLoadingStateObservable,
@@ -72,13 +87,32 @@ public final class ActivityProvider: ActivityProviding {
         .map {
             ActivityItemEventsLoadingStates(
                 statePerCurrency: [
-                    .fiat(.GBP): $0.0,
-                    .fiat(.EUR): $0.1,
-                    .crypto(.ethereum): $0.2,
-                    .crypto(.pax): $0.3,
-                    .crypto(.stellar): $0.4,
-                    .crypto(.bitcoin): $0.5,
-                    .crypto(.bitcoinCash): $0.6
+                    .crypto(.ethereum): $0.0,
+                    .crypto(.pax): $0.1,
+                    .crypto(.stellar): $0.2,
+                    .crypto(.bitcoin): $0.3,
+                    .crypto(.bitcoinCash): $0.4
+                ]
+            )
+        }
+    }
+    
+    private var activityItemsLoadingStates: Observable<ActivityItemEventsLoadingStates> {
+        Observable.combineLatest(
+            fiatActivityItemsLoadingState,
+            cryptoActivityItemsLoadingState
+        )
+        .map {
+            ActivityItemEventsLoadingStates(
+                statePerCurrency: [
+                    .fiat(.GBP): $0.0[.fiat(.GBP)],
+                    .fiat(.EUR): $0.0[.fiat(.EUR)],
+                    .fiat(.USD): $0.0[.fiat(.USD)],
+                    .crypto(.ethereum): $0.1[.crypto(.ethereum)],
+                    .crypto(.pax): $0.1[.crypto(.pax)],
+                    .crypto(.stellar): $0.1[.crypto(.stellar)],
+                    .crypto(.bitcoin): $0.1[.crypto(.bitcoin)],
+                    .crypto(.bitcoinCash): $0.1[.crypto(.bitcoinCash)]
                 ]
             )
         }

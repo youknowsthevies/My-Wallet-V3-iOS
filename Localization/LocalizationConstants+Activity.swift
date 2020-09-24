@@ -42,8 +42,10 @@ extension LocalizationConstants.Activity.MainScreen {
         public static let tradeWallet = trade + " " + wallet
         public static let confirmations = NSLocalizedString("Confirmations", comment: "Confirmations")
         public static let of = NSLocalizedString("of", comment: "of")
+        public static let failed = NSLocalizedString("Failed", comment: "Failed")
         public static let send = NSLocalizedString("Send", comment: "Send")
         public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
+        public static let withdraw = NSLocalizedString("Withdraw", comment: "Withdraw")
         public static let buy = NSLocalizedString("Buy", comment: "Buy")
         public static let swap = NSLocalizedString("Swap", comment: "Swap")
         public static let receive = NSLocalizedString("Receive", comment: "Receive")

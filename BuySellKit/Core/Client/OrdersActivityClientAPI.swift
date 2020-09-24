@@ -12,6 +12,6 @@ import RxSwift
 protocol OrdersActivityClientAPI: class {
 
     /// Fetch order activity response
-    func activityResponse(fiatCurrency: FiatCurrency) -> Single<OrdersActivityResponse>
+    func activityResponse(fiatCurrency: FiatCurrency, pendingOnly: Bool) -> Single<OrdersActivityResponse>
 }
 

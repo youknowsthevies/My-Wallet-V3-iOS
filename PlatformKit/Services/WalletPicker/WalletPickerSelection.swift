@@ -9,12 +9,13 @@
 public enum WalletPickerSelection {
     case all
     case nonCustodial(CryptoCurrency)
-    case custodial(CryptoCurrency)
+    case custodial(CurrencyType)
 
-    public var currency: CryptoCurrency? {
+    public var currencyType: CurrencyType? {
         switch self {
-        case .nonCustodial(let currency),
-             .custodial(let currency):
+        case .nonCustodial(let cryptoCurrency):
+            return .crypto(cryptoCurrency)
+        case .custodial(let currency):
             return currency
         case .all:
             return nil

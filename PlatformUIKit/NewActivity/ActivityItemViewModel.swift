@@ -35,8 +35,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                 cryptoAccessiblitySuffix: accessibility.cryptoValuePrefix,
                 fiatAccessiblitySuffix: accessibility.fiatValuePrefix
             )
-        case .product(let status):
-            // TODO: Handle Product Status
+        case .product:
             return .activity(
                 cryptoAccessiblitySuffix: accessibility.cryptoValuePrefix,
                 fiatAccessiblitySuffix: accessibility.fiatValuePrefix
@@ -62,7 +61,15 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                 text = LocalizationStrings.send + " \(event.currency.displayCode)"
             }
         case .fiat(let event):
-            text = LocalizationStrings.deposit + " \(event.fiatValue.currencyCode)"
+            let type = event.type
+            switch type {
+            case .deposit:
+                text = LocalizationStrings.deposit + " \(event.fiatValue.currencyCode)"
+            case .withdrawal:
+                text = LocalizationStrings.withdraw + " \(event.fiatValue.currencyCode)"
+            case .unknown:
+                text = ""
+            }
         }
         return .init(
             text: text,
@@ -92,8 +99,29 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                 accessibility: .id(AccessibilityId.ActivityCell.descriptionLabel)
             )
         case .product(let status):
-            // TODO: Should swap event status be accounted for here?
-            // TODO: Should `Buy` event status be accounted for here?
+            let failedLabelContent: LabelContent = .init(
+                text: LocalizationStrings.failed,
+                font: descriptors.cryptoFont,
+                color: .destructive,
+                alignment: .left,
+                accessibility: .id(AccessibilityId.ActivityCell.descriptionLabel)
+            )
+            
+            switch status {
+            case .fiat(let fiatStatus):
+                if fiatStatus == .failed || fiatStatus == .rejected {
+                    return failedLabelContent
+                }
+            case .buySell(let buySellStatus):
+                if buySellStatus == .failed {
+                    return failedLabelContent
+                }
+            case .swap(let swapStatus):
+                if swapStatus == .failed {
+                    return failedLabelContent
+                }
+            }
+            
             return .init(
                 text: DateFormatter.medium.string(from: event.creationDate),
                 font: descriptors.cryptoFont,
@@ -108,6 +136,10 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
     public var eventColor: UIColor {
         switch event {
         case .buySell(let orderDetails):
+            if orderDetails.status == .failed {
+                return .destructive
+            }
+            
             switch orderDetails.isBuy {
             case true:
                 return orderDetails.outputValue.currencyType.brandColor
@@ -115,8 +147,16 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                 return orderDetails.inputValue.currencyType.brandColor
             }
         case .swap(let event):
+            if event.status == .failed {
+                return .destructive
+            }
+            
             return event.pair.from.brandColor
-        case .fiat:
+        case .fiat(let event):
+            if event.status == .failed || event.status == .rejected {
+                return .destructive
+            }
+            
             return .fiat
         case .transactional(let event):
             switch event.status {
@@ -137,18 +177,30 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
     public var imageName: String {
         switch event {
         case .buySell(let value):
+            if value.status == .failed {
+                return "activity-failed-icon"
+            }
+            
             return value.isBuy ? "plus-icon" : "minus-icon"
         case .fiat(let event):
+            if event.status == .failed || event.status == .rejected {
+                return "activity-failed-icon"
+            }
+            
             let type = event.type
             switch type {
             case .deposit:
                 return "deposit-icon"
             case .withdrawal:
-                return "Withdrawal"
+                return "Withdraw"
             case .unknown:
                 return ""
             }
-        case .swap:
+        case .swap(let event):
+            if event.status == .failed {
+                return "activity-failed-icon"
+            }
+            
             return "swap-icon"
         case .transactional(let event):
             if case .pending = event.status {

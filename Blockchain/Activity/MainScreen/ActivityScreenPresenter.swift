@@ -225,10 +225,9 @@ fileprivate extension SelectionButtonViewModel.LeadingContent {
                     )
                 )
             )
-        case .custodial(let currency),
-             .nonCustodial(let currency):
+        case .nonCustodial(let cryptoCurrency):
             return .image(
-                .init(name: currency.logoImageName,
+                .init(name: cryptoCurrency.logoImageName,
                       background: .clear,
                       offset: 0,
                       cornerRadius: .round,
@@ -238,6 +237,35 @@ fileprivate extension SelectionButtonViewModel.LeadingContent {
                     )
                 )
             )
+        case .custodial(let currencyType):
+            switch currencyType {
+            case .crypto:
+                return .image(
+                    .init(
+                        name: currencyType.logoImageName,
+                        background: .clear,
+                        offset: 0,
+                        cornerRadius: .round,
+                        size: .init(
+                            width: 32,
+                            height: 32
+                        )
+                    )
+                )
+            case .fiat:
+                return .image(
+                    .init(
+                        name: currencyType.logoImageName,
+                        background: .fiat,
+                        offset: 0,
+                        cornerRadius: .value(8.0),
+                        size: .init(
+                            width: 32,
+                            height: 32
+                        )
+                    )
+                )
+            }
         }
     }
 }

@@ -23,6 +23,7 @@ final class OrdersActivityEventService: OrdersActivityEventServiceAPI {
     }
     
     func activityResponse(fiatCurrency: FiatCurrency) -> Single<OrdersActivityResponse> {
-        client.activityResponse(fiatCurrency: fiatCurrency)
+        /// We want all activity including pending transactions.
+        client.activityResponse(fiatCurrency: fiatCurrency, pendingOnly: false)
     }
 }

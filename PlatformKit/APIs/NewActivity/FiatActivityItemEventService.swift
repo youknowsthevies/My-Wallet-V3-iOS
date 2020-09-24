@@ -41,6 +41,7 @@ public final class FiatActivityItemEventService: FiatActivityItemEventServiceAPI
                 .milliseconds(100),
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
             )
+            .observeOn(MainScheduler.asyncInstance)
             .flatMapLatest(weak: self) { (self, _) in
                 self.fiatActivityObservable
             }

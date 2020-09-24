@@ -89,7 +89,24 @@ final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
             statusDescription = LocalizedString.refunded
         }
         
-        let badgeType: BadgeType = event.status == .complete ? .verified : .default(accessibilitySuffix: statusDescription)
+        let badgeType: BadgeType
+        
+        switch event.status {
+        case .failed,
+             .rejected:
+            badgeType = .destructive
+        case .complete:
+            badgeType = .verified
+        case .created,
+             .fraudReview,
+             .manualReview,
+             .pending,
+             .unidentified,
+             .cleared,
+             .refunded:
+           badgeType = .default(accessibilitySuffix: statusDescription)
+        }
+        
         let badgeItem: BadgeItem = .init(
             type: badgeType,
             description: statusDescription

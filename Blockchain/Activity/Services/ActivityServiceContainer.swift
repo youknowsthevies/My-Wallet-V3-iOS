@@ -11,7 +11,7 @@ import RxRelay
 import RxSwift
 
 protocol ActivityServiceContaining {
-    var asset: Observable<CryptoCurrency> { get }
+    var asset: Observable<CurrencyType> { get }
     var balanceProviding: BalanceProviding { get }
     var exchangeProviding: ExchangeProviding { get }
     var fiatCurrency: FiatCurrencySettingsServiceAPI { get }
@@ -21,10 +21,10 @@ protocol ActivityServiceContaining {
 }
 
 final class ActivityServiceContainer: ActivityServiceContaining {
-    var asset: Observable<CryptoCurrency> {
+    var asset: Observable<CurrencyType> {
         selectionService
             .selectedData
-            .compactMap { $0.currency }
+            .compactMap { $0.currencyType }
     }
     
     var activityEventsLoadingState: Observable<ActivityItemEventsLoadingState> {
@@ -51,10 +51,18 @@ final class ActivityServiceContainer: ActivityServiceContaining {
         accountSelectionService
             .selectedData
             .map { account -> WalletPickerSelection in
+                if let account: FiatAccount = account as? FiatAccount {
+                    switch account.balanceType {
+                    case .custodial:
+                        return .custodial(account.currencyType)
+                    case .nonCustodial:
+                        fatalError("Fiat Account cannot be non-custodial: \(account)")
+                    }
+                }
                 if let account: CryptoAccount = account as? CryptoAccount {
                     switch account.balanceType {
                     case .custodial:
-                        return .custodial(account.asset)
+                        return .custodial(.crypto(account.asset))
                     case .nonCustodial:
                         return .nonCustodial(account.asset)
                     }
@@ -84,7 +92,12 @@ final class ActivityServiceContainer: ActivityServiceContaining {
                             [states.1, states.0].reduce()
                         }
                 case .custodial(let currency):
-                    return self.activityProviding[currency].buySell.state
+                    switch currency {
+                    case .crypto(let crypto):
+                        return self.activityProviding[crypto].buySell.state
+                    case .fiat(let fiat):
+                        return self.activityProviding[fiat].activityLoadingStateObservable
+                    }
                 }
             }
             .bindAndCatch(to: eventsRelay)

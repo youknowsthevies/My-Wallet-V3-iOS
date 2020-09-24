@@ -13,8 +13,7 @@ import RxSwift
 final class FiatEventService: FiatItemEventServiceAPI {
     
     var activityEvents: Single<[ActivityItemEvent]> {
-        _ = setup
-        return fiat
+        fiat
             .fiatActivityEvents
             .map { items in items.map { .fiat($0) } }
             .catchErrorJustReturn([])
@@ -44,7 +43,6 @@ final class FiatEventService: FiatItemEventServiceAPI {
             .disposed(by: disposeBag)
     }()
     
-    
     // MARK: - Setup
     
     init(fiat: FiatActivityItemEventServiceAPI) {
@@ -52,7 +50,6 @@ final class FiatEventService: FiatItemEventServiceAPI {
     }
     
     func refresh() {
-        _ = setup
         fiat.fetchTriggerRelay.accept(())
     }
 }
