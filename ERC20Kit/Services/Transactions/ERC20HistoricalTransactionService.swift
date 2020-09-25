@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import EthereumKit
 import NetworkKit
 import PlatformKit
@@ -29,7 +30,7 @@ public class AnyERC20HistoricalTransactionService<Token: ERC20Token>: TokenizedH
     private let accountClient: ERC20AccountAPIClient<Token>
     private let bridge: EthereumWalletBridgeAPI
     
-    public init(bridge: EthereumWalletBridgeAPI, accountClient: ERC20AccountAPIClient<Token> = ERC20AccountAPIClient<Token>()) {
+    public init(bridge: EthereumWalletBridgeAPI = resolve(), accountClient: ERC20AccountAPIClient<Token> = ERC20AccountAPIClient<Token>()) {
         self.bridge = bridge
         self.accountClient = accountClient
     }

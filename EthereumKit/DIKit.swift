@@ -20,5 +20,14 @@ extension DependencyContainer {
         factory(tag: CryptoCurrency.ethereum) { EthereumAsset() as CryptoAsset }
 
         factory { EthereumAccountBalanceService() as EthereumAccountBalanceServiceAPI }
+        
+        factory { () -> EthereumHistoricalTransactionService in
+            let wallet: EthereumWalletBridgeAPI = DIKit.resolve()
+            return EthereumHistoricalTransactionService(with: wallet)
+        }
+        
+        factory { EthereumTransactionalActivityItemEventsService() }
+        
+        factory { EthereumActivityItemEventDetailsFetcher() }
     }
 }

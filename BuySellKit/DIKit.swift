@@ -7,6 +7,7 @@
 //
 
 import DIKit
+import PlatformKit
 
 extension DependencyContainer {
     
@@ -19,5 +20,16 @@ extension DependencyContainer {
         factory { CardClient() as CardClientAPI }
         
         factory { EveryPayClient() as EveryPayClientAPI }
+        
+        // MARK: Services
+        
+        factory { () -> OrdersServiceAPI in
+            let provider: ServiceProviderAPI = DIKit.resolve()
+            return provider.ordersDetails
+        }
+        
+        factory { OrdersFiatActivityItemEventService() as FiatActivityItemEventFetcherAPI }
+        
+        factory { OrdersActivityEventService() as OrdersActivityEventServiceAPI }
     }
 }

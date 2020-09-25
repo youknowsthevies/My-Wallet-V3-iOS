@@ -104,6 +104,11 @@ extension DependencyContainer {
         
         single { SettingsService() as CompleteSettingsServiceAPI }
         
+        factory { () -> FiatCurrencySettingsServiceAPI in
+            let completeSettings: CompleteSettingsServiceAPI = DIKit.resolve()
+            return completeSettings as FiatCurrencySettingsServiceAPI
+        }
+        
         single { GeneralInformationService() as GeneralInformationServiceAPI }
         
         single { EmailVerificationService() as EmailVerificationServiceAPI }
@@ -139,5 +144,13 @@ extension DependencyContainer {
         factory { WalletCryptoService() as WalletCryptoServiceAPI }
 
         factory { TradingBalanceService() as TradingBalanceServiceAPI }
+        
+        // MARK: Activity Services
+        
+        factory(tag: FiatCurrency.EUR) { FiatActivityItemEventService(fiatCurrency: .EUR) as FiatActivityItemEventServiceAPI }
+        
+        factory(tag: FiatCurrency.GBP) { FiatActivityItemEventService(fiatCurrency: .GBP) as FiatActivityItemEventServiceAPI }
+        
+        factory(tag: FiatCurrency.USD) { FiatActivityItemEventService(fiatCurrency: .USD) as FiatActivityItemEventServiceAPI }
     }
 }

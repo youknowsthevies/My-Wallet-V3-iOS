@@ -6,6 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import ActivityKit
+import ActivityUIKit
 import AlgorandKit
 import BitcoinKit
 import DIKit
@@ -81,6 +83,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             DependencyContainer.bitcoinKit;
             DependencyContainer.stellarKit;
             DependencyContainer.buySellKit;
+            DependencyContainer.activityKit;
+            DependencyContainer.activityUIKit;
             DependencyContainer.blockchain;
         })
         // swiftlint:enable trailing_semicolon

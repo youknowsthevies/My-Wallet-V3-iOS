@@ -38,7 +38,9 @@ extension DependencyContainer {
         factory { ERC20AccountAPIClient<PaxToken>() }
 
         factory(tag: CryptoCurrency.pax) { ERC20AssetBalanceFetcher<PaxToken>() as CryptoAccountBalanceFetching }
-
+        
+        factory { AnyERC20HistoricalTransactionService<PaxToken>() }
+        
         // MARK: - Tether
 
         factory(tag: CryptoCurrency.tether) { ERC20Asset<TetherToken>() as CryptoAsset }
@@ -62,6 +64,8 @@ extension DependencyContainer {
         factory { ERC20AccountAPIClient<TetherToken>() }
 
         factory(tag: CryptoCurrency.tether) { ERC20AssetBalanceFetcher<TetherToken>() as CryptoAccountBalanceFetching }
+        
+        factory { AnyERC20HistoricalTransactionService<TetherToken>() }
 
     }
 }

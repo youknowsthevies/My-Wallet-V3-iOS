@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 
@@ -13,7 +14,7 @@ final class OrdersFiatActivityItemEventService: FiatActivityItemEventFetcherAPI 
     
     private let service: OrdersActivityEventServiceAPI
     
-    init(service: OrdersActivityEventServiceAPI) {
+    init(service: OrdersActivityEventServiceAPI = resolve()) {
         self.service = service
     }
     

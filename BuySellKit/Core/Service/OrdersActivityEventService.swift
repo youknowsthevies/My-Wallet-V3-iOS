@@ -18,7 +18,7 @@ final class OrdersActivityEventService: OrdersActivityEventServiceAPI {
     
     private let client: OrdersActivityClientAPI
     
-    init(client: OrdersActivityClientAPI) {
+    init(client: SimpleBuyClientAPI = resolve()) {
         self.client = client
     }
     

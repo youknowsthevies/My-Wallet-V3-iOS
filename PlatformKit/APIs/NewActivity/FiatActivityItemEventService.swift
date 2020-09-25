@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxRelay
 import RxSwift
 
@@ -57,7 +58,7 @@ public final class FiatActivityItemEventService: FiatActivityItemEventServiceAPI
     private let stateRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
     private let disposeBag = DisposeBag()
     
-    public init(fetcher: FiatActivityItemEventFetcherAPI,
+    public init(fetcher: FiatActivityItemEventFetcherAPI = resolve(),
                 fiatCurrency: FiatCurrency) {
         self.fetcher = fetcher
         self.fiatCurrency = fiatCurrency

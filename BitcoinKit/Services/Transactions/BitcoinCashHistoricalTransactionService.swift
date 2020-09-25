@@ -19,7 +19,7 @@ public final class BitcoinCashHistoricalTransactionService: TokenizedHistoricalT
     private let client: APIClientAPI
     private let bridge: BitcoinCashWalletBridgeAPI
     
-    public convenience init(bridge: BitcoinCashWalletBridgeAPI) {
+    public convenience init(bridge: BitcoinCashWalletBridgeAPI = resolve()) {
         self.init(with: resolve(), bridge: bridge)
     }
     

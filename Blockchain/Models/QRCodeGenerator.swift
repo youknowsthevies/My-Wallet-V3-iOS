@@ -64,11 +64,6 @@ import PlatformUIKit
     }
 }
 
-public protocol QRCodeWrapperAPI {
-    func qrCode(from metadata: CryptoAssetQRMetadata) -> QRCodeAPI?
-    func qrCode(from string: String) -> QRCodeAPI?
-}
-
 class QRCodeWrapper: QRCodeWrapperAPI {
     func qrCode(from metadata: CryptoAssetQRMetadata) -> QRCodeAPI? {
         QRCode(metadata: metadata)

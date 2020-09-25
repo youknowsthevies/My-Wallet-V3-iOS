@@ -14,10 +14,6 @@ import RxCocoa
 import RxRelay
 import RxSwift
 
-protocol QRScannerRouting: class {
-    func routeToQrScanner()
-}
-
 /// This enum aggregates possible action types that can be done in the dashboard
 enum DashboardCollectionAction {
     

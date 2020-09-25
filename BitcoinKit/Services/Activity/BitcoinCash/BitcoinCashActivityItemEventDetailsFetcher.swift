@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 
@@ -14,7 +15,7 @@ public final class BitcoinCashActivityItemEventDetailsFetcher: ActivityItemEvent
 
     private let transactionService: BitcoinCashHistoricalTransactionService
 
-    public init(transactionService: BitcoinCashHistoricalTransactionService) {
+    public init(transactionService: BitcoinCashHistoricalTransactionService = resolve()) {
         self.transactionService = transactionService
     }
 

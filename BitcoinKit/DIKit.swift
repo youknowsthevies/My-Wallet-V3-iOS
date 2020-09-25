@@ -26,11 +26,22 @@ extension DependencyContainer {
         factory(tag: CryptoCurrency.bitcoin) { BitcoinAsset() as CryptoAsset }
 
         factory { BitcoinHistoricalTransactionService() }
+        
+        factory { BitcoinActivityItemEventDetailsFetcher() }
+        
+        factory { BitcoinTransactionalActivityItemEventsService() }
 
         // MARK: - Bitcoin Cash
 
         factory { BitcoinCashWalletAccountRepository() }
 
         factory(tag: CryptoCurrency.bitcoinCash) { BitcoinCashAsset() as CryptoAsset }
+        
+        factory { BitcoinCashHistoricalTransactionService() }
+        
+        factory { BitcoinCashActivityItemEventDetailsFetcher() }
+        
+        factory { BitcoinCashTransactionalActivityItemEventsService() }
+        
     }
 }

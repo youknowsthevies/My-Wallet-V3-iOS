@@ -24,6 +24,8 @@ extension DependencyContainer {
      
     public static var networkKit = module {
         
+        factory { BlockchainAPI.shared }
+        
         factory { UserAgentProvider() }
         
         single { CertificatePinner() as CertificatePinnerAPI }

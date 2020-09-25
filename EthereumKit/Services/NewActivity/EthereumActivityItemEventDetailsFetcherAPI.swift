@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 
@@ -14,7 +15,7 @@ public final class EthereumActivityItemEventDetailsFetcher: ActivityItemEventDet
 
     private let transactionService: EthereumHistoricalTransactionService
 
-    public init(transactionService: EthereumHistoricalTransactionService) {
+    public init(transactionService: EthereumHistoricalTransactionService = resolve()) {
         self.transactionService = transactionService
     }
 

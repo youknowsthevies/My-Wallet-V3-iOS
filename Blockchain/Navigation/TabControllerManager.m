@@ -6,7 +6,8 @@
 //  Copyright © 2017 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-#import <PlatformUIKit/PlatformUIKit.h>
+@import PlatformUIKit;
+@import NetworkKit;
 #import "TabControllerManager.h"
 #import "Transaction.h"
 #import "Blockchain-Swift.h"
@@ -511,7 +512,7 @@
 
 - (void)showActivity {
     if (self.activityNavigationController == nil) {
-        ActivityScreenViewController *viewController = [[ActivityScreenViewController alloc] init];
+        ActivityScreenViewController *viewController = [ActivityScreenViewController provideController];
         self.activityNavigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     }
     [_tabViewController setActiveViewController:self.activityNavigationController animated:true index:[ConstantsObjcBridge tabTransactions]];

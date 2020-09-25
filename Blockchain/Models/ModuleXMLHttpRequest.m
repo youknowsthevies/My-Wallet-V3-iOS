@@ -24,6 +24,7 @@
 */
 #import "ModuleXMLHttpRequest.h"
 #import "NSURLSession+SendSynchronousRequest.h"
+@import NetworkKit;
 #import "Blockchain-Swift.h"
 
 @implementation ModuleXMLHttpRequest

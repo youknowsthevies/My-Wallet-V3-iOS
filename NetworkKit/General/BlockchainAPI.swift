@@ -17,6 +17,7 @@ import Foundation
  */
 
 @objc
+@available(*, deprecated, message: "Don't use this")
 public final class BlockchainAPI: NSObject {
 
     // MARK: - Properties

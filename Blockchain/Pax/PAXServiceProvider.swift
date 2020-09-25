@@ -13,14 +13,6 @@ import EthereumKit
 import PlatformKit
 import RxSwift
 
-protocol PAXDependencies {
-    var assetAccountRepository: ERC20AssetAccountRepository<PaxToken> { get }
-    var historicalTransactionService: AnyERC20HistoricalTransactionService<PaxToken> { get }
-    var paxService: ERC20Service<PaxToken> { get }
-    var walletService: EthereumWalletServiceAPI { get }
-    var feeService: AnyCryptoFeeService<EthereumTransactionFee> { get }
-}
-
 struct PAXServices: PAXDependencies {
     let assetAccountRepository: ERC20AssetAccountRepository<PaxToken>
     let historicalTransactionService: AnyERC20HistoricalTransactionService<PaxToken>
@@ -58,7 +50,7 @@ final class PAXServiceProvider {
     
     private let disposables = CompositeDisposable()
 
-    init(services: PAXDependencies) {
+    init(services: PAXDependencies = resolve()) {
         self.services = services
     }
 }

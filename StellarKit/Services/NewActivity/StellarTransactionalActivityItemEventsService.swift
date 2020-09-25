@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 
@@ -19,7 +20,7 @@ public final class StellarTransactionalActivityItemEventsService: TransactionalA
         self.transactionService = transactionService
     }
 
-    public init(repository: StellarWalletAccountRepositoryAPI) {
+    public init(repository: StellarWalletAccountRepositoryAPI = resolve()) {
         self.transactionService = StellarHistoricalTransactionService(repository: repository)
     }
     

@@ -7,6 +7,7 @@
 //
 
 import DIKit
+import BuySellKit
 import BitcoinKit
 import ERC20Kit
 import EthereumKit
@@ -34,6 +35,8 @@ extension DependencyContainer {
         factory { UIDevice.current as DeviceInfo }
 
         single { AnalyticsService() as AnalyticsServiceAPI }
+        
+        factory { CrashlyticsRecorder() as MessageRecording }
 
         // MARK: - AppCoordinator
 
@@ -42,6 +45,11 @@ extension DependencyContainer {
         factory { () -> DrawerRouting in
             let app: AppCoordinator = DIKit.resolve()
             return app as DrawerRouting
+        }
+        
+        factory { () -> QRScannerRouting in
+            let app: AppCoordinator = DIKit.resolve()
+            return app as QRScannerRouting
         }
 
         // MARK: - BlockchainSettings.App
@@ -114,6 +122,10 @@ extension DependencyContainer {
             let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
             return userInformationProvider.settings
         }
+        
+        // MARK: - QRCodeWrapper
+        
+        factory { QRCodeWrapper() }
 
         // MARK: - DataProvider
 
@@ -123,6 +135,17 @@ extension DependencyContainer {
             let provider: DataProvider = DIKit.resolve()
             return provider as DataProviding
         }
+        
+        // MARK: - BuySellKit Service Provider
+        
+        factory { () -> BuySellKit.ServiceProviderAPI in
+            let provider: DataProvider = DIKit.resolve()
+            return provider.buySell
+        }
+        
+        // MARK: - Pax Service Provider
+        
+        factory { PAXServices() as PAXDependencies }
 
         // MARK: - Ethereum Wallet
 
@@ -181,5 +204,9 @@ extension DependencyContainer {
         }
 
         single { BitcoinCashWallet() as BitcoinCashWalletBridgeAPI }
+        
+        // MARK: Simple Buy
+        
+        factory { CardServiceProvider() as CardServiceProviderAPI }
     }
 }

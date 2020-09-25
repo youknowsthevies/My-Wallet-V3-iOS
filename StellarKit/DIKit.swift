@@ -37,5 +37,9 @@ extension DependencyContainer {
         }
 
         factory(tag: CryptoCurrency.stellar) { StellarAsset() as CryptoAsset }
+        
+        factory { StellarTransactionalActivityItemEventsService() }
+        
+        factory { StellarActivityItemEventDetailsFetcher() }
     }
 }

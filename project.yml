@@ -43,6 +43,8 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: AlgorandKitTests
         randomExecutionOrder: true
+      - name: ActivityKitTests
+        randomExecutionOrder: true
       - name: BitcoinKitTests
         randomExecutionOrder: true
       - name: ERC20KitTests
@@ -172,6 +174,68 @@ targets:
       path: TestKit/Mocks/NetworkKit
     templates:
     - FrameworkTest
+  ActivityKit:
+    dependencies:
+    - target: PlatformKit
+    - target: BuySellKit
+    - target: BitcoinKit
+    - target: EthereumKit
+    - target: ERC20Kit
+    - target: StellarKit
+    - target: ToolKit
+    - target: NetworkKit
+    - carthage: BigInt
+    - carthage: DIKit
+    - carthage: RxRelay
+    - carthage: RxSwift
+    templates:
+    - Framework
+  ActivityKitTests:
+    dependencies:
+    - target: ActivityKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    templates:
+    - FrameworkTest
+  ActivityUIKit:
+    dependencies:
+    - target: ActivityKit
+    - target: BuySellKit
+    - target: PlatformUIKit
+    - target: PlatformKit
+    - target: ToolKit
+    - target: Localization
+    - sdk: LinkPresentation.framework
+    - sdk: SafariServices.framework
+    - carthage: DIKit
+    - carthage: RxRelay
+    - carthage: RxSwift
+    - carthage: RxCocoa
+    - carthage: RxDataSources
+    scheme:
+      testTargets:
+      - ActivityUIKitTests
+    templates:
+    - Framework
+  ActivityUIKitTests:
+    dependencies:
+    - target: ActivityUIKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformUIKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    templates:
+    - FrameworkTest
   BitcoinKit:
     dependencies:
     - target: PlatformKit
@@ -252,6 +316,8 @@ targets:
     - target: HDWalletKit
     - target: CommonCryptoKit
     - target: Localization
+    - target: ActivityKit
+    - target: ActivityUIKit
     - carthage: FIRAnalyticsConnector
       findFrameworks: false
       linkType: static

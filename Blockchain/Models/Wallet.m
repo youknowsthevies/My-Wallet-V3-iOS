@@ -27,8 +27,8 @@
 #import "KeyPair.h"
 #import "NSData+BTCData.h"
 #import "NSNumberFormatter+Currencies.h"
-#import <CommonCryptoKit/CommonCryptoKit.h>
-
+@import NetworkKit;
+@import CommonCryptoKit;
 @import FirebaseAnalytics;
 
 #define DICTIONARY_KEY_CURRENCY @"currency"
