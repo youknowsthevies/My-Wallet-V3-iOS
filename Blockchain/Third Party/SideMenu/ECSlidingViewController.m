@@ -462,13 +462,13 @@
     CGRect containerViewFrame = self.view.bounds;
     
     if (!(self.topViewController.edgesForExtendedLayout & UIRectEdgeTop)) {
-        CGFloat topLayoutGuideLength = [self.topLayoutGuide length];
+        CGFloat topLayoutGuideLength = self.view.safeAreaInsets.top;
         containerViewFrame.origin.y     = topLayoutGuideLength;
         containerViewFrame.size.height -= topLayoutGuideLength;
     }
     
     if (!(self.topViewController.edgesForExtendedLayout & UIRectEdgeBottom)) {
-        CGFloat bottomLayoutGuideLength = [self.bottomLayoutGuide length];
+        CGFloat bottomLayoutGuideLength = self.view.safeAreaInsets.bottom;
         containerViewFrame.size.height -= bottomLayoutGuideLength;
     }
     
@@ -494,13 +494,13 @@
     CGRect containerViewFrame = self.view.bounds;
     
     if (!(self.underLeftViewController.edgesForExtendedLayout & UIRectEdgeTop)) {
-        CGFloat topLayoutGuideLength    = [self.topLayoutGuide length];
+        CGFloat topLayoutGuideLength    = self.view.safeAreaInsets.top;
         containerViewFrame.origin.y     = topLayoutGuideLength;
         containerViewFrame.size.height -= topLayoutGuideLength;
     }
     
     if (!(self.underLeftViewController.edgesForExtendedLayout & UIRectEdgeBottom)) {
-        CGFloat bottomLayoutGuideLength = [self.bottomLayoutGuide length];
+        CGFloat bottomLayoutGuideLength = self.view.safeAreaInsets.bottom;
         containerViewFrame.size.height -= bottomLayoutGuideLength;
     }
     
@@ -519,13 +519,13 @@
     CGRect containerViewFrame = self.view.bounds;
     
     if (!(self.underRightViewController.edgesForExtendedLayout & UIRectEdgeTop)) {
-        CGFloat topLayoutGuideLength    = [self.topLayoutGuide length];
+        CGFloat topLayoutGuideLength    = self.view.safeAreaInsets.top;
         containerViewFrame.origin.y     = topLayoutGuideLength;
         containerViewFrame.size.height -= topLayoutGuideLength;
     }
-    
+
     if (!(self.underRightViewController.edgesForExtendedLayout & UIRectEdgeBottom)) {
-        CGFloat bottomLayoutGuideLength = [self.bottomLayoutGuide length];
+        CGFloat bottomLayoutGuideLength = self.view.safeAreaInsets.bottom;
         containerViewFrame.size.height -= bottomLayoutGuideLength;
     }
     
