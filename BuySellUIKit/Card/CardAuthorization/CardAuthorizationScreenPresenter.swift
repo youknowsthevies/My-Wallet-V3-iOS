@@ -12,7 +12,7 @@ import PlatformKit
 import PlatformUIKit
 import ToolKit
 
-final class CardAuthorizationScreenPresenter: Presenter {
+final class CardAuthorizationScreenPresenter: RibBridgePresenter {
     
     let title = LocalizationConstants.AuthorizeCardScreen.title
     

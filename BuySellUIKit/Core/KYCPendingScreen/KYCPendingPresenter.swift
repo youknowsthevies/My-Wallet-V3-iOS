@@ -13,7 +13,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class KYCPendingPresenter: Presenter, PendingStatePresenterAPI {
+final class KYCPendingPresenter: RibBridgePresenter, PendingStatePresenterAPI {
 
     // MARK: - Types
 

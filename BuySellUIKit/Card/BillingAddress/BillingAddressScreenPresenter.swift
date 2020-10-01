@@ -15,7 +15,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class BillingAddressScreenPresenter: Presenter {
+final class BillingAddressScreenPresenter: RibBridgePresenter {
         
     // MARK: - Types
 

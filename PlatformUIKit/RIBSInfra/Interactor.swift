@@ -1,13 +1,22 @@
 //
-//  Interactor.swift
-//  PlatformUIKit
+//  Copyright (c) 2017. Uber Technologies
 //
-//  Created by Daniel on 16/07/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//  Architecture based on Uber/RIBs: https://github.com/uber/RIBs
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
+import Foundation
 import RxSwift
+import UIKit
 
 /// Protocol defining the activeness of an interactor's scope.
 public protocol InteractorScope: class {
@@ -139,7 +148,7 @@ open class Interactor: Interactable {
 }
 
 /// Interactor related `Observable` extensions.
-extension ObservableType {
+public extension ObservableType {
 
     /// Confines the observable's subscription to the given interactor scope. The subscription is only triggered
     /// after the interactor scope is active and before the interactor scope resigns active. This composition
@@ -154,7 +163,7 @@ extension ObservableType {
     /// - parameter interactorScope: The interactor scope whose activeness this observable is confined to.
     /// - returns: The `Observable` confined to this interactor's activeness lifecycle.
 
-    public func confineTo(_ interactorScope: InteractorScope) -> Observable<Element> {
+    func confineTo(_ interactorScope: InteractorScope) -> Observable<Element> {
         Observable
             .combineLatest(interactorScope.isActiveStream, self) { isActive, value in
                 (isActive, value)

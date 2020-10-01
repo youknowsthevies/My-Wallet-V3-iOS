@@ -15,7 +15,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class CardDetailsScreenPresenter: Presenter {
+final class CardDetailsScreenPresenter: RibBridgePresenter {
     
     // MARK: - Types
     

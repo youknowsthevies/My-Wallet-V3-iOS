@@ -24,12 +24,12 @@ public final class PendingStateViewController: BaseScreenViewController {
 
     // MARK: - Properties
 
-    private let presenter: PendingStatePresenterAPI & Presenter
+    private let presenter: PendingStatePresenterAPI & RibBridgePresenter
     private let disposeBag = DisposeBag()
 
     // MARK: - Init
 
-    public required init(presenter: PendingStatePresenterAPI & Presenter) {
+    public required init(presenter: PendingStatePresenterAPI & RibBridgePresenter) {
         self.presenter = presenter
         super.init(nibName: PendingStateViewController.objectName, bundle: .platformUIKit)
     }

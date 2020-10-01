@@ -110,7 +110,7 @@ open class Router<InteractorType>: Routing {
         didLoadFlag = true
         internalWillLoad()
         willLoad()
-        internalLoad()
+        internalDidLoad()
         didLoad()
     }
 
@@ -160,7 +160,7 @@ open class Router<InteractorType>: Routing {
 
     let deinitDisposable = CompositeDisposable()
 
-    private func internalLoad() {
+    func internalDidLoad() {
         bindSubtreeActiveState()
         lifecycleSubject.onNext(.didLoad)
     }

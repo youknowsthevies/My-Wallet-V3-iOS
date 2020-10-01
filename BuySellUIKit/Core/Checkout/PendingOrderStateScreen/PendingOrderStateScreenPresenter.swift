@@ -14,7 +14,7 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-final class PendingOrderStateScreenPresenter: Presenter, PendingStatePresenterAPI {
+final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePresenterAPI {
     
     // MARK: - Types
     

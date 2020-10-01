@@ -13,7 +13,7 @@ import RxSwift
 import ToolKit
 
 /// A presenter for enter amount screen. Designed to be subclassed by Buy, Sell, Send, Swap corresponding presenters
-open class EnterAmountScreenPresenter: Presenter {
+open class EnterAmountScreenPresenter: RibBridgePresenter {
 
     // MARK: - Types
     

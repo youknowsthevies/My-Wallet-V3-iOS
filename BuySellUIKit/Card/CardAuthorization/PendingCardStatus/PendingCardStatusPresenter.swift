@@ -12,7 +12,7 @@ import PlatformUIKit
 import RxCocoa
 import RxSwift
 
-final class PendingCardStatusPresenter: Presenter, PendingStatePresenterAPI {
+final class PendingCardStatusPresenter: RibBridgePresenter, PendingStatePresenterAPI {
     
     // MARK: - Types
     

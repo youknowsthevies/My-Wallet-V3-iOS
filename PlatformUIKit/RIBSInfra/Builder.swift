@@ -16,21 +16,19 @@
 
 import Foundation
 
-/// The base protocol for all `Presenter`s.
-public protocol Presentable: class {}
+/// The base builder protocol that all builders should conform to.
+public protocol Buildable: AnyObject {}
 
-/// The base class of all `Presenter`s. A `Presenter` translates business models into values the corresponding
-/// `ViewController` can consume and display. It also maps UI events to business logic method, invoked to
-/// its listener.
-open class Presenter<ViewControllerType>: Presentable {
+/// Utility that instantiates a RIB and sets up its internal wirings.
+open class Builder<DependencyType>: Buildable {
 
-    /// The view controller of this presenter.
-    public let viewController: ViewControllerType
+    /// The dependency used for this builder to build the RIB.
+    public let dependency: DependencyType
 
     /// Initializer.
     ///
-    /// - parameter viewController: The `ViewController` of this `Presenter`.
-    public init(viewController: ViewControllerType) {
-        self.viewController = viewController
+    /// - parameter dependency: The dependency used for this builder to build the RIB.
+    public init(dependency: DependencyType) {
+        self.dependency = dependency
     }
 }

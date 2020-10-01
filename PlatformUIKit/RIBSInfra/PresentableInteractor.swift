@@ -16,21 +16,24 @@
 
 import Foundation
 
-/// The base protocol for all `Presenter`s.
-public protocol Presentable: class {}
+/// Base class of an `Interactor` that actually has an associated `Presenter` and `View`.
+open class PresentableInteractor<PresenterType>: Interactor {
 
-/// The base class of all `Presenter`s. A `Presenter` translates business models into values the corresponding
-/// `ViewController` can consume and display. It also maps UI events to business logic method, invoked to
-/// its listener.
-open class Presenter<ViewControllerType>: Presentable {
-
-    /// The view controller of this presenter.
-    public let viewController: ViewControllerType
+    /// The `Presenter` associated with this `Interactor`.
+    public let presenter: PresenterType
 
     /// Initializer.
     ///
-    /// - parameter viewController: The `ViewController` of this `Presenter`.
-    public init(viewController: ViewControllerType) {
-        self.viewController = viewController
+    /// - note: This holds a strong reference to the given `Presenter`.
+    ///
+    /// - parameter presenter: The presenter associated with this `Interactor`.
+    public init(presenter: PresenterType) {
+        self.presenter = presenter
+    }
+
+    // MARK: - Private
+
+    deinit {
+        LeakDetector.instance.expectDeallocate(object: presenter as AnyObject)
     }
 }
