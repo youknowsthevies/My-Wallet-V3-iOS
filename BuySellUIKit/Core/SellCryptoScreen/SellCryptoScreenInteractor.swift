@@ -175,6 +175,11 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
         auxiliaryViewInteractor.resetToMaxAmount
             .withLatestFrom(balance)
             .map { ($0.base, $0.quote) }
+            .do(onNext: { (base, quote) in
+                #warning("This will break once we enable input using either fiat or crypto")
+                let amount = quote.toDisplayString(includeSymbol: false)
+                amountTranslationInteractor.set(amount: amount)
+            })
             .map { (base, quote) -> State in
                 guard !quote.isZero else { return .empty }
                 guard let fiat = quote.fiatValue else { return .empty }
