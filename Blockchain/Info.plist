@@ -19,7 +19,7 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.59.1</string>
+	<string>2.60.0</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -34,7 +34,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>4</string>
+	<string>0</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>ITSAppUsesNonExemptEncryption</key>
