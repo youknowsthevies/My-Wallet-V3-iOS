@@ -51,22 +51,22 @@ public final class DefaultWalletActionCellPresenter {
         case .deposit:
             switch currencyType {
             case .crypto:
-                description = String(format: LocalizationId.Deposit.Crypto.description, currencyType.symbol)
+                description = String(format: LocalizationId.Deposit.Crypto.description, currencyType.displayCode)
             case .fiat:
                 description = LocalizationId.Deposit.Fiat.description
             }
         case .transfer:
-            description = .init(format: LocalizationId.Transfer.description, currencyType.symbol)
+            description = .init(format: LocalizationId.Transfer.description, currencyType.displayCode)
         case .withdraw:
             description = LocalizationId.Withdraw.description
         case .interest:
-            description = .init(format: LocalizationId.Interest.description, currencyType.symbol)
+            description = .init(format: LocalizationId.Interest.description, currencyType.displayCode)
         case .send:
-            description = .init(format: LocalizationId.Send.description, currencyType.symbol)
+            description = .init(format: LocalizationId.Send.description, currencyType.displayCode)
         case .receive:
-            description = .init(format: LocalizationId.Receive.description, currencyType.symbol)
+            description = .init(format: LocalizationId.Receive.description, currencyType.displayCode)
         case .swap:
-            description = .init(format: LocalizationId.Swap.description, currencyType.symbol)
+            description = .init(format: LocalizationId.Swap.description, currencyType.displayCode)
         case .buy:
             description = LocalizationId.Buy.description
         case .sell:
