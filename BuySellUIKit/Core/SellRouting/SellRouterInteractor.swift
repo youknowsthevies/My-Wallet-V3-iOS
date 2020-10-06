@@ -124,7 +124,7 @@ public final class SellRouterInteractor: Interactor {
     private lazy var setup: Void = {
         accountSelectionService
             .selectedData
-            .flatMap { $0.balance }
+            .flatMap(\.balance)
             .map { $0.currencyType }
             .compactMap { $0.cryptoCurrency }
             .bindAndCatch(weak: self) { (self, selection) in
@@ -136,7 +136,7 @@ public final class SellRouterInteractor: Interactor {
         
         accountSelectionService
             .selectedData
-            .flatMap { $0.balance }
+            .flatMap(\.balance)
             .map { $0.currencyType }
             .compactMap { $0.fiatCurrency }
             .compactMap { selection -> SellCryptoInteractionData? in

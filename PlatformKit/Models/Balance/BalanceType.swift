@@ -8,12 +8,10 @@
 
 import Foundation
 
-public enum BalanceType: Hashable, CaseIterable {
-    public static var allCases: [BalanceType] {
-        [.nonCustodial] + CustodialType.allCases.map { .custodial($0) }
-    }
+@available(*, deprecated, message: "This should be replaced with SingleAccountBalanceType.")
+public enum BalanceType: Hashable {
     
-    public enum CustodialType: String, Hashable, CaseIterable {
+    public enum CustodialType: String, Hashable {
         case trading
         case savings
     }
@@ -27,33 +25,6 @@ public enum BalanceType: Hashable, CaseIterable {
             return "custodial" + type.rawValue
         case .nonCustodial:
             return "nonCustodial"
-        }
-    }
-    
-    public var isCustodial: Bool {
-        switch self {
-        case .custodial:
-            return true
-        case .nonCustodial:
-            return false
-        }
-    }
-
-    public var isTrading: Bool {
-        switch self {
-        case .custodial(let type):
-            return type == .trading
-        case .nonCustodial:
-            return false
-        }
-    }
-
-    public var isSavings: Bool {
-        switch self {
-        case .custodial(let type):
-            return type == .savings
-        case .nonCustodial:
-            return false
         }
     }
 }

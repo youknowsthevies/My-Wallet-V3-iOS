@@ -17,7 +17,7 @@ public class NullCryptoAccount: CryptoAccount {
         unimplemented()
     }
 
-    public var balanceType: BalanceType {
+    public var accountType: SingleAccountType {
         unimplemented()
     }
 
@@ -26,6 +26,14 @@ public class NullCryptoAccount: CryptoAccount {
     }
 
     public var label: String {
+        unimplemented()
+    }
+    
+    public var isFunded: Single<Bool> {
+        unimplemented()
+    }
+    
+    public var pendingBalance: Single<MoneyValue> {
         unimplemented()
     }
 

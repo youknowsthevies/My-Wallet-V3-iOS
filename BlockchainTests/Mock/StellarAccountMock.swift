@@ -20,7 +20,7 @@ class StellarAccountMock: StellarAccountAPI {
     typealias CompletionHandler = ((Result<Bool, Error>) -> Void)
     typealias AccountDetailsCompletion = ((Result<StellarAccount, Error>) -> Void)
     
-    public var balanceType: BalanceType {
+    public var accountType: SingleAccountType {
         .nonCustodial
     }
 
@@ -28,6 +28,19 @@ class StellarAccountMock: StellarAccountAPI {
 
     var balance: Single<CryptoValue> {
         Single.error(NSError())
+    }
+    
+    var pendingBalanceMoneyObservable: Observable<MoneyValue> {
+        pendingBalanceMoney
+            .asObservable()
+    }
+    
+    var pendingBalanceMoney: Single<MoneyValue> {
+        Single.just(MoneyValue.zero(currency: .stellar))
+    }
+    
+    var balanceMoney: Single<MoneyValue> {
+        balance.moneyValue
     }
     
     var balanceMoneyObservable: Observable<MoneyValue> {

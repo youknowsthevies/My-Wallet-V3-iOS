@@ -14,13 +14,27 @@ final class BitcoinCashAssetBalanceFetcher: CryptoAccountBalanceFetching {
     
     // MARK: - Exposed Properties
     
-    var balanceType: BalanceType {
+    var accountType: SingleAccountType {
         .nonCustodial
     }
     
     var balance: Single<CryptoValue> {
         Single
             .just(CryptoValue.bitcoinCash(satoshis: Int(wallet.getBchBalance())))
+    }
+    
+    var pendingBalanceMoneyObservable: Observable<MoneyValue> {
+        pendingBalanceMoney
+            .asObservable()
+    }
+    
+    var pendingBalanceMoney: Single<MoneyValue> {
+        Single.just(MoneyValue.zero(currency: .bitcoinCash))
+    }
+    
+    var balanceMoney: Single<MoneyValue> {
+        Single.just(CryptoValue.bitcoinCash(satoshis: Int(wallet.getBchBalance())))
+            .map { .init(cryptoValue: $0) }
     }
     
     var balanceObservable: Observable<CryptoValue> {

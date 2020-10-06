@@ -78,7 +78,6 @@ final class DashboardDetailsScreenPresenter {
     
     enum CellType: Hashable {
         case balance(BalanceType)
-        case sendRequest
         case priceAlert
         case chart
     }
@@ -120,9 +119,6 @@ final class DashboardDetailsScreenPresenter {
     /// Returns the ordered cell types
     var cellArrangement: [CellType] {
         var cellTypes: [CellType] = []
-        if shouldShowSendRequest {
-            cellTypes.append(.sendRequest)
-        }
         cellTypes.append(.priceAlert)
         cellTypes.append(.chart)
         if shouldShowNonCustodialBalance {
@@ -147,12 +143,6 @@ final class DashboardDetailsScreenPresenter {
     
     // MARK: - Public Properties (Presenters)
     
-    var sendRequestPresenter: MultiActionViewPresenting {
-        PlainActionViewPresenter(
-            using: sendRequestItems
-        )
-    }
-    
     let lineChartCellPresenter: AssetLineChartTableViewCellPresenter
 
     let currency: CryptoCurrency
@@ -164,10 +154,6 @@ final class DashboardDetailsScreenPresenter {
 
     private var shouldShowNonCustodialBalance: Bool {
         walletBalancePresenter != nil
-    }
-
-    private var shouldShowSendRequest: Bool {
-        currency.hasNonCustodialTradeSupport
     }
 
     private var shouldShowTradingBalance: Bool {
@@ -294,11 +280,11 @@ final class DashboardDetailsScreenPresenter {
             .disposed(by: disposeBag)
     }
     
-    private func balanceCellPresenter(for balanceType: BalanceType) -> CurrentBalanceCellPresenter {
+    private func balanceCellPresenter(for accountType: SingleAccountType) -> CurrentBalanceCellPresenter {
         
         let descriptionValue: () -> Observable<String> = { [weak self] in
             guard let self = self else { return .empty() }
-            switch balanceType {
+            switch accountType {
             case .nonCustodial:
                 return .just(LocalizedString.Description.nonCustodial)
             case .custodial(.savings):
@@ -315,35 +301,16 @@ final class DashboardDetailsScreenPresenter {
         return CurrentBalanceCellPresenter(
             interactor: CurrentBalanceCellInteractor(
                 balanceFetching: interactor.balanceFetcher,
-                balanceType: balanceType
+                accountType: accountType
             ),
             descriptionValue: descriptionValue,
             currency: .crypto(currency),
             titleAccessibilitySuffix: "\(AccessilbityId.CurrentBalanceCell.titleValue)",
             descriptionAccessibilitySuffix: "\(AccessilbityId.CurrentBalanceCell.descriptionValue)",
+            pendingAccessibilitySuffix: "\(AccessilbityId.CurrentBalanceCell.pendingValue)",
             descriptors: .default(
                 cryptoAccessiblitySuffix: "\(AccessilbityId.CurrentBalanceCell.cryptoValue).\(currency.code)",
                 fiatAccessiblitySuffix: "\(AccessilbityId.CurrentBalanceCell.fiatValue).\(currency.code)")
         )
     }
-    
-    private lazy var sendRequestItems: [SegmentedViewModel.Item] = {
-        typealias LocalizedString = LocalizationConstants.Dashboard
-        let currency = self.currency
-        let actionRelay = self.actionRelay
-        return [
-            .text(
-                LocalizedString.send,
-                action: {
-                    actionRelay.accept(.send(currency))
-                }
-            ),
-            .text(
-                LocalizedString.request,
-                action: {
-                    actionRelay.accept(.request(currency))
-                }
-            )
-        ]
-    }()
 }

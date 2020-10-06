@@ -13,6 +13,7 @@ extension Accessibility.Identifier {
         public static let view = "\(prefix)view"
         public static let title = "\(prefix)title"
         public static let description = "\(prefix)description"
+        public static let pending = "\(prefix)pending"
     }
     
     public struct Dashboard {
@@ -95,6 +96,7 @@ extension Accessibility.Identifier {
             public static let prefix = "\(DashboardDetails.prefix)CurrentBalance."
             public static let titleValue = "\(prefix)titleValue"
             public static let descriptionValue = "\(prefix)descriptionValue"
+            public static let pendingValue = "\(prefix)pending"
             public static let cryptoValue = "\(prefix)cryptoValue"
             public static let fiatValue = "\(prefix)fiatValue"
         }

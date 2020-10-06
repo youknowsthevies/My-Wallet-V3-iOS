@@ -33,6 +33,14 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
     public var description: Driver<String> {
         descriptionRelay.asDriver()
     }
+    
+    public var pending: Driver<String> {
+       .empty()
+    }
+    
+    public var pendingLabelVisibility: Driver<Visibility> {
+        .just(.hidden)
+    }
 
     public var separatorVisibility: Driver<Visibility> {
         separatorVisibilityRelay.asDriver()
@@ -40,6 +48,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
 
     public let titleAccessibilitySuffix: String = ""
     public let descriptionAccessibilitySuffix: String = ""
+    public let pendingAccessibilitySuffix: String = ""
 
     public let assetBalanceViewPresenter: AssetBalanceViewPresenter
 
@@ -85,7 +94,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
         }
         titleRelay.accept(account.label)
 
-        switch account.balanceType {
+        switch account.accountType {
         case .custodial:
             iconImageViewContentRelay.accept(ImageViewContent(imageName: "icon_custody_lock", bundle: Bundle.platformUIKit))
         case .nonCustodial:

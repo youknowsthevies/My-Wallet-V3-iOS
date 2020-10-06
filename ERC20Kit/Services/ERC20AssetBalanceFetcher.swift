@@ -16,18 +16,29 @@ final class ERC20AssetBalanceFetcher<Token: ERC20Token>: CryptoAccountBalanceFet
 
     // MARK: - Exposed Properties
 
-    var balanceType: BalanceType {
+    var accountType: SingleAccountType {
         .nonCustodial
     }
-
+    
     var balance: Single<CryptoValue> {
         assetAccountRepository
             .currentAssetAccountDetails(fromCache: true)
             .asObservable()
             .asSingle()
-            .map { details -> CryptoValue in
-                details.balance
-            }
+            .map { $0.balance }
+    }
+    
+    var pendingBalanceMoneyObservable: Observable<MoneyValue> {
+        pendingBalanceMoney
+            .asObservable()
+    }
+    
+    var pendingBalanceMoney: Single<MoneyValue> {
+        Single.just(MoneyValue.zero(currency: .ethereum))
+    }
+
+    var balanceMoney: Single<MoneyValue> {
+        balance.moneyValue
     }
 
     var balanceObservable: Observable<CryptoValue> {

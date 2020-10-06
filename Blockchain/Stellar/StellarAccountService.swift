@@ -20,7 +20,7 @@ class StellarAccountService: StellarAccountAPI {
 
     // MARK: AccountBalanceFetching
     
-    var balanceType: BalanceType {
+    var accountType: SingleAccountType {
         .nonCustodial
     }
     
@@ -33,6 +33,19 @@ class StellarAccountService: StellarAccountAPI {
                 guard error is StellarAccountError else { return Single.error(error) }
                 return Single.just(.zero(currency: .stellar))
             }
+    }
+    
+    var pendingBalanceMoneyObservable: Observable<MoneyValue> {
+        pendingBalanceMoney
+            .asObservable()
+    }
+    
+    var pendingBalanceMoney: Single<MoneyValue> {
+        Single.just(MoneyValue.zero(currency: .stellar))
+    }
+    
+    var balanceMoney: Single<MoneyValue> {
+        balance.moneyValue
     }
     
     var balanceObservable: Observable<CryptoValue> {

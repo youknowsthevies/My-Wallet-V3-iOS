@@ -15,16 +15,12 @@ public protocol BlockchainAccount {
     var label: String { get }
 
     var balance: Single<MoneyValue> { get }
+    
+    var pendingBalance: Single<MoneyValue> { get }
 
     var actions: AvailableActions { get }
 
     var isFunded: Single<Bool> { get }
 
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue>
-}
-
-public extension BlockchainAccount {
-    var isFunded: Single<Bool> {
-        unimplemented()
-    }
 }

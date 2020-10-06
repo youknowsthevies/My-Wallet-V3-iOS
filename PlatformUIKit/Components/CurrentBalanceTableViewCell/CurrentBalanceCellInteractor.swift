@@ -10,22 +10,22 @@ import PlatformKit
 
 public protocol CurrentBalanceCellInteracting: AnyObject {
     var assetBalanceViewInteractor: AssetBalanceTypeViewInteracting { get }
-    var balanceType: BalanceType { get }
+    var accountType: SingleAccountType { get }
 }
 
 public final class CurrentBalanceCellInteractor: CurrentBalanceCellInteracting {
     
     public let assetBalanceViewInteractor: AssetBalanceTypeViewInteracting
     
-    public var balanceType: BalanceType {
-        assetBalanceViewInteractor.balanceType
+    public var accountType: SingleAccountType {
+        assetBalanceViewInteractor.accountType
     }
     
     public init(balanceFetching: AssetBalanceFetching,
-                balanceType: BalanceType) {
+                accountType: SingleAccountType) {
         self.assetBalanceViewInteractor = AssetBalanceTypeViewInteractor(
             assetBalanceFetching: balanceFetching,
-            balanceType: balanceType
+            accountType: accountType
         )
     }
     

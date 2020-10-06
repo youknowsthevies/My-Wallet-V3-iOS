@@ -12,7 +12,7 @@ import RxSwift
 
 public final class ActivityItemBalanceViewInteractor: AssetBalanceViewInteracting {
     
-    public typealias InteractionState = DashboardAsset.State.AssetBalance.Interaction
+    public typealias InteractionState = AssetBalanceViewModel.State.Interaction
     
     public var state: Observable<InteractionState> {
         stateRelay.asObservable()
@@ -36,7 +36,8 @@ public final class ActivityItemBalanceViewInteractor: AssetBalanceViewInteractin
                     return .loaded(
                         next: .init(
                             fiatValue: result.quote,
-                            cryptoValue: result.base
+                            cryptoValue: result.base,
+                            pendingValue: .zero(currency: result.base.currency)
                         )
                     )
                 }

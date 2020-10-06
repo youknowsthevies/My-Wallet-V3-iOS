@@ -18,10 +18,23 @@ public class CryptoInterestAccount: CryptoAccount {
     public let label: String
     public let asset: CryptoCurrency
     public let isDefault: Bool = false
-    public let balanceType: BalanceType = .custodial(.savings)
+    public let accountType: SingleAccountType = .custodial(.savings)
+    
+    public var pendingBalance: Single<MoneyValue> {
+        balanceFetching
+            .pendingBalanceMoney
+    }
     
     public var balance: Single<MoneyValue> {
-        balanceFetching.balanceMoney
+        balanceFetching
+            .balanceMoney
+    }
+    
+    public var isFunded: Single<Bool> {
+        balanceFetching
+            .isFunded
+            .take(1)
+            .asSingle()
     }
 
     public var actions: AvailableActions {

@@ -10,7 +10,7 @@ import PlatformKit
 
 public protocol WalletActionScreenInteracting: class {
     var currency: CurrencyType { get }
-    var balanceType: BalanceType { get }
+    var accountType: SingleAccountType { get }
     var supportsSend: Bool { get }
     var supportsSwap: Bool { get }
     var supportsActivity: Bool { get }
@@ -18,7 +18,7 @@ public protocol WalletActionScreenInteracting: class {
 }
 
 public final class WalletActionScreenInteractor: WalletActionScreenInteracting {
-    public let balanceType: BalanceType
+    public let accountType: SingleAccountType
     public let currency: CurrencyType
     public let balanceCellInteractor: CurrentBalanceCellInteracting
     public var supportsSend: Bool = false
@@ -27,14 +27,14 @@ public final class WalletActionScreenInteractor: WalletActionScreenInteracting {
     
     // MARK: - Init
     
-    public init(balanceType: BalanceType,
+    public init(accountType: SingleAccountType,
                 currency: CurrencyType,
                 service: AssetBalanceFetching) {
         self.currency = currency
-        self.balanceType = balanceType
+        self.accountType = accountType
         self.balanceCellInteractor = CurrentBalanceCellInteractor(
             balanceFetching: service,
-            balanceType: balanceType
+            accountType: accountType
         )
         switch currency {
         case .crypto(let crypto):

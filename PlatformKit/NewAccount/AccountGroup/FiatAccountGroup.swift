@@ -11,6 +11,7 @@ import RxSwift
 
 /// An `AccountGroup` containing only fiat accounts.
 public class FiatAccountGroup: AccountGroup {
+    
     private typealias LocalizedString = LocalizationConstants.AccountGroup
 
     public let id: String = "FiatAccountGroup"
@@ -18,6 +19,14 @@ public class FiatAccountGroup: AccountGroup {
     public let label: String
 
     public let accounts: [SingleAccount]
+    
+    public var isFunded: Single<Bool> {
+        .error(AccountGroupError.noBalance)
+    }
+    
+    public var pendingBalance: Single<MoneyValue> {
+        .error(AccountGroupError.noBalance)
+    }
 
     public var balance: Single<MoneyValue> {
         .error(AccountGroupError.noBalance)

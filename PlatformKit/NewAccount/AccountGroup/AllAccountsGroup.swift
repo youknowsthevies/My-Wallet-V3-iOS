@@ -18,7 +18,20 @@ final class AllAccountsGroup: AccountGroup {
     let id: String = "AllAccountsGroup"
     let label: String = LocalizedString.allWallets
     let actions: AvailableActions = [.viewActivity]
-    let isFunded: Bool = true
+    
+    var isFunded: Single<Bool> {
+        if accounts.isEmpty {
+            return .just(false)
+        }
+        return Single.zip(accounts.map(\.isFunded))
+            .map { values -> Bool in
+                !values.contains(false)
+            }
+    }
+    
+    var pendingBalance: Single<MoneyValue> {
+        .error(AccountGroupError.noBalance)
+    }
 
     var balance: Single<MoneyValue> {
         .error(AccountGroupError.noBalance)

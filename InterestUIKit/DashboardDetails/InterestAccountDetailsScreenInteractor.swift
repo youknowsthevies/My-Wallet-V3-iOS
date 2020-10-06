@@ -104,7 +104,7 @@ public final class InterestAccountDetailsScreenInteractor {
         self.cryptoCurrency = cryptoCurrency
         self.currentBalanceCellInteractor = .init(
             balanceFetching: assetBalanceFetching,
-            balanceType: .custodial(.savings)
+            accountType: .custodial(.savings)
         )
     }
 }

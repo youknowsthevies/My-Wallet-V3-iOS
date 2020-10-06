@@ -30,24 +30,46 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
             
             presenter.title
                 .map {
-                    .init(text: $0,
-                          font: .main(.semibold, 16.0),
-                          color: .titleText,
-                          alignment: .left,
-                          accessibility: .id(presenter.titleAccessibilitySuffix))
+                    LabelContent.init(
+                        text: $0,
+                        font: .main(.semibold, 16.0),
+                        color: .titleText,
+                        alignment: .left,
+                        accessibility: .id(presenter.titleAccessibilitySuffix)
+                    )
                 }
                 .drive(titleLabel.rx.content)
                 .disposed(by: disposeBag)
             
             presenter.description
                 .map {
-                    .init(text: $0,
-                          font: .main(.medium, 14.0),
-                          color: .descriptionText,
-                          alignment: .left,
-                          accessibility: .id(presenter.descriptionAccessibilitySuffix))
+                    LabelContent.init(
+                        text: $0,
+                        font: .main(.medium, 14.0),
+                        color: .descriptionText,
+                        alignment: .left,
+                        accessibility: .id(presenter.descriptionAccessibilitySuffix)
+                    )
                 }
                 .drive(descriptionLabel.rx.content)
+                .disposed(by: disposeBag)
+            
+            presenter.pending
+                .map {
+                    LabelContent.init(
+                        text: $0,
+                        font: .main(.medium, 14.0),
+                        color: .mutedText,
+                        alignment: .left,
+                        accessibility: .id(presenter.pendingAccessibilitySuffix)
+                    )
+                }
+                .drive(pendingLabel.rx.content)
+                .disposed(by: disposeBag)
+            
+            presenter.pendingLabelVisibility
+                .map { $0.isHidden }
+                .drive(pendingLabel.rx.isHidden)
                 .disposed(by: disposeBag)
             
             presenter.separatorVisibility
@@ -69,12 +91,12 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
     // MARK: - Private IBOutlets
 
     @IBOutlet private var badgeImageView: BadgeImageView!
-    @IBOutlet private var thumbImageView: UIImageView!
     @IBOutlet private var thumbSideImageView: UIImageView!
 
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var descriptionLabel: UILabel!
-
+    @IBOutlet private var pendingLabel: UILabel!
+    
     @IBOutlet private var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet private var separatorView: UIView!
     @IBOutlet private var assetBalanceView: AssetBalanceView!

@@ -42,7 +42,7 @@ class CustodialMoneyBalanceFetcherTests: XCTestCase {
     func testValidResponseIsFundedAfterThrottlingTimespan() {
         api.underlyingCustodialBalance = CustodialAccountBalanceStates(
             response: CustodialBalanceResponse(
-                balances: [currency.code : .init(available: "2", withdrawable: "2")]
+                balances: [currency.code : .init(pending: "0", pendingDeposit: "0", pendingWithdrawal: "0", available: "2", withdrawable: "2")]
             )
         )
 
@@ -70,7 +70,7 @@ class CustodialMoneyBalanceFetcherTests: XCTestCase {
     func testZeroedResponseIsFunded() {
         api.underlyingCustodialBalance = CustodialAccountBalanceStates(
             response: CustodialBalanceResponse(
-                balances: [currency.code : .init(available: "0", withdrawable: "0")]
+                balances: [currency.code : .init(pending: "0", pendingDeposit: "0", pendingWithdrawal: "0", available: "0", withdrawable: "0")]
             )
         )
         
@@ -92,7 +92,7 @@ class CustodialMoneyBalanceFetcherTests: XCTestCase {
     func testValidResponseIsFunded() {
         api.underlyingCustodialBalance = CustodialAccountBalanceStates(
             response: CustodialBalanceResponse(
-                balances: [currency.code : .init(available: "1", withdrawable: "1")]
+                balances: [currency.code : .init(pending: "0", pendingDeposit: "0", pendingWithdrawal: "0", available: "1", withdrawable: "1")]
             )
         )
         
@@ -170,7 +170,7 @@ class CustodialMoneyBalanceFetcherTests: XCTestCase {
 
     func testZeroedResponse() {
         api.underlyingCustodialBalance = .absent
-        let response = CustodialBalanceResponse(balances: [currency.code : .init(available: "0", withdrawable: "0")])
+        let response = CustodialBalanceResponse(balances: [currency.code : .init(pending: "0", pendingDeposit: "0", pendingWithdrawal: "0", available: "0", withdrawable: "0")])
         let events = obervedBalanceEvents(
             data: [(20, response)]
         )
@@ -194,7 +194,7 @@ class CustodialMoneyBalanceFetcherTests: XCTestCase {
 
     func testValidResponse() {
         api.underlyingCustodialBalance = .absent
-        let response = CustodialBalanceResponse(balances: [currency.code : .init(available: "10", withdrawable: "10")])
+        let response = CustodialBalanceResponse(balances: [currency.code : .init(pending: "0", pendingDeposit: "0", pendingWithdrawal: "0", available: "10", withdrawable: "10")])
         let events = obervedBalanceEvents(data: [(40, response)])
         
         var expectedStates = CustodialAccountBalanceStates()

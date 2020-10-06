@@ -12,7 +12,7 @@ import RxSwift
 
 public final class AssetBalanceViewInteractor: AssetBalanceViewInteracting {
     
-    public typealias InteractionState = DashboardAsset.State.AssetBalance.Interaction
+    public typealias InteractionState = AssetBalanceViewModel.State.Interaction
     
     // MARK: - Exposed Properties
     
@@ -33,7 +33,8 @@ public final class AssetBalanceViewInteractor: AssetBalanceViewInteracting {
                     return .loaded(
                         next: .init(
                             fiatValue: result.quote,
-                            cryptoValue: result.base
+                            cryptoValue: result.base,
+                            pendingValue: .zero(currency: result.base.currency)
                         )
                     )
                 }
@@ -56,11 +57,12 @@ public final class AssetBalanceViewInteractor: AssetBalanceViewInteracting {
 
 public final class AssetBalanceTypeViewInteractor: AssetBalanceTypeViewInteracting {
     
-    public typealias InteractionState = DashboardAsset.State.AssetBalance.Interaction
+    public typealias InteractionState = AssetBalanceViewModel.State.Interaction
+    private typealias Model = AssetBalanceViewModel.Value.Interaction
     
     // MARK: - Exposed Properties
     
-    public let balanceType: BalanceType
+    public let accountType: SingleAccountType
     
     public var state: Observable<InteractionState> {
         _ = setup
@@ -70,18 +72,38 @@ public final class AssetBalanceTypeViewInteractor: AssetBalanceTypeViewInteracti
     // MARK: - Private Accessors
     
     private lazy var setup: Void = {
-        assetBalanceFetching.calculationState
-            .map(weak: self) { (self, state) -> InteractionState in
+        Observable.combineLatest(
+                assetBalanceFetching.calculationState,
+                assetBalanceFetching.wallet.pendingBalanceMoneyObservable,
+                assetBalanceFetching.trading.pendingBalanceMoneyObservable,
+                assetBalanceFetching.savings.pendingBalanceMoneyObservable
+            )
+            .map(weak: self) { (self, values) -> InteractionState in
+                let (state, wallet, trading, savings) = values
+                let pending: MoneyValue
+                switch self.accountType {
+                case .custodial(let type):
+                    switch type {
+                    case .savings:
+                        pending = savings
+                    case .trading:
+                        pending = trading
+                    }
+                case .nonCustodial:
+                    pending = wallet
+                }
+                
                 switch state {
                 case .calculating, .invalid:
                     return .loading
                 case .value(let result):
                     return .loaded(
                         next: .init(
-                            fiatValue: result[self.balanceType].quote,
-                            cryptoValue: result[self.balanceType].base
+                            fiatValue: result[self.accountType].quote,
+                            cryptoValue: result[self.accountType].base,
+                            pendingValue: pending
+                            )
                         )
-                    )
                 }
             }
             .bindAndCatch(to: stateRelay)
@@ -95,8 +117,8 @@ public final class AssetBalanceTypeViewInteractor: AssetBalanceTypeViewInteracti
     
     // MARK: - Setup
     
-    public init(assetBalanceFetching: AssetBalanceFetching, balanceType: BalanceType) {
-        self.balanceType = balanceType
+    public init(assetBalanceFetching: AssetBalanceFetching, accountType: SingleAccountType) {
+        self.accountType = accountType
         self.assetBalanceFetching = assetBalanceFetching
     }
 }

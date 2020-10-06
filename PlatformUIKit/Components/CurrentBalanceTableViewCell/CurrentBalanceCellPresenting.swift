@@ -20,12 +20,19 @@ public protocol CurrentBalanceCellPresenting {
 
     /// Returns the description of the balance
     var description: Driver<String> { get }
+    
+    /// Returns the pending title
+    var pending: Driver<String> { get }
+    
+    var pendingLabelVisibility: Driver<Visibility> { get }
 
     var separatorVisibility: Driver<Visibility> { get }
 
     var titleAccessibilitySuffix: String { get }
 
     var descriptionAccessibilitySuffix: String { get }
+    
+    var pendingAccessibilitySuffix: String { get }
 
     var assetBalanceViewPresenter: AssetBalanceViewPresenter { get }
 }

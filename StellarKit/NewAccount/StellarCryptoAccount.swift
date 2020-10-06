@@ -24,12 +24,17 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
         balanceFetching
             .balanceMoney
     }
+    
+    var pendingBalance: Single<MoneyValue> {
+        balanceFetching
+            .pendingBalanceMoney
+    }
 
     var actions: AvailableActions {
         [.viewActivity]
     }
 
-    private let balanceFetching: AccountBalanceFetching
+    private let balanceFetching: SingleAccountBalanceFetching
     private let exchangeService: PairExchangeServiceAPI
 
     init(id: String,

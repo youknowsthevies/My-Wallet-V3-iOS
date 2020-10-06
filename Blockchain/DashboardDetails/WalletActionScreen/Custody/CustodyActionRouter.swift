@@ -139,7 +139,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
             analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbTradingWalletClicked(asset: cryptoCurrency))
         }
         let interactor = WalletActionScreenInteractor(
-            balanceType: .custodial(.trading),
+            accountType: .custodial(.trading),
             currency: currency,
             service: dataProviding.balance[currency.currency]
         )

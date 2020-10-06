@@ -55,7 +55,7 @@ final class ActivityServiceContainer: ActivityServiceContaining {
             .selectedData
             .map { account -> WalletPickerSelection in
                 if let account: FiatAccount = account as? FiatAccount {
-                    switch account.balanceType {
+                    switch account.accountType {
                     case .custodial:
                         return .custodial(account.currencyType)
                     case .nonCustodial:
@@ -63,7 +63,7 @@ final class ActivityServiceContainer: ActivityServiceContaining {
                     }
                 }
                 if let account: CryptoAccount = account as? CryptoAccount {
-                    switch account.balanceType {
+                    switch account.accountType {
                     case .custodial:
                         return .custodial(.crypto(account.asset))
                     case .nonCustodial:

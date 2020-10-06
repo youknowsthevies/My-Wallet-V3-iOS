@@ -71,7 +71,7 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
     
     private func showNonCustodialActionScreen() {
         let interactor = WalletActionScreenInteractor(
-            balanceType: .nonCustodial,
+            accountType: .nonCustodial,
             currency: .crypto(currency),
             service: balanceProviding[currency.currency]
         )

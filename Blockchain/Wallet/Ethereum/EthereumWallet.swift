@@ -310,12 +310,26 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
             }
     }
 
-    var balanceType: BalanceType {
+    var accountType: SingleAccountType {
         .nonCustodial
     }
     
     var history: Single<Void> {
         fetchHistory(fromCache: false)
+    }
+    
+    var pendingBalanceMoneyObservable: Observable<MoneyValue> {
+        pendingBalanceMoney
+            .asObservable()
+    }
+    
+    var pendingBalanceMoney: Single<MoneyValue> {
+        Single.just(MoneyValue.zero(currency: .ethereum))
+    }
+    
+    var balanceMoney: Single<MoneyValue> {
+        balance
+            .moneyValue
     }
     
     var balance: Single<CryptoValue> {

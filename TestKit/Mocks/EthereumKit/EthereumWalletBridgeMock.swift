@@ -17,6 +17,23 @@ enum EthereumWalletBridgeMockError: Error {
 }
 
 class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBridgeAPI, MnemonicAccessAPI, PasswordAccessAPI {
+    var balance: Single<CryptoValue> {
+        balanceValue
+    }
+    
+    var balanceMoney: Single<MoneyValue> {
+        Single.just(.init(cryptoValue: CryptoValue.ether(major: "2.0")!))
+    }
+    
+    var pendingBalanceMoney: Single<MoneyValue> {
+        Single.just(.init(cryptoValue: CryptoValue.ether(major: "2.0")!))
+    }
+    
+    var pendingBalanceMoneyObservable: Observable<MoneyValue> {
+        pendingBalanceMoney
+            .asObservable()
+    }
+    
     func updateMemo(for transactionHash: String, memo: String?) -> Completable {
         .empty()
     }
@@ -25,7 +42,7 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
         .just(nil)
     }
 
-    public var balanceType: BalanceType {
+    public var accountType: SingleAccountType {
         .nonCustodial
     }
 
@@ -49,9 +66,6 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
     }
 
     var balanceValue: Single<CryptoValue> = Single.just(CryptoValue.ether(major: "2.0")!)
-    var balance: Single<CryptoValue> {
-        balanceValue
-    }
 
     var balanceObservable: Observable<CryptoValue> {
         balance.asObservable()

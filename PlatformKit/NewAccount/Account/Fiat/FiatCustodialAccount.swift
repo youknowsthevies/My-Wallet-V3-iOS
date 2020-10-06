@@ -19,7 +19,20 @@ public class FiatCustodialAccount: FiatAccount {
     public let isDefault: Bool = true
     public let label: String
     public let fiatCurrency: FiatCurrency
-    public let balanceType: BalanceType = .custodial(.trading)
+    public let accountType: SingleAccountType = .custodial(.trading)
+    
+    public var pendingBalance: Single<MoneyValue> {
+        balanceProviding[currencyType]
+            .trading
+            .pendingBalanceMoney
+    }
+    
+    public var isFunded: Single<Bool> {
+        balanceProviding[currencyType]
+            .trading
+            .balanceMoney
+            .map { $0.isPositive }
+    }
 
     public var balance: Single<MoneyValue> {
         balanceProviding[currencyType]

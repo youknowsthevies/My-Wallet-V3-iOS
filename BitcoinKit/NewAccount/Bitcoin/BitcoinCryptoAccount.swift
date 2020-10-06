@@ -19,6 +19,10 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     let label: String
     let asset: CryptoCurrency = .bitcoin
     let isDefault: Bool
+    
+    var pendingBalance: Single<MoneyValue> {
+        Single.just(MoneyValue.zero(currency: .bitcoin))
+    }
 
     var balance: Single<MoneyValue> {
         balanceService

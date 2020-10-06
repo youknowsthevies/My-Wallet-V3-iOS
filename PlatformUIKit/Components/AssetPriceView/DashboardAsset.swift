@@ -20,12 +20,6 @@ public struct DashboardAsset {
             public typealias Interaction = LoadingState<Value.Interaction.AssetPrice>
             public typealias Presentation = LoadingState<Value.Presentation.AssetPrice>
         }
-        
-        /// The state of the `AssetBalance` interactor and presenter
-        public struct AssetBalance {
-            public typealias Interaction = LoadingState<Value.Interaction.AssetBalance>
-            public typealias Presentation = LoadingState<Value.Presentation.AssetBalance>
-        }
     }
     
     // MARK: - Value Namespace
@@ -96,84 +90,11 @@ public struct DashboardAsset {
                 }
             }
             
-            public struct AssetBalance {
-                
-                /// The wallet's balance in fiat
-                let fiatValue: MoneyValue
-                /// The wallet's balance in crypto
-                let cryptoValue: MoneyValue
-                
-                init(fiatValue: MoneyValue, cryptoValue: MoneyValue) {
-                    self.fiatValue = fiatValue
-                    self.cryptoValue = cryptoValue
-                }
-            }
-            
         }
         
         // MARK: - Presentation
         
         public struct Presentation {
-            
-            /// The presentation model for `AssetBalanceView`
-            public struct AssetBalance {
-                
-                private typealias AccessibilityId = Accessibility.Identifier.Dashboard.AssetCell
-                
-                // MARK: - Properties
-                
-                /// The balance in fiat
-                let fiatBalance: LabelContent
-                
-                /// The balance in crypto
-                let cryptoBalance: LabelContent
-                
-                /// Descriptors that allows customized content and style
-                public struct Descriptors {
-                    let fiatFont: UIFont
-                    let fiatTextColor: UIColor
-                    let fiatAccessibility: Accessibility
-                    let cryptoFont: UIFont
-                    let cryptoTextColor: UIColor
-                    let cryptoAccessibility: Accessibility
-                    
-                    public init(fiatFont: UIFont,
-                                fiatTextColor: UIColor,
-                                fiatAccessibility: Accessibility,
-                                cryptoFont: UIFont,
-                                cryptoTextColor: UIColor,
-                                cryptoAccessibility: Accessibility) {
-                        self.fiatFont = fiatFont
-                        self.fiatTextColor = fiatTextColor
-                        self.fiatAccessibility = fiatAccessibility
-                        self.cryptoFont = cryptoFont
-                        self.cryptoTextColor = cryptoTextColor
-                        self.cryptoAccessibility = cryptoAccessibility
-                    }
-                }
-                
-                // MARK: - Setup
-
-                public init(with value: Interaction.AssetBalance, descriptors: Descriptors) {
-                    fiatBalance = LabelContent(
-                        text: value.fiatValue.toDisplayString(includeSymbol: true, locale: .current),
-                        font: descriptors.fiatFont,
-                        color: descriptors.fiatTextColor,
-                        accessibility: descriptors.fiatAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
-                    )
-                    
-                    if value.cryptoValue == value.fiatValue {
-                        cryptoBalance = .empty
-                    } else {
-                        cryptoBalance = LabelContent(
-                            text: value.cryptoValue.toDisplayString(includeSymbol: true, locale: .current),
-                            font: descriptors.cryptoFont,
-                            color: descriptors.cryptoTextColor,
-                            accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
-                        )
-                    }
-                }
-            }
             
             /// The presentation model for `AssetPriceView`
             public struct AssetPrice {
@@ -325,64 +246,6 @@ extension DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
             priceFont: .systemFont(ofSize: 16.0, weight: .semibold),
             changeFont: .systemFont(ofSize: 12.0, weight: .semibold),
             accessibilityIdSuffix: accessibilityIdSuffix
-        )
-    }
-}
-
-public extension DashboardAsset.Value.Presentation.AssetBalance.Descriptors {
-    typealias Descriptors = DashboardAsset.Value.Presentation.AssetBalance.Descriptors
-    
-    static func `default`(
-        cryptoAccessiblitySuffix: String,
-        fiatAccessiblitySuffix: String
-    ) -> Descriptors {
-        Descriptors(
-            fiatFont: .main(.semibold, 16.0),
-            fiatTextColor: .dashboardFiatPriceTitle,
-            fiatAccessibility: .init(
-                id: .value(fiatAccessiblitySuffix)
-            ),
-            cryptoFont: .main(.medium, 14.0),
-            cryptoTextColor: .descriptionText,
-            cryptoAccessibility: .init(
-                id: .value(cryptoAccessiblitySuffix)
-            )
-        )
-    }
-    
-    static func muted(
-        cryptoAccessiblitySuffix: String,
-        fiatAccessiblitySuffix: String
-    ) -> Descriptors {
-        Descriptors(
-            fiatFont: .main(.medium, 16.0),
-            fiatTextColor: .mutedText,
-            fiatAccessibility: .init(
-                id: .value(fiatAccessiblitySuffix)
-            ),
-            cryptoFont: .main(.medium, 14.0),
-            cryptoTextColor: .mutedText,
-            cryptoAccessibility: .init(
-                id: .value(cryptoAccessiblitySuffix)
-            )
-        )
-    }
-    
-    static func activity(
-        cryptoAccessiblitySuffix: String,
-        fiatAccessiblitySuffix: String
-    ) -> Descriptors {
-        Descriptors(
-            fiatFont: .main(.semibold, 16.0),
-            fiatTextColor: .textFieldText,
-            fiatAccessibility: .init(
-                id: .value(fiatAccessiblitySuffix)
-            ),
-            cryptoFont: .main(.medium, 14.0),
-            cryptoTextColor: .descriptionText,
-            cryptoAccessibility: .init(
-                id: .value(cryptoAccessiblitySuffix)
-            )
         )
     }
 }

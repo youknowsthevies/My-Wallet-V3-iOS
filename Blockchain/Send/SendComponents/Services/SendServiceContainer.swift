@@ -19,7 +19,7 @@ protocol SendServiceContaining {
     var executor: SendExecuting { get }
     var exchange: PairExchangeServiceAPI { get }
     var fee: SendFeeServicing { get }
-    var balance: AccountBalanceFetching { get }
+    var balance: SingleAccountBalanceFetching { get }
     var bus: WalletActionEventBus { get }
     var fiatCurrency: FiatCurrencySettingsServiceAPI { get }
     
@@ -38,7 +38,7 @@ struct SendServiceContainer: SendServiceContaining {
     let executor: SendExecuting
     let exchange: PairExchangeServiceAPI
     let fee: SendFeeServicing
-    let balance: AccountBalanceFetching
+    let balance: SingleAccountBalanceFetching
     let bus: WalletActionEventBus
     let fiatCurrency: FiatCurrencySettingsServiceAPI
     

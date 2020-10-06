@@ -13,7 +13,7 @@ import RxSwift
 
 final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteracting {
 
-    typealias InteractionState = DashboardAsset.State.AssetBalance.Interaction
+    typealias InteractionState = AssetBalanceViewModel.State.Interaction
 
     // MARK: - Exposed Properties
 
@@ -36,13 +36,15 @@ final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteracting {
                 Single.zip(
                     self.account.fiatBalance(fiatCurrency: fiatCurrency),
                     self.account.balance
-                ) { (fiatBalance: $0, cryptoBalance: $1) }
+                )
             }
+            .map { (fiatBalance: $0, cryptoBalance: $1) }
             .map { data -> InteractionState in
                 InteractionState.loaded(
-                    next: DashboardAsset.Value.Interaction.AssetBalance(
+                    next: AssetBalanceViewModel.Value.Interaction.init(
                         fiatValue: data.fiatBalance,
-                        cryptoValue: data.cryptoBalance
+                        cryptoValue: data.cryptoBalance,
+                        pendingValue: .zero(currency: data.cryptoBalance.currency)
                     )
                 )
             }

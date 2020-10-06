@@ -16,7 +16,7 @@ public final class BitcoinAllAccountsBalanceFetcher: CryptoAccountBalanceFetchin
         
     // MARK: - Exposed Properties
     
-    public var balanceType: BalanceType {
+    public var accountType: SingleAccountType {
         .nonCustodial
     }
     
@@ -25,6 +25,20 @@ public final class BitcoinAllAccountsBalanceFetcher: CryptoAccountBalanceFetchin
             .flatMap(weak: self) { (self, activeAccounts) -> Single<CryptoValue> in
                 self.balanceService.bitcoinBalances(for: activeAccounts)
             }
+    }
+    
+    public var pendingBalanceMoneyObservable: Observable<MoneyValue> {
+        pendingBalanceMoney
+            .asObservable()
+    }
+    
+    public var pendingBalanceMoney: Single<MoneyValue> {
+        Single.just(MoneyValue.zero(currency: .bitcoin))
+    }
+    
+    public var balanceMoney: Single<MoneyValue> {
+        balance
+            .moneyValue
     }
     
     public var balanceObservable: Observable<CryptoValue> {

@@ -148,9 +148,11 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
                     observer(.success(.failure(NetworkCommunicatorError.serverError(.badResponse))))
                     return
                 }
+//                #if DEBUG
 //                if let payload = payload, let responseValue = String(data: payload, encoding: .utf8) {
 //                    Logger.shared.debug("\(responseValue) <- \(requestPath)")
 //                }
+//                #endif
                 switch response.statusCode {
                 case 204:
                     observer(.success(.success(ServerResponse(response: response, payload: nil))))

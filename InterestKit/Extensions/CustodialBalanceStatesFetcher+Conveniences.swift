@@ -13,7 +13,7 @@ extension CustodialBalanceStatesFetcher {
     public convenience init(savingAccountService: SavingAccountServiceAPI,
                             scheduler: SchedulerType = ConcurrentDispatchQueueScheduler(qos: .background)) {
         self.init(
-            custodialType: .savings,
+            custodialAccountType: .savings,
             fetch: { savingAccountService.fetchBalances() },
             scheduler: scheduler
         )

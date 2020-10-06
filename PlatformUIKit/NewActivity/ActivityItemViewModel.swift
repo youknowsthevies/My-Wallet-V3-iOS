@@ -16,7 +16,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
     typealias AccessibilityId = Accessibility.Identifier.Activity
     typealias LocalizationStrings = LocalizationConstants.Activity.MainScreen.Item
     
-    public typealias Descriptors = DashboardAsset.Value.Presentation.AssetBalance.Descriptors
+    public typealias Descriptors = AssetBalanceViewModel.Value.Presentation.Descriptors
 
     public var identity: AnyHashable {
         event

@@ -28,13 +28,13 @@ final class SendSpendableBalanceInteractor: SendSpendableBalanceInteracting {
 
     // MARK: - Services
     
-    private let balanceFetcher: AccountBalanceFetching
+    private let balanceFetcher: SingleAccountBalanceFetching
     private let feeInteractor: SendFeeInteracting
     private let exchangeService: PairExchangeServiceAPI
     
     // MARK: - Setup
     
-    init(balanceFetcher: AccountBalanceFetching,
+    init(balanceFetcher: SingleAccountBalanceFetching,
          feeInteractor: SendFeeInteracting,
          exchangeService: PairExchangeServiceAPI) {
         self.balanceFetcher = balanceFetcher
@@ -44,7 +44,8 @@ final class SendSpendableBalanceInteractor: SendSpendableBalanceInteracting {
         let fee = feeInteractor.calculationState
             .compactMap { $0.value }
             .map { $0.base }
-        let balance = balanceFetcher.balanceMoney.asObservable()
+        let balance = balanceFetcher
+            .balanceMoneyObservable
         let exchangeRate = exchangeService.fiatPrice
             .map { $0.moneyValue }
         

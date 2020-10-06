@@ -10,9 +10,9 @@ import PlatformKit
 import RxSwift
 
 public protocol AssetBalanceViewInteracting: class {
-    var state: Observable<DashboardAsset.State.AssetBalance.Interaction> { get }
+    var state: Observable<AssetBalanceViewModel.State.Interaction> { get }
 }
 
 public protocol AssetBalanceTypeViewInteracting: AssetBalanceViewInteracting {
-    var balanceType: BalanceType { get }
+    var accountType: SingleAccountType { get }
 }

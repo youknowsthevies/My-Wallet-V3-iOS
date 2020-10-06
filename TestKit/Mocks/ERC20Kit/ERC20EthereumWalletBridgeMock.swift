@@ -21,8 +21,20 @@ class ERC20EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
     func memo(for transactionHash: String) -> Single<String?> {
         .just(nil)
     }
+    
+    var pendingBalanceMoney: Single<MoneyValue> = Single.just(CryptoValue.pax(major: "1.0")!.moneyValue)
+    
+    var pendingBalanceMoneyObservable: Observable<MoneyValue> {
+        pendingBalanceMoney
+            .asObservable()
+    }
+    
+    var balanceMoney: Single<MoneyValue> {
+        balance
+            .moneyValue
+    }
 
-    public var balanceType: BalanceType {
+    public var accountType: SingleAccountType {
         .nonCustodial
     }
 

@@ -12,7 +12,7 @@ import ToolKit
 
 public protocol CustodialBalanceStatesFetcherAPI: AnyObject {
     var isFunded: Observable<Bool> { get }
-    var balanceType: BalanceType { get }
+    var custodialAccountType: SingleAccountType.CustodialAccountType { get }
     var balanceStates: Single<CustodialAccountBalanceStates> { get }
     var balanceStatesObservable: Observable<CustodialAccountBalanceStates> { get }
     var balanceFetchTriggerRelay: PublishRelay<Void> { get }
@@ -27,7 +27,7 @@ public final class CustodialBalanceStatesFetcher: CustodialBalanceStatesFetcherA
     
     // MARK: - Public Properties
     
-    public let balanceType: BalanceType
+    public let custodialAccountType: SingleAccountType.CustodialAccountType
     
     public var balanceStates: Single<CustodialAccountBalanceStates> {
         balanceStatesObservable
@@ -72,11 +72,11 @@ public final class CustodialBalanceStatesFetcher: CustodialBalanceStatesFetcherA
     
     // MARK: Init
 
-    public init(custodialType: BalanceType.CustodialType,
+    public init(custodialAccountType: SingleAccountType.CustodialAccountType,
                 fetch: @escaping Fetch,
                 scheduler: SchedulerType) {
         self.balanceRelay = BehaviorRelay(value: .absent)
-        self.balanceType = .custodial(custodialType)
+        self.custodialAccountType = custodialAccountType
         self.scheduler = scheduler
         self.fetch = fetch
     }
@@ -93,7 +93,7 @@ extension CustodialBalanceStatesFetcher {
     public convenience init(tradingBalanceService: TradingBalanceServiceAPI,
                             scheduler: SchedulerType = ConcurrentDispatchQueueScheduler(qos: .background)) {
         self.init(
-            custodialType: .trading,
+            custodialAccountType: .trading,
             fetch: { tradingBalanceService.fetchBalances() },
             scheduler: scheduler
         )

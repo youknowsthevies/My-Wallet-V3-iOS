@@ -14,9 +14,23 @@ public final class CustodialMoneyBalanceFetcher: CustodialAccountBalanceFetching
 
     // MARK: - Public Properties
     
-    public var balanceType: BalanceType {
+    public var accountType: SingleAccountType {
         _ = setup
-        return fetcher.balanceType
+        return .custodial(fetcher.custodialAccountType)
+    }
+    
+    public var pendingBalanceMoney: Single<MoneyValue> {
+        pendingBalanceMoneyObservable
+            .take(1)
+            .asSingle()
+    }
+    
+    public var pendingBalanceMoneyObservable: Observable<MoneyValue> {
+        _ = setup
+        let currencyType = self.currencyType
+        return balanceRelay
+            .map { $0?.pending }
+            .map { $0 ?? .zero(currency: currencyType) }
     }
     
     public var balanceMoney: Single<MoneyValue> {
@@ -30,7 +44,7 @@ public final class CustodialMoneyBalanceFetcher: CustodialAccountBalanceFetching
         let currencyType = self.currencyType
         return balanceRelay
             .map { $0?.available }
-            .map { $0 ?? .zero(currency: currencyType)  }
+            .map { $0 ?? .zero(currency: currencyType) }
     }
 
     public var isFunded: Observable<Bool> {

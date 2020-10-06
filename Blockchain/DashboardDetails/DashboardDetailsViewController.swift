@@ -113,8 +113,6 @@ extension DashboardDetailsViewController: UITableViewDelegate, UITableViewDataSo
         let cell: UITableViewCell
         let type = presenter.cellArrangement[indexPath.row]
         switch type {
-        case .sendRequest:
-            cell = multiActionCell(for: indexPath, presenter: presenter.sendRequestPresenter)
         case .priceAlert:
             cell = priceAlertCell(for: indexPath)
         case .balance(let balanceType):

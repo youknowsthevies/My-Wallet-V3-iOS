@@ -9,11 +9,56 @@
 import RxSwift
 import ToolKit
 
+public enum SingleAccountType: Hashable {
+    case custodial(CustodialAccountType)
+    case nonCustodial
+    
+    public enum CustodialAccountType: String, Hashable {
+        case trading
+        case savings
+        
+        var isTrading: Bool {
+            self == .trading
+        }
+        
+        var isSavings: Bool {
+            self == .savings
+        }
+    }
+    
+    public var isTrading: Bool {
+        switch self {
+        case .nonCustodial:
+            return false
+        case .custodial(let type):
+            return type.isTrading
+        }
+    }
+    
+    public var isSavings: Bool {
+        switch self {
+        case .nonCustodial:
+            return false
+        case .custodial(let type):
+            return type.isSavings
+        }
+    }
+    
+    public var description: String {
+        switch self {
+        case .custodial(let type):
+            return "custodial.\(type.rawValue)"
+        case .nonCustodial:
+            return "noncustodial"
+        }
+    }
+}
+
 /// A BlockchainAccount that represents a single account, opposed to a collection of accounts.
 public protocol SingleAccount: BlockchainAccount {
 
     var currencyType: CurrencyType { get }
-    var balanceType: BalanceType { get }
+    var accountType: SingleAccountType { get }
     var isDefault: Bool { get }
     var receiveAddress: Single<ReceiveAddress> { get }
     var sendState: Single<SendState> { get }

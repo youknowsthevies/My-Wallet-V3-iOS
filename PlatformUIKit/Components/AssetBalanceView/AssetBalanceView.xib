@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -17,6 +17,7 @@
             <connections>
                 <outlet property="cryptoBalanceLabel" destination="wbL-Wd-8WF" id="Jam-mT-bVO"/>
                 <outlet property="fiatBalanceLabel" destination="MPw-VI-n67" id="gSb-1M-N67"/>
+                <outlet property="pendingCryptoBalanceLabel" destination="sEN-Cu-6tE" id="5Xg-Wx-KAj"/>
                 <outlet property="stackView" destination="h9Z-Ja-2G4" id="lGB-94-PoE"/>
             </connections>
         </placeholder>
@@ -35,7 +36,13 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wbL-Wd-8WF">
-                            <rect key="frame" x="0.0" y="23.5" width="224" height="30.5"/>
+                            <rect key="frame" x="0.0" y="23.5" width="224" height="9.5"/>
+                            <fontDescription key="fontDescription" name="Inter-Medium" family="Inter" pointSize="14"/>
+                            <color key="textColor" red="0.59599999999999997" green="0.63100000000000001" blue="0.69799999999999995" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text=" " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sEN-Cu-6tE">
+                            <rect key="frame" x="0.0" y="37" width="224" height="17"/>
                             <fontDescription key="fontDescription" name="Inter-Medium" family="Inter" pointSize="14"/>
                             <color key="textColor" red="0.59599999999999997" green="0.63100000000000001" blue="0.69799999999999995" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
@@ -43,6 +50,7 @@
                     </subviews>
                 </stackView>
             </subviews>
+            <viewLayoutGuide key="safeArea" id="OnG-hD-YTx"/>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="h9Z-Ja-2G4" secondAttribute="trailing" id="1fQ-gj-FJd"/>
@@ -51,7 +59,6 @@
                 <constraint firstAttribute="bottom" secondItem="h9Z-Ja-2G4" secondAttribute="bottom" id="aQn-2b-avc"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <viewLayoutGuide key="safeArea" id="OnG-hD-YTx"/>
             <point key="canvasLocation" x="0.0" y="-10.044642857142856"/>
         </view>
     </objects>

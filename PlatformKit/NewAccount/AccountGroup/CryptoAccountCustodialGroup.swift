@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import Localization
+import RxSwift
 
 /// An `AccountGroup` containing only Custodial accounts.
 public class CryptoAccountCustodialGroup: AccountGroup {
@@ -20,6 +20,27 @@ public class CryptoAccountCustodialGroup: AccountGroup {
     public let label: String
 
     public let accounts: [SingleAccount]
+    
+    public var isFunded: Single<Bool> {
+        if accounts.isEmpty {
+            return .just(false)
+        }
+        return Single.zip(accounts.map(\.isFunded))
+                    .map { values -> Bool in
+                        !values.contains(false)
+                    }
+    }
+    
+    public var pendingBalance: Single<MoneyValue> {
+        if accounts.isEmpty {
+            return .just(.zero(currency: asset))
+        }
+        let asset = self.asset
+        return Single.zip(accounts.map(\.pendingBalance))
+            .map { values -> MoneyValue in
+                try values.reduce(MoneyValue.zero(currency: asset), +)
+            }
+    }
 
     public var balance: Single<MoneyValue> {
         if accounts.isEmpty {
@@ -27,8 +48,8 @@ public class CryptoAccountCustodialGroup: AccountGroup {
         }
         let asset = self.asset
         return Single.zip(accounts.map(\.balance))
-            .map { values -> MoneyValue in
-                try values.reduce(MoneyValue.zero(currency: asset), +)
+                    .map { values -> MoneyValue in
+                        try values.reduce(MoneyValue.zero(currency: asset), +)
             }
     }
 

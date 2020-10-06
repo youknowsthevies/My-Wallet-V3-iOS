@@ -19,6 +19,10 @@ class AlgorandCryptoAccount: CryptoNonCustodialAccount {
     let label: String
     let asset: CryptoCurrency = .algorand
     let isDefault: Bool = false
+    
+    var pendingBalance: Single<MoneyValue> {
+        unimplemented()
+    }
 
     var balance: Single<MoneyValue> {
         unimplemented()

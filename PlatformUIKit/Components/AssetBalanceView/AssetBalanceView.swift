@@ -56,6 +56,7 @@ public final class AssetBalanceView: UIView {
     @IBOutlet private var stackView: UIStackView!
     @IBOutlet fileprivate var fiatBalanceLabel: UILabel!
     @IBOutlet fileprivate var cryptoBalanceLabel: UILabel!
+    @IBOutlet fileprivate var pendingCryptoBalanceLabel: UILabel!
     
     fileprivate var fiatLabelShimmeringView: ShimmeringView!
     fileprivate var cryptoLabelShimmeringView: ShimmeringView!
@@ -124,10 +125,12 @@ public final class AssetBalanceView: UIView {
 // MARK: - Rx
 
 extension Reactive where Base: AssetBalanceView {
-    var values: Binder<DashboardAsset.Value.Presentation.AssetBalance> {
+    var values: Binder<AssetBalanceViewModel.Value.Presentation> {
         Binder(base) { view, values in
             view.fiatBalanceLabel.content = values.fiatBalance
             view.cryptoBalanceLabel.content = values.cryptoBalance
+            view.pendingCryptoBalanceLabel.content = values.pendingBalance
+            view.pendingCryptoBalanceLabel.isHidden = values.pendingBalanceVisibility.isHidden
         }
     }
 }

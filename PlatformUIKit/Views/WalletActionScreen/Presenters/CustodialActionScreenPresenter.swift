@@ -68,6 +68,7 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
             currency: interactor.currency,
             titleAccessibilitySuffix: "\(Accessibility.Identifier.CurrentBalanceCell.title)",
             descriptionAccessibilitySuffix: "\(Accessibility.Identifier.CurrentBalanceCell.description)",
+            pendingAccessibilitySuffix: "\(Accessibility.Identifier.CurrentBalanceCell.pending)",
             descriptors: .default(
                 cryptoAccessiblitySuffix: "\(AccessibilityId.CustodialAction.cryptoValue)",
                 fiatAccessiblitySuffix: "\(AccessibilityId.CustodialAction.fiatValue)"
@@ -84,8 +85,8 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
                 .init(currencyType: currency, action: .buy),
                 .init(currencyType: currency, action: .sell)
             ])
-            let isTrading = interactor.balanceType.isTrading
-            let isSavings = interactor.balanceType.isSavings
+            let isTrading = interactor.accountType.isTrading
+            let isSavings = interactor.accountType.isSavings
             if isTrading && crypto.hasNonCustodialWithdrawalSupport {
                 actionPresenters.append(
                     .init(currencyType: currency, action: .transfer)

@@ -13,8 +13,7 @@ extension CustodialAccountBalance {
     init?(currency: CryptoCurrency,
           response: SavingsAccountBalanceDetails) {
         guard let balance = response.balance else { return nil }
-        let available = CryptoValue.create(minor: balance, currency: currency) ?? .zero(currency: currency)
-        self = .init(available: available.moneyValue, withdrawable: .zero(currency: currency))
+        self = .init(minorValue: balance, currencyType: .crypto(currency))
     }
 }
 

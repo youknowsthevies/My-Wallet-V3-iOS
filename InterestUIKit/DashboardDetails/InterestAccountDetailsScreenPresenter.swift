@@ -47,6 +47,7 @@ public final class InterestAccountDetailsScreenPresenter {
                             currency: .crypto(self.interactor.cryptoCurrency),
                             titleAccessibilitySuffix: "\(AccessibilityId.balanceCellTitle)",
                             descriptionAccessibilitySuffix: "\(AccessibilityId.balanceCellDescription)",
+                            pendingAccessibilitySuffix: "\(AccessibilityId.balanceCellPending)",
                             descriptors: .default(
                                 cryptoAccessiblitySuffix: "\(AccessibilityId.balanceCellCryptoAmount)",
                                 fiatAccessiblitySuffix: "\(AccessibilityId.balanceCellFiatAmount)"

@@ -11,9 +11,18 @@ import RxSwift
 
 import PlatformKit
 
-public final class MockAccountBalanceFetcher: AccountBalanceFetching {
+public final class MockAccountBalanceFetcher: SingleAccountBalanceFetching {
+    
+    public var pendingBalanceMoney: Single<MoneyValue> {
+        .just(MoneyValue.zero(currency: expectedBalance.currency))
+    }
+    
+    public var pendingBalanceMoneyObservable: Observable<MoneyValue> {
+        pendingBalanceMoney
+            .asObservable()
+    }
 
-    public var balanceType: BalanceType {
+    public var accountType: SingleAccountType {
         .nonCustodial
     }
 

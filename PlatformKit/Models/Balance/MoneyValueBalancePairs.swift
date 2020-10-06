@@ -18,8 +18,8 @@ public struct MoneyValueBalancePairs: Equatable {
     /// The quote currency type - either crypto or fiat
     public let quoteCurrency: CurrencyType
     
-    public subscript(balanceType: BalanceType) -> MoneyValuePair {
-        moneyPairs[balanceType] ?? MoneyValuePair(base: .zero(currency: baseCurrency), quote: .zero(currency: quoteCurrency))
+    public subscript(accountType: SingleAccountType) -> MoneyValuePair {
+        moneyPairs[accountType] ?? MoneyValuePair(base: .zero(currency: baseCurrency), quote: .zero(currency: quoteCurrency))
     }
         
     /// Returns true in case the balance is absent
@@ -27,7 +27,7 @@ public struct MoneyValueBalancePairs: Equatable {
     
     // MARK: - Services
     
-    private var moneyPairs: [BalanceType: MoneyValuePair] = [:]
+    private var moneyPairs: [SingleAccountType: MoneyValuePair] = [:]
     
     // MARK: - Setup
     

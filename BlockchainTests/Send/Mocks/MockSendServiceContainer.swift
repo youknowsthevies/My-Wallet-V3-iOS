@@ -19,7 +19,7 @@ struct MockSendServiceContainer: SendServiceContaining {
     let executor: SendExecuting
     let exchange: PairExchangeServiceAPI
     let fee: SendFeeServicing
-    let balance: AccountBalanceFetching
+    let balance: SingleAccountBalanceFetching
     let bus: WalletActionEventBus
     let fiatCurrency: FiatCurrencySettingsServiceAPI
     

@@ -123,6 +123,8 @@ extension DependencyContainer {
                 })
             )
         }
+        
+        factory { BlockchainAccountProvider() as BlockchainAccountProviding }
 
         single { KYCTiersService() as KYCTiersServiceAPI }
 

@@ -37,20 +37,30 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
         return descriptionRelay.asDriver()
     }
     
+    public var pending: Driver<String> {
+       .just(LocalizedString.pending)
+    }
+    
+    public var pendingLabelVisibility: Driver<Visibility> {
+        _ = setup
+        return pendingLabelVisibilityRelay.asDriver()
+    }
+    
     public var separatorVisibility: Driver<Visibility> {
         separatorVisibilityRelay.asDriver()
     }
     
     var identifier: String {
-        "\(balanceType.description).\(currency.name)"
+        "\(accountType.description).\(currency.name)"
     }
     
     public let titleAccessibilitySuffix: String
     public let descriptionAccessibilitySuffix: String
+    public let pendingAccessibilitySuffix: String
         
     public let currency: CurrencyType
-    public var balanceType: BalanceType {
-        interactor.balanceType
+    public var accountType: SingleAccountType {
+        interactor.accountType
     }
     public let assetBalanceViewPresenter: AssetBalanceViewPresenter
         
@@ -61,11 +71,20 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
             .catchErrorJustReturn("")
             .bindAndCatch(to: descriptionRelay)
             .disposed(by: disposeBag)
+        
+        interactor
+            .assetBalanceViewInteractor
+            .state
+            .compactMap { $0.value }
+            .map { $0.pendingValue.isZero ? .hidden : .visible }
+            .bind(to: pendingLabelVisibilityRelay)
+            .disposed(by: disposeBag)
     }()
     
     private let badgeRelay = BehaviorRelay<BadgeImageViewModel>(value: .empty)
     private let separatorVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let iconImageViewContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
+    private let pendingLabelVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let titleRelay = BehaviorRelay<String>(value: "")
     private let descriptionRelay = BehaviorRelay<String>(value: "")
     private let interactor: CurrentBalanceCellInteracting
@@ -79,9 +98,11 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
                 separatorVisibility: Visibility = .hidden,
                 titleAccessibilitySuffix: String,
                 descriptionAccessibilitySuffix: String,
-                descriptors: DashboardAsset.Value.Presentation.AssetBalance.Descriptors) {
+                pendingAccessibilitySuffix: String,
+                descriptors: AssetBalanceViewModel.Value.Presentation.Descriptors) {
         self.titleAccessibilitySuffix = titleAccessibilitySuffix
         self.descriptionAccessibilitySuffix = descriptionAccessibilitySuffix
+        self.pendingAccessibilitySuffix = pendingAccessibilitySuffix
         separatorVisibilityRelay.accept(separatorVisibility)
         self.interactor = interactor
         self.assetBalanceViewPresenter = AssetBalanceViewPresenter(
@@ -112,7 +133,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
             badgeRelay.accept(badgeImageViewModel)
         }
         
-        switch (interactor.balanceType, currency) {
+        switch (interactor.accountType, currency) {
         case (.nonCustodial, _):
             titleRelay.accept(currency.name)
         case (.custodial(.trading), .crypto):

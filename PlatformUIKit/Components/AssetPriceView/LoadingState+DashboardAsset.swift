@@ -25,9 +25,9 @@ extension LoadingState where Content == DashboardAsset.Value.Presentation.AssetP
     }
 }
 
-extension LoadingState where Content == DashboardAsset.Value.Presentation.AssetBalance {
-    init(with state: LoadingState<DashboardAsset.Value.Interaction.AssetBalance>,
-         descriptors: DashboardAsset.Value.Presentation.AssetBalance.Descriptors) {
+extension LoadingState where Content == AssetBalanceViewModel.Value.Presentation {
+    init(with state: LoadingState<AssetBalanceViewModel.Value.Interaction>,
+         descriptors: AssetBalanceViewModel.Value.Presentation.Descriptors) {
         switch state {
         case .loading:
             self = .loading

@@ -24,6 +24,7 @@ public extension Accessibility.Identifier {
                 static let balanceCellDescription = "\(prefix)balanceCellDescription"
                 static let balanceCellFiatAmount = "\(prefix)balanceCellFiatAmount"
                 static let balanceCellCryptoAmount = "\(prefix)balanceCellCryptoAmount"
+                static let balanceCellPending = "\(prefix)balanceCellPending"
                 static let lineItem = "\(prefix)lineItem"
                 static let footerCellTitle = "\(prefix)footerCellTitle"
             }

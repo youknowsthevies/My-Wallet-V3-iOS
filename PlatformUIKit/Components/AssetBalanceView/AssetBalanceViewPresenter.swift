@@ -13,7 +13,7 @@ import RxSwift
 
 public final class AssetBalanceViewPresenter {
     
-    typealias PresentationState = DashboardAsset.State.AssetBalance.Presentation
+    typealias PresentationState = AssetBalanceViewModel.State.Presentation
         
     // MARK: - Exposed Properties
     
@@ -41,7 +41,7 @@ public final class AssetBalanceViewPresenter {
     }()
     
     private let interactor: AssetBalanceViewInteracting
-    private let descriptors: DashboardAsset.Value.Presentation.AssetBalance.Descriptors
+    private let descriptors: AssetBalanceViewModel.Value.Presentation.Descriptors
     
     // MARK: - Private Accessors
     
@@ -53,7 +53,7 @@ public final class AssetBalanceViewPresenter {
     
     public init(alignment: UIStackView.Alignment = .fill,
                 interactor: AssetBalanceViewInteracting,
-                descriptors: DashboardAsset.Value.Presentation.AssetBalance.Descriptors) {
+                descriptors: AssetBalanceViewModel.Value.Presentation.Descriptors) {
         self.interactor = interactor
         self.descriptors = descriptors
         self.alignmentRelay = BehaviorRelay<UIStackView.Alignment>(value: alignment)
