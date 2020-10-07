@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import ToolKit
 
@@ -20,7 +21,7 @@ import ToolKit
     private let recorder: AnalyticsServiceAPI
 
     override init() {
-        self.recorder = AnalyticsService.shared
+        self.recorder = resolve()
         super.init()
     }
 

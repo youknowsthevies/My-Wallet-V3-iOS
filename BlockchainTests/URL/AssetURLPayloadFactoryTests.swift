@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-
-import BitcoinKit
 @testable import Blockchain
+import BitcoinCashKit
+import BitcoinKit
+import Foundation
 import PlatformKit
 import XCTest
 

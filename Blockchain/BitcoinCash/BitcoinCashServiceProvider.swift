@@ -6,7 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import BitcoinKit
+import BitcoinCashKit
 import BuySellKit
 import DIKit
 import PlatformKit
@@ -18,10 +18,8 @@ protocol BitcoinCashDependencies {
 struct BitcoinCashServices: BitcoinCashDependencies {
     let transactions: BitcoinCashHistoricalTransactionService
 
-    init(bridge: BitcoinCashWalletBridgeAPI = resolve()) {
-        transactions = BitcoinCashHistoricalTransactionService(
-            bridge: bridge
-        )
+    init(transactions: BitcoinCashHistoricalTransactionService = resolve()) {
+        self.transactions = transactions
     }
 }
 

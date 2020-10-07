@@ -238,6 +238,7 @@ targets:
     - FrameworkTest
   BitcoinKit:
     dependencies:
+    - target: BitcoinChainKit
     - target: PlatformKit
     - target: HDWalletKit
     - target: ToolKit
@@ -256,6 +257,69 @@ targets:
   BitcoinKitTests:
     dependencies:
     - target: BitcoinKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/BitcoinKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    templates:
+    - FrameworkTest
+  BitcoinCashKit:
+    dependencies:
+    - target: BitcoinChainKit
+    - target: PlatformKit
+    - target: HDWalletKit
+    - target: ToolKit
+    - target: NetworkKit
+    - target: Localization
+    - carthage: BigInt
+    - carthage: DIKit
+    - carthage: RxRelay
+    - carthage: RxSwift
+    - carthage: LibWally
+    scheme:
+      testTargets:
+      - BitcoinCashKitTests
+    templates:
+    - Framework
+  BitcoinCashKitTests:
+    dependencies:
+    - target: BitcoinCashKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/BitcoinKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    templates:
+    - FrameworkTest
+  BitcoinChainKit:
+    dependencies:
+    - target: PlatformKit
+    - target: HDWalletKit
+    - target: ToolKit
+    - target: NetworkKit
+    - target: Localization
+    - carthage: BigInt
+    - carthage: DIKit
+    - carthage: RxRelay
+    - carthage: RxSwift
+    - carthage: LibWally
+    scheme:
+      testTargets:
+      - BitcoinChainKitTests
+    templates:
+    - Framework
+  BitcoinChainKitTests:
+    dependencies:
+    - target: BitcoinChainKit
     sources:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
@@ -313,6 +377,8 @@ targets:
     - target: EthereumKit
     - target: ERC20Kit
     - target: BitcoinKit
+    - target: BitcoinCashKit
+    - target: BitcoinChainKit
     - target: HDWalletKit
     - target: CommonCryptoKit
     - target: Localization

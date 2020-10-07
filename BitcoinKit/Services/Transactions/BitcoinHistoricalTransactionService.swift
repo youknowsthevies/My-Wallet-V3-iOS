@@ -28,10 +28,10 @@ public final class BitcoinHistoricalTransactionService: TokenizedHistoricalTrans
         repository.activeAccounts
             .map { accounts in accounts.map(\.publicKey) }
             .flatMap(weak: self) { (self, addresses) -> Single<PageModel> in
-                self.client.bitcoinMultiAddress(for: addresses)
+                self.client.multiAddress(for: addresses)
                     .map(\.transactions)
                     .map { PageModel(hasNextPage: false, items: $0) }
-        }
+            }
     }
 }
 

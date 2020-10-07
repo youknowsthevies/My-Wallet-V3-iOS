@@ -7,32 +7,27 @@
 //
 
 @testable import BitcoinKit
+import BitcoinChainKit
 import Foundation
 import RxSwift
 
-class APIClientMock: APIClientAPI {
-    var underlyingBitcoinMultiAddress: Single<BitcoinMultiAddressResponse> = .error(APIClientError.unknown)
-    func bitcoinMultiAddress(for addresses: [String]) -> Single<BitcoinMultiAddressResponse> {
-        underlyingBitcoinMultiAddress
+enum TestAPIClientError: Error {
+    case testError
+}
+
+class APIClientMock: BitcoinKit.APIClientAPI {
+    var underlyingMultiAddress: Single<BitcoinMultiAddressResponse> = .error(TestAPIClientError.testError)
+    func multiAddress(for addresses: [String]) -> Single<BitcoinMultiAddressResponse> {
+        underlyingMultiAddress
     }
 
-    var underlyingBitcoinBalances: Single<BitcoinBalanceResponse> = .error(APIClientError.unknown)
-    func bitcoinBalances(for addresses: [String]) -> Single<BitcoinBalanceResponse> {
-        underlyingBitcoinBalances
+    var underlyingBalances: Single<BitcoinBalanceResponse> = .error(TestAPIClientError.testError)
+    func balances(for addresses: [String]) -> Single<BitcoinBalanceResponse> {
+        underlyingBalances
     }
 
-    var underlyingBitcoinCashMultiAddress: Single<BitcoinCashMultiAddressResponse> = .error(APIClientError.unknown)
-    func bitcoinCashMultiAddress(for address: String) -> Single<BitcoinCashMultiAddressResponse> {
-        underlyingBitcoinCashMultiAddress
-    }
-
-    var underlyingBitcoinCashBalances: Single<BitcoinBalanceResponse> = .error(APIClientError.unknown)
-    func bitcoinCashBalances(for addresses: [String]) -> Single<BitcoinBalanceResponse> {
-        underlyingBitcoinCashBalances
-    }
-
-    var underlyingUnspentOutputs: Single<UnspentOutputsResponse> = .error(APIClientError.unknown)
-    func unspentOutputs(addresses: [String]) -> Single<UnspentOutputsResponse> {
+    var underlyingUnspentOutputs: Single<UnspentOutputsResponse> = .error(TestAPIClientError.testError)
+    func unspentOutputs(for addresses: [String]) -> Single<UnspentOutputsResponse> {
         underlyingUnspentOutputs
     }
 }

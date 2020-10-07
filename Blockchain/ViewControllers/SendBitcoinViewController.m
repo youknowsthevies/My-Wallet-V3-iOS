@@ -24,6 +24,7 @@
 @class BridgeAnalyticsRecorder;
 
 @import BitcoinKit;
+@import BitcoinCashKit;
 
 typedef enum {
     SendTransactionTypeRegular = 100,

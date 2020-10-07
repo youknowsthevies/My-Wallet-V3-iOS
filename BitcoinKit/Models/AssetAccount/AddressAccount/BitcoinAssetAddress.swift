@@ -19,13 +19,3 @@ public struct BitcoinAssetAddress: AssetAddress, Importable, Hashable {
     }
 }
 
-public struct BitcoinCashAssetAddress: AssetAddress, Importable, Hashable {
-    public let isImported: Bool
-    public let publicKey: String
-    public let cryptoCurrency: CryptoCurrency = .bitcoinCash
-    
-    public init(isImported: Bool = false, publicKey: String) {
-        self.isImported = isImported
-        self.publicKey = publicKey
-    }
-}

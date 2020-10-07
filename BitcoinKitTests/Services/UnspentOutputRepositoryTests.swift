@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+@testable import BitcoinChainKit
 @testable import BitcoinKit
 import RxSwift
 import RxTest

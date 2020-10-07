@@ -67,7 +67,7 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
     }
     
     private func fetchUnspentOutputs(for addresses: [String]) -> Single<UnspentOutputs> {
-        client.unspentOutputs(addresses: addresses)
+        client.unspentOutputs(for: addresses)
             .map { UnspentOutputs(networkResponse: $0) }
     }
 }

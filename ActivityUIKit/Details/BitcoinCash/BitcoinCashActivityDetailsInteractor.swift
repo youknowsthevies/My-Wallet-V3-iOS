@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BitcoinCashKit
 import DIKit
-import BitcoinKit
 import PlatformKit
 import RxSwift
 
@@ -21,8 +21,7 @@ final class BitcoinCashActivityDetailsInteractor {
     
     // MARK: - Init
 
-    init(wallet: BitcoinWalletBridgeAPI = resolve(),
-         fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
+    init(fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
          priceService: PriceServiceAPI = PriceService(),
          detailsService: AnyActivityItemEventDetailsFetcher<BitcoinCashActivityItemEventDetails> = resolve()) {
         self.detailsService = detailsService

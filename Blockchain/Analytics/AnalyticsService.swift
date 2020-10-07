@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Firebase
 import Foundation
 import PlatformKit
@@ -50,9 +51,9 @@ class AnalyticsService: AnalyticsServiceAPI {
         ]
     }
     
-    static let shared = AnalyticsService()
-    
     // MARK: - Properties
+    
+    @Inject static var shared: AnalyticsServiceAPI
     
     private let queue = DispatchQueue(label: "AnalyticsService", qos: .background)
     

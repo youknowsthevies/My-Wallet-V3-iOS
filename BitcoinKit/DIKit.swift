@@ -17,10 +17,6 @@ extension DependencyContainer {
         
         factory { APIClient() as APIClientAPI }
 
-        factory { BalanceService() as BalanceServiceAPI }
-
-        // MARK: - Bitcoin
-
         factory { BitcoinWalletAccountRepository() }
 
         factory(tag: CryptoCurrency.bitcoin) { BitcoinAsset() as CryptoAsset }
@@ -30,18 +26,5 @@ extension DependencyContainer {
         factory { BitcoinActivityItemEventDetailsFetcher() }
         
         factory { BitcoinTransactionalActivityItemEventsService() }
-
-        // MARK: - Bitcoin Cash
-
-        factory { BitcoinCashWalletAccountRepository() }
-
-        factory(tag: CryptoCurrency.bitcoinCash) { BitcoinCashAsset() as CryptoAsset }
-        
-        factory { BitcoinCashHistoricalTransactionService() }
-        
-        factory { BitcoinCashActivityItemEventDetailsFetcher() }
-        
-        factory { BitcoinCashTransactionalActivityItemEventsService() }
-        
     }
 }

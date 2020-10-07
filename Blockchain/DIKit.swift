@@ -9,6 +9,7 @@
 import DIKit
 import BuySellKit
 import BitcoinKit
+import BitcoinCashKit
 import ERC20Kit
 import EthereumKit
 import PlatformKit

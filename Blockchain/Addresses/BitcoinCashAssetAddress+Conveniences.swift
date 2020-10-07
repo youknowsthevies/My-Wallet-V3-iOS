@@ -6,15 +6,15 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import BitcoinKit
+import BitcoinCashKit
 
 extension BitcoinCashAssetAddress {
     // TODO: Replace with convenience function in BitcoinKit
     @available(*, deprecated, message: "This should be replaced by a convenience function in BitcoinKit")
-    func bitcoinAssetAddress(from wallet: Wallet) -> BitcoinAssetAddress? {
+    func bitcoinAssetAddress(from wallet: Wallet) -> BitcoinCashAssetAddress? {
         guard let address = wallet.fromBitcoinCash(publicKey) else {
             return nil
         }
-        return BitcoinAssetAddress(publicKey: address)
+        return BitcoinCashAssetAddress(publicKey: address)
     }
 }

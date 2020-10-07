@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BitcoinCashKit
 import BitcoinKit
 import EthereumKit
 import Foundation

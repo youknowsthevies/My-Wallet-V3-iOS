@@ -9,6 +9,8 @@
 import ActivityKit
 import ActivityUIKit
 import AlgorandKit
+import BitcoinCashKit
+import BitcoinChainKit
 import BitcoinKit
 import DIKit
 import EthereumKit
@@ -80,7 +82,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             DependencyContainer.algorandKit;
             DependencyContainer.ethereumKit;
             DependencyContainer.erc20Kit;
+            DependencyContainer.bitcoinChainKit;
             DependencyContainer.bitcoinKit;
+            DependencyContainer.bitcoinCashKit;
             DependencyContainer.stellarKit;
             DependencyContainer.buySellKit;
             DependencyContainer.activityKit;

@@ -7,6 +7,7 @@
 //
 
 import BigInt
+import BitcoinChainKit
 import PlatformKit
 
 struct UnspentOutput: Equatable {

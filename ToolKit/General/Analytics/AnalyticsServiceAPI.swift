@@ -9,5 +9,15 @@
 import Foundation
 
 public protocol AnalyticsServiceAPI {
+    
+    func trackEvent(title: String)
+    
     func trackEvent(title: String, parameters: [String: Any]?)
+}
+
+extension AnalyticsServiceAPI {
+    
+    public func trackEvent(title: String) {
+        trackEvent(title: title, parameters: nil)
+    }
 }
