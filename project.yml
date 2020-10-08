@@ -853,6 +853,7 @@ targets:
     - carthage: Zxcvbn
     - carthage: RxDataSources
     - carthage: Differentiator
+    - carthage: RIBs
     scheme:
       testTargets:
       - PlatformUIKitTests

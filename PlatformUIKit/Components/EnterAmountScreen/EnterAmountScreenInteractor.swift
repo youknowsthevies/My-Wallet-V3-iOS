@@ -6,8 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import PlatformKit
+import RIBs
+import RxSwift
 import ToolKit
 
 /// API for interaction of enter amount screen

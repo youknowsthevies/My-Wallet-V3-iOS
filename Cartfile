@@ -13,6 +13,7 @@ github "danielgindi/Charts" ~> 3.5
 github "dropbox/zxcvbn-ios" ~> 1.0
 github "marmelroy/PhoneNumberKit" ~> 3.2
 github "ReactiveX/RxSwift" ~> 5.1
+github "uber/RIBs" ~> 0.9
 github "RxSwiftCommunity/RxDataSources" ~> 4.0
 github "thisisalexmcgregor/stellar-ios-mac-sdk" "blockchain"
 github "thisisalexmcgregor/web3swift" "paulo/IOS-3758/xcode-12-support" 

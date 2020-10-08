@@ -9,11 +9,12 @@
 import BuySellKit
 import PlatformKit
 import PlatformUIKit
+import RIBs
 import RxRelay
 import RxSwift
 import ToolKit
 
-public final class CardRouter: PlatformUIKit.Router<CardRouterInteractor> {
+public final class CardRouter: RIBs.Router<CardRouterInteractor> {
     
     // MARK: - Types
 
@@ -39,8 +40,8 @@ public final class CardRouter: PlatformUIKit.Router<CardRouterInteractor> {
     
     // MARK: - Lifecycle
     
-    public override func willLoad() {
-        super.willLoad()
+    public override func didLoad() {
+        super.didLoad()
         
         // Embed the entire flow in another navigation controller
         // instead of generating one of its own
@@ -64,10 +65,6 @@ public final class CardRouter: PlatformUIKit.Router<CardRouterInteractor> {
         /// TODO: Remove once BuySell moves into RIBs because Should be automatically
         /// called by `Router` once `self` is attached as a child router.
         interactor.activate()
-    }
-    
-    public override func didLoad() {
-        super.didLoad()
         
         // Once the interator becomes inactive dismiss the flow
         interactor.isActiveStream

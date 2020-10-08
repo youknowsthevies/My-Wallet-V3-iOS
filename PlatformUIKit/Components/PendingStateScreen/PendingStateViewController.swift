@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import RIBs
 import RxCocoa
 import RxSwift
 
@@ -31,6 +32,7 @@ public final class PendingStateViewController: BaseScreenViewController {
 
     public required init(presenter: PendingStatePresenterAPI & RibBridgePresenter) {
         self.presenter = presenter
+        
         super.init(nibName: PendingStateViewController.objectName, bundle: .platformUIKit)
     }
 

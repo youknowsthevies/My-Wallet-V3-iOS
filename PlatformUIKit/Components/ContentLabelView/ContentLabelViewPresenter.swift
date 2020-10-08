@@ -6,10 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
-import ToolKit
 import PlatformKit
+import RIBs
+import RxCocoa
+import RxSwift
+import ToolKit
 
 public final class ContentLabelViewPresenter {
     

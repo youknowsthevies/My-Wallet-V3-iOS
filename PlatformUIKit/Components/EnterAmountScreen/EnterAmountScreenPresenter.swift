@@ -7,6 +7,7 @@
 //
 
 import PlatformKit
+import RIBs
 import RxCocoa
 import RxRelay
 import RxSwift

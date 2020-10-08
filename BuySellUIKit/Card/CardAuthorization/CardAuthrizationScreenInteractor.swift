@@ -7,6 +7,7 @@
 //
 
 import PlatformUIKit
+import RIBs
 
 final class CardAuthorizationScreenInteractor: Interactor {
     

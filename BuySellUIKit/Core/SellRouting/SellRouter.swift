@@ -11,11 +11,12 @@ import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
+import RIBs
 import RxSwift
 import SafariServices
 import ToolKit
 
-public final class SellRouter: PlatformUIKit.Router<SellRouterInteractor> {
+public final class SellRouter: RIBs.Router<SellRouterInteractor> {
     
     // MARK: - Injected
     
@@ -41,8 +42,8 @@ public final class SellRouter: PlatformUIKit.Router<SellRouterInteractor> {
     
     // MARK: - Lifecycle
     
-    public override func willLoad() {
-        super.willLoad()
+    public override func didLoad() {
+        super.didLoad()
         
         // Embed the entire flow in another navigation controller
         // instead of generating one of its own
@@ -67,10 +68,6 @@ public final class SellRouter: PlatformUIKit.Router<SellRouterInteractor> {
         /// TODO: Remove once `AppCoordinator` moves into RIBs because Should be automatically
         /// called by `Router` once `self` is attached as a child router.
         interactor.activate()
-    }
-    
-    public override func didLoad() {
-        super.didLoad()
     }
     
     private func next(to state: SellRouterInteractor.State) {

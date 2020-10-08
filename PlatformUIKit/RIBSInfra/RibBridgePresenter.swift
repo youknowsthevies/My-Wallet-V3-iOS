@@ -7,7 +7,7 @@
 //  Implementation Reference: https://github.com/uber/RIBs (RIBs Architecture by Uber)
 //
 
-import Foundation
+import RIBs
 
 /// Presenters should subclass `Presenter`
 open class RibBridgePresenter: Presentable {

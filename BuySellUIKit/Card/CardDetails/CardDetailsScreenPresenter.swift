@@ -10,6 +10,7 @@ import BuySellKit
 import Localization
 import PlatformKit
 import PlatformUIKit
+import RIBs
 import RxCocoa
 import RxRelay
 import RxSwift

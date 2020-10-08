@@ -9,6 +9,7 @@
 import BuySellKit
 import PlatformKit
 import PlatformUIKit
+import RIBs
 import RxSwift
 
 final class CardDetailsScreenInteractor: Interactor {
