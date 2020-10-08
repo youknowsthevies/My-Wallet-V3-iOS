@@ -401,7 +401,8 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
                 eligibilityService: serviceProvider.eligibility,
                 uiUtilityProvider: UIUtilityProvider.default,
                 kycTiersService: KYCServiceProvider.default.tiers,
-                featureFetching: resolve()
+                featureFetching: resolve(),
+                balanceProvider: DataProvider.default.balance
             ),
             kycServiceProvider: resolve(),
             analyticsRecorder: resolve(),
