@@ -6,19 +6,18 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import RxSwift
-import XCTest
-
 @testable import Blockchain
 import PlatformKit
+import PlatformUIKit
+import RxSwift
+import XCTest
 
 class AddressPresenterTests: XCTestCase {
     
     func testAddressPresenterStatus() {
         let asset = CryptoCurrency.ethereum
         let addressString = "eth-address"
-        let address = WalletAddressContent(string: addressString, image: UIImage())
+        let address = WalletAddressContent(string: addressString, qrCode: QRCode(string: "")!)
         let payment = ReceivedPaymentDetails(amount: "1 ETH", asset: asset, address: addressString)
         let interactor = AddressInteractorMock(asset: asset,
                                                address: address,

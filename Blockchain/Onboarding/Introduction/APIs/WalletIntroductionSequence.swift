@@ -67,8 +67,8 @@ class WalletIntroductionLocationSequencer: WalletIntroductionLocationSequenceAPI
             case .home:
                 return Single.just(WalletIntroductionLocation(screen: .dashboard, position: .send))
             case .send:
-                return Single.just(WalletIntroductionLocation(screen: .dashboard, position: .request))
-            case .request:
+                return Single.just(WalletIntroductionLocation(screen: .dashboard, position: .receive))
+            case .receive:
                 return Single.just(WalletIntroductionLocation(screen: .dashboard, position: .swap))
             case .swap:
                 return Single.error(WalletIntroductionError.noAdditionalSteps)

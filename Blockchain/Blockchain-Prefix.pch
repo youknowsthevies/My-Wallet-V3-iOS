@@ -14,9 +14,7 @@
 #define HEIGHT_IPHONE_6_PLUS 736.0
 
 #define IS_USING_6_OR_7_PLUS_SCREEN_SIZE UIScreen.mainScreen.bounds.size.height >= HEIGHT_IPHONE_6_PLUS
-
 #define IS_USING_SCREEN_SIZE_LARGER_THAN_5S UIScreen.mainScreen.bounds.size.height > HEIGHT_IPHONE_5S
-#define IS_USING_SCREEN_SIZE_5S UIScreen.mainScreen.bounds.size.height == HEIGHT_IPHONE_5S
 
 #define FONT_SIZE_EXTRA_EXTRA_SMALL IS_USING_SCREEN_SIZE_LARGER_THAN_5S ? 14.0 : 11.0
 #define FONT_SIZE_EXTRA_SMALL IS_USING_SCREEN_SIZE_LARGER_THAN_5S ? 15.0 : 12.0
@@ -44,43 +42,14 @@
 #define DEBUG_STRING_RESET NSLocalizedString(@"Reset", nil)
 #define DEBUG_STRING_FROM_LOWERCASE NSLocalizedString(@"from", nil)
 #define DEBUG_STRING_WELCOME NSLocalizedString(@"Welcome", nil)
-#define DEBUG_STRING_TESTNET @"Testnet"
 #define DEBUG_STRING_CERTIFICATE_PINNING @"Certificate Pinning"
-#define DEBUG_STRING_APP_STORE_REVIEW_PROMPT_TIMER NSLocalizedString(@"App Store review prompt timer (seconds)", nil)
 #define DEBUG_STRING_SECURITY_REMINDER_PROMPT_TIMER NSLocalizedString(@"Security reminder prompt timer (seconds)", nil)
 #define DEBUG_STRING_ZERO_VALUE_TICKER NSLocalizedString(@"Simulate zero ticker values", nil)
 
-#define CERTIFICATE_SERVER_NAME_PRODUCTION @"blockchain"
-#define CERTIFICATE_SERVER_NAME_STAGING @"staging"
-#define CERTIFICATE_SERVER_NAME_DEV @"dev"
-#define CERTIFICATE_SERVER_NAME_TESTNET @"testnet"
-
 #define WEBSOCKET_ERROR_INVALID_SERVER_CERTIFICATE @"Invalid server certificate."
-
-#define CELL_IDENTIFIER_TRANSACTION_DETAIL_WARNING @"transactionDetailWarning"
-#define CELL_IDENTIFIER_TRANSACTION_DETAIL_VALUE @"transactionDetailValue"
-#define CELL_IDENTIFIER_TRANSACTION_DETAIL_STATUS @"transactionDetailStatus"
-#define CELL_IDENTIFIER_TRANSACTION_DETAIL_DATE @"transactionDetailDate"
-#define CELL_IDENTIFIER_TRANSACTION_DETAIL_FROM @"transactionDetailFrom"
-#define CELL_IDENTIFIER_TRANSACTION_DETAIL_TO @"transactionDetailTo"
-#define CELL_IDENTIFIER_TRANSACTION_DETAIL_DESCRIPTION @"transactionDetailDescription"
-
-#define CELL_IDENTIFIER_TRANSACTION_RECIPIENT @"transactionRecipient"
-
-#define CELL_IDENTIFIER_CONTACT @"contact"
-#define CELL_IDENTIFIER_CONTACT_TRANSACTION @"contactTransaction"
-#define CELL_IDENTIFIER_CONTACT_MESSAGE @"contactMessage"
-
-#define CELL_IDENTIFIER_LOCAL_CURRENCY @"localCurrency"
 
 #define LOCALE_IDENTIFIER_EN_US @"en_US"
 #define LOCALE_IDENTIFIER_AR @"ar"
-
-#define INFO_PLIST_KEY_CFBUNDLE_SHORT_VERSION_STRING @"CFBundleShortVersionString"
-
-#define TX_TYPE_TRANSFER @"transfer"
-#define TX_TYPE_SENT @"sent"
-#define TX_TYPE_RECEIVED @"received"
 
 // TODO Start - Deprecate these in favor of Constants.FontNames
 #define FONT_MONTSERRAT_REGULAR @"Montserrat-Regular"
@@ -93,28 +62,16 @@
 
 #define ERROR_NO_FREE_OUTPUTS_TO_SPEND @"No free outputs to spend"
 #define ERROR_FAILED_NETWORK_REQUEST @"Connectivity error, failed to send network request"
-#define ERROR_MISSING_DESTINATION_ADDRESS @"Missing destination address"
 #define ERROR_FEE_TOO_LOW @"Fee is too low / Not sufficient priority\n"
 #define ERROR_FETCH_UNSPENT @"ERR_FETCH_UNSPENT"
 #define ERROR_BELOW_DUST_THRESHOLD @"BELOW_DUST_THRESHOLD"
 #define ERROR_NO_UNSPENT_OUTPUTS @"NO_UNSPENT_OUTPUTS"
 #define ERROR_AMOUNTS_ADDRESSES_MUST_EQUAL @"The number of destiny addresses and destiny amounts should be the same."
-#define ERROR_TYPE_MUST_START_WITH_NUMBER @"TypeError: must start with number"
-#define ERROR_FIRST_ARGUMENT_MUST_BE_STRING @"TypeError: First argument must be a string"
-#define ERROR_INVALID_PAIRING_VERSION_CODE @"Invalid Pairing Version Code"
 
 // TODO: Move these in Constants.NotificationKeys
-#define NOTIFICATION_KEY_LOADING_TEXT @"SetLoadingText"
 #define NOTIFICATION_KEY_RELOAD_ACCOUNTS_AND_ADDRESSES @"reloadAccountsAndAddresses"
 
-#define NOTIFICATION_KEY_SHARE_CONTACT_LINK @"shareContactLink"
-
 // Notifications used in settings
-#define NOTIFICATION_KEY_RELOAD_SETTINGS @"reloadSettings"
-#define NOTIFICATION_KEY_RELOAD_SETTINGS_AFTER_MULTIADDRESS @"reloadSettingsAfterMultiAddress"
-#define NOTIFICATION_KEY_UPDATE_FEE @"UpdateFee"
-#define NOTIFICATION_KEY_CHECK_MAX_AMOUNT @"CheckMaxAmount"
-#define NOTIFICATION_KEY_RECEIVE_PAYMENT @"ReceivePayment"
 #define NOTIFICATION_KEY_GET_ALL_CURRENCY_SYMBOLS_SUCCESS @"GetAllCurrencySymbols"
 #define NOTIFICATION_KEY_GET_ACCOUNT_INFO_SUCCESS @"GetAccountInfo"
 #define NOTIFICATION_KEY_CHANGE_EMAIL_SUCCESS @"ChangeEmail"
@@ -126,19 +83,9 @@
 #define NOTIFICATION_KEY_CHANGE_NOTIFICATIONS_ERROR @"ChangeEmailNotificationsError"
 
 #define URL_SUFFIX_ETH_IS_CONTRACT_ADDRESS_ARGUMENT @"/eth/account/%@/isContract"
-#define URL_SUFFIX_PRICE_INDEX_ARGUMENTS_BASE_QUOTE_TIME @"/price/index?base=%@&quote=%@&time=%lld"
 
-#define SEGUE_IDENTIFIER_CURRENCY @"currency"
-#define SEGUE_IDENTIFIER_ABOUT @"about"
-#define SEGUE_IDENTIFIER_CHANGE_PASSWORD @"changePassword"
 #define SEGUE_IDENTIFIER_ACCOUNTS_AND_ADDRESSES_DETAIL @"accountsAndAddressesDetail"
 #define SEGUE_IDENTIFIER_ACCOUNTS_AND_ADDRESSES_DETAIL_EDIT @"accountsAndAddressesDetailEdit"
-#define SEGUE_IDENTIFIER_TWO_STEP @"twoStep"
-
-#define SEGUE_SENDER_ABOUT_US @"aboutUs"
-#define SEGUE_SENDER_TERMS_OF_SERVICE @"termsOfService"
-#define SEGUE_SENDER_PRIVACY_POLICY @"privacyPolicy"
-#define SEGUE_IDENTIFIER_DEBUG_MENU @"debugMenu"
 
 #define NETWORK_MAINNET @"bitcoin"
 #define NETWORK_TESTNET @"testnet"
@@ -150,85 +97,13 @@
 #define ENV_INDEX_PRODUCTION @2
 #define ENV_INDEX_TESTNET @3
 
-#define URL_MERCHANT PRODUCTION_MERCHANT_URL
-
 #define TRANSACTION_RESULT_URL_SUFFIX_HASH_ARGUMENT_ADDRESS_ARGUMENT @"/q/txresult/%@/%@"
 
-#define WEBKIT_HANDLER_BUY_COMPLETED @"buyCompleted"
-#define WEBKIT_HANDLER_FRONTEND_INITIALIZED @"frontendInitialized"
-#define WEBKIT_HANDLER_SHOW_TX @"showTx"
-
-#define INFORMATION_RECEIVE_URL @"https://support.blockchain.com/hc/en-us/articles/210353663-Why-is-my-bitcoin-address-changing"
-
-#define URL_SUFFIX_EVENT_NAME_ARGUMENT @"/event?name=%@"
-#define WALLET_EVENT_TX_FROM_QR @"wallet_ios_tx_from_qr"
-#define WALLET_EVENT_TX_FROM_PASTE @"wallet_ios_tx_from_paste"
-#define WALLET_EVENT_TX_FROM_URI @"wallet_ios_tx_from_uri"
-#define WALLET_EVENT_TX_FROM_DROPDOWN @"wallet_ios_tx_from_dropdown"
-#define WALLET_EVENT_TX_FROM_CONTACTS @"wallet_ios_tx_from_contacts"
-
-#define URL_INFORMATION_RECEIVE @"https://support.blockchain.com/hc/en-us/articles/210353663-Why-is-my-bitcoin-address-changing"
-
-#define TRANSACTION_FILTER_IMPORTED @"imported"
-
-#define CURRENCY_CODE_BTC @"BTC"
-#define CURRENCY_CODE_MBC @"MBC"
-#define CURRENCY_CODE_UBC @"UBC"
-
 #define CURRENCY_SYMBOL_ETH @"ETH"
-
 #define CURRENCY_SYMBOL_BCH @"BCH"
-
-#define CURRENCY_SYMBOL_XLM @"XLM"
-
 #define CURRENCY_SYMBOL_BTC @"BTC"
 
-#define CURRENCY_CONVERSION_BTC @100000000
-
-#define CURRENCY_NAME_BTC @"Bitcoin"
-
-#define CURRENCY_CODE_USD @"USD"
-#define CURRENCY_CODE_EUR @"EUR"
-#define CURRENCY_CODE_ISK @"ISK"
-#define CURRENCY_CODE_HKD @"HKD"
-#define CURRENCY_CODE_TWD @"TWD"
-#define CURRENCY_CODE_CHF @"CHF"
-#define CURRENCY_CODE_DKK @"DKK"
-#define CURRENCY_CODE_CLP @"CLP"
-#define CURRENCY_CODE_CAD @"CAD"
-#define CURRENCY_CODE_INR @"INR"
-#define CURRENCY_CODE_CNY @"CNY"
-#define CURRENCY_CODE_THB @"THB"
-#define CURRENCY_CODE_AUD @"AUD"
-#define CURRENCY_CODE_SGD @"SGD"
-#define CURRENCY_CODE_KRW @"KRW"
-#define CURRENCY_CODE_JPY @"JPY"
-#define CURRENCY_CODE_PLN @"PLN"
-#define CURRENCY_CODE_GBP @"GBP"
-#define CURRENCY_CODE_SEK @"SEK"
-#define CURRENCY_CODE_NZD @"NZD"
-#define CURRENCY_CODE_BRL @"BRL"
-#define CURRENCY_CODE_RUB @"RUB"
-
-#define DICTIONARY_KEY_SUCCESS @"success"
 #define DICTIONARY_KEY_ERROR @"error"
-
-#define DICTIONARY_KEY_STATE @"state"
-#define DICTIONARY_KEY_INTENDED_AMOUNT @"intended_amount"
-#define DICTIONARY_KEY_ROLE @"role"
-#define DICTIONARY_KEY_TX_HASH @"tx_hash"
-#define DICTIONARY_KEY_REASON @"reason"
-#define DICTIONARY_KEY_LAST_UPDATED @"last_updated"
-
-#define DICTIONARY_KEY_APS @"aps"
-#define DICTIONARY_KEY_TYPE @"type"
-#define DICTIONARY_KEY_ALERT @"alert"
-#define DICTIONARY_KEY_TITLE @"title"
-#define DICTIONARY_KEY_BODY @"body"
-#define DICTIONARY_KEY_PAYLOAD @"payload"
-
-#define DICTIONARY_KEY_ID @"id"
-#define DICTIONARY_KEY_NOTE @"note"
 
 #define DICTIONARY_KEY_FEE_REGULAR @"regular"
 #define DICTIONARY_KEY_FEE_PRIORITY @"priority"
@@ -236,33 +111,10 @@
 #define DICTIONARY_KEY_FEE_LIMITS_MIN @"min"
 #define DICTIONARY_KEY_FEE_LIMITS_MAX @"max"
 
-#define DICTIONARY_KEY_TRANSACTION_FROM @"from"
-#define DICTIONARY_KEY_TRANSACTION_TO @"to"
-#define DICTIONARY_KEY_TRANSACTION_BLOCK_HEIGHT @"block_height"
-#define DICTIONARY_KEY_TRANSACTION_CONFIRMATIONS @"confirmations"
-#define DICTIONARY_KEY_TRANSACTION_FEE @"fee"
-#define DICTIONARY_KEY_TRANSACTION_MY_HASH @"myHash"
-#define DICTIONARY_KEY_TRANSACTION_HASH @"hash"
-#define DICTIONARY_KEY_TRANSACTION_TX_TYPE @"txType"
-#define DICTIONARY_KEY_TRANSACTION_AMOUNT @"amount"
-#define DICTIONARY_KEY_TRANSACTION_TIME @"time"
-#define DICTIONARY_KEY_TRANSACTION_FROM_WATCH_ONLY @"fromWatchOnly"
-#define DICTIONARY_KEY_TRANSACTION_TO_WATCH_ONLY @"toWatchOnly"
-#define DICTIONARY_KEY_TRANSACTION_NOTE @"note"
-#define DICTIONARY_KEY_TRANSACTION_DOUBLE_SPEND @"double_spend"
-#define DICTIONARY_KEY_TRANSACTION_REPLACE_BY_FEE @"rbf"
-
-#define DICTIONARY_KEY_LABEL @"label"
 #define DICTIONARY_KEY_ADDRESS @"address"
-#define DICTIONARY_KEY_AMOUNT @"amount"
-#define DICTIONARY_KEY_DISPLAY_AMOUNT @"displayAmount"
-#define DICTIONARY_KEY_CODE @"code"
 #define DICTIONARY_KEY_THRESHOLD @"threshold"
-#define DICTIONARY_KEY_SUCCESS @"success"
-#define DICTIONARY_KEY_KEY @"key"
 #define DICTIONARY_KEY_VALUE @"value"
 #define DICTIONARY_KEY_HASH @"hash"
-#define DICTIONARY_KEY_ACCOUNT_INDEX @"accountIndex"
 
 #define DICTIONARY_KEY_OUT @"out"
 #define DICTIONARY_KEY_ADDRESS_OUTPUT @"addr"
@@ -271,29 +123,9 @@
 #define DICTIONARY_KEY_LAST @"last"
 #define DICTIONARY_KEY_USD @"USD"
 
-#define DICTIONARY_KEY_SYMBOL @"symbol"
-#define DICTIONARY_KEY_CONVERSION @"conversion"
 #define DICTIONARY_KEY_NAME @"name"
 #define DICTIONARY_KEY_LAST @"last"
 
-#define DICTIONARY_KEY_MULTIADDRESS_FINAL_BALANCE @"final_balance"
-#define DICTIONARY_KEY_MULTIADDRESS_TOTAL_RECEIVED @"total_received"
-#define DICTIONARY_KEY_MULTIADDRESS_NUMBER_TRANSACTIONS @"n_transactions"
-#define DICTIONARY_KEY_MULTIADDRESS_TOTAL_SENT @"total_sent"
-#define DICTIONARY_KEY_MULTIADDRESS_TRANSACTIONS @"transactions"
-#define DICTIONARY_KEY_MULTIADDRESS_ADDRESSES @"addresses"
-
-#define DICTIONARY_KEY_BITCOIN @"bitcoin"
-#define DICTIONARY_KEY_BITCOIN_CASH @"bitcoinCash"
-
-#define ERROR_MINIMUM @"minimum"
-#define ERROR_MAXIMUM @"maximum"
-
-#define DICTIONARY_VALUE_NOTIFICATION_RECEIVE 2
-#define DICTIONARY_VALUE_NOTIFICATION_SEND_AND_RECEIVE 0
-
-#define USER_DEFAULTS_KEY_NEXT_ADDRESS @"nextReceivingAddress"
-#define USER_DEFAULTS_KEY_NEXT_ADDRESS_USED @"nextReceivingAddressUsed"
 #define USER_DEFAULTS_KEY_LOADED_SETTINGS @"loadedSettings"
 #define USER_DEFAULTS_KEY_HIDE_APP_REVIEW_PROMPT @"hideAppReviewPrompt"
 #define USER_DEFAULTS_KEY_SHARED_KEY @"sharedKey"
@@ -320,31 +152,6 @@
 #define KEYCHAIN_KEY_ALGO_ADDRESS @"algoSwipeToReceiveAddress"
 #define KEYCHAIN_KEY_USDT_ADDRESS @"usdtSwipeToReceiveAddress"
 
-#define QR_CODE_KEY_GUID @"guid"
-#define QR_CODE_KEY_SHARED_KEY @"sharedKey"
-#define QR_CODE_KEY_PASSWORD @"password"
-
-#define STORYBOARD_NAME_BACKUP @"Backup"
-
-#define TRANSACTION_STATE_WAITING_PAYMENT @"waiting_payment"
-#define TRANSACTION_STATE_WAITING_ADDRESS @"waiting_address"
-#define TRANSACTION_STATE_PAYMENT_BROADCASTED @"payment_broadcasted"
-#define TRANSACTION_STATE_DECLINED @"declined"
-#define TRANSACTION_STATE_CANCELLED @"cancelled"
-
-#define TRANSACTION_ROLE_PR_INITIATOR @"pr_initiator"
-#define TRANSACTION_ROLE_PR_RECEIVER @"pr_receiver"
-#define TRANSACTION_ROLE_RPR_INITIATOR @"rpr_initiator"
-#define TRANSACTION_ROLE_RPR_RECEIVER @"rpr_receiver"
-
-#define NAVIGATION_CONTROLLER_NAME_BACKUP @"BackupNavigation"
-
-#define NIB_NAME_TRANSACTIONS @"Transactions"
-#define NIB_NAME_SEND_COINS @"SendCoins"
-#define NIB_NAME_RECEIVE_COINS @"ReceiveCoins"
-
-#define URL_SUPPORT @"https://support.blockchain.com"
-
 #define UNSAFE_CHECK_PATH_CYDIA @"/Applications/Cydia.app"
 #define UNSAFE_CHECK_PATH_MOBILE_SUBSTRATE @"/Library/MobileSubstrate/MobileSubstrate.dylib"
 #define UNSAFE_CHECK_PATH_BIN_BASH @"/bin/bash"
@@ -361,15 +168,8 @@
 #define JAVASCRIPTCORE_TYPE_JS @"js"
 
 #define JAVASCRIPTCORE_PREFIX_JS_SOURCE @"var window = this; var navigator = {userAgent : {match : function() {return 0;}}}; Promise = undefined;"
-#define JAVASCRIPTCORE_CLASS_HDNODE @"HDNode"
-#define JAVASCRIPTCORE_BITCOIN_INIT @"var Bitcoin = require('bitcoinjs-lib');"
-#define JAVASCRIPTCORE_BITCOIN @"Bitcoin"
-#define JAVASCRIPTCORE_CLASS_XMLHTTPREQUEST @"XMLHttpRequest"
 #define JAVASCRIPTCORE_STACK @"stack"
 #define JAVASCRIPTCORE_LINE @"line"
-#define JAVASCRIPTCORE_CONSOLE_INIT @"var console = {}"
-#define JAVASCRIPTCORE_CONSOLE @"console"
-#define JAVASCRIPTCORE_LOG @"log"
 #define JAVASCRIPTCORE_SET_TIMEOUT @"setTimeout"
 #define JAVASCRIPTCORE_CLEAR_TIMEOUT @"clearTimeout"
 #define JAVASCRIPTCORE_SET_INTERVAL @"setInterval"
@@ -385,14 +185,10 @@
 
 #define SATOSHI 1e8 // 100,000,000
 
-#define MULTI_ADDR_TIME 60.0f // 1 Minute
-
 #define TX_SIZE_ONE_KILOBYTE 1000
 
 #define ANIMATION_DURATION .2f
 #define ANIMATION_DURATION_LONG .5f
-#define kConfirmationBitcoinThreshold 3
-#define kConfirmationEtherThreshold 12
 
 #define CORNER_RADIUS_BUTTON 4
 
@@ -404,13 +200,8 @@
 #define BTC_LIMIT_IN_SATOSHI 21e14 // 21,000,000 (Total possible Bitcoins) * 100,000,000 (Satoshi)
 #define ETH_DECIMAL_LIMIT 18
 #define RECOVERY_ACCOUNT_DEFAULT_NUMBER 10
-#define RECOVERY_PHRASE_NUMBER_OF_WORDS 12
-
-#define DURATION_LONG_PRESS_GESTURE_DEBUG 0.0
 
 #define TIME_INTERVAL_SECURITY_REMINDER_PROMPT 60*60*24*30 // Seconds in thirty days
-
-#define MSEC_PER_SEC 1000
 
 #define ONE_PERCENT_DECIMAL @0.01
 #define FIFTY_CENTS_DECIMAL @0.50
@@ -421,7 +212,10 @@
 #define WEBSOCKET_CODE_RECEIVED_TO_SWIPE_ADDRESS 4503
 #define WEBSOCKET_CODE_ARCHIVE_UNARCHIVE 4504
 
-#define TRANSACTION_DESCRIPTION_CHARACTER_LIMIT 255
+#define ERROR_UNDEFINED @"undefined"
+#define ERROR_ALL_OUTPUTS_ARE_VERY_SMALL @"All Outputs Are Very Small"
+#define ERROR_TIMEOUT_REQUEST @"timeout request"
+#define ERROR_INVALID_PASSPHRASE @"invalid passphrase"
 
 #pragma mark - Runtime modes
 
@@ -432,11 +226,3 @@
     // assert will not be included in release builds
     #define NDEBUG 1
 #endif
-
-#define ERROR_UNDEFINED @"undefined"
-#define ERROR_ALL_OUTPUTS_ARE_VERY_SMALL @"All Outputs Are Very Small"
-#define ERROR_TIMEOUT_REQUEST @"timeout request"
-#define ERROR_TIMEOUT_ERROR @"TimeoutError"
-#define ERROR_INVALID_PASSPHRASE @"invalid passphrase"
-#define ERROR_STATUS_ZERO @"status:0"
-#define ERROR_GAP @"GAP"

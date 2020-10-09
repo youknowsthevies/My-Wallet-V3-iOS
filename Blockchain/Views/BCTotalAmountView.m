@@ -19,7 +19,8 @@
 
 - (id)initWithFrame:(CGRect)frame color:(UIColor *)color amount:(uint64_t)amount
 {
-    if ([super initWithFrame:frame]) {
+    self = [super initWithFrame:frame];
+    if (self) {
         UILabel *totalLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 8, 0, 0)];
         totalLabel.text = BC_STRING_TOTAL;
         totalLabel.textColor = [UIColor darkGrayColor];

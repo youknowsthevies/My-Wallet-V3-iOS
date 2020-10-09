@@ -11,18 +11,23 @@ import Foundation
 import RxSwift
 
 class BitcoinWalletBridgeMock: BitcoinWalletBridgeAPI {
-    
-    func updateMemo(for transactionHash: String, memo: String?) -> Completable {
-        .empty()
-    }
 
     enum MockError: Error {
         case error
     }
 
+    var receiveAddressValue: Single<String> = .error(MockError.error)
+    func receiveAddress(forXPub xpub: String) -> Single<String> {
+        receiveAddressValue
+    }
+
     var memoValue: Single<String?> = .just(nil)
     func memo(for transactionHash: String) -> Single<String?> {
         memoValue
+    }
+
+    func updateMemo(for transactionHash: String, memo: String?) -> Completable {
+        .empty()
     }
 
     var hdWalletValue: Single<PayloadBitcoinHDWallet> = Single.error(MockError.error)

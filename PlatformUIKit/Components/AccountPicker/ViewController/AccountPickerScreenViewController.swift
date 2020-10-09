@@ -78,7 +78,6 @@ public final class AccountPickerScreenViewController: UIViewController {
         tableView.rx.modelSelected(AccountPickerCellItem.self)
             .bindAndCatch(weak: self) { (self, model) in
                 self.presenter.record(selection: model.account)
-                self.dismiss(animated: true, completion: nil)
             }
             .disposed(by: disposeBag)
     }

@@ -11,6 +11,8 @@ import BitcoinCashKit
 import BitcoinKit
 import Foundation
 import PlatformKit
+import StellarKit
+import stellarsdk
 import XCTest
 
 class AssetURLPayloadFactoryTests: XCTestCase {
@@ -30,7 +32,7 @@ class AssetURLPayloadFactoryTests: XCTestCase {
     }
 
     func testStellarURLPayloadCreated() {
-        let url = URL(string: "\(StellarURLPayload.scheme):\(StellarURLPayload.payOperation)destination=address")!
+        let url = URL(string: "\(StellarURLPayload.scheme):\(PayOperation)destination=address")!
         let payload = AssetURLPayloadFactory.create(from: url)
         XCTAssertNotNil(payload)
         XCTAssertTrue(payload is StellarURLPayload)

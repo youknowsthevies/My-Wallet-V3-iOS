@@ -64,7 +64,7 @@ extension DependencyContainer {
         factory { ERC20AccountAPIClient<TetherToken>() }
 
         factory(tag: CryptoCurrency.tether) { ERC20AssetBalanceFetcher<TetherToken>() as CryptoAccountBalanceFetching }
-        
+
         factory { AnyERC20HistoricalTransactionService<TetherToken>() }
 
     }

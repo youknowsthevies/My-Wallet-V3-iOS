@@ -31,7 +31,11 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var actions: AvailableActions {
-        [.viewActivity]
+        [.viewActivity, .receive, .send]
+    }
+
+    var receiveAddress: Single<ReceiveAddress> {
+        .just(StellarReceiveAddress(address: id, label: label))
     }
 
     private let balanceFetching: SingleAccountBalanceFetching

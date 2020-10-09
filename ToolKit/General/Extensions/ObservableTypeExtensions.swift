@@ -144,13 +144,13 @@ extension ObservableType {
         self.do(onError: { error in
             fatalError("Binding error to publish relay: \(error). file: \(file), line: \(line), function: \(function)")
         })
-        .subscribe { e in
-            switch e {
+        .subscribe { event in
+            switch event {
             case let .next(element):
                 relays.forEach {
                     $0.accept(element)
                 }
-            case .error(_):
+            case .error:
                 break
             case .completed:
                 break
@@ -176,13 +176,13 @@ extension ObservableType {
         self.do(onError: { error in
             fatalError("Binding error to behavior relay: \(error). file: \(file), line: \(line), function: \(function)")
         })
-        .subscribe { e in
-            switch e {
+        .subscribe { event in
+            switch event {
             case let .next(element):
                 relays.forEach {
                     $0.accept(element)
                 }
-            case .error(_):
+            case .error:
                 break
             case .completed:
                 break

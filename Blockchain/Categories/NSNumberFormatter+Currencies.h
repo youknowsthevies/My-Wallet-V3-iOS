@@ -10,9 +10,7 @@
 
 @interface NSNumberFormatter (Currencies)
 
-+ (NSString *)localCurrencyCode;
 + (NSString *)satoshiToBTC:(uint64_t)value;
-+ (NSDecimalNumber *)formatSatoshiInLocalCurrency:(uint64_t)value;
 + (NSString*)formatMoney:(uint64_t)value;
 + (NSString*)formatMoney:(uint64_t)value localCurrency:(BOOL)fsymbolLocal;
 + (NSString *)formatAmount:(uint64_t)amount localCurrency:(BOOL)localCurrency;
@@ -39,9 +37,7 @@
 + (NSString *)localFormattedString:(NSString *)amountString;
 + (NSString *)fiatStringFromDouble:(double)fiatBalance;
 
-+ (NSString*)formatBCH:(uint64_t)value;
-+ (NSString*)formatBch:(uint64_t)value localCurrency:(BOOL)fsymbolLocal;
-+ (NSString*)formatBchWithSymbol:(uint64_t)value;
-+ (NSString *)formatBchWithSymbol:(uint64_t)amount localCurrency:(BOOL)localCurrency;
++ (NSString *)formatBCHAmountInAutomaticLocalCurrency:(uint64_t)amount;
++ (NSString *)formatBCHAmount:(uint64_t)amount includeSymbol:(BOOL)includeSymbol inLocalCurrency:(BOOL)localCurrency;
 
 @end

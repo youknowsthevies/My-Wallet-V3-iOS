@@ -451,6 +451,7 @@
 #define BC_STRING_NEW_ZEALAND_DOLLAR NSLocalizedString(@"New Zealand Dollar", @"")
 #define BC_STRING_BRAZIL_REAL NSLocalizedString(@"Brazil Real", @"")
 #define BC_STRING_RUSSIAN_RUBLE NSLocalizedString(@"Russian Ruble", @"")
+#define BC_STRING_TURKISH_LIRA NSLocalizedString(@"Turkish Lira", @"")
 
 #define BC_STRING_NO_TRANSACTIONS_TITLE NSLocalizedString(@"No Transactions", nil)
 #define BC_STRING_NO_TRANSACTIONS_TEXT_BITCOIN NSLocalizedString(@"Transactions occur when you send and request bitcoin.", nil)

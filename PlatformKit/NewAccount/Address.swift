@@ -14,15 +14,13 @@ public protocol SendTarget {
 
 public protocol ReceiveAddress: SendTarget { }
 
-public enum ReceiveAddressError: Error {
-    case notSupported
-}
-
-protocol CryptoAddress : ReceiveAddress {
+public protocol CryptoReceiveAddress: ReceiveAddress {
+    var label: String { get }
     var asset: CryptoCurrency { get }
     var address: String { get }
+    var metadata: CryptoAssetQRMetadata { get }
 }
 
-class NullAddress: ReceiveAddress {
-    let label: String = ""
+public enum ReceiveAddressError: Error {
+    case notSupported
 }

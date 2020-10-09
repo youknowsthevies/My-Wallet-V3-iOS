@@ -8,68 +8,28 @@
 
 import PlatformKit
 
-// TODO: Move all send flows here, the VIPER stack should remain the same
-// The only replaceable layer is the `asset: CryptoCurrency`.
-// Move navigation logic here
-// Move asset selection logic here
-// Move entire tab item related logic here
+/// Router for the send flow
+final class SendRouter {
 
-/// Router for te send flow
-@objc
-final class SendRouter: NSObject {
-    
-    enum State {
+    private weak var baseViewController: UIViewController?
+    private let asset: CryptoCurrency
 
-        /// The initial screen
-        case send
-        
-        /// Approval screen
-        case approval
-        
-        /// Summary screen
-        case summary
+    init(asset: CryptoCurrency) {
+        precondition(asset == .ethereum, "Only Ethereum is supported.")
+        self.asset = asset
     }
-    
-    private let initialViewController: UIViewController
-    private unowned let appCoordinator: AppCoordinator
-    
-    /// The presenters as per asset. This is the only resource that should be kept.
-    private var presenters: [CryptoCurrency: SendPresenter] = [:]
-    
-    @objc
-    init(using initialViewController: UIViewController, appCoordinator: AppCoordinator = .shared) {
-        self.initialViewController = initialViewController
-        self.appCoordinator = appCoordinator
+
+    func presentQRScan(using builder: QRCodeScannerViewControllerBuilder<AddressQRCodeParser>) {
+        guard let viewController = builder.build() else { return }
+        baseViewController?.present(viewController, animated: true, completion: nil)
     }
-    
-    // TODO: Extend logic to other assets.
-    // TODO: Change legacy asset to asset once the tab controller is being refactored
-    @objc
-    func sendViewController(by legacyAsset: LegacyAssetType) -> SendViewController {
-        let asset = CryptoCurrency(legacyAssetType: legacyAsset)
-        if let presenter = presenters[asset] {
-            return SendViewController(presenter: presenter)
-        }
-        
+
+    func sendViewController() -> SendViewController {
         let services = SendServiceContainer(asset: asset)
         let interactor = SendInteractor(services: services)
         let presenter = SendPresenter(router: self, interactor: interactor)
-        presenters[asset] = presenter
-        return SendViewController(presenter: presenter)
-    }
-    
-    func presentQRScan(using builder: QRCodeScannerViewControllerBuilder<AddressQRCodeParser>) {
-        guard let viewController = builder.build() else { return }
-        initialViewController.present(viewController, animated: true, completion: nil)
-    }
-    
-    func toggleSideMenu() {
-        appCoordinator.toggleSideMenu()
-    }
-    
-    // TODO: Remove this legacy function once tab controller
-    @objc func presentQRCodeScan(using legacyAsset: LegacyAssetType) {
-        let asset = CryptoCurrency(legacyAssetType: legacyAsset)
-        presenters[asset]!.scanQRCode()
+        let viewController = SendViewController(presenter: presenter)
+        baseViewController = viewController
+        return viewController
     }
 }

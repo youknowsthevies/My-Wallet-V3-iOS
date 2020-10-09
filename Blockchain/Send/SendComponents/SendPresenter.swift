@@ -195,11 +195,6 @@ final class SendPresenter {
     
     // MARK: - Private
 
-    // TODO: - `func scanQRCode()` should be private, but since the scan needs to be
-    // accessible from `SendRouter` it is exposed.
-    // Once `TabControllerManager` is refactored - it will be easier change
-    // the access control
-    
     /// Scan a QR code. This method builds the QR code controller builder and interacts with
     /// the router in order to present the view controller
     func scanQRCode() {
@@ -283,14 +278,9 @@ extension SendPresenter {
         case .qrCode:
             recordQrButtonClick()
             scanQRCode()
-        default:
+        case .processing:
             break
         }
-    }
-    
-    /// Left button CTA - opens the menu
-    func navigationLeftButtonTapped() {
-        router.toggleSideMenu()
     }
 
     /// CTA for the send button. Once invoked, the transaction will be initiated

@@ -7,29 +7,27 @@
 //  Copyright (c) 2012 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-#import "Wallet.h"
-#import "Transaction.h"
-#import "MultiAddressResponse.h"
-#import "NSString+JSONParser_NSString.h"
-#import "crypto_scrypt.h"
-#import "NSData+Hex.h"
-#import "NSArray+EncodedJSONString.h"
-#import <JavaScriptCore/JavaScriptCore.h>
-#import "ModuleXMLHttpRequest.h"
-#import "KeychainItemWrapper+Credentials.h"
-#import "NSURLRequest+SRWebSocket.h"
-#import <CommonCrypto/CommonKeyDerivation.h>
-#import "HDNode.h"
-#import "Assets.h"
-#import "Blockchain-Swift.h"
-#import "BTCKey.h"
-#import "BTCData.h"
-#import "KeyPair.h"
-#import "NSData+BTCData.h"
-#import "NSNumberFormatter+Currencies.h"
-@import NetworkKit;
 @import CommonCryptoKit;
 @import FirebaseAnalytics;
+@import NetworkKit;
+#import <CommonCrypto/CommonKeyDerivation.h>
+#import <JavaScriptCore/JavaScriptCore.h>
+#import "Wallet.h"
+#import "Assets.h"
+#import "Blockchain-Swift.h"
+#import "BTCData.h"
+#import "BTCKey.h"
+#import "crypto_scrypt.h"
+#import "HDNode.h"
+#import "KeychainItemWrapper+Credentials.h"
+#import "KeyPair.h"
+#import "ModuleXMLHttpRequest.h"
+#import "NSArray+EncodedJSONString.h"
+#import "NSData+BTCData.h"
+#import "NSData+Hex.h"
+#import "NSNumberFormatter+Currencies.h"
+#import "NSString+JSONParser_NSString.h"
+#import "NSURLRequest+SRWebSocket.h"
 
 #define DICTIONARY_KEY_CURRENCY @"currency"
 
@@ -37,27 +35,29 @@ NSString * const kAccountInvitations = @"invited";
 NSString * const kLockboxInvitation = @"lockbox";
 
 @interface Wallet ()
-@property (nonatomic) JSContext *context;
-@property (nonatomic) BOOL isSettingDefaultAccount;
-@property (nonatomic) NSMutableDictionary *timers;
-@property (nonatomic) NSDictionary *bitcoinCashExchangeRates;
-@property (nonatomic) uint64_t bitcoinCashConversion;
+
+@property (nonatomic, strong) JSContext *context;
+@property (nonatomic, assign) BOOL isSettingDefaultAccount;
+@property (nonatomic, strong) NSMutableDictionary *timers;
+@property (nonatomic, copy) NSDictionary *bitcoinCashExchangeRates;
+@property (nonatomic, assign) double bitcoinCashConversion;
+
 @end
 
 @implementation Wallet
 
 @synthesize delegate;
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
-
     if (self) {
         _transactionProgressListeners = [NSMutableDictionary dictionary];
         _bitcoin = [[BitcoinWallet alloc] initWithLegacyWallet:self];
         _ethereum = [[EthereumWallet alloc] initWithLegacyWallet:self];
+        _isSyncing = YES;
+        _bitcoinCashConversion = 0;
     }
-
     return self;
 }
 
@@ -350,8 +350,12 @@ NSString * const kLockboxInvitation = @"lockbox";
         [weakSelf update_max_amount:maxAmount fee:fee dust:dust willConfirm:willConfirm];
     };
 
-    self.context[@"objc_update_total_available_final_fee"] = ^(NSNumber *sweepAmount, NSNumber *finalFee) {
-        [weakSelf update_total_available:sweepAmount final_fee:finalFee];
+    self.context[@"objc_update_total_available_final_fee_btc"] = ^(NSNumber *sweepAmount, NSNumber *finalFee) {
+        [weakSelf update_total_available_btc:sweepAmount final_fee:finalFee];
+    };
+
+    self.context[@"objc_update_total_available_final_fee_bch"] = ^(NSNumber *sweepAmount, NSNumber *finalFee) {
+        [weakSelf update_total_available_bch:sweepAmount final_fee:finalFee];
     };
 
     self.context[@"objc_check_max_amount_fee"] = ^(NSNumber *amount, NSNumber *fee) {
@@ -585,10 +589,6 @@ NSString * const kLockboxInvitation = @"lockbox";
         [weakSelf on_get_btc_exchange_rates_success:currencies];
     };
 
-    self.context[@"objc_on_error_creating_new_address"] = ^(NSString *error) {
-        [weakSelf on_error_creating_new_address:error];
-    };
-
     self.context[@"objc_on_progress_recover_with_passphrase_finalBalance"] = ^(NSString *totalReceived, NSString *finalBalance) {
         [weakSelf on_progress_recover_with_passphrase:totalReceived finalBalance:finalBalance];
     };
@@ -757,6 +757,8 @@ NSString * const kLockboxInvitation = @"lockbox";
         websocketURL = [BlockchainAPI.shared ethereumWebSocketUri];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
         websocketURL = [BlockchainAPI.shared bitcoinCashWebSocketUri];
+    } else {
+        return nil;
     }
 
     NSMutableURLRequest *webSocketRequest = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:websocketURL]];
@@ -883,11 +885,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 }
 
-- (NSDecimalNumber *)btcDecimalBalance
-{
-    return [NSNumberFormatter formatSatoshiInLocalCurrency:[WalletManager.sharedInstance.wallet getTotalActiveBalance]];
-}
-
 # pragma mark - Socket Delegate
 
 - (void)webSocketDidOpen:(SRWebSocket *)webSocket
@@ -979,7 +976,7 @@ NSString * const kLockboxInvitation = @"lockbox";
             if (amountReceived > 0) {
                 if ([delegate respondsToSelector:@selector(paymentReceivedOnPINScreen:assetType:address:)]) {
                     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
-                        NSString *amountString = [NSNumberFormatter formatBchWithSymbol:amountReceived localCurrency:NO];
+                        NSString *amountString = [NSNumberFormatter formatBCHAmount:amountReceived includeSymbol:YES inLocalCurrency:NO];
                         [delegate paymentReceivedOnPINScreen:amountString assetType:LegacyAssetTypeBitcoinCash address: self.bchSwipeAddressToSubscribe];
                     }
                 } else {
@@ -1057,20 +1054,23 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (void)getHistoryForAllAssets
 {
-    if ([self isInitialized])
+    if ([self isInitialized]) {
         [self.context evaluateScript:@"MyWalletPhone.getHistoryForAllAssets()"];
+    }
 }
 
 - (void)getHistory
 {
-    if ([self isInitialized])
-    [self.context evaluateScript:@"MyWalletPhone.get_history()"];
+    if ([self isInitialized]) {
+        [self.context evaluateScript:@"MyWalletPhone.get_history()"];
+    }
 }
 
 - (void)getHistoryWithoutBusyView
 {
-    if ([self isInitialized])
+    if ([self isInitialized]) {
         [self.context evaluateScript:@"MyWalletPhone.get_history(true)"];
+    }
 }
 
 - (void)getHistoryIfNoTransactionMessage
@@ -1116,12 +1116,12 @@ NSString * const kLockboxInvitation = @"lockbox";
     [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.changeBtcCurrency(\"%@\")", [btcCode escapedForJS]]];
 }
 
-- (uint64_t)conversionForBitcoinAssetType:(LegacyAssetType)assetType
+- (double)conversionForBitcoinAssetType:(LegacyAssetType)assetType
 {
     if (assetType == LegacyAssetTypeBitcoin) {
         return WalletManager.sharedInstance.latestMultiAddressResponse.symbol_local.conversion;
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        return [WalletManager.sharedInstance.wallet getBitcoinCashConversion];
+        return [self getBitcoinCashConversion];
     }
     return 0;
 }
@@ -1364,9 +1364,9 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        if ([[WalletManager.sharedInstance.wallet.addressBook objectForKey:address] length] > 0) {
-            return [WalletManager.sharedInstance.wallet.addressBook objectForKey:address];
-        } else if ([[WalletManager.sharedInstance.wallet allLegacyAddresses:assetType] containsObject:address]) {
+        if ([self.addressBook[address] length] > 0) {
+            return self.addressBook[address];
+        } else if ([[self allLegacyAddresses:assetType] containsObject:address]) {
             NSString *label = [self checkIfWalletHasAddress:address] ? [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.labelForLegacyAddress(\"%@\")", [address escapedForJS]]] toString] : nil;
             if (label && ![label isEqualToString:@""])
                 return label;
@@ -1410,7 +1410,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return NO;
     }
 
-    AddressValidator *validator = [[AddressValidator alloc] initWithContext:WalletManager.sharedInstance.wallet.context];
+    AddressValidator *validator = [[AddressValidator alloc] initWithContext:self.context];
 
     if (assetType == LegacyAssetTypeBitcoin) {
         return [validator validateWithBitcoinAddress:string];
@@ -2223,20 +2223,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 }
 
-- (NSArray *)getBitcoinCashTransactions:(NSInteger)filterType
-{
-    if ([self isInitialized]) {
-        NSArray *fetchedTransactions = [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.transactions(%ld)", filterType]] toArray];
-        NSMutableArray *transactions = [NSMutableArray new];
-        for (NSDictionary *data in fetchedTransactions) {
-            Transaction *transaction = [Transaction fromJSONDict:data];
-            [transactions addObject:transaction];
-        }
-        return transactions;
-    }
-    return nil;
-}
-
 - (void)fetchBitcoinCashExchangeRates
 {
     if ([self isInitialized]) {
@@ -2287,7 +2273,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     return nil;
 }
 
-- (uint64_t)getBitcoinCashConversion
+- (double)getBitcoinCashConversion
 {
     if ([self isInitialized]) {
         return self.bitcoinCashConversion;
@@ -2306,7 +2292,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (uint64_t)getBchBalance
 {
-    if ([self isInitialized] && [WalletManager.sharedInstance.wallet hasBchAccount]) {
+    if ([self isInitialized] && [self hasBchAccount]) {
         return [[[self.context evaluateScript:@"MyWalletPhone.bch.getBalance()"] toNumber] longLongValue];
     }
     DLog(@"Warning: getting bch balance when not initialized - returning 0");
@@ -2491,7 +2477,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     NSString *multiAddrJSON = [[self.context evaluateScript:[NSString stringWithFormat:@"JSON.stringify(MyWalletPhone.getMultiAddrResponse(\"%@\"))", filter]] toString];
 
-    MultiAddressResponse *response = [self parseMultiAddrJSON:multiAddrJSON];
+    MultiAddressResponse *response = [[MultiAddressResponse alloc] initWithJsonString:multiAddrJSON];
 
     if (!self.isSyncing) {
         [self loading_stop];
@@ -2502,33 +2488,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     } else {
         DLog(@"Error: delegate of class %@ does not respond to selector didGetMultiAddressResponse:!", [delegate class]);
     }
-}
-
-- (MultiAddressResponse *)parseMultiAddrJSON:(NSString*)multiAddrJSON
-{
-    if (multiAddrJSON == nil)
-    return nil;
-
-    NSDictionary *dict = [multiAddrJSON getJSONObject];
-
-    MultiAddressResponse *response = [[MultiAddressResponse alloc] init];
-
-    response.final_balance = [[dict objectForKey:DICTIONARY_KEY_MULTIADDRESS_FINAL_BALANCE] longLongValue];
-    response.total_received = [[dict objectForKey:DICTIONARY_KEY_MULTIADDRESS_TOTAL_RECEIVED] longLongValue];
-    response.n_transactions = [[dict objectForKey:DICTIONARY_KEY_MULTIADDRESS_NUMBER_TRANSACTIONS] unsignedIntValue];
-    response.total_sent = [[dict objectForKey:DICTIONARY_KEY_MULTIADDRESS_TOTAL_SENT] longLongValue];
-    response.addresses = [dict objectForKey:DICTIONARY_KEY_MULTIADDRESS_ADDRESSES];
-    response.transactions = [NSMutableArray array];
-
-    NSArray *transactionsArray = [dict objectForKey:DICTIONARY_KEY_MULTIADDRESS_TRANSACTIONS];
-
-    for (NSDictionary *dict in transactionsArray) {
-        Transaction *tx = [Transaction fromJSONDict:dict];
-
-        [response.transactions addObject:tx];
-    }
-
-    return response;
 }
 
 - (void)on_tx_received
@@ -2560,11 +2519,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     } else {
         DLog(@"Error: delegate of class %@ does not respond to selector getSecondPassword!", [delegate class]);
     }
-}
-
-- (void)setLoadingText:(NSString*)message
-{
-    [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_KEY_LOADING_TEXT object:message];
 }
 
 - (void)makeNotice:(NSString*)type id:(NSString*)_id message:(NSString*)message
@@ -2872,12 +2826,12 @@ NSString * const kLockboxInvitation = @"lockbox";
     NSDictionary *currencyNames = [CurrencySymbol currencyNames];
 
     for (NSString *abbreviatedFiatString in [allCurrencySymbolsDictionary allKeys]) {
-        NSDictionary *values = [allCurrencySymbolsDictionary objectForKey:abbreviatedFiatString]; // should never be nil
+        NSDictionary *values = allCurrencySymbolsDictionary[abbreviatedFiatString]; // should never be nil
         NSMutableDictionary *valuesWithName = [[NSMutableDictionary alloc] initWithDictionary:values]; // create a mutable dictionary of the current dictionary values
-        NSString *currencyName = [currencyNames objectForKey:abbreviatedFiatString];
+        NSString *currencyName = currencyNames[abbreviatedFiatString];
         if (currencyName) {
-            [valuesWithName setObject:currencyName forKey:DICTIONARY_KEY_NAME];
-            [currencySymbolsWithNames setObject:valuesWithName forKey:abbreviatedFiatString];
+            valuesWithName[DICTIONARY_KEY_NAME] = currencyName;
+            currencySymbolsWithNames[abbreviatedFiatString] = valuesWithName;
         } else {
             DLog(@"Warning: no name found for currency %@", abbreviatedFiatString);
         }
@@ -2956,12 +2910,22 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 }
 
-- (void)update_total_available:(NSNumber *)sweepAmount final_fee:(NSNumber *)finalFee
+- (void)update_total_available_btc:(NSNumber *)sweepAmount final_fee:(NSNumber *)finalFee
 {
-    DLog(@"update_total_available:minus_fee:");
+    DLog(@"update_total_available_btc:minus_fee:");
 
-    if ([self.delegate respondsToSelector:@selector(didUpdateTotalAvailable:finalFee:)]) {
-        [self.delegate didUpdateTotalAvailable:sweepAmount finalFee:finalFee];
+    if ([self.delegate respondsToSelector:@selector(didUpdateTotalAvailableBTC:finalFee:)]) {
+        [self.delegate didUpdateTotalAvailableBTC:sweepAmount finalFee:finalFee];
+    }
+}
+
+
+- (void)update_total_available_bch:(NSNumber *)sweepAmount final_fee:(NSNumber *)finalFee
+{
+    DLog(@"update_total_available_bch:minus_fee:");
+
+    if ([self.delegate respondsToSelector:@selector(didUpdateTotalAvailableBCH:finalFee:)]) {
+        [self.delegate didUpdateTotalAvailableBCH:sweepAmount finalFee:finalFee];
     }
 }
 
@@ -3196,13 +3160,9 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (void)on_fetch_eth_exchange_rate_success:(JSValue *)rate code:(JSValue *)code
 {
-    if ([self.delegate respondsToSelector:@selector(didFetchEthExchangeRate:)]) {
         NSDictionary *codeDict = [[rate toDictionary] objectForKey:[code toString]];
-        self.latestEthExchangeRate = [NSDecimalNumber decimalNumberWithDecimal:[[codeDict objectForKey:DICTIONARY_KEY_LAST] decimalValue]];
-        [self.delegate didFetchEthExchangeRate:self.latestEthExchangeRate];
-    } else {
-        DLog(@"Error: delegate of class %@ does not respond to selector didUpdateEthPayment!", [delegate class]);
-    }
+        NSDecimal decimalETH = [codeDict[DICTIONARY_KEY_LAST] decimalValue];
+        self.latestEthExchangeRate = [NSDecimalNumber decimalNumberWithDecimal:decimalETH];
 }
 
 - (void)eth_socket_send:(NSString *)message
@@ -3244,16 +3204,21 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (void)did_get_bitcoin_cash_exchange_rates:(NSDictionary *)rates
 {
-    NSString *currency = [self.accountInfo objectForKey:DICTIONARY_KEY_CURRENCY];
+    NSString *currency = self.accountInfo[DICTIONARY_KEY_CURRENCY];
     if (rates == nil || currency == nil) {
         return;
     }
-    id lastPriceNumber = [[rates objectForKey:currency] objectForKey:DICTIONARY_KEY_LAST];
+
+    id lastPriceNumber = rates[currency][DICTIONARY_KEY_LAST];
+
     if (lastPriceNumber == nil || ![lastPriceNumber isKindOfClass:[NSNumber class]] || [(NSNumber *)lastPriceNumber isEqualToNumber:@0]) {
         return;
     }
     double lastPrice = [(NSNumber *)lastPriceNumber doubleValue];
-    self.bitcoinCashConversion = [[[(NSDecimalNumber *)[NSDecimalNumber numberWithDouble:SATOSHI] decimalNumberByDividingBy: (NSDecimalNumber *)[NSDecimalNumber numberWithDouble:lastPrice]] stringValue] longLongValue];
+    NSDecimalNumber *satoshi = (NSDecimalNumber *)[NSDecimalNumber numberWithDouble:SATOSHI];
+    NSDecimalNumber *lastPriceDecimal = (NSDecimalNumber *)[NSDecimalNumber numberWithDouble:lastPrice];
+    NSDecimalNumber *conversion = (NSDecimalNumber *)[satoshi decimalNumberByDividingBy:lastPriceDecimal];
+    self.bitcoinCashConversion = [conversion doubleValue];
     self.bitcoinCashExchangeRates = rates;
 }
 
@@ -3744,7 +3709,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     if ([message isEqualToString:ERROR_NO_UNSPENT_OUTPUTS] || [message isEqualToString:ERROR_AMOUNTS_ADDRESSES_MUST_EQUAL]) {
         if ([self.delegate respondsToSelector:@selector(didErrorWhenBuildingBitcoinPaymentWithError:)]) {
-            [self.delegate didErrorWhenBuildingBitcoinPaymentWithError:[NSString stringWithFormat:[LocalizationConstantsObjcBridge notEnoughXForFees], [ConstantsObjcBridge btcCode]]];
+            [self.delegate didErrorWhenBuildingBitcoinPaymentWithError:[NSString stringWithFormat:[LocalizationConstantsObjcBridge notEnoughXForFees], CURRENCY_SYMBOL_BTC]];
         }
     } else if ([message isEqualToString:ERROR_BELOW_DUST_THRESHOLD]) {
         id errorObject = error[DICTIONARY_KEY_MESSAGE][DICTIONARY_KEY_ERROR];

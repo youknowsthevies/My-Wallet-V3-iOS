@@ -16,9 +16,19 @@ protocol LegacyBitcoinCashWalletProtocol: class {
     func bitcoinCashWallets() -> [[String: Any]]?
 
     func bitcoinCashDefaultWallet() -> [String: Any]?
+
+    func getBitcoinCashReceiveAddress(forXPub xpub: String) -> String?
 }
 
 extension Wallet: LegacyBitcoinCashWalletProtocol {
+
+    func getBitcoinCashReceiveAddress(forXPub xpub: String) -> String? {
+        guard isInitialized() else {
+            return nil
+        }
+        let function: String = "MyWalletPhone.bch.getReceivingAddressForAccountXPub(\"\(xpub)\")"
+        return context.evaluateScript(function)?.toString()
+    }
 
     var hasBitcoinCashAccount: Bool {
         guard isInitialized() else {

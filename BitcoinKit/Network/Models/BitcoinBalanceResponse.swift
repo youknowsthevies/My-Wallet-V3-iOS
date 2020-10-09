@@ -8,4 +8,4 @@
 
 import BitcoinChainKit
 
-public typealias BitcoinBalanceResponse = BitcoinChainBalanceResponse
+typealias BitcoinBalanceResponse = BitcoinChainBalanceResponse

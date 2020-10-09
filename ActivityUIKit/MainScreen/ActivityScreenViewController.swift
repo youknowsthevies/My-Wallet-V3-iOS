@@ -92,7 +92,7 @@ public final class ActivityScreenViewController: BaseScreenViewController {
     private func setupNavigationBar() {
         set(barStyle: .lightContent(),
             leadingButtonStyle: .drawer,
-            trailingButtonStyle: .qrCode)
+            trailingButtonStyle: .none)
         titleViewStyle = .text(value: presenter.title)
     }
     
@@ -169,11 +169,7 @@ public final class ActivityScreenViewController: BaseScreenViewController {
     public override func navigationBarLeadingButtonPressed() {
         presenter.navigationBarLeadingButtonPressed()
     }
-    
-    public override func navigationBarTrailingButtonPressed() {
-        presenter.navigationBarTrailingButtonPressed()
-    }
-    
+
     // MARK: - UITableView refresh
     
     @objc

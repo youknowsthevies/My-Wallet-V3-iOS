@@ -291,7 +291,7 @@ class ExchangeCreateViewController: UIViewController {
 
     fileprivate func presentURL(_ url: URL) {
         let viewController = SFSafariViewController(url: url)
-        guard let controller = AppCoordinator.shared.tabControllerManager.tabViewController else { return }
+        let controller = AppCoordinator.shared.tabControllerManager.tabViewController
         viewController.modalPresentationStyle = .overCurrentContext
         controller.present(viewController, animated: true, completion: nil)
     }

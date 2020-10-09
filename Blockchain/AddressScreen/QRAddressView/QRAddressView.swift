@@ -77,7 +77,7 @@ final class QRAddressView: UIView {
         switch status {
         case .readyForDisplay(content: let content):
             contentVisibility = .visible
-            qrImageView.image = content.image
+            qrImageView.image = content.qrCode.image
             addressLabel.text = content.string
             activityIndicatorView.stopAnimating()
         case .awaitingFetch, .fetching:

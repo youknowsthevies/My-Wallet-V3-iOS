@@ -20,7 +20,8 @@
 
 - (id)initWithYPosition:(CGFloat)yPosition
 {
-    if (self == [super init]) {
+    self = [super initWithFrame:CGRectZero];
+    if (self) {
         [self setupAtYPosition:yPosition];
     }
     

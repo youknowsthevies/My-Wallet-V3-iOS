@@ -37,7 +37,7 @@ class SideMenuPresenter {
                         self.menuItems(showSimpleBuy: isSimpleBuyEnabled)
                     }
             }
-            .startWith(menuItems(showSimpleBuy: false))
+            .startWith([])
             .observeOn(MainScheduler.instance)
     }
     

@@ -29,8 +29,4 @@ final class ETHServiceProvider {
     var transactionService: EthereumHistoricalTransactionService {
         services.transactionService
     }
-
-    var qrMetadataFactory: EthereumQRMetadataFactory {
-        services.qrMetadataFactory
-    }
 }

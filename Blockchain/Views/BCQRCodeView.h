@@ -22,7 +22,6 @@
 
 @property (nonatomic) id<DoneButtonDelegate> doneButtonDelegate;
 
-- (id)initWithFrame:(CGRect)frame qrHeaderText:(NSString *)qrHeaderText addAddressPrefix:(BOOL)addPrefix;
 - (id)initWithFrame:(CGRect)frame qrHeaderText:(NSString *)qrHeaderText addAddressPrefix:(BOOL)addPrefix assetType:(LegacyAssetType)assetType;
 
 @end

@@ -100,7 +100,7 @@ class ExchangeClient: ExchangeClientAPI {
     func syncDepositAddress(accounts: [AssetAddress]) -> Completable {
         let depositAddresses: Dictionary<String, String> = Dictionary(accounts.map { account in
             if let bitcoinCashAddress = account as? BitcoinCashAssetAddress {
-                let depositAddress = bitcoinCashAddress.publicKey.removing(prefix: "\(Constants.Schemes.bitcoinCash):")
+                let depositAddress = bitcoinCashAddress.publicKey.removing(prefix: "\(AssetConstants.URLSchemes.bitcoinCash):")
                 return (bitcoinCashAddress.cryptoCurrency.code, depositAddress)
             } else {
                 return (account.cryptoCurrency.code, account.publicKey)

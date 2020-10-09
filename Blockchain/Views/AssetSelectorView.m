@@ -10,8 +10,6 @@
 #import "UIView+ChangeFrameAttribute.h"
 #import "Blockchain-Swift.h"
 
-#define CELL_IDENTIFIER_ASSET_SELECTOR @"assetSelectorCell"
-
 @interface AssetSelectorView () <UITableViewDataSource, UITableViewDelegate, AssetTypeCellDelegate>
 
 @property (nonatomic, strong) UITableView *tableView;

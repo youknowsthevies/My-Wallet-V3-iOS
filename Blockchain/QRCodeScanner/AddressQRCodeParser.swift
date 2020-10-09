@@ -18,7 +18,7 @@ final class AddressQRCodeParser: QRCodeScannerParsing {
     }
     
     struct Address {
-        let payload: AssetURLPayload
+        let payload: CryptoAssetQRMetadata
     }
     
     private let assetType: CryptoCurrency

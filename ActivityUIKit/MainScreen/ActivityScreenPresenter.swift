@@ -91,8 +91,7 @@ final class ActivityScreenPresenter {
     let selectedModelRelay: PublishRelay<ActivityCellItem> = .init()
     
     // MARK: - Injected
-    
-    private let qrScannerRouter: QRScannerRouting
+
     private let drawerRouter: DrawerRouting
     private let router: ActivityRouterAPI
     private let interactor: ActivityScreenInteractor
@@ -105,9 +104,7 @@ final class ActivityScreenPresenter {
     
     init(router: ActivityRouterAPI,
          interactor: ActivityScreenInteractor,
-         qrScannerRouter: QRScannerRouting = resolve(),
          drawerRouter: DrawerRouting = resolve()) {
-        self.qrScannerRouter = qrScannerRouter
         self.drawerRouter = drawerRouter
         self.router = router
         self.interactor = interactor
@@ -204,11 +201,6 @@ final class ActivityScreenPresenter {
     /// Should be invoked upon tapping navigation bar leading button
     func navigationBarLeadingButtonPressed() {
         drawerRouter.toggleSideMenu()
-    }
-    
-    /// Should be invoked upon tapping navigation bar trailing button
-    func navigationBarTrailingButtonPressed() {
-        qrScannerRouter.routeToQrScanner()
     }
 }
 

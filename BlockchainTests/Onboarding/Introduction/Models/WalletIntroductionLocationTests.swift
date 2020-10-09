@@ -10,8 +10,7 @@
 import XCTest
 
 class WalletIntroductionLocationTests: XCTestCase {
-    
-    let dashboardHome = WalletIntroductionLocation(screen: .dashboard, position: .home)
+
     let dashboardSend = WalletIntroductionLocation(screen: .dashboard, position: .send)
     let dashboardSwap = WalletIntroductionLocation(screen: .dashboard, position: .swap)
     

@@ -2,48 +2,49 @@
 //  BitcoinCashURLPayload.swift
 //  BitcoinCashKit
 //
-//  Created by Jack Pooley on 05/10/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//  Created by Jack on 05/08/2019.
+//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
 import PlatformKit
 
-@objc public class BitcoinCashURLPayload: NSObject, BIP21URI {
-    
+/// Encapsulates the payload of a "bitcoincash:" URL payload
+public class BitcoinCashURLPayload: BIP21URI {
+
     public static var scheme: String {
         AssetConstants.URLSchemes.bitcoinCash
     }
-    
-    @objc public var schemeCompat: String {
-        BitcoinCashURLPayload.scheme
-    }
-    
-    @objc public var absoluteString: String {
-        let prefix = includeScheme ? "\(BitcoinCashURLPayload.scheme):" : ""
+
+    public var absoluteString: String {
+        let prefix = includeScheme ? "\(Self.scheme):" : ""
         let uri = "\(prefix)\(address)"
         if let amount = amount {
             return "\(uri)?amount=\(amount)"
         }
         return uri
     }
-    
-    @objc public var address: String
-    
-    @objc public var amount: String?
-    
-    @objc public var paymentRequestUrl: String?
-    
-    @objc public var includeScheme: Bool = false
-    
-    @objc public required init(address: String, amount: String?, paymentRequestUrl: String?) {
+
+    public let address: String
+
+    public let amount: String?
+
+    public let cryptoCurrency: CryptoCurrency = .bitcoinCash
+
+    public let paymentRequestUrl: String?
+
+    public let includeScheme: Bool
+
+    public required init(address: String, amount: String?, paymentRequestUrl: String?) {
         self.address = address
         self.amount = amount
         self.paymentRequestUrl = paymentRequestUrl
+        includeScheme = false
     }
-    
-    @objc public required init(address: String, amount: String?, includeScheme: Bool = false) {
+
+    public required init(address: String, amount: String?, includeScheme: Bool = false) {
         self.address = address
         self.amount = amount
+        paymentRequestUrl = nil
         self.includeScheme = includeScheme
     }
 }

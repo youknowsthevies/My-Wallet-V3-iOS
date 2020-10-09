@@ -1,8 +1,8 @@
 //
 //  BitcoinCashWalletAccount.swift
-//  BitcoinCashKit
+//  BitcoinKit
 //
-//  Created by Jack Pooley on 05/10/2020.
+//  Created by Alex McGregor on 5/20/20.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
@@ -28,3 +28,4 @@ public struct BitcoinCashWalletAccount: WalletAccount, Codable, Hashable {
         self.archived = archived
     }
 }
+

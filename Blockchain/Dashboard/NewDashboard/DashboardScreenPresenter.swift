@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BuySellUIKit
 import DIKit
 import PlatformKit
 import PlatformUIKit
-import BuySellUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
@@ -173,8 +173,7 @@ final class DashboardScreenPresenter {
     private let historicalBalanceCellPresenters: [HistoricalBalanceCellPresenter]
     
     // MARK: - Interactor
-    
-    private let qrScannerRouter: QRScannerRouting
+
     private let drawerRouter: DrawerRouting
     private let interactor: DashboardScreenInteractor
     
@@ -187,11 +186,9 @@ final class DashboardScreenPresenter {
     
     init(interactor: DashboardScreenInteractor = DashboardScreenInteractor(),
          drawerRouter: DrawerRouting = resolve(),
-         qrScannerRouter: QRScannerRouting = AppCoordinator.shared,
          announcmentPresenter: AnnouncementPresenter = AnnouncementPresenter()) {
         self.interactor = interactor
         self.drawerRouter = drawerRouter
-        self.qrScannerRouter = qrScannerRouter
         self.announcmentPresenter = announcmentPresenter
         totalBalancePresenter = TotalBalanceViewPresenter(
             balanceProvider: interactor.balanceProvider,
@@ -284,10 +281,5 @@ final class DashboardScreenPresenter {
     /// Should be invoked upon tapping navigation bar leading button
     func navigationBarLeadingButtonPressed() {
         drawerRouter.toggleSideMenu()
-    }
-    
-    /// Should be invoked upon tapping navigation bar trailing button
-    func navigationBarTrailingButtonPressed() {
-        qrScannerRouter.routeToQrScanner()
     }
 }

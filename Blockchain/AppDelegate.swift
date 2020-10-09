@@ -21,6 +21,7 @@ import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import TransactionUIKit
 import ToolKit
 
 @UIApplicationMain
@@ -86,6 +87,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             DependencyContainer.bitcoinKit;
             DependencyContainer.bitcoinCashKit;
             DependencyContainer.stellarKit;
+            DependencyContainer.sendReceiveUIKit;
             DependencyContainer.buySellKit;
             DependencyContainer.activityKit;
             DependencyContainer.activityUIKit;
@@ -253,7 +255,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let urlString = url.absoluteString
 
         guard BlockchainSettings.App.shared.isPinSet else {
-            if "\(Constants.Schemes.blockchainWallet)loginAuthorized" == urlString {
+            if "\(AssetConstants.URLSchemes.blockchainWallet)loginAuthorized" == urlString {
                 // TODO: Link to manual pairing
                 appCoordinator.onboardingRouter.start()
                 return true
@@ -265,12 +267,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return true
         }
 
-        if urlScheme == Constants.Schemes.blockchainWallet {
+        if urlScheme == AssetConstants.URLSchemes.blockchainWallet {
             // Redirect from browser to app - do nothing.
             return true
         }
 
-        if urlScheme == Constants.Schemes.blockchain {
+        if urlScheme == AssetConstants.URLSchemes.blockchain {
             ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
             return true
         }
@@ -295,7 +297,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             AuthenticationCoordinator.shared.postAuthenticationRoute = .sendCoins
 
             appCoordinator.tabControllerManager.setupBitcoinPaymentFromURLHandler(
-                withAmountString: bitcoinUrlPayload.amount,
+                with: bitcoinUrlPayload.amount,
                 address: bitcoinUrlPayload.address
             )
 

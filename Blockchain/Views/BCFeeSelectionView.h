@@ -13,7 +13,9 @@
 - (void)didSelectFeeType:(FeeType)feeType;
 - (FeeType)selectedFeeType;
 @end
+
 @interface BCFeeSelectionView : UIView <UITableViewDelegate, UITableViewDataSource>
+
 @property (nonatomic, weak) id <FeeSelectionDelegate> delegate;
 
 @end

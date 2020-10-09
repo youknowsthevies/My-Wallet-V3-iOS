@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import JavaScriptCore
 import ToolKit
 
 @objc public protocol BitcoinJSInteropDelegateAPI {

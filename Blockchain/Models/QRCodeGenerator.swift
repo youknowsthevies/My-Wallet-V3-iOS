@@ -12,65 +12,42 @@ import Foundation
 import PlatformKit
 import PlatformUIKit
 
-@available(*, deprecated, message: "Don't use this, this is superseded by CryptoAssetQRMetadata")
-@objc protocol QRCodeGeneratorAPI {
-    func qrImage(fromAddress address: String, amount: String?, asset legacyAsset: LegacyAssetType, includeScheme: Bool) -> UIImage?
-    func createQRImage(fromString string: String) -> UIImage?
-}
+@available(swift, deprecated: 1.0, message: "Use `QRCode: QRCodeAPI` and `CryptoAssetQRMetadata` instead")
+@objc class QRCodeGenerator: NSObject {
 
-@available(*, deprecated, message: "Don't use this, this is superseded by CryptoAssetQRMetadata")
-@objc class QRCodeGenerator: NSObject, QRCodeGeneratorAPI {
-    
-    private let qrCodeWrapper: QRCodeWrapperAPI
-    
     @objc override init() {
-        self.qrCodeWrapper = QRCodeWrapper()
-    }
-    
-    init(qrCodeWrapper: QRCodeWrapperAPI) {
-        self.qrCodeWrapper = qrCodeWrapper
         super.init()
     }
     
     @objc func qrImage(fromAddress address: String, amount: String?, asset legacyAsset: LegacyAssetType, includeScheme: Bool) -> UIImage? {
         guard let metadata = metadata(address: address, amount: amount, asset: legacyAsset, includeScheme: includeScheme) else { return nil }
-        let qr = qrCodeWrapper.qrCode(from: metadata)
-        return qr?.image
+        return QRCode(metadata: metadata)?.image
     }
     
     @objc func createQRImage(fromString string: String) -> UIImage? {
-        let qr = qrCodeWrapper.qrCode(from: string)
-        return qr?.image
+        QRCode(string: string)?.image
     }
     
     private func metadata(address: String, amount: String?, asset legacyAsset: LegacyAssetType, includeScheme: Bool) -> CryptoAssetQRMetadata? {
         switch legacyAsset {
         case .bitcoin:
-            let metadata = BitcoinQRMetadata(
+            return BitcoinURLPayload(
                 address: address,
                 amount: amount,
                 includeScheme: includeScheme
             )
-            return metadata
         case .bitcoinCash:
-            let metadata = BitcoinCashURLPayload(
+            return BitcoinCashURLPayload(
                 address: address,
                 amount: amount,
                 includeScheme: includeScheme
             )
-            return metadata
-        default:
+        case .algorand,
+             .ether,
+             .pax,
+             .stellar,
+             .tether:
             return nil
         }
-    }
-}
-
-class QRCodeWrapper: QRCodeWrapperAPI {
-    func qrCode(from metadata: CryptoAssetQRMetadata) -> QRCodeAPI? {
-        QRCode(metadata: metadata)
-    }
-    
-    func qrCode(from string: String) -> QRCodeAPI? {
-        QRCode(string: string)
     }
 }

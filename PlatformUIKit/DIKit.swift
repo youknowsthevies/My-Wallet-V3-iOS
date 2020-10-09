@@ -19,5 +19,6 @@ extension DependencyContainer {
 
         factory { WebViewService() as WebViewServiceAPI }
 
+        factory { UIPasteboard.general as Pasteboarding }
     }
 }

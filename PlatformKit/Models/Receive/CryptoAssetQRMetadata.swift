@@ -12,6 +12,10 @@ import Foundation
 /// as well as other metadata such as an amount, message, etc. The set of supported metadata
 /// can be asset dependent.
 public protocol CryptoAssetQRMetadata {
+    /// The asset's scheme (e.g. "bitcoin")
+    static var scheme: String { get }
+
+    var cryptoCurrency: CryptoCurrency { get }
     
     /// The asset's address (e.g. "1Amu4uPJnYbUXX2HhDFMNq7tSneDwWYDyv")
     var address: String { get }
@@ -25,13 +29,4 @@ public protocol CryptoAssetQRMetadata {
     
     /// Render the `absoluteString` with the scheme prefix
     var includeScheme: Bool { get }
-    
-    /// The asset's scheme (e.g. "bitcoin")
-    static var scheme: String { get }
-}
-
-extension CryptoAssetQRMetadata {
-    public var includeScheme: Bool {
-        false
-    }
 }

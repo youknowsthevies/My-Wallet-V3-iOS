@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
@@ -83,7 +84,7 @@ final class AddressPresenter {
     // MARK: - Setup
     
     init(interactor: AddressInteracting,
-         pasteboard: Pasteboarding = UIPasteboard.general) {
+         pasteboard: Pasteboarding = resolve()) {
         self.interactor = interactor
         self.pasteboard = pasteboard
         let asset = interactor.asset

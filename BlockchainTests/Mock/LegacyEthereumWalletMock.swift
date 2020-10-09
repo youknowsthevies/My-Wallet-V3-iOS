@@ -16,7 +16,7 @@ import PlatformUIKit
 
 class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, MnemonicAccessAPI {
 
-    var initializationState: Single<WalletSetup.State> = .never()
+    var initializationState: Single<WalletSetup.State> = .just(.initialized)
 
     func setEthereumMemo(for transaction: String, memo: String?) {
 

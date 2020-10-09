@@ -10,7 +10,6 @@ import PlatformKit
 
 public protocol ETHDependencies {
     var assetAccountRepository: EthereumAssetAccountRepository { get }
-    var qrMetadataFactory: EthereumQRMetadataFactory { get }
     var repository: EthereumWalletAccountRepository { get }
     var transactionService: EthereumHistoricalTransactionService { get }
 }

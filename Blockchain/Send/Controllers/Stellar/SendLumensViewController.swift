@@ -30,7 +30,7 @@ protocol SendXLMViewControllerDelegate: class {
     var sendingToExchange: Bool { get }
 }
 
-@objc class SendLumensViewController: UIViewController, BottomButtonContainerView {
+@objc class SendLumensViewController: BaseScreenViewController, BottomButtonContainerView {
     
     fileprivate static let topToStackView: CGFloat = 12.0
     fileprivate static let maximumMemoTextLength: Int = 28
@@ -156,7 +156,7 @@ protocol SendXLMViewControllerDelegate: class {
 
     // MARK: Public Methods
 
-    @objc func scanQrCodeForDestinationAddress() {
+    func scanQrCodeForDestinationAddress() {
         analyticsRecorder.record(event: AnalyticsEvents.Send.sendFormQrButtonClick(asset: .stellar))
         guard let scanner = QRCodeScanner() else { return }
         
@@ -173,15 +173,13 @@ protocol SendXLMViewControllerDelegate: class {
             }
         )
         
-        let viewController = QRCodeScannerViewControllerBuilder(viewModel: qrScannerViewModel)?
+        let builder = QRCodeScannerViewControllerBuilder(viewModel: qrScannerViewModel)?
             .with(presentationType: .modal(dismissWithAnimation: false))
-            .build()
         
-        guard let qrCodeScannerViewController = viewController else { return }
+        guard let viewController = builder?.build() else { return }
         
-        DispatchQueue.main.async {
-            guard let controller = AppCoordinator.shared.tabControllerManager.tabViewController else { return }
-            controller.present(qrCodeScannerViewController, animated: true, completion: nil)
+        DispatchQueue.main.async { [weak self] in
+            self?.navigationController?.present(viewController, animated: true, completion: nil)
         }
     }
     
@@ -197,11 +195,6 @@ protocol SendXLMViewControllerDelegate: class {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.frame = UIView.rootViewSafeAreaFrame(
-            navigationBar: true,
-            tabBar: true,
-            assetSelector: true
-        )
         originalBottomButtonConstraint = layoutConstraintBottomButton.constant
         setUpBottomButtonContainerView()
         setupMemoIDField()
@@ -223,13 +216,24 @@ protocol SendXLMViewControllerDelegate: class {
         memoTextField.placeholder = LocalizationConstants.Stellar.memoPlaceholder
         delegate?.onLoad()
         setupAccessibility()
+        setupNavigationBar()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         delegate?.onAppear()
     }
-    
+
+    private func setupNavigationBar() {
+        set(barStyle: .lightContent(),
+            leadingButtonStyle: .close,
+            trailingButtonStyle: .qrCode)
+    }
+
+    override func navigationBarTrailingButtonPressed() {
+        scanQrCodeForDestinationAddress()
+    }
+
     private func setupAccessibility() {
         fromLabel.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.sourceAccountTitleLabel
         walletNameLabel.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.sourceAccountValueLabel
@@ -430,7 +434,7 @@ protocol SendXLMViewControllerDelegate: class {
 
     private func showPaymentSuccess() {
         let controller = AppCoordinator.shared.tabControllerManager
-        controller.showTransactionsStellar()
+        controller?.showTransactions()
         AlertViewPresenter.shared.standardNotify(
             title: LocalizationConstants.success, message: LocalizationConstants.SendAsset.paymentSent
         )

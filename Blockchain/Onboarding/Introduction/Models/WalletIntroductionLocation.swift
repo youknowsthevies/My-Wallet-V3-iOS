@@ -22,7 +22,7 @@ struct WalletIntroductionLocation: Codable, Comparable {
     enum Position: Int, Codable, Comparable {
         case home
         case send
-        case request
+        case receive
         case swap
     }
     

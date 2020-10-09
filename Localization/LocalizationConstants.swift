@@ -406,6 +406,7 @@ public enum LocalizationConstants {
         public static let  BC_STRING_NEW_ZEALAND_DOLLAR = NSLocalizedString("New Zealand Dollar", comment: "")
         public static let  BC_STRING_BRAZIL_REAL = NSLocalizedString("Brazil Real", comment: "")
         public static let  BC_STRING_RUSSIAN_RUBLE = NSLocalizedString("Russian Ruble", comment: "")
+        public static let  BC_STRING_TURKISH_LIRA = NSLocalizedString("Turkish Lira", comment: "")
         public static let  BC_STRING_NO_TRANSACTIONS_TITLE = NSLocalizedString("No Transactions", comment: "")
         public static let  BC_STRING_NO_TRANSACTIONS_TEXT_BITCOIN = NSLocalizedString("Transactions occur when you send and request bitcoin.", comment: "")
         public static let  BC_STRING_NO_TRANSACTIONS_TEXT_ETHER = NSLocalizedString("Transactions occur when you receive and send ether.", comment: "")
@@ -600,10 +601,6 @@ public enum LocalizationConstants {
     public static let loading = NSLocalizedString(
         "Loading",
         comment: "Text displayed when there is an asynchronous action that needs to complete before the user can take further action."
-    )
-    public static let copiedToClipboard = NSLocalizedString(
-        "Copied to clipboard",
-        comment: "Text displayed when a user has tapped on an item to copy its text."
     )
     public static let learnMore = NSLocalizedString(
         "Learn More",
@@ -1743,92 +1740,6 @@ public enum LocalizationConstants {
             )
         }
     }
-    
-    // MARK: - Transfer Screen
-    
-    public struct Send {
-        public struct Source {
-            public static let subject = NSLocalizedString(
-                "From",
-                comment: "Transfer screen: source address / account subject"
-            )
-        }
-        
-        public struct Destination {
-            public static let subject = NSLocalizedString(
-                "To",
-                comment: "Transfer screen: destination address / account subject"
-            )
-            public static let placeholder = NSLocalizedString(
-                "Enter %@ address",
-                comment: "Transfer screen: destination address / account placeholder"
-            )
-            public static let exchangeCover = NSLocalizedString(
-                "Exchange %@ Address",
-                comment: "Exchange address for a wallet"
-            )
-        }
-        
-        public struct Fees {
-            public static let subject = NSLocalizedString(
-                "Fees",
-                comment: "Transfer screen: fees subject"
-            )
-        }
-        
-        public struct SpendableBalance {
-            public static let prefix = NSLocalizedString(
-                "Use total spendable balance: ",
-                comment: "String displayed to the user when they want to send their full balance to an address."
-            )
-        }
-        
-        public static let primaryButton = NSLocalizedString(
-            "Continue",
-            comment: "Transfer screen: primary CTA button"
-        )
-        
-        public struct Error {
-            public struct Balance {
-                public static let title = NSLocalizedString(
-                    "Not Enough %@",
-                    comment: "Prefix for alert title when there is not enough balance"
-                )
-                public static let description = NSLocalizedString(
-                    "You will need %@ to send the transaction",
-                    comment: "Prefix for alert description when there is not enough balance"
-                )
-                public static let descriptionERC20 = NSLocalizedString(
-                    "You will need ETH to send your ERC20 Token",
-                    comment: "Prefix for alert description when there is not enough balance"
-                )
-            }
-            public struct DestinationAddress {
-                public static let title = NSLocalizedString(
-                    "Invalid %@ Address",
-                    comment: "Prefix for alert title when the destination address is invalid"
-                )
-                public static let description = NSLocalizedString(
-                    "You must enter a valid %@ address to send the transaction",
-                    comment: "Prefix for alert description when the destination address is invalid"
-                )
-                public static let descriptionERC20 = NSLocalizedString(
-                    "You must enter a valid %@ address to send your ERC20 Token",
-                    comment: "Prefix for alert description when the destination address is invalid"
-                )
-            }
-            public struct PendingTransaction {
-                public static let title = NSLocalizedString(
-                    "Waiting for Payment",
-                    comment: "Alert title when transaction cannot be sent because there is another in progress"
-                )
-                public static let description = NSLocalizedString(
-                    "Please wait until your last ETH transaction confirms",
-                    comment: "Alert description when transaction cannot be sent because there is another in progress"
-                )
-            }
-        }
-    }
 
     public struct SideMenu {
         public static let loginToWebWallet = NSLocalizedString("Pair Web Wallet", comment: "")
@@ -2298,42 +2209,6 @@ public enum LocalizationConstants {
         public static let loginToRefreshAddress = NSLocalizedString(
             "Log in to refresh addresses",
             comment: "Message that let the user know he has to login to refresh his wallet addresses")
-    }
-
-    public struct Receive {
-        public static let tapToCopyThisAddress = NSLocalizedString(
-            "Tap to copy this address. Share it with the sender via email or text.",
-            comment: "Text displayed on the receive screen instructing the user to copy their crypto address."
-        )
-        public static let requestPayment = NSLocalizedString(
-            "Request Payment",
-            comment: "Text displayed on the button when requesting for payment to a crypto address."
-        )
-        public static let copiedToClipboard = NSLocalizedString(
-            "Copied to clipboard",
-            comment: "Text displayed when a crypto address has been copied to the users clipboard."
-        )
-        public static let enterYourSecondPassword = NSLocalizedString(
-            "Enter Your Second Password",
-            comment: "Text on the button prompting the user to enter their second password to proceed with creating a crypto account."
-        )
-
-        public static let secondPasswordPromptX = NSLocalizedString(
-            "Your second password is required in order to create a %@ account.",
-            comment: "Text shown when the second password is required to create an XLM account."
-        )
-        public static let xPaymentRequest = NSLocalizedString(
-            "%@ payment request.",
-            comment: "Subject when requesting payment for a given asset."
-        )
-        public static let pleaseSendXto = NSLocalizedString(
-            "Please send %@ to",
-            comment: "Message when requesting payment to a given asset."
-        )
-    }
-
-    public struct ReceiveAsset {
-        public static let xPaymentRequest = NSLocalizedString("%@ payment request", comment: "Subject of the email sent when requesting for payment from another user.")
     }
 
     public struct Transactions {
@@ -3517,7 +3392,7 @@ public enum LocalizationConstants {
     
     @objc public class func paxFee() -> String { return LocalizationConstants.Transactions.paxfee }
 
-    @objc public class func copiedToClipboard() -> String { return LocalizationConstants.Receive.copiedToClipboard }
+    @objc public class func copiedToClipboard() -> String { LocalizationConstants.Receive.Text.copiedToClipboard }
 
     @objc public class func createWalletLegalAgreementPrefix() -> String {
         return LocalizationConstants.Onboarding.termsOfServiceAndPrivacyPolicyNoticePrefix
@@ -3534,10 +3409,6 @@ public enum LocalizationConstants {
     @objc public class func twoFactorExchangeDisabled() -> String { return LocalizationConstants.Exchange.twoFactorNotEnabled }
     
     @objc public class func sendAssetExchangeDestination() -> String { return LocalizationConstants.Exchange.Send.destination }
-
-    @objc public class func tapToCopyThisAddress() -> String { return LocalizationConstants.Receive.tapToCopyThisAddress }
-
-    @objc public class func requestPayment() -> String { return LocalizationConstants.Receive.requestPayment }
 
     @objc public class func continueString() -> String { return LocalizationConstants.continueString }
 
@@ -3594,8 +3465,6 @@ public enum LocalizationConstants {
     @objc public class func confirming() -> String { return LocalizationConstants.Swap.confirming }
 
     @objc public class func loadingTransactions() -> String { return LocalizationConstants.Swap.loadingTransactions }
-
-    @objc public class func xPaymentRequest() -> String { return LocalizationConstants.ReceiveAsset.xPaymentRequest }
 
     @objc public class func invalidXAddressY() -> String { return LocalizationConstants.SendAsset.invalidXAddressY }
 

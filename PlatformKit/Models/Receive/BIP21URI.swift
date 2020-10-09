@@ -9,9 +9,7 @@
 import Foundation
 
 /// A URI scheme that conforms to BIP 21 (https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki)
-/// TODO: Whenever `BitcoinKit` is added, we need to use this protocol for
-/// QR metadata and QR responses. 
-public protocol BIP21URI: CryptoAssetQRMetadata, AssetURLPayload {
+public protocol BIP21URI: CryptoAssetQRMetadata {
     init(address: String, amount: String?, paymentRequestUrl: String?)
 }
 

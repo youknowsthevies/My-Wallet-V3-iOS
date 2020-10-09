@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import DIKit
 import ActivityKit
+import DIKit
 import NetworkKit
 import Localization
 import PlatformKit
@@ -24,7 +24,6 @@ final class ActivityMessageViewModel {
     let badgeImageViewModel: BadgeImageViewModel
     
     init?(event: ActivityItemEvent,
-          qrCodeAPI: QRCodeWrapperAPI = resolve(),
           transactionDetailService: TransactionDetailServiceAPI = resolve()) {
         guard case let .transactional(transaction) = event else { return nil }
         var title = ""
@@ -69,9 +68,10 @@ final class ActivityMessageViewModel {
             alignment: .left,
             accessibility: .none
         )
-        
+
         guard let url = transactionDetailService.transactionDetailURL(for: event.identifier, cryptoCurrency: transaction.currency) else { return nil }
-        image = qrCodeAPI.qrCode(from: url)?.image
+        image = QRCode(string: url)?.image
+
         logoImage = .init(
             imageName: "logo-blockchain",
             accessibility: .none,

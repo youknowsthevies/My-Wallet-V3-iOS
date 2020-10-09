@@ -102,6 +102,21 @@ extension CryptoCurrency {
             return true
         }
     }
+    
+    public var hasSwapSupport: Bool {
+        switch self {
+        case .algorand,
+             .tether:  // TICKET: IOS-3380 - Add USD-T support to Swap.
+            return false
+        case .bitcoin,
+             .bitcoinCash,
+             .ethereum,
+             .pax,
+             .stellar:
+            return true
+            
+        }
+    }
 
     public var name: String {
         switch self {
@@ -171,6 +186,16 @@ extension CryptoCurrency {
             return 7
         case .tether:
             return 6
+        }
+    }
+    
+    /// Returns `true` for any ERC20 asset
+    public var isERC20: Bool {
+        switch self {
+        case .pax, .tether:
+            return true
+        case .algorand, .bitcoin, .bitcoinCash, .ethereum, .stellar:
+            return false
         }
     }
 }

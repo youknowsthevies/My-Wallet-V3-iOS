@@ -11,6 +11,7 @@ import DIKit
 import ERC20Kit
 import EthereumKit
 import Foundation
+import JavaScriptCore
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -525,7 +526,11 @@ extension EthereumWallet: EthereumWalletAccountBridgeAPI {
     }
     
     var wallets: Single<[EthereumWalletAccount]> {
-        secondPasswordIfAccountCreationNeeded
+        reactiveWallet
+            .waitUntilInitializedSingle
+            .flatMap(weak: self) { (self, _) -> Single<String?> in
+                self.secondPasswordIfAccountCreationNeeded
+            }
             .flatMap(weak: self) { (self, secondPassword) -> Single<[EthereumWalletAccount]> in
                 self.ethereumWallets(secondPassword: secondPassword)
             }

@@ -8,6 +8,7 @@
 
 import BitcoinKit
 import Foundation
+import JavaScriptCore
 import PlatformKit
 import RxSwift
 
@@ -66,6 +67,30 @@ final class BitcoinWallet: NSObject {
 }
 
 extension BitcoinWallet: BitcoinWalletBridgeAPI {
+
+    func receiveAddress(forXPub xpub: String) -> Single<String> {
+        let addressSingle: Single<String?> = Single
+            .create(weak: self) { (self, observer) -> Disposable in
+                guard let wallet = self.wallet else {
+                    return Disposables.create()
+                }
+                let address = wallet.getBitcoinReceiveAddress(forXPub: xpub)
+                observer(.success(address))
+                return Disposables.create()
+            }
+
+        return reactiveWallet
+            .waitUntilInitializedSingle
+            .flatMap { () -> Single<String?> in
+                addressSingle
+            }
+            .map { address -> String in
+                guard let address = address else {
+                    throw ReceiveAddressError.notSupported
+                }
+                return address
+            }
+    }
 
     func updateMemo(for transactionHash: String, memo: String?) -> Completable {
         let saveMemo: Completable = Completable.create { completable in

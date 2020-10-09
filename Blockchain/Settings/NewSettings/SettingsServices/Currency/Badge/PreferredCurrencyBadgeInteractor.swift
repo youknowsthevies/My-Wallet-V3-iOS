@@ -19,22 +19,39 @@ final class PreferredCurrencyBadgeInteractor: DefaultBadgeAssetInteractor {
          fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
         super.init()
         let settingsFiatCurrency = settingsService.valueObservable
-            .map { $0.fiatCurrency }
+            .map { $0.currency }
         let fiatCurrency = fiatCurrencyService.fiatCurrencyObservable
-        let currencyNames = CurrencySymbol.currencyNames()!
-        
+
         Observable
-            .combineLatest(settingsFiatCurrency, fiatCurrency)
-            .map { currencyInfo -> BadgeItem in
-                let currency = currencyInfo.0
-                let description = currencyNames[currency] as? String ?? currency
-                let title = "\(description) (\(currencyInfo.1.symbol))"
+            .combineLatest(settingsFiatCurrency, fiatCurrency) { (remoteFiatCurrency: $0, localFiatCurrency: $1) }
+            .map { payload -> FiatCurrency? in
+                guard let remoteFiatCurrency = payload.remoteFiatCurrency else {
+                    // We don't recognise the value select on Backend
+                    return payload.localFiatCurrency
+                }
+                guard remoteFiatCurrency == payload.localFiatCurrency else {
+                    // Currencies don't match, we must wait them to load.
+                    return nil
+                }
+                // We recognise the value and it matches the current value.
+                return remoteFiatCurrency
+            }
+            .map { fiatCurrency -> BadgeItem? in
+                guard let fiatCurrency = fiatCurrency else {
+                    return nil
+                }
+                let title = "\(fiatCurrency.name) (\(fiatCurrency.symbol))"
                 return BadgeItem(
                     type: .default(accessibilitySuffix: title),
                     description: title
                 )
             }
-            .map { .loaded(next: $0) }
+            .map { badgeItem in
+                guard let badgeItem = badgeItem else {
+                    return .loading
+                }
+                return .loaded(next: badgeItem)
+            }
             .catchErrorJustReturn(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)

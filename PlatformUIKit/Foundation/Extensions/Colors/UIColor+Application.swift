@@ -74,10 +74,11 @@ public extension UIColor {
     static let strongPassword = blue600
     static let destructive = red600
     
-    static let textFieldPlaceholder = grey400
-    static let textFieldText = grey800
+    static let darkTitleText = grey900
     static let titleText = grey800
     static let descriptionText = grey600
+    static let textFieldPlaceholder = grey400
+    static let textFieldText = grey800
     static let mutedText = grey400
     
     static let dashboardAssetTitle = grey800

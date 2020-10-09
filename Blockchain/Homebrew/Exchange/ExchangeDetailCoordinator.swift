@@ -226,7 +226,7 @@ class ExchangeDetailCoordinator: NSObject {
                             UIPasteboard.general.string = text
                             $0.animate(
                                 fromText: orderTransaction.orderIdentifier ?? "",
-                                toIntermediateText: LocalizationConstants.copiedToClipboard,
+                                toIntermediateText: LocalizationConstants.Receive.Text.copiedToClipboard,
                                 speed: 1,
                                 gestureReceiver: $0
                             )
@@ -309,7 +309,7 @@ class ExchangeDetailCoordinator: NSObject {
                     UIPasteboard.general.string = text
                     $0.animate(
                         fromText: trade.identifier,
-                        toIntermediateText: LocalizationConstants.copiedToClipboard,
+                        toIntermediateText: LocalizationConstants.Receive.Text.copiedToClipboard,
                         speed: 1,
                         gestureReceiver: $0
                     )

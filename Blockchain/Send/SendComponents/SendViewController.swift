@@ -61,6 +61,7 @@ final class SendViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        definesPresentationContext = true
         keyboardInteractionController = KeyboardInteractionController(in: self)
         setupTableView()
         setupContinueButton()
@@ -133,8 +134,7 @@ final class SendViewController: UIViewController {
         let alertView = AlertView.make(with: alert, completion: nil)
         alertView.show()
     }
-    
-    // TODO: Refactor this once `BCConfirmPaymentView` is written in `Swift`
+
     // The confirmation screen should be enqeued normally into a navigation controller.
     private func continueButtonTapped() {
         presenter.recordContinueClick()
@@ -249,9 +249,13 @@ extension SendViewController: NavigatableView {
     func navControllerRightBarButtonTapped(_ navController: UINavigationController) {
         presenter.navigationRightButtonTapped()
     }
-    
+
     func navControllerLeftBarButtonTapped(_ navController: UINavigationController) {
-        presenter.navigationLeftButtonTapped()
+        dismiss(animated: true, completion: nil)
+    }
+
+    var leftNavControllerCTAType: NavigationCTAType {
+        .dismiss
     }
 }
 

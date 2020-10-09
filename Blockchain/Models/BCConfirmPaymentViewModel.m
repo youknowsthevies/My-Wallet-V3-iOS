@@ -49,7 +49,8 @@
                    fiatFee:(NSString *)fiatFee
                  fiatTotal:(NSString *)fiatTotal
 {
-    if (self == [super init]) {
+    self = [super init];
+    if (self) {
         self.from = [LocalizationConstantsObjcBridge myEtherWallet];
         self.destinationDisplayAddress = destinationDisplayAddress;
         self.destinationRawAddress = destinationRawAddress;
@@ -78,8 +79,8 @@
         self.destinationDisplayAddress = destinationDisplayAddress;
         self.destinationRawAddress = destinationRawAddress;
         self.surgeIsOccurring = surgePresent;
-        self.fiatTotalAmountText = [NSNumberFormatter formatBchWithSymbol:total localCurrency:YES];
-        self.totalAmountText = [NSNumberFormatter formatBCH:total];
+        self.fiatTotalAmountText = [NSNumberFormatter formatBCHAmount:total includeSymbol:YES inLocalCurrency:YES];
+        self.totalAmountText = [NSNumberFormatter formatBCHAmount:total includeSymbol:YES inLocalCurrency:NO];
         self.cryptoWithFiatAmountText = [self formatAmountInBCHAndFiat:amount];
         self.amountWithFiatFeeText = [self formatAmountInBCHAndFiat:fee];
         self.showDescription = YES;
@@ -147,7 +148,9 @@
 
 - (NSString *)formatAmountInBCHAndFiat:(uint64_t)amount
 {
-    return [NSString stringWithFormat:@"%@ (%@)", [NSNumberFormatter formatBchWithSymbol:amount localCurrency:NO], [NSNumberFormatter formatBchWithSymbol:amount localCurrency:YES]];
+    NSString *crypto = [NSNumberFormatter formatBCHAmount:amount includeSymbol:YES inLocalCurrency:NO];
+    NSString *fiat = [NSNumberFormatter formatBCHAmount:amount includeSymbol:YES inLocalCurrency:YES];
+    return [NSString stringWithFormat:@"%@ (%@)", crypto, fiat];
 }
 
 @end

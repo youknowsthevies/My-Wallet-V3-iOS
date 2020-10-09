@@ -15,7 +15,7 @@ extension Reachability {
     /// Checks if the device has internet connectivity
     @objc static func hasInternetConnection() -> Bool {
         let reachability = Reachability.forInternetConnection()
-        guard reachability?.currentReachabilityStatus() != NotReachable else {
+        guard reachability?.currentReachabilityStatus() != NetworkStatus.NotReachable else {
             Logger.shared.info("No internet connection.")
             return false
         }

@@ -8,35 +8,25 @@
 
 import PlatformKit
 
-public class EthereumURLPayload: EIP67URI, RawRepresentable {
-    
+public class EthereumURLPayload: EIP67URI {
     private enum QueryItemKeys: String {
         case value
         case gas
     }
     
     public static var scheme: String {
-        "ethereum"
+        AssetConstants.URLSchemes.ethereum
     }
-    
-    public var schemeCompat: String {
-        EthereumURLPayload.scheme
-    }
-    
+
     public var absoluteString: String {
         components.url!.absoluteString
     }
-    
-    public var rawValue: String {
-        absoluteString
-    }
-    
+
     public let address: String
-    
+    public let cryptoCurrency: CryptoCurrency = .ethereum
+    public let includeScheme: Bool = true
     public private(set) var amount: String?
-    
     public private(set) var gas: String?
-    
     public private(set) var paymentRequestUrl: String?
     
     private let components: URLComponents
@@ -60,14 +50,14 @@ public class EthereumURLPayload: EIP67URI, RawRepresentable {
         guard let components: URLComponents = URLComponents(string: rawValue) else {
             return nil
         }
-        
+
         guard EthereumURLPayload.valid(components: components) else {
             return nil
         }
-        
+
         self.components = components
         self.address = components.path
-        
+
         if let queryItems = components.queryItems {
             for item in queryItems {
                 if let key = QueryItemKeys(rawValue: item.name) {

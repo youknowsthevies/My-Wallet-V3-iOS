@@ -28,6 +28,10 @@ import PlatformUIKit
 
     private var transferAllController: TransferAllFundsViewController?
 
+    private var tabControllerManager: TabControllerManager {
+        AppCoordinator.shared.tabControllerManager
+    }
+
     func start() {
         transferAllController = TransferAllFundsViewController()
         let navigationController = BCNavigationController(
@@ -35,7 +39,7 @@ import PlatformUIKit
             title: LocalizationConstants.SendAsset.transferAllFunds
         )
         let tabViewController = AppCoordinator.shared.tabControllerManager.tabViewController
-        tabViewController?.topMostViewController!.present(navigationController, animated: true, completion: nil)
+        tabViewController.topMostViewController!.present(navigationController, animated: true, completion: nil)
     }
 
     @objc func start(withDelegate delegate: TransferAllPromptDelegate) {
@@ -45,16 +49,16 @@ import PlatformUIKit
 
     @objc func startWithSendScreen() {
         transferAllController = nil
-        AppCoordinator.shared.tabControllerManager.setupTransferAllFunds()
+        tabControllerManager.setupTransferAllFunds()
     }
 }
 
 extension TransferAllCoordinator: WalletTransferAllDelegate {
-    func updateTransferAll(amount: NSNumber, fee: NSNumber, addressesUsed: NSArray) {
+    func updateTransferAll(amount: NSNumber, fee: NSNumber, addressesUsed: [Any]) {
         if transferAllController != nil {
-            transferAllController?.updateTransferAllAmount(amount, fee: fee, addressesUsed: addressesUsed as? [Any])
+            transferAllController?.updateTransferAllAmount(amount, fee: fee, addressesUsed: addressesUsed)
         } else {
-            AppCoordinator.shared.tabControllerManager.updateTransferAllAmount(amount, fee: fee, addressesUsed: addressesUsed as? [Any])
+            tabControllerManager.updateTransferAll(amount: amount, fee: fee, addressesUsed: addressesUsed)
         }
     }
 
@@ -63,7 +67,7 @@ extension TransferAllCoordinator: WalletTransferAllDelegate {
             transferAllController?.showSummaryForTransferAll()
             loadingViewPresenter.hide()
         } else {
-            AppCoordinator.shared.tabControllerManager.showSummaryForTransferAll()
+            tabControllerManager.showSummaryForTransferAll()
         }
     }
 
@@ -71,11 +75,11 @@ extension TransferAllCoordinator: WalletTransferAllDelegate {
         if transferAllController != nil {
             transferAllController?.sendDuringTransferAll(secondPassword)
         } else {
-            AppCoordinator.shared.tabControllerManager.sendDuringTransferAll(secondPassword)
+            tabControllerManager.sendDuringTransferAll(secondPassword: secondPassword)
         }
     }
 
     func didErrorDuringTransferAll(error: String, secondPassword: String?) {
-        AppCoordinator.shared.tabControllerManager.didErrorDuringTransferAll(error, secondPassword: secondPassword)
+        tabControllerManager.didErrorDuringTransferAll(error: error, secondPassword: secondPassword)
     }
 }

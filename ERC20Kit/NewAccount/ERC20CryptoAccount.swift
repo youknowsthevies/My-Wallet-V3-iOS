@@ -30,9 +30,17 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
         balanceFetching
             .pendingBalanceMoney
     }
-    
-    var actions: AvailableActions {
-        [.viewActivity]
+
+    private(set) lazy var actions: AvailableActions = {
+        var base: AvailableActions = [.viewActivity, .receive]
+        if Token.nonCustodialSendSupport {
+            base.insert(.send)
+        }
+        return base
+    }()
+
+    var receiveAddress: Single<ReceiveAddress> {
+        .just(ERC20ReceiveAddress(asset: asset, address: id, label: label))
     }
 
     private let balanceFetching: SingleAccountBalanceFetching

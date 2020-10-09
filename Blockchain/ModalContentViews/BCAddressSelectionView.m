@@ -159,12 +159,10 @@ typedef enum {
                 [bchAccountLabels addObjectsFromArray:accountsAndLabelsBitcoinCash[DICTIONARY_KEY_ACCOUNT_LABELS]];
 
             } else if (assetType == LegacyAssetTypeBitcoin || assetType == LegacyAssetTypeBitcoinCash) {
-                TabControllerManager *tabControllerManager = AppCoordinator.shared.tabControllerManager;
-
                 // Show the address book
                 for (NSString * addr in [_wallet.addressBook allKeys]) {
                     [addressBookAddresses addObject:addr];
-                    [addressBookAddressLabels addObject:[tabControllerManager.sendBitcoinViewController labelForLegacyAddress:addr]];
+                    [addressBookAddressLabels addObject:[_wallet labelForLegacyAddress:addr assetType:assetType]];
                 }
 
                 // Then show the HD accounts
@@ -534,8 +532,7 @@ typedef enum {
                 NSDecimalNumber *ethBalance = [WalletManager.sharedInstance.wallet getEthBalance];
                 NSComparisonResult result = [ethBalance compare:[NSDecimalNumber numberWithInt:0]];
                 zeroBalance = result == NSOrderedDescending || result == NSOrderedSame;
-                TabControllerManager *tabControllerManager = AppCoordinator.shared.tabControllerManager;
-                cell.balanceLabel.text = BlockchainSettingsApp.shared.symbolLocal ? [NSNumberFormatter formatEthToFiatWithSymbol:[ethBalance stringValue] exchangeRate:tabControllerManager.latestEthExchangeRate] : [NSNumberFormatter formatEth:[NSNumberFormatter localFormattedString:[ethBalance stringValue]]];
+                cell.balanceLabel.text = BlockchainSettingsApp.shared.symbolLocal ? [NSNumberFormatter formatEthToFiatWithSymbol:[ethBalance stringValue] exchangeRate:self.wallet.latestEthExchangeRate] : [NSNumberFormatter formatEth:[NSNumberFormatter localFormattedString:[ethBalance stringValue]]];
             } else {
                 uint64_t bchBalance = 0;
                 if (section == bchAccountsSectionNumber) {
@@ -554,7 +551,7 @@ typedef enum {
                     bchBalance = [WalletManager.sharedInstance.wallet getTotalBalanceForActiveLegacyAddresses:LegacyAssetTypeBitcoinCash];
                 }
                 zeroBalance = bchBalance == 0;
-                cell.balanceLabel.text = [NSNumberFormatter formatBchWithSymbol:bchBalance];
+                cell.balanceLabel.text = [NSNumberFormatter formatBCHAmountInAutomaticLocalCurrency:bchBalance];
             }
             
             if (section == legacyAddressesSectionNumber && (selectMode == SelectModeSendFrom || selectMode == SelectModeReceiveTo)) {

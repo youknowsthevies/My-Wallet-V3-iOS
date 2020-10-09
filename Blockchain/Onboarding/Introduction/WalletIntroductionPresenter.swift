@@ -26,21 +26,23 @@ enum WalletIntroductionPresentationEvent {
 /// `WalletIntroductionPresenter` is used on the `TabViewController`.
 @objc
 final class WalletIntroductionPresenter: NSObject {
-    
+
     /// Returns a `WalletIntroductionPresentationEvent` that the `UIViewController` can respond to.
     var introductionEvent: Driver<WalletIntroductionPresentationEvent> {
-        introductionRelay.map {
-            switch $0 {
-            case .pulse(let model):
-                return .showPulse(model)
-            case .sheet(let model):
-                return .presentSheet(model)
-            case .none:
-                return .introductionComplete
+        introductionRelay
+            .map {
+                switch $0 {
+                case .pulse(let model):
+                    return .showPulse(model)
+                case .sheet(let model):
+                    return .presentSheet(model)
+                case .none:
+                    return .introductionComplete
+                }
             }
-            }.asDriver(onErrorJustReturn: .introductionComplete)
+            .asDriver(onErrorJustReturn: .introductionComplete)
     }
-    
+
     // The current introduction sequence.
     private var introductionSequence = WalletIntroductionSequence()
 
@@ -51,20 +53,20 @@ final class WalletIntroductionPresenter: NSObject {
     private let onboardingSettings: BlockchainSettings.Onboarding
     private let introductionRelay = PublishRelay<WalletIntroductionEventType>()
     private let disposeBag = DisposeBag()
-    
+
     init(
         featureConfigurator: FeatureConfiguring = AppFeatureConfigurator.shared,
         onboardingSettings: BlockchainSettings.Onboarding = .shared,
         screen: WalletIntroductionLocation.Screen,
         recorder: AnalyticsEventRecording = resolve()
-        ) {
+    ) {
         self.featureConfigurator = featureConfigurator
         self.onboardingSettings = onboardingSettings
         self.screen = screen
         self.interactor = WalletIntroductionInteractor(onboardingSettings: onboardingSettings, screen: screen)
         self.recorder = recorder
     }
-    
+
     func start() {
         interactor.startingLocation
             .map { [weak self] location -> [WalletIntroductionEvent] in
@@ -77,24 +79,24 @@ final class WalletIntroductionPresenter: NSObject {
                 guard let self = self else { return }
                 self.introductionRelay.accept(.none)
             })
-        .disposed(by: disposeBag)
+            .disposed(by: disposeBag)
     }
-    
+
     private func triggerNextStep() {
         guard let next = introductionSequence.next() else { return }
         /// We track all introduction events that have an analyticsKey.
-        /// This happens on presentation. 
+        /// This happens on presentation.
         if let trackable = next as? WalletIntroductionAnalyticsEvent {
             recorder.record(event: trackable.eventType)
         }
         introductionRelay.accept(next.type)
     }
-    
+
     private func execute(events: [WalletIntroductionEvent]) {
         introductionSequence.reset(to: events)
         triggerNextStep()
     }
-    
+
     private func startingWithLocation(_ location: WalletIntroductionLocation) -> [WalletIntroductionEvent] {
         let screen = location.screen
         let position = location.position
@@ -104,27 +106,27 @@ final class WalletIntroductionPresenter: NSObject {
             return homeEvents() + sendEvents() + requestEvents() + swapEvents()
         case .send:
             return sendEvents() + requestEvents() + swapEvents()
-        case .request:
+        case .receive:
             return requestEvents() + swapEvents()
         case .swap:
             return swapEvents()
         }
     }
-    
-    // MARK: `[WalletIntroductionEvent]` 
-    
+
+    // MARK: `[WalletIntroductionEvent]`
+
     private func homeEvents() -> [WalletIntroductionEvent] {
         [home, homeDescription]
     }
-    
+
     private func sendEvents() -> [WalletIntroductionEvent] {
         [send, sendDescription]
     }
-    
+
     private func requestEvents() -> [WalletIntroductionEvent] {
         [request, requestDescription]
     }
-    
+
     private func swapEvents() -> [WalletIntroductionEvent] {
         [swap, swapDescription]
     }
@@ -134,47 +136,47 @@ extension WalletIntroductionPresenter {
     private var home: HomeWalletIntroductionEvent {
         HomeWalletIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
-            AppCoordinator.shared.tabControllerManager.dashBoardClicked(nil)
+            AppCoordinator.shared.tabControllerManager.showDashboard()
             self.triggerNextStep()
         })
     }
-    
+
     private var homeDescription: HomeDescriptionWalletIntroductionEvent {
         HomeDescriptionWalletIntroductionEvent(selection: triggerNextStep)
     }
-    
+
     private var send: SendWalletIntroductionEvent {
         SendWalletIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
-            AppCoordinator.shared.tabControllerManager.sendCoinsClicked(nil)
+            AppCoordinator.shared.tabControllerManager.showSend()
             self.triggerNextStep()
         })
     }
-    
+
     private var sendDescription: SendDescriptionIntroductionEvent {
         SendDescriptionIntroductionEvent(selection: triggerNextStep)
     }
-    
+
     private var request: RequestWalletIntroductionEvent {
         RequestWalletIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
-            AppCoordinator.shared.tabControllerManager.receiveCoinClicked(nil)
+            AppCoordinator.shared.tabControllerManager.showReceive()
             self.triggerNextStep()
         })
     }
-    
+
     private var requestDescription: RequestDescriptionIntroductionEvent {
         RequestDescriptionIntroductionEvent(selection: triggerNextStep)
     }
-    
+
     private var swap: SwapWalletIntroductionEvent {
         SwapWalletIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
-            AppCoordinator.shared.tabControllerManager.swapTapped(nil)
+            AppCoordinator.shared.tabControllerManager.showSwap()
             self.triggerNextStep()
         })
     }
-    
+
     private var swapDescription: SwapDescriptionIntroductionEvent {
         let isSimpleBuyEnabled = featureConfigurator.configuration(for: .simpleBuyEnabled).isEnabled
         return SwapDescriptionIntroductionEvent(isSimpleBuyEnabled: isSimpleBuyEnabled, selection: { [weak self] in

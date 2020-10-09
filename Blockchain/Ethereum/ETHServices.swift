@@ -13,7 +13,6 @@ import PlatformKit
 struct ETHServices: ETHDependencies {
 
     let assetAccountRepository: EthereumAssetAccountRepository
-    let qrMetadataFactory: EthereumQRMetadataFactory
     let repository: EthereumWalletAccountRepository
     let transactionService: EthereumHistoricalTransactionService
 
@@ -27,7 +26,6 @@ struct ETHServices: ETHDependencies {
                 with: wallet.ethereum
             )
         )
-        qrMetadataFactory = EthereumQRMetadataFactory()
         repository = EthereumWalletAccountRepository(with: wallet.ethereum)
     }
 }

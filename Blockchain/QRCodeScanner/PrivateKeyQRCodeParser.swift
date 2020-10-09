@@ -56,7 +56,7 @@ final class PrivateKeyQRCodeParser: QRCodeScannerParsing {
     }
     
     private func handleSuccess(privateKey stringValue: String, completion: ((Result<PrivateKey, PrivateKeyQRCodeParserError>) -> Void)?) {
-        let scheme = "\(Constants.Schemes.bitcoin):"
+        let scheme = "\(AssetConstants.URLSchemes.bitcoin):"
         var scannedKey = stringValue
         //: strip scheme if applicable
         if stringValue.hasPrefix(scheme) {

@@ -27,10 +27,13 @@ import Foundation
     func enableSendPaymentButtons()
 
     /// Method invoked when changing a payment 'from' to update balance in UI (Bitcoin only)
-    func updateSendBalance(balance: NSNumber, fees: NSDictionary)
+    func updateSendBalance(balance: NSNumber, fees: [AnyHashable: Any])
+
+    /// Method invoked when changing a payment 'from' to update balance in UI (Bitcoin only)
+    func didUpdateTotalAvailableBTC(sweepAmount: NSNumber, finalFee: NSNumber)
 
     /// Method invoked when changing a payment 'from' to update balance in UI (Bitcoin Cash only)
-    func didUpdateTotalAvailable(sweepAmount: NSNumber, finalFee: NSNumber)
+    func didUpdateTotalAvailableBCH(sweepAmount: NSNumber, finalFee: NSNumber)
 
     /// Method invoked when a message is emitted, usually to inform of network congestion/high fees
     func didReceivePaymentNotice(notice: String?)

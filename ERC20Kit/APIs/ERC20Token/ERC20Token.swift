@@ -12,13 +12,14 @@ import PlatformKit
 import web3swift
 
 public protocol ERC20Token {
-    
+
     static var assetType: CryptoCurrency { get }
     static var name: String { get }
     static var metadataKey: String { get }
     static var contractAddress: EthereumContractAddress { get }
     static var smallestSpendableValue: ERC20TokenValue<Self> { get }
     static var zeroValue: ERC20TokenValue<Self> { get }
+    static var nonCustodialSendSupport: Bool { get }
     
     static func cryptoValueFrom(majorValue: String) -> ERC20TokenValue<Self>?
     
@@ -27,7 +28,7 @@ public protocol ERC20Token {
 }
 
 extension ERC20Token {
-    
+
     public static var name: String {
         assetType.name
     }

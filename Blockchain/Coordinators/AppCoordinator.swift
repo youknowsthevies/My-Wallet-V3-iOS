@@ -47,7 +47,7 @@ import RxSwift
     // MARK: - UIViewController Properties
     
     @objc var slidingViewController: ECSlidingViewController!
-    @objc var tabControllerManager = TabControllerManager.makeFromStoryboard()
+    @objc var tabControllerManager: TabControllerManager!
     private(set) var sideMenuViewController: SideMenuViewController!
     private let disposeBag = DisposeBag()
     
@@ -77,7 +77,7 @@ import RxSwift
         window.rootViewController?.dismiss(animated: true, completion: nil)
         setupMainFlow(forced: true)
         window.rootViewController = slidingViewController
-        tabControllerManager.dashBoardClicked(nil)
+        tabControllerManager.showDashboard()
     }
 
     func syncPinKeyWithICloud() {
@@ -157,10 +157,10 @@ import RxSwift
             self.setupSideMenuViewController()
             let viewController = ECSlidingViewController()
             viewController.underLeftViewController = self.sideMenuViewController
-            viewController.topViewController = self.tabControllerManager
+            viewController.topViewController = self.tabControllerManager.tabViewController
             self.slidingViewController = viewController
-            self.tabControllerManager.loadViewIfNeeded()
-            self.tabControllerManager.dashBoardClicked(nil)
+            self.tabControllerManager.tabViewController.loadViewIfNeeded()
+            self.tabControllerManager.showDashboard()
             return viewController
         }
         
@@ -180,8 +180,7 @@ import RxSwift
     }
     
     private func setupTabControllerManager() {
-        let tabControllerManager = TabControllerManager.makeFromStoryboard()
-        self.tabControllerManager = tabControllerManager
+        self.tabControllerManager = TabControllerManager()
     }
 
     func showSettingsView() {
@@ -219,7 +218,7 @@ import RxSwift
             return
         }
         tabControllerManager.hideSendAndReceiveKeyboards()
-        tabControllerManager.dashBoardClicked(nil)
+        tabControllerManager.showDashboard()
         closeSideMenu()
     }
 
@@ -233,13 +232,10 @@ import RxSwift
     }
 
     func reloadAfterMultiAddressResponse() {
-        if WalletManager.shared.wallet.didReceiveMessageForLastTransaction {
-            WalletManager.shared.wallet.didReceiveMessageForLastTransaction = false
-            if let transaction = WalletManager.shared.latestMultiAddressResponse?.transactions.firstObject as? Transaction {
-                tabControllerManager.receiveBitcoinViewController?.paymentReceived(UInt64(abs(transaction.amount)))
-            }
+        guard tabControllerManager != nil, tabControllerManager.tabViewController.isViewLoaded else {
+            // Nothing to reload
+            return
         }
-        
         tabControllerManager.reloadAfterMultiAddressResponse()
         accountsAndAddressesNavigationController.reload()
         sideMenuViewController?.reload()
@@ -322,7 +318,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     }
     
     private func handleExchange() {
-        ExchangeCoordinator.shared.start(from: tabControllerManager)
+        ExchangeCoordinator.shared.start(from: tabControllerManager.tabViewController)
     }
 
     private func handleWebLogin() {
@@ -450,14 +446,6 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     }
 }
 
-// MARK: - QRScannerRouting
-
-extension AppCoordinator: QRScannerRouting {
-    func routeToQrScanner() {
-        tabControllerManager.qrCodeButtonClicked()
-    }
-}
-
 // MARK: - DrawerRouting
 
 extension AppCoordinator: DrawerRouting {
@@ -499,11 +487,6 @@ extension AppCoordinator: WalletHistoryDelegate {
         AlertViewPresenter.shared.standardError(message: LocalizationConstants.Errors.balancesGeneric)
     }
 
-    func didFetchEthHistory() {
-        loadingViewPresenter.hide()
-        reload()
-    }
-
     func didFetchBitcoinCashHistory() {
         loadingViewPresenter.hide()
         reload()
@@ -514,44 +497,29 @@ extension AppCoordinator: WalletHistoryDelegate {
 
 extension AppCoordinator: TabSwapping {
     func switchToSend() {
-        tabControllerManager.sendCoinsClicked(nil)
+        tabControllerManager.showSend()
     }
     
     func switchTabToSwap() {
-        tabControllerManager.swapTapped(nil)
+        tabControllerManager.showSwap()
     }
     
     func switchTabToReceive() {
-        tabControllerManager.receiveCoinClicked(nil)
+        tabControllerManager.showReceive()
     }
     
     func switchToActivity(currency: CryptoCurrency) {
-        switch currency {
-        case .algorand:
-            tabControllerManager.showTransactionsAlgorand()
-        case .bitcoin:
-            tabControllerManager.showTransactionsBitcoin()
-        case .bitcoinCash:
-            tabControllerManager.showTransactionsBitcoinCash()
-        case .ethereum:
-            tabControllerManager.showTransactionsEther()
-        case .pax:
-            tabControllerManager.showTransactionsPax()
-        case .stellar:
-            tabControllerManager.showTransactionsStellar()
-        case .tether:
-            tabControllerManager.showTransactionsTether()
-        }
+        tabControllerManager.showTransactions()
     }
 }
 
 extension AppCoordinator: CurrencyRouting {
     func toSend(_ currency: CryptoCurrency) {
-        tabControllerManager.showSend(currency.legacy)
+        tabControllerManager.showSend()
     }
     
     func toReceive(_ currency: CryptoCurrency) {
-        tabControllerManager.showReceive(currency.legacy)
+        tabControllerManager.showReceive()
     }
 }
 

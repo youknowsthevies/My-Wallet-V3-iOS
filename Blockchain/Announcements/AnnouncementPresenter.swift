@@ -270,7 +270,7 @@ extension AnnouncementPresenter {
             action: { [weak self] in
                 guard let self = self else { return }
                 let tier = user.tiers?.selected ?? .tier1
-                self.kycCoordinator.start(from: self.appCoordinator.tabControllerManager, tier: tier)
+                self.kycCoordinator.start(from: self.appCoordinator.tabControllerManager.tabViewController, tier: tier)
             }
         )
     }
@@ -302,7 +302,7 @@ extension AnnouncementPresenter {
             action: { [weak self] in
                 guard let self = self else { return }
                 let tier = user.tiers?.selected ?? .tier1
-                self.kycCoordinator.start(from: self.appCoordinator.tabControllerManager, tier: tier)
+                self.kycCoordinator.start(from: self.appCoordinator.tabControllerManager.tabViewController, tier: tier)
             }
         )
     }
@@ -476,7 +476,7 @@ extension AnnouncementPresenter {
             action: { [weak self] in
                 guard let self = self else { return }
                 let tier = user.tiers?.selected ?? .tier1
-                self.kycCoordinator.start(from: self.appCoordinator.tabControllerManager, tier: tier)
+                self.kycCoordinator.start(from: self.appCoordinator.tabControllerManager.tabViewController, tier: tier)
             }
         )
     }

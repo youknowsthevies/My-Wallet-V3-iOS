@@ -31,7 +31,11 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     }
     
     var actions: AvailableActions {
-        [.viewActivity]
+        [.viewActivity, .receive, .send]
+    }
+
+    var receiveAddress: Single<ReceiveAddress> {
+        .just(EthereumReceiveAddress(address: id, label: label))
     }
 
     private let balanceFetching: SingleAccountBalanceFetching

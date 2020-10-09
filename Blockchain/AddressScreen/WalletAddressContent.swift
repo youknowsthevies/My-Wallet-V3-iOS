@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformUIKit
 
 /// Content the represents an address on the data level
 struct WalletAddressContent {
@@ -15,5 +15,5 @@ struct WalletAddressContent {
     let string: String
     
     /// The image representing the QR code of the address
-    let image: UIImage
+    let qrCode: QRCodeAPI
 }

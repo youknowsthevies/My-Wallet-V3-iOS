@@ -6,23 +6,25 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import DIKit
-import BuySellKit
 import BitcoinKit
 import BitcoinCashKit
+import BuySellKit
+import DIKit
 import ERC20Kit
 import EthereumKit
 import PlatformKit
 import PlatformUIKit
 import StellarKit
 import ToolKit
+import TransactionKit
+import TransactionUIKit
 
 extension DependencyContainer {
     
     // MARK: - Blockchain Module
     
     static var blockchain = module {
-        
+
         single { AuthenticationCoordinator() }
 
         single { OnboardingRouter() }
@@ -39,6 +41,15 @@ extension DependencyContainer {
         
         factory { CrashlyticsRecorder() as MessageRecording }
 
+        // MARK: - Send
+
+        factory { () -> SendScreenProvider in
+            let manager: SendControllerManager = DIKit.resolve()
+            return manager
+        }
+
+        single { SendControllerManager() }
+
         // MARK: - AppCoordinator
 
         single { AppCoordinator() }
@@ -46,11 +57,6 @@ extension DependencyContainer {
         factory { () -> DrawerRouting in
             let app: AppCoordinator = DIKit.resolve()
             return app as DrawerRouting
-        }
-        
-        factory { () -> QRScannerRouting in
-            let app: AppCoordinator = DIKit.resolve()
-            return app as QRScannerRouting
         }
 
         // MARK: - BlockchainSettings.App
@@ -123,10 +129,6 @@ extension DependencyContainer {
             let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
             return userInformationProvider.settings
         }
-        
-        // MARK: - QRCodeWrapper
-        
-        factory { QRCodeWrapper() }
 
         // MARK: - DataProvider
 

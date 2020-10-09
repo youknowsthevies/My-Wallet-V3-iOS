@@ -30,26 +30,14 @@ const float imageWidth = 190;
     return self;
 }
 
-- (id)initWithFrame:(CGRect)frame qrHeaderText:(NSString *)qrHeaderText addAddressPrefix:(BOOL)addPrefix
-{
-    self = [super initWithFrame:frame];
-    
-    if (self) {
-        [self setupWithQRHeaderText:qrHeaderText];
-        self.shouldAddAddressPrefix = addPrefix;
-        self.assetType = LegacyAssetTypeBitcoin;
-    }
-    return self;
-}
-
 - (id)initWithFrame:(CGRect)frame qrHeaderText:(NSString *)qrHeaderText addAddressPrefix:(BOOL)addPrefix assetType:(LegacyAssetType)assetType
 {
     self = [super initWithFrame:frame];
     
     if (self) {
-        [self setupWithQRHeaderText:qrHeaderText];
         self.shouldAddAddressPrefix = addPrefix;
         self.assetType = assetType;
+        [self setupWithQRHeaderText:qrHeaderText];
     }
     return self;
 }

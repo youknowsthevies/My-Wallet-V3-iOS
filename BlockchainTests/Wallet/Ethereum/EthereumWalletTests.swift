@@ -22,16 +22,18 @@ class EthereumWalletTests: XCTestCase {
     
     var subject: EthereumWallet!
     var legacyWalletMock: MockLegacyEthereumWallet!
+    var reactiveWallet: ReactiveWalletAPI!
 
     override func setUp() {
         super.setUp()
         
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
-        
+        reactiveWallet = ReactiveWalletMock()
         legacyWalletMock = MockLegacyEthereumWallet()
         // Hack to make things compile
         subject = EthereumWallet(schedulerType: scheduler!, wallet: legacyWalletMock)
+        subject.reactiveWallet = reactiveWallet
         _ = subject.walletLoaded().subscribeOn(scheduler)
     }
 
@@ -122,19 +124,13 @@ class EthereumWalletTests: XCTestCase {
         
         XCTAssertEqual(result.events, expectedEvents)
     }
-    
+
     func test_wallet_not_initialised() {
         // Arrange
         legacyWalletMock.ethereumAccountsCompletion = .failure(
             MockLegacyEthereumWallet.MockLegacyEthereumWalletError.notInitialized
         )
-        
-        let expectedAccount = EthereumAssetAccount(
-            walletIndex: 0,
-            accountAddress: MockEthereumWalletTestData.account,
-            name: "My ETH Wallet"
-        )
-        
+
         let walletObservable: Observable<EthereumAssetAccount> = subject
             .account
             .asObservable()

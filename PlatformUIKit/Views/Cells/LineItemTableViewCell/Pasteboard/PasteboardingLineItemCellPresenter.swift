@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxCocoa
 import RxRelay
@@ -83,7 +84,7 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
     // MARK: - Init
     
     public init(input: Input,
-                pasteboard: Pasteboarding = UIPasteboard.general,
+                pasteboard: Pasteboarding = resolve(),
                 analyticsRecorder: AnalyticsEventRecorderAPI,
                 accessibilityIdPrefix: String) {
         self.analyticsRecorder = analyticsRecorder

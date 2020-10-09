@@ -8,9 +8,9 @@
 
 import PlatformKit
 
-public protocol EIP67URI: AssetURLPayload {
+// TODO: Adopt EIP-681 https://eips.ethereum.org/EIPS/eip-681
+public protocol EIP67URI: CryptoAssetQRMetadata {
     init?(address: String, amount: String?, gas: String?)
-    
     init?(url: URL)
     init?(rawValue: String)
 }

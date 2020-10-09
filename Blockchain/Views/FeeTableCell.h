@@ -10,10 +10,11 @@
 #import "FeeTypes.h"
 
 @interface FeeTableCell : UITableViewCell
-@property (nonatomic) UILabel *nameLabel;
-@property (nonatomic) UILabel *descriptionLabel;
-@property (nonatomic, readonly) FeeType feeType;
 
-- (id)initWithFeeType:(FeeType)feeType;
+@property (nonatomic, strong) UILabel *nameLabel;
+@property (nonatomic, strong) UILabel *descriptionLabel;
+@property (nonatomic, assign, readonly) FeeType feeType;
+
+- (instancetype)initWithFeeType:(FeeType)feeType;
 
 @end

@@ -133,7 +133,7 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
 
         BlockchainSettings.App.shared.biometryEnabled = false
 
-        AppCoordinator.shared.tabControllerManager.transition(to: 1)
+        AppCoordinator.shared.tabControllerManager.showDashboard()
     }
 
     private var backgroundUpdateTaskIdentifer: UIBackgroundTaskIdentifier?
@@ -155,12 +155,7 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
         UIApplication.shared.endBackgroundTask(backgroundUpdateTaskIdentifer)
     }
 
-    fileprivate func updateSymbols() {
-        updateFiatSymbols()
-        updateBtcSymbols()
-    }
-
-    private func updateFiatSymbols() {
+    fileprivate func updateFiatSymbols() {
         guard wallet.hasLoadedAccountInfo == true else { return }
         
         guard let fiatCode = self.wallet.accountInfo["currency"] as? String else {
@@ -174,18 +169,9 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
             Logger.shared.warning("Currency symbols dictionary is nil")
             return
         }
-        let symbolLocalDict = NSMutableDictionary(dictionary: currencySymbols)
-        symbolLocalDict.setObject(fiatCode, forKey: "code" as NSString)
-        self.latestMultiAddressResponse?.symbol_local = CurrencySymbol(fromDict: symbolLocalDict as? [AnyHashable: Any])
-    }
-
-    private func updateBtcSymbols() {
-        guard wallet.hasLoadedAccountInfo == true else { return }
-        guard let code = wallet.accountInfo["btc_currency"] as? String else {
-            Logger.shared.warning("Could not get btc code")
-            return
-        }
-        latestMultiAddressResponse?.symbol_btc = CurrencySymbol.btcSymbol(fromCode: code)
+        var symbolLocalDict = currencySymbols
+        symbolLocalDict["code"] = fiatCode
+        self.latestMultiAddressResponse?.symbol_local = CurrencySymbol(dict: symbolLocalDict)
     }
 
     private func reloadAfterMultiaddressResponse() {
@@ -258,9 +244,14 @@ extension WalletManager: WalletDelegate {
         }
     }
 
-    func didUpdateTotalAvailable(_ sweepAmount: NSNumber!, finalFee: NSNumber!) {
+    func didUpdateTotalAvailableBTC(_ sweepAmount: NSNumber!, finalFee: NSNumber!) {
         DispatchQueue.main.async { [unowned self] in
-            self.sendBitcoinDelegate?.didUpdateTotalAvailable(sweepAmount: sweepAmount, finalFee: finalFee)
+            self.sendBitcoinDelegate?.didUpdateTotalAvailableBTC(sweepAmount: sweepAmount, finalFee: finalFee)
+        }
+    }
+    func didUpdateTotalAvailableBCH(_ sweepAmount: NSNumber!, finalFee: NSNumber!) {
+        DispatchQueue.main.async { [unowned self] in
+            self.sendBitcoinDelegate?.didUpdateTotalAvailableBCH(sweepAmount: sweepAmount, finalFee: finalFee)
         }
     }
 
@@ -289,7 +280,7 @@ extension WalletManager: WalletDelegate {
 
     func updateSendBalance(_ balance: NSNumber!, fees: [AnyHashable: Any]!) {
         DispatchQueue.main.async { [unowned self] in
-            self.sendBitcoinDelegate?.updateSendBalance(balance: balance, fees: fees as NSDictionary)
+            self.sendBitcoinDelegate?.updateSendBalance(balance: balance, fees: fees)
         }
     }
 
@@ -307,23 +298,6 @@ extension WalletManager: WalletDelegate {
     }
 
     // MARK: - Send Ether
-    func didUpdateEthPayment(_ payment: [AnyHashable: Any]!) {
-        DispatchQueue.main.async { [unowned self] in
-            self.sendEtherDelegate?.didUpdateEthPayment(payment: payment as NSDictionary)
-        }
-    }
-
-    func didSendEther() {
-        DispatchQueue.main.async { [unowned self] in
-            self.sendEtherDelegate?.didSendEther()
-        }
-    }
-
-    func didErrorDuringEtherSend(_ error: String!) {
-        DispatchQueue.main.async { [unowned self] in
-            self.sendEtherDelegate?.didErrorDuringEtherSend(error: error)
-        }
-    }
 
     func didGetEtherAddressWithSecondPassword() {
         DispatchQueue.main.async { [unowned self] in
@@ -363,14 +337,8 @@ extension WalletManager: WalletDelegate {
 
     func walletDidGetBtcExchangeRates(_ wallet: Wallet!) {
         DispatchQueue.main.async { [unowned self] in
-            self.updateSymbols()
+            self.updateFiatSymbols()
         }
-    }
-
-    // MARK: ETH Exchange Rate
-
-    func didFetchEthExchangeRate(_ rate: NSNumber!) {
-        AppCoordinator.shared.tabControllerManager.didFetchEthExchangeRate(rate)
     }
 
     // MARK: - BTC Multiaddress
@@ -437,12 +405,6 @@ extension WalletManager: WalletDelegate {
         }
     }
 
-    func didFetchEthHistory() {
-        DispatchQueue.main.async { [unowned self] in
-            self.historyDelegate?.didFetchEthHistory()
-        }
-    }
-
     func didFetchBitcoinCashHistory() {
         DispatchQueue.main.async { [unowned self] in
             self.historyDelegate?.didFetchBitcoinCashHistory()
@@ -478,7 +440,7 @@ extension WalletManager: WalletDelegate {
             self.transferAllDelegate?.updateTransferAll(
                 amount: amount,
                 fee: fee,
-                addressesUsed: addressesUsed as NSArray
+                addressesUsed: addressesUsed
             )
         }
     }

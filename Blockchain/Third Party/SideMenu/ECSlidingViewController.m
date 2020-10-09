@@ -25,7 +25,6 @@
 
 #import "ECSlidingAnimationController.h"
 #import "ECSlidingInteractiveTransition.h"
-#import "ECSlidingSegue.h"
 
 @interface ECSlidingViewController()
 @property (nonatomic, assign) ECSlidingViewControllerOperation currentOperation;
@@ -195,20 +194,6 @@
 
 - (BOOL)shouldAutomaticallyForwardAppearanceMethods {
     return NO;
-}
-
-- (BOOL)shouldAutomaticallyForwardRotationMethods {
-    return YES;
-}
-
-- (UIStoryboardSegue *)segueForUnwindingToViewController:(UIViewController *)toViewController fromViewController:(UIViewController *)fromViewController identifier:(NSString *)identifier {
-    if ([self.underLeftViewController isMemberOfClass:[toViewController class]] || [self.underRightViewController isMemberOfClass:[toViewController class]]) {
-        ECSlidingSegue *unwindSegue = [[ECSlidingSegue alloc] initWithIdentifier:identifier source:fromViewController destination:toViewController];
-        [unwindSegue setValue:@YES forKey:@"isUnwinding"];
-        return unwindSegue;
-    } else {
-        return [super segueForUnwindingToViewController:toViewController fromViewController:fromViewController identifier:identifier];
-    }
 }
 
 - (UIViewController *)childViewControllerForStatusBarHidden {

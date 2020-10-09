@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
@@ -45,7 +46,7 @@ class RecoveryPhraseViewModel {
     
     init(mnemonicAPI: MnemonicAccessAPI,
          mnemonicComponentsProviding: MnemonicComponentsProviding,
-         pasteboarding: Pasteboarding = UIPasteboard.general) {
+         pasteboarding: Pasteboarding = resolve()) {
         
         mnemonicComponentsProviding
             .components

@@ -15,7 +15,8 @@
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-    if (self = [super initWithFrame:frame]) {
+    self = [super initWithFrame:frame];
+    if (self) {
         self.descriptionCellHeight = 132;
         self.scrollEnabled = NO;
         self.showsVerticalScrollIndicator = NO;

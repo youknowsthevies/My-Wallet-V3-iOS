@@ -335,6 +335,16 @@ MyWalletPhone.getReceivingAddressForAccount = function(num) {
     return MyWallet.wallet.hdwallet.accounts[num].receiveAddress;
 };
 
+MyWalletPhone.getReceivingAddressForAccountXPub = function(xpub) {
+    if (!MyWallet.wallet.isUpgradedToHD) {
+        console.log('Warning: Getting accounts when wallet has not upgraded!');
+        return '';
+    }
+
+    const found = MyWallet.wallet.hdwallet.accounts.find(account => account.extendedPublicKey == xpub);
+    return found.receiveAddress;
+};
+
 MyWalletPhone.isArchived = function(accountOrAddress) {
     if (Helpers.isNumber(accountOrAddress) && accountOrAddress >= 0) {
 
@@ -636,7 +646,7 @@ MyWalletPhone.getTransactionFeeWithUpdateType = function(updateType) {
 MyWalletPhone.updateTotalAvailableAndFinalFee = function() {
     if (currentPayment) {
         currentPayment.payment.then(function(x) {
-          objc_update_total_available_final_fee(x.sweepAmount, x.finalFee)
+          objc_update_total_available_final_fee_btc(x.sweepAmount, x.finalFee)
         }).catch(function(error) {
           console.log(error);
         });
@@ -705,8 +715,6 @@ MyWalletPhone.login = function(user_guid, shared_key, resend_code, inputedPasswo
 
     var login_success = function() {
         logTime('fetch history, account info');
-
-        objc_loading_stop();
 
         objc_did_load_wallet();
 
@@ -804,7 +812,6 @@ MyWalletPhone.loginAfterPairing = function(password) {
     };
 
     var login_success = function() {
-        objc_loading_stop();
         objc_did_load_wallet();
         MyWallet.wallet.useEthSocket(ethSocketInstance);
     };
@@ -2273,6 +2280,11 @@ MyWalletPhone.bch = {
         return Helpers.toBitcoinCash(MyWallet.wallet.bch.accounts[index].receiveAddress);
     },
 
+    getReceivingAddressForAccountXPub : function(xpub) {
+        const found = MyWallet.wallet.bch.accounts.find(account => account.xpub == xpub);
+        return Helpers.toBitcoinCash(found.receiveAddress);
+    },
+
     getLabelForAccount : function(index) {
         return MyWallet.wallet.bch.accounts[index].label;
     },
@@ -2393,10 +2405,10 @@ MyWalletPhone.bch = {
         bchAccount.getAvailableBalance(this.feePerByte()).then(function(balance) {
             var fee = balance.sweepFee;
             var maxAvailable = balance.amount;
-            objc_update_total_available_final_fee(maxAvailable, fee);
+            objc_update_total_available_final_fee_bch(maxAvailable, fee);
         }).catch(function(e) {
             console.log(e);
-            objc_update_total_available_final_fee(0, 0);
+            objc_update_total_available_final_fee_bch(0, 0);
         });
     },
 
@@ -2408,10 +2420,10 @@ MyWalletPhone.bch = {
         importedAddresses.getAvailableBalance(this.feePerByte()).then(function(balance) {
             var fee = balance.sweepFee;
             var maxAvailable = balance.amount;
-            objc_update_total_available_final_fee(maxAvailable, fee);
+            objc_update_total_available_final_fee_bch(maxAvailable, fee);
         }).catch(function(e) {
             console.log(e);
-            objc_update_total_available_final_fee(0, 0);
+            objc_update_total_available_final_fee_bch(0, 0);
         });
     },
 

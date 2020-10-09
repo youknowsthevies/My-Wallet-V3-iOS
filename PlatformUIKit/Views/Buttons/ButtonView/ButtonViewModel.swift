@@ -58,6 +58,7 @@ public struct ButtonViewModel {
         get {
             Theme(
                 backgroundColor: backgroundColorRelay.value,
+                borderColor: borderColorRelay.value,
                 contentColor: contentColorRelay.value,
                 imageName: imageName.value,
                 text: textRelay.value,
@@ -186,11 +187,17 @@ public struct ButtonViewModel {
     
     /// Set the theme using a mild fade animation
     public func animate(theme: Theme) {
-        UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseOut, .allowUserInteraction], animations: {
-            self.backgroundColorRelay.accept(theme.backgroundColor)
-            self.borderColorRelay.accept(theme.borderColor)
-            self.contentColorRelay.accept(theme.contentColor)
-        }, completion: nil)
+        UIView.animate(
+            withDuration: 0.25,
+            delay: 0,
+            options: [.curveEaseOut, .allowUserInteraction],
+            animations: {
+                self.backgroundColorRelay.accept(theme.backgroundColor)
+                self.borderColorRelay.accept(theme.borderColor)
+                self.contentColorRelay.accept(theme.contentColor)
+            },
+            completion: nil
+        )
         textRelay.accept(theme.text)
         imageName.accept(theme.imageName)
     }

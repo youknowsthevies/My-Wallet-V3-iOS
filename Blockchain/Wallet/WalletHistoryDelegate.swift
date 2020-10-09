@@ -13,9 +13,6 @@ import Foundation
     /// Method invoked when getting transaction history fails
     func didFailGetHistory(error: String?)
 
-    /// Method invoked after getting ETH transaction history
-    func didFetchEthHistory()
-
     /// Method invoked after getting BCH transaction history
     func didFetchBitcoinCashHistory()
 }

@@ -363,15 +363,15 @@ extension SendPaxViewController: NavigatableView {
             delegate?.onErrorBarButtonItemTapped()
         } else if let type = delegate?.rightNavigationCTAType, type == .qrCode {
             delegate?.onQRBarButtonItemTapped()
-        } else if let parent = parent as? AssetSelectorContainerViewController {
-            parent.navControllerRightBarButtonTapped(navController)
         }
+    }
+
+    var leftNavControllerCTAType: NavigationCTAType {
+        .dismiss
     }
     
     func navControllerLeftBarButtonTapped(_ navController: UINavigationController) {
-        if let parent = parent as? AssetSelectorContainerViewController {
-            parent.navControllerLeftBarButtonTapped(navController)
-        }
+        dismiss(animated: true, completion: nil)
     }
     
     var rightNavControllerCTAType: NavigationCTAType {
@@ -435,9 +435,8 @@ extension SendPaxViewController {
     }
 }
 
-// TODO: Clean this up, move to Coordinator
 extension SendPaxViewController {
-    @objc func scanQrCodeForDestinationAddress() {
+    func scanQrCodeForDestinationAddress() {
         guard let scanner = QRCodeScanner() else { return }
         
         let parser = AddressQRCodeParser(assetType: .pax)
@@ -453,15 +452,13 @@ extension SendPaxViewController {
             }
         )
         
-        let viewController = QRCodeScannerViewControllerBuilder(viewModel: qrScannerViewModel)?
+        let builder = QRCodeScannerViewControllerBuilder(viewModel: qrScannerViewModel)?
             .with(presentationType: .modal(dismissWithAnimation: false))
-            .build()
         
-        guard let qrCodeScannerViewController = viewController else { return }
+        guard let viewController = builder?.build() else { return }
         
-        DispatchQueue.main.async {
-            guard let controller = AppCoordinator.shared.tabControllerManager.tabViewController else { return }
-            controller.present(qrCodeScannerViewController, animated: true, completion: nil)
+        DispatchQueue.main.async { [weak self] in
+            self?.navigationController?.present(viewController, animated: true, completion: nil)
         }
     }
     

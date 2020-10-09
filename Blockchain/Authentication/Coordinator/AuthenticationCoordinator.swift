@@ -7,13 +7,13 @@
 //
 
 import BuySellKit
+import DIKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
 import ToolKit
-import DIKit
 
 protocol PairingWalletFetching: class {
     func authenticate(using password: String)
@@ -136,10 +136,9 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         
         alertPresenter.dismissIfNeeded()
         let topViewController = UIApplication.shared.keyWindow?.rootViewController?.topMostViewController
-        
+
         let tabControllerManager = AppCoordinator.shared.tabControllerManager
-        tabControllerManager.sendBitcoinViewController?.reload()
-        tabControllerManager.sendBitcoinCashViewController?.reload()
+        tabControllerManager?.reload()
 
         StellarServiceProvider.shared.services.accounts.prefetch()
         
@@ -194,7 +193,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         if let route = postAuthenticationRoute {
             switch route {
             case .sendCoins:
-                AppCoordinator.shared.tabControllerManager.showSendCoins(animated: true)
+                AppCoordinator.shared.tabControllerManager.showSend()
             }
             postAuthenticationRoute = nil
         }

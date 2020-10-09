@@ -74,7 +74,7 @@ final class QRCodeScannerViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        view.backgroundColor = .primary
         switch presentationType {
         case .modal:
             title = viewModel.headerText

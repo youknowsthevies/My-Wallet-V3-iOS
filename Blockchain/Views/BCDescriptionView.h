@@ -9,17 +9,18 @@
 #import <UIKit/UIKit.h>
 
 @interface BCDescriptionView : UIScrollView
-@property (nonatomic) UITableView *tableView;
 
-@property (nonatomic) UITextView *descriptionTextView;
-@property (nonatomic) NSString *note;
-@property (nonatomic) BOOL isEditingDescription;
-@property (nonatomic) CGFloat descriptionCellHeight;
-@property (nonatomic) UIView *topView;
-@property (nonatomic) CGFloat originalTableViewHeight;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) UITextView *descriptionTextView;
+@property (nonatomic, copy) NSString *note;
+@property (nonatomic, assign) BOOL isEditingDescription;
+@property (nonatomic, assign) CGFloat descriptionCellHeight;
+@property (nonatomic, strong) UIView *topView;
+@property (nonatomic, assign) CGFloat originalTableViewHeight;
 
 - (void)beginEditingDescription;
 - (void)endEditingDescription;
 - (UITableViewCell *)configureDescriptionTextViewForCell:(UITableViewCell *)cell;
 - (UITextView *)configureTextViewWithFrame:(CGRect)frame;
+
 @end

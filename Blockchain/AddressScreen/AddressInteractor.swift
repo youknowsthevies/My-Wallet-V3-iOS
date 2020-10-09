@@ -8,6 +8,7 @@
 
 import Foundation
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxSwift
 import ToolKit
@@ -27,7 +28,6 @@ final class AddressInteractor: AddressInteracting {
     private lazy var addressFetcher: AssetAddressFetching = addressFetcherProvider()
     private let addressFetcherProvider: () -> AssetAddressFetching
     private let addressSubscriber: AssetAddressSubscribing
-    private let qrCodeGenerator: QRCodeGenerator
     private let recorder: ErrorRecording
     
     // MARK: - Rx
@@ -63,13 +63,13 @@ final class AddressInteractor: AddressInteracting {
                 }
                                                        
                 // Generate a QR image out of the provided url
-                guard let image = self.qrCodeGenerator.createQRImage(fromString: qrUrl) else {
+                guard let qrCode = QRCode(string: qrUrl) else {
                     let error = AddressFetchingError.parsing
                     self.recorder.error(error)
                     throw error
                 }
-                
-                return WalletAddressContent(string: address, image: image)
+
+                return WalletAddressContent(string: address, qrCode: qrCode)
             }
     }
     
@@ -131,13 +131,11 @@ final class AddressInteractor: AddressInteracting {
          addressFetcherProvider: @escaping () -> AssetAddressFetching = { AssetAddressRepository.shared },
          transactionObserver: TransactionObserving = WalletManager.shared,
          addressSubscriber: AssetAddressSubscribing = WalletManager.shared.wallet,
-         qrCodeGenerator: QRCodeGenerator = QRCodeGenerator(),
          recorder: ErrorRecording = CrashlyticsRecorder()) {
         self.asset = asset
         self.addressType = addressType
         self.addressFetcherProvider = addressFetcherProvider
         self.addressSubscriber = addressSubscriber
-        self.qrCodeGenerator = qrCodeGenerator
         self.recorder = recorder
         
         // Observe received payments for the associated asset.

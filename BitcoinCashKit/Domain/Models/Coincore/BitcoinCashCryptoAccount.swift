@@ -2,7 +2,7 @@
 //  BitcoinCashCryptoAccount.swift
 //  BitcoinCashKit
 //
-//  Created by Jack Pooley on 05/10/2020.
+//  Created by Paulo on 12/08/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
@@ -32,22 +32,31 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var actions: AvailableActions {
-        [.viewActivity]
+        [.viewActivity, .receive, .send]
+    }
+
+    var receiveAddress: Single<ReceiveAddress> {
+        let label = self.label
+        return bridge.receiveAddress(forXPub: id)
+            .map { BitcoinCashReceiveAddress(address: $0, label: label) }
     }
 
     private let exchangeService: PairExchangeServiceAPI
     private let balanceService: BalanceServiceAPI
+    private let bridge: BitcoinCashWalletBridgeAPI
 
     init(id: String,
          label: String?,
          isDefault: Bool,
          exchangeProviding: ExchangeProviding = resolve(),
-         balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainCoin.bitcoinCash)) {
+         balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainCoin.bitcoinCash),
+         bridge: BitcoinCashWalletBridgeAPI = resolve()) {
         self.id = id
         self.label = label ?? CryptoCurrency.bitcoinCash.defaultWalletName
         self.isDefault = isDefault
         self.exchangeService = exchangeProviding[.bitcoinCash]
         self.balanceService = balanceService
+        self.bridge = bridge
     }
 
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {

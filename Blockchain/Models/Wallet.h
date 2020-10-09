@@ -19,14 +19,12 @@
  */
 
 #import "TransactionProgressListeners.h"
-#import "MultiAddressResponse.h"
 #import "SRWebSocket.h"
 #import "FeeTypes.h"
 #import "Assets.h"
 #import "WalletDelegate.h"
 
-@class Transaction,
-       JSValue,
+@class JSValue,
        JSContext,
        OrderTransactionLegacy,
        BitcoinWallet,
@@ -37,50 +35,50 @@
 @interface Wallet : NSObject <SRWebSocketDelegate>
 
 // Core Wallet Init Properties
-@property (readonly, nonatomic) JSContext *context;
+@property (nonatomic, readonly, strong) JSContext *context;
 
-@property(nonatomic, weak) id<WalletDelegate> delegate;
+@property (nonatomic, weak) id<WalletDelegate> delegate;
 
-@property(nonatomic, strong) NSMutableDictionary *transactionProgressListeners;
+@property (nonatomic, strong) NSMutableDictionary *transactionProgressListeners;
 
-@property(nonatomic) NSDictionary *accountInfo;
-@property(nonatomic) BOOL hasLoadedAccountInfo;
+@property (nonatomic, copy) NSDictionary *accountInfo;
+@property (nonatomic, assign) BOOL hasLoadedAccountInfo;
 
-@property(nonatomic) BOOL shouldLoadMetadata;
+@property (nonatomic, assign) BOOL shouldLoadMetadata;
 
-@property(nonatomic) NSString *lastScannedWatchOnlyAddress;
-@property(nonatomic) NSString *lastImportedAddress;
-@property(nonatomic) BOOL didReceiveMessageForLastTransaction;
+@property (nonatomic, copy) NSString *lastScannedWatchOnlyAddress;
+@property (nonatomic, copy) NSString *lastImportedAddress;
+@property (nonatomic, assign) BOOL didReceiveMessageForLastTransaction;
 
 // HD properties:
-@property NSString *recoveryPhrase;
-@property int emptyAccountIndex;
-@property int recoveredAccountIndex;
+@property (nonatomic, copy) NSString *recoveryPhrase;
+@property (nonatomic, assign) int emptyAccountIndex;
+@property (nonatomic, assign) int recoveredAccountIndex;
 
-@property BOOL isSyncing;
-@property BOOL isNew;
-@property NSString *twoFactorInput;
-@property (nonatomic, nullable) NSDictionary<NSString *, id> *btcRates;
+@property (nonatomic, assign) BOOL isSyncing;
+@property (nonatomic, assign) BOOL isNew;
+@property (nonatomic, copy) NSString *twoFactorInput;
+@property (nonatomic, copy, nullable) NSDictionary<NSString *, id> *btcRates;
 
-@property (nonatomic) SRWebSocket *btcSocket;
-@property (nonatomic) SRWebSocket *bchSocket;
-@property (nonatomic) SRWebSocket *ethSocket;
-@property (nonatomic) NSMutableArray *pendingEthSocketMessages;
+@property (nonatomic, strong) SRWebSocket *btcSocket;
+@property (nonatomic, strong) SRWebSocket *bchSocket;
+@property (nonatomic, strong) SRWebSocket *ethSocket;
+@property (nonatomic, strong) NSMutableArray *pendingEthSocketMessages;
 
-@property (nonatomic) NSTimer *btcSocketTimer;
-@property (nonatomic) NSTimer *bchSocketTimer;
-@property (nonatomic) NSString *btcSwipeAddressToSubscribe;
-@property (nonatomic) NSString *bchSwipeAddressToSubscribe;
+@property (nonatomic, strong) NSTimer *btcSocketTimer;
+@property (nonatomic, strong) NSTimer *bchSocketTimer;
+@property (nonatomic, copy) NSString *btcSwipeAddressToSubscribe;
+@property (nonatomic, copy) NSString *bchSwipeAddressToSubscribe;
 
-@property (nonatomic) int lastLabelledAddressesCount;
+@property (nonatomic, assign) int lastLabelledAddressesCount;
 
-@property (readonly, nonatomic) BitcoinWallet * _Nonnull bitcoin;
-@property (readonly, nonatomic) EthereumWallet * _Nonnull ethereum;
-@property (nonatomic) WalletRepository * _Nonnull repository;
+@property (nonatomic, readonly, strong) BitcoinWallet * _Nonnull bitcoin;
+@property (nonatomic, readonly, strong) EthereumWallet * _Nonnull ethereum;
+@property (nonatomic, strong) WalletRepository * _Nonnull repository;
 
-@property (nonatomic) NSDecimalNumber *latestEthExchangeRate;
+@property (nonatomic, copy, nullable) NSDecimalNumber *latestEthExchangeRate;
 
-- (id)init;
+- (instancetype)init;
 
 /// Forces the JS layer to load - should be used to reset the context and rebind the methods
 - (void)loadJS;
@@ -133,7 +131,6 @@
 - (BOOL)validateSecondPassword:(NSString *)secondPassword;
 
 - (void)getHistory;
-- (void)getHistoryWithoutBusyView;
 - (void)getHistoryIfNoTransactionMessage;
 - (void)getBitcoinCashHistoryIfNoTransactionMessage;
 - (void)getHistoryForAllAssets;
@@ -141,7 +138,7 @@
 - (id)getLegacyAddressBalance:(NSString *)address assetType:(LegacyAssetType)assetType;
 - (void)changeLocalCurrency:(NSString *)currencyCode;
 - (void)changeBtcCurrency:(NSString *)btcCode;
-- (uint64_t)conversionForBitcoinAssetType:(LegacyAssetType)assetType;
+- (double)conversionForBitcoinAssetType:(LegacyAssetType)assetType;
 
 - (NSString *)detectPrivateKeyFormat:(NSString *)privateKeyString;
 
@@ -280,7 +277,6 @@
 // Bitcoin Cash
 - (NSString *)fromBitcoinCash:(NSString *)address;
 - (NSString *)toBitcoinCash:(NSString *)address includePrefix:(BOOL)includePrefix;
-- (void)getBitcoinCashHistoryAndRates;
 - (void)fetchBitcoinCashExchangeRates;
 - (NSString *)getLabelForBitcoinCashAccount:(int)account;
 - (void)buildBitcoinCashPaymentTo:(id)to amount:(uint64_t)amount;
@@ -288,8 +284,6 @@
 - (BOOL)hasBchAccount;
 - (uint64_t)getBchBalance;
 - (NSString *)bitcoinCashExchangeRate;
-- (uint64_t)getBitcoinCashConversion;
-- (NSArray *)getBitcoinCashTransactions:(NSInteger)filterType;
 - (NSString *_Nullable)getLabelForDefaultBchAccount;
 
 // Exchange
@@ -321,8 +315,6 @@
 ///   - error: handler called when an error occurs while sending the payment
 ///   - cancel: handler called when the payment is cancelled (e.g., when an intermediate screen such as second password is dismissed)
 - (void)sendOrderTransaction:(LegacyAssetType)legacyAssetType secondPassword:(NSString* _Nullable)secondPassword completion:(void (^ _Nonnull)(void))completion success:(void (^ _Nonnull)(void))success error:(void (^ _Nonnull)(NSString *_Nonnull))error cancel:(void (^ _Nonnull)(void))cancel;
-// Top Bar Display
-- (NSDecimalNumber *)btcDecimalBalance;
 
 - (NSString *)getMobileMessage;
 

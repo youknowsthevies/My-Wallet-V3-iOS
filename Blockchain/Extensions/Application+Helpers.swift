@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformKit
 import PlatformUIKit
 import SafariServices
 
@@ -18,11 +19,11 @@ extension UIApplication {
 
     // Opens the mail application, if possible, otherwise, displays an error
     @objc func openMailApplication() {
-        guard let mailURL = URL(string: "\(Constants.Schemes.mail)://"), canOpenURL(mailURL) else {
+        guard let mailURL = URL(string: "\(AssetConstants.URLSchemes.mail)://"), canOpenURL(mailURL) else {
             AlertViewPresenter.shared.standardError(
                 message: NSString(
                     format: LocalizationConstants.Errors.cannotOpenURLArg as NSString,
-                    Constants.Schemes.mail
+                    AssetConstants.URLSchemes.mail
                 ) as String
             )
             return

@@ -12,7 +12,8 @@ protocol Storyboardable: class {
     static var defaultStoryboardName: String { get }
 }
 
-extension Storyboardable where Self: UIViewController {
+extension UIViewController: Storyboardable {
+
     static var defaultStoryboardName: String {
         String(describing: self)
     }
@@ -28,5 +29,3 @@ extension Storyboardable where Self: UIViewController {
         return viewController
     }
 }
-
-extension UIViewController: Storyboardable { }

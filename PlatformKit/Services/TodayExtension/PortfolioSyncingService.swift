@@ -8,7 +8,6 @@
 
 import RxRelay
 import RxSwift
-import RxCocoa
 
 public final class PortfolioSyncingService: BalanceSharingSettingsServiceAPI {
     

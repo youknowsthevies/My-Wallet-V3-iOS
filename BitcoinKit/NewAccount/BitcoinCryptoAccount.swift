@@ -32,22 +32,31 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var actions: AvailableActions {
-        [.viewActivity]
+        [.viewActivity, .receive, .send]
+    }
+
+    var receiveAddress: Single<ReceiveAddress> {
+        let label = self.label
+        return bridge.receiveAddress(forXPub: id)
+            .map { BitcoinReceiveAddress(address: $0, label: label) }
     }
 
     private let exchangeService: PairExchangeServiceAPI
     private let balanceService: BalanceServiceAPI
+    private let bridge: BitcoinWalletBridgeAPI
 
     init(id: String,
          label: String?,
          isDefault: Bool,
          exchangeProviding: ExchangeProviding = resolve(),
-         balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainKit.BitcoinChainCoin.bitcoin)) {
+         balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainKit.BitcoinChainCoin.bitcoin),
+         bridge: BitcoinWalletBridgeAPI = resolve()) {
         self.id = id
         self.label = label ?? CryptoCurrency.bitcoin.defaultWalletName
         self.isDefault = isDefault
         self.exchangeService = exchangeProviding[.bitcoin]
         self.balanceService = balanceService
+        self.bridge = bridge
     }
 
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {

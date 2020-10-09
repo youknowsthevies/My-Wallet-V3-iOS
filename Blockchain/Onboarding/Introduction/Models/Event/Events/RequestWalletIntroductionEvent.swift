@@ -14,7 +14,7 @@ final class RequestWalletIntroductionEvent: CompletableWalletIntroductionEvent {
     
     private static let location: WalletIntroductionLocation = .init(
         screen: .dashboard,
-        position: .request
+        position: .receive
     )
     
     var type: WalletIntroductionEventType {

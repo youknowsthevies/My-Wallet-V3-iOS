@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol LegacyBitcoinWalletProtocol: class {
+protocol LegacyBitcoinWalletProtocol: class {
     
     func bitcoinDefaultWalletIndex(with secondPassword: String?, success: @escaping (Int) -> Void, error: @escaping (String) -> Void)
     
@@ -19,11 +19,21 @@ public protocol LegacyBitcoinWalletProtocol: class {
     func getBitcoinMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void)
 
     func saveBitcoinMemo(for transaction: String, memo: String?)
+
+    func getBitcoinReceiveAddress(forXPub xpub: String) -> String?
 }
 
 extension Wallet: LegacyBitcoinWalletProtocol {
 
-    public func saveBitcoinMemo(for transaction: String, memo: String?) {
+    func getBitcoinReceiveAddress(forXPub xpub: String) -> String? {
+        guard isInitialized() else {
+            return nil
+        }
+        let function: String = "MyWalletPhone.getReceivingAddressForAccountXPub(\"\(xpub)\")"
+        return context.evaluateScript(function)?.toString()
+    }
+
+    func saveBitcoinMemo(for transaction: String, memo: String?) {
         guard isInitialized() else {
             return
         }
@@ -36,7 +46,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         context.evaluateScript(function)
     }
 
-    public func getBitcoinMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void) {
+    func getBitcoinMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void) {
         guard isInitialized() else {
             error("Wallet is not yet initialized.")
             return
@@ -54,7 +64,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         success(result)
     }
 
-    public func bitcoinDefaultWalletIndex(with secondPassword: String?, success: @escaping (Int) -> Void, error: @escaping (String) -> Void) {
+    func bitcoinDefaultWalletIndex(with secondPassword: String?, success: @escaping (Int) -> Void, error: @escaping (String) -> Void) {
         guard isInitialized() else {
             error("Wallet is not yet initialized.")
             return
@@ -77,7 +87,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         context.evaluateScript(script)
     }
     
-    public func bitcoinWallets(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
+    func bitcoinWallets(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
         guard isInitialized() else {
             error("Wallet is not yet initialized.")
             return
@@ -100,7 +110,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         context.evaluateScript(script)
     }
     
-    public func hdWallet(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
+    func hdWallet(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
         guard isInitialized() else {
             error("Wallet is not yet initialized.")
             return

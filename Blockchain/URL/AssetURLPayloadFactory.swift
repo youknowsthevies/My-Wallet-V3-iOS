@@ -11,31 +11,13 @@ import BitcoinKit
 import EthereumKit
 import Foundation
 import PlatformKit
+import StellarKit
 import ToolKit
 
-@objc class AssetURLPayloadFactory: NSObject {
+class AssetURLPayloadFactory: NSObject {
 
-    @objc static func scheme(forAsset asset: LegacyCryptoCurrency) -> String? {
-        switch asset.value {
-        case .bitcoin:
-            return BitcoinURLPayload.scheme
-        case .bitcoinCash:
-            return BitcoinCashURLPayload.scheme
-        case .stellar:
-            return StellarURLPayload.scheme
-        case .pax:
-            return EthereumURLPayload.scheme
-        default:
-            return nil
-        }
-    }
-
-    @objc
-    static func create(fromString string: String, asset: LegacyCryptoCurrency) -> AssetURLPayload? {
-        AssetURLPayloadFactory.create(fromString: string, asset: asset.value)
-    }
-    
-    static func create(fromString string: String, asset: CryptoCurrency) -> AssetURLPayload? {
+    static func create(fromString string: String?, asset: CryptoCurrency) -> CryptoAssetQRMetadata? {
+        guard let string = string else { return nil }
         if string.contains(":") {
             guard let url = URL(string: string) else {
                 Logger.shared.warning("Could not create payload from URL \(string)")
@@ -52,13 +34,14 @@ import ToolKit
                 return StellarURLPayload(address: string, amount: nil)
             case .pax, .ethereum:
                 return EthereumURLPayload(address: string, amount: nil)
-            default:
+            case .algorand,
+                 .tether:
                 return nil
             }
         }
     }
 
-    @objc static func create(from url: URL) -> AssetURLPayload? {
+    static func create(from url: URL) -> CryptoAssetQRMetadata? {
         guard let scheme = url.scheme else {
             Logger.shared.warning("Cannot create AssetURLPayload. Scheme is nil.")
             return nil

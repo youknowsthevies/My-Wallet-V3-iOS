@@ -57,6 +57,10 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: BuySellUIKitTests
         randomExecutionOrder: true
+      - name: TransactionKitTests
+        randomExecutionOrder: true
+      - name: TransactionUIKitTests
+        randomExecutionOrder: true
       - name: StellarKitTests
         randomExecutionOrder: true
       - name: BlockchainTests
@@ -147,33 +151,6 @@ targetTemplates:
       path: TestKit/Utilities
     type: bundle.unit-test
 targets:
-  AlgorandKit:
-    dependencies:
-    - target: Localization
-    - target: PlatformKit
-    - target: ToolKit
-    - target: NetworkKit
-    - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
-    scheme:
-      testTargets:
-      - AlgorandKitTests
-    templates:
-    - Framework
-  AlgorandKitTests:
-    dependencies:
-    - target: AlgorandKit
-    sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    templates:
-    - FrameworkTest
   ActivityKit:
     dependencies:
     - target: PlatformKit
@@ -236,34 +213,29 @@ targets:
       path: TestKit/Mocks/PlatformKit
     templates:
     - FrameworkTest
-  BitcoinKit:
+  AlgorandKit:
     dependencies:
-    - target: BitcoinChainKit
+    - target: Localization
     - target: PlatformKit
-    - target: HDWalletKit
     - target: ToolKit
     - target: NetworkKit
-    - target: Localization
     - carthage: BigInt
     - carthage: DIKit
     - carthage: RxRelay
     - carthage: RxSwift
-    - carthage: LibWally
     scheme:
       testTargets:
-      - BitcoinKitTests
+      - AlgorandKitTests
     templates:
     - Framework
-  BitcoinKitTests:
+  AlgorandKitTests:
     dependencies:
-    - target: BitcoinKit
+    - target: AlgorandKit
     sources:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/BitcoinKit
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templates:
@@ -331,6 +303,38 @@ targets:
       path: TestKit/Mocks/NetworkKit
     templates:
     - FrameworkTest
+  BitcoinKit:
+    dependencies:
+    - target: BitcoinChainKit
+    - target: PlatformKit
+    - target: HDWalletKit
+    - target: ToolKit
+    - target: NetworkKit
+    - target: Localization
+    - carthage: BigInt
+    - carthage: DIKit
+    - carthage: RxRelay
+    - carthage: RxSwift
+    - carthage: LibWally
+    scheme:
+      testTargets:
+      - BitcoinKitTests
+    templates:
+    - Framework
+  BitcoinKitTests:
+    dependencies:
+    - target: BitcoinKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/BitcoinKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    templates:
+    - FrameworkTest
   Blockchain:
     configFiles:
       Debug Dev: Config/BlockchainConfig/Blockchain-Dev.xcconfig
@@ -370,6 +374,8 @@ targets:
     - target: BuySellUIKit
     - target: InterestKit
     - target: InterestUIKit
+    - target: TransactionKit
+    - target: TransactionUIKit
     - target: ToolKit
     - target: NetworkKit
     - target: AlgorandKit
@@ -955,5 +961,63 @@ targets:
     sources:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
+    templates:
+    - FrameworkTest
+  TransactionKit:
+    dependencies:
+    - target: Localization
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: ToolKit
+    - carthage: BigInt
+    - carthage: DIKit
+    - carthage: RxSwift
+    - carthage: RxRelay
+    scheme:
+      testTargets:
+      - TransactionKitTests
+    templates:
+    - Framework
+  TransactionKitTests:
+    dependencies:
+    - target: TransactionKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    templates:
+    - FrameworkTest
+  TransactionUIKit:
+    dependencies:
+    - target: TransactionKit
+    - target: Localization
+    - target: PlatformKit
+    - target: PlatformUIKit
+    - target: ToolKit
+    - carthage: BigInt
+    - carthage: DIKit
+    - carthage: RxCocoa
+    - carthage: RxRelay
+    - carthage: RxSwift
+    scheme:
+      testTargets:
+      - BuySellUIKitTests
+    templates:
+    - Framework
+  TransactionUIKitTests:
+    dependencies:
+    - target: TransactionUIKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformUIKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
     templates:
     - FrameworkTest

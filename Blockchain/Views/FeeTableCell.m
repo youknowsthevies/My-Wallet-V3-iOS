@@ -11,9 +11,10 @@
 
 @implementation FeeTableCell
 
-- (id)initWithFeeType:(FeeType)feeType
+- (instancetype)initWithFeeType:(FeeType)feeType
 {
-    if (self = [super init]) {
+    self = [super init];
+    if (self) {
         _feeType = feeType;
         [self setup];
     }

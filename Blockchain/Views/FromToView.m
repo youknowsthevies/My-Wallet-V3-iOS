@@ -14,7 +14,8 @@
 
 - (id)initWithFrame:(CGRect)frame enableToTextField:(BOOL)enableToTextField
 {
-    if (self == [super initWithFrame:frame]) {
+    self = [super initWithFrame:frame];
+    if (self) {
         
         self.backgroundColor = [UIColor whiteColor];
         

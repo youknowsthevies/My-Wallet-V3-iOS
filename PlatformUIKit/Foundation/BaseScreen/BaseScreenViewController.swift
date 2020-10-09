@@ -6,6 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
+
 open class BaseScreenViewController: UIViewController {
     
     // MARK: - Types
@@ -242,15 +244,17 @@ open class BaseScreenViewController: UIViewController {
             break
         }
     }
-    
+
+    private lazy var drawerRouter: DrawerRouting = resolve()
     open func navigationBarLeadingButtonPressed() {
         switch leadingButtonStyle {
         case .back:
             baseNavigationController?.popViewController(animated: true)
         case .close:
             dismiss(animated: true, completion: nil)
-        case .drawer,
-             .none,
+        case .drawer:
+            drawerRouter.toggleSideMenu()
+        case .none,
              .text:
             break
         }

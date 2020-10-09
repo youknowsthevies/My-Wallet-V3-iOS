@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
+import PlatformKit
 
 struct Constants {
 
@@ -32,13 +32,6 @@ struct Constants {
         static let tabSend = 3
         static let tabReceive = 4
     }
-    struct TransactionTypes {
-        // TODO: change to enum, move to its own file,
-        // and deprecate TX_TYPE_* in Blockchain-Prefix
-        static let sent = "sent"
-        static let receive = "received"
-        static let transfer = "transfer"
-    }
     struct Measurements {
         static let DefaultHeaderHeight: CGFloat = 65
         // TODO: remove this once we use autolayout
@@ -53,7 +46,6 @@ struct Constants {
 
         static let MinimumTapTargetSize: CGFloat = 22.0
 
-        static let infoLabelEdgeInsets: UIEdgeInsets = UIEdgeInsets(top: 2, left: 9.5, bottom: 2, right: 9.5)
         static let buttonHeight: CGFloat = 40.0
         static let buttonHeightLarge: CGFloat = 56.0
         static let buttonCornerRadius: CGFloat = 4.0
@@ -106,21 +98,6 @@ struct Constants {
         static let userInfoId = "id"
         static let typePayment = "payment"
     }
-    struct Schemes {
-        static let bitcoin = "bitcoin"
-        static let bitcoinCash = "bitcoincash"
-        static let stellar = "web+stellar"
-        static let blockchain = "blockchain"
-        static let blockchainWallet = "blockchain-wallet"
-        static let ethereum = "ethereum"
-        static let mail = "message"
-    }
-    struct Time {
-        static let securityReminderModalTimeInterval: TimeInterval = 60 * 60 * 24 * 30 // Seconds in thirty days
-    }
-    struct Locales {
-        static let englishUS = "en_US"
-    }
     struct Url {
         static let withdrawalLockArticle = "https://support.blockchain.com/hc/en-us/articles/360048200392"
         static let blockchainHome = "https://www.blockchain.com"
@@ -153,11 +130,6 @@ struct Constants {
         static let addressAndKeyImportWrongBipPass = "wrongBipPass"
         static let addressAndKeyImportWrongPrivateKey = "wrongPrivateKey"
     }
-    struct AssetTypeCodes {
-        static let bitcoin = "BTC"
-        static let ethereum = "ETH"
-        static let bitcoinCash = "BCH"
-    }
     struct FilterIndexes {
         static let all: Int32 = -1
         static let importedAddresses: Int32 = -2
@@ -167,16 +139,6 @@ struct Constants {
 /// Constant class wrapper so that Constants can be accessed from Obj-C. Should deprecate this
 /// once Obj-C is no longer using this
 @objc class ConstantsObjcBridge: NSObject {
-    @objc class func airdropWaitlistUrl() -> String { Constants.Url.airdropWaitlist }
-
-    @objc class func animationDuration() -> Double { Constants.Animation.duration }
-
-    @objc class func animationDurationLong() -> Double { Constants.Animation.durationLong }
-    
-    @objc class func notificationKeyModalViewDismissed() -> String {
-        Constants.NotificationKeys.modalViewDismissed.rawValue
-    }
-
     @objc class func notificationKeyReloadToDismissViews() -> String {
         Constants.NotificationKeys.reloadToDismissViews.rawValue
     }
@@ -191,10 +153,6 @@ struct Constants {
 
     @objc class func notificationKeyBackupSuccess() -> String {
         Constants.NotificationKeys.backupSuccess.rawValue
-    }
-
-    @objc class func notificationKeyGetFiatAtTime() -> String {
-        Constants.NotificationKeys.getFiatAtTime.rawValue
     }
     
     @objc class func notificationKeyTransactionReceived() -> String {
@@ -233,36 +191,8 @@ struct Constants {
         Constants.Measurements.assetTypeCellHeight
     }
 
-    @objc class func bitcoinUriPrefix() -> String {
-        Constants.Schemes.bitcoin
-    }
-
     @objc class func bitcoinCashUriPrefix() -> String {
-        Constants.Schemes.bitcoinCash
-    }
-
-    @objc class func ethereumUriPrefix() -> String {
-        Constants.Schemes.ethereum
-    }
-
-    @objc class func wrongPrivateKey() -> String {
-        Constants.JSErrors.addressAndKeyImportWrongPrivateKey
-    }
-
-    @objc class func wrongBip38Password() -> String {
-        Constants.JSErrors.addressAndKeyImportWrongBipPass
-    }
-
-    @objc class func termsOfServiceURLString() -> String {
-        Constants.Url.termsOfService
-    }
-
-    @objc class func privacyPolicyURLString() -> String {
-        Constants.Url.privacyPolicy
-    }
-
-    @objc class func cookiePolicyURLString() -> String {
-        Constants.Url.cookiesPolicy
+        AssetConstants.URLSchemes.bitcoinCash
     }
 
     @objc class func defaultNavigationBarHeight() -> CGFloat {
@@ -273,23 +203,11 @@ struct Constants {
         Constants.Measurements.AssetSelectorHeight
     }
 
-    @objc class func minimumTapTargetSize() -> CGFloat {
-        Constants.Measurements.MinimumTapTargetSize
-    }
-
     @objc class func montserratLight() -> String {
         Constants.FontNames.montserratLight
     }
 
     @objc class func montserratSemiBold() -> String {
         Constants.FontNames.montserratSemiBold
-    }
-
-    @objc class func infoLabelEdgeInsets() -> UIEdgeInsets {
-        Constants.Measurements.infoLabelEdgeInsets
-    }
-
-    @objc class func btcCode() -> String {
-        Constants.AssetTypeCodes.bitcoin
     }
 }

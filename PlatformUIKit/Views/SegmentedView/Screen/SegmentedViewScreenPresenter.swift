@@ -7,8 +7,8 @@
 //
 
 import PlatformKit
-import RxSwift
 import RxRelay
+import RxSwift
 import ToolKit
 
 public struct SegmentedViewScreenItem {

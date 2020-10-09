@@ -129,7 +129,7 @@ class SideMenuViewController: UIViewController {
     }
 
     private func setSideMenuGestures() {
-        guard let tabViewController = AppCoordinator.shared.tabControllerManager.tabViewController else { return }
+        let tabViewController = AppCoordinator.shared.tabControllerManager.tabViewController
 
         if let menuSwipeRecognizerView = tabViewController.menuSwipeRecognizerView {
             menuSwipeRecognizerView.isUserInteractionEnabled = false
@@ -152,11 +152,11 @@ class SideMenuViewController: UIViewController {
             activeViewController.view.addGestureRecognizer(tapToCloseGestureRecognizerVC)
         }
 
-        tabViewController.addTapGestureRecognizer(toTabBar: tapToCloseGestureRecognizerTabBar)
+        tabViewController.addTapGestureRecognizerToTabBar(tapToCloseGestureRecognizerTabBar)
     }
 
     private func resetSideMenuGestures() {
-        guard let tabViewController = AppCoordinator.shared.tabControllerManager.tabViewController else { return }
+        let tabViewController = AppCoordinator.shared.tabControllerManager.tabViewController
         guard let slidingViewController = AppCoordinator.shared.slidingViewController else { return }
         if let activeViewController = tabViewController.activeViewController {
             activeViewController.view.removeGestureRecognizer(slidingViewController.panGesture)
@@ -166,7 +166,7 @@ class SideMenuViewController: UIViewController {
             }
         }
 
-        tabViewController.removeTapGestureRecognizer(fromTabBar: tapToCloseGestureRecognizerTabBar)
+        tabViewController.removeTapGestureRecognizerToTabBar(tapToCloseGestureRecognizerTabBar)
 
         // Enable swipe to open side menu gesture on small bar on the left of main view
         tabViewController.menuSwipeRecognizerView.isUserInteractionEnabled = true

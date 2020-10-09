@@ -20,9 +20,10 @@ int rowCustom = 2;
 
 @implementation BCFeeSelectionView
 
-- (id)initWithFrame:(CGRect)rect
+- (instancetype)initWithFrame:(CGRect)frame
 {
-    if (self = [super initWithFrame:rect]) {
+    self = [super initWithFrame:frame];
+    if (self) {
         [self setup];
     }
     return self;

@@ -6,7 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxCocoa
+import RxRelay
 import RxSwift
 
 /// A interface for a service used to select a `BlockchainAccount`.

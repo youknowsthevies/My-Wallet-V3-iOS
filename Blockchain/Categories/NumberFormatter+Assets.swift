@@ -50,7 +50,7 @@ extension NumberFormatter {
         let formatter = decimalStyleFormatter(withMinfractionDigits: localCurrencyFractionDigits,
                                               maxfractionDigits: localCurrencyFractionDigits,
                                               usesGroupingSeparator: false)
-        formatter.locale = Locale(identifier: Constants.Locales.englishUS)
+        formatter.locale = Locale.US
         return formatter
     }()
 
@@ -81,7 +81,7 @@ extension NumberFormatter {
         let formatter = decimalStyleFormatter(withMinfractionDigits: 0,
                                               maxfractionDigits: CryptoCurrency.maxDisplayableDecimalPlaces,
                                               usesGroupingSeparator: false)
-        formatter.locale = Locale(identifier: Constants.Locales.englishUS)
+        formatter.locale = .US
         return formatter
     }()
 }

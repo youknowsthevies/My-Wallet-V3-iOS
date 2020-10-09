@@ -15,24 +15,26 @@
 #define CELL_HEIGHT_DEFAULT 60
 
 @interface BCConfirmPaymentView () <UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate>
-@property (nonatomic) BCSecureTextField *descriptionField;
-@property (nonatomic) BCTotalAmountView *totalAmountView;
-@property (nonatomic) BCConfirmPaymentViewModel *viewModel;
-@property (nonatomic) NSMutableArray *rows;
+
+@property (nonatomic, strong) BCSecureTextField *descriptionField;
+@property (nonatomic, strong) BCTotalAmountView *totalAmountView;
+@property (nonatomic, strong) BCConfirmPaymentViewModel *viewModel;
+@property (nonatomic, strong) NSMutableArray *rows;
+
 @end
+
 @implementation BCConfirmPaymentView
 
 - (instancetype)initWithFrame:(CGRect)frame viewModel:(BCConfirmPaymentViewModel *)viewModel sendButtonFrame:(CGRect)sendButtonFrame
 {
     self = [super initWithFrame:frame];
-
     if (self) {
-        
-        self.frame = frame;
-
         self.viewModel = viewModel;
-        
-        BCTotalAmountView *totalAmountView = [[BCTotalAmountView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, TOTAL_AMOUNT_VIEW_HEIGHT) color:UIColor.red amount:0];
+
+        CGRect totalAmountViewFrame = CGRectMake(0, 0, self.frame.size.width, TOTAL_AMOUNT_VIEW_HEIGHT);
+        BCTotalAmountView *totalAmountView = [[BCTotalAmountView alloc] initWithFrame:totalAmountViewFrame
+                                                                                color:UIColor.red
+                                                                               amount:0];
         
         totalAmountView.btcAmountLabel.text = self.viewModel.totalAmountText;
         totalAmountView.fiatAmountLabel.text = self.viewModel.fiatTotalAmountText;
@@ -45,8 +47,12 @@
         CGFloat tableViewHeight = [self getCellHeight] * [self.rows count];
         
         self.backgroundColor = [UIColor whiteColor];
-        
-        UITableView *summaryTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, totalAmountView.frame.origin.y + totalAmountView.frame.size.height, frame.size.width, tableViewHeight)];
+
+        CGRect summaryTableViewFrame = CGRectMake(0,
+                                                  totalAmountView.frame.origin.y + totalAmountView.frame.size.height,
+                                                  frame.size.width,
+                                                  tableViewHeight);
+        UITableView *summaryTableView = [[UITableView alloc] initWithFrame:summaryTableViewFrame];
         summaryTableView.scrollEnabled = NO;
         summaryTableView.delegate = self;
         summaryTableView.dataSource = self;
@@ -59,13 +65,19 @@
         CALayer *topBorder = [CALayer layer];
         topBorder.borderColor = UIColor.grayLine.CGColor;
         topBorder.borderWidth = 1;
-        topBorder.frame = CGRectMake(0, 0, CGRectGetWidth(summaryTableView.frame), lineWidth);
+        topBorder.frame = CGRectMake(0,
+                                     0,
+                                     CGRectGetWidth(summaryTableView.frame),
+                                     lineWidth);
         [summaryTableView.layer addSublayer:topBorder];
         
         CALayer *bottomBorder = [CALayer layer];
         bottomBorder.borderColor = UIColor.grayLine.CGColor;
         bottomBorder.borderWidth = 1;
-        bottomBorder.frame = CGRectMake(0, CGRectGetHeight(summaryTableView.frame) - lineWidth, CGRectGetWidth(summaryTableView.frame), lineWidth);
+        bottomBorder.frame = CGRectMake(0,
+                                        CGRectGetHeight(summaryTableView.frame) - lineWidth,
+                                        CGRectGetWidth(summaryTableView.frame),
+                                        lineWidth);
         [summaryTableView.layer addSublayer:bottomBorder];
         
         self.tableView = summaryTableView;
@@ -74,7 +86,7 @@
         
         self.reallyDoPaymentButton = [[UIButton alloc] initWithFrame:sendButtonFrame];
         self.reallyDoPaymentButton.layer.cornerRadius = CORNER_RADIUS_BUTTON;
-        [self.reallyDoPaymentButton changeYPosition:self.frame.size.height - 20 + 49];
+        [self.reallyDoPaymentButton changeYPosition:sendButtonFrame.origin.y - 29];
         
         [self.reallyDoPaymentButton setTitle:buttonTitle forState:UIControlStateNormal];
         self.reallyDoPaymentButton.backgroundColor = UIColor.brandSecondary;

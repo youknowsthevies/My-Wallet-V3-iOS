@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BuySellUIKit
 import PlatformKit
 import PlatformUIKit
-import BuySellUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
@@ -77,7 +77,7 @@ final class DashboardViewController: BaseScreenViewController {
     private func setupNavigationBar() {
         set(barStyle: .lightContent(),
             leadingButtonStyle: .drawer,
-            trailingButtonStyle: .qrCode)
+            trailingButtonStyle: .none)
         titleViewStyle = .text(value: LocalizationConstants.DashboardScreen.title)
     }
     
@@ -197,11 +197,7 @@ final class DashboardViewController: BaseScreenViewController {
     override func navigationBarLeadingButtonPressed() {
         presenter.navigationBarLeadingButtonPressed()
     }
-    
-    override func navigationBarTrailingButtonPressed() {
-        presenter.navigationBarTrailingButtonPressed()
-    }
-    
+
     // MARK: - UITableView refresh
     
     @objc

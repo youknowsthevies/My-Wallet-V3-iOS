@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @class Wallet;
+@class MultiAddressResponse;
 @protocol WalletSuccessCallback;
 @protocol WalletDismissCallback;
 
@@ -45,7 +46,8 @@
 - (void)estimateTransactionSize:(uint64_t)size;
 - (void)didCheckForOverSpending:(NSNumber *)amount fee:(NSNumber *)fee;
 - (void)didGetMaxFee:(NSNumber *)fee amount:(NSNumber *)amount dust:(NSNumber *_Nullable)dust willConfirm:(BOOL)willConfirm;
-- (void)didUpdateTotalAvailable:(NSNumber *)sweepAmount finalFee:(NSNumber *)finalFee;
+- (void)didUpdateTotalAvailableBTC:(NSNumber *)sweepAmount finalFee:(NSNumber *)finalFee;
+- (void)didUpdateTotalAvailableBCH:(NSNumber *)sweepAmount finalFee:(NSNumber *)finalFee;
 - (void)didGetFee:(NSNumber *)fee dust:(NSNumber *_Nullable)dust txSize:(NSNumber *)txSize;
 - (void)didChangeSatoshiPerByte:(NSNumber *)sweepAmount fee:(NSNumber *)fee dust:(NSNumber *_Nullable)dust updateType:(FeeUpdateType)updateType;
 - (void)enableSendPaymentButtons;
@@ -74,11 +76,6 @@
 - (void)didSendPaymentRequestResponse;
 - (void)didPushTransaction;
 - (void)didGetSwipeAddresses:(NSArray *)newSwipeAddresses assetType:(LegacyAssetType)assetType;
-- (void)didFetchEthHistory;
-- (void)didUpdateEthPayment:(NSDictionary *)payment;
-- (void)didFetchEthExchangeRate:(NSNumber *)rate;
-- (void)didSendEther;
-- (void)didErrorDuringEtherSend:(NSString *)error;
 - (void)didGetEtherAddressWithSecondPassword;
 - (void)didGetAvailableBtcBalance:(NSDictionary *)result;
 - (void)didCreateEthAccountForExchange;
