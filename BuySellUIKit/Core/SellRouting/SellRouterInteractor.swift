@@ -166,6 +166,7 @@ public final class SellRouterInteractor: Interactor {
     private let uiUtilityProvider: UIUtilityProviderAPI
     private let accountSelectionService: AccountSelectionServiceAPI
     private let featureFetching: FeatureFetching
+    private let balanceProvider: BalanceProviding
     private let statesRelay = BehaviorRelay<States>(value: .inactive)
     private let actionRelay = PublishRelay<Action>()
     private var disposeBag = DisposeBag()
@@ -175,12 +176,14 @@ public final class SellRouterInteractor: Interactor {
                 eligibilityService: EligibilityServiceAPI,
                 uiUtilityProvider: UIUtilityProviderAPI,
                 kycTiersService: KYCTiersServiceAPI,
-                featureFetching: FeatureFetching) {
+                featureFetching: FeatureFetching,
+                balanceProvider: BalanceProviding) {
         self.uiUtilityProvider = uiUtilityProvider
         self.eligibilityService = eligibilityService
         self.kycTiersService = kycTiersService
         self.featureFetching = featureFetching
         self.accountSelectionService = accountSelectionService
+        self.balanceProvider = balanceProvider
         super.init()
         _ = setup
     }
@@ -189,6 +192,8 @@ public final class SellRouterInteractor: Interactor {
     
     public override func didBecomeActive() {
         super.didBecomeActive()
+        
+        balanceProvider.refresh()
         
         previousRelay
             .observeOn(MainScheduler.instance)

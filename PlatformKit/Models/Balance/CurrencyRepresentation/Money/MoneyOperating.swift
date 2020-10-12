@@ -73,10 +73,15 @@ extension MoneyOperating {
 
     public static func / (lhs: Self, rhs: Self) throws -> Self {
         try ensureComparable(value: lhs, other: rhs)
+        let maxDecimalPlaces = lhs.maxDecimalPlaces
         let quotientAndRemainder = lhs.amount.quotientAndRemainder(dividingBy: rhs.amount)
-        let quotientResult = quotientAndRemainder.quotient * BigInt(10 ^^ lhs.maxDecimalPlaces)
-        let reminderResult = quotientAndRemainder.remainder / BigInt(10 ^^ lhs.maxDecimalPlaces)
-        return Self.init(amount: quotientResult + reminderResult, currency: lhs.currencyType)
+        let quotientResult = quotientAndRemainder.quotient * BigInt(10 ^^ maxDecimalPlaces)
+        let remainderDivisor = rhs.amount / BigInt(10 ^^ maxDecimalPlaces)
+        guard quotientAndRemainder.remainder != 0, remainderDivisor != 0 else {
+            return Self.init(amount: quotientResult, currency: lhs.currencyType)
+        }
+        let remainderResult = quotientAndRemainder.remainder / remainderDivisor
+        return Self.init(amount: quotientResult + remainderResult, currency: lhs.currencyType)
     }
 
     public static func += (lhs: inout Self, rhs: Self) throws {

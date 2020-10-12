@@ -164,7 +164,12 @@ fileprivate extension OperationResponse {
              .manageSellOffer,
              .pathPayment,
              .pathPaymentStrictSend,
-             .setOptions:
+             .setOptions,
+             .createClaimableBalance,
+             .claimClaimableBalance,
+             .endSponsoringFutureReserves,
+             .revokeSponsorship,
+             .beginSponsoringFutureReserves:
             return nil
         }
     }
