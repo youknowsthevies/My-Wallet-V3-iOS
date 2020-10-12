@@ -45,6 +45,30 @@ public final class SelectionButtonViewModel: IdentifiableType {
         case none
     }
     
+    public enum TrailingContent {
+        case transaction(TransactionDescriptorViewModel)
+        case image(ImageViewContent)
+        case empty
+        
+        var transaction: TransactionDescriptorViewModel? {
+            switch self {
+            case .transaction(let value):
+                return value
+            case .image, .empty:
+                return nil
+            }
+        }
+        
+        var image: ImageViewContent? {
+            switch self {
+            case .image(let value):
+                return value
+            case .transaction, .empty:
+                return nil
+            }
+        }
+    }
+    
     public enum LeadingContentType {
         public struct Image {
             let name: String
@@ -112,8 +136,8 @@ public final class SelectionButtonViewModel: IdentifiableType {
     /// Accessibility content relay
     public let accessibilityContentRelay = BehaviorRelay<AccessibilityContent>(value: .empty)
     
-    /// Trailing image content relay
-    public let trailingImageViewContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
+    /// Trailing content relay
+    public let trailingContentRelay = BehaviorRelay<TrailingContent>(value: .empty)
     
     /// Title Relay: title describing the selection
     public let shouldShowSeparatorRelay = BehaviorRelay(value: false)
@@ -200,10 +224,11 @@ public final class SelectionButtonViewModel: IdentifiableType {
             }
             .asDriver(onErrorJustReturn: LabelContent.empty)
     }
-
-    /// Streams the trailing image
-    var trailingImageViewContent: Driver<ImageViewContent> {
-        trailingImageViewContentRelay.asDriver()
+    
+    /// Streams the trailing content
+    var trailingContent: Driver<TrailingContent> {
+        trailingContentRelay
+            .asDriver()
     }
 
     /// Streams the accessibility

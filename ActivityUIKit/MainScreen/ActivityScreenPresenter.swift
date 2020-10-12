@@ -162,7 +162,8 @@ final class ActivityScreenPresenter {
                     )
                 }
             }
-            .bindAndCatch(to: selectionButtonViewModel.trailingImageViewContentRelay)
+            .map { .image($0) }
+            .bindAndCatch(to: selectionButtonViewModel.trailingContentRelay)
             .disposed(by: disposeBag)
         
         let subtitleObservable: Observable<String> = Observable

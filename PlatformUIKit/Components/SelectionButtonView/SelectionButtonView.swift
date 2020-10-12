@@ -63,7 +63,8 @@ public final class SelectionButtonView: UIView {
                 })
                 .disposed(by: disposeBag)
 
-            viewModel.trailingImageViewContent
+            viewModel.trailingContent
+                .compactMap { $0.image }
                 .drive(trailingImageView.rx.content)
                 .disposed(by: disposeBag)
 
@@ -88,7 +89,18 @@ public final class SelectionButtonView: UIView {
                 .controlEvent(.touchUpInside)
                 .bindAndCatch(to: viewModel.tapRelay)
                 .disposed(by: disposeBag)
-
+            
+            viewModel.trailingContentRelay
+                .compactMap { $0.transaction }
+                .bindAndCatch(to: transactionDescriptorView.rx.viewModel)
+                .disposed(by: disposeBag)
+            
+            viewModel.trailingContentRelay
+                .map { $0.transaction == nil }
+                .map { $0 ? .hidden : .visible }
+                .bindAndCatch(to: transactionDescriptorView.rx.visibility)
+                .disposed(by: disposeBag)
+            
             viewModel.accessibility
                 .drive(button.rx.accessibility)
                 .disposed(by: disposeBag)
@@ -111,6 +123,7 @@ public final class SelectionButtonView: UIView {
 
     // MARK: - UI Properties
 
+    private let transactionDescriptorView = TransactionDescriptorView()
     private let leadingBadgeImageView = BadgeImageView()
     private let leadingLabel = UILabel()
     private let separatorView = UIView()
@@ -166,6 +179,7 @@ public final class SelectionButtonView: UIView {
         addSubview(leadingLabel)
         addSubview(labelsStackView)
         addSubview(trailingImageView)
+        addSubview(transactionDescriptorView)
         addSubview(button)
         labelsStackView.addArrangedSubview(titleLabel)
         addSubview(separatorView)
@@ -221,6 +235,10 @@ public final class SelectionButtonView: UIView {
         trailingConstraint = trailingImageView.layoutToSuperview(.trailing, offset: -24)
         trailingImageView.layoutToSuperview(.centerY)
         trailingImageView.maximizeResistanceAndHuggingPriorities()
+        
+        transactionDescriptorView.layoutToSuperview(.trailing, offset: -24)
+        transactionDescriptorView.layoutToSuperview(.centerY)
+        transactionDescriptorView.maximizeResistanceAndHuggingPriorities()
     }
 
     @objc

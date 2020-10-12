@@ -226,7 +226,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             viewModel.isButtonEnabledRelay.accept(false)
         }
         
-        viewModel.trailingImageViewContentRelay.accept(trailingImageViewContent)
+        viewModel.trailingContentRelay.accept(.image(trailingImageViewContent))
 
         viewModel.tap
             .emit(weak: self) { (self) in

@@ -55,7 +55,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
     override func viewDidLoad() {
         super.viewDidLoad()
         topSelectionButtonViewModel.isButtonEnabledRelay.accept(false)
-        topSelectionButtonViewModel.trailingImageViewContentRelay.accept(.empty)
+        topSelectionButtonViewModel.trailingContentRelay.accept(.empty)
         bottomAuxiliaryViewModelStateRelay.accept(.maxAvailable(auxiliaryViewPresenter))
         topSelectionButtonViewModel.titleRelay.accept(
             String(format: LocalizedString.from, interactor.data.source.currencyType.code)

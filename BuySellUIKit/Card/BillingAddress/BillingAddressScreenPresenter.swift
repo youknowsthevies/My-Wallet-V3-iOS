@@ -169,9 +169,11 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
             .bindAndCatch(to: refreshRelay)
             .disposed(by: disposeBag)
 
-        selectionButtonViewModel.trailingImageViewContentRelay.accept(
-            ImageViewContent(
-                imageName: "icon-disclosure-down-small"
+        selectionButtonViewModel.trailingContentRelay.accept(
+            .image(
+                ImageViewContent(
+                    imageName: "icon-disclosure-down-small"
+                )
             )
         )
         

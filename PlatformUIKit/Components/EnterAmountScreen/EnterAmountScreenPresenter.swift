@@ -154,9 +154,11 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
             .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
     
-        topSelectionButtonViewModel.trailingImageViewContentRelay.accept(
-            ImageViewContent(
-                imageName: "icon-disclosure-down-small"
+        topSelectionButtonViewModel.trailingContentRelay.accept(
+            .image(
+                ImageViewContent(
+                    imageName: "icon-disclosure-down-small"
+                )
             )
         )
         
