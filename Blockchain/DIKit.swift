@@ -125,7 +125,7 @@ extension DependencyContainer {
         
         // MARK: - QRCodeWrapper
         
-        factory { QRCodeWrapper() }
+        factory { QRCodeWrapper() as QRCodeWrapperAPI }
 
         // MARK: - DataProvider
 
