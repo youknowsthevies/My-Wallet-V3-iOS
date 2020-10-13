@@ -10,11 +10,11 @@
 
 @implementation NSURLSession (SendSynchronousRequest)
 
-+ (NSData *)sendSynchronousRequest:(NSURLRequest *)request
-                           session:(NSURLSession *)session
-                 returningResponse:(__autoreleasing NSURLResponse **)responsePtr
-                             error:(__autoreleasing NSError **)errorPtr
-                sessionDescription:(NSString *)sessionDescription
++ (NSData * _Nullable)sendSynchronousRequest:(NSURLRequest *)request
+                                     session:(NSURLSession *)session
+                           returningResponse:(__autoreleasing NSURLResponse **)responsePtr
+                                       error:(__autoreleasing NSError **)errorPtr
+                          sessionDescription:(NSString *)sessionDescription
 {
     dispatch_semaphore_t    sem;
     __block NSData *        result;
@@ -38,7 +38,8 @@
                     dispatch_semaphore_signal(sem);
                 }] resume];
     
-    dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+    dispatch_time_t thirtySeconds = dispatch_time(DISPATCH_TIME_NOW, 30*NSEC_PER_SEC);
+    dispatch_semaphore_wait(sem, thirtySeconds);
         
     return result;
 }

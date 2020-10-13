@@ -10,9 +10,9 @@
 
 @interface NSURLSession (SendSynchronousRequest)
 
-+ (NSData *)sendSynchronousRequest:(NSURLRequest *)request
-                           session:(NSURLSession *)session
-                 returningResponse:(__autoreleasing NSURLResponse **)responsePtr
-                             error:(__autoreleasing NSError **)errorPtr
-                sessionDescription:(NSString *)sessionDescription;
++ (NSData * _Nullable)sendSynchronousRequest:(NSURLRequest *)request
+                                     session:(NSURLSession *)session
+                           returningResponse:(__autoreleasing NSURLResponse **)responsePtr
+                                       error:(__autoreleasing NSError **)errorPtr
+                          sessionDescription:(NSString *)sessionDescription;
 @end
