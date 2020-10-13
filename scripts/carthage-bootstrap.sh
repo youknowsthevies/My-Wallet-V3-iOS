@@ -8,4 +8,4 @@
 #  https://github.com/Carthage/Carthage/issues/3019
 #  https://github.com/Carthage/Carthage/blob/master/Documentation/Xcode12Workaround.md
 
-sh scripts/carthage.sh bootstrap --use-ssh --cache-builds --platform iOS || (echo "retry in 5" && sleep 5 && echo "retrying carthage bootstrap" && sh scripts/carthage.sh bootstrap --use-ssh --cache-builds --platform iOS)
+sh scripts/carthage.sh bootstrap --use-ssh --cache-builds --platform iOS
