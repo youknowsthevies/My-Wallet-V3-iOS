@@ -7,6 +7,6 @@
 //
 
 extension Bundle {
-    private class SendReceiveUIKitBundle { }
-    static let sendReceiveUIKit: Bundle = Bundle(for: SendReceiveUIKitBundle.self)
+    private class TransactionUIKitBundle { }
+    static let transactionUIKit: Bundle = Bundle(for: TransactionUIKitBundle.self)
 }

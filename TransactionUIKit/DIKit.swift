@@ -13,7 +13,7 @@ extension DependencyContainer {
 
     // MARK: - TransactionUIKit Module
 
-    public static var sendReceiveUIKit = module {
+    public static var transactionUIKit = module {
 
         factory { SendReceiveCoordinator() }
 

@@ -14,6 +14,6 @@ enum ImageAsset: String, PlatformUIKit.ImageAsset {
     case iconReceiveGray = "icon_receive_gray"
 
     var image: UIImage {
-        UIImage(named: rawValue, in: .sendReceiveUIKit, compatibleWith: nil)!
+        UIImage(named: rawValue, in: .transactionUIKit, compatibleWith: nil)!
     }
 }
