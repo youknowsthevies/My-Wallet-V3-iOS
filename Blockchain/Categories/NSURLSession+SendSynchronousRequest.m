@@ -38,7 +38,7 @@
                     dispatch_semaphore_signal(sem);
                 }] resume];
     
-    dispatch_time_t thirtySeconds = dispatch_time(DISPATCH_TIME_NOW, 30000000000);
+    dispatch_time_t thirtySeconds = dispatch_time(DISPATCH_TIME_NOW, 30*NSEC_PER_SEC);
     dispatch_semaphore_wait(sem, thirtySeconds);
         
     return result;
