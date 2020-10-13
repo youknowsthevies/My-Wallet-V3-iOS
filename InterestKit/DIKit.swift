@@ -11,7 +11,7 @@ import PlatformKit
 
 extension DependencyContainer {
 
-    // MARK: - BuySellKit Module
+    // MARK: - InterestKit Module
 
     public static var interestKit = module {
         factory { SavingsAccountClient() as SavingsAccountClientAPI }

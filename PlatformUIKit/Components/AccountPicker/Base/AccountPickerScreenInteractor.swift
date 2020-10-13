@@ -57,7 +57,7 @@ public final class AccountPickerScreenInteractor {
     public init(singleAccountsOnly: Bool,
                 coincore: Coincore = resolve(),
                 action: AssetAction,
-                selectionService: AccountSelectionServiceAPI) {
+                selectionService: AccountSelectionServiceAPI = AccountSelectionService()) {
         self.singleAccountsOnly = singleAccountsOnly
         self.action = action
         self.coincore = coincore

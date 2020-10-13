@@ -56,8 +56,8 @@ final class AnnouncementPresenter {
     
     init(interactor: AnnouncementInteracting = AnnouncementInteractor(),
          topMostViewControllerProvider: TopMostViewControllerProviding = DIKit.resolve(),
-         featureConfigurator: FeatureConfiguring = AppFeatureConfigurator.shared,
-         featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
+         featureConfigurator: FeatureConfiguring = DIKit.resolve(),
+         featureFetcher: FeatureFetching = DIKit.resolve(),
          airdropRouter: AirdropRouterAPI = AppCoordinator.shared.airdropRouter,
          cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting = AppCoordinator.shared,
          interestIdentityVerificationRouter: InterestIdentityVerificationAnnouncementRouting = AppCoordinator.shared,

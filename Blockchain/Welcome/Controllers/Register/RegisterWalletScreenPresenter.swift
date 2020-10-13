@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -76,7 +77,7 @@ final class RegisterWalletScreenPresenter {
     // MARK: - Setup
     
     init(alertPresenter: AlertViewPresenter = .shared,
-         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
+         loadingViewPresenter: LoadingViewPresenting = resolve(),
          interactor: RegisterWalletScreenInteracting,
          type: RegistrationType = .default) {
         self.alertPresenter = alertPresenter

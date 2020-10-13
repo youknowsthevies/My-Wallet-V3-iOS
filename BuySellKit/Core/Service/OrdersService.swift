@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -39,7 +40,12 @@ final class OrdersService: OrdersServiceAPI {
         return ordersCachedValue.valueSingle
     }
     
-    private let ordersCachedValue = CachedValue<[OrderDetails]>(configuration: .onSubscription())
+    private let ordersCachedValue = CachedValue<[OrderDetails]>(
+        configuration: .init(
+            refreshType: .onSubscription,
+            flushNotificationName: .logout
+        )
+    )
 
     // MARK: - Injected
     
@@ -59,8 +65,8 @@ final class OrdersService: OrdersServiceAPI {
     
     // MARK: - Setup
     
-    init(analyticsRecorder: AnalyticsEventRecording,
-         client: OrderDetailsClientAPI) {
+    init(analyticsRecorder: AnalyticsEventRecording = resolve(),
+         client: OrderDetailsClientAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client
     }

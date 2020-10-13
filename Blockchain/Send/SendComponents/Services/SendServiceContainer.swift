@@ -49,7 +49,7 @@ struct SendServiceContainer: SendServiceContaining {
         fee = SendFeeService(asset: asset)
         sourceAccountState = SendSourceAccountStateService(asset: asset)
         bus = WalletActionEventBus()
-        fiatCurrency = UserInformationServiceProvider.default.settings
+        fiatCurrency = resolve()
         
         switch asset {
         case .ethereum:

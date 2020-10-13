@@ -17,12 +17,7 @@ extension BuySellUIKit.Router {
     convenience init(builder: BuySellUIKit.Buildable) {
         self.init(
             navigationRouter: NavigationRouter(),
-            serviceProvider: DataProvider.default.buySell,
-            cardServiceProvider: CardServiceProvider.default,
-            userInformationProvider: UserInformationServiceProvider.default,
             builder: builder,
-            kycServiceProvider: resolve(),
-            recordingProvider: RecordingProvider.default,
             kycRouter: resolve(),
             exchangeProvider: DataProvider.default.exchange
         )

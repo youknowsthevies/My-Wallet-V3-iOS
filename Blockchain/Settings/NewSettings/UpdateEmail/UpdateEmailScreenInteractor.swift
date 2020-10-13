@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -71,8 +72,8 @@ final class UpdateEmailScreenInteractor {
     private let interactionStateRelay = BehaviorRelay<State>(value: .ready)
     private let disposeBag = DisposeBag()
     
-    init(emailSettingsService: EmailSettingsService = UserInformationServiceProvider.default.settings,
-         emailVerificationService: EmailVerificationServiceAPI = UserInformationServiceProvider.default.emailVerification) {
+    init(emailSettingsService: EmailSettingsService = resolve(),
+         emailVerificationService: EmailVerificationServiceAPI = resolve()) {
         self.emailSettingsService = emailSettingsService
         self.verificationService = emailVerificationService
         

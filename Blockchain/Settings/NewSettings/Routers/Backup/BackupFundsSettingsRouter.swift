@@ -20,13 +20,10 @@ final class BackupFundsSettingsRouter: BackupRouterAPI {
     
     private var stateService: BackupRouterStateService!
     private let navigationRouter: NavigationRouterAPI
-    private let serviceProvider: BackupFundsServiceProviderAPI
     private let disposeBag = DisposeBag()
     
-    init(navigationRouter: NavigationRouterAPI,
-         services: BackupFundsServiceProviderAPI = BackupFundsServiceProvider.default) {
+    init(navigationRouter: NavigationRouterAPI) {
         self.navigationRouter = navigationRouter
-        self.serviceProvider = services
     }
     
     func start() {
@@ -56,11 +53,11 @@ final class BackupFundsSettingsRouter: BackupRouterAPI {
         case .backupFunds(let presentationType, let entry):
             showBackupFunds(presentationType: presentationType, entry: entry)
         case .recovery:
-            let presenter = RecoveryPhraseScreenPresenter(stateService: stateService, serviceProvider: serviceProvider)
+            let presenter = RecoveryPhraseScreenPresenter(stateService: stateService)
             let controller = RecoveryPhraseViewController(presenter: presenter)
             navigationRouter.navigationControllerAPI?.pushViewController(controller, animated: true)
         case .verification:
-            let presenter = VerifyBackupScreenPresenter(stateService: stateService, service: serviceProvider.recoveryPhraseVerifyingAPI)
+            let presenter = VerifyBackupScreenPresenter(stateService: stateService)
             let controller = VerifyBackupViewController(presenter: presenter)
             navigationRouter.navigationControllerAPI?.pushViewController(controller, animated: true)
         }

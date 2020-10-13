@@ -115,7 +115,7 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Init
 
-    init(alertViewPresenter: AlertViewPresenterAPI = AlertViewPresenter.shared,
+    init(alertViewPresenter: AlertViewPresenterAPI = resolve(),
          event: TransactionalActivityItemEvent,
          router: ActivityRouterAPI,
          interactor: StellarActivityDetailsInteractor = .init(),

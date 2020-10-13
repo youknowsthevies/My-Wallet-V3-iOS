@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import RxRelay
 import RxSwift
 import ToolKit
@@ -41,7 +42,7 @@ public class BuyCheckoutRoutingInteractor: CheckoutRoutingInteracting {
     private unowned let stateService: StateService
     private let disposeBag = DisposeBag()
     
-    init(analyticsRecorder: AnalyticsEventRecorderAPI,
+    init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          stateService: StateService) {
         self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService

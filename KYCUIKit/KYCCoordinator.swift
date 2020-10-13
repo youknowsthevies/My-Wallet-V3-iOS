@@ -112,7 +112,7 @@ final class KYCCoordinator: KYCRouterAPI {
         analyticsService: AnalyticsServiceAPI = resolve(),
         dataRepository: DataRepositoryAPI = resolve(),
         kycSettings: KYCSettingsAPI = resolve(),
-        loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
         communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail)
     ) {
         self.requestBuilder = requestBuilder

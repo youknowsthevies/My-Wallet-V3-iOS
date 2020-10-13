@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -40,7 +41,7 @@ final class AirdropCenterScreenInteractor {
     // MARK: - Setup
     
     /// use `UserInformationServiceProvider` when merged into `dev`.
-    init(service: AirdropCenterServiceAPI = AirdropCenterService.shared) {
+    init(service: AirdropCenterServiceAPI = resolve()) {
         self.service = service
         
         let allCampaigns = service.campaignsCalculationState

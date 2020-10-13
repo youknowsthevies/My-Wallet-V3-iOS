@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import RxSwift
 import PlatformUIKit
@@ -44,9 +45,9 @@ final class PaymentMethodsScreenInteractor {
     
     // MARK: - Setup
     
-    init(paymentMethodTypesService: PaymentMethodTypesServiceAPI,
-         fiatCurrencyService: FiatCurrencyServiceAPI,
-         kycTiers: KYCTiersServiceAPI) {
+    init(paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
+         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+         kycTiers: KYCTiersServiceAPI = resolve()) {
         self.paymentMethodTypesService = paymentMethodTypesService
         self.fiatCurrencyService = fiatCurrencyService
         self.kycTiers = kycTiers

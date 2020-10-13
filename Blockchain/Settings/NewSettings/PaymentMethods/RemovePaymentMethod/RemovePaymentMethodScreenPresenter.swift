@@ -7,11 +7,12 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
+import RxCocoa
 import RxRelay
 import RxSwift
-import RxCocoa
 
 final class RemovePaymentMethodScreenPresenter {
     
@@ -40,7 +41,7 @@ final class RemovePaymentMethodScreenPresenter {
     
     init(buttonLocalizedString: String,
          interactor: RemovePaymentMethodScreenInteractor,
-         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared) {
+         loadingViewPresenter: LoadingViewPresenting = resolve()) {
         self.loadingViewPresenter = loadingViewPresenter
         self.interactor = interactor
         

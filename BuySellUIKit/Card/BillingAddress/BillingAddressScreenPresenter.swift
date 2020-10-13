@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -107,7 +108,7 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
 
     init(interactor: BillingAddressScreenInteractor,
          countrySelectionRouter: SelectionRouterAPI,
-         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
+         loadingViewPresenter: LoadingViewPresenting = resolve(),
          eventRecorder: AnalyticsEventRecording,
          messageRecorder: MessageRecording) {
         self.interactor = interactor

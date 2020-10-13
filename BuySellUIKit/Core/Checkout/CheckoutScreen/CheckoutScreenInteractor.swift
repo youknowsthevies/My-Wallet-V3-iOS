@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -32,9 +33,9 @@ final class CheckoutScreenInteractor {
     
     // MARK: - Setup
     
-    init(confirmationService: OrderConfirmationServiceAPI,
-         cancellationService: OrderCancellationServiceAPI,
-         orderCheckoutInterator: OrderCheckoutInteracting,
+    init(confirmationService: OrderConfirmationServiceAPI = resolve(),
+         cancellationService: OrderCancellationServiceAPI = resolve(),
+         orderCheckoutInterator: OrderCheckoutInteracting = resolve(),
          checkoutData: CheckoutData) {
         self.orderCheckoutInterator = orderCheckoutInterator
         self.confirmationService = confirmationService

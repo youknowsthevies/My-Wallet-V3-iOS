@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 
@@ -41,9 +42,9 @@ public final class CardOrderCheckoutInteractor {
     private let orderQuoteService: OrderQuoteServiceAPI
     private let orderCreationService: OrderCreationServiceAPI
     
-    public init(cardListService: CardListServiceAPI,
-                orderQuoteService: OrderQuoteServiceAPI,
-                orderCreationService: OrderCreationServiceAPI) {
+    public init(cardListService: CardListServiceAPI = resolve(),
+                orderQuoteService: OrderQuoteServiceAPI = resolve(),
+                orderCreationService: OrderCreationServiceAPI = resolve()) {
         self.cardListService = cardListService
         self.orderQuoteService = orderQuoteService
         self.orderCreationService = orderCreationService

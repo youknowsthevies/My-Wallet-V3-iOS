@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import ToolKit
 
 public final class EventCache {
@@ -36,7 +37,7 @@ public final class EventCache {
     
     // MARK: - Setup
     
-    init(cacheSuite: CacheSuite) {
+    init(cacheSuite: CacheSuite = resolve()) {
         self.cacheSuite = cacheSuite
     }
     

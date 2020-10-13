@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import BuySellKit
 import PlatformKit
 import PlatformUIKit
@@ -163,27 +164,32 @@ public final class SellRouterInteractor: Interactor {
     
     private let eligibilityService: EligibilityServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
-    private let uiUtilityProvider: UIUtilityProviderAPI
     private let accountSelectionService: AccountSelectionServiceAPI
     private let featureFetching: FeatureFetching
     private let balanceProvider: BalanceProviding
+    private let loader: LoadingViewPresenting
+    private let alert: AlertViewPresenterAPI
+    
     private let statesRelay = BehaviorRelay<States>(value: .inactive)
     private let actionRelay = PublishRelay<Action>()
     private var disposeBag = DisposeBag()
+    
     // MARK: - Setup
     
-    public init(accountSelectionService: AccountSelectionServiceAPI,
-                eligibilityService: EligibilityServiceAPI,
-                uiUtilityProvider: UIUtilityProviderAPI,
-                kycTiersService: KYCTiersServiceAPI,
-                featureFetching: FeatureFetching,
-                balanceProvider: BalanceProviding) {
-        self.uiUtilityProvider = uiUtilityProvider
+    public init(accountSelectionService: AccountSelectionServiceAPI = AccountSelectionService(),
+                eligibilityService: EligibilityServiceAPI = resolve(),
+                kycTiersService: KYCTiersServiceAPI = resolve(),
+                featureFetching: FeatureFetching = resolve(),
+                balanceProvider: BalanceProviding,
+                loader: LoadingViewPresenting = resolve(),
+                alert: AlertViewPresenterAPI = resolve()) {
         self.eligibilityService = eligibilityService
         self.kycTiersService = kycTiersService
         self.featureFetching = featureFetching
         self.accountSelectionService = accountSelectionService
         self.balanceProvider = balanceProvider
+        self.loader = loader
+        self.alert = alert
         super.init()
         _ = setup
     }
@@ -210,7 +216,7 @@ public final class SellRouterInteractor: Interactor {
             )
             .map { (tiers: $0.0, isEnabled: ($0.1 && $0.2), eligible: $0.3) }
             .handleLoaderForLifecycle(
-                loader: uiUtilityProvider.loader,
+                loader: loader,
                 style: .circle
             )
             .map { (tiers: KYC.UserTiers, isEnabled: Bool, eligible: Bool) -> State in
@@ -276,7 +282,7 @@ public final class SellRouterInteractor: Interactor {
             )
             .map { (tiers: $0.0, isEnabled: ($0.1 && $0.2)) }
             .handleLoaderForLifecycle(
-                loader: uiUtilityProvider.loader,
+                loader: loader,
               style: .circle
             )
             .map { values -> States in

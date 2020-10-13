@@ -7,20 +7,22 @@
 //
 
 import BigInt
+import DIKit
 import PlatformKit
 import RxSwift
 
-public class EthereumTransactionValidationService: ValidateTransactionAPI {
+final class EthereumTransactionValidationService: ValidateTransactionAPI {
+    
     private let feeService: AnyCryptoFeeService<EthereumTransactionFee>
     private let repository: EthereumAssetAccountRepository
     
-    public init(with feeService: AnyCryptoFeeService<EthereumTransactionFee>,
-                repository: EthereumAssetAccountRepository) {
+    init(with feeService: AnyCryptoFeeService<EthereumTransactionFee> = resolve(),
+         repository: EthereumAssetAccountRepository = resolve()) {
         self.feeService = feeService
         self.repository = repository
     }
     
-    public func validateCryptoAmount(amount: Crypto) -> Single<TransactionValidationResult> {
+    func validateCryptoAmount(amount: Crypto) -> Single<TransactionValidationResult> {
         Single.zip(feeService.fees, balance)
             .flatMap { tuple -> Single<TransactionValidationResult> in
                 let (fee, balanceSigned) = tuple

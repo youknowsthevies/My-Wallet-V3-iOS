@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import ToolKit
 
 extension Wallet {
@@ -14,9 +15,10 @@ extension Wallet {
     }
 
     @objc func logJavaScriptTypeError(_ message: String, stack: String?) {
-        let recorder: RecordingProviderAPI = RecordingProvider.default
-        recorder.message.record("JS Stack: \(stack ?? "not available")")
-        recorder.message.record("JS Error: \(message)")
-        recorder.error.error(WalletJavaScriptError.typeError)
+        let messageRecorder: MessageRecording = resolve()
+        let errorRecorder: ErrorRecording = resolve()
+        messageRecorder.record("JS Stack: \(stack ?? "not available")")
+        messageRecorder.record("JS Error: \(message)")
+        errorRecorder.error(WalletJavaScriptError.typeError)
     }
 }

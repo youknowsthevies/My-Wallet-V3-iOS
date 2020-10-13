@@ -111,7 +111,7 @@ final class ExchangeAddressFetcher: ExchangeAddressFetching {
         
     // MARK: - Setup
     
-    init(featureConfigurator: FeatureConfiguring = AppFeatureConfigurator.shared,
+    init(featureConfigurator: FeatureConfiguring = resolve(),
          repository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository(),
          communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
          urlPrefix: String = BlockchainAPI.shared.retailCoreUrl) {

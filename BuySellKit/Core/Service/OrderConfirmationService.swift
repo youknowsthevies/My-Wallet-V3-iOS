@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -29,8 +30,8 @@ final class OrderConfirmationService: OrderConfirmationServiceAPI {
 
     // MARK: - Setup
     
-    init(analyticsRecorder: AnalyticsEventRecording,
-         client: CardOrderConfirmationClientAPI) {
+    init(analyticsRecorder: AnalyticsEventRecording = resolve(),
+         client: CardOrderConfirmationClientAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client
     }

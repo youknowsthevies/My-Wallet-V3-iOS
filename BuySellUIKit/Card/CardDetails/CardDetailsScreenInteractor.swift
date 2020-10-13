@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -27,8 +28,8 @@ final class CardDetailsScreenInteractor: Interactor {
     // MARK: - Setup
     
     init(routingInteractor: CardRouterInteractor,
-         paymentMethodsService: PaymentMethodsServiceAPI,
-         cardListService: CardListServiceAPI) {
+         paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
+         cardListService: CardListServiceAPI = resolve()) {
         self.routingInteractor = routingInteractor
         self.paymentMethodsService = paymentMethodsService
         self.cardListService = cardListService

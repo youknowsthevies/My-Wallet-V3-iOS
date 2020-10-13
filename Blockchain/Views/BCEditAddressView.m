@@ -62,7 +62,7 @@
         [allowedCharSet formUnionWithCharacterSet:[NSCharacterSet whitespaceCharacterSet]];
         
         if ([label rangeOfCharacterFromSet:[allowedCharSet invertedSet]].location != NSNotFound) {
-            [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_LABEL_MUST_BE_ALPHANUMERIC in:nil handler:nil];
+            [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_LABEL_MUST_BE_ALPHANUMERIC in:nil handler:nil];
             return;
         }
     }
@@ -76,7 +76,7 @@
     [[ModalPresenter sharedInstance] closeModalWithTransition:kCATransitionFade];
     
     if (WalletManager.sharedInstance.wallet.isSyncing) {
-        [[LoadingViewPresenter sharedInstance] showWith:[LocalizationConstantsObjcBridge syncingWallet]];
+        [LoadingViewPresenter.shared showWith:[LocalizationConstantsObjcBridge syncingWallet]];
     }
 }
 

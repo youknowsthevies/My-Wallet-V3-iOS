@@ -26,23 +26,23 @@ final class DashboardRouter {
     private let backupRouterAPI: BackupRouterAPI
     private let custodyActionRouterAPI: CustodyActionRouterAPI
     private let nonCustodialActionRouterAPI: NonCustodialActionRouterAPI
-    private let userInformationServiceProvider: UserInformationServiceProviding
     private let balanceProviding: BalanceProviding
     private let exchangeProviding: ExchangeProviding
+    private let settingsService: FiatCurrencySettingsServiceAPI
     
     init(routing: CurrencyRouting & TabSwapping,
          navigationRouter: NavigationRouterAPI = NavigationRouter(),
-         userInformationServiceProvider: UserInformationServiceProviding = UserInformationServiceProvider.default,
          wallet: Wallet = WalletManager.shared.wallet,
          balanceProviding: BalanceProviding = resolve(),
          exchangeProviding: ExchangeProviding = resolve(),
+         settingsService: FiatCurrencySettingsServiceAPI = resolve(),
          backupRouterAPI: BackupRouterAPI = BackupFundsCustodialRouter()) {
         self.navigationRouter = navigationRouter
         self.routing = routing
         self.recoveryVerifyingAPI = RecoveryPhraseVerifyingService(wallet: wallet)
-        self.userInformationServiceProvider = userInformationServiceProvider
         self.balanceProviding = balanceProviding
         self.exchangeProviding = exchangeProviding
+        self.settingsService = settingsService
         self.backupRouterAPI = backupRouterAPI
         self.custodyActionRouterAPI = CustodyActionRouter(backupRouterAPI: backupRouterAPI, tabSwapping: AppCoordinator.shared)
         self.nonCustodialActionRouterAPI = NonCustodialActionRouter(balanceProvider: balanceProviding, routing: routing)
@@ -66,13 +66,12 @@ final class DashboardRouter {
         let detailsInteractor = DashboardDetailsScreenInteractor(
             currency: currency,
             balanceFetcher: balanceFetcher,
-            fiatCurrencyService: userInformationServiceProvider.settings,
             exchangeAPI: exchangeProviding[currency]
         )
         /// FIXME: The dashboard model is not reactive to fiat currency change - at the tap
         /// time we may not have the fiat currency fetched - that can lead to a crash if the fiat is not set.
         /// alternatively (current solution) - the fiat currency defaults to USD
-        let fiatCurrency = userInformationServiceProvider.settings.legacyCurrency ?? .USD
+        let fiatCurrency = settingsService.legacyCurrency ?? .USD
         let detailsPresenter = DashboardDetailsScreenPresenter(
             using: detailsInteractor,
             with: currency,

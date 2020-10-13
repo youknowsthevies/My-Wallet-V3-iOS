@@ -23,6 +23,8 @@ public protocol FeatureFetching: class {
     func fetchBool(for key: AppFeature) -> Single<Bool>
 }
 
+public typealias FeatureFetchingConfiguring = FeatureFetching & FeatureConfiguring
+
 /// This protocol is responsible for variant fetching
 public protocol FeatureVariantFetching: class {
     

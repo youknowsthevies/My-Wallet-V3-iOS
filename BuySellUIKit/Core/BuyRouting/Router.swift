@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -31,14 +32,11 @@ public final class Router: RouterAPI {
     
     // MARK: - Private Properties
     
-    private let recordingProvider: RecordingProviderAPI
     private let stateService: StateServiceAPI
     private let kycRouter: KYCRouterAPI
-    private let kycServiceProvider: KYCServiceProviderAPI
-    private let serviceProvider: ServiceProviderAPI
-    private let cardServiceProvider: CardServiceProviderAPI
-    private let userInformationProvider: UserInformationServiceProviding
-    private let cryptoSelectionService: SelectionServiceAPI & CryptoCurrencyServiceAPI
+    private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
+    private let settingsService: FiatCurrencySettingsServiceAPI
+    private let cryptoSelectionService: CryptoCurrencySelectionServiceAPI
     private let exchangeProvider: ExchangeProviding
     private let navigationRouter: NavigationRouterAPI
     
@@ -55,28 +53,21 @@ public final class Router: RouterAPI {
     // MARK: - Setup
     
     public init(navigationRouter: NavigationRouterAPI,
-                serviceProvider: ServiceProviderAPI,
-                cardServiceProvider: CardServiceProviderAPI,
-                userInformationProvider: UserInformationServiceProviding,
+                settingsService: CompleteSettingsServiceAPI = resolve(),
+                supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
                 builder: Buildable,
-                kycServiceProvider: KYCServiceProviderAPI,
-                recordingProvider: RecordingProviderAPI,
                 kycRouter: KYCRouterAPI,
                 exchangeProvider: ExchangeProviding) {
         self.navigationRouter = navigationRouter
-        self.recordingProvider = recordingProvider
-        self.serviceProvider = serviceProvider
-        self.userInformationProvider = userInformationProvider
-        self.cardServiceProvider = cardServiceProvider
+        self.supportedPairsInteractor = supportedPairsInteractor
+        self.settingsService = settingsService
         self.stateService = builder.stateService
-        self.kycServiceProvider = kycServiceProvider
         self.exchangeProvider = exchangeProvider
         self.kycRouter = kycRouter
-                
         self.builder = builder
         
         let cryptoSelectionService = CryptoCurrencySelectionService(
-            service: serviceProvider.supportedPairsInteractor,
+            service: supportedPairsInteractor,
             defaultSelectedData: CryptoCurrency.bitcoin
         )
         
@@ -125,7 +116,6 @@ public final class Router: RouterAPI {
         case .intro:
             showIntroScreen()
         case .changeFiat:
-            let settingsService = userInformationProvider.settings
             settingsService
                 .fiatCurrency
                 .observeOn(MainScheduler.instance)
@@ -134,7 +124,6 @@ public final class Router: RouterAPI {
                 })
                 .disposed(by: disposeBag)
         case .selectFiat:
-            let settingsService = userInformationProvider.settings
             settingsService
                 .fiatCurrency
                 .observeOn(MainScheduler.instance)
@@ -195,12 +184,10 @@ public final class Router: RouterAPI {
     
     private func startCardAdditionFlow(with checkoutData: CheckoutData) {
         let interactor = stateService.cardRoutingInteractor(
-            with: checkoutData,
-            cardServiceProvider: cardServiceProvider
+            with: checkoutData
         )
         let builder = CardComponentBuilder(
-            routingInteractor: interactor,
-            recordingProvider: recordingProvider
+            routingInteractor: interactor
         )
         cardRouter = CardRouter(
             interactor: interactor,
@@ -227,7 +214,7 @@ public final class Router: RouterAPI {
     private func showFiatCurrencyChangeScreen(selectedCurrency: FiatCurrency) {
         let selectionService = FiatCurrencySelectionService(
             defaultSelectedData: selectedCurrency,
-            provider: FiatCurrencySelectionProvider(supportedCurrencies: serviceProvider.supportedCurrencies)
+            provider: FiatCurrencySelectionProvider()
         )
         let interactor = SelectionScreenInteractor(service: selectionService)
         let presenter = SelectionScreenPresenter(
@@ -241,7 +228,10 @@ public final class Router: RouterAPI {
             viewController.isModalInPresentation = true
         }
         
-        recordingProvider.analytics.record(event: AnalyticsEvent.sbCurrencySelectScreen)
+        do {
+            let analytics: AnalyticsEventRecorderAPI = resolve()
+            analytics.record(event: AnalyticsEvent.sbCurrencySelectScreen)
+        }
         
         let navigationController = UINavigationController(rootViewController: viewController)
         navigationRouter.navigationControllerAPI?.present(navigationController, animated: true, completion: nil)
@@ -250,7 +240,7 @@ public final class Router: RouterAPI {
             .map { FiatCurrency(code: $0)! }
             .flatMap(weak: self, { (self, currency) -> Single<FiatCurrency> in
                 // TICKET: IOS-3144
-                self.serviceProvider.settings
+                self.settingsService
                     .update(
                         currency: currency,
                         context: .simpleBuy
@@ -264,7 +254,7 @@ public final class Router: RouterAPI {
                     /// TODO: Remove this and `fiatCurrencySelected` once `ReceiveBTC` and
                     /// `SendBTC` are replaced with Swift implementations.
                     NotificationCenter.default.post(name: .fiatCurrencySelected, object: nil)
-                    self.recordingProvider.analytics.record(event: AnalyticsEvent.sbCurrencySelected(currencyCode: currency.code))
+                    self.analytics.record(event: AnalyticsEvent.sbCurrencySelected(currencyCode: currency.code))
                     
                     self.stateService.previousRelay.accept(())
                 })
@@ -303,14 +293,14 @@ public final class Router: RouterAPI {
             .map { FiatCurrency(code: $0)! }
             .flatMap(weak: self, { (self, currency) -> Single<(FiatCurrency, Bool)> in
 
-                let isCurrencySupported = self.serviceProvider.supportedPairsInteractor
+                let isCurrencySupported = self.supportedPairsInteractor
                     .fetch()
                     .map { !$0.pairs.isEmpty }
                     .take(1)
                     .asSingle()
 
                 // TICKET: IOS-3144
-                return self.serviceProvider.settings
+                return self.settingsService
                     .update(
                         currency: currency,
                         context: .simpleBuy
@@ -327,7 +317,7 @@ public final class Router: RouterAPI {
                     /// TODO: Remove this and `fiatCurrencySelected` once `ReceiveBTC` and
                     /// `SendBTC` are replaced with Swift implementations.
                     NotificationCenter.default.post(name: .fiatCurrencySelected, object: nil)
-                    self.recordingProvider.analytics.record(event: AnalyticsEvent.sbCurrencySelected(currencyCode: value.0.code))
+                    self.analytics.record(event: AnalyticsEvent.sbCurrencySelected(currencyCode: value.0.code))
                     
                     let isFiatCurrencySupported = value.1
                     let currency = value.0
@@ -345,15 +335,10 @@ public final class Router: RouterAPI {
     }
     
     private func showPaymentMethodsScreen() {
-        let interactor = PaymentMethodsScreenInteractor(
-            paymentMethodTypesService: serviceProvider.paymentMethodTypes,
-            fiatCurrencyService: serviceProvider.settings,
-            kycTiers: kycServiceProvider.tiers
-        )
+        let interactor = PaymentMethodsScreenInteractor()
         let presenter = PaymentMethodsScreenPresenter(
             interactor: interactor,
-            stateService: stateService,
-            eventRecorder: recordingProvider.analytics
+            stateService: stateService
         )
         let viewController = PaymentMethodsScreenViewController(presenter: presenter)
         let navigationController = UINavigationController(rootViewController: viewController)
@@ -363,21 +348,19 @@ public final class Router: RouterAPI {
     private func showInelligibleCurrency(with currency: FiatCurrency) {
         let presenter = IneligibleCurrencyScreenPresenter(
             currency: currency,
-            stateService: stateService,
-            analyticsRecording: recordingProvider.analytics
+            stateService: stateService
         )
         let controller = IneligibleCurrencyViewController(presenter: presenter)
         controller.transitioningDelegate = sheetPresenter
         controller.modalPresentationStyle = .custom
-        recordingProvider.analytics.record(event: AnalyticsEvent.sbCurrencyUnsupported)
+        analytics.record(event: AnalyticsEvent.sbCurrencyUnsupported)
         navigationRouter.topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
     }
     
     /// Shows the checkout details screen
     private func showBankTransferDetailScreen(with data: CheckoutData) {
         let interactor = BankTransferDetailScreenInteractor(
-            checkoutData: data,
-            cancellationService: serviceProvider.orderCancellation
+            checkoutData: data
         )
         
         let webViewRouter = WebViewRouter(
@@ -386,7 +369,6 @@ public final class Router: RouterAPI {
         
         let presenter = BankTransferDetailScreenPresenter(
             webViewRouter: webViewRouter,
-            analyticsRecorder: recordingProvider.analytics,
             interactor: interactor,
             stateService: stateService
         )
@@ -408,17 +390,14 @@ public final class Router: RouterAPI {
     /// Shows the cancellation modal
     private func showTransferCancellation(with data: CheckoutData) {
         let interactor = TransferCancellationInteractor(
-            checkoutData: data,
-            cancellationService: serviceProvider.orderCancellation
+            checkoutData: data
         )
         
         let presenter = TransferCancellationScreenPresenter(
             routingInteractor: BuyTransferCancellationRoutingInteractor(
-                stateService: stateService,
-                analyticsRecorder: recordingProvider.analytics
+                stateService: stateService
             ),
             currency: data.outputCurrency,
-            analyticsRecorder: recordingProvider.analytics,
             interactor: interactor
         )
         let viewController = TransferCancellationViewController(presenter: presenter)
@@ -433,35 +412,23 @@ public final class Router: RouterAPI {
         switch data.order.paymentMethod {
         case .card:
             orderInteractor = BuyOrderCardCheckoutInteractor(
-                cardInteractor: CardOrderCheckoutInteractor(
-                    cardListService: cardServiceProvider.cardList,
-                    orderQuoteService: serviceProvider.orderQuote,
-                    orderCreationService: serviceProvider.orderCreation
-                )
+                cardInteractor: CardOrderCheckoutInteractor()
             )
         case .funds, .bankTransfer:
             orderInteractor = BuyOrderFundsCheckoutInteractor(
-                fundsAndBankInteractor: FundsAndBankOrderCheckoutInteractor(
-                    paymentAccountService: serviceProvider.paymentAccount,
-                    orderQuoteService: serviceProvider.orderQuote,
-                    orderCreationService: serviceProvider.orderCreation
-                )
+                fundsAndBankInteractor: FundsAndBankOrderCheckoutInteractor()
             )
         }
 
         let interactor = CheckoutScreenInteractor(
-            confirmationService: serviceProvider.orderConfirmation,
-            cancellationService: serviceProvider.orderCancellation,
             orderCheckoutInterator: orderInteractor,
             checkoutData: data
         )
         let presenter = CheckoutScreenPresenter(
             checkoutRouting: BuyCheckoutRoutingInteractor(
-                analyticsRecorder: recordingProvider.analytics,
                 stateService: stateService
             ),
             contentReducer: BuyCheckoutScreenContentReducer(data: data),
-            analyticsRecorder: recordingProvider.analytics,
             interactor: interactor
         )
         let viewController = DetailsScreenViewController(presenter: presenter)
@@ -470,12 +437,10 @@ public final class Router: RouterAPI {
     
     private func showPendingOrderCompletionScreen(for orderDetails: OrderDetails) {
         let interactor = PendingOrderStateScreenInteractor(
-            orderDetails: orderDetails,
-            service: serviceProvider.orderCompletion
+            orderDetails: orderDetails
         )
         let presenter = PendingOrderStateScreenPresenter(
             routingInteractor: BuyPendingOrderRoutingInteractor(stateService: stateService),
-            analyticsRecorder: recordingProvider.analytics,
             interactor: interactor
         )
         let viewController = PendingStateViewController(
@@ -492,8 +457,7 @@ public final class Router: RouterAPI {
         
         let presenter = CardAuthorizationScreenPresenter(
             interactor: interactor,
-            data: data.authorizationData!,
-            eventRecorder: recordingProvider.analytics
+            data: data.authorizationData!
         )
         let viewController = CardAuthorizationScreenViewController(
             presenter: presenter
@@ -503,14 +467,10 @@ public final class Router: RouterAPI {
 
     /// Show the pending kyc screen
     private func showPendingKycApprovalScreen() {
-        let interactor = KYCPendingInteractor(
-            kycTiersService: kycServiceProvider.tiersPollingService,
-            eligibilityService: serviceProvider.eligibility
-        )
+        let interactor = KYCPendingInteractor()
         let presenter = KYCPendingPresenter(
             stateService: stateService,
-            interactor: interactor,
-            analyticsRecorder: recordingProvider.analytics
+            interactor: interactor
         )
         let viewController = PendingStateViewController(presenter: presenter)
         navigationRouter.present(viewController: viewController, using: .navigationFromCurrent)
@@ -551,19 +511,11 @@ public final class Router: RouterAPI {
     /// Shows buy-crypto screen using a specified presentation type
     private func showBuyCryptoScreen() {
         let interactor = BuyCryptoScreenInteractor(
-            kycTiersService: kycServiceProvider.tiers,
             exchangeProvider: exchangeProvider,
-            fiatCurrencyService: serviceProvider.settings,
-            cryptoCurrencySelectionService: cryptoSelectionService,
-            pairsService: serviceProvider.supportedPairsInteractor,
-            eligibilityService: serviceProvider.eligibility,
-            paymentMethodTypesService: serviceProvider.paymentMethodTypes,
-            orderCreationService: serviceProvider.orderCreation,
-            suggestedAmountsService: serviceProvider.suggestedAmounts
+            cryptoCurrencySelectionService: cryptoSelectionService
         )
 
         let presenter = BuyCryptoScreenPresenter(
-            analyticsRecorder: recordingProvider.analytics,
             router: self,
             stateService: stateService,
             interactor: interactor
@@ -576,8 +528,7 @@ public final class Router: RouterAPI {
     /// Shows intro screen using a specified presentation type
     private func showIntroScreen() {
         let presenter = BuyIntroScreenPresenter(
-            stateService: stateService,
-            recordingProvider: recordingProvider
+            stateService: stateService
         )
         let viewController = BuyIntroScreenViewController(presenter: presenter)
         navigationRouter.present(viewController: viewController)
@@ -585,5 +536,9 @@ public final class Router: RouterAPI {
     
     private lazy var sheetPresenter: BottomSheetPresenting = {
         BottomSheetPresenting(ignoresBackroundTouches: true)
+    }()
+    
+    private lazy var analytics: AnalyticsEventRecorderAPI = { () -> AnalyticsEventRecorderAPI in
+        DIKit.resolve()
     }()
 }

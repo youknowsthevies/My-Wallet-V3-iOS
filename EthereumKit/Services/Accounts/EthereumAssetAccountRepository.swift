@@ -6,11 +6,13 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
 
 open class EthereumAssetAccountRepository: AssetAccountRepositoryAPI {
+    
     public typealias Details = EthereumAssetAccountDetails
     
     public var assetAccountDetails: Single<Details> {
@@ -21,7 +23,7 @@ open class EthereumAssetAccountRepository: AssetAccountRepositoryAPI {
    
     private let service: EthereumAssetAccountDetailsService
     
-    public init(service: EthereumAssetAccountDetailsService) {
+    public init(service: EthereumAssetAccountDetailsService = resolve()) {
         self.service = service
     }
     

@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -68,9 +69,9 @@ final class SuggestedAmountsService: SuggestedAmountsServiceAPI {
     
     // MARK: - Setup
     
-    init(client: SuggestedAmountsClientAPI,
-         reactiveWallet: ReactiveWalletAPI,
-         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI) {
+    init(client: SuggestedAmountsClientAPI = resolve(),
+         reactiveWallet: ReactiveWalletAPI = resolve(),
+         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve()) {
         self.client = client
         self.reactiveWallet = reactiveWallet
         self.fiatCurrencySettingsService = fiatCurrencySettingsService

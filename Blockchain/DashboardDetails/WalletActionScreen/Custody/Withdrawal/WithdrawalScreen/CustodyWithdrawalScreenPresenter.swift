@@ -84,7 +84,7 @@ final class CustodyWithdrawalScreenPresenter {
     init(interactor: CustodyWithdrawalScreenInteractor,
          currency: CryptoCurrency,
          stateService: CustodyWithdrawalStateServiceAPI,
-         loadingPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
+         loadingPresenter: LoadingViewPresenting = resolve(),
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.loadingPresenter = loadingPresenter

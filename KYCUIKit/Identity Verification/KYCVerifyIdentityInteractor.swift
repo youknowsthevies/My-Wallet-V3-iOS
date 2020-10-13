@@ -41,7 +41,7 @@ class KYCVerifyIdentityInteractor {
     private var disposable: Disposable?
 
     init(client: KYCClientAPI = resolve(),
-         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared) {
+         loadingViewPresenter: LoadingViewPresenting = resolve()) {
         self.loadingViewPresenter = loadingViewPresenter
         self.client = client
     }

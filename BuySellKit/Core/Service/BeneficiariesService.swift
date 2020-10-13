@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 import RxRelay
@@ -65,12 +66,16 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
         
     // MARK: - Setup
     
-    init(client: BeneficiariesClientAPI,
-         featureFetcher: FeatureFetching,
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI) {
+    init(client: BeneficiariesClientAPI = resolve(),
+         featureFetcher: FeatureFetching = resolve(),
+         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve()) {
         self.client = client
         self.featureFetcher = featureFetcher
         self.paymentMethodTypesService = paymentMethodTypesService
+        
+        NotificationCenter.when(.logout) { [weak beneficiariesRelay] _ in
+            beneficiariesRelay?.accept(nil)
+        }
     }
     
     func fetch() -> Observable<[Beneficiary]> {

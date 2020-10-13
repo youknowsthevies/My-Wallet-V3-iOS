@@ -13,7 +13,9 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class CryptoCurrencySelectionService: SelectionServiceAPI, CryptoCurrencyServiceAPI {
+public protocol CryptoCurrencySelectionServiceAPI: SelectionServiceAPI, CryptoCurrencyServiceAPI {}
+
+final class CryptoCurrencySelectionService: CryptoCurrencySelectionServiceAPI {
     
     var dataSource: Observable<[SelectionItemViewModel]> {
         service.pairs
@@ -49,7 +51,8 @@ final class CryptoCurrencySelectionService: SelectionServiceAPI, CryptoCurrencyS
     private let cryptoCurrencyRelay: BehaviorRelay<CryptoCurrency>
     private let disposeBag = DisposeBag()
             
-    init(service: SupportedPairsInteractorServiceAPI, defaultSelectedData: CryptoCurrency) {
+    init(service: SupportedPairsInteractorServiceAPI,
+         defaultSelectedData: CryptoCurrency) {
         self.service = service
         selectedDataRelay = BehaviorRelay(value: defaultSelectedData.selectionItem)
         cryptoCurrencyRelay = BehaviorRelay(value: defaultSelectedData)

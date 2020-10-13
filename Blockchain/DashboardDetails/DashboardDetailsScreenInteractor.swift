@@ -51,7 +51,7 @@ final class DashboardDetailsScreenInteractor {
     init(currency: CryptoCurrency,
          balanceFetcher: AssetBalanceFetching,
          savingsAccountService: SavingAccountServiceAPI = resolve(),
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI,
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
          exchangeAPI: PairExchangeServiceAPI,
          wallet: Wallet = WalletManager.shared.wallet) {
         self.blockchainAccountFetcher = BlockchainAccountFetchingFactory.make(for: .crypto(currency))

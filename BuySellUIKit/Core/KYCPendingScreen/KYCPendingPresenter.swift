@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Localization
 import PlatformUIKit
 import RxCocoa
@@ -43,7 +44,7 @@ final class KYCPendingPresenter: RibBridgePresenter, PendingStatePresenterAPI {
     
     init(stateService: RoutingStateEmitterAPI,
          interactor: KYCPendingInteractor,
-         analyticsRecorder: AnalyticsEventRecorderAPI) {
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService
         self.interactor = interactor

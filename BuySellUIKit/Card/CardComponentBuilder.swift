@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import BuySellKit
 import PlatformKit
 import PlatformUIKit
@@ -29,28 +30,26 @@ public protocol CardComponentBuilderAPI: AnyObject {
 
 public final class CardComponentBuilder: CardComponentBuilderAPI {
     
-    private let utilityProvider: UIUtilityProviderAPI
-    private let recordingProvider: RecordingProviderAPI
     private let routingInteractor: CardRouterInteractor
+    private let analyticsRecorder: AnalyticsEventRecording
+    private let messageRecorder: MessageRecording
     
     public init(routingInteractor: CardRouterInteractor,
-                utilityProvider: UIUtilityProviderAPI = UIUtilityProvider.default,
-                recordingProvider: RecordingProviderAPI) {
+                analyticsRecorder: AnalyticsEventRecording = resolve(),
+                messageRecorder: MessageRecording = resolve()) {
         self.routingInteractor = routingInteractor
-        self.utilityProvider = utilityProvider
-        self.recordingProvider = recordingProvider
+        self.analyticsRecorder = analyticsRecorder
+        self.messageRecorder = messageRecorder
     }
     
     public func cardDetails() -> UIViewController {
         let interactor = CardDetailsScreenInteractor(
-            routingInteractor: routingInteractor,
-            paymentMethodsService: routingInteractor.buySellServiceProvider.paymentMethods,
-            cardListService: routingInteractor.cardServiceProvider.cardList
+            routingInteractor: routingInteractor
         )
         let presenter = CardDetailsScreenPresenter(
             interactor: interactor,
-            eventRecorder: recordingProvider.analytics,
-            messageRecorder: recordingProvider.message
+            eventRecorder: analyticsRecorder,
+            messageRecorder: messageRecorder
         )
         let viewController = CardDetailsScreenViewController(presenter: presenter)
         return viewController
@@ -59,8 +58,6 @@ public final class CardComponentBuilder: CardComponentBuilderAPI {
     public func pendingCardStatus(cardId: String) -> UIViewController {
         let interactor = PendingCardStatusInteractor(
             cardId: cardId,
-            activationService: routingInteractor.cardServiceProvider.cardActivation,
-            paymentMethodTypesService: routingInteractor.buySellServiceProvider.paymentMethodTypes,
             routingInteractor: routingInteractor
         )
         let presenter = PendingCardStatusPresenter(interactor: interactor)
@@ -75,7 +72,7 @@ public final class CardComponentBuilder: CardComponentBuilderAPI {
         let presenter = CardAuthorizationScreenPresenter(
             interactor: interactor,
             data: data,
-            eventRecorder: recordingProvider.analytics
+            eventRecorder: analyticsRecorder
         )
         let viewController = CardAuthorizationScreenViewController(
             presenter: presenter
@@ -88,19 +85,16 @@ public final class CardComponentBuilder: CardComponentBuilderAPI {
         let selectionRouter = SelectionRouter(parent: navigationControllerAPI)
         let interactor = BillingAddressScreenInteractor(
             cardData: cardData,
-            service: routingInteractor.cardServiceProvider.cardUpdate,
-            userDataRepository: routingInteractor.cardServiceProvider.dataRepository,
             routingInteractor: routingInteractor
         )
         let presenter = BillingAddressScreenPresenter(
             interactor: interactor,
             countrySelectionRouter: selectionRouter,
-            eventRecorder: recordingProvider.analytics,
-            messageRecorder: recordingProvider.message
+            eventRecorder: analyticsRecorder,
+            messageRecorder: messageRecorder
         )
         let viewController = BillingAddressScreenViewController(
-            presenter: presenter,
-            alertViewPresenter: utilityProvider.alert
+            presenter: presenter
         )
         return viewController
     }

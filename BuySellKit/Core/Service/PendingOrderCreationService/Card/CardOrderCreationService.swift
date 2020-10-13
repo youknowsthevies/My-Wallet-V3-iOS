@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 
 final class CardOrderCreationService: PendingOrderCreationServiceAPI {
@@ -13,8 +14,8 @@ final class CardOrderCreationService: PendingOrderCreationServiceAPI {
     private let orderQuoteService: OrderQuoteServiceAPI
     private let orderCreationService: OrderCreationServiceAPI
     
-    init(orderQuoteService: OrderQuoteServiceAPI,
-         orderCreationService: OrderCreationServiceAPI) {
+    init(orderQuoteService: OrderQuoteServiceAPI = resolve(),
+         orderCreationService: OrderCreationServiceAPI = resolve()) {
         self.orderQuoteService = orderQuoteService
         self.orderCreationService = orderCreationService
     }

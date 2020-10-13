@@ -10,10 +10,10 @@ import BuySellKit
 import Localization
 import PlatformKit
 import PlatformUIKit
-import ToolKit
-import RxSwift
-import RxRelay
 import RxCocoa
+import RxRelay
+import RxSwift
+import ToolKit
 
 final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
     
@@ -30,7 +30,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
     
     // MARK: - Setup
     
-    init(uiUtilityProvider: UIUtilityProviderAPI = UIUtilityProvider.default,
+    init(
          analyticsRecorder: AnalyticsEventRecorderAPI,
          interactor: SellCryptoScreenInteractor,
          routerInteractor: SellRouterInteractor,
@@ -44,7 +44,6 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
             maxButtonVisibility: .visible
         )
         super.init(
-            uiUtilityProvider: uiUtilityProvider,
             analyticsRecorder: analyticsRecorder,
             backwardsNavigation: backwardsNavigation,
             displayBundle: .sell(cryptoCurrency: interactor.data.source.currencyType.cryptoCurrency!),
@@ -74,7 +73,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
             .asObservable()
             .withLatestFrom(interactor.candidateOrderDetails)
             .compactMap { $0 }
-            .show(loader: uiUtilityProvider.loader, style: .circle)
+            .show(loader: loader, style: .circle)
             .flatMap(weak: interactor) { (interactor, candidateOrderDetails) -> Observable<Result<CTAData, Error>> in
                 Observable.zip(
                     interactor.currentKycState.asObservable(),
@@ -107,16 +106,16 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
             case .success(let data):
                 switch (data.kycState, data.isSimpleBuyEligible) {
                 case (.completed, false):
-                    self.uiUtilityProvider.loader.hide()
+                    self.loader.hide()
                     // TODO: inelligible
                 case (.completed, true):
                     self.createOrder(from: data.candidateOrderDetails) { [weak self] checkoutData in
-                        self?.uiUtilityProvider.loader.hide()
+                        self?.loader.hide()
                         self?.routerInteractor.nextFromSellCrypto(checkoutData: checkoutData)
                     }
                 case (.shouldComplete, _):
                     self.createOrder(from: data.candidateOrderDetails) { [weak self] checkoutData in
-                        self?.uiUtilityProvider.loader.hide()
+                        self?.loader.hide()
                         // TODO: KYC with checkout data
                     }
                 }

@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
@@ -20,13 +21,10 @@ final class BackupFundsCustodialRouter: BackupRouterAPI {
     
     private let navigationRouter: NavigationRouterAPI
     private var stateService: BackupRouterStateService!
-    private let serviceProvider: BackupFundsServiceProviderAPI
     private let disposeBag = DisposeBag()
     
-    init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
-         services: BackupFundsServiceProviderAPI = BackupFundsServiceProvider.default) {
+    init(navigationRouter: NavigationRouterAPI = NavigationRouter()) {
         self.navigationRouter = navigationRouter
-        self.serviceProvider = services
     }
     
     func start() {
@@ -58,11 +56,11 @@ final class BackupFundsCustodialRouter: BackupRouterAPI {
         case .backupFunds(let presentationType, let entry):
             showBackupFunds(presentationType: presentationType, entry: entry)
         case .recovery:
-            let presenter = RecoveryPhraseScreenPresenter(stateService: stateService, serviceProvider: serviceProvider)
+            let presenter = RecoveryPhraseScreenPresenter(stateService: stateService)
             let controller = RecoveryPhraseViewController(presenter: presenter)
             navigationRouter.navigationControllerAPI?.pushViewController(controller, animated: true)
         case .verification:
-            let presenter = VerifyBackupScreenPresenter(stateService: stateService, service: serviceProvider.recoveryPhraseVerifyingAPI)
+            let presenter = VerifyBackupScreenPresenter(stateService: stateService)
             let controller = VerifyBackupViewController(presenter: presenter)
             navigationRouter.navigationControllerAPI?.pushViewController(controller, animated: true)
         }

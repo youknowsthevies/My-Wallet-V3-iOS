@@ -6,12 +6,12 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
-import PlatformUIKit
-import RxSwift
-import RxRelay
 import BuySellKit
 import DIKit
+import PlatformKit
+import PlatformUIKit
+import RxRelay
+import RxSwift
 
 final class DashboardScreenInteractor {
     
@@ -39,9 +39,9 @@ final class DashboardScreenInteractor {
          balanceProvider: BalanceProviding = DataProvider.default.balance,
          historicalProvider: HistoricalFiatPriceProviding = DataProvider.default.historicalPrices,
          balanceChangeProvider: BalanceChangeProviding = DataProvider.default.balanceChange,
-         paymentMethodsService: PaymentMethodsServiceAPI = DataProvider.default.buySell.paymentMethods,
+         paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
          enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-         featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
+         featureFetcher: FeatureFetching = resolve(),
          reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
          userPropertyInteractor: AnalyticsUserPropertyInteractor = AnalyticsUserPropertyInteractor()) {
         self.historicalProvider = historicalProvider

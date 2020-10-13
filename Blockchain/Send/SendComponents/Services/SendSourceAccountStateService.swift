@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import EthereumKit
 import Foundation
 import PlatformKit
@@ -44,7 +45,7 @@ final class SendSourceAccountStateService: SendSourceAccountStateServicing {
     
     // MARK: - Setup
     
-    init(asset: CryptoCurrency, ethereumService: EthereumWalletServiceAPI = EthereumWalletService.shared) {
+    init(asset: CryptoCurrency, ethereumService: EthereumWalletServiceAPI = resolve()) {
         self.asset = asset
         self.ethereumService = ethereumService
     }

@@ -36,7 +36,7 @@ public class KYCTiersViewController: UIViewController {
     fileprivate let drawerRouting: DrawerRouting = resolve()
     fileprivate var layoutAttributes: LayoutAttributes = .tiersOverview
     fileprivate var coordinator: KYCTiersCoordinator!
-    private let loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared
+    private let loadingViewPresenter: LoadingViewPresenting = resolve()
     fileprivate var disposable: Disposable?
     private let analyticsRecorder: AnalyticsEventRecording = resolve()
     private let featureConfiguring: FeatureConfiguring = resolve()
@@ -296,12 +296,12 @@ extension KYCTiersViewController: KYCTiersInterface {
 extension KYCTiersViewController {
 
     public static func tiersMetadata(currency: FiatCurrency = .USD) -> Single<KYCTiersPageModel> {
-        let kycServiceProvider: KYCServiceProviderAPI = resolve()
+        let tiersService: KYCTiersServiceAPI = resolve()
 
         let tradeLimits = limitsAPI.getTradeLimits(withFiatCurrency: currency.code, ignoringCache: true)
             .optional()
             .catchErrorJustReturn(nil)
-        let tiers = kycServiceProvider.tiers.tiers
+        let tiers = tiersService.tiers
 
         return Single.zip(tradeLimits, tiers)
             .map { (values) -> (FiatValue, KYC.UserTiers) in

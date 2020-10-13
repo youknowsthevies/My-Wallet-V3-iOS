@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import RxSwift
 
@@ -29,7 +30,7 @@ final class TransferCancellationInteractor {
     // MARK: - Setup
     
     init(checkoutData: CheckoutData,
-         cancellationService: OrderCancellationServiceAPI) {
+         cancellationService: OrderCancellationServiceAPI = resolve()) {
         self.checkoutData = checkoutData
         self.cancellationService = cancellationService
     }

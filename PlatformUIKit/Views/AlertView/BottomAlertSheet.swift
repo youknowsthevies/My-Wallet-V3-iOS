@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 
 public enum BottomAlertType {
@@ -70,7 +71,7 @@ public class BottomAlertSheet: UIView {
     @IBOutlet var title: UILabel!
     @IBOutlet var subtitle: UILabel!
     
-    private let loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared
+    private let loadingViewPresenter: LoadingViewPresenting = resolve()
     private var model: Model!
     private var observer: NSKeyValueObservation?
     private var animator: UIDynamicAnimator!

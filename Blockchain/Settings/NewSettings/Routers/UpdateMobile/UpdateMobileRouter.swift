@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
@@ -19,7 +20,7 @@ final class UpdateMobileRouter {
     private let disposeBag = DisposeBag()
     
     init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
-         service: MobileSettingsServiceAPI = UserInformationServiceProvider.default.settings) {
+         service: MobileSettingsServiceAPI = resolve()) {
         self.serviceProvider = service
         self.navigationRouter = navigationRouter
     }

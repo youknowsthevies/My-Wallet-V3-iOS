@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -45,7 +46,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
     // MARK: - Setup
     
     init(routingInteractor: PendingOrderRoutingInteracting,
-         analyticsRecorder: AnalyticsEventRecording,
+         analyticsRecorder: AnalyticsEventRecording = resolve(),
          interactor: PendingOrderStateScreenInteractor) {
         self.analyticsRecorder = analyticsRecorder
         self.routingInteractor = routingInteractor

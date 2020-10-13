@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxRelay
 import RxSwift
 import ToolKit
@@ -37,7 +38,7 @@ public final class BuyTransferCancellationRoutingInteractor: TransferOrderRoutin
     private unowned let stateService: StateServiceAPI
     
     public init(stateService: StateServiceAPI,
-                analyticsRecorder: AnalyticsEventRecording) {
+                analyticsRecorder: AnalyticsEventRecording = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService
         _ = setup

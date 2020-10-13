@@ -7,6 +7,7 @@
 //
 
 import BitcoinKit
+import DIKit
 import EthereumKit
 import PlatformKit
 import RxSwift
@@ -62,25 +63,13 @@ public final class FeeService: FeeServiceAPI {
     private let ethereumFeeService: CryptoFeeService<EthereumTransactionFee>
     private let stellarFeeService: CryptoFeeService<StellarTransactionFee>
 
-    init(bitcoinFeeService: CryptoFeeService<BitcoinTransactionFee> = CryptoFeeService<BitcoinTransactionFee>.shared,
-         bitcoinCashFeeService: CryptoFeeService<BitcoinCashTransactionFee> = CryptoFeeService<BitcoinCashTransactionFee>.shared,
-         ethereumFeeService: CryptoFeeService<EthereumTransactionFee> = CryptoFeeService<EthereumTransactionFee>.shared,
-         stellarFeeService: CryptoFeeService<StellarTransactionFee> = CryptoFeeService<StellarTransactionFee>.shared) {
+    init(bitcoinFeeService: CryptoFeeService<BitcoinTransactionFee> = resolve(),
+         bitcoinCashFeeService: CryptoFeeService<BitcoinCashTransactionFee> = resolve(),
+         ethereumFeeService: CryptoFeeService<EthereumTransactionFee> = resolve(),
+         stellarFeeService: CryptoFeeService<StellarTransactionFee> = resolve()) {
         self.bitcoinFeeService = bitcoinFeeService
         self.bitcoinCashFeeService = bitcoinCashFeeService
         self.ethereumFeeService = ethereumFeeService
         self.stellarFeeService = stellarFeeService
     }
-}
-
-extension CryptoFeeService where FeeType == BitcoinTransactionFee {
-    static let shared: CryptoFeeService<FeeType> = CryptoFeeService<FeeType>()
-}
-
-extension CryptoFeeService where FeeType == BitcoinCashTransactionFee {
-    static let shared: CryptoFeeService<FeeType> = CryptoFeeService<FeeType>()
-}
-
-extension CryptoFeeService where FeeType == EthereumTransactionFee {
-    static let shared: CryptoFeeService<FeeType> = CryptoFeeService<FeeType>()
 }

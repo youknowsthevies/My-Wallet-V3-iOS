@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -25,16 +26,14 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
     
     private let disposeBag = DisposeBag()
     
-    init(uiUtilityProvider: UIUtilityProviderAPI = UIUtilityProvider.default,
-         analyticsRecorder: AnalyticsEventRecorderAPI,
-         router: RouterAPI,
+    init(router: RouterAPI,
          stateService: CheckoutServiceAPI,
-         interactor: BuyCryptoScreenInteractor) {
+         interactor: BuyCryptoScreenInteractor,
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.interactor = interactor
         self.stateService = stateService
         self.router = router
         super.init(
-            uiUtilityProvider: uiUtilityProvider,
             analyticsRecorder: analyticsRecorder,
             backwardsNavigation: {
                 stateService.previousRelay.accept(())
@@ -77,7 +76,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             .asObservable()
             .withLatestFrom(interactor.candidateOrderDetails)
             .compactMap { $0 }
-            .show(loader: uiUtilityProvider.loader, style: .circle)
+            .show(loader: loader, style: .circle)
             .flatMap(weak: interactor) { (interactor, candidateOrderDetails) in
                 Observable
                     .zip(
@@ -139,16 +138,16 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 case .success(let data):
                     switch (data.kycState, data.isSimpleBuyEligible) {
                     case (.completed, false):
-                        self.uiUtilityProvider.loader.hide()
+                        self.loader.hide()
                         self.stateService.ineligible()
                     case (.completed, true):
                         self.createOrder(from: data.candidateOrderDetails) { [weak self] checkoutData in
-                            self?.uiUtilityProvider.loader.hide()
+                            self?.loader.hide()
                             self?.stateService.nextFromBuyCrypto(with: checkoutData)
                         }
                     case (.shouldComplete, _):
                         self.createOrder(from: data.candidateOrderDetails) { [weak self] checkoutData in
-                            self?.uiUtilityProvider.loader.hide()
+                            self?.loader.hide()
                             self?.stateService.kyc(with: checkoutData)
                         }
                     }
@@ -169,7 +168,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
         // Bind to the pairs the user is able to buy
         
         interactor.pairsCalculationState
-            .handle(loadingViewPresenter: uiUtilityProvider.loader)
+            .handle(loadingViewPresenter: loader)
             .bindAndCatch(weak: self) { (self, state) in
                 guard case .invalid(.valueCouldNotBeCalculated) = state else {
                     return

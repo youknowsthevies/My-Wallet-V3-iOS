@@ -41,8 +41,6 @@ final class SettingsRouter: SettingsRouterAPI {
     private let guidRepositoryAPI: GuidRepositoryAPI
     private let analyticsRecording: AnalyticsEventRecording
     private let alertPresenter: AlertViewPresenter
-    private let cardsServiceProvider: CardServiceProviderAPI
-    private let simpleBuyServiceProvider: ServiceProviderAPI
     private var cardRouter: CardRouter!
     
     private let navigationRouter: NavigationRouterAPI
@@ -62,15 +60,12 @@ final class SettingsRouter: SettingsRouterAPI {
          navigationRouter: NavigationRouterAPI = NavigationRouter(),
          analyticsRecording: AnalyticsEventRecording = resolve(),
          alertPresenter: AlertViewPresenter = AlertViewPresenter.shared,
-         cardsServiceProvider: CardServiceProviderAPI = CardServiceProvider.default,
-         simpleBuyServiceProvider: ServiceProviderAPI = DataProvider.default.buySell,
+         cardListService: CardListServiceAPI = resolve(),
          currencyRouting: CurrencyRouting,
          tabSwapping: TabSwapping) {
         self.appCoordinator = appCoordinator
         self.builder = builder
         self.navigationRouter = navigationRouter
-        self.simpleBuyServiceProvider = simpleBuyServiceProvider
-        self.cardsServiceProvider = cardsServiceProvider
         self.alertPresenter = alertPresenter
         self.analyticsRecording = analyticsRecording
         self.currencyRouting = currencyRouting
@@ -91,8 +86,7 @@ final class SettingsRouter: SettingsRouterAPI {
         
         addCardCompletionRelay
             .bindAndCatch(weak: self) { (self) in
-                self.cardsServiceProvider
-                    .cardList
+                cardListService
                     .fetchCards()
                     .subscribe()
                     .disposed(by: self.disposeBag)
@@ -139,18 +133,14 @@ final class SettingsRouter: SettingsRouterAPI {
             viewController.modalPresentationStyle = .custom
             navigationRouter.topMostViewControllerProvider.topMostViewController?.present(viewController, animated: true, completion: nil)
         case .showAddCardScreen:
-            let interactor = CardRouterInteractor(
-                buySellServiceProvider: simpleBuyServiceProvider,
-                cardServiceProvider: cardsServiceProvider
-            )
+            let interactor = CardRouterInteractor()
             interactor
                 .completionCardData
                 .mapToVoid()
                 .bindAndCatch(to: addCardCompletionRelay)
                 .disposed(by: disposeBag)
             let builder = CardComponentBuilder(
-                routingInteractor: interactor,
-                recordingProvider: RecordingProvider.default
+                routingInteractor: interactor
             )
             cardRouter = CardRouter(
                 interactor: interactor,
@@ -167,7 +157,7 @@ final class SettingsRouter: SettingsRouterAPI {
         case .showChangePinScreen:
             AuthenticationCoordinator.shared.changePin()
         case .showCurrencySelectionScreen:
-            let settingsService = UserInformationServiceProvider.default.settings
+            let settingsService: FiatCurrencySettingsServiceAPI = resolve()
             settingsService
                 .fiatCurrency
                 .observeOn(MainScheduler.instance)
@@ -280,8 +270,9 @@ final class SettingsRouter: SettingsRouterAPI {
         
         interactor.selectedIdOnDismissal
             .map { FiatCurrency(code: $0)! }
-            .flatMap { currency in
-                UserInformationServiceProvider.default.settings
+            .flatMap { currency -> Single<FiatCurrency> in
+                let settings: FiatCurrencySettingsServiceAPI = resolve()
+                return settings
                     .update(
                         currency: currency,
                         context: .settings

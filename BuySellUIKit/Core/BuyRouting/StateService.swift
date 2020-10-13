@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import BuySellKit
 import PlatformKit
 import PlatformUIKit
@@ -160,31 +161,37 @@ public final class StateService: StateServiceAPI {
     public let previousRelay = PublishRelay<Void>()
 
     public let cache: EventCache
-    
-    private let uiUtilityProvider: UIUtilityProviderAPI
-    private let userInformationServiceProvider: UserInformationServiceProviding
+   
+    private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
+    private let paymentAccountService: PaymentAccountServiceAPI
+    private let pendingOrderDetailsService: PendingOrderDetailsServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let statesRelay = BehaviorRelay<States>(value: .inactive)
     private let actionRelay = PublishRelay<Action>()
-    private let recordingProvider: RecordingProviderAPI
-    private let serviceProvider: ServiceProviderAPI
+    private let loader: LoadingViewPresenting
+    private let alert: AlertViewPresenterAPI
+    private let messageRecorder: MessageRecording
     
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
-    public init(serviceProvider: ServiceProviderAPI,
-                uiUtilityProvider: UIUtilityProviderAPI,
-                recordingProvider: RecordingProviderAPI,
-                kycTiersService: KYCTiersServiceAPI,
-                cache: EventCache,
-                userInformationServiceProvider: UserInformationServiceProviding) {
-        self.serviceProvider = serviceProvider
+    public init(supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
+                paymentAccountService: PaymentAccountServiceAPI = resolve(),
+                pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve(),
+                kycTiersService: KYCTiersServiceAPI = resolve(),
+                cache: EventCache = resolve(),
+                loader: LoadingViewPresenting = resolve(),
+                alert: AlertViewPresenterAPI = resolve(),
+                messageRecorder: MessageRecording = resolve()) {
+        self.supportedPairsInteractor = supportedPairsInteractor
+        self.paymentAccountService = paymentAccountService
+        self.pendingOrderDetailsService = pendingOrderDetailsService
         self.kycTiersService = kycTiersService
-        self.userInformationServiceProvider = userInformationServiceProvider
-        self.uiUtilityProvider = uiUtilityProvider
-        self.recordingProvider = recordingProvider
         self.cache = cache
+        self.loader = loader
+        self.alert = alert
+        self.messageRecorder = messageRecorder
         
         nextRelay
             .observeOn(MainScheduler.instance)
@@ -197,11 +204,8 @@ public final class StateService: StateServiceAPI {
             .disposed(by: disposeBag)
     }
     
-    public func cardRoutingInteractor(with checkoutData: CheckoutData, cardServiceProvider: CardServiceProviderAPI) -> CardRouterInteractor {
-        let interactor = CardRouterInteractor(
-            buySellServiceProvider: serviceProvider,
-            cardServiceProvider: cardServiceProvider
-        )
+    public func cardRoutingInteractor(with checkoutData: CheckoutData) -> CardRouterInteractor {
+        let interactor = CardRouterInteractor()
         interactor.completionCardData
             .bindAndCatch(weak: self) { (self, cardData) in
                 let checkoutData = checkoutData.checkoutData(byAppending: cardData)
@@ -295,7 +299,7 @@ public final class StateService: StateServiceAPI {
         
     private func startFlow() {
         let cache = self.cache
-        let isFiatCurrencySupported: Single<Bool> = serviceProvider.supportedPairsInteractor.pairs
+        let isFiatCurrencySupported: Single<Bool> = supportedPairsInteractor.pairs
             .take(1)
             .asSingle()
             .map { !$0.pairs.isEmpty }
@@ -306,11 +310,11 @@ public final class StateService: StateServiceAPI {
                 
         Single
             .zip(
-                serviceProvider.pendingOrderDetails.pendingOrderDetails,
+                pendingOrderDetailsService.pendingOrderDetails,
                 isFiatCurrencySupported
             ) { (pendingOrderDetails: $0, isFiatCurrencySupported: $1) }
             .handleLoaderForLifecycle(
-                loader: uiUtilityProvider.loader,
+                loader: loader,
                 style: .circle
             )
             .flatMap { data -> Single<State> in
@@ -381,8 +385,8 @@ public final class StateService: StateServiceAPI {
                         states: self.states(byAppending: state)
                     )
                 },
-                onError: { [weak uiUtilityProvider] error in
-                    uiUtilityProvider?.alert.error(in: nil, action: nil)
+                onError: { [weak alert] error in
+                    alert?.error(in: nil, action: nil)
                 }
             )
             .disposed(by: disposeBag)
@@ -406,12 +410,12 @@ public final class StateService: StateServiceAPI {
     }
     
     private func statesByRemovingLast() -> States {
-        recordingProvider.message.record("removing state: \(statesRelay.value.current.debugDescription)")
+        messageRecorder.record("removing state: \(statesRelay.value.current.debugDescription)")
         return statesRelay.value.statesByRemovingLast()
     }
     
     private func states(byAppending state: State) -> States {
-        recordingProvider.message.record("appending state: \(state.debugDescription)")
+        messageRecorder.record("appending state: \(state.debugDescription)")
         return statesRelay.value.states(byAppending: state)
     }
 }

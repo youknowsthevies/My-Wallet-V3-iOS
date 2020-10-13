@@ -12,6 +12,7 @@ import RxCocoa
 import RxSwift
 
 public class ERC20AssetAccountRepository<Token: ERC20Token>: AssetAccountRepositoryAPI {
+    
     public typealias Details = ERC20AssetAccountDetails
     
     public var assetAccountDetails: Single<Details> {

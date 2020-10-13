@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
@@ -43,17 +44,22 @@ final class RecoveryPhraseScreenPresenter {
     // MARK: - Injected
     
     private let stateService: BackupRouterStateService
+    private var recoveryPhraseVerifying: RecoveryPhraseVerifyingServiceAPI
+    
     private let disposeBag = DisposeBag()
     
     // MARK: - Init
     
     init(stateService: BackupRouterStateService,
-         serviceProvider: BackupFundsServiceProviderAPI) {
+         mnemonicAccess: MnemonicAccessAPI = resolve(),
+         mnemonicComponentsProviding: MnemonicComponentsProviding = resolve(),
+         recoveryPhraseVerifying: RecoveryPhraseVerifyingServiceAPI = resolve()) {
         self.stateService = stateService
+        self.recoveryPhraseVerifying = recoveryPhraseVerifying
         
         recoveryViewModel = RecoveryPhraseViewModel(
-            mnemonicAPI: serviceProvider.mnemonicAccessAPI,
-            mnemonicComponentsProviding: serviceProvider.mnemonicComponentsProviding
+            mnemonicAPI: mnemonicAccess,
+            mnemonicComponentsProviding: mnemonicComponentsProviding
         )
         
         nextViewModel = .primary(
@@ -76,10 +82,10 @@ final class RecoveryPhraseScreenPresenter {
         )
         
         nextViewModel.tapRelay
-            .withLatestFrom(serviceProvider.mnemonicComponentsProviding.components)
-            .bind { components in
-                serviceProvider.recoveryPhraseVerifyingAPI.phraseComponents = components
-                serviceProvider.recoveryPhraseVerifyingAPI.selection = components.pick(3)
+            .withLatestFrom(mnemonicComponentsProviding.components)
+            .bind { [weak self] components in
+                self?.recoveryPhraseVerifying.phraseComponents = components
+                self?.recoveryPhraseVerifying.selection = components.pick(3)
                 stateService.nextRelay.accept(())
             }
             .disposed(by: disposeBag)

@@ -76,7 +76,7 @@ class SendPaxViewController: UIViewController {
         
     private var coordinator: SendPaxCoordinator!
     private let alertViewPresenter: AlertViewPresenter = AlertViewPresenter.shared
-    private let loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared
+    private let loadingViewPresenter: LoadingViewPresenting = resolve()
     private var qrScannerViewModel: QRCodeScannerViewModel<AddressQRCodeParser>?
     private let analyticsRecorder: AnalyticsEventRecording = resolve()
     

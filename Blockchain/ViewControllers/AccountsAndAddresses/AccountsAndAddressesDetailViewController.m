@@ -165,7 +165,7 @@ typedef enum {
 - (void)setDefaultAccount:(int)account
 {
     if (self.assetType == LegacyAssetTypeBitcoin)
-        [LoadingViewPresenter.sharedInstance showWith:[LocalizationConstantsObjcBridge syncingWallet]];
+        [LoadingViewPresenter.shared showWith:[LocalizationConstantsObjcBridge syncingWallet]];
     [WalletManager.sharedInstance.wallet setDefaultAccount:account assetType:self.assetType];
 }
 
@@ -176,14 +176,14 @@ typedef enum {
         NSArray *activeLegacyAddresses = [WalletManager.sharedInstance.wallet activeLegacyAddresses:self.assetType];
 
         if (![WalletManager.sharedInstance.wallet didUpgradeToHd] && [activeLegacyAddresses count] == 1 && [[activeLegacyAddresses firstObject] isEqualToString:self.address]) {
-            [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_AT_LEAST_ONE_ADDRESS_REQUIRED in:self handler: nil];
+            [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_AT_LEAST_ONE_ADDRESS_REQUIRED in:self handler: nil];
         } else {
-            [LoadingViewPresenter.sharedInstance showWith:[LocalizationConstantsObjcBridge syncingWallet]];
+            [LoadingViewPresenter.shared showWith:[LocalizationConstantsObjcBridge syncingWallet]];
             [self performSelector:@selector(toggleArchiveLegacyAddress) withObject:nil afterDelay:ANIMATION_DURATION];
         }
     } else {
         if (self.assetType == LegacyAssetTypeBitcoin)
-            [LoadingViewPresenter.sharedInstance showWith:[LocalizationConstantsObjcBridge syncingWallet]];
+            [LoadingViewPresenter.shared showWith:[LocalizationConstantsObjcBridge syncingWallet]];
         [self performSelector:@selector(toggleArchiveAccount) withObject:nil afterDelay:ANIMATION_DURATION];
     }
 }

@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -61,7 +62,7 @@ final class PasswordRequiredScreenPresenter {
     
     // MARK: - Setup
     
-    init(loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
+    init(loadingViewPresenter: LoadingViewPresenting = resolve(),
          onboardingRouter: OnboardingRouter = AppCoordinator.shared.onboardingRouter,
          launchAnnouncementPresenter: LaunchAnnouncementPresenter = LaunchAnnouncementPresenter(),
          interactor: PasswordRequiredScreenInteractor = PasswordRequiredScreenInteractor(),

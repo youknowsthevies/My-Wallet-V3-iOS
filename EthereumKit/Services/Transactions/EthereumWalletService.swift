@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import DIKit
 import BigInt
+import DIKit
 import PlatformKit
 import RxSwift
 
@@ -32,13 +32,13 @@ public protocol EthereumWalletServiceAPI {
     func send(transaction: EthereumTransactionCandidate) -> Single<EthereumTransactionPublished>
 }
 
-public final class EthereumWalletService: EthereumWalletServiceAPI {
+final class EthereumWalletService: EthereumWalletServiceAPI {
     
-    public var fetchHistoryIfNeeded: Single<Void> {
+    var fetchHistoryIfNeeded: Single<Void> {
         bridge.history
     }
 
-    public var handlePendingTransaction: Single<Void> {
+    var handlePendingTransaction: Single<Void> {
         bridge.isWaitingOnTransaction
             .flatMap { isWaiting -> Single<Void> in
                 guard !isWaiting else {
@@ -71,15 +71,15 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
     private let walletAccountRepository: EthereumWalletAccountRepositoryAPI
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
     private let transactionSendingService: EthereumTransactionSendingServiceAPI
-    private let transactionValidationService: ValidateTransactionAPI
+    private let transactionValidationService: EthereumTransactionValidationService
 
-    public init(with bridge: EthereumWalletBridgeAPI = resolve(),
-                client: APIClientAPI = resolve(),
-                feeService: AnyCryptoFeeService<EthereumTransactionFee>,
-                walletAccountRepository: EthereumWalletAccountRepositoryAPI,
-                transactionBuildingService: EthereumTransactionBuildingServiceAPI,
-                transactionSendingService: EthereumTransactionSendingServiceAPI,
-                transactionValidationService: ValidateTransactionAPI) {
+    init(with bridge: EthereumWalletBridgeAPI = resolve(),
+         client: APIClientAPI = resolve(),
+         feeService: AnyCryptoFeeService<EthereumTransactionFee> = resolve(),
+         walletAccountRepository: EthereumWalletAccountRepositoryAPI = resolve(),
+         transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
+         transactionSendingService: EthereumTransactionSendingServiceAPI = resolve(),
+         transactionValidationService: EthereumTransactionValidationService = resolve()) {
         self.bridge = bridge
         self.client = client
         self.feeService = feeService
@@ -89,14 +89,14 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
         self.transactionValidationService = transactionValidationService
     }
     
-    public func evaluate(amount: EthereumValue) -> Single<TransactionValidationResult> {
+    func evaluate(amount: EthereumValue) -> Single<TransactionValidationResult> {
         handlePendingTransactionResult.flatMap(weak: self) { (self, result) -> Single<TransactionValidationResult> in
             guard result.isOk else { return .just(result) }
             return self.transactionValidationService.validateCryptoAmount(amount: amount)
         }
     }
     
-    public func buildTransaction(with value: EthereumValue, to: EthereumAddress) -> Single<EthereumTransactionCandidate> {
+    func buildTransaction(with value: EthereumValue, to: EthereumAddress) -> Single<EthereumTransactionCandidate> {
         handlePendingTransactionResult.flatMap(weak: self) { (self, result) -> Single<EthereumTransactionCandidate> in
             // Throw error if received from earlier step
             if let error = result.error { throw error }
@@ -104,7 +104,7 @@ public final class EthereumWalletService: EthereumWalletServiceAPI {
         }
     }
     
-    public func send(transaction: EthereumTransactionCandidate) -> Single<EthereumTransactionPublished> {
+    func send(transaction: EthereumTransactionCandidate) -> Single<EthereumTransactionPublished> {
         handlePendingTransaction
             .flatMap(weak: self) { (self, _) -> Single<EthereumKeyPair> in
                 self.loadKeyPair

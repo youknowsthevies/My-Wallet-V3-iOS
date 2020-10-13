@@ -62,7 +62,7 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
     private var countryCode: String?
 
     private var presenter: KYCVerifyIdentityPresenter!
-    private let loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared
+    private let loadingViewPresenter: LoadingViewPresenting = resolve()
     let analyticsRecorder: AnalyticsEventRecording = resolve()
 
     private var countrySupportedTrigger: ActionableTrigger!

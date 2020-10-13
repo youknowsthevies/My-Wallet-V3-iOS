@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import DIKit
 import BigInt
+import DIKit
 import PlatformKit
 import RxSwift
 import web3swift
@@ -17,13 +17,14 @@ public enum EthereumTransactionCreationServiceError: Error {
     case nullReferenceError
 }
 
-public protocol EthereumTransactionSendingServiceAPI {
+protocol EthereumTransactionSendingServiceAPI {
+    
     func send(transaction: EthereumTransactionCandidate, keyPair: EthereumKeyPair) -> Single<EthereumTransactionPublished>
 }
 
-public final class EthereumTransactionSendingService: EthereumTransactionSendingServiceAPI {
+final class EthereumTransactionSendingService: EthereumTransactionSendingServiceAPI {
     
-    public typealias Bridge = EthereumWalletBridgeAPI
+    typealias Bridge = EthereumWalletBridgeAPI
     
     private let bridge: Bridge
     private let client: APIClientAPI
@@ -32,29 +33,13 @@ public final class EthereumTransactionSendingService: EthereumTransactionSending
     private let transactionSigner: EthereumTransactionSignerAPI
     private let transactionEncoder: EthereumTransactionEncoderAPI
 
-    public convenience init(
-        with bridge: Bridge,
-        feeService: AnyCryptoFeeService<EthereumTransactionFee>,
-        transactionBuilder: EthereumTransactionBuilderAPI,
-        transactionSigner: EthereumTransactionSignerAPI,
-        transactionEncoder: EthereumTransactionEncoderAPI) {
-        self.init(
-            with: bridge,
-            client: resolve(),
-            feeService: feeService,
-            transactionBuilder: transactionBuilder,
-            transactionSigner: transactionSigner,
-            transactionEncoder: transactionEncoder
-        )
-    }
-
-    public init(
-        with bridge: Bridge,
-        client: APIClientAPI,
-        feeService: AnyCryptoFeeService<EthereumTransactionFee>,
-        transactionBuilder: EthereumTransactionBuilderAPI,
-        transactionSigner: EthereumTransactionSignerAPI,
-        transactionEncoder: EthereumTransactionEncoderAPI) {
+    init(
+        with bridge: Bridge = resolve(),
+        client: APIClientAPI = resolve(),
+        feeService: AnyCryptoFeeService<EthereumTransactionFee> = resolve(),
+        transactionBuilder: EthereumTransactionBuilderAPI = resolve(),
+        transactionSigner: EthereumTransactionSignerAPI = resolve(),
+        transactionEncoder: EthereumTransactionEncoderAPI = resolve()) {
         self.bridge = bridge
         self.client = client
         self.feeService = feeService
@@ -63,7 +48,7 @@ public final class EthereumTransactionSendingService: EthereumTransactionSending
         self.transactionEncoder = transactionEncoder
     }
     
-    public func send(transaction: EthereumTransactionCandidate, keyPair: EthereumKeyPair) -> Single<EthereumTransactionPublished> {
+    func send(transaction: EthereumTransactionCandidate, keyPair: EthereumKeyPair) -> Single<EthereumTransactionPublished> {
         finalise(transaction: transaction, keyPair: keyPair)
             .flatMap(weak: self) { (self, transaction) -> Single<EthereumTransactionPublished> in
                 assert(transaction.web3swiftTransaction.intrinsicChainID == NetworkId.mainnet.rawValue)

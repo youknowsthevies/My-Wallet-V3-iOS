@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformUIKit
 import RxCocoa
 import RxRelay
@@ -27,7 +28,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
     // MARK: - Setup
     
     init(presenter: BillingAddressScreenPresenter,
-         alertViewPresenter: AlertViewPresenterAPI) {
+         alertViewPresenter: AlertViewPresenterAPI = resolve()) {
         self.presenter = presenter
         self.alertViewPresenter = alertViewPresenter
         super.init()

@@ -29,9 +29,6 @@ protocol AirdropCenterServiceAPI: class {
 /// TODO: Move into `PlatformKit` when https://blockchain.atlassian.net/browse/IOS-2724 is merged
 final class AirdropCenterService: AirdropCenterServiceAPI {
             
-    /// TODO: Remove `shared` and place in `UserInformationServiceProvider`.
-    static let shared = AirdropCenterService()
-    
     var campaignsCalculationState: Observable<ValueCalculationState<AirdropCampaigns>> {
         campaignsCalculationStateRelay.asObservable()
     }

@@ -67,8 +67,10 @@ class SideMenuPresenter {
         wallet: Wallet = WalletManager.shared.wallet,
         walletService: WalletOptionsAPI = resolve(),
         reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
-        featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
-        exchangeConfiguration: AppFeatureConfiguration = AppFeatureConfigurator.shared.configuration(for: .exchangeLinking),
+        featureFetcher: FeatureFetching = resolve(),
+        exchangeConfiguration: AppFeatureConfiguration = { () -> AppFeatureConfigurator in
+            resolve()
+        }().configuration(for: .exchangeLinking),
         onboardingSettings: BlockchainSettings.Onboarding = .shared,
         analyticsRecorder: AnalyticsEventRecording = resolve()
     ) {

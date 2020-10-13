@@ -37,25 +37,22 @@ class TradeExecutionService: TradeExecutionAPI {
         let stellar: StellarDependenciesAPI
         let paxService: AnyERC20Service<PaxToken>
         let paxAccountRepository: ERC20AssetAccountRepository<PaxToken>
-        var ethereumWalletService: EthereumWalletServiceAPI {
-            paxServiceProvider.services.walletService
-        }
-
-        private let paxServiceProvider: PAXServiceProvider
+        let ethereumWalletService: EthereumWalletServiceAPI
 
         init(
             paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = resolve(),
             repository: AssetAccountRepositoryAPI = AssetAccountRepository.shared,
             cryptoFeeService: FeeServiceAPI = FeeService.shared,
             xlmServiceProvider: StellarServiceProvider = StellarServiceProvider.shared,
-            serviceProvider: PAXServiceProvider = PAXServiceProvider.shared
+            ethereumWalletService: EthereumWalletServiceAPI = resolve(),
+            paxService: AnyERC20Service<PaxToken> = resolve()
         ) {
             self.paxAccountRepository = paxAccountRepository
-            assetAccountRepository = repository
-            feeService = cryptoFeeService
+            self.assetAccountRepository = repository
+            self.feeService = cryptoFeeService
             self.stellar = xlmServiceProvider.services
-            self.paxServiceProvider = serviceProvider
-            paxService = AnyERC20Service<PaxToken>(paxServiceProvider.services.paxService)
+            self.ethereumWalletService = ethereumWalletService
+            self.paxService = paxService
         }
     }
     

@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -66,8 +67,8 @@ final class VerifyBackupScreenPresenter {
     // MARK: - Init
     
     init(stateService: BackupRouterStateService,
-         service: RecoveryPhraseVerifyingServiceAPI,
-         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared) {
+         service: RecoveryPhraseVerifyingServiceAPI = resolve(),
+         loadingViewPresenter: LoadingViewPresenting = resolve()) {
         self.stateService = stateService
         self.loadingViewPresenter = loadingViewPresenter
         self.service = service

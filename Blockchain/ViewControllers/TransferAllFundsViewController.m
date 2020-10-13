@@ -40,7 +40,7 @@
     
     self.transferPaymentBuilder.on_before_send = ^() {
         NSString *text = [NSString stringWithFormat:BC_STRING_TRANSFER_ALL_FROM_ADDRESS_ARGUMENT_ARGUMENT, weakSelf.transferPaymentBuilder.transferAllAddressesInitialCount - [weakSelf.transferPaymentBuilder.transferAllAddressesToTransfer count] + 1, weakSelf.transferPaymentBuilder.transferAllAddressesInitialCount];
-        LoadingViewPresenter *loadingViewPresenter = [LoadingViewPresenter sharedInstance];
+        LoadingViewPresenter *loadingViewPresenter = [LoadingViewPresenter shared];
         [loadingViewPresenter showWith:text];
     };
     self.transferPaymentBuilder.delegate = self;

@@ -82,8 +82,8 @@ final class EthereumActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Init
 
-    init(alertViewPresenter: AlertViewPresenterAPI = AlertViewPresenter.shared,
-         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
+    init(alertViewPresenter: AlertViewPresenterAPI = resolve(),
+         loadingViewPresenter: LoadingViewPresenting = resolve(),
          event: TransactionalActivityItemEvent,
          router: ActivityRouterAPI,
          interactor: EthereumActivityDetailsInteractor = .init(),

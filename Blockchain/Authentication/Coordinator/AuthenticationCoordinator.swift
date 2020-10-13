@@ -63,7 +63,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     /// PATCH: Don't change until ReactiveWallet is fixed. This is here because `ReactiveWallet` keeps checking if
     /// the wallet is initialized during the wallet creation - which generate a crash.
     private lazy var exchangeRepository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository()
-    private lazy var supportedPairsInteractor: BuySellKit.SupportedPairsInteractorServiceAPI = DataProvider.default.buySell.supportedPairsInteractor
+    private lazy var supportedPairsInteractor: BuySellKit.SupportedPairsInteractorServiceAPI = resolve()
 
     /// TODO: Delete when `AuthenticationCoordinator` is removed
     /// Temporary handler since `AuthenticationManager` was refactored.
@@ -80,14 +80,14 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         
    // MARK: - Initializer
 
-    init(fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
+    init(fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve(),
          appSettings: BlockchainSettings.App = resolve(),
          sharedContainter: SharedContainerUserDefaults = .default,
          onboardingSettings: BlockchainSettings.Onboarding = .shared,
          wallet: Wallet = WalletManager.shared.wallet,
-         alertPresenter: AlertViewPresenter = AlertViewPresenter.shared,
+         alertPresenter: AlertViewPresenter = resolve(),
          walletManager: WalletManager = WalletManager.shared,
-         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
+         loadingViewPresenter: LoadingViewPresenting = resolve(),
          dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
          deepLinkRouter: DeepLinkRouter = DeepLinkRouter(),
          remoteNotificationServiceContainer: RemoteNotificationServiceContainer = .default) {

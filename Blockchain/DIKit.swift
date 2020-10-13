@@ -122,6 +122,11 @@ extension DependencyContainer {
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching
         }
+        
+        factory { () -> FeatureFetchingConfiguring in
+            let featureFetching: AppFeatureConfigurator = DIKit.resolve()
+            return featureFetching
+        }
 
         factory { () -> FeatureVariantFetching in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
@@ -130,21 +135,19 @@ extension DependencyContainer {
 
         // MARK: - UserInformationServiceProvider
 
-        single { UserInformationServiceProvider() as UserInformationServiceProviding }
-
         factory { () -> SettingsServiceAPI in
-            let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
-            return userInformationProvider.settings
+            let completeSettingsService: CompleteSettingsServiceAPI = DIKit.resolve()
+            return completeSettingsService
         }
 
         factory { () -> FiatCurrencyServiceAPI in
-            let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
-            return userInformationProvider.settings
+            let completeSettingsService: CompleteSettingsServiceAPI = DIKit.resolve()
+            return completeSettingsService
         }
 
         factory { () -> MobileSettingsServiceAPI in
-            let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
-            return userInformationProvider.settings
+            let completeSettingsService: CompleteSettingsServiceAPI = DIKit.resolve()
+            return completeSettingsService
         }
 
         // MARK: - DataProvider
@@ -156,17 +159,6 @@ extension DependencyContainer {
             return provider as DataProviding
         }
         
-        // MARK: - BuySellKit Service Provider
-        
-        factory { () -> BuySellKit.ServiceProviderAPI in
-            let provider: DataProvider = DIKit.resolve()
-            return provider.buySell
-        }
-        
-        // MARK: - Pax Service Provider
-        
-        factory { PAXServices() as PAXDependencies }
-
         // MARK: - Ethereum Wallet
 
         factory { () -> EthereumWallet in
@@ -208,6 +200,11 @@ extension DependencyContainer {
             let ethereum: EthereumWallet = DIKit.resolve()
             return ethereum
         }
+        
+        factory { () -> EthereumWalletAccountRepository.Bridge in
+            let ethereum: EthereumWallet = DIKit.resolve()
+            return ethereum as EthereumWalletAccountRepository.Bridge
+        }
 
         // MARK: - Stellar Wallet
 
@@ -227,6 +224,5 @@ extension DependencyContainer {
         
         // MARK: Simple Buy
         
-        factory { CardServiceProvider() as CardServiceProviderAPI }
     }
 }

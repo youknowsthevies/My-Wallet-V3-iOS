@@ -7,12 +7,12 @@
 //
 
 import BuySellKit
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
 import RxSwift
 import ToolKit
-import DIKit
 
 /// Provides an API for building sell components
 public protocol SellBuilderAPI: AnyObject {
@@ -61,32 +61,26 @@ public protocol SellBuilderAPI: AnyObject {
 /// Builds sell components
 public final class SellBuilder: SellBuilderAPI {
     
-    // MARK: - Properties
+    // MARK: - Public Properties
     
-    private let kycServiceProvider: KYCServiceProviderAPI
+    public let routerInteractor: SellRouterInteractor
+    
+    // MARK: - Private Properties
+    
     private let analyticsRecorder: AnalyticsEventRecorderAPI
-    private let recorderProvider: RecordingProviderAPI
-    private let userInformationProvider: UserInformationServiceProviding
     private let exchangeProvider: ExchangeProviding
     private let balanceProvider: BalanceProviding
-    private let buySellServiceProvider: BuySellKit.ServiceProviderAPI
-    public let routerInteractor: SellRouterInteractor
+    private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
     
     // MARK: - Setup
     
     public init(routerInteractor: SellRouterInteractor,
-                kycServiceProvider: KYCServiceProviderAPI,
                 analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-                recorderProvider: RecordingProviderAPI = resolve(),
-                userInformationProvider: UserInformationServiceProviding = resolve(),
-                buySellServiceProvider: BuySellKit.ServiceProviderAPI,
+                supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
                 exchangeProvider: ExchangeProviding = resolve(),
                 balanceProvider: BalanceProviding) {
-        self.kycServiceProvider = kycServiceProvider
         self.analyticsRecorder = analyticsRecorder
-        self.recorderProvider = recorderProvider
-        self.userInformationProvider = userInformationProvider
-        self.buySellServiceProvider = buySellServiceProvider
+        self.supportedPairsInteractor = supportedPairsInteractor
         self.exchangeProvider = exchangeProvider
         self.balanceProvider = balanceProvider
         self.routerInteractor = routerInteractor
@@ -102,8 +96,7 @@ public final class SellBuilder: SellBuilderAPI {
     public func accountSelectionViewController() -> UIViewController {
         let interactor = AccountPickerScreenInteractor(
             singleAccountsOnly: false,
-            action: .sell,
-            selectionService: buySellServiceProvider.accountSelectionService
+            action: .sell
         )
         let presenter = AccountPickerScreenPresenter(
             interactor: interactor,
@@ -116,8 +109,7 @@ public final class SellBuilder: SellBuilderAPI {
     public func fiatAccountSelectionViewController() -> UIViewController {
         let interactor = AccountPickerScreenInteractor(
             singleAccountsOnly: false,
-            action: .deposit,
-            selectionService: buySellServiceProvider.accountSelectionService
+            action: .deposit
         )
         let presenter = AccountPickerScreenPresenter(
             interactor: interactor,
@@ -129,20 +121,15 @@ public final class SellBuilder: SellBuilderAPI {
     
     public func sellCryptoViewController(data: SellCryptoInteractionData) -> UIViewController {
         let cryptoSelectionService = CryptoCurrencySelectionService(
-            service: buySellServiceProvider.supportedPairsInteractor,
+            service: supportedPairsInteractor,
             defaultSelectedData: data.source.currencyType.cryptoCurrency!
         )
         let interactor = SellCryptoScreenInteractor(
-            kycTiersService: kycServiceProvider.tiers,
-            pairsService: buySellServiceProvider.supportedPairsInteractor,
-            eligibilityService: buySellServiceProvider.eligibility,
             data: data,
             exchangeProvider: exchangeProvider,
             balanceProvider: balanceProvider,
-            fiatCurrencyService: userInformationProvider.settings,
             cryptoCurrencySelectionService: cryptoSelectionService,
-            initialActiveInput: .fiat,
-            orderCreationService: buySellServiceProvider.orderCreation
+            initialActiveInput: .fiat
         )
         let presenter = SellCryptoScreenPresenter(
             analyticsRecorder: analyticsRecorder,
@@ -164,12 +151,10 @@ public final class SellBuilder: SellBuilderAPI {
     
     public func pendingScreenViewController(for orderDetails: OrderDetails) -> UIViewController {
         let interactor = PendingOrderStateScreenInteractor(
-            orderDetails: orderDetails,
-            service: buySellServiceProvider.orderCompletion
+            orderDetails: orderDetails
         )
         let presenter = PendingOrderStateScreenPresenter(
             routingInteractor: SellPendingOrderRoutingInteractor(interactor: routerInteractor),
-            analyticsRecorder: recorderProvider.analytics,
             interactor: interactor
         )
         let viewController = PendingStateViewController(
@@ -180,17 +165,14 @@ public final class SellBuilder: SellBuilderAPI {
     
     public func transferCancellationViewController(data: CheckoutData) -> UIViewController {
         let interactor = TransferCancellationInteractor(
-            checkoutData: data,
-            cancellationService: buySellServiceProvider.orderCancellation
+            checkoutData: data
         )
         
         let presenter = TransferCancellationScreenPresenter(
             routingInteractor: SellTransferCancellationRoutingInteractor(
-                routingInteractor: routerInteractor,
-                analyticsRecording: recorderProvider.analytics
+                routingInteractor: routerInteractor
             ),
             currency: data.outputCurrency,
-            analyticsRecorder: recorderProvider.analytics,
             interactor: interactor
         )
         let viewController = TransferCancellationViewController(presenter: presenter)
@@ -199,25 +181,17 @@ public final class SellBuilder: SellBuilderAPI {
     
     public func checkoutScreenViewController(data: CheckoutData) -> UIViewController {
         let orderInteractor = SellOrderCheckoutInteractor(
-            fundsAndBankInteractor: .init(
-                paymentAccountService: buySellServiceProvider.paymentAccount,
-                orderQuoteService: buySellServiceProvider.orderQuote,
-                orderCreationService: buySellServiceProvider.orderCreation
-            )
+            fundsAndBankInteractor: FundsAndBankOrderCheckoutInteractor()
         )
         let interactor = CheckoutScreenInteractor(
-            confirmationService: buySellServiceProvider.orderConfirmation,
-            cancellationService: buySellServiceProvider.orderCancellation,
             orderCheckoutInterator: orderInteractor,
             checkoutData: data
         )
         let presenter = CheckoutScreenPresenter(
             checkoutRouting: SellCheckoutRoutingInteractor(
-                analyticsRecorder: recorderProvider.analytics,
                 interactor: routerInteractor
             ),
             contentReducer: SellCheckoutContentReducer(data: data),
-            analyticsRecorder: recorderProvider.analytics,
             interactor: interactor
         )
         let viewController = DetailsScreenViewController(presenter: presenter)
@@ -225,7 +199,10 @@ public final class SellBuilder: SellBuilderAPI {
     }
     
     public func ineligibleViewController() -> UIViewController {
-        let presenter = BuySellIneligibleScreenPresenter(interactor: .init(dataRepositoryAPI: buySellServiceProvider.dataRepository), router: routerInteractor)
+        let presenter = BuySellIneligibleScreenPresenter(
+            interactor: BuySellIneligibleScreenInteractor(),
+            router: routerInteractor
+        )
         let controller = BuySellIneligibleRegionViewController(presenter: presenter)
         return controller
     }

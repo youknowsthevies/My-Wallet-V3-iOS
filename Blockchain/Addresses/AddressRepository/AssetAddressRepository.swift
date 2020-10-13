@@ -12,8 +12,8 @@ import DIKit
 import ERC20Kit
 import EthereumKit
 import NetworkKit
-import RxSwift
 import PlatformKit
+import RxSwift
 import StellarKit
 import ToolKit
 
@@ -75,10 +75,9 @@ enum AssetAddressType {
     
     init(walletManager: WalletManager = WalletManager.shared,
          stellarWalletRepository: StellarWalletAccountRepository = resolve(),
-         paxAssetAccountRepository: ERC20AssetAccountRepository<PaxToken> = PAXServiceProvider.shared.services.assetAccountRepository,
-         tetherAssetAccountRepository: ERC20AssetAccountRepository<TetherToken> = TetherServiceProvider.shared.services.assetAccountRepository,
-         urlSession: URLSession = resolve()
-        ) {
+         paxAssetAccountRepository: ERC20AssetAccountRepository<PaxToken> = resolve(),
+         tetherAssetAccountRepository: ERC20AssetAccountRepository<TetherToken> = resolve(),
+         urlSession: URLSession = resolve()) {
         self.walletManager = walletManager
         self.stellarWalletAccountRepository = stellarWalletRepository
         self.paxAssetAccountRepository = paxAssetAccountRepository

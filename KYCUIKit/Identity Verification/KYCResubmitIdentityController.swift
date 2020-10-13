@@ -55,7 +55,7 @@ final class KYCResubmitIdentityController: KYCBaseViewController, ProgressableVi
     private var countryCode: String?
 
     private var presenter: KYCVerifyIdentityPresenter!
-    private let loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared
+    private let loadingViewPresenter: LoadingViewPresenting = resolve()
     let analyticsRecorder: AnalyticsEventRecording = resolve()
 
     // MARK: - KYCCoordinatorDelegate

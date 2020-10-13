@@ -18,14 +18,22 @@ public enum EthereumTransactionSignerError: Error {
     case incorrectChainId
 }
 
-public protocol EthereumTransactionSignerAPI {
-    func sign(transaction: EthereumTransactionCandidateCosted, nonce: BigUInt, keyPair: EthereumKeyPair) -> Result<EthereumTransactionCandidateSigned, EthereumTransactionSignerError>
+protocol EthereumTransactionSignerAPI {
+    
+    func sign(
+        transaction: EthereumTransactionCandidateCosted,
+        nonce: BigUInt,
+        keyPair: EthereumKeyPair
+    ) -> Result<EthereumTransactionCandidateSigned, EthereumTransactionSignerError>
 }
 
-public class EthereumTransactionSigner: EthereumTransactionSignerAPI {
-    public static let shared = EthereumTransactionSigner()
+final class EthereumTransactionSigner: EthereumTransactionSignerAPI {
     
-    public func sign(transaction: EthereumTransactionCandidateCosted, nonce: BigUInt, keyPair: EthereumKeyPair) -> Result<EthereumTransactionCandidateSigned, EthereumTransactionSignerError> {
+    func sign(
+        transaction: EthereumTransactionCandidateCosted,
+        nonce: BigUInt,
+        keyPair: EthereumKeyPair
+    ) -> Result<EthereumTransactionCandidateSigned, EthereumTransactionSignerError> {
         
         let mnemonics: Mnemonics
         do {

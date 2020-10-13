@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -45,12 +46,16 @@ final class SupportedPairsInteractorService: SupportedPairsInteractorServiceAPI 
     
     // MARK: - Setup
 
-    init(featureFetcher: FeatureFetching,
-         pairsService: SupportedPairsServiceAPI,
-         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI) {
+    init(featureFetcher: FeatureFetching = resolve(),
+         pairsService: SupportedPairsServiceAPI = resolve(),
+         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve()) {
         self.featureFetcher = featureFetcher
         self.pairsService = pairsService
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
+        
+        NotificationCenter.when(.logout) { [weak pairsRelay] _ in
+            pairsRelay?.accept(nil)
+        }
     }
 
     func fetch() -> Observable<SupportedPairs> {

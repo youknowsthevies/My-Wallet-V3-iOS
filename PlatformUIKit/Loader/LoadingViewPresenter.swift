@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import ToolKit
@@ -49,11 +50,8 @@ import UIKit
     // MARK: - Properties
     
     /// The shared instance of the loading view
-    public static let shared = LoadingViewPresenter()
-    
-    /// sharedInstance function declared so that the LoadingViewPresenter singleton can be accessed
-    /// from Obj-C. Should deprecate this once all Obj-c references have been removed.
-    @objc public class func sharedInstance() -> LoadingViewPresenter { shared }
+    @available(*, deprecated, message: "Don't use this, resolve using DIKit instead.")
+    @LazyInject @objc public static var shared: LoadingViewPresenter
 
     /// Returns `true` if the loader is currently visible and animating
     @objc public var isVisible: Bool {

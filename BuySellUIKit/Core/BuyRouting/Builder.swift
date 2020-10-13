@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import UIKit
 import RxSwift
 import BuySellKit
@@ -26,17 +27,14 @@ public final class Builder: Buildable {
     public let stateService: StateServiceAPI
     
     private let fiatCurrencyService: FiatCurrencyServiceAPI
-    private let serviceProvider: ServiceProviderAPI
-    private let recordingProvider: RecordingProviderAPI
-    
-    public init(fiatCurrencyService: FiatCurrencyServiceAPI,
-                serviceProvider: ServiceProviderAPI,
+    private let analytics: AnalyticsEventRecorderAPI
+
+    public init(fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
                 stateService: StateServiceAPI,
-                recordingProvider: RecordingProviderAPI) {
+                analytics: AnalyticsEventRecorderAPI = resolve()) {
         self.fiatCurrencyService = fiatCurrencyService
-        self.serviceProvider = serviceProvider
         self.stateService = stateService
-        self.recordingProvider = recordingProvider
+        self.analytics = analytics
     }
     
     /// Generates and returns the `DetailsScreenViewController` for funds transfer
@@ -54,7 +52,6 @@ public final class Builder: Buildable {
     /// - Returns: A `DetailsScreenViewController` that shows the funds transfer details
     public func fundsTransferDetailsViewController(for fiatCurrency: FiatCurrency, isOriginDeposit: Bool) -> UIViewController {
         let interactor = InteractiveFundsTransferDetailsInteractor(
-            paymentAccountService: self.serviceProvider.paymentAccount,
             fiatCurrency: fiatCurrency
         )
         
@@ -66,9 +63,9 @@ public final class Builder: Buildable {
         
         let presenter = FundsTransferDetailScreenPresenter(
             webViewRouter: webViewRouter,
-            analyticsRecorder: self.recordingProvider.analytics,
+            analyticsRecorder: analytics,
             interactor: interactor,
-            stateService: self.stateService,
+            stateService: stateService,
             isOriginDeposit: isOriginDeposit
         )
         let viewController = DetailsScreenViewController(presenter: presenter)

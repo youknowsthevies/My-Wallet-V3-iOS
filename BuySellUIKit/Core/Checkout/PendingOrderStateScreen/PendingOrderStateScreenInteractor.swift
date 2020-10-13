@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -38,7 +39,7 @@ final class PendingOrderStateScreenInteractor: Interactor {
     // MARK: - Setup
     
     init(orderDetails: OrderDetails,
-         service: PendingOrderCompletionServiceAPI) {
+         service: PendingOrderCompletionServiceAPI = resolve()) {
         self.orderDetails = orderDetails
         self.service = service
     }

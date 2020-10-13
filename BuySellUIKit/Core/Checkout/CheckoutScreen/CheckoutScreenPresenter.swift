@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -40,9 +41,10 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
     // MARK: - Injected
     
     private let analyticsRecorder: AnalyticsEventRecorderAPI
-    private let uiUtilityProvider: UIUtilityProviderAPI
     private let interactor: CheckoutScreenInteractor
     private let checkoutRouting: CheckoutRoutingInteracting
+    private let loader: LoadingViewPresenting
+    private let alert: AlertViewPresenterAPI
 
     // MARK: - Private Properties
     
@@ -53,12 +55,14 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
     
     init(checkoutRouting: CheckoutRoutingInteracting,
          contentReducer: CheckoutScreenContentReducing,
-         uiUtilityProvider: UIUtilityProviderAPI = UIUtilityProvider.default,
-         analyticsRecorder: AnalyticsEventRecorderAPI,
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+         loader: LoadingViewPresenting = resolve(),
+         alert: AlertViewPresenterAPI = resolve(),
          interactor: CheckoutScreenInteractor) {
         self.analyticsRecorder = analyticsRecorder
         self.checkoutRouting = checkoutRouting
-        self.uiUtilityProvider = uiUtilityProvider
+        self.loader = loader
+        self.alert = alert
         self.interactor = interactor
         self.contentReducer = contentReducer
 
@@ -76,18 +80,18 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
 
         contentReducer.continueButtonViewModel
             .tapRelay
-            .show(loader: uiUtilityProvider.loader, style: .circle)
+            .show(loader: loader, style: .circle)
             .flatMap(weak: self) { (self, _) in
                 self.interactor.continue()
                     .mapToResult()
             }
-            .hide(loader: uiUtilityProvider.loader)
+            .hide(loader: loader)
             .bindAndCatch(weak: self) { (self, result) in
                 switch result {
                 case .success(let data):
                     self.checkoutRouting.actionRelay.accept(.confirm(data.0, isOrderNew: data.1))
                 case .failure:
-                    self.uiUtilityProvider.alert.error(in: nil, action: nil)
+                    self.alert.error(in: nil, action: nil)
                 }
             }
             .disposed(by: disposeBag)
@@ -110,7 +114,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
     /// Should get called once, when the view has finished loading
     func viewDidLoad() {
         interactor.setup()
-            .handleLoaderForLifecycle(loader: uiUtilityProvider.loader, style: .circle)
+            .handleLoaderForLifecycle(loader: loader, style: .circle)
             .subscribe(
                 onSuccess: { [weak self] data in
                     guard let self = self else { return }
@@ -131,7 +135,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
             checkoutRouting.actionRelay.accept(.cancel(interactor.checkoutData))
         } else {
             interactor.cancelIfPossible()
-                .handleLoaderForLifecycle(loader: uiUtilityProvider.loader, style: .circle)
+                .handleLoaderForLifecycle(loader: loader, style: .circle)
                 .subscribe(
                     onSuccess: { [weak self] wasCancelled in
                         guard let self = self else { return }
@@ -161,7 +165,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
     
     /// Is called as the interaction setup fails
     private func setupDidFail() {
-        uiUtilityProvider.alert.error(in: nil) { [weak self] in
+        alert.error(in: nil) { [weak self] in
             self?.cancel()
         }
     }

@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 
@@ -23,7 +24,7 @@ final class OrderQuoteService: OrderQuoteServiceAPI {
 
     // MARK: - Setup
     
-    init(client: QuoteClientAPI) {
+    init(client: QuoteClientAPI = resolve()) {
         self.client = client
     }
     

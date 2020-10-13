@@ -19,10 +19,6 @@ import ToolKit
 class SendPaxCoordinator {
     
     private let interface: SendPAXInterface
-    private let serviceProvider: PAXServiceProvider
-    private var services: PAXDependencies {
-        serviceProvider.services
-    }
     
     private let analyticsRecorder: AnalyticsEventRecording
     
@@ -33,6 +29,10 @@ class SendPaxCoordinator {
     private let priceAPI: PriceServiceAPI
     private var isExecuting: Bool = false
     private var output: SendPaxOutput?
+    private let feeService: AnyCryptoFeeService<EthereumTransactionFee>
+    private let walletService: EthereumWalletServiceAPI
+    private let assetAccountRepository: ERC20AssetAccountRepository<PaxToken>
+    private let paxService: ERC20Service<PaxToken>
     
     /// The source of the address
     private var addressSource = SendAssetAddressSource.standard
@@ -42,24 +42,30 @@ class SendPaxCoordinator {
     private var exchangeAddressViewModel = ExchangeAddressViewModel(assetType: .pax)
 
     private var fees: Single<EthereumTransactionFee> {
-        services.feeService.fees
+        feeService.fees
     }
     
     init(
         interface: SendPAXInterface,
-        serviceProvider: PAXServiceProvider = PAXServiceProvider.shared,
         priceService: PriceServiceAPI = PriceService(),
         exchangeAddressPresenter: SendExchangeAddressStatePresenter,
         bus: WalletActionEventBus = WalletActionEventBus.shared,
-        analyticsRecorder: AnalyticsEventRecording = resolve()
+        analyticsRecorder: AnalyticsEventRecording = resolve(),
+        feeService: AnyCryptoFeeService<EthereumTransactionFee> = resolve(),
+        walletService: EthereumWalletServiceAPI = resolve(),
+        assetAccountRepository: ERC20AssetAccountRepository<PaxToken> = resolve(),
+        paxService: ERC20Service<PaxToken> = resolve()
     ) {
         self.interface = interface
-        self.calculator = SendPaxCalculator(erc20Service: serviceProvider.services.paxService)
-        self.serviceProvider = serviceProvider
+        self.calculator = SendPaxCalculator(erc20Service: resolve())
         self.priceAPI = priceService
         self.exchangeAddressPresenter = exchangeAddressPresenter
         self.bus = bus
         self.analyticsRecorder = analyticsRecorder
+        self.feeService = feeService
+        self.walletService = walletService
+        self.assetAccountRepository = assetAccountRepository
+        self.paxService = paxService
         if let controller = interface as? SendPaxViewController {
             controller.delegate = self
         }
@@ -147,7 +153,7 @@ extension SendPaxCoordinator {
     
     /// Returns metadata struct. See `Metadata`.
     private var metadata: Single<Metadata> {
-        let balance = services.assetAccountRepository.assetAccountDetails
+        let balance = assetAccountRepository.assetAccountDetails
             .map { details -> CryptoValue in
                 details.balance
             }
@@ -232,7 +238,7 @@ extension SendPaxCoordinator: SendPaxViewControllerDelegate {
     
     func onAppear() {
         
-        serviceProvider.services.walletService.fetchHistoryIfNeeded
+        walletService.fetchHistoryIfNeeded
             .subscribe()
             .disposed(by: bag)
         calculator.handle(event: .resume)
@@ -335,14 +341,14 @@ extension SendPaxCoordinator: SendPaxViewControllerDelegate {
         guard let model = output?.model else { return }
         guard let proposal = model.proposal else { return }
         guard case .valid(let address) = model.addressStatus else { return }
-        services.paxService.transfer(proposal: proposal, to: address.ethereumAddress)
+        paxService.transfer(proposal: proposal, to: address.ethereumAddress)
             .subscribeOn(MainScheduler.instance)
             .observeOn(MainScheduler.asyncInstance)
             .do(onSubscribe: { [weak self] in
                 self?.interface.apply(updates: [.loadingIndicatorVisibility(.visible)])
             })
             .flatMap(weak: self) { (self, candidate) -> Single<EthereumTransactionPublished> in
-                self.services.walletService.send(transaction: candidate)
+                self.walletService.send(transaction: candidate)
             }
             .observeOn(MainScheduler.instance)
             .do(onDispose: { [weak self] in

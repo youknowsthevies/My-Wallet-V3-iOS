@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import PlatformUIKit
@@ -35,7 +36,7 @@ typealias OnModalResumed = () -> Void
     private let loadingViewPresenter: LoadingViewPresenting
 
     private init(recorder: UIOperationRecording = CrashlyticsRecorder(),
-                 loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared) {
+                 loadingViewPresenter: LoadingViewPresenting = resolve()) {
         self.recorder = recorder
         self.loadingViewPresenter = loadingViewPresenter
         super.init()

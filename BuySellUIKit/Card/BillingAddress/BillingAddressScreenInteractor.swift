@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -44,8 +45,8 @@ final class BillingAddressScreenInteractor: Interactor {
     // MARK: - Setup
     
     init(cardData: CardData,
-         service: CardUpdateServiceAPI,
-         userDataRepository: DataRepositoryAPI,
+         service: CardUpdateServiceAPI = resolve(),
+         userDataRepository: DataRepositoryAPI = resolve(),
          routingInteractor: CardRouterInteractor) {
         self.cardData = cardData
         self.service = service

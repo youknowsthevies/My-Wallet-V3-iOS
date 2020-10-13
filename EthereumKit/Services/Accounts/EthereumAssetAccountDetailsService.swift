@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import DIKit
 import BigInt
+import DIKit
 import PlatformKit
 import RxSwift
 
@@ -29,12 +29,8 @@ public class EthereumAssetAccountDetailsService: AssetAccountDetailsAPI {
     private let client: APIClientAPI
 
     // MARK: - Setup
-
-    public convenience init(with bridge: EthereumWalletBridgeAPI) {
-        self.init(with: bridge, client: resolve())
-    }
-
-    public init(with bridge: EthereumWalletBridgeAPI, client: APIClientAPI) {
+    
+    init(with bridge: EthereumWalletBridgeAPI = resolve(), client: APIClientAPI = resolve()) {
         self.bridge = bridge
         self.client = client
     }
