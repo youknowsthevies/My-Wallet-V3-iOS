@@ -7,6 +7,7 @@
 //
 
 import DIKit
+import KYCKit
 import Firebase
 import PlatformKit
 import ToolKit
@@ -14,9 +15,12 @@ import ToolKit
 class DeepLinkHandler {
 
     private let appSettings: BlockchainSettings.App
+    private let kycSettings: KYCSettingsAPI
 
-    init(appSettings: BlockchainSettings.App = resolve()) {
+    init(appSettings: BlockchainSettings.App = resolve(),
+         kycSettings: KYCSettingsAPI = resolve()) {
         self.appSettings = appSettings
+        self.kycSettings = kycSettings
     }
 
     func handle(deepLink: String,
@@ -48,8 +52,8 @@ class DeepLinkHandler {
     }
 
     private func handleKycDocumentResubmission(_ params: [String: String]) {
-        appSettings.didTapOnDocumentResubmissionDeepLink = true
-        appSettings.documentResubmissionLinkReason = params[DeepLinkConstant.documentResubmissionReason]
+        kycSettings.didTapOnDocumentResubmissionDeepLink = true
+        kycSettings.documentResubmissionLinkReason = params[DeepLinkConstant.documentResubmissionReason]
     }
     
     private func handleExchangeLinking(_ params: [String: String]) {
@@ -58,6 +62,6 @@ class DeepLinkHandler {
     }
 
     private func handleKyc() {
-        appSettings.didTapOnKycDeepLink = true
+        kycSettings.didTapOnKycDeepLink = true
     }
 }

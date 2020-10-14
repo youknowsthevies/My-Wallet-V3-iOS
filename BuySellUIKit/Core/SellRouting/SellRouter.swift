@@ -31,7 +31,7 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
     
     public init(routingType: RoutingType = .modal,
                 navigationRouter: NavigationRouterAPI = NavigationRouter(),
-                kycRouter: KYCRouterAPI,
+                kycRouter: KYCRouterAPI = resolve(),
                 builder: SellBuilderAPI) {
         self.kycRouter = kycRouter
         self.navigationRouter = navigationRouter

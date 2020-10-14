@@ -12,6 +12,8 @@ import PlatformUIKit
 import RxSwift
 import SafariServices
 import ToolKit
+import KYCKit
+import KYCUIKit
 
 protocol ExchangeCreateDelegate: NumberKeypadViewDelegate {
     func onViewDidLoad()

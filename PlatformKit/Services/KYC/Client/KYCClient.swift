@@ -140,9 +140,9 @@ public final class KYCClient: KYCClientAPI {
     }
     
     public func selectCountry(country: String,
-                       state: String?,
-                       notifyWhenAvailable: Bool,
-                       jwtToken: String) -> Completable {
+                              state: String?,
+                              notifyWhenAvailable: Bool,
+                              jwtToken: String) -> Completable {
         struct Payload: Encodable {
             let jwt: String
             let countryCode: String

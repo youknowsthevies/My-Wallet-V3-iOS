@@ -62,7 +62,7 @@ final class SettingsScreenInteractor {
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
          pitConnectionAPI: PITConnectionStatusProviding = PITConnectionStatusProvider(),
          settingsAuthenticating: AppSettingsAuthenticating = resolve(),
-         tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
+         tiersService: KYCTiersServiceAPI = resolve(),
          wallet: Wallet = WalletManager.shared.wallet,
          cardsService: CardServiceProviderAPI = CardServiceProvider.default,
          simpleBuyService: ServiceProviderAPI = DataProvider.default.buySell,

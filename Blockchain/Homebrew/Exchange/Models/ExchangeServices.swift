@@ -35,7 +35,7 @@ struct ExchangeServices: ExchangeDependencies {
     let analyticsRecorder: AnalyticsEventRecording
     let fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
 
-    init() {
+    init(tradeLimits: TradeLimitsAPI = resolve(), analyticsRecorder: AnalyticsEventRecording = resolve()) {
         service = ExchangeService()
         markets = MarketsService()
         conversions = ExchangeConversionService()
@@ -45,8 +45,8 @@ struct ExchangeServices: ExchangeDependencies {
             wallet: WalletManager.shared.wallet,
             dependencies: TradeExecutionService.Dependencies()
         )
-        tradeLimits = TradeLimitsService()
-        analyticsRecorder = resolve()
         fiatCurrencySettingsService = UserInformationServiceProvider.default.settings
+        self.tradeLimits = tradeLimits
+        self.analyticsRecorder = analyticsRecorder
     }
 }

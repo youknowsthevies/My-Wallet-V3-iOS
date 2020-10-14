@@ -21,7 +21,7 @@ extension ServiceProvider {
             wallet: WalletManager.shared.reactiveWallet,
             settings: UserInformationServiceProvider.default.settings,
             dataRepository: BlockchainDataRepository.shared,
-            tiersService: KYCServiceProvider.default.tiers,
+            tiersService: resolve(),
             balanceProvider: balanceProvider,
             enabledFiatCurrencies: enabledCurrenciesService.allEnabledFiatCurrencies,
             featureFetcher: AppFeatureConfigurator.shared

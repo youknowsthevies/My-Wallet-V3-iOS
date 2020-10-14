@@ -16,6 +16,8 @@ import RxRelay
 import RxSwift
 import SafariServices
 import ToolKit
+import KYCKit
+import KYCUIKit
 
 final class SettingsRouter: SettingsRouterAPI {
     

@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformUIKit
 import SafariServices
 
@@ -15,8 +16,8 @@ public final class InterestDashboardAnnouncementRouter: InterestDashboardAnnounc
     private let router: KYCRouterAPI
     private let navigationRouterAPI: NavigationRouterAPI
     
-    public init(topMostViewControllerProvider: TopMostViewControllerProviding,
-                routerAPI: KYCRouterAPI,
+    public init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
+                routerAPI: KYCRouterAPI = resolve(),
                 navigationRouter: NavigationRouterAPI) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.router = routerAPI

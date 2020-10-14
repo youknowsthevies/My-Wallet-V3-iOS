@@ -11,25 +11,6 @@ import PlatformUIKit
 import SafariServices
 
 extension UIApplication {
-    @objc func openWebView(url: String, title: String, presentingViewController: UIViewController) {
-        guard let value = URL(string: url) else { return }
-        let controller = SFSafariViewController(url: value)
-        presentingViewController.present(controller, animated: true)
-    }
-
-    // Opens the mail application, if possible, otherwise, displays an error
-    @objc func openMailApplication() {
-        guard let mailURL = URL(string: "\(AssetConstants.URLSchemes.mail)://"), canOpenURL(mailURL) else {
-            AlertViewPresenter.shared.standardError(
-                message: NSString(
-                    format: LocalizationConstants.Errors.cannotOpenURLArg as NSString,
-                    AssetConstants.URLSchemes.mail
-                ) as String
-            )
-            return
-        }
-        open(mailURL)
-    }
 
     // MARK: - Open the AppStore at the app's page
 

@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import ERC20Kit
 import EthereumKit
 import PlatformKit
@@ -85,7 +86,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     init(repository: AuthenticatorRepositoryAPI = WalletManager.shared.repository,
          wallet: WalletProtocol = WalletManager.shared.wallet,
          dataRepository: BlockchainDataRepository = .shared,
-         tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
+         tiersService: KYCTiersServiceAPI = resolve(),
          exchangeService: ExchangeService = .shared,
          infoService: GeneralInformationServiceAPI = UserInformationServiceProvider.default.general,
          paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = PAXServiceProvider.shared.services.assetAccountRepository,

@@ -195,9 +195,7 @@ final class DashboardScreenPresenter {
             balanceChangeProvider: interactor.balanceChangeProvider,
             enabledCurrenciesService: interactor.enabledCurrenciesService
         )
-        noticePresenter = DashboardNoticePresenter(
-            interactor: .init(lockboxRepository: interactor.lockboxRepository)
-        )
+        noticePresenter = DashboardNoticePresenter()
         historicalBalanceCellPresenters = interactor
             .historicalBalanceInteractors
             .map { .init(interactor: $0) }

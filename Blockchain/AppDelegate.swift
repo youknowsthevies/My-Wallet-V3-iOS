@@ -17,12 +17,14 @@ import EthereumKit
 import Firebase
 import FirebaseCrashlytics
 import FirebaseDynamicLinks
+import KYCKit
+import KYCUIKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
-import TransactionUIKit
 import ToolKit
+import TransactionUIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -91,6 +93,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             DependencyContainer.buySellKit;
             DependencyContainer.activityKit;
             DependencyContainer.activityUIKit;
+            DependencyContainer.kycKit;
+            DependencyContainer.kycUIKit;
             DependencyContainer.blockchain;
         })
         // swiftlint:enable trailing_semicolon

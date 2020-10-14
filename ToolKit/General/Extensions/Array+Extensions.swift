@@ -7,17 +7,13 @@
 //
 
 import Foundation
+import Foundation
 
 extension Array {
-    
-    public subscript(safeIndex index: Int) -> Element? {
-        guard index >= 0, index < endIndex else {
-            return nil
-        }
 
-        return self[index]
-    }
-    
+    /// Randomly picks the given amount of elements.
+    ///
+    /// - parameter amount: The amount of elements to pick. 
     public func pick(_ amount: Int) -> Array<Element> {
         Array(shuffled().prefix(amount))
     }

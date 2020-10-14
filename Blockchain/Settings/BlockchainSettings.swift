@@ -13,6 +13,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 import ToolKit
+import KYCKit
 
 /**
  Settings for the current user.
@@ -24,7 +25,7 @@ final class BlockchainSettings: NSObject {
     // MARK: - App
 
     @objc(BlockchainSettingsApp)
-    class App: NSObject, AppSettingsAPI, AppSettingsAuthenticating, SwipeToReceiveConfiguring, CloudBackupConfiguring {
+    class App: NSObject, AppSettingsAPI, AppSettingsAuthenticating, SwipeToReceiveConfiguring, CloudBackupConfiguring, PermissionSettingsAPI {
 
         @Inject @objc static var shared: App
 
@@ -167,10 +168,6 @@ final class BlockchainSettings: NSObject {
         @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencySettingsServiceAPI`")
         var fiatCurrency: FiatCurrency {
             FiatCurrency(code: UserInformationServiceProvider.default.settings.legacyCurrency?.code ?? "USD")!
-        }
-
-        @objc func fiatSymbolFromCode(currencyCode: String) -> String? {
-            FiatCurrency(code: currencyCode)?.symbol
         }
 
         /// The first 5 characters of SHA256 hash of the user's password
@@ -370,40 +367,6 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        /// Determines if the user deep linked into the app using a document resubmission link. This
-        /// value is used to continue KYC'ing at the Verify Your Identity step.
-        var didTapOnDocumentResubmissionDeepLink: Bool {
-            get {
-                defaults.bool(forKey: UserDefaults.Keys.didTapOnDocumentResubmissionDeepLink.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.didTapOnDocumentResubmissionDeepLink.rawValue)
-            }
-        }
-
-        /// Determines if the user deep linked into the app using an email verification link. This
-        /// value is used to continue KYC'ing at the Verify Email step.
-        var didTapOnKycDeepLink: Bool {
-            get {
-                defaults.bool(forKey: UserDefaults.Keys.didTapOnKycDeepLink.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.didTapOnKycDeepLink.rawValue)
-            }
-        }
-
-        /// Property saved from parsing '' query param from document resubmission deeplink.
-        /// Used to pass reasons for initial verification failure to display in the Verify Your
-        /// Identity screen
-        var documentResubmissionLinkReason: String? {
-            get {
-                defaults.string(forKey: UserDefaults.Keys.documentResubmissionLinkReason.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.documentResubmissionLinkReason.rawValue)
-            }
-        }
-
         /// Users that are linking their Exchange account to their blockchain wallet will deep-link
         /// from the Exchange into the mobile app.
         var exchangeLinkIdentifier: String? {
@@ -465,10 +428,10 @@ final class BlockchainSettings: NSObject {
             didTapOnAirdropDeepLink = false
             didTapOnExchangeDeepLink = false
             didAttemptToRouteForAirdrop = false
-            didTapOnKycDeepLink = false
             exchangeLinkIdentifier = nil
 
-            KYCSettings.shared.reset()
+            let kycSettings: KYCSettingsAPI = resolve()
+            kycSettings.reset()
             AnnouncementRecorder.reset()
             DataProvider.default.buySell.cache.reset()
 

@@ -6,12 +6,13 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import BitcoinKit
 import BitcoinCashKit
+import BitcoinKit
 import BuySellKit
 import DIKit
 import ERC20Kit
 import EthereumKit
+import KYCKit
 import PlatformKit
 import PlatformUIKit
 import StellarKit
@@ -40,6 +41,12 @@ extension DependencyContainer {
         single { AnalyticsService() as AnalyticsServiceAPI }
         
         factory { CrashlyticsRecorder() as MessageRecording }
+
+        factory { LockboxRepository() as LockboxRepositoryAPI }
+
+        single { TradeLimitsService() as TradeLimitsAPI }
+
+        factory { BlockchainDataRepository.shared as DataRepositoryAPI }
 
         // MARK: - Send
 
@@ -71,6 +78,11 @@ extension DependencyContainer {
         factory { () -> AppSettingsAuthenticating in
             let app: BlockchainSettings.App = DIKit.resolve()
             return app as AppSettingsAuthenticating
+        }
+
+        factory { () -> PermissionSettingsAPI in
+            let app: BlockchainSettings.App = DIKit.resolve()
+            return app
         }
 
         // MARK: - WalletManager
@@ -126,6 +138,11 @@ extension DependencyContainer {
         }
 
         factory { () -> FiatCurrencyServiceAPI in
+            let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
+            return userInformationProvider.settings
+        }
+
+        factory { () -> MobileSettingsServiceAPI in
             let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
             return userInformationProvider.settings
         }

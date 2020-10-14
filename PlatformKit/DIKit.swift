@@ -98,17 +98,10 @@ extension DependencyContainer {
 
         single { EnabledCurrenciesService() as EnabledCurrenciesServiceAPI }
         
-        factory { KYCServiceProvider() as KYCServiceProviderAPI }
+        single { KYCServiceProvider() as KYCServiceProviderAPI }
         
         single { NabuUserService() as NabuUserServiceAPI }
-        
-        single { SettingsService() as CompleteSettingsServiceAPI }
-        
-        factory { () -> FiatCurrencySettingsServiceAPI in
-            let completeSettings: CompleteSettingsServiceAPI = DIKit.resolve()
-            return completeSettings as FiatCurrencySettingsServiceAPI
-        }
-        
+
         single { GeneralInformationService() as GeneralInformationServiceAPI }
         
         single { EmailVerificationService() as EmailVerificationServiceAPI }
@@ -146,7 +139,21 @@ extension DependencyContainer {
         factory { WalletCryptoService() as WalletCryptoServiceAPI }
 
         factory { TradingBalanceService() as TradingBalanceServiceAPI }
-        
+
+        // MARK: Settings
+
+        single { SettingsService() as CompleteSettingsServiceAPI }
+
+        factory { () -> FiatCurrencySettingsServiceAPI in
+            let completeSettings: CompleteSettingsServiceAPI = DIKit.resolve()
+            return completeSettings
+        }
+
+        factory { () -> EmailSettingsServiceAPI in
+            let completeSettings: CompleteSettingsServiceAPI = DIKit.resolve()
+            return completeSettings
+        }
+
         // MARK: Activity Services
         
         factory(tag: FiatCurrency.EUR) { FiatActivityItemEventService(fiatCurrency: .EUR) as FiatActivityItemEventServiceAPI }

@@ -45,7 +45,6 @@ extension UserDefaults {
         case passwordPartHash
         case pin
         case pinKey
-        case isCompletingKyc = "shouldShowKYCAnnouncementCard"
         case didTapOnAirdropDeepLink
         case swipeToReceiveEnabled = "swipeToReceive"
         case cloudBackupEnabled
@@ -55,13 +54,9 @@ extension UserDefaults {
         case hasSeenGetFreeXlmModal
         case didAttemptToRouteForAirdrop
         case didRegisterForAirdropCampaignSucceed
-        case kycLatestPage
         case didRequestCameraPermissions
         case didRequestMicrophonePermissions
         case didRequestNotificationPermissions
-        case didTapOnKycDeepLink
-        case didTapOnDocumentResubmissionDeepLink
-        case documentResubmissionLinkReason
         case exchangeLinkIdentifier = "pitLinkIdentifier"
         case didTapOnExchangeDeepLink = "didTapOnPitDeepLink"
         case walletIntroLatestLocation

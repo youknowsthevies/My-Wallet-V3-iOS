@@ -8,6 +8,8 @@
 
 import PlatformUIKit
 import SafariServices
+import KYCKit
+import KYCUIKit
 
 /// Protocol definition for a view that can be navigated to. Typically implemented by
 /// a UIViewController for easily adding a CTA in the top right corner.

@@ -8,6 +8,7 @@
 
 import BuySellKit
 import BuySellUIKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
 
@@ -20,9 +21,9 @@ extension BuySellUIKit.Router {
             cardServiceProvider: CardServiceProvider.default,
             userInformationProvider: UserInformationServiceProvider.default,
             builder: builder,
-            kycServiceProvider: KYCServiceProvider.default,
+            kycServiceProvider: resolve(),
             recordingProvider: RecordingProvider.default,
-            kycRouter: KYCCoordinator.shared,
+            kycRouter: resolve(),
             exchangeProvider: DataProvider.default.exchange
         )
     }

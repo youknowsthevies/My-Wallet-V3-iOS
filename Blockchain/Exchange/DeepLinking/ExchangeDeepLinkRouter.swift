@@ -7,6 +7,7 @@
 //
 
 import DIKit
+import PlatformKit
 
 class ExchangeDeepLinkRouter: DeepLinkRouting {
     

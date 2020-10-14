@@ -6,18 +6,18 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
 import StellarKit
 import ToolKit
+import KYCKit
+import KYCUIKit
 
 enum SwapCoordinatorEvent {
-    case confirmExchange(orderTransaction: OrderTransaction, conversion: Conversion)
     case sentTransaction(orderTransaction: OrderTransaction, conversion: Conversion)
-    case showTradeDetails(trade: ExchangeTradeCellModel)
 }
 
 protocol SwapCoordinatorAPI {
@@ -31,14 +31,9 @@ protocol SwapCoordinatorAPI {
     func canSwap() -> Single<Bool>
 }
 
-@objc class SwapCoordinator: NSObject, Coordinator, SwapCoordinatorAPI {
+class SwapCoordinator: SwapCoordinatorAPI {
 
     static let shared = SwapCoordinator()
-
-    // class function declared so that the SwapCoordinator singleton can be accessed from obj-C
-    @objc class func sharedInstance() -> SwapCoordinator {
-        SwapCoordinator.shared
-    }
     
     // MARK: - Private Properties
 
@@ -50,35 +45,12 @@ protocol SwapCoordinatorAPI {
     private var rootViewController: UIViewController?
 
     // MARK: - Entry Point
-
-    func start() {
-        disposable = canSwap()
-            .subscribeOn(MainScheduler.asyncInstance)
-            .observeOn(MainScheduler.instance)
-            .subscribe(onSuccess: { [weak self] result in
-                guard let this = self else { return }
-                switch result {
-                case true:
-                    this.showAppropriateExchange()
-                case false:
-                    this.routeToTiers()
-                }
-            }, onError: { [weak self] error in
-                guard let this = self else { return }
-                AlertViewPresenter.shared.standardError(
-                    title: LocalizationConstants.Errors.error,
-                    message: this.errorMessage(for: error),
-                    in: this.rootViewController
-                )
-                Logger.shared.error("Failed to get user: \(error.localizedDescription)")
-            })
-    }
     
     func canSwap() -> Single<Bool> {
         let user = BlockchainDataRepository.shared.nabuUserSingle
-        let tiers = KYCServiceProvider.default.tiers.tiers
+        let tiersService: KYCTiersServiceAPI = resolve()
         return Single.create(subscribe: { [unowned self] observer -> Disposable in
-            self.disposable = Single.zip(user, tiers)
+            self.disposable = Single.zip(user, tiersService.tiers)
                 .subscribeOn(MainScheduler.asyncInstance)
                 .observeOn(MainScheduler.instance)
                 .subscribe(onSuccess: { payload in
@@ -130,16 +102,6 @@ protocol SwapCoordinatorAPI {
             walletManager.wallet.createEthAccount(forExchange: nil)
         }
     }
-    
-    private func routeToTiers() {
-        guard let viewController = rootViewController else {
-            Logger.shared.error("View controller to present on is nil")
-            return
-        }
-        disposable = KYCTiersViewController.routeToTiers(
-            fromViewController: viewController
-        )
-    }
 
     // TICKET: IOS-1168 - Complete error handling TODOs throughout the KYC
     private func errorMessage(for error: Error) -> String {
@@ -156,56 +118,6 @@ protocol SwapCoordinatorAPI {
         }
     }
 
-    private func showAppropriateExchange() {
-        initXlmAccountIfNeeded { [unowned self] in
-            if !self.walletManager.wallet.hasEthAccount() {
-                self.createEthAccountForExchange()
-            } else {
-                self.showExchange()
-            }
-        }
-    }
-
-    private func showExchange(country: CountryData? = nil) {
-        guard let viewController = rootViewController else {
-            Logger.shared.error("View controller to present on is nil")
-            return
-        }
-        let listViewController = ExchangeListViewController.make(with: ExchangeServices())
-        navigationController = ExchangeNavigationController(
-            rootViewController: listViewController,
-            title: LocalizationConstants.Swap.swap
-        )
-        viewController.present(navigationController!, animated: true)
-    }
-
-    private func showCreateExchange(animated: Bool, country: CountryData? = nil) {
-        let exchangeCreateViewController = ExchangeCreateViewController.makeFromStoryboard()
-        if navigationController == nil {
-            guard let viewController = rootViewController else {
-                Logger.shared.error("View controller to present on is nil")
-                return
-            }
-            navigationController = ExchangeNavigationController(
-                rootViewController: exchangeCreateViewController,
-                title: LocalizationConstants.Swap.navigationTitle
-            )
-            viewController.topMostViewController?.present(navigationController!, animated: animated)
-        } else {
-            navigationController?.pushViewController(exchangeCreateViewController, animated: animated)
-        }
-    }
-
-    private func showConfirmExchange(orderTransaction: OrderTransaction, conversion: Conversion) {
-        guard let navigationController = navigationController else {
-            Logger.shared.error("No navigation controller found")
-            return
-        }
-        let model = ExchangeDetailPageModel(type: .confirm(orderTransaction, conversion))
-        let confirmController = ExchangeDetailViewController.make(with: model, dependencies: ExchangeServices())
-        navigationController.pushViewController(confirmController, animated: true)
-    }
-    
     private func showLockedExchange(orderTransaction: OrderTransaction, conversion: Conversion) {
         guard let root = UIApplication.shared.keyWindow?.rootViewController else {
             Logger.shared.error("No navigation controller found")
@@ -219,23 +131,10 @@ protocol SwapCoordinatorAPI {
         root.present(navController, animated: true, completion: nil)
     }
 
-    private func showTradeDetails(trade: ExchangeTradeCellModel) {
-        let model = ExchangeDetailPageModel(type: .overview(trade))
-        let detailViewController = ExchangeDetailViewController.make(
-            with: model,
-            dependencies: ExchangeServices()
-        )
-        navigationController?.pushViewController(detailViewController, animated: true)
-    }
-
     func handle(event: SwapCoordinatorEvent) {
         switch event {
-        case .confirmExchange(let orderTransaction, let conversion):
-            showConfirmExchange(orderTransaction: orderTransaction, conversion: conversion)
         case .sentTransaction(orderTransaction: let transaction, conversion: let conversion):
             showLockedExchange(orderTransaction: transaction, conversion: conversion)
-        case .showTradeDetails(let trade):
-            showTradeDetails(trade: trade)
         }
     }
 
@@ -246,6 +145,7 @@ protocol SwapCoordinatorAPI {
     private let bag: DisposeBag = DisposeBag()
 
     // MARK: - Lifecycle
+
     private init(
         walletManager: WalletManager = WalletManager.shared,
         exchangeService: ExchangeService = ExchangeService(),
@@ -256,25 +156,10 @@ protocol SwapCoordinatorAPI {
         self.exchangeService = exchangeService
         self.stellarAccountService = stellarAccountService
         self.stellarAccountRepository = stellarAccountRepository
-        super.init()        
     }
 
     deinit {
         disposable?.dispose()
         disposable = nil
-    }
-}
-
-// MARK: - Coordination
-@objc extension SwapCoordinator {
-    func start(rootViewController: UIViewController) {
-        self.rootViewController = rootViewController
-        start()
-    }
-}
-
-extension SwapCoordinator {
-    func subscribeToRates() {
-
     }
 }

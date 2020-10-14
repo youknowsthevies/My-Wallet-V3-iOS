@@ -63,6 +63,10 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: StellarKitTests
         randomExecutionOrder: true
+      - name: KYCKitTests
+        randomExecutionOrder: true
+      - name: KYCUIKitTests
+        randomExecutionOrder: true
       - name: BlockchainTests
         randomExecutionOrder: true
 schemes:
@@ -390,6 +394,8 @@ targets:
     - target: Localization
     - target: ActivityKit
     - target: ActivityUIKit
+    - target: KYCKit
+    - target: KYCUIKit
     - carthage: FIRAnalyticsConnector
       findFrameworks: false
       linkType: static
@@ -744,6 +750,65 @@ targets:
   InterestUIKitTests:
     dependencies:
     - target: InterestUIKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformUIKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    templates:
+    - FrameworkTest
+  KYCKit:
+    dependencies:
+    - target: PlatformKit
+    - target: NetworkKit
+    - target: ToolKit
+    - target: Localization
+    - carthage: DIKit
+    - carthage: RxSwift
+    scheme:
+      testTargets:
+      - KYCKitTests
+    templates:
+    - Framework
+  KYCKitTests:
+    dependencies:
+    - target: KYCKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    templates:
+    - FrameworkTest
+  KYCUIKit:
+    dependencies:
+    - target: KYCKit
+    - target: PlatformUIKit
+    - target: PlatformKit
+    - target: NetworkKit
+    - target: ToolKit
+    - target: KYCKit
+    - target: Localization
+    - carthage: DIKit
+    - carthage: RxRelay
+    - carthage: RxSwift
+    - carthage: RxCocoa
+    - carthage: Veriff
+    - carthage: WebRTC
+    scheme:
+      testTargets:
+      - KYCUIKitTests
+    templates:
+    - Framework
+  KYCUIKitTests:
+    dependencies:
+    - target: KYCUIKit
     sources:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/ToolKit

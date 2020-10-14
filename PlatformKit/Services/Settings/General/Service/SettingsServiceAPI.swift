@@ -14,9 +14,13 @@ public typealias CompleteSettingsServiceAPI = SettingsServiceAPI &
                                               LastTransactionSettingsUpdateServiceAPI &
                                               EmailNotificationSettingsServiceAPI &
                                               FiatCurrencySettingsServiceAPI &
-                                              UpdateMobileSettingsServiceAPI &
                                               SMSTwoFactorSettingsServiceAPI &
+                                              UpdateMobileSettingsServiceAPI &
                                               VerifyMobileSettingsServiceAPI
+
+public typealias MobileSettingsServiceAPI = UpdateMobileSettingsServiceAPI &
+                                            VerifyMobileSettingsServiceAPI &
+                                            SettingsServiceAPI
 
 public protocol SettingsServiceAPI: AnyObject {
     var valueSingle: Single<WalletSettings> { get }
@@ -49,7 +53,3 @@ public protocol BalanceSharingSettingsServiceAPI {
 public protocol SMSTwoFactorSettingsServiceAPI: SettingsServiceAPI {
     func smsTwoFactorAuthentication(enabled: Bool) -> Completable
 }
-
-public typealias MobileSettingsServiceAPI = UpdateMobileSettingsServiceAPI &
-                                            VerifyMobileSettingsServiceAPI &
-                                            SettingsServiceAPI

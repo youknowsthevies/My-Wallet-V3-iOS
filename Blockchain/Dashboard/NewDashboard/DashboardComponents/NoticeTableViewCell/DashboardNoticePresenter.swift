@@ -31,7 +31,7 @@ final class DashboardNoticePresenter {
     
     // MARK: - Setup
     
-    init(interactor: DashboardNoticeInteractor) {
+    init(interactor: DashboardNoticeInteractor = .init()) {
         self.interactor = interactor
     }
     

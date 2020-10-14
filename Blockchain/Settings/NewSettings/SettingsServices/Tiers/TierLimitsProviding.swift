@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -26,7 +26,7 @@ final class TierLimitsProvider: TierLimitsProviding {
         Observable.combineLatest(tiersService.tiers.asObservable(), fetchTriggerRelay).map { $0.0 }
     }
     
-    init(tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers) {
+    init(tiersService: KYCTiersServiceAPI = resolve()) {
         self.tiersService = tiersService
     }
 }

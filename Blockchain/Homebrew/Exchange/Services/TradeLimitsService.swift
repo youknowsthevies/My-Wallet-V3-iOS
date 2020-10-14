@@ -13,7 +13,7 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-class TradeLimitsService: TradeLimitsAPI {
+final class TradeLimitsService: TradeLimitsAPI {
 
     private let disposables = CompositeDisposable()
     

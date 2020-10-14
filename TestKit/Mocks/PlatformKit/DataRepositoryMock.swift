@@ -23,4 +23,14 @@ class DataRepositoryMock: DataRepositoryAPI {
     var user: Observable<User> {
         Observable.just(underlyingUser)
     }
+
+    var underlyingNabuUser: NabuUser!
+
+    func fetchNabuUser() -> Single<NabuUser> {
+        .just(underlyingNabuUser)
+    }
+
+    var nabuUserSingle: Single<NabuUser> {
+        .just(underlyingNabuUser)
+    }
 }

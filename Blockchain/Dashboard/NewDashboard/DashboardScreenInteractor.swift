@@ -21,7 +21,6 @@ final class DashboardScreenInteractor {
     let historicalProvider: HistoricalFiatPriceProviding
     let balanceChangeProvider: BalanceChangeProviding
     let reactiveWallet: ReactiveWalletAPI
-    let lockboxRepository: LockboxRepositoryAPI
     let userPropertyInteractor: AnalyticsUserPropertyInteractor
     
     let historicalBalanceInteractors: [HistoricalBalanceCellInteractor]
@@ -42,14 +41,12 @@ final class DashboardScreenInteractor {
          balanceChangeProvider: BalanceChangeProviding = DataProvider.default.balanceChange,
          paymentMethodsService: PaymentMethodsServiceAPI = DataProvider.default.buySell.paymentMethods,
          enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-         lockboxRepository: LockboxRepositoryAPI = LockboxRepository(),
          featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
          reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
          userPropertyInteractor: AnalyticsUserPropertyInteractor = AnalyticsUserPropertyInteractor()) {
         self.historicalProvider = historicalProvider
         self.balanceProvider = balanceProvider
         self.balanceChangeProvider = balanceChangeProvider
-        self.lockboxRepository = lockboxRepository
         self.reactiveWallet = reactiveWallet
         self.enabledCurrenciesService = enabledCurrenciesService
         self.userPropertyInteractor = userPropertyInteractor

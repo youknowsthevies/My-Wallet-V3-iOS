@@ -11,13 +11,6 @@ import PlatformKit
 /// Model for buy-sell trades.
 // TODO: integrate with Exchange trades.
 
-extension Trade {
-    static func demo() -> Trade {
-        let trade = Trade(pair: TradingPair(from: .bitcoin, to: .ethereum)!)
-        return trade
-    }
-}
-
 struct Trade: Decodable {
     
     let identifier: String
@@ -118,13 +111,13 @@ struct Trade: Decodable {
             )
         }
         
-        quantity = try values.decode(String.self, forKey: .quantity).toDecimal()
+        quantity = try values.decodeDecimalFromString(forKey: .quantity)
         refundAddress = try values.decode(String.self, forKey: .refundAddress)
-        price = try values.decode(String.self, forKey: .price).toDecimal()
+        price = try values.decodeDecimalFromString(forKey: .price)
         depositAddress = try values.decode(String.self, forKey: .depositAddress)
-        depositQuantity = try values.decode(String.self, forKey: .depositQuantity).toDecimal()
+        depositQuantity = try values.decodeDecimalFromString(forKey: .depositQuantity)
         withdrawalAddress = try values.decode(String.self, forKey: .withdrawlAddress)
-        withdrawalQuantity = try values.decode(String.self, forKey: .withdrawlQuantity).toDecimal()
+        withdrawalQuantity = try values.decodeDecimalFromString(forKey: .withdrawlQuantity)
         depositHash = try values.decode(String.self, forKey: .depositTxHash)
         withdrawalHash = try values.decode(String.self, forKey: .withdrawalTxHash)
     }

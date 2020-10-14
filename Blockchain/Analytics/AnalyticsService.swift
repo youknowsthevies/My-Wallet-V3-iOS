@@ -60,7 +60,7 @@ class AnalyticsService: AnalyticsServiceAPI {
     // MARK: Public Methods
     
     // Simple custom event with no parameters
-    func trackEvent(title: String, parameters: [String: Any]? = nil) {
+    func trackEvent(title: String, parameters: [String: Any]?) {
         queue.async { [weak self] in
             guard let self = self else { return }
             guard !title.isEmpty, !self.isReservedKey(title) else { return }

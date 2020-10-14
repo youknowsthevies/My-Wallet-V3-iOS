@@ -33,6 +33,21 @@ public extension String {
 }
 
 public extension String {
+    var isEmail: Bool {
+        let types: NSTextCheckingResult.CheckingType = [.link]
+        guard let detector = try? NSDataDetector(types: types.rawValue) else {
+            return false
+        }
+        var validated = false
+        let nsRange = NSRange(self.startIndex..<self.endIndex, in: self)
+        detector.enumerateMatches(in: self, range: nsRange) { (result, _, _) in
+            validated = result?.url?.scheme == "mailto"
+        }
+        return validated
+    }
+}
+
+public extension String {
     
     func count(of substring: String) -> Int {
         let components = self.components(separatedBy: substring)

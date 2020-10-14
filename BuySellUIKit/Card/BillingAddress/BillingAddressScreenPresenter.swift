@@ -212,7 +212,7 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
                     addressLine2: states[2],
                     city: states[3],
                     postcode: states[4],
-                    state: states[safeIndex: 5]
+                    state: states[safe: 5]
                 )
             }
         

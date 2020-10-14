@@ -39,6 +39,14 @@ extension NSMutableAttributedString {
 }
 
 extension NSAttributedString {
+
+    public static func lineBreak() -> NSAttributedString {
+        NSAttributedString(string: "\n")
+    }
+
+    public static func space() -> NSAttributedString {
+        NSAttributedString(string: " ")
+    }
     
     public convenience init(_ labelContent: LabelContent) {
         self.init(
@@ -94,7 +102,7 @@ extension NSAttributedString {
         }
         return copy() as! NSAttributedString
     }
-    
+
     public func asBulletPoint() -> NSAttributedString {
         let bullet = NSMutableAttributedString(
             string: "\u{2022} ",
@@ -116,9 +124,30 @@ extension NSAttributedString {
     }
 }
 
+extension NSMutableAttributedString {
+
+    /// Sets the foreground color of the substring `text` to the provided `color`
+    /// if `text` is within this attributed string's range.
+    ///
+    /// - Parameters:
+    ///   - color: the foreground color to set
+    ///   - text: the text to set a foreground color to
+    public func addForegroundColor(_ color: UIColor, to text: String) {
+        guard let range = string.range(of: text) else {
+            Logger.shared.info("Cannot add color to attributed string. Text is not in range.")
+            return
+        }
+        addAttribute(
+            NSAttributedString.Key.foregroundColor,
+            value: color,
+            range: NSRange(range, in: string)
+        )
+    }
+}
+
 extension Sequence where Element: NSAttributedString {
-    
-    func join(withSeparator separator: NSAttributedString? = nil) -> NSAttributedString {
+
+    public func join(withSeparator separator: NSAttributedString? = nil) -> NSAttributedString {
         let result = NSMutableAttributedString()
         for (index, string) in enumerated() {
             if index > 0 {

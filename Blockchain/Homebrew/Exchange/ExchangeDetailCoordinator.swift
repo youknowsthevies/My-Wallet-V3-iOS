@@ -362,11 +362,11 @@ class ExchangeDetailCoordinator: NSObject {
                     self.analyticsRecorder.record(
                         event: AnalyticsEvents.Swap.swapSummaryConfirmSuccess
                     )
-                    
+
                     NotificationCenter.default.post(
                         Notification(name: Constants.NotificationKeys.exchangeSubmitted)
                     )
-                    
+
                     self.bus.publish(
                         action: .sendCrypto,
                         extras: [WalletAction.ExtraKeys.assetType: transaction.from.address.cryptoCurrency]
@@ -379,35 +379,37 @@ class ExchangeDetailCoordinator: NSObject {
                         )
                     )
                     self.delegate?.coordinator(self, completedTransaction: transaction)
-            }) { [weak self] errorDescription, transactionID, nabuError in
-                guard let self = self else { return }
-                self.analyticsRecorder.record(event: AnalyticsEvents.Swap.swapSummaryConfirmFailure)
-                let complete: () -> Void = { [weak self] in
+                },
+                error: { [weak self] errorDescription, transactionID, nabuError in
                     guard let self = self else { return }
-                    if let networkError = nabuError {
-                        self.showAlertFrom(networkError)
-                    } else {
-                        self.interface?.loadingVisibility(.hidden)
-                        var description = errorDescription
-                        if transaction.from.address.cryptoCurrency == .stellar {
-                            description = LocalizationConstants.Stellar.cannotSendXLMAtThisTime
+                    self.analyticsRecorder.record(event: AnalyticsEvents.Swap.swapSummaryConfirmFailure)
+                    let complete: () -> Void = { [weak self] in
+                        guard let self = self else { return }
+                        if let networkError = nabuError {
+                            self.showAlertFrom(networkError)
+                        } else {
+                            self.interface?.loadingVisibility(.hidden)
+                            var description = errorDescription
+                            if transaction.from.address.cryptoCurrency == .stellar {
+                                description = LocalizationConstants.Stellar.cannotSendXLMAtThisTime
+                            }
+                            AlertViewPresenter.shared.standardError(message: description)
                         }
-                        AlertViewPresenter.shared.standardError(message: description)
+                    }
+
+                    if let identifier = transactionID {
+                        self.logTransactionFailure(transaction, errorMessage: errorDescription)
+                        self.tradeExecution.trackTransactionFailure(errorDescription, transactionID: identifier, completion: { error in
+                            if let value = error {
+                                Logger.shared.error(value.localizedDescription)
+                            }
+                            complete()
+                        })
+                    } else {
+                        complete()
                     }
                 }
-                
-                if let identifier = transactionID {
-                    self.logTransactionFailure(transaction, errorMessage: errorDescription)
-                    self.tradeExecution.trackTransactionFailure(errorDescription, transactionID: identifier, completion: { error in
-                        if let value = error {
-                            Logger.shared.error(value.localizedDescription)
-                        }
-                        complete()
-                    })
-                } else {
-                    complete()
-                }
-            }
+            )
         }
     }
     
@@ -646,10 +648,10 @@ extension ExchangeDetailCoordinator {
 extension ExchangeDetailCoordinator {
     // TICKET: IOS-1328 Find a better place for this
     func valueString(for amount: String, currencyCode: String) -> String {
-        if let currencySymbol = BlockchainSettings.App.shared.fiatSymbolFromCode(currencyCode: currencyCode) {
+        if let currency = FiatCurrency(code: currencyCode) {
             // $2.34
             // `Partner` models already have the currency symbol appended.
-            return amount.contains(currencySymbol) ? amount : currencySymbol + amount
+            return amount.contains(currency.symbol) ? amount : currency.symbol + amount
         } else {
             // 2.34 USD
             return amount + " " + currencyCode

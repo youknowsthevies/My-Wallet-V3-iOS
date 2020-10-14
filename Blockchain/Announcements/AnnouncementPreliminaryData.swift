@@ -53,7 +53,7 @@ struct AnnouncementPreliminaryData {
          tiers: KYC.UserTiers,
          hasTrades: Bool,
          hasLinkedBanks: Bool,
-         countries: Countries,
+         countries: [CountryData],
          simpleBuyEventCache: EventCache = DataProvider.default.buySell.cache,
          authenticatorType: AuthenticatorType,
          pendingOrderDetails: OrderDetails?,

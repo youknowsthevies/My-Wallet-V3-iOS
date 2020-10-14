@@ -25,7 +25,6 @@ import DIKit
     override init() {
         remoteConfig = RemoteConfig.remoteConfig()
         super.init()
-        setDefaultConfigs()
     }
 
     /// Returns an `AppFeatureConfiguration` object for the provided feature.
@@ -60,14 +59,6 @@ import DIKit
             }
             self?.remoteConfig.activate(completionHandler: nil)
         }
-    }
-
-    // MARK: - Private
-
-    private func setDefaultConfigs() {
-        remoteConfig.setDefaults([
-            AppFeature.stellarAirdrop.remoteEnabledKey!: "false" as NSString
-        ])
     }
 }
 

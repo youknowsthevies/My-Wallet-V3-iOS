@@ -18,23 +18,11 @@ extension UIColor {
 
     static let brandPrimary = #colorLiteral(red: 0, green: 0.2901960784, blue: 0.4862745098, alpha: 1)
 
-    static let brandSecondary = #colorLiteral(red: 0.06274509804, green: 0.6784313725, blue: 0.8941176471, alpha: 1)
-
     static let brandTertiary = #colorLiteral(red: 0.6980392157, green: 0.8352941176, blue: 0.8980392157, alpha: 1)
 
     static let brandYellow = #colorLiteral(red: 1, green: 0.8117647059, blue: 0.3843137255, alpha: 1)
 
-    static let error = #colorLiteral(red: 0.7921568627, green: 0.2274509804, blue: 0.2352941176, alpha: 1)
-    
     static let gray1 = #colorLiteral(red: 0.9176470588, green: 0.9176470588, blue: 0.9176470588, alpha: 1)
-
-    static let gray2 = #colorLiteral(red: 0.8, green: 0.8, blue: 0.8, alpha: 1)
-
-    static let gray3 = #colorLiteral(red: 0.6, green: 0.6078431373, blue: 0.6196078431, alpha: 1)
-
-    static let gray4 = #colorLiteral(red: 0.4588235294, green: 0.462745098, blue: 0.4745098039, alpha: 1)
-
-    static let gray5 = #colorLiteral(red: 0.3294117647, green: 0.3294117647, blue: 0.337254902, alpha: 1)
 
     static let darkGray = #colorLiteral(red: 0.26, green: 0.26, blue: 0.26, alpha: 1)
     
@@ -53,14 +41,6 @@ extension UIColor {
     static let keyPadButton = #colorLiteral(red: 0.831372549, green: 0.8509803922, blue: 0.8666666667, alpha: 1)
 
     static let lightGray = #colorLiteral(red: 0.9607843137, green: 0.9647058824, blue: 0.9725490196, alpha: 1)
-
-    static let pending = #colorLiteral(red: 0.9490196078, green: 0.5450980392, blue: 0.1882352941, alpha: 1)
-
-    static let verified = #colorLiteral(red: 0.01176470588, green: 0.662745098, blue: 0.4470588235, alpha: 1)
-
-    static let unverified = #colorLiteral(red: 0.86, green: 0.16, blue: 0.16, alpha: 1)
-
-    static let disabled = #colorLiteral(red: 0.88, green: 0.88, blue: 0.88, alpha: 1)
 
     static let navigationBarBackground = UIColor.NavigationBar.LightContent.background
 }

@@ -11,6 +11,8 @@ import PlatformKit
 import PlatformUIKit
 import SafariServices
 import ToolKit
+import KYCKit
+import KYCUIKit
 
 protocol ExchangeDetailDelegate: class {
     func onViewLoaded()

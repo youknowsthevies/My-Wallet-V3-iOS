@@ -16,7 +16,7 @@ import PlatformKit
 import StellarKit
 
 extension DependencyContainer {
-    
+
     public static var activityKit = module {
         
         factory { TransactionDetailService() as TransactionDetailServiceAPI }

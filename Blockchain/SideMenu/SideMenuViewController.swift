@@ -112,8 +112,7 @@ class SideMenuViewController: UIViewController {
     // MARK: - Private Methods
     
     private func registerCells() {
-        let nib = UINib(nibName: SideMenuCell.identifier, bundle: nil)
-        tableView.register(nib, forCellReuseIdentifier: SideMenuCell.identifier)
+        tableView.registerNibCell(SideMenuCell.self)
     }
 
     private func initializeTableView() {

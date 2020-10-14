@@ -11,7 +11,7 @@ import DIKit
 public final class KYCServiceProvider: KYCServiceProviderAPI {
 
     // MARK: - Properties
-        
+
     public let tiers: KYCTiersServiceAPI
     public let user: NabuUserServiceAPI
     
@@ -21,14 +21,10 @@ public final class KYCServiceProvider: KYCServiceProviderAPI {
     }
     
     // MARK: - Setup
-    
-    public convenience init() {
-        self.init(client: resolve())
-    }
-    
-    init(client: KYCClientAPI = resolve()) {
-        user = NabuUserService(client: client)
-        tiers = KYCTiersService(client: client)
+
+    init(user: NabuUserServiceAPI = resolve(), tiers: KYCTiersServiceAPI = resolve()) {
+        self.user = user
+        self.tiers = tiers
     }
 }
 

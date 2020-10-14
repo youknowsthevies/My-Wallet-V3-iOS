@@ -27,7 +27,7 @@ final class AnalyticsUserPropertyInteractor {
     
     init(recorder: UserPropertyRecording = AnalyticsUserPropertyRecorder(),
          balanceProvider: BalanceProviding = DataProvider.default.balance,
-         tiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers,
+         tiersService: KYCTiersServiceAPI = resolve(),
          walletRepository: WalletRepositoryAPI = resolve(),
          dataRepository: BlockchainDataRepository = .shared) {
         self.recorder = recorder

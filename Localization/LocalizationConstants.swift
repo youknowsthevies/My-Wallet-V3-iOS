@@ -2695,10 +2695,6 @@ public enum LocalizationConstants {
         public static let state = NSLocalizedString("State", comment: "state")
         public static let stateRegionProvinceCountry = NSLocalizedString("State / Region / Province / Country", comment: "State / Region / Province / Country")
         public static let postalCode = NSLocalizedString("Postal Code", comment: "postal code")
-        public static let airdropLargeBacklogNotice = NSLocalizedString(
-            "Gold verification is under review, once verified you'll be able to use Swap and trade up to our Gold Level limit.\n\nPlease be aware there is a large waiting list for Stellar airdrops and unfortunately not all applications for free XLM will be successful.",
-            comment: "Footer in the tiers page notifying the user that the airdrop program has a large backlog."
-        )
     }
 
     public struct Swap {

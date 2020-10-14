@@ -12,10 +12,10 @@ import RxSwift
 public final class KeyboardObserver {
     
     // MARK: - Types
-    
+
     public struct Payload {
         public let duration: TimeInterval
-        public let curve: UIView.AnimationOptions
+        public let curve: UIView.AnimationCurve
         public let begin: CGRect
         public let end: CGRect
         
@@ -24,9 +24,14 @@ public final class KeyboardObserver {
                 return nil
             }
             duration = rawValue[UIResponder.keyboardAnimationDurationUserInfoKey] as! TimeInterval
-            curve = .init(rawValue: rawValue[UIResponder.keyboardAnimationCurveUserInfoKey] as! UInt)
             begin = (rawValue[UIResponder.keyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
             end = (rawValue[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+
+            if let curveNumber = rawValue[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber {
+                curve = UIView.AnimationCurve(rawValue: curveNumber.intValue) ?? .linear
+            } else {
+                curve = .linear
+            }
         }
         
         public var height: CGFloat {

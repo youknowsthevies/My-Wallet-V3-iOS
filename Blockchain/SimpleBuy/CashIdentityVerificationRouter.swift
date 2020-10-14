@@ -14,15 +14,19 @@ import RxSwift
 final class CashIdentityVerificationRouter {
     
     private weak var topMostViewControllerProvider: TopMostViewControllerProviding!
-    
-    init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve()) {
+    private let kycRouter: KYCRouterAPI
+
+    init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
+         kycRouter: KYCRouterAPI = resolve()) {
+        self.kycRouter = kycRouter
         self.topMostViewControllerProvider = topMostViewControllerProvider
     }
     
     func dismiss(startKYC: Bool = false) {
+        let kycRouter = self.kycRouter
         topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: {
             guard startKYC else { return }
-            KYCCoordinator.shared.start()
+            kycRouter.start()
         })
     }
 }

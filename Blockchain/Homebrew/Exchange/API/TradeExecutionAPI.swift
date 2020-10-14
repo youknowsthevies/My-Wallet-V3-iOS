@@ -16,15 +16,6 @@ import StellarKit
 
 enum TradeExecutionAPIError: Error {
     case generic
-    
-    /// Some assets (in this case XLM) have minimum
-    /// balance requirements. If the user tries to send
-    /// an amount more than their minimum balance, we will
-    /// return this error. 
-    case exceededMaxVolume(CryptoValue)
-
-    /// Wraps an `ERC20ServiceError`
-    case erc20Error(ERC20ServiceError)
 }
 
 protocol TradeExecutionAPI {

@@ -14,6 +14,8 @@ import PlatformUIKit
 import RxSwift
 import SafariServices
 import ToolKit
+import KYCKit
+import KYCUIKit
 
 class ExchangeContainerViewController: BaseNavigationController {
     
@@ -26,8 +28,9 @@ class ExchangeContainerViewController: BaseNavigationController {
     private let accountsRepository: AssetAccountRepositoryAPI = AssetAccountRepository.shared
     private var tiersViewController: KYCTiersViewController?
     private let loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared
-    private let kycSettings: KYCSettingsAPI = KYCSettings.shared
+    private let kycSettings: KYCSettingsAPI = resolve()
     private let analyticsRecorder: AnalyticsEventRecording = resolve()
+    private let kycRouter: KYCRouterAPI = resolve()
     
     // MARK: Lifecycle
     
@@ -88,7 +91,7 @@ class ExchangeContainerViewController: BaseNavigationController {
                 }, onError: { [weak self] _ in
                     guard let self = self else { return }
                     self.onboardingController.action = {
-                        KYCCoordinator.shared.start()
+                        self.kycRouter.start()
                     }
                     self.setViewControllers([self.onboardingController], animated: false)
                 })
@@ -109,7 +112,7 @@ class ExchangeContainerViewController: BaseNavigationController {
             }, onError: { [weak self] _ in
                 guard let self = self else { return }
                 self.onboardingController.action = {
-                    KYCCoordinator.shared.start()
+                    self.kycRouter.start()
                 }
                 self.setViewControllers([self.onboardingController], animated: false)
             })
@@ -155,7 +158,8 @@ class ExchangeContainerViewController: BaseNavigationController {
         tiersViewController = KYCTiersViewController.make(with: model)
         guard let controller = tiersViewController else { return }
         controller.selectedTier = { tier in
-            KYCCoordinator.shared.startFrom(tier)
+            let kycRouter: KYCRouterAPI = resolve()
+            kycRouter.start(tier: tier)
         }
         setViewControllers([controller], animated: false)
     }

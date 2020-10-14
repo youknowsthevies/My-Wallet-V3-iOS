@@ -6,7 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
+import PlatformKit
 import RxSwift
 
 /// Supports notices
@@ -26,7 +27,7 @@ final class DashboardNoticeInteractor {
     
     // MARK: - Setup
     
-    init(lockboxRepository: LockboxRepositoryAPI) {
+    init(lockboxRepository: LockboxRepositoryAPI = resolve()) {
         self.lockboxRepository = lockboxRepository
     }
 }

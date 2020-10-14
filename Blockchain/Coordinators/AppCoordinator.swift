@@ -13,6 +13,7 @@ import InterestUIKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import KYCUIKit
 
 /// TODO: This class should be refactored so any view would load
 /// as late as possible and also would be deallocated when is no longer in use
@@ -272,8 +273,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         case .exchange:
             handleExchange()
         case .lockbox:
-            let storyboard = UIStoryboard(name: "LockboxViewController", bundle: nil)
-            let lockboxViewController = storyboard.instantiateViewController(withIdentifier: "LockboxViewController") as! LockboxViewController
+            let lockboxViewController = LockboxViewController.makeFromStoryboard()
             lockboxViewController.modalPresentationStyle = .fullScreen
             lockboxViewController.modalTransitionStyle = .coverVertical
             UIApplication.shared.keyWindow?.rootViewController?.topMostViewController?.present(lockboxViewController, animated: true)
@@ -396,7 +396,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
                 accountSelectionService: serviceProvider.accountSelectionService,
                 eligibilityService: serviceProvider.eligibility,
                 uiUtilityProvider: UIUtilityProvider.default,
-                kycTiersService: KYCServiceProvider.default.tiers,
+                kycTiersService: resolve(),
                 featureFetching: resolve(),
                 balanceProvider: DataProvider.default.balance
             ),
@@ -408,7 +408,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
             exchangeProvider: DataProvider.default.exchange,
             balanceProvider: DataProvider.default.balance
         )
-        sellRouter = BuySellUIKit.SellRouter(kycRouter: KYCCoordinator.shared, builder: builder)
+        sellRouter = BuySellUIKit.SellRouter(builder: builder)
         sellRouter.load()
     }
     
@@ -535,9 +535,7 @@ extension AppCoordinator: CashIdentityVerificationAnnouncementRouting {
 extension AppCoordinator: InterestIdentityVerificationAnnouncementRouting {
     func showInterestDashboardAnnouncementScreen(isKYCVerfied: Bool) {
         var presenter: InterestDashboardAnnouncementPresenting
-        let router: InterestDashboardAnnouncementRouter = .init(
-            topMostViewControllerProvider: resolve(),
-            routerAPI: KYCCoordinator.shared,
+        let router = InterestDashboardAnnouncementRouter(
             navigationRouter: NavigationRouter()
         )
         if isKYCVerfied {

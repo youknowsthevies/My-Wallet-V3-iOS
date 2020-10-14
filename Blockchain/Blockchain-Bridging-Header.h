@@ -9,7 +9,6 @@
 #import "AssetSelectorView.h"
 #import "BCConfirmPaymentViewModel.h"
 #import "BCModalView.h"
-#import "ContinueButtonInputAccessoryView.h"
 #import "DebugTableViewController.h"
 #import "DestinationAddressSource.h"
 #import "ECSlidingViewController.h"

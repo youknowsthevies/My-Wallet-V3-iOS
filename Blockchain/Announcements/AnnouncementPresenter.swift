@@ -12,6 +12,7 @@ import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
+import KYCKit
 
 // TODO: Tests - Create a protocol for tests, and inject protocol dependencies.
 
@@ -27,7 +28,7 @@ final class AnnouncementPresenter {
     private let airdropRouter: AirdropRouterAPI
     private let cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting
     private let interestIdentityVerificationRouter: InterestIdentityVerificationAnnouncementRouting
-    private let kycCoordinator: KYCCoordinator
+    private let kycRouter: KYCRouterAPI
     private let exchangeCoordinator: ExchangeCoordinator
     private let wallet: Wallet
     private let kycSettings: KYCSettingsAPI
@@ -62,9 +63,9 @@ final class AnnouncementPresenter {
          interestIdentityVerificationRouter: InterestIdentityVerificationAnnouncementRouting = AppCoordinator.shared,
          appCoordinator: AppCoordinator = .shared,
          exchangeCoordinator: ExchangeCoordinator = .shared,
-         kycCoordinator: KYCCoordinator = .shared,
+         kycRouter: KYCRouterAPI = DIKit.resolve(),
          reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
-         kycSettings: KYCSettingsAPI = KYCSettings.shared,
+         kycSettings: KYCSettingsAPI = DIKit.resolve(),
          webViewServiceAPI: WebViewServiceAPI = DIKit.resolve(),
          wallet: Wallet = WalletManager.shared.wallet) {
         self.interactor = interactor
@@ -74,7 +75,7 @@ final class AnnouncementPresenter {
         self.interestIdentityVerificationRouter = interestIdentityVerificationRouter
         self.cashIdentityVerificationRouter = cashIdentityVerificationRouter
         self.exchangeCoordinator = exchangeCoordinator
-        self.kycCoordinator = kycCoordinator
+        self.kycRouter = kycRouter
         self.airdropRouter = airdropRouter
         self.reactiveWallet = reactiveWallet
         self.kycSettings = kycSettings
@@ -270,7 +271,9 @@ extension AnnouncementPresenter {
             action: { [weak self] in
                 guard let self = self else { return }
                 let tier = user.tiers?.selected ?? .tier1
-                self.kycCoordinator.start(from: self.appCoordinator.tabControllerManager.tabViewController, tier: tier)
+                self.kycRouter.start(from: self.appCoordinator.tabControllerManager.tabViewController,
+                                     tier: tier,
+                                     parentFlow: .none)
             }
         )
     }
@@ -302,7 +305,9 @@ extension AnnouncementPresenter {
             action: { [weak self] in
                 guard let self = self else { return }
                 let tier = user.tiers?.selected ?? .tier1
-                self.kycCoordinator.start(from: self.appCoordinator.tabControllerManager.tabViewController, tier: tier)
+                self.kycRouter.start(from: self.appCoordinator.tabControllerManager.tabViewController,
+                                     tier: tier,
+                                     parentFlow: .none)
             }
         )
     }
@@ -476,7 +481,9 @@ extension AnnouncementPresenter {
             action: { [weak self] in
                 guard let self = self else { return }
                 let tier = user.tiers?.selected ?? .tier1
-                self.kycCoordinator.start(from: self.appCoordinator.tabControllerManager.tabViewController, tier: tier)
+                self.kycRouter.start(from: self.appCoordinator.tabControllerManager.tabViewController,
+                                     tier: tier,
+                                     parentFlow: .none)
             }
         )
     }

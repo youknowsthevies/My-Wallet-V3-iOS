@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import PlatformKit
 import RxCocoa
@@ -24,8 +25,8 @@ class BlockchainDataRepository: DataRepositoryAPI {
     private let kycTiersService: KYCTiersServiceAPI
     private let userService: NabuUserServiceAPI
     
-    init(userService: NabuUserServiceAPI = KYCServiceProvider.default.user,
-         kycTiersService: KYCTiersServiceAPI = KYCServiceProvider.default.tiers) {
+    init(userService: NabuUserServiceAPI = resolve(),
+         kycTiersService: KYCTiersServiceAPI = resolve()) {
         self.userService = userService
         self.kycTiersService = kycTiersService
     }
