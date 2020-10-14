@@ -146,6 +146,10 @@ extension DependencyContainer {
             let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
             return userInformationProvider.settings
         }
+        
+        // MARK: - QRCodeWrapper
+        
+        factory { QRCodeWrapper() as QRCodeWrapperAPI }
 
         // MARK: - DataProvider
 
