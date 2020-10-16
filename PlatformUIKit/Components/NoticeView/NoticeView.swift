@@ -24,9 +24,7 @@ public final class NoticeView: UIView {
         didSet {
             guard let viewModel = viewModel else { return }
             imageView.set(viewModel.imageViewContent)
-            stackView.arrangedSubviews.forEach { subview in
-                stackView.removeArrangedSubview(subview)
-            }
+            stackView.removeSubviews()
             
             viewModel.labelContents
                 .map {

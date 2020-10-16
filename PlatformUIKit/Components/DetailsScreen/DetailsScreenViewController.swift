@@ -219,7 +219,7 @@ extension DetailsScreenViewController: UITableViewDelegate, UITableViewDataSourc
         return cell
     }
 
-    private func badgesCell(for indexPath: IndexPath, model: MultiBadgeCellModel) -> UITableViewCell {
+    private func badgesCell(for indexPath: IndexPath, model: MultiBadgeViewModel) -> UITableViewCell {
         let cell = tableView.dequeue(MultiBadgeTableViewCell.self, for: indexPath)
         cell.model = model
         return cell

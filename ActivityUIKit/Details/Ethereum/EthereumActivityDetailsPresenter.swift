@@ -71,7 +71,7 @@ final class EthereumActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: Private Properties (Badge)
 
-    private let badgesModel: MultiBadgeCellModel = .init()
+    private let badgesModel = MultiBadgeViewModel()
     private let statusBadge: DefaultBadgeAssetPresenter = .init()
     private let confirmingBadge: DefaultBadgeAssetPresenter = .init()
     private let badgeCircleModel: BadgeCircleViewModel = .init()

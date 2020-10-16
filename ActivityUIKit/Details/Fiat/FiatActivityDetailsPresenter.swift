@@ -7,12 +7,12 @@
 //
 
 import DIKit
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
 import ToolKit
-import Localization
 
 final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
@@ -52,7 +52,7 @@ final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: Private Properties (Badge Model)
 
-    private let badgesModel: MultiBadgeCellModel = .init()
+    private let badgesModel = MultiBadgeViewModel()
     private let statusBadge: DefaultBadgeAssetPresenter = .init()
 
     // MARK: - Init

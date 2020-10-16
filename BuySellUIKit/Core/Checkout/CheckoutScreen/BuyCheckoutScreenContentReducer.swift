@@ -195,7 +195,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
 
         continueButtonViewModel = BuyCheckoutScreenContentReducer.continueButton(data: data)
         cancelButtonViewModel = BuyCheckoutScreenContentReducer.cancelButton(data: data)
-        let badgesModel = MultiBadgeCellModel()
+        let badgesModel = MultiBadgeViewModel()
         badgesModel.badgesRelay.accept([statusBadge])
 
         switch (data.order.paymentMethod, data.hasCardCheckoutMade, data.isPendingDepositBankWire) {

@@ -63,7 +63,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: Private Properties (Badge)
 
-    private let badgesModel: MultiBadgeCellModel = .init()
+    private let badgesModel = MultiBadgeViewModel()
     private let statusBadge: DefaultBadgeAssetPresenter = .init()
 
     init(event: BuySellActivityItemEvent, interactor: BuySellActivityDetailsInteractor = .init()) {

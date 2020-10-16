@@ -7,12 +7,12 @@
 //
 
 import DIKit
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
 import ToolKit
-import Localization
 
 final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
@@ -65,7 +65,7 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: Private Properties (Badge)
 
-    private let badgesModel: MultiBadgeCellModel = .init()
+    private let badgesModel = MultiBadgeViewModel()
     private let statusBadge: DefaultBadgeAssetPresenter = .init()
     private let confirmingBadge: DefaultBadgeAssetPresenter = .init()
     private let badgeCircleModel: BadgeCircleViewModel = .init()

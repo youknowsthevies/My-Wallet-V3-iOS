@@ -19,7 +19,7 @@ public enum DetailsScreen {
     }
 
     public enum CellType {
-        case badges(MultiBadgeCellModel)
+        case badges(MultiBadgeViewModel)
         case buttons([ButtonViewModel])
         case label(LabelContentPresenting)
         case staticLabel(LabelContent)
