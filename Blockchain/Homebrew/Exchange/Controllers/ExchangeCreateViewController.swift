@@ -292,10 +292,10 @@ class ExchangeCreateViewController: UIViewController {
     }
 
     fileprivate func presentURL(_ url: URL) {
+        guard let tabControllerManager = AppCoordinator.shared.tabControllerManager else { return }
         let viewController = SFSafariViewController(url: url)
-        let controller = AppCoordinator.shared.tabControllerManager.tabViewController
         viewController.modalPresentationStyle = .overCurrentContext
-        controller.present(viewController, animated: true, completion: nil)
+        tabControllerManager.tabViewController.present(viewController, animated: true, completion: nil)
     }
     
     private func showETHAirdropAlert() {

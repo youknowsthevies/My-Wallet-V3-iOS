@@ -128,7 +128,8 @@ class SideMenuViewController: UIViewController {
     }
 
     private func setSideMenuGestures() {
-        let tabViewController = AppCoordinator.shared.tabControllerManager.tabViewController
+        guard let tabControllerManager = AppCoordinator.shared.tabControllerManager else { return }
+        let tabViewController = tabControllerManager.tabViewController
 
         if let menuSwipeRecognizerView = tabViewController.menuSwipeRecognizerView {
             menuSwipeRecognizerView.isUserInteractionEnabled = false
@@ -155,7 +156,8 @@ class SideMenuViewController: UIViewController {
     }
 
     private func resetSideMenuGestures() {
-        let tabViewController = AppCoordinator.shared.tabControllerManager.tabViewController
+        guard let tabControllerManager = AppCoordinator.shared.tabControllerManager else { return }
+        let tabViewController = tabControllerManager.tabViewController
         guard let slidingViewController = AppCoordinator.shared.slidingViewController else { return }
         if let activeViewController = tabViewController.activeViewController {
             activeViewController.view.removeGestureRecognizer(slidingViewController.panGesture)

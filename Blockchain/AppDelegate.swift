@@ -300,7 +300,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
             AuthenticationCoordinator.shared.postAuthenticationRoute = .sendCoins
 
-            appCoordinator.tabControllerManager.setupBitcoinPaymentFromURLHandler(
+            appCoordinator.tabControllerManager?.setupBitcoinPaymentFromURLHandler(
                 with: bitcoinUrlPayload.amount,
                 address: bitcoinUrlPayload.address
             )

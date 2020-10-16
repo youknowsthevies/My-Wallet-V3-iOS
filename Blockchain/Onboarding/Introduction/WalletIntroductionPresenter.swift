@@ -136,7 +136,7 @@ extension WalletIntroductionPresenter {
     private var home: HomeWalletIntroductionEvent {
         HomeWalletIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
-            AppCoordinator.shared.tabControllerManager.showDashboard()
+            AppCoordinator.shared.tabControllerManager?.showDashboard()
             self.triggerNextStep()
         })
     }
@@ -148,7 +148,7 @@ extension WalletIntroductionPresenter {
     private var send: SendWalletIntroductionEvent {
         SendWalletIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
-            AppCoordinator.shared.tabControllerManager.showSend()
+            AppCoordinator.shared.tabControllerManager?.showSend()
             self.triggerNextStep()
         })
     }
@@ -160,7 +160,7 @@ extension WalletIntroductionPresenter {
     private var request: RequestWalletIntroductionEvent {
         RequestWalletIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
-            AppCoordinator.shared.tabControllerManager.showReceive()
+            AppCoordinator.shared.tabControllerManager?.showReceive()
             self.triggerNextStep()
         })
     }
@@ -172,7 +172,7 @@ extension WalletIntroductionPresenter {
     private var swap: SwapWalletIntroductionEvent {
         SwapWalletIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
-            AppCoordinator.shared.tabControllerManager.showSwap()
+            AppCoordinator.shared.tabControllerManager?.showSwap()
             self.triggerNextStep()
         })
     }

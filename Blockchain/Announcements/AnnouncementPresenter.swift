@@ -248,7 +248,7 @@ extension AnnouncementPresenter {
             action: { [weak self] in
                guard let self = self else { return }
                self.hideAnnouncement()
-               self.appCoordinator.tabControllerManager.tabViewController.setupIntroduction()
+               self.appCoordinator.tabControllerManager?.tabViewController.setupIntroduction()
             },
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
@@ -270,8 +270,9 @@ extension AnnouncementPresenter {
             },
             action: { [weak self] in
                 guard let self = self else { return }
+                guard let tabControllerManager = self.appCoordinator.tabControllerManager else { return }
                 let tier = user.tiers?.selected ?? .tier1
-                self.kycRouter.start(from: self.appCoordinator.tabControllerManager.tabViewController,
+                self.kycRouter.start(from: tabControllerManager.tabViewController,
                                      tier: tier,
                                      parentFlow: .none)
             }
@@ -304,8 +305,9 @@ extension AnnouncementPresenter {
             },
             action: { [weak self] in
                 guard let self = self else { return }
+                guard let tabControllerManager = self.appCoordinator.tabControllerManager else { return }
                 let tier = user.tiers?.selected ?? .tier1
-                self.kycRouter.start(from: self.appCoordinator.tabControllerManager.tabViewController,
+                self.kycRouter.start(from: tabControllerManager.tabViewController,
                                      tier: tier,
                                      parentFlow: .none)
             }
@@ -480,8 +482,9 @@ extension AnnouncementPresenter {
             },
             action: { [weak self] in
                 guard let self = self else { return }
+                guard let tabControllerManager = self.appCoordinator.tabControllerManager else { return }
                 let tier = user.tiers?.selected ?? .tier1
-                self.kycRouter.start(from: self.appCoordinator.tabControllerManager.tabViewController,
+                self.kycRouter.start(from: tabControllerManager.tabViewController,
                                      tier: tier,
                                      parentFlow: .none)
             }

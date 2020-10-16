@@ -129,11 +129,11 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
 
         latestMultiAddressResponse = nil
 
-        AppCoordinator.shared.reload()
+        let appCoordinator = AppCoordinator.shared
+        appCoordinator.clearOnLogout()
+        appCoordinator.reload()
 
         BlockchainSettings.App.shared.biometryEnabled = false
-
-        AppCoordinator.shared.tabControllerManager.showDashboard()
     }
 
     private var backgroundUpdateTaskIdentifer: UIBackgroundTaskIdentifier?

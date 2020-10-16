@@ -193,7 +193,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         if let route = postAuthenticationRoute {
             switch route {
             case .sendCoins:
-                AppCoordinator.shared.tabControllerManager.showSend()
+                AppCoordinator.shared.tabControllerManager?.showSend()
             }
             postAuthenticationRoute = nil
         }

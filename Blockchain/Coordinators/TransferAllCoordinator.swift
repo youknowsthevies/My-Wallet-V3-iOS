@@ -28,7 +28,7 @@ import PlatformUIKit
 
     private var transferAllController: TransferAllFundsViewController?
 
-    private var tabControllerManager: TabControllerManager {
+    private var tabControllerManager: TabControllerManager? {
         AppCoordinator.shared.tabControllerManager
     }
 
@@ -38,8 +38,8 @@ import PlatformUIKit
             rootViewController: transferAllController!,
             title: LocalizationConstants.SendAsset.transferAllFunds
         )
-        let tabViewController = AppCoordinator.shared.tabControllerManager.tabViewController
-        tabViewController.topMostViewController!.present(navigationController, animated: true, completion: nil)
+        let tabViewController = AppCoordinator.shared.tabControllerManager?.tabViewController
+        tabViewController?.topMostViewController!.present(navigationController, animated: true, completion: nil)
     }
 
     @objc func start(withDelegate delegate: TransferAllPromptDelegate) {
@@ -49,7 +49,7 @@ import PlatformUIKit
 
     @objc func startWithSendScreen() {
         transferAllController = nil
-        tabControllerManager.setupTransferAllFunds()
+        tabControllerManager?.setupTransferAllFunds()
     }
 }
 
@@ -58,7 +58,7 @@ extension TransferAllCoordinator: WalletTransferAllDelegate {
         if transferAllController != nil {
             transferAllController?.updateTransferAllAmount(amount, fee: fee, addressesUsed: addressesUsed)
         } else {
-            tabControllerManager.updateTransferAll(amount: amount, fee: fee, addressesUsed: addressesUsed)
+            tabControllerManager?.updateTransferAll(amount: amount, fee: fee, addressesUsed: addressesUsed)
         }
     }
 
@@ -67,7 +67,7 @@ extension TransferAllCoordinator: WalletTransferAllDelegate {
             transferAllController?.showSummaryForTransferAll()
             loadingViewPresenter.hide()
         } else {
-            tabControllerManager.showSummaryForTransferAll()
+            tabControllerManager?.showSummaryForTransferAll()
         }
     }
 
@@ -75,11 +75,11 @@ extension TransferAllCoordinator: WalletTransferAllDelegate {
         if transferAllController != nil {
             transferAllController?.sendDuringTransferAll(secondPassword)
         } else {
-            tabControllerManager.sendDuringTransferAll(secondPassword: secondPassword)
+            tabControllerManager?.sendDuringTransferAll(secondPassword: secondPassword)
         }
     }
 
     func didErrorDuringTransferAll(error: String, secondPassword: String?) {
-        tabControllerManager.didErrorDuringTransferAll(error: error, secondPassword: secondPassword)
+        tabControllerManager?.didErrorDuringTransferAll(error: error, secondPassword: secondPassword)
     }
 }

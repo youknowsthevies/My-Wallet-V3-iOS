@@ -433,8 +433,8 @@ protocol SendXLMViewControllerDelegate: class {
     }
 
     private func showPaymentSuccess() {
-        let controller = AppCoordinator.shared.tabControllerManager
-        controller?.showTransactions()
+        let tabControllerManager = AppCoordinator.shared.tabControllerManager
+        tabControllerManager?.showTransactions()
         AlertViewPresenter.shared.standardNotify(
             title: LocalizationConstants.success, message: LocalizationConstants.SendAsset.paymentSent
         )
@@ -501,7 +501,7 @@ extension SendLumensViewController: SendXLMInterface {
     }
 
     func present(viewController: UIViewController) {
-        AppCoordinator.shared.tabControllerManager.tabViewController.present(viewController, animated: true)
+        AppCoordinator.shared.tabControllerManager?.tabViewController.present(viewController, animated: true)
     }
 }
 

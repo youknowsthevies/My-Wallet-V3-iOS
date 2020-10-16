@@ -30,7 +30,7 @@ class BitPayLinkRouter: DeepLinkRouting {
 
     func routeIfNeeded() -> Bool {
         guard let bitpayURL: URL = service.contentRelay.value else { return false }
-        AppCoordinator.shared.tabControllerManager.setupBitpayPayment(from: bitpayURL)
+        AppCoordinator.shared.tabControllerManager?.setupBitpayPayment(from: bitpayURL)
         service.contentRelay.accept(nil)
         return true
     }

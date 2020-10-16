@@ -48,7 +48,7 @@ import KYCUIKit
     // MARK: - UIViewController Properties
     
     @objc var slidingViewController: ECSlidingViewController!
-    @objc var tabControllerManager: TabControllerManager!
+    @objc var tabControllerManager: TabControllerManager?
     private(set) var sideMenuViewController: SideMenuViewController!
     private let disposeBag = DisposeBag()
     
@@ -78,7 +78,7 @@ import KYCUIKit
         window.rootViewController?.dismiss(animated: true, completion: nil)
         setupMainFlow(forced: true)
         window.rootViewController = slidingViewController
-        tabControllerManager.showDashboard()
+        tabControllerManager?.showDashboard()
     }
 
     func syncPinKeyWithICloud() {
@@ -158,10 +158,10 @@ import KYCUIKit
             self.setupSideMenuViewController()
             let viewController = ECSlidingViewController()
             viewController.underLeftViewController = self.sideMenuViewController
-            viewController.topViewController = self.tabControllerManager.tabViewController
+            viewController.topViewController = self.tabControllerManager?.tabViewController
             self.slidingViewController = viewController
-            self.tabControllerManager.tabViewController.loadViewIfNeeded()
-            self.tabControllerManager.showDashboard()
+            self.tabControllerManager?.tabViewController.loadViewIfNeeded()
+            self.tabControllerManager?.showDashboard()
             return viewController
         }
         
@@ -201,7 +201,7 @@ import KYCUIKit
 
     /// Reloads contained view controllers
     @objc func reload() {
-        tabControllerManager.reload()
+        tabControllerManager?.reload()
         accountsAndAddressesNavigationController.reload()
         sideMenuViewController?.reload()
         
@@ -218,26 +218,26 @@ import KYCUIKit
         guard slidingViewController != nil else {
             return
         }
-        tabControllerManager.hideSendAndReceiveKeyboards()
-        tabControllerManager.showDashboard()
+        tabControllerManager?.hideSendAndReceiveKeyboards()
+        tabControllerManager?.showDashboard()
         closeSideMenu()
     }
 
     /// Observes symbol changes so that view controllers can reflect the new symbol
     private func observeSymbolChanges() {
         BlockchainSettings.App.shared.onSymbolLocalChanged = { [unowned self] _ in
-            self.tabControllerManager.reloadSymbols()
+            self.tabControllerManager?.reloadSymbols()
             self.accountsAndAddressesNavigationController.reload()
             self.sideMenuViewController?.reload()
         }
     }
 
     func reloadAfterMultiAddressResponse() {
-        guard tabControllerManager != nil, tabControllerManager.tabViewController.isViewLoaded else {
+        guard tabControllerManager != nil, tabControllerManager!.tabViewController.isViewLoaded else {
             // Nothing to reload
             return
         }
-        tabControllerManager.reloadAfterMultiAddressResponse()
+        tabControllerManager?.reloadAfterMultiAddressResponse()
         accountsAndAddressesNavigationController.reload()
         sideMenuViewController?.reload()
 
@@ -318,7 +318,8 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     }
     
     private func handleExchange() {
-        ExchangeCoordinator.shared.start(from: tabControllerManager.tabViewController)
+        guard let tabViewController = tabControllerManager?.tabViewController else { return }
+        ExchangeCoordinator.shared.start(from: tabViewController)
     }
 
     private func handleWebLogin() {
@@ -372,6 +373,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     }
     
     func clearOnLogout() {
+        tabControllerManager = nil
         slidingViewController = nil
         sideMenuViewController = nil
     }
@@ -498,29 +500,29 @@ extension AppCoordinator: WalletHistoryDelegate {
 
 extension AppCoordinator: TabSwapping {
     func switchToSend() {
-        tabControllerManager.showSend()
+        tabControllerManager?.showSend()
     }
     
     func switchTabToSwap() {
-        tabControllerManager.showSwap()
+        tabControllerManager?.showSwap()
     }
     
     func switchTabToReceive() {
-        tabControllerManager.showReceive()
+        tabControllerManager?.showReceive()
     }
     
     func switchToActivity(currency: CryptoCurrency) {
-        tabControllerManager.showTransactions()
+        tabControllerManager?.showTransactions()
     }
 }
 
 extension AppCoordinator: CurrencyRouting {
     func toSend(_ currency: CryptoCurrency) {
-        tabControllerManager.showSend()
+        tabControllerManager?.showSend()
     }
     
     func toReceive(_ currency: CryptoCurrency) {
-        tabControllerManager.showReceive()
+        tabControllerManager?.showReceive()
     }
 }
 
@@ -528,7 +530,7 @@ extension AppCoordinator: CashIdentityVerificationAnnouncementRouting {
     func showCashIdentityVerificationScreen() {
         let presenter = CashIdentityVerificationPresenter()
         let controller = CashIdentityVerificationViewController(presenter: presenter)
-        tabControllerManager.tabViewController.showCashIdentityVerificatonController(controller)
+        tabControllerManager?.tabViewController.showCashIdentityVerificatonController(controller)
     }
 }
 
@@ -548,7 +550,7 @@ extension AppCoordinator: InterestIdentityVerificationAnnouncementRouting {
             )
         }
         let controller = InterestDashboardAnnouncementViewController(presenter: presenter)
-        tabControllerManager.tabViewController.showInterestIdentityVerificationScreen(controller)
+        tabControllerManager?.tabViewController.showInterestIdentityVerificationScreen(controller)
     }
 }
 
