@@ -75,10 +75,10 @@ extension ImageViewContent: Equatable {
 }
 
 extension UIImageView {
-    public func set(_ content: ImageViewContent) {
-        image = content.image
-        tintColor = content.templateColor
-        accessibility = content.accessibility
+    public func set(_ content: ImageViewContent?) {
+        image = content?.image
+        tintColor = content?.templateColor
+        accessibility = content?.accessibility ?? .none
     }
 }
 

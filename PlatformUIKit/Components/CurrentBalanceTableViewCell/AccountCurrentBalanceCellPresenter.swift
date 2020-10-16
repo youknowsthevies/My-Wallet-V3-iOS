@@ -12,46 +12,46 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
+final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
 
     private typealias AccessibilityId = Accessibility.Identifier.AccountPicker.AccountCell
     private typealias LocalizedString = LocalizationConstants.DashboardDetails.BalanceCell
 
-    public var iconImageViewContent: Driver<ImageViewContent> {
+    var iconImageViewContent: Driver<ImageViewContent> {
         iconImageViewContentRelay.asDriver()
     }
 
-    public var badgeImageViewModel: Driver<BadgeImageViewModel> {
+    var badgeImageViewModel: Driver<BadgeImageViewModel> {
         badgeRelay.asDriver()
     }
 
     /// Returns the description of the balance
-    public var title: Driver<String> {
+    var title: Driver<String> {
         titleRelay.asDriver()
     }
 
     /// Returns the description of the balance
-    public var description: Driver<String> {
+    var description: Driver<String> {
         descriptionRelay.asDriver()
     }
     
-    public var pending: Driver<String> {
+    var pending: Driver<String> {
        .empty()
     }
     
-    public var pendingLabelVisibility: Driver<Visibility> {
+    var pendingLabelVisibility: Driver<Visibility> {
         .just(.hidden)
     }
 
-    public var separatorVisibility: Driver<Visibility> {
+    var separatorVisibility: Driver<Visibility> {
         separatorVisibilityRelay.asDriver()
     }
 
-    public let titleAccessibilitySuffix: String
-    public let descriptionAccessibilitySuffix: String
-    public let pendingAccessibilitySuffix: String
+    let titleAccessibilitySuffix: String
+    let descriptionAccessibilitySuffix: String
+    let pendingAccessibilitySuffix: String
 
-    public let assetBalanceViewPresenter: AssetBalanceViewPresenter
+    let assetBalanceViewPresenter: AssetBalanceViewPresenter
 
     // MARK: - Private Properties
 
@@ -63,7 +63,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
     private let disposeBag = DisposeBag()
     private let account: SingleAccount
 
-    public init(account: SingleAccount, interactor: AssetBalanceViewInteracting) {
+    init(account: SingleAccount, interactor: AssetBalanceViewInteracting) {
         self.account = account
         titleAccessibilitySuffix = "\(AccessibilityId.titleLabel)"
         descriptionAccessibilitySuffix = "\(AccessibilityId.descriptionLabel)"

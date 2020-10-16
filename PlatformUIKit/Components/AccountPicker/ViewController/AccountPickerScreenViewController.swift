@@ -52,7 +52,7 @@ public final class AccountPickerScreenViewController: UIViewController {
         tableView.estimatedRowHeight = UITableView.automaticDimension
         tableView.separatorColor = .clear
         tableView.alwaysBounceVertical = true
-        tableView.registerNibCell(CurrentBalanceTableViewCell.self)
+        tableView.register(CurrentBalanceTableViewCell.self)
         tableView.registerNibCell(AccountGroupBalanceTableViewCell.self)
         view.addSubview(tableView)
         tableView.layoutToSuperview(.top, .bottom, .leading, .trailing)

@@ -65,7 +65,7 @@ final class DashboardDetailsViewController: BaseScreenViewController {
         tableView.registerNibCell(MultiActionTableViewCell.self)
         tableView.registerNibCell(PriceAlertTableViewCell.self)
         tableView.registerNibCell(AssetLineChartTableViewCell.self)
-        tableView.registerNibCell(CurrentBalanceTableViewCell.self)
+        tableView.register(CurrentBalanceTableViewCell.self)
         tableView.separatorColor = .clear
         
         presenter.isScrollEnabled

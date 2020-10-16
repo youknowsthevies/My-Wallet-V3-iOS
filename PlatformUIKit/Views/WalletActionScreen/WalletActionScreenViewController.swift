@@ -59,7 +59,7 @@ public final class WalletActionScreenViewController: UIViewController {
         tableView.tableFooterView = UIView()
         tableView.estimatedRowHeight = 85
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.registerNibCell(CurrentBalanceTableViewCell.self)
+        tableView.register(CurrentBalanceTableViewCell.self)
         tableView.register(DefaultWalletActionTableViewCell.self)
         tableView.separatorInset = .zero
         tableView.separatorColor = .lightBorder

@@ -9,30 +9,29 @@
 import RxCocoa
 import RxSwift
 
-public final class AssetBalanceView: UIView {
-    
+public final class AssetBalanceView: ThreeLabelStackView {
+
     // MARK: - Injected
-    
+
     public var presenter: AssetBalanceViewPresenter! {
         willSet {
             disposeBag = DisposeBag()
         }
         didSet {
             guard let presenter = presenter else {
-                fiatBalanceLabel.text = " "
-                cryptoBalanceLabel.text = " "
+                clear()
                 return
             }
 
             presenter.alignment
-                .drive(stackView.rx.alignment)
+                .drive(rx.alignment)
                 .disposed(by: disposeBag)
-            
+
             presenter.state
                 .compactMap { $0.value }
                 .bindAndCatch(to: rx.values)
                 .disposed(by: disposeBag)
-            
+
             presenter.state
                 .map { $0.isLoading }
                 .mapToVoid()
@@ -40,7 +39,7 @@ public final class AssetBalanceView: UIView {
                     self?.startShimmering()
                 }
                 .disposed(by: disposeBag)
-                
+
             presenter.state
                 .filter { $0.isLoading == false }
                 .mapToVoid()
@@ -50,29 +49,32 @@ public final class AssetBalanceView: UIView {
                 .disposed(by: disposeBag)
         }
     }
-    
-    // MARK: - Private IBOutlets
-    
-    @IBOutlet private var stackView: UIStackView!
-    @IBOutlet fileprivate var fiatBalanceLabel: UILabel!
-    @IBOutlet fileprivate var cryptoBalanceLabel: UILabel!
-    @IBOutlet fileprivate var pendingCryptoBalanceLabel: UILabel!
-    
+
+    // MARK: - Private Properties
+
+    fileprivate var fiatBalanceLabel: UILabel {
+        topLabel
+    }
+    fileprivate var cryptoBalanceLabel: UILabel {
+        middleLabel
+    }
+    fileprivate var pendingCryptoBalanceLabel: UILabel {
+        bottomLabel
+    }
+
     fileprivate var fiatLabelShimmeringView: ShimmeringView!
     fileprivate var cryptoLabelShimmeringView: ShimmeringView!
-    
+
     private var disposeBag = DisposeBag()
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setup()
     }
-    
-    required init?(coder: NSCoder) {
+
+    required init(coder: NSCoder) {
         super.init(coder: coder)
-        setup()
     }
-    
+
     /// Should be called once when the parent view loads
     public func shimmer(estimatedFiatLabelSize: CGSize, estimatedCryptoLabelSize: CGSize) {
         fiatLabelShimmeringView = ShimmeringView(
@@ -86,26 +88,22 @@ public final class AssetBalanceView: UIView {
             size: estimatedCryptoLabelSize
         )
     }
-    
-    private func setup() {
-        fromNib()
-    }
-    
+
     private func stopShimmering() {
         guard fiatLabelShimmeringView != nil else { return }
         guard cryptoLabelShimmeringView != nil else { return }
         guard fiatLabelShimmeringView.isShimmering, cryptoLabelShimmeringView.isShimmering else { return }
-        
+
         fiatBalanceLabel.alpha = 0
         cryptoBalanceLabel.alpha = 0
-        
+
         let animation = {
             self.fiatBalanceLabel.alpha = 1
             self.cryptoBalanceLabel.alpha = 1
             self.fiatLabelShimmeringView.stop()
             self.cryptoLabelShimmeringView.stop()
         }
-        
+
         UIView.animate(
             withDuration: 0.3,
             delay: 0,
@@ -113,7 +111,7 @@ public final class AssetBalanceView: UIView {
             animations: animation
         )
     }
-    
+
     private func startShimmering() {
         guard fiatBalanceLabel.content.isEmpty else { return }
         guard cryptoBalanceLabel.content.isEmpty else { return }

@@ -37,6 +37,8 @@ public final class BadgeImageView: UIView {
         }
         didSet {
             guard let viewModel = viewModel else {
+                imageView.set(nil)
+                containerView.backgroundColor = nil
                 return
             }
             

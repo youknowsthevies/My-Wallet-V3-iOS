@@ -57,7 +57,7 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
         tableView.separatorColor = .background
         tableView.separatorInset = .zero
         tableView.estimatedRowHeight = UITableView.automaticDimension
-        tableView.registerNibCell(CurrentBalanceTableViewCell.self)
+        tableView.register(CurrentBalanceTableViewCell.self)
         tableView.registerNibCell(LineItemTableViewCell.self)
         tableView.register(FooterTableViewCell.self)
         

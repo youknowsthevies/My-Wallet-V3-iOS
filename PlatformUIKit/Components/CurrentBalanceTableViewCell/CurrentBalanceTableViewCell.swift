@@ -7,30 +7,35 @@
 //
 
 import PlatformKit
+import RxCocoa
 import RxSwift
-import UIKit
 
 public final class CurrentBalanceTableViewCell: UITableViewCell {
-    
+
     public var presenter: CurrentBalanceCellPresenting! {
         willSet {
             disposeBag = DisposeBag()
         }
         didSet {
             assetBalanceView.presenter = presenter?.assetBalanceViewPresenter
-            guard let presenter = presenter else { return }
-            
+            guard let presenter = presenter else {
+                badgeImageView.viewModel = nil
+                thumbSideImageView.set(nil)
+                labelStackView.clear()
+                return
+            }
+
             presenter.badgeImageViewModel
                 .drive(badgeImageView.rx.viewModel)
                 .disposed(by: disposeBag)
-            
+
             presenter.iconImageViewContent
                 .drive(thumbSideImageView.rx.content)
                 .disposed(by: disposeBag)
-            
+
             presenter.title
                 .map {
-                    LabelContent.init(
+                    LabelContent(
                         text: $0,
                         font: .main(.semibold, 16.0),
                         color: .titleText,
@@ -38,12 +43,12 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
                         accessibility: .id(presenter.titleAccessibilitySuffix)
                     )
                 }
-                .drive(titleLabel.rx.content)
+                .drive(labelStackView.topLabel.rx.content)
                 .disposed(by: disposeBag)
-            
+
             presenter.description
                 .map {
-                    LabelContent.init(
+                    LabelContent(
                         text: $0,
                         font: .main(.medium, 14.0),
                         color: .descriptionText,
@@ -51,12 +56,12 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
                         accessibility: .id(presenter.descriptionAccessibilitySuffix)
                     )
                 }
-                .drive(descriptionLabel.rx.content)
+                .drive(labelStackView.middleLabel.rx.content)
                 .disposed(by: disposeBag)
-            
+
             presenter.pending
                 .map {
-                    LabelContent.init(
+                    LabelContent(
                         text: $0,
                         font: .main(.medium, 14.0),
                         color: .mutedText,
@@ -64,19 +69,19 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
                         accessibility: .id(presenter.pendingAccessibilitySuffix)
                     )
                 }
-                .drive(pendingLabel.rx.content)
+                .drive(labelStackView.bottomLabel.rx.content)
                 .disposed(by: disposeBag)
-            
+
             presenter.pendingLabelVisibility
                 .map { $0.isHidden }
-                .drive(pendingLabel.rx.isHidden)
+                .drive(labelStackView.bottomLabel.rx.isHidden)
                 .disposed(by: disposeBag)
-            
+
             presenter.separatorVisibility
                 .map { $0.defaultAlpha }
                 .drive(separatorView.rx.alpha)
                 .disposed(by: disposeBag)
-            
+
             presenter.separatorVisibility
                 .map { $0.isHidden ? 0 : 1 }
                 .drive(separatorHeightConstraint.rx.constant)
@@ -85,35 +90,69 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
     }
 
     // MARK: - Private Properties
-    
+
     private var disposeBag = DisposeBag()
-    
-    // MARK: - Private IBOutlets
+    private var separatorHeightConstraint: NSLayoutConstraint!
 
-    @IBOutlet private var badgeImageView: BadgeImageView!
-    @IBOutlet private var thumbSideImageView: UIImageView!
+    private let badgeImageView = BadgeImageView()
+    private let thumbSideImageView = UIImageView()
+    private let labelStackView = ThreeLabelStackView()
+    private let assetBalanceView = AssetBalanceView()
+    private let separatorView = UIView()
 
-    @IBOutlet private var titleLabel: UILabel!
-    @IBOutlet private var descriptionLabel: UILabel!
-    @IBOutlet private var pendingLabel: UILabel!
-    
-    @IBOutlet private var separatorHeightConstraint: NSLayoutConstraint!
-    @IBOutlet private var separatorView: UIView!
-    @IBOutlet private var assetBalanceView: AssetBalanceView!
-    
     // MARK: - Lifecycle
-       
-    public override func awakeFromNib() {
-        super.awakeFromNib()
-        separatorView.backgroundColor = .lightBorder
-        assetBalanceView.shimmer(
-            estimatedFiatLabelSize: CGSize(width: 90, height: 16),
-            estimatedCryptoLabelSize: CGSize(width: 100, height: 14)
-        )
+
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setup()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
     }
 
     public override func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil
+    }
+
+    func setup() {
+        contentView.addSubview(badgeImageView)
+        contentView.addSubview(thumbSideImageView)
+        contentView.addSubview(labelStackView)
+        contentView.addSubview(assetBalanceView)
+        contentView.addSubview(separatorView)
+
+        separatorHeightConstraint = separatorView.layout(dimension: .height, to: 1)
+        separatorView.layoutToSuperview(.leading, .trailing, .bottom)
+
+        badgeImageView.layout(size: .edge(32))
+        badgeImageView.layoutToSuperview(.leading, offset: 24)
+        badgeImageView.layoutToSuperview(.centerY)
+
+        thumbSideImageView.layout(size: .edge(16))
+        thumbSideImageView.layout(to: .trailing, of: badgeImageView, offset: 4)
+        thumbSideImageView.layout(to: .bottom, of: badgeImageView, offset: 4)
+
+        labelStackView.layoutToSuperview(.top, offset: 16)
+        labelStackView.layoutToSuperview(.bottom, offset: -16)
+        labelStackView.layout(edge: .leading, to: .trailing, of: badgeImageView, offset: 16)
+
+        assetBalanceView.layout(edge: .leading, to: .trailing, of: labelStackView)
+        assetBalanceView.layoutToSuperview(.trailing, offset: -24)
+        assetBalanceView.layoutToSuperview(.centerY)
+
+        thumbSideImageView.image = UIImage(named: "icon_custody_lock",
+                                           in: .platformUIKit,
+                                           compatibleWith: nil)
+        separatorView.backgroundColor = .lightBorder
+
+        layoutIfNeeded()
+
+        assetBalanceView.shimmer(
+            estimatedFiatLabelSize: CGSize(width: 90, height: 16),
+            estimatedCryptoLabelSize: CGSize(width: 100, height: 14)
+        )
     }
 }
