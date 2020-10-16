@@ -52,9 +52,9 @@ final class SwapClient: SwapClientAPI {
     // MARK: - SwapActivityClientAPI
     
     func fetchActivity(from date: Date,
-                              fiatCurrency: String,
-                              cryptoCurrency: CryptoCurrency,
-                              limit: Int) -> Single<[SwapActivityItemEvent]> {
+                       fiatCurrency: String,
+                       cryptoCurrency: CryptoCurrency,
+                       limit: Int) -> Single<[SwapActivityItemEvent]> {
         let parameters = [
             URLQueryItem(
                 name: Parameter.before,

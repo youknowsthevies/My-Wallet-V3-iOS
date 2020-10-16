@@ -89,6 +89,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             DependencyContainer.bitcoinKit;
             DependencyContainer.bitcoinCashKit;
             DependencyContainer.stellarKit;
+            DependencyContainer.transactionKit;
             DependencyContainer.transactionUIKit;
             DependencyContainer.buySellKit;
             DependencyContainer.activityKit;
