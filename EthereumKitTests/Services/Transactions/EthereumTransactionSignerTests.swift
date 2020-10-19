@@ -28,6 +28,61 @@ class EthereumTransactionSignerTests: XCTestCase {
         super.tearDown()
     }
 
+    func test_sign_transaction_empty_password() throws {
+
+        func deriveKeyPair() throws -> EthereumKeyPair {
+            let derivationInput = EthereumKeyDerivationInput(
+                mnemonic: MockEthereumWalletTestData.mnemonic,
+                password: ""
+            )
+            let deriver = EthereumKeyPairDeriver()
+            let result = deriver.derive(input: derivationInput)
+            return try result.get()
+        }
+
+        let keyPair = try deriveKeyPair()
+        let publicKey = try Web3Utils.privateToPublic(keyPair.privateKey.data, compressed: true)
+        let accountAddress = try Web3Utils.publicToAddressString(publicKey)
+        XCTAssertEqual(accountAddress, MockEthereumWalletTestData.account)
+
+        let toAddress = EthereumKit.EthereumAddress.init(stringLiteral: "0x3535353535353535353535353535353535353535")
+        let amount: String = "0.1"
+        let nonce: BigUInt = 9
+        var web3transaction: web3swift.EthereumTransaction = EthereumTransaction(
+            nonce: nonce,
+            gasPrice: BigUInt(23),
+            gasLimit: BigUInt(21000),
+            to: Address(toAddress.publicKey),
+            value: BigUInt(amount, decimals: CryptoCurrency.ethereum.maxDecimalPlaces)!,
+            data: Data()
+        )
+        web3transaction.UNSAFE_setChainID(NetworkId.mainnet)
+
+        // swiftlint:disable force_try
+        let costedTransaction = try! EthereumTransactionCandidateCosted(
+            transaction: web3transaction
+        )
+        // swiftlint:enable force_try
+
+        let result = subject
+            .sign(
+                transaction: costedTransaction,
+                nonce: nonce,
+                keyPair: keyPair
+            )
+
+        XCTAssertNoThrow(try result.get())
+
+        guard case .success(let signedTransaction) = result else {
+            XCTFail("Tx signing should succeed")
+            return
+        }
+
+        XCTAssertEqual(signedTransaction.transaction.v, 38)
+        XCTAssertEqual(signedTransaction.transaction.sender, web3swift.Address(accountAddress))
+        XCTAssertEqual(signedTransaction.transaction.intrinsicChainID, NetworkId.mainnet.rawValue)
+    }
+
     func test_sign_transaction() throws {
         let keyPair = MockEthereumWalletTestData.keyPair
         let account = MockEthereumWalletTestData.account
