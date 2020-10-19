@@ -24,7 +24,7 @@
 */
 #import "ModuleXMLHttpRequest.h"
 #import "NSURLSession+SendSynchronousRequest.h"
-@import NetworkKit;
+#import <NetworkKit/NetworkKit.h>
 #import "Blockchain-Swift.h"
 
 @implementation ModuleXMLHttpRequest
@@ -89,10 +89,18 @@
     NSHTTPURLResponse* response;
     NSError* error;
     if ([Reachability hasInternetConnection]) {
-        NSData* data = [NSURLSession sendSynchronousRequest:req session:NetworkDependenciesObjc.session returningResponse:&response error:&error sessionDescription:req.URL.host];
-        status = [response statusCode];
-        self.responseText = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        _responseHeaders = response.allHeaderFields;
+        NSData * _Nullable data = [NSURLSession sendSynchronousRequest:req
+                                                               session:NetworkDependenciesObjc.session
+                                                     returningResponse:&response
+                                                                 error:&error
+                                                    sessionDescription:req.URL.host];
+        if (data != nil) {
+            status = [response statusCode];
+            self.responseText = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            _responseHeaders = response.allHeaderFields;
+        } else {
+            error = [ModuleXMLHttpRequest networkConnectivityError];
+        }
     } else {
         error = [ModuleXMLHttpRequest networkConnectivityError];
     }
