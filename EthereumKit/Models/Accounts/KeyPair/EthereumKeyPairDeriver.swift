@@ -21,19 +21,20 @@ public class EthereumKeyPairDeriver: EthereumKeyPairDeriverAPI {
         let privateKey: Data
         let publicKey: Data
         let accountAddress: String
-
-        // swiftlint:disable force_try
-        mnemonics = try! Mnemonics(mnemonic)
-        keystore = try! BIP32Keystore(
-            mnemonics: mnemonics,
-            password: password,
-            prefixPath: HDNode.defaultPathMetamaskPrefix
-        )
-        let address = keystore.addresses[0]
-        privateKey = try! keystore.UNSAFE_getPrivateKeyData(password: password, account: address)
-        publicKey = try! Web3Utils.privateToPublic(privateKey, compressed: true)
-        accountAddress = try! Web3Utils.publicToAddressString(publicKey)
-
+        do {
+            mnemonics = try Mnemonics(mnemonic)
+            keystore = try BIP32Keystore(
+                mnemonics: mnemonics,
+                password: password,
+                prefixPath: HDNode.defaultPathMetamaskPrefix
+            )
+            let address = keystore.addresses[0]
+            privateKey = try keystore.UNSAFE_getPrivateKeyData(password: password, account: address)
+            publicKey = try Web3Utils.privateToPublic(privateKey, compressed: true)
+            accountAddress = try Web3Utils.publicToAddressString(publicKey)
+        } catch {
+            return .failure(error)
+        }
         return .success(
             EthereumKeyPair(
                 accountID: accountAddress,
