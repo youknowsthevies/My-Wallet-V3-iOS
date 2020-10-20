@@ -146,21 +146,20 @@ public struct DashboardAsset {
                             id: .value("\(AccessibilityId.fiatBalanceLabelFormat)\(descriptors.accessibilityIdSuffix)")
                         )
                     )
-                    
-                    let color: UIColor
+
+                    let tintColor: UIColor
                     let sign: String
-                    
-                    if value.fiatChange.isPositive {
+                    if value.changePercentage > 0 {
                         sign = "+"
-                        color = .positivePrice
-                    } else if value.fiatChange.isNegative {
+                        tintColor = .positivePrice
+                    } else if value.changePercentage < 0 {
                         sign = ""
-                        color = .negativePrice
-                    } else { // Zero {
+                        tintColor = .negativePrice
+                    } else {
                         sign = ""
-                        color = .mutedText
+                        tintColor = .mutedText
                     }
-                    
+
                     let fiatChange: NSAttributedString
                     if descriptors.contentOptions.contains(.fiat) {
                         let fiat = value.fiatChange.toDisplayString(includeSymbol: true)
@@ -169,7 +168,7 @@ public struct DashboardAsset {
                             LabelContent(
                                 text: "\(sign)\(fiat)\(suffix)",
                                 font: descriptors.changeFont,
-                                color: color
+                                color: tintColor
                             )
                         )
                     } else {
@@ -193,7 +192,7 @@ public struct DashboardAsset {
                             LabelContent(
                                 text: "\(prefix)\(percentageString)%\(suffix)",
                                 font: descriptors.changeFont,
-                                color: color
+                                color: tintColor
                             )
                         )
                     } else {
