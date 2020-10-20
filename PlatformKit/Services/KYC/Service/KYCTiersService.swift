@@ -25,24 +25,26 @@ final class KYCTiersService: KYCTiersServiceAPI {
     
     var tiers: Single<KYC.UserTiers> {
         _ = setup
-        return Single
-            .create(weak: self) { (self, observer) -> Disposable in
-                self.semaphore.wait()
-                let disposable = self.cachedTiers.valueSingle
-                    .subscribe { event in
-                        switch event {
-                        case .success(let value):
-                            observer(.success(value))
-                        case .error(let value):
-                            observer(.error(value))
-                        }
-                    }
-                return Disposables.create {
-                    disposable.dispose()
-                    self.semaphore.signal()
-                }
+        return Single.create(weak: self) { (self, observer) -> Disposable in
+            guard case .success = self.semaphore.wait(timeout: .now() + .seconds(30)) else {
+                observer(.error(ToolKitError.timedOut))
+                return Disposables.create()
             }
-            .subscribeOn(scheduler)
+            let disposable = self.cachedTiers.valueSingle
+                .subscribe { event in
+                    switch event {
+                    case .success(let value):
+                        observer(.success(value))
+                    case .error(let value):
+                        observer(.error(value))
+                    }
+                }
+            return Disposables.create {
+                disposable.dispose()
+                self.semaphore.signal()
+            }
+        }
+        .subscribeOn(scheduler)
     }
 
     // MARK: - Private Properties

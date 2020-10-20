@@ -105,23 +105,25 @@ class NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
                     self.currentToken(offlineToken: offlineToken)
                         .map { Token(sessionToken: $0, offlineToken: offlineToken) }
                 }
-        return Single
-            .create(weak: self) { (self, observer) -> Disposable in
-                self.semaphore.wait()
-                let disposable = tokenSingle.subscribe { event in
-                    switch event {
-                    case .error(let error):
-                        observer(.error(error))
-                    case .success(let payload):
-                        observer(.success(payload))
-                    }
-                }
-                return Disposables.create {
-                    disposable.dispose()
-                    self.semaphore.signal()
+        return Single.create(weak: self) { (self, observer) -> Disposable in
+            guard case .success = self.semaphore.wait(timeout: .now() + .seconds(30)) else {
+                observer(.error(ToolKitError.timedOut))
+                return Disposables.create()
+            }
+            let disposable = tokenSingle.subscribe { event in
+                switch event {
+                case .error(let error):
+                    observer(.error(error))
+                case .success(let payload):
+                    observer(.success(payload))
                 }
             }
-            .subscribeOn(scheduler)
+            return Disposables.create {
+                disposable.dispose()
+                self.semaphore.signal()
+            }
+        }
+        .subscribeOn(scheduler)
     }
     
     private func currentToken(offlineToken: NabuOfflineTokenResponse) -> Single<NabuSessionTokenResponse> {

@@ -58,30 +58,32 @@ final class SettingsService: SettingsServiceAPI {
     // MARK: - Public Methods
         
     func fetch(force: Bool) -> Single<WalletSettings> {
-        Single
-            .create(weak: self) { (self, observer) -> Disposable in
-                self.semaphore.wait()
-                let disposable = self.settingsRelay
-                    .take(1)
-                    .asSingle()
-                    .flatMap(weak: self) { (self, settings: WalletSettings?) -> Single<WalletSettings> in
-                        self.fetchSettings(settings: settings, force: force)
-                    }
-                    .subscribe { event in
-                        switch event {
-                        case .success(let settings):
-                            observer(.success(settings))
-                        case .error(let error):
-                            observer(.error(error))
-                        }
-                    }
-                
-                return Disposables.create {
-                    disposable.dispose()
-                    self.semaphore.signal()
-                }
+        Single.create(weak: self) { (self, observer) -> Disposable in
+            guard case .success = self.semaphore.wait(timeout: .now() + .seconds(30)) else {
+                observer(.error(ToolKitError.timedOut))
+                return Disposables.create()
             }
-            .subscribeOn(scheduler)
+            let disposable = self.settingsRelay
+                .take(1)
+                .asSingle()
+                .flatMap(weak: self) { (self, settings: WalletSettings?) -> Single<WalletSettings> in
+                    self.fetchSettings(settings: settings, force: force)
+                }
+                .subscribe { event in
+                    switch event {
+                    case .success(let settings):
+                        observer(.success(settings))
+                    case .error(let error):
+                        observer(.error(error))
+                    }
+                }
+            
+            return Disposables.create {
+                disposable.dispose()
+                self.semaphore.signal()
+            }
+        }
+        .subscribeOn(scheduler)
     }
     
     private func fetchSettings(settings: WalletSettings?, force: Bool) -> Single<WalletSettings> {

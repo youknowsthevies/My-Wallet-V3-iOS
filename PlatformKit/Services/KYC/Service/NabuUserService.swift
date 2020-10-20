@@ -15,30 +15,32 @@ public protocol NabuUserServiceAPI: AnyObject {
     func fetchUser() -> Single<NabuUser>
 }
 
-public final class NabuUserService: NabuUserServiceAPI {
+final class NabuUserService: NabuUserServiceAPI {
     
     // MARK: - Exposed Properties
     
-    public var user: Single<NabuUser> {
+    var user: Single<NabuUser> {
         _ = setup
-        return Single
-            .create(weak: self) { (self, observer) -> Disposable in
-                self.semaphore.wait()
-                let disposable = self.cachedUser.valueSingle
-                    .subscribe { event in
-                        switch event {
-                        case .success(let value):
-                            observer(.success(value))
-                        case .error(let value):
-                            observer(.error(value))
-                        }
-                    }
-                return Disposables.create {
-                    disposable.dispose()
-                    self.semaphore.signal()
-                }
+        return Single.create(weak: self) { (self, observer) -> Disposable in
+            guard case .success = self.semaphore.wait(timeout: .now() + .seconds(30)) else {
+                observer(.error(ToolKitError.timedOut))
+                return Disposables.create()
             }
-            .subscribeOn(scheduler)
+            let disposable = self.cachedUser.valueSingle
+                .subscribe { event in
+                    switch event {
+                    case .success(let value):
+                        observer(.success(value))
+                    case .error(let value):
+                        observer(.error(value))
+                    }
+                }
+            return Disposables.create {
+                disposable.dispose()
+                self.semaphore.signal()
+            }
+        }
+        .subscribeOn(scheduler)
     }
     
     private let cachedUser = CachedValue<NabuUser>(configuration: .onSubscription())
@@ -54,15 +56,11 @@ public final class NabuUserService: NabuUserServiceAPI {
         
     // MARK: - Setup
     
-    public convenience init() {
-        self.init(client: resolve())
-    }
-    
-    init(client: KYCClientAPI) {
+    init(client: KYCClientAPI = resolve()) {
         self.client = client
     }
     
-    public func fetchUser() -> Single<NabuUser> {
+    func fetchUser() -> Single<NabuUser> {
         _  = setup
         return cachedUser.fetchValue
     }
