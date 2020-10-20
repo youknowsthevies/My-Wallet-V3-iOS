@@ -12,12 +12,12 @@ extension CryptoCurrency {
     private typealias LocalizedString = LocalizationConstants.Account
 
     public var defaultInterestWalletName: String {
-        String(format: LocalizedString.myInterestWallet, code)
+        String(format: LocalizedString.myInterestWallet, displayCode)
     }
     public var defaultTradeWalletName: String {
-        String(format: LocalizedString.myTradeAccount, code)
+        String(format: LocalizedString.myTradeAccount, displayCode)
     }
     public var defaultWalletName: String {
-        String(format: LocalizedString.myWallet, code)
+        String(format: LocalizedString.myWallet, displayCode)
     }
 }
