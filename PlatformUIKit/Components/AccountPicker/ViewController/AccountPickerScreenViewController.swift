@@ -97,15 +97,12 @@ public final class AccountPickerScreenViewController: UIViewController {
 
 extension AccountPickerScreenViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard section == 0, let headerModel = presenter.headerModel else { return nil }
-        let frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: AccountPickerHeaderModel.defaultHeight)
-        let headerView = AccountPickerHeaderView(frame: frame)
-        headerView.model = headerModel
-        return headerView
+        guard section == 0 else { return nil }
+        return presenter.headerBuilder.view(for: presenter.headerModel, fittingWidth: view.bounds.width)
     }
 
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        guard section == 0, presenter.headerModel != nil else { return 0 }
-        return AccountPickerHeaderModel.defaultHeight
+        guard section == 0 else { return 0 }
+        return presenter.headerBuilder.defaultHeight(for: presenter.headerModel)
     }
 }

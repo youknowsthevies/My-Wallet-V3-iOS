@@ -107,7 +107,6 @@ public final class SellBuilder: SellBuilderAPI {
         )
         let presenter = AccountPickerScreenPresenter(
             interactor: interactor,
-            headerModel: nil,
             navigationModel: ScreenNavigationModel.AccountPicker.modal,
             shouldDismissOnSelection: false
         )
@@ -122,7 +121,6 @@ public final class SellBuilder: SellBuilderAPI {
         )
         let presenter = AccountPickerScreenPresenter(
             interactor: interactor,
-            headerModel: nil,
             navigationModel: ScreenNavigationModel.AccountPicker.modal,
             shouldDismissOnSelection: false
         )

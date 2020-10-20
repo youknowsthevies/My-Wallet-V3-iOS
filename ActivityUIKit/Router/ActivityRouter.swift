@@ -41,7 +41,6 @@ final class ActivityRouter: ActivityRouterAPI {
         )
         let presenter = AccountPickerScreenPresenter(
             interactor: interactor,
-            headerModel: nil,
             navigationModel: ScreenNavigationModel.AccountPicker.modal
         )
         let controller = AccountPickerScreenModalViewController(presenter: presenter)

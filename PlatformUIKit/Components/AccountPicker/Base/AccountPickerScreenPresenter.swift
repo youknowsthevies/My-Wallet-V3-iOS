@@ -32,7 +32,8 @@ public final class AccountPickerScreenPresenter {
         navigationModel.barStyle
     }
 
-    let headerModel: AccountPickerHeaderModel?
+    let headerModel: AccountPickerHeaderType
+    let headerBuilder = AccountPickerHeaderBuilder()
     
     let shouldDismissOnSelection: Bool
 
@@ -61,7 +62,7 @@ public final class AccountPickerScreenPresenter {
     }()
 
     public init(interactor: AccountPickerScreenInteractor,
-                headerModel: AccountPickerHeaderModel?,
+                headerModel: AccountPickerHeaderType = .none,
                 navigationModel: ScreenNavigationModel,
                 shouldDismissOnSelection: Bool = true) {
         self.headerModel = headerModel

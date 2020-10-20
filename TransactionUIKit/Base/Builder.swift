@@ -43,7 +43,7 @@ public final class Builder {
         )
         let presenter = AccountPickerScreenPresenter(
             interactor: interactor,
-            headerModel: header,
+            headerModel: .default(header),
             navigationModel: navigation
         )
         return AccountPickerScreenModalViewController(presenter: presenter)
@@ -68,7 +68,7 @@ public final class Builder {
         )
         let presenter = AccountPickerScreenPresenter(
             interactor: interactor,
-            headerModel: header,
+            headerModel: .default(header),
             navigationModel: navigation
         )
         return AccountPickerScreenModalViewController(presenter: presenter)
