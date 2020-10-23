@@ -53,7 +53,8 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
     var identifier: String {
         "\(accountType.description).\(currency.name)"
     }
-    
+
+    public let multiBadgeViewModel = MultiBadgeViewModel()
     public let titleAccessibilitySuffix: String
     public let descriptionAccessibilitySuffix: String
     public let pendingAccessibilitySuffix: String

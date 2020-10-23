@@ -30,14 +30,25 @@ struct AccountPickerCellItem: IdentifiableType {
     let account: BlockchainAccount
     let presenter: Presenter
 
-    init(interactor: Interactor) {
+    init(interactor: Interactor, assetAction: AssetAction) {
         switch interactor {
         case .singleAccount(let account, let interactor):
             self.account = account
-            presenter = .singleAccount(AccountCurrentBalanceCellPresenter(account: account, interactor: interactor))
+            presenter = .singleAccount(
+                AccountCurrentBalanceCellPresenter(
+                    account: account,
+                    assetAction: assetAction,
+                    interactor: interactor
+                )
+            )
         case .accountGroup(let account, let interactor):
             self.account = account
-            presenter = .accountGroup(AccountGroupBalanceCellPresenter(account: account, interactor: interactor))
+            presenter = .accountGroup(
+                AccountGroupBalanceCellPresenter(
+                    account: account,
+                    interactor: interactor
+                )
+            )
         }
     }
 }

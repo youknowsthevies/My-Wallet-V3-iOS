@@ -47,6 +47,16 @@ final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
         separatorVisibilityRelay.asDriver()
     }
 
+    let multiBadgeViewModel = MultiBadgeViewModel(
+        layoutMargins: UIEdgeInsets(
+            top: 8,
+            left: 72,
+            bottom: 16,
+            right: 24
+        ),
+        height: 24
+    )
+    
     let titleAccessibilitySuffix: String
     let descriptionAccessibilitySuffix: String
     let pendingAccessibilitySuffix: String
@@ -56,15 +66,20 @@ final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
     // MARK: - Private Properties
 
     private let badgeRelay = BehaviorRelay<BadgeImageViewModel>(value: .empty)
-    private let separatorVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
+    private let separatorVisibilityRelay: BehaviorRelay<Visibility>
     private let iconImageViewContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
     private let titleRelay = BehaviorRelay<String>(value: "")
     private let descriptionRelay = BehaviorRelay<String>(value: "")
     private let disposeBag = DisposeBag()
+    private let badgeFactory = SingleAccountBadgeFactory()
     private let account: SingleAccount
 
-    init(account: SingleAccount, interactor: AssetBalanceViewInteracting) {
+    init(account: SingleAccount,
+         assetAction: AssetAction,
+         interactor: AssetBalanceViewInteracting,
+         separatorVisibility: Visibility = .hidden) {
         self.account = account
+        self.separatorVisibilityRelay = BehaviorRelay<Visibility>(value: separatorVisibility)
         titleAccessibilitySuffix = "\(AccessibilityId.titleLabel)"
         descriptionAccessibilitySuffix = "\(AccessibilityId.descriptionLabel)"
         pendingAccessibilitySuffix = "\(AccessibilityId.pendingLabel)"
@@ -76,6 +91,13 @@ final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
                 fiatAccessiblitySuffix: "\(AccessibilityId.fiatAmountLabel)"
             )
         )
+
+        badgeFactory
+            .badge(account: account, action: assetAction)
+            .subscribe { [weak self] models in
+                self?.multiBadgeViewModel.badgesRelay.accept(models)
+            }
+            .disposed(by: disposeBag)
 
         switch account.currencyType {
         case .fiat(let fiatCurrency):

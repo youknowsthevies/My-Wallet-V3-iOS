@@ -19,8 +19,10 @@ open class DefaultBadgeAssetInteractor: BadgeAssetInteracting {
 
     // MARK: - Private Accessors
 
-    public let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
+    public let stateRelay: BehaviorRelay<InteractionState>
     public let disposeBag = DisposeBag()
 
-    public init() { }
+    public init(initialState: InteractionState = .loading) {
+        stateRelay = BehaviorRelay<InteractionState>(value: initialState)
+    }
 }

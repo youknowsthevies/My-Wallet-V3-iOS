@@ -17,13 +17,24 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
             disposeBag = DisposeBag()
         }
         didSet {
-            assetBalanceView.presenter = presenter?.assetBalanceViewPresenter
             guard let presenter = presenter else {
+                assetBalanceView.presenter = nil
                 badgeImageView.viewModel = nil
                 thumbSideImageView.set(nil)
                 labelStackView.clear()
+                multiBadgeView.model = nil
                 return
             }
+
+            assetBalanceView.presenter = presenter.assetBalanceViewPresenter
+            multiBadgeView.model = presenter.multiBadgeViewModel
+
+            presenter.multiBadgeViewModel
+                .visibility
+                .drive(weak: self) { (self, visibility) in
+                    self.displayBadges(visibility: visibility)
+                }
+                .disposed(by: disposeBag)
 
             presenter.badgeImageViewModel
                 .drive(badgeImageView.rx.viewModel)
@@ -93,12 +104,15 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
 
     private var disposeBag = DisposeBag()
     private var separatorHeightConstraint: NSLayoutConstraint!
+    private var labelStackViewBottomSuperview: NSLayoutConstraint!
+    private var labelStackViewBottomMultiBadgeView: NSLayoutConstraint!
 
     private let badgeImageView = BadgeImageView()
     private let thumbSideImageView = UIImageView()
     private let labelStackView = ThreeLabelStackView()
     private let assetBalanceView = AssetBalanceView()
     private let separatorView = UIView()
+    private let multiBadgeView = MultiBadgeView()
 
     // MARK: - Lifecycle
 
@@ -117,11 +131,18 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
         presenter = nil
     }
 
+    private func displayBadges(visibility: Visibility) {
+        multiBadgeView.isHidden = visibility.isHidden
+        labelStackViewBottomSuperview.isActive = visibility.isHidden
+        labelStackViewBottomMultiBadgeView.isActive = !visibility.isHidden
+    }
+
     func setup() {
         contentView.addSubview(badgeImageView)
         contentView.addSubview(thumbSideImageView)
         contentView.addSubview(labelStackView)
         contentView.addSubview(assetBalanceView)
+        contentView.addSubview(multiBadgeView)
         contentView.addSubview(separatorView)
 
         separatorHeightConstraint = separatorView.layout(dimension: .height, to: 1)
@@ -129,20 +150,27 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
 
         badgeImageView.layout(size: .edge(32))
         badgeImageView.layoutToSuperview(.leading, offset: 24)
-        badgeImageView.layoutToSuperview(.centerY)
+        badgeImageView.layout(to: .centerY, of: labelStackView)
 
         thumbSideImageView.layout(size: .edge(16))
         thumbSideImageView.layout(to: .trailing, of: badgeImageView, offset: 4)
         thumbSideImageView.layout(to: .bottom, of: badgeImageView, offset: 4)
 
         labelStackView.layoutToSuperview(.top, offset: 16)
-        labelStackView.layoutToSuperview(.bottom, offset: -16)
+        labelStackViewBottomSuperview = labelStackView.layoutToSuperview(.bottom, offset: -16)
         labelStackView.layout(edge: .leading, to: .trailing, of: badgeImageView, offset: 16)
 
         assetBalanceView.layout(edge: .leading, to: .trailing, of: labelStackView)
         assetBalanceView.layoutToSuperview(.trailing, offset: -24)
-        assetBalanceView.layoutToSuperview(.centerY)
+        assetBalanceView.layout(to: .centerY, of: labelStackView)
 
+        multiBadgeView.layoutToSuperview(.leading, .trailing, .bottom)
+        labelStackViewBottomMultiBadgeView = labelStackView.layout(edge: .bottom,
+                                                                   to: .top,
+                                                                   of: multiBadgeView,
+                                                                   offset: 0,
+                                                                   priority: .penultimateHigh,
+                                                                   activate: false)
         thumbSideImageView.image = UIImage(named: "icon_custody_lock",
                                            in: .platformUIKit,
                                            compatibleWith: nil)

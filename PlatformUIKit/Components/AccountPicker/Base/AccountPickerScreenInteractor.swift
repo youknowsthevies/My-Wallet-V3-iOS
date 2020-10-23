@@ -14,6 +14,8 @@ import ToolKit
 
 public final class AccountPickerScreenInteractor {
 
+    // MARK: Properties
+
     var interactors: Observable<[AccountPickerCellItem.Interactor]> {
         _ = setup
         let action = self.action
@@ -34,8 +36,11 @@ public final class AccountPickerScreenInteractor {
             .asObservable()
     }
 
-    private let allAccountsRelay: BehaviorRelay<AccountGroup?> = .init(value: nil)
-    private let action: AssetAction
+    let action: AssetAction
+
+    // MARK: Private Properties
+
+    private let allAccountsRelay = BehaviorRelay<AccountGroup?>(value: nil)
     private let coincore: Coincore
     private let selectionService: AccountSelectionServiceAPI
     private let disposeBag = DisposeBag()

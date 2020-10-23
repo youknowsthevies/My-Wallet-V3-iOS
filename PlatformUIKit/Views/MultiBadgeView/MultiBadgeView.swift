@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import RxCocoa
 import RxSwift
 import UIKit
 
@@ -19,7 +20,7 @@ class MultiBadgeView: UIView {
 
     private var horizontalConstraints: Axis.Constraints?
     private var verticalConstraints: Axis.Constraints?
-    private var heightConstraint: NSLayoutConstraint?
+    private var heightConstraint: NSLayoutConstraint!
 
     // MARK: - Public Properties
 
@@ -75,8 +76,8 @@ class MultiBadgeView: UIView {
     private func add(_ presenter: BadgeAssetPresenting) {
         let badge = BadgeView()
         badge.contentHuggingPriority = (.defaultHigh, .defaultHigh)
-        badge.layout(dimension: .height, to: 32)
         stackView.addArrangedSubview(badge)
+        badge.layout(edges: .height, to: stackView)
         presenter.state
             .compactMap { $0 }
             .bindAndCatch(to: badge.rx.viewModel)
@@ -88,8 +89,8 @@ class MultiBadgeView: UIView {
         stackView.spacing = 8
         stackView.alignment = .center
         addSubview(stackView)
+        heightConstraint = stackView.layout(dimension: .height, to: 32)
         horizontalConstraints = stackView.layoutToSuperview(axis: .horizontal)
-        stackView.layout(dimension: .height, to: 32)
         verticalConstraints = stackView.layoutToSuperview(axis: .vertical)
     }
 }

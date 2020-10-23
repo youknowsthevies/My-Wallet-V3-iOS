@@ -35,4 +35,6 @@ public protocol CurrentBalanceCellPresenting {
     var pendingAccessibilitySuffix: String { get }
 
     var assetBalanceViewPresenter: AssetBalanceViewPresenter { get }
+
+    var multiBadgeViewModel: MultiBadgeViewModel { get }
 }

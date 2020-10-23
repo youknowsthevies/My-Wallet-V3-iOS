@@ -51,10 +51,11 @@ public final class AccountPickerScreenPresenter {
     private let disposeBag = DisposeBag()
 
     private lazy var setup: Void = {
+        let action = interactor.action
         interactor.interactors
             .map { items -> [AccountPickerCellItem] in
                 items.map { interactor in
-                    AccountPickerCellItem(interactor: interactor)
+                    AccountPickerCellItem(interactor: interactor, assetAction: action)
                 }
             }
             .bindAndCatch(to: sectionRelay)
