@@ -518,7 +518,7 @@ extension AppCoordinator: TabSwapping {
 
 extension AppCoordinator: CurrencyRouting {
     func toSend(_ currency: CryptoCurrency) {
-        tabControllerManager?.showSend()
+        tabControllerManager?.showSend(cryptoCurrency: currency)
     }
     
     func toReceive(_ currency: CryptoCurrency) {

@@ -74,6 +74,18 @@ final class TabControllerManager: NSObject {
                                                   index: Constants.Navigation.tabSwap)
     }
 
+    func showSend(cryptoCurrency: CryptoCurrency) {
+        UIView.animate(
+            withDuration: 0.3,
+            animations: { [weak self] in
+                self?.showSend()
+            },
+            completion: { [weak self] _ in
+                self?.sendControllerManager.showSend(cryptoCurrency)
+            }
+        )
+    }
+
     func showSend() {
         if sendNavigationViewController == nil {
             let send = sendReceiveCoordinator.builder.send()

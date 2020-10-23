@@ -24,6 +24,13 @@ class SendControllerManager: NSObject {
     init(navigationRouter: NavigationRouterAPI = NavigationRouter()) {
         self.navigationRouter = navigationRouter
     }
+
+    func showSend(_ cryptoCurrency: CryptoCurrency) {
+        let viewController = send(cryptoCurrency)
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(250)) { [weak self] in
+            self?.navigationRouter.present(viewController: viewController)
+        }
+    }
 }
 
 extension SendControllerManager: SendScreenProvider {
