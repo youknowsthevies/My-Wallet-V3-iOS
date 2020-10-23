@@ -186,7 +186,16 @@ extension SendControllerManager: SendScreenProvider {
     }
 
     func setupTransferAllFunds() {
-        sendBTC?.setupTransferAll()
+        if let sendBTC = self.sendBTC {
+            sendBTC.setupTransferAll()
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { [weak self] in
+                guard let self = self else { return }
+                self.navigationRouter.present(viewController: self.send(.bitcoin))
+                self.sendBTC?.setupTransferAll()
+                self.sendBTC?.reload()
+            }
+        }
     }
 
     func setupBitpayPayment(from url: URL) {

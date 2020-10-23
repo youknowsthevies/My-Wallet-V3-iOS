@@ -75,9 +75,9 @@
 {
     [self dismissViewControllerAnimated:YES completion:^{
         [AppCoordinator.shared closeSideMenu];
+        [[TransferAllCoordinator sharedInstance] startWithSendScreen];
     }];
-    
-    [[TransferAllCoordinator sharedInstance] startWithSendScreen];
+
 }
 
 

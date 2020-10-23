@@ -113,27 +113,55 @@ final class TabControllerManager: NSObject {
     }
 
     @objc func transferFundsToDefaultAccount(from address: String) {
-        showSend()
-        sendControllerManager.transferFundsToDefaultAccount(from: address)
+        UIView.animate(
+            withDuration: 0.3,
+            animations: { [weak self] in
+                self?.showSend()
+            },
+            completion: { [weak self] _ in
+                self?.sendControllerManager.transferFundsToDefaultAccount(from: address)
+            }
+        )
     }
 
     // MARK: Transfer All
 
     func setupTransferAllFunds() {
-        showSend()
-        sendControllerManager.setupTransferAllFunds()
+        UIView.animate(
+            withDuration: 0.3,
+            animations: { [weak self] in
+                self?.showSend()
+            },
+            completion: { [weak self] _ in
+                self?.sendControllerManager.setupTransferAllFunds()
+            }
+        )
     }
 
     // MARK: BitPay
 
     func setupBitpayPayment(from url: URL) {
-        showSend()
-        sendControllerManager.setupBitpayPayment(from: url)
+        UIView.animate(
+            withDuration: 0.3,
+            animations: { [weak self] in
+                self?.showSend()
+            },
+            completion: { [weak self] _ in
+                self?.sendControllerManager.setupBitpayPayment(from: url)
+            }
+        )
     }
 
     func setupBitcoinPaymentFromURLHandler(with amount: String?, address: String) {
-        showSend()
-        sendControllerManager.setupBitcoinPayment(amount: amount, address: address)
+        UIView.animate(
+            withDuration: 0.3,
+            animations: { [weak self] in
+                self?.showSend()
+            },
+            completion: { [weak self] _ in
+                self?.sendControllerManager.setupBitcoinPayment(amount: amount, address: address)
+            }
+        )
     }
 }
 
