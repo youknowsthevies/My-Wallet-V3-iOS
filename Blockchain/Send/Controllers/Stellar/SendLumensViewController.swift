@@ -47,7 +47,11 @@ protocol SendXLMViewControllerDelegate: class {
     // MARK: BottomButtonContainerView
     
     var originalBottomButtonConstraint: CGFloat!
-    var optionalOffset: CGFloat = -50
+    lazy var optionalOffset: CGFloat = {
+        let window = UIApplication.shared.keyWindow
+        let bottomSafeAreaInsets = window?.safeAreaInsets.bottom ?? 0
+        return 8 - bottomSafeAreaInsets - originalBottomButtonConstraint
+    }()
     @IBOutlet var layoutConstraintBottomButton: NSLayoutConstraint!
     
     @IBOutlet fileprivate var fromLabel: UILabel!

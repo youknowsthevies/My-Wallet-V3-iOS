@@ -1118,9 +1118,16 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
         
         [self.confirmPaymentView.reallyDoPaymentButton addTarget:self action:@selector(reportSendSummaryConfirmClick) forControlEvents:UIControlEventTouchUpInside];
 
-        [[ModalPresenter sharedInstance] showModalWithContent:self.confirmPaymentView closeType:ModalCloseTypeBack showHeader:true headerText:BC_STRING_CONFIRM_PAYMENT onDismiss:^{
-            [self enablePaymentButtons];
-        } onResume:nil];
+        __weak typeof(self) weakSelf = self;
+        void (^onDismiss)(void) = ^{
+            [weakSelf enablePaymentButtons];
+        };
+        [[ModalPresenter sharedInstance] showModalWithContent:self.confirmPaymentView
+                                                    closeType:ModalCloseTypeBack
+                                                   showHeader:true
+                                                   headerText:BC_STRING_CONFIRM_PAYMENT
+                                                    onDismiss:onDismiss
+                                                     onResume:nil];
         
         NSDecimalNumber *last = [NSDecimalNumber decimalNumberWithDecimal:[[NSDecimalNumber numberWithDouble:[[WalletManager.sharedInstance.wallet.btcRates objectForKey:DICTIONARY_KEY_USD][DICTIONARY_KEY_LAST] doubleValue]] decimalValue]];
         NSDecimalNumber *conversionToUSD = [[NSDecimalNumber decimalNumberWithDecimal:[[NSDecimalNumber numberWithDouble:SATOSHI] decimalValue]] decimalNumberByDividingBy:last];

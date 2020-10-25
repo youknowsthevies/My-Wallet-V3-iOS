@@ -16,9 +16,10 @@
 @end
 @implementation TransferAllFundsBuilder
 
-- (id)initWithAssetType:(LegacyAssetType)assetType usingSendScreen:(BOOL)usesSendScreen
+- (instancetype)initWithAssetType:(LegacyAssetType)assetType usingSendScreen:(BOOL)usesSendScreen
 {
-    if (self = [super init]) {
+    self = [super init];
+    if (self) {
         self.assetType = assetType;
         _usesSendScreen = usesSendScreen;
         [self getTransferAllInfo];

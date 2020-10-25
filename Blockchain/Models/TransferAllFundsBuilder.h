@@ -16,7 +16,7 @@
 @end
 
 @interface TransferAllFundsBuilder : NSObject
-@property (nonatomic) id <TransferAllFundsDelegate> delegate;
+@property (nonatomic, weak) id <TransferAllFundsDelegate> delegate;
 
 @property (nonatomic) NSMutableArray *transferAllAddressesToTransfer;
 @property (nonatomic) NSMutableArray *transferAllAddressesTransferred;
@@ -39,7 +39,7 @@
 @property(nonatomic, copy) void (^on_finish_signing)(NSString*);
 
 
-- (id)initWithAssetType:(LegacyAssetType)assetType usingSendScreen:(BOOL)usesSendScreen;
+- (instancetype)initWithAssetType:(LegacyAssetType)assetType usingSendScreen:(BOOL)usesSendScreen;
 - (void)setupTransfersToAccount:(int)account;
 - (void)setupFirstTransferWithAddressesUsed:(NSArray *)addressesUsed;
 - (void)transferAllFundsToAccountWithSecondPassword:(NSString *)secondPassword;
