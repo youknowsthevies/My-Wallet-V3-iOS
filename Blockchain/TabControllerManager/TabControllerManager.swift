@@ -25,21 +25,26 @@ final class TabControllerManager: NSObject {
 
     private var activityNavigationController: UINavigationController!
     private var dashboardNavigationController: UINavigationController!
-    private var exchangeContainerViewController: ExchangeContainerViewController!
     private var sendNavigationViewController: UINavigationController!
     private var receiveNavigationViewController: UINavigationController!
     private var buySellViewController: UINavigationController!
+    private var swapViewController: UIViewController!
+    private var swapRouter: SwapRootRouting!
+
     private var analyticsEventRecorder: AnalyticsEventRecording
     private let sendControllerManager: SendControllerManager
     private let sendReceiveCoordinator: SendReceiveCoordinator
+    private let featureConfigurator: FeatureConfiguring
 
     init(sendControllerManager: SendControllerManager = resolve(),
          sendReceiveCoordinator: SendReceiveCoordinator = resolve(),
-         analyticsEventRecorder: AnalyticsEventRecording = resolve()) {
+         analyticsEventRecorder: AnalyticsEventRecording = resolve(),
+         featureConfigurator: FeatureConfiguring = resolve()) {
         self.sendControllerManager = sendControllerManager
-        self.analyticsEventRecorder = analyticsEventRecorder
-        tabViewController = TabViewController.makeFromStoryboard()
         self.sendReceiveCoordinator = sendReceiveCoordinator
+        self.analyticsEventRecorder = analyticsEventRecorder
+        self.featureConfigurator = featureConfigurator
+        tabViewController = TabViewController.makeFromStoryboard()
         super.init()
         tabViewController.delegate = self
     }
@@ -64,12 +69,33 @@ final class TabControllerManager: NSObject {
                                                   index: Constants.Navigation.tabTransactions)
     }
 
-    func showSwap() {
-        if exchangeContainerViewController == nil {
-            exchangeContainerViewController = ExchangeContainerViewController.makeFromStoryboard()
+    private func loadSwap() {
+        guard swapViewController == nil else { return }
+        guard swapRouter == nil else { return }
 
+        func populateNewSwap() {
+            let router = SwapRootBuilder().build()
+            swapViewController = router.viewControllable.uiviewController
+            swapRouter = router
+            router.interactable.activate()
+            router.load()
         }
-        tabViewController.setActiveViewController(exchangeContainerViewController,
+        func populateLegacySwap() {
+            swapViewController = ExchangeContainerViewController.makeFromStoryboard()
+        }
+
+        populateLegacySwap()
+        // TODO: When New Swap is ready, use Feature Flag to decide which one should be displayed:
+        // if featureConfigurator.configuration(for: .newSwapEnabled).isEnabled {
+        //     populateNewSwap()
+        // } else {
+        //     populateLegacySwap()
+        // }
+    }
+
+    func showSwap() {
+        loadSwap()
+        tabViewController.setActiveViewController(swapViewController,
                                                   animated: true,
                                                   index: Constants.Navigation.tabSwap)
     }
@@ -245,7 +271,10 @@ extension TabControllerManager: WalletExchangeIntermediateDelegate {
     /// swap for the first time. This is a delegate callback from the JS layer. This needs to be
     /// refactored so that it is in a completion handler and only in `ExchangeContainerViewController`
     func didCreateEthAccountForExchange() {
-        exchangeContainerViewController.showExchange()
+        guard let exchangeContainer = swapViewController as? ExchangeContainerViewController else {
+            return
+        }
+        exchangeContainer.showExchange()
     }
 }
 

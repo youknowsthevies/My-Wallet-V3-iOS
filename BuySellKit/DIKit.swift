@@ -27,6 +27,11 @@ extension DependencyContainer {
             let provider: ServiceProviderAPI = DIKit.resolve()
             return provider.ordersDetails
         }
+
+        factory { () -> EligibilityServiceAPI in
+            let provider: ServiceProviderAPI = DIKit.resolve()
+            return provider.eligibility
+        }
         
         factory { OrdersFiatActivityItemEventService() as FiatActivityItemEventFetcherAPI }
         
