@@ -16,7 +16,12 @@ import UIKit
 class ValidationDateField: ValidationTextField {
 
     lazy var pickerView: UIDatePicker = {
-        let picker = UIDatePicker(frame: .zero)
+        var picker = UIDatePicker()
+        picker.datePickerMode = .date
+        if #available(iOS 14.0, *) {
+            picker.preferredDatePickerStyle = .wheels
+            picker.sizeToFit()
+        }
         return picker
     }()
 
@@ -41,8 +46,6 @@ class ValidationDateField: ValidationTextField {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-
-        pickerView.datePickerMode = .date
         textFieldInputView = pickerView
         pickerView.addTarget(self, action: #selector(datePickerUpdated(_:)), for: .valueChanged)
     }
