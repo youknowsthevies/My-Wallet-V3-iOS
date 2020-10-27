@@ -18,7 +18,7 @@ public final class ValidationTextFieldView: TextFieldView {
     
     // MARK: - Private Properties
     
-    private let invalidImageView = UIImageView(image: #imageLiteral(resourceName: "validation-error"))
+    private let invalidImageView = UIImageView()
     private var disposeBag = DisposeBag()
     
     // MARK: - Setup
@@ -29,6 +29,7 @@ public final class ValidationTextFieldView: TextFieldView {
     }
     
     private func setupImageView() {
+        invalidImageView.image = UIImage(named: "validation-error", in: .platformUIKit, compatibleWith: nil)
         invalidImageView.contentMode = .scaleAspectFit
         accessoryView.addSubview(invalidImageView)
         invalidImageView.layout(size: .init(width: 24, height: 20))
