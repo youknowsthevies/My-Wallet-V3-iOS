@@ -10,10 +10,10 @@ import BuySellUIKit
 import DIKit
 import InterestKit
 import InterestUIKit
+import KYCUIKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
-import KYCUIKit
 
 /// TODO: This class should be refactored so any view would load
 /// as late as possible and also would be deallocated when is no longer in use
@@ -381,10 +381,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     /// Starts Buy Crypto flow.
     @objc func handleBuyCrypto() {
         let builder = BuySellUIKit.Builder(
-            fiatCurrencyService: UserInformationServiceProvider.default.settings,
-            serviceProvider: DataProvider.default.buySell,
-            stateService: BuySellUIKit.StateService.make(),
-            recordingProvider: RecordingProvider.default
+            stateService: BuySellUIKit.StateService()
         )
         buyRouter = BuySellUIKit.Router(builder: builder)
         buyRouter.start()
@@ -392,21 +389,11 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     
     /// Starts Sell Crypto flow
     @objc func handleSellCrypto() {
-        let serviceProvider = DataProvider.default.buySell
         let builder = BuySellUIKit.SellBuilder(
             routerInteractor: SellRouterInteractor(
-                accountSelectionService: serviceProvider.accountSelectionService,
-                eligibilityService: serviceProvider.eligibility,
-                uiUtilityProvider: UIUtilityProvider.default,
-                kycTiersService: resolve(),
-                featureFetching: resolve(),
                 balanceProvider: DataProvider.default.balance
             ),
-            kycServiceProvider: resolve(),
             analyticsRecorder: resolve(),
-            recorderProvider: RecordingProvider.default,
-            userInformationProvider: resolve(),
-            buySellServiceProvider: serviceProvider,
             exchangeProvider: DataProvider.default.exchange,
             balanceProvider: DataProvider.default.balance
         )
@@ -415,16 +402,13 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     }
     
     func startSimpleBuyAtLogin() {
-        let stateService = BuySellUIKit.StateService.make()
+        let stateService = BuySellUIKit.StateService()
         guard !stateService.cache[.hasShownIntroScreen] else {
             return
         }
         
         let builder = BuySellUIKit.Builder(
-            fiatCurrencyService: UserInformationServiceProvider.default.settings,
-            serviceProvider: DataProvider.default.buySell,
-            stateService: stateService,
-            recordingProvider: RecordingProvider.default
+            stateService: stateService
         )
         
         buyRouter = BuySellUIKit.Router(builder: builder)
@@ -432,12 +416,9 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     }
     
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool) {
-        let stateService = BuySellUIKit.StateService.make()
+        let stateService = BuySellUIKit.StateService()
         let builder = BuySellUIKit.Builder(
-            fiatCurrencyService: UserInformationServiceProvider.default.settings,
-            serviceProvider: DataProvider.default.buySell,
-            stateService: stateService,
-            recordingProvider: RecordingProvider.default
+            stateService: stateService
         )
         
         buyRouter = BuySellUIKit.Router(builder: builder)

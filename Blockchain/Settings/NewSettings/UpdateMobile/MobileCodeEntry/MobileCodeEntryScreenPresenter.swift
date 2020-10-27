@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
@@ -46,7 +47,7 @@ final class MobileCodeEntryScreenPresenter {
     
     init(stateService: UpdateMobileStateServiceAPI,
          service: MobileSettingsServiceAPI,
-         loadingViewPresenting: LoadingViewPresenting = LoadingViewPresenter.shared) {
+         loadingViewPresenting: LoadingViewPresenting = resolve()) {
         self.interactor = MobileCodeEntryInteractor(service: service)
         self.stateService = stateService
         codeEntryTextFieldModel = .init(

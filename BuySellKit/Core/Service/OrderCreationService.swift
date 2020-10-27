@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -30,9 +31,9 @@ final class OrderCreationService: OrderCreationServiceAPI {
     
     // MARK: - Setup
     
-    init(analyticsRecorder: AnalyticsEventRecording,
-         client: OrderCreationClientAPI,
-         pendingOrderDetailsService: PendingOrderDetailsServiceAPI) {
+    init(analyticsRecorder: AnalyticsEventRecording = resolve(),
+         client: OrderCreationClientAPI = resolve(),
+         pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client
         self.pendingOrderDetailsService = pendingOrderDetailsService

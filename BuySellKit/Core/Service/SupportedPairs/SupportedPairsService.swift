@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxRelay
 import RxSwift
 
@@ -23,7 +24,7 @@ final class SupportedPairsService: SupportedPairsServiceAPI {
     
     // MARK: - Setup
     
-    init(client: SupportedPairsClientAPI) {
+    init(client: SupportedPairsClientAPI = resolve()) {
         self.client = client
     }
     

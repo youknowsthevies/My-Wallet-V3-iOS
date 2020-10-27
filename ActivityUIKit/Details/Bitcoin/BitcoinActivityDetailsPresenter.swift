@@ -79,8 +79,8 @@ final class BitcoinActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     private let explorerButton: ButtonViewModel
 
-    init(alertViewPresenter: AlertViewPresenterAPI = AlertViewPresenter.shared,
-         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
+    init(alertViewPresenter: AlertViewPresenterAPI = resolve(),
+         loadingViewPresenter: LoadingViewPresenting = resolve(),
          event: TransactionalActivityItemEvent,
          router: ActivityRouterAPI,
          interactor: BitcoinActivityDetailsInteractor = .init(),

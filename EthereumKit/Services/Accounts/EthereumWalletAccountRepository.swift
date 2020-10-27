@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 
@@ -43,14 +44,14 @@ open class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI, 
     private let deriver: AnyKeyPairDeriver<EthereumKeyPair, EthereumKeyDerivationInput>
     
     // MARK: - Init
+    
+    convenience init(with bridge: Bridge = resolve()) {
+        self.init(with: bridge, deriver: AnyEthereumKeyPairDeriver())
+    }
 
-    public init<D: KeyPairDeriverAPI>(with bridge: Bridge, deriver: D) where D.Pair == EthereumKeyPair, D.Input == EthereumKeyDerivationInput {
+    init<D: KeyPairDeriverAPI>(with bridge: Bridge, deriver: D) where D.Pair == EthereumKeyPair, D.Input == EthereumKeyDerivationInput {
         self.bridge = bridge
         self.deriver = AnyKeyPairDeriver<EthereumKeyPair, EthereumKeyDerivationInput>(deriver: deriver)
-    }
-    
-    public convenience init(with bridge: Bridge) {
-        self.init(with: bridge, deriver: AnyEthereumKeyPairDeriver())
     }
 
     // MARK: - Public methods

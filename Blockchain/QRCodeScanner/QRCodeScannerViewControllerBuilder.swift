@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import PlatformUIKit
@@ -26,7 +27,7 @@ final class QRCodeScannerViewControllerBuilder<P: QRCodeScannerParsing> {
     typealias CompletionHandler = ((Result<P.T, P.U>) -> Void)
     
     private var scanner: QRCodeScanner? = QRCodeScanner()
-    private var loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared
+    private var loadingViewPresenter: LoadingViewPresenting = resolve()
     private var loadingViewStyle: LoadingViewPresenter.LoadingViewStyle = .activityIndicator
     private var presentationType = QRCodePresentationType.modal(dismissWithAnimation: true)
     

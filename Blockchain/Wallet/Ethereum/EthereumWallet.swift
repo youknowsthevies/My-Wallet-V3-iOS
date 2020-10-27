@@ -64,13 +64,14 @@ class EthereumWallet: NSObject {
     private weak var wallet: WalletAPI?
     private let walletOptionsService: WalletOptionsAPI
     
+    /// THese are lazy because we have a dependency cycle, and injecting using `EthereumWallet` initializer
+    /// overflows the function stack with initializers that call one another
+    @LazyInject private var assetAccountRepository: EthereumAssetAccountRepository
+    @LazyInject private var historicalTransactionService: EthereumHistoricalTransactionService
+    
     /// NOTE: This is to fix flaky tests - interaction with `Wallet` should be performed on the main scheduler
     private let schedulerType: SchedulerType
     
-    /// This is lazy because we got a massive retain cycle, and injecting using `EthereumWallet` initializer
-    /// overflows the function stack with initializers that call one another
-    private lazy var dependencies: ETHDependencies = ETHServiceProvider.shared.services
-
     private static let defaultPAXAccount = ERC20TokenAccount(
         label: LocalizationConstants.SendAsset.myPaxWallet,
         contractAddress: PaxToken.contractAddress.publicKey,
@@ -371,15 +372,14 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
     
     /// Streams the nonce of the address
     var nonce: Single<BigUInt> {
-        dependencies
-            .assetAccountRepository
+        assetAccountRepository
             .assetAccountDetails
             .map { BigUInt(integerLiteral: $0.nonce) }
     }
     
     /// Streams `true` if there is a prending transaction
     var isWaitingOnTransaction: Single<Bool> {
-        dependencies.transactionService
+        historicalTransactionService
             .fetchTransactions()
             .map { $0.contains(where: { $0.state == .pending }) }
     }
@@ -410,7 +410,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
     }
 
     private func fetchBalance(secondPassword: String? = nil) -> Single<CryptoValue> {
-        dependencies.assetAccountRepository.assetAccountDetails
+        assetAccountRepository.assetAccountDetails
             .map { $0.balance }
             // TODO: This side effect is necessary for backward compat. since the relevant JS logic has been removed
             .do(onSuccess: { [weak self] cryptoValue in
@@ -462,9 +462,9 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
 
     private func fetchHistory(fromCache: Bool) -> Single<Void> {
         if fromCache {
-            return dependencies.transactionService.transactions.mapToVoid()
+            return historicalTransactionService.transactions.mapToVoid()
         } else {
-            return dependencies.transactionService.fetchTransactions().mapToVoid()
+            return historicalTransactionService.fetchTransactions().mapToVoid()
         }
     }
 }

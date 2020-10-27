@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -30,8 +31,8 @@ final class KYCPendingInteractor: Interactor {
 
     // MARK: - Setup
     
-    init(kycTiersService: KYCTierUpdatePollingService,
-         eligibilityService: EligibilityServiceAPI) {
+    init(kycTiersService: KYCTierUpdatePollingService = resolve(),
+         eligibilityService: EligibilityServiceAPI = resolve()) {
         self.kycTiersService = kycTiersService
         self.eligibilityService = eligibilityService
     }

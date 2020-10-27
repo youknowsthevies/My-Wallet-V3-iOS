@@ -20,17 +20,6 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     
     // MARK: - Services
     
-    /// Dispatch queue
-    private let dispatchQueueName = "announcements-interaction-queue"
-    
-    private let wallet: WalletProtocol
-    private let dataRepository: BlockchainDataRepository
-    private let tiersService: KYCTiersServiceAPI
-    private let infoService: GeneralInformationServiceAPI
-    private let exchangeService: ExchangeService
-    private let repository: AuthenticatorRepositoryAPI
-    private let simpleBuyServiceProvider: ServiceProviderAPI
-
     /// Returns announcement preliminary data, according to which the relevant
     /// announcement will be displayed
     var preliminaryData: Single<AnnouncementPreliminaryData> {
@@ -42,13 +31,10 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         let tiers = tiersService.tiers
         let countries = infoService.countries
         let hasTrades = exchangeService.hasExecutedTrades()
-        let simpleBuyOrderDetails = simpleBuyServiceProvider
-            .pendingOrderDetails
+        let simpleBuyOrderDetails = pendingOrderDetailsService
             .pendingActionOrderDetails
 
-        let isSimpleBuyAvailable = simpleBuyServiceProvider
-            .supportedPairsInteractor
-            .pairs
+        let isSimpleBuyAvailable = supportedPairsInteractor.pairs
             .map { !$0.pairs.isEmpty }
             .take(1)
             .asSingle()
@@ -62,7 +48,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                  Single.zip(
                      isSimpleBuyAvailable,
                      simpleBuyOrderDetails,
-                     simpleBuyServiceProvider.beneficiaries.hasLinkedBank.take(1).asSingle()
+                    beneficiariesService.hasLinkedBank.take(1).asSingle()
                  )
             )
             .observeOn(MainScheduler.instance)
@@ -81,6 +67,21 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             }
     }
     
+    // MARK: - Private properties
+    
+    /// Dispatch queue
+    private let dispatchQueueName = "announcements-interaction-queue"
+    
+    private let wallet: WalletProtocol
+    private let dataRepository: BlockchainDataRepository
+    private let tiersService: KYCTiersServiceAPI
+    private let infoService: GeneralInformationServiceAPI
+    private let exchangeService: ExchangeService
+    private let repository: AuthenticatorRepositoryAPI
+    private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
+    private let beneficiariesService: BeneficiariesServiceAPI
+    private let pendingOrderDetailsService: PendingOrderDetailsServiceAPI
+    
     // MARK: - Setup
     
     init(repository: AuthenticatorRepositoryAPI = WalletManager.shared.repository,
@@ -88,15 +89,19 @@ final class AnnouncementInteractor: AnnouncementInteracting {
          dataRepository: BlockchainDataRepository = .shared,
          tiersService: KYCTiersServiceAPI = resolve(),
          exchangeService: ExchangeService = .shared,
-         infoService: GeneralInformationServiceAPI = UserInformationServiceProvider.default.general,
-         paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = PAXServiceProvider.shared.services.assetAccountRepository,
-         simpleBuyServiceProvider: ServiceProviderAPI = DataProvider.default.buySell) {
+         infoService: GeneralInformationServiceAPI = resolve(),
+         paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = resolve(),
+         supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
+         beneficiariesService: BeneficiariesServiceAPI = resolve(),
+         pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve()) {
         self.repository = repository
         self.wallet = wallet
         self.dataRepository = dataRepository
         self.tiersService = tiersService
         self.infoService = infoService
         self.exchangeService = exchangeService
-        self.simpleBuyServiceProvider = simpleBuyServiceProvider
+        self.supportedPairsInteractor = supportedPairsInteractor
+        self.beneficiariesService = beneficiariesService
+        self.pendingOrderDetailsService = pendingOrderDetailsService
     }
 }

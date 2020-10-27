@@ -26,7 +26,6 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI {
     let completionRelay = PublishRelay<Void>()
     
     private var stateService: CustodyWithdrawalStateService!
-    private let custodialServiceProvider: CustodialServiceProviderAPI
     private let dataProviding: DataProviding
     private let navigationRouter: NavigationRouterAPI
     private let webViewService: WebViewServiceAPI
@@ -35,10 +34,8 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI {
     
     init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
          dataProviding: DataProviding = DataProvider.default,
-         custodialServiceProvider: CustodialServiceProviderAPI = CustodialServiceProvider.default,
          webViewService: WebViewServiceAPI = resolve()) {
         self.dataProviding = dataProviding
-        self.custodialServiceProvider = custodialServiceProvider
         self.navigationRouter = navigationRouter
         self.webViewService = webViewService
     }
@@ -84,7 +81,6 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI {
     
     private func showWithdrawalScreen() {
         let interactor = CustodyWithdrawalScreenInteractor(
-            withdrawalService: custodialServiceProvider.withdrawal,
             currency: currency,
             balanceFetching: dataProviding.balance[currency.currency],
             accountRepository: AssetAccountRepository.shared

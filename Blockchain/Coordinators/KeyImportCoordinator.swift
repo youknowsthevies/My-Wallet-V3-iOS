@@ -7,6 +7,7 @@
 //
 
 import BitcoinKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
 
@@ -59,7 +60,7 @@ import PlatformUIKit
 
     // TODO: Refactor class to support other asset types (currently assumed to be Bitcoin)
     private init(walletManager: WalletManager = WalletManager.shared,
-                 loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared) {
+                 loadingViewPresenter: LoadingViewPresenting = resolve()) {
         self.walletManager = walletManager
         self.loadingViewPresenter = loadingViewPresenter
         super.init()
@@ -120,7 +121,7 @@ import PlatformUIKit
                     self?.handlePrivateKeyScan(result: result, legacyDelegate: delegate)
                 }
             )
-            .with(loadingViewPresenter: LoadingViewPresenter.shared)
+            .with(loadingViewPresenter: loadingViewPresenter)
             .build()
         
         guard let qrCodeScannerViewController = qrCodeScannerViewController else { return }

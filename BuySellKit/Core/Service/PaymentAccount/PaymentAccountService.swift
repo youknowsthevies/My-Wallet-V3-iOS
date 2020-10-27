@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 
@@ -46,9 +47,9 @@ final class PaymentAccountService: PaymentAccountServiceAPI {
 
     // MARK: - Setup
 
-    init(client: PaymentAccountClientAPI,
-         dataRepository: DataRepositoryAPI,
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI,
+    init(client: PaymentAccountClientAPI = resolve(),
+         dataRepository: DataRepositoryAPI = resolve(),
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
          patcher: PaymentAccountPatcher = PaymentAccountPatcher()) {
         self.client = client
         self.fiatCurrencyService = fiatCurrencyService

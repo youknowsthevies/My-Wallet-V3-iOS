@@ -30,8 +30,6 @@ final class SettingsScreenInteractor {
     /// The presenter should not contain any interaction logic
     
     let settingsService: SettingsServiceAPI
-    let cardsService: CardServiceProviderAPI
-    let simpleBuyService: ServiceProviderAPI
     let smsTwoFactorService: SMSTwoFactorSettingsServiceAPI
     let emailNotificationsService: EmailNotificationSettingsServiceAPI
     
@@ -42,7 +40,7 @@ final class SettingsScreenInteractor {
     let biometryProviding: BiometryProviding
     let credentialsStore: CredentialsStoreAPI
     let appSettings: BlockchainSettings.App
-    let featureConfigurator: FeatureFetching & FeatureConfiguring
+    let featureConfigurator: FeatureFetchingConfiguring
     let recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
     let pitLinkingConfiguration: AppFeatureConfiguration
     let simpleBuyCardsConfiguration: AppFeatureConfiguration
@@ -54,22 +52,18 @@ final class SettingsScreenInteractor {
     
     init(repository: BlockchainDataRepository = BlockchainDataRepository.shared,
          credentialsStore: CredentialsStoreAPI = resolve(),
-         featureConfigurator: FeatureFetching & FeatureConfiguring = AppFeatureConfigurator.shared,
-         settingsService: SettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         smsTwoFactorService: SMSTwoFactorSettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         emailNotificationService: EmailNotificationSettingsServiceAPI = UserInformationServiceProvider.default.settings,
+         featureConfigurator: FeatureFetchingConfiguring = resolve(),
+         settingsService: SettingsServiceAPI = resolve(),
+         smsTwoFactorService: SMSTwoFactorSettingsServiceAPI = resolve(),
+         emailNotificationService: EmailNotificationSettingsServiceAPI = resolve(),
          appSettings: BlockchainSettings.App = resolve(),
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
          pitConnectionAPI: PITConnectionStatusProviding = PITConnectionStatusProvider(),
          settingsAuthenticating: AppSettingsAuthenticating = resolve(),
          tiersService: KYCTiersServiceAPI = resolve(),
          wallet: Wallet = WalletManager.shared.wallet,
-         cardsService: CardServiceProviderAPI = CardServiceProvider.default,
-         simpleBuyService: ServiceProviderAPI = DataProvider.default.buySell,
          balanceProviding: BalanceProviding = DataProvider.default.balance,
          balanceChangeProviding: BalanceChangeProviding = DataProvider.default.balanceChange) {
-        self.simpleBuyService = simpleBuyService
-        self.cardsService = cardsService
         self.smsTwoFactorService = smsTwoFactorService
         self.appSettings = appSettings
         self.settingsService = settingsService
@@ -86,14 +80,11 @@ final class SettingsScreenInteractor {
 
         cardSectionInteractor = CardSettingsSectionInteractor(
             featureFetcher: featureConfigurator,
-            paymentMethodTypesService: simpleBuyService.paymentMethodTypes,
             tierLimitsProvider: tiersProviding
         )
         
         bankSectionInteractor = BanksSettingsSectionInteractor(
-            beneficiariesService: simpleBuyService.beneficiaries,
             featureFetcher: featureConfigurator,
-            paymentMethodTypesService: simpleBuyService.paymentMethodTypes,
             tierLimitsProvider: tiersProviding
         )
         

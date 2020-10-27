@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
@@ -20,7 +21,7 @@ public final class FiatCurrencySelectionProvider: FiatCurrencySelectionProviderA
 
     private let supportedCurrencies: SupportedCurrenciesServiceAPI
 
-    public init(supportedCurrencies: SupportedCurrenciesServiceAPI) {
+    public init(supportedCurrencies: SupportedCurrenciesServiceAPI = resolve()) {
         self.supportedCurrencies = supportedCurrencies
     }
 }

@@ -16,18 +16,48 @@ extension DependencyContainer {
     public static var ethereumKit = module {
         
         factory { APIClient() as APIClientAPI }
+        
+        factory { CryptoFeeService<EthereumTransactionFee>() }
 
         factory(tag: CryptoCurrency.ethereum) { EthereumAsset() as CryptoAsset }
-
+        
+        single { EthereumAssetAccountRepository() }
+        
+        factory { EthereumAssetAccountDetailsService() }
+        
+        factory { EthereumWalletAccountRepository() as EthereumWalletAccountRepositoryAPI }
+        
         factory { EthereumAccountBalanceService() as EthereumAccountBalanceServiceAPI }
         
-        factory { () -> EthereumHistoricalTransactionService in
-            let wallet: EthereumWalletBridgeAPI = DIKit.resolve()
-            return EthereumHistoricalTransactionService(with: wallet)
-        }
-        
+        single { EthereumHistoricalTransactionService() }
+
         factory { EthereumTransactionalActivityItemEventsService() }
         
         factory { EthereumActivityItemEventDetailsFetcher() }
+        
+        factory { EthereumWalletService() as EthereumWalletServiceAPI }
+        
+        factory { EthereumTransactionBuildingService() as EthereumTransactionBuildingServiceAPI }
+        
+        factory { EthereumTransactionSendingService() as EthereumTransactionSendingServiceAPI }
+        
+        factory { EthereumTransactionValidationService() }
+        
+        factory { AnyCryptoFeeService<EthereumTransactionFee>.ethereum() }
+        
+        factory { EthereumTransactionBuilder() as EthereumTransactionBuilderAPI }
+        
+        factory { EthereumTransactionSigner() as EthereumTransactionSignerAPI }
+        
+        factory { EthereumTransactionEncoder() as EthereumTransactionEncoderAPI }
+    }
+}
+
+extension AnyCryptoFeeService where FeeType == EthereumTransactionFee {
+    
+    fileprivate static func ethereum(
+        service: CryptoFeeService<EthereumTransactionFee> = resolve()
+    ) -> AnyCryptoFeeService<FeeType> {
+        AnyCryptoFeeService<FeeType>(service: service)
     }
 }

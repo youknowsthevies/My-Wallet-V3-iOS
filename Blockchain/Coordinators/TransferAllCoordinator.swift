@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformUIKit
 
@@ -20,7 +21,7 @@ import PlatformUIKit
     
     private let loadingViewPresenter: LoadingViewPresenting
 
-    private init(loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared) {
+    private init(loadingViewPresenter: LoadingViewPresenting = resolve()) {
         self.loadingViewPresenter = loadingViewPresenter
         super.init()
         WalletManager.shared.transferAllDelegate = self

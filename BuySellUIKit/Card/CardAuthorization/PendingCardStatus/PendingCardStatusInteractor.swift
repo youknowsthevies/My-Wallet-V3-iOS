@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -32,8 +33,8 @@ final class PendingCardStatusInteractor: Interactor {
     // MARK: - Setup
     
     init(cardId: String,
-         activationService: CardActivationServiceAPI,
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
+         activationService: CardActivationServiceAPI = resolve(),
+         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
          routingInteractor: CardRouterInteractor) {
         self.cardId = cardId
         self.routingInteractor = routingInteractor

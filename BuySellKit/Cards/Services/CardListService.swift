@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 import RxRelay
@@ -53,10 +54,10 @@ public final class CardListService: CardListServiceAPI {
     
     // MARK: - Setup
     
-    public init(client: CardListClientAPI,
-                reactiveWallet: ReactiveWalletAPI,
-                featureFetcher: FeatureFetching,
-                fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
+    public init(client: CardListClientAPI = resolve(),
+                reactiveWallet: ReactiveWalletAPI = resolve(),
+                featureFetcher: FeatureFetching = resolve(),
+                fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()) {
         self.client = client
         self.reactiveWallet = reactiveWallet
         self.featureFetcher = featureFetcher

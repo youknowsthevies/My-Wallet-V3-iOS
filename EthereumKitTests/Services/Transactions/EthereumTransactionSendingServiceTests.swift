@@ -40,9 +40,9 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
             service: CryptoFeeServiceMock<EthereumTransactionFee>(underlyingFees: .default)
         )
         
-        transactionBuilder = EthereumTransactionBuilder.shared
-        transactionSigner = EthereumTransactionSigner.shared
-        transactionEncoder = EthereumTransactionEncoder.shared
+        transactionBuilder = EthereumTransactionBuilder()
+        transactionSigner = EthereumTransactionSigner()
+        transactionEncoder = EthereumTransactionEncoder()
         
         subject = EthereumTransactionSendingService(
             with: bridge,

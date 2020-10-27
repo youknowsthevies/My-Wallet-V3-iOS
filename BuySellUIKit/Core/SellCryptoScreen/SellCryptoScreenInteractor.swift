@@ -7,10 +7,11 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
-import RxSwift
 import RxRelay
+import RxSwift
 
 public struct SellCryptoInteractionData {
 
@@ -123,16 +124,16 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
     
     // MARK: - Setup
     
-    init(kycTiersService: KYCTiersServiceAPI,
-         pairsService: SupportedPairsInteractorServiceAPI,
-         eligibilityService: EligibilityServiceAPI,
+    init(kycTiersService: KYCTiersServiceAPI = resolve(),
+         pairsService: SupportedPairsInteractorServiceAPI = resolve(),
+         eligibilityService: EligibilityServiceAPI = resolve(),
          data: SellCryptoInteractionData,
          exchangeProvider: ExchangeProviding,
          balanceProvider: BalanceProviding,
-         fiatCurrencyService: FiatCurrencyServiceAPI,
+         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
          cryptoCurrencySelectionService: CryptoCurrencyServiceAPI & SelectionServiceAPI,
          initialActiveInput: ActiveAmountInput,
-         orderCreationService: OrderCreationServiceAPI) {
+         orderCreationService: OrderCreationServiceAPI = resolve()) {
         self.eligibilityService = eligibilityService
         self.pairsService = pairsService
         self.kycTiersService = kycTiersService

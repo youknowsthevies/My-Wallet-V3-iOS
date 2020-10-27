@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -58,7 +59,7 @@ final class UpdateEmailScreenPresenter {
     private let interactor: UpdateEmailScreenInteractor
     
     init(emailScreenInteractor: UpdateEmailScreenInteractor,
-         loadingViewPresenting: LoadingViewPresenting = LoadingViewPresenter.shared) {
+         loadingViewPresenting: LoadingViewPresenting = resolve()) {
         self.interactor = emailScreenInteractor
         textField = .init(
             with: .email,

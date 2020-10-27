@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -53,9 +54,9 @@ final class PaymentMethodsScreenPresenter {
     // MARK: - Setup
     
     init(interactor: PaymentMethodsScreenInteractor,
-         loadingViewPresenter: LoadingViewPresenting = UIUtilityProvider.default.loader,
+         loadingViewPresenter: LoadingViewPresenting = resolve(),
          stateService: PaymentMethodsStateAPI,
-         eventRecorder: AnalyticsEventRecording) {
+         eventRecorder: AnalyticsEventRecording = resolve()) {
         self.loadingViewPresenter = loadingViewPresenter
         self.stateService = stateService
         self.interactor = interactor

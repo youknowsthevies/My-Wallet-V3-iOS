@@ -7,6 +7,7 @@
 //
 
 import BigInt
+import DIKit
 import ERC20Kit
 import EthereumKit
 import PlatformKit
@@ -14,7 +15,6 @@ import RxCocoa
 import RxSwift
 import StellarKit
 import ToolKit
-import DIKit
 
 // TICKET: [IOS-2087] - Integrate PlatformKit Account Repositories and Deprecate AssetAccountRepository
 /// A repository for `AssetAccount` objects
@@ -38,22 +38,21 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     private let disposables = CompositeDisposable()
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
 
-    init(
-        wallet: Wallet = WalletManager.shared.wallet,
-        stellarServiceProvider: StellarServiceProvider = StellarServiceProvider.shared,
-        paxServiceProvider: PAXServiceProvider = PAXServiceProvider.shared,
-        ethereumServiceProvider: ETHServiceProvider = ETHServiceProvider.shared,
-        tetherServiceProvider: TetherServiceProvider = .shared,
-        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
-    ) {
+    init(wallet: Wallet = WalletManager.shared.wallet,
+         stellarServiceProvider: StellarServiceProvider = StellarServiceProvider.shared,
+         ethereumAccountRepository: EthereumAssetAccountRepository = resolve(),
+         paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = resolve(),
+         tetherAccountRepository: ERC20AssetAccountRepository<TetherToken> = resolve(),
+         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+         ethereumWalletService: EthereumWalletServiceAPI = resolve()) {
         self.wallet = wallet
         self.enabledCurrenciesService = enabledCurrenciesService
-        self.paxAccountRepository = paxServiceProvider.services.assetAccountRepository
-        self.tetherAccountRepository = tetherServiceProvider.services.assetAccountRepository
-        self.ethereumWalletService = paxServiceProvider.services.walletService
+        self.paxAccountRepository = paxAccountRepository
+        self.tetherAccountRepository = tetherAccountRepository
+        self.ethereumWalletService = ethereumWalletService
         self.stellarServiceProvider = stellarServiceProvider
         self.stellarAccountService = stellarServiceProvider.services.accounts
-        self.ethereumAccountRepository = ethereumServiceProvider.services.assetAccountRepository
+        self.ethereumAccountRepository = ethereumAccountRepository
     }
 
     deinit {

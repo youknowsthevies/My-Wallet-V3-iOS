@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import ToolKit
@@ -36,7 +37,7 @@ final class QRCodeScannerViewController: UIViewController {
     
     init(presentationType: QRCodePresentationType = .modal(dismissWithAnimation: true),
          viewModel: QRCodeScannerViewModelProtocol,
-         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
+         loadingViewPresenter: LoadingViewPresenting = resolve(),
          loadingViewStyle: LoadingViewPresenter.LoadingViewStyle = .activityIndicator) {
         self.presentationType = presentationType
         self.viewModel = viewModel

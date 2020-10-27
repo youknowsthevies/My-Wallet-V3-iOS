@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -57,7 +58,7 @@ final class BankTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     // MARK: - Setup
 
     init(webViewRouter: WebViewRouterAPI,
-         analyticsRecorder: AnalyticsEventRecorderAPI,
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          interactor: BankTransferDetailScreenInteractor,
          stateService: StateServiceAPI) {
         self.analyticsRecorder = analyticsRecorder

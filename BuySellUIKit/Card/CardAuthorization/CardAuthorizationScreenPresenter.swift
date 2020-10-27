@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -31,7 +32,7 @@ final class CardAuthorizationScreenPresenter: RibBridgePresenter {
     
     init(interactor: CardAuthorizationScreenInteractor,
          data: PartnerAuthorizationData,
-         eventRecorder: AnalyticsEventRecording) {
+         eventRecorder: AnalyticsEventRecording = resolve()) {
         self.eventRecorder = eventRecorder
         self.interactor = interactor
         self.data = data

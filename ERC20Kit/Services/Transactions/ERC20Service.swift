@@ -7,6 +7,7 @@
 //
 
 import BigInt
+import DIKit
 import EthereumKit
 import PlatformKit
 import RxSwift
@@ -111,10 +112,10 @@ public class ERC20Service<Token: ERC20Token>: ERC20API, ERC20TransactionEvaluati
     private let ethereumAssetAccountRepository: EthereumAssetAccountRepository
     private let feeService: AnyCryptoFeeService<EthereumTransactionFee>
 
-    public init(with bridge: ERC20BridgeAPI,
-                assetAccountRepository: ERC20AssetAccountRepository<Token>,
-                ethereumAssetAccountRepository: EthereumAssetAccountRepository,
-                feeService: AnyCryptoFeeService<EthereumTransactionFee>) {
+    init(with bridge: ERC20BridgeAPI = resolve(),
+         assetAccountRepository: ERC20AssetAccountRepository<Token> = resolve(),
+         ethereumAssetAccountRepository: EthereumAssetAccountRepository = resolve(),
+         feeService: AnyCryptoFeeService<EthereumTransactionFee> = resolve()) {
         self.bridge = bridge
         self.assetAccountRepository = assetAccountRepository
         self.ethereumAssetAccountRepository = ethereumAssetAccountRepository

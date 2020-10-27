@@ -74,7 +74,7 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     private let explorerButton: ButtonViewModel
 
-    init(alertViewPresenter: AlertViewPresenterAPI = AlertViewPresenter.shared,
+    init(alertViewPresenter: AlertViewPresenterAPI = resolve(),
          event: TransactionalActivityItemEvent,
          router: ActivityRouterAPI,
          interactor: ERC20ActivityDetailsInteractor,

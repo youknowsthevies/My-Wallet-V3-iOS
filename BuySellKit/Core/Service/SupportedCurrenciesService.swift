@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -28,9 +29,9 @@ final class SupportedCurrenciesService: SupportedCurrenciesServiceAPI {
 
     // MARK: - Setup
 
-    init(featureFetcher: FeatureFetching,
-         pairsService: SupportedPairsServiceAPI,
-         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI) {
+    init(featureFetcher: FeatureFetching = resolve(),
+         pairsService: SupportedPairsServiceAPI = resolve(),
+         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve()) {
 
         cachedValue = .init(
             configuration: .init(

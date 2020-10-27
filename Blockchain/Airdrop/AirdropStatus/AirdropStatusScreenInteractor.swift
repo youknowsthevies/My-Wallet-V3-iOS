@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -31,7 +32,7 @@ final class AirdropStatusScreenInteractor {
     
     // MARK: - Setup
     
-    init(service: AirdropCenterServiceAPI = AirdropCenterService.shared,
+    init(service: AirdropCenterServiceAPI = resolve(),
          campaignName: AirdropCampaigns.Campaign.Name) {
         self.service = service
         service.fetchCampaignCalculationState(campaignName: campaignName, useCache: true)

@@ -7,11 +7,12 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
-import ToolKit
 import RxRelay
 import RxSwift
+import ToolKit
 
 final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
 
@@ -141,15 +142,15 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     
     // MARK: - Setup
     
-    init(kycTiersService: KYCTiersServiceAPI,
+    init(kycTiersService: KYCTiersServiceAPI = resolve(),
          exchangeProvider: ExchangeProviding,
-         fiatCurrencyService: FiatCurrencyServiceAPI,
-         cryptoCurrencySelectionService: SelectionServiceAPI & CryptoCurrencyServiceAPI,
-         pairsService: SupportedPairsInteractorServiceAPI,
-         eligibilityService: EligibilityServiceAPI,
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
-         orderCreationService: OrderCreationServiceAPI,
-         suggestedAmountsService: SuggestedAmountsServiceAPI) {
+         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+         cryptoCurrencySelectionService: CryptoCurrencySelectionServiceAPI,
+         pairsService: SupportedPairsInteractorServiceAPI = resolve(),
+         eligibilityService: EligibilityServiceAPI = resolve(),
+         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
+         orderCreationService: OrderCreationServiceAPI = resolve(),
+         suggestedAmountsService: SuggestedAmountsServiceAPI = resolve()) {
         self.kycTiersService = kycTiersService
         self.pairsService = pairsService
         self.suggestedAmountsService = suggestedAmountsService

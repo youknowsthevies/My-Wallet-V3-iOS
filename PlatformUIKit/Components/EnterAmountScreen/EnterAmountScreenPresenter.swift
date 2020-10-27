@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RIBs
 import RxCocoa
@@ -59,7 +60,8 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
 
     // MARK: - Injected
     
-    public let uiUtilityProvider: UIUtilityProviderAPI
+    public let loader: LoadingViewPresenting
+    public let alert: AlertViewPresenterAPI
     public let analyticsRecorder: AnalyticsEventRecorderAPI
     public let displayBundle: DisplayBundle
     
@@ -72,13 +74,15 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
     
     // MARK: - Setup
     
-    public init(uiUtilityProvider: UIUtilityProviderAPI,
-                analyticsRecorder: AnalyticsEventRecorderAPI,
+    public init(loader: LoadingViewPresenting = resolve(),
+                alert: AlertViewPresenterAPI = resolve(),
+                analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
                 backwardsNavigation: @escaping () -> Void,
                 displayBundle: DisplayBundle,
                 interactor: EnterAmountScreenInteractor) {
+        self.loader = loader
+        self.alert = alert
         self.analyticsRecorder = analyticsRecorder
-        self.uiUtilityProvider = uiUtilityProvider
         self.interactor = interactor
         self.backwardsNavigation = backwardsNavigation
         self.title = displayBundle.strings.title
@@ -176,8 +180,8 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
             
     public func handleError() {
         analyticsRecorder.record(event: displayBundle.events.confirmFailure)
-        uiUtilityProvider.loader.hide()
-        uiUtilityProvider.alert.error(in: nil, action: nil)
+        loader.hide()
+        alert.error(in: nil, action: nil)
     }
 
     private static func digitPadViewModel() -> DigitPadViewModel {

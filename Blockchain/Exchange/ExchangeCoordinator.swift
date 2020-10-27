@@ -36,7 +36,7 @@ class ExchangeCoordinator {
     
     init(repository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository(),
          authenticator: ExchangeAccountAuthenticatorAPI = ExchangeAccountAuthenticator(),
-         loadingIndicatorAPI: LoadingViewPresenting = LoadingViewPresenter.shared,
+         loadingIndicatorAPI: LoadingViewPresenting = resolve(),
          campaignComposer: CampaignComposer = CampaignComposer(),
          appSettings: BlockchainSettings.App = resolve()) {
         self.repository = repository

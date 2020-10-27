@@ -34,9 +34,9 @@
     AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputForQRScannerAndReturnError:&error];
     if (!input) {
         if ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo] != AVAuthorizationStatusAuthorized) {
-            [AlertViewPresenter.sharedInstance showNeedsCameraPermissionAlert];
+            [AlertViewPresenter.shared showNeedsCameraPermissionAlert];
         } else {
-            [AlertViewPresenter.sharedInstance standardNotifyWithTitle:LocalizationConstantsObjcBridge.error message:[error localizedDescription] in:self handler:nil];
+            [AlertViewPresenter.shared standardNotifyWithTitle:LocalizationConstantsObjcBridge.error message:[error localizedDescription] in:self handler:nil];
         }
         return NO;
     }

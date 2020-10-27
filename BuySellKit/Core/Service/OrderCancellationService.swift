@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 
@@ -24,8 +25,8 @@ final class OrderCancellationService: OrderCancellationServiceAPI {
 
     // MARK: - Setup
     
-    init(client: OrderCancellationClientAPI,
-         orderDetailsService: OrdersServiceAPI) {
+    init(client: OrderCancellationClientAPI = resolve(),
+         orderDetailsService: OrdersServiceAPI = resolve()) {
         self.client = client
         self.orderDetailsService = orderDetailsService
     }

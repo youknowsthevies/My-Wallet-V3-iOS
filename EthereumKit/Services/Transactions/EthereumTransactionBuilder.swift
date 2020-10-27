@@ -11,15 +11,14 @@ import PlatformKit
 import RxSwift
 import web3swift
 
-public protocol EthereumTransactionBuilderAPI {
-    func build(transaction: EthereumTransactionCandidate
-        ) -> Result<EthereumTransactionCandidateCosted, EthereumKitValidationError>
+protocol EthereumTransactionBuilderAPI {
+    
+    func build(transaction: EthereumTransactionCandidate) -> Result<EthereumTransactionCandidateCosted, EthereumKitValidationError>
 }
 
-public class EthereumTransactionBuilder: EthereumTransactionBuilderAPI {
-    public static let shared = EthereumTransactionBuilder()
+final class EthereumTransactionBuilder: EthereumTransactionBuilderAPI {
     
-    public func build(transaction: EthereumTransactionCandidate
+    func build(transaction: EthereumTransactionCandidate
         ) -> Result<EthereumTransactionCandidateCosted, EthereumKitValidationError> {
         
         let value = transaction.value

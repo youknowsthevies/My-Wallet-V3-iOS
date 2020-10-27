@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -34,21 +35,25 @@ final class TransferCancellationScreenPresenter {
     // MARK: - Private Properties
     
     private let analyticsRecorder: AnalyticsEventRecorderAPI
-    private let uiUtilityProvider: UIUtilityProviderAPI
     private let routingInteractor: TransferOrderRoutingInteracting
     private let interactor: TransferCancellationInteractor
+    private let loader: LoadingViewPresenting
+    private let alert: AlertViewPresenterAPI
+    
     private let disposeBag = DisposeBag()
     
     init(routingInteractor: TransferOrderRoutingInteracting,
          currency: CurrencyType,
-         uiUtilityProvider: UIUtilityProviderAPI = UIUtilityProvider.default,
-         analyticsRecorder: AnalyticsEventRecorderAPI,
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+         loader: LoadingViewPresenting = resolve(),
+         alert: AlertViewPresenterAPI = resolve(),
          interactor: TransferCancellationInteractor) {
         self.analyticsRecorder = analyticsRecorder
         self.interactor = interactor
         self.routingInteractor = routingInteractor
-        self.uiUtilityProvider = uiUtilityProvider
-        
+        self.loader = loader
+        self.alert = alert
+
         titleContent = .init(
             text: LocalizationIDs.title,
             font: .main(.semibold, 20.0),
@@ -86,12 +91,12 @@ final class TransferCancellationScreenPresenter {
     private func setupCancellationBinding() {
         let cancellationResult = yesButtonViewModel
             .tapRelay
-            .show(loader: uiUtilityProvider.loader, style: .circle)
+            .show(loader: loader, style: .circle)
             .flatMap(weak: self) { (self, _) in
                 self.interactor.cancel()
             }
             .mapToResult()
-            .hide(loader: uiUtilityProvider.loader)
+            .hide(loader: loader)
             .share(replay: 1)
 
         cancellationResult
@@ -118,7 +123,7 @@ final class TransferCancellationScreenPresenter {
     }
     
     private func cancellationDidFail() {
-        uiUtilityProvider.alert.error(in: nil, action: nil)
+        alert.error(in: nil, action: nil)
         analyticsRecorder.record(event: AnalyticsEvent.sbCancelOrderError)
     }
     

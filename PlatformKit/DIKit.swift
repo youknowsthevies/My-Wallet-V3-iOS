@@ -98,7 +98,7 @@ extension DependencyContainer {
 
         single { EnabledCurrenciesService() as EnabledCurrenciesServiceAPI }
         
-        single { KYCServiceProvider() as KYCServiceProviderAPI }
+        single { KYCTiersService() as KYCTiersServiceAPI }
         
         single { NabuUserService() as NabuUserServiceAPI }
 
@@ -118,8 +118,6 @@ extension DependencyContainer {
         }
         
         factory { BlockchainAccountProvider() as BlockchainAccountProviding }
-
-        single { KYCTiersService() as KYCTiersServiceAPI }
 
         factory { CustodialFeatureFetcher() as CustodialFeatureFetching }
 
@@ -150,6 +148,16 @@ extension DependencyContainer {
         }
 
         factory { () -> EmailSettingsServiceAPI in
+            let completeSettings: CompleteSettingsServiceAPI = DIKit.resolve()
+            return completeSettings
+        }
+        
+        factory { () -> SMSTwoFactorSettingsServiceAPI in
+            let completeSettings: CompleteSettingsServiceAPI = DIKit.resolve()
+            return completeSettings
+        }
+        
+        factory { () -> EmailNotificationSettingsServiceAPI in
             let completeSettings: CompleteSettingsServiceAPI = DIKit.resolve()
             return completeSettings
         }

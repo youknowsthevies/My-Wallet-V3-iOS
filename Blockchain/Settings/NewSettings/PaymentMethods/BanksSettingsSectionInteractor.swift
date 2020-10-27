@@ -7,11 +7,11 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
 import ToolKit
-import DIKit
 
 final class BanksSettingsSectionInteractor {
     
@@ -49,9 +49,9 @@ final class BanksSettingsSectionInteractor {
 
     // MARK: - Setup
     
-    init(beneficiariesService: BeneficiariesServiceAPI,
-         featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI = DataProvider.default.buySell.paymentMethodTypes,
+    init(beneficiariesService: BeneficiariesServiceAPI = resolve(),
+         featureFetcher: FeatureFetching = resolve(),
+         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
          enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
          tierLimitsProvider: TierLimitsProviding) {
         self.beneficiariesService = beneficiariesService

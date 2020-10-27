@@ -115,16 +115,6 @@ public final class CardRouterInteractor: Interactor {
     
     private let actionRelay = PublishRelay<Action>()
     private let disposeBag = DisposeBag()
-
-    let buySellServiceProvider: ServiceProviderAPI
-    let cardServiceProvider: CardServiceProviderAPI
-    
-    // MARK: - Setup
-    
-    public init(buySellServiceProvider: ServiceProviderAPI, cardServiceProvider: CardServiceProviderAPI) {
-        self.buySellServiceProvider = buySellServiceProvider
-        self.cardServiceProvider = cardServiceProvider
-    }
             
     // MARK: - Lifecycle
     

@@ -7,25 +7,28 @@
 //
 
 import BigInt
+import DIKit
 import PlatformKit
 import RxSwift
 import web3swift
 
-public protocol EthereumTransactionBuildingServiceAPI {
+protocol EthereumTransactionBuildingServiceAPI {
+    
     func buildTransaction(with amount: EthereumValue, to: EthereumAddress) -> Single<EthereumTransactionCandidate>
 }
 
-public class EthereumTransactionBuildingService: EthereumTransactionBuildingServiceAPI {
+final class EthereumTransactionBuildingService: EthereumTransactionBuildingServiceAPI {
+    
     private let feeService: AnyCryptoFeeService<EthereumTransactionFee>
     private let repository: EthereumAssetAccountRepository
     
-    public init(with feeService: AnyCryptoFeeService<EthereumTransactionFee>,
-                repository: EthereumAssetAccountRepository) {
+    init(with feeService: AnyCryptoFeeService<EthereumTransactionFee> = resolve(),
+         repository: EthereumAssetAccountRepository = resolve()) {
         self.feeService = feeService
         self.repository = repository
     }
     
-    public func buildTransaction(with amount: EthereumValue, to: EthereumAddress) -> Single<EthereumTransactionCandidate> {
+    func buildTransaction(with amount: EthereumValue, to: EthereumAddress) -> Single<EthereumTransactionCandidate> {
         Single.zip(feeService.fees, balance) { (fees: $0, balance: $1) }
             .map { data -> EthereumTransactionCandidate in
                 let value: BigUInt = BigUInt(amount.amount)

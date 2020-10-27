@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 import RxRelay
@@ -41,14 +42,18 @@ final class EligibilityService: EligibilityServiceAPI {
     
     // MARK: - Setup
     
-    init(client: EligibilityClientAPI,
-         reactiveWallet: ReactiveWalletAPI,
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI,
-         featureFetcher: FeatureFetching) {
+    init(client: EligibilityClientAPI = resolve(),
+         reactiveWallet: ReactiveWalletAPI = resolve(),
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
+         featureFetcher: FeatureFetching  = resolve()) {
         self.client = client
         self.reactiveWallet = reactiveWallet
         self.fiatCurrencyService = fiatCurrencyService
         self.featureFetcher = featureFetcher
+        
+        NotificationCenter.when(.logout) { [weak isEligibileRelay] _ in
+            isEligibileRelay?.accept(nil)
+        }
     }
     
     func fetch() -> Observable<Bool> {

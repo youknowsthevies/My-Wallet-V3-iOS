@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 
@@ -25,7 +26,7 @@ public final class BuySellIneligibleScreenInteractor {
     
     // MARK: - Init
     
-    init(dataRepositoryAPI: DataRepositoryAPI) {
+    init(dataRepositoryAPI: DataRepositoryAPI = resolve()) {
         self.dataRepositoryAPI = dataRepositoryAPI
     }
     

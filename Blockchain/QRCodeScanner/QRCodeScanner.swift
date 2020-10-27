@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 
@@ -96,7 +97,7 @@ extension AVCaptureMetadataOutput: CaptureMetadataOutputProtocol {}
     private let captureMetadataOutputBuilder: () -> CaptureMetadataOutputProtocol
     private let sessionQueue: DispatchQueue
     
-    required init?(deviceInput: CaptureInputProtocol? = QRCodeScanner.runDeviceInputChecks(alertViewPresenter: AlertViewPresenter.shared), captureSession: CaptureSessionProtocol = AVCaptureSession(), captureMetadataOutputBuilder: @escaping () -> CaptureMetadataOutputProtocol = { AVCaptureMetadataOutput() }, sessionQueue: DispatchQueue = DispatchQueue(label: "com.blockchain.Blockchain.qrCodeScanner.sessionQueue", qos: .background)) {
+    required init?(deviceInput: CaptureInputProtocol? = QRCodeScanner.runDeviceInputChecks(alertViewPresenter: resolve()), captureSession: CaptureSessionProtocol = AVCaptureSession(), captureMetadataOutputBuilder: @escaping () -> CaptureMetadataOutputProtocol = { AVCaptureMetadataOutput() }, sessionQueue: DispatchQueue = DispatchQueue(label: "com.blockchain.Blockchain.qrCodeScanner.sessionQueue", qos: .background)) {
         guard let deviceInput = deviceInput else { return nil }
         
         captureSession.sessionPreset = .high

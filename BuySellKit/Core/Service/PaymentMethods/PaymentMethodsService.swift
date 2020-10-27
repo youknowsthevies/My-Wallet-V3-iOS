@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -73,17 +74,23 @@ final class PaymentMethodsService: PaymentMethodsServiceAPI {
     
     // MARK: - Setup
     
-    init(client: PaymentMethodsClientAPI,
-         tiersService: KYCTiersServiceAPI,
-         reactiveWallet: ReactiveWalletAPI,
-         featureFetcher: FeatureFetching,
-         enabledFiatCurrencies: [FiatCurrency],
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
+    init(client: PaymentMethodsClientAPI = resolve(),
+         tiersService: KYCTiersServiceAPI = resolve(),
+         reactiveWallet: ReactiveWalletAPI = resolve(),
+         featureFetcher: FeatureFetching = resolve(),
+         enabledFiatCurrencies: [FiatCurrency] = { () -> EnabledCurrenciesServiceAPI in
+            resolve()
+         }().allEnabledFiatCurrencies,
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()) {
         self.client = client
         self.tiersService = tiersService
         self.featureFetcher = featureFetcher
         self.fiatCurrencyService = fiatCurrencyService
         self.enabledFiatCurrencies = enabledFiatCurrencies
+        
+        NotificationCenter.when(.logout) { [weak paymentMethodsRelay] _ in
+            paymentMethodsRelay?.accept(nil)
+        }
     }
     
     func refresh() -> Completable {

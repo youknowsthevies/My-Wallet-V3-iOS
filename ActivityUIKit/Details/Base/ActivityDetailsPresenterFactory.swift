@@ -15,9 +15,9 @@ import RxSwift
 
 final class ActivityDetailsPresenterFactory {
 
-    static func presenter(for event: ActivityItemEvent,
-                          router: ActivityRouterAPI,
-                          paxServiceProvider: PAXDependencies = resolve()) -> DetailsScreenPresenterAPI {
+    static func presenter(
+        for event: ActivityItemEvent, router: ActivityRouterAPI
+    ) -> DetailsScreenPresenterAPI {
         switch event {
         case .fiat(let fiat):
             return FiatActivityDetailsPresenter(event: fiat)

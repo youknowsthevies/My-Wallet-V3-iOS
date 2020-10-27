@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 
 /// Contains any needed remotely fetched data before displaying announcements.
@@ -54,7 +55,7 @@ struct AnnouncementPreliminaryData {
          hasTrades: Bool,
          hasLinkedBanks: Bool,
          countries: [CountryData],
-         simpleBuyEventCache: EventCache = DataProvider.default.buySell.cache,
+         simpleBuyEventCache: EventCache = resolve(),
          authenticatorType: AuthenticatorType,
          pendingOrderDetails: OrderDetails?,
          isSimpleBuyAvailable: Bool) {

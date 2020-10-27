@@ -50,12 +50,8 @@ public final class EthereumHistoricalTransactionService: HistoricalTransactionAP
     private let client: APIClientAPI
 
     // MARK: - Init
-
-    convenience public init(with bridge: Bridge) {
-        self.init(with: bridge, client: resolve())
-    }
     
-    public init(with bridge: Bridge, client: APIClientAPI) {
+    init(with bridge: Bridge = resolve(), client: APIClientAPI = resolve()) {
         self.bridge = bridge
         self.client = client
         self.cachedAccount = CachedValue<EthereumAssetAccount>(configuration: .onSubscription())

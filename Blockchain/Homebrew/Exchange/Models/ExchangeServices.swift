@@ -45,7 +45,7 @@ struct ExchangeServices: ExchangeDependencies {
             wallet: WalletManager.shared.wallet,
             dependencies: TradeExecutionService.Dependencies()
         )
-        fiatCurrencySettingsService = UserInformationServiceProvider.default.settings
+        fiatCurrencySettingsService = resolve()
         self.tradeLimits = tradeLimits
         self.analyticsRecorder = analyticsRecorder
     }

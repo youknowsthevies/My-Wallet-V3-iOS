@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -55,7 +56,7 @@ final class AutoPairingScreenPresenter {
     
     init(interactor: AutoPairingScreenInteractor = AutoPairingScreenInteractor(),
          alertPresenter: AlertViewPresenter = .shared,
-         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared) {
+         loadingViewPresenter: LoadingViewPresenting = resolve()) {
         self.interactor = interactor
         self.loadingViewPresenter = loadingViewPresenter
         self.alertPresenter = alertPresenter

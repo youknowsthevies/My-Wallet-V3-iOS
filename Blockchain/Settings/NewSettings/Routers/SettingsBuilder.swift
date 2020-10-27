@@ -16,15 +16,6 @@ protocol SettingsBuilding: AnyObject {
 
 final class SettingsBuilder: SettingsBuilding {
     
-    private let cardServiceProvider: CardServiceProviderAPI
-    private let buySellServiceProvider: BuySellKit.ServiceProviderAPI
-
-    init(cardServiceProvider: CardServiceProviderAPI = CardServiceProvider.default,
-         buySellServiceProvider: BuySellKit.ServiceProviderAPI = DataProvider.default.buySell) {
-        self.cardServiceProvider = cardServiceProvider
-        self.buySellServiceProvider = buySellServiceProvider
-    }
-    
     /// Generate remove card payment method view controller
     /// - Parameter cardData: CC data
     /// - Returns: The view controller
@@ -32,8 +23,7 @@ final class SettingsBuilder: SettingsBuilding {
         let data = PaymentMethodRemovalData(cardData: cardData)
         return removePaymentMethodViewController(
             buttonLocalizedString: LocalizationConstants.Settings.Card.remove,
-            removalData: data,
-            deletionService: cardServiceProvider.cardDeletion
+            removalData: data
         )
     }
     
@@ -44,17 +34,16 @@ final class SettingsBuilder: SettingsBuilding {
         let data = PaymentMethodRemovalData(beneficiary: beneficiary)
         return removePaymentMethodViewController(
             buttonLocalizedString: LocalizationConstants.Settings.Bank.remove,
-            removalData: data,
-            deletionService: buySellServiceProvider.beneficiaries
+            removalData: data
         )
     }
     
     private func removePaymentMethodViewController(buttonLocalizedString: String,
                                                    removalData: PaymentMethodRemovalData,
-                                                   deletionService: PaymentMethodDeletionServiceAPI) -> UIViewController {
+                                                   deletionService: PaymentMethodDeletionServiceAPI = resolve()) -> UIViewController {
         let interactor = RemovePaymentMethodScreenInteractor(
             data: removalData,
-            deletionService: cardServiceProvider.cardDeletion
+            deletionService: deletionService
         )
         let presenter = RemovePaymentMethodScreenPresenter(
             buttonLocalizedString: buttonLocalizedString,

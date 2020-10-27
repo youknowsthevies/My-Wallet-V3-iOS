@@ -13,11 +13,10 @@ import ToolKit
 
 @objc
 public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
+   
+    @available(*, deprecated, message: "Don't use this, resolve using DIKit instead.")
+    @Inject @objc public static var shared: AlertViewPresenter
     
-    public static let shared = AlertViewPresenter()
-    @objc
-    public class func sharedInstance() -> AlertViewPresenter { shared }
-
     public let disposeBag = DisposeBag()
     
     // MARK: - Services
@@ -27,8 +26,8 @@ public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
     
     // MARK: - Setup
     
-    private init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
-                 loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared) {
+    init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
+         loadingViewPresenter: LoadingViewPresenting = resolve()) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.loadingViewPresenter = loadingViewPresenter
         super.init()

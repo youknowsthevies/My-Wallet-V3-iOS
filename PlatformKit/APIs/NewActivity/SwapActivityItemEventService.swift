@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxRelay
 import RxSwift
 import ToolKit
@@ -75,7 +76,7 @@ public class SwapActivityItemEventService: SwapActivityItemEventServiceAPI {
     // MARK: - Init
     
     public init(fetcher: SwapActivityItemEventFetcherAPI,
-                fiatCurrencyProvider: FiatCurrencySettingsServiceAPI) {
+                fiatCurrencyProvider: FiatCurrencySettingsServiceAPI = resolve()) {
         self.fetcher = fetcher
         self.fiatCurrencyProvider = fiatCurrencyProvider
     }

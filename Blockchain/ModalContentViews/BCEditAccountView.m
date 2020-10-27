@@ -62,26 +62,26 @@
     NSString *label = [self.labelTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 
     if (label.length == 0) {
-        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_YOU_MUST_ENTER_A_LABEL in:nil handler:nil];
+        [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_YOU_MUST_ENTER_A_LABEL in:nil handler:nil];
         return;
     }
 
     if (label.length > 17) {
         // TODO i18n
-        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_LABEL_MUST_HAVE_LESS_THAN_18_CHAR in:nil handler:nil];
+        [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_LABEL_MUST_HAVE_LESS_THAN_18_CHAR in:nil handler:nil];
         return;
     }
 
     if (![WalletManager.sharedInstance.wallet isAccountNameValid:label]) {
-        [[AlertViewPresenter sharedInstance] standardErrorWithTitle:[LocalizationConstantsObjcBridge error] message:[LocalizationConstantsObjcBridge nameAlreadyInUse] in:nil handler:nil];
-        [LoadingViewPresenter.sharedInstance hide];
+        [AlertViewPresenter.shared standardErrorWithTitle:[LocalizationConstantsObjcBridge error] message:[LocalizationConstantsObjcBridge nameAlreadyInUse] in:nil handler:nil];
+        [LoadingViewPresenter.shared hide];
         return;
     }
 
     [self.labelTextField resignFirstResponder];
 
     if (self.assetType == LegacyAssetTypeBitcoin) {
-        [[LoadingViewPresenter sharedInstance] showWith:[LocalizationConstantsObjcBridge syncingWallet]];
+        [LoadingViewPresenter.shared showWith:[LocalizationConstantsObjcBridge syncingWallet]];
     }
 
     [[ModalPresenter sharedInstance] closeModalWithTransition:kCATransitionFade];

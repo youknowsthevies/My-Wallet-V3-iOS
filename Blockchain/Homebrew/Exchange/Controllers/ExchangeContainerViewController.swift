@@ -27,7 +27,7 @@ class ExchangeContainerViewController: BaseNavigationController {
     private let wallet: Wallet = WalletManager.shared.wallet
     private let accountsRepository: AssetAccountRepositoryAPI = AssetAccountRepository.shared
     private var tiersViewController: KYCTiersViewController?
-    private let loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared
+    private let loadingViewPresenter: LoadingViewPresenting = resolve()
     private let kycSettings: KYCSettingsAPI = resolve()
     private let analyticsRecorder: AnalyticsEventRecording = resolve()
     private let kycRouter: KYCRouterAPI = resolve()

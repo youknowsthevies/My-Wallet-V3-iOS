@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import EthereumKit
 import Foundation
 import PlatformKit
@@ -28,7 +29,7 @@ final class SendExecutor: SendExecuting {
     
     // MARK: - Setup
     
-    init(asset: CryptoCurrency, ethereumService: EthereumWalletServiceAPI = EthereumWalletService.shared) {
+    init(asset: CryptoCurrency, ethereumService: EthereumWalletServiceAPI = resolve()) {
         assert(asset == .ethereum, "\(asset.rawValue) doesn't support new send logic.")
         self.asset = asset
         self.ethereumService = ethereumService

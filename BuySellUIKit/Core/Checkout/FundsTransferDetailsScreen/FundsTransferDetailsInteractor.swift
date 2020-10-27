@@ -6,12 +6,13 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
-import ToolKit
-import PlatformKit
 import BuySellKit
+import DIKit
+import PlatformKit
+import RxCocoa
+import RxRelay
+import RxSwift
+import ToolKit
 
 typealias FundsTransferDetailsInteractionState = ValueCalculationState<PaymentAccount>
 
@@ -47,7 +48,8 @@ final class InteractiveFundsTransferDetailsInteractor: FundsTransferDetailsInter
     
     // MARK: - Setup
     
-    init(paymentAccountService: PaymentAccountServiceAPI, fiatCurrency: FiatCurrency) {
+    init(paymentAccountService: PaymentAccountServiceAPI = resolve(),
+         fiatCurrency: FiatCurrency) {
         self.paymentAccountService = paymentAccountService
         self.fiatCurrency = fiatCurrency
     }

@@ -34,11 +34,11 @@
 - (IBAction)upgradeTapped:(UIButton *)sender
 {
     if (!Reachability.hasInternetConnection) {
-        [AlertViewPresenter.sharedInstance internetConnection];
+        [AlertViewPresenter.shared internetConnection];
         return;
     }
 
-    [LoadingViewPresenter.sharedInstance showWith:BC_STRING_LOADING_CREATING_V3_WALLET];
+    [LoadingViewPresenter.shared showWith:BC_STRING_LOADING_CREATING_V3_WALLET];
 
     [WalletManager.sharedInstance.wallet upgradeToV3Wallet];
 }
@@ -221,7 +221,7 @@
 - (void)onWalletUpgraded
 {
     __weak UpgradeViewController *weakSelf = self;
-    [AlertViewPresenter.sharedInstance standardNotifyWithTitle:LocalizationConstantsObjcBridge.upgradeSuccessTitle    
+    [AlertViewPresenter.shared standardNotifyWithTitle:LocalizationConstantsObjcBridge.upgradeSuccessTitle    
                                                        message: LocalizationConstantsObjcBridge.upgradeSuccess
                                                               in:self
                                                          handler:^(UIAlertAction * _Nonnull action) {

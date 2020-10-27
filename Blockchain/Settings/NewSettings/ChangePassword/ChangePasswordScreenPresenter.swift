@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformUIKit
 import RxCocoa
 import RxRelay
@@ -58,7 +59,7 @@ final class ChangePasswordScreenPresenter {
     // MARK: - Setup
     
     init(alertPresenter: AlertViewPresenter = .shared,
-         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared,
+         loadingViewPresenter: LoadingViewPresenting = resolve(),
          previousAPI: RoutingPreviousStateEmitterAPI,
          interactor: ChangePasswordScreenInteractor) {
         self.previousAPI = previousAPI

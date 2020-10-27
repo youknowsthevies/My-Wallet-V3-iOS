@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Localization
 import PlatformUIKit
 import ToolKit
@@ -25,7 +26,7 @@ final class CardDetailsScreenViewController: BaseTableViewController {
     // MARK: - Setup
     
     init(presenter: CardDetailsScreenPresenter,
-         alertPresenter: AlertViewPresenterAPI = AlertViewPresenter.shared) {
+         alertPresenter: AlertViewPresenterAPI = resolve()) {
         self.presenter = presenter
         self.alertPresenter = alertPresenter
         super.init()

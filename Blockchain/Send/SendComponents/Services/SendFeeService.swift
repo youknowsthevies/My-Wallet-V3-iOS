@@ -7,6 +7,7 @@
 //
 
 import BigInt
+import DIKit
 import EthereumKit
 import Foundation
 import PlatformKit
@@ -70,7 +71,7 @@ final class SendFeeService: SendFeeServicing {
     // MARK: - Setup
     
     init(asset: CryptoCurrency,
-         ethereumService: CryptoFeeService<EthereumTransactionFee> = .shared) {
+         ethereumService: CryptoFeeService<EthereumTransactionFee> = resolve()) {
         self.asset = asset
         self.ethereumService = ethereumService
     }    

@@ -27,7 +27,7 @@ class WalletActionSubscriber {
     init(
         appSettings: BlockchainSettings.App = resolve(),
         bus: WalletActionEventBus = WalletActionEventBus.shared,
-        lastTransactionUpdateService: LastTransactionSettingsUpdateServiceAPI = UserInformationServiceProvider.default.settings
+        lastTransactionUpdateService: CompleteSettingsServiceAPI = resolve()
     ) {
         self.appSettings = appSettings
         self.bus = bus

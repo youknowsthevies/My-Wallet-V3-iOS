@@ -35,15 +35,12 @@ final class DataProvider: DataProviding {
     
     /// Balance service for any asset
     let balance: BalanceProviding
-                
-    /// BuySellKit service provider
-    let buySell: BuySellKit.ServiceProviderAPI
     
     let syncing: PortfolioSyncingService
     
-    init(featureFetching: FeatureFetching & FeatureConfiguring = AppFeatureConfigurator.shared,
+    init(featureFetching: FeatureFetchingConfiguring = resolve(),
          kycTierService: KYCTiersServiceAPI = resolve(),
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = UserInformationServiceProvider.default.settings,
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
          enabledCurrencies: EnabledCurrenciesServiceAPI = resolve()) {
         
         var fiatExchangeServices: [FiatCurrency: PairExchangeServiceAPI] = [:]
@@ -300,6 +297,5 @@ final class DataProvider: DataProviding {
             balanceChangeProviding: balanceChange,
             fiatCurrencyProviding: fiatCurrencyService
         )
-        buySell = BuySellKit.ServiceProvider(balanceProvider: balance)
     }
 }

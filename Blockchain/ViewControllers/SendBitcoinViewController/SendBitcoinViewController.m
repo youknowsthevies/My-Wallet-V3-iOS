@@ -625,7 +625,7 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
                     [self selectToAddress:self.exchangeAddressViewModel.address];
                     self.destinationAddressIndicatorLabel.hidden = false;
                 } else {
-                    [AlertViewPresenter.sharedInstance standardErrorWithTitle:BC_STRING_ERROR message:[LocalizationConstantsObjcBridge twoFactorExchangeDisabled] in:self handler:nil];
+                    [AlertViewPresenter.shared standardErrorWithTitle:BC_STRING_ERROR message:[LocalizationConstantsObjcBridge twoFactorExchangeDisabled] in:self handler:nil];
                 }
             }
             break;
@@ -686,7 +686,7 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
 - (void)handleSigningPaymentError:(NSString *)errorMessage
 {
     DLog(@"Send error: %@", errorMessage);
-    [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:errorMessage in:self handler: nil];
+    [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:errorMessage in:self handler: nil];
     
     [self.sendProgressActivityIndicator stopAnimating];
     
@@ -738,7 +738,7 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
         /// The transaction was not successful
         if (error != nil) {
             DLog(@"Send error: %@", error);
-            [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:error.localizedDescription in:self handler: nil];
+            [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:error.localizedDescription in:self handler: nil];
             
             [self.sendProgressActivityIndicator stopAnimating];
             
@@ -755,7 +755,7 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
 
 - (void)getInfoForTransferAllFundsToDefaultAccount
 {
-    [[LoadingViewPresenter sharedInstance] showWith:BC_STRING_TRANSFER_ALL_PREPARING_TRANSFER];
+    [LoadingViewPresenter.shared showWith:BC_STRING_TRANSFER_ALL_PREPARING_TRANSFER];
     
     [WalletManager.sharedInstance.wallet getInfoForTransferAllFundsToAccount];
 }
@@ -857,13 +857,13 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
              [self reportSendSummaryConfirmFailure];
              
              if ([error isEqualToString:ERROR_UNDEFINED]) {
-                 [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_SEND_ERROR_NO_INTERNET_CONNECTION in:self handler: nil];
+                 [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_SEND_ERROR_NO_INTERNET_CONNECTION in:self handler: nil];
              } else if ([error isEqualToString:ERROR_FEE_TOO_LOW]) {
-                 [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_SEND_ERROR_FEE_TOO_LOW in:self handler: nil];
+                 [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_SEND_ERROR_FEE_TOO_LOW in:self handler: nil];
              } else if ([error isEqualToString:ERROR_FAILED_NETWORK_REQUEST]) {
-                 [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:[LocalizationConstantsObjcBridge requestFailedCheckConnection] in:self handler: nil];
+                 [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:[LocalizationConstantsObjcBridge requestFailedCheckConnection] in:self handler: nil];
              } else if (error && error.length != 0)  {
-                 [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:error in:self handler: nil];
+                 [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:error in:self handler: nil];
              }
              
              [self.sendProgressActivityIndicator stopAnimating];
@@ -924,9 +924,9 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
         }
 
         [[ModalPresenter sharedInstance] showModalWithContent:strongSelf.sendProgressModal closeType:ModalCloseTypeNone showHeader:true headerText:BC_STRING_SENDING_TRANSACTION onDismiss:^{
-            [LoadingViewPresenter.sharedInstance setIsEnabled:TRUE];
+            [LoadingViewPresenter.shared setIsEnabled:TRUE];
         } onResume:^{
-            [LoadingViewPresenter.sharedInstance setIsEnabled:TRUE];
+            [LoadingViewPresenter.shared setIsEnabled:TRUE];
         }];
         
         [UIView animateWithDuration:0.3f animations:^{
@@ -935,7 +935,7 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
         }];
         
         // Once the modal
-        [LoadingViewPresenter.sharedInstance setIsEnabled:FALSE];
+        [LoadingViewPresenter.shared setIsEnabled:FALSE];
         weakSelf.isSending = YES;
     };
     
@@ -1392,10 +1392,10 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
     if ([self isKeyboardVisible]) {
         [self hideKeyboard];
         dispatch_after(DELAY_KEYBOARD_DISMISSAL, dispatch_get_main_queue(), ^{
-            [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:error in:self handler:nil];
+            [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:error in:self handler:nil];
         });
     } else {
-        [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_ERROR message:error in:self handler:nil];
+        [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:error in:self handler:nil];
     }
 }
 
@@ -1445,15 +1445,15 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
     if ([addressesUsed count] == 0) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * ANIMATION_DURATION * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self showErrorBeforeSending:BC_STRING_NO_ADDRESSES_WITH_SPENDABLE_BALANCE_ABOVE_OR_EQUAL_TO_DUST];
-            [[LoadingViewPresenter sharedInstance] hide];
+            [LoadingViewPresenter.shared hide];
         });
         return;
     }
     
     if ([amount longLongValue] + [fee longLongValue] > [WalletManager.sharedInstance.wallet getTotalBalanceForSpendableActiveLegacyAddresses]) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * ANIMATION_DURATION * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [[AlertViewPresenter sharedInstance] standardNotifyWithTitle:BC_STRING_WARNING_TITLE message:BC_STRING_SOME_FUNDS_CANNOT_BE_TRANSFERRED_AUTOMATICALLY in:self handler:nil];
-            [[LoadingViewPresenter sharedInstance] hide];
+            [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_WARNING_TITLE message:BC_STRING_SOME_FUNDS_CANNOT_BE_TRANSFERRED_AUTOMATICALLY in:self handler:nil];
+            [LoadingViewPresenter.shared hide];
         });
     }
     
@@ -1475,7 +1475,7 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
 
 - (void)showSummaryForTransferAll
 {
-    [[LoadingViewPresenter sharedInstance] hide];
+    [LoadingViewPresenter.shared hide];
     
     [self showSummaryForTransferAllWithCustomFromLabel:self.selectAddressTextField.text];
     
@@ -2248,7 +2248,7 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
 
 - (void)archiveTransferredAddresses
 {
-    [[LoadingViewPresenter sharedInstance] showWith:[NSString stringWithFormat:BC_STRING_ARCHIVING_ADDRESSES]];
+    [LoadingViewPresenter.shared showWith:[NSString stringWithFormat:BC_STRING_ARCHIVING_ADDRESSES]];
                                       
     [WalletManager.sharedInstance.wallet archiveTransferredAddresses:self.transferAllPaymentBuilder.transferAllAddressesTransferred];
     
@@ -2312,13 +2312,13 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
 
 - (void)handleBitpayInvoiceID:(NSString *)invoiceID event:(id<ObjcAnalyticsEvent> _Nonnull) event
 {
-    [[LoadingViewPresenter sharedInstance] showCircularIn:self.view with:nil];
+    [LoadingViewPresenter.shared showCircularIn:self.view with:nil];
     [self.analyticsRecorder recordWithEvent:event];
     [self.bitpayService bitpayPaymentRequestWithInvoiceID:invoiceID assetType:self.assetType completion:^(ObjcCompatibleBitpayObject * _Nullable paymentReq, NSString * _Nullable error) {
-        [[LoadingViewPresenter sharedInstance] hide];
+        [LoadingViewPresenter.shared hide];
         if (error != nil) {
             DLog(@"Error when creating bitpay request: %@", error);
-            [AlertViewPresenter.sharedInstance standardErrorWithTitle:BC_STRING_ERROR
+            [AlertViewPresenter.shared standardErrorWithTitle:BC_STRING_ERROR
                                                               message:error
                                                                    in:self
                                                               handler:nil];
@@ -2393,7 +2393,7 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
     if (address == nil || ![qrMetadata isAsset:self.assetType] || ![WalletManager.sharedInstance.wallet isValidAddress:address assetType:self.assetType]) {
         NSString *assetName = qrMetadata.assetName;
         NSString *errorMessage = [NSString stringWithFormat:LocalizationConstantsObjcBridge.invalidXAddressY, assetName, address];
-        [AlertViewPresenter.sharedInstance standardErrorWithTitle:LocalizationConstantsObjcBridge.error
+        [AlertViewPresenter.shared standardErrorWithTitle:LocalizationConstantsObjcBridge.error
                                                           message:errorMessage
                                                                in:self
                                                           handler:nil];

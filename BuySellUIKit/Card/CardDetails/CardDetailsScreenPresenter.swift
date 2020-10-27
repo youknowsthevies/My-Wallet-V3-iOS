@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -97,9 +98,9 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
     // MARK: - Setup
     
     init(interactor: CardDetailsScreenInteractor,
-         loadingViewPresenter: LoadingViewPresenting = UIUtilityProvider.default.loader,
-         eventRecorder: AnalyticsEventRecording,
-         messageRecorder: MessageRecording) {
+         eventRecorder: AnalyticsEventRecording = resolve(),
+         messageRecorder: MessageRecording = resolve(),
+         loadingViewPresenter: LoadingViewPresenting = resolve()) {
         self.interactor = interactor
         self.eventRecorder = eventRecorder
         self.loadingViewPresenter = loadingViewPresenter

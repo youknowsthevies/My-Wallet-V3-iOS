@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 import ToolKit
 
@@ -44,8 +45,8 @@ final class PendingOrderDetailsService: PendingOrderDetailsServiceAPI {
     
     // MARK: - Setup
     
-    init(ordersService: OrdersServiceAPI,
-         cancallationService: OrderCancellationServiceAPI) {
+    init(ordersService: OrdersServiceAPI = resolve(),
+         cancallationService: OrderCancellationServiceAPI = resolve()) {
         self.ordersService = ordersService
         self.cancallationService = cancallationService
     }

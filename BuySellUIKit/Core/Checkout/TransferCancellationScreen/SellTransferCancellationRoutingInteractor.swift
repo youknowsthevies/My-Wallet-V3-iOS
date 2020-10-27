@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxRelay
 import RxSwift
 import ToolKit
@@ -39,7 +40,7 @@ public final class SellTransferCancellationRoutingInteractor: TransferOrderRouti
     private unowned let routingInteractor: SellRouterInteractor
     
     public init(routingInteractor: SellRouterInteractor,
-                analyticsRecording: AnalyticsEventRecording) {
+                analyticsRecording: AnalyticsEventRecording = resolve()) {
         self.analyticsRecorder = analyticsRecording
         self.routingInteractor = routingInteractor
         _ = setup

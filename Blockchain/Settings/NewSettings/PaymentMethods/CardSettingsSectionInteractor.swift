@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -55,8 +56,8 @@ final class CardSettingsSectionInteractor {
     
     // MARK: - Setup
     
-    init(featureFetcher: FeatureFetching = AppFeatureConfigurator.shared,
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI = DataProvider.default.buySell.paymentMethodTypes,
+    init(featureFetcher: FeatureFetching = resolve(),
+         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
          tierLimitsProvider: TierLimitsProviding) {
         self.featureFetcher = featureFetcher
         self.paymentMethodTypesService = paymentMethodTypesService

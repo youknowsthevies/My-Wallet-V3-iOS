@@ -53,10 +53,10 @@ class EthereumWalletServiceTests: XCTestCase {
             service: CryptoFeeServiceMock<EthereumTransactionFee>(underlyingFees: .default)
         )
         
-        transactionBuilder = EthereumTransactionBuilder.shared
-        transactionSigner = EthereumTransactionSigner.shared
+        transactionBuilder = EthereumTransactionBuilder()
+        transactionSigner = EthereumTransactionSigner()
         
-        transactionEncoder = EthereumTransactionEncoder.shared
+        transactionEncoder = EthereumTransactionEncoder()
         
         walletAccountRepository = EthereumWalletAccountRepositoryMock()
         

@@ -11,7 +11,7 @@ import PlatformKit
 
 extension DependencyContainer {
 
-    // MARK: - BuySellKit Module
+    // MARK: - ERC20Kit Module
 
     public static var erc20Kit = module {
 
@@ -40,6 +40,8 @@ extension DependencyContainer {
         factory(tag: CryptoCurrency.pax) { ERC20AssetBalanceFetcher<PaxToken>() as CryptoAccountBalanceFetching }
         
         factory { AnyERC20HistoricalTransactionService<PaxToken>() }
+        
+        factory { ERC20Service<PaxToken>() }
         
         // MARK: - Tether
 

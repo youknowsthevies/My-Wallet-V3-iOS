@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import DIKit
 import BuySellKit
+import DIKit
 import PlatformKit
 import RxSwift
 
@@ -15,11 +15,7 @@ final class BuySellActivityDetailsInteractor {
 
     private let cardListService: CardListServiceAPI
 
-    convenience init(cardsServiceProvider: CardServiceProviderAPI = resolve()) {
-        self.init(cardListService: cardsServiceProvider.cardList)
-    }
-
-    init(cardListService: CardListServiceAPI) {
+    init(cardListService: CardListServiceAPI = resolve()) {
         self.cardListService = cardListService
     }
 

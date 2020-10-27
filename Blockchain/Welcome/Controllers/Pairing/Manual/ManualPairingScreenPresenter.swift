@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -57,7 +58,7 @@ final class ManualPairingScreenPresenter {
     init(interactor: ManualPairingInteractor = ManualPairingInteractor(),
          routerStateProvider: OnboardingRouterStateProviding = AppCoordinator.shared.onboardingRouter,
          alertPresenter: AlertViewPresenter = .shared,
-         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared) {
+         loadingViewPresenter: LoadingViewPresenting = resolve()) {
         self.routerStateProvider = routerStateProvider
         self.alertPresenter = alertPresenter
         self.loadingViewPresenter = loadingViewPresenter

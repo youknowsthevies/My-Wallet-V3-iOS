@@ -112,7 +112,7 @@ final class CustodyWithdrawalScreenInteractor {
     private let submissionInteractor: CustodyWithdrawalSubmissionInteractor
     private let disposeBag = DisposeBag()
 
-    init(withdrawalService: CustodyWithdrawalServiceAPI,
+    init(withdrawalService: CustodyWithdrawalServiceAPI = resolve(),
          currency: CryptoCurrency,
          balanceFetching: AssetBalanceFetching,
          tradingBalanceService: TradingBalanceServiceAPI = resolve(),

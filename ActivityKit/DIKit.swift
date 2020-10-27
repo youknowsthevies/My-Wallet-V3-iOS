@@ -123,8 +123,7 @@ extension CryptoEventService {
         let transactionalService = TransactionalActivityItemEventService(fetcher: eventsService)
         let buySell = BuySellActivityItemEventService(currency: .bitcoin, service: orderService)
         let fetcher = BitcoinSwapActivityItemEventsService(service: swapActivity)
-        let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
-        let swapService = SwapActivityItemEventService(fetcher: fetcher, fiatCurrencyProvider: userInformationProvider.settings)
+        let swapService = SwapActivityItemEventService(fetcher: fetcher)
         return CryptoEventService(
             transactional: transactionalService,
             buySell: buySell,
@@ -138,8 +137,7 @@ extension CryptoEventService {
         let transactionalService = TransactionalActivityItemEventService(fetcher: eventsService)
         let buySell = BuySellActivityItemEventService(currency: .bitcoinCash, service: orderService)
         let fetcher = BitcoinCashSwapActivityItemEventsService(service: swapActivity)
-        let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
-        let swapService = SwapActivityItemEventService(fetcher: fetcher, fiatCurrencyProvider: userInformationProvider.settings)
+        let swapService = SwapActivityItemEventService(fetcher: fetcher)
         return CryptoEventService(
             transactional: transactionalService,
             buySell: buySell,
@@ -154,8 +152,7 @@ extension CryptoEventService {
         let transactionalService = TransactionalActivityItemEventService(fetcher: eventsService)
         let buySell = BuySellActivityItemEventService(currency: .ethereum, service: orderService)
         let fetcher = EthereumSwapActivityItemEventsService(service: swapActivity)
-        let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
-        let swapService = SwapActivityItemEventService(fetcher: fetcher, fiatCurrencyProvider: userInformationProvider.settings)
+        let swapService = SwapActivityItemEventService(fetcher: fetcher)
         return CryptoEventService(
             transactional: transactionalService,
             buySell: buySell,
@@ -171,8 +168,7 @@ extension CryptoEventService {
         let transactionalService = TransactionalActivityItemEventService(fetcher: eventsService)
         let buySell = BuySellActivityItemEventService(currency: .stellar, service: orderService)
         let fetcher = StellarSwapActivityItemEventsService(service: swapActivity)
-        let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
-        let swapService = SwapActivityItemEventService(fetcher: fetcher, fiatCurrencyProvider: userInformationProvider.settings)
+        let swapService = SwapActivityItemEventService(fetcher: fetcher)
         return CryptoEventService(
             transactional: transactionalService,
             buySell: buySell,
@@ -191,8 +187,7 @@ extension CryptoEventService {
         let buySell = BuySellActivityItemEventService(currency: .tether, service: orderService)
         
         let fetcher = AnyERC20SwapActivityItemEventsService<TetherToken>(service: swapActivity)
-        let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
-        let swapService = SwapActivityItemEventService(fetcher: fetcher, fiatCurrencyProvider: userInformationProvider.settings)
+        let swapService = SwapActivityItemEventService(fetcher: fetcher)
         return CryptoEventService(
             transactional: transactionalService,
             buySell: buySell,
@@ -210,8 +205,7 @@ extension CryptoEventService {
         let buySell = BuySellActivityItemEventService(currency: .pax, service: orderService)
         
         let fetcher = AnyERC20SwapActivityItemEventsService<PaxToken>(service: swapActivity)
-        let userInformationProvider: UserInformationServiceProviding = DIKit.resolve()
-        let swapService = SwapActivityItemEventService(fetcher: fetcher, fiatCurrencyProvider: userInformationProvider.settings)
+        let swapService = SwapActivityItemEventService(fetcher: fetcher)
         return CryptoEventService(
             transactional: transactionalService,
             buySell: buySell,

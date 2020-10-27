@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Localization
 import PlatformUIKit
 import RxCocoa
@@ -37,12 +38,11 @@ final class BuyIntroScreenPresenter {
     // MARK: - Injected
     
     private unowned let stateService: StateServiceAPI
-    private let recordingProvider: RecordingProviderAPI
 
     // MARK: - Setup
     
-    init(stateService: StateServiceAPI, recordingProvider: RecordingProviderAPI) {
-        self.recordingProvider = recordingProvider
+    init(stateService: StateServiceAPI,
+         analytics: AnalyticsEventRecorderAPI = resolve()) {
         self.stateService = stateService
         
         themeBackgroundImageViewContent = .init(
@@ -75,7 +75,7 @@ final class BuyIntroScreenPresenter {
         
         continueButtonViewModel.tapRelay
             .map { AnalyticsEvent.sbWantToBuyButtonClicked }
-            .bindAndCatch(to: recordingProvider.analytics.recordRelay)
+            .bindAndCatch(to: analytics.recordRelay)
             .disposed(by: disposeBag)
         
         skipButtonViewModel.tapRelay
@@ -84,10 +84,10 @@ final class BuyIntroScreenPresenter {
         
         skipButtonViewModel.tapRelay
             .map { AnalyticsEvent.sbWantToBuyButtonSkip }
-            .bindAndCatch(to: recordingProvider.analytics.recordRelay)
+            .bindAndCatch(to: analytics.recordRelay)
             .disposed(by: disposeBag)
         
-        recordingProvider.analytics.record(event: AnalyticsEvent.sbWantToBuyScreenShown)
+        analytics.record(event: AnalyticsEvent.sbWantToBuyScreenShown)
     }
     
     // MARK: - Exposed

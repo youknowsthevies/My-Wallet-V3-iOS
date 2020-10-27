@@ -6,16 +6,17 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import DIKit
 import BigInt
+import DIKit
 import PlatformKit
 import RxSwift
 
 protocol EthereumAccountBalanceServiceAPI {
+    
     func balance(for address: String) -> Single<CryptoValue>
 }
 
-class EthereumAccountBalanceService: EthereumAccountBalanceServiceAPI {
+final class EthereumAccountBalanceService: EthereumAccountBalanceServiceAPI {
 
     private let client: APIClientAPI
 

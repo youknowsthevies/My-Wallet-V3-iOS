@@ -55,7 +55,7 @@ final class WalletIntroductionPresenter: NSObject {
     private let disposeBag = DisposeBag()
 
     init(
-        featureConfigurator: FeatureConfiguring = AppFeatureConfigurator.shared,
+        featureConfigurator: FeatureConfiguring = resolve(),
         onboardingSettings: BlockchainSettings.Onboarding = .shared,
         screen: WalletIntroductionLocation.Screen,
         recorder: AnalyticsEventRecording = resolve()

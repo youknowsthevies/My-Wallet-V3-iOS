@@ -146,7 +146,7 @@ final class SendPresenter {
     // MARK: - Setup
     
     init(router: SendRouter,
-         loader: LoadingViewPresenting = LoadingViewPresenter.shared,
+         loader: LoadingViewPresenting = resolve(),
          interactor: SendInteracting,
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.router = router

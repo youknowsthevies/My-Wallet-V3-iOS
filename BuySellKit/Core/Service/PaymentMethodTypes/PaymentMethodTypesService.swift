@@ -7,10 +7,10 @@
 //
 
 import DIKit
+import PlatformKit
 import RxRelay
 import RxSwift
 import ToolKit
-import PlatformKit
 
 /// The type of payment method
 public enum PaymentMethodType: Equatable {
@@ -117,10 +117,10 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     // MARK: - Setup
     
     init(enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-         paymentMethodsService: PaymentMethodsServiceAPI,
-         fiatCurrencyService: FiatCurrencyServiceAPI,
-         cardListService: CardListServiceAPI,
-         balanceProvider: BalanceProviding) {
+         paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
+         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+         cardListService: CardListServiceAPI = resolve(),
+         balanceProvider: BalanceProviding = resolve()) {
         self.enabledCurrenciesService = enabledCurrenciesService
         self.paymentMethodsService = paymentMethodsService
         self.fiatCurrencyService = fiatCurrencyService

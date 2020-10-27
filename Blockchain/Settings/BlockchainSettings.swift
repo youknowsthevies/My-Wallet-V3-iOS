@@ -6,14 +6,14 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import DIKit
 import BuySellKit
+import DIKit
+import KYCKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
 import ToolKit
-import KYCKit
 
 /**
  Settings for the current user.
@@ -167,7 +167,7 @@ final class BlockchainSettings: NSObject {
         
         @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencySettingsServiceAPI`")
         var fiatCurrency: FiatCurrency {
-            FiatCurrency(code: UserInformationServiceProvider.default.settings.legacyCurrency?.code ?? "USD")!
+            FiatCurrency(code: fiatSettings.legacyCurrency?.code ?? "USD")!
         }
 
         /// The first 5 characters of SHA256 hash of the user's password
@@ -395,6 +395,14 @@ final class BlockchainSettings: NSObject {
                 defaults.set(newValue, forKey: UserDefaults.Keys.custodySendInterstitialViewed.rawValue)
             }
         }
+        
+        private var buySellCache: EventCache {
+            resolve()
+        }
+        
+        private var fiatSettings: FiatCurrencySettingsServiceAPI {
+            resolve()
+        }
 
         private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
 
@@ -433,7 +441,8 @@ final class BlockchainSettings: NSObject {
             let kycSettings: KYCSettingsAPI = resolve()
             kycSettings.reset()
             AnnouncementRecorder.reset()
-            DataProvider.default.buySell.cache.reset()
+            
+            buySellCache.reset()
 
             Logger.shared.info("Application settings have been reset.")
         }

@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Foundation
 import PlatformKit
 import PlatformUIKit
@@ -49,7 +50,7 @@ class ExchangeDetailViewController: UIViewController {
     fileprivate var coordinator: ExchangeDetailCoordinator!
     fileprivate var presenter: ExchangeDetailPresenter!
     fileprivate var dependencies: ExchangeDependencies!
-    private let loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter.shared
+    private let loadingViewPresenter: LoadingViewPresenting = resolve()
 
     // MARK: Lifecycle
 

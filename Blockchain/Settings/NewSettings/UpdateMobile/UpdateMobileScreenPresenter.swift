@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -64,8 +65,8 @@ final class UpdateMobileScreenPresenter {
     private let disposeBag = DisposeBag()
     
     init(stateService: UpdateMobileStateServiceAPI,
-         settingsAPI: MobileSettingsServiceAPI = UserInformationServiceProvider.default.settings,
-         loadingViewPresenting: LoadingViewPresenting = LoadingViewPresenter.shared) {
+         settingsAPI: MobileSettingsServiceAPI = resolve(),
+         loadingViewPresenting: LoadingViewPresenting = resolve()) {
         self.stateService = stateService
         textField = .init(
             with: .mobile,

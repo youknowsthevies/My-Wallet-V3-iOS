@@ -36,7 +36,7 @@ final class KYCCountrySelectionController: KYCBaseViewController, ProgressableVi
     }()
 
     private let analyticsRecorder: AnalyticsEventRecording = resolve()
-    private let informationService: UserInformationServiceProviding = resolve()
+    private let generalInformationService: GeneralInformationServiceAPI = resolve()
 
     private let disposeBag = DisposeBag()
 
@@ -63,7 +63,7 @@ final class KYCCountrySelectionController: KYCBaseViewController, ProgressableVi
     // MARK: - Private Methods
 
     private func fetchListOfCountries() {
-        informationService.general
+        generalInformationService
             .countries
             .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: { [weak self] countries in
