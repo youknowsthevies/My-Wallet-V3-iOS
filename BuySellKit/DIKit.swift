@@ -80,7 +80,7 @@ extension DependencyContainer {
         factory { CardClient() as CardClientAPI }
         
         factory { EveryPayClient() as EveryPayClientAPI }
-        
+
         factory { () -> CardListClientAPI in
             let client: CardClientAPI = DIKit.resolve()
             return client as CardListClientAPI

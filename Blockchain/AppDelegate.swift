@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DebugUIKit
 import ActivityKit
 import ActivityUIKit
 import AlgorandKit
@@ -65,6 +66,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private lazy var remoteNotificationTokenReceiver: RemoteNotificationDeviceTokenReceiving = {
         RemoteNotificationServiceContainer.default.tokenReceiver
     }()
+
+    @LazyInject(tag: DebugScreenContext.tag)
+    private var debugCoordinator: DebugCoordinating
     
     private let disposeBag = DisposeBag()
     private var appCoordinator: AppCoordinator { .shared }
@@ -97,6 +101,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             DependencyContainer.kycKit;
             DependencyContainer.kycUIKit;
             DependencyContainer.blockchain;
+            #if DEBUG
+            DependencyContainer.debugUIKit;
+            #endif
         })
         // swiftlint:enable trailing_semicolon
     }
@@ -162,6 +169,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
             let simulateSurgeKey = UserDefaults.DebugKeys.simulateSurge.rawValue
             cacheSuite.set(false, forKey: simulateSurgeKey)
+
+            debugCoordinator.enableDebugMenu(for: window)
         }
 
         // TODO: prevent any other data tasks from executing until cert is pinned

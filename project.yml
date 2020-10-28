@@ -396,6 +396,7 @@ targets:
     - target: ActivityUIKit
     - target: KYCKit
     - target: KYCUIKit
+    - target: DebugUIKit
     - carthage: FIRAnalyticsConnector
       findFrameworks: false
       linkType: static
@@ -1015,6 +1016,7 @@ targets:
     - carthage: DIKit
     - carthage: RxSwift
     - carthage: RxRelay
+    - carthage: RxCocoa
     scheme:
       testTargets:
       - ToolKitTests
@@ -1087,3 +1089,14 @@ targets:
       path: TestKit/Mocks/PlatformKit
     templates:
     - FrameworkTest
+  DebugUIKit:
+    dependencies:
+    - target: ToolKit
+    - target: PlatformKit
+    - target: PlatformUIKit
+    - carthage: DIKit
+    - carthage: RxCocoa
+    - carthage: RxRelay
+    - carthage: RxSwift
+    templates:
+    - Framework
