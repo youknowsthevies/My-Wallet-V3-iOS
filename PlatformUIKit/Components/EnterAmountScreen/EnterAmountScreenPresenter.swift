@@ -36,7 +36,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
 
     public let deviceType = DevicePresenter.type
     let title: String
-    
+
     public var bottomAuxiliaryViewModelState: Driver<BottomAuxiliaryViewModelState> {
         bottomAuxiliaryViewModelStateRelay.asDriver()
     }
@@ -64,7 +64,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
     public let alert: AlertViewPresenterAPI
     public let analyticsRecorder: AnalyticsEventRecorderAPI
     public let displayBundle: DisplayBundle
-    
+
     private let interactor: EnterAmountScreenInteractor
     private let backwardsNavigation: () -> Void
     

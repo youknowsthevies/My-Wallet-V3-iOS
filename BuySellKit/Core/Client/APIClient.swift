@@ -22,7 +22,8 @@ typealias SimpleBuyClientAPI = EligibilityClientAPI &
                                QuoteClientAPI &
                                PaymentMethodsClientAPI &
                                BeneficiariesClientAPI &
-                               OrdersActivityClientAPI
+                               OrdersActivityClientAPI &
+                               WithdrawalClientAPI
 
 /// Simple-Buy network client
 final class APIClient: SimpleBuyClientAPI {
@@ -53,6 +54,7 @@ final class APIClient: SimpleBuyClientAPI {
         static let paymentAccount = [ "payments", "accounts", "simplebuy" ]
         static let quote = [ "simple-buy", "quote" ]
         static let eligible = [ "simple-buy", "eligible" ]
+        static let withdrawalFees = [ "payments", "withdrawals", "fees" ]
     }
     
     private enum Constants {
@@ -324,6 +326,27 @@ final class APIClient: SimpleBuyClientAPI {
         ]
         let request = requestBuilder.get(
             path: Path.paymentMethods,
+            parameters: queryParameters,
+            authenticated: true
+        )!
+        return communicator.perform(request: request)
+    }
+
+    // MARK: - WithdrawalClientAPI
+
+    func withdrawFee(currency: FiatCurrency) -> Single<WithdrawFeesResponse> {
+        let queryParameters = [
+            URLQueryItem(
+                name: Parameter.currency,
+                value: currency.code
+            ),
+            URLQueryItem(
+                name: Parameter.product,
+                value: Constants.simpleBuyProduct
+            )
+        ]
+        let request = requestBuilder.get(
+            path: Path.withdrawalFees,
             parameters: queryParameters,
             authenticated: true
         )!

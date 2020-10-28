@@ -47,8 +47,6 @@ extension DependencyContainer {
 
         single { TradeLimitsService() as TradeLimitsAPI }
 
-        factory { BlockchainDataRepository.shared as DataRepositoryAPI }
-
         // MARK: - Send
 
         factory { () -> SendScreenProvider in
@@ -159,6 +157,10 @@ extension DependencyContainer {
             let provider: DataProvider = DIKit.resolve()
             return provider as DataProviding
         }
+
+        // MARK: - BlockchainDataRepository
+
+        factory { BlockchainDataRepository.shared as DataRepositoryAPI }
         
         // MARK: - Ethereum Wallet
 

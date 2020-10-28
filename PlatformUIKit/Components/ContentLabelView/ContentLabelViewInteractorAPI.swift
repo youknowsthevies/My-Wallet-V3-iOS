@@ -7,16 +7,16 @@
 //
 
 import PlatformKit
-import RIBs
 import RxCocoa
 import RxSwift
 import ToolKit
 
-public protocol ContentLabelViewInteractorAPI: Interactable {
+public protocol ContentLabelViewInteractorAPI {
     var contentCalculationState: Observable<ValueCalculationState<String>> { get }
 }
 
-public final class AvailableBalanceContentViewInteractor: Interactor, ContentLabelViewInteractorAPI {
+@available(*, deprecated, message: "Use `AvailableBalanceContentInteractor` instead which uses the Coincore API")
+public final class AvailableBalanceContentViewInteractor: ContentLabelViewInteractorAPI {
     
     public var contentCalculationState: Observable<ValueCalculationState<String>> {
         balanceProvider[currencyType].calculationState

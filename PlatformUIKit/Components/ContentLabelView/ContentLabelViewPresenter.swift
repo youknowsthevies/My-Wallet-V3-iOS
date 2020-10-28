@@ -18,9 +18,7 @@ public final class ContentLabelViewPresenter {
     
     private typealias AccessibilityId = Accessibility.Identifier.ContentLabelView
     
-    public var descriptionLabelContent: Driver<LabelContent> {
-        descriptionLabelContentRelay.asDriver()
-    }
+    public let descriptionLabelContent: Driver<LabelContent>
          
     public var containsDescription: Driver<Bool> {
         interactor.contentCalculationState
@@ -29,10 +27,8 @@ public final class ContentLabelViewPresenter {
     }
     
     public let titleLabelContent: LabelContent
-    
-    private let descriptionLabelContentRelay: BehaviorRelay<LabelContent>
-    private let interactor: ContentLabelViewInteractorAPI & Interactable
-    private let disposeBag = DisposeBag()
+
+    private let interactor: ContentLabelViewInteractorAPI
     
     public init(title: String, interactor: ContentLabelViewInteractorAPI) {
         self.interactor = interactor
@@ -42,9 +38,8 @@ public final class ContentLabelViewPresenter {
             color: .descriptionText,
             accessibility: .id(AccessibilityId.title)
         )
-        
-        descriptionLabelContentRelay = BehaviorRelay(value: .empty)
-        interactor.contentCalculationState
+
+        descriptionLabelContent = interactor.contentCalculationState
             .compactMap { $0.value }
             .map {
                 LabelContent(
@@ -54,7 +49,6 @@ public final class ContentLabelViewPresenter {
                     accessibility: .id(AccessibilityId.description)
                 )
             }
-            .bindAndCatch(to: descriptionLabelContentRelay)
-            .disposed(by: disposeBag)
+            .asDriver(onErrorJustReturn: .empty)
     }
 }

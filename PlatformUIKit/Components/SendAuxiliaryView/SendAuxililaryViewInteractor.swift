@@ -6,10 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
-import ToolKit
+import DIKit
 import PlatformKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 public final class SendAuxililaryViewInteractor {
 
@@ -18,14 +19,23 @@ public final class SendAuxililaryViewInteractor {
         resetToMaxAmountRelay.asObservable()
     }
     
-    let availableBalanceContentViewInteractor: AvailableBalanceContentViewInteractor
+    let availableBalanceContentViewInteractor: ContentLabelViewInteractorAPI
 
     let resetToMaxAmountRelay = PublishRelay<Void>()
-    
+
+    @available(*, deprecated, message: "Use `init(currencyType:coincore:)` method instead which uses the Coincore API")
     public init(balanceProvider: BalanceProviding, currencyType: CurrencyType) {
         availableBalanceContentViewInteractor = AvailableBalanceContentViewInteractor(
             balanceProvider: balanceProvider,
             currencyType: currencyType
+        )
+    }
+
+    public init(currencyType: CurrencyType,
+                coincore: Coincore = resolve()) {
+        availableBalanceContentViewInteractor = AvailableBalanceContentInteractor(
+            currencyType: currencyType,
+            coincore: coincore
         )
     }
 }

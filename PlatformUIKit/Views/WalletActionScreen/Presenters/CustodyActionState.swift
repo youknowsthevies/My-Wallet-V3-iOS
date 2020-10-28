@@ -41,6 +41,8 @@ public enum CustodyActionState {
     
     /// The withdrawal custodial funds screen
     case withdrawal
+
+    case withdrawalFiat(isKYCApproved: Bool)
     
     /// The withdrawal screen but only
     /// if the user just backed up their wallet.

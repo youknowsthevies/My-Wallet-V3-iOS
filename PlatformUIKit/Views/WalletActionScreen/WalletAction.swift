@@ -37,7 +37,7 @@ public enum WalletAction: IdentifiableType {
         case .deposit:
             return "deposit-icon"
         case .withdraw:
-            return "deposit-icon"
+            return "withdraw-icon"
         case .transfer:
             return "send-icon"
         case .interest:

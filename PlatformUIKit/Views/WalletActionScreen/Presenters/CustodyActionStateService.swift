@@ -34,6 +34,10 @@ public protocol CustodyDepositEmitterAPI: class {
     var depositRelay: PublishRelay<Void> { get }
 }
 
+public protocol CustodyWithdrawEmitterAPI: class {
+    var withdrawRelay: PublishRelay<Void> { get }
+}
+
 public protocol CustodyBuyEmitterAPI: class {
     var buyRelay: PublishRelay<Void> { get }
 }
@@ -48,7 +52,8 @@ public typealias CustodyActionStateServiceAPI = CustodyActionStateReceiverServic
                                          CustodyBuyEmitterAPI &
                                          CustodySellEmitterAPI &
                                          CustodyDepositEmitterAPI &
-                                         RoutingPreviousStateEmitterAPI
+                                         RoutingPreviousStateEmitterAPI &
+                                         CustodyWithdrawEmitterAPI
 
 public final class CustodyActionStateService: CustodyActionStateServiceAPI {
     public typealias State = CustodyActionState
@@ -119,6 +124,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
     public let depositRelay = PublishRelay<Void>()
     public let sellRelay = PublishRelay<Void>()
     public let buyRelay = PublishRelay<Void>()
+    public let withdrawRelay = PublishRelay<Void>()
     
     private let statesRelay = BehaviorRelay<States>(value: .start)
     private let actionRelay = PublishRelay<Action>()
@@ -182,6 +188,20 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
                 self.apply(action: .next(.sell), states: nextStates)
             }
             .disposed(by: disposeBag)
+
+        withdrawRelay
+            .observeOn(MainScheduler.instance)
+            .flatMap {
+                kycTiersService
+                    .fetchTiers()
+                    .asObservable()
+            }
+            .map { $0.isTier2Approved }
+            .bindAndCatch(weak: self) { (self, isKYCApproved) in
+                let nextStates = self.statesRelay.value.states(byAppending: .withdrawalFiat(isKYCApproved: isKYCApproved))
+                self.apply(action: .next(.withdrawalFiat(isKYCApproved: isKYCApproved)), states: nextStates)
+            }
+            .disposed(by: disposeBag)
     }
     
     private func next() {
@@ -208,6 +228,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
              .sell,
              .withdrawal,
              .deposit,
+             .withdrawalFiat,
              .withdrawalAfterBackup,
              .end:
             state = .end

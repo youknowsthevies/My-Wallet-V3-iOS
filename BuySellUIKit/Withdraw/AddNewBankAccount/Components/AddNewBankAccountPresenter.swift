@@ -1,8 +1,8 @@
 //
-//  FundsTransferDetailsPresenter.swift
+//  AddNewBankAccountPresenter.swift
 //  BuySellUIKit
 //
-//  Created by Daniel on 23/06/2020.
+//  Created by Dimitrios Chatzieleftheriou on 08/10/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
@@ -16,7 +16,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
+final class AddNewBankAccountPagePresenter: DetailsScreenPresenterAPI, AddNewBankAccountPresentable {
 
     // MARK: - Types
 
@@ -24,18 +24,14 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.TransferDetails
     private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.TransferDetails
 
-    // MARK: - Screen Properties
+    // MARK: - Navigation Properties
 
     let reloadRelay: PublishRelay<Void> = .init()
 
-    private(set) var buttons: [ButtonViewModel] = []
-
-    private(set) var cells: [DetailsScreen.CellType] = []
-
-    // MARK: - Navigation Properties
-
     let navigationBarTrailingButtonAction: DetailsScreen.BarButtonAction
     let navigationBarLeadingButtonAction: DetailsScreen.BarButtonAction = .default
+
+    let titleViewRelay: BehaviorRelay<Screen.Style.TitleView> = .init(value: .none)
 
     var navigationBarAppearance: DetailsScreen.NavigationBarAppearance {
         .custom(
@@ -45,50 +41,53 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
         )
     }
 
-    let titleViewRelay: BehaviorRelay<Screen.Style.TitleView> = .init(value: .none)
+    // MARK: - Screen Properties
+
+    private(set) var buttons: [ButtonViewModel] = []
+    private(set) var cells: [DetailsScreen.CellType] = []
 
     // MARK: - Private Properties
-    
+
     private let disposeBag = DisposeBag()
-    
+    private let termsTapRelay = PublishRelay<TitledLink>()
+    private let navigationCloseRelay = PublishRelay<Void>()
+
     // MARK: - Injected
 
+    private let fiatCurrency: FiatCurrency
     private let isOriginDeposit: Bool
     private let analyticsRecorder: AnalyticsEventRecorderAPI
-    private let webViewRouter: WebViewRouterAPI
-    private let stateService: StateServiceAPI
-    private let interactor: FundsTransferDetailsInteractorAPI
-    
+
     // MARK: - Setup
 
-    init(webViewRouter: WebViewRouterAPI,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         interactor: FundsTransferDetailsInteractorAPI,
-         stateService: StateServiceAPI,
-         isOriginDeposit: Bool) {
-        self.analyticsRecorder = analyticsRecorder
-        self.webViewRouter = webViewRouter
-        self.interactor = interactor
-        self.stateService = stateService
+    init(isOriginDeposit: Bool,
+         fiatCurrency: FiatCurrency,
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.isOriginDeposit = isOriginDeposit
-        
-        navigationBarTrailingButtonAction = .custom {
-            stateService.previousRelay.accept(())
+        self.fiatCurrency = fiatCurrency
+        self.analyticsRecorder = analyticsRecorder
+
+        navigationBarTrailingButtonAction = .custom { [navigationCloseRelay] in
+            navigationCloseRelay.accept(())
         }
     }
-    
-    func viewDidLoad() {
-        analyticsRecorder.record(
-            event: AnalyticsEvents.SimpleBuy.sbLinkBankScreenShown(currencyCode: interactor.fiatCurrency.code)
-        )
-        
-        interactor.state
-            .bindAndCatch(weak: self) { (self, state) in
+
+    func connect(action: Driver<AddNewBankAccountAction>) -> Driver<AddNewBankAccountEffects> {
+        let details = action
+            .flatMap { action -> Driver<AddNewBankAccountDetailsInteractionState> in
+                switch action {
+                case .details(let state):
+                    return .just(state)
+                }
+            }
+
+        details
+            .drive(weak: self) { (self, state) in
                 switch state {
                 case .invalid(.valueCouldNotBeCalculated):
                     self.analyticsRecorder.record(
                         event: AnalyticsEvents.SimpleBuy.sbLinkBankLoadingError(
-                            currencyCode: self.interactor.fiatCurrency.code
+                            currencyCode: self.fiatCurrency.code
                         )
                     )
                 case .value(let account):
@@ -98,8 +97,24 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
                 }
             }
             .disposed(by: disposeBag)
+
+        let closeTapped = navigationCloseRelay
+            .map { _ in AddNewBankAccountEffects.close }
+            .asDriverCatchError()
+
+        let termsTapped = termsTapRelay
+            .map(AddNewBankAccountEffects.termsTapped)
+            .asDriverCatchError()
+
+        return Driver.merge(closeTapped, termsTapped)
     }
-    
+
+    func viewDidLoad() {
+        analyticsRecorder.record(
+            event: AnalyticsEvents.SimpleBuy.sbLinkBankScreenShown(currencyCode: fiatCurrency.code)
+        )
+    }
+
     private func setup(account: PaymentAccount) {
         let contentReducer = ContentReducer(
             account: account,
@@ -110,16 +125,6 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
         // MARK: Nav Bar
 
         titleViewRelay.accept(.text(value: contentReducer.title))
-
-        // MARK: Continue Button Setup
-
-        let continueButtonViewModel = ButtonViewModel.primary(with: LocalizedString.Button.ok)
-        continueButtonViewModel.tapRelay
-            .bindAndCatch(weak: self) { (self) in
-                self.stateService.previousRelay.accept(())
-            }
-            .disposed(by: disposeBag)
-        buttons.append(continueButtonViewModel)
 
         // MARK: Cells Setup
 
@@ -132,18 +137,18 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
 
         if let termsTextViewModel = contentReducer.termsTextViewModel {
             termsTextViewModel.tap
-                .bind(to: webViewRouter.launchRelay)
+                .bind(to: termsTapRelay)
                 .disposed(by: disposeBag)
             cells.append(.interactableTextCell(termsTextViewModel))
         }
-        
+
         reloadRelay.accept(())
     }
 }
 
 // MARK: - Content Reducer
 
-extension FundsTransferDetailScreenPresenter {
+extension AddNewBankAccountPagePresenter {
 
     final class ContentReducer {
 
@@ -155,19 +160,19 @@ extension FundsTransferDetailScreenPresenter {
         init(account: PaymentAccount,
              isOriginDeposit: Bool,
              analyticsRecorder: AnalyticsEventRecorderAPI) {
-        
+
             typealias FundsString = LocalizedString.Funds
-            
+
             if isOriginDeposit {
                 title = "\(FundsString.Title.depositPrefix) \(account.currency)"
             } else {
                 title = "\(FundsString.Title.addBankPrefix) \(account.currency) \(FundsString.Title.addBankSuffix) "
             }
-            
+
             lineItems = account.fields.transferDetailsCellsPresenting(analyticsRecorder: analyticsRecorder)
 
             let font = UIFont.main(.medium, 12)
-            
+
             let processingTimeNoticeDescription: String
 
             switch account.currency {
@@ -193,7 +198,7 @@ extension FundsTransferDetailScreenPresenter {
                 processingTimeNoticeDescription = ""
                 termsTextViewModel = nil
             }
-            
+
             noticeViewModels = [
                     (
                         title: FundsString.Notice.BankTransferOnly.title,
@@ -257,7 +262,7 @@ private extension Array where Element == PaymentAccountProperty.Field {
                 return nil
             }
         }
-        
+
         return map { TransactionalLineItem.paymentAccountField($0) }
             .map { field in
                 if isCopyable(field: field) {

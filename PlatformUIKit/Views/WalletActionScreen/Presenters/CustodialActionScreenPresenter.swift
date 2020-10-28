@@ -49,7 +49,8 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
     
     public init(using interactor: WalletActionScreenInteracting,
                 enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-                stateService: CustodyActionStateServiceAPI) {
+                stateService: CustodyActionStateServiceAPI,
+                internalFeatureFlags: InternalFeatureFlagServiceAPI = resolve()) {
         self.interactor = interactor
         self.enabledCurrenciesService = enabledCurrenciesService
         
@@ -102,6 +103,14 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
                 break
             }
             actionPresenters.append(DefaultWalletActionCellPresenter(currencyType: currency, action: .deposit))
+
+            guard internalFeatureFlags.isEnabled(.withdrawalFlow) else {
+                break
+            }
+            guard enabledCurrenciesService.withdrawEnabledFiatCurrencies.contains(fiatCurrency) else {
+                break
+            }
+            actionPresenters.append(DefaultWalletActionCellPresenter(currencyType: currency, action: .withdraw))
         }
         
         actionCells.append(contentsOf: actionPresenters.map { .default($0) })
@@ -121,6 +130,8 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
                     stateService.nextRelay.accept(())
                 case .deposit:
                     stateService.depositRelay.accept(())
+                case .withdraw:
+                    stateService.withdrawRelay.accept(())
                 default:
                     break
                 }

@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import BuySellUIKit
 import DIKit
 import PlatformKit
 import PlatformUIKit
@@ -32,6 +33,11 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
     private let tabSwapping: TabSwapping
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let disposeBag = DisposeBag()
+
+    /// Represents a reference of the `WithdrawFlowRouter` object
+    /// - note: This is needed in order for the reference to be kept in memory,
+    ///         will be release on the dismissal of the flow.
+    private var withdrawFiatRouter: WithdrawFlowStarter?
     
     init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
          appSettings: BlockchainSettings.App = resolve(),
@@ -129,6 +135,13 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
                 guard let self = self else { return }
                 self.custodyWithdrawalRouter.start(with: currency)
             }
+        case .withdrawalFiat(let isKYCApproved):
+            if isKYCApproved {
+                guard case let .fiat(currency) = currency else { return }
+                showWithdrawFiatScreen(currency: currency)
+            } else {
+                showCashIdentityViewController()
+            }
         case .end:
             dismissTopMost()
         }
@@ -202,6 +215,20 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
         }
         navigationRouter.present(viewController: controller, using: .modalOverTopMost)
     }
+
+    private func showWithdrawFiatScreen(currency: FiatCurrency) {
+        let withdrawBuilder = WithdrawBuilder(currency: currency)
+        let (router, controller) = withdrawBuilder.build()
+        withdrawFiatRouter = router
+        let flowDimissed: () -> Void = { [weak self] in
+            guard let self = self else { return }
+            self.withdrawFiatRouter = nil
+        }
+        router.startFlow(flowDismissed: flowDimissed)
+        dismissTopMost { [weak navigationRouter] in
+            navigationRouter?.present(viewController: controller)
+        }
+    }
     
     func previous() {
         navigationRouter.dismiss()
@@ -215,4 +242,3 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
         BottomSheetPresenting(ignoresBackroundTouches: false)
     }()
 }
-

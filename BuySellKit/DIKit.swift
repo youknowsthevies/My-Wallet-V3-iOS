@@ -75,6 +75,13 @@ extension DependencyContainer {
             return client
         }
 
+        factory { () -> WithdrawalClientAPI in
+            let client: SimpleBuyClientAPI = DIKit.resolve()
+            return client as WithdrawalClientAPI
+        }
+
+        factory { WithdrawalService() as WithdrawalServiceAPI }
+        
         // MARK: - Clients - Cards
         
         factory { CardClient() as CardClientAPI }
