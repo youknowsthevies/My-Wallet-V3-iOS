@@ -76,11 +76,6 @@ extension DependencyContainer {
             return client as CardListClientAPI
         }
 
-        factory { () -> EligibilityServiceAPI in
-            let provider: ServiceProviderAPI = DIKit.resolve()
-            return provider.eligibility
-        }
-        
         // MARK: - Services - General
         
         factory { EventCache() }
