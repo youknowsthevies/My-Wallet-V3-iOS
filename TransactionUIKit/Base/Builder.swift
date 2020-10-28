@@ -18,8 +18,8 @@ public final class Builder {
     private let sendSelectionService: AccountSelectionServiceAPI
     private let receiveSelectionService: AccountSelectionServiceAPI
 
-    init(sendSelectionService: AccountSelectionServiceAPI = AccountSelectionService(),
-         receiveSelectionService: AccountSelectionServiceAPI = AccountSelectionService()) {
+    init(sendSelectionService: AccountSelectionServiceAPI,
+         receiveSelectionService: AccountSelectionServiceAPI) {
         self.sendSelectionService = sendSelectionService
         self.receiveSelectionService = receiveSelectionService
     }

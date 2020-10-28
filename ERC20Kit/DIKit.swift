@@ -42,6 +42,11 @@ extension DependencyContainer {
         factory { AnyERC20HistoricalTransactionService<PaxToken>() }
         
         factory { ERC20Service<PaxToken>() }
+
+        factory { () -> AnyERC20Service<PaxToken> in
+            let service: ERC20Service<PaxToken> = DIKit.resolve()
+            return AnyERC20Service<PaxToken>(service)
+        }
         
         // MARK: - Tether
 

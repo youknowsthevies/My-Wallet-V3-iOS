@@ -176,7 +176,7 @@ public final class SellRouterInteractor: Interactor {
     
     // MARK: - Setup
     
-    public init(accountSelectionService: AccountSelectionServiceAPI = AccountSelectionService(),
+    public init(accountSelectionService: AccountSelectionServiceAPI,
                 eligibilityService: EligibilityServiceAPI = resolve(),
                 kycTiersService: KYCTiersServiceAPI = resolve(),
                 featureFetching: FeatureFetching = resolve(),

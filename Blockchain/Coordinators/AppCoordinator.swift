@@ -389,10 +389,14 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     
     /// Starts Sell Crypto flow
     @objc func handleSellCrypto() {
+        let accountSelectionService = AccountSelectionService()
+        let interactor = SellRouterInteractor(
+            accountSelectionService: accountSelectionService,
+            balanceProvider: DataProvider.default.balance
+        )
         let builder = BuySellUIKit.SellBuilder(
-            routerInteractor: SellRouterInteractor(
-                balanceProvider: DataProvider.default.balance
-            ),
+            accountSelectionService: accountSelectionService,
+            routerInteractor: interactor,
             analyticsRecorder: resolve(),
             exchangeProvider: DataProvider.default.exchange,
             balanceProvider: DataProvider.default.balance

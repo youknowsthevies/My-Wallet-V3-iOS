@@ -59,12 +59,22 @@ extension DependencyContainer {
             let client: SimpleBuyClientAPI = DIKit.resolve()
             return client as PaymentAccountClientAPI
         }
-        
+
         factory { () -> SuggestedAmountsClientAPI in
             let client: SimpleBuyClientAPI = DIKit.resolve()
             return client as SuggestedAmountsClientAPI
         }
-        
+
+        factory { () -> QuoteClientAPI in
+            let client: SimpleBuyClientAPI = DIKit.resolve()
+            return client
+        }
+
+        factory { () -> CardOrderConfirmationClientAPI in
+            let client: SimpleBuyClientAPI = DIKit.resolve()
+            return client
+        }
+
         // MARK: - Clients - Cards
         
         factory { CardClient() as CardClientAPI }
@@ -77,6 +87,10 @@ extension DependencyContainer {
         }
 
         // MARK: - Services - General
+
+        factory { OrderConfirmationService() as OrderConfirmationServiceAPI }
+
+        factory { OrderQuoteService() as OrderQuoteServiceAPI }
         
         factory { EventCache() }
         

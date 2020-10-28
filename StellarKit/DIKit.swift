@@ -41,5 +41,7 @@ extension DependencyContainer {
         factory { StellarTransactionalActivityItemEventsService() }
         
         factory { StellarActivityItemEventDetailsFetcher() }
+
+        single { CryptoFeeService<StellarTransactionFee>() }
     }
 }

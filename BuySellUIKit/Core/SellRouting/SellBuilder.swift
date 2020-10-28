@@ -71,14 +71,17 @@ public final class SellBuilder: SellBuilderAPI {
     private let exchangeProvider: ExchangeProviding
     private let balanceProvider: BalanceProviding
     private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
-    
+    private let accountSelectionService: AccountSelectionServiceAPI
+
     // MARK: - Setup
     
-    public init(routerInteractor: SellRouterInteractor,
+    public init(accountSelectionService: AccountSelectionServiceAPI,
+                routerInteractor: SellRouterInteractor,
                 analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
                 supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
                 exchangeProvider: ExchangeProviding = resolve(),
                 balanceProvider: BalanceProviding) {
+        self.accountSelectionService = accountSelectionService
         self.analyticsRecorder = analyticsRecorder
         self.supportedPairsInteractor = supportedPairsInteractor
         self.exchangeProvider = exchangeProvider
@@ -96,7 +99,8 @@ public final class SellBuilder: SellBuilderAPI {
     public func accountSelectionViewController() -> UIViewController {
         let interactor = AccountPickerScreenInteractor(
             singleAccountsOnly: false,
-            action: .sell
+            action: .sell,
+            selectionService: accountSelectionService
         )
         let presenter = AccountPickerScreenPresenter(
             interactor: interactor,
@@ -109,7 +113,8 @@ public final class SellBuilder: SellBuilderAPI {
     public func fiatAccountSelectionViewController() -> UIViewController {
         let interactor = AccountPickerScreenInteractor(
             singleAccountsOnly: false,
-            action: .deposit
+            action: .deposit,
+            selectionService: accountSelectionService
         )
         let presenter = AccountPickerScreenPresenter(
             interactor: interactor,
