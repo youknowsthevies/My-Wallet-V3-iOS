@@ -93,11 +93,21 @@ public struct AssetBalanceViewModel {
             
             // MARK: - Setup
             
-            public init(with value: Interaction, descriptors: Descriptors) {
+            public init(with value: Interaction, alignment: UIStackView.Alignment, descriptors: Descriptors) {
+                let textAlignment: NSTextAlignment
+                switch alignment {
+                case .leading:
+                    textAlignment = .left
+                case .trailing:
+                    textAlignment = .right
+                default:
+                    textAlignment = .natural
+                }
                 fiatBalance = LabelContent(
                     text: value.fiatValue.toDisplayString(includeSymbol: true, locale: .current),
                     font: descriptors.fiatFont,
                     color: descriptors.fiatTextColor,
+                    alignment: textAlignment,
                     accessibility: descriptors.fiatAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
                 )
                 
@@ -108,6 +118,7 @@ public struct AssetBalanceViewModel {
                         text: value.cryptoValue.toDisplayString(includeSymbol: true, locale: .current),
                         font: descriptors.cryptoFont,
                         color: descriptors.cryptoTextColor,
+                        alignment: textAlignment,
                         accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
                     )
                 }
@@ -116,6 +127,7 @@ public struct AssetBalanceViewModel {
                     text: value.pendingValue.toDisplayString(includeSymbol: true, locale: .current),
                     font: descriptors.cryptoFont,
                     color: descriptors.pendingTextColor,
+                    alignment: textAlignment,
                     accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
                 )
                 

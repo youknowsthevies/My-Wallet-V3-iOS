@@ -41,11 +41,20 @@ public final class ShimmeringView: UIView {
         super.init(frame: .init(origin: .zero, size: size))
         self.backgroundColor = light
         superview.addSubview(self)
-        layout(to: .leading, of: anchorView)
-        layout(to: .top, of: anchorView)
+
+        // Contain shimmer inside superview
+        layout(edge: .leading, to: .leading, of: superview, relation: .greaterThanOrEqual, priority: .required)
+        layout(edge: .trailing, to: .trailing, of: superview, relation: .lessThanOrEqual, priority: .required)
+
+        // Layout shimmer to Anchor
+        layout(to: .leading, of: anchorView, priority: .penultimateHigh)
+        layout(to: .bottom, of: anchorView)
         layout(to: .height, of: anchorView, priority: .defaultHigh)
+
+        // Layout shimmer to Size
         layout(dimension: .width, to: size.width)
         layout(dimension: .height, to: size.height, priority: .defaultLow)
+
         animatingView.fillSuperview()
         layer.cornerRadius = cornerRadius
         animatingView.layer.cornerRadius = cornerRadius

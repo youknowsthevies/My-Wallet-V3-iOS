@@ -32,9 +32,14 @@ public final class AssetBalanceViewPresenter {
     private lazy var setup: Void = {
         /// Map interaction state into presnetation state
         /// and bind it to `stateRelay`
-        interactor.state
-            .map(weak: self) { (self, state) in
-                .init(with: state, descriptors: self.descriptors)
+        let descriptors = self.descriptors
+        Observable.combineLatest(interactor.state, alignmentRelay.asObservable())
+            .map { (state, alignment) in
+                .init(
+                    with: state,
+                    alignment: alignment,
+                    descriptors: descriptors
+                )
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)

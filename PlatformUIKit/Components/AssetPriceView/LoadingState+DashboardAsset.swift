@@ -27,6 +27,7 @@ extension LoadingState where Content == DashboardAsset.Value.Presentation.AssetP
 
 extension LoadingState where Content == AssetBalanceViewModel.Value.Presentation {
     init(with state: LoadingState<AssetBalanceViewModel.Value.Interaction>,
+         alignment: UIStackView.Alignment,
          descriptors: AssetBalanceViewModel.Value.Presentation.Descriptors) {
         switch state {
         case .loading:
@@ -35,6 +36,7 @@ extension LoadingState where Content == AssetBalanceViewModel.Value.Presentation
             self = .loaded(
                 next: .init(
                     with: content,
+                    alignment: alignment,
                     descriptors: descriptors
                 )
             )

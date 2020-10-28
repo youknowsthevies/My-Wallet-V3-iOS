@@ -69,14 +69,19 @@ public final class AssetBalanceView: ThreeLabelStackView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        clipsToBounds = true
     }
 
     required init(coder: NSCoder) {
         super.init(coder: coder)
+        clipsToBounds = true
     }
 
     /// Should be called once when the parent view loads
     public func shimmer(estimatedFiatLabelSize: CGSize, estimatedCryptoLabelSize: CGSize) {
+        fiatLabelShimmeringView?.removeFromSuperview()
+        cryptoLabelShimmeringView?.removeFromSuperview()
+
         fiatLabelShimmeringView = ShimmeringView(
             in: self,
             anchorView: fiatBalanceLabel,
@@ -97,18 +102,25 @@ public final class AssetBalanceView: ThreeLabelStackView {
         fiatBalanceLabel.alpha = 0
         cryptoBalanceLabel.alpha = 0
 
-        let animation = {
-            self.fiatBalanceLabel.alpha = 1
-            self.cryptoBalanceLabel.alpha = 1
-            self.fiatLabelShimmeringView.stop()
-            self.cryptoLabelShimmeringView.stop()
+        let animation = { [weak self] in
+            self?.fiatBalanceLabel.alpha = 1
+            self?.cryptoBalanceLabel.alpha = 1
+            self?.fiatLabelShimmeringView.stop()
+            self?.cryptoLabelShimmeringView.stop()
+        }
+        let completion: (Bool) -> Void = { [weak self] _ in
+            self?.fiatLabelShimmeringView.removeFromSuperview()
+            self?.cryptoLabelShimmeringView.removeFromSuperview()
+            self?.fiatLabelShimmeringView = nil
+            self?.cryptoLabelShimmeringView = nil
         }
 
         UIView.animate(
             withDuration: 0.3,
             delay: 0,
             options: [.curveEaseInOut, .transitionCrossDissolve],
-            animations: animation
+            animations: animation,
+            completion: completion
         )
     }
 
