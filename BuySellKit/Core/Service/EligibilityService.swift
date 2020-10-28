@@ -8,16 +8,9 @@
 
 import DIKit
 import PlatformKit
-import RxSwift
 import RxRelay
+import RxSwift
 import ToolKit
-
-public protocol EligibilityServiceAPI: class {
-
-    /// Feature is enabled and EligibilityClientAPI returns eligible for current fiat currency.
-    var isEligible: Observable<Bool> { get }
-    func fetch() -> Observable<Bool>
-}
 
 final class EligibilityService: EligibilityServiceAPI {
     
@@ -27,7 +20,7 @@ final class EligibilityService: EligibilityServiceAPI {
         isEligibileRelay
             .flatMap(weak: self) { (self, isEligibile) -> Observable<Bool> in
                 guard let isEligibile = isEligibile else {
-                    return self.fetch().asObservable()
+                    return self.fetch()
                 }
                 return .just(isEligibile)
             }

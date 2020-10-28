@@ -31,16 +31,19 @@ final class AccountPickerInteractor: PresentableInteractor<AccountPickerPresenta
     private let didSelect: AccountPickerDidSelect
     private let disposeBag = DisposeBag()
     private let singleAccountsOnly: Bool
+    private let sourceAccount: CryptoAccount?
 
     // MARK: - Init
 
     init(presenter: AccountPickerPresentable,
          singleAccountsOnly: Bool,
+         sourceAccount: CryptoAccount?,
          coincore: Coincore = resolve(),
          action: AssetAction,
          didSelect: @escaping AccountPickerDidSelect) {
         self.action = action
         self.coincore = coincore
+        self.sourceAccount = sourceAccount
         self.didSelect = didSelect
         self.singleAccountsOnly = singleAccountsOnly
         super.init(presenter: presenter)
@@ -54,14 +57,29 @@ final class AccountPickerInteractor: PresentableInteractor<AccountPickerPresenta
         let action = self.action
         let singleAccountsOnly = self.singleAccountsOnly
 
-        let interactorState: Driver<State> = coincore.allAccounts
-            .map { allAccountsGroup -> [BlockchainAccount] in
-                if singleAccountsOnly {
-                    return allAccountsGroup.accounts
+        func allCoincoreAccounts() -> Single<[BlockchainAccount]> {
+            coincore.allAccounts
+                .map { allAccountsGroup -> [BlockchainAccount] in
+                    if singleAccountsOnly {
+                        return allAccountsGroup.accounts
+                    }
+                    return [allAccountsGroup] + allAccountsGroup.accounts
                 }
-                return [allAccountsGroup] + allAccountsGroup.accounts
-            }
-            .map { $0.filter { $0.actions.contains(action) } }
+                .map { $0.filter { $0.actions.contains(action) } }
+        }
+
+        func targetAccounts(sourceAccount: CryptoAccount) -> Single<[SingleAccount]> {
+            coincore.getTransactionTargets(sourceAccount: sourceAccount, action: action)
+        }
+
+        let dataSource: Single<[BlockchainAccount]>
+        if let sourceAccount = self.sourceAccount {
+            dataSource = targetAccounts(sourceAccount: sourceAccount).map { $0 }
+        } else {
+            dataSource = allCoincoreAccounts()
+        }
+
+        let interactorState: Driver<State> = dataSource
             .map { accounts -> [AccountPickerCellItem.Interactor] in
                 accounts.map(\.accountPickerCellItemInteractor)
             }
@@ -70,7 +88,8 @@ final class AccountPickerInteractor: PresentableInteractor<AccountPickerPresenta
             }
             .asDriver(onErrorJustReturn: .empty)
 
-        presenter.connect(state: interactorState)
+        presenter
+            .connect(state: interactorState)
             .drive(onNext: handle(effects:))
             .disposeOnDeactivate(interactor: self)
     }

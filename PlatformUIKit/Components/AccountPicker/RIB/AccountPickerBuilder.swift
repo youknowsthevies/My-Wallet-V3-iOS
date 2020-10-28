@@ -19,8 +19,9 @@ public final class AccountPickerBuilder: AccountPickerBuildable {
 
     // MARK: - Private Properties
 
-    private let singleAccountsOnly: Bool
     private let action: AssetAction
+    private let singleAccountsOnly: Bool
+    private let sourceAccount: CryptoAccount?
     private let navigationModel: ScreenNavigationModel
     private let headerModel: AccountPickerHeaderType
 
@@ -28,10 +29,12 @@ public final class AccountPickerBuilder: AccountPickerBuildable {
 
     public init(singleAccountsOnly: Bool,
                 action: AssetAction,
+                sourceAccount: CryptoAccount? = nil,
                 navigationModel: ScreenNavigationModel,
                 headerModel: AccountPickerHeaderType) {
-        self.singleAccountsOnly = singleAccountsOnly
         self.action = action
+        self.singleAccountsOnly = singleAccountsOnly
+        self.sourceAccount = sourceAccount
         self.navigationModel = navigationModel
         self.headerModel = headerModel
     }
@@ -49,6 +52,7 @@ public final class AccountPickerBuilder: AccountPickerBuildable {
         let interactor = AccountPickerInteractor(
             presenter: presenter,
             singleAccountsOnly: singleAccountsOnly,
+            sourceAccount: sourceAccount,
             action: action,
             didSelect: didSelect
         )

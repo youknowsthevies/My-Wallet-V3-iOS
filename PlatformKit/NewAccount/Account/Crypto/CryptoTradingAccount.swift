@@ -38,7 +38,7 @@ public class CryptoTradingAccount: CryptoAccount {
     }
 
     public var actions: AvailableActions {
-        [.viewActivity, .sell]
+        [.viewActivity, .sell, .swap]
     }
 
     private let balanceFetching: CustodialAccountBalanceFetching

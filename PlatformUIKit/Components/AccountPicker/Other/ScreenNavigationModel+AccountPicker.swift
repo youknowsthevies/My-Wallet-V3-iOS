@@ -20,4 +20,11 @@ extension ScreenNavigationModel.AccountPicker {
         titleViewStyle: .text(value: LocalizationConstants.WalletPicker.title),
         barStyle: .darkContent()
     )
+
+    public static let navigation = ScreenNavigationModel(
+        leadingButton: .back,
+        trailingButton: .none,
+        titleViewStyle: .text(value: LocalizationConstants.WalletPicker.title),
+        barStyle: .darkContent()
+    )
 }

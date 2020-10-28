@@ -31,7 +31,7 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     }
     
     var actions: AvailableActions {
-        [.viewActivity, .receive, .send]
+        [.viewActivity, .receive, .send, .swap]
     }
 
     var receiveAddress: Single<ReceiveAddress> {

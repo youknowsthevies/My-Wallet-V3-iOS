@@ -44,4 +44,49 @@ public final class Coincore {
         self.cryptoAssets = cryptoAssets
         self.fiatAsset = fiatAsset
     }
+
+    public func getTransactionTargets(
+        sourceAccount: CryptoAccount,
+        action: AssetAction
+    ) -> Single<[SingleAccount]> {
+        switch action {
+        case .swap:
+            return allAccounts
+                .map(\.accounts)
+                .map(weak: self) { (self, accounts) -> [SingleAccount] in
+                    accounts.filter { destinationAccount -> Bool in
+                        self.getActionFilter(
+                            sourceAccount: sourceAccount,
+                            destinationAccount: destinationAccount,
+                            action: action
+                        )
+                    }
+                }
+        case .deposit,
+             .receive,
+             .sell,
+             .send,
+             .viewActivity:
+            unimplemented() // TODO: (Coincore)
+        }
+    }
+
+    private func getActionFilter(sourceAccount: CryptoAccount, destinationAccount: SingleAccount, action: AssetAction) -> Bool {
+        switch action {
+        case .sell:
+            return destinationAccount is FiatAccount
+        case .swap:
+            return destinationAccount is CryptoAccount
+                && destinationAccount.currencyType != sourceAccount.currencyType
+                && !(destinationAccount is FiatAccount)
+                && !(destinationAccount is CryptoInterestAccount)
+                && (sourceAccount.isCustodial ? destinationAccount.isCustodial : true)
+        case .send:
+            return !(destinationAccount is FiatAccount)
+        case .deposit,
+             .receive,
+             .viewActivity:
+            return false
+        }
+    }
 }

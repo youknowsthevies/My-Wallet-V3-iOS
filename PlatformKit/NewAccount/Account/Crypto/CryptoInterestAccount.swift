@@ -47,7 +47,7 @@ public class CryptoInterestAccount: CryptoAccount {
     public init(asset: CryptoCurrency,
                 balanceProviding: BalanceProviding = resolve(),
                 exchangeProviding: ExchangeProviding = resolve()) {
-        self.label = asset.defaultTradeWalletName
+        self.label = asset.defaultInterestWalletName
         self.asset = asset
         self.exchangeService = exchangeProviding[asset]
         self.balanceFetching = balanceProviding[asset.currency].savings

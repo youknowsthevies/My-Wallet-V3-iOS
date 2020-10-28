@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BitcoinChainKit
 import DIKit
 import Localization
 import PlatformKit
-import BitcoinChainKit
 import RxSwift
 import ToolKit
 
@@ -32,7 +32,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var actions: AvailableActions {
-        [.viewActivity, .receive, .send]
+        [.viewActivity, .receive, .send, .swap]
     }
 
     var receiveAddress: Single<ReceiveAddress> {

@@ -22,5 +22,13 @@ public protocol BlockchainAccount {
 
     var isFunded: Single<Bool> { get }
 
+    var isCustodial: Bool { get }
+
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue>
+}
+
+extension BlockchainAccount {
+    public var isCustodial: Bool {
+        self is CryptoTradingAccount || self is CryptoInterestAccount
+    }
 }

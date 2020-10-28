@@ -1059,7 +1059,6 @@ targets:
     - FrameworkTest
   TransactionUIKit:
     dependencies:
-    - target: BuySellKit
     - target: TransactionKit
     - target: Localization
     - target: PlatformKit

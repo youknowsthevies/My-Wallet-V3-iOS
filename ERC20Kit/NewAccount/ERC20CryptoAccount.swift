@@ -35,6 +35,7 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
         var base: AvailableActions = [.viewActivity, .receive]
         if Token.nonCustodialSendSupport {
             base.insert(.send)
+            base.insert(.swap)
         }
         return base
     }()
