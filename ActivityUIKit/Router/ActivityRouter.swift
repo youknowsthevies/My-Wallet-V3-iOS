@@ -20,8 +20,8 @@ final class ActivityRouter: ActivityRouterAPI {
     private let serviceContainer: ActivityServiceContaining
     private let transactionDetailService: TransactionDetailServiceAPI
     private let navigationRouter: NavigationRouterAPI
-
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
+    private var router: AccountPickerRouting!
     
     init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
          enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
@@ -34,17 +34,24 @@ final class ActivityRouter: ActivityRouterAPI {
     }
 
     func showWalletSelectionScreen() {
-        let interactor = AccountPickerScreenInteractor(
+        let builder = AccountPickerBuilder(
             singleAccountsOnly: false,
             action: .viewActivity,
-            selectionService: serviceContainer.accountSelectionService
+            navigationModel: ScreenNavigationModel.AccountPicker.modal,
+            headerModel: .none
         )
-        let presenter = AccountPickerScreenPresenter(
-            interactor: interactor,
-            navigationModel: ScreenNavigationModel.AccountPicker.modal
-        )
-        let controller = AccountPickerScreenModalViewController(presenter: presenter)
-        navigationRouter.present(viewController: controller)
+        router = builder.build { [weak self] account in
+            self?.didSelect(account: account)
+        }
+        router.interactable.activate()
+        router.load()
+        navigationRouter.present(viewController: router.viewControllable.uiviewController)
+    }
+
+    private func didSelect(account: BlockchainAccount) {
+        serviceContainer.accountSelectionService.record(selection: account)
+        router.viewControllable.uiviewController.dismiss(animated: true, completion: nil)
+        router = nil
     }
 
     func showTransactionScreen(with event: ActivityItemEvent) {

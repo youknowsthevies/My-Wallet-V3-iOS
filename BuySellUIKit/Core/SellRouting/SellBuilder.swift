@@ -32,10 +32,10 @@ public protocol SellBuilderAPI: AnyObject {
     func sellIdentityIntroductionViewController() -> UIViewController
     
     /// Start of `Sell`. Builds the account selection screen.
-    func accountSelectionViewController() -> UIViewController
+    func accountSelectionRouter() -> AccountPickerRouting
     
     /// Builds the fiat account selection screen.
-    func fiatAccountSelectionViewController() -> UIViewController
+    func fiatAccountSelectionRouter() -> AccountPickerRouting
     
     /// Builds and provides a sell crypto VIP stack, based on `EnterAmountScreenViewController`.
     /// - Parameter data: The data required for building the interaction state
@@ -96,32 +96,30 @@ public final class SellBuilder: SellBuilderAPI {
         return BuySellKYCInvalidViewController(presenter: presenter)
     }
     
-    public func accountSelectionViewController() -> UIViewController {
-        let interactor = AccountPickerScreenInteractor(
+    public func accountSelectionRouter() -> AccountPickerRouting {
+        let builder = AccountPickerBuilder(
             singleAccountsOnly: false,
             action: .sell,
-            selectionService: accountSelectionService
-        )
-        let presenter = AccountPickerScreenPresenter(
-            interactor: interactor,
             navigationModel: ScreenNavigationModel.AccountPicker.modal,
-            shouldDismissOnSelection: false
+            headerModel: .none
         )
-        return AccountPickerScreenModalViewController(presenter: presenter)
+        let router = builder.build { [weak self] account in
+            self?.accountSelectionService.record(selection: account)
+        }
+        return router
     }
     
-    public func fiatAccountSelectionViewController() -> UIViewController {
-        let interactor = AccountPickerScreenInteractor(
+    public func fiatAccountSelectionRouter() -> AccountPickerRouting {
+        let builder = AccountPickerBuilder(
             singleAccountsOnly: false,
             action: .deposit,
-            selectionService: accountSelectionService
-        )
-        let presenter = AccountPickerScreenPresenter(
-            interactor: interactor,
             navigationModel: ScreenNavigationModel.AccountPicker.modal,
-            shouldDismissOnSelection: false
+            headerModel: .none
         )
-        return AccountPickerScreenModalViewController(presenter: presenter)
+        let router = builder.build { [weak self] account in
+            self?.accountSelectionService.record(selection: account)
+        }
+        return router
     }
     
     public func sellCryptoViewController(data: SellCryptoInteractionData) -> UIViewController {

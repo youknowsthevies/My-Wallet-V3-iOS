@@ -24,53 +24,58 @@ public final class Builder {
         self.receiveSelectionService = receiveSelectionService
     }
 
+    var receiveAccountPickerRouter: AccountPickerRouting!
     public func receive() -> UIViewController {
         let header = AccountPickerHeaderModel(
             title: LocalizedReceive.Header.receiveCryptoNow,
             subtitle: LocalizedReceive.Header.chooseAWalletToReceiveTo,
             image: ImageAsset.iconReceive.image
         )
-        let navigation = ScreenNavigationModel(
+        let navigationModel = ScreenNavigationModel(
             leadingButton: .drawer,
             trailingButton: .none,
             titleViewStyle: .text(value: LocalizedReceive.Text.request),
             barStyle: .lightContent()
         )
-        let interactor = AccountPickerScreenInteractor(
-            singleAccountsOnly: true,
+        let builder = AccountPickerBuilder(
+            singleAccountsOnly: false,
             action: .receive,
-            selectionService: receiveSelectionService
+            navigationModel: navigationModel,
+            headerModel: .default(header)
         )
-        let presenter = AccountPickerScreenPresenter(
-            interactor: interactor,
-            headerModel: .default(header),
-            navigationModel: navigation
-        )
-        return AccountPickerScreenModalViewController(presenter: presenter)
+        receiveAccountPickerRouter = builder.build { [weak self] account in
+            self?.receiveSelectionService.record(selection: account)
+        }
+        receiveAccountPickerRouter.interactable.activate()
+        receiveAccountPickerRouter.load()
+        return receiveAccountPickerRouter.viewControllable.uiviewController
     }
 
+    var sendAccountPickerRouter: AccountPickerRouting!
     public func send() -> UIViewController {
         let header = AccountPickerHeaderModel(
             title: LocalizedSend.Header.sendCryptoNow,
             subtitle: LocalizedSend.Header.chooseAWalletToSendFrom,
             image: ImageAsset.iconSend.image
         )
-        let navigation = ScreenNavigationModel(
+        let navigationModel = ScreenNavigationModel(
             leadingButton: .drawer,
             trailingButton: .none,
             titleViewStyle: .text(value: LocalizedSend.Text.send),
             barStyle: .lightContent()
         )
-        let interactor = AccountPickerScreenInteractor(
-            singleAccountsOnly: true,
+        let builder = AccountPickerBuilder(
+            singleAccountsOnly: false,
             action: .send,
-            selectionService: sendSelectionService
+            navigationModel: navigationModel,
+            headerModel: .default(header)
         )
-        let presenter = AccountPickerScreenPresenter(
-            interactor: interactor,
-            headerModel: .default(header),
-            navigationModel: navigation
-        )
-        return AccountPickerScreenModalViewController(presenter: presenter)
+        sendAccountPickerRouter = builder.build { [weak self] account in
+            self?.sendSelectionService.record(selection: account)
+        }
+        sendAccountPickerRouter.interactable.activate()
+        sendAccountPickerRouter.load()
+        return sendAccountPickerRouter.viewControllable.uiviewController
     }
+
 }

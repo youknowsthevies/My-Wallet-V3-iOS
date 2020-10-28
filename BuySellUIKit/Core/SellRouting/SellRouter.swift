@@ -210,17 +210,20 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
         let viewController = builder.transferCancellationViewController(data: data)
         navigationRouter.present(viewController: viewController)
     }
-    
+
     private func navigateToFiatAccountSelectorScreen() {
-        let viewController = builder.fiatAccountSelectionViewController()
-        navigationRouter.present(viewController: viewController, using: .modalOverTopMost)
+        let router = builder.fiatAccountSelectionRouter()
+        attachChild(router)
+        navigationRouter.present(viewController: router.viewControllable.uiviewController,
+                                 using: .modalOverTopMost)
     }
-    
+
     private func navigateToAccountSelectorScreen() {
-        let viewController = builder.accountSelectionViewController()
-        navigationRouter.present(viewController: viewController)
+        let router = builder.accountSelectionRouter()
+        attachChild(router)
+        navigationRouter.present(viewController: router.viewControllable.uiviewController)
     }
-    
+
     private func navigateToEnterAmountScreen(with data: SellCryptoInteractionData) {
         let viewController = builder.sellCryptoViewController(data: data)
         navigationRouter.present(viewController: viewController, using: .modalOverTopMost)
