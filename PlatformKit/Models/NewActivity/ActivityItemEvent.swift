@@ -94,7 +94,7 @@ extension ActivityItemEvent {
         case .buySell(let event):
             return event.outputValue
         case .swap(let event):
-            return .init(cryptoValue: event.amounts.deposit)
+            return event.amounts.deposit
         case .transactional(let event):
             return .init(cryptoValue: event.amount)
         case .fiat(let event):

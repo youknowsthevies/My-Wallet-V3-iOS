@@ -82,7 +82,7 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
-        toPresenter = TransactionalLineItem.to(event.addresses.withdrawalAddress).defaultCopyablePresenter(
+        toPresenter = TransactionalLineItem.to(event.kind.withdrawalAddress).defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )

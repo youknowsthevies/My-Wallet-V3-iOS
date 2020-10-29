@@ -33,7 +33,7 @@ final class SwapClient: SwapClientAPI {
     }
     
     private enum Path {
-        static let activity = ["trades"]
+        static let activity = ["trades", "unified"]
     }
     
     // MARK: - Properties

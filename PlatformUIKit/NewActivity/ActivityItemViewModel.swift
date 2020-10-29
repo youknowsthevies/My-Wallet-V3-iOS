@@ -52,7 +52,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             text = "\(prefix) \(postfix)"
         case .swap(let event):
             let pair = event.pair
-            text = "\(LocalizationStrings.swap) \(pair.from.displayCode) -> \(pair.to.displayCode)"
+            text = "\(LocalizationStrings.swap) \(pair.inputCurrencyType.displayCode) -> \(pair.outputCurrencyType.displayCode)"
         case .transactional(let event):
             switch event.type {
             case .receive:
@@ -151,7 +151,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                 return .destructive
             }
             
-            return event.pair.from.brandColor
+            return event.pair.inputCurrencyType.brandColor
         case .fiat(let event):
             if event.status == .failed || event.status == .rejected {
                 return .destructive

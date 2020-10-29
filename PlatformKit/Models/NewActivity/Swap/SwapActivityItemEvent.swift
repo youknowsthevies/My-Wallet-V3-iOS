@@ -10,33 +10,37 @@ import Localization
 
 public struct SwapActivityItemEvent: Decodable, Tokenized {
     
-    enum SwapActivityItemEventError: Error {
-        case decodingError
-    }
-    
     public let identifier: String
     public let status: EventStatus
     public let date: Date
     public let pair: Pair
-    public let addresses: Addresses
+    public let kind: SwapKind
+    private let priceFunnel: PriceFunnel
     public let amounts: Amounts
-    public let withdrawalTxHash: String?
-    public let depositTxHash: String?
+    
+    public var withdrawalTxHash: String? {
+        kind.withdrawalTxHash
+    }
+    
+    public var depositTxHash: String? {
+        kind.depositTxHash
+    }
     
     public var token: String {
         identifier
     }
     
     public struct Pair {
-        public let to: CryptoCurrency
-        public let from: CryptoCurrency
+        public let inputCurrencyType: CurrencyType
+        public let outputCurrencyType: CurrencyType
         
-        init(to: CryptoCurrency, from: CryptoCurrency) {
-            self.to = to
-            self.from = from
+        init(inputCurrencyType: CurrencyType,
+             outputCurrencyType: CurrencyType) {
+            self.inputCurrencyType = inputCurrencyType
+            self.outputCurrencyType = outputCurrencyType
         }
         
-        init(string: String) throws {
+        init(string: String, values: KeyedDecodingContainer<CodingKeys>) throws {
             
             var components: [String] = []
             for value in ["-", "_"] {
@@ -46,34 +50,35 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
                 }
             }
             
-            guard let from = components.first else { throw SwapActivityItemEventError.decodingError }
-            guard let to = components.last else { throw SwapActivityItemEventError.decodingError }
-            guard let toAsset = CryptoCurrency(code: to) else { throw SwapActivityItemEventError.decodingError }
-            guard let fromAsset = CryptoCurrency(code: from) else { throw SwapActivityItemEventError.decodingError }
+            let error = DecodingError.dataCorruptedError(
+                forKey: .pair,
+                in: values,
+                debugDescription: "Expected a valid pair"
+            )
             
-            self.init(to: toAsset, from: fromAsset)
-        }
-    }
-    
-    public struct Addresses {
-        public let refundAddress: String
-        public let depositAddress: String
-        public let withdrawalAddress: String
-        
-        public init(refund: String, deposit: String, withdrawal: String) {
-            self.refundAddress = refund
-            self.depositAddress = deposit
-            self.withdrawalAddress = withdrawal
+            guard let input = components.first else { throw error }
+            guard let output = components.last else { throw error }
+            do {
+                self.init(
+                    inputCurrencyType: try CurrencyType(code: input),
+                    outputCurrencyType: try CurrencyType(code: output)
+                )
+            } catch {
+                throw error
+            }
         }
     }
     
     public struct Amounts {
-        public let deposit: CryptoValue
-        public let withdrawal: CryptoValue
-        public let withdrawalFee: CryptoValue
+        public let deposit: MoneyValue
+        public let withdrawal: MoneyValue
+        public let withdrawalFee: MoneyValue
         public let fiatValue: FiatValue
         
-        init(deposit: CryptoValue, withdrawal: CryptoValue, withdrawalFee: CryptoValue, fiatValue: FiatValue) {
+        init(deposit: MoneyValue,
+             withdrawal: MoneyValue,
+             withdrawalFee: MoneyValue,
+             fiatValue: FiatValue) {
             self.deposit = deposit
             self.withdrawal = withdrawal
             self.withdrawalFee = withdrawalFee
@@ -153,15 +158,19 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
         case status = "state"
         case createdAt
         case pair
-        case refundAddress
-        case depositAddress
         case deposit
-        case withdrawalAddress
-        case withdrawal
-        case withdrawalFee
         case fiatValue
-        case depositTxHash
-        case withdrawalTxHash
+        case fiatCurrency
+        case priceFunnel
+        case kind
+    }
+    
+    private struct PriceFunnel: Decodable {
+        let inputMoney: String
+        let price: String
+        let networkFee: String
+        let staticFee: String
+        let outputMoney: String
     }
     
     public init(from decoder: Decoder) throws {
@@ -190,52 +199,48 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
         
         let statusValue = try values.decode(String.self, forKey: .status)
         status = EventStatus(value: statusValue)
-        pair = try Pair(string: pairValue)
-        let refundAddress = try values.decode(String.self, forKey: .refundAddress)
-        let depositAddress = try values.decode(String.self, forKey: .depositAddress)
-        let withdrawalAddress = try values.decode(String.self, forKey: .withdrawalAddress)
+        pair = try Pair(string: pairValue, values: values)
+        kind = try values.decode(SwapKind.self, forKey: .kind)
+        priceFunnel = try values.decode(PriceFunnel.self, forKey: .priceFunnel)
         
-        addresses = .init(
-            refund: refundAddress,
-            deposit: depositAddress,
-            withdrawal: withdrawalAddress
+        let fiatAmount = try values.decode(String.self, forKey: .fiatValue)
+        let fiatCurrency = try values.decode(FiatCurrency.self, forKey: .fiatCurrency)
+        guard let fiatValue = FiatValue.create(minor: fiatAmount, currency: fiatCurrency) else {
+            throw DecodingError.dataCorruptedError(
+                forKey: .fiatCurrency,
+                in: values,
+                debugDescription: "Expected a valid fiat currency."
+            )
+        }
+        guard let deposit = MoneyValue.create(minor: priceFunnel.outputMoney, currency: pair.outputCurrencyType) else {
+            throw DecodingError.dataCorruptedError(
+                forKey: .deposit,
+                in: values,
+                debugDescription: "Expected a valid output money amount"
+            )
+        }
+        guard let withdrawal = MoneyValue.create(minor: priceFunnel.inputMoney, currency: pair.inputCurrencyType) else {
+            throw DecodingError.dataCorruptedError(
+                forKey: .priceFunnel,
+                in: values,
+                debugDescription: "Expected a valid input money amount"
+            )
+        }
+        
+        guard let fee = MoneyValue.create(minor: priceFunnel.networkFee, currency: pair.inputCurrencyType) else {
+            throw DecodingError.dataCorruptedError(
+                forKey: .priceFunnel,
+                in: values,
+                debugDescription: "Expected a valid network fee"
+            )
+        }
+
+        self.amounts = Amounts(
+            deposit: deposit,
+            withdrawal: withdrawal,
+            withdrawalFee: fee,
+            fiatValue: fiatValue
         )
-
-        let deposit = try values.decode(SymbolValue.self, forKey: .deposit)
-        guard let depositCryptoCurrency = CryptoCurrency(code: deposit.symbol) else {
-            throw SwapActivityItemEventError.decodingError
-        }
-        guard let depositCryptoValue = CryptoValue.create(major: deposit.value, currency: depositCryptoCurrency) else {
-            throw SwapActivityItemEventError.decodingError
-        }
-
-        let withdrawal = try values.decode(SymbolValue.self, forKey: .withdrawal)
-        guard let withdrawalCryptoCurrency = CryptoCurrency(code: withdrawal.symbol) else {
-            throw SwapActivityItemEventError.decodingError
-        }
-        guard let withdrawalCryptoValue = CryptoValue.create(major: withdrawal.value, currency: withdrawalCryptoCurrency) else {
-            throw SwapActivityItemEventError.decodingError
-        }
-        
-        let withdrawalFee = try values.decode(SymbolValue.self, forKey: .withdrawalFee)
-        guard let withdrawalFeeCryptoCurrency = CryptoCurrency(code: withdrawalFee.symbol) else {
-            throw SwapActivityItemEventError.decodingError
-        }
-        guard let withdrawalFeeCryptoValue = CryptoValue.create(
-            major: withdrawalFee.value,
-            currency: withdrawalFeeCryptoCurrency) else {
-            throw SwapActivityItemEventError.decodingError
-        }
-        
-        let fiatValueContainer = try values.decode(SymbolValue.self, forKey: .fiatValue)
-        guard let fiatCurrency = FiatCurrency(code: fiatValueContainer.symbol) else {
-            throw SwapActivityItemEventError.decodingError
-        }
-        let fiatValue = FiatValue.create(major: fiatValueContainer.value, currency: fiatCurrency)!
-
-        self.amounts = Amounts(deposit: depositCryptoValue, withdrawal: withdrawalCryptoValue, withdrawalFee: withdrawalFeeCryptoValue, fiatValue: fiatValue)
-        depositTxHash = try values.decodeIfPresent(String.self, forKey: .depositTxHash)
-        withdrawalTxHash = try values.decodeIfPresent(String.self, forKey: .withdrawalTxHash)
     }
 }
 
@@ -251,7 +256,7 @@ extension SwapActivityItemEvent: Equatable {
             lhs.status == rhs.status &&
             lhs.date == rhs.date &&
             lhs.pair == rhs.pair &&
-            lhs.addresses == rhs.addresses &&
+            lhs.kind == rhs.kind &&
             lhs.amounts == rhs.amounts &&
             lhs.withdrawalTxHash == rhs.withdrawalTxHash &&
             lhs.depositTxHash == rhs.depositTxHash
@@ -280,16 +285,8 @@ extension SwapActivityItemEvent.EventStatus: Equatable {
 
 extension SwapActivityItemEvent.Pair: Equatable {
     public static func == (lhs: SwapActivityItemEvent.Pair, rhs: SwapActivityItemEvent.Pair) -> Bool {
-        lhs.to == rhs.to &&
-            lhs.from == rhs.from
-    }
-}
-
-extension SwapActivityItemEvent.Addresses: Equatable {
-    public static func == (lhs: SwapActivityItemEvent.Addresses, rhs: SwapActivityItemEvent.Addresses) -> Bool {
-        lhs.depositAddress == rhs.depositAddress &&
-            lhs.refundAddress == rhs.refundAddress &&
-            lhs.withdrawalAddress == rhs.withdrawalAddress
+            lhs.outputCurrencyType == rhs.outputCurrencyType &&
+            lhs.inputCurrencyType == rhs.inputCurrencyType
     }
 }
 
