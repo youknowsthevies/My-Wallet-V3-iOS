@@ -25,13 +25,17 @@ public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
     public init(repository: WalletRepositoryAPI,
                 walletPayloadClient: WalletPayloadClientAPI = WalletPayloadClient(),
                 walletPairingClient: AutoWalletPairingClientAPI = AutoWalletPairingClient(),
-                jsContextProvider: JSContextProviderAPI) {
+                jsContextProvider: JSContextProviderAPI,
+                recorder: Recording) {
         self.walletPairingClient = walletPairingClient
         walletPayloadService = WalletPayloadService(
             client: walletPayloadClient,
             repository: repository
         )
-        walletCryptoService = WalletCryptoService(jsContextProvider: jsContextProvider)
+        walletCryptoService = WalletCryptoService(
+            contextProvider: jsContextProvider,
+            recorder: recorder
+        )
     }
     
     /// Maps a QR pairing code of a wallet into its password, retrieve and cache the wallet data.

@@ -22,7 +22,7 @@ final class EthereumTransactionValidationService: ValidateTransactionAPI {
         self.repository = repository
     }
     
-    func validateCryptoAmount(amount: Crypto) -> Single<TransactionValidationResult> {
+    func validateCryptoAmount(amount: CryptoMoney) -> Single<TransactionValidationResult> {
         Single.zip(feeService.fees, balance)
             .flatMap { tuple -> Single<TransactionValidationResult> in
                 let (fee, balanceSigned) = tuple

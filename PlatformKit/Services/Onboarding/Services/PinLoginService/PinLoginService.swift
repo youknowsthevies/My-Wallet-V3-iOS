@@ -37,11 +37,15 @@ public final class PinLoginService: PinLoginServiceAPI {
     public init(jsContextProvider: JSContextProviderAPI = resolve(),
                 settings: AppSettingsAuthenticating,
                 service: WalletPayloadServiceAPI,
-                walletRepository: PasscodeRepositoryAPI) {
+                walletRepository: PasscodeRepositoryAPI,
+                recoder: Recording = resolve(tag: "CrashlyticsRecorder")) {
         self.service = service
         self.settings = settings
         self.walletRepository = walletRepository
-        self.walletCryptoService = WalletCryptoService(jsContextProvider: jsContextProvider)
+        self.walletCryptoService = WalletCryptoService(
+            contextProvider: jsContextProvider,
+            recorder: recoder
+        )
     }
     
     public func password(from pinDecryptionKey: String) -> Single<String> {

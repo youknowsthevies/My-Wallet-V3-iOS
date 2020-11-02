@@ -1,5 +1,5 @@
 //
-//  Crypto.swift
+//  CryptoMoney.swift
 //  PlatformKit
 //
 //  Created by Paulo on 11/02/2020.
@@ -8,7 +8,7 @@
 
 import BigInt
 
-public protocol Crypto: Money {
+public protocol CryptoMoney: Money {
     
     /// The `CryptoCurrency` (e.g. `BTC`, `ETH`)
     var currencyType: CryptoCurrency { get }
@@ -17,7 +17,7 @@ public protocol Crypto: Money {
     var value: CryptoValue { get }
 }
 
-extension Crypto {
+extension CryptoMoney {
     
     /// Converts this money to a displayable String in its major format
     ///

@@ -14,6 +14,17 @@ import RxSwift
 import ToolKit
 import XCTest
 
+class MockRecorder: Recording {
+    func record(_ message: String) {}
+    func record() {}
+    
+    func error(_ error: Error) {}
+    func error(_ errorMessage: String) {}
+    func error() {}
+
+    func recordIllegalUIOperationIfNeeded() {}
+}
+
 class WalletCryptoServiceTests: XCTestCase {
 
     var walletManager: WalletManager!

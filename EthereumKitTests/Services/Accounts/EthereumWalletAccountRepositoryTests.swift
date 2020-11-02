@@ -54,7 +54,7 @@ class EthereumWalletAccountRepositoryTests: XCTestCase {
         // Arrange
         let expectedKeyPair = MockEthereumWalletTestData.keyPair
         
-        let sendObservable: Observable<EthereumKeyPair> = subject.loadKeyPair()
+        let sendObservable: Observable<EthereumKeyPair> = subject.keyPair
             .asObservable()
         
         // Act

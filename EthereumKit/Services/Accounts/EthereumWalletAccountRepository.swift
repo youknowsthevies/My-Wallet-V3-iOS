@@ -2,44 +2,70 @@
 //  EthereumWalletAccountRepository.swift
 //  EthereumKit
 //
-//  Created by kevinwu on 2/6/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
+//  Created by Jack Pooley on 20/11/2020.
+//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
 import DIKit
 import PlatformKit
 import RxSwift
+import ToolKit
 
-public protocol EthereumWalletAccountRepositoryAPI {
-    var keyPair: Maybe<EthereumKeyPair> { get }
-    var defaultAccount: EthereumWalletAccount? { get }
+protocol EthereumWalletAccountRepositoryAPI {
     
-    func initializeMetadataMaybe() -> Maybe<EthereumWalletAccount>
-    func accounts() -> [EthereumWalletAccount]
+    var defaultAccount: Single<EthereumWalletAccount> { get }
+    var accounts: Single<[EthereumWalletAccount]> { get }
+    var activeAccounts: Single<[EthereumWalletAccount]> { get }
 }
 
-open class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI, WalletAccountRepositoryAPI, KeyPairProviderAPI {
-    public typealias Account = EthereumWalletAccount
-    public typealias KeyPair = EthereumKeyPair
-    public typealias WalletAccount = EthereumWalletAccount
-    public typealias Bridge =
-          EthereumWalletBridgeAPI
-        & MnemonicAccessAPI
-        & PasswordAccessAPI
-        & EthereumWalletAccountBridgeAPI
-
-    // MARK: - Properties
+// TODO: Move everything over from `EthereumWalletAccountRepository` to `EthereumWalletAccountRepositoryNew`
+final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI, KeyPairProviderNewAPI {
     
-    public var keyPair: Maybe<KeyPair> {
-        loadKeyPair()
-    }
+    typealias KeyPair = EthereumKeyPair
+    typealias Account = EthereumWalletAccount
+    typealias Bridge = CompleteEthereumWalletBridgeAPI
 
-    // For ETH, there is only one account which is the default account.
-    public var defaultAccount: EthereumWalletAccount?
+    // MARK: - EthereumWalletAccountRepositoryAPI
+    
+    var defaultAccount: Single<Account> {
+        bridge.account
+            .map { assetAccount -> Account in
+                Account(
+                    index: assetAccount.walletIndex,
+                    publicKey: assetAccount.accountAddress,
+                    label: assetAccount.name,
+                    archived: false
+                )
+            }
+    }
+    
+    var accounts: Single<[Account]> {
+        defaultAccount.map { [ $0 ] }
+    }
+    
+    var activeAccounts: Single<[Account]> {
+        accounts.map { accounts in
+            accounts.filter(\.isActive)
+        }
+    }
+    
+    // MARK: - KeyPairProviderNewAPI
+    
+    var keyPair: Single<KeyPair> {
+        bridge.mnemonicPromptingIfNeeded
+            .flatMap(weak: self) { (self, mnemonic) -> Single<KeyPair> in
+                self.deriver.derive(
+                    input: EthereumKeyDerivationInput(
+                        mnemonic: mnemonic,
+                        password: ""
+                    )
+                )
+                .single
+            }
+    }
     
     // MARK: - Private Properties
     
-    private let disposeBag = DisposeBag()
     private let bridge: Bridge
     private let deriver: AnyKeyPairDeriver<EthereumKeyPair, EthereumKeyDerivationInput>
     
@@ -53,52 +79,10 @@ open class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI, 
         self.bridge = bridge
         self.deriver = AnyKeyPairDeriver<EthereumKeyPair, EthereumKeyDerivationInput>(deriver: deriver)
     }
-
-    // MARK: - Public methods
-    
-    public func initializeMetadataMaybe() -> Maybe<WalletAccount> {
-        loadDefaultAccount()
-    }
-
-    public func accounts() -> [WalletAccount] {
-        guard let defaultAccount = defaultAccount else {
-            return []
-        }
-        return [ defaultAccount ]
-    }
-    
-    // MARK: - Private methods
-    
-    private func loadDefaultAccount() -> Maybe<WalletAccount> {
-        bridge.wallets.asMaybe()
-            .flatMap { accounts -> Maybe<WalletAccount> in
-                guard let first = accounts.first else {
-                    return Maybe.empty()
-                }
-                return Maybe.just(first)
-            }
-            .do(onNext: { account in
-                self.defaultAccount = account
-            })
-    }
-    
-    // MARK: - KeyPairProviderAPI
-    
-    public func loadKeyPair() -> Maybe<KeyPair> {
-        bridge.mnemonicPromptingIfNeeded
-            .flatMap(weak: self) { (self, mnemonic) -> Maybe<KeyPair> in
-                self.deriver.derive(input: EthereumKeyDerivationInput(mnemonic: mnemonic, password: "")).maybe
-            }
-    }
-
-    private func save(keyPair: KeyPair) {
-        // TODO: Need to localize this
-        bridge.save(keyPair: keyPair, label: "My Ethereum Wallet")
-            .subscribeOn(MainScheduler.asyncInstance)
-            .observeOn(MainScheduler.instance)
-            .subscribe()
-            .disposed(by: disposeBag)
-    }
 }
 
-extension EthereumWalletAccountRepository: WalletAccountInitializer { }
+extension EthereumWalletAccount {
+    var isActive: Bool {
+        !archived
+    }
+}

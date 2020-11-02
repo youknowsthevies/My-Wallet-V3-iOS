@@ -33,6 +33,8 @@ class EthereumWalletServiceTests: XCTestCase {
     
     var walletAccountRepository: EthereumWalletAccountRepositoryMock!
     
+    var keyPairProvider: AnyKeyPairProviderNew<EthereumKeyPair>!
+    
     var transactionBuildingService: EthereumTransactionBuildingService!
     
     var transactionSendingService: EthereumTransactionSendingService!
@@ -59,6 +61,8 @@ class EthereumWalletServiceTests: XCTestCase {
         transactionEncoder = EthereumTransactionEncoder()
         
         walletAccountRepository = EthereumWalletAccountRepositoryMock()
+        
+        keyPairProvider = AnyKeyPairProviderNew<EthereumKeyPair>(provider: walletAccountRepository)
         
         assetAccountDetailsService = EthereumAssetAccountDetailsService(
             with: bridge,
@@ -92,7 +96,7 @@ class EthereumWalletServiceTests: XCTestCase {
             with: bridge,
             client: client,
             feeService: feeService,
-            walletAccountRepository: walletAccountRepository,
+            keyPairProvider: keyPairProvider,
             transactionBuildingService: transactionBuildingService,
             transactionSendingService: transactionSendingService,
             transactionValidationService: transactionValidationService
@@ -109,6 +113,7 @@ class EthereumWalletServiceTests: XCTestCase {
         transactionSigner = nil
         transactionEncoder = nil
         walletAccountRepository = nil
+        keyPairProvider = nil
         assetAccountDetailsService = nil
         ethereumAssetAccountRepository = nil
         transactionSendingService = nil
@@ -274,7 +279,7 @@ class EthereumWalletServiceTests: XCTestCase {
             with: bridge,
             client: client,
             feeService: feeService,
-            walletAccountRepository: walletAccountRepository,
+            keyPairProvider: keyPairProvider,
             transactionBuildingService: transactionBuildingService,
             transactionSendingService: transactionSendingService,
             transactionValidationService: transactionValidationService

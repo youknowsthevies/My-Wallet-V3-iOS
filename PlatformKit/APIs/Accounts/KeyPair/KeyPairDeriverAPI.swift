@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import RxSwift
 
 public protocol KeyPairDeriverAPI {
     associatedtype Pair: KeyPair

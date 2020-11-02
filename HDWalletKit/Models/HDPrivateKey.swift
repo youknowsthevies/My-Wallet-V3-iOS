@@ -19,6 +19,10 @@ public struct HDPrivateKey: Equatable {
         libWallyKey.xpub
     }
     
+    public var publicKey: HDPublicKey {
+        HDPublicKey(data: libWallyKey.pubKey.data)
+    }
+    
     // FIXME: This is public for now but will eventually be private
     public let libWallyKey: LibWally.HDKey
     
@@ -39,23 +43,25 @@ public struct HDPrivateKey: Equatable {
         self.libWallyKey = libWallyKey
     }
     
-    public func publicKey() -> HDPublicKey {
-        HDPublicKey(data: libWallyKey.pubKey.data)
+    public func derive(at path: HDKeyPath) -> Result<HDPrivateKey, HDWalletKitError> {
+        Result { try libWallyKey.derive(path.libWallyPath) }
+            .mapError { HDWalletKitError.libWallyError($0) }
+            .map { HDPrivateKey(libWallyKey: $0) }
     }
     
     public func derive(at path: HDKeyPath) throws -> HDPrivateKey {
-        let key: LibWally.HDKey
-        do {
-            key = try libWallyKey.derive(path.libWallyPath)
-        } catch {
-            throw HDWalletKitError.libWallyError(error)
-        }
-        return HDPrivateKey(libWallyKey: key)
+        try derive(at: path).get()
     }
     
     public static func == (lhs: HDPrivateKey, rhs: HDPrivateKey) -> Bool {
         lhs.xpriv == rhs.xpriv
             && lhs.xpub == rhs.xpub
     }
-    
+}
+
+extension HDPrivateKey {
+    public static func from(seed: Seed, network: Network = .main(Bitcoin.self)) -> Result<HDPrivateKey, HDWalletKitError> {
+        Result { try HDPrivateKey(seed: seed, network: network) }
+            .mapError { $0 as! HDWalletKitError }
+    }
 }

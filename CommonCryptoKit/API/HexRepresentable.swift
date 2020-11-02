@@ -11,7 +11,7 @@ import Foundation
 public protocol DataRepresentable: Hashable {
     var data: Data { get }
     
-    init(data: Data)
+    init(data: Data) throws
 }
 
 public protocol HexRepresentable: DataRepresentable, LosslessStringConvertible, CustomDebugStringConvertible {
@@ -32,7 +32,7 @@ extension HexRepresentable {
 
 extension HexRepresentable {
     public init?(_ description: String) {
-        self.init(data: Data(hex: description))
+        try? self.init(data: Data(hexValue: description))
     }
 }
 

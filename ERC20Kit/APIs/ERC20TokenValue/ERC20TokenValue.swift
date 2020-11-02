@@ -15,7 +15,7 @@ public enum ERC20TokenValueError: Error {
     case invalidCryptoValue
 }
 
-public struct ERC20TokenValue<Token: ERC20Token>: Crypto {
+public struct ERC20TokenValue<Token: ERC20Token>: CryptoMoney {
     
     public var currency: CurrencyType {
         .crypto(currencyType)
@@ -37,9 +37,9 @@ public struct ERC20TokenValue<Token: ERC20Token>: Crypto {
         value.moneyValue
     }
     
-    private let crypto: Crypto
+    private let crypto: CryptoMoney
     
-    public init(crypto: Crypto) throws {
+    public init(crypto: CryptoMoney) throws {
         guard crypto.currencyType == Token.assetType else {
             throw ERC20TokenValueError.invalidCryptoValue
         }

@@ -21,7 +21,7 @@ class StellarTradeLimitsService: StellarTradeLimitsAPI {
         self.accountsService = accountsService
     }
     
-    func validateCryptoAmount(amount: Crypto) -> Single<TransactionValidationResult> {
+    func validateCryptoAmount(amount: CryptoMoney) -> Single<TransactionValidationResult> {
         accountsService.currentStellarAccount(fromCache: true).flatMap(weak: self, { (self, account) -> Single<TransactionValidationResult> in
             self.maxSpendableAmount(for: account.identifier).map {
                 let spendable = amount.amount <= $0.amount && amount.amount > 0

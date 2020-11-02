@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BitcoinKit
 import BuySellKit
 import DIKit
 import NetworkKit
@@ -14,6 +15,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 protocol PairingWalletFetching: class {
     func authenticate(using password: String)

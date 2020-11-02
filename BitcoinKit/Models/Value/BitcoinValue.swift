@@ -14,7 +14,7 @@ public enum BitcoinValueError: Error {
     case invalidAmount
 }
 
-public struct BitcoinValue: Crypto {
+public struct BitcoinValue: CryptoMoney {
     
     public let currency: CurrencyType = .crypto(.bitcoin)
     
@@ -31,9 +31,9 @@ public struct BitcoinValue: Crypto {
         crypto.value
     }
     
-    private let crypto: Crypto
+    private let crypto: CryptoMoney
     
-    public init(crypto: Crypto) throws {
+    public init(crypto: CryptoMoney) throws {
         guard crypto.currencyType == .bitcoin else {
             throw BitcoinValueError.invalidCryptoValue
         }

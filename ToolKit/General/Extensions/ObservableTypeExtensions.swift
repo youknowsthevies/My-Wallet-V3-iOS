@@ -235,3 +235,16 @@ extension ObservableType {
         binder(self)
     }
 }
+
+extension ObservableType {
+    
+    public func _debug(file: String = #file, line: UInt = #line, function: String = #function) -> Observable<Element> {
+        debug("\(file).\(function)", trimOutput: false, file: file, line: line, function: function)
+    }
+    
+    public func crashOnError(file: String = #file, line: UInt = #line, function: String = #function) -> Observable<Element> {
+        self.do(onError: { error in
+            fatalError(error.localizedDescription)
+        })
+    }
+}

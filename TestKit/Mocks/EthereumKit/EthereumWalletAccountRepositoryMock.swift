@@ -13,9 +13,10 @@ import PlatformKit
 import RxSwift
 import web3swift
 
-class EthereumWalletAccountRepositoryMock: EthereumWalletAccountRepositoryAPI {
-    var keyPairValue = Maybe.just(MockEthereumWalletTestData.keyPair)
-    var keyPair: PrimitiveSequence<MaybeTrait, EthereumKeyPair> {
+class EthereumWalletAccountRepositoryMock: EthereumWalletAccountRepositoryAPI, KeyPairProviderNewAPI {
+    
+    var keyPairValue = Single.just(MockEthereumWalletTestData.keyPair)
+    var keyPair: Single<EthereumKeyPair> {
         keyPairValue
     }
     
@@ -25,20 +26,18 @@ class EthereumWalletAccountRepositoryMock: EthereumWalletAccountRepositoryAPI {
         label: "",
         archived: false
     )
-    
-    var defaultAccountValue: EthereumWalletAccount? = ethereumWalletAccount
-    var defaultAccount: EthereumWalletAccount? {
-        defaultAccountValue
+
+    var defaultAccountValue: EthereumWalletAccount = ethereumWalletAccount
+    var defaultAccount: Single<EthereumWalletAccount> {
+        .just(defaultAccountValue)
     }
     
-    var initializeMetadataMaybeValue = Maybe.just(ethereumWalletAccount)
-    func initializeMetadataMaybe() -> Maybe<EthereumWalletAccount> {
-        initializeMetadataMaybeValue
+    var accounts: Single<[EthereumWalletAccount]> {
+        defaultAccount.map { [ $0 ] }
     }
     
-    var accountsValue: [EthereumWalletAccount] = []
-    func accounts() -> [EthereumWalletAccount] {
-        accountsValue
+    var activeAccounts: Single<[EthereumWalletAccount]> {
+        accounts
     }
 }
 

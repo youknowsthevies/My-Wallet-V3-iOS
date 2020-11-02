@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-enum HDWalletKitError: Error {
+public enum HDWalletKitError: Error {
     case unknown
     case libWallyError(Error)
 }

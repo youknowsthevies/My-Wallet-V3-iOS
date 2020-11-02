@@ -25,9 +25,18 @@ extension DependencyContainer {
         
         factory { EthereumAssetAccountDetailsService() }
         
-        factory { EthereumWalletAccountRepository() as EthereumWalletAccountRepositoryAPI }
+        factory { EthereumWalletAccountRepository() }
+                
+        factory { () -> EthereumWalletAccountRepositoryAPI in
+            let repository: EthereumWalletAccountRepository = DIKit.resolve()
+            return repository as EthereumWalletAccountRepositoryAPI
+        }
         
         factory { EthereumAccountBalanceService() as EthereumAccountBalanceServiceAPI }
+        
+        factory(tag: CryptoCurrency.ethereum) {
+            EthereumAssetBalanceFetcher() as CryptoAccountBalanceFetching
+        }
         
         single { EthereumHistoricalTransactionService() }
 
@@ -45,6 +54,8 @@ extension DependencyContainer {
         
         factory { AnyCryptoFeeService<EthereumTransactionFee>.ethereum() }
         
+        factory { AnyKeyPairProviderNew<EthereumKeyPair>.ethereum() }
+        
         factory { EthereumTransactionBuilder() as EthereumTransactionBuilderAPI }
         
         factory { EthereumTransactionSigner() as EthereumTransactionSignerAPI }
@@ -61,3 +72,13 @@ extension AnyCryptoFeeService where FeeType == EthereumTransactionFee {
         AnyCryptoFeeService<FeeType>(service: service)
     }
 }
+
+extension AnyKeyPairProviderNew where Pair == EthereumKeyPair {
+    
+    fileprivate static func ethereum(
+        ethereumWalletAccountRepository: EthereumWalletAccountRepository = resolve()
+    ) -> AnyKeyPairProviderNew<Pair> {
+        AnyKeyPairProviderNew<Pair>(provider: ethereumWalletAccountRepository)
+    }
+}
+

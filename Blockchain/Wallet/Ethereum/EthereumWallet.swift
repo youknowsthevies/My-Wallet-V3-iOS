@@ -33,17 +33,6 @@ class EthereumWallet: NSObject {
     
     typealias WalletAPI = LegacyEthereumWalletAPI & LegacyWalletAPI & MnemonicAccessAPI
     
-    var balanceObservable: Observable<CryptoValue> {
-        balanceRelay.asObservable()
-    }
-    
-    var balanceMoneyObservable: Observable<MoneyValue> {
-        balanceObservable.moneyValue
-    }
-    
-    let balanceFetchTriggerRelay = PublishRelay<Void>()
-
-    private let balanceRelay = PublishRelay<CryptoValue>()
     private let disposeBag = DisposeBag()
     
     var delegate: EthereumJSInteropDelegateAPI {
@@ -78,9 +67,7 @@ class EthereumWallet: NSObject {
         hasSeen: false,
         transactionNotes: [String: String]()
     )
-
-    private var ethereumAccountExists: Bool?
-
+    
     private let dispatcher: Dispatcher
     
     @objc convenience init(legacyWallet: Wallet) {
@@ -140,22 +127,11 @@ class EthereumWallet: NSObject {
     }
     
     @objc func walletDidLoad() {
-        Observable
-            .combineLatest(
-                reactiveWallet.waitUntilInitialized,
-                balanceFetchTriggerRelay
-            )
-            .throttle(
-                .milliseconds(100),
-                scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
-            )
-            .flatMap(weak: self) { (self, _) -> Observable<CryptoValue> in
+        reactiveWallet.waitUntilInitialized
+            .flatMap {
                 self.walletLoaded()
-                    .andThen(self.balance.asObservable())
             }
-            .subscribe(onNext: { [weak self] cryptoValue in
-                self?.balanceRelay.accept(cryptoValue)
-            })
+            .subscribe()
             .disposed(by: disposeBag)
     }
 
@@ -163,7 +139,6 @@ class EthereumWallet: NSObject {
         guard let wallet = wallet else {
             return .error(WalletError.notInitialized)
         }
-        ethereumAccountExists = wallet.checkIfEthereumAccountExists()
         return saveDefaultPAXAccountIfNeeded()
             .subscribeOn(MainScheduler.asyncInstance)
     }
@@ -320,27 +295,6 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
         fetchHistory(fromCache: false)
     }
     
-    var pendingBalanceMoneyObservable: Observable<MoneyValue> {
-        pendingBalanceMoney
-            .asObservable()
-    }
-    
-    var pendingBalanceMoney: Single<MoneyValue> {
-        Single.just(MoneyValue.zero(currency: .ethereum))
-    }
-    
-    var balanceMoney: Single<MoneyValue> {
-        balance
-            .moneyValue
-    }
-    
-    var balance: Single<CryptoValue> {
-        secondPasswordIfAccountCreationNeeded
-            .flatMap(weak: self) { (self, secondPassword) -> Single<CryptoValue> in
-                self.fetchBalance(secondPassword: secondPassword)
-            }
-    }
-    
     var name: Single<String> {
         secondPasswordIfAccountCreationNeeded
             .flatMap(weak: self) { (self, secondPassword) -> Single<String> in
@@ -349,7 +303,10 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
     }
 
     var address: Single<EthereumKit.EthereumAddress> {
-        secondPasswordIfAccountCreationNeeded
+        reactiveWallet.waitUntilInitializedSingle
+            .flatMap(weak: self) { (self, _) in
+                self.secondPasswordIfAccountCreationNeeded
+            }
             .flatMap(weak: self) { (self, secondPassword) -> Single<String> in
                 self.address(secondPassword: secondPassword)
             }
@@ -408,16 +365,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
     func fetchHistory() -> Single<Void> {
         fetchHistory(fromCache: false)
     }
-
-    private func fetchBalance(secondPassword: String? = nil) -> Single<CryptoValue> {
-        assetAccountRepository.assetAccountDetails
-            .map { $0.balance }
-            // TODO: This side effect is necessary for backward compat. since the relevant JS logic has been removed
-            .do(onSuccess: { [weak self] cryptoValue in
-                self?.legacyEthBalance = NSDecimalNumber(decimal: cryptoValue.displayMajorValue)
-            })
-    }
-
+    
     private func label(secondPassword: String? = nil) -> Single<String> {
         Single<String>
             .create(weak: self) { (self, observer) -> Disposable in
@@ -575,9 +523,12 @@ extension EthereumWallet: SecondPasswordPromptable {
     }
     
     var accountExists: Single<Bool> {
-        guard let ethereumAccountExists = ethereumAccountExists else {
-            return .error(WalletError.notInitialized)
-        }
-        return .just(ethereumAccountExists)
+        reactiveWallet.waitUntilInitializedSingle
+            .flatMap(weak: self) { (self, _) -> Single<Bool> in
+                guard let ethereumAccountExists = self.wallet?.checkIfEthereumAccountExists() else {
+                    return .error(WalletError.notInitialized)
+                }
+                return .just(ethereumAccountExists)
+            }
     }
 }

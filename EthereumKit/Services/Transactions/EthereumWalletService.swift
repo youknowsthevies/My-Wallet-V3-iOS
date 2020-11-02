@@ -62,13 +62,13 @@ final class EthereumWalletService: EthereumWalletServiceAPI {
     }
     
     private var loadKeyPair: Single<EthereumKeyPair> {
-        walletAccountRepository.keyPair.asObservable().asSingle()
+        keyPairProvider.keyPair
     }
     
     private let bridge: EthereumWalletBridgeAPI
     private let client: APIClientAPI
     private let feeService: AnyCryptoFeeService<EthereumTransactionFee>
-    private let walletAccountRepository: EthereumWalletAccountRepositoryAPI
+    private let keyPairProvider: AnyKeyPairProviderNew<EthereumKeyPair>
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
     private let transactionSendingService: EthereumTransactionSendingServiceAPI
     private let transactionValidationService: EthereumTransactionValidationService
@@ -76,14 +76,14 @@ final class EthereumWalletService: EthereumWalletServiceAPI {
     init(with bridge: EthereumWalletBridgeAPI = resolve(),
          client: APIClientAPI = resolve(),
          feeService: AnyCryptoFeeService<EthereumTransactionFee> = resolve(),
-         walletAccountRepository: EthereumWalletAccountRepositoryAPI = resolve(),
+         keyPairProvider: AnyKeyPairProviderNew<EthereumKeyPair> = resolve(),
          transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
          transactionSendingService: EthereumTransactionSendingServiceAPI = resolve(),
          transactionValidationService: EthereumTransactionValidationService = resolve()) {
         self.bridge = bridge
         self.client = client
         self.feeService = feeService
-        self.walletAccountRepository = walletAccountRepository
+        self.keyPairProvider = keyPairProvider
         self.transactionBuildingService = transactionBuildingService
         self.transactionSendingService = transactionSendingService
         self.transactionValidationService = transactionValidationService

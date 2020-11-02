@@ -10,6 +10,7 @@ import BitcoinKit
 import BuySellKit
 import DIKit
 import ERC20Kit
+import EthereumKit
 import InterestKit
 import PlatformKit
 import RxRelay

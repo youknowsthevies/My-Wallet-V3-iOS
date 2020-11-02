@@ -34,7 +34,7 @@ class HDWalletKitTests: XCTestCase {
         
         let privateKey = try HDPrivateKey(seed: seed, network: .main(Bitcoin.self))
         
-        XCTAssertEqual(privateKey.publicKey(), HDPublicKey("02f632717d78bf73e74aa8461e2e782532abae4eed5110241025afb59ebfd3d2fd")!)
+        XCTAssertEqual(privateKey.publicKey, HDPublicKey("02f632717d78bf73e74aa8461e2e782532abae4eed5110241025afb59ebfd3d2fd")!)
         XCTAssertEqual(privateKey.xpub, "xpub661MyMwAqRbcGB88KaFbLGiYAat55APKhtWg4uYMkXAmfuSTbq2QYsn9sKJCj1YqZPafsboef4h4YbXXhNhPwMbkHTpkf3zLhx7HvFw1NDy")
         XCTAssertEqual(privateKey.xpriv, "xprv9s21ZrQH143K3h3fDYiay8mocZ3afhfULfb5GX8kCBdno77K4HiA15Tg23wpbeF1pLfs1c5SPmYHrEpTuuRhxMwvKDwqdKiGJS9XFKzUsAF")
         
@@ -46,9 +46,9 @@ class HDWalletKitTests: XCTestCase {
         
         let childKeyPath = HDKeyPath(pathString)!
         
-        let childKey = try wallet.privateKey(path: childKeyPath)
+        let childKey: HDPrivateKey = try wallet.privateKey(at: childKeyPath)
         
-        XCTAssertEqual(childKey.publicKey(), HDPublicKey("0331e9b0c6b7f3798bb1b5a6b90c5e2e27c2906cbfd063a3c97b6031ee062ef745")!)
+        XCTAssertEqual(childKey.publicKey, HDPublicKey("0331e9b0c6b7f3798bb1b5a6b90c5e2e27c2906cbfd063a3c97b6031ee062ef745")!)
         XCTAssertEqual(childKey.xpub, "xpub6D3Cj1d8RgE6BRaEyYiRsJ8T17QA6Vq8F4P8f13BvDQTfgiBVT5iSdeSJ2QLSRijq2PMBXRSgduEUq11mYggQz6vUEe7Ga9e86urZjkrmeR")
         XCTAssertEqual(childKey.xpriv, "xprv9z3rKW6EbJfnxwVmsXBRWABiT5Zfh37GsqTXrcdaMssUntP2wumTtqKxSkZsytaxQZknwAhb3U8UR5cc3cxoMxdo4871tPPCTmeqckJyrWL")
         

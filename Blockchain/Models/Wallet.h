@@ -29,6 +29,7 @@
        OrderTransactionLegacy,
        BitcoinWallet,
        EthereumWallet,
+       WalletCryptoJS,
        WalletRepository,
        EtherTransaction;
 
@@ -74,6 +75,7 @@
 
 @property (nonatomic, readonly, strong) BitcoinWallet * _Nonnull bitcoin;
 @property (nonatomic, readonly, strong) EthereumWallet * _Nonnull ethereum;
+@property (nonatomic, readonly, strong) WalletCryptoJS * _Nonnull crypto;
 @property (nonatomic, strong) WalletRepository * _Nonnull repository;
 
 @property (nonatomic, copy, nullable) NSDecimalNumber *latestEthExchangeRate;

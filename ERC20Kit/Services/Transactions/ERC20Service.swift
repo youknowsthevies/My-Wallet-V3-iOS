@@ -44,7 +44,7 @@ public class AnyERC20Service<Token: ERC20Token>: ERC20ServiceAPI, ValidateTransa
         self.transfer = service.transfer
     }
     
-    public func validateCryptoAmount(amount: Crypto) -> Single<TransactionValidationResult> {
+    public func validateCryptoAmount(amount: CryptoMoney) -> Single<TransactionValidationResult> {
         do {
             let value = try ERC20TokenValue<Token>(crypto: amount)
             return evaluate(amount: value)

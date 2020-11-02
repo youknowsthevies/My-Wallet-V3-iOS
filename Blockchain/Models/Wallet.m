@@ -8,6 +8,7 @@
 //
 
 @import CommonCryptoKit;
+@import WalletPayloadKit;
 @import FirebaseAnalytics;
 @import NetworkKit;
 #import <CommonCrypto/CommonKeyDerivation.h>
@@ -55,6 +56,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         _transactionProgressListeners = [NSMutableDictionary dictionary];
         _bitcoin = [[BitcoinWallet alloc] initWithLegacyWallet:self];
         _ethereum = [[EthereumWallet alloc] initWithLegacyWallet:self];
+        _crypto = [[WalletCryptoJS alloc] init];
         _isSyncing = YES;
         _bitcoinCashConversion = 0;
     }
@@ -280,10 +282,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     self.context[@"objc_loading_start_download_wallet"] = ^(){
         [weakSelf loading_start_download_wallet];
-    };
-
-    self.context[@"objc_loading_start_get_wallet_and_history"] = ^() {
-        [weakSelf loading_start_get_wallet_and_history];
     };
 
     self.context[@"objc_loading_stop"] = ^(){
@@ -652,6 +650,10 @@ NSString * const kLockboxInvitation = @"lockbox";
 #pragma mark Bitcoin
     
     [self.bitcoin setupWith:self.context];
+
+#pragma mark Wallet Crypto
+    
+    [self.crypto setupWith:self.context];
     
 #pragma mark Bitcoin Cash
 
@@ -2398,11 +2400,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (void)loading_start_get_history
 {
     [LoadingViewPresenter.shared showWith:BC_STRING_LOADING_LOADING_TRANSACTIONS];
-}
-
-- (void)loading_start_get_wallet_and_history
-{
-    [LoadingViewPresenter.shared showWith:BC_STRING_LOADING_CHECKING_WALLET_UPDATES];
 }
 
 - (void)loading_start_create_account

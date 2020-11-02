@@ -64,6 +64,10 @@ final class DashboardScreenInteractor {
             paymentMethodsService: paymentMethodsService,
             enabledCurrenciesService: enabledCurrenciesService
         )
+        
+        NotificationCenter.when(.walletInitialized) { [weak self] _ in
+            self?.refresh()
+        }
     }
     
     func refresh() {

@@ -7,6 +7,7 @@
 //
 
 import RxSwift
+import WalletPayloadKit
 
 public final class TwoFAWalletService: TwoFAWalletServiceAPI {
     
@@ -61,7 +62,7 @@ public final class TwoFAWalletService: TwoFAWalletServiceAPI {
                 }
                 return (guid, sessionToken)
             }
-            .flatMap(weak: self) { (self, credentials) -> Single<WalletPayload> in
+            .flatMap(weak: self) { (self, credentials) -> Single<WalletPayloadWrapper> in
                 self.client.payload(guid: credentials.guid, sessionToken: credentials.sessionToken, code: code)
             }
             .flatMapCompletable(weak: self) { (self, response) -> Completable in

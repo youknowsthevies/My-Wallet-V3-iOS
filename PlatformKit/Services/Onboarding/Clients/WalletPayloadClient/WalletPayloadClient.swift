@@ -9,6 +9,7 @@
 import DIKit
 import NetworkKit
 import RxSwift
+import WalletPayloadKit
 
 /// TODO: fetch using a `sharedKey`
 public final class WalletPayloadClient: WalletPayloadClientAPI {
@@ -29,13 +30,13 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
         /// Payload should be nullified if 2FA s required.
         /// Then `authType` should have a none 0 value.
         /// `AuthenticatorType` is an enum representation of the possible values.
-        let payload: WalletPayload?
+        let payload: WalletPayloadWrapper?
                 
         init(response: Response) throws {
             guard let guid = response.guid else {
                 throw ClientError.missingGuid
             }
-            self.payload = try? WalletPayload(string: response.payload)
+            self.payload = try? WalletPayloadWrapper(string: response.payload)
             self.guid = guid
             self.authType = response.authType
             self.language = response.language

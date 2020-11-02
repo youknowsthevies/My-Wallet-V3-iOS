@@ -16,23 +16,19 @@ final class EthereumAsset: CryptoAsset {
     let asset: CryptoCurrency = .ethereum
 
     var defaultAccount: Single<SingleAccount> {
-        walletAccountBridge.wallets
-            .map { $0.first }
-            .map { wallet -> EthereumWalletAccount in
-                guard let wallet = wallet else {
-                    throw CryptoAssetError.noDefaultAccount
-                }
-                return wallet
-            }
-            .map { wallet -> SingleAccount in
-                EthereumCryptoAccount(id: wallet.publicKey, label: wallet.label)
+        repository.defaultAccount
+            .map { walletAccount -> SingleAccount in
+                EthereumCryptoAccount(
+                    id: walletAccount.publicKey,
+                    label: walletAccount.label
+                )
             }
     }
+    
+    private let repository: EthereumWalletAccountRepositoryAPI
 
-    private let walletAccountBridge: EthereumWalletAccountBridgeAPI
-
-    init(walletAccountBridge: EthereumWalletAccountBridgeAPI = resolve()) {
-        self.walletAccountBridge = walletAccountBridge
+    init(repository: EthereumWalletAccountRepositoryAPI = resolve()) {
+        self.repository = repository
     }
 
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {
@@ -52,9 +48,13 @@ final class EthereumAsset: CryptoAsset {
 
     private var allAccountsGroup: Single<AccountGroup> {
         let asset = self.asset
-        return Single
-            .zip(nonCustodialGroup, custodialGroup, interestGroup)
-            .map { CryptoAccountNonCustodialGroup(asset: asset, accounts: $0.0.accounts + $0.1.accounts + $0.2.accounts) }
+        return Single.zip(nonCustodialGroup, custodialGroup, interestGroup)
+            .map { (nonCustodialGroup, custodialGroup, interestGroup) -> [SingleAccount] in
+                nonCustodialGroup.accounts + custodialGroup.accounts + interestGroup.accounts
+            }
+            .map { accounts -> AccountGroup in
+                CryptoAccountNonCustodialGroup(asset: asset, accounts: accounts)
+            }
     }
 
     private var custodialGroup: Single<AccountGroup> {
@@ -67,15 +67,12 @@ final class EthereumAsset: CryptoAsset {
             .just(CryptoInterestAccount(asset: asset))
             .map { CryptoAccountCustodialGroup(asset: asset, accounts: [$0]) }
     }
-
+    
     private var nonCustodialGroup: Single<AccountGroup> {
         let asset = self.asset
-        return walletAccountBridge.wallets
-            .map { wallets -> [SingleAccount] in
-                wallets.map { EthereumCryptoAccount(id: $0.publicKey, label: $0.label) }
-            }
-            .map { accounts -> AccountGroup in
-                CryptoAccountNonCustodialGroup(asset: asset, accounts: accounts)
+        return defaultAccount
+            .map { account -> AccountGroup in
+                CryptoAccountNonCustodialGroup(asset: asset, accounts: [ account ])
             }
     }
 }
