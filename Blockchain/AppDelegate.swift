@@ -126,7 +126,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             // If isDebug build, and we are running unit test, skip rest of AppDelegate.
             return true
         }
-        
+
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
         window?.backgroundColor = #colorLiteral(red: 0.0431372549, green: 0.1019607843, blue: 0.2784313725, alpha: 1)
@@ -176,7 +176,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // TODO: prevent any other data tasks from executing until cert is pinned
         let certificatePinner: CertificatePinnerAPI = resolve()
         certificatePinner.pinCertificateIfNeeded()
-        
+
+        let sift: SiftServiceAPI = DIKit.resolve()
+        sift.enable()
+
         checkForNewInstall()
         
         appCoordinator.start()

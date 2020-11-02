@@ -83,5 +83,9 @@
 	<string>Light</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>siftAccountId</key>
+	<string>$(SIFT_ACCOUNT_ID)</string>
+	<key>siftKey</key>
+	<string>$(SIFT_BEACON_KEY)</string>
 </dict>
 </plist>

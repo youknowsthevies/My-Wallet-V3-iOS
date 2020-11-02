@@ -47,6 +47,8 @@ extension DependencyContainer {
 
         single { TradeLimitsService() as TradeLimitsAPI }
 
+        factory { SiftService() as SiftServiceAPI }
+
         // MARK: - Send
 
         factory { () -> SendScreenProvider in

@@ -26,3 +26,4 @@
 #import "UILabel+Animations.h"
 #import "UIView+ChangeFrameAttribute.h"
 #import "Wallet.h"
+#import "Sift/Sift.h"

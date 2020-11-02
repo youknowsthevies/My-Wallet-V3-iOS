@@ -369,6 +369,7 @@ targets:
     - carthage: WebRTC
     - carthage: Veriff
     - carthage: Zxcvbn
+    - carthage: Sift
     - embed: false
       framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
     - target: PlatformUIKit
