@@ -108,6 +108,8 @@ extension DependencyContainer {
         factory { OrdersActivityEventService() as OrdersActivityEventServiceAPI }
         
         factory { PendingOrderDetailsService() as PendingOrderDetailsServiceAPI }
+
+        factory { PendingOrderCompletionService() as PendingOrderCompletionServiceAPI }
         
         factory { OrderCancellationService() as OrderCancellationServiceAPI }
         
