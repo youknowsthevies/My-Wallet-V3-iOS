@@ -10,38 +10,52 @@
 
 @implementation NSURLSession (SendSynchronousRequest)
 
-+ (NSData * _Nullable)sendSynchronousRequest:(NSURLRequest *)request
-                                     session:(NSURLSession *)session
-                           returningResponse:(__autoreleasing NSURLResponse **)responsePtr
-                                       error:(__autoreleasing NSError **)errorPtr
-                          sessionDescription:(NSString *)sessionDescription
-{
-    dispatch_semaphore_t    sem;
-    __block NSData *        result;
-    
-    result = nil;
-    
-    sem = dispatch_semaphore_create(0);
-    
++ (SynchronousRequestResponse *)sendSynchronousRequest:(NSURLRequest *)request
+                                               session:(NSURLSession *)session
+                                    sessionDescription:(nullable NSString *)sessionDescription {
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    __block NSData * resultData = nil;
+    __block NSURLResponse * resultResponse = nil;
+    __block NSError * resultError = nil;
+
     session.sessionDescription = sessionDescription;
-    [[session dataTaskWithRequest:request
-                completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                    if (errorPtr != NULL) {
-                        *errorPtr = error;
-                    }
-                    if (responsePtr != NULL) {
-                        *responsePtr = response;
-                    }
-                    if (error == nil) {
-                        result = data;
-                    }
-                    dispatch_semaphore_signal(sem);
-                }] resume];
-    
+
+    NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request
+                                                completionHandler:^(NSData * _Nullable data,
+                                                                    NSURLResponse * _Nullable response,
+                                                                    NSError * _Nullable error) {
+        resultData = data;
+        resultResponse = (NSHTTPURLResponse *)response;
+        resultError = error;
+        dispatch_semaphore_signal(semaphore);
+    }];
+    [dataTask resume];
+
     dispatch_time_t thirtySeconds = dispatch_time(DISPATCH_TIME_NOW, 30*NSEC_PER_SEC);
-    dispatch_semaphore_wait(sem, thirtySeconds);
-        
-    return result;
+    intptr_t status = dispatch_semaphore_wait(semaphore, thirtySeconds);
+
+    if (status == 0) {
+        // Success
+        return [[SynchronousRequestResponse alloc] initWithData:resultData response:resultResponse error:resultError];
+    }
+    [dataTask cancel];
+    NSError *cancelled = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCancelled userInfo:nil];
+    return [[SynchronousRequestResponse alloc] initWithData:nil response:nil error:cancelled];
+}
+
+@end
+
+@implementation SynchronousRequestResponse
+
+- (instancetype)initWithData:(nullable NSData *)data response:(nullable NSHTTPURLResponse *)response error:(nullable NSError *)error;
+{
+    self = [super init];
+    if (self) {
+        self.data = data;
+        self.response = response;
+        self.error = error;
+    }
+    return self;
 }
 
 @end

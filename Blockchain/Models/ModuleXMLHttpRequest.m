@@ -83,21 +83,18 @@
     if ([inputData isKindOfClass:[NSString class]]) {
         req.HTTPBody = [((NSString *) inputData) dataUsingEncoding:NSUTF8StringEncoding];
     }
-    
+
     req.HTTPMethod = _method;
 
-    NSHTTPURLResponse* response;
-    NSError* error;
+    NSError *error = nil;
     if ([Reachability hasInternetConnection]) {
-        NSData * _Nullable data = [NSURLSession sendSynchronousRequest:req
-                                                               session:NetworkDependenciesObjc.session
-                                                     returningResponse:&response
-                                                                 error:&error
-                                                    sessionDescription:req.URL.host];
-        if (data != nil) {
-            status = [response statusCode];
-            self.responseText = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-            _responseHeaders = response.allHeaderFields;
+        SynchronousRequestResponse *response = [NSURLSession sendSynchronousRequest:req
+                                                                            session:NetworkDependenciesObjc.session
+                                                                 sessionDescription:req.URL.host];
+        if (response.data != nil) {
+            status = response.response.statusCode;
+            self.responseText = [[NSString alloc] initWithData:response.data encoding:NSUTF8StringEncoding];
+            _responseHeaders = response.response.allHeaderFields;
         } else {
             error = [ModuleXMLHttpRequest networkConnectivityError];
         }
@@ -105,10 +102,11 @@
         error = [ModuleXMLHttpRequest networkConnectivityError];
     }
     
-    if (!error && _onLoad)
+    if (!error && _onLoad) {
         [[_onLoad.value invokeMethod:@"bind" withArguments:@[self]] callWithArguments:NULL];
-    else if (error && _onError)
+    } else if (error && _onError) {
         [[_onError.value invokeMethod:@"bind" withArguments:@[self]] callWithArguments:@[[JSValue valueWithNewErrorFromMessage:error.localizedDescription inContext:[JSContext currentContext]]]];
+    }
 }
 
 - (void)setRequestHeader:(NSString *)name :(NSString *)value {
