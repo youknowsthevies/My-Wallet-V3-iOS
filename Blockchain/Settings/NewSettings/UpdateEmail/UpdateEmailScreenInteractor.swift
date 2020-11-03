@@ -72,7 +72,7 @@ final class UpdateEmailScreenInteractor {
     private let interactionStateRelay = BehaviorRelay<State>(value: .ready)
     private let disposeBag = DisposeBag()
     
-    init(emailSettingsService: EmailSettingsService = resolve(),
+    init(emailSettingsService: CompleteSettingsServiceAPI = resolve(),
          emailVerificationService: EmailVerificationServiceAPI = resolve()) {
         self.emailSettingsService = emailSettingsService
         self.verificationService = emailVerificationService
