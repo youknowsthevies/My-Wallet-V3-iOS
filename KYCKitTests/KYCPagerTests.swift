@@ -62,6 +62,7 @@ class KYCPagerTests: XCTestCase {
 
     private func createTestNabuUser(tiers: KYC.UserState? = nil) -> NabuUser {
         NabuUser(
+            identifier: "identifier",
             personalDetails: PersonalDetails(id: "id", first: "John", last: "Smithy", birthday: nil),
             address: nil,
             email: Email(address: "email@test.com", verified: false),

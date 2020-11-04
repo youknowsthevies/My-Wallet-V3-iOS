@@ -18,6 +18,7 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
     private var authenticationClient: NabuAuthenticationClientMock!
     private var store: NabuTokenStore!
     private var settingsService: SettingsServiceMock!
+    private var siftService: SiftServiceMock!
     private var jwtService: JWTServiceMock!
     private var walletRepository: MockWalletRepository!
     private var deviceInfo: MockDeviceInfo!
@@ -28,6 +29,7 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
         authenticationClient = NabuAuthenticationClientMock()
         store = NabuTokenStore()
         settingsService = SettingsServiceMock()
+        siftService = SiftServiceMock()
         jwtService = JWTServiceMock()
         walletRepository = MockWalletRepository()
         deviceInfo = MockDeviceInfo(systemVersion: "1.2.3", model: "iPhone5S", uuidString: "uuid")
@@ -36,6 +38,7 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
             userCreationClient: userCreationClient,
             store: store,
             settingsService: settingsService,
+            siftService: siftService,
             jwtService: jwtService,
             authenticationClient: authenticationClient,
             credentialsRepository: walletRepository,

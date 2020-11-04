@@ -227,6 +227,9 @@ extension AuthenticationCoordinator: PairingWalletFetching {
 
         NotificationCenter.default.post(name: .logout, object: nil)
         
+        let sift: SiftServiceAPI = resolve()
+        sift.removeUserId()
+        
         SocketManager.shared.disconnectAll()
         StellarServiceProvider.shared.tearDown()
         sharedContainter.reset()

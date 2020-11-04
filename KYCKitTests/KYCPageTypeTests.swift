@@ -143,6 +143,7 @@ class KYCPageTypeTests: XCTestCase {
             )
         }
         return NabuUser(
+            identifier: "identifier",
             personalDetails: PersonalDetails(id: nil, first: nil, last: nil, birthday: nil),
             address: address,
             email: Email(address: "test", verified: isEmailVerified),
