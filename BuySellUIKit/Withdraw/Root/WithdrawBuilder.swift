@@ -8,6 +8,7 @@
 
 import PlatformKit
 import PlatformUIKit
+import RIBs
 import UIKit
 
 /// Provides the entry point for `WithdrawRootRouter`
@@ -33,11 +34,13 @@ public final class WithdrawBuilder: WithdrawBuildable {
         let rootNavigation = RootNavigation()
         let linkedBanksBuilder = LinkedBanksSelectionBuilder(currency: currency)
         let enterAmountBuilder = WithdrawAmountPageBuilder(currency: currency)
+        let checkountPageBuilder = CheckoutPageBuilder()
         let interactor = WithdrawRootInteractor()
         let router = WithdrawRootRouter(interactor: interactor,
                                         navigation: rootNavigation,
                                         selectBanksBuilder: linkedBanksBuilder,
-                                        enterAmountBuilder: enterAmountBuilder)
+                                        enterAmountBuilder: enterAmountBuilder,
+                                        checkoutPageBuilder: checkountPageBuilder)
         return (router, rootNavigation)
     }
 

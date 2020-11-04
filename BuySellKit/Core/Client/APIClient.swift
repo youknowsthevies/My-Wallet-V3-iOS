@@ -41,6 +41,7 @@ final class APIClient: SimpleBuyClientAPI {
         static let methods = "methods"
         static let checkEligibility = "checkEligibility"
         static let states = "states"
+        static let benefiary = "beneficiary"
     }
         
     private enum Path {
@@ -55,6 +56,7 @@ final class APIClient: SimpleBuyClientAPI {
         static let quote = [ "simple-buy", "quote" ]
         static let eligible = [ "simple-buy", "eligible" ]
         static let withdrawalFees = [ "payments", "withdrawals", "fees" ]
+        static let withdrawal = [ "payments", "withdrawals" ]
     }
     
     private enum Constants {
@@ -348,6 +350,16 @@ final class APIClient: SimpleBuyClientAPI {
         let request = requestBuilder.get(
             path: Path.withdrawalFees,
             parameters: queryParameters,
+            authenticated: true
+        )!
+        return communicator.perform(request: request)
+    }
+
+    func withdraw(data: WithdrawalCheckoutData) -> Single<WithdrawalCheckoutResponse> {
+        let payload = WithdrawalPayload(data: data)
+        let request = requestBuilder.post(
+            path: Path.withdrawal,
+            body: try? payload.encode(),
             authenticated: true
         )!
         return communicator.perform(request: request)

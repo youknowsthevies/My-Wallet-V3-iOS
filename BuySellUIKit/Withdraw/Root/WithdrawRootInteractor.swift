@@ -57,6 +57,10 @@ public final class WithdrawRootInteractor: Interactor,
         router?.routeToCheckout(checkoutData: checkoutData)
     }
 
+    func checkoutDidTapBack() {
+        router?.didTapBack()
+    }
+
     // MARK: - Private methods
     private func startFlow() {
         router?.routeToFlowRoot()

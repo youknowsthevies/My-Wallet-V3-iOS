@@ -75,7 +75,6 @@ final class LinkedBanksSelectionInteractor: PresentableInteractor<LinkedBanksSel
         presenter.connect(action: actions)
             .drive(onNext: handleEffects)
             .disposeOnDeactivate(interactor: self)
-
     }
 
     override func willResignActive() {

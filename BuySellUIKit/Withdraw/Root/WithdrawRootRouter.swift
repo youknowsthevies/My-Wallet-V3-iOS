@@ -12,7 +12,10 @@ import PlatformUIKit
 import RIBs
 import RxCocoa
 
-protocol WithdrawFlowInteractable: Interactable, LinkedBanksSelectionListener, WithdrawAmountPageListener {
+protocol WithdrawFlowInteractable: Interactable,
+                                   LinkedBanksSelectionListener,
+                                   WithdrawAmountPageListener,
+                                   CheckoutPageListener {
     var router: WithdrawFlowRouting? { get set }
     var listener: WithdrawFlowListener? { get set }
 }
@@ -28,6 +31,7 @@ final class WithdrawRootRouter: RIBs.Router<WithdrawFlowInteractable>,
 
     private let selectBanksBuilder: LinkedBanksSelectionBuildable
     private let enterAmountBuilder: WithdrawAmountPageBuildable
+    private let checkoutPageBuilder: CheckoutPageBuildable
     private let navigation: RootNavigatable
 
     private var dismissFlow: (() -> Void)?
@@ -35,10 +39,12 @@ final class WithdrawRootRouter: RIBs.Router<WithdrawFlowInteractable>,
     init(interactor: WithdrawFlowInteractable,
          navigation: RootNavigatable,
          selectBanksBuilder: LinkedBanksSelectionBuildable,
-         enterAmountBuilder: WithdrawAmountPageBuildable) {
+         enterAmountBuilder: WithdrawAmountPageBuildable,
+         checkoutPageBuilder: CheckoutPageBuildable) {
         self.navigation = navigation
         self.selectBanksBuilder = selectBanksBuilder
         self.enterAmountBuilder = enterAmountBuilder
+        self.checkoutPageBuilder = checkoutPageBuilder
         super.init(interactor: interactor)
         interactor.router = self
     }
@@ -60,7 +66,9 @@ final class WithdrawRootRouter: RIBs.Router<WithdrawFlowInteractable>,
     }
 
     func routeToCheckout(checkoutData: WithdrawalCheckoutData) {
-        // TODO: Route to checkout screen
+        let router = checkoutPageBuilder.build(listener: interactor, checkoutData: checkoutData)
+        attachChild(router)
+        navigation.push(controller: router.viewControllable)
     }
 
     func didTapBack() {

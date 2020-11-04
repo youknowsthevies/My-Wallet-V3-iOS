@@ -8,7 +8,7 @@
 
 import PlatformKit
 
-public struct WithdrawalCheckoutData {
+public struct WithdrawalCheckoutData: Equatable {
     public let currency: FiatCurrency
     public let beneficiary: Beneficiary
     public let amount: FiatValue
