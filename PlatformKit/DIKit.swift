@@ -138,7 +138,7 @@ extension DependencyContainer {
 
         factory { TradingBalanceService() as TradingBalanceServiceAPI }
 
-        // MARK: Settings
+        // MARK: - Settings
 
         single { SettingsService() as CompleteSettingsServiceAPI }
 
@@ -162,15 +162,19 @@ extension DependencyContainer {
             return completeSettings
         }
 
-        // MARK: Activity Services
+        // MARK: - Activity Services
         
         factory(tag: FiatCurrency.EUR) { FiatActivityItemEventService(fiatCurrency: .EUR) as FiatActivityItemEventServiceAPI }
         
         factory(tag: FiatCurrency.GBP) { FiatActivityItemEventService(fiatCurrency: .GBP) as FiatActivityItemEventServiceAPI }
         
         factory(tag: FiatCurrency.USD) { FiatActivityItemEventService(fiatCurrency: .USD) as FiatActivityItemEventServiceAPI }
+        
+        // MARK: - Withdrawal
+        
+        factory { CustodyWithdrawalRequestService() as CustodyWithdrawalServiceAPI }
 
-        // MARK: Internal Feature Flag
+        // MARK: - Internal Feature Flag
 
         factory { InternalFeatureFlagService(defaultsProvider: provideInternalUserDefaults) as InternalFeatureFlagServiceAPI }
     }
