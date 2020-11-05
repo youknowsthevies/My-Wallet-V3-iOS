@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -24,8 +25,8 @@ final class CardDeletionService: PaymentMethodDeletionServiceAPI {
     
     // MARK: - Setup
     
-    init(client: CardDeletionClientAPI,
-         cardListService: CardListServiceAPI) {
+    init(client: CardDeletionClientAPI = resolve(),
+         cardListService: CardListServiceAPI = resolve()) {
         self.cardListService = cardListService
         self.client = client
     }

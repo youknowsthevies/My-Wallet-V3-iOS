@@ -33,10 +33,13 @@ public final class CardComponentBuilder: CardComponentBuilderAPI {
     private let routingInteractor: CardRouterInteractor
     private let analyticsRecorder: AnalyticsEventRecording
     private let messageRecorder: MessageRecording
+    private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     
     public init(routingInteractor: CardRouterInteractor,
+                paymentMethodTypesService: PaymentMethodTypesServiceAPI,
                 analyticsRecorder: AnalyticsEventRecording = resolve(),
                 messageRecorder: MessageRecording = resolve()) {
+        self.paymentMethodTypesService = paymentMethodTypesService
         self.routingInteractor = routingInteractor
         self.analyticsRecorder = analyticsRecorder
         self.messageRecorder = messageRecorder
@@ -58,6 +61,7 @@ public final class CardComponentBuilder: CardComponentBuilderAPI {
     public func pendingCardStatus(cardId: String) -> UIViewController {
         let interactor = PendingCardStatusInteractor(
             cardId: cardId,
+            paymentMethodTypesService: paymentMethodTypesService,
             routingInteractor: routingInteractor
         )
         let presenter = PendingCardStatusPresenter(interactor: interactor)

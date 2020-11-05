@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -44,7 +45,7 @@ final class AirdropCenterService: AirdropCenterServiceAPI {
     
     // MARK: - Setup
     
-    init(client: AirdropCenterClientAPI = AirdropCenterClient()) {
+    init(client: AirdropCenterClientAPI = resolve()) {
         self.client = client
         
         fetchTriggerRelay

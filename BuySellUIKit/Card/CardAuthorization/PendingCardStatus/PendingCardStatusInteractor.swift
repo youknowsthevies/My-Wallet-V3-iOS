@@ -34,7 +34,7 @@ final class PendingCardStatusInteractor: Interactor {
     
     init(cardId: String,
          activationService: CardActivationServiceAPI = resolve(),
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
+         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
          routingInteractor: CardRouterInteractor) {
         self.cardId = cardId
         self.routingInteractor = routingInteractor
