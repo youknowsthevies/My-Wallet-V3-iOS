@@ -18,7 +18,7 @@ public protocol CustodyWithdrawalServiceAPI: class {
     func makeWithdrawal(amount: CryptoValue, destination: String) -> Single<CustodialWithdrawalResponse>
 }
 
-public final class CustodyWithdrawalRequestService: CustodyWithdrawalServiceAPI {
+final class CustodyWithdrawalRequestService: CustodyWithdrawalServiceAPI {
     
     // MARK: - Private Properties
     
@@ -26,17 +26,13 @@ public final class CustodyWithdrawalRequestService: CustodyWithdrawalServiceAPI 
     
     // MARK: - Init
     
-    public convenience init() {
-        self.init(client: resolve())
-    }
-    
-    init(client: CustodyWithdrawalClientAPI) {
+    init(client: CustodyWithdrawalClientAPI = resolve()) {
         self.client = client
     }
     
     // MARK: - SimpleBuyWithdrawalServiceAPI
     
-    public func makeWithdrawal(amount: CryptoValue, destination: String) -> Single<CustodialWithdrawalResponse> {
+    func makeWithdrawal(amount: CryptoValue, destination: String) -> Single<CustodialWithdrawalResponse> {
         self.client
             .withdraw(cryptoValue: amount, destination: destination)
             .catchError { error in
