@@ -99,7 +99,7 @@ final class SettingsRouter: SettingsRouterAPI {
     }
     
     func presentSettings() {
-        let interactor = SettingsScreenInteractor()
+        let interactor = SettingsScreenInteractor(paymentMethodTypesService: paymentMethodTypesService)
         let presenter = SettingsScreenPresenter(interactor: interactor, router: self)
         let controller = SettingsViewController(presenter: presenter)
         navigationRouter.present(viewController: controller, using: .modalOverTopMost)

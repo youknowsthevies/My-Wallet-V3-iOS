@@ -68,8 +68,7 @@ final class SettingsScreenPresenter {
     
     // MARK: - Init
     
-    init(interactor: SettingsScreenInteractor = SettingsScreenInteractor(),
-         router: SettingsRouterAPI) {
+    init(interactor: SettingsScreenInteractor, router: SettingsRouterAPI) {
         aboutSectionPresenter = AboutSectionPresenter()
         
         connectPresenter = .init(

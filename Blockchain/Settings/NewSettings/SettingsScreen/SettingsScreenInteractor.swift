@@ -63,7 +63,8 @@ final class SettingsScreenInteractor {
          tiersService: KYCTiersServiceAPI = resolve(),
          wallet: Wallet = WalletManager.shared.wallet,
          balanceProviding: BalanceProviding = DataProvider.default.balance,
-         balanceChangeProviding: BalanceChangeProviding = DataProvider.default.balanceChange) {
+         balanceChangeProviding: BalanceChangeProviding = DataProvider.default.balanceChange,
+         paymentMethodTypesService: PaymentMethodTypesServiceAPI) {
         self.smsTwoFactorService = smsTwoFactorService
         self.appSettings = appSettings
         self.settingsService = settingsService
@@ -80,11 +81,13 @@ final class SettingsScreenInteractor {
 
         cardSectionInteractor = CardSettingsSectionInteractor(
             featureFetcher: featureConfigurator,
+            paymentMethodTypesService: paymentMethodTypesService,
             tierLimitsProvider: tiersProviding
         )
         
         bankSectionInteractor = BanksSettingsSectionInteractor(
             featureFetcher: featureConfigurator,
+            paymentMethodTypesService: paymentMethodTypesService,
             tierLimitsProvider: tiersProviding
         )
         

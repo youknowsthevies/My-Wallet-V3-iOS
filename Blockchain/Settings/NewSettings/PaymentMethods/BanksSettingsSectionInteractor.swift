@@ -51,7 +51,7 @@ final class BanksSettingsSectionInteractor {
     
     init(beneficiariesService: BeneficiariesServiceAPI = resolve(),
          featureFetcher: FeatureFetching = resolve(),
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
+         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
          enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
          tierLimitsProvider: TierLimitsProviding) {
         self.beneficiariesService = beneficiariesService
