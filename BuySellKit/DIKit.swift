@@ -136,6 +136,8 @@ extension DependencyContainer {
         
         factory { SuggestedAmountsService() as SuggestedAmountsServiceAPI }
 
+        factory { CardUpdateService() as CardUpdateServiceAPI }
+
         // MARK: - Services - Cards
         
         single { CardListService() as CardListServiceAPI }

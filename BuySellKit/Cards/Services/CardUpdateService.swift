@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -59,11 +60,11 @@ public final class CardUpdateService: CardUpdateServiceAPI {
     
     // MARK: - Setup
     
-    init(dataRepository: DataRepositoryAPI,
-         cardClient: CardClientAPI,
-         everyPayClient: EveryPayClientAPI,
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI,
-         analyticsRecorder: AnalyticsEventRecording) {
+    init(dataRepository: DataRepositoryAPI = resolve(),
+         cardClient: CardClientAPI = resolve(),
+         everyPayClient: EveryPayClientAPI = resolve(),
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
+         analyticsRecorder: AnalyticsEventRecording = resolve()) {
         self.dataRepository = dataRepository
         self.cardClient = cardClient
         self.everyPayClient = everyPayClient
