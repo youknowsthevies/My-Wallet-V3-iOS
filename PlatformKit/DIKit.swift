@@ -61,6 +61,7 @@ extension DependencyContainer {
         single { NabuAuthenticationExecutor() as NabuAuthenticationExecutorAPI }
         
         factory { () -> NabuAuthenticationExecutorProvider in
+            // swiftlint:disable:next invalid_open_brace
             { () -> NabuAuthenticationExecutorAPI in
                 DIKit.resolve()
             }
@@ -78,6 +79,8 @@ extension DependencyContainer {
             let walletRepositoryProvider: WalletRepositoryProvider = DIKit.resolve()
             return walletRepositoryProvider.repository as WalletRepositoryAPI
         }
+        
+        factory { MnemonicComponentsProvider() as MnemonicComponentsProviding }
         
         factory { () -> CredentialsRepositoryAPI in
             let repository: WalletRepositoryAPI = DIKit.resolve()
@@ -173,6 +176,10 @@ extension DependencyContainer {
         // MARK: - Withdrawal
         
         factory { CustodyWithdrawalRequestService() as CustodyWithdrawalServiceAPI }
+        
+        // MARK: - KYC
+        
+        factory { KYCTierUpdatePollingService() as KYCTierUpdatePollingServiceAPI }
 
         // MARK: - Internal Feature Flag
 
