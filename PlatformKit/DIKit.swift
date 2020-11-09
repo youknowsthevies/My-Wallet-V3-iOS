@@ -60,12 +60,13 @@ extension DependencyContainer {
 
         single { NabuAuthenticationExecutor() as NabuAuthenticationExecutorAPI }
         
+        // swiftlint:disable opening_brace
         factory { () -> NabuAuthenticationExecutorProvider in
-            // swiftlint:disable:next invalid_open_brace
             { () -> NabuAuthenticationExecutorAPI in
                 DIKit.resolve()
             }
         }
+        // swiftlint:enable opening_brace
         
         factory { NabuAuthenticator() as AuthenticatorAPI }
         
