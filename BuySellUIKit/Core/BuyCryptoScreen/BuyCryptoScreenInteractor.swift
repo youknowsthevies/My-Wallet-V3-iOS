@@ -144,11 +144,11 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     
     init(kycTiersService: KYCTiersServiceAPI = resolve(),
          exchangeProvider: ExchangeProviding,
+         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
          cryptoCurrencySelectionService: CryptoCurrencySelectionServiceAPI,
          pairsService: SupportedPairsInteractorServiceAPI = resolve(),
          eligibilityService: EligibilityServiceAPI = resolve(),
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
          orderCreationService: OrderCreationServiceAPI = resolve(),
          suggestedAmountsService: SuggestedAmountsServiceAPI = resolve()) {
         self.kycTiersService = kycTiersService

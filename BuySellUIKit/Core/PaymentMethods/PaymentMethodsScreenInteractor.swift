@@ -45,7 +45,7 @@ final class PaymentMethodsScreenInteractor {
     
     // MARK: - Setup
     
-    init(paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
+    init(paymentMethodTypesService: PaymentMethodTypesServiceAPI,
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
          kycTiers: KYCTiersServiceAPI = resolve()) {
         self.paymentMethodTypesService = paymentMethodTypesService

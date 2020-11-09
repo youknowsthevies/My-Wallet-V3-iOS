@@ -92,6 +92,11 @@ extension DependencyContainer {
             let client: CardClientAPI = DIKit.resolve()
             return client as CardListClientAPI
         }
+        
+        factory { () -> CardDeletionClientAPI in
+            let client: CardClientAPI = DIKit.resolve()
+            return client as CardDeletionClientAPI
+        }
 
         // MARK: - Services - General
 
@@ -108,6 +113,8 @@ extension DependencyContainer {
         factory { OrdersActivityEventService() as OrdersActivityEventServiceAPI }
         
         factory { PendingOrderDetailsService() as PendingOrderDetailsServiceAPI }
+
+        factory { PendingOrderCompletionService() as PendingOrderCompletionServiceAPI }
         
         factory { OrderCancellationService() as OrderCancellationServiceAPI }
         
@@ -129,8 +136,12 @@ extension DependencyContainer {
         
         factory { SuggestedAmountsService() as SuggestedAmountsServiceAPI }
 
+        factory { CardUpdateService() as CardUpdateServiceAPI }
+
         // MARK: - Services - Cards
         
         single { CardListService() as CardListServiceAPI }
+        
+        factory { CardDeletionService() as PaymentMethodDeletionServiceAPI }
     }
 }

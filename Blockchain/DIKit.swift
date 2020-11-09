@@ -34,6 +34,10 @@ extension DependencyContainer {
         factory { PaymentPresenter() }
 
         factory { AirdropRouter() as AirdropRouterAPI }
+        
+        factory { AirdropCenterClient() as AirdropCenterClientAPI }
+        
+        factory { AirdropCenterService() as AirdropCenterServiceAPI }
 
         factory { DeepLinkRouter() }
         

@@ -38,6 +38,7 @@ public struct NabuUser: Decodable {
     
     // MARK: - Properties
 
+    public let identifier: String
     public let personalDetails: PersonalDetails
     public let address: UserAddress?
     public let email: Email
@@ -61,6 +62,7 @@ public struct NabuUser: Decodable {
     // MARK: - Decodable
 
     private enum CodingKeys: String, CodingKey {
+        case identifier = "id"
         case address
         case status = "kycState"
         case state
@@ -78,6 +80,7 @@ public struct NabuUser: Decodable {
     // MARK: - Init
 
     public init(
+        identifier: String,
         personalDetails: PersonalDetails,
         address: UserAddress?,
         email: Email,
@@ -94,6 +97,7 @@ public struct NabuUser: Decodable {
         kycCreationDate: String? = nil,
         kycUpdateDate: String? = nil
     ) {
+        self.identifier = identifier
         self.personalDetails = personalDetails
         self.address = address
         self.email = email
@@ -113,6 +117,7 @@ public struct NabuUser: Decodable {
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
+        identifier = try values.decode(String.self, forKey: .identifier)
         address = try values.decodeIfPresent(UserAddress.self, forKey: .address)
         tiers = try values.decodeIfPresent(KYC.UserState.self, forKey: .tiers)
         userName = try values.decodeIfPresent(String.self, forKey: .userName)

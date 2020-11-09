@@ -44,6 +44,7 @@ final class SettingsRouter: SettingsRouterAPI {
     private var cardRouter: CardRouter!
     
     private let navigationRouter: NavigationRouterAPI
+    private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private unowned let currencyRouting: CurrencyRouting
     private unowned let tabSwapping: TabSwapping
     private unowned let appCoordinator: AppCoordinator
@@ -61,6 +62,7 @@ final class SettingsRouter: SettingsRouterAPI {
          analyticsRecording: AnalyticsEventRecording = resolve(),
          alertPresenter: AlertViewPresenter = AlertViewPresenter.shared,
          cardListService: CardListServiceAPI = resolve(),
+         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
          currencyRouting: CurrencyRouting,
          tabSwapping: TabSwapping) {
         self.appCoordinator = appCoordinator
@@ -71,6 +73,7 @@ final class SettingsRouter: SettingsRouterAPI {
         self.currencyRouting = currencyRouting
         self.tabSwapping = tabSwapping
         self.guidRepositoryAPI = guidRepositoryAPI
+        self.paymentMethodTypesService = paymentMethodTypesService
         
         previousRelay
             .bindAndCatch(weak: self) { (self) in
@@ -96,7 +99,7 @@ final class SettingsRouter: SettingsRouterAPI {
     }
     
     func presentSettings() {
-        let interactor = SettingsScreenInteractor()
+        let interactor = SettingsScreenInteractor(paymentMethodTypesService: paymentMethodTypesService)
         let presenter = SettingsScreenPresenter(interactor: interactor, router: self)
         let controller = SettingsViewController(presenter: presenter)
         navigationRouter.present(viewController: controller, using: .modalOverTopMost)
@@ -140,7 +143,8 @@ final class SettingsRouter: SettingsRouterAPI {
                 .bindAndCatch(to: addCardCompletionRelay)
                 .disposed(by: disposeBag)
             let builder = CardComponentBuilder(
-                routingInteractor: interactor
+                routingInteractor: interactor,
+                paymentMethodTypesService: paymentMethodTypesService
             )
             cardRouter = CardRouter(
                 interactor: interactor,

@@ -10,38 +10,54 @@ import Sift
 import PlatformKit
 
 final class SiftService: SiftServiceAPI {
-
-    /// Enables the services
-    func enable() {
-        let sift = Sift.sharedInstance()
-        sift?.accountId = identifier()
-        sift?.beaconKey = beacon()
-        sift?.allowUsingMotionSensors = false
-        sift?.disallowCollectingLocationData = true
+    
+    private enum Constants {
+        static let siftAccountId = "siftAccountId"
+        static let siftKey = "siftKey"
+    }
+    
+    // MARK: - Private properties
+    
+    private var sift: Sift {
+        Sift.sharedInstance()
     }
 
-    // MARK: - Private
-
-    private func identifier() -> String {
-        let info = infoDictionary()
-        guard let accountId = info["siftAccountId"] as? String else {
+    private var identifier: String {
+        guard let accountId = infoDictionary[Constants.siftAccountId] as? String else {
             return ""
         }
         return accountId
     }
 
-    private func beacon() -> String {
-        let info = infoDictionary()
-        guard let accountId = info["siftKey"] as? String else {
+    private var beacon: String {
+        guard let accountId = infoDictionary[Constants.siftKey] as? String else {
             return ""
         }
         return accountId
     }
 
-    private func infoDictionary() -> [String: Any] {
+    private var infoDictionary: [String: Any] {
         guard let infoDictionary = Bundle.main.infoDictionary else {
             return [:]
         }
         return infoDictionary
+    }
+    
+    // MARK: - SiftServiceAPI
+
+    /// Enables the services
+    func enable() {
+        sift.accountId = identifier
+        sift.beaconKey = beacon
+        sift.allowUsingMotionSensors = false
+        sift.disallowCollectingLocationData = true
+    }
+
+    func set(userId: String) {
+        sift.userId = userId
+    }
+
+    func removeUserId() {
+        sift.unsetUserId()
     }
 }

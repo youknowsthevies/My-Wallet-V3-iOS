@@ -57,7 +57,7 @@ final class CardSettingsSectionInteractor {
     // MARK: - Setup
     
     init(featureFetcher: FeatureFetching = resolve(),
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
+         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
          tierLimitsProvider: TierLimitsProviding) {
         self.featureFetcher = featureFetcher
         self.paymentMethodTypesService = paymentMethodTypesService

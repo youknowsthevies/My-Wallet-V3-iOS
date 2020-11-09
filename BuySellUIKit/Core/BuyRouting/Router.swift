@@ -35,6 +35,7 @@ public final class Router: RouterAPI {
     private let stateService: StateServiceAPI
     private let kycRouter: KYCRouterAPI
     private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
+    private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private let settingsService: FiatCurrencySettingsServiceAPI
     private let cryptoSelectionService: CryptoCurrencySelectionServiceAPI
     private let exchangeProvider: ExchangeProviding
@@ -53,6 +54,7 @@ public final class Router: RouterAPI {
     // MARK: - Setup
     
     public init(navigationRouter: NavigationRouterAPI,
+                paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
                 settingsService: CompleteSettingsServiceAPI = resolve(),
                 supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
                 builder: Buildable,
@@ -70,7 +72,7 @@ public final class Router: RouterAPI {
             service: supportedPairsInteractor,
             defaultSelectedData: CryptoCurrency.bitcoin
         )
-        
+        self.paymentMethodTypesService = paymentMethodTypesService
         self.cryptoSelectionService = cryptoSelectionService
     }
     
@@ -187,7 +189,8 @@ public final class Router: RouterAPI {
             with: checkoutData
         )
         let builder = CardComponentBuilder(
-            routingInteractor: interactor
+            routingInteractor: interactor,
+            paymentMethodTypesService: paymentMethodTypesService
         )
         cardRouter = CardRouter(
             interactor: interactor,
@@ -335,7 +338,7 @@ public final class Router: RouterAPI {
     }
     
     private func showPaymentMethodsScreen() {
-        let interactor = PaymentMethodsScreenInteractor()
+        let interactor = PaymentMethodsScreenInteractor(paymentMethodTypesService: paymentMethodTypesService)
         let presenter = PaymentMethodsScreenPresenter(
             interactor: interactor,
             stateService: stateService
@@ -512,6 +515,7 @@ public final class Router: RouterAPI {
     private func showBuyCryptoScreen() {
         let interactor = BuyCryptoScreenInteractor(
             exchangeProvider: exchangeProvider,
+            paymentMethodTypesService: paymentMethodTypesService,
             cryptoCurrencySelectionService: cryptoSelectionService
         )
 
