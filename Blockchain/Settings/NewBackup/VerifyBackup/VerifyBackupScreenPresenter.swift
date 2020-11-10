@@ -67,7 +67,7 @@ final class VerifyBackupScreenPresenter {
     // MARK: - Init
     
     init(stateService: BackupRouterStateService,
-         service: RecoveryPhraseVerifyingServiceAPI = resolve(),
+         service: RecoveryPhraseVerifyingServiceAPI,
          loadingViewPresenter: LoadingViewPresenting = resolve()) {
         self.stateService = stateService
         self.loadingViewPresenter = loadingViewPresenter

@@ -32,6 +32,8 @@ extension DependencyContainer {
         single { OnboardingRouter() }
         
         factory { PaymentPresenter() }
+        
+        factory { RecoveryPhraseVerifyingService() as RecoveryPhraseVerifyingServiceAPI }
 
         factory { AirdropRouter() as AirdropRouterAPI }
         

@@ -105,6 +105,8 @@ extension DependencyContainer {
 
         // MARK: - Services - General
 
+        factory { CardActivationService() as CardActivationServiceAPI }
+        
         factory { OrderConfirmationService() as OrderConfirmationServiceAPI }
 
         factory { OrderQuoteService() as OrderQuoteServiceAPI }
