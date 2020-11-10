@@ -31,7 +31,7 @@ final class CustodyWithdrawalSubmissionInteractor {
     
     // MARK: - Private Properties
     
-    private unowned let withdrawalService: CustodyWithdrawalServiceAPI
+    private let withdrawalService: CustodyWithdrawalServiceAPI
     private let disposeBag = DisposeBag()
     
     init(withdrawalService: CustodyWithdrawalServiceAPI) {

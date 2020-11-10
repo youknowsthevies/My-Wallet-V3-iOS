@@ -97,6 +97,11 @@ extension DependencyContainer {
             let client: CardClientAPI = DIKit.resolve()
             return client as CardDeletionClientAPI
         }
+        
+        factory { () -> CardDetailClientAPI in
+            let client: CardClientAPI = DIKit.resolve()
+            return client as CardDetailClientAPI
+        }
 
         // MARK: - Services - General
 

@@ -6,12 +6,31 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxRelay
 import RxSwift
 import ToolKit
 
 /// Service to poll for KYC Tiers updates
-public final class KYCTierUpdatePollingService {
+public protocol KYCTierUpdatePollingServiceAPI {
+    
+    /// Cancel polling
+    var cancel: Completable { get }
+    
+    /// Start polling until the user reaches a given status on a given tier, or an
+    /// given amout of time passes.
+    ///
+    /// - Parameter desiredTier: The desired tier.
+    /// - Parameter desiredStatus: The desired status.
+    /// - Parameter seconds: How many seconds long polling should happen.
+    func poll(untilTier desiredTier: KYC.Tier,
+              is desiredStatus: KYC.AccountStatus,
+              timeoutAfter seconds: TimeInterval) -> Single<KYC.AccountStatus>
+}
+
+/// Service to poll for KYC Tiers updates
+final class KYCTierUpdatePollingService: KYCTierUpdatePollingServiceAPI {
+    
     // MARK: - Types
 
     private enum ServiceError: Error {
@@ -28,12 +47,12 @@ public final class KYCTierUpdatePollingService {
 
     // MARK: - Setup
 
-    public init(tiersService: KYCTiersServiceAPI) {
+    init(tiersService: KYCTiersServiceAPI = resolve()) {
         self.tiersService = tiersService
     }
 
     /// Cancel polling
-    public var cancel: Completable {
+    var cancel: Completable {
         Completable
             .create { [weak self] observer -> Disposable in
                 self?.isActiveRelay.accept(false)
@@ -48,9 +67,9 @@ public final class KYCTierUpdatePollingService {
     /// - Parameter desiredTier: The desired tier.
     /// - Parameter desiredStatus: The desired status.
     /// - Parameter seconds: How many seconds long polling should happen.
-    public func poll(untilTier desiredTier: KYC.Tier,
-                     is desiredStatus: KYC.AccountStatus,
-                     timeoutAfter seconds: TimeInterval) -> Single<KYC.AccountStatus> {
+    func poll(untilTier desiredTier: KYC.Tier,
+              is desiredStatus: KYC.AccountStatus,
+              timeoutAfter seconds: TimeInterval) -> Single<KYC.AccountStatus> {
         endDate = Date().addingTimeInterval(seconds)
         return start(desiredTier: desiredTier, shouldMatch: desiredStatus)
     }

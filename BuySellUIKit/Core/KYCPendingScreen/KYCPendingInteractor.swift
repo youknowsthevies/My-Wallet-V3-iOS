@@ -24,14 +24,14 @@ final class KYCPendingInteractor: Interactor {
     }
     
     private let eligibilityService: EligibilityServiceAPI
-    private let kycTiersService: KYCTierUpdatePollingService
+    private let kycTiersService: KYCTierUpdatePollingServiceAPI
     private let disposeBag = DisposeBag()
 
     private let verificationStateRelay = BehaviorRelay<KYCPendingVerificationState>(value: .loading)
 
     // MARK: - Setup
     
-    init(kycTiersService: KYCTierUpdatePollingService = resolve(),
+    init(kycTiersService: KYCTierUpdatePollingServiceAPI = resolve(),
          eligibilityService: EligibilityServiceAPI = resolve()) {
         self.kycTiersService = kycTiersService
         self.eligibilityService = eligibilityService

@@ -207,11 +207,11 @@ class NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
                         deviceId: self.deviceInfo.uuidString,
                         email: payload.email
                     )
-                    .do(onSuccess: { nabuSessionTokenResponse in
-                        self.siftService.set(
-                            userId: nabuSessionTokenResponse.userId
-                        )
-                    })
+//                    .do(onSuccess: { nabuSessionTokenResponse in
+//                        self.siftService.set(
+//                            userId: nabuSessionTokenResponse.userId
+//                        )
+//                    })
             }
     }
     

@@ -53,9 +53,9 @@ final class NabuUserService: NabuUserServiceAPI {
     private lazy var setup: Void = {        
         cachedUser.setFetch(weak: self) { (self) in
             self.client.user()
-                .do(onSuccess: { nabuUser in
-                    self.siftService.set(userId: nabuUser.identifier)
-                })
+//                .do(onSuccess: { nabuUser in
+//                    self.siftService.set(userId: nabuUser.identifier)
+//                })
         }
     }()
         
