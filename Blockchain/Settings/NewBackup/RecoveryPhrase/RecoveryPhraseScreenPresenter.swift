@@ -51,9 +51,9 @@ final class RecoveryPhraseScreenPresenter {
     // MARK: - Init
     
     init(stateService: BackupRouterStateService,
+         recoveryPhraseVerifying: RecoveryPhraseVerifyingServiceAPI,
          mnemonicAccess: MnemonicAccessAPI = resolve(),
-         mnemonicComponentsProviding: MnemonicComponentsProviding = resolve(),
-         recoveryPhraseVerifying: RecoveryPhraseVerifyingServiceAPI = resolve()) {
+         mnemonicComponentsProviding: MnemonicComponentsProviding = resolve()) {
         self.stateService = stateService
         self.recoveryPhraseVerifying = recoveryPhraseVerifying
         
