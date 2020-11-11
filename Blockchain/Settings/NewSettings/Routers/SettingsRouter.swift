@@ -60,7 +60,7 @@ final class SettingsRouter: SettingsRouterAPI {
          guidRepositoryAPI: GuidRepositoryAPI = WalletManager.shared.repository,
          navigationRouter: NavigationRouterAPI = NavigationRouter(),
          analyticsRecording: AnalyticsEventRecording = resolve(),
-         alertPresenter: AlertViewPresenter = AlertViewPresenter.shared,
+         alertPresenter: AlertViewPresenter = resolve(),
          cardListService: CardListServiceAPI = resolve(),
          paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
          currencyRouting: CurrencyRouting,

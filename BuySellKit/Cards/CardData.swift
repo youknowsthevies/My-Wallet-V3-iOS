@@ -108,7 +108,8 @@ extension CardData {
 
 extension CardData: Equatable {
     public static func == (lhs: CardData, rhs: CardData) -> Bool {
-        lhs.identifier == rhs.identifier
+        lhs.identifier == rhs.identifier &&
+            lhs.state == rhs.state
     }
 }
 
