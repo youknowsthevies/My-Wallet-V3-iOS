@@ -31,9 +31,7 @@ final class CardSettingsSectionInteractor {
             .asObservable()
             .flatMap(weak: self) { (self, enabled) -> Observable<State> in
                 guard enabled else { return .just(.invalid(.empty)) }
-                return self.cards.map { values -> State in
-                    .value(values)
-                }
+                return self.cardsState
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
@@ -41,7 +39,13 @@ final class CardSettingsSectionInteractor {
         
     private let stateRelay = BehaviorRelay<State>(value: .invalid(.empty))
     private let disposeBag = DisposeBag()
-    
+
+    private var cardsState: Observable<State> {
+        cards.map { values -> State in
+            .value(values)
+        }
+    }
+
     private var cards: Observable<[CardData]> {
         paymentMethodTypesService.cards
             .map { $0.filter { $0.state == .active || $0.state == .expired } }

@@ -12,7 +12,7 @@ import RxSwift
 
 public protocol PaymentAccountServiceAPI: class {
 
-    /// Fetch the Payment Account information for thr currency wallet's fiat currency
+    /// Fetch the Payment Account information for the currency wallet's fiat currency
     var paymentAccount: Single<PaymentAccount> { get }
     
     /// Fetch the Payment Account information for the given currency.

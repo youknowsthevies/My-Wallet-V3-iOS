@@ -104,8 +104,6 @@ extension DependencyContainer {
         }
 
         // MARK: - Services - General
-
-        factory { CardActivationService() as CardActivationServiceAPI }
         
         factory { OrderConfirmationService() as OrderConfirmationServiceAPI }
 
@@ -126,27 +124,31 @@ extension DependencyContainer {
         factory { OrderCancellationService() as OrderCancellationServiceAPI }
         
         factory { OrderCreationService() as OrderCreationServiceAPI }
-        
-        single { PaymentMethodsService() as PaymentMethodsServiceAPI }
-        
+
         factory { PaymentAccountService() as PaymentAccountServiceAPI }
-        
+
         single { SupportedPairsInteractorService() as SupportedPairsInteractorServiceAPI }
         
         factory { SupportedPairsService() as SupportedPairsServiceAPI }
-        
-        single { BeneficiariesService() as BeneficiariesServiceAPI }
-        
-        factory { PaymentMethodTypesService() as PaymentMethodTypesServiceAPI }
-        
+
         single { EligibilityService() as EligibilityServiceAPI }
         
         factory { SuggestedAmountsService() as SuggestedAmountsServiceAPI }
 
-        factory { CardUpdateService() as CardUpdateServiceAPI }
+        // MARK: - Services - Payment Methods
+
+        single { BeneficiariesService() as BeneficiariesServiceAPI }
+
+        single { PaymentMethodTypesService() as PaymentMethodTypesServiceAPI }
+
+        single { PaymentMethodsService() as PaymentMethodsServiceAPI }
 
         // MARK: - Services - Cards
-        
+
+        factory { CardActivationService() as CardActivationServiceAPI }
+
+        factory { CardUpdateService() as CardUpdateServiceAPI }
+
         single { CardListService() as CardListServiceAPI }
         
         factory { CardDeletionService() as PaymentMethodDeletionServiceAPI }

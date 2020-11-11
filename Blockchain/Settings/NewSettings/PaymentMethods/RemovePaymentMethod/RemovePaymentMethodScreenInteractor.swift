@@ -52,7 +52,7 @@ final class RemovePaymentMethodScreenInteractor {
     private let deletionService: PaymentMethodDeletionServiceAPI
     
     init(data: PaymentMethodRemovalData,
-         deletionService: PaymentMethodDeletionServiceAPI = resolve(),
+         deletionService: PaymentMethodDeletionServiceAPI,
          eventRecorder: AnalyticsEventRecording = resolve()) {
         self.deletionService = deletionService
         self.eventRecorder = eventRecorder
