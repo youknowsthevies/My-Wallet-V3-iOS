@@ -21,9 +21,12 @@ final class BackupFundsCustodialRouter: BackupRouterAPI {
     
     private let navigationRouter: NavigationRouterAPI
     private var stateService: BackupRouterStateService!
+    private let recoveryPhraseVerifyingService: RecoveryPhraseVerifyingServiceAPI
     private let disposeBag = DisposeBag()
     
-    init(navigationRouter: NavigationRouterAPI = NavigationRouter()) {
+    init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
+         recoveryPhraseVerifying: RecoveryPhraseVerifyingServiceAPI = resolve()) {
+        self.recoveryPhraseVerifyingService = recoveryPhraseVerifying
         self.navigationRouter = navigationRouter
     }
     
@@ -56,11 +59,17 @@ final class BackupFundsCustodialRouter: BackupRouterAPI {
         case .backupFunds(let presentationType, let entry):
             showBackupFunds(presentationType: presentationType, entry: entry)
         case .recovery:
-            let presenter = RecoveryPhraseScreenPresenter(stateService: stateService)
+            let presenter = RecoveryPhraseScreenPresenter(
+                stateService: stateService,
+                recoveryPhraseVerifying: recoveryPhraseVerifyingService
+                )
             let controller = RecoveryPhraseViewController(presenter: presenter)
             navigationRouter.navigationControllerAPI?.pushViewController(controller, animated: true)
         case .verification:
-            let presenter = VerifyBackupScreenPresenter(stateService: stateService)
+            let presenter = VerifyBackupScreenPresenter(
+                stateService: stateService,
+                service: recoveryPhraseVerifyingService
+            )
             let controller = VerifyBackupViewController(presenter: presenter)
             navigationRouter.navigationControllerAPI?.pushViewController(controller, animated: true)
         }
