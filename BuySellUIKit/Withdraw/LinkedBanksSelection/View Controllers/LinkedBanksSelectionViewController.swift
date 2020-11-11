@@ -95,8 +95,7 @@ class LinkedBanksSelectionViewController: BaseScreenViewController,
         set(barStyle: .darkContent(),
             leadingButtonStyle: .none,
             trailingButtonStyle: .close)
-        // TODO: text value should be from Localized strings
-        titleViewStyle = .text(value: "Linked Banks")
+        titleViewStyle = .text(value: LocalizationConstants.FiatWithdrawal.LinkedBanks.Navigation.title)
     }
 
     /// - note: We're overriding this method but we don't call `super` as we want

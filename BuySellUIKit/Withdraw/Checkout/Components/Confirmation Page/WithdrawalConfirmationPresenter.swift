@@ -15,7 +15,7 @@ import RxSwift
 
 final class WithdrawalConfirmationPresenter: RibBridgePresenter, PendingStatePresenterAPI {
 
-    private typealias LocalizedString = LocalizationConstants.SimpleBuy.Checkout.PendingOrderScreen
+    private typealias LocalizedString = LocalizationConstants.FiatWithdrawal.Checkout.ConfirmationScreen
 
     // MARK: - Properties
     var viewModel: Driver<PendingStateViewModel> = .empty()
@@ -63,15 +63,12 @@ final class WithdrawalConfirmationPresenter: RibBridgePresenter, PendingStatePre
                           backgroundColor: .fiat,
                           cornerRadiusRatio: 0.2)
                 ),
-            title: "Withdrawing \(amount.toDisplayString(includeSymbol: true))",
-            subtitle: "We’re completing your withdrawal now.")
+            title: String(format: LocalizedString.Loading.titlePrefix, amount.toDisplayString(includeSymbol: true)),
+            subtitle: LocalizedString.Loading.subtitle)
     }
 
     private static func viewModel(with amount: FiatValue, buttonModel: ButtonViewModel) -> PendingStateViewModel {
-        // TODO: Use localized strings here
-        let amountTitle = amount.toDisplayString(includeSymbol: true)
-        let subtitle = "Success! We're are withdrawing the cash from your GBP Wallet now. The funds should be in your bank in 1-3 business days."
-        return PendingStateViewModel(compositeStatusViewType: .composite(
+        PendingStateViewModel(compositeStatusViewType: .composite(
             .init(
                 baseViewType: .text(amount.currencyType.symbol),
                 sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.success.name), position: .radiusDistanceFromCenter),
@@ -79,8 +76,8 @@ final class WithdrawalConfirmationPresenter: RibBridgePresenter, PendingStatePre
                 cornerRadiusRatio: 0.2
             )
         ),
-        title: "\(amountTitle) Withdrawal",
-        subtitle: subtitle,
+        title: String(format: LocalizedString.Success.titleSuffix, amount.toDisplayString(includeSymbol: true)),
+        subtitle: LocalizedString.Success.subtitle,
         button: buttonModel)
     }
 
@@ -93,8 +90,8 @@ final class WithdrawalConfirmationPresenter: RibBridgePresenter, PendingStatePre
                 cornerRadiusRatio: 0.2
             )
         ),
-        title: LocalizationConstants.ErrorScreen.title,
-        subtitle: LocalizationConstants.ErrorScreen.subtitle,
+        title: LocalizedString.Error.titleSuffix,
+        subtitle: LocalizedString.Error.subtitle,
         button: buttonModel)
     }
 }

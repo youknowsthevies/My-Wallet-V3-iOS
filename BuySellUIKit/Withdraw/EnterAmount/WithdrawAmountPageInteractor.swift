@@ -33,6 +33,8 @@ protocol WithdrawAmountPagePresentable: Presentable {
 final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPagePresentable>,
                                           WithdrawAmountPageInteractable {
 
+    private typealias LocalizatedStrings = LocalizationConstants.FiatWithdrawal.EnterAmountScreen
+
     weak var router: WithdrawAmountPageRouting?
     weak var listener: WithdrawAmountPageListener?
 
@@ -144,10 +146,9 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
     }
 
     private func initialState() -> State {
-        // TODO: Use Localized strings instead
-        let topSelectionTitle = String(format: "From: My %@ Wallet",
+        let topSelectionTitle = String(format: LocalizatedStrings.from,
                                        fiatCurrency.code)
-        let bottomSelectionTitle = String(format: "To: %@ %@",
+        let bottomSelectionTitle = String(format: LocalizatedStrings.to,
                                           beneficiary.name,
                                           beneficiary.account)
         let topSelectionState = TopSelectionState(
@@ -160,8 +161,8 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
 
         let bottomAuxiliaryState = BottomAuxiliaryViewModelState.maxAvailable(
             SendAuxililaryViewPresenter(interactor: auxiliaryViewInteractor,
-                                        availableBalanceTitle: "Available",
-                                        maxButtonTitle: "Withdraw Max")
+                                        availableBalanceTitle: LocalizatedStrings.available,
+                                        maxButtonTitle: LocalizatedStrings.withdrawMax)
         )
 
         return State(

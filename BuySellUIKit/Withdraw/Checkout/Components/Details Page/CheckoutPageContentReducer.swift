@@ -23,7 +23,7 @@ final class CheckoutPageContentReducer: CheckoutPageContentReducing {
     private typealias TitleLabelInteractor = DefaultLabelContentInteractor
     private typealias DescriptionLabelInteractor = DefaultLabelContentInteractor
 
-    private typealias LocalizedString = LocalizationConstants.SimpleBuy.Checkout
+    private typealias LocalizedString = LocalizationConstants.FiatWithdrawal.Checkout
     private typealias LocalizedLineItem = LocalizationConstants.LineItem.Transactional
     private typealias LocalizedSummary = LocalizedString.Summary
     private typealias AccessibilityLineItem = Accessibility.Identifier.LineItem
@@ -101,6 +101,9 @@ final class CheckoutPageContentReducer: CheckoutPageContentReducing {
         ]
 
         cancelButtonViewModel = .cancel(with: LocalizationConstants.cancel)
-        continueButtonViewModel = .primary(with: "Withdraw \(data.amount.toDisplayString(includeSymbol: true))")
+
+        let continueButtonTitle = String(format: LocalizedString.Button.withdrawTitle,
+                                         data.amount.toDisplayString(includeSymbol: true))
+        continueButtonViewModel = .primary(with: continueButtonTitle)
     }
 }

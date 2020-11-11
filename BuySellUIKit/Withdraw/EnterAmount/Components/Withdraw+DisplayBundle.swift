@@ -97,13 +97,12 @@ struct DisplayBundle {
 extension DisplayBundle {
 
     static func withdraw(currency: Currency) -> DisplayBundle {
-        // TODO: Add correct Localized strings
-        typealias LocalizedString = LocalizationConstants.SimpleBuy.SellCryptoScreen
+        typealias LocalizedString = LocalizationConstants.FiatWithdrawal.EnterAmountScreen
         typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
         typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.SellScreen
 
         let strings = Strings(
-            title: "Withdraw \(currency.code)",
+            title: String(format: LocalizedString.title, currency.code),
             ctaButton: LocalizedString.ctaButton,
             bottomAuxiliaryItemSeparatorTitle: "",
             useMin: "",
