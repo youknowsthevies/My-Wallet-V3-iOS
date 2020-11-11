@@ -40,7 +40,7 @@ final class WithdrawalService: WithdrawalServiceAPI {
     func withdrawal(for checkout: WithdrawalCheckoutData) -> Single<Result<FiatValue, Error>> {
         client.withdraw(data: checkout)
             .mapToResult { (response) -> FiatValue in
-                guard let amount = FiatValue.create(minor: response.amount.value, currency: checkout.currency) else {
+                guard let amount = FiatValue.create(major: response.amount.value, currency: checkout.currency) else {
                     fatalError("Couldn't create FiatValue from withdrawal response: \(response)")
                 }
                 return amount

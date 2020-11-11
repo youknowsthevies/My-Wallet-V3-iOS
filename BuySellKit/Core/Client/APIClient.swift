@@ -357,9 +357,11 @@ final class APIClient: SimpleBuyClientAPI {
 
     func withdraw(data: WithdrawalCheckoutData) -> Single<WithdrawalCheckoutResponse> {
         let payload = WithdrawalPayload(data: data)
+        let headers = [HttpHeaderField.blockchainOrigin: HttpHeaderValue.simpleBuy]
         let request = requestBuilder.post(
             path: Path.withdrawal,
             body: try? payload.encode(),
+            headers: headers,
             authenticated: true
         )!
         return communicator.perform(request: request)

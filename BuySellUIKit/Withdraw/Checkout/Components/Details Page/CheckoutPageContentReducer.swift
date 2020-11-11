@@ -69,7 +69,7 @@ final class CheckoutPageContentReducer: CheckoutPageContentReducing {
         )
 
         let feeLineItemCellInteractor: CellInteractor = .init(
-            title: TitleLabelInteractor(knownValue: LocalizedLineItem.to),
+            title: TitleLabelInteractor(knownValue: LocalizedLineItem.fee),
             description: DescriptionLabelInteractor(
                 knownValue: "\(data.fee.toDisplayString(includeSymbol: true))"
             )
