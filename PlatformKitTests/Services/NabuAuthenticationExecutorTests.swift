@@ -38,7 +38,7 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
             userCreationClient: userCreationClient,
             store: store,
             settingsService: settingsService,
-            siftService: siftService,
+//            siftService: siftService,
             jwtService: jwtService,
             authenticationClient: authenticationClient,
             credentialsRepository: walletRepository,

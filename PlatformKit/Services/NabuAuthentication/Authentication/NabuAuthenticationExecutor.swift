@@ -41,7 +41,7 @@ class NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
     private let jwtService: JWTServiceAPI
     private let authenticationClient: NabuAuthenticationClientAPI
     private let settingsService: SettingsServiceAPI
-    private let siftService: SiftServiceAPI
+//    private let siftService: SiftServiceAPI
     
     private let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
     private let semaphore = DispatchSemaphore(value: 1)
@@ -49,7 +49,7 @@ class NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
     init(userCreationClient: UserCreationClientAPI = resolve(),
          store: NabuTokenStore = resolve(),
          settingsService: SettingsServiceAPI = resolve(),
-         siftService: SiftServiceAPI = resolve(),
+//         siftService: SiftServiceAPI = resolve(),
          jwtService: JWTServiceAPI = resolve(),
          authenticationClient: NabuAuthenticationClientAPI = resolve(),
          credentialsRepository: CredentialsRepository = resolve(),
@@ -57,7 +57,7 @@ class NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
         self.userCreationClient = userCreationClient
         self.store = store
         self.settingsService = settingsService
-        self.siftService = siftService
+//        self.siftService = siftService
         self.credentialsRepository = credentialsRepository
         self.jwtService = jwtService
         self.authenticationClient = authenticationClient
