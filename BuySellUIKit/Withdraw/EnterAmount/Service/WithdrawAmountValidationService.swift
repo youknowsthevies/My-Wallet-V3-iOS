@@ -52,13 +52,13 @@ final class WithdrawAmountValidationService {
     }
 
     let balance: Single<MoneyValue>
+    let account: Observable<SingleAccount>
 
     // MARK: - Services
 
     private let coincore: Coincore
 
     // MARK: - Properties
-    private let account: Observable<SingleAccount>
     private let fiatCurrency: FiatCurrency
     private let beneficiary: Beneficiary
 
@@ -74,7 +74,7 @@ final class WithdrawAmountValidationService {
                 group.accounts.first(where: { $0.currencyType == fiatCurrency.currency })
             }
             .asObservable()
-            .share()
+            .share(replay: 1, scope: .whileConnected)
 
         self.balance = account
             .asObservable()

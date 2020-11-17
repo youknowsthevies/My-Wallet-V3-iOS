@@ -66,7 +66,8 @@ public final class Coincore {
              .receive,
              .sell,
              .send,
-             .viewActivity:
+             .viewActivity,
+             .withdraw:
             unimplemented() // TODO: (Coincore)
         }
     }
@@ -85,7 +86,8 @@ public final class Coincore {
             return !(destinationAccount is FiatAccount)
         case .deposit,
              .receive,
-             .viewActivity:
+             .viewActivity,
+             .withdraw:
             return false
         }
     }

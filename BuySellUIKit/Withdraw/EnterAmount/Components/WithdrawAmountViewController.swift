@@ -193,6 +193,12 @@ final class WithdrawAmountViewController: BaseScreenViewController,
         topSelection.map(\.leadingContent)
             .drive(topSelectionButtonView.viewModel.leadingContentTypeRelay)
             .disposed(by: disposeBag)
+        topSelection.compactMap(\.trailingContent)
+            .drive(topSelectionButtonView.viewModel.trailingContentRelay)
+            .disposed(by: disposeBag)
+        topSelection.map(\.horizontalOffset)
+            .drive(topSelectionButtonView.viewModel.horizontalOffsetRelay)
+            .disposed(by: disposeBag)
 
         state.map(\.bottomAuxiliaryState)
             .distinctUntilChanged()
