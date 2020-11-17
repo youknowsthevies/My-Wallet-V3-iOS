@@ -101,6 +101,7 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
 
         let viewModel = TransactionDescriptorViewModel(assetAction: .withdraw, adjustActionIconColor: true)
         validationService.account
+            .map(TransactionDescriptorViewModel.TransactionAccountValue.value)
             .bind(to: viewModel.fromAccountRelay)
             .disposeOnDeactivate(interactor: self)
 

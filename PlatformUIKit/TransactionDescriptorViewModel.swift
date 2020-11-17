@@ -37,6 +37,7 @@ public struct TransactionDescriptorViewModel {
             return Driver.just(provideBadgeImageViewModel(accentColor: .primaryButton, backgroundColor: .lightBlueBackground))
         }
         return fromAccountRelay
+            .compactMap(\.account)
             .map(\.currencyType)
             .map(BadgeImageAttributes.init)
             // This should not happen.
@@ -52,6 +53,7 @@ public struct TransactionDescriptorViewModel {
     
     public var fromAccountBadgeImageViewModel: Driver<BadgeImageViewModel> {
         fromAccountRelay
+            .compactMap(\.account)
             .map(\.currencyType)
             .map(BadgeImageAttributes.init)
             // This should not happen.
@@ -71,7 +73,7 @@ public struct TransactionDescriptorViewModel {
     
     public var toAccountBadgeImageViewModel: Driver<BadgeImageViewModel> {
         toAccountRelay
-            .compactMap { $0 }
+            .compactMap(\.account)
             .map(\.currencyType)
             .map(BadgeImageAttributes.init)
             // This should not happen.
@@ -89,16 +91,9 @@ public struct TransactionDescriptorViewModel {
 
     public var toAccountBadgeIsHidden: Driver<Bool> {
         toAccountRelay
-            .startWith(nil)
-            .map { $0 == nil }
+            .map(\.isEmpty)
             .asDriver(onErrorDriveWith: .empty())
     }
-    
-    /// The `SingleAccount` that the transaction is originating from
-    public let fromAccountRelay = ReplaySubject<SingleAccount>.create(bufferSize: 1)
-    
-    /// The `SingleAccount` that is the destination for the transaction
-    public let toAccountRelay = ReplaySubject<SingleAccount?>.create(bufferSize: 1)
 
     private let assetAction: AssetAction
     private let adjustActionIconColor: Bool
@@ -106,6 +101,49 @@ public struct TransactionDescriptorViewModel {
     public init(assetAction: AssetAction, adjustActionIconColor: Bool = false) {
         self.assetAction = assetAction
         self.adjustActionIconColor = adjustActionIconColor
+    }
+
+    public enum TransactionAccountValue {
+        case value(SingleAccount)
+        case empty
+
+        var account: SingleAccount? {
+            switch self {
+            case .value(let account):
+                return account
+            case .empty:
+                return nil
+            }
+        }
+
+        var isEmpty: Bool {
+            switch self {
+            case .value:
+                return false
+            case .empty:
+                return true
+            }
+        }
+    }
+
+    /// The `SingleAccount` that the transaction is originating from
+    public let fromAccountRelay = BehaviorRelay<TransactionAccountValue>(value: .empty)
+
+    /// The `SingleAccount` that is the destination for the transaction
+    public let toAccountRelay = BehaviorRelay<TransactionAccountValue>(value: .empty)
+
+    public init(sourceAccount: SingleAccount? = nil,
+                destinationAccount: SingleAccount? = nil,
+                assetAction: AssetAction,
+                adjustActionIconColor: Bool = false) {
+        self.assetAction = assetAction
+        self.adjustActionIconColor = adjustActionIconColor
+        if let sourceAccount = sourceAccount {
+            self.fromAccountRelay.accept(.value(sourceAccount))
+        }
+        if let destinationAccount = destinationAccount {
+            self.toAccountRelay.accept(.value(destinationAccount))
+        }
     }
 
     private func provideBadgeImageViewModel(accentColor: UIColor, backgroundColor: UIColor) -> BadgeImageViewModel {
