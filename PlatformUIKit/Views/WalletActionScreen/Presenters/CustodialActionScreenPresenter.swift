@@ -104,9 +104,6 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
             }
             actionPresenters.append(DefaultWalletActionCellPresenter(currencyType: currency, action: .deposit))
 
-            guard internalFeatureFlags.isEnabled(.withdrawalFlow) else {
-                break
-            }
             guard enabledCurrenciesService.withdrawEnabledFiatCurrencies.contains(fiatCurrency) else {
                 break
             }
