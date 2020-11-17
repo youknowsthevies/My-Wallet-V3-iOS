@@ -19,15 +19,14 @@ protocol CheckoutPageBuildable {
 final class CheckoutPageBuilder: CheckoutPageBuildable {
     func build(listener: CheckoutPageListener, checkoutData: WithdrawalCheckoutData) -> CheckoutPageRouter {
         let detailsPresenter = CheckoutPageDetailsPresenter(fiatCurrency: checkoutData.currency)
-        let checkountViewController = DetailsScreenViewController(presenter: detailsPresenter)
+        let checkoutViewController = DetailsScreenViewController(presenter: detailsPresenter)
         let interactor = CheckoutPageInteractor(presenter: detailsPresenter,
                                                 checkoutData: checkoutData)
         interactor.listener = listener
         let confirmationPageBuilder = ConfirmationPageBuilder()
-        let contentPage = ContentPage(state: .initial)
+        let contentPage = ContentPage(state: .render(checkoutViewController))
         return CheckoutPageRouter(interactor: interactor,
                                   contentControllable: contentPage,
-                                  checkoutControllable: checkountViewController,
                                   confirmationBuilder: confirmationPageBuilder)
     }
 }

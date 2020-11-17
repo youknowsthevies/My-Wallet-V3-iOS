@@ -24,21 +24,13 @@ final class CheckoutPageRouter: ViewableRouter<CheckoutPageInteractable, Content
                                 CheckoutPageRouting {
 
     private let confirmationPageBuilder: ConfirmationPageBuilder
-    private let checkoutControllable: ViewControllable
 
     init(interactor: CheckoutPageInteractable,
          contentControllable: ContentPageControllable,
-         checkoutControllable: ViewControllable,
          confirmationBuilder: ConfirmationPageBuilder) {
-        self.checkoutControllable = checkoutControllable
         self.confirmationPageBuilder = confirmationBuilder
         super.init(interactor: interactor, viewController: contentControllable)
         interactor.router = self
-    }
-
-    override func didLoad() {
-        super.didLoad()
-        viewController.transition(to: .render(checkoutControllable))
     }
 
     func route(to type: CheckoutRoute) {

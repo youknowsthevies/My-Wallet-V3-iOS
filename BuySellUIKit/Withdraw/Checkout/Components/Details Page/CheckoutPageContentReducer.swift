@@ -64,7 +64,7 @@ final class CheckoutPageContentReducer: CheckoutPageContentReducing {
         let toLineItemCellInteractor: CellInteractor = .init(
             title: TitleLabelInteractor(knownValue: LocalizedLineItem.to),
             description: DescriptionLabelInteractor(
-                knownValue: "\(data.beneficiary.name)"
+                knownValue: "\(data.beneficiary.name) \(data.beneficiary.account)"
             )
         )
 
