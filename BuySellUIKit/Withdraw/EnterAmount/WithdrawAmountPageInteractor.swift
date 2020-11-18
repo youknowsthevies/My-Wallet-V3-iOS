@@ -99,8 +99,14 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
             .bindAndCatch(to: amountInteractor.stateRelay)
             .disposeOnDeactivate(interactor: self)
 
+        let viewModel = TransactionDescriptorViewModel(assetAction: .withdraw, adjustActionIconColor: true)
+        validationService.account
+            .map(TransactionDescriptorViewModel.TransactionAccountValue.value)
+            .bindAndCatch(to: viewModel.fromAccountRelay)
+            .disposeOnDeactivate(interactor: self)
+
         let interactorState = validationState
-            .scan(initialState()) { (state, updater) -> State in
+            .scan(initialState(descriptorViewModel: viewModel)) { (state, updater) -> State in
                 var state = state
                 return state.update(\.canContinue, value: updater.isValid)
             }
@@ -145,7 +151,7 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
         }
     }
 
-    private func initialState() -> State {
+    private func initialState(descriptorViewModel: TransactionDescriptorViewModel) -> State {
         let topSelectionTitle = String(format: LocalizatedStrings.from,
                                        fiatCurrency.code)
         let bottomSelectionTitle = String(format: LocalizatedStrings.to,
@@ -155,7 +161,7 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
             title: topSelectionTitle,
             subtitle: bottomSelectionTitle,
             isEnabled: false,
-            trailingContent: .empty,
+            trailingContent: .transaction(descriptorViewModel),
             leadingContent: .none
         )
 
@@ -185,7 +191,8 @@ extension WithdrawAmountPageInteractor {
         var title: String
         var subtitle: String
         var isEnabled: Bool
-        var trailingContent: ImageViewContent?
+        var horizontalOffset: CGFloat = 0
+        var trailingContent: SelectionButtonViewModel.TrailingContent?
         var leadingContent: SelectionButtonViewModel.LeadingContentType?
         var accessibilityContent: SelectionButtonViewModel.AccessibilityContent?
     }
@@ -198,7 +205,6 @@ extension WithdrawAmountPageInteractor {
         /// Hidden - nothing to present
         case hidden
     }
-
 }
 
 extension WithdrawAmountPageInteractor {

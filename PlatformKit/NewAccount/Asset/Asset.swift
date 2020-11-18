@@ -22,6 +22,7 @@ public enum AssetAction {
     case send
     case receive
     case swap
+    case withdraw
 }
 
 public typealias AvailableActions = Set<AssetAction>

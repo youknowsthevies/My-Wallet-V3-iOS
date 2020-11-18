@@ -192,7 +192,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             case .deposit:
                 return "deposit-icon"
             case .withdrawal:
-                return "Withdraw"
+                return "withdraw-icon"
             case .unknown:
                 return ""
             }

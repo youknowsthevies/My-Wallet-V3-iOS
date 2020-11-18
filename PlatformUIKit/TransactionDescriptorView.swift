@@ -29,12 +29,19 @@ public final class TransactionDescriptorView: UIView {
             
             viewModel
                 .toAccountBadgeImageViewModel
-                .drive(fromAccountBadgeImageView.rx.viewModel)
+                .drive(toAccountBadgeImageView.rx.viewModel)
                 .disposed(by: disposeBag)
             
             viewModel
                 .transactionTypeBadgeImageViewModel
                 .drive(transactionTypeBadgeImageView.rx.viewModel)
+                .disposed(by: disposeBag)
+
+            viewModel
+                .toAccountBadgeIsHidden
+                .drive(weak: self, onNext: { (self, value) in
+                    self.toAccountBadgeImageView.isHidden = value
+                })
                 .disposed(by: disposeBag)
         }
     }
@@ -62,29 +69,23 @@ public final class TransactionDescriptorView: UIView {
         backgroundColor = .clear
         clipsToBounds = true
 
-        addSubview(fromAccountBadgeImageView)
-        addSubview(toAccountBadgeImageView)
-        addSubview(transactionTypeBadgeImageView)
-        bringSubviewToFront(transactionTypeBadgeImageView)
+        let stackView = UIStackView(arrangedSubviews: [
+            fromAccountBadgeImageView,
+            transactionTypeBadgeImageView,
+            toAccountBadgeImageView
+        ])
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.setCustomSpacing(-4, after: fromAccountBadgeImageView)
+        stackView.setCustomSpacing(-4, after: transactionTypeBadgeImageView)
 
-        fromAccountBadgeImageView.layoutToSuperview(.centerY, .leading, .top)
-        fromAccountBadgeImageView.layout(
-            edge: .trailing,
-            to: .leading,
-            of: toAccountBadgeImageView,
-            offset: -16
-        )
-        toAccountBadgeImageView.layoutToSuperview(.centerY, .trailing, .top)
-        transactionTypeBadgeImageView.layoutToSuperview(.centerY, .centerX)
-        fromAccountBadgeImageView.layout(
-            size: .init(edge: 32)
-        )
-        toAccountBadgeImageView.layout(
-            size: .init(edge: 32)
-        )
-        transactionTypeBadgeImageView.layout(
-            size: .init(edge: 24)
-        )
+        addSubview(stackView)
+        stackView.bringSubviewToFront(transactionTypeBadgeImageView)
+
+        stackView.layoutToSuperview(.top, .leading, .trailing, .bottom)
+        fromAccountBadgeImageView.layout(size: .edge(32))
+        toAccountBadgeImageView.layout(size: .edge(32))
+        transactionTypeBadgeImageView.layout(size: .edge(24))
     }
 }
 

@@ -235,7 +235,7 @@ public final class SelectionButtonView: UIView {
         trailingConstraint = trailingImageView.layoutToSuperview(.trailing, offset: -24)
         trailingImageView.layoutToSuperview(.centerY)
         trailingImageView.maximizeResistanceAndHuggingPriorities()
-        
+
         transactionDescriptorView.layoutToSuperview(.trailing, offset: -24)
         transactionDescriptorView.layoutToSuperview(.centerY)
         transactionDescriptorView.maximizeResistanceAndHuggingPriorities()

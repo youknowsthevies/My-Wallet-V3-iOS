@@ -36,6 +36,7 @@ final class ContentPage: UIViewController, ContentPageControllable {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        transition(to: state)
     }
 
     override func viewWillLayoutSubviews() {
