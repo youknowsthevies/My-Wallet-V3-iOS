@@ -39,6 +39,7 @@ public class ThreeLabelStackView: UIStackView {
     private func superSetup() {
         axis = .vertical
         spacing = 4
+        distribution = .fillEqually
         addArrangedSubview(topLabel)
         addArrangedSubview(middleLabel)
         addArrangedSubview(bottomLabel)
