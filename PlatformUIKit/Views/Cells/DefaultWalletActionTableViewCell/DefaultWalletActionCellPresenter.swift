@@ -22,16 +22,19 @@ public final class DefaultWalletActionCellPresenter {
         self.action = action
         
         var templateColor: UIColor = .clear
+        var accentColor: UIColor = .clear
         switch currencyType {
         case .crypto(let crypto):
             templateColor = crypto.brandColor
+            accentColor = crypto.accentColor
         case .fiat:
             templateColor = .fiat
+            accentColor = UIColor.fiat.withAlphaComponent(0.15)
         }
         self.badgeImageViewModel = .template(
             with: action.imageName,
             templateColor: templateColor,
-            backgroundColor: templateColor.withAlphaComponent(0.15),
+            backgroundColor: accentColor,
             accessibilityIdSuffix: "\(action.accessibilityId)"
         )
         

@@ -150,6 +150,8 @@ class TradeExecutionService: TradeExecutionAPI {
             return Single.just(.ok)
         case .tether:
             return validateTether(volume: volume)
+        case .wDGLD:
+            return validateWDGLD(volume: volume)
         }
     }
     
@@ -375,7 +377,7 @@ class TradeExecutionService: TradeExecutionAPI {
                     case .ethereum:
                         orderTransactionLegacy.fees = ethereumFee.priorityGweiValue
                         orderTransactionLegacy.gasLimit = String(ethereumFee.gasLimit)
-                    case .stellar, .pax, .algorand, .tether:
+                    case .stellar, .pax, .algorand, .tether, .wDGLD:
                         break
                     }
                     
@@ -538,6 +540,10 @@ class TradeExecutionService: TradeExecutionAPI {
         validateERC20(volume: volume, token: TetherToken.self)
     }
 
+    private func validateWDGLD(volume: CryptoValue) -> Single<TransactionValidationResult> {
+        validateERC20(volume: volume, token: WDGLDToken.self)
+    }
+
     private func validatePax(volume: CryptoValue) -> Single<TransactionValidationResult> {
         validateERC20(volume: volume, token: PaxToken.self)
     }
@@ -697,7 +703,7 @@ fileprivate extension TradeExecutionService {
                 case .ethereum:
                     orderTransactionLegacy.fees = ethereumFee.priorityGweiValue
                     orderTransactionLegacy.gasLimit = String(ethereumFee.gasLimit)
-                case .stellar, .pax, .algorand, .tether:
+                case .stellar, .pax, .algorand, .tether, .wDGLD:
                     break
                 }
                 

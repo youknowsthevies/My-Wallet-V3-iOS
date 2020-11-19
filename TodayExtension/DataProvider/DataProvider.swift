@@ -95,6 +95,12 @@ final class DataProvider {
             exchangeAPI: exchange[CryptoCurrency.tether],
             fiatCurrencyService: fiatCurrencyService
         )
+
+        let wDGLDHistoricalFiatService = HistoricalFiatPriceService(
+            cryptoCurrency: .wDGLD,
+            exchangeAPI: exchange[CryptoCurrency.wDGLD],
+            fiatCurrencyService: fiatCurrencyService
+        )
         
         self.historicalPrices = HistoricalFiatPriceProvider(
             algorand: algorandHistoricalFiatService,
@@ -103,7 +109,8 @@ final class DataProvider {
             stellar: stellarHistoricalFiatService,
             bitcoin: bitcoinHistoricalFiatService,
             bitcoinCash: bitcoinCashHistoricalFiatService,
-            tether: tetherHistoricalFiatService
+            tether: tetherHistoricalFiatService,
+            wDGLD: wDGLDHistoricalFiatService
         )
     }
 }

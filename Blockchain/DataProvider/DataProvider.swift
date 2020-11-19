@@ -99,6 +99,11 @@ final class DataProvider: DataProviding {
             exchangeAPI: exchange[CryptoCurrency.tether],
             fiatCurrencyService: fiatCurrencyService
         )
+        let wDGLDHistoricalFiatService = HistoricalFiatPriceService(
+            cryptoCurrency: .wDGLD,
+            exchangeAPI: exchange[CryptoCurrency.wDGLD],
+            fiatCurrencyService: fiatCurrencyService
+        )
         
         self.historicalPrices = HistoricalFiatPriceProvider(
             algorand: algorandHistoricalFiatService,
@@ -107,7 +112,8 @@ final class DataProvider: DataProviding {
             stellar: stellarHistoricalFiatService,
             bitcoin: bitcoinHistoricalFiatService,
             bitcoinCash: bitcoinCashHistoricalFiatService,
-            tether: tetherHistoricalFiatService
+            tether: tetherHistoricalFiatService,
+            wDGLD: wDGLDHistoricalFiatService
         )
                 
         let tradingBalanceStatesFetcher = CustodialBalanceStatesFetcher(
@@ -196,6 +202,19 @@ final class DataProvider: DataProviding {
             ),
             exchange: exchange[CurrencyType.crypto(.tether)]
         )
+        let wDGLDBalanceFetcher = AssetBalanceFetcher(
+            blockchainAccountFetcher: BlockchainAccountFetchingFactory.make(for: .crypto(.wDGLD)),
+            wallet: { () -> CryptoAccountBalanceFetching in resolve(tag: CryptoCurrency.wDGLD) }(),
+            trading: CustodialMoneyBalanceFetcher(
+                currencyType: CryptoCurrency.wDGLD.currency,
+                fetcher: tradingBalanceStatesFetcher
+            ),
+            savings: CustodialMoneyBalanceFetcher(
+                currencyType: CryptoCurrency.wDGLD.currency,
+                fetcher: savingsBalanceStatesFetcher
+            ),
+            exchange: exchange[CurrencyType.crypto(.wDGLD)]
+        )
         let stellarBalanceFetcher = AssetBalanceFetcher(
             blockchainAccountFetcher: BlockchainAccountFetchingFactory.make(for: .crypto(.stellar)),
             wallet: StellarServiceProvider.shared.services.accounts,
@@ -243,7 +262,8 @@ final class DataProvider: DataProviding {
             .pax : paxBalanceFetcher,
             .ethereum : etherBalanceFetcher,
             .algorand : algorandBalanceFetcher,
-            .tether : tetherBalanceFetcher
+            .tether : tetherBalanceFetcher,
+            .wDGLD: wDGLDBalanceFetcher,
         ]
         
         let balance = BalanceProvider(
@@ -289,6 +309,11 @@ final class DataProvider: DataProviding {
                 balance: tetherBalanceFetcher,
                 prices: historicalPrices[.tether],
                 cryptoCurrency: .tether
+            ),
+            wDGLD: AssetBalanceChangeProvider(
+                balance: wDGLDBalanceFetcher,
+                prices: historicalPrices[.wDGLD],
+                cryptoCurrency: .wDGLD
             )
         )
         

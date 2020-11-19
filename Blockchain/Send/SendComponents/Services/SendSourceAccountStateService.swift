@@ -55,7 +55,7 @@ final class SendSourceAccountStateService: SendSourceAccountStateServicing {
         switch asset {
         case .algorand:
             stateRelay.accept(.available)
-        case .ethereum, .pax, .tether:
+        case .ethereum, .pax, .tether, .wDGLD:
             recalculateStateForEtherBasedAssets()
         case .bitcoin, .bitcoinCash, .stellar:
             stateRelay.accept(.available)

@@ -66,6 +66,8 @@ extension SendControllerManager: SendScreenProvider {
             return BaseNavigationController(rootViewController: sendXLM)
         case .tether:
             fatalError("Not Supported")
+        case .wDGLD:
+            fatalError("Not Supported")
         }
     }
 }

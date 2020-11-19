@@ -31,7 +31,8 @@ public final class HistoricalFiatPriceProvider: HistoricalFiatPriceProviding {
                 stellar: HistoricalFiatPriceServiceAPI,
                 bitcoin: HistoricalFiatPriceServiceAPI,
                 bitcoinCash: HistoricalFiatPriceServiceAPI,
-                tether: HistoricalFiatPriceServiceAPI) {
+                tether: HistoricalFiatPriceServiceAPI,
+                wDGLD: HistoricalFiatPriceServiceAPI) {
         services[.algorand] = algorand
         services[.ethereum] = ether
         services[.pax] = pax
@@ -39,6 +40,7 @@ public final class HistoricalFiatPriceProvider: HistoricalFiatPriceProviding {
         services[.bitcoin] = bitcoin
         services[.bitcoinCash] = bitcoinCash
         services[.tether] = tether
+        services[.wDGLD] = wDGLD
         
         refresh()
     }

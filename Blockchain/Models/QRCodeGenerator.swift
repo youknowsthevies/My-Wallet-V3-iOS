@@ -46,7 +46,8 @@ import PlatformUIKit
              .ether,
              .pax,
              .stellar,
-             .tether:
+             .tether,
+             .WDGLD:
             return nil
         }
     }

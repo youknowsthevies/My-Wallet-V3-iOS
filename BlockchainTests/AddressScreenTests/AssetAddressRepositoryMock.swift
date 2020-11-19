@@ -57,6 +57,8 @@ class AssetAddressRepositoryMock: AssetAddressFetching {
                 result += [StellarAssetAddress(publicKey: address)]
             case .tether:
                 result += [AnyERC20AssetAddress<TetherToken>(publicKey: address)]
+            case .wDGLD:
+                result += [AnyERC20AssetAddress<WDGLDToken>(publicKey: address)]
             }
         }
         return result

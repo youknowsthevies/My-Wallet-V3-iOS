@@ -182,6 +182,11 @@ enum AssetAddressType {
                 return []
             }
             return [AnyERC20AssetAddress<TetherToken>(publicKey: address)]
+        case .wDGLD:
+            guard let address = appSettings.swipeAddressForWDGLD else {
+                return []
+            }
+            return [AnyERC20AssetAddress<WDGLDToken>(publicKey: address)]
         case .bitcoinCash, .bitcoin:
             let swipeAddresses = KeychainItemWrapper.getSwipeAddresses(for: asset.legacy) as? [String] ?? []
             return AssetAddressFactory.create(fromAddressStringArray: swipeAddresses, assetType: asset)

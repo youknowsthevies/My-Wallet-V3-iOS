@@ -44,6 +44,8 @@ final class TransactionDetailService: TransactionDetailServiceAPI {
             return "\(blockchainAPI.etherExplorerUrl)/tx/\(transactionHash)"
         case .tether:
             return "\(blockchainAPI.etherExplorerUrl)/tx/\(transactionHash)"
+        case .wDGLD:
+            return "\(blockchainAPI.etherExplorerUrl)/tx/\(transactionHash)"
         }
     }
 }

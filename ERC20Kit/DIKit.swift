@@ -74,5 +74,30 @@ extension DependencyContainer {
 
         factory { AnyERC20HistoricalTransactionService<TetherToken>() }
 
+        // MARK: - WDGLD
+
+        factory(tag: CryptoCurrency.wDGLD) { ERC20Asset<WDGLDToken>() as CryptoAsset }
+
+        factory { ERC20AssetAccountRepository<WDGLDToken>() }
+
+        factory(tag: CryptoCurrency.wDGLD) {
+            AnyAssetAccountDetailsAPI(
+                service: ERC20AssetAccountDetailsService<WDGLDToken>()
+            )
+        }
+
+        factory { ERC20BalanceService<WDGLDToken>() }
+
+        factory {
+            AnyERC20AccountAPIClient<WDGLDToken>(
+                accountAPIClient: ERC20AccountAPIClient<WDGLDToken>()
+            )
+        }
+
+        factory { ERC20AccountAPIClient<WDGLDToken>() }
+
+        factory(tag: CryptoCurrency.wDGLD) { ERC20AssetBalanceFetcher<WDGLDToken>() as CryptoAccountBalanceFetching }
+
+        factory { AnyERC20HistoricalTransactionService<WDGLDToken>() }
     }
 }

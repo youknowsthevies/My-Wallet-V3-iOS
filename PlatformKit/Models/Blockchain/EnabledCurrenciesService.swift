@@ -18,7 +18,7 @@ public protocol EnabledCurrenciesServiceAPI {
 
 final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
 
-    let allEnabledCryptoCurrencies: [CryptoCurrency] = CryptoCurrency.allCases
+    let allEnabledCryptoCurrencies: [CryptoCurrency]
     let allEnabledFiatCurrencies: [FiatCurrency] = [.USD, .EUR, .GBP]
     let depositEnabledFiatCurrencies: [FiatCurrency] = [.EUR, .GBP]
     let withdrawEnabledFiatCurrencies: [FiatCurrency] = [.EUR, .GBP]
@@ -33,5 +33,10 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
     
     init(featureFetcher: FeatureConfiguring = resolve()) {
         self.featureFetcher = featureFetcher
+        var enabledCryptoCurrency = CryptoCurrency.allCases
+        if !featureFetcher.configuration(for: .wDGLDenabled).isEnabled {
+            enabledCryptoCurrency = CryptoCurrency.allCases.filter { $0 != CryptoCurrency.wDGLD }
+        }
+        allEnabledCryptoCurrencies = enabledCryptoCurrency
     }
 }

@@ -82,7 +82,8 @@ public final class ActivityProvider: ActivityProviding {
             services[.crypto(.pax)]!.activityLoadingStateObservable,
             services[.crypto(.stellar)]!.activityLoadingStateObservable,
             services[.crypto(.bitcoin)]!.activityLoadingStateObservable,
-            services[.crypto(.bitcoinCash)]!.activityLoadingStateObservable
+            services[.crypto(.bitcoinCash)]!.activityLoadingStateObservable,
+            services[.crypto(.wDGLD)]!.activityLoadingStateObservable
         )
         .map {
             ActivityItemEventsLoadingStates(
@@ -91,7 +92,8 @@ public final class ActivityProvider: ActivityProviding {
                     .crypto(.pax): $0.1,
                     .crypto(.stellar): $0.2,
                     .crypto(.bitcoin): $0.3,
-                    .crypto(.bitcoinCash): $0.4
+                    .crypto(.bitcoinCash): $0.4,
+                    .crypto(.wDGLD): $0.5
                 ]
             )
         }
@@ -112,7 +114,8 @@ public final class ActivityProvider: ActivityProviding {
                     .crypto(.pax): $0.1[.crypto(.pax)],
                     .crypto(.stellar): $0.1[.crypto(.stellar)],
                     .crypto(.bitcoin): $0.1[.crypto(.bitcoin)],
-                    .crypto(.bitcoinCash): $0.1[.crypto(.bitcoinCash)]
+                    .crypto(.bitcoinCash): $0.1[.crypto(.bitcoinCash)],
+                    .crypto(.wDGLD): $0.1[.crypto(.wDGLD)]
                 ]
             )
         }

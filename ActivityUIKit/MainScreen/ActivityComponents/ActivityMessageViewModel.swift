@@ -48,7 +48,7 @@ final class ActivityMessageViewModel {
         badgeImageViewModel = .template(
             with: imageName,
             templateColor: currency.brandColor,
-            backgroundColor: currency.brandColor.withAlphaComponent(0.15),
+            backgroundColor: currency.accentColor,
             accessibilityIdSuffix: ""
         )
         badgeImageViewModel.marginOffsetRelay.accept(0.0)

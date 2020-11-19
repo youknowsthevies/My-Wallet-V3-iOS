@@ -309,6 +309,11 @@ final class BlockchainSettings: NSObject {
             set { setSwipeAddress(newValue, for: .tether) }
         }
 
+        var swipeAddressForWDGLD: String? {
+            get { getSwipeAddress(for: .wDGLD) }
+            set { setSwipeAddress(newValue, for: .wDGLD) }
+        }
+
         /**
          Determines the number of labeled addresses for the default account.
          - Note:

@@ -35,7 +35,8 @@ class AssetURLPayloadFactory: NSObject {
             case .pax, .ethereum:
                 return EthereumURLPayload(address: string, amount: nil)
             case .algorand,
-                 .tether:
+                 .tether,
+                 .wDGLD:
                 return nil
             }
         }

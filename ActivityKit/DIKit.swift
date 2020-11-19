@@ -60,7 +60,8 @@ extension DependencyContainer {
                 .tether: DIKit.resolve(tag: CryptoCurrency.tether),
                 .pax: DIKit.resolve(tag: CryptoCurrency.pax),
                 .ethereum: DIKit.resolve(tag: CryptoCurrency.ethereum),
-                .stellar: DIKit.resolve(tag: CryptoCurrency.stellar)
+                .stellar: DIKit.resolve(tag: CryptoCurrency.stellar),
+                .wDGLD: DIKit.resolve(tag: CryptoCurrency.wDGLD)
             ]
             
             return ActivityProvider(
@@ -103,6 +104,10 @@ extension DependencyContainer {
         
         factory(tag: CryptoCurrency.stellar) { () -> CryptoItemEventServiceAPI in
             CryptoEventService.stellar()
+        }
+
+        factory(tag: CryptoCurrency.wDGLD) { () -> CryptoItemEventServiceAPI in
+            CryptoEventService.wDGLD()
         }
     }
 }
@@ -187,6 +192,24 @@ extension CryptoEventService {
         let buySell = BuySellActivityItemEventService(currency: .tether, service: orderService)
         
         let fetcher = AnyERC20SwapActivityItemEventsService<TetherToken>(service: swapActivity)
+        let swapService = SwapActivityItemEventService(fetcher: fetcher)
+        return CryptoEventService(
+            transactional: transactionalService,
+            buySell: buySell,
+            swap: swapService
+        )
+    }
+
+    fileprivate static func wDGLD(historalTransactionService: AnyERC20HistoricalTransactionService<WDGLDToken> = resolve(),
+                                  eventsService: BitcoinCashTransactionalActivityItemEventsService = resolve(),
+                                  orderService: BuySellKit.OrdersServiceAPI = resolve(),
+                                  swapActivity: SwapActivityServiceAPI = resolve()) -> CryptoEventService {
+        let erc20EventsService = AnyERC20TransactionalActivityItemEventsService<WDGLDToken>(transactionsService: historalTransactionService)
+
+        let transactionalService = TransactionalActivityItemEventService(fetcher: erc20EventsService)
+        let buySell = BuySellActivityItemEventService(currency: .wDGLD, service: orderService)
+
+        let fetcher = AnyERC20SwapActivityItemEventsService<WDGLDToken>(service: swapActivity)
         let swapService = SwapActivityItemEventService(fetcher: fetcher)
         return CryptoEventService(
             transactional: transactionalService,

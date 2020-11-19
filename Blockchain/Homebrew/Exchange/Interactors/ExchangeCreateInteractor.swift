@@ -429,7 +429,7 @@ extension ExchangeCreateInteractor: ExchangeCreateInput {
             return feeServiceAPI.bitcoin.asObservable().map { $0.priority }
         case .bitcoinCash:
             return feeServiceAPI.bitcoinCash.asObservable().map { $0.priority }
-        case .ethereum, .pax, .tether:
+        case .ethereum, .pax, .tether, .wDGLD:
             return feeServiceAPI.ethereum.asObservable().map { $0.priority }
         case .stellar:
             return feeServiceAPI.stellar.asObservable().map { $0.priority }

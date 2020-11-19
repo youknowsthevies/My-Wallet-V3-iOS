@@ -21,9 +21,10 @@ public enum CryptoCurrency: String, Currency, Codable, CaseIterable, Comparable 
     case stellar = "XLM"
     case algorand = "ALGO"
     case pax = "PAX"
+    case wDGLD = "WDGLD"
     case tether = "USDT"
 
-    /// Initialize with currency code: `BTC`, `ETH`, `BCH`, `XLM`, `PAX`, `ALGO`
+    /// Initialize with currency code: `BTC`, `ETH`, `BCH`, `XLM`, `PAX`, `ALGO`, `WDGLD`
     public init?(code: String) {
         self.init(rawValue: code.uppercased())
     }
@@ -56,15 +57,18 @@ extension CryptoCurrency {
             return 4
         case .pax:
             return 5
-        case .tether:
+        case .wDGLD:
             return 6
+        case .tether:
+            return 7
         }
     }
     
     public var hasNonCustodialTradeSupport: Bool {
         switch self {
         case .algorand,
-             .tether:
+             .tether,
+             .wDGLD:
             return false
         case .bitcoin,
              .bitcoinCash,
@@ -78,7 +82,8 @@ extension CryptoCurrency {
     public var hasNonCustodialWithdrawalSupport: Bool {
         switch self {
         case .algorand,
-             .tether:
+             .tether,
+             .wDGLD:
             return false
         case .bitcoin,
              .bitcoinCash,
@@ -98,7 +103,8 @@ extension CryptoCurrency {
              .ethereum,
              .pax,
              .tether,
-             .stellar:
+             .stellar,
+             .wDGLD:
             return true
         }
     }
@@ -106,7 +112,8 @@ extension CryptoCurrency {
     public var hasSwapSupport: Bool {
         switch self {
         case .algorand,
-             .tether:  // TICKET: IOS-3380 - Add USD-T support to Swap.
+             .tether,  // TICKET: IOS-3380 - Add USD-T support to Swap.
+             .wDGLD:
             return false
         case .bitcoin,
              .bitcoinCash,
@@ -114,7 +121,6 @@ extension CryptoCurrency {
              .pax,
              .stellar:
             return true
-            
         }
     }
 
@@ -134,6 +140,8 @@ extension CryptoCurrency {
             return "Stellar"
         case .tether:
             return "Tether"
+        case .wDGLD:
+            return "Wrapped-DGLD"
         }
     }
     
@@ -148,6 +156,8 @@ extension CryptoCurrency {
             return "USD-T"
         case .pax:
             return "USD-D"
+        case .wDGLD:
+            return "wDGLD"
         }
     }
 
@@ -167,6 +177,8 @@ extension CryptoCurrency {
             return 7
         case .tether:
             return 6
+        case .wDGLD:
+            return 8
         }
     }
 
@@ -186,13 +198,15 @@ extension CryptoCurrency {
             return 7
         case .tether:
             return 6
+        case .wDGLD:
+            return 8
         }
     }
     
     /// Returns `true` for any ERC20 asset
     public var isERC20: Bool {
         switch self {
-        case .pax, .tether:
+        case .pax, .tether, .wDGLD:
             return true
         case .algorand, .bitcoin, .bitcoinCash, .ethereum, .stellar:
             return false

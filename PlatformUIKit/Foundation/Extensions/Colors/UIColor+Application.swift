@@ -111,6 +111,7 @@ public extension UIColor {
     static let usdd = pax
     static let algorand = algo
     static let tether = usdt
+    static let wdgld = wDGLD
     static let fiat = green500
     
     // Tiers

@@ -29,6 +29,8 @@
             return KEYCHAIN_KEY_ALGO_ADDRESS;
         case LegacyAssetTypeTether:
             return KEYCHAIN_KEY_USDT_ADDRESS;
+        case LegacyAssetTypeWDGLD:
+            return KEYCHAIN_KEY_WDGLD_ADDRESS;
     }
 }
 

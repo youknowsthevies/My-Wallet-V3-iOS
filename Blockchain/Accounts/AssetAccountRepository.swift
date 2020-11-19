@@ -31,6 +31,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     private let stellarServiceProvider: StellarServiceProvider
     private let paxAccountRepository: ERC20AssetAccountRepository<PaxToken>
     private let tetherAccountRepository: ERC20AssetAccountRepository<TetherToken>
+    private let wdgldAccountRepository: ERC20AssetAccountRepository<WDGLDToken>
     private let ethereumAccountRepository: EthereumAssetAccountRepository
     private let ethereumWalletService: EthereumWalletServiceAPI
     private let stellarAccountService: StellarAccountAPI
@@ -43,12 +44,14 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
          ethereumAccountRepository: EthereumAssetAccountRepository = resolve(),
          paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = resolve(),
          tetherAccountRepository: ERC20AssetAccountRepository<TetherToken> = resolve(),
+         wdgldAccountRepository: ERC20AssetAccountRepository<WDGLDToken> = resolve(),
          enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
          ethereumWalletService: EthereumWalletServiceAPI = resolve()) {
         self.wallet = wallet
         self.enabledCurrenciesService = enabledCurrenciesService
         self.paxAccountRepository = paxAccountRepository
         self.tetherAccountRepository = tetherAccountRepository
+        self.wdgldAccountRepository = wdgldAccountRepository
         self.ethereumWalletService = ethereumWalletService
         self.stellarServiceProvider = stellarServiceProvider
         self.stellarAccountService = stellarServiceProvider.services.accounts
@@ -97,6 +100,8 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
             return legacyAddress(assetType: assetType, fromCache: fromCache)
         case .tether:
             return tetherAccount(fromCache: fromCache)
+        case .wDGLD:
+            return wdgldAccount(fromCache: fromCache)
         }
     }
 
@@ -146,7 +151,8 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
             return .just(defaultAccount)
         case .ethereum,
              .pax,
-             .tether:
+             .tether,
+             .wDGLD:
             return accounts(for: assetType, fromCache: false)
                 .map { accounts in
                     guard let defaultAccount = accounts.first else {
@@ -210,6 +216,23 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
                     address: AssetAddressFactory.create(
                         fromAddressString: details.account.accountAddress,
                         assetType: .tether
+                    ),
+                    balance: details.balance,
+                    name: details.account.name
+                )
+            }
+            .map { [$0] }
+    }
+
+    private func wdgldAccount(fromCache: Bool) -> Single<[AssetAccount]> {
+        wdgldAccountRepository
+            .currentAssetAccountDetails(fromCache: fromCache)
+            .map { details -> AssetAccount in
+                AssetAccount(
+                    index: 0,
+                    address: AssetAddressFactory.create(
+                        fromAddressString: details.account.accountAddress,
+                        assetType: .wDGLD
                     ),
                     balance: details.balance,
                     name: details.account.name

@@ -30,6 +30,8 @@ class FakeAddress {
             return "fake_tether_address"
         case .algorand:
             return "fake_algorand_address"
+        case .wDGLD:
+            return "fake_wDGLD_address"
         }
     }
 }

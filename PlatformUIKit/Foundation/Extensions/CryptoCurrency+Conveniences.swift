@@ -37,6 +37,29 @@ extension CryptoCurrency {
             return .stellar
         case .tether:
             return .tether
+        case .wDGLD:
+            return .black
+        }
+    }
+
+    public var accentColor: UIColor {
+        switch self {
+        case .algorand:
+            return UIColor.algo.withAlphaComponent(0.15)
+        case .bitcoin:
+            return UIColor.bitcoin.withAlphaComponent(0.15)
+        case .bitcoinCash:
+            return UIColor.bitcoinCash.withAlphaComponent(0.15)
+        case .ethereum:
+            return UIColor.ethereum.withAlphaComponent(0.15)
+        case .pax:
+            return UIColor.usdd.withAlphaComponent(0.15)
+        case .stellar:
+            return UIColor.stellar.withAlphaComponent(0.15)
+        case .tether:
+            return UIColor.tether.withAlphaComponent(0.15)
+        case .wDGLD:
+            return UIColor.wDGLD.withAlphaComponent(0.15)
         }
     }
 
@@ -58,6 +81,8 @@ extension CryptoCurrency {
             return "filled_xlm_small"
         case .tether:
             return "filled_usdt_small"
+        case .wDGLD:
+            return "filled_wdgld_small"
         }
     }
 
@@ -77,6 +102,8 @@ extension CryptoCurrency {
             return "filled_xlm_large"
         case .tether:
             return "filled_usdt_large"
+        case .wDGLD:
+            return "filled_wdgld_large"
         }
     }
 
@@ -96,6 +123,8 @@ extension CryptoCurrency {
             return "white_xlm_small"
         case .tether:
             return "white_usdt_small"
+        case .wDGLD:
+            return "white_wdgld_small"
         }
     }
 
@@ -115,6 +144,8 @@ extension CryptoCurrency {
             return #imageLiteral(resourceName: "symbol-xlm")
         case .tether:
             return #imageLiteral(resourceName: "symbol-usdt")
+        case .wDGLD:
+            return #imageLiteral(resourceName: "symbol_wdgld")
         }
     }
 
@@ -134,6 +165,8 @@ extension CryptoCurrency {
             return #imageLiteral(resourceName: "xlm_bad")
         case .tether:
             return #imageLiteral(resourceName: "usdt_bad")
+        case .wDGLD:
+            return #imageLiteral(resourceName: "wdgld_bad")
         }
     }
     
@@ -153,6 +186,8 @@ extension CryptoCurrency {
             return #imageLiteral(resourceName: "xlm_good")
         case .tether:
             return #imageLiteral(resourceName: "usdt_good")
+        case .wDGLD:
+            return #imageLiteral(resourceName: "wdgld_good")
         }
     }
 

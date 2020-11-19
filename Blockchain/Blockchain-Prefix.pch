@@ -151,6 +151,7 @@
 #define KEYCHAIN_KEY_PAX_ADDRESS @"paxSwipeToReceiveAddress"
 #define KEYCHAIN_KEY_ALGO_ADDRESS @"algoSwipeToReceiveAddress"
 #define KEYCHAIN_KEY_USDT_ADDRESS @"usdtSwipeToReceiveAddress"
+#define KEYCHAIN_KEY_WDGLD_ADDRESS @"wdgldSwipeToReceiveAddress"
 
 #define UNSAFE_CHECK_PATH_CYDIA @"/Applications/Cydia.app"
 #define UNSAFE_CHECK_PATH_MOBILE_SUBSTRATE @"/Library/MobileSubstrate/MobileSubstrate.dylib"

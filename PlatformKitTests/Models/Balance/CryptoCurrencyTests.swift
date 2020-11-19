@@ -24,6 +24,7 @@ class CryptoCurrencyTests: XCTestCase {
             .stellar,
             .algorand,
             .pax,
+            .wDGLD,
             .tether
         ]
         XCTAssertTrue(CryptoCurrency.allCases == cryptoCurrencyDesiredOrder,

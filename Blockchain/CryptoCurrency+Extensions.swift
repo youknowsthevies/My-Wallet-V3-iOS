@@ -28,6 +28,8 @@ extension CryptoCurrency {
             return .stellar
         case .tether:
             return .tether
+        case .wDGLD:
+            return .WDGLD
         }
     }
     
@@ -52,6 +54,8 @@ extension CryptoCurrency {
             self = .pax
         case .tether:
             self = .tether
+        case .WDGLD:
+            self = .wDGLD
         }
     }
 }

@@ -33,7 +33,7 @@ final class ActivityDetailsPresenterFactory {
                 return BitcoinActivityDetailsPresenter(event: transactional, router: router)
             case .bitcoinCash:
                 return BitcoinCashActivityDetailsPresenter(event: transactional, router: router)
-            case .pax, .tether:
+            case .pax, .tether, .wDGLD:
                 let interactor = ERC20ActivityDetailsInteractor(cryptoCurrency: transactional.currency)
                 return ERC20ActivityDetailsPresenter(event: transactional, router: router, interactor: interactor)
             case .stellar:
