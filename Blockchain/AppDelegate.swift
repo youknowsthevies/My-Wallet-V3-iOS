@@ -177,8 +177,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let certificatePinner: CertificatePinnerAPI = resolve()
         certificatePinner.pinCertificateIfNeeded()
 
-//        let sift: SiftServiceAPI = DIKit.resolve()
-//        sift.enable()
+        let sift: SiftServiceAPI = DIKit.resolve()
+        sift.enable()
 
         checkForNewInstall()
         

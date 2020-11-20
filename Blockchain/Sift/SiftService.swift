@@ -6,8 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Sift
+import DIKit
 import PlatformKit
+import Sift
 
 final class SiftService: SiftServiceAPI {
     
@@ -18,8 +19,11 @@ final class SiftService: SiftServiceAPI {
     
     // MARK: - Private properties
     
-    private var sift: Sift {
-        Sift.sharedInstance()
+    private var sift: Sift? {
+        guard featureConfigurator.configuration(for: .siftScienceEnabled).isEnabled else {
+            return nil
+        }
+        return Sift.sharedInstance()
     }
 
     private var identifier: String {
@@ -42,11 +46,18 @@ final class SiftService: SiftServiceAPI {
         }
         return infoDictionary
     }
+
+    private let featureConfigurator: FeatureConfiguring
+
+    init(featureConfigurator: FeatureConfiguring = DIKit.resolve()) {
+        self.featureConfigurator = featureConfigurator
+    }
     
     // MARK: - SiftServiceAPI
 
     /// Enables the services
     func enable() {
+        guard let sift = self.sift else { return }
         sift.accountId = identifier
         sift.beaconKey = beacon
         sift.allowUsingMotionSensors = false
@@ -54,10 +65,16 @@ final class SiftService: SiftServiceAPI {
     }
 
     func set(userId: String) {
-        sift.userId = userId
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.sift?.userId = userId
+        }
     }
 
     func removeUserId() {
-        sift.unsetUserId()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.sift?.unsetUserId()
+        }
     }
 }

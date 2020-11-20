@@ -40,6 +40,8 @@ public enum AppFeature: Int, CaseIterable {
     case newSwapEnabled
 
     case wDGLDenabled
+
+    case siftScienceEnabled
 }
 
 extension AppFeature {
@@ -64,6 +66,8 @@ extension AppFeature {
             return "new_swap_enabled"
         case .wDGLDenabled:
             return "wdgld_enabled"
+        case .siftScienceEnabled:
+            return "sift_science_enabled"
         case .biometry,
              .swipeToReceive,
              .transferFundsFromImportedAddress:

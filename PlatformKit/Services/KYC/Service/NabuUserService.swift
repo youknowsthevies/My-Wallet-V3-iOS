@@ -48,22 +48,23 @@ final class NabuUserService: NabuUserServiceAPI {
     private let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
     
     private let client: KYCClientAPI
-//    private let siftService: SiftServiceAPI
+    private let siftService: SiftServiceAPI
 
     private lazy var setup: Void = {        
         cachedUser.setFetch(weak: self) { (self) in
             self.client.user()
-//                .do(onSuccess: { nabuUser in
-//                    self.siftService.set(userId: nabuUser.identifier)
-//                })
+                .do(onSuccess: { nabuUser in
+                    self.siftService.set(userId: nabuUser.identifier)
+                })
         }
     }()
         
     // MARK: - Setup
     
-    init(client: KYCClientAPI = resolve()) {
+    init(client: KYCClientAPI = resolve(),
+         siftService: SiftServiceAPI = resolve()) {
         self.client = client
-//        self.siftService = siftService
+        self.siftService = siftService
     }
     
     func fetchUser() -> Single<NabuUser> {
