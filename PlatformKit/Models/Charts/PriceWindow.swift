@@ -121,7 +121,7 @@ public extension CryptoCurrency {
         case .tether:
             return 1511829681
         case .wDGLD:
-            return 1511829681
+            return 1576108800
         }
     }
 }
