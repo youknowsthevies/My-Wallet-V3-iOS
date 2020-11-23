@@ -42,6 +42,8 @@ public struct ERC20ContractGasActivityModel {
             return .pax
         } else if address.publicKey.compare(TetherToken.contractAddress.publicKey, options: .caseInsensitive) == .orderedSame {
             return .tether
+        } else if address.publicKey.compare(WDGLDToken.contractAddress.publicKey, options: .caseInsensitive) == .orderedSame {
+           return .wDGLD
         }
         return nil
     }
