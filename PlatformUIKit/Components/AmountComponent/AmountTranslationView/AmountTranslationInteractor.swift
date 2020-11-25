@@ -133,14 +133,20 @@ public final class AmountTranslationInteractor {
         /// modify the fiat / crypto value
         
         // Fiat changes affect crypto
-        
-        fiatCurrencyService.fiatCurrencyObservable
+
+        let fiatCurrency = fiatCurrencyService.fiatCurrencyObservable
             .map { $0 as Currency }
+            .share(replay: 1, scope: .whileConnected)
+
+        let cryptoCurrency = cryptoCurrencyService.cryptoCurrencyObservable
+            .map { $0 as Currency }
+            .share(replay: 1, scope: .whileConnected)
+        
+        fiatCurrency
             .bind(to: fiatInteractor.interactor.currencyRelay)
             .disposed(by: disposeBag)
-        
-        cryptoCurrencyService.cryptoCurrencyObservable
-            .map { $0 as Currency }
+
+        cryptoCurrency
             .bind(to: cryptoInteractor.interactor.currencyRelay)
             .disposed(by: disposeBag)
         
@@ -155,9 +161,16 @@ public final class AmountTranslationInteractor {
             .bind(to: fiatInteractor.scanner.rawInputRelay, cryptoInteractor.scanner.rawInputRelay)
             .disposed(by: disposeBag)
 
+        // We need to keep any currency selection changes up to date with the input values
+        // and eventually update the `cryptoAmountRelay` and `fiatAmountRelay`
+        let currenciesMerged = Observable.merge(fiatCurrency, cryptoCurrency)
+            .share(replay: 1, scope: .whileConnected)
+
         // Bind of the edit values to the scanner depending on the currently edited currency type
-        
-        let pairFromFiatInput = fiatInteractor.scanner.input
+        let pairFromFiatInput = currenciesMerged
+            .flatMap(weak: self) { (self, _) -> Observable<MoneyValueInputScanner.Input> in
+                self.fiatInteractor.scanner.input
+            }
             .flatMap(weak: self) { (self, input) in
                 self.activeInput
                     .take(1)
@@ -191,7 +204,10 @@ public final class AmountTranslationInteractor {
                     }
             }
         
-        let pairFromCryptoInput = cryptoInteractor.scanner.input
+        let pairFromCryptoInput = currenciesMerged
+            .flatMap(weak: self) { (self, _) -> Observable<MoneyValueInputScanner.Input> in
+                self.cryptoInteractor.scanner.input
+            }
             .flatMap(weak: self) { (self, input) in
                 self.activeInput
                     .take(1)
