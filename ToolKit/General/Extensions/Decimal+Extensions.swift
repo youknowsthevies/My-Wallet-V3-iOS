@@ -12,9 +12,9 @@ extension Decimal {
         (self as NSDecimalNumber).doubleValue
     }
 
-    public func roundTo(places: Int) -> Decimal {
+    public func roundTo(places: Int, roundingMode: RoundingMode = .bankers) -> Decimal {
         let roundingBehaviour = NSDecimalNumberHandler(
-            roundingMode: .bankers,
+            roundingMode: roundingMode,
             scale: Int16(places),
             raiseOnExactness: true,
             raiseOnOverflow: true,

@@ -71,6 +71,19 @@ extension MoneyOperating {
         return Self.init(amount: amount, currency: lhs.currencyType)
     }
 
+    /// - Returns: A` Decimal` rounded to 4 decimal places.
+    public func percentage(of rhs: Self) throws -> Decimal {
+        try Self.percentage(lhs: self, rhs: rhs)
+    }
+    
+    private static func percentage(lhs: Self, rhs: Self) throws -> Decimal {
+        try ensureComparable(value: lhs, other: rhs)
+        let lhsDecimal = lhs.displayMajorValue
+        let rhsDecimal = rhs.displayMajorValue
+        let resDecimal = lhsDecimal / rhsDecimal
+        return resDecimal.roundTo(places: 4)
+    }
+
     public static func / (lhs: Self, rhs: Self) throws -> Self {
         try ensureComparable(value: lhs, other: rhs)
         let maxDecimalPlaces = lhs.maxDecimalPlaces

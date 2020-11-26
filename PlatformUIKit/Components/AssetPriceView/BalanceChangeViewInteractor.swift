@@ -39,12 +39,11 @@ public final class BalanceChangeViewInteractor: AssetPriceViewInteracting {
                     let previousBalance = try currentBalance - changeValue
                     
                     /// `zero` shouldn't be possible but is handled in any case
-                    /// in a wa that would not throw
-                    if previousBalance.isZero {
+                    /// in a way that would not throw
+                    if previousBalance.isZero || previousBalance.isNegative {
                         percentage = 0
                     } else {
-                        let precentageFiat = try changeValue / previousBalance
-                        percentage = precentageFiat.displayMajorValue
+                        percentage = try changeValue.percentage(of: previousBalance)
                     }
                 }
                 return .loaded(
