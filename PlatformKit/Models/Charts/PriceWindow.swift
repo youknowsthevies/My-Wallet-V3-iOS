@@ -66,17 +66,19 @@ extension PriceWindow {
             return cryptoCurrency.maxStartDate
         case .day:
             components.day = -1
-            return calendar.date(byAdding: components, to: date)?.timeIntervalSince1970 ?? date.timeIntervalSince1970
         case .week:
             components.day = -7
-            return calendar.date(byAdding: components, to: date)?.timeIntervalSince1970 ?? date.timeIntervalSince1970
         case .month:
             components.month = -1
-            return calendar.date(byAdding: components, to: date)?.timeIntervalSince1970 ?? date.timeIntervalSince1970
         case .year:
             components.year = -1
-            return calendar.date(byAdding: components, to: date)?.timeIntervalSince1970 ?? date.timeIntervalSince1970
         }
+        return timeInterval(from: date, with: components, calendar: calendar, cryptoCurrency: cryptoCurrency)
+    }
+
+    private func timeInterval(from date: Date, with components: DateComponents, calendar: Calendar, cryptoCurrency: CryptoCurrency) -> TimeInterval {
+        let dateFromComponents = calendar.date(byAdding: components, to: date)?.timeIntervalSince1970 ?? date.timeIntervalSince1970
+        return max(cryptoCurrency.maxStartDate, dateFromComponents)
     }
 }
 
@@ -121,7 +123,7 @@ public extension CryptoCurrency {
         case .tether:
             return 1511829681
         case .wDGLD:
-            return 1576108800
+            return 1605636000
         }
     }
 }
