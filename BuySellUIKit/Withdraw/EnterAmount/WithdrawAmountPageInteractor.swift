@@ -81,8 +81,7 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
             .flatMap(weak: self) { (self, _) -> Observable<WithdrawAmountValidationService.Input> in
                 self.validationService.balance
                     .do(onSuccess: { (moneyValue) in
-                        let amount = moneyValue.toDisplayString(includeSymbol: false)
-                        self.amountInteractor.set(amount: amount)
+                        self.amountInteractor.set(amount: moneyValue)
                     })
                     .map { _ in .withdrawMax }
                     .asObservable()

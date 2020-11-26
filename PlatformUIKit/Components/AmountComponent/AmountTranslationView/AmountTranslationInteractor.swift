@@ -352,4 +352,13 @@ public final class AmountTranslationInteractor {
             }
             .disposed(by: disposeBag)
     }
+
+    public func set(amount: MoneyValue) {
+        currentInteractor
+            .asObservable()
+            .bind { interactor in
+                interactor.scanner.reset(to: amount)
+            }
+            .disposed(by: disposeBag)
+    }
 }

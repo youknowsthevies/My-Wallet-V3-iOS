@@ -189,30 +189,21 @@ public final class MoneyValueInputScanner {
             )
             .disposed(by: disposeBag)
     }
+
+    public func reset(to moneyValue: MoneyValue) {
+        let amount = moneyValue.displayMajorValue
+        reset(to: amount)
+    }
     
     /// Resets the input to a single `0` character.
     public func reset(to string: String = "") {
-        guard let number = Decimal(string: string) else { return }
-        guard let string = formatter.string(from: number as NSNumber) else { return }
-        
-        let components: [String] = string
-            .split(separator: Character(Constant.decimalSeparator))
-            .map { component in
-                var component = String(component)
-                component.removeAll(where: { !CharacterSet.decimalDigits.contains($0) })
-                return component
-            }
-        
-        let input: Input
-        if components.isEmpty {
-            input = .placeholderZero
-        } else {
-            var string = String(components[0].prefix(maxDigitsRelay.value.decimal))
-            if components.count > 1 {
-                string += "\(Constant.decimalSeparator)\(components[1].prefix(maxDigitsRelay.value.fraction))"
-            }
-            input = .init(string: string)
-        }
+        guard let amount = Decimal(string: string) else { return }
+        reset(to: amount)
+    }
+
+    private func reset(to decimal: Decimal) {
+        guard let value = formatter.string(from: decimal as NSNumber) else { return }
+        let input = parse(amount: value)
         internalInputRelay.accept(input)
     }
     
@@ -371,6 +362,32 @@ public final class MoneyValueInputScanner {
         }
         let padding = Array(repeating: Constant.zero, count: padCount).joined()
         value.append(padding)
+    }
+
+    /// Parses a given string to an Input struct
+    ///
+    /// - Parameter value: The value of the given amount.
+    /// - Returns: An `Input` struct containing the parsed value.
+    func parse(amount value: String) -> Input {
+        let components: [String] = value
+            .split(separator: Character(Constant.decimalSeparator))
+            .map { component in
+                var component = String(component)
+                component.removeAll(where: { !CharacterSet.decimalDigits.contains($0) })
+                return component
+            }
+
+        let input: Input
+        if components.isEmpty {
+            input = .placeholderZero
+        } else {
+            var string = String(components[0].prefix(maxDigitsRelay.value.decimal))
+            if components.count > 1 {
+                string += "\(Constant.decimalSeparator)\(components[1].prefix(maxDigitsRelay.value.fraction))"
+            }
+            input = .init(string: string)
+        }
+        return input
     }
 }
 
