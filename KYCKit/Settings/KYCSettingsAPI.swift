@@ -6,7 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import RxSwift
+import ToolKit
 
 public protocol KYCSettingsAPI: AnyObject {
 
@@ -21,4 +22,15 @@ public protocol KYCSettingsAPI: AnyObject {
     var latestKycPage: KYCPageType? { get set }
 
     func reset()
+}
+
+public extension KYCSettingsAPI {
+    var isCompletingKyc: Single<Bool> {
+        Single.deferred { [weak self] in
+            guard let self = self else {
+                return .error(ToolKitError.nullReference(Self.self))
+            }
+            return .just(self.isCompletingKyc)
+        }
+    }
 }

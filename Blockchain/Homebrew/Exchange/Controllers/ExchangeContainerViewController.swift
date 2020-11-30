@@ -7,15 +7,14 @@
 //
 
 import DIKit
-import Foundation
+import KYCKit
+import KYCUIKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
 import SafariServices
 import ToolKit
-import KYCKit
-import KYCUIKit
 
 class ExchangeContainerViewController: BaseNavigationController {
     
@@ -31,6 +30,7 @@ class ExchangeContainerViewController: BaseNavigationController {
     private let kycSettings: KYCSettingsAPI = resolve()
     private let analyticsRecorder: AnalyticsEventRecording = resolve()
     private let kycRouter: KYCRouterAPI = resolve()
+    private let kycTiersPageModelFactory: KYCTiersPageModelFactoryAPI = resolve()
     
     // MARK: Lifecycle
     
@@ -76,9 +76,9 @@ class ExchangeContainerViewController: BaseNavigationController {
         if viewControllers.count > 0 {
             viewControllers.removeAll()
         }
-        
-        let tiers = KYCTiersViewController.tiersMetadata()
-        Single.zip(tiers, hasStartedKYC())
+
+        let pageModel = kycTiersPageModelFactory.tiersPageModel(suppressCTA: true)
+        Single.zip(pageModel, hasStartedKYC())
             .observeOn(MainScheduler.instance)
             .hideOnDisposal(loader: loadingViewPresenter)
             .subscribe(onSuccess: { [weak self] (pageModel, hasStarted) in
@@ -99,11 +99,11 @@ class ExchangeContainerViewController: BaseNavigationController {
     }
     
     private func hasStartedKYC() -> Single<Bool> {
-        Single.just(kycSettings.isCompletingKyc)
+        kycSettings.isCompletingKyc
     }
     
     private func introductionStartTapped() {
-        KYCTiersViewController.tiersMetadata()
+        kycTiersPageModelFactory.tiersPageModel(suppressCTA: true)
             .observeOn(MainScheduler.instance)
             .showOnSubscription(loader: loadingViewPresenter)
             .hideOnDisposal(loader: loadingViewPresenter)
@@ -155,7 +155,7 @@ class ExchangeContainerViewController: BaseNavigationController {
     }
     
     fileprivate func setupTiersController(_ model: KYCTiersPageModel) {
-        tiersViewController = KYCTiersViewController.make(with: model)
+        tiersViewController = KYCTiersViewController(pageModel: model)
         guard let controller = tiersViewController else { return }
         controller.selectedTier = { tier in
             let kycRouter: KYCRouterAPI = resolve()

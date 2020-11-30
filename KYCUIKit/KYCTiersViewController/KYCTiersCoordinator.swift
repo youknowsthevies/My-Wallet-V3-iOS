@@ -10,63 +10,35 @@ import DIKit
 import PlatformKit
 import RxSwift
 
-class KYCTiersCoordinator {
+final class KYCTiersCoordinator {
 
-    private let limitsAPI: TradeLimitsAPI = resolve()
-    private var disposable: Disposable?
     private weak var interface: KYCTiersInterface?
-    private let tiersService: KYCTiersServiceAPI
+    private let pageModelFactory: KYCTiersPageModelFactoryAPI
+    private var disposable: Disposable?
 
-    init(interface: KYCTiersInterface?, tiersService: KYCTiersServiceAPI = resolve()) {
+    init(interface: KYCTiersInterface?,
+         pageModelFactory: KYCTiersPageModelFactoryAPI = resolve()) {
         self.interface = interface
-        self.tiersService = tiersService
+        self.pageModelFactory = pageModelFactory
     }
 
-    func refreshViewModel(withCurrency currency: FiatCurrency = .USD, suppressCTA: Bool = false) {
+    func refreshViewModel(suppressCTA: Bool) {
         interface?.collectionViewVisibility(.hidden)
         interface?.loadingIndicator(.visible)
-
-        let tradeLimits = limitsAPI.getTradeLimits(withFiatCurrency: currency.code, ignoringCache: true)
-            .optional()
-            .catchErrorJustReturn(nil)
-        let tiers = tiersService.tiers
-
-        disposable = Single.zip(tradeLimits, tiers)
-            .map { (values) -> (FiatValue, KYC.UserTiers) in
-                let (tradeLimits, tiers) = values
-                guard tiers.tierAccountStatus(for: .tier1).isApproved else {
-                    return (FiatValue.zero(currency: currency), tiers)
-                }
-                let maxTradableToday = FiatValue.create(
-                    major: tradeLimits?.maxTradableToday ?? 0,
-                    currency: currency
-                )
-                return (maxTradableToday, tiers)
-            }
-            .observeOn(MainScheduler.instance)
+        
+        disposable = pageModelFactory.tiersPageModel(suppressCTA: suppressCTA)
+            .observeOn(MainScheduler.asyncInstance)
             .subscribe(
-                onSuccess: { [weak self] (maxTradableToday, tiers) in
-                    guard let this = self else { return }
-                    let header = KYCTiersHeaderViewModel.make(
-                        with: tiers,
-                        availableFunds: maxTradableToday.toDisplayString(includeSymbol: true),
-                        suppressDismissCTA: suppressCTA
-                    )
-
-                    let models = tiers.tiers
-                        .filter { $0.tier != .tier0 }
-                        .map { KYCTierCellModel.model(from: $0) }
-                        .compactMap { $0 }
-
-                    let page = KYCTiersPageModel(header: header, cells: models)
-                    this.interface?.apply(page)
-                    this.interface?.loadingIndicator(.hidden)
-                    this.interface?.collectionViewVisibility(.visible)
+                onSuccess: { [weak self] (page) in
+                    guard let self = self else { return }
+                    self.interface?.apply(page)
+                    self.interface?.loadingIndicator(.hidden)
+                    self.interface?.collectionViewVisibility(.visible)
                 },
                 onError: { [weak self] _ in
-                    guard let this = self else { return }
-                    this.interface?.loadingIndicator(.hidden)
-                    this.interface?.collectionViewVisibility(.visible)
+                    guard let self = self else { return }
+                    self.interface?.loadingIndicator(.hidden)
+                    self.interface?.collectionViewVisibility(.visible)
                 }
             )
     }

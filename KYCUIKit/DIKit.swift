@@ -15,5 +15,7 @@ extension DependencyContainer {
 
     public static let kycUIKit = module {
         single { KYCCoordinator() as KYCRouterAPI }
+
+        factory { KYCTiersPageModelFactory() as KYCTiersPageModelFactoryAPI }
     }
 }
