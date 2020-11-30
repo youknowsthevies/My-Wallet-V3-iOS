@@ -153,7 +153,7 @@ extension CryptoCurrency {
         case .algorand, .bitcoin, .bitcoinCash, .ethereum, .stellar:
             return code
         case .tether:
-            return "USD-T"
+            return "USDT"
         case .pax:
             return "USD-D"
         case .wDGLD:
