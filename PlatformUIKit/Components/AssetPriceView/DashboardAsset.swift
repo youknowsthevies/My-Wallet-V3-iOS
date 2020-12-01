@@ -147,18 +147,21 @@ public struct DashboardAsset {
                         )
                     )
 
-                    let tintColor: UIColor
+                    let fiatTintColor: UIColor
+                    var deltaTintColor: UIColor
                     let sign: String
-                    if value.changePercentage > 0 {
+                    if value.fiatChange.isPositive {
                         sign = "+"
-                        tintColor = .positivePrice
-                    } else if value.changePercentage < 0 {
+                        fiatTintColor = .positivePrice
+                    } else if value.fiatChange.isNegative {
                         sign = ""
-                        tintColor = .negativePrice
+                        fiatTintColor = .negativePrice
                     } else {
                         sign = ""
-                        tintColor = .mutedText
+                        fiatTintColor = .mutedText
                     }
+                    deltaTintColor = value.changePercentage > 0 ? .positivePrice : .negativePrice
+                    deltaTintColor = value.changePercentage.isZero ? .mutedText : deltaTintColor
 
                     let fiatChange: NSAttributedString
                     if descriptors.contentOptions.contains(.fiat) {
@@ -168,7 +171,7 @@ public struct DashboardAsset {
                             LabelContent(
                                 text: "\(sign)\(fiat)\(suffix)",
                                 font: descriptors.changeFont,
-                                color: tintColor
+                                color: fiatTintColor
                             )
                         )
                     } else {
@@ -192,7 +195,7 @@ public struct DashboardAsset {
                             LabelContent(
                                 text: "\(prefix)\(percentageString)%\(suffix)",
                                 font: descriptors.changeFont,
-                                color: tintColor
+                                color: deltaTintColor
                             )
                         )
                     } else {
