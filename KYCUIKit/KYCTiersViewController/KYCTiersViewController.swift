@@ -27,31 +27,34 @@ public class KYCTiersViewController: UIViewController {
 
     // MARK: Private IBOutlets
 
-    @IBOutlet fileprivate var layout: UICollectionViewFlowLayout!
-    @IBOutlet fileprivate var collectionView: UICollectionView!
+    fileprivate var layout: UICollectionViewFlowLayout!
+    fileprivate var collectionView: UICollectionView!
 
     // MARK: Private Properties
 
-    fileprivate static let limitsAPI: TradeLimitsAPI = resolve()
     fileprivate let drawerRouting: DrawerRouting = resolve()
     fileprivate var layoutAttributes: LayoutAttributes = .tiersOverview
     fileprivate var coordinator: KYCTiersCoordinator!
     private let loadingViewPresenter: LoadingViewPresenting = resolve()
-    fileprivate var disposable: Disposable?
     private let analyticsRecorder: AnalyticsEventRecording = resolve()
     private let featureConfiguring: FeatureConfiguring = resolve()
+    private let analytics: AnalyticsServiceAPI = resolve()
+    fileprivate var disposable: Disposable?
 
     // MARK: Public Properties
 
-    var pageModel: KYCTiersPageModel!
+    private var pageModel: KYCTiersPageModel
     public var selectedTier: ((KYC.Tier) -> Void)?
 
-    public static func make(
-        with pageModel: KYCTiersPageModel
-    ) -> KYCTiersViewController {
-        let controller = KYCTiersViewController.makeFromStoryboard()
-        controller.pageModel = pageModel
-        return controller
+    public init(pageModel: KYCTiersPageModel, title: String = LocalizationConstants.KYC.accountLimits) {
+        self.pageModel = pageModel
+        super.init(nibName: nil, bundle: nil)
+        self.title = title
+    }
+
+    @available(*, unavailable)
+    public required init?(coder: NSCoder) {
+        unimplemented()
     }
 
     // MARK: Lifecycle
@@ -64,16 +67,20 @@ public class KYCTiersViewController: UIViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-        title = LocalizationConstants.KYC.accountLimits
+        layout = UICollectionViewFlowLayout()
+        collectionView = UICollectionView(frame: view.frame, collectionViewLayout: layout)
+        view.addSubview(collectionView)
+        collectionView.layoutToSuperview(.leading, .trailing, .bottom, .top)
         coordinator = KYCTiersCoordinator(interface: self)
         setupLayout()
         registerCells()
         registerSupplementaryViews()
         registerForNotifications()
         collectionView.reloadData()
-        pageModel.trackPresentation()
-
-        view.backgroundColor = #colorLiteral(red: 0.9607843137, green: 0.968627451, blue: 0.9764705882, alpha: 1)
+        pageModel.trackPresentation(analytics: analytics)
+        let backgroundColor = #colorLiteral(red: 0.9607843137, green: 0.968627451, blue: 0.9764705882, alpha: 1)
+        collectionView.backgroundColor = backgroundColor
+        view.backgroundColor = backgroundColor
     }
 
     fileprivate func setupLayout() {
@@ -272,11 +279,11 @@ extension KYCTiersViewController: KYCTierCellDelegate {
 }
 
 extension KYCTiersViewController: KYCTiersInterface {
-    func apply(_ model: KYCTiersPageModel) {
-        pageModel = model
+    func apply(_ newModel: KYCTiersPageModel) {
+        pageModel = newModel
         registerSupplementaryViews()
         collectionView.reloadData()
-        pageModel.trackPresentation()
+        pageModel.trackPresentation(analytics: analytics)
     }
 
     func collectionViewVisibility(_ visibility: Visibility) {
@@ -295,49 +302,41 @@ extension KYCTiersViewController: KYCTiersInterface {
 
 extension KYCTiersViewController {
 
-    public static func tiersMetadata(currency: FiatCurrency = .USD) -> Single<KYCTiersPageModel> {
+    private static func tiersPageModel() -> Single<KYCTiersPageModel> {
+        let currencyService: FiatCurrencyServiceAPI = resolve()
         let tiersService: KYCTiersServiceAPI = resolve()
+        let limitsAPI: TradeLimitsAPI = resolve()
+        return currencyService.fiatCurrency
+            .flatMap { [limitsAPI, tiersService] fiatCurrency -> Single<(TradeLimits?, KYC.UserTiers, FiatCurrency)> in
+                let tradeLimits = limitsAPI
+                    .getTradeLimits(withFiatCurrency: fiatCurrency.code, ignoringCache: true)
+                    .optional()
+                    .catchErrorJustReturn(nil)
 
-        let tradeLimits = limitsAPI.getTradeLimits(withFiatCurrency: currency.code, ignoringCache: true)
-            .optional()
-            .catchErrorJustReturn(nil)
-        let tiers = tiersService.tiers
-
-        return Single.zip(tradeLimits, tiers)
-            .map { (values) -> (FiatValue, KYC.UserTiers) in
-                let (tradeLimits, tiers) = values
+                return Single.zip(tradeLimits, tiersService.tiers, .just(fiatCurrency))
+            }
+            .map { (tradeLimits, tiers, fiatCurrency) -> (FiatValue, KYC.UserTiers) in
                 guard tiers.tierAccountStatus(for: .tier1).isApproved else {
-                    return (FiatValue.zero(currency: currency), tiers)
+                    return (FiatValue.zero(currency: fiatCurrency), tiers)
                 }
                 let maxTradableToday = FiatValue.create(
                     major: tradeLimits?.maxTradableToday ?? 0,
-                    currency: currency
+                    currency: fiatCurrency
                 )
                 return (maxTradableToday, tiers)
             }
-            .observeOn(MainScheduler.asyncInstance)
             .map { (maxTradableToday, tiers) -> KYCTiersPageModel in
-                let header = KYCTiersHeaderViewModel.make(
-                    with: tiers,
-                    availableFunds: maxTradableToday.toDisplayString(includeSymbol: true),
-                    suppressDismissCTA: true
-                )
-                let models = tiers.tiers
-                    .filter { $0.tier != .tier0 }
-                    .map { KYCTierCellModel.model(from: $0) }
-                    .compactMap { $0 }
-                return KYCTiersPageModel(header: header, cells: models)
+                KYCTiersPageModel.make(tiers: tiers, maxTradableToday: maxTradableToday, suppressCTA: true)
             }
     }
 
     public static func routeToTiers(
-        fromViewController: UIViewController,
-        currency: FiatCurrency = .USD
+        fromViewController: UIViewController
     ) -> Disposable {
-        tiersMetadata(currency: currency)
+        tiersPageModel()
             .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: { model in
-                let controller = KYCTiersViewController.make(with: model)
+                let controller = KYCTiersViewController(pageModel: model)
                 if let from = fromViewController as? UINavigationController {
                     from.pushViewController(controller, animated: true)
                     return

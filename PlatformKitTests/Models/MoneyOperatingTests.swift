@@ -13,16 +13,16 @@ import XCTest
 // Tests default implementations of MoneyOperating
 final class MoneyOperatingTests: XCTestCase {
 
-    func moneyValueUSD(_ uInt: UInt) -> MoneyValue {
-        MoneyValue(amount: BigInt(uInt), currency: .fiat(.USD))
+    func moneyValueUSD(_ int: Int) -> MoneyValue {
+        MoneyValue(amount: BigInt(int), currency: .fiat(.USD))
     }
 
-    func moneyValueIQD(_ uInt: UInt) -> MoneyValue {
-        MoneyValue(amount: BigInt(uInt), currency: .fiat(.IQD))
+    func moneyValueIQD(_ int: Int) -> MoneyValue {
+        MoneyValue(amount: BigInt(int), currency: .fiat(.IQD))
     }
 
-    func moneyValue(_ uInt: UInt, _ currency: CurrencyType) -> MoneyValue {
-        MoneyValue(amount: BigInt(uInt), currency: currency)
+    func moneyValue(_ int: Int, _ currency: CurrencyType) -> MoneyValue {
+        MoneyValue(amount: BigInt(int), currency: currency)
     }
 
     func testMoneyValueMultiplication() throws {
@@ -33,7 +33,26 @@ final class MoneyOperatingTests: XCTestCase {
     private func divide(x: MoneyValue,
                         y: MoneyValue,
                         shouldBe result: BigInt) {
-        XCTAssertEqual((try x / y).amount, BigInt(result))
+        XCTAssertEqual((try x / y).amount, result)
+    }
+    
+    private func percentage(x: MoneyValue,
+                            y: MoneyValue,
+                            shouldBe result: Decimal) {
+        XCTAssertEqual((try x.percentage(of: y)), result)
+    }
+
+    func testPercentage() {
+        percentage(
+            x: moneyValueUSD(0_00),
+            y: moneyValueUSD(1_000_000_000_00),
+            shouldBe: Decimal(string: "0")!
+        )
+        percentage(
+            x: moneyValueUSD(-122_81),
+            y: moneyValueUSD(764_61),
+            shouldBe: Decimal(string: "-0.1606")!
+        )
     }
 
     // USD 2 decimal places division

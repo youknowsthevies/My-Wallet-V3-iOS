@@ -82,6 +82,12 @@ public final class SingleAmountInteractor {
             .rawInputRelay
             .accept(amount)
     }
+
+    public func set(amount: MoneyValue) {
+        currencyInteractor
+            .scanner
+            .reset(to: amount)
+    }
 }
 
 extension SingleAmountInteractor.Input {
