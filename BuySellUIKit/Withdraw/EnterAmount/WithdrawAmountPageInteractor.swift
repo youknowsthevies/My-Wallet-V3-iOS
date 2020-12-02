@@ -14,6 +14,7 @@ import PlatformUIKit
 import RIBs
 import RxCocoa
 import RxSwift
+import ToolKit
 
 protocol WithdrawAmountPageRouting: AnyObject {
     func showError()
@@ -33,6 +34,7 @@ protocol WithdrawAmountPagePresentable: Presentable {
 final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPagePresentable>,
                                           WithdrawAmountPageInteractable {
 
+    private typealias AnalyticsEvent = AnalyticsEvents.FiatWithdrawal
     private typealias LocalizatedStrings = LocalizationConstants.FiatWithdrawal.EnterAmountScreen
 
     weak var router: WithdrawAmountPageRouting?
@@ -46,6 +48,7 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
     /// The interactor that `SingleAmountPreseneter` uses
     private let amountInteractor: SingleAmountInteractor
 
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let loadingViewPresenter: LoadingViewPresenting
     private let alertViewPresenter: AlertViewPresenterAPI
 
@@ -58,6 +61,7 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
          amountInteractor: SingleAmountInteractor,
          withdrawalFeeService: WithdrawalFeeService,
          validationService: WithdrawAmountValidationService,
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          loadingViewPresenter: LoadingViewPresenting = resolve(),
          alertViewPresenter: AlertViewPresenterAPI = resolve()) {
         self.fiatCurrency = fiatCurrency
@@ -65,6 +69,7 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
         self.amountInteractor = amountInteractor
         self.auxiliaryViewInteractor = SendAuxililaryViewInteractor(currencyType: fiatCurrency.currency)
         self.withdrawalFeeService = withdrawalFeeService
+        self.analyticsRecorder = analyticsRecorder
         self.validationService = validationService
         self.alertViewPresenter = alertViewPresenter
         self.loadingViewPresenter = loadingViewPresenter
@@ -129,6 +134,9 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
             .observeOn(MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] (checkoutData) in
                 self?.loadingViewPresenter.hide()
+                let event = AnalyticsEvent.confirm(currencyCode: checkoutData.currency.code,
+                                                   amount: checkoutData.amount.displayString)
+                self?.analyticsRecorder.record(event: event)
                 self?.listener?.showCheckoutScreen(checkoutData: checkoutData)
             })
             .disposeOnDeactivate(interactor: self)

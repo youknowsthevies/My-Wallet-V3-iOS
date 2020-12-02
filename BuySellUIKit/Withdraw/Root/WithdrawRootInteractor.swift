@@ -6,7 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import BuySellKit
+import ToolKit
 import RIBs
 
 protocol WithdrawFlowRouting: AnyObject {
@@ -28,8 +30,16 @@ public final class WithdrawRootInteractor: Interactor,
                                            LinkedBanksSelectionListener,
                                            WithdrawAmountPageListener {
 
+    private typealias AnalyticsEvent = AnalyticsEvents.FiatWithdrawal
+
     weak var router: WithdrawFlowRouting?
     weak var listener: WithdrawFlowListener?
+
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
+
+    init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+        self.analyticsRecorder = analyticsRecorder
+    }
     
     public override func didBecomeActive() {
         super.didBecomeActive()
@@ -63,6 +73,7 @@ public final class WithdrawRootInteractor: Interactor,
 
     // MARK: - Private methods
     private func startFlow() {
+        analyticsRecorder.record(event: AnalyticsEvents.FiatWithdrawal.formShown)
         router?.routeToFlowRoot()
     }
 
