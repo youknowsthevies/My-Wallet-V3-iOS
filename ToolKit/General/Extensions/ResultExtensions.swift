@@ -82,6 +82,24 @@ extension Result where Success == Never {
 }
 
 extension Result {
+    public func replaceError<E: Error>(with error: E) -> Result<Success, E> {
+        mapError { _ in error }
+    }
+}
+
+extension Result {
+    public func eraseError() -> Result<Success, Error> {
+        mapError { $0 }
+    }
+}
+
+extension Result {
+    public func reduce<NewValue>(_ transform: (Result<Success, Failure>) -> NewValue) -> NewValue {
+        transform(self)
+    }
+}
+
+extension Result {
     public var singleEvent: SingleEvent<Success> {
         switch self {
         case .success(let value):

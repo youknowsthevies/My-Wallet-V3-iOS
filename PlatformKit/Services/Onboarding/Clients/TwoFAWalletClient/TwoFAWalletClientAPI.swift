@@ -7,7 +7,8 @@
 //
 
 import RxSwift
+import WalletPayloadKit
 
 public protocol TwoFAWalletClientAPI: class {
-    func payload(guid: String, sessionToken: String, code: String) -> Single<WalletPayload>
+    func payload(guid: String, sessionToken: String, code: String) -> Single<WalletPayloadWrapper>
 }

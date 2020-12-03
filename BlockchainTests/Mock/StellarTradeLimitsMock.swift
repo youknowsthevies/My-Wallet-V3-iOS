@@ -25,7 +25,7 @@ class StellarTradeLimitsMock: StellarTradeLimitsAPI {
         Single.just(true)
     }
 
-    func validateCryptoAmount(amount: Crypto) -> Single<TransactionValidationResult> {
+    func validateCryptoAmount(amount: CryptoMoney) -> Single<TransactionValidationResult> {
         Single.just(.ok)
     }
 }

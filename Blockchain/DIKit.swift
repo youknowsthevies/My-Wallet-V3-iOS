@@ -48,6 +48,10 @@ extension DependencyContainer {
         single { AnalyticsService() as AnalyticsServiceAPI }
         
         factory { CrashlyticsRecorder() as MessageRecording }
+        
+        factory { CrashlyticsRecorder() as ErrorRecording }
+        
+        factory(tag: "CrashlyticsRecorder") { CrashlyticsRecorder() as Recording }
 
         factory { LockboxRepository() as LockboxRepositoryAPI }
 
@@ -206,15 +210,10 @@ extension DependencyContainer {
             let ethereum: EthereumWallet = DIKit.resolve()
             return ethereum
         }
-
-        factory(tag: CryptoCurrency.ethereum) { () -> CryptoAccountBalanceFetching in
-            let ethereum: EthereumWallet = DIKit.resolve()
-            return ethereum
-        }
         
-        factory { () -> EthereumWalletAccountRepository.Bridge in
+        factory { () -> CompleteEthereumWalletBridgeAPI in
             let ethereum: EthereumWallet = DIKit.resolve()
-            return ethereum as EthereumWalletAccountRepository.Bridge
+            return ethereum as CompleteEthereumWalletBridgeAPI
         }
 
         // MARK: - Stellar Wallet
@@ -232,8 +231,5 @@ extension DependencyContainer {
         }
 
         single { BitcoinCashWallet() as BitcoinCashWalletBridgeAPI }
-        
-        // MARK: Simple Buy
-        
     }
 }

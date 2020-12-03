@@ -53,7 +53,7 @@ public struct Mnemonic {
     
     public var seed: Seed? {
         let bip39seed = libWallyMnemonic.seedHex(passphrase?.rawValue)
-        let data = Data(hex: bip39seed.description)
+        let data = Data(hexValue: bip39seed.description)
         return Seed(data: data)
     }
     

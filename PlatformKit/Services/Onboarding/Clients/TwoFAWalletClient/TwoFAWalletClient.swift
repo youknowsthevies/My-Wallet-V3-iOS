@@ -9,6 +9,7 @@
 import DIKit
 import NetworkKit
 import RxSwift
+import WalletPayloadKit
 
 public final class TwoFAWalletClient: TwoFAWalletClientAPI {
 
@@ -63,7 +64,7 @@ public final class TwoFAWalletClient: TwoFAWalletClientAPI {
     
     public func payload(guid: String,
                         sessionToken: String,
-                        code: String) -> Single<WalletPayload> {
+                        code: String) -> Single<WalletPayloadWrapper> {
         let request = requestBuilder.build(
             guid: guid,
             sessionToken: sessionToken,
@@ -71,9 +72,9 @@ public final class TwoFAWalletClient: TwoFAWalletClientAPI {
         )
         return communicator.perform(
             request: request,
-            responseType: WalletPayload.self
+            responseType: WalletPayloadWrapper.self
         )
-        .catchError { error -> Single<WalletPayload> in
+        .catchError { error -> Single<WalletPayloadWrapper> in
             switch error {
             case NetworkCommunicatorError.payloadError(.badData(rawPayload: let payload)):
                 throw ClientError(plainServerError: payload) ?? error

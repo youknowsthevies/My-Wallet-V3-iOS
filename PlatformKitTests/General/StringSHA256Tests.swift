@@ -1,13 +1,13 @@
 //
 //  StringSHA256Tests.swift
-//  CommonCryptoKitTests
+//  PlatformKitTests
 //
-//  Created by Paulo on 23/03/2020.
+//  Created by Jack on 08/04/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-@testable import CommonCryptoKit
 import XCTest
+@testable import PlatformKit
 
 class StringSHA256Tests: XCTestCase {
     func testSha256() {

@@ -66,10 +66,11 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
     }
     
     init(wallet: Wallet = Wallet()!,
-         appSettings: BlockchainSettings.App = resolve()) {
+         appSettings: BlockchainSettings.App = resolve(),
+         reactiveWallet: ReactiveWallet = resolve()) {
         self.appSettings = appSettings
         self.wallet = wallet
-        self.reactiveWallet = ReactiveWallet(wallet: wallet)
+        self.reactiveWallet = reactiveWallet
         super.init()
         let repository = WalletRepository(jsContextProvider: self, settings: appSettings, reactiveWallet: reactiveWallet)
         self.legacyRepository = repository

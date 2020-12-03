@@ -23,7 +23,7 @@ open class EthereumAssetAccountRepository: AssetAccountRepositoryAPI {
    
     private let service: EthereumAssetAccountDetailsService
     
-    public init(service: EthereumAssetAccountDetailsService = resolve()) {
+    init(service: EthereumAssetAccountDetailsService = resolve()) {
         self.service = service
     }
     

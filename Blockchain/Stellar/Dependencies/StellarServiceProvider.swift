@@ -15,16 +15,8 @@ final class StellarServiceProvider: NSObject {
     @objc static let shared: StellarServiceProvider = .init(services: .init())
 
     let services: StellarDependenciesAPI
-
-    private let disposeBag = DisposeBag()
-
-    private init(services: StellarServices) {
-        self.services = services
-        super.init()
-        setup()
-    }
-
-    private func setup() {
+    
+    private lazy var setup: Void = {
         Observable
             .combineLatest(
                 services.ledger.current,
@@ -32,8 +24,16 @@ final class StellarServiceProvider: NSObject {
             )
             .subscribe()
             .disposed(by: disposeBag)
-    }
+    }()
 
+    private let disposeBag = DisposeBag()
+
+    private init(services: StellarServices) {
+        self.services = services
+        super.init()
+        _ = setup
+    }
+    
     func tearDown() {
         services.accounts.clear()
         services.operation.clear()

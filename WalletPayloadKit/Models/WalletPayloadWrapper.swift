@@ -1,15 +1,15 @@
 //
-//  WalletPayload.swift
-//  PlatformKit
+//  WalletPayloadWrapper.swift
+//  WalletKit
 //
-//  Created by Daniel Huri on 27/11/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
+//  Created by Jack Pooley on 25/05/2020.
+//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
 import Foundation
 
 /// The wallet payload as it is returned by the server
-public struct WalletPayload {
+public struct WalletPayloadWrapper {
     
     /// Possible errors for payload
     public enum MappingError: Error {
@@ -21,22 +21,22 @@ public struct WalletPayload {
         case dataConversionFailure
     }
         
-    public let bpkdf2IterationCount: Int
+    public let pbkdf2IterationCount: UInt32
     public let version: Int
     public let payload: String
     
     /// Returns `self` as string (JS requirements)
-    var stringRepresentation: String? {
-        try? encodeToString(encoding: .utf8)
+    public var stringRepresentation: String? {
+        return try? encodeToString(encoding: .utf8)
     }
 }
 
 // MARK: - Codable
 
-extension WalletPayload: Codable {
+extension WalletPayloadWrapper: Codable {
     
     enum CodingKeys: String, CodingKey {
-        case bpkdf2IterationCount = "pbkdf2_iterations"
+        case pbkdf2IterationCount = "pbkdf2_iterations"
         case version
         case payload
     }
@@ -44,6 +44,6 @@ extension WalletPayload: Codable {
     public init(string: String?) throws {
         guard let string = string else { throw MappingError.missingRawInput }
         guard let data = string.data(using: .utf8) else { throw MappingError.dataConversionFailure }
-        self = try data.decode(to: WalletPayload.self)
+        self = try data.decode(to: WalletPayloadWrapper.self)
     }
 }

@@ -10,6 +10,11 @@ import PlatformKit
 import RxSwift
 
 class ReactiveWalletMock: ReactiveWalletAPI {
+    
+    var initializationState: Single<WalletSetup.State> {
+        fatalError("Unimplemented")
+    }
+    
     var waitUntilInitializedSingle: Single<Void> {
         .just(())
     }

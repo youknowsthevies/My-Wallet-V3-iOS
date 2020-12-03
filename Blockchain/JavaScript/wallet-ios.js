@@ -76,6 +76,42 @@ var currentShiftPayment = null;
 var transferAllBackupPayment = null;
 var transferAllPayments = {};
 
+MyWallet.setIsInitialized = function () {
+    if (MyWallet.getIsInitialized()) return;
+    MyWallet.socketConnect();
+    MyWallet.updateToInitialized();
+    console.log("Wallet is initialized");
+    objc_set_is_initialized();
+};
+
+MyWallet.decryptAndInitializeWallet = function (success, error, decryptSuccess) {
+    var encryptedWalletData = WalletStore.getEncryptedWalletData();
+    if (encryptedWalletData === undefined || encryptedWalletData === null || encryptedWalletData.length === 0) {
+      error('No Wallet Data To Decrypt');
+      return;
+    };
+
+    var init = function () {
+        MyWallet.setIsInitialized();
+    };
+
+    var resultJSON = objc_decrypt_wallet(encryptedWalletData, WalletStore.getPassword());
+    var result = JSON.parse(resultJSON);
+    if (result.success != undefined) {
+        var decryptedPayload = JSON.parse(result.success);
+        MyWallet.handleDecryptAndInitializeWalletSuccess(decryptedPayload, success, decryptSuccess, init);
+    } else {
+        var errorMessage = 'Error decrypting wallet, please check that your password is correct';
+        if (result.failure != undefined) {
+            errorMessage = result.failure;
+        };
+        MyWallet.handleDecryptAndInitializeWalletError(
+            error,
+            errorMessage
+        );
+    };
+};
+
 var walletOptions = new WalletOptions(BlockchainAPI);
 
 // Register for JS event handlers and forward to Obj-C handlers
@@ -822,7 +858,9 @@ MyWalletPhone.loginAfterPairing = function(password) {
         Promise.all([getOptions, fetchAccount]).then(login_success);
     };
 
-    return MyWallet.initializeWallet(password, decrypt_success, build_hd_success).then(success).catch(other_error);
+    return MyWallet.initializeWallet(password, decrypt_success, build_hd_success)
+        .then(success)
+        .catch(other_error);
 };
 
 MyWalletPhone.getInfoForTransferAllFundsToAccount = function() {
@@ -1151,26 +1189,6 @@ MyWalletPhone.get_history = function(hideBusyView) {
     getHistory.then(success).catch(error);
 };
 
-MyWalletPhone.get_wallet_and_history = function() {
-    var success = function () {
-        console.log('Got wallet and history');
-        objc_loading_stop();
-    };
-
-    var error = function (e) {
-        console.log(e);
-        console.log('Error getting wallet and history');
-        objc_loading_stop();
-    };
-
-    objc_loading_start_get_wallet_and_history();
-
-    MyWallet.getWallet(function() {
-      var getHistory = MyWallet.wallet.getHistory();
-      getHistory.then(success).catch(error);
-    });
-};
-
 MyWalletPhone.getMultiAddrResponse = function(txFilter) {
     var obj = {};
 
@@ -1245,6 +1263,10 @@ BIP39.mnemonicToSeed = function(mnemonic, enteredPassword) {
     var saltBuffer = new Buffer(BIP39.salt(enteredPassword), 'utf8');
     var retVal = objc_pbkdf2_sync(mnemonicBuffer, saltBuffer, 2048, 64);
     return new Buffer(retVal, 'hex');
+}
+
+BIP39.mnemonicToSeedHex = function(mnemonic, enteredPassword) {
+    return BIP39.mnemonicToSeed(mnemonic, enteredPassword).toString('hex');
 }
 
 Metadata.verify = function (address, signature, message) {

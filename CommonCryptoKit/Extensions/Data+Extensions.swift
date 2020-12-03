@@ -19,7 +19,7 @@ extension Data {
         map { String(format: "%02x", $0) }.reduce("", +)
     }
 
-    public init(hex: String) {
+    public init(hexValue hex: String) {
         let len = hex.count / 2
         var data = Data(capacity: len)
         for i in 0..<len {
@@ -40,5 +40,22 @@ extension Data {
 extension Data {
     public var bytes: Array<UInt8> {
       Array(self)
+    }
+}
+
+import Crypto
+
+extension Data {
+
+    public var sha256: String {
+        sha256Digest.compactMap { String(format: "%02x", $0) }.joined()
+    }
+    
+    private var sha256Data: Data {
+        Data(sha256Digest)
+    }
+    
+    private var sha256Digest: Crypto.SHA256.Digest {
+        Crypto.SHA256.hash(data: self)
     }
 }

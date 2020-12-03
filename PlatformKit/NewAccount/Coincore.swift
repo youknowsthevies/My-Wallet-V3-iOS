@@ -6,29 +6,21 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 import ToolKit
 
 public final class Coincore {
-
-    // MARK: Private Properties
-
-    private let cryptoAssets: [CryptoCurrency: CryptoAsset]
-    private let fiatAsset: FiatAsset
-    private var allAssets: [Asset] {
-        [fiatAsset] + sortedCryptoAssets
-    }
-    private var sortedCryptoAssets: [CryptoAsset] {
-        cryptoAssets.sorted(by: { $0.key < $1.key }).map { $0.value }
-    }
-
-    // MARK: Public Properties
+    
+    // MARK: - Public Properties
 
     public var allAccounts: Single<AccountGroup> {
-        Single
-            .zip(
-                allAssets.map { asset in asset.accountGroup(filter: .all) }
-            )
+        reactiveWallet.waitUntilInitializedSingle
+            .flatMap(weak: self) { (self, _) in
+                Single.zip(
+                    self.allAssets.map { asset in asset.accountGroup(filter: .all) }
+                )
+            }
             .map { accountGroups -> [SingleAccount] in
                 accountGroups.map { $0.accounts }.reduce([SingleAccount](), +)
             }
@@ -36,13 +28,29 @@ public final class Coincore {
                 AllAccountsGroup(accounts: accounts)
             }
     }
+    
+    // MARK: - Private Properties
 
-    // MARK: Setup
+    private var allAssets: [Asset] {
+        [fiatAsset] + sortedCryptoAssets
+    }
+    
+    private var sortedCryptoAssets: [CryptoAsset] {
+        cryptoAssets.sorted(by: { $0.key < $1.key }).map { $0.value }
+    }
+    
+    private let cryptoAssets: [CryptoCurrency: CryptoAsset]
+    private let fiatAsset: FiatAsset
+    private let reactiveWallet: ReactiveWalletAPI
+    
+    // MARK: - Setup
 
     init(cryptoAssets: [CryptoCurrency: CryptoAsset],
-         fiatAsset: FiatAsset = FiatAsset()) {
+         fiatAsset: FiatAsset = FiatAsset(),
+         reactiveWallet: ReactiveWalletAPI = resolve()) {
         self.cryptoAssets = cryptoAssets
         self.fiatAsset = fiatAsset
+        self.reactiveWallet = reactiveWallet
     }
 
     public func getTransactionTargets(

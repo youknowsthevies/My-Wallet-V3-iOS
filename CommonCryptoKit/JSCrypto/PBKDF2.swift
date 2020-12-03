@@ -8,13 +8,13 @@
 
 import CommonCrypto
 
-enum PBKDF2Error: Error {
+public enum PBKDF2Error: Error {
     case keyDerivationError
 }
 
-class PBKDF2 {
+public class PBKDF2 {
     
-    enum PBKDFAlgorithm {
+    public enum PBKDFAlgorithm {
         case sha1
         case sha512
         
@@ -28,7 +28,7 @@ class PBKDF2 {
         }
     }
     
-    class func deriveSHA1Result(password: String, salt: Data, iterations: UInt32, keySizeBytes: UInt) -> Result<Data, PBKDF2Error> {
+    public class func deriveSHA1Result(password: String, salt: Data, iterations: UInt32, keySizeBytes: UInt) -> Result<Data, PBKDF2Error> {
         deriveResult(
             password: password,
             salt: salt,
@@ -38,7 +38,7 @@ class PBKDF2 {
         )
     }
     
-    class func derive(password: String, salt: Data, iterations: UInt32, keySizeBytes: UInt, algorithm: PBKDFAlgorithm) -> Data? {
+    public class func derive(password: String, salt: Data, iterations: UInt32, keySizeBytes: UInt, algorithm: PBKDFAlgorithm) -> Data? {
         let derivation = PBKDF2.deriveResult(
             password: password,
             salt: salt,

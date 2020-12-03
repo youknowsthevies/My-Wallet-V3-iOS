@@ -17,8 +17,7 @@ import RxSwift
 public protocol WalletAccountRepositoryAPI {
     associatedtype Account: WalletAccount
     
-    // TODO:
-    // * Refactor StellarKit and EthereumKit to use the new `Single` based APIs
+    // TODO: Refactor StellarKit and EthereumKit to use the new `Single` based APIs
 //    var accounts: Single<[Account]> { get }
     
 //    var defaultAccount: Single<Account?> { get }

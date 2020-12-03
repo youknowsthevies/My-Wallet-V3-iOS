@@ -106,6 +106,7 @@ final class AnnouncementPresenter {
     private func calculate() {
         let announcementsMetadata: Single<AnnouncementsMetadata> = featureFetcher.fetch(for: .announcements)
         let data: Single<AnnouncementPreliminaryData> = interactor.preliminaryData
+            .delaySubscription(.seconds(10), scheduler: MainScheduler.asyncInstance)
         Single
             .zip(announcementsMetadata, data)
             .flatMap(weak: self) { (self, payload) -> Single<AnnouncementDisplayAction> in

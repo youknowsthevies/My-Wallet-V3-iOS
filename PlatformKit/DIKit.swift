@@ -38,8 +38,8 @@ extension DependencyContainer {
         factory { CustodialClient() as CustodialClientAPI }
         
         factory { () -> CustodyWithdrawalClientAPI in
-            let custodialClient: CustodialClientAPI = DIKit.resolve()
-            return custodialClient as CustodyWithdrawalClientAPI
+            let client: CustodialClientAPI = DIKit.resolve()
+            return client as CustodyWithdrawalClientAPI
         }
         
         factory { PriceClient() as PriceClientAPI }
@@ -120,6 +120,8 @@ extension DependencyContainer {
                 })
             )
         }
+        
+        single { ReactiveWallet() }
         
         factory { BlockchainAccountProvider() as BlockchainAccountProviding }
 

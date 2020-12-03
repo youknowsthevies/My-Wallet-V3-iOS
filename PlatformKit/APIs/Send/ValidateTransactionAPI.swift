@@ -46,9 +46,9 @@ public enum TransactionValidationResult {
     }
 }
 
-/// `ValidateTransactionAPI` takes a `Crypto`. The reason that this is not a `CryptoValue` is `ERC20TokenValue`
-/// and `EthereumValue` are not `CryptoValues` though they do conform to `Crypto`. Use this API to confirm
+/// `ValidateTransactionAPI` takes a `CryptoMoney`. The reason that this is not a `CryptoValue` is `ERC20TokenValue`
+/// and `EthereumValue` are not `CryptoValues` though they do conform to `CryptoMoney`. Use this API to confirm
 /// that an amount you would like to send is valid. 
 public protocol ValidateTransactionAPI {
-    func validateCryptoAmount(amount: Crypto) -> Single<TransactionValidationResult>
+    func validateCryptoAmount(amount: CryptoMoney) -> Single<TransactionValidationResult>
 }

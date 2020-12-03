@@ -107,6 +107,9 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
             
     private var offlineToken: Single<String?> {
         Single.deferred { [weak self] in
+            guard WalletManager.shared.wallet.isInitialized() else {
+                return .error(WalletError.notInitialized)
+            }
             guard let self = self else {
                 return .error(ToolKitError.nullReference(Self.self))
             }
@@ -121,6 +124,9 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     
     private var userId: Single<String?> {
         Single.deferred { [weak self] in
+            guard WalletManager.shared.wallet.isInitialized() else {
+                return .error(WalletError.notInitialized)
+            }
             guard let self = self else {
                 return .error(ToolKitError.nullReference(Self.self))
             }

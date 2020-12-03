@@ -26,6 +26,7 @@ import PlatformUIKit
 import RxSwift
 import ToolKit
 import TransactionUIKit
+import WalletPayloadKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -83,6 +84,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         DependencyContainer.defined(by: modules {
             DependencyContainer.toolKit;
             DependencyContainer.networkKit;
+            DependencyContainer.walletPayloadKit;
             DependencyContainer.platformKit;
             DependencyContainer.interestKit;
             DependencyContainer.platformUIKit;

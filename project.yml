@@ -381,6 +381,7 @@ targets:
     - target: InterestUIKit
     - target: TransactionKit
     - target: TransactionUIKit
+    - target: WalletPayloadKit
     - target: ToolKit
     - target: NetworkKit
     - target: AlgorandKit
@@ -613,6 +614,10 @@ targets:
     templates:
     - FrameworkTest
   CommonCryptoKit:
+    dependencies:
+    - carthage: Crypto
+    - carthage: CCryptoBoringSSL
+    - carthage: CCryptoBoringSSLShims
     scheme:
       testTargets:
       - CommonCryptoKitTests
@@ -889,11 +894,17 @@ targets:
     - target: Localization
     - target: NetworkKit
     - target: ToolKit
+    - target: WalletPayloadKit
     - carthage: BigInt
     - carthage: DIKit
     - carthage: RxSwift
     - carthage: RxRelay
     - carthage: RxCocoa
+    - carthage: CryptoSwift
+    - carthage: Crypto
+    - carthage: CCryptoBoringSSL
+    - carthage: CCryptoBoringSSLShims
+    - carthage: LibWally
     scheme:
       testTargets:
       - PlatformKitTests
@@ -1100,3 +1111,19 @@ targets:
     - carthage: RxSwift
     templates:
     - Framework
+  WalletPayloadKit:
+    dependencies:
+    - target: CommonCryptoKit
+    - target: Localization
+    - target: ToolKit
+    - carthage: CryptoSwift
+    scheme:
+      testTargets:
+      - WalletPayloadKitTests
+    templates:
+    - Framework
+  WalletPayloadKitTests:
+    dependencies:
+    - target: WalletPayloadKit
+    templates:
+    - FrameworkTest
