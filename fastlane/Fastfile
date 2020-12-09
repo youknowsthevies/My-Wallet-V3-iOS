@@ -71,7 +71,11 @@ platform :ios do
     )
   end
 
-  lane :upload_to_appcenter do 
+  desc "Upload IPA to AppCenter."
+  lane :upload_to_appcenter do
+  	#  Expected env vars: 
+  	#  APPCENTER_API_TOKEN, APPCENTER_DISTRIBUTE_FILE, APPCENTER_OWNER_NAME,
+  	#  APPCENTER_DISTRIBUTE_DESTINATIONS, APPCENTER_DISTRIBUTE_RELEASE_NOTES and APPCENTER_APP_NAME
   	appcenter_upload
   end
 end
