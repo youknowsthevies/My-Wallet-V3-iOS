@@ -20,8 +20,8 @@ public enum CryptoCurrency: String, Currency, Codable, CaseIterable, Comparable 
     case bitcoinCash = "BCH"
     case stellar = "XLM"
     case algorand = "ALGO"
-    case pax = "PAX"
     case wDGLD = "WDGLD"
+    case pax = "PAX"
     case tether = "USDT"
 
     /// Initialize with currency code: `BTC`, `ETH`, `BCH`, `XLM`, `PAX`, `ALGO`, `WDGLD`
@@ -55,9 +55,9 @@ extension CryptoCurrency {
             return 3
         case .algorand:
             return 4
-        case .pax:
-            return 5
         case .wDGLD:
+            return 5
+        case .pax:
             return 6
         case .tether:
             return 7
