@@ -70,4 +70,8 @@ platform :ios do
       gsp_path: "./Blockchain/Firebase/Prod/GoogleService-Info.plist"
     )
   end
+
+  lane :upload_to_appcenter do 
+  	appcenter_upload
+  end
 end
