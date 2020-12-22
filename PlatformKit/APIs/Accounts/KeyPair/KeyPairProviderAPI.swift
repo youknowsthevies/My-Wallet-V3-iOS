@@ -32,10 +32,14 @@ public class AnyKeyPairProviderNew<Pair: KeyPair>: KeyPairProviderNewAPI {
     // MARK: - Private methods
     
     private let keyPairProvider: Single<Pair>
+    /// Strong opaque reference to Provider.
+    /// We do this because `keyPairProvider` and `keyPairWithSecondPasswordProvider` may depend on a reference of `self: KeyPairProviderAPI`
+    private let provider: Any
     
     // MARK: - Init
     
     public init<P: KeyPairProviderNewAPI>(provider: P) where P.Pair == Pair {
+        self.provider = provider
         self.keyPairProvider = provider.keyPair
     }
 }
