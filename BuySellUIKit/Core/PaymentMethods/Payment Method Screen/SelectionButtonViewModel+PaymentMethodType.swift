@@ -15,7 +15,7 @@ extension SelectionButtonViewModel {
     
     // MARK: - Types
     
-    private typealias LocalizedString = LocalizationConstants.SimpleBuy.PaymentMethodSelectionScreen
+    private typealias LocalizedString = LocalizationConstants.SimpleBuy.AddPaymentMethodSelectionScreen
     
     // MARK: - Setup
     

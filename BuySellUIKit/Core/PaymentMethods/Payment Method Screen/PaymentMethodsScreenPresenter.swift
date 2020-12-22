@@ -21,7 +21,7 @@ final class PaymentMethodsScreenPresenter {
     // MARK: - Types
     
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
-    private typealias LocalizedString = LocalizationConstants.SimpleBuy.PaymentMethodSelectionScreen
+    private typealias LocalizedString = LocalizationConstants.SimpleBuy.AddPaymentMethodSelectionScreen
     private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.PaymentMethodsScreen
     
     enum CellViewModelType {
@@ -54,8 +54,8 @@ final class PaymentMethodsScreenPresenter {
     // MARK: - Setup
     
     init(interactor: PaymentMethodsScreenInteractor,
-         loadingViewPresenter: LoadingViewPresenting = resolve(),
          stateService: PaymentMethodsStateAPI,
+         loadingViewPresenter: LoadingViewPresenting = resolve(),
          eventRecorder: AnalyticsEventRecording = resolve()) {
         self.loadingViewPresenter = loadingViewPresenter
         self.stateService = stateService

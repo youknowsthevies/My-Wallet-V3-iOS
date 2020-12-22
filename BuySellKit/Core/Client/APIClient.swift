@@ -23,7 +23,8 @@ typealias SimpleBuyClientAPI = EligibilityClientAPI &
                                PaymentMethodsClientAPI &
                                BeneficiariesClientAPI &
                                OrdersActivityClientAPI &
-                               WithdrawalClientAPI
+                               WithdrawalClientAPI &
+                               PaymentEligibleMethodsClientAPI
 
 /// Simple-Buy network client
 final class APIClient: SimpleBuyClientAPI {
@@ -42,11 +43,13 @@ final class APIClient: SimpleBuyClientAPI {
         static let checkEligibility = "checkEligibility"
         static let states = "states"
         static let benefiary = "beneficiary"
+        static let onlyEligible = "onlyEligible"
     }
         
     private enum Path {
         static let transactions = ["payments", "transactions"]
         static let paymentMethods = [ "payments", "methods" ]
+        static let eligiblePaymentMethods = [ "eligible", "payment-methods" ]
         static let beneficiaries = [ "payments", "beneficiaries" ]
         static let banks = ["payments", "banks"]
         static let supportedPairs = [ "simple-buy", "pairs" ]
@@ -332,6 +335,28 @@ final class APIClient: SimpleBuyClientAPI {
             authenticated: true
         )!
         return communicator.perform(request: request)
+    }
+
+    // MARK: - PaymentEligibleMethodsClientAPI
+
+    func eligiblePaymentMethods(for currency: String, onlyEligible: Bool) -> Single<[PaymentMethodsResponse.Method]> {
+        let queryParameters = [
+            URLQueryItem(
+                name: Parameter.currency,
+                value: currency
+            ),
+            URLQueryItem(
+                name: Parameter.onlyEligible,
+                value: "\(onlyEligible)"
+            )
+        ]
+        let request = requestBuilder.get(
+            path: Path.eligiblePaymentMethods,
+            parameters: queryParameters,
+            authenticated: true
+        )!
+        return communicator.perform(request: request)
+
     }
 
     // MARK: - WithdrawalClientAPI

@@ -128,59 +128,74 @@ extension LocalizationConstants.SimpleBuy {
         public static let viewHome = NSLocalizedString("View Home",
                                                        comment: "View Home")
     }
+
     public enum PaymentMethodSelectionScreen {
         public static let title = NSLocalizedString(
-            "Payment Methods",
+            "Pay with my...",
             comment: "Simple Buy: Payment method selection screen title"
+        )
+
+        public enum NewPaymentButton {
+            public static let title = NSLocalizedString(
+                "+ Add New",
+                comment: "Simple Buy: Add new payment method button selection title"
+            )
+        }
+    }
+
+    public enum AddPaymentMethodSelectionScreen {
+        public static let title = NSLocalizedString(
+            "Payment Methods",
+            comment: "Simple Buy: Add Payment method selection screen title"
         )
         public struct Card {
             public static let title = NSLocalizedString(
                 "Add Credit or Debit Card",
-                comment: "Simple Buy: Payment method selection screen: card title"
+                comment: "Simple Buy: Add Payment method selection screen: card title"
             )
             public static let descriptionLimit = NSLocalizedString(
                 "Limit",
-                comment: "Simple Buy: Payment method selection screen: description of card payment max limit"
+                comment: "Simple Buy: Add Payment method selection screen: description of card payment max limit"
             )
             public static let descriptionInfo = NSLocalizedString(
                 "Instantly buy crypto with any Visa or Mastercard.",
-                comment: "Simple Buy: Payment method selection screen: description of card"
+                comment: "Simple Buy: Add Payment method selection screen: description of card"
             )
             public static let badgeTitle = NSLocalizedString(
                 "Most Popular",
-                comment: "Simple Buy: Payment method selection screen: promotional text for card payment"
+                comment: "Simple Buy: Add Payment method selection screen: promotional text for card payment"
             )
         }
         public struct DepositCash {
             public static let title = NSLocalizedString(
                 "Deposit Cash",
-                comment: "Simple Buy: Payment method selection screen: deposit funds title"
+                comment: "Simple Buy: Add Payment method selection screen: deposit funds title"
             )
             public static let description = NSLocalizedString(
                 "Send funds directly from your bank to your Blockchain.com Wallet. Once we receive the manual transfer, use that cash to buy crypto.",
-                comment: "Simple Buy: Payment method selection screen: description of Deposit Funds"
+                comment: "Simple Buy: Add Payment method selection screen: description of Deposit Funds"
             )
         }
         public enum Types {
             public static let bankWireTitle = NSLocalizedString(
                 "Bank Wire Transfer",
-                comment: "Simple Buy: Payment method selection screen: bank wire transfer"
+                comment: "Simple Buy: Add Payment method selection screen: bank wire transfer"
             )
             public static let cardTitle = NSLocalizedString(
                 "Credit or Debit Card",
-                comment: "Simple Buy: Payment method selection screen: card"
+                comment: "Simple Buy: Add Payment method selection screen: card"
             )
             public static let limitSubtitle = NSLocalizedString(
                 "Limit",
-                comment: "Simple Buy: Payment method selection screen: type subtitle (max amount limit)"
+                comment: "Simple Buy: Add Payment method selection screen: type subtitle (max amount limit)"
             )
             public static let available = NSLocalizedString(
                 "Available",
-                comment: "Simple Buy: Payment method selection screen: funds type subtitle (max amount limit)"
+                comment: "Simple Buy: Add Payment method selection screen: funds type subtitle (max amount limit)"
             )
             public static let selectCashOrCard = NSLocalizedString(
                 "Select Cash or Card",
-                comment: "Simple Buy: Payment method selection screen: select cash or card"
+                comment: "Simple Buy: Add Payment method selection screen: select cash or card"
             )
         }
     }

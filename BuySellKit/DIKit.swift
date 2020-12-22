@@ -80,6 +80,11 @@ extension DependencyContainer {
             return client as WithdrawalClientAPI
         }
 
+        factory { () -> PaymentEligibleMethodsClientAPI in
+            let client: SimpleBuyClientAPI = DIKit.resolve()
+            return client as PaymentEligibleMethodsClientAPI
+        }
+
         factory { WithdrawalService() as WithdrawalServiceAPI }
         
         // MARK: - Clients - Cards
@@ -141,7 +146,13 @@ extension DependencyContainer {
 
         single { PaymentMethodTypesService() as PaymentMethodTypesServiceAPI }
 
-        single { PaymentMethodsService() as PaymentMethodsServiceAPI }
+        single { () -> PaymentMethodsServiceAPI in
+            let internalFeatureService: InternalFeatureFlagServiceAPI = DIKit.resolve()
+            if internalFeatureService.isEnabled(.achFlow) {
+                return EligiblePaymentMethodsService() as PaymentMethodsServiceAPI
+            }
+            return PaymentMethodsService() as PaymentMethodsServiceAPI
+        }
 
         // MARK: - Services - Cards
 

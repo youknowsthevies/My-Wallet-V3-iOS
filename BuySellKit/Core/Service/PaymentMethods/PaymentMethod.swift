@@ -22,10 +22,10 @@ public struct PaymentMethod: Equatable {
         
         /// Card payment method
         case card(Set<CardType>)
-        
+
         /// Bank transfer payment method
         case bankTransfer
-        
+
         /// Funds payment method
         case funds(CurrencyType)
         
@@ -159,6 +159,19 @@ extension Array where Element == PaymentMethod {
             .compactMap {
                 PaymentMethod(
                     currency: response.currency,
+                    method: $0,
+                    supportedFiatCurrencies: supportedFiatCurrencies
+                )
+            }
+        append(contentsOf: methods)
+    }
+
+    init(methods: [PaymentMethodsResponse.Method], currency: FiatCurrency, supportedFiatCurrencies: [FiatCurrency]) {
+        self.init()
+        let methods = methods
+            .compactMap {
+                PaymentMethod(
+                    currency: currency.code,
                     method: $0,
                     supportedFiatCurrencies: supportedFiatCurrencies
                 )

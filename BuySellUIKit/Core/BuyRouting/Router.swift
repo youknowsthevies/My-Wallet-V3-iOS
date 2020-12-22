@@ -40,6 +40,7 @@ public final class Router: RouterAPI {
     private let cryptoSelectionService: CryptoCurrencySelectionServiceAPI
     private let exchangeProvider: ExchangeProviding
     private let navigationRouter: NavigationRouterAPI
+    private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     
     private var cardRouter: CardRouter!
     
@@ -50,6 +51,8 @@ public final class Router: RouterAPI {
     private let disposeBag = DisposeBag()
     
     private let builder: Buildable
+
+    private var achFlowRouter: ACHFlowStarter?
     
     // MARK: - Setup
     
@@ -57,6 +60,7 @@ public final class Router: RouterAPI {
                 paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
                 settingsService: CompleteSettingsServiceAPI = resolve(),
                 supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
+                internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
                 builder: Buildable,
                 kycRouter: KYCRouterAPI,
                 exchangeProvider: ExchangeProviding) {
@@ -67,6 +71,7 @@ public final class Router: RouterAPI {
         self.exchangeProvider = exchangeProvider
         self.kycRouter = kycRouter
         self.builder = builder
+        self.internalFeatureFlagService = internalFeatureFlagService
         
         let cryptoSelectionService = CryptoCurrencySelectionService(
             service: supportedPairsInteractor,
@@ -338,6 +343,26 @@ public final class Router: RouterAPI {
     }
     
     private func showPaymentMethodsScreen() {
+        guard internalFeatureFlagService.isEnabled(.achFlow) else {
+            showOldPaymentMethodsScreen()
+            return
+        }
+        showACHPaymentMethodsScreen()
+    }
+
+    private func showACHPaymentMethodsScreen() {
+        let builder = ACHFlowRootBuilder(stateService: stateService)
+        let (router, controller) = builder.build()
+        self.achFlowRouter = router
+        let flowDimissed: () -> Void = { [weak self] in
+            guard let self = self else { return }
+            self.achFlowRouter = nil
+        }
+        router.startFlow(flowDismissed: flowDimissed)
+        navigationRouter.navigationControllerAPI?.present(controller.uiviewController, animated: true, completion: nil)
+    }
+
+    private func showOldPaymentMethodsScreen() {
         let interactor = PaymentMethodsScreenInteractor(paymentMethodTypesService: paymentMethodTypesService)
         let presenter = PaymentMethodsScreenPresenter(
             interactor: interactor,
