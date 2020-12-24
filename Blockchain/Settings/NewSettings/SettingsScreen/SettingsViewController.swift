@@ -190,7 +190,7 @@ extension SettingsViewController: UITableViewDelegate {
     }
 
     private func linkedBankCell(for indexPath: IndexPath,
-                                viewModel: LinkedBankViewModel) -> LinkedBankTableViewCell {
+                                viewModel: BeneficiaryLinkedBankViewModel) -> LinkedBankTableViewCell {
         let cell = tableView.dequeue(LinkedBankTableViewCell.self, for: indexPath)
         cell.viewModel = viewModel
         return cell

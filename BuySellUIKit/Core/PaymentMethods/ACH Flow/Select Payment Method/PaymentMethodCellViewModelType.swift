@@ -26,4 +26,5 @@ enum PaymentMethodCellViewModelItem: Equatable {
     case linkedCard(LinkedCardCellPresenter)
     case account(FiatCustodialBalanceViewPresenter)
     case addNew(AddNewPaymentMethodCellModel)
+    case linkedBank(LinkedBankViewModel)
 }

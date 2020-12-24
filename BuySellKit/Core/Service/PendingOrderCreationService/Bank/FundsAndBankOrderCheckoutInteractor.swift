@@ -61,7 +61,7 @@ public final class FundsAndBankOrderCheckoutInteractor {
             )
 
         let finalCheckoutData: Single<CheckoutData>
-        if checkoutData.order.paymentMethod.isBankTransfer {
+        if checkoutData.order.paymentMethod.isBankAccount {
             finalCheckoutData = paymentAccountService
                 .paymentAccount(for: fiat.currencyType)
                 .map { checkoutData.checkoutData(byAppending: $0) }

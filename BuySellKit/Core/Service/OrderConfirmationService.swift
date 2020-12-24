@@ -41,7 +41,10 @@ final class OrderConfirmationService: OrderConfirmationServiceAPI {
         let paymentMethodId = checkoutData.order.paymentMethodId
         let partner: OrderPayload.ConfirmOrder.Partner
         switch checkoutData.order.paymentMethod {
+        case .bankAccount:
+            partner = .bank
         case .bankTransfer:
+            // TODO: ACH - Add correct value here
             partner = .bank
         case .card:
             partner = .everyPay(customerUrl: PartnerAuthorizationData.exitLink)

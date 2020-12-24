@@ -23,6 +23,6 @@ extension LinkedBanksSectionModel: SectionModelType {
 }
 
 enum LinkedBanksSectionItem: Equatable {
-    case linkedBank(LinkedBankViewModel)
+    case linkedBank(BeneficiaryLinkedBankViewModel)
     case addNewBank(AddBankCellModel)
 }

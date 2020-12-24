@@ -57,7 +57,7 @@ final class LinkedBanksSelectionInteractor: PresentableInteractor<LinkedBanksSel
                 beneficiaries.filter { $0.currency == currency }
             }
             .map { [currency] beneficiariesFiltered -> [LinkedBanksSectionItem] in
-                let beneficiariesViewModels = beneficiariesFiltered.map(LinkedBankViewModel.init(data:))
+                let beneficiariesViewModels = beneficiariesFiltered.map(BeneficiaryLinkedBankViewModel.init(data:))
                 let beneficiariesItems = beneficiariesViewModels.map(LinkedBanksSectionItem.linkedBank)
                 // always append `.addNewBank` in the list
                 let item = LinkedBanksSectionItem.addNewBank(AddBankCellModel(fiatCurrency: currency))

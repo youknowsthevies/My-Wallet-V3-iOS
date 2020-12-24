@@ -2,7 +2,7 @@
 //  LinkedBankViewModel.swift
 //  BuySellUIKit
 //
-//  Created by Dimitrios Chatzieleftheriou on 08/12/2020.
+//  Created by Daniel on 16/07/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
@@ -13,33 +13,39 @@ import PlatformUIKit
 import RxCocoa
 import RxDataSources
 
-public final class LinkedBankViewModel: LinkedBankViewModelAPI {
+public protocol LinkedBankViewModelAPI {
+    var nameLabelContent: LabelContent { get }
+    var limitLabelContent: LabelContent { get }
+    var accountLabelContent: LabelContent { get }
+    var badgeImageViewModel: BadgeImageViewModel { get }
+    /// Determines if the view accepts taps from its custom button or not
+    var isCustomButtonEnabled: Bool { get }
+    /// PublishRelay for forwarding tap events from the view
+    var tapRelay: PublishRelay<Void> { get }
+}
 
+public final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
+    
     // MARK: - Types
-
+    
     private typealias AccessibilityId = Accessibility.Identifier.LinkedBankView
-
+    
     // MARK: - Properties
-
-    public let data: LinkedBankData
-
+    
+    public let data: Beneficiary
+    
     public let nameLabelContent: LabelContent
     public let limitLabelContent: LabelContent
     public let accountLabelContent: LabelContent
     public let badgeImageViewModel: BadgeImageViewModel
 
-    public let isCustomButtonEnabled: Bool = true
-
     public let tapRelay = PublishRelay<Void>()
-    public var tap: Signal<Void> {
-        tapRelay.asSignal()
-    }
-
+    public let isCustomButtonEnabled: Bool = false
     // MARK: - Setup
-
-    public init(data: LinkedBankData) {
+    
+    public init(data: Beneficiary) {
         self.data = data
-
+        
         badgeImageViewModel = .template(
             with: "icon-bank",
             templateColor: .secondary,
@@ -48,23 +54,28 @@ public final class LinkedBankViewModel: LinkedBankViewModelAPI {
             accessibilityIdSuffix: data.identifier
         )
         badgeImageViewModel.marginOffsetRelay.accept(0)
-
+        
         nameLabelContent = LabelContent(
-            text: data.account.bankName,
+            text: data.name,
             font: .main(.semibold, 16),
             color: .titleText,
             accessibility: .id("\(AccessibilityId.name)\(data.identifier)")
         )
-
+        
+        var limitText = ""
+        if let limit = data.limit {
+            limitText = "\(limit.toDisplayString(includeSymbol: true)) \(LocalizationConstants.Settings.Bank.dailyLimit)"
+        }
+        
         limitLabelContent = LabelContent(
-            text: data.account.name,
+            text: limitText,
             font: .main(.medium, 14),
             color: .descriptionText,
             accessibility: .id("\(AccessibilityId.limits)\(data.identifier)")
         )
-
+        
         accountLabelContent = LabelContent(
-            text: "",
+            text: data.account,
             font: .main(.semibold, 16),
             color: .titleText,
             accessibility: .id("\(AccessibilityId.account)\(data.identifier)")
@@ -72,14 +83,14 @@ public final class LinkedBankViewModel: LinkedBankViewModelAPI {
     }
 }
 
-extension LinkedBankViewModel: IdentifiableType {
+extension BeneficiaryLinkedBankViewModel: IdentifiableType {
     public var identity: String {
         data.identifier
     }
 }
 
-extension LinkedBankViewModel: Equatable {
-    public static func == (lhs: LinkedBankViewModel, rhs: LinkedBankViewModel) -> Bool {
+extension BeneficiaryLinkedBankViewModel: Equatable {
+    public static func == (lhs: BeneficiaryLinkedBankViewModel, rhs: BeneficiaryLinkedBankViewModel) -> Bool {
         lhs.data == rhs.data
     }
 }

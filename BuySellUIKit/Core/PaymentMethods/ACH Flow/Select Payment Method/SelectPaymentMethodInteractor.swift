@@ -156,6 +156,18 @@ final class SelectPaymentMethodInteractor: PresentableInteractor<SelectPaymentMe
                 .emit(to: selectionRelay)
                 .disposeOnDeactivate(interactor: self)
             cellType = .account(presenter)
+        case .linkedBank(let data):
+            let viewModel = LinkedBankViewModel(data: data)
+            viewModel.tap
+                .do(onNext: { [weak self] _ in
+                    self?.eventRecorder.record(
+                        event: AnalyticsEvent.sbPaymentMethodSelected(selection: .funds)
+                    )
+                })
+                .map { _ in paymentMethodType }
+                .emit(to: selectionRelay)
+                .disposeOnDeactivate(interactor: self)
+            cellType = .linkedBank(viewModel)
         }
 
         return cellType

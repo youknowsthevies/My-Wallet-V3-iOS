@@ -442,7 +442,12 @@ public final class Router: RouterAPI {
             orderInteractor = BuyOrderCardCheckoutInteractor(
                 cardInteractor: CardOrderCheckoutInteractor()
             )
-        case .funds, .bankTransfer:
+        case .funds, .bankAccount:
+            orderInteractor = BuyOrderFundsCheckoutInteractor(
+                fundsAndBankInteractor: FundsAndBankOrderCheckoutInteractor()
+            )
+        case .bankTransfer:
+            // TODO: ACH - Add correct value, though this might be correct!
             orderInteractor = BuyOrderFundsCheckoutInteractor(
                 fundsAndBankInteractor: FundsAndBankOrderCheckoutInteractor()
             )

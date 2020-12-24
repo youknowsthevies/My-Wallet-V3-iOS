@@ -85,6 +85,11 @@ extension DependencyContainer {
             return client as PaymentEligibleMethodsClientAPI
         }
 
+        factory { () -> LinkedBanksClientAPI in
+            let client: SimpleBuyClientAPI = DIKit.resolve()
+            return client as LinkedBanksClientAPI
+        }
+
         factory { WithdrawalService() as WithdrawalServiceAPI }
         
         // MARK: - Clients - Cards
@@ -139,6 +144,8 @@ extension DependencyContainer {
         single { EligibilityService() as EligibilityServiceAPI }
         
         factory { SuggestedAmountsService() as SuggestedAmountsServiceAPI }
+
+        factory { LinkedBanksService() as LinkedBanksServiceAPI }
 
         // MARK: - Services - Payment Methods
 

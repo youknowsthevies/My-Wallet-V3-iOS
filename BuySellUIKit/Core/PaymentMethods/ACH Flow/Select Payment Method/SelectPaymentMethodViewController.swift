@@ -54,6 +54,7 @@ final class SelectPaymentMethodViewController: BaseScreenViewController,
         tableView.registerNibCell(LinkedCardTableViewCell.self)
         tableView.register(FiatCustodialBalanceTableViewCell.self)
         tableView.register(AddNewPaymentMethodTableViewCell.self)
+        tableView.register(LinkedBankTableViewCell.self)
         tableView.allowsSelection = false
         tableView.separatorInset = .zero
         tableView.tableFooterView = UIView()
@@ -84,6 +85,8 @@ final class SelectPaymentMethodViewController: BaseScreenViewController,
                     return self.accountTableViewCell(for: indexPath, presenter: presenter)
                 case .addNew(let viewModel):
                     return self.addNewTableViewCell(for: indexPath, viewModel: viewModel)
+                case .linkedBank(let viewModel):
+                    return self.linkedBankTableViewCell(for: indexPath, viewModel: viewModel)
                 }
             }
         )
@@ -124,6 +127,13 @@ final class SelectPaymentMethodViewController: BaseScreenViewController,
                                      viewModel: AddNewPaymentMethodCellModel) -> UITableViewCell {
         let cell = tableView.dequeue(AddNewPaymentMethodTableViewCell.self, for: indexPath)
         cell.configure(viewModel: viewModel)
+        return cell
+    }
+
+    private func linkedBankTableViewCell(for indexPath: IndexPath,
+                                         viewModel: LinkedBankViewModel) -> UITableViewCell {
+        let cell = tableView.dequeue(LinkedBankTableViewCell.self, for: indexPath)
+        cell.viewModel = viewModel
         return cell
     }
 }

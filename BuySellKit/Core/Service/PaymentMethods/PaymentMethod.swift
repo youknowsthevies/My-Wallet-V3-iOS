@@ -11,7 +11,8 @@ import ToolKit
 
 public enum PaymentMethodPayloadType: String, CaseIterable, Encodable {
     case card = "PAYMENT_CARD"
-    case bankTransfer = "BANK_ACCOUNT"
+    case bankAccount = "BANK_ACCOUNT"
+    case bankTransfer = "BANK_TRANSFER"
     case funds = "FUNDS"
 }
 
@@ -23,6 +24,9 @@ public struct PaymentMethod: Equatable {
         /// Card payment method
         case card(Set<CardType>)
 
+        /// Bank account payment method
+        case bankAccount
+
         /// Bank transfer payment method
         case bankTransfer
 
@@ -33,7 +37,7 @@ public struct PaymentMethod: Equatable {
             switch self {
             case .card:
                 return true
-            case .bankTransfer, .funds:
+            case .bankAccount, .bankTransfer, .funds:
                 return false
             }
         }
@@ -42,16 +46,16 @@ public struct PaymentMethod: Equatable {
             switch self {
             case .funds:
                 return true
-            case .bankTransfer, .card:
+            case .bankAccount, .bankTransfer, .card:
                 return false
             }
         }
         
-        public var isBankTransfer: Bool {
+        public var isBankAccount: Bool {
             switch self {
-            case .bankTransfer:
+            case .bankAccount:
                 return true
-            case .funds, .card:
+            case .funds, .card, .bankTransfer:
                 return false
             }
         }
@@ -60,10 +64,12 @@ public struct PaymentMethod: Equatable {
             switch self {
             case .card:
                 return .card
-            case .bankTransfer:
-                return .bankTransfer
+            case .bankAccount:
+                return .bankAccount
             case .funds:
                 return .funds
+            case .bankTransfer:
+                return .bankTransfer
             }
         }
         
@@ -71,7 +77,7 @@ public struct PaymentMethod: Equatable {
             switch self {
             case .card:
                 return .card
-            case .bankTransfer:
+            case .bankAccount, .bankTransfer:
                 return .bank
             case .funds:
                 return .funds
@@ -89,6 +95,8 @@ public struct PaymentMethod: Equatable {
                 /// at least one sub type is included. e.g: "VISA".
                 guard !cardTypes.isEmpty else { return nil }
                 self = .card(cardTypes)
+            case .bankAccount:
+                self = .bankAccount
             case .bankTransfer:
                 self = .bankTransfer
             case .funds:
@@ -103,6 +111,8 @@ public struct PaymentMethod: Equatable {
             switch type {
             case .card:
                 self = .card([])
+            case .bankAccount:
+                self = .bankAccount
             case .bankTransfer:
                 self = .bankTransfer
             case .funds:

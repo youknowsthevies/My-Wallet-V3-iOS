@@ -91,7 +91,7 @@ final class PaymentMethodsScreenPresenter {
     // MARK: - Private
     
     private func generateCellType(by paymentMethodType: PaymentMethodType) -> CellViewModelType? {
-        let cellType: CellViewModelType
+        let cellType: CellViewModelType?
         switch paymentMethodType {
         case .suggested(let method):
             let viewModel: ExplainedActionViewModel
@@ -116,16 +116,20 @@ final class PaymentMethodsScreenPresenter {
                     uniqueAccessibilityIdentifier: AccessibilityId.addCard
                 )
             case .bankTransfer:
-                fatalError("Bank transfer is not a valid payment method any longer")
+                fatalError("Bank transfer not handled on this presenter")
+            case .bankAccount:
+                fatalError("Bank account is not a valid payment method any longer")
             }
             viewModel.tap
                 .emit(weak: self) { (self) in
                     let event: AnalyticsEvents.SimpleBuy.PaymentMethod
                     switch method.type {
-                    case .bankTransfer:
+                    case .bankAccount:
                         event = .bank
                         self.interactor.select(method: paymentMethodType)
                         self.stateService.previousRelay.accept(())
+                    case .bankTransfer:
+                        fatalError("bank transfer here is not eligible")
                     case .funds(.fiat(let currency)):
                         event = .funds
                         self.showFundsTransferDetailsIfNeeded(for: currency)
@@ -175,6 +179,9 @@ final class PaymentMethodsScreenPresenter {
                 }
                 .disposed(by: disposeBag)
             cellType = .account(presenter)
+        case .linkedBank:
+            // Payment method, not handled here, this shouldn't happen, perhaps backend issue
+            cellType = nil
         }
         
         return cellType

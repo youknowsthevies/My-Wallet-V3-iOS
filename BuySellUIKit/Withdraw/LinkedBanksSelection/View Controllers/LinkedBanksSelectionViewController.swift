@@ -111,7 +111,7 @@ class LinkedBanksSelectionViewController: BaseScreenViewController,
 
     // MARK: - Private Functions
 
-    private func linkedBankCell(for indexPath: IndexPath, viewModel: LinkedBankViewModel) -> LinkedBankTableViewCell {
+    private func linkedBankCell(for indexPath: IndexPath, viewModel: BeneficiaryLinkedBankViewModel) -> LinkedBankTableViewCell {
         let cell = tableView.dequeue(LinkedBankTableViewCell.self, for: indexPath)
         cell.viewModel = viewModel
         return cell

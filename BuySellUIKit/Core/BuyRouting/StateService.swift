@@ -245,7 +245,7 @@ public final class StateService: StateServiceAPI {
         case .pendingKycApproval(let data):
             // After KYC - add card if necessary or go to checkout for bank transfer
             switch data.order.paymentMethod {
-            case .bankTransfer:
+            case .bankAccount:
                 state = .checkout(data)
             case .card:
                 state = .addCard(data)
@@ -255,6 +255,8 @@ public final class StateService: StateServiceAPI {
                     isOriginPaymentMethods: false,
                     isOriginDeposit: false
                 )
+            case .bankTransfer:
+                state = .checkout(data)
             }
             apply(
                 action: .next(to: state),
@@ -355,6 +357,9 @@ public final class StateService: StateServiceAPI {
                                 return .just(.checkout(checkoutData))
                             }
                         case .bankTransfer:
+                            // TODO: ACH - Add correct value for Bank Transfer
+                            return .just(.checkout(checkoutData))
+                        case .bankAccount:
                             return .just(.pendingOrderDetails(checkoutData))
                         case .funds:
                             return .just(.pendingOrderDetails(checkoutData))
@@ -542,9 +547,13 @@ extension StateService {
             state = .pendingOrderCompleted(
                 orderDetails: checkoutData.order
             )
-        case (.bankTransfer, true):
+        case (.bankAccount, true):
             state = .bankTransferDetails(checkoutData)
-        case (.bankTransfer, false),
+        case (.bankTransfer, true):
+            // TODO: ACH - Add correct value here
+            state = .pendingOrderCompleted(orderDetails: checkoutData.order)
+        case (.bankAccount, false),
+             (.bankTransfer, false),
              (.funds, false):
             state = .inactive
         case (.card, _):

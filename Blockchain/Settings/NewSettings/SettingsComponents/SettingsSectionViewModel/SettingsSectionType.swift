@@ -60,7 +60,7 @@ enum SettingsSectionType: Int, Equatable {
         case `switch`(SwitchCellType, SwitchCellPresenting)
         case clipboard(ClipboardCellType)
         case cards(LinkedPaymentMethodCellType<AddPaymentMethodCellPresenter, LinkedCardCellPresenter>)
-        case banks(LinkedPaymentMethodCellType<AddPaymentMethodCellPresenter, LinkedBankViewModel>)
+        case banks(LinkedPaymentMethodCellType<AddPaymentMethodCellPresenter, BeneficiaryLinkedBankViewModel>)
         case plain(PlainCellType)
         
         enum BadgeCellType: String {

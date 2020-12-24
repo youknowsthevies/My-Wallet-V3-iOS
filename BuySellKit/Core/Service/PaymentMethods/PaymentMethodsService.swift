@@ -56,7 +56,7 @@ final class PaymentMethodsService: PaymentMethodsServiceAPI {
             switch card.type {
             case .card(let types):
                 return types
-            case .bankTransfer, .funds:
+            case .bankAccount, .bankTransfer, .funds:
                 return []
             }
         }
@@ -123,6 +123,8 @@ final class PaymentMethodsService: PaymentMethodsServiceAPI {
                             case .funds(let currencyType):
                                 return currencyType.code == fiatCurrency.code
                             case .bankTransfer:
+                                return false
+                            case .bankAccount:
                                 // Filter out bank transfer details from currencies we do not
                                 //  have local support/UI.
                                 return enabledFiatCurrencies.contains($0.min.currencyType)

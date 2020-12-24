@@ -76,6 +76,9 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         switch event.paymentMethod {
         case .bankTransfer:
             paymentMethod = LocalizedLineItem.bankTransfer
+        case .bankAccount:
+            // TODO: ACH - Add correct value here
+            paymentMethod = LocalizedLineItem.bankTransfer
         case .card:
             paymentMethod = LocalizedLineItem.creditOrDebitCard
         case .funds:
@@ -167,6 +170,8 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
     func viewDidLoad() {
         switch event.paymentMethod {
         case .bankTransfer:
+            break
+        case .bankAccount:
             break
         case .funds:
             break

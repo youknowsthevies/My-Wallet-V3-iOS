@@ -24,7 +24,8 @@ typealias SimpleBuyClientAPI = EligibilityClientAPI &
                                BeneficiariesClientAPI &
                                OrdersActivityClientAPI &
                                WithdrawalClientAPI &
-                               PaymentEligibleMethodsClientAPI
+                               PaymentEligibleMethodsClientAPI &
+                               LinkedBanksClientAPI
 
 /// Simple-Buy network client
 final class APIClient: SimpleBuyClientAPI {
@@ -60,6 +61,7 @@ final class APIClient: SimpleBuyClientAPI {
         static let eligible = [ "simple-buy", "eligible" ]
         static let withdrawalFees = [ "payments", "withdrawals", "fees" ]
         static let withdrawal = [ "payments", "withdrawals" ]
+        static let linkedBanks = [ "payments", "banktransfer" ]
     }
     
     private enum Constants {
@@ -387,6 +389,16 @@ final class APIClient: SimpleBuyClientAPI {
             path: Path.withdrawal,
             body: try? payload.encode(),
             headers: headers,
+            authenticated: true
+        )!
+        return communicator.perform(request: request)
+    }
+
+    // MARK: - LinkedBanks API
+
+    func linkedBanks() -> Single<[LinkedBankResponse]> {
+        let request = requestBuilder.get(
+            path: Path.linkedBanks,
             authenticated: true
         )!
         return communicator.perform(request: request)

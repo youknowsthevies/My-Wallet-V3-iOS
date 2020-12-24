@@ -14,6 +14,8 @@ extension BuySellActivityItemEvent {
         
         let paymentMethod: PaymentMethod
         switch orderDetails.paymentMethod {
+        case .bankAccount:
+            paymentMethod = .bankAccount
         case .bankTransfer:
             paymentMethod = .bankTransfer
         case .card:

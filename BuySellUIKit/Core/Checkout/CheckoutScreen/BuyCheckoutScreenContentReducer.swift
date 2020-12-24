@@ -89,7 +89,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
             } else {
                 return LocalizedString.Title.checkout
             }
-        case .bankTransfer, .funds:
+        case .bankAccount, .funds, .bankTransfer:
             if data.order.isPendingConfirmation {
                 return LocalizedString.Title.checkout
             } else {
@@ -107,7 +107,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
             } else {
                 title = "\(LocalizedSummary.buyButtonPrefix)\(data.outputCurrency.displayCode)"
             }
-        case .bankTransfer, .funds:
+        case .bankAccount, .funds, .bankTransfer:
             if data.order.isPendingConfirmation {
                 title = "\(LocalizedSummary.buyButtonPrefix)\(data.outputCurrency.displayCode)"
             } else {
@@ -122,6 +122,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
         case (.card, true):
             return nil
         case (.card, false),
+             (.bankAccount, _),
              (.bankTransfer, _),
              (.funds, _):
             return .cancel(with: LocalizationConstants.cancel)
@@ -159,7 +160,10 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
             localizedPaymentMethod = "\(LocalizedLineItem.Funds.prefix) \(data.fee.currency.code) \(LocalizedLineItem.Funds.suffix)"
         case .card:
             localizedPaymentMethod = "\(data.card?.label ?? "") \(data.card?.displaySuffix ?? "")"
+        case .bankAccount:
+            localizedPaymentMethod = LocalizedLineItem.bankTransfer
         case .bankTransfer:
+            // TODO: ACH - Add correct value here
             localizedPaymentMethod = LocalizedLineItem.bankTransfer
         }
 
@@ -223,6 +227,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
                 .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
             ]
         case (.card, false, _),
+             (.bankAccount, _, false),
              (.bankTransfer, _, false):
 
             // MARK: Cells Setup
@@ -262,7 +267,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
                 .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
             ]
             
-        case (.bankTransfer, _, true):
+        case (.bankAccount, _, true):
 
             // MARK: Cells Setup
 
@@ -288,6 +293,9 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
                 .separator,
                 .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
             ]
+        case (.bankTransfer, _, true):
+            // TODO: ACH - Add correct value
+            cells = []
         }
 
     }
@@ -301,8 +309,10 @@ extension BuySellKit.PaymentMethod.MethodType {
             return LocalizedString.cards
         case .funds:
             return LocalizedString.funds
-        case .bankTransfer:
+        case .bankAccount:
             return "\(LocalizedString.BankTransfer.prefix) \(currencyType.displayCode) \(LocalizedString.BankTransfer.suffix)"
+        case .bankTransfer:
+            return ""
         }
     }
 }

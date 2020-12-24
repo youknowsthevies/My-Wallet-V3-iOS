@@ -72,7 +72,7 @@ private extension Array where Element == SettingsCellViewModel {
             .map { SettingsCellViewModel(cellType: .banks(.add($0))) }
     }
     
-    init(_ viewModels: [LinkedBankViewModel]) {
+    init(_ viewModels: [BeneficiaryLinkedBankViewModel]) {
         self = viewModels
             .map {
                 SettingsCellViewModel(cellType: .banks(.linked($0)))
@@ -82,7 +82,7 @@ private extension Array where Element == SettingsCellViewModel {
     init(_ beneficiaries: [Beneficiary]) {
         self = beneficiaries
             .map {
-                SettingsCellViewModel(cellType: .banks(.linked(LinkedBankViewModel(data: $0))))
+                SettingsCellViewModel(cellType: .banks(.linked(BeneficiaryLinkedBankViewModel(data: $0))))
             }
     }
 }

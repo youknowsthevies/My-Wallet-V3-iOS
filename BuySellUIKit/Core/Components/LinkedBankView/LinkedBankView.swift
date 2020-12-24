@@ -7,25 +7,52 @@
 //
 
 import PlatformUIKit
+import RxSwift
 
 final class LinkedBankView: UIView {
-        
-    var viewModel: LinkedBankViewModel! {
+
+    var viewModel: LinkedBankViewModelAPI! {
+        willSet {
+            disposeBag = DisposeBag()
+        }
         didSet {
             nameLabel.content = viewModel?.nameLabelContent ?? .empty
             limitsLabel.content = viewModel?.limitLabelContent ?? .empty
             accountLabel.content = viewModel?.accountLabelContent ?? .empty
             badgeImageView.viewModel = viewModel?.badgeImageViewModel
+
+            button.isEnabled = viewModel?.isCustomButtonEnabled ?? false
+            if let tapRelay = viewModel?.tapRelay, button.isEnabled {
+                button.rx.tap
+                    .bindAndCatch(to: tapRelay)
+                    .disposed(by: disposeBag)
+
+                button.rx
+                    .controlEvent(.touchDown)
+                    .map { _ in UIColor.hightlightedBackground }
+                    .bind(to: self.rx.backgroundColor)
+                    .disposed(by: disposeBag)
+
+                button.rx
+                    .controlEvent(.touchCancel)
+                    .map { _ in UIColor.white }
+                    .bind(to: self.rx.backgroundColor)
+                    .disposed(by: disposeBag)
+                    
+            }
         }
     }
     
-    // MARK: - Private IBOutlets
-    
+    // MARK: - Private
+    private var disposeBag = DisposeBag()
+
     private let stackView = UIStackView()
     private let nameLabel = UILabel()
     private let limitsLabel = UILabel()
     private let accountLabel = UILabel()
     private let badgeImageView = BadgeImageView()
+
+    private let button = UIButton()
 
     // MARK: - Setup
     
@@ -43,6 +70,7 @@ final class LinkedBankView: UIView {
         addSubview(stackView)
         addSubview(badgeImageView)
         addSubview(accountLabel)
+        addSubview(button)
         
         badgeImageView.layoutToSuperview(.centerY)
         badgeImageView.layout(size: CGSize(width: 32, height: 20))
@@ -57,6 +85,9 @@ final class LinkedBankView: UIView {
         stackView.layout(edge: .leading, to: .trailing, of: badgeImageView, offset: Spacing.inner)
         stackView.layoutToSuperview(.centerY)
         stackView.layoutToSuperview(axis: .vertical, offset: 16, priority: .defaultHigh)
+
+        button.layoutToSuperview(axis: .vertical)
+        button.layoutToSuperview(axis: .horizontal)
     }
     
     @available(*, unavailable)

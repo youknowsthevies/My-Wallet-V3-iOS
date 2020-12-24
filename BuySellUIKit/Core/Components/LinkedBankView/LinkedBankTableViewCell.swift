@@ -12,7 +12,7 @@ public final class LinkedBankTableViewCell: UITableViewCell {
     
     // MARK: - Public Properites
     
-    public var viewModel: LinkedBankViewModel! {
+    public var viewModel: LinkedBankViewModelAPI! {
         didSet {
             linkedBankView.viewModel = viewModel
         }
