@@ -40,7 +40,10 @@ extension FiatValue {
     /// - Returns: the converted FiatValue in CryptoValue
     public func convertToCryptoValue(exchangeRate: FiatValue, cryptoCurrency: CryptoCurrency) -> CryptoValue {
         let conversionAmount = displayMajorValue / exchangeRate.displayMajorValue
-        return CryptoValue.create(major: "\(conversionAmount)", currency: cryptoCurrency)!
+        guard let result = CryptoValue.create(major: "\(conversionAmount)", currency: cryptoCurrency) else {
+            fatalError("FiatValue.convertToCryptoValue conversion failed. conversionAmount: \(conversionAmount), displayMajorValue: \(displayMajorValue), exchangeRate.displayMajorValue: \(exchangeRate.displayMajorValue)")
+        }
+        return result
     }
 }
 
