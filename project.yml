@@ -366,7 +366,6 @@ targets:
     - carthage: Starscream
     - carthage: stellarsdk
     - carthage: web3swift
-    - carthage: WebRTC
     - carthage: Veriff
     - carthage: Zxcvbn
     - carthage: Sift
@@ -802,7 +801,6 @@ targets:
     - carthage: RxSwift
     - carthage: RxCocoa
     - carthage: Veriff
-    - carthage: WebRTC
     scheme:
       testTargets:
       - KYCUIKitTests
