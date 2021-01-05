@@ -11,9 +11,9 @@ import PlatformKit
 import UIKit
 import Veriff
 
-protocol VeriffController: VeriffDelegate {
+protocol VeriffController: VeriffSdkDelegate {
 
-    var veriff: Veriff { get }
+    var veriff: VeriffSdk { get }
 
     // Actions
 
@@ -31,8 +31,8 @@ protocol VeriffController: VeriffDelegate {
 }
 
 extension VeriffController where Self: UIViewController {
-    internal var veriff: Veriff {
-        Veriff.shared
+    internal var veriff: VeriffSdk {
+        VeriffSdk.shared
     }
 
     func launchVeriffController(credentials: VeriffCredentials) {
@@ -42,7 +42,7 @@ extension VeriffController where Self: UIViewController {
 }
 
 extension VeriffController {
-    func sessionDidEndWithResult(_ result: Veriff.Result) {
+    func sessionDidEndWithResult(_ result: VeriffSdk.Result) {
 
         switch result.status {
         case .error(let error):
@@ -57,7 +57,7 @@ extension VeriffController {
     }
 }
 
-extension Veriff.Error {
+extension VeriffSdk.Error {
     var localizedErrorMessage: String {
         switch self {
         case .cameraUnavailable:
