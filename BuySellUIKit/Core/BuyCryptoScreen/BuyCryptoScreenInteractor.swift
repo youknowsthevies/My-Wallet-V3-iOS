@@ -282,8 +282,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     maxFiatValue = try FiatValue.min(pair.maxFiatValue, method.max)
                     paymentMethodId = nil
                 case .linkedBank(let data):
-                    // TODO: ACH - Check here to max limit
-                    maxFiatValue = .zero(currency: data.currency)
+                    maxFiatValue = data.topLimit
                     paymentMethodId = nil
                 }
                 

@@ -21,6 +21,7 @@ enum SelectPaymentMethodAction {
 }
 
 enum SelectPaymentMethodEffects {
+    case addNewPaymentMethod
     case closeFlow
 }
 
@@ -34,6 +35,7 @@ protocol SelectPaymentMethodPresentable: Presentable {
 
 protocol SelectPaymentMethodListener: AnyObject {
     func closeFlow()
+    func route(to screen: ACHFlow.Screen)
 }
 
 final class SelectPaymentMethodInteractor: PresentableInteractor<SelectPaymentMethodPresentable>, SelectPaymentMethodInteractable {
@@ -65,7 +67,7 @@ final class SelectPaymentMethodInteractor: PresentableInteractor<SelectPaymentMe
     override func didBecomeActive() {
         super.didBecomeActive()
 
-        let methods = paymentMethodService.methods
+        let methods = paymentMethodService.paymentMethods
             .handleLoaderForLifecycle(loader: loadingViewPresenter, style: .circle)
             .map { [weak self] (methods: [PaymentMethodType]) -> [PaymentMethodCellViewModelItem] in
                 guard let self = self else { return [] }
@@ -110,6 +112,8 @@ final class SelectPaymentMethodInteractor: PresentableInteractor<SelectPaymentMe
         switch effect {
         case .closeFlow:
             listener?.closeFlow()
+        case .addNewPaymentMethod:
+            listener?.route(to: .addPaymentMethod(asInitialScreen: false))
         }
     }
 
@@ -176,8 +180,8 @@ final class SelectPaymentMethodInteractor: PresentableInteractor<SelectPaymentMe
     private func generateAddNewCell() -> PaymentMethodCellViewModelItem {
         let model = AddNewPaymentMethodCellModel()
         model.tap
-            .debug()
-            .emit()
+            .map { _ in SelectPaymentMethodEffects.addNewPaymentMethod }
+            .emit(onNext: handle(effect:))
             .disposeOnDeactivate(interactor: self)
         return PaymentMethodCellViewModelItem.addNew(model)
     }

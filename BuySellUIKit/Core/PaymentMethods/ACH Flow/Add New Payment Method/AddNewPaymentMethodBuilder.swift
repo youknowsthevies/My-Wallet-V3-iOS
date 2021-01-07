@@ -1,8 +1,8 @@
 //
-//  SelectPaymentMethodBuilder.swift
+//  AddNewPaymentMethodBuilder.swift
 //  BuySellUIKit
 //
-//  Created by Dimitrios Chatzieleftheriou on 03/12/2020.
+//  Created by Dimitrios Chatzieleftheriou on 08/12/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
@@ -10,11 +10,11 @@ import RIBs
 
 // MARK: - Builder
 
-protocol SelectPaymentMethodBuildable {
-    func build(listener: SelectPaymentMethodListener) -> SelectPaymentMethodRouting
+protocol AddNewPaymentMethodBuildable {
+    func build(listener: AddNewPaymentMethodListener) -> AddNewPaymentMethodRouting
 }
 
-final class SelectPaymentMethodBuilder: SelectPaymentMethodBuildable {
+final class AddNewPaymentMethodBuilder: AddNewPaymentMethodBuildable {
 
     private let stateService: StateServiceAPI
     private let paymentMethodService: SelectPaymentMethodService
@@ -24,14 +24,14 @@ final class SelectPaymentMethodBuilder: SelectPaymentMethodBuildable {
         self.paymentMethodService = paymentMethodService
     }
 
-    func build(listener: SelectPaymentMethodListener) -> SelectPaymentMethodRouting {
-        let viewController = SelectPaymentMethodViewController()
+    func build(listener: AddNewPaymentMethodListener) -> AddNewPaymentMethodRouting {
+        let viewController = AddNewPaymentMethodViewController()
         if #available(iOS 13.0, *) {
             viewController.isModalInPresentation = true
         }
-        let interactor = SelectPaymentMethodInteractor(presenter: viewController,
+        let interactor = AddNewPaymentMethodInteractor(presenter: viewController,
                                                        paymentMethodService: paymentMethodService)
         interactor.listener = listener
-        return SelectPaymentMethodRouter(interactor: interactor, viewController: viewController)
+        return AddNewPaymentMethodRouter(interactor: interactor, viewController: viewController)
     }
 }

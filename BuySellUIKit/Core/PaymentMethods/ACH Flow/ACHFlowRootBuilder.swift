@@ -12,7 +12,9 @@ import RIBs
 // MARK: - Builder
 
 protocol ACHFlowRootBuildable {
-    func build() -> (flow: ACHFlowStarter, viewController: ViewControllable)
+    /// Builds the new payment method flow
+    /// - Parameter presentingController: A `NavigationControllerAPI` object that acts as a presenting controller
+    func build(presentingController: NavigationControllerAPI?) -> ACHFlowStarter
 }
 
 final class ACHFlowRootBuilder: ACHFlowRootBuildable {
@@ -23,13 +25,17 @@ final class ACHFlowRootBuilder: ACHFlowRootBuildable {
         self.stateService = stateService
     }
 
-    func build() -> (flow: ACHFlowStarter, viewController: ViewControllable) {
-        let rootNavigation = RootNavigation()
-        let selectPaymentMethodBuilder = SelectPaymentMethodBuilder(stateService: stateService)
-        let interactor = ACHFlowRootInteractor(stateService: stateService)
+    func build(presentingController: NavigationControllerAPI?) -> ACHFlowStarter {
+        let paymentMethodService = SelectPaymentMethodService()
+        let selectPaymentMethodBuilder = SelectPaymentMethodBuilder(stateService: stateService,
+                                                                    paymentMethodService: paymentMethodService)
+        let addNewPaymentMethodBuilder = AddNewPaymentMethodBuilder(stateService: stateService,
+                                                                    paymentMethodService: paymentMethodService)
+        let interactor = ACHFlowRootInteractor(stateService: stateService, paymentMethodService: paymentMethodService)
         let router = ACHFlowRootRouter(interactor: interactor,
-                                       navigation: rootNavigation,
-                                       selectPaymentMethodBuilder: selectPaymentMethodBuilder)
-        return (router, rootNavigation)
+                                       navigation: presentingController,
+                                       selectPaymentMethodBuilder: selectPaymentMethodBuilder,
+                                       addNewPaymentMethodBuilder: addNewPaymentMethodBuilder)
+        return router
     }
 }

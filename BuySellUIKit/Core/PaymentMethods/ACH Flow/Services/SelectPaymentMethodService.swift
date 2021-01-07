@@ -15,7 +15,7 @@ final class SelectPaymentMethodService {
 
     // MARK: - Properties
 
-    /// Streams the available payment methods
+    /// Streams all the available payment methods, this includes suggested and valid payments
     var methods: Single<[PaymentMethodType]> {
         let methodTypes = paymentMethodTypesService.methodTypes
             .take(1)
@@ -30,6 +30,22 @@ final class SelectPaymentMethodService {
                 let (methods, fiatCurrency) = payload
                 return methods.filterValidForBuy(currentWalletCurrency: fiatCurrency)
             }
+    }
+
+    /// Streams the suggested payment methods that a customer can add (credit-card, linked bank, deposit)
+    var suggestedMethods: Single<[PaymentMethodType]> {
+        methods.map { types -> [PaymentMethodType] in
+            types.filter(\.isSuggested)
+        }
+    }
+
+    /// Streams the available payment methods that a customer can use
+    var paymentMethods: Single<[PaymentMethodType]> {
+        methods.map { types -> [PaymentMethodType] in
+            types.filter { type -> Bool in
+                !type.isSuggested
+            }
+        }
     }
 
     var isUserEligibleForFunds: Single<Bool> {

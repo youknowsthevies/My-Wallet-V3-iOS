@@ -50,14 +50,17 @@ public final class LinkedBankViewModel: LinkedBankViewModelAPI {
         badgeImageViewModel.marginOffsetRelay.accept(0)
 
         nameLabelContent = LabelContent(
-            text: data.account.bankName,
+            text: data.account?.bankName ?? "",
             font: .main(.semibold, 16),
             color: .titleText,
             accessibility: .id("\(AccessibilityId.name)\(data.identifier)")
         )
 
+        let accountName = data.account?.name ?? ""
+        let accountNumber = data.account?.number ?? ""
+        let detailsTitle = "\(accountName) \(accountNumber)"
         limitLabelContent = LabelContent(
-            text: data.account.name,
+            text: detailsTitle,
             font: .main(.medium, 14),
             color: .descriptionText,
             accessibility: .id("\(AccessibilityId.limits)\(data.identifier)")

@@ -50,7 +50,14 @@ extension SelectionButtonViewModel {
                 )
                 title = LocalizedString.DepositCash.title
             case .bankTransfer:
-                fatalError("Bank transfer is not handled in this class")
+                leadingContent = .image(
+                    .init(name: "icon-bank",
+                          background: .lightBlueBackground,
+                          cornerRadius: .round,
+                          size: .init(edge: 32))
+                )
+                // TODO: ACH - Add Localized string here
+                title = "Bank Account"
             case .bankAccount:
                 fatalError("Bank account is not a valid payment method anymore")
             }
@@ -105,7 +112,8 @@ extension SelectionButtonViewModel {
             )
             // TODO: ACH - Add Localized string here
             title = "Bank Account"
-            subtitleRelay.accept("\(data.account.name)")
+            let accountName = data.account?.name ?? ""
+            subtitleRelay.accept(accountName)
             accessibilityContent = AccessibilityContent(
                 id: Accessibility.Identifier.SimpleBuy.BuyScreen.selectPaymentMethodLabel,
                 label: title

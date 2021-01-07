@@ -10,8 +10,8 @@ import BuySellKit
 import Localization
 import PlatformKit
 import PlatformUIKit
-import RxDataSources
 import RxCocoa
+import RxDataSources
 import RxRelay
 import RxSwift
 import ToolKit

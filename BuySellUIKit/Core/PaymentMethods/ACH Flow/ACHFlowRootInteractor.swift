@@ -6,13 +6,20 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BuySellKit
+import DIKit
+import Localization
+import PlatformKit
+import PlatformUIKit
 import RIBs
+import RxCocoa
 import RxSwift
+import ToolKit
 
 struct ACHFlow {
     enum Screen {
         case selectMethod
-        case addPaymentMethod
+        case addPaymentMethod(asInitialScreen: Bool)
     }
 }
 
@@ -28,7 +35,8 @@ protocol ACHFlowRootListener: class {
 
 final class ACHFlowRootInteractor: Interactor,
                                    ACHFlowRootInteractable,
-                                   SelectPaymentMethodListener {
+                                   SelectPaymentMethodListener,
+                                   AddNewPaymentMethodListener {
 
     // MARK: - Injected
 
@@ -36,21 +44,76 @@ final class ACHFlowRootInteractor: Interactor,
     weak var listener: ACHFlowRootListener?
 
     private let stateService: StateServiceAPI
+    private let paymentMethodService: SelectPaymentMethodService
+    private let loadingViewPresenter: LoadingViewPresenting
 
-    init(stateService: StateServiceAPI) {
+    init(stateService: StateServiceAPI,
+         paymentMethodService: SelectPaymentMethodService,
+         loadingViewPresenter: LoadingViewPresenting = resolve()) {
         self.stateService = stateService
+        self.paymentMethodService = paymentMethodService
+        self.loadingViewPresenter = loadingViewPresenter
         super.init()
     }
 
     override func didBecomeActive() {
         super.didBecomeActive()
-        // TODO: Check if there are no available methods and route to `addPaymentMethod`
-        router?.route(to: .selectMethod)
+
+        paymentMethodService.paymentMethods
+            .handleLoaderForLifecycle(loader: loadingViewPresenter, style: .circle)
+            .observeOn(MainScheduler.asyncInstance)
+            .subscribe(onSuccess: { paymentMethods in
+                if paymentMethods.isEmpty {
+                    self.router?.route(to: .addPaymentMethod(asInitialScreen: true))
+                } else {
+                    self.router?.route(to: .selectMethod)
+                }
+            })
+            .disposeOnDeactivate(interactor: self)
     }
 
     func closeFlow() {
         // this dismiss the navigation flow...
         stateService.previousRelay.accept(())
         router?.closeFlow()
+    }
+
+    func route(to screen: ACHFlow.Screen) {
+        router?.route(to: screen)
+    }
+
+    func navigate(with method: PaymentMethod.MethodType) {
+        switch method {
+        case .bankAccount:
+            self.stateService.previousRelay.accept(())
+            router?.closeFlow()
+        case .bankTransfer:
+            self.stateService.previousRelay.accept(())
+            router?.closeFlow()
+        case .funds(.fiat(let currency)):
+            self.showFundsTransferDetailsIfNeeded(for: currency)
+        case .funds(.crypto):
+            fatalError("Funds with crypto currency is not a possible state")
+        case .card:
+            self.stateService.previousRelay.accept(())
+            router?.closeFlow()
+        }
+    }
+
+    private func showFundsTransferDetailsIfNeeded(for currency: FiatCurrency) {
+        paymentMethodService.isUserEligibleForFunds
+            .handleLoaderForLifecycle(loader: loadingViewPresenter)
+            .observeOn(MainScheduler.instance)
+            .subscribe(onSuccess: { [weak self] isEligibile in
+                if isEligibile {
+                    self?.stateService.showFundsTransferDetails(for: currency, isOriginDeposit: false)
+                } else {
+                    self?.stateService.kyc()
+                }
+
+            }, onError: { error in
+                Logger.shared.error(error)
+            })
+            .disposeOnDeactivate(interactor: self)
     }
 }

@@ -148,6 +148,20 @@ extension LocalizationConstants.SimpleBuy {
             "Payment Methods",
             comment: "Simple Buy: Add Payment method selection screen title"
         )
+        public struct LinkABank {
+            public static let title = NSLocalizedString(
+                "Link a Bank",
+                comment: "Simple Buy: Add Payment method selection screen: link a bank title"
+            )
+            public static let descriptionLimit = NSLocalizedString(
+                "Instantly Available",
+                comment: "Simple Buy: Add Payment method selection screen: description of funds availability"
+            )
+            public static let descriptionInfo = NSLocalizedString(
+                "Link your bank and instantly buy crypto at anytime.",
+                comment: "Simple Buy: Add Payment method selection screen: description of bank account"
+            )
+        }
         public struct Card {
             public static let title = NSLocalizedString(
                 "Add Credit or Debit Card",

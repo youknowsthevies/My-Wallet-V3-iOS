@@ -10,7 +10,11 @@ import PlatformKit
 
 struct LinkedBankResponse: Decodable {
     struct Details: Decodable {
-        let bankAccountType: String
+        enum AccountType: String, Decodable {
+            case savings = "SAVINGS"
+            case checking = "CHECKING"
+        }
+        let bankAccountType: AccountType
         let bankName: String
         let accountName: String
         let accountNumber: String
@@ -20,5 +24,5 @@ struct LinkedBankResponse: Decodable {
     let currency: String
     let partner: String
     let state: PaymentAccountProperty.State
-    let details: Details
+    let details: Details?
 }

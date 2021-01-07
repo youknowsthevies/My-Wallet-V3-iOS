@@ -20,7 +20,7 @@ final class SelectPaymentMethodViewController: BaseScreenViewController,
 
     private typealias RxDataSource = RxTableViewSectionedReloadDataSource<PaymentMethodCellModel>
 
-    // MARK: - IBOutlets
+    // MARK: - Views
 
     private lazy var tableView = UITableView()
 
@@ -38,33 +38,7 @@ final class SelectPaymentMethodViewController: BaseScreenViewController,
         setupTableView()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
-    // MARK: - Setup
-
-    private func setupNavigationBar() {
-        titleViewStyle = .text(value: LocalizationConstants.SimpleBuy.PaymentMethodSelectionScreen.title)
-        setStandardDarkContentStyle()
-    }
-
-    private func setupTableView() {
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.registerNibCell(LinkedCardTableViewCell.self)
-        tableView.register(FiatCustodialBalanceTableViewCell.self)
-        tableView.register(AddNewPaymentMethodTableViewCell.self)
-        tableView.register(LinkedBankTableViewCell.self)
-        tableView.allowsSelection = false
-        tableView.separatorInset = .zero
-        tableView.tableFooterView = UIView()
-        tableView.estimatedRowHeight = 100
-        tableView.rowHeight = UITableView.automaticDimension
-        view.addSubview(tableView)
-
-        tableView.layoutToSuperview(axis: .horizontal)
-        tableView.layoutToSuperview(axis: .vertical)
-    }
+    // MARK: - Connect
 
     func connect(action: Driver<SelectPaymentMethodAction>) -> Driver<SelectPaymentMethodEffects> {
         let items: Driver<[PaymentMethodCellModel]> = action
@@ -74,7 +48,7 @@ final class SelectPaymentMethodViewController: BaseScreenViewController,
                     return .just(viewModels)
                 }
             }
-        
+
         let dataSource = RxDataSource(
             configureCell: { [weak self] (_, _, indexPath, item) -> UITableViewCell in
                 guard let self = self else { return UITableViewCell() }
@@ -105,6 +79,30 @@ final class SelectPaymentMethodViewController: BaseScreenViewController,
 
     override func navigationBarTrailingButtonPressed() {
         closeTriggerred.onNext(())
+    }
+
+    // MARK: - Private
+
+    private func setupNavigationBar() {
+        titleViewStyle = .text(value: LocalizationConstants.SimpleBuy.PaymentMethodSelectionScreen.title)
+        setStandardDarkContentStyle()
+    }
+
+    private func setupTableView() {
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.registerNibCell(LinkedCardTableViewCell.self)
+        tableView.register(FiatCustodialBalanceTableViewCell.self)
+        tableView.register(AddNewPaymentMethodTableViewCell.self)
+        tableView.register(LinkedBankTableViewCell.self)
+        tableView.allowsSelection = false
+        tableView.separatorInset = .zero
+        tableView.tableFooterView = UIView()
+        tableView.estimatedRowHeight = 100
+        tableView.rowHeight = UITableView.automaticDimension
+        view.addSubview(tableView)
+
+        tableView.layoutToSuperview(axis: .horizontal)
+        tableView.layoutToSuperview(axis: .vertical)
     }
 
     // MARK: - Private

@@ -169,6 +169,8 @@ public final class Router: RouterAPI {
             /// Show pending KYC approval for `ineligible` state as well, since the expected poll result would be
             /// ineligible anyway
             showPendingKycApprovalScreen()
+        case .linkBank(let data):
+            showLinkBankFlow(data: data)
         case .addCard(let data):
             startCardAdditionFlow(with: data)
         case .inactive:
@@ -352,14 +354,14 @@ public final class Router: RouterAPI {
 
     private func showACHPaymentMethodsScreen() {
         let builder = ACHFlowRootBuilder(stateService: stateService)
-        let (router, controller) = builder.build()
+        // we need to pass the the navigation controller so we can present and dismiss from within the flow.
+        let router = builder.build(presentingController: navigationRouter.navigationControllerAPI)
         self.achFlowRouter = router
         let flowDimissed: () -> Void = { [weak self] in
             guard let self = self else { return }
             self.achFlowRouter = nil
         }
         router.startFlow(flowDismissed: flowDimissed)
-        navigationRouter.navigationControllerAPI?.present(controller.uiviewController, animated: true, completion: nil)
     }
 
     private func showOldPaymentMethodsScreen() {
@@ -371,6 +373,10 @@ public final class Router: RouterAPI {
         let viewController = PaymentMethodsScreenViewController(presenter: presenter)
         let navigationController = UINavigationController(rootViewController: viewController)
         navigationRouter.navigationControllerAPI?.present(navigationController, animated: true, completion: nil)
+    }
+
+    private func showLinkBankFlow(data: CheckoutData) {
+        // TODO: Show link bank flow
     }
     
     private func showInelligibleCurrency(with currency: FiatCurrency) {

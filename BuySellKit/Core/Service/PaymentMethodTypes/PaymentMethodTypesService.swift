@@ -39,6 +39,17 @@ public enum PaymentMethodType: Equatable {
             return .bankTransfer
         }
     }
+
+    public var isSuggested: Bool {
+        switch self {
+        case .card,
+             .account,
+             .linkedBank:
+            return false
+        case .suggested:
+            return true
+        }
+    }
     
     var methodId: String? {
         switch self {
@@ -83,7 +94,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     }
 
     var linkedBanks: Observable<[LinkedBankData]> {
-        .empty()
+        methodTypes.map { $0.linkedBanks }
     }
     
     /// Preferred payment method
@@ -226,7 +237,15 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             }
             .map { PaymentMethodType.account($0) }
 
+        let topBankTransferLimit = (paymentMethods.first { $0.type.isBankTransfer })?.max
         let activeBanks = linkedBanks.filter(\.isActive)
+            .map { bank in
+                var bank = bank
+                if let limit = topBankTransferLimit {
+                    bank.topLimit = limit
+                }
+                return bank
+            }
             .map { PaymentMethodType.linkedBank($0) }
         
         return balances + activeBanks + cardTypes + suggestedMethods
@@ -292,7 +311,18 @@ extension Array where Element == PaymentMethodType {
             }
         }
     }
-    
+
+    fileprivate var linkedBanks: [LinkedBankData] {
+        compactMap { paymentMethod in
+            switch paymentMethod {
+            case .linkedBank(let data):
+                return data
+            case .suggested, .account, .card:
+                return nil
+            }
+        }
+    }
+
     var accounts: [FundData] {
         compactMap { paymentMethod in
             switch paymentMethod {

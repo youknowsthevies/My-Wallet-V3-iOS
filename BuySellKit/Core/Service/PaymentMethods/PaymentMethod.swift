@@ -59,6 +59,15 @@ public struct PaymentMethod: Equatable {
                 return false
             }
         }
+
+        public var isBankTransfer: Bool {
+            switch self {
+            case .bankTransfer:
+                return true
+            case .funds, .card, .bankAccount:
+                return false
+            }
+        }
         
         public var rawType: PaymentMethodPayloadType {
             switch self {

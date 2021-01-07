@@ -113,6 +113,9 @@ public final class StateService: StateServiceAPI {
 
         /// Purchase completed
         case pendingOrderCompleted(orderDetails: OrderDetails)
+
+        /// The user will be taken to link a bank flow
+        case linkBank(CheckoutData)
         
         /// Inactive state - no buy flow is performed at the moment
         case inactive
@@ -256,7 +259,7 @@ public final class StateService: StateServiceAPI {
                     isOriginDeposit: false
                 )
             case .bankTransfer:
-                state = .checkout(data)
+                state = .linkBank(data)
             }
             apply(
                 action: .next(to: state),
@@ -268,7 +271,8 @@ public final class StateService: StateServiceAPI {
              .transferCancellation,
              .unsupportedFiat,
              .showURL,
-             .changeFiat:
+             .changeFiat,
+             .linkBank:
             state = .inactive
             apply(
                 action: .dismiss,
@@ -359,6 +363,8 @@ public final class StateService: StateServiceAPI {
                         case .bankTransfer:
                             // TODO: ACH - Add correct value for Bank Transfer
                             return .just(.checkout(checkoutData))
+                        case .bankAccount:
+                            return .just(.pendingOrderDetails(checkoutData))
                         case .bankAccount:
                             return .just(.pendingOrderDetails(checkoutData))
                         case .funds:
@@ -473,6 +479,8 @@ extension StateService {
         switch checkoutData.order.paymentMethod {
         case .card where !checkoutData.isPaymentMethodFinalized:
             state = .addCard(checkoutData)
+        case .bankTransfer:
+            state = .linkBank(checkoutData)
         default:
             state = .checkout(checkoutData)
         }
@@ -645,6 +653,8 @@ extension StateService.State: CustomDebugStringConvertible {
             suffix = "pending-order-details"
         case .pendingOrderCompleted:
             suffix = "pending-order-completed"
+        case .linkBank:
+            suffix = "link-bank"
         case .inactive:
             suffix = "inactive"
         }

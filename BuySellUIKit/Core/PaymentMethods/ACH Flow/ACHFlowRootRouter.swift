@@ -9,7 +9,7 @@
 import PlatformUIKit
 import RIBs
 
-protocol ACHFlowRootInteractable: Interactable, SelectPaymentMethodListener {
+protocol ACHFlowRootInteractable: Interactable, SelectPaymentMethodListener, AddNewPaymentMethodListener {
     var router: ACHFlowRootRouting? { get set }
     var listener: ACHFlowRootListener? { get set }
 }
@@ -29,16 +29,21 @@ final class ACHFlowRootRouter: RIBs.Router<ACHFlowRootInteractable>,
                                ACHFlowRootRouting,
                                ACHFlowStarter {
 
-    private let navigation: RootNavigatable
+    private let navigationController: RootNavigatable
+    private let navigation: NavigationControllerAPI?
     private let selectPaymentMethodBuilder: SelectPaymentMethodBuildable
+    private let addNewPaymentMethodBuilder: AddNewPaymentMethodBuildable
 
     private var dismissFlow: (() -> Void)?
 
     init(interactor: ACHFlowRootInteractable,
-         navigation: RootNavigatable,
-         selectPaymentMethodBuilder: SelectPaymentMethodBuildable) {
+         navigation: NavigationControllerAPI?,
+         selectPaymentMethodBuilder: SelectPaymentMethodBuildable,
+         addNewPaymentMethodBuilder: AddNewPaymentMethodBuildable) {
         self.navigation = navigation
         self.selectPaymentMethodBuilder = selectPaymentMethodBuilder
+        self.addNewPaymentMethodBuilder = addNewPaymentMethodBuilder
+        self.navigationController = RootNavigation()
         super.init(interactor: interactor)
         interactor.router = self
     }
@@ -50,9 +55,19 @@ final class ACHFlowRootRouter: RIBs.Router<ACHFlowRootInteractable>,
         case .selectMethod:
             let router = selectPaymentMethodBuilder.build(listener: interactor)
             attachChild(router)
-            navigation.set(root: router.viewControllable)
-        case .addPaymentMethod:
-            break
+            let navController = UINavigationController(rootViewController: router.viewControllable.uiviewController)
+            navigation?.present(navController, animated: true, completion: nil)
+        case .addPaymentMethod(let initialScreen):
+            let router = addNewPaymentMethodBuilder.build(listener: interactor)
+            attachChild(router)
+            let navController = UINavigationController(rootViewController: router.viewControllable.uiviewController)
+            if initialScreen {
+                navigation?.present(navController, animated: true, completion: nil)
+            } else {
+                navigation?.dismiss(animated: true, completion: { [navigation] in
+                    navigation?.present(navController, animated: true, completion: nil)
+                })
+            }
         }
     }
 

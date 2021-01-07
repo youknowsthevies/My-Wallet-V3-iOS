@@ -116,7 +116,8 @@ final class PaymentMethodsScreenPresenter {
                     uniqueAccessibilityIdentifier: AccessibilityId.addCard
                 )
             case .bankTransfer:
-                fatalError("Bank transfer not handled on this presenter")
+                // Bank transfer not handled on this presenter
+                return nil
             case .bankAccount:
                 fatalError("Bank account is not a valid payment method any longer")
             }

@@ -70,3 +70,12 @@ public struct ExplainedActionViewModel {
         }
     }
 }
+
+extension ExplainedActionViewModel: Equatable {
+    public static func == (lhs: ExplainedActionViewModel, rhs: ExplainedActionViewModel) -> Bool {
+        lhs.badgeViewModel == rhs.badgeViewModel
+            && lhs.titleLabelContent == rhs.titleLabelContent
+            && lhs.thumbBadgeImageViewModel == rhs.thumbBadgeImageViewModel
+            && lhs.descriptionLabelContents == rhs.descriptionLabelContents
+    }
+}
