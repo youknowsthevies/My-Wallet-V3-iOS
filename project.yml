@@ -134,6 +134,17 @@ settings:
     SUPPORTS_MACCATALYST: false
     VALID_ARCHS: arm64
     VALID_ARCHS[sdk=iphonesimulator*]: x86_64
+  configs:
+    Debug Dev:
+      DEBUG_MENU: true
+    Debug Production:
+      DEBUG_MENU: true
+    Debug Staging:
+      DEBUG_MENU: true
+    Release:
+      DEBUG_MENU: false
+    Release Staging:
+      DEBUG_MENU: true
 targetTemplates:
   Framework:
     platform: iOS
@@ -627,6 +638,17 @@ targets:
     - target: CommonCryptoKit
     templates:
     - FrameworkTest
+  DebugUIKit:
+    dependencies:
+    - target: ToolKit
+    - target: PlatformKit
+    - target: PlatformUIKit
+    - carthage: DIKit
+    - carthage: RxCocoa
+    - carthage: RxRelay
+    - carthage: RxSwift
+    templates:
+    - Framework
   ERC20Kit:
     dependencies:
     - target: NetworkKit
@@ -1098,17 +1120,6 @@ targets:
       path: TestKit/Mocks/PlatformKit
     templates:
     - FrameworkTest
-  DebugUIKit:
-    dependencies:
-    - target: ToolKit
-    - target: PlatformKit
-    - target: PlatformUIKit
-    - carthage: DIKit
-    - carthage: RxCocoa
-    - carthage: RxRelay
-    - carthage: RxSwift
-    templates:
-    - Framework
   WalletPayloadKit:
     dependencies:
     - target: CommonCryptoKit
