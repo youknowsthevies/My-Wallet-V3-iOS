@@ -103,7 +103,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             DependencyContainer.kycKit;
             DependencyContainer.kycUIKit;
             DependencyContainer.blockchain;
-            #if DEBUG
+            #if DEBUG_MENU
             DependencyContainer.debugUIKit;
             #endif
         })
@@ -172,8 +172,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let simulateSurgeKey = UserDefaults.DebugKeys.simulateSurge.rawValue
             cacheSuite.set(false, forKey: simulateSurgeKey)
 
-            debugCoordinator.enableDebugMenu(for: window)
         }
+        #if DEBUG_MENU
+        debugCoordinator.enableDebugMenu(for: window)
+        #endif
 
         // TODO: prevent any other data tasks from executing until cert is pinned
         let certificatePinner: CertificatePinnerAPI = resolve()

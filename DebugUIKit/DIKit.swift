@@ -11,7 +11,7 @@ import DIKit
 extension DependencyContainer {
     
     public static var debugUIKit = module {
-        #if DEBUG
+        #if DEBUG_MENU
         factory(tag: DebugScreenContext.tag) { DebugCoordinator() as DebugCoordinating }
         #endif
     }
