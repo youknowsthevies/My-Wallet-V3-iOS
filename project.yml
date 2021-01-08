@@ -136,15 +136,13 @@ settings:
     VALID_ARCHS[sdk=iphonesimulator*]: x86_64
   configs:
     Debug Dev:
-      DEBUG_MENU: true
+      OTHER_SWIFT_FLAGS: -DDEBUG_MENU
     Debug Production:
-      DEBUG_MENU: true
+      OTHER_SWIFT_FLAGS: -DDEBUG_MENU
     Debug Staging:
-      DEBUG_MENU: true
-    Release:
-      DEBUG_MENU: false
+      OTHER_SWIFT_FLAGS: -DDEBUG_MENU
     Release Staging:
-      DEBUG_MENU: true
+      OTHER_SWIFT_FLAGS: -DDEBUG_MENU
 targetTemplates:
   Framework:
     platform: iOS
