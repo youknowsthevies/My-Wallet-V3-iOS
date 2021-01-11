@@ -226,6 +226,7 @@ public final class StateService: StateServiceAPI {
     // TODO: Look into reactive state machine
     private func next() {
         let states = statesRelay.value
+        messageRecorder.record("StateService: next: \(states.debugDescription)")
         let state: State
         switch states.current {
         case .inactive:
@@ -275,7 +276,7 @@ public final class StateService: StateServiceAPI {
         case .kyc:
             statesRelay.accept(statesByRemovingLast())
         case .buy, .checkout, .paymentMethods, .selectFiat, .addCard, .authorizeCard, .pendingOrderCompleted, .ineligible:
-            fatalError("\(#function) was called with unhandled state \(states.current.debugDescription). The previous states are: \(states.previous.debugDescription)")
+            fatalError("\(#function) was called with unhandled state: \(states.debugDescription).")
         }
     }
     
@@ -393,6 +394,7 @@ public final class StateService: StateServiceAPI {
     }
     
     private func apply(action: Action, states: States) {
+        messageRecorder.record("StateService: apply: \(action) and \(states.debugDescription)")
         actionRelay.accept(action)
         statesRelay.accept(states)
         cache(state: states.current)
@@ -410,12 +412,12 @@ public final class StateService: StateServiceAPI {
     }
     
     private func statesByRemovingLast() -> States {
-        messageRecorder.record("removing state: \(statesRelay.value.current.debugDescription)")
+        messageRecorder.record("StateService: removing last: \(statesRelay.value.debugDescription)")
         return statesRelay.value.statesByRemovingLast()
     }
     
     private func states(byAppending state: State) -> States {
-        messageRecorder.record("appending state: \(state.debugDescription)")
+        messageRecorder.record("StateService: appending state: \(state.debugDescription) to \(statesRelay.value.debugDescription)")
         return statesRelay.value.states(byAppending: state)
     }
 }
@@ -590,6 +592,12 @@ extension StateService {
             action: .next(to: state),
             states: self.states(byAppending: state)
         )
+    }
+}
+
+extension StateService.States: CustomDebugStringConvertible {
+    var debugDescription: String {
+        "current: \(current.debugDescription), previous: \(previous.map(\.debugDescription))"
     }
 }
 
