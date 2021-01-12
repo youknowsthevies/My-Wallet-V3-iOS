@@ -403,4 +403,18 @@ final class APIClient: SimpleBuyClientAPI {
         )!
         return communicator.perform(request: request)
     }
+
+    func createBankLinkage(for currency: FiatCurrency) -> Single<CreateBankLinkageResponse> {
+        struct Payload: Encodable {
+            let currency: String
+        }
+
+        let payload = Payload(currency: currency.code)
+        let request = requestBuilder.post(
+            path: Path.linkedBanks,
+            body: try? payload.encode(),
+            authenticated: true
+        )!
+        return communicator.perform(request: request)
+    }
 }

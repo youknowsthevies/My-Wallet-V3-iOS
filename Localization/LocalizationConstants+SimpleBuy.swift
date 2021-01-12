@@ -785,4 +785,33 @@ extension LocalizationConstants.SimpleBuy {
             comment: "Simple Buy KYC Screen - button label"
         )
     }
+
+    public enum LinkBankScreen {
+        public static let title = NSLocalizedString(
+            "Link a Bank",
+            comment: "Link bank: top title label"
+        )
+
+        public static let subtitle = NSLocalizedString(
+            "Blockchain.com uses %@ to verify your bank credentials & securely link your accounts.",
+            comment: "Link bank: description label for bank linkage using a partner title"
+        )
+
+        public static let detailsTitle = NSLocalizedString(
+            "Secure Connection",
+            comment: "Link bank: detail title about secure connection"
+        )
+
+        public static let detailsSubtitle = NSLocalizedString(
+            "%@ securely stores your credentials adhering to leading industry practices for data security, regulatory compliance, and privacy.",
+            comment: "Link bank: detail subtitle for bank linkage using partner title"
+        )
+
+        public static let learnMore = NSLocalizedString("Learn more", comment: "Learn more")
+
+        public static let continueButtonTitle = NSLocalizedString(
+            "Continue",
+            comment: "Link bank: continue button title"
+        )
+    }
 }

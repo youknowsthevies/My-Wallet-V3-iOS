@@ -32,7 +32,7 @@ public struct LinkedBankData {
     public let currency: FiatCurrency
     public let identifier: String
     public let account: Account?
-    public let state: PaymentAccountProperty.State
+    public let state: LinkedBankResponse.State
 
     public var topLimit: FiatValue
 

@@ -49,6 +49,7 @@ public extension UIColor {
     static let hightlightedBackground = grey050
     static let lightBlueBackground = blue000
     static let lightRedBackground = red000
+    static let darkBlueBackground = blue700
     
     static let lightBorder = grey000
     static let mediumBorder = grey100

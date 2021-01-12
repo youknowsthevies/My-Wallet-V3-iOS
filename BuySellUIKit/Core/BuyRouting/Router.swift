@@ -52,7 +52,10 @@ public final class Router: RouterAPI {
     
     private let builder: Buildable
 
+    /// The router for payment methods flow
     private var achFlowRouter: ACHFlowStarter?
+    /// The router for linking a new bank
+    private var linkBankFlowRouter: LinkBankFlowStarter?
     
     // MARK: - Setup
     
@@ -376,7 +379,15 @@ public final class Router: RouterAPI {
     }
 
     private func showLinkBankFlow(data: CheckoutData) {
-        // TODO: Show link bank flow
+        let builder = LinkBankFlowRootBuilder()
+        // we need to pass the the navigation controller so we can present and dismiss from within the flow.
+        let router = builder.build(presentingController: navigationRouter.navigationControllerAPI)
+        self.linkBankFlowRouter = router
+        let flowDimissed: () -> Void = { [weak self] in
+            guard let self = self else { return }
+            self.linkBankFlowRouter = nil
+        }
+        router.startFlow(flowDismissed: flowDimissed)
     }
     
     private func showInelligibleCurrency(with currency: FiatCurrency) {
