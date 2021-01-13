@@ -46,9 +46,9 @@ final class YodleeActivateService {
         self.paymentMethodTypesService = paymentMethodTypesService
     }
 
-    func startPolling(for bankId: String, providerAccountId: String) -> Single<State> {
+    func startPolling(for bankId: String, providerAccountId: String, accountId: String) -> Single<State> {
         activationService
-            .waitForActivation(of: bankId, paymentAccountId: providerAccountId)
+            .waitForActivation(of: bankId, paymentAccountId: providerAccountId, accountId: accountId)
             .flatMap(weak: self) { (self, result) -> Single<State> in
                 switch result {
                 case .final(let state):

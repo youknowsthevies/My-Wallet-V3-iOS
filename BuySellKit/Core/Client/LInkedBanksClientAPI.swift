@@ -23,6 +23,7 @@ protocol LinkedBanksClientAPI: AnyObject {
 
     /// Fetches a specific bank with
     /// - Parameter id: A `String` representing the id of the linked bank
-    /// - Parameter providerAcountId: A `String` representing the `providerAcountId` from partner's response
-    func updateBankLinkage(for id: String, providerAcountId: String) -> Single<LinkedBankResponse>
+    /// - Parameter providerAccountId: A `String` representing the `providerAccountId` from partner's response
+    /// - Parameter acountId: A `String` representing the `accountId` from partner's response
+    func updateBankLinkage(for id: String, providerAccountId: String, accountId: String) -> Single<LinkedBankResponse>
 }

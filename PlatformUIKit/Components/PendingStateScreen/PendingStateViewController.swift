@@ -18,9 +18,10 @@ public final class PendingStateViewController: BaseScreenViewController {
     
     // MARK: - Private IBOutlets
 
-    @IBOutlet private var actionButton: ButtonView!
-    @IBOutlet private var titleLabel: UILabel!
-    @IBOutlet private var subtitleTextView: InteractableTextView!
+    private lazy var actionButton = ButtonView()
+    private lazy var cancelButton = ButtonView()
+    private lazy var titleLabel = UILabel()
+    private lazy var subtitleTextView = InteractableTextView()
     private var compositeStatusView: CompositeStatusView!
 
     // MARK: - Properties
@@ -32,8 +33,7 @@ public final class PendingStateViewController: BaseScreenViewController {
 
     public required init(presenter: PendingStatePresenterAPI & RibBridgePresenter) {
         self.presenter = presenter
-        
-        super.init(nibName: PendingStateViewController.objectName, bundle: .platformUIKit)
+        super.init(nibName: nil, bundle: nil)
     }
 
     @available(*, unavailable)
@@ -45,7 +45,7 @@ public final class PendingStateViewController: BaseScreenViewController {
         super.viewDidLoad()
         presenter.viewDidLoad()
         setupNavigationBar()
-        setupCompositeStatusView()
+        setupUI()
         setupAccessibility()
         presenter.viewModel
             .drive(rx.viewModel)
@@ -74,15 +74,46 @@ public final class PendingStateViewController: BaseScreenViewController {
         titleViewStyle = .text(value: presenter.title)
         set(barStyle: .darkContent())
     }
-    
-    private func setupCompositeStatusView() {
+
+    private func setupUI() {
+        view.backgroundColor = .white
+
+        titleLabel.numberOfLines = 0
+        titleLabel.textAlignment = .center
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        subtitleTextView.translatesAutoresizingMaskIntoConstraints = false
+        let labelsStackView = UIStackView(arrangedSubviews: [titleLabel, subtitleTextView])
+        labelsStackView.axis = .vertical
+        labelsStackView.spacing = Spacing.inner
+        view.addSubview(labelsStackView)
+
+        labelsStackView.layoutToSuperview(.leading, relation: .equal, usesSafeAreaLayoutGuide: true, offset: Spacing.outer)
+        labelsStackView.layoutToSuperview(.trailing, relation: .equal, usesSafeAreaLayoutGuide: true, offset: -Spacing.outer)
+        labelsStackView.layoutToSuperview(.centerX, relation: .equal)
+        labelsStackView.layoutToSuperview(.centerY, relation: .equal)
+
         compositeStatusView = .init(
             edge: presenter.pendingStatusViewEdgeSize,
             sizeContainerViewRatio: presenter.pendingStatusViewSideContainerRatio
         )
         view.addSubview(compositeStatusView)
-        compositeStatusView.layout(edge: .bottom, to: .top, of: titleLabel, offset: -16)
+        compositeStatusView.layout(edge: .bottom, to: .top, of: labelsStackView, relation: .equal, offset: -Spacing.outer)
         compositeStatusView.layoutToSuperview(.centerX)
+
+        actionButton.translatesAutoresizingMaskIntoConstraints = false
+        cancelButton.translatesAutoresizingMaskIntoConstraints = false
+        let stackView = UIStackView(arrangedSubviews: [actionButton, cancelButton])
+        stackView.axis = .vertical
+        stackView.spacing = Spacing.inner
+
+        view.addSubview(stackView)
+        stackView.layoutToSuperview(.centerX)
+        stackView.layoutToSuperview(.leading, usesSafeAreaLayoutGuide: true, offset: Spacing.outer)
+        stackView.layoutToSuperview(.trailing, usesSafeAreaLayoutGuide: true, offset: -Spacing.outer)
+        stackView.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true, offset: -Spacing.inner)
+
+        actionButton.layout(dimension: .height, to: 48)
+        cancelButton.layout(dimension: .height, to: 48)
     }
 
     // MARK: - View Update
@@ -96,6 +127,12 @@ public final class PendingStateViewController: BaseScreenViewController {
             actionButton.isHidden = false
         } else {
             actionButton.isHidden = true
+        }
+        if let supplementaryButtonModel = model.supplementaryButton {
+            cancelButton.viewModel = supplementaryButtonModel
+            cancelButton.isHidden = false
+        } else {
+            cancelButton.isHidden = true
         }
     }
 }

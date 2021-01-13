@@ -16,7 +16,8 @@ public protocol LinkBankFlowStarter: AnyObject {
 
 protocol LinkBankFlowRootInteractable: Interactable,
                                        LinkBankSplashScreenListener,
-                                       YodleeScreenListener {
+                                       YodleeScreenListener,
+                                       LinkBankFailureScreenListener {
     var router: LinkBankFlowRootRouting? { get set }
 }
 
@@ -30,6 +31,7 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
     private let presentingController: NavigationControllerAPI?
     private let splashScreenBuilder: LinkBankSplashScreenBuildable
     private let yodleeScreenBuilder: YodleeScreenBuildable
+    private let failureScreenBuilder: LinkBankFailureScreenBuildable
 
     private var navigationController: UINavigationController?
 
@@ -37,11 +39,13 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
          stateService: StateServiceAPI,
          presentingController: NavigationControllerAPI?,
          splashScreenBuilder: LinkBankSplashScreenBuildable,
-         yodleeScreenBuilder: YodleeScreenBuildable) {
+         yodleeScreenBuilder: YodleeScreenBuildable,
+         failureScreenBuilder: LinkBankFailureScreenBuildable) {
         self.stateService = stateService
         self.presentingController = presentingController
         self.splashScreenBuilder = splashScreenBuilder
         self.yodleeScreenBuilder = yodleeScreenBuilder
+        self.failureScreenBuilder = failureScreenBuilder
         super.init(interactor: interactor)
         interactor.router = self
     }
@@ -49,6 +53,7 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
     func route(to screen: LinkBankFlow.Screen) {
         switch screen {
         case .splash(let data):
+            detachCurrentChild() // in case of a failure we need to detatch the current child
             let router = splashScreenBuilder.build(withListener: interactor, data: data)
             attachChild(router)
             let navigationController = UINavigationController(rootViewController: router.viewControllable.uiviewController)
@@ -58,7 +63,16 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
             let router = yodleeScreenBuilder.build(withListener: interactor, data: data)
             attachChild(router)
             navigationController?.pushViewController(router.viewControllable.uiviewController, animated: true)
+        case .failure:
+            let router = failureScreenBuilder.build(withListener: interactor)
+            attachChild(router)
+            presentingController?.present(router.viewControllable.uiviewController, animated: true, completion: nil)
         }
+    }
+
+    func closeFailureScreen() {
+        detachCurrentChild()
+        presentingController?.dismiss(animated: true, completion: nil)
     }
 
     func closeFlow() {
@@ -69,7 +83,6 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
     }
 
     // MARK: - LinkBankFlowStarter
-    
     func startFlow(flowDismissed: @escaping () -> Void) {
         dismissFlow = flowDismissed
         interactable.activate()

@@ -10,16 +10,22 @@ import BuySellKit
 import RxCocoa
 import RxSwift
 
+struct YodleeSuccessData: Equatable {
+    let providerAccountId: String
+    let accountId: String
+}
+
 final class YodleeMessageService {
 
     enum MessageError: LocalizedError {
         case providerIdNotFound
+        case accountIdNotFound
         case generic
     }
-
+    
     enum Effect: Equatable {
         case openExternal(url: URL)
-        case success(providerId: String)
+        case success(data: YodleeSuccessData)
         case closed(reason: String)
         case error(MessageError)
         case none
@@ -38,10 +44,10 @@ final class YodleeMessageService {
             return true
         }
 
-        var providerId: String? {
+        var successData: YodleeSuccessData? {
             switch self {
-            case .success(let providerId):
-                return providerId
+            case .success(let data):
+                return data
             default:
                 return nil
             }
@@ -58,7 +64,7 @@ final class YodleeMessageService {
 
         effect = messageHandler.receivedMessage
             .map(\.data)
-            .map { type -> Effect in
+            .map { (type) -> Effect in
                 switch type {
                 case .externalLink(let data):
                     guard let url = URL(string: data.url) else {
@@ -84,16 +90,16 @@ final class YodleeMessageService {
 func yodleeMessageParser(data: DataMessage) -> YodleeMessageService.Effect {
     guard let action = data.action, action == .exit else {
         // handle the case where action is nil but we have a provideAccountId
-        if let providerId = data.providerAccountId {
-            return .success(providerId: String(providerId))
+        if let providerId = data.providerAccountId, let accountId = data.accountId {
+            return .success(data: .init(providerAccountId: String(providerId), accountId: String(accountId)))
         }
         return .error(.generic)
-    }
+    }     
     if let status = data.status {
-        return parse(status: status, reason: data.reason, providerAccountId: data.providerAccountId)
+        return parse(status: status, reason: data.reason, providerAccountId: data.providerAccountId, accountId: data.accountId)
     } else if let sites = data.sites, !sites.isEmpty {
         if let siteData = sites.first, let siteStatus = siteData.status {
-            return parse(status: siteStatus, reason: siteData.reason, providerAccountId: siteData.providerAccountId)
+            return parse(status: siteStatus, reason: siteData.reason, providerAccountId: siteData.providerAccountId, accountId: siteData.accountId)
         } else {
             return .error(.generic)
         }
@@ -102,12 +108,15 @@ func yodleeMessageParser(data: DataMessage) -> YodleeMessageService.Effect {
     }
 }
 
-private func parse(status: MessageStatus, reason: String?, providerAccountId: Int?) -> YodleeMessageService.Effect {
+private func parse(status: MessageStatus, reason: String?, providerAccountId: Int?, accountId: Int?) -> YodleeMessageService.Effect {
     guard case .success = status else {
         return .closed(reason: reason ?? "unknown reason")
     }
     guard let providerAccountId = providerAccountId else {
         return .error(.providerIdNotFound)
     }
-    return .success(providerId: String(providerAccountId))
+    guard let accountId = accountId else {
+        return .error(.accountIdNotFound)
+    }
+    return .success(data: .init(providerAccountId: String(providerAccountId), accountId: String(accountId)))
 }

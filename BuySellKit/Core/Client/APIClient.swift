@@ -430,15 +430,16 @@ final class APIClient: SimpleBuyClientAPI {
         return communicator.perform(request: request)
     }
 
-    func updateBankLinkage(for id: String, providerAcountId: String) -> Single<LinkedBankResponse> {
+    func updateBankLinkage(for id: String, providerAccountId: String, accountId: String) -> Single<LinkedBankResponse> {
         struct Payload: Encodable {
             struct Attributes: Encodable {
                 let providerAccountId: String
+                let accountId: String
             }
             let attributes: Attributes
         }
         let path = Path.updateLinkedBank(id: id)
-        let payload = Payload(attributes: .init(providerAccountId: providerAcountId))
+        let payload = Payload(attributes: .init(providerAccountId: providerAccountId, accountId: accountId))
         let request = requestBuilder.post(
             path: path,
             body: try? payload.encode(),

@@ -11,12 +11,17 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
+public enum BankLinkageError: Error {
+    case generic
+    case server(Error)
+}
+
 public protocol LinkedBanksServiceAPI {
     /// Fetches any linked bank associated with the current user
     var linkedBanks: Single<[LinkedBankData]> { get }
 
     /// Starts the flow to linked a bank
-    var bankLinkageStartup: Single<BankLinkageData?> { get }
+    var bankLinkageStartup: Single<Result<BankLinkageData?, BankLinkageError>> { get }
 }
 
 final class LinkedBanksService: LinkedBanksServiceAPI {
@@ -25,7 +30,7 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
         cachedValue.valueSingle
     }
 
-    let bankLinkageStartup: Single<BankLinkageData?>
+    let bankLinkageStartup: Single<Result<BankLinkageData?, BankLinkageError>>
 
     // MARK: - Private
     private let cachedValue: CachedValue<[LinkedBankData]>
@@ -52,7 +57,8 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
             .flatMap { currency -> Single<CreateBankLinkageResponse> in
                 client.createBankLinkage(for: currency)
             }
-            .map(BankLinkageData.init(from:))
+            .mapToResult(successMap: { BankLinkageData(from: $0) } ,
+                         errorMap: { BankLinkageError.server($0) })
     }
 }
 

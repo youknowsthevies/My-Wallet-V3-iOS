@@ -817,6 +817,26 @@ extension LocalizationConstants.SimpleBuy {
             "Continue",
             comment: "Link bank: continue button title"
         )
+
+        public enum GenericFailure {
+            public static let title = NSLocalizedString(
+                "Oops! Something went wrong.",
+                comment: "Yodlee Web Screen: likning bank error state title"
+            )
+
+            public static let subtitle = NSLocalizedString(
+                "Please try linking your bank again. If this keeps happening, please contact support.",
+                comment: "Bank linkage error state subtitle"
+            )
+            public static let tryAgainButtonTitle = NSLocalizedString(
+                "Try Again",
+                comment: "Bank linkage error try again button title"
+            )
+            public static let cancelActionButtonTitle = NSLocalizedString(
+                "Cancel",
+                comment: "Bank linkage error cancel button title"
+            )
+        }
     }
 
     public enum YodleeWebScreen {
@@ -885,7 +905,6 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "Yodlee Web Screen: likning bank error cancel button title"
                 )
             }
-
         }
     }
 }

@@ -31,11 +31,13 @@ final class LinkBankFlowRootBuilder: LinkBankFlowRootBuildable {
     func build(presentingController: NavigationControllerAPI?) -> LinkBankFlowStarter {
         let splashScreenBuilder = LinkBankSplashScreenBuilder(stateService: stateService, checkoutData: checkoutData)
         let yodleeScreenBuilder = YodleeScreenBuilder(stateService: stateService, checkoutData: checkoutData)
+        let failureScreenBuilder = LinkBankFailureScreenBuilder()
         let interactor = LinkBankFlowRootInteractor()
         return LinkBankFlowRootRouter(interactor: interactor,
                                       stateService: stateService,
                                       presentingController: presentingController,
                                       splashScreenBuilder: splashScreenBuilder,
-                                      yodleeScreenBuilder: yodleeScreenBuilder)
+                                      yodleeScreenBuilder: yodleeScreenBuilder,
+                                      failureScreenBuilder: failureScreenBuilder)
     }
 }

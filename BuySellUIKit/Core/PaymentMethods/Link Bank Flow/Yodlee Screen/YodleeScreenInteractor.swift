@@ -114,7 +114,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
         // Success message from Yodlee
         let successMessage = yodleeMessageService.effect
             .filter(\.isSuccess)
-            .compactMap(\.providerId)
+            .compactMap(\.successData)
 
         // Success message from Yodlee
         let errorMessageAction = yodleeMessageService.effect
@@ -125,10 +125,10 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
             .asDriverCatchError()
 
         let activationResult = successMessage
-            .flatMap { [weak self] (providerId) -> Single<YodleeActivateService.State> in
+            .flatMap { [weak self] data -> Single<YodleeActivateService.State> in
                 guard let self = self else { return .just(.timeout) }
                 return self.yodleeActivationService
-                        .startPolling(for: self.bankLinkageData.id, providerAccountId: providerId)
+                    .startPolling(for: self.bankLinkageData.id, providerAccountId: data.providerAccountId, accountId: data.accountId)
             }
             .share(replay: 1, scope: .whileConnected)
 
