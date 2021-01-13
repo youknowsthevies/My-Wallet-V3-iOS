@@ -471,6 +471,10 @@ targets:
       path: Blockchain/Scripts/firebase_copy_plist.sh
     - name: Envman BUILT_PRODUCTS_DIR
       path: Blockchain/Scripts/export_built_products_dir.sh
+    preBuildScripts:
+    - name: my-wallet SHA256
+      script: "cd ${PROJECT_DIR}\nif ! shasum -a 256 -c ${PROJECT_DIR}/my-wallet.js.sha256; then\n  echo\
+        \ \"Checksum failed:\" >&2\n  exit 1\nfi\n"
     settings:
       base:
         GCC_PREFIX_HEADER: Blockchain/Blockchain-Prefix.pch
