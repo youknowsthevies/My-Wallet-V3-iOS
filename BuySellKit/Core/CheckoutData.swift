@@ -131,6 +131,11 @@ public struct CheckoutData {
     public var isUnknownCardType: Bool {
         order.paymentMethod.isCard && order.paymentMethodId == nil
     }
+
+    /// `true` if the order is bank transfer but is undetermined
+    public var isUnknownBankTransfer: Bool {
+        order.paymentMethod.isBankTransfer && order.paymentMethodId == nil
+    }
     
     public var isPendingConfirmationFunds: Bool {
         order.isPendingConfirmation && order.paymentMethod.isFunds
@@ -145,6 +150,12 @@ public struct CheckoutData {
     public func checkoutData(byAppending cardData: CardData) -> CheckoutData {
         var order = self.order
         order.paymentMethodId = cardData.identifier
+        return CheckoutData(order: order)
+    }
+
+    public func checkoutData(byAppending bankAccount: LinkedBankData) -> CheckoutData {
+        var order = self.order
+        order.paymentMethodId = bankAccount.identifier
         return CheckoutData(order: order)
     }
     

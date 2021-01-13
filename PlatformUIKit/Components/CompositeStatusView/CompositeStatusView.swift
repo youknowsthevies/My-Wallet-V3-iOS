@@ -125,9 +125,9 @@ public final class CompositeStatusView: UIView {
     
     // MARK: - Setup
     
-    init(edge: CGFloat,
-         mainContainerViewRatio: CGFloat = 0.85,
-         sizeContainerViewRatio: CGFloat = 0.35) {
+    public init(edge: CGFloat,
+                mainContainerViewRatio: CGFloat = 0.85,
+                sizeContainerViewRatio: CGFloat = 0.35) {
         self.mainContainerViewRatio = mainContainerViewRatio
         self.sideContainerViewRatio = sizeContainerViewRatio
                 

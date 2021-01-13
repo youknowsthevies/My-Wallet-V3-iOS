@@ -62,6 +62,9 @@ final class APIClient: SimpleBuyClientAPI {
         static let withdrawalFees = [ "payments", "withdrawals", "fees" ]
         static let withdrawal = [ "payments", "withdrawals" ]
         static let linkedBanks = [ "payments", "banktransfer" ]
+        static func updateLinkedBank(id: String) -> [String] {
+            linkedBanks + [id, "update"]
+        }
     }
     
     private enum Constants {
@@ -412,6 +415,32 @@ final class APIClient: SimpleBuyClientAPI {
         let payload = Payload(currency: currency.code)
         let request = requestBuilder.post(
             path: Path.linkedBanks,
+            body: try? payload.encode(),
+            authenticated: true
+        )!
+        return communicator.perform(request: request)
+    }
+
+    func getLinkedBank(for id: String) -> Single<LinkedBankResponse> {
+        let path = Path.linkedBanks + [id]
+        let request = requestBuilder.get(
+            path: path,
+            authenticated: true
+        )!
+        return communicator.perform(request: request)
+    }
+
+    func updateBankLinkage(for id: String, providerAcountId: String) -> Single<LinkedBankResponse> {
+        struct Payload: Encodable {
+            struct Attributes: Encodable {
+                let providerAccountId: String
+            }
+            let attributes: Attributes
+        }
+        let path = Path.updateLinkedBank(id: id)
+        let payload = Payload(attributes: .init(providerAccountId: providerAcountId))
+        let request = requestBuilder.post(
+            path: path,
             body: try? payload.encode(),
             authenticated: true
         )!

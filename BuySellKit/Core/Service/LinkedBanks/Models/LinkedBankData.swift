@@ -29,14 +29,21 @@ public struct LinkedBankData {
             number = details.accountNumber.replacingOccurrences(of: "x", with: "")
         }
     }
+    public enum LinkageError {
+        case alreadyLinked
+        case unsuportedAccount
+        case namesMissmatched
+        case unknown
+    }
     public let currency: FiatCurrency
     public let identifier: String
     public let account: Account?
-    public let state: LinkedBankResponse.State
+    let state: LinkedBankResponse.State
+    public let error: LinkageError?
 
     public var topLimit: FiatValue
 
-    var isActive: Bool {
+    public var isActive: Bool {
         state == .active
     }
 
@@ -44,6 +51,7 @@ public struct LinkedBankData {
         identifier = response.id
         account = Account(details: response.details)
         state = response.state
+        error = LinkageError(from: response.error)
         guard let currency = FiatCurrency(code: response.currency) else {
             return nil
         }
@@ -59,6 +67,22 @@ extension LinkedBankData.Account.AccountType {
             self = .savings
         case .checking:
             self = .checking
+        }
+    }
+}
+
+extension LinkedBankData.LinkageError {
+    init?(from error: LinkedBankResponse.Error?) {
+        guard let error = error else { return nil }
+        switch error {
+        case .alreadyLinked:
+            self = .alreadyLinked
+        case .namesMissmatched:
+            self = .namesMissmatched
+        case .unsuportedAccount:
+            self = .unsuportedAccount
+        default:
+            self = .unknown
         }
     }
 }

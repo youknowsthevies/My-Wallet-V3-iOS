@@ -14,25 +14,34 @@ public protocol LinkBankFlowStarter: AnyObject {
     func startFlow(flowDismissed: @escaping () -> Void)
 }
 
-protocol LinkBankFlowRootInteractable: Interactable {
+protocol LinkBankFlowRootInteractable: Interactable,
+                                       LinkBankSplashScreenListener,
+                                       YodleeScreenListener {
     var router: LinkBankFlowRootRouting? { get set }
 }
 
 final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
                                     LinkBankFlowStarter,
-                                    LinkBankFlowRootRouting,
-                                    LinkBankSplashScreenListener {
+                                    LinkBankFlowRootRouting {
 
     private var dismissFlow: (() -> Void)?
 
+    private let stateService: StateServiceAPI
     private let presentingController: NavigationControllerAPI?
     private let splashScreenBuilder: LinkBankSplashScreenBuildable
+    private let yodleeScreenBuilder: YodleeScreenBuildable
+
+    private var navigationController: UINavigationController?
 
     init(interactor: LinkBankFlowRootInteractable,
+         stateService: StateServiceAPI,
          presentingController: NavigationControllerAPI?,
-         splashScreenBuilder: LinkBankSplashScreenBuildable) {
+         splashScreenBuilder: LinkBankSplashScreenBuildable,
+         yodleeScreenBuilder: YodleeScreenBuildable) {
+        self.stateService = stateService
         self.presentingController = presentingController
         self.splashScreenBuilder = splashScreenBuilder
+        self.yodleeScreenBuilder = yodleeScreenBuilder
         super.init(interactor: interactor)
         interactor.router = self
     }
@@ -40,14 +49,23 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
     func route(to screen: LinkBankFlow.Screen) {
         switch screen {
         case .splash(let data):
-            let router = splashScreenBuilder.build(withListener: self, data: data)
+            let router = splashScreenBuilder.build(withListener: interactor, data: data)
             attachChild(router)
-            presentingController?.present(router.viewControllable.uiviewController, animated: true, completion: nil)
+            let navigationController = UINavigationController(rootViewController: router.viewControllable.uiviewController)
+            presentingController?.present(navigationController, animated: true, completion: nil)
+            self.navigationController = navigationController
+        case .yodlee(let data):
+            let router = yodleeScreenBuilder.build(withListener: interactor, data: data)
+            attachChild(router)
+            navigationController?.pushViewController(router.viewControllable.uiviewController, animated: true)
         }
     }
 
     func closeFlow() {
-        dismissFlow?()
+        stateService.previousRelay.accept(())
+        presentingController?.dismiss(animated: true, completion: { [weak self] in
+            self?.dismissFlow?()
+        })
     }
 
     // MARK: - LinkBankFlowStarter

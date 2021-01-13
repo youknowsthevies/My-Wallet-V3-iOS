@@ -340,7 +340,7 @@ public final class StateService: StateServiceAPI {
                                     return .buy
                                 }
                                 // If the order is card but payment method id is missing - navigate to the main amount screen
-                                if checkoutData.isUnknownCardType {
+                                if checkoutData.isUnknownCardType || checkoutData.isUnknownBankTransfer {
                                     return .buy
                                 }
                                 // If this is not a Buy order - navigate to the main amount screen
@@ -481,7 +481,7 @@ extension StateService {
         switch checkoutData.order.paymentMethod {
         case .card where !checkoutData.isPaymentMethodFinalized:
             state = .addCard(checkoutData)
-        case .bankTransfer:
+        case .bankTransfer where !checkoutData.isPaymentMethodFinalized:
             state = .linkBank(checkoutData)
         default:
             state = .checkout(checkoutData)
@@ -560,8 +560,9 @@ extension StateService {
         case (.bankAccount, true):
             state = .bankTransferDetails(checkoutData)
         case (.bankTransfer, true):
-            // TODO: ACH - Add correct value here
-            state = .pendingOrderCompleted(orderDetails: checkoutData.order)
+            state = .pendingOrderCompleted(
+                orderDetails: checkoutData.order
+            )
         case (.bankAccount, false),
              (.bankTransfer, false),
              (.funds, false):

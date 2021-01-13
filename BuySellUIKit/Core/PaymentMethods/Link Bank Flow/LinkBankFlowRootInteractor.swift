@@ -15,6 +15,7 @@ import RxSwift
 enum LinkBankFlow {
     enum Screen {
         case splash(data: BankLinkageData)
+        case yodlee(data: BankLinkageData)
     }
 }
 
@@ -23,7 +24,8 @@ protocol LinkBankFlowRootRouting: Routing {
     func closeFlow()
 }
 
-final class LinkBankFlowRootInteractor: Interactor, LinkBankFlowRootInteractable {
+final class LinkBankFlowRootInteractor: Interactor,
+                                        LinkBankFlowRootInteractable {
 
     // MARK: - Properties
     weak var router: LinkBankFlowRootRouting?
@@ -51,6 +53,14 @@ final class LinkBankFlowRootInteractor: Interactor, LinkBankFlowRootInteractable
             .subscribe(onSuccess: handleInitialRouting,
                        onError: handleInitialRoutingError)
             .disposeOnDeactivate(interactor: self)
+    }
+
+    func route(to screen: LinkBankFlow.Screen) {
+        router?.route(to: screen)
+    }
+
+    func closeFlow() {
+        router?.closeFlow()
     }
 
     // MARK: - Private

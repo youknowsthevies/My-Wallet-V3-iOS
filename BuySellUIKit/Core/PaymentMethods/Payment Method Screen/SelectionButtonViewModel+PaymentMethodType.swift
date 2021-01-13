@@ -56,8 +56,7 @@ extension SelectionButtonViewModel {
                           cornerRadius: .round,
                           size: .init(edge: 32))
                 )
-                // TODO: ACH - Add Localized string here
-                title = "Bank Account"
+                title = LocalizedString.Types.bankAccount
             case .bankAccount:
                 fatalError("Bank account is not a valid payment method anymore")
             }
@@ -110,8 +109,7 @@ extension SelectionButtonViewModel {
                       cornerRadius: .round,
                       size: .init(edge: 32))
             )
-            // TODO: ACH - Add Localized string here
-            title = "Bank Account"
+            title = LocalizedString.Types.bankAccount
             let accountName = data.account?.name ?? ""
             subtitleRelay.accept(accountName)
             accessibilityContent = AccessibilityContent(

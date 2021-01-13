@@ -17,6 +17,8 @@ public protocol CardListServiceAPI: class {
     /// Streams an updated array of cards.
     /// Expected to reactively stream the updated cards after
     var cards: Observable<[CardData]> { get }
+
+    var cardsSingle: Single<[CardData]> { get }
     
     func card(by identifier: String) -> Single<CardData?>
         
@@ -39,6 +41,10 @@ public final class CardListService: CardListServiceAPI {
             }
             .share(replay: 1, scope: .whileConnected)
             .distinctUntilChanged()
+    }
+
+    public var cardsSingle: Single<[CardData]> {
+        cards.take(1).asSingle()
     }
     
     // MARK: - Private properties

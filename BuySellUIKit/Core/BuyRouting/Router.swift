@@ -172,8 +172,8 @@ public final class Router: RouterAPI {
             /// Show pending KYC approval for `ineligible` state as well, since the expected poll result would be
             /// ineligible anyway
             showPendingKycApprovalScreen()
-        case .linkBank(let data):
-            showLinkBankFlow(data: data)
+        case .linkBank(let checkoutData):
+            showLinkBankFlow(with: checkoutData)
         case .addCard(let data):
             startCardAdditionFlow(with: data)
         case .inactive:
@@ -185,7 +185,7 @@ public final class Router: RouterAPI {
         switch state {
         // Some independent flows which dismiss themselves.
         // Therefore, do nothing.
-        case .kyc, .selectFiat, .changeFiat, .unsupportedFiat, .addCard:
+        case .kyc, .selectFiat, .changeFiat, .unsupportedFiat, .addCard, .linkBank:
             break
         case .paymentMethods, .bankTransferDetails, .fundsTransferDetails:
             navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
@@ -378,8 +378,8 @@ public final class Router: RouterAPI {
         navigationRouter.navigationControllerAPI?.present(navigationController, animated: true, completion: nil)
     }
 
-    private func showLinkBankFlow(data: CheckoutData) {
-        let builder = LinkBankFlowRootBuilder()
+    private func showLinkBankFlow(with checkoutData: CheckoutData) {
+        let builder = LinkBankFlowRootBuilder(stateService: stateService, checkoutData: checkoutData)
         // we need to pass the the navigation controller so we can present and dismiss from within the flow.
         let router = builder.build(presentingController: navigationRouter.navigationControllerAPI)
         self.linkBankFlowRouter = router

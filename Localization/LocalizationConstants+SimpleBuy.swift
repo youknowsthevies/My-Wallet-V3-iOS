@@ -211,6 +211,10 @@ extension LocalizationConstants.SimpleBuy {
                 "Select Cash or Card",
                 comment: "Simple Buy: Add Payment method selection screen: select cash or card"
             )
+            public static let bankAccount = NSLocalizedString(
+                "Bank Account",
+                comment: "Simple Buy: Add Payment method selection screen: bank account"
+            )
         }
     }
     public enum CryptoSelectionScreen {
@@ -813,5 +817,75 @@ extension LocalizationConstants.SimpleBuy {
             "Continue",
             comment: "Link bank: continue button title"
         )
+    }
+
+    public enum YodleeWebScreen {
+        public enum WebViewPendingContent {
+            public static let title = NSLocalizedString(
+                "Taking you to Yodlee...",
+                comment: "Yodlee Web Screen: loading state title"
+            )
+
+            public static let subtitle = NSLocalizedString(
+                "This could take up to 30 secconds.",
+                comment: "Yodlee Web Screen: loading state subtitle"
+            )
+        }
+
+        public enum LinkingPendingContent {
+            public static let title = NSLocalizedString(
+                "Updating Your Wallet...",
+                comment: "Yodlee Web Screen: likning bank loading state title"
+            )
+
+            public static let subtitle = NSLocalizedString(
+                "This could take up to 30 secconds. Please do not go back or close the app.",
+                comment: "Yodlee Web Screen: likning bank loading state subtitle"
+            )
+        }
+
+        public enum WebViewSuccessContent {
+            public static let title = NSLocalizedString(
+                "Bank Linked!",
+                comment: "Yodlee Web Screen: linked bank success state title"
+            )
+
+            public static let subtitleWithBankName = NSLocalizedString(
+                "Your %@ account is now linked to your Blockchain.com Wallet.",
+                comment: "Yodlee Web Screen: linked bank success subtitle with custom bank name"
+            )
+
+            public static let subtitleGeneric = NSLocalizedString(
+                "Your account is now linked to your Blockchain.com Wallet.",
+                comment: "Yodlee Web Screen: linked bank success subtitle without bank name"
+            )
+            public static let mainActionButtonTitle = NSLocalizedString(
+                "Continue",
+                comment: "Yodlee Web Screen: likning bank success continue button title"
+            )
+        }
+
+        public enum FailurePendingContent {
+            public enum Generic {
+                public static let title = NSLocalizedString(
+                    "Oops! Something went wrong.",
+                    comment: "Yodlee Web Screen: likning bank error state title"
+                )
+                
+                public static let subtitle = NSLocalizedString(
+                    "Please try linking your bank again. If this keeps happening, please contact support.",
+                    comment: "Yodlee Web Screen: likning bank error state subtitle"
+                )
+                public static let mainActionButtonTitle = NSLocalizedString(
+                    "Try Again",
+                    comment: "Yodlee Web Screen: likning bank error try again button title"
+                )
+                public static let cancelActionButtonTitle = NSLocalizedString(
+                    "Cancel",
+                    comment: "Yodlee Web Screen: likning bank error cancel button title"
+                )
+            }
+
+        }
     }
 }

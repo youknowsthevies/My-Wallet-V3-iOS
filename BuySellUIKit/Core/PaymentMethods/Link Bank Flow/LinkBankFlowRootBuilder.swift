@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BuySellKit
 import PlatformUIKit
 import RIBs
 
@@ -19,11 +20,22 @@ protocol LinkBankFlowRootBuildable {
 
 final class LinkBankFlowRootBuilder: LinkBankFlowRootBuildable {
 
+    private let stateService: StateServiceAPI
+    private let checkoutData: CheckoutData
+
+    init(stateService: StateServiceAPI, checkoutData: CheckoutData) {
+        self.stateService = stateService
+        self.checkoutData = checkoutData
+    }
+
     func build(presentingController: NavigationControllerAPI?) -> LinkBankFlowStarter {
-        let splashScreenBuilder = LinkBankSplashScreenBuilder()
+        let splashScreenBuilder = LinkBankSplashScreenBuilder(stateService: stateService, checkoutData: checkoutData)
+        let yodleeScreenBuilder = YodleeScreenBuilder(stateService: stateService, checkoutData: checkoutData)
         let interactor = LinkBankFlowRootInteractor()
         return LinkBankFlowRootRouter(interactor: interactor,
+                                      stateService: stateService,
                                       presentingController: presentingController,
-                                      splashScreenBuilder: splashScreenBuilder)
+                                      splashScreenBuilder: splashScreenBuilder,
+                                      yodleeScreenBuilder: yodleeScreenBuilder)
     }
 }

@@ -8,17 +8,17 @@
 
 import PlatformUIKit
 import RIBs
-import RxSwift
 import RxCocoa
+import RxSwift
 import UIKit
 
-final class LinkBankSplashScreenViewController: UIViewController,
+final class LinkBankSplashScreenViewController: BaseScreenViewController,
                                                 LinkBankSplashScreenPresentable,
                                                 LinkBankSplashScreenViewControllable {
 
     private let disposeBag = DisposeBag()
+    private let closeTriggerred = PublishSubject<Void>()
 
-    private lazy var closeButton = UIButton(type: .custom)
     private lazy var topBackgroundImageView = UIImageView()
     private lazy var topImageView = UIImageView()
     private lazy var topTitleLabel = UILabel()
@@ -36,6 +36,12 @@ final class LinkBankSplashScreenViewController: UIViewController,
 
         setupUI()
     }
+
+    override func navigationBarTrailingButtonPressed() {
+        closeTriggerred.onNext(())
+    }
+
+    // MARK: - LinkBankSplashScreenPresentable
 
     func connect(state: Driver<LinkBankSplashScreenInteractor.State>) -> Driver<LinkBankSplashScreenEffects> {
         state.map(\.topTitle)
@@ -74,12 +80,14 @@ final class LinkBankSplashScreenViewController: UIViewController,
 
         let continueTapped = state
             .map(\.continueButtonModel)
-            .map(\.tap)
+            .flatMap { viewModel -> Signal<Void> in
+                viewModel.tap
+            }
             .asObservable()
             .map { _ in LinkBankSplashScreenEffects.continueTapped }
             .asDriverCatchError()
 
-        let closeTapped = closeButton.rx.tap
+        let closeTapped = closeTriggerred
             .map { _ in LinkBankSplashScreenEffects.closeFlow }
             .asDriverCatchError()
 
@@ -89,16 +97,14 @@ final class LinkBankSplashScreenViewController: UIViewController,
     // MARK: - Private
 
     func setupUI() {
+        set(barStyle: .darkContent(ignoresStatusBar: true, isTranslucent: true, background: .clear),
+            leadingButtonStyle: .none,
+            trailingButtonStyle: .close)
         // static content
-        closeButton.setImage(UIImage(named: "Icon-Close-Circle"), for: .normal)
         topBackgroundImageView.image = UIImage(named: "link-bank-splash-top-bg", in: bundle, compatibleWith: nil)
         topImageView.image = UIImage(named: "splash-screen-bank-icon", in: bundle, compatibleWith: nil)
 
         view.addSubview(topBackgroundImageView)
-        view.addSubview(closeButton)
-
-        closeButton.layoutToSuperview(.top, offset: Spacing.inner)
-        closeButton.layoutToSuperview(.trailing, offset: -Spacing.inner)
 
         topBackgroundImageView.contentMode = .scaleToFill
         topBackgroundImageView.layoutToSuperview(.top, .leading, .trailing)

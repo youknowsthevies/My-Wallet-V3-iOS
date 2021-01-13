@@ -44,7 +44,6 @@ final class OrderConfirmationService: OrderConfirmationServiceAPI {
         case .bankAccount:
             partner = .bank
         case .bankTransfer:
-            // TODO: ACH - Add correct value here
             partner = .bank
         case .card:
             partner = .everyPay(customerUrl: PartnerAuthorizationData.exitLink)

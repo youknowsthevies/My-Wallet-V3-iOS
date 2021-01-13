@@ -28,8 +28,9 @@ protocol LinkBankSplashScreenPresentable: Presentable {
     func connect(state: Driver<LinkBankSplashScreenInteractor.State>) -> Driver<LinkBankSplashScreenEffects>
 }
 
-protocol LinkBankSplashScreenListener: class {
+protocol LinkBankSplashScreenListener: AnyObject {
     func closeFlow()
+    func route(to screen: LinkBankFlow.Screen)
 }
 
 final class LinkBankSplashScreenInteractor: PresentableInteractor<LinkBankSplashScreenPresentable>,
@@ -38,14 +39,20 @@ final class LinkBankSplashScreenInteractor: PresentableInteractor<LinkBankSplash
     weak var router: LinkBankSplashScreenRouting?
     weak var listener: LinkBankSplashScreenListener?
 
+    private let stateService: StateServiceAPI
     private let bankLinkageData: BankLinkageData
     private let contentReducer: LinkBankSplashScreenContentReducer
+    private let checkoutData: CheckoutData
 
     init(presenter: LinkBankSplashScreenPresentable,
+         stateService: StateServiceAPI,
          bankLinkageData: BankLinkageData,
+         checkoutData: CheckoutData,
          contentReducer: LinkBankSplashScreenContentReducer) {
+        self.stateService = stateService
         self.bankLinkageData = bankLinkageData
         self.contentReducer = contentReducer
+        self.checkoutData = checkoutData
         super.init(presenter: presenter)
     }
 
@@ -66,7 +73,7 @@ final class LinkBankSplashScreenInteractor: PresentableInteractor<LinkBankSplash
         case .closeFlow:
             listener?.closeFlow()
         case .continueTapped:
-            break
+            listener?.route(to: .yodlee(data: bankLinkageData))
         case .linkTapped(let link):
             router?.route(to: .link(url: link.url))
         }

@@ -22,6 +22,9 @@ public protocol BalanceProviding: class {
     
     /// Streams the balances of the fiat based currencies
     var fiatFundsBalances: Observable<MoneyBalancePairsCalculationStates> { get }
+
+    /// Single wrapper for `fiatFundsBalances` the balances of the fiat based currencies
+    var fiatFundsBalancesSingle: Single<MoneyBalancePairsCalculationStates> { get }
     
     /// Triggers a refresh on the balances
     func refresh()
@@ -94,6 +97,10 @@ public final class BalanceProvider: BalanceProviding {
     
     public var fiatFundsBalances: Observable<MoneyBalancePairsCalculationStates> {
         fiatBalances.map { $0.fiatBaseStates }
+    }
+
+    public var fiatFundsBalancesSingle: Single<MoneyBalancePairsCalculationStates> {
+        fiatFundsBalances.take(1).asSingle()
     }
 
     public subscript(currency: Currency) -> AssetBalanceFetching {

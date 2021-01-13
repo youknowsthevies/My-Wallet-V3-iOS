@@ -283,7 +283,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     paymentMethodId = nil
                 case .linkedBank(let data):
                     maxFiatValue = data.topLimit
-                    paymentMethodId = nil
+                    paymentMethodId = data.identifier
                 }
                 
                 guard fiat.currencyType == minFiatValue.currencyType && fiat.currencyType == maxFiatValue.currencyType else {

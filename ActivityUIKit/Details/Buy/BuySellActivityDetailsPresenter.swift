@@ -77,7 +77,6 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .bankTransfer:
             paymentMethod = LocalizedLineItem.bankTransfer
         case .bankAccount:
-            // TODO: ACH - Add correct value here
             paymentMethod = LocalizedLineItem.bankTransfer
         case .card:
             paymentMethod = LocalizedLineItem.creditOrDebitCard

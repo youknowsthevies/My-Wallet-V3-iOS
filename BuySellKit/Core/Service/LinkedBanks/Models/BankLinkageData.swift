@@ -8,6 +8,10 @@
 
 import Foundation
 
+public struct FastlinkConfiguration {
+    public let config: String?
+}
+
 public struct BankLinkageData {
     public enum Partner {
         case yodlee
@@ -15,7 +19,9 @@ public struct BankLinkageData {
     }
     public let token: String?
     public let fastlinkUrl: String?
+    public let fastlinkParams: FastlinkConfiguration
     public let partner: Partner
+    public let id: String
 
     init?(from response: CreateBankLinkageResponse) {
         guard let attributes = response.attributes else {
@@ -23,7 +29,9 @@ public struct BankLinkageData {
         }
         token = attributes.token
         fastlinkUrl = attributes.fastlinkUrl
+        fastlinkParams = FastlinkConfiguration(config: attributes.fastlinkParams?.configName)
         partner = Partner(from: response.partner)
+        id = response.id
     }
 }
 

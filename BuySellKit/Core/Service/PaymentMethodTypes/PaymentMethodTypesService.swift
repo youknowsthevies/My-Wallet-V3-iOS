@@ -78,6 +78,8 @@ public protocol PaymentMethodTypesServiceAPI {
     var preferredPaymentMethodType: Observable<PaymentMethodType?> { get }
     
     func fetchCards(andPrefer cardId: String) -> Completable
+
+    func fetchLinkBanks(andPrefer bankId: String) -> Completable
 }
 
 /// A service that aggregates all the payment method types and possible methods.
@@ -154,7 +156,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             .zip(
                 paymentMethodsService.paymentMethodsSingle,
                 cardListService.fetchCards(),
-                balanceProvider.fiatFundsBalances.take(1).asSingle()
+                balanceProvider.fiatFundsBalancesSingle
             )
             .map(weak: self) { (self, payload) in
                 self.merge(paymentMethods: payload.0, cards: payload.1, balances: payload.2, linkedBanks: [])
@@ -172,6 +174,36 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                     .first
                 guard let data = card else { return }
                 preferredPaymentMethodTypeRelay?.accept(.card(data))
+            })
+            .asCompletable()
+    }
+
+    func fetchLinkBanks(andPrefer bankId: String) -> Completable {
+        Single
+            .zip(
+                paymentMethodsService.paymentMethodsSingle,
+                cardListService.cardsSingle,
+                balanceProvider.fiatFundsBalancesSingle,
+                linkedBankService.linkedBanks
+            )
+            .map(weak: self) { (self, payload) in
+                self.merge(paymentMethods: payload.0, cards: payload.1, balances: payload.2, linkedBanks: payload.3)
+            }
+            .map { types in
+                types
+                    .compactMap { type -> LinkedBankData? in
+                        switch type {
+                        case .linkedBank(let bankData):
+                            return bankData
+                        case .suggested, .account, .card:
+                            return nil
+                        }
+                    }
+                    .first(where: { $0.identifier == bankId })
+            }
+            .do(onSuccess: { [weak preferredPaymentMethodTypeRelay] linkedBank in
+                guard let data = linkedBank else { return }
+                preferredPaymentMethodTypeRelay?.accept(.linkedBank(data))
             })
             .asCompletable()
     }

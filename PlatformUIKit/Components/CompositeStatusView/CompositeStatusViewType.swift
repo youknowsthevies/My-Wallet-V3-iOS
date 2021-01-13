@@ -6,22 +6,22 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-public enum CompositeStatusViewType {
+public enum CompositeStatusViewType: Equatable {
     
-    public struct Composite {
-        public enum BaseViewType {
+    public struct Composite: Equatable {
+        public enum BaseViewType: Equatable {
             case image(String)
             case text(String)
         }
         
-        public struct SideViewAttributes {
-            public enum ViewType {
+        public struct SideViewAttributes: Equatable {
+            public enum ViewType: Equatable {
                 case image(String)
                 case loader
                 case none
             }
             
-            public enum Position {
+            public enum Position: Equatable {
                 case radiusDistanceFromCenter
                 case rightCorner
             }
@@ -78,4 +78,3 @@ public enum CompositeStatusViewType {
         }
     }
 }
-
