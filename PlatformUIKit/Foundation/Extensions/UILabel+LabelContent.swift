@@ -11,13 +11,6 @@ import RxSwift
 
 public extension UILabel {
     var content: LabelContent {
-        set {
-            text = newValue.text
-            font = newValue.font
-            textColor = newValue.color
-            textAlignment = newValue.alignment
-            accessibility = newValue.accessibility
-        }
         get {
             LabelContent(
                 text: text ?? "",
@@ -26,6 +19,13 @@ public extension UILabel {
                 alignment: textAlignment,
                 accessibility: accessibility
             )
+        }
+        set {
+            text = newValue.text
+            font = newValue.font
+            textColor = newValue.color
+            textAlignment = newValue.alignment
+            accessibility = newValue.accessibility
         }
     }
 }

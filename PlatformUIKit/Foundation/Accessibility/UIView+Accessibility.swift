@@ -16,6 +16,13 @@ extension UIView {
     /// To nullify a value just pass an `empty` value, like this: `value(nil)` for id,
     /// or `value(UIAccessibilityTraits.none)` for traits.
     public var accessibility: Accessibility {
+        get {
+            Accessibility(id: accessibilityIdentifier != nil ? .value(accessibilityIdentifier!) : .none,
+                                 label: accessibilityLabel != nil ? .value(accessibilityLabel!) : .none,
+                                 hint: accessibilityHint != nil ? .value(accessibilityHint!) : .none,
+                                 traits: accessibilityTraits != .none ? .value(accessibilityTraits) : .none,
+                                 isAccessible: isAccessibilityElement)
+        }
         set {
             if case .value(let id) = newValue.id {
                 accessibilityIdentifier = id
@@ -30,13 +37,6 @@ extension UIView {
                 accessibilityTraits = traits
             }
             isAccessibilityElement = newValue.isAccessible
-        }
-        get {
-            Accessibility(id: accessibilityIdentifier != nil ? .value(accessibilityIdentifier!) : .none,
-                                 label: accessibilityLabel != nil ? .value(accessibilityLabel!) : .none,
-                                 hint: accessibilityHint != nil ? .value(accessibilityHint!) : .none,
-                                 traits: accessibilityTraits != .none ? .value(accessibilityTraits) : .none,
-                                 isAccessible: isAccessibilityElement)
         }
     }
 }

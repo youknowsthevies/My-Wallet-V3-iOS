@@ -97,7 +97,7 @@ public struct FiatBalanceViewAsset {
                             color: descriptors.quoteFiatTextColor,
                             alignment: .right,
                             accessibility: .init(
-                                id: .value("\(descriptors.quoteFiatAccessibility)\(value.quote.currency.code)")
+                                id: .value("\(descriptors.quoteFiatAccessibility.id)\(value.quote.currency.code)")
                             )
                         )
                     )
@@ -115,7 +115,7 @@ public struct FiatBalanceViewAsset {
                     color: baseColor,
                     alignment: .right,
                     accessibility: .init(
-                        id: .value("\(descriptors.baseFiatAccessibility)\(value.base.currency.code)")
+                        id: .value("\(descriptors.baseFiatAccessibility.id)\(value.base.currency.code)")
                     )
                 )
             }

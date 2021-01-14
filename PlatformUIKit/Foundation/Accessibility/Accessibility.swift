@@ -12,7 +12,7 @@ import UIKit
 public struct Accessibility {
     
     /// A generic value
-    public enum Value<T: Equatable>: Equatable {
+    public enum Value<T: Equatable>: Equatable, CustomStringConvertible {
         
         /// Contains a value of type `T`
         case value(T)
@@ -26,6 +26,15 @@ public struct Accessibility {
                 return rawValue
             case .none:
                 return nil
+            }
+        }
+
+        public var description: String {
+            switch self {
+            case .value(let rawValue):
+                return String(describing: rawValue)
+            default:
+                return ""
             }
         }
     }
