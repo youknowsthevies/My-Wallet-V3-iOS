@@ -44,6 +44,7 @@ extension Accessibility.Identifier {
             public static let fiatPriceLabelFormat = "\(prefix)fiatPriceLabelFormat."
             public static let changeLabelFormat = "\(prefix)changeLabelFormat."
             public static let fiatBalanceLabelFormat = "\(prefix)fiatBalanceLabel."
+            public static let marketFiatBalanceLabelFormat = "\(prefix)marketFiatBalanceLabel."
             public static let cryptoBalanceLabelFormat = "\(prefix)cryptoBalanceLabel."
         }
         struct Announcement {

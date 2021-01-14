@@ -143,7 +143,7 @@ public struct DashboardAsset {
                         font: descriptors.priceFont,
                         color: .dashboardAssetTitle,
                         accessibility: .init(
-                            id: .value("\(AccessibilityId.fiatBalanceLabelFormat)\(descriptors.accessibilityIdSuffix)")
+                            id: .value("\(AccessibilityId.marketFiatBalanceLabelFormat)\(descriptors.accessibilityIdSuffix)")
                         )
                     )
 
