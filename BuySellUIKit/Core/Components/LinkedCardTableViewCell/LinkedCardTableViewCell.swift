@@ -44,7 +44,7 @@ public final class LinkedCardTableViewCell: UITableViewCell {
                 .disposed(by: disposeBag)
         
             button.rx
-                .controlEvent(.touchCancel)
+                .controlEvent(.touchUpInside)
                 .bindAndCatch(to: presenter.tapRelay)
                 .disposed(by: disposeBag)
         }
