@@ -362,10 +362,7 @@ public final class StateService: StateServiceAPI {
                                 return .just(.checkout(checkoutData))
                             }
                         case .bankTransfer:
-                            // TODO: ACH - Add correct value for Bank Transfer
                             return .just(.checkout(checkoutData))
-                        case .bankAccount:
-                            return .just(.pendingOrderDetails(checkoutData))
                         case .bankAccount:
                             return .just(.pendingOrderDetails(checkoutData))
                         case .funds:

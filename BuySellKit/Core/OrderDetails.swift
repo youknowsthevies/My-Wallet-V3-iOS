@@ -130,11 +130,11 @@ public struct OrderDetails {
     }
     
     public var paymentMethodId: String? {
-        set {
-            _value.set(paymentId: newValue)
-        }
         get {
             _value.paymentMethodId
+        }
+        set {
+            _value.set(paymentId: newValue)
         }
     }
     

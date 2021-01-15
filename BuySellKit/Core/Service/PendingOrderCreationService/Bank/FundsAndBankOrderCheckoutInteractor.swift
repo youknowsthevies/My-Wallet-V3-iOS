@@ -34,13 +34,16 @@ public final class FundsAndBankOrderCheckoutInteractor {
     private let paymentAccountService: PaymentAccountServiceAPI
     private let orderQuoteService: OrderQuoteServiceAPI
     private let orderCreationService: OrderCreationServiceAPI
+    private let linkedBanksService: LinkedBanksServiceAPI
     
     public init(paymentAccountService: PaymentAccountServiceAPI = resolve(),
                 orderQuoteService: OrderQuoteServiceAPI = resolve(),
-                orderCreationService: OrderCreationServiceAPI = resolve()) {
+                orderCreationService: OrderCreationServiceAPI = resolve(),
+                linkedBanksService: LinkedBanksServiceAPI = resolve()) {
         self.paymentAccountService = paymentAccountService
         self.orderQuoteService = orderQuoteService
         self.orderCreationService = orderCreationService
+        self.linkedBanksService = linkedBanksService
     }
     
     /// 1. Fetch the payment account matching the order currency and append it to the checkout data
@@ -65,6 +68,15 @@ public final class FundsAndBankOrderCheckoutInteractor {
             finalCheckoutData = paymentAccountService
                 .paymentAccount(for: fiat.currencyType)
                 .map { checkoutData.checkoutData(byAppending: $0) }
+        } else if checkoutData.order.paymentMethod.isBankTransfer, let authData = checkoutData.order.authorizationData {
+            finalCheckoutData = linkedBanksService
+                .linkedBank(for: authData.paymentMethodId)
+                .map { data -> CheckoutData in
+                    guard let data = data else {
+                        return checkoutData
+                    }
+                    return checkoutData.checkoutData(byAppending: data)
+                }
         } else {
             finalCheckoutData = Single.just(checkoutData)
         }
@@ -81,6 +93,7 @@ public final class FundsAndBankOrderCheckoutInteractor {
                     amount: MoneyValue(cryptoValue: payload.quote.estimatedAmount),
                     exchangeRate: MoneyValue(fiatValue: payload.quote.rate),
                     card: nil,
+                    bankTransferData: payload.checkoutData.linkedBankData,
                     orderId: payload.checkoutData.order.identifier,
                     paymentMethod: checkoutData.order.paymentMethod
                 )
@@ -105,6 +118,7 @@ public final class FundsAndBankOrderCheckoutInteractor {
                 amount: order.outputValue,
                 exchangeRate: nil,
                 card: nil,
+                bankTransferData: nil,
                 orderId: order.identifier,
                 paymentMethod: order.paymentMethod
             )

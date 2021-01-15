@@ -33,6 +33,7 @@ public enum TransactionalLineItem: Hashable {
     case to(_ content: String? = nil)
     case gasFor(_ content: String? = nil)
     case memo(_ content: String? = nil)
+    case availableToTrade(_ content: String? = nil)
 
     public var accessibilityID: String {
         switch self {
@@ -74,6 +75,8 @@ public enum TransactionalLineItem: Hashable {
             return AccessibilityID.gasFor
         case .memo:
             return AccessibilityID.memo
+        case .availableToTrade:
+            return AccessibilityID.memo
         }
     }
 
@@ -96,7 +99,8 @@ public enum TransactionalLineItem: Hashable {
              .fee(let content),
              .for(let content),
              .totalCost(let content),
-             .total(let content):
+             .total(let content),
+             .availableToTrade(let content):
             return content
         case .paymentAccountField(let field):
             return field.content
@@ -143,6 +147,8 @@ public enum TransactionalLineItem: Hashable {
             return LocalizedString.gasFor
         case .memo:
             return LocalizedString.memo
+        case .availableToTrade:
+            return LocalizedString.availableToTrade
         }
     }
 

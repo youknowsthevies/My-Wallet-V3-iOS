@@ -14,6 +14,7 @@ public struct CheckoutInteractionData {
     public let amount: MoneyValue
     public let exchangeRate: MoneyValue?
     public let card: CardData?
+    public let bankTransferData: LinkedBankData?
     public let orderId: String
     public let paymentMethod: PaymentMethod.MethodType
     
@@ -22,6 +23,7 @@ public struct CheckoutInteractionData {
                 amount: MoneyValue,
                 exchangeRate: MoneyValue?,
                 card: CardData?,
+                bankTransferData: LinkedBankData?,
                 orderId: String,
                 paymentMethod: PaymentMethod.MethodType) {
         self.time = time
@@ -29,6 +31,7 @@ public struct CheckoutInteractionData {
         self.amount = amount
         self.exchangeRate = exchangeRate
         self.card = card
+        self.bankTransferData = bankTransferData
         self.orderId = orderId
         self.paymentMethod = paymentMethod
     }

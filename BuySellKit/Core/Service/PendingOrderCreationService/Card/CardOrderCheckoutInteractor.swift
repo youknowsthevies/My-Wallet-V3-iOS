@@ -78,6 +78,7 @@ public final class CardOrderCheckoutInteractor {
                             amount: MoneyValue(cryptoValue: quote.estimatedAmount),
                             exchangeRate: MoneyValue(fiatValue: quote.rate),
                             card: card,
+                            bankTransferData: nil,
                             orderId: checkoutData.order.identifier,
                             paymentMethod: checkoutData.order.paymentMethod
                         )
@@ -118,6 +119,7 @@ public final class CardOrderCheckoutInteractor {
                     amount: order.outputValue,
                     exchangeRate: price,
                     card: card,
+                    bankTransferData: nil,
                     orderId: order.identifier,
                     paymentMethod: order.paymentMethod
                 )

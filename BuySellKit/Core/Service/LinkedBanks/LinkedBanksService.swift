@@ -22,6 +22,9 @@ public protocol LinkedBanksServiceAPI {
 
     /// Starts the flow to linked a bank
     var bankLinkageStartup: Single<Result<BankLinkageData?, BankLinkageError>> { get }
+
+    /// Returns the requested linked bank for the given id
+    func linkedBank(for id: String) -> Single<LinkedBankData?>
 }
 
 final class LinkedBanksService: LinkedBanksServiceAPI {
@@ -59,6 +62,13 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
             }
             .mapToResult(successMap: { BankLinkageData(from: $0) } ,
                          errorMap: { BankLinkageError.server($0) })
+    }
+
+    // MARK: Methods
+
+    func linkedBank(for id: String) -> Single<LinkedBankData?> {
+        linkedBanks
+            .map { $0.first(where: { $0.identifier == id }) }
     }
 }
 

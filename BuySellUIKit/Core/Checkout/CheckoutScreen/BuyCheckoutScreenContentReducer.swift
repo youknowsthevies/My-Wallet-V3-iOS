@@ -60,6 +60,11 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
     private let statusLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.status(LocalizedLineItem.pending).defaultPresenter(
         accessibilityIdPrefix: AccessibilityId.lineItemPrefix
     )
+    
+    private let availableToTradeInstantlyItemCellPresenter: DefaultLineItemCellPresenter =
+        LineItem.availableToTrade(LocalizedLineItem.instantly).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
 
     private let cryptoAmountLabelPresenter: DefaultLabelContentPresenter = DefaultLabelContentPresenter(
         knownValue: " ",
@@ -163,8 +168,11 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
         case .bankAccount:
             localizedPaymentMethod = LocalizedLineItem.bankTransfer
         case .bankTransfer:
-            // TODO: ACH - Add correct value here
-            localizedPaymentMethod = LocalizedLineItem.bankTransfer
+            if let bankTransferData = data.bankTransferData, let account = bankTransferData.account {
+                localizedPaymentMethod = "\(account.bankName) \(account.number)"
+            } else {
+                localizedPaymentMethod = LocalizedLineItem.bankTransfer
+            }
         }
 
         paymentMethodLineItemCellPresenter.interactor.description.stateRelay.accept(
@@ -227,8 +235,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
                 .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
             ]
         case (.card, false, _),
-             (.bankAccount, _, false),
-             (.bankTransfer, _, false):
+             (.bankAccount, _, false):
 
             // MARK: Cells Setup
 
@@ -293,9 +300,23 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
                 .separator,
                 .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
             ]
-        case (.bankTransfer, _, true):
-            // TODO: ACH - Add correct value
-            cells = []
+        case (.bankTransfer, _, _):
+            cells = [
+                .label(cryptoAmountLabelPresenter),
+                .badges(badgesModel),
+                .separator,
+                .lineItem(exchangeRateLineItemCellPresenter),
+                .separator,
+                .lineItem(buyingFeeLineItemCellPresenter),
+                .separator,
+                .lineItem(totalCostLineItemCellPresenter),
+                .separator,
+                .lineItem(paymentMethodLineItemCellPresenter),
+                .separator,
+                .lineItem(availableToTradeInstantlyItemCellPresenter),
+                .separator,
+                .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
+            ]
         }
 
     }
@@ -312,7 +333,7 @@ extension BuySellKit.PaymentMethod.MethodType {
         case .bankAccount:
             return "\(LocalizedString.BankTransfer.prefix) \(currencyType.displayCode) \(LocalizedString.BankTransfer.suffix)"
         case .bankTransfer:
-            return ""
+            return LocalizedString.linkedBankCard
         }
     }
 }

@@ -128,6 +128,10 @@ extension LocalizationConstants.LineItem.Transactional {
         "Bank Transfer",
         comment: "Bank Transfer"
     )
+    public static let availableToTrade = NSLocalizedString(
+        "Available to Trade",
+        comment: "Available to Trade"
+    )
     public struct Funds {
         public static let prefix = NSLocalizedString(
             "My",
@@ -150,6 +154,8 @@ extension LocalizationConstants.LineItem.Transactional {
     public static let total = NSLocalizedString("Total", comment: "Total")
     public static let wallet = NSLocalizedString("Wallet", comment: "Wallet")
     public static let tradingWallet = NSLocalizedString("Trading Wallet", comment: "Trading Wallet")
+
+    public static let instantly = NSLocalizedString("Instantly", comment: "Simple Buy: Available to Trade description")
 }
 
 // MARK: Transactional.Copyable

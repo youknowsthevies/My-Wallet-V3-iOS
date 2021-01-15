@@ -84,6 +84,7 @@ public struct CheckoutData {
     public let order: OrderDetails
     public let paymentAccount: PaymentAccount!
     public let isPaymentMethodFinalized: Bool
+    public let linkedBankData: LinkedBankData?
     
     // MARK: - Properties
 
@@ -141,9 +142,10 @@ public struct CheckoutData {
         order.isPendingConfirmation && order.paymentMethod.isFunds
     }
                 
-    public init(order: OrderDetails, paymentAccount: PaymentAccount? = nil) {
+    public init(order: OrderDetails, paymentAccount: PaymentAccount? = nil, linkedBankData: LinkedBankData? = nil) {
         self.order = order
         self.paymentAccount = paymentAccount
+        self.linkedBankData = linkedBankData
         isPaymentMethodFinalized = (paymentAccount != nil || order.paymentMethodId != nil)
     }
 
@@ -156,7 +158,7 @@ public struct CheckoutData {
     public func checkoutData(byAppending bankAccount: LinkedBankData) -> CheckoutData {
         var order = self.order
         order.paymentMethodId = bankAccount.identifier
-        return CheckoutData(order: order)
+        return CheckoutData(order: order, linkedBankData: bankAccount)
     }
     
     func checkoutData(byAppending paymentAccount: PaymentAccount) -> CheckoutData {
