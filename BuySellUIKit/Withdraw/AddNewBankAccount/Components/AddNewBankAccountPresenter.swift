@@ -115,7 +115,7 @@ final class AddNewBankAccountPagePresenter: DetailsScreenPresenterAPI, AddNewBan
         )
     }
 
-    private func setup(account: PaymentAccount) {
+    private func setup(account: BuySellKit.PaymentAccount) {
         let contentReducer = ContentReducer(
             account: account,
             isOriginDeposit: isOriginDeposit,
@@ -157,7 +157,7 @@ extension AddNewBankAccountPagePresenter {
         let noticeViewModels: [NoticeViewModel]
         let termsTextViewModel: InteractableTextViewModel!
 
-        init(account: PaymentAccount,
+        init(account: BuySellKit.PaymentAccount,
              isOriginDeposit: Bool,
              analyticsRecorder: AnalyticsEventRecorderAPI) {
 

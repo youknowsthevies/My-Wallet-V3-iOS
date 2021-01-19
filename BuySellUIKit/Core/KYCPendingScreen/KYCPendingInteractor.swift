@@ -46,8 +46,6 @@ final class KYCPendingInteractor: Interactor {
                     return .just(state)
                 }
                 return self.eligibilityService.fetch()
-                    .take(1)
-                    .asSingle()
                     .map { $0 ? .completed : .ineligible }
             }
             .subscribe(

@@ -10,11 +10,14 @@ import BigInt
 import DIKit
 import PlatformKit
 import RxSwift
+import TransactionKit
 import web3swift
 
 protocol EthereumTransactionBuildingServiceAPI {
     
-    func buildTransaction(with amount: EthereumValue, to: EthereumAddress) -> Single<EthereumTransactionCandidate>
+    func buildTransaction(with amount: EthereumValue,
+                          to: EthereumAddress,
+                          feeLevel: FeeLevel) -> Single<EthereumTransactionCandidate>
 }
 
 final class EthereumTransactionBuildingService: EthereumTransactionBuildingServiceAPI {
@@ -27,14 +30,28 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
         self.feeService = feeService
         self.repository = repository
     }
-    
-    func buildTransaction(with amount: EthereumValue, to: EthereumAddress) -> Single<EthereumTransactionCandidate> {
-        Single.zip(feeService.fees, balance) { (fees: $0, balance: $1) }
-            .map { data -> EthereumTransactionCandidate in
+
+    private func fee(feeLevel: FeeLevel) -> Single<(gasLimit: Int, gasPrice: CryptoValue)> {
+        feeService.fees.map { fee in
+            switch feeLevel {
+            case .priority:
+                return (fee.gasLimit, fee.priority)
+            case .custom, .none, .regular:
+                return (fee.gasLimit, fee.regular)
+            }
+        }
+    }
+
+    func buildTransaction(with amount: EthereumValue,
+                          to: EthereumAddress,
+                          feeLevel: FeeLevel) -> Single<EthereumTransactionCandidate> {
+        Single
+            .zip(fee(feeLevel: feeLevel), balance)
+            .map { (fee, balance) -> EthereumTransactionCandidate in
                 let value: BigUInt = BigUInt(amount.amount)
-                let gasPrice = BigUInt(data.fees.regular.amount)
-                let gasLimit = BigUInt(data.fees.gasLimit)
-                let balance = BigUInt(data.balance.amount)
+                let gasPrice = BigUInt(fee.gasPrice.amount)
+                let gasLimit = BigUInt(fee.gasLimit)
+                let balance = BigUInt(balance.amount)
                 let transactionFee = gasPrice * gasLimit
                 
                 guard transactionFee < balance else {
@@ -49,8 +66,8 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
                 
                 return EthereumTransactionCandidate(
                     to: to,
-                    gasPrice: BigUInt(data.fees.regular.amount),
-                    gasLimit: BigUInt(data.fees.gasLimit),
+                    gasPrice: gasPrice,
+                    gasLimit: gasLimit,
                     value: value,
                     data: Data()
                 )

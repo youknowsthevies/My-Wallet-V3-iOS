@@ -7,8 +7,7 @@
 //
 
 @testable import Blockchain
-import BitcoinCashKit
-import BitcoinKit
+import BitcoinChainKit
 import Foundation
 import PlatformKit
 import StellarKit

@@ -13,10 +13,10 @@ import StellarKit
 
 class StellarTradeLimitsService: StellarTradeLimitsAPI {
 
-    private let ledgerService: StellarLedgerAPI
+    private let ledgerService: StellarLedgerServiceAPI
     private let accountsService: StellarAccountAPI
 
-    init(ledgerService: StellarLedgerAPI, accountsService: StellarAccountAPI) {
+    init(ledgerService: StellarLedgerServiceAPI, accountsService: StellarAccountAPI) {
         self.ledgerService = ledgerService
         self.accountsService = accountsService
     }

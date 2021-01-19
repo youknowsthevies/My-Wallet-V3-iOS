@@ -19,6 +19,7 @@ public enum DetailsScreen {
     }
 
     public enum CellType {
+        case numbered(BadgeNumberedItemViewModel)
         case badges(MultiBadgeViewModel)
         case buttons([ButtonViewModel])
         case label(LabelContentPresenting)
@@ -31,6 +32,7 @@ public enum DetailsScreen {
     }
 
     public enum NavigationBarAppearance {
+        case defaultLight
         case defaultDark
         case custom(leading: Screen.Style.LeadingButton, trailing: Screen.Style.TrailingButton, barStyle: Screen.Style.Bar)
     }

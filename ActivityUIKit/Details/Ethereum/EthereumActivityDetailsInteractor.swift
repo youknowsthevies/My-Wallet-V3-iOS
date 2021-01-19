@@ -24,7 +24,7 @@ final class EthereumActivityDetailsInteractor {
 
     init(wallet: EthereumWalletBridgeAPI = resolve(),
          fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
-         priceService: PriceServiceAPI = PriceService(),
+         priceService: PriceServiceAPI = resolve(),
          detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> = resolve()) {
         self.detailsService = detailsService
         self.fiatCurrencySettings = fiatCurrencySettings

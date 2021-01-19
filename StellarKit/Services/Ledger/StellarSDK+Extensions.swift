@@ -9,67 +9,17 @@
 import PlatformKit
 import stellarsdk
 
-public enum StellarLedgerServiceError: Error {
-    case unknown
-    case sdkError(Error)
-}
-
-public protocol LedgerResponseProtocol: Decodable {
-    var id: String { get }
-    var pagingToken: String { get }
-    var sequenceNumber: Int64 { get }
-    var successfulTransactionCount: Int? { get }
-    var operationCount: Int { get }
-    var closedAt: Date { get }
-    var totalCoins: String { get }
-    var baseFeeInStroops: Int? { get }
-    var baseReserveInStroops: Int? { get }
-}
-
-extension LedgerResponse: LedgerResponseProtocol {
-    public var successfulTransactionCount: Int? {
-        nil
-    }
-}
-
-public protocol PageResponseProtocol: Decodable {
-    var allRecords: [LedgerResponseProtocol] { get }
-}
-
-extension stellarsdk.PageResponse: PageResponseProtocol where Element: LedgerResponseProtocol {
-    public var allRecords: [LedgerResponseProtocol] {
-        records as [LedgerResponseProtocol]
-    }
-}
-
-public protocol LedgersServiceAPI {
+extension stellarsdk.LedgersService: LedgersServiceAPI {
     func ledgers(
         cursor: String?,
         order: stellarsdk.Order?,
         limit: Int?,
-        response: @escaping (Result<PageResponseProtocol, StellarLedgerServiceError>) -> Void
-    )
-}
-
-public protocol StellarSDKLedgersServiceAPI: LedgersServiceAPI {
-    func getLedgers(
-        cursor: String?,
-        order: stellarsdk.Order?,
-        limit: Int?,
-        response: @escaping stellarsdk.PageResponse<stellarsdk.LedgerResponse>.ResponseClosure
-    )
-}
-
-extension StellarSDKLedgersServiceAPI {
-    public func ledgers(
-        cursor: String?,
-        order: stellarsdk.Order?,
-        limit: Int?,
-        response: @escaping (Result<PageResponseProtocol, StellarLedgerServiceError>) -> Void) {
+        response: @escaping (Result<[StellarLedger], StellarLedgerServiceError>) -> Void) {
         getLedgers(cursor: cursor, order: order, limit: limit) { result in
             switch result {
-            case .success(let value as PageResponseProtocol):
-                response(.success(value))
+            case .success(let value):
+                let result = value.records.map { $0.mapToStellarLedger() }
+                response(.success(result))
             case .failure(let error):
                 response(.failure(StellarLedgerServiceError.sdkError(error)))
             }
@@ -77,4 +27,18 @@ extension StellarSDKLedgersServiceAPI {
     }
 }
 
-extension LedgersService: StellarSDKLedgersServiceAPI {}
+extension stellarsdk.LedgerResponse {
+    func mapToStellarLedger() -> StellarLedger {
+        StellarLedger(
+            identifier: id,
+            token: pagingToken,
+            sequence: Int(sequenceNumber),
+            transactionCount: successfulTransactionCount,
+            operationCount: operationCount,
+            closedAt: closedAt,
+            totalCoins: totalCoins,
+            baseFeeInStroops: baseFeeInStroops,
+            baseReserveInStroops: baseReserveInStroops
+        )
+    }
+}

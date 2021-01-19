@@ -18,11 +18,11 @@ class SendReceiveSegmentedItemsFactory {
     
     // MARK: Private Properties
     
-    private let builder: Builder
+    private let builder: SendReceiveBuilder
     
     // MARK: Setup
     
-    init(builder: Builder) {
+    init(builder: SendReceiveBuilder) {
         self.builder = builder
     }
     

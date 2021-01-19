@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxCocoa
 import RxSwift
@@ -15,13 +16,8 @@ public final class AvailableBalanceContentInteractor: ContentLabelViewInteractor
 
     public let contentCalculationState: Observable<ValueCalculationState<String>>
 
-    private let coincore: Coincore
-    private let currencyType: CurrencyType
-
     public init(currencyType: CurrencyType,
                 coincore: Coincore) {
-        self.currencyType = currencyType
-        self.coincore = coincore
 
         let balance = coincore.allAccounts
             .compactMap { group in
@@ -33,6 +29,30 @@ public final class AvailableBalanceContentInteractor: ContentLabelViewInteractor
             }
 
         contentCalculationState = balance
+            .map { .value($0.toDisplayString(includeSymbol: true)) }
+            .share(replay: 1, scope: .whileConnected)
+    }
+
+    init(account: BlockchainAccount,
+         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
+        contentCalculationState = fiatCurrencyService
+            .fiatCurrencyObservable
+            .flatMap { fiatCurrency -> Observable<MoneyValue> in
+                account.fiatBalance(fiatCurrency: fiatCurrency).asObservable()
+            }
+            .map { .value($0.toDisplayString(includeSymbol: true)) }
+            .share(replay: 1, scope: .whileConnected)
+    }
+
+    init(account: Observable<BlockchainAccount>,
+         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
+        contentCalculationState = fiatCurrencyService
+            .fiatCurrencyObservable
+            .flatMap { fiatCurrency -> Observable<MoneyValue> in
+                account.flatMap { account in
+                    account.fiatBalance(fiatCurrency: fiatCurrency)
+                }
+            }
             .map { .value($0.toDisplayString(includeSymbol: true)) }
             .share(replay: 1, scope: .whileConnected)
     }

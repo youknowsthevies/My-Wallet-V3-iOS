@@ -69,7 +69,7 @@ final class PaymentAccountService: PaymentAccountServiceAPI {
                              patcher: PaymentAccountPatcher) -> Single<PaymentAccount> {
         Single
             .zip(
-                client.paymentAccount(for: currency),
+                client.paymentAccount(for: currency).map(\.account),
                 dataRepository.user.take(1).asSingle()
             )
             .map { (response, user) -> PaymentAccount? in

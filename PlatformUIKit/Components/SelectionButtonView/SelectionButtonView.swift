@@ -26,24 +26,28 @@ public final class SelectionButtonView: UIView {
             }
 
             viewModel.leadingContent
-                .drive(onNext: { [weak self] content in
-                    guard let self = self else { return }
+                .drive(weak: self) { (self, content) in
                     switch content {
                     case .badgeImage(let viewModel):
                         self.leadingBadgeImageView.viewModel = viewModel
                         self.leadingLabel.content = .empty
-                        self.stackViewToLabelConstraint.priority = .defaultLow
-                        self.stackViewToImageConstraint.priority = .penultimateHigh
+                        self.stackViewToLabelConstraint.priority = .penultimateLow
+                        self.stackViewToBadgeConstraint.priority = .penultimateHigh
+                        self.stackViewToSuperviewConstraint.priority = .penultimateLow
                     case .label(let content):
                         self.leadingLabel.content = content
                         self.leadingBadgeImageView.viewModel = .empty
                         self.stackViewToLabelConstraint.priority = .penultimateHigh
-                        self.stackViewToImageConstraint.priority = .defaultLow
+                        self.stackViewToBadgeConstraint.priority = .penultimateLow
+                        self.stackViewToSuperviewConstraint.priority = .penultimateLow
                     case .none:
                         self.leadingLabel.content = .empty
                         self.leadingBadgeImageView.viewModel = .empty
+                        self.stackViewToLabelConstraint.priority = .penultimateLow
+                        self.stackViewToBadgeConstraint.priority = .penultimateLow
+                        self.stackViewToSuperviewConstraint.priority = .penultimateHigh
                     }
-                })
+                }
                 .disposed(by: disposeBag)
 
             viewModel.title
@@ -61,11 +65,6 @@ public final class SelectionButtonView: UIView {
                 .drive(onNext: { [weak self] shouldDisplay in
                     self?.relayoutToDisplaySubtitle(shouldDisplay: shouldDisplay)
                 })
-                .disposed(by: disposeBag)
-
-            viewModel.trailingContent
-                .compactMap { $0.image }
-                .drive(trailingImageView.rx.content)
                 .disposed(by: disposeBag)
 
             viewModel.horizontalOffset
@@ -89,18 +88,7 @@ public final class SelectionButtonView: UIView {
                 .controlEvent(.touchUpInside)
                 .bindAndCatch(to: viewModel.tapRelay)
                 .disposed(by: disposeBag)
-            
-            viewModel.trailingContentRelay
-                .compactMap { $0.transaction }
-                .bindAndCatch(to: transactionDescriptorView.rx.viewModel)
-                .disposed(by: disposeBag)
-            
-            viewModel.trailingContentRelay
-                .map { $0.transaction == nil }
-                .map { $0 ? .hidden : .visible }
-                .bindAndCatch(to: transactionDescriptorView.rx.visibility)
-                .disposed(by: disposeBag)
-            
+
             viewModel.accessibility
                 .drive(button.rx.accessibility)
                 .disposed(by: disposeBag)
@@ -118,6 +106,43 @@ public final class SelectionButtonView: UIView {
                     )
                 })
                 .disposed(by: disposeBag)
+
+            // Trailing Content
+
+            viewModel.trailingContent
+                .drive(weak: self) { (self, content) in
+                    switch content {
+                    case .image(let content):
+                        self.transactionDescriptorView.viewModel = nil
+                        self.trailingImageView.set(content)
+                        self.stackViewToImageConstraint.priority = .penultimateHigh
+                        self.stackViewToTransactionConstraint.priority = .penultimateLow
+                    case .transaction(let viewModel):
+                        self.transactionDescriptorView.viewModel = viewModel
+                        self.trailingImageView.set(nil)
+                        self.stackViewToImageConstraint.priority = .penultimateLow
+                        self.stackViewToTransactionConstraint.priority = .penultimateHigh
+                    case .empty:
+                        self.transactionDescriptorView.viewModel = nil
+                        self.trailingImageView.set(nil)
+                        self.stackViewToImageConstraint.priority = .penultimateHigh
+                        self.stackViewToTransactionConstraint.priority = .penultimateLow
+                    }
+                }
+                .disposed(by: disposeBag)
+
+            viewModel.trailingContent
+                .map { $0.image == nil }
+                .map { $0 ? .hidden : .visible }
+                .drive(transactionDescriptorView.rx.visibility)
+                .disposed(by: disposeBag)
+
+            viewModel.trailingContent
+                .map { $0.transaction == nil }
+                .map { $0 ? .hidden : .visible }
+                .drive(transactionDescriptorView.rx.visibility)
+                .disposed(by: disposeBag)
+
         }
     }
 
@@ -134,8 +159,11 @@ public final class SelectionButtonView: UIView {
     private let button = UIButton()
 
     private var leadingConstraint: NSLayoutConstraint!
-    private var stackViewToImageConstraint: NSLayoutConstraint!
+    private var stackViewToBadgeConstraint: NSLayoutConstraint!
     private var stackViewToLabelConstraint: NSLayoutConstraint!
+    private var stackViewToSuperviewConstraint: NSLayoutConstraint!
+    private var stackViewToImageConstraint: NSLayoutConstraint!
+    private var stackViewToTransactionConstraint: NSLayoutConstraint!
     private var trailingConstraint: NSLayoutConstraint!
     private var verticalConstraints: Axis.Constraints!
     
@@ -210,25 +238,33 @@ public final class SelectionButtonView: UIView {
         leadingLabel.horizontalContentHuggingPriority = .required
         
         verticalConstraints = labelsStackView.layoutToSuperview(axis: .vertical)
-        stackViewToImageConstraint = labelsStackView.layout(
+        stackViewToBadgeConstraint = labelsStackView.layout(
             edge: .leading,
             to: .trailing,
             of: leadingBadgeImageView,
             offset: 16,
-            priority: .penultimateHigh
+            priority: .penultimateLow
         )
         stackViewToLabelConstraint = labelsStackView.layout(
             edge: .leading,
             to: .trailing,
             of: leadingLabel,
             offset: 16,
-            priority: .defaultLow
+            priority: .penultimateLow
         )
-        labelsStackView.layout(edge: .trailing, to: .leading, of: trailingImageView, offset: -8)
+        stackViewToSuperviewConstraint = labelsStackView.layout(
+            edge: .leading,
+            to: .leading,
+            of: self,
+            offset: 24,
+            priority: .penultimateHigh
+        )
 
         titleLabel.verticalContentHuggingPriority = .required
         titleLabel.verticalContentCompressionResistancePriority = .required
-        
+
+        subtitleLabel.adjustsFontSizeToFitWidth = true
+        subtitleLabel.minimumScaleFactor = 0.7
         subtitleLabel.verticalContentHuggingPriority = .required
         subtitleLabel.verticalContentCompressionResistancePriority = .required
         
@@ -239,6 +275,21 @@ public final class SelectionButtonView: UIView {
         transactionDescriptorView.layoutToSuperview(.trailing, offset: -24)
         transactionDescriptorView.layoutToSuperview(.centerY)
         transactionDescriptorView.maximizeResistanceAndHuggingPriorities()
+
+        stackViewToImageConstraint = labelsStackView.layout(
+            edge: .trailing,
+            to: .leading,
+            of: trailingImageView,
+            offset: -8,
+            priority: .penultimateHigh
+        )
+        stackViewToTransactionConstraint = labelsStackView.layout(
+            edge: .trailing,
+            to: .leading,
+            of: transactionDescriptorView,
+            offset: -8,
+            priority: .penultimateLow
+        )
     }
 
     @objc

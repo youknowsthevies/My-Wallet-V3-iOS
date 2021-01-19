@@ -7,41 +7,49 @@
 //
 
 import DIKit
+import KYCKit
+import KYCUIKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
 import RxSwift
 
 protocol SwapBootstrapRouting: ViewableRouting {
-    // TODO: Declare methods the interactor can invoke to manage sub-tree via the router.
 }
 
 protocol SwapBootstrapPresentable: Presentable {
     func showLoading()
 }
 
-protocol SwapBootstrapListener: class {
-    func userIsIneligibleForSwap()
+protocol SwapBootstrapListener: AnyObject {
     func userMustKYCForSwap()
+    func userMustCompleteKYC(model: KYCTiersPageModel)
     func userReadyForSwap()
 }
 
 final class SwapBootstrapInteractor: PresentableInteractor<SwapBootstrapPresentable>, SwapBootstrapInteractable {
 
+    private enum Effect {
+        case userMustKYCForSwap
+        case userMustCompleteKYC(KYCTiersPageModel)
+        case userReadyForSwap
+    }
+
     weak var router: SwapBootstrapRouting?
     weak var listener: SwapBootstrapListener?
 
-    private var disposeBag: DisposeBag = DisposeBag()
     private let kycTiersService: KYCTiersServiceAPI
-    private let eligibilityService: EligibilityServiceAPI
+    private let kycSettings: KYCSettingsAPI
+    private let kycTiersPageModelFactory: KYCTiersPageModelFactoryAPI
 
     init(presenter: SwapBootstrapPresentable,
+         kycSettings: KYCSettingsAPI = resolve(),
          kycTiersService: KYCTiersServiceAPI = resolve(),
-         eligibilityService: EligibilityServiceAPI = resolve()) {
-        self.eligibilityService = eligibilityService
+         kycTiersPageModelFactory: KYCTiersPageModelFactoryAPI = resolve()) {
         self.kycTiersService = kycTiersService
+        self.kycSettings = kycSettings
+        self.kycTiersPageModelFactory = kycTiersPageModelFactory
         super.init(presenter: presenter)
-
     }
 
     override func didBecomeActive() {
@@ -50,40 +58,46 @@ final class SwapBootstrapInteractor: PresentableInteractor<SwapBootstrapPresenta
     }
 
     private func checkStatus() {
-        let tier2Status: Single<KYC.AccountStatus> = kycTiersService
+        let isCompletingKyc: Single<Bool> = kycSettings.isCompletingKyc
+        let hasAnyApprovedKYCTier: Single<Bool> = kycTiersService
             .fetchTiers()
-            .map { $0.tierAccountStatus(for: .tier2) }
+            .map { $0.latestApprovedTier > .tier0 }
 
-        let eligibility: Single<Bool> = eligibilityService
-            .fetch()
-            .take(1)
-            .asSingle()
-
-        Single.zip(tier2Status, eligibility)
+        Single.zip(hasAnyApprovedKYCTier, isCompletingKyc)
             .observeOn(MainScheduler.asyncInstance)
             .do(onSubscribe: { [weak presenter] in
                 presenter?.showLoading()
             })
+            .flatMap(weak: self) { (self, payload) -> Single<Effect> in
+                let (hasAnyApprovedKYCTier, isCompletingKyc) = payload
+                switch (hasAnyApprovedKYCTier, isCompletingKyc) {
+                case (false, false):
+                    return .just(.userMustKYCForSwap)
+                case (false, true):
+                    return self.kycTiersPageModelFactory
+                        .tiersPageModel(suppressCTA: true)
+                        .map { .userMustCompleteKYC($0) }
+                        .observeOn(MainScheduler.asyncInstance)
+                case (true, _):
+                    return .just(.userReadyForSwap)
+                }
+            }
             .subscribe(
-                onSuccess: { [weak self] (tier2Status: KYC.AccountStatus, eligibility: Bool) in
-                    switch (eligibility, tier2Status.isApproved) {
-                    case (false, _):
-                        self?.listener?.userIsIneligibleForSwap()
-                    case (true, false):
-                        self?.listener?.userMustKYCForSwap()
-                    case (true, true):
-                        self?.listener?.userReadyForSwap()
+                onSuccess: { [weak self] effect in
+                    guard let self = self else { return }
+                    switch effect {
+                    case .userMustKYCForSwap:
+                        self.listener?.userMustKYCForSwap()
+                    case .userMustCompleteKYC(let model):
+                        self.listener?.userMustCompleteKYC(model: model)
+                    case .userReadyForSwap:
+                        self.listener?.userReadyForSwap()
                     }
                 },
                 onError: { error in
-                    
+
                 }
             )
             .disposeOnDeactivate(interactor: self)
-    }
-
-    override func willResignActive() {
-        disposeBag = DisposeBag()
-        super.willResignActive()
     }
 }

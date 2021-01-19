@@ -960,6 +960,8 @@ extension FiatCurrency {
         let locale = NSLocale.current as NSLocale
         return locale.displayName(forKey: .currencySymbol, value: code) ?? ""
     }
+
+    public var displaySymbol: String { symbol }
     
     /// The name of the currency. e.g US Dollar, Euro, Great British Pound
     public var name: String {

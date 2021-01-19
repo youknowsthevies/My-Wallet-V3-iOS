@@ -59,13 +59,23 @@ public struct TransactionDescriptorViewModel {
             // This should not happen.
             .asDriver(onErrorJustReturn: .empty)
             .map { (attributes) -> BadgeImageViewModel in
-                let model = BadgeImageViewModel.primary(
-                    with: attributes.logoImageName,
-                    contentColor: .white,
-                    backgroundColor: attributes.brandColor,
-                    cornerRadius: attributes.isFiat ? .value(8.0) : .round,
-                    accessibilityIdSuffix: ""
-                )
+                var model: BadgeImageViewModel
+                switch attributes.isFiat {
+                case true:
+                    model = BadgeImageViewModel.primary(
+                        with: attributes.logoImageName,
+                        contentColor: .white,
+                        backgroundColor: attributes.brandColor,
+                        cornerRadius: attributes.isFiat ? .value(8.0) : .round,
+                        accessibilityIdSuffix: ""
+                    )
+                case false:
+                    model = BadgeImageViewModel.default(
+                        with: attributes.logoImageName,
+                        cornerRadius: attributes.isFiat ? .value(8.0) : .round,
+                        accessibilityIdSuffix: ""
+                    )
+                }
                 model.marginOffsetRelay.accept(0)
                 return model
             }
@@ -125,7 +135,7 @@ public struct TransactionDescriptorViewModel {
             }
         }
     }
-
+    
     /// The `SingleAccount` that the transaction is originating from
     public let fromAccountRelay = BehaviorRelay<TransactionAccountValue>(value: .empty)
 

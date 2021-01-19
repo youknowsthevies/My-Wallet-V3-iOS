@@ -6,9 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
+import PlatformKit
 import RxCocoa
+import RxRelay
+import RxSwift
+import ToolKit
 
 public final class AmountTranslationView: UIView {
     
@@ -38,7 +40,7 @@ public final class AmountTranslationView: UIView {
     
     private let fiatAmountLabelView = AmountLabelView()
     private let cryptoAmountLabelView = AmountLabelView()
-    private let labeledButtonView = LabeledButtonView<CurrencyLabeledButtonViewModel>()
+    private let auxiliaryButton = ButtonView()
     private let swapButton = UIButton()
 
     private let presenter: AmountTranslationPresenter
@@ -47,7 +49,12 @@ public final class AmountTranslationView: UIView {
         
     private var fiatLabelConstraints: AmountLabelConstraints!
     private var cryptoLabelConstraints: AmountLabelConstraints!
-    
+
+    // MARK: - Init
+
+    @available(*, unavailable)
+    public required init?(coder: NSCoder) { unimplemented() }
+
     public init(presenter: AmountTranslationPresenter) {
         self.presenter = presenter
         super.init(frame: UIScreen.main.bounds)
@@ -67,12 +74,10 @@ public final class AmountTranslationView: UIView {
                 offset: 24,
                 priority: topPriority
             )!
-            let topTrailingConstraint = amountLabelView.layout(
-                edge: .trailing,
-                to: .leading,
-                of: swapButton,
+            let topTrailingConstraint = amountLabelView.layoutToSuperview(
+                .trailing,
                 relation: .lessThanOrEqual,
-                offset: -16,
+                offset: -24,
                 priority: topPriority
             )!
             let topVerticalConstraint = amountLabelView.layout(
@@ -121,7 +126,7 @@ public final class AmountTranslationView: UIView {
         
         addSubview(fiatAmountLabelView)
         addSubview(cryptoAmountLabelView)
-        addSubview(labeledButtonView)
+        addSubview(auxiliaryButton)
         addSubview(swapButton)
         
         fiatLabelConstraints = setupConstraints(for: fiatAmountLabelView, isActive: true)
@@ -141,23 +146,28 @@ public final class AmountTranslationView: UIView {
                 priority: .penultimateLow
             )!
         )
-        
+
         cryptoLabelConstraints.bottom.append(
-            labeledButtonView.layout(
+            auxiliaryButton.layout(
                 to: .centerY,
                 of: cryptoAmountLabelView,
                 priority: .penultimateHigh
             )!
         )
         fiatLabelConstraints.bottom.append(
-            labeledButtonView.layout(
+            auxiliaryButton.layout(
                 to: .centerY,
                 of: fiatAmountLabelView,
                 priority: .penultimateLow
             )!
         )
-        
-        labeledButtonView.layoutToSuperview(.centerX)
+
+        auxiliaryButton.layoutToSuperview(.centerX)
+        auxiliaryButton.layout(edge: .trailing,
+                                 to: .leading,
+                                 of: swapButton,
+                                 relation: .lessThanOrEqual,
+                                 offset: 0)
         
         let swapImage = UIImage(named: "vertical-swap-icon", in: bundle, compatibleWith: nil)
         swapButton.setImage(swapImage, for: .normal)
@@ -171,7 +181,21 @@ public final class AmountTranslationView: UIView {
         swapButton.rx.tap
             .bind(to: presenter.swapButtonTapRelay)
             .disposed(by: disposeBag)
-        
+
+        presenter.activeAmountInput
+            .map { input -> Bool in
+                input == .fiat
+            }
+            .drive(fiatAmountLabelView.presenter.focusRelay)
+            .disposed(by: disposeBag)
+
+        presenter.activeAmountInput
+            .map { input -> Bool in
+                input == .crypto
+            }
+            .drive(cryptoAmountLabelView.presenter.focusRelay)
+            .disposed(by: disposeBag)
+
         presenter.activeAmountInput
             .drive(
                 onNext: { [weak self] input in
@@ -179,52 +203,57 @@ public final class AmountTranslationView: UIView {
                 }
             )
             .disposed(by: disposeBag)
-        
-        Driver
-            .combineLatest(
-                presenter.state,
-                presenter.activeAmountInput
-            )
-            .map { (state: $0.0, activeAmountInput: $0.1) }
-            .drive(onNext: { [weak self] payload in
-                guard let self = self else { return }
-                let limitButtonVisibility: Visibility
-                switch payload.state {
-                case .showLimitButton(let viewModel):
-                    self.labeledButtonView.viewModel = viewModel
-                    limitButtonVisibility = .visible
-                case .showSecondaryAmountLabel:
-                    limitButtonVisibility = .hidden
-                }
-                
-                let fiatVisibility: Visibility
-                let cryptoVisibility: Visibility
-                switch payload.activeAmountInput {
-                case .fiat:
-                    fiatVisibility = .visible
-                    cryptoVisibility = limitButtonVisibility.inverted
-                case .crypto:
-                    cryptoVisibility = .visible
-                    fiatVisibility = limitButtonVisibility.inverted
-                }
-                UIView.animate(
-                    withDuration: 0.15,
-                    delay: 0,
-                    options: [.beginFromCurrentState, .curveEaseInOut],
-                    animations: {
-                        self.labeledButtonView.alpha = limitButtonVisibility.defaultAlpha
-                        self.fiatAmountLabelView.alpha = fiatVisibility.defaultAlpha
-                        self.cryptoAmountLabelView.alpha = cryptoVisibility.defaultAlpha
-                    },
-                    completion: nil
-                )
-            })
-            .disposed(by: disposeBag)
     }
-    
-    @available(*, unavailable)
-    public required init?(coder: NSCoder) {
-        fatalError("(ﾉ☉ヮ⚆)ﾉ ⌒*:･ﾟ✧ no use me with Xibzib. use me with Codcode")
+
+    // MARK: - Public Methods
+
+    public func connect(input: Driver<AmountTranslationPresenter.Input>) -> Driver<AmountTranslationPresenter.State> {
+        Driver.combineLatest(presenter.connect(input: input), presenter.activeAmountInput)
+            .map { (state: $0.0, activeAmountInput: $0.1) }
+            .map { [weak self] value in
+                guard let self = self else { return .empty }
+                return self.performEffect(state: value.state, activeAmountInput: value.activeAmountInput)
+            }
+    }
+
+    // MARK: - Private Methods
+
+    private func performEffect(state: AmountTranslationPresenter.State,
+                               activeAmountInput: ActiveAmountInput) -> AmountTranslationPresenter.State {
+        let limitButtonVisibility: Visibility
+        switch state {
+        case .warning(let viewModel):
+            auxiliaryButton.viewModel = viewModel
+            limitButtonVisibility = .visible
+        case .showSecondaryAmountLabel,
+             .empty:
+            auxiliaryButton.viewModel = nil
+            limitButtonVisibility = .hidden
+        }
+        
+        let fiatVisibility: Visibility
+        let cryptoVisibility: Visibility
+        switch activeAmountInput {
+        case .fiat:
+            fiatVisibility = .visible
+            cryptoVisibility = limitButtonVisibility.inverted
+        case .crypto:
+            cryptoVisibility = .visible
+            fiatVisibility = limitButtonVisibility.inverted
+        }
+        UIView.animate(
+            withDuration: 0.15,
+            delay: 0,
+            options: [.beginFromCurrentState, .curveEaseInOut],
+            animations: {
+                self.auxiliaryButton.alpha = limitButtonVisibility.defaultAlpha
+                self.auxiliaryButton.isHidden = limitButtonVisibility.isHidden
+                self.fiatAmountLabelView.alpha = fiatVisibility.defaultAlpha
+                self.cryptoAmountLabelView.alpha = cryptoVisibility.defaultAlpha
+            },
+            completion: nil
+        )
+        return state
     }
     
     private func didChangeActiveInput(to newInput: ActiveAmountInput) {
@@ -240,13 +269,9 @@ public final class AmountTranslationView: UIView {
                 case .fiat:
                     self.fiatLabelConstraints.activate()
                     self.cryptoLabelConstraints.deactivate()
-                    self.cryptoAmountLabelView.transform = .init(scaleX: 0.3, y: 0.3)
-                    self.fiatAmountLabelView.transform = .identity
                 case .crypto:
                     self.cryptoLabelConstraints.activate()
                     self.fiatLabelConstraints.deactivate()
-                    self.cryptoAmountLabelView.transform = .identity
-                    self.fiatAmountLabelView.transform = .init(scaleX: 0.3, y: 0.3)
                 }
                 self.layoutIfNeeded()
             },

@@ -231,6 +231,24 @@ MyWalletPhone.getIndexOfActiveAccount = function(num) {
     return realNum;
 };
 
+MyWalletPhone.getAccountIndex = function(address) {
+    var accounts = MyWallet.wallet.hdwallet.accounts;
+    
+    var index = null;
+    for (var i = 0; i < accounts.length; i++) {
+        var account = accounts[i];
+        if (account.receiveAddress === address) {
+            index = account.index;
+        }
+    }
+
+    if (index) {
+        return index;
+    }
+
+    return 0;
+};
+
 MyWalletPhone.getDefaultAccountIndex = function() {
     if (!MyWallet.wallet.isUpgradedToHD) {
         console.log('Warning: Getting accounts when wallet has not upgraded!');
@@ -2104,6 +2122,26 @@ MyWalletPhone.getDefaultBitcoinWalletIndexAsync = function (secondPassword) {
         .then(success)
         .catch(error);
 };
+                                    
+MyWalletPhone.getBitcoinWalletIndexAsync = function (receiveAddress) {
+    var getBitcoinWalletIndex = function (address) {
+    var walletIndex = MyWalletPhone.getAccountIndex(address);
+        return Promise.resolve(walletIndex);
+    };
+    var success = function (walletIndex) {
+        console.log('Fetched walletIndex');
+        console.log(walletIndex);
+        objc_on_didGetBitcoinWalletIndexAsync(walletIndex);
+    };
+    var error = function (e) {
+        console.log('Error fetching walletIndex');
+        console.log(e);
+        objc_on_error_gettingBitcoinWalletIndexAsync(e);
+    };
+    return getBitcoinWalletIndex(receiveAddress)
+        .then(success)
+        .catch(error);
+};
 
 MyWalletPhone.getHDWalletAsync = function (secondPassword) {
     var fetchHDWallet = function () {
@@ -2549,14 +2587,33 @@ MyWalletPhone.tradeExecution = {
             .amount(amount)
             .build()
             .then(function (paymentPromise) {
-                objc_on_create_order_payment_success(paymentPromise.finalFee);
+                var data = {
+                    "finalFee": paymentPromise.finalFee,
+                    "sweepFee": paymentPromise.sweepFee,
+                    "sweepAmount": paymentPromise.sweepAmount
+                };
+                var payload = { "payment": data };
+                objc_on_create_order_payment_success(JSON.stringify(payload));
                 return paymentPromise
-                  }).catch(function(e) {
-                        objc_on_create_order_payment_error(JSON.stringify(e))
-                });
+            }).catch(function(e) {
+                var paymentPromise = e.payment
+                var paymentData = {
+                    "finalFee": paymentPromise.finalFee,
+                    "sweepFee": paymentPromise.sweepFee,
+                    "sweepAmount": paymentPromise.sweepAmount
+                };
+                var payload = {
+                    "error": e.error.message.error,
+                    "payment": paymentData
+                };
+                objc_on_create_order_payment_error(JSON.stringify(payload))
+            });
         },
         send: function(secondPassword) {
-            MyWalletPhone.sendBitcoinPayment(currentPayment, secondPassword, objc_on_send_order_transaction_success, objc_on_send_order_transaction_error, objc_on_send_order_transaction_dismiss);
+            var success = function(tx) {
+                objc_on_send_order_transaction_success(tx.txid)
+            };
+            MyWalletPhone.sendBitcoinPayment(currentPayment, secondPassword, success, objc_on_send_order_transaction_error, objc_on_send_order_transaction_dismiss);
         }
     },
 
@@ -2566,19 +2623,30 @@ MyWalletPhone.tradeExecution = {
             let bchAccount = MyWallet.wallet.bch.accounts[from];
             currentBitcoinCashPayment = bchAccount.createPayment();
             MyWalletPhone.bch.changePaymentToAddress(to);
-            currentBitcoinCashPayment.amount(amount);
 
-            bchAccount.getAvailableBalance(feePerByte).then(function(balance) {
-                var fee = balance.sweepFee;
+
+            bchAccount.getAvailableBalance(feePerByte)
+            .then(function (balance) {
+                currentBitcoinCashPayment.amount(amount)
                 currentBitcoinCashPayment.feePerByte(feePerByte);
                 currentBitcoinCashPayment.build();
-                objc_on_create_order_payment_success(fee);
+                var paymentData = {
+                    "finalFee": balance.sweepFee,
+                    "sweepFee": balance.sweepFee,
+                    "sweepAmount": balance.amount
+                };
+                var payload = { "payment": paymentData };
+                objc_on_create_order_payment_success(JSON.stringify(payload));
             }).catch(function(e) {
-                objc_on_create_order_payment_error(JSON.stringify(e))
+                var payload = { "error": JSON.stringify(e) };
+                objc_on_create_order_payment_error(JSON.stringify(payload))
             });
         },
         send: function(secondPassword) {
-            MyWalletPhone.sendBitcoinPayment(currentBitcoinCashPayment, secondPassword, objc_on_send_order_transaction_success, objc_on_send_order_transaction_error, objc_on_send_order_transaction_dismiss);
+            var success = function(tx) {
+                objc_on_send_order_transaction_success(tx.txid)
+            };
+            MyWalletPhone.sendBitcoinPayment(currentBitcoinCashPayment, secondPassword, success, objc_on_send_order_transaction_error, objc_on_send_order_transaction_dismiss);
         },
     }
 }

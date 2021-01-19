@@ -10,6 +10,7 @@ import BigInt
 import Foundation
 
 extension BigInt {
+    public static let one = BigInt(1)
     public static let zero = BigInt(0)
 }
 
@@ -29,12 +30,15 @@ extension BigInt {
     /// Note that doing so may cause the returned value to lose precision,
     /// therefore we should avoid using it for anything other than to display data.
     /// - Parameters:
-    ///   - maxDecimalPlaces: maximum decimal places allowed
+    ///   - baseDecimalPlaces: Number of the decimal places of the represented value currency used to convert minor to major value.
+    ///   - roundingDecimalPlaces: Number of the decimal places used to round value.
     /// - Returns: A major value (Decimal)
-    public func toDisplayMajor(maxDecimalPlaces: Int) -> Decimal {
-        let divisor = BigInt(10).power(maxDecimalPlaces)
+    public func toDecimalMajor(baseDecimalPlaces: Int,
+                               roundingDecimalPlaces: Int,
+                               roundingMode: Decimal.RoundingMode = .bankers) -> Decimal {
+        let divisor = BigInt(10).power(baseDecimalPlaces)
         let majorValue = decimalDivision(divisor: divisor)
-        return majorValue.roundTo(places: maxDecimalPlaces)
+        return majorValue.roundTo(places: roundingDecimalPlaces, roundingMode: roundingMode)
     }
     
     public func toMinor(maxDecimalPlaces: Int) -> BigInt {

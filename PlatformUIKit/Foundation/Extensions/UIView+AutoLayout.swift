@@ -253,6 +253,7 @@ extension UIView {
                        relation: Relation = .equal,
                        ratio: CGFloat = 1.0,
                        offset: CGFloat = 0,
+                       usesSafeAreaLayoutGuide: Bool = false,
                        priority: UILayoutPriority = .required) -> Constraints {
         var constraints: Constraints = [:]
         guard prepareForAutoLayout() else {
@@ -260,12 +261,19 @@ extension UIView {
             return constraints
         }
         let uniqueEdges = Set(edges)
+        let secondItem: Any
+        if usesSafeAreaLayoutGuide {
+            secondItem = view.safeAreaLayoutGuide
+        } else {
+            secondItem = view
+        }
+
         for edge in uniqueEdges {
             let constraint = NSLayoutConstraint(
                 item: self,
                 attribute: edge,
                 relatedBy: relation,
-                toItem: view,
+                toItem: secondItem,
                 attribute: edge,
                 multiplier: ratio,
                 constant: offset

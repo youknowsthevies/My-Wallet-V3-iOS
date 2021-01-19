@@ -15,6 +15,10 @@ final class EmptySwapActivityItemEventService: SwapActivityItemEventServiceAPI {
 
     var swapActivityObservable: Observable<[SwapActivityItemEvent]> { .just([]) }
 
+    var custodial: Observable<ActivityItemEventsLoadingState> { .just(.loaded(next: [])) }
+    
+    var nonCustodial: Observable<ActivityItemEventsLoadingState> { .just(.loaded(next: [])) }
+    
     var state: Observable<ActivityItemEventsLoadingState> { .just(.loaded(next: [])) }
 
     let fetchTriggerRelay: PublishRelay<Void> = .init()

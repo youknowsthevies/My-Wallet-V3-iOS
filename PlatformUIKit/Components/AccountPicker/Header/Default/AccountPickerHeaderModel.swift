@@ -14,8 +14,8 @@ public struct AccountPickerHeaderModel {
 
     private let title: String
     private let subtitle: String
-    let image: UIImage
-    private let selectWallet: String
+    let imageContent: ImageViewContent
+    private let tableTitle: String?
 
     var titleLabel: LabelContent {
         .init(
@@ -33,9 +33,10 @@ public struct AccountPickerHeaderModel {
         )
     }
 
-    var selectWalletLabel: LabelContent {
-        .init(
-            text: selectWallet,
+    var tableTitleLabel: LabelContent? {
+        guard let tableTitle = tableTitle else { return nil }
+        return LabelContent(
+            text: tableTitle,
             font: .main(.semibold, 12),
             color: .titleText
         )
@@ -43,11 +44,11 @@ public struct AccountPickerHeaderModel {
 
     public init(title: String,
                 subtitle: String,
-                image: UIImage,
-                selectWallet: String = LocalizedString.selectAWallet) {
+                imageContent: ImageViewContent,
+                tableTitle: String? = LocalizedString.selectAWallet) {
         self.title = title
         self.subtitle = subtitle
-        self.image = image
-        self.selectWallet = selectWallet
+        self.imageContent = imageContent
+        self.tableTitle = tableTitle
     }
 }

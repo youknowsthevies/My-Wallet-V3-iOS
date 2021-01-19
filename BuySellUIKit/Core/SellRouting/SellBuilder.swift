@@ -68,7 +68,7 @@ public final class SellBuilder: SellBuilderAPI {
     // MARK: - Private Properties
     
     private let analyticsRecorder: AnalyticsEventRecorderAPI
-    private let exchangeProvider: ExchangeProviding
+    private let priceService: PriceServiceAPI
     private let balanceProvider: BalanceProviding
     private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
     private let accountSelectionService: AccountSelectionServiceAPI
@@ -79,49 +79,55 @@ public final class SellBuilder: SellBuilderAPI {
                 routerInteractor: SellRouterInteractor,
                 analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
                 supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
-                exchangeProvider: ExchangeProviding = resolve(),
+                priceService: PriceServiceAPI = resolve(),
                 balanceProvider: BalanceProviding) {
         self.accountSelectionService = accountSelectionService
         self.analyticsRecorder = analyticsRecorder
         self.supportedPairsInteractor = supportedPairsInteractor
-        self.exchangeProvider = exchangeProvider
+        self.priceService = priceService
         self.balanceProvider = balanceProvider
         self.routerInteractor = routerInteractor
     }
-    
+
     // MARK: - SellBuilderAPI
-    
+
     public func buySellKYCInvalidViewController() -> UIViewController {
         let presenter = BuySellKYCInvalidScreenPresenter(routerInteractor: routerInteractor)
         return BuySellKYCInvalidViewController(presenter: presenter)
     }
-    
+
     public func accountSelectionRouter() -> AccountPickerRouting {
         let builder = AccountPickerBuilder(
-            singleAccountsOnly: false,
-            action: .sell,
-            navigationModel: ScreenNavigationModel.AccountPicker.modal,
-            headerModel: .none
+            singleAccountsOnly: true,
+            action: .sell
         )
-        let router = builder.build { [weak self] account in
+        let didSelect: AccountPickerDidSelect = { [weak self] account in
             self?.accountSelectionService.record(selection: account)
         }
+        let router = builder.build(
+            listener: .simple(didSelect),
+            navigationModel: ScreenNavigationModel.AccountPicker.modal(),
+            headerModel: .none
+        )
         return router
     }
-    
+
     public func fiatAccountSelectionRouter() -> AccountPickerRouting {
         let builder = AccountPickerBuilder(
-            singleAccountsOnly: false,
-            action: .deposit,
-            navigationModel: ScreenNavigationModel.AccountPicker.modal,
-            headerModel: .none
+            singleAccountsOnly: true,
+            action: .deposit
         )
-        let router = builder.build { [weak self] account in
+        let didSelect: AccountPickerDidSelect = { [weak self] account in
             self?.accountSelectionService.record(selection: account)
         }
+        let router = builder.build(
+            listener: .simple(didSelect),
+            navigationModel: ScreenNavigationModel.AccountPicker.modal(),
+            headerModel: .none
+        )
         return router
     }
-    
+
     public func sellCryptoViewController(data: SellCryptoInteractionData) -> UIViewController {
         let cryptoSelectionService = CryptoCurrencySelectionService(
             service: supportedPairsInteractor,
@@ -129,7 +135,7 @@ public final class SellBuilder: SellBuilderAPI {
         )
         let interactor = SellCryptoScreenInteractor(
             data: data,
-            exchangeProvider: exchangeProvider,
+            priceService: priceService,
             balanceProvider: balanceProvider,
             cryptoCurrencySelectionService: cryptoSelectionService,
             initialActiveInput: .fiat

@@ -55,7 +55,7 @@ public struct StellarTransactionFee: TransactionFee, Decodable {
 
     public init(limits: TransactionFeeLimits, regular: Int, priority: Int) {
         self.limits = limits
-        self.regular = CryptoValue.stellar(minor: String(regular))!
-        self.priority = CryptoValue.stellar(minor: String(priority))!
+        self.regular = CryptoValue.stellar(minor: regular)
+        self.priority = CryptoValue.stellar(minor: priority)
     }
 }

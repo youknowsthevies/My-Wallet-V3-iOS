@@ -13,16 +13,28 @@ import RxSwift
 import ToolKit
 
 class StellarCryptoAccount: CryptoNonCustodialAccount {
-    private typealias LocalizedString = LocalizationConstants.Account
-
     let id: String
     let label: String
     let asset: CryptoCurrency
     let isDefault: Bool = true
 
     var balance: Single<MoneyValue> {
-        balanceFetching
-            .balanceMoney
+        horizonProxy
+            .accountResponse(for: id)
+            .map(\.totalBalance)
+            .moneyValue
+            .catchNonExistentAccount()
+    }
+
+    var actionableBalance: Single<MoneyValue> {
+        horizonProxy
+            .accountResponse(for: id)
+            .map(weak: self) { (self, account) -> MoneyValue in
+                let zero = CryptoValue.zero(currency: .stellar)
+                let value = try account.totalBalance - self.horizonProxy.minimumBalance(subentryCount: Int(account.subentryCount))
+                return try value < zero ? zero.moneyValue : value.moneyValue
+            }
+            .catchNonExistentAccount()
     }
     
     var pendingBalance: Single<MoneyValue> {
@@ -30,8 +42,15 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
             .pendingBalanceMoney
     }
 
-    var actions: AvailableActions {
-        [.viewActivity, .receive, .send, .swap]
+    var actions: Single<AvailableActions> {
+        isFunded
+            .map { isFunded -> AvailableActions in
+                var base: AvailableActions = [.viewActivity, .receive, .send]
+                if isFunded {
+                    base.insert(.swap)
+                }
+                return base
+            }
     }
 
     var receiveAddress: Single<ReceiveAddress> {
@@ -39,16 +58,19 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
     }
 
     private let balanceFetching: SingleAccountBalanceFetching
+    private let horizonProxy: HorizonProxyAPI
     private let exchangeService: PairExchangeServiceAPI
 
     init(id: String,
          label: String? = nil,
+         horizonProxy: HorizonProxyAPI = resolve(),
          balanceProviding: BalanceProviding = resolve(),
          exchangeProviding: ExchangeProviding = resolve()) {
         let asset = CryptoCurrency.stellar
         self.asset = asset
         self.id = id
         self.label = label ?? asset.defaultWalletName
+        self.horizonProxy = horizonProxy
         self.balanceFetching = balanceProviding[asset.currency].wallet
         self.exchangeService = exchangeProviding[asset]
     }
@@ -61,5 +83,18 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
             ) { (exchangeRate: $0, balance: $1) }
             .map { try MoneyValuePair(base: $0.balance, exchangeRate: $0.exchangeRate.moneyValue) }
             .map(\.quote)
+    }
+}
+
+extension PrimitiveSequence where Trait == SingleTrait, Element == MoneyValue {
+    fileprivate func catchNonExistentAccount() -> Single<MoneyValue> {
+        catchError { error -> Single<MoneyValue> in
+            switch error {
+            case is StellarAccountError:
+                return .just(CryptoValue.zero(currency: .stellar).moneyValue)
+            default:
+                throw error
+            }
+        }
     }
 }

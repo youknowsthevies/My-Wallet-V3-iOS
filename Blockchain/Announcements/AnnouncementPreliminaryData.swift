@@ -44,6 +44,8 @@ struct AnnouncementPreliminaryData {
     var hasIncompleteBuyFlow: Bool {
         simpleBuyEventCache[.hasShownBuyScreen] && isSimpleBuyAvailable
     }
+
+    let isSimpleBuyEligible: Bool
     
     let pendingOrderDetails: OrderDetails?
 
@@ -58,7 +60,8 @@ struct AnnouncementPreliminaryData {
          simpleBuyEventCache: EventCache = resolve(),
          authenticatorType: AuthenticatorType,
          pendingOrderDetails: OrderDetails?,
-         isSimpleBuyAvailable: Bool) {
+         isSimpleBuyAvailable: Bool,
+         isSimpleBuyEligible: Bool) {
         self.user = user
         self.tiers = tiers
         self.hasTrades = hasTrades
@@ -67,6 +70,7 @@ struct AnnouncementPreliminaryData {
         self.authenticatorType = authenticatorType
         self.pendingOrderDetails = pendingOrderDetails
         self.isSimpleBuyAvailable = isSimpleBuyAvailable
+        self.isSimpleBuyEligible = isSimpleBuyEligible
         country = countries.first { $0.code == user.address?.countryCode }
     }
 }

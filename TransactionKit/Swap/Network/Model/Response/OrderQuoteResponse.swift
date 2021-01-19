@@ -8,19 +8,19 @@
 
 import PlatformKit
 
-public struct OrderQuoteResponse: Decodable {
-    public let identifier: String
-    public let product: Product
-    public let pair: OrderPair
-    public let quote: OrderQuote
+struct OrderQuoteResponse: Decodable {
+    let identifier: String
+    let product: Product
+    let pair: OrderPair
+    let quote: OrderQuote
     
     /// `MoneyValue` in the `pair.destinationCurrencyType`
-    public let networkFee: MoneyValue
-    public let staticFee: MoneyValue
-    public let sampleDepositAddress: String
-    public let expiresAt: Date
-    public let createdAt: Date
-    public let updatedAt: Date
+    let networkFee: MoneyValue
+    let staticFee: MoneyValue
+    let sampleDepositAddress: String
+    let expiresAt: Date
+    let createdAt: Date
+    let updatedAt: Date
     
     enum CodingKeys: String, CodingKey {
         case identifier = "id"
@@ -35,7 +35,29 @@ public struct OrderQuoteResponse: Decodable {
         case quote
     }
     
-    public init(from decoder: Decoder) throws {
+    init(identifier: String,
+         product: Product = .brokerage,
+         pair: OrderPair,
+         quote: OrderQuote,
+         networkFee: MoneyValue,
+         staticFee: MoneyValue,
+         sampleDepositAddress: String,
+         expiresAt: Date,
+         createdAt: Date,
+         updatedAt: Date) {
+        self.identifier = identifier
+        self.product = product
+        self.pair = pair
+        self.quote = quote
+        self.networkFee = networkFee
+        self.staticFee = staticFee
+        self.sampleDepositAddress = sampleDepositAddress
+        self.expiresAt = expiresAt
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+    }
+    
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let createdAt = try values.decode(String.self, forKey: .createdAt)
         let expiresAt = try values.decode(String.self, forKey: .expiresAt)
@@ -59,9 +81,9 @@ public struct OrderQuoteResponse: Decodable {
         self.sampleDepositAddress = try values.decode(String.self, forKey: .sampleDepositAddress)
         let networkFeeValue = try values.decode(String.self, forKey: .networkFee)
         let staticFeeValue = try values.decode(String.self, forKey: .staticFee)
-        let zero = MoneyValue.zero(currency: pair.destinationCurrencyType)
-        networkFee = MoneyValue.create(minor: networkFeeValue, currency: pair.destinationCurrencyType) ?? zero
-        staticFee = MoneyValue.create(minor: staticFeeValue, currency: pair.destinationCurrencyType) ?? zero
+        let zeroDestination = MoneyValue.zero(currency: pair.destinationCurrencyType)
+        networkFee = MoneyValue.create(minor: networkFeeValue, currency: pair.destinationCurrencyType) ?? zeroDestination
+        staticFee = MoneyValue.create(minor: staticFeeValue, currency: pair.destinationCurrencyType) ?? zeroDestination
         quote = try values.decode(OrderQuote.self, forKey: .quote)
     }
 }

@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import BitcoinKit
+import BitcoinChainKit
 @testable import Blockchain
 import PlatformKit
 import PlatformUIKit

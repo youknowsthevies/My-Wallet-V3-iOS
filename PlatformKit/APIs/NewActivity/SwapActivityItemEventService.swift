@@ -33,9 +33,27 @@ public class SwapActivityItemEventService: SwapActivityItemEventServiceAPI {
         swapActivityEvents.asObservable()
     }
     
+    public var custodial: Observable<ActivityItemEventsLoadingState> {
+        _ = setup
+        return custodialRelay.asObservable()
+    }
+    
+    public var nonCustodial: Observable<ActivityItemEventsLoadingState> {
+        _ = setup
+        return onChainRelay.asObservable()
+    }
+    
     public var state: Observable<ActivityItemEventsLoadingState> {
         _ = setup
-        return stateRelay.asObservable()
+        return Observable.combineLatest(custodial, nonCustodial)
+            .map { values -> [ActivityItemEvent] in
+                let (a, b) = values
+                let custodial = a.value ?? []
+                let nonCustodial = b.value ?? []
+                return custodial + nonCustodial
+            }
+            .map { .loaded(next: $0) }
+            .catchErrorJustReturn(.loaded(next: []))
     }
     
     public let fetchTriggerRelay = PublishRelay<Void>()
@@ -44,6 +62,8 @@ public class SwapActivityItemEventService: SwapActivityItemEventServiceAPI {
     
     private let fetcher: SwapActivityItemEventFetcherAPI
     private let fiatCurrencyProvider: FiatCurrencySettingsServiceAPI
+    private let onChainRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
+    private let custodialRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
     private let stateRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
     private let disposeBag = DisposeBag()
     
@@ -54,7 +74,7 @@ public class SwapActivityItemEventService: SwapActivityItemEventServiceAPI {
         
         let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
         
-        Observable
+        let activityItems = Observable
             .combineLatest(
                 fiatCurrencyCode,
                 fetchTriggerRelay
@@ -66,10 +86,29 @@ public class SwapActivityItemEventService: SwapActivityItemEventServiceAPI {
                     .catchErrorJustReturn(.init(hasNextPage: false, items: []))
                     .map { $0.items }
             }
+        
+        let onChain: Observable<[ActivityItemEvent]> = activityItems
+            .map { items -> [SwapActivityItemEvent] in
+                items.filter(\.isNonCustodial)
+            }
             .map { items in items.map { .swap($0) } }
+        
+        let custodial: Observable<[ActivityItemEvent]> = activityItems
+            .map { items -> [SwapActivityItemEvent] in
+                items.filter(\.isCustodial)
+            }
+            .map { items in items.map { .swap($0) } }
+        
+        onChain
             .map { .loaded(next: $0) }
             .catchErrorJustReturn(.loaded(next: []))
-            .bindAndCatch(to: stateRelay)
+            .bindAndCatch(to: onChainRelay)
+            .disposed(by: disposeBag)
+        
+        custodial
+            .map { .loaded(next: $0) }
+            .catchErrorJustReturn(.loaded(next: []))
+            .bindAndCatch(to: custodialRelay)
             .disposed(by: disposeBag)
     }()
     

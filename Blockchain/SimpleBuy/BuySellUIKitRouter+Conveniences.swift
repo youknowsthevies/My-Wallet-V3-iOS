@@ -18,8 +18,7 @@ extension BuySellUIKit.Router {
         self.init(
             navigationRouter: NavigationRouter(),
             builder: builder,
-            kycRouter: resolve(),
-            exchangeProvider: DataProvider.default.exchange
+            kycRouter: resolve()
         )
     }
 }

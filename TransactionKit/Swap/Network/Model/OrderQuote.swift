@@ -15,6 +15,12 @@ public struct OrderQuote: Decodable {
         case priceTiers
     }
     
+    public init(pair: OrderPair,
+                priceTiers: [OrderPriceTier]) {
+        self.pair = pair
+        self.priceTiers = priceTiers
+    }
+    
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         priceTiers = try values.decode([OrderPriceTier].self, forKey: .priceTiers)

@@ -31,14 +31,40 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
             .moneyValue
     }
 
-    var actions: AvailableActions {
-        [.viewActivity, .receive, .send, .swap]
+    var actions: Single<AvailableActions> {
+        isFunded
+            .map { isFunded -> AvailableActions in
+                var base: AvailableActions = [.viewActivity, .receive, .send]
+                if isFunded {
+                    base.insert(.swap)
+                }
+                return base
+            }
     }
 
     var receiveAddress: Single<ReceiveAddress> {
-        let label = self.label
-        return bridge.receiveAddress(forXPub: id)
-            .map { BitcoinCashReceiveAddress(address: $0, label: label) }
+        let account = bridge
+            .wallets
+            .map(weak: self) { (self, wallets) in 
+                wallets.filter { $0.label == self.label }
+            }
+            .map { accounts -> BitcoinCashWalletAccount in
+                guard let account = accounts.first else {
+                    throw PlatformKitError.illegalStateException(message: "Expected a BitcoinCashWalletAccount")
+                }
+                return account
+            }
+        
+        return Single.zip(bridge.receiveAddress(forXPub: id), account)
+            .map(weak: self) { (self, values) -> ReceiveAddress in
+                let (address, account) = values
+                return BitcoinChainReceiveAddress<BitcoinCashToken>(
+                    address: address,
+                    label: self.label,
+                    onTxCompleted: self.onTxCompleted,
+                    index: Int32(account.index)
+                )
+            }
     }
 
     private let exchangeService: PairExchangeServiceAPI

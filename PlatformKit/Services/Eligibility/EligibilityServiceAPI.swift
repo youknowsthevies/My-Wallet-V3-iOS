@@ -12,6 +12,6 @@ import RxSwift
 public protocol EligibilityServiceAPI: AnyObject {
 
     /// Feature is enabled and EligibilityClientAPI returns eligible for current fiat currency.
-    var isEligible: Observable<Bool> { get }
-    func fetch() -> Observable<Bool>
+    var isEligible: Single<Bool> { get }
+    func fetch() -> Single<Bool>
 }

@@ -5,7 +5,6 @@
 //  Created by AlexM on 11/25/19.
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
-import RxSwift
 
 import RxSwift
 

@@ -40,7 +40,4 @@ extension LabeledButtonViewStyle {
             textColor: .negativePrice
         )
     }
-    public static var currencyTooHigh: LabeledButtonViewStyle {
-        .currencyOutOfBounds
-    }
 }

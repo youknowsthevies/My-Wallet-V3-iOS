@@ -9,7 +9,7 @@
 import RxCocoa
 
 /// An interaction later for a label view.
-public protocol LabeledButtonViewModelAPI: class {
+public protocol LabeledButtonViewModelAPI: AnyObject {
     
     /// Associate an element with the content
     associatedtype Element

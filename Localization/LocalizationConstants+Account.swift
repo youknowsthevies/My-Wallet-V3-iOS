@@ -6,6 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+// swiftlint:disable all
+
 import Foundation
 
 extension LocalizationConstants {
@@ -28,6 +30,11 @@ extension LocalizationConstants {
         public static let lowFees = NSLocalizedString(
             "Low Fees",
             comment: "Low Fees"
+        )
+
+        public static let faster = NSLocalizedString(
+            "Faster",
+            comment: "Faster"
         )
     }
 

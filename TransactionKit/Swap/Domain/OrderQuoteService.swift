@@ -9,8 +9,13 @@
 import DIKit
 import PlatformKit
 import RxSwift
+import ToolKit
 
-public protocol OrderQuoteServiceAPI {
+protocol OrderQuoteServiceAPI: AnyObject {
+    
+    // TODO: Domain Model
+    var latestQuote: Single<OrderQuoteResponse> { get }
+
     func fetchQuote(direction: OrderDirection,
                     sourceCurrencyType: CurrencyType,
                     destinationCurrencyType: CurrencyType) -> Single<OrderQuoteResponse>
@@ -18,10 +23,10 @@ public protocol OrderQuoteServiceAPI {
 
 final class OrderQuoteService: OrderQuoteServiceAPI {
     
-    // MARK: - Service Error
+    // MARK: - Public Properties
     
-    enum ServiceError: Error {
-        case mappingError
+    var latestQuote: Single<OrderQuoteResponse> {
+        unimplemented()
     }
     
     // MARK: - Properties
@@ -36,9 +41,9 @@ final class OrderQuoteService: OrderQuoteServiceAPI {
     
     // MARK: - OrderQuoteServiceAPI
     
-    public func fetchQuote(direction: OrderDirection,
-                           sourceCurrencyType: CurrencyType,
-                           destinationCurrencyType: CurrencyType) -> Single<OrderQuoteResponse> {
+    func fetchQuote(direction: OrderDirection,
+                    sourceCurrencyType: CurrencyType,
+                    destinationCurrencyType: CurrencyType) -> Single<OrderQuoteResponse> {
         let request = OrderQuoteRequest(
             product: .brokerage,
             direction: direction,

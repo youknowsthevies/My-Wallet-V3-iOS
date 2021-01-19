@@ -15,6 +15,10 @@ class BitcoinWalletBridgeMock: BitcoinWalletBridgeAPI {
     enum MockError: Error {
         case error
     }
+    
+    func walletIndex(for receiveAddress: String) -> Single<Int32> {
+        .never()
+    }
 
     var receiveAddressValue: Single<String> = .error(MockError.error)
     func receiveAddress(forXPub xpub: String) -> Single<String> {

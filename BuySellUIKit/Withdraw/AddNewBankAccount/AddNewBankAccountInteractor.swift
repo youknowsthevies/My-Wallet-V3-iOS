@@ -15,7 +15,7 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-typealias AddNewBankAccountDetailsInteractionState = ValueCalculationState<PaymentAccount>
+typealias AddNewBankAccountDetailsInteractionState = ValueCalculationState<BuySellKit.PaymentAccount>
 
 enum AddNewBankAccountAction {
     case details(AddNewBankAccountDetailsInteractionState)

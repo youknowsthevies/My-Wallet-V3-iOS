@@ -19,6 +19,10 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     let label: String
     let asset: CryptoCurrency
     let isDefault: Bool = true
+    
+    var actionableBalance: Single<MoneyValue> {
+        balance
+    }
 
     var balance: Single<MoneyValue> {
         balanceFetching
@@ -30,12 +34,19 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
             .pendingBalanceMoney
     }
     
-    var actions: AvailableActions {
-        [.viewActivity, .receive, .send, .swap]
+    var actions: Single<AvailableActions> {
+        isFunded
+            .map { isFunded -> AvailableActions in
+                var base: AvailableActions = [.viewActivity, .receive, .send]
+                if isFunded {
+                    base.insert(.swap)
+                }
+                return base
+            }
     }
 
     var receiveAddress: Single<ReceiveAddress> {
-        .just(EthereumReceiveAddress(address: id, label: label))
+        .just(EthereumReceiveAddress(address: id, label: label, onTxCompleted: onTxCompleted))
     }
 
     private let balanceFetching: SingleAccountBalanceFetching

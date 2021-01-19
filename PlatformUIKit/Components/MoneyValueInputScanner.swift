@@ -16,14 +16,15 @@ import RxSwift
 public final class MoneyValueInputScanner {
     
     // MARK: - Types
-    
+
+    /// Structure describing the maximum amount of digits in a decimal number integral and fractional parts.
     public struct MaxDigits {
-        let decimal: Int
-        let fraction: Int
+        let integral: Int
+        let fractional: Int
         
-        public init(decimal: Int, fraction: Int) {
-            self.decimal = decimal
-            self.fraction = fraction
+        init(integral: Int, fractional: Int) {
+            self.integral = integral
+            self.fractional = fractional
         }
     }
     
@@ -333,15 +334,15 @@ public final class MoneyValueInputScanner {
         /// by a newly added padding
         let components = newValue.components(separatedBy: Constant.decimalSeparator)
         
-        // Reached maximum number of digits before decimal separator
-        guard components[0].count <= maxDigitsRelay.value.decimal else {
+        // Reached maximum number of digits before decimal separator [integral part]
+        guard components[0].count <= maxDigitsRelay.value.integral else {
             return Input(string: lastValue)
         }
         
-        // Reached maximum number of digits after the decimal separator
+        // Reached maximum number of digits after the decimal separator [fractional part]
         if components.count == 2 {
             let rhs = components[1]
-            if rhs.count != maxDigitsRelay.value.fraction {
+            if rhs.count != maxDigitsRelay.value.fractional {
                 return Input(string: lastValue)
             }
         }
@@ -356,7 +357,7 @@ public final class MoneyValueInputScanner {
         }
         
         let rhs = components[1]
-        let padCount = maxDigitsRelay.value.fraction - rhs.count
+        let padCount = maxDigitsRelay.value.fractional - rhs.count
         guard padCount > 0 else {
             return
         }
@@ -381,9 +382,9 @@ public final class MoneyValueInputScanner {
         if components.isEmpty {
             input = .placeholderZero
         } else {
-            var string = String(components[0].prefix(maxDigitsRelay.value.decimal))
+            var string = String(components[0].prefix(maxDigitsRelay.value.integral))
             if components.count > 1 {
-                string += "\(Constant.decimalSeparator)\(components[1].prefix(maxDigitsRelay.value.fraction))"
+                string += "\(Constant.decimalSeparator)\(components[1].prefix(maxDigitsRelay.value.fractional))"
             }
             input = .init(string: string)
         }

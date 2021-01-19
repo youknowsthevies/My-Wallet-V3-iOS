@@ -17,16 +17,16 @@ public final class ButtonView: UIView {
     
     // MARK: - UI Properties
     
-    @IBOutlet private var button: UIButton!
-    @IBOutlet private var imageView: UIImageView!
-    @IBOutlet private var label: UILabel!
+    private let button = UIButton(type: .system)
+    private let imageView = UIImageView(image: nil)
+    private let label = UILabel(frame: .zero)
     
     // Constraints for scenario with title only, and no image
-    @IBOutlet private var labelToImageViewLeadingConstraint: NSLayoutConstraint!
-    @IBOutlet private var labelToSuperviewLeadingConstraint: NSLayoutConstraint!
-    @IBOutlet private var labelToSuperviewBottomConstraint: NSLayoutConstraint!
-    @IBOutlet private var labelToSuperviewTopConstraint: NSLayoutConstraint!
-    @IBOutlet private var labelToSuperviewTrailingConstraint: NSLayoutConstraint!
+    private var labelToImageViewLeadingConstraint: NSLayoutConstraint!
+    private var labelToSuperviewLeadingConstraint: NSLayoutConstraint!
+    private var labelToSuperviewBottomConstraint: NSLayoutConstraint!
+    private var labelToSuperviewTopConstraint: NSLayoutConstraint!
+    private var labelToSuperviewTrailingConstraint: NSLayoutConstraint!
 
     // MARK: - Rx
     
@@ -39,14 +39,20 @@ public final class ButtonView: UIView {
             disposeBag = DisposeBag()
         }
         didSet {
-            
+            guard let viewModel = viewModel else {
+                button.isEnabled = false
+                label.text = nil
+                imageView.image = nil
+                return
+            }
+
             // Set non-reactive properties
             layer.cornerRadius = viewModel.cornerRadius
             label.font = viewModel.font
-            
+
             // Set accessibility
             accessibility = viewModel.accessibility
-            
+
             // Bind background color
             viewModel.backgroundColor
                 .drive(rx.backgroundColor)
@@ -125,9 +131,9 @@ public final class ButtonView: UIView {
 
     private func updateContentInset(to contentInset: UIEdgeInsets) {
         labelToSuperviewLeadingConstraint.constant = contentInset.left
-        labelToSuperviewBottomConstraint.constant = contentInset.bottom
+        labelToSuperviewBottomConstraint.constant = -contentInset.bottom
         labelToSuperviewTopConstraint.constant = contentInset.top
-        labelToSuperviewTrailingConstraint.constant = contentInset.right
+        labelToSuperviewTrailingConstraint.constant = -contentInset.right
         layoutIfNeeded()
     }
     
@@ -144,18 +150,48 @@ public final class ButtonView: UIView {
     }
     
     private func setup() {
-        fromNib()
         clipsToBounds = true
         layer.borderWidth = 1
+
+        addSubview(imageView)
+        addSubview(button)
+        addSubview(label)
+
+        // Button
+        button.layoutToSuperview(.leading, .trailing, .top, .bottom)
+        button.addTargetForTouchUp(self, selector: #selector(touchUp))
+        button.addTargetForTouchDown(self, selector: #selector(touchDown))
+
+        // ImageView
+        imageView.contentMode = .left
+        imageView.layoutToSuperview(.top, .bottom)
+        imageView.layoutToSuperview(.leading, offset: 16)
+        imageView.layout(edge: .trailing, to: .centerX, of: self, relation: .equal, offset: -10, priority: .penultimateHigh)
+
+        // Label
+        label.numberOfLines = 0
+        labelToSuperviewLeadingConstraint = label.layoutToSuperview(.leading, priority: .penultimateHigh)
+        labelToSuperviewTrailingConstraint = label.layoutToSuperview(.trailing)
+        labelToSuperviewTopConstraint = label.layoutToSuperview(.top)
+        labelToSuperviewBottomConstraint = label.layoutToSuperview(.bottom)
+        labelToImageViewLeadingConstraint = label.layout(edge: .leading, to: .trailing, of: imageView, priority: .penultimateLow)
     }
     
     // MARK: - User Interactions
     
-    @IBAction private func touchUp() {
+    @objc private func touchUp() {
         alpha = 1
     }
     
-    @IBAction private func touchDown() {
+    @objc private func touchDown() {
         alpha = 0.85
+    }
+}
+
+public extension Reactive where Base: ButtonView {
+    var viewModel: Binder<ButtonViewModel> {
+        Binder(base) { buttonView, viewModel in
+            buttonView.viewModel = viewModel
+        }
     }
 }

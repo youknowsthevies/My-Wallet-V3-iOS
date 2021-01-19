@@ -77,7 +77,7 @@ final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
     init(account: SingleAccount,
          assetAction: AssetAction,
          interactor: AssetBalanceViewInteracting,
-         separatorVisibility: Visibility = .hidden) {
+         separatorVisibility: Visibility = .visible) {
         self.account = account
         self.separatorVisibilityRelay = BehaviorRelay<Visibility>(value: separatorVisibility)
         titleAccessibilitySuffix = "\(AccessibilityId.titleLabel)"

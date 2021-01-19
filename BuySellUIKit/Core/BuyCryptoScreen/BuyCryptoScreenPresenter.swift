@@ -30,11 +30,13 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
          stateService: CheckoutServiceAPI,
          interactor: BuyCryptoScreenInteractor,
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+        
         self.interactor = interactor
         self.stateService = stateService
         self.router = router
         super.init(
             analyticsRecorder: analyticsRecorder,
+            inputTypeToggleVisibility: .hidden,
             backwardsNavigation: {
                 stateService.previousRelay.accept(())
             },
@@ -199,9 +201,17 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
         }
         return Observable
             .combineLatest(
-                interactor.exchangeProvider[cryptoCurrency].fiatPrice,
+                interactor.fiatCurrencyService.fiatCurrencyObservable,
                 Observable.just(cryptoCurrency)
             )
+            .flatMap(weak: self) { (self, currencies) -> Observable<(FiatValue, CryptoCurrency)> in
+                let fiat = currencies.0
+                let crypto = currencies.1
+                return self.interactor.priceService.price(for: crypto, in: fiat)
+                    .compactMap(\.moneyValue.fiatValue)
+                    .map { (fiat: $0, crypto: crypto) }
+                    .asObservable()
+            }
             .map { payload -> String in
                 let tuple: (fiat: FiatValue, crypto: CryptoCurrency) = payload
                 return "1 \(tuple.crypto.displayCode) = \(tuple.fiat.displayString) \(tuple.fiat.currencyCode)"

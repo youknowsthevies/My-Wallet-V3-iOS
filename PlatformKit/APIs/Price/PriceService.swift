@@ -13,6 +13,7 @@ import RxSwift
 import ToolKit
 
 public protocol PriceServiceAPI {
+    func moneyValuePair(base fiatValue: FiatValue, cryptoCurrency: CryptoCurrency, usesFiatAsBase: Bool) -> Single<MoneyValuePair>
     func price(for baseCurrency: Currency, in quoteCurrency: Currency) -> Single<PriceQuoteAtTime>
     func price(for baseCurrency: Currency, in quoteCurrency: Currency, at date: Date?) -> Single<PriceQuoteAtTime>
     func priceSeries(within window: PriceWindow, of baseCurrency: CryptoCurrency, in quoteCurrency: FiatCurrency) -> Single<HistoricalPriceSeries>
@@ -30,6 +31,16 @@ public class PriceService: PriceServiceAPI {
 
     public init(client: PriceClientAPI) {
         self.client = client
+    }
+    
+    public func moneyValuePair(base fiatValue: FiatValue, cryptoCurrency: CryptoCurrency, usesFiatAsBase: Bool) -> Single<MoneyValuePair> {
+        price(for: cryptoCurrency, in: fiatValue.currency)
+            .map(\.moneyValue)
+            .map { $0.fiatValue ?? .zero(currency: fiatValue.currencyType) }
+            .map { MoneyValuePair(fiat: fiatValue,
+                                  priceInFiat: $0,
+                                  cryptoCurrency: cryptoCurrency,
+                                  usesFiatAsBase: usesFiatAsBase) }
     }
     
     public func price(for baseCurrency: Currency,

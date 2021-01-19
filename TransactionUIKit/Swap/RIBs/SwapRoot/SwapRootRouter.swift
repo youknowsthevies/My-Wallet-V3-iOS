@@ -6,16 +6,25 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
+import KYCKit
+import KYCUIKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
 
-public protocol SwapRootRouting: ViewableRouting {
+struct SwapTrendingPair {
+    let sourceAccount: CryptoAccount
+    let destinationAccount: CryptoAccount
+    let enabled: Bool
+}
+
+protocol SwapRootRouting: ViewableRouting {
     func routeToSwapBootstrap()
-    func routeToNewSwap()
-    func routeToComingSoon()
+    func routeToSwapLanding()
+    func routeToSwapTiers(model: KYCTiersPageModel, present: Bool)
     func routeToKYC()
-    func routeToSwap(with pair: (CurrencyType, CurrencyType)?)
+    func routeToSwap(with pair: SwapTrendingPair?)
 }
 
 final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewControllable>, SwapRootRouting {
@@ -30,79 +39,48 @@ final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewContr
         viewController.replaceRoot(viewController: viewControllable)
     }
 
-    func routeToNewSwap() {
+    func routeToSwapLanding() {
         if let child = bootstrap {
             detachChild(child)
             bootstrap = nil
         }
-        let router = NewSwapBuilder().build(withListener: interactor)
+        let router = SwapLandingBuilder().build(withListener: interactor)
         let viewControllable = router.viewControllable
         attachChild(router)
         viewController.replaceRoot(viewController: viewControllable)
     }
 
-    func routeToComingSoon() {
-        // TODO: Route to Coming Soon
-        routeToNewSwap()
+    func routeToSwapTiers(model: KYCTiersPageModel, present: Bool) {
+        let controller = KYCTiersViewController(pageModel: model)
+        if present {
+            let nav = UINavigationController(rootViewController: controller)
+            viewController.present(viewController: nav)
+        } else {
+            viewController.replaceRoot(viewController: controller)
+        }
     }
 
     func routeToKYC() {
-        // TODO: Route to KYC
-        routeToNewSwap()
+        let presenter = SwapKYCPresenter()
+        let vc = DetailsScreenViewController(presenter: presenter)
+        viewController.replaceRoot(viewController: vc)
     }
-
-    func routeToSwap(with pair: (CurrencyType, CurrencyType)?) {
-        if let pair = pair {
-            routeToPriceInput(with: pair)
-        } else {
-            routeToSourceAccountPicker()
-        }
-    }
-
-    private func routeToSourceAccountPicker() {
-        let header = AccountPickerSimpleHeaderModel(
-            title: "Swap",
-            subtitle: "Which wallet do you want to Swap from?"
-        )
-        let builder = AccountPickerBuilder(
-            singleAccountsOnly: true,
+    
+    func routeToSwap(with pair: SwapTrendingPair?) {
+        let builder = TransactionFlowBuilder()
+        let router = builder.build(
+            withListener: interactor,
             action: .swap,
-            navigationModel: ScreenNavigationModel.AccountPicker.navigation,
-            headerModel: .simple(header)
+            sourceAccount: pair?.sourceAccount,
+            target: pair?.destinationAccount
         )
-        let router = builder.build { [weak self] account in
-            self?.routeToDestinationAccountPicker(source: account)
+        let viewControllable = router.viewControllable
+        children.forEach { child in
+            if child is TransactionFlowRouting {
+                detachChild(child)
+            }
         }
-        let viewControllable = router.viewControllable
         attachChild(router)
-        viewController.push(viewController: viewControllable)
-    }
-
-    private func routeToDestinationAccountPicker(source sourceAccount: BlockchainAccount) {
-        guard let sourceAccount = sourceAccount as? CryptoAccount else { return }
-        let header = AccountPickerSimpleHeaderModel(
-            title: "Receive",
-            subtitle: "Which crypto do you want to Swap for?"
-        )
-        let builder = AccountPickerBuilder(
-            singleAccountsOnly: true,
-            action: .swap,
-            sourceAccount: sourceAccount,
-            navigationModel: ScreenNavigationModel.AccountPicker.navigation,
-            headerModel: .simple(header)
-        )
-        let router = builder.build { [weak self] account in
-            // TODO: Navigate to price input
-        }
-        let viewControllable = router.viewControllable
-        attachChild(router)
-        viewController.push(viewController: viewControllable)
-    }
-
-    private func routeToPriceInput(with pair: (CurrencyType, CurrencyType)) {
-        let router = AmountInputBuilder(pair: pair).build(withListener: interactor)
-        let viewControllable = router.viewControllable
-        attachChild(router)
-        viewController.push(viewController: viewControllable)
+        viewController.present(viewController: viewControllable)
     }
 }

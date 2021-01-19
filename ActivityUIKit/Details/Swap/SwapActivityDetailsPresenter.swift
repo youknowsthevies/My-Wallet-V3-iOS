@@ -52,6 +52,7 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
     private let amountFromPresenter: LineItemCellPresenting
     private let amountForPresenter: LineItemCellPresenting
     private let toPresenter: LineItemCellPresenting
+    private let fromPresenter: LineItemCellPresenting
     private let orderIDPresenter: LineItemCellPresenting
 
     // MARK: Private Properties (Badge Model)
@@ -82,10 +83,23 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
-        toPresenter = TransactionalLineItem.to(event.kind.withdrawalAddress).defaultCopyablePresenter(
-            analyticsRecorder: analyticsRecorder,
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
+        
+        switch event.isNonCustodial {
+        case true:
+            toPresenter = TransactionalLineItem.to(event.kind.withdrawalAddress).defaultCopyablePresenter(
+                analyticsRecorder: analyticsRecorder,
+                accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+            )
+            fromPresenter = TransactionalLineItem.from(event.depositTxHash ?? "")
+                .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
+        case false:
+            let source = event.pair.inputCurrencyType.displayCode
+            let destination = event.pair.outputCurrencyType.displayCode
+            toPresenter = TransactionalLineItem.from("\(destination) \(LocalizedString.wallet)")
+                .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
+            fromPresenter = TransactionalLineItem.to("\(source) \(LocalizedString.wallet)")
+                .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
+        }
 
         titleViewRelay
             .accept(.text(value: LocalizedString.Title.swap))
@@ -106,8 +120,8 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
         badgesModel
             .badgesRelay
             .accept([statusBadge])
-
-        cells = [
+        
+        var values: [DetailsScreen.CellType] = [
             .label(cryptoAmountLabelPresenter),
             .badges(badgesModel),
             .separator,
@@ -120,9 +134,24 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .lineItem(amountForPresenter),
             .separator,
             .lineItem(valuePresenter),
-            .separator,
-            .lineItem(toPresenter),
             .separator
         ]
+        
+        switch event.isCustodial {
+        case true:
+            values.append(contentsOf: [
+                 .lineItem(fromPresenter),
+                 .separator,
+                 .lineItem(toPresenter),
+                 .separator]
+            )
+        case false:
+            values.append(contentsOf: [
+                .lineItem(toPresenter),
+                .separator
+            ])
+        }
+
+        cells = values
     }
 }

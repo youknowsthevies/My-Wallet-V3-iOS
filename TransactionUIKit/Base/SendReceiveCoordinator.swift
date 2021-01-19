@@ -15,7 +15,7 @@ public class SendReceiveCoordinator {
 
     // MARK: Public Properties
 
-    public let builder: Builder
+    public let builder: SendReceiveBuilder
 
     // MARK: Private Properties
 
@@ -31,7 +31,10 @@ public class SendReceiveCoordinator {
          receiveSelectionService: AccountSelectionServiceAPI = AccountSelectionService()) {
         self.sendRouter = sendRouter
         self.receiveRouter = receiveRouter
-        builder = Builder(sendSelectionService: sendSelectionService, receiveSelectionService: receiveSelectionService)
+        builder = SendReceiveBuilder(
+            sendSelectionService: sendSelectionService,
+            receiveSelectionService: receiveSelectionService
+        )
 
         receiveSelectionService
             .selectedData

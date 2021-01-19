@@ -1,0 +1,230 @@
+//
+//  TransactionState.swift
+//  TransactionUIKit
+//
+//  Created by Paulo on 13/10/2020.
+//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+import PlatformKit
+import ToolKit
+import TransactionKit
+
+struct TransactionState: Equatable {
+
+    var action: AssetAction = .send
+    var step: TransactionStep = .initial {
+        didSet {
+            isGoingBack = false
+        }
+    }
+    var isGoingBack: Bool = false
+    var source: CryptoAccount?
+    var destination: TransactionTarget?
+    var passwordRequired: Bool = false
+    var allowFiatInput: Bool = false
+    var secondPassword: String = ""
+    var nextEnabled: Bool = false
+    var errorState: TransactionErrorState = .none
+    var pendingTransaction: PendingTransaction?
+    var executionStatus: TransactionExecutionStatus = .notStarted
+    var stepsBackStack: [TransactionStep] = []
+    var availableTargets: [TransactionTarget] = []
+    var availableSources: [CryptoAccount] = []
+    var sourceDestinationPair: MoneyValuePair?
+    var sourceToFiatPair: MoneyValuePair?
+    var destinationToFiatPair: MoneyValuePair?
+
+    static func == (lhs: TransactionState, rhs: TransactionState) -> Bool {
+        // TODO: Expand
+        lhs.action == rhs.action
+            && lhs.step == rhs.step
+            && lhs.source?.id == rhs.source?.id
+            && lhs.destination?.label == rhs.destination?.label // TODO: Fix
+            && lhs.passwordRequired == rhs.passwordRequired
+            && lhs.secondPassword == rhs.secondPassword
+            && lhs.nextEnabled == rhs.nextEnabled
+            && lhs.errorState == rhs.errorState
+            && lhs.pendingTransaction == rhs.pendingTransaction
+            && lhs.executionStatus == rhs.executionStatus
+            && lhs.sourceDestinationPair == rhs.sourceDestinationPair
+            && lhs.sourceToFiatPair == rhs.sourceToFiatPair
+            && lhs.destinationToFiatPair == rhs.destinationToFiatPair
+            && lhs.stepsBackStack == rhs.stepsBackStack
+            && lhs.allowFiatInput == rhs.allowFiatInput
+        // && lhs.availableTargets == rhs.availableTargets
+    }
+
+    /// The source account `CryptoCurrency`.
+    var asset: CryptoCurrency {
+        source?.asset ?? .bitcoin // TODO: Better default required
+    }
+
+    /// The amount the user is swapping from.
+    var amount: MoneyValue {
+        pendingTransaction?.amount ?? .zero(currency: asset) // TODO: Better default required
+    }
+    
+    var minSpendable: MoneyValue {
+        pendingTransaction?.minimumLimit ?? .zero(currency: asset)
+    }
+    
+    /// The maximum amount the user can spend. We compare the amount entered to the
+    /// `maxLimit` as `CryptoValues` and return whichever is smaller.
+    var maxSpendable: MoneyValue {
+        pendingTransaction?.maxSpendable ?? .zero(currency: asset)
+    }
+
+    /// The balance in `MoneyValue` based on the `PendingTransaction`
+    var availableBalance: MoneyValue {
+        pendingTransaction?.available ?? .zero(currency: asset)
+    }
+
+    func moneyValueFromSource() throws -> MoneyValue {
+        guard let source = source?.currencyType else {
+            throw TransactionUIKitError.emptySourceAccount
+        }
+        guard let rate = sourceToFiatPair else {
+            return .zero(currency: source)
+        }
+        guard let currencyType = rate.base.cryptoValue?.currencyType else {
+            throw TransactionUIKitError.unexpectedMoneyValueType(rate.base)
+        }
+        guard let quote = rate.quote.fiatValue else {
+            throw TransactionUIKitError.unexpectedMoneyValueType(rate.quote)
+        }
+        switch (amount.cryptoValue, amount.fiatValue) {
+        case (.some(let amount), .none):
+            /// Just show the `CryptoValue` that the user entered
+            /// as this is the `source` currency.
+            return .init(cryptoValue: amount)
+        case (.none, .some(let amount)):
+            /// Convert the `FiatValue` to a `CryptoValue` given the
+            /// `quote` from the `sourceToFiatPair` exchange rate.
+            return amount
+                .convertToCryptoValue(
+                    exchangeRate: quote,
+                    cryptoCurrency: currencyType
+                )
+                .moneyValue
+        default:
+            break
+        }
+        return .zero(currency: currencyType)
+    }
+    
+    func moneyValueFromDestination() throws -> MoneyValue {
+        guard let destination = destination as? SingleAccount else {
+            throw TransactionUIKitError.unexpectedDestinationAccountType
+        }
+        guard let exchange = sourceDestinationPair else {
+            return .zero(currency: destination.currencyType)
+        }
+        guard case let .crypto(currency) = exchange.quote.currencyType else {
+            throw TransactionUIKitError.unexpectedCurrencyType(exchange.quote.currencyType)
+        }
+        guard let sourceQuote = sourceToFiatPair?.quote.fiatValue else {
+            throw TransactionUIKitError.emptySourceExchangeRate
+        }
+        guard let destinationQuote = destinationToFiatPair?.quote.fiatValue else {
+            throw TransactionUIKitError.emptyDestinationExchangeRate
+        }
+        
+        switch (amount.cryptoValue,
+                amount.fiatValue,
+                exchange.quote.cryptoValue) {
+        case (.none, .some(let fiat), .some(let cryptoPrice)):
+            /// Conver the `fiatValue` amount entered into
+            /// a `CryptoValue`
+            return fiat
+                .convertToCryptoValue(
+                    exchangeRate: destinationQuote,
+                    cryptoCurrency: cryptoPrice.currencyType
+                )
+                .moneyValue
+        case (.some(let crypto), .none, _):
+            /// Convert the `cryptoValue` input into a `fiatValue` type.
+            let fiat = crypto.convertToFiatValue(exchangeRate: sourceQuote)
+            /// Convert the `fiatValue` input into a `cryptoValue` type
+            /// given the `quote` of the `destinationCurrencyType`.
+            return fiat
+                .convertToCryptoValue(
+                    exchangeRate: destinationQuote,
+                    cryptoCurrency: currency
+                )
+                .moneyValue
+        default:
+            break
+        }
+        return .zero(currency: currency)
+    }
+
+    /// Converts an FiatValue `available` into CryptoValue if necessary.
+    private func availableToAmountCurrency(available: MoneyValue, amount: MoneyValue) throws -> MoneyValue {
+        guard amount.isFiat else {
+            return available
+        }
+        guard let rate = sourceToFiatPair else {
+            return .zero(currency: amount.currency)
+        }
+        return try available.convert(using: rate.quote)
+    }
+}
+
+enum TransactionStep: Equatable {
+    case initial
+    case enterPassword
+    case selectSource
+    case enterAddress
+    case selectTarget
+    case enterAmount
+    case confirmDetail
+    case inProgress
+    case closed
+
+    var addToBackStack: Bool {
+        switch self {
+        case .selectSource,
+             .selectTarget,
+             .enterAddress,
+             .enterAmount:
+            return true
+        case .closed,
+             .confirmDetail,
+             .enterPassword,
+             .inProgress,
+             .initial:
+            return false
+        }
+    }
+}
+
+enum TransactionErrorState: Equatable {
+    case none
+    case addressIsContract
+    case belowMinimumLimit
+    case insufficientFunds
+    case insufficientGas
+    case insufficientFundsForFees
+    case invalidAddress
+    case invalidAmount
+    case invalidPassword
+    case optionInvalid
+    case overGoldTierLimit
+    case overMaximumLimit
+    case overSilverTierLimit
+    case pendingOrdersLimitReached
+    case transactionInFlight
+    case unknownError
+}
+
+enum TransactionExecutionStatus {
+    case notStarted
+    case inProgress
+    case error
+    case completed
+    
+    var isComplete: Bool {
+        self == .completed
+    }
+}

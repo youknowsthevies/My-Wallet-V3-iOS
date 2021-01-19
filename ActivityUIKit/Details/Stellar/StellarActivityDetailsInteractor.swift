@@ -23,7 +23,7 @@ final class StellarActivityDetailsInteractor {
     // MARK: - Init
 
     init(fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
-         priceService: PriceServiceAPI = PriceService(),
+         priceService: PriceServiceAPI = resolve(),
          detailsService: AnyActivityItemEventDetailsFetcher<StellarActivityItemEventDetails> = resolve()) {
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService

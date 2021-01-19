@@ -15,6 +15,7 @@ extension DependencyContainer {
     // MARK: - PlatformKit Module
 
     public static var platformKit = module {
+
         // MARK: - BalanceProviding
 
         factory { () -> BalanceProviding in
@@ -34,14 +35,7 @@ extension DependencyContainer {
         factory { SwapClient() as SwapClientAPI }
         
         factory { GeneralInformationClient() as GeneralInformationClientAPI }
-        
-        factory { CustodialClient() as CustodialClientAPI }
-        
-        factory { () -> CustodyWithdrawalClientAPI in
-            let client: CustodialClientAPI = DIKit.resolve()
-            return client as CustodyWithdrawalClientAPI
-        }
-        
+
         factory { PriceClient() as PriceClientAPI }
         
         factory { UpdateWalletInformationClient() as UpdateWalletInformationClientAPI }
@@ -53,7 +47,17 @@ extension DependencyContainer {
         factory { UserCreationClient() as UserCreationClientAPI }
         
         factory { NabuAuthenticationClient() as NabuAuthenticationClientAPI }
-        
+
+        // MARK: CustodialClient
+
+        factory { CustodialClient() as CustodyWithdrawalClientAPI }
+
+        factory { CustodialClient() as CustodialPaymentAccountClientAPI }
+
+        factory { CustodialClient() as CustodialPendingDepositClientAPI }
+
+        factory { CustodialClient() as TradingBalanceClientAPI }
+
         // MARK: - Authentication
         
         single { NabuTokenStore() }
@@ -131,6 +135,10 @@ extension DependencyContainer {
             WalletService()
         }
 
+        factory { CustodialPendingDepositService() as CustodialPendingDepositServiceAPI }
+
+        factory { CustodialAddressService() as CustodialAddressServiceAPI }
+        
         factory { () -> MaintenanceServicing in
             let service: WalletOptionsAPI = DIKit.resolve()
             return service
@@ -143,6 +151,10 @@ extension DependencyContainer {
         factory { WalletCryptoService() as WalletCryptoServiceAPI }
 
         factory { TradingBalanceService() as TradingBalanceServiceAPI }
+
+        factory { PriceService() as PriceServiceAPI }
+        
+        factory { CryptoReceiveAddressFactoryService() }
 
         // MARK: - Settings
 

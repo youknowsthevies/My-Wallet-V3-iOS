@@ -38,7 +38,6 @@ public final class Router: RouterAPI {
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private let settingsService: FiatCurrencySettingsServiceAPI
     private let cryptoSelectionService: CryptoCurrencySelectionServiceAPI
-    private let exchangeProvider: ExchangeProviding
     private let navigationRouter: NavigationRouterAPI
     private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     
@@ -65,13 +64,11 @@ public final class Router: RouterAPI {
                 supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
                 internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
                 builder: Buildable,
-                kycRouter: KYCRouterAPI,
-                exchangeProvider: ExchangeProviding) {
+                kycRouter: KYCRouterAPI) {
         self.navigationRouter = navigationRouter
         self.supportedPairsInteractor = supportedPairsInteractor
         self.settingsService = settingsService
         self.stateService = builder.stateService
-        self.exchangeProvider = exchangeProvider
         self.kycRouter = kycRouter
         self.builder = builder
         self.internalFeatureFlagService = internalFeatureFlagService
@@ -560,7 +557,6 @@ public final class Router: RouterAPI {
     /// Shows buy-crypto screen using a specified presentation type
     private func showBuyCryptoScreen() {
         let interactor = BuyCryptoScreenInteractor(
-            exchangeProvider: exchangeProvider,
             paymentMethodTypesService: paymentMethodTypesService,
             cryptoCurrencySelectionService: cryptoSelectionService
         )

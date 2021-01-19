@@ -15,11 +15,11 @@ public protocol StellarWalletAccountRepositoryAPI {
 
     func initializeMetadataMaybe() -> Maybe<StellarWalletAccount>
     func loadKeyPair() -> Maybe<StellarKeyPair>
+    func loadKeyPair(with secondPassword: String?) -> Single<StellarKeyPair>
 }
 
-public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletAccountRepositoryAPI, WalletAccountInitializer, KeyPairProviderAPI {
+public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletAccountRepositoryAPI, WalletAccountInitializer {
     public typealias Account = StellarWalletAccount
-    public typealias Pair = StellarKeyPair
     public typealias WalletAccount = StellarWalletAccount
 
     private let bridge: StellarWalletBridgeAPI
@@ -46,11 +46,22 @@ public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, 
     func accounts() -> [WalletAccount] {
         bridge.stellarWallets()
     }
+
+    public func loadKeyPair(with secondPassword: String?) -> Single<StellarKeyPair> {
+        mnemonicAccessAPI
+            .mnemonic(with: secondPassword)
+            .map { mnemonic in
+                StellarKeyDerivationInput(mnemonic: mnemonic)
+            }
+            .flatMap(weak: self) { (self, input) -> Single<StellarKeyPair> in
+                self.deriver.derive(input: input).single
+            }
+    }
     
-    public func loadKeyPair() -> Maybe<Pair> {
+    public func loadKeyPair() -> Maybe<StellarKeyPair> {
         mnemonicAccessAPI
             .mnemonicPromptingIfNeeded
-            .flatMap { [unowned self] mnemonic -> Maybe<Pair> in
+            .flatMap { [unowned self] mnemonic -> Maybe<StellarKeyPair> in
                 self.deriver.derive(input: StellarKeyDerivationInput(mnemonic: mnemonic)).maybe
             }
     }
@@ -66,7 +77,7 @@ public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, 
     
     private func createAndSaveStellarAccount() -> Maybe<WalletAccount> {
         loadKeyPair()
-            .flatMap(weak: self) { (self, keyPair) -> Maybe<Pair> in
+            .flatMap(weak: self) { (self, keyPair) -> Maybe<StellarKeyPair> in
                 self.save(keyPair: keyPair)
                     .andThen(Maybe.just(keyPair))
             }
@@ -80,7 +91,7 @@ public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, 
             }
     }
 
-    private func save(keyPair: Pair) -> Completable {
+    private func save(keyPair: StellarKeyPair) -> Completable {
         Completable.create(weak: self) { (self, observer) -> Disposable in
             self.bridge.save(
                 keyPair: keyPair,

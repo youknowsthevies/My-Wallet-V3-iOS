@@ -75,13 +75,13 @@ class StellarAccountService: StellarAccountAPI {
     }
     
     private let configurationService: StellarConfigurationAPI
-    private let ledgerService: StellarLedgerAPI
+    private let ledgerService: StellarLedgerServiceAPI
     private let repository: StellarWalletAccountRepositoryAPI
     private let walletOptionsAPI: WalletOptionsAPI
 
     init(
         configurationService: StellarConfigurationAPI,
-        ledgerService: StellarLedgerAPI,
+        ledgerService: StellarLedgerServiceAPI,
         repository: StellarWalletAccountRepositoryAPI,
         walletService: WalletOptionsAPI = resolve()
     ) {

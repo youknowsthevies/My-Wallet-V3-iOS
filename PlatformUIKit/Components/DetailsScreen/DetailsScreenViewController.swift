@@ -35,6 +35,8 @@ public final class DetailsScreenViewController: BaseTableViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.delegate = self
+        tableView.dataSource = self
         tableView.selfSizingBehaviour = .fill
         setupTableView()
         setupNavigationBar()
@@ -74,9 +76,9 @@ public final class DetailsScreenViewController: BaseTableViewController {
             .bindAndCatch(weak: self) { (self, state) in
                 switch state.visibility {
                 case .visible:
-                    self.tableViewBottomConstraint.constant = state.payload.height - self.view.safeAreaInsets.bottom
+                    self.contentBottomConstraint.constant = state.payload.height - self.view.safeAreaInsets.bottom
                 case .hidden:
-                    self.tableViewBottomConstraint.constant = 0
+                    self.contentBottomConstraint.constant = 0
                 }
                 self.view.layoutIfNeeded()
             }
@@ -93,8 +95,9 @@ public final class DetailsScreenViewController: BaseTableViewController {
         tableView.register(MultiBadgeTableViewCell.self)
         tableView.register(LabelTableViewCell.self)
         tableView.register(TextFieldTableViewCell.self)
+        tableView.register(BadgeNumberedTableViewCell.self)
         tableView.registerNibCell(LineItemTableViewCell.self)
-        tableView.registerNibCell(SeparatorTableViewCell.self)
+        tableView.register(SeparatorTableViewCell.self)
         tableView.registerNibCell(ButtonsTableViewCell.self)
     }
 
@@ -106,6 +109,8 @@ public final class DetailsScreenViewController: BaseTableViewController {
                 trailingButtonStyle: trailing)
         case .defaultDark:
             setStandardDarkContentStyle()
+        case .defaultLight:
+            setStandardLightContentStyle()
         }
         presenter.titleView
             .distinctUntilChanged()
@@ -139,6 +144,16 @@ public final class DetailsScreenViewController: BaseTableViewController {
 // MARK: - UITableViewDelegate, UITableViewDataSource
 extension DetailsScreenViewController: UITableViewDelegate, UITableViewDataSource {
 
+    public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        presenter.header(for: section)?
+            .view(fittingWidth: view.bounds.width, customHeight: nil)
+    }
+
+    public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        presenter.header(for: section)?
+            .defaultHeight ?? 0
+    }
+
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let idx = indexPath.row
         tableView.deselectRow(at: indexPath, animated: true)
@@ -146,7 +161,8 @@ extension DetailsScreenViewController: UITableViewDelegate, UITableViewDataSourc
             return
         }
         switch presenter.cells[indexPath.row] {
-        case .badges,
+        case .numbered,
+             .badges,
              .buttons,
              .label,
              .staticLabel,
@@ -170,6 +186,8 @@ extension DetailsScreenViewController: UITableViewDelegate, UITableViewDataSourc
                           cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         assert(presenter.cells.indices.contains(indexPath.row))
         switch presenter.cells[indexPath.row] {
+        case .numbered(let model):
+            return numberedCell(for: indexPath, model: model)
         case .badges(let model):
             return badgesCell(for: indexPath, model: model)
         case .buttons(let models):
@@ -206,6 +224,12 @@ extension DetailsScreenViewController: UITableViewDelegate, UITableViewDataSourc
         let cell = tableView.dequeue(InteractableTextTableViewCell.self, for: indexPath)
         cell.contentInset = UIEdgeInsets(horizontal: 24, vertical: 0)
         cell.viewModel = viewModel
+        return cell
+    }
+
+    private func numberedCell(for indexPath: IndexPath, model: BadgeNumberedItemViewModel) -> UITableViewCell {
+        let cell = tableView.dequeue(BadgeNumberedTableViewCell.self, for: indexPath)
+        cell.viewModel = model
         return cell
     }
 

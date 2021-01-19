@@ -54,23 +54,14 @@ final class ActivityServiceContainer: ActivityServiceContaining {
         accountSelectionService
             .selectedData
             .map { account -> WalletPickerSelection in
-                if let account: FiatAccount = account as? FiatAccount {
-                    switch account.accountType {
-                    case .custodial:
-                        return .custodial(account.currencyType)
-                    case .nonCustodial:
-                        fatalError("Fiat Account cannot be non-custodial: \(account)")
-                    }
+                guard let account = account as? SingleAccount else {
+                    return .all
                 }
-                if let account: CryptoAccount = account as? CryptoAccount {
-                    switch account.accountType {
-                    case .custodial:
-                        return .custodial(.crypto(account.asset))
-                    case .nonCustodial:
-                        return .nonCustodial(account.asset)
-                    }
+                if account is NonCustodialAccount {
+                    return .nonCustodial(account.currencyType)
+                } else {
+                    return .custodial(account.currencyType)
                 }
-                return .all
             }
             .bind { [weak self] selection in
                 self?.selectionService.record(selection: selection)
@@ -81,23 +72,41 @@ final class ActivityServiceContainer: ActivityServiceContaining {
             .selectedData
             .do(afterNext: { [weak self] _ in self?.activityProviding.refresh() })
             .flatMapLatest(weak: self) { (self, selection) -> Observable<ActivityItemEventsLoadingState> in
+                /// For non-custodial and custodial events there are swaps
+                /// specific to the non-custodial or custodial wallet.
+                /// In other words, you can swap from either type of wallet.
+                /// The picker allows you to filter by wallet, so we must pull swaps from
+                /// either the custodial, non-custodial, or both. We would normally use
+                ///  `ActivityItemEventsLoadingState` for each of our services but, since we need to split
+                ///  custodial from non-custodial swaps, we need deviate from this in the `.nonCustodial`
+                ///  and `.custodial` state.
                 switch selection {
                 case .all:
                     return self.activityProviding.activityItems
                 case .nonCustodial(let currency):
-                    let transactional = self.activityProviding[currency].transactional
-                    let swap = self.activityProviding[currency].swap
+                    let activityProvider = self.activityProviding[currency.cryptoCurrency!]
+                    let transactional = activityProvider.transactional
+                    /// We can't use the `activityProvider.swap.state` here since we want only the
+                    /// noncustodial swaps.
+                    let swap = activityProvider.swap.nonCustodial
                     return Observable.combineLatest(
                             transactional.state,
-                            swap.state
+                            swap
                         )
-                        .map(weak: self) { (self, states) -> ActivityItemEventsLoadingState in
+                        .map { (states) -> ActivityItemEventsLoadingState in
                             [states.1, states.0].reduce()
                         }
                 case .custodial(let currency):
                     switch currency {
                     case .crypto(let crypto):
-                        return self.activityProviding[crypto].buySell.state
+                        /// We can't use the `self.activityProviding[crypto].swap.state`
+                        /// here since we want only the custodial swaps.
+                        let swap = self.activityProviding[crypto].swap.custodial
+                        let buySell = self.activityProviding[crypto].buySell.state
+                        return Observable.combineLatest(swap, buySell)
+                            .map { (states) -> ActivityItemEventsLoadingState in
+                                [states.1, states.0].reduce()
+                            }
                     case .fiat(let fiat):
                         return self.activityProviding[fiat].activityLoadingStateObservable
                     }

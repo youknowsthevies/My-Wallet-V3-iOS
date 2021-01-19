@@ -20,7 +20,7 @@ final class BitcoinActivityDetailsInteractor {
 
     init(wallet: BitcoinWalletBridgeAPI = resolve(),
          fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
-         priceService: PriceServiceAPI = PriceService(),
+         priceService: PriceServiceAPI = resolve(),
          detailsService: AnyActivityItemEventDetailsFetcher<BitcoinActivityItemEventDetails> = resolve()) {
         self.detailsService = detailsService
         self.fiatCurrencySettings = fiatCurrencySettings

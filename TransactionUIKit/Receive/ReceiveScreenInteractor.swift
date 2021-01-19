@@ -21,12 +21,10 @@ final class ReceiveScreenInteractor {
         account
             .receiveAddress
             .map { address -> CryptoAssetQRMetadata in
-                switch address {
-                case is CryptoReceiveAddress:
-                    return (address as! CryptoReceiveAddress).metadata
-                default:
+                guard let address = address as? CryptoAssetQRMetadataProviding else {
                     throw ReceiveAddressError.notSupported
                 }
+                return address.metadata
             }
     }
 

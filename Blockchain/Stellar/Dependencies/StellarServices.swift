@@ -14,8 +14,8 @@ import StellarKit
 
 struct StellarServices: StellarDependenciesAPI {
     let accounts: StellarAccountAPI
-    let feeService: StellarFeeServiceAPI
-    let ledger: StellarLedgerAPI
+    let feeService: AnyCryptoFeeService<StellarTransactionFee>
+    let ledger: StellarLedgerServiceAPI
     let limits: StellarTradeLimitsAPI
     let operation: StellarOperationsAPI
     let prices: PriceServiceAPI
@@ -27,15 +27,14 @@ struct StellarServices: StellarDependenciesAPI {
         configurationService: StellarConfigurationAPI = resolve(),
         wallet: Wallet = WalletManager.shared.wallet,
         eventBus: WalletActionEventBus = WalletActionEventBus.shared,
-        xlmFeeService: StellarFeeServiceAPI = StellarFeeService.shared,
+        feeService: AnyCryptoFeeService<StellarTransactionFee> = resolve(),
+        ledger: StellarLedgerServiceAPI = resolve(),
         repository: StellarWalletAccountRepositoryAPI = resolve()
     ) {
         walletActionEventBus = eventBus
         self.repository = repository
-        ledger = StellarLedgerService(
-            configurationService: configurationService,
-            feeService: xlmFeeService
-        )
+        self.ledger = ledger
+        self.feeService = feeService
         accounts = StellarAccountService(
             configurationService: configurationService,
             ledgerService: ledger,
@@ -55,6 +54,5 @@ struct StellarServices: StellarDependenciesAPI {
             ledgerService: ledger,
             accountsService: accounts
         )
-        feeService = xlmFeeService
     }
 }

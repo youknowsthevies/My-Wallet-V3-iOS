@@ -8,12 +8,15 @@
 
 import DIKit
 import PlatformKit
+import TransactionKit
 
 extension DependencyContainer {
 
     // MARK: - BitcoinKit Module
 
     public static var stellarKit = module {
+
+        factory { HorizonProxy() as HorizonProxyAPI }
 
         factory {
             AnyAssetAccountDetailsAPI<StellarAssetAccountDetails>(
@@ -38,10 +41,21 @@ extension DependencyContainer {
 
         factory(tag: CryptoCurrency.stellar) { StellarAsset() as CryptoAsset }
         
+        factory(tag: CryptoCurrency.stellar) { StellarOnChainTransactionEngineFactory() as OnChainTransactionEngineFactory }
+        
         factory { StellarTransactionalActivityItemEventsService() }
         
         factory { StellarActivityItemEventDetailsFetcher() }
 
-        single { CryptoFeeService<StellarTransactionFee>() }
+        single { AnyCryptoFeeService(service: CryptoFeeService<StellarTransactionFee>()) }
+
+        factory { StellarTransactionDispatcher() }
+
+        factory { LedgersServiceProvider() as LedgersServiceProviderAPI }
+
+        single { StellarLedgerService() as StellarLedgerServiceAPI }
+
+        factory(tag: CryptoCurrency.stellar) { StellarCryptoReceiveAddressFactory() as CryptoReceiveAddressFactory }
+
     }
 }

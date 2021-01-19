@@ -438,6 +438,13 @@ extension EthereumWallet: MnemonicAccessAPI {
         }
         return wallet.mnemonicPromptingIfNeeded
     }
+
+    func mnemonic(with secondPassword: String?) -> Single<Mnemonic> {
+        guard let wallet = wallet else {
+            return .error(PlatformKitError.default)
+        }
+        return wallet.mnemonic(with: secondPassword)
+    }
 }
 
 extension EthereumWallet: PasswordAccessAPI {

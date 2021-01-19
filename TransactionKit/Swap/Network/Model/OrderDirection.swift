@@ -15,4 +15,26 @@ public enum OrderDirection: String, Codable {
     case toUserKey = "TO_USERKEY"
     /// From custodial to custodial
     case `internal` = "INTERNAL"
+    
+    public var requiresDestinationAddress: Bool {
+        switch self {
+        case .onChain,
+             .toUserKey:
+            return true
+        case .fromUserKey,
+             .internal:
+            return false
+        }
+    }
+    
+    public var requiresRefundAddress: Bool {
+        switch self {
+        case .onChain,
+             .fromUserKey:
+            return true
+        case .toUserKey,
+             .internal:
+            return false
+        }
+    }
 }

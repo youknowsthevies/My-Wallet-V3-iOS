@@ -65,7 +65,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
             PendingStateViewModel(
                 compositeStatusViewType: .composite(
                     .init(
-                        baseViewType: .image(PendingStateViewModel.Image.cutsom(currencyType.logoImageName).name),
+                        baseViewType: .image(PendingStateViewModel.Image.custom(currencyType.logoImageName).name),
                         sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter)
                     )
                 ),
@@ -104,7 +104,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
         let viewModel = PendingStateViewModel(
             compositeStatusViewType: .composite(
                 .init(
-                    baseViewType: .image(PendingStateViewModel.Image.cutsom(currencyType.logoImageName).name),
+                    baseViewType: .image(PendingStateViewModel.Image.custom(currencyType.logoImageName).name),
                     sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.circleError.name), position: .radiusDistanceFromCenter)
                 )
             ),
@@ -126,7 +126,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
         let viewModel = PendingStateViewModel(
             compositeStatusViewType: .composite(
                 .init(
-                    baseViewType: .image(PendingStateViewModel.Image.cutsom(currencyType.logoImageName).name),
+                    baseViewType: .image(PendingStateViewModel.Image.custom(currencyType.logoImageName).name),
                     sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.clock.name), position: .radiusDistanceFromCenter)
                 )
             ),
@@ -156,7 +156,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
         let viewModel = PendingStateViewModel(
             compositeStatusViewType: .composite(
                 .init(
-                    baseViewType: .image(PendingStateViewModel.Image.cutsom(currencyType.logoImageName).name),
+                    baseViewType: .image(PendingStateViewModel.Image.custom(currencyType.logoImageName).name),
                     sideViewAttributes: .init(type: .image("v-success-icon"), position: .radiusDistanceFromCenter)
                 )
             ),

@@ -22,12 +22,14 @@ public final class InputAmountLabelInteractor {
     
     // MARK: - Setup
     
-    init(currency: Currency, decimalAccuracy: Int = 10) {
-        scanner = .init(maxDigits: .init(decimal: decimalAccuracy, fraction: currency.maxDecimalPlaces))
-        self.interactor = .init(currency: currency)
+    init(currency: Currency, integralPlacesLimit: Int = 10) {
+        scanner = MoneyValueInputScanner(
+            maxDigits: .init(integral: integralPlacesLimit, fractional: currency.maxDisplayableDecimalPlaces)
+        )
+        self.interactor = AmountLabelViewInteractor(currency: currency)
         
         interactor.currency
-            .map { .init(decimal: decimalAccuracy, fraction: $0.maxDecimalPlaces) }
+            .map { .init(integral: integralPlacesLimit, fractional: $0.maxDisplayableDecimalPlaces) }
             .bind(to: scanner.maxDigitsRelay)
             .disposed(by: disposeBag)
     }

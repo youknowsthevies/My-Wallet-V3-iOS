@@ -18,8 +18,7 @@ protocol EthereumWalletAccountRepositoryAPI {
     var activeAccounts: Single<[EthereumWalletAccount]> { get }
 }
 
-// TODO: Move everything over from `EthereumWalletAccountRepository` to `EthereumWalletAccountRepositoryNew`
-final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI, KeyPairProviderNewAPI {
+final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI, KeyPairProviderAPI {
     
     typealias KeyPair = EthereumKeyPair
     typealias Account = EthereumWalletAccount
@@ -49,8 +48,21 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI,
         }
     }
     
-    // MARK: - KeyPairProviderNewAPI
-    
+    // MARK: - KeyPairProviderAPI
+
+    func keyPair(with secondPassword: String?) -> Single<EthereumKeyPair> {
+        bridge.mnemonic(with: secondPassword)
+            .flatMap(weak: self) { (self, mnemonic) -> Single<KeyPair> in
+                self.deriver.derive(
+                    input: EthereumKeyDerivationInput(
+                        mnemonic: mnemonic,
+                        password: ""
+                    )
+                )
+                .single
+            }
+    }
+
     var keyPair: Single<KeyPair> {
         bridge.mnemonicPromptingIfNeeded
             .flatMap(weak: self) { (self, mnemonic) -> Single<KeyPair> in

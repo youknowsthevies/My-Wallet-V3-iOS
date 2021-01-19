@@ -9,20 +9,24 @@
 import DIKit
 import NetworkKit
 import RxSwift
+import ToolKit
 
 public protocol TradingBalanceClientAPI: class {
     var balance: Single<CustodialBalanceResponse?> { get }
     func balance(for currencyType: CurrencyType) -> Single<CustodialBalanceResponse?>
 }
 
-public typealias CustodialClientAPI = TradingBalanceClientAPI & CustodyWithdrawalClientAPI
-
-final class CustodialClient: CustodialClientAPI {
+final class CustodialClient: TradingBalanceClientAPI,
+                             CustodyWithdrawalClientAPI,
+                             CustodialPaymentAccountClientAPI,
+                             CustodialPendingDepositClientAPI {
     
     // MARK: - Types
     
     private enum Path {
+        static let pendingDeposit = ["payments", "deposits", "pending"]
         static let withdrawal = ["payments", "withdrawals"]
+        static let paymentAccount = [ "payments", "accounts", "simplebuy" ]
         static let custodialBalance = [ "accounts", "simplebuy" ]
     }
     
@@ -48,6 +52,17 @@ final class CustodialClient: CustodialClientAPI {
         self.requestBuilder = requestBuilder
     }
     
+    // MARK: - CustodialPendingDepositClientAPI
+
+    func createPendingDeposit(body: CreatePendingDepositRequestBody) -> Completable {
+        let request = requestBuilder.post(
+            path: Path.withdrawal,
+            body: try? body.encode(),
+            authenticated: true
+        )!
+        return communicator.perform(request: request)
+    }
+    
     // MARK: - TradingBalanceClientAPI
 
     func balance(for currencyType: CurrencyType) -> Single<CustodialBalanceResponse?> {
@@ -63,6 +78,22 @@ final class CustodialClient: CustodialClientAPI {
             path: Path.withdrawal,
             body: try? withdrawalRequest.encode(),
             headers: headers,
+            authenticated: true
+        )!
+        return communicator.perform(request: request)
+    }
+    
+    // MARK: - CustodialPaymentAccountClientAPI
+    
+    func custodialPaymentAccount(for cryptoCurrency: CryptoCurrency) -> Single<PaymentAccount.Response> {
+        struct Payload: Encodable {
+            let currency: String
+        }
+        
+        let payload = Payload(currency: cryptoCurrency.code)
+        let request = requestBuilder.put(
+            path: Path.paymentAccount,
+            body: try? payload.encode(),
             authenticated: true
         )!
         return communicator.perform(request: request)

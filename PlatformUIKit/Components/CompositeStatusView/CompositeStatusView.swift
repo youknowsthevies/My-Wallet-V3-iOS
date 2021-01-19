@@ -162,6 +162,8 @@ public final class CompositeStatusView: UIView {
                         switch composite.baseViewType {
                         case .image(let image):
                             self.setupImageView(with: image)
+                        case .templateImage(name: let image, templateColor: let color):
+                            self.setupTemplateImageView(with: image, templateColor: color)
                         case .text(let text):
                             self.setupLabel(with: text)
                         }
@@ -227,6 +229,14 @@ public final class CompositeStatusView: UIView {
     private func setupImageView(with name: String) {
         let image = UIImage(named: name, in: .platformUIKit, compatibleWith: .none)!
         let imageView = UIImageView(image: image)
+        add(view: imageView)
+    }
+    
+    private func setupTemplateImageView(with name: String, templateColor: UIColor) {
+        let image = UIImage(named: name, in: .platformUIKit, compatibleWith: .none)!
+            .withRenderingMode(.alwaysTemplate)
+        let imageView = UIImageView(image: image)
+        imageView.tintColor = templateColor
         add(view: imageView)
     }
     

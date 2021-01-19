@@ -17,7 +17,7 @@ class MoneyValueInputScannerTests: XCTestCase {
         // Given
         let currency = FiatCurrency.GBP
         let decimalAccurancy = 10
-        let scanner = MoneyValueInputScanner(maxDigits: .init(decimal: decimalAccurancy, fraction: currency.maxDecimalPlaces))
+        let scanner = MoneyValueInputScanner(maxDigits: .init(integral: decimalAccurancy, fractional: currency.maxDecimalPlaces))
         
         // When
         let inputs = [0, 100, 123_21, 1_123_01, 11_642_12, 11_642_07, 100_123_02, 10_000_000_23]
@@ -40,7 +40,7 @@ class MoneyValueInputScannerTests: XCTestCase {
         // Given
         let currency = CryptoCurrency.bitcoin
         let decimalAccurancy = 10
-        let scanner = MoneyValueInputScanner(maxDigits: .init(decimal: decimalAccurancy, fraction: currency.maxDecimalPlaces))
+        let scanner = MoneyValueInputScanner(maxDigits: .init(integral: decimalAccurancy, fractional: currency.maxDecimalPlaces))
 
         // When
         let inputs = [0, 100, 123_21, 1_123_01, 11_642_12, 11_642_07, 100_123_02, 10_000_000_23, 100_000_000_231232]
@@ -63,7 +63,7 @@ class MoneyValueInputScannerTests: XCTestCase {
         // Given
         let currency = CryptoCurrency.bitcoin
         let decimalAccurancy = 10
-        let scanner = MoneyValueInputScanner(maxDigits: .init(decimal: decimalAccurancy, fraction: currency.maxDecimalPlaces))
+        let scanner = MoneyValueInputScanner(maxDigits: .init(integral: decimalAccurancy, fractional: currency.maxDecimalPlaces))
 
         // When empty value
         var input = scanner.parse(amount: "")

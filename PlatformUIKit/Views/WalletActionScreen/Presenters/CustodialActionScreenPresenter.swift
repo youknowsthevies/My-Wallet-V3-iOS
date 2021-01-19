@@ -84,7 +84,8 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
         case .crypto(let crypto):
             actionPresenters.append(contentsOf: [
                 .init(currencyType: currency, action: .buy),
-                .init(currencyType: currency, action: .sell)
+                .init(currencyType: currency, action: .sell),
+                .init(currencyType: currency, action: .swap)
             ])
             let isTrading = interactor.accountType.isTrading
             let isSavings = interactor.accountType.isSavings
@@ -129,6 +130,8 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
                     stateService.depositRelay.accept(())
                 case .withdraw:
                     stateService.withdrawRelay.accept(())
+                case .swap:
+                    stateService.swapRelay.accept(())
                 default:
                     break
                 }

@@ -8,6 +8,7 @@
 
 import DIKit
 import PlatformKit
+import TransactionKit
 
 extension DependencyContainer {
     
@@ -18,8 +19,12 @@ extension DependencyContainer {
         factory { APIClient() as APIClientAPI }
         
         factory { CryptoFeeService<EthereumTransactionFee>() }
+        
+        factory(tag: CryptoCurrency.ethereum) { EthereumExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
 
         factory(tag: CryptoCurrency.ethereum) { EthereumAsset() as CryptoAsset }
+        
+        factory(tag: CryptoCurrency.ethereum) { EthereumOnChainTransactionEngineFactory() as OnChainTransactionEngineFactory }
         
         single { EthereumAssetAccountRepository() }
         
@@ -54,7 +59,7 @@ extension DependencyContainer {
         
         factory { AnyCryptoFeeService<EthereumTransactionFee>.ethereum() }
         
-        factory { AnyKeyPairProviderNew<EthereumKeyPair>.ethereum() }
+        factory { AnyKeyPairProvider<EthereumKeyPair>.ethereum() }
         
         factory { EthereumTransactionBuilder() as EthereumTransactionBuilderAPI }
         
@@ -73,12 +78,12 @@ extension AnyCryptoFeeService where FeeType == EthereumTransactionFee {
     }
 }
 
-extension AnyKeyPairProviderNew where Pair == EthereumKeyPair {
+extension AnyKeyPairProvider where Pair == EthereumKeyPair {
     
     fileprivate static func ethereum(
         ethereumWalletAccountRepository: EthereumWalletAccountRepository = resolve()
-    ) -> AnyKeyPairProviderNew<Pair> {
-        AnyKeyPairProviderNew<Pair>(provider: ethereumWalletAccountRepository)
+    ) -> AnyKeyPairProvider<Pair> {
+        AnyKeyPairProvider<Pair>(provider: ethereumWalletAccountRepository)
     }
 }
 

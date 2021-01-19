@@ -139,6 +139,10 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
         Maybe.just("")
     }
 
+    func mnemonic(with secondPassword: String?) -> Single<Mnemonic> {
+        .just("")
+    }
+
     // MARK: - PasswordAccessAPI
 
     var passwordMaybe = Maybe.just("password")

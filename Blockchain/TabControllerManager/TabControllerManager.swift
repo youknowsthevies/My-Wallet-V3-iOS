@@ -12,6 +12,7 @@ import DIKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import RIBs
 import ToolKit
 import TransactionUIKit
 
@@ -29,21 +30,24 @@ final class TabControllerManager: NSObject {
     private var receiveNavigationViewController: UINavigationController!
     private var buySellViewController: UINavigationController!
     private var swapViewController: UIViewController!
-    private var swapRouter: SwapRootRouting!
+    private var swapRouter: ViewableRouting!
 
     private var analyticsEventRecorder: AnalyticsEventRecording
     private let sendControllerManager: SendControllerManager
     private let sendReceiveCoordinator: SendReceiveCoordinator
     private let featureConfigurator: FeatureConfiguring
+    private let internalFeatureFlag: InternalFeatureFlagServiceAPI
 
     init(sendControllerManager: SendControllerManager = resolve(),
          sendReceiveCoordinator: SendReceiveCoordinator = resolve(),
          analyticsEventRecorder: AnalyticsEventRecording = resolve(),
-         featureConfigurator: FeatureConfiguring = resolve()) {
+         featureConfigurator: FeatureConfiguring = resolve(),
+         internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve()) {
         self.sendControllerManager = sendControllerManager
         self.sendReceiveCoordinator = sendReceiveCoordinator
         self.analyticsEventRecorder = analyticsEventRecorder
         self.featureConfigurator = featureConfigurator
+        self.internalFeatureFlag = internalFeatureFlag
         tabViewController = TabViewController.makeFromStoryboard()
         super.init()
         tabViewController.delegate = self
@@ -72,7 +76,7 @@ final class TabControllerManager: NSObject {
     private func loadSwap() {
         guard swapViewController == nil else { return }
         guard swapRouter == nil else { return }
-
+        
         func populateNewSwap() {
             let router = SwapRootBuilder().build()
             swapViewController = router.viewControllable.uiviewController
@@ -83,8 +87,11 @@ final class TabControllerManager: NSObject {
         func populateLegacySwap() {
             swapViewController = ExchangeContainerViewController.makeFromStoryboard()
         }
-
-        populateLegacySwap()
+        if internalFeatureFlag.isEnabled(.newSwap) {
+            populateNewSwap()
+        } else {
+            populateLegacySwap()
+        }
         // TODO: When New Swap is ready, use Feature Flag to decide which one should be displayed:
         // if featureConfigurator.configuration(for: .newSwapEnabled).isEnabled {
         //     populateNewSwap()
@@ -95,9 +102,11 @@ final class TabControllerManager: NSObject {
 
     func showSwap() {
         loadSwap()
-        tabViewController.setActiveViewController(swapViewController,
-                                                  animated: true,
-                                                  index: Constants.Navigation.tabSwap)
+        tabViewController.setActiveViewController(
+            swapViewController,
+            animated: true,
+            index: Constants.Navigation.tabSwap
+        )
     }
 
     func showSend(cryptoCurrency: CryptoCurrency) {

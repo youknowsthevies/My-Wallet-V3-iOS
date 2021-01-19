@@ -98,6 +98,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
         eligibilityService
             .fetch()
             .mapToResult()
+            .asObservable()
     }
 
     var paymentMethodTypes: Observable<[PaymentMethodType]> {
@@ -143,7 +144,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     // MARK: - Setup
     
     init(kycTiersService: KYCTiersServiceAPI = resolve(),
-         exchangeProvider: ExchangeProviding,
+         priceService: PriceServiceAPI = resolve(),
          paymentMethodTypesService: PaymentMethodTypesServiceAPI,
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
          cryptoCurrencySelectionService: CryptoCurrencySelectionServiceAPI,
@@ -158,7 +159,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
         self.paymentMethodTypesService = paymentMethodTypesService
         self.orderCreationService = orderCreationService
         super.init(
-            exchangeProvider: exchangeProvider,
+            priceService: priceService,
             fiatCurrencyService: fiatCurrencyService,
             cryptoCurrencySelectionService: cryptoCurrencySelectionService,
             initialActiveInput: .fiat
@@ -168,7 +169,6 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     // MARK: - Interactor
     
     override func didLoad() {
-        let exchangeProvider = self.exchangeProvider
         let cryptoCurrencySelectionService = self.cryptoCurrencySelectionService
         let fiatCurrencyService = self.fiatCurrencyService
         
@@ -179,26 +179,23 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                         self.amountTranslationInteractor.activeInputRelay.take(1).asSingle(),
                         cryptoCurrencySelectionService.cryptoCurrency
                     )
-                    .flatMap { (activeInput, currency) -> Single<AmountTranslationInteractor.State> in
+                    .flatMap(weak: self) { (self, values) -> Single<AmountTranslationInteractor.State> in
+                        let activeInput = values.0
+                        let currency = values.1
                         switch state {
                         case .tooHigh(max: let fiatValue), .tooLow(min: let fiatValue):
-                            return exchangeProvider[currency].fiatPrice
-                                .take(1)
-                                .asSingle()
-                                 .map { exchangeRate -> MoneyValuePair in
-                                    MoneyValuePair(
-                                        fiat: fiatValue,
-                                        priceInFiat: exchangeRate,
-                                        cryptoCurrency: currency,
-                                        usesFiatAsBase: activeInput == .fiat
-                                    )
-                                 }
+                            return self.priceService
+                                .moneyValuePair(
+                                    base: fiatValue,
+                                    cryptoCurrency: currency,
+                                    usesFiatAsBase: activeInput == .fiat
+                                )
                                 .map { pair -> AmountTranslationInteractor.State in
                                     switch state {
                                     case .tooHigh:
-                                        return .maxLimitExceeded(pair)
+                                        return .maxLimitExceeded(pair.base)
                                     case .tooLow:
-                                        return .minLimitExceeded(pair)
+                                        return .minLimitExceeded(pair.base)
                                     case .empty:
                                         return .empty
                                     case .inBounds:

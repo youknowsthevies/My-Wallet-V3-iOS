@@ -51,7 +51,10 @@ public final class SendReceiveSegmentedViewScreenPresenter: SegmentedViewScreenP
         self.drawerRouter = drawerRouter
         self.sendRouter = sendRouter
         self.receiveRouter = receiveRouter
-        let builder = Builder(sendSelectionService: sendSelectionService, receiveSelectionService: receiveSelectionService)
+        let builder = SendReceiveBuilder(
+            sendSelectionService: sendSelectionService,
+            receiveSelectionService: receiveSelectionService
+        )
         segmentedItemsFactory = SendReceiveSegmentedItemsFactory(builder: builder)
 
         leadingButtonTapRelay

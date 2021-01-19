@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxRelay
-import RxCocoa
-import ToolKit
 import PlatformKit
+import RxCocoa
+import RxRelay
+import RxSwift
+import ToolKit
 
 /// A view model for `AmountLabelView` which is able to display a money amount with
 /// an `valid` / `invalid` indication.
@@ -28,7 +28,6 @@ public final class AmountLabelViewPresenter {
         fileprivate static var empty: Output {
             Output(
                 amountLabelContent: .empty,
-                currencyCodeLabelContent: .empty,
                 currencyCodeSide: .leading
             )
         }
@@ -37,14 +36,14 @@ public final class AmountLabelViewPresenter {
             let string = NSMutableAttributedString()
             switch currencyCodeSide {
             case .leading:
-                string.append(NSAttributedString(currencyCodeLabelContent))
-                string.append(.init(string: "  "))
+                string.append(NSAttributedString(amountLabelContent.currencyCode))
+                string.append(.space())
                 string.append(amountLabelContent.string)
                 return string
             case .trailing:
                 string.append(amountLabelContent.string)
-                string.append(.init(string: "  "))
-                string.append(NSAttributedString(currencyCodeLabelContent))
+                string.append(.space())
+                string.append(NSAttributedString(amountLabelContent.currencyCode))
                 return string
             }
             
@@ -55,7 +54,6 @@ public final class AmountLabelViewPresenter {
         }
         
         let amountLabelContent: AmountLabelContent
-        let currencyCodeLabelContent: LabelContent
         let currencyCodeSide: CurrencyCodeSide
     }
     
@@ -67,12 +65,11 @@ public final class AmountLabelViewPresenter {
     }
     
     public let outputRelay = BehaviorRelay<Output>(value: .empty)
-        
+
     /// The state of the component
     public let inputRelay = BehaviorRelay<MoneyValueInputScanner.Input>(value: .empty)
-    
-    private let currencyCodeContentRelay = BehaviorRelay<LabelContent>(value: .empty)
-    private let amountRelay = BehaviorRelay<AmountLabelContent>(value: .empty)
+
+    public let focusRelay = BehaviorRelay<Bool>(value: false)
 
     // MARK: - Injected
 
@@ -84,55 +81,29 @@ public final class AmountLabelViewPresenter {
     public init(interactor: AmountLabelViewInteractor, currencyCodeSide: CurrencyCodeSide) {
         self.interactor = interactor
         self.currencyCodeSide = currencyCodeSide
-        
+
         Observable
             .combineLatest(
                 interactor.currency,
-                interactor.state
+                inputRelay,
+                focusRelay
             )
-            .map { (currency, state) -> LabelContent in
-                let color: Color
-                switch state {
-                case .invalid:
-                    color = .mutedText
-                case .valid:
-                    color = .titleText
-                }
-                return LabelContent(
-                    text: currency.symbol,
-                    font: .main(.medium, 48),
-                    color: color,
-                    accessibility: .id(currency.isCryptoCurrency ? AccessibilityId.cryptoCurrencyCodeLabel : AccessibilityId.fiatCurrencyCodeLabel)
+            .map { currency, input, hasFocus in
+                AmountLabelContent(
+                    input: input,
+                    currencyCode: currency.displayCode,
+                    currencySymbol: currency.displaySymbol,
+                    hasFocus: hasFocus
                 )
             }
-            .catchErrorJustReturn(.empty)
-            .bindAndCatch(to: currencyCodeContentRelay)
-            .disposed(by: disposeBag)
-        
-        Observable
-            .combineLatest(
-                interactor.currency,
-                inputRelay
-            )
-            .map { AmountLabelContent(input: $0.1, currencyCode: $0.0.code) }
-            .bindAndCatch(to: amountRelay)
-            .disposed(by: disposeBag)
-        
-        Observable
-            .combineLatest(
-                amountRelay,
-                currencyCodeContentRelay
-            )
-            .map {
+            .map { labelContent in
                 Output(
-                    amountLabelContent: $0.0,
-                    currencyCodeLabelContent: $0.1,
+                    amountLabelContent: labelContent,
                     currencyCodeSide: currencyCodeSide
                 )
             }
             .bindAndCatch(to: outputRelay)
             .disposed(by: disposeBag)
-        
     }
 }
 
@@ -141,7 +112,7 @@ public final class AmountLabelViewPresenter {
 extension AmountLabelViewPresenter {
 
     // MARK: - Types
-        
+
     private typealias AccessibilityId = Accessibility.Identifier.AmountLabelView
     
     struct AmountLabelContent {
@@ -149,7 +120,7 @@ extension AmountLabelViewPresenter {
         // MARK: - Properties
         
         fileprivate static var empty: AmountLabelContent {
-            .init(input: .empty, currencyCode: "")
+            .init(input: .empty, currencyCode: "", currencySymbol: "", hasFocus: false)
         }
         
         /// Returns the attributed string
@@ -168,11 +139,15 @@ extension AmountLabelViewPresenter {
         let amount: LabelContent
         let currencyCode: LabelContent
         let placeholder: LabelContent?
-                
+
         // MARK: - Setup
         
-        init(input: MoneyValueInputScanner.Input,
-             currencyCode: String) {
+        init(
+            input: MoneyValueInputScanner.Input,
+            currencyCode: String,
+            currencySymbol: String,
+            hasFocus: Bool
+        ) {
             var amount = ""
             let formatter = NumberFormatter(
                 locale: Locale.current,
@@ -190,14 +165,15 @@ extension AmountLabelViewPresenter {
             if amountComponents.count == 2 {
                 amount += "\(decimalSeparator)\(amountComponents[1])"
             }
-            
-            let font = UIFont.main(.medium, 48)
+
+            let font: UIFont = hasFocus ? .main(.medium, 48) : .main(.semibold, 14)
 
             self.currencyCode = LabelContent(
-                text: currencyCode,
+                text: currencySymbol,
                 font: font,
-                color: .titleText)
-        
+                color: .titleText
+            )
+
             self.amount = LabelContent(
                 text: amount,
                 font: font,

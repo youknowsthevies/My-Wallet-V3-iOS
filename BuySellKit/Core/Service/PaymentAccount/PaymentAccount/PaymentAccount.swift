@@ -13,7 +13,7 @@ import PlatformKit
 public protocol PaymentAccount {
 
     /// - Returns: A `Payment Account` if the response matches the requiriments, `nil` otherwise.
-    init?(response: PaymentAccountResponse)
+    init?(response: PlatformKit.PaymentAccount)
     
     /// A identifier for this PaymentAccount.
     var identifier: String { get }

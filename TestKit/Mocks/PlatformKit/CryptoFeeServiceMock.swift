@@ -9,15 +9,15 @@
 import PlatformKit
 import RxSwift
 
-final class CryptoFeeServiceMock<T: TransactionFee & Decodable>: CryptoFeeServiceAPI {
-    typealias FeeType = T
+final class CryptoFeeServiceMock<FeeType: TransactionFee & Decodable>: CryptoFeeServiceAPI {
 
     var underlyingFees: FeeType!
+
     var fees: Single<FeeType> {
         .just(underlyingFees)
     }
 
-    init(underlyingFees: FeeType?) {
+    init(underlyingFees: FeeType? = FeeType.default) {
         self.underlyingFees = underlyingFees
     }
 }

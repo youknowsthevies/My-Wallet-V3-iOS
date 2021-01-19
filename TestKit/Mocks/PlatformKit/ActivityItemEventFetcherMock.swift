@@ -68,6 +68,14 @@ class BuyActivityItemEventFetcherMock: BuySellActivityItemEventServiceAPI {
 
 class SwapActivityItemEventServiceMock: SwapActivityItemEventServiceAPI {
     
+    var custodial: Observable<ActivityItemEventsLoadingState> {
+        Observable.just(.loading)
+    }
+    
+    var nonCustodial: Observable<ActivityItemEventsLoadingState> {
+        Observable.just(.loading)
+    }
+    
     var state: Observable<ActivityItemEventsLoadingState> {
         Observable.just(.loading)
     }

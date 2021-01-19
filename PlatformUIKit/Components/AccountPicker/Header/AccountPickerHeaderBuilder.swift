@@ -6,16 +6,15 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-/// Defines a component used to build a Header UIView given the specific HeaderType.
-protocol HeaderBuilder {
-    associatedtype HeaderType
-    func defaultHeight(for headerType: HeaderType) -> CGFloat
-    func view(for headerType: AccountPickerHeaderType, fittingWidth width: CGFloat, customHeight: CGFloat?) -> UIView?
-}
+public struct AccountPickerHeaderBuilder: HeaderBuilder {
 
-struct AccountPickerHeaderBuilder: HeaderBuilder {
+    private let headerType: AccountPickerHeaderType
 
-    func defaultHeight(for headerType: AccountPickerHeaderType) -> CGFloat {
+    public init(headerType: AccountPickerHeaderType) {
+        self.headerType = headerType
+    }
+
+    public var defaultHeight: CGFloat {
         switch headerType {
         case .none:
             return 0
@@ -26,8 +25,8 @@ struct AccountPickerHeaderBuilder: HeaderBuilder {
         }
     }
 
-    func view(for headerType: AccountPickerHeaderType, fittingWidth width: CGFloat, customHeight: CGFloat? = nil) -> UIView? {
-        let height = customHeight ?? defaultHeight(for: headerType)
+    public func view(fittingWidth width: CGFloat, customHeight: CGFloat?) -> UIView? {
+        let height = customHeight ?? defaultHeight
         let frame = CGRect(x: 0, y: 0, width: width, height: height)
         switch headerType {
         case .none:

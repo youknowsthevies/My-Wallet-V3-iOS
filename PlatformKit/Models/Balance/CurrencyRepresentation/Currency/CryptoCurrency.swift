@@ -144,9 +144,11 @@ extension CryptoCurrency {
             return "Wrapped-DGLD"
         }
     }
-    
-    public var code: String { rawValue }
+
     public var symbol: String { code }
+    public var displaySymbol: String { displayCode }
+
+    public var code: String { rawValue }
         
     public var displayCode: String {
         switch self {

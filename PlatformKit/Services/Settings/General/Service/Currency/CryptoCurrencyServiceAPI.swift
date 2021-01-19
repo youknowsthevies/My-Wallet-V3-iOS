@@ -27,3 +27,26 @@ extension CryptoCurrencyServiceAPI {
         cryptoCurrency.map { $0 as Currency }
     }
 }
+
+public class DefaultCryptoCurrencyService: CryptoCurrencyServiceAPI {
+    public enum ServiceError: Error {
+        case unexpectedCurrencyType
+    }
+    
+    public var cryptoCurrencyObservable: Observable<CryptoCurrency> {
+        cryptoCurrency.asObservable()
+    }
+    
+    public var cryptoCurrency: Single<CryptoCurrency> {
+        guard case let .crypto(crypto) = value else {
+            return .error(ServiceError.unexpectedCurrencyType)
+        }
+        return .just(crypto)
+    }
+    
+    private let value: CurrencyType
+    
+    public init(currencyType: CurrencyType) {
+        self.value = currencyType
+    }
+}

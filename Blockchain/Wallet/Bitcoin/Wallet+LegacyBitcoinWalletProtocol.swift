@@ -12,6 +12,8 @@ protocol LegacyBitcoinWalletProtocol: class {
     
     func bitcoinDefaultWalletIndex(with secondPassword: String?, success: @escaping (Int) -> Void, error: @escaping (String) -> Void)
     
+    func bitcoinWalletIndex(receiveAddress: String, success: @escaping (Int32) -> Void, error: @escaping (String) -> Void)
+    
     func bitcoinWallets(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void)
     
     func hdWallet(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void)
@@ -84,6 +86,27 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         } else {
             script = "\(function)()"
         }
+        context.evaluateScript(script)
+    }
+    
+    func bitcoinWalletIndex(receiveAddress: String, success: @escaping (Int32) -> Void, error: @escaping (String) -> Void) {
+        guard isInitialized() else {
+            error("Wallet is not yet initialized.")
+            return
+        }
+        bitcoin.interopDispatcher.getWalletIndex.addObserver { result in
+            switch result {
+            case .success(let defaultWalletIndex):
+                success(defaultWalletIndex)
+            case .failure(let errorMessage):
+                error(errorMessage.localizedDescription)
+            }
+        }
+        let function: String = "MyWalletPhone.getBitcoinWalletIndexAsync"
+        let script: String
+        let address = receiveAddress.escapedForJS()
+        
+        script = "\(function)(\"\(address)\")"
         context.evaluateScript(script)
     }
     

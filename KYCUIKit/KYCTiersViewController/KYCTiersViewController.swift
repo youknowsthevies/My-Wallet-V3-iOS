@@ -23,7 +23,7 @@ protocol KYCTiersInterface: AnyObject {
     func collectionViewVisibility(_ visibility: Visibility)
 }
 
-public class KYCTiersViewController: UIViewController {
+public final class KYCTiersViewController: UIViewController {
 
     // MARK: Private IBOutlets
 

@@ -25,7 +25,7 @@ extension APIClient {
             id: "12-34-56-78",
             address: "4250 Executive Square, La Jolla, California, 92037",
             agent: mockAgent,
-            currency: currency,
+            currency: .fiat(currency),
             state: .pending
         )
     }

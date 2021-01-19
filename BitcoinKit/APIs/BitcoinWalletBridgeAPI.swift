@@ -52,5 +52,7 @@ public protocol BitcoinWalletBridgeAPI: AnyObject {
     func updateMemo(for transactionHash: String, memo: String?) -> Completable
 
     func receiveAddress(forXPub xpub: String) -> Single<String>
+    
+    func walletIndex(for receiveAddress: String) -> Single<Int32>
 }
 

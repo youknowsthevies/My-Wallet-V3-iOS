@@ -12,17 +12,17 @@ import RxSwift
 import stellarsdk
 import ToolKit
 
-class StellarAssetAccountDetailsService: AssetAccountDetailsAPI {
+final class StellarAssetAccountDetailsService: AssetAccountDetailsAPI {
     typealias AccountDetails = StellarAssetAccountDetails
     
-    private let configurationService: StellarConfigurationAPI
+    private let horizonProxy: HorizonProxyAPI
 
-    init(configurationService: StellarConfigurationAPI = resolve()) {
-        self.configurationService = configurationService
+    init(horizonProxy: HorizonProxyAPI = resolve()) {
+        self.horizonProxy = horizonProxy
     }
     
     func accountDetails(for accountID: String) -> Single<AccountDetails> {
-        accountResponse(for: accountID)
+        horizonProxy.accountResponse(for: accountID)
             .map { response -> AccountDetails in
                 response.toAssetAccountDetails()
             }
@@ -36,15 +36,6 @@ class StellarAssetAccountDetailsService: AssetAccountDetailsAPI {
                     throw error
                 }
             }
-    }
-    
-    // MARK: Private Functions
-    
-    private func accountResponse(for accountID: String) -> Single<stellarsdk.AccountResponse> {
-        configurationService
-            .configuration
-            .map { $0.sdk.accounts }
-            .flatMap { $0.getAccountDetails(accountId: accountID) }
     }
 }
 

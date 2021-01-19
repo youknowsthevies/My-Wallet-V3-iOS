@@ -23,7 +23,10 @@ public final class AmountLabelView: UIView {
             
             presenter.output
                 .map { $0.string }
-                .drive(amountLabel.rx.attributedText)
+                .drive(weak: self, onNext: { (self, attributedText) in
+                    self.amountLabel.attributedText = attributedText
+                    self.amountLabel.lineBreakMode = .byClipping
+                })
                 .disposed(by: disposeBag)
             
             presenter.output
@@ -55,13 +58,13 @@ public final class AmountLabelView: UIView {
     
     private func setup() {
         addSubview(amountLabel)
-        amountLabel.fillSuperview()
+        amountLabel.layoutToSuperview(.leading, .trailing, .bottom, .top)
         amountLabel.minimumScaleFactor = 0.35
         amountLabel.adjustsFontSizeToFitWidth = true
         amountLabel.textAlignment = .center
         amountLabel.baselineAdjustment = .alignCenters
         
-        amountLabel.horizontalContentHuggingPriority = UILayoutPriority.penultimateHigh
-        amountLabel.horizontalContentCompressionResistancePriority = UILayoutPriority.penultimateHigh
+        amountLabel.horizontalContentHuggingPriority = UILayoutPriority.required
+        amountLabel.horizontalContentCompressionResistancePriority = UILayoutPriority.defaultLow
     }
 }

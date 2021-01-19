@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import RxCocoa
 import RxRelay
@@ -49,7 +50,7 @@ public final class AssetLineChartInteractor: AssetLineChartInteracting {
     
     public init(cryptoCurrency: CryptoCurrency,
                 fiatCurrency: FiatCurrency,
-                priceService: PriceServiceAPI = PriceService()) {
+                priceService: PriceServiceAPI = resolve()) {
         self.fiatCurrency = fiatCurrency
         self.priceService = priceService
         self.cryptoCurrency = cryptoCurrency

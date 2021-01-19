@@ -1,0 +1,31 @@
+//
+//  CustodialAddressService.swift
+//  PlatformKit
+//
+//  Created by Alex McGregor on 11/18/20.
+//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+import DIKit
+import RxSwift
+
+public protocol CustodialAddressServiceAPI {
+    func receiveAddress(for cryptoCurrency: CryptoCurrency) -> Single<String>
+}
+
+final class CustodialAddressService: CustodialAddressServiceAPI {
+    
+    private let client: CustodialPaymentAccountClientAPI
+    
+    // MARK: - Setup
+
+    init(client: CustodialPaymentAccountClientAPI = resolve()) {
+        self.client = client
+    }
+    
+    func receiveAddress(for cryptoCurrency: CryptoCurrency) -> Single<String> {
+        client.custodialPaymentAccount(for: cryptoCurrency)
+            .map(\.account)
+            .map(\.address)
+    }
+}

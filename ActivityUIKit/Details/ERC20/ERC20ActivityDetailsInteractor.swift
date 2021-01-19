@@ -25,7 +25,7 @@ final class ERC20ActivityDetailsInteractor {
 
     init(wallet: EthereumWalletBridgeAPI = resolve(),
          fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
-         priceService: PriceServiceAPI = PriceService(),
+         priceService: PriceServiceAPI = resolve(),
          detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> = resolve(),
          cryptoCurrency: CryptoCurrency) {
         self.cryptoCurrency = cryptoCurrency

@@ -26,26 +26,25 @@ final class AccountPickerInteractor: PresentableInteractor<AccountPickerPresenta
 
     // MARK: - Private Properties
 
-    private let action: AssetAction
-    private let coincore: Coincore
-    private let didSelect: AccountPickerDidSelect
+    private let accountProvider: AccountPickerAccountProviding
+    private let didSelect: AccountPickerDidSelect?
     private let disposeBag = DisposeBag()
-    private let singleAccountsOnly: Bool
-    private let sourceAccount: CryptoAccount?
+    private weak var listener: AccountPickerListener?
 
     // MARK: - Init
 
     init(presenter: AccountPickerPresentable,
-         singleAccountsOnly: Bool,
-         sourceAccount: CryptoAccount?,
-         coincore: Coincore = resolve(),
-         action: AssetAction,
-         didSelect: @escaping AccountPickerDidSelect) {
-        self.action = action
-        self.coincore = coincore
-        self.sourceAccount = sourceAccount
-        self.didSelect = didSelect
-        self.singleAccountsOnly = singleAccountsOnly
+         accountProvider: AccountPickerAccountProviding,
+         listener: AccountPickerListenerBridge) {
+        self.accountProvider = accountProvider
+        switch listener {
+        case .simple(let didSelect):
+            self.didSelect = didSelect
+            self.listener = nil
+        case .listener(let listener):
+            self.didSelect = nil
+            self.listener = listener
+        }
         super.init(presenter: presenter)
     }
 
@@ -54,32 +53,7 @@ final class AccountPickerInteractor: PresentableInteractor<AccountPickerPresenta
     override func didBecomeActive() {
         super.didBecomeActive()
 
-        let action = self.action
-        let singleAccountsOnly = self.singleAccountsOnly
-
-        func allCoincoreAccounts() -> Single<[BlockchainAccount]> {
-            coincore.allAccounts
-                .map { allAccountsGroup -> [BlockchainAccount] in
-                    if singleAccountsOnly {
-                        return allAccountsGroup.accounts
-                    }
-                    return [allAccountsGroup] + allAccountsGroup.accounts
-                }
-                .map { $0.filter { $0.actions.contains(action) } }
-        }
-
-        func targetAccounts(sourceAccount: CryptoAccount) -> Single<[SingleAccount]> {
-            coincore.getTransactionTargets(sourceAccount: sourceAccount, action: action)
-        }
-
-        let dataSource: Single<[BlockchainAccount]>
-        if let sourceAccount = self.sourceAccount {
-            dataSource = targetAccounts(sourceAccount: sourceAccount).map { $0 }
-        } else {
-            dataSource = allCoincoreAccounts()
-        }
-
-        let interactorState: Driver<State> = dataSource
+        let interactorState: Driver<State> = accountProvider.accounts
             .map { accounts -> [AccountPickerCellItem.Interactor] in
                 accounts.map(\.accountPickerCellItemInteractor)
             }
@@ -94,17 +68,17 @@ final class AccountPickerInteractor: PresentableInteractor<AccountPickerPresenta
             .disposeOnDeactivate(interactor: self)
     }
 
-    override func willResignActive() {
-        super.willResignActive()
-        // TODO: Pause any business logic.
-    }
-
     // MARK: - Private methods
 
     private func handle(effects: Effects) {
         switch effects {
         case .select(let account):
-            didSelect(account)
+            didSelect?(account)
+            listener?.didSelect(blockchainAccount: account)
+        case .back:
+            listener?.didTapBack()
+        case .closed:
+            listener?.didTapClose()
         case .none:
             break
         }
@@ -119,6 +93,8 @@ extension AccountPickerInteractor {
 
     enum Effects {
         case select(BlockchainAccount)
+        case back
+        case closed
         case none
     }
 }

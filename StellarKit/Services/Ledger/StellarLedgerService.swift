@@ -12,30 +12,31 @@ import RxRelay
 import RxSwift
 import stellarsdk
 
-public class StellarLedgerService: StellarLedgerAPI {
+final class StellarLedgerService: StellarLedgerServiceAPI {
 
-    public let fallbackBaseReserve: Decimal = 0.5
-    public let fallbackBaseFee: Decimal = CryptoValue.stellar(minor: StellarTransactionFee.defaultLimits.min).displayMajorValue
+    // MARK: - StellarLedgerServiceAPI
     
-    public var current: Observable<StellarLedger> {
-        fetchLedgerStartingWithCache(
-            cachedValue: privateLedger,
-            networkValue: fetchLedger
-        )
+    let fallbackBaseReserve: Decimal = 0.5
+    let fallbackBaseFee: Decimal = CryptoValue.stellar(minor: StellarTransactionFee.defaultLimits.min).displayMajorValue
+    
+    var current: Observable<StellarLedger> {
+        guard let cachedValue = privateLedger.value else {
+            return fetchLedger.asObservable()
+        }
+        return fetchLedger.asObservable().startWith(cachedValue)
     }
     
-    public var currentLedger: StellarLedger? {
+    var currentLedger: StellarLedger? {
         privateLedger.value
     }
     
-    private var privateLedger = BehaviorRelay<StellarLedger?>(value: nil)
+    private let privateLedger = BehaviorRelay<StellarLedger?>(value: nil)
     
     private var fetchLedger: Single<StellarLedger> {
         Single.zip(getLedgers, feeService.fees)
-            .flatMap { value -> Single<StellarLedger> in
-                let (ledger, fees) = value
+            .flatMap { (ledger, fees) -> Single<StellarLedger> in
                 // Convert from Lumens to stroops
-                guard let baseFeeInStroops: Int = try? StellarValue(value: fees.regular).stroops() else {
+                guard let baseFeeInStroops: Int = Int(fees.regular.minorString) else {
                     return Single.just(ledger.apply(baseFeeInStroops: StellarTransactionFee.defaultLimits.min))
                 }
                 return Single.just(ledger.apply(baseFeeInStroops: baseFeeInStroops))
@@ -46,72 +47,18 @@ public class StellarLedgerService: StellarLedgerAPI {
     }
     
     private var getLedgers: Single<StellarLedger> {
-        ledgersService.flatMap(weak: self) { (self, ledgersService) -> Single<StellarLedger> in
-            Single<StellarLedger>.create { observer -> Disposable in
-                ledgersService.ledgers(cursor: nil, order: .descending, limit: 1) { result in
-                    switch result {
-                    case .success(let value):
-                        if let input = value.allRecords.first {
-                            let ledger = StellarLedger(
-                                identifier: input.id,
-                                token: input.pagingToken,
-                                sequence: Int(input.sequenceNumber),
-                                transactionCount: input.successfulTransactionCount,
-                                operationCount: input.operationCount,
-                                closedAt: input.closedAt,
-                                totalCoins: input.totalCoins,
-                                baseFeeInStroops: input.baseFeeInStroops,
-                                baseReserveInStroops: input.baseReserveInStroops
-                            )
-                            observer(.success(ledger))
-                        } else {
-                            observer(.error(NSError() as Error))
-                        }
-                    case .failure(let error):
-                        observer(.error(error))
-                    }
-                }
-                return Disposables.create()
+        ledgersServiceProvider.ledgersService
+            .flatMap(weak: self) { (self, ledgersService) -> Single<StellarLedger> in
+                ledgersService.ledgers(cursor: nil, order: .descending, limit: 1)
             }
-        }
-    }
-    
-    private var ledgersService: Single<LedgersServiceAPI> {
-        guard let ledgersService = ledgersServiceValue else {
-            return sdk.map { $0.ledgers }
-        }
-        return Single.just(ledgersService)
     }
 
-    private var sdk: Single<stellarsdk.StellarSDK> {
-        configuration.map { $0.sdk }
-    }
+    private let ledgersServiceProvider: LedgersServiceProviderAPI
+    private let feeService: AnyCryptoFeeService<StellarTransactionFee>
     
-    private var configuration: Single<StellarConfiguration> {
-        configurationService.configuration
-    }
-    
-    private let configurationService: StellarConfigurationAPI
-    private let feeService: StellarFeeServiceAPI
-    private let ledgersServiceValue: LedgersServiceAPI?
-    
-    public init(
-        configurationService: StellarConfigurationAPI = resolve(),
-        ledgersService: LedgersServiceAPI? = nil,
-        feeService: StellarFeeServiceAPI = StellarFeeService.shared) {
-        self.ledgersServiceValue = ledgersService
-        self.configurationService = configurationService
+    init(ledgersServiceProvider: LedgersServiceProviderAPI = resolve(),
+         feeService: AnyCryptoFeeService<StellarTransactionFee> = resolve()) {
+        self.ledgersServiceProvider = ledgersServiceProvider
         self.feeService = feeService
-    }
-    
-    private func fetchLedgerStartingWithCache(
-        cachedValue: BehaviorRelay<StellarLedger?>,
-        networkValue: Single<StellarLedger>
-        ) -> Observable<StellarLedger> {
-        let networkObservable = networkValue.asObservable()
-        guard let cachedValue = cachedValue.value else {
-            return networkObservable
-        }
-        return networkObservable.startWith(cachedValue)
     }
 }

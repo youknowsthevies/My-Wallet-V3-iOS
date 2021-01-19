@@ -44,7 +44,7 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
     private let validationService: WithdrawAmountValidationService
 
     /// The interactor that `SendAuxililaryViewPresenter` uses
-    private let auxiliaryViewInteractor: SendAuxililaryViewInteractor
+    private let auxiliaryViewInteractor: SendAuxililaryViewInteractorAPI
     /// The interactor that `SingleAmountPreseneter` uses
     private let amountInteractor: SingleAmountInteractor
 

@@ -13,13 +13,16 @@ import PlatformKit
 import RxSwift
 import web3swift
 
-class EthereumWalletAccountRepositoryMock: EthereumWalletAccountRepositoryAPI, KeyPairProviderNewAPI {
+class EthereumWalletAccountRepositoryMock: EthereumWalletAccountRepositoryAPI, KeyPairProviderAPI {
     
     var keyPairValue = Single.just(MockEthereumWalletTestData.keyPair)
     var keyPair: Single<EthereumKeyPair> {
         keyPairValue
     }
-    
+    func keyPair(with secondPassword: String?) -> Single<EthereumKeyPair> {
+        keyPairValue
+    }
+
     static let ethereumWalletAccount = EthereumWalletAccount(
         index: 0,
         publicKey: "",

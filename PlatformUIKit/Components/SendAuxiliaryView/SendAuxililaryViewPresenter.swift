@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
-import ToolKit
 import PlatformKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 public final class SendAuxililaryViewPresenter {
     
@@ -25,7 +25,7 @@ public final class SendAuxililaryViewPresenter {
     private let buttonVisibility: Visibility
     private let disposeBag = DisposeBag()
     
-    public init(interactor: SendAuxililaryViewInteractor,
+    public init(interactor: SendAuxililaryViewInteractorAPI,
                 availableBalanceTitle: String,
                 maxButtonTitle: String,
                 maxButtonVisibility: Visibility = .visible) {

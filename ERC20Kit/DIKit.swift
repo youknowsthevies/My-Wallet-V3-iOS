@@ -8,6 +8,7 @@
 
 import DIKit
 import PlatformKit
+import TransactionKit
 
 extension DependencyContainer {
 
@@ -20,6 +21,10 @@ extension DependencyContainer {
         factory(tag: CryptoCurrency.pax) { ERC20Asset<PaxToken>() as CryptoAsset }
 
         factory { ERC20AssetAccountRepository<PaxToken>() }
+        
+        factory(tag: CryptoCurrency.pax) { ERC20OnChainTransactionEngineFactory<PaxToken>() as OnChainTransactionEngineFactory }
+        
+        factory(tag: CryptoCurrency.pax) { ERC20ExternalAssetAddressFactory<PaxToken>() as CryptoReceiveAddressFactory }
 
         factory(tag: CryptoCurrency.pax) {
             AnyAssetAccountDetailsAPI(
@@ -53,6 +58,10 @@ extension DependencyContainer {
         factory(tag: CryptoCurrency.tether) { ERC20Asset<TetherToken>() as CryptoAsset }
 
         factory { ERC20AssetAccountRepository<TetherToken>() }
+        
+        factory(tag: CryptoCurrency.tether) { ERC20OnChainTransactionEngineFactory<TetherToken>() as OnChainTransactionEngineFactory }
+        
+        factory(tag: CryptoCurrency.tether) { ERC20ExternalAssetAddressFactory<TetherToken>() as CryptoReceiveAddressFactory }
 
         factory(tag: CryptoCurrency.tether) {
             AnyAssetAccountDetailsAPI(
@@ -79,6 +88,10 @@ extension DependencyContainer {
         factory(tag: CryptoCurrency.wDGLD) { ERC20Asset<WDGLDToken>() as CryptoAsset }
 
         factory { ERC20AssetAccountRepository<WDGLDToken>() }
+        
+        factory(tag: CryptoCurrency.wDGLD) { ERC20OnChainTransactionEngineFactory<WDGLDToken>() as OnChainTransactionEngineFactory }
+
+        factory(tag: CryptoCurrency.wDGLD) { ERC20ExternalAssetAddressFactory<WDGLDToken>() as CryptoReceiveAddressFactory }
 
         factory(tag: CryptoCurrency.wDGLD) {
             AnyAssetAccountDetailsAPI(

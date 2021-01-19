@@ -92,7 +92,7 @@ extension Money {
     
     @available(*, deprecated, message: "please use `displayString` instead")
     public var displayMajorValue: Decimal {
-        amount.toDisplayMajor(maxDecimalPlaces: currency.maxDecimalPlaces)
+        amount.toDecimalMajor(baseDecimalPlaces: currency.maxDecimalPlaces, roundingDecimalPlaces: currency.maxDecimalPlaces)
     }
     
     public var currencyCode: String {

@@ -12,6 +12,7 @@ import RxCocoa
 import RxDataSources
 import RxRelay
 import RxSwift
+import ToolKit
 
 protocol AccountPickerViewControllable: ViewControllable {
     func connect(state: Driver<AccountPickerPresenter.State>) -> Driver<AccountPickerInteractor.Effects>
@@ -26,9 +27,12 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
     // MARK: - Private Properties
 
     private var disposeBag = DisposeBag()
+    private let shouldOverrideNavigationEffects: Bool
     private let tableView = UITableView(frame: .zero, style: .grouped)
-    private let headerBuilder = AccountPickerHeaderBuilder()
-    private let headerRelay = BehaviorRelay<AccountPickerHeaderType>(value: .none)
+    private let headerRelay = BehaviorRelay<HeaderBuilder?>(value: nil)
+    private let backButtonRelay = PublishRelay<Void>()
+    private let closeButtonRelay = PublishRelay<Void>()
+
     private lazy var dataSource: RxDataSource = {
         RxDataSource(configureCell: { [weak self] dataSource, tableView, indexPath, item in
             guard let self = self else { return UITableViewCell() }
@@ -43,8 +47,8 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
             return cell
         })
     }()
+
     private lazy var setupTableView: Void = {
-        tableView.delegate = self
         tableView.backgroundColor = .white
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = UITableView.automaticDimension
@@ -53,6 +57,14 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
         tableView.register(CurrentBalanceTableViewCell.self)
         tableView.registerNibCell(AccountGroupBalanceTableViewCell.self)
     }()
+
+    init(shouldOverrideNavigationEffects: Bool) {
+        self.shouldOverrideNavigationEffects = shouldOverrideNavigationEffects
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { unimplemented() }
 
     // MARK: - Lifecycle
 
@@ -66,9 +78,16 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
     // MARK: - Methods
     func connect(state: Driver<AccountPickerPresenter.State>) -> Driver<AccountPickerInteractor.Effects> {
         disposeBag = DisposeBag()
-        // TODO: IOS-3987 Deal with view life cycle in a different way.
-        _ = setupTableView
-        state
+        tableView.delegate = self
+
+        let stateWait: Driver<AccountPickerPresenter.State> =
+            self.rx.viewDidLoad
+            .asDriver()
+            .flatMap { _ in
+                state
+            }
+
+        stateWait
             .map(\.navigationModel)
             .drive(weak: self) { (self, model) in
                 self.titleViewStyle = model.titleViewStyle
@@ -78,11 +97,12 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
             }
             .disposed(by: disposeBag)
 
-        state.map(\.headerModel)
+        stateWait.map(\.headerModel)
+            .map { AccountPickerHeaderBuilder(headerType: $0) }
             .drive(headerRelay)
             .disposed(by: disposeBag)
 
-        state.map(\.sections)
+        stateWait.map(\.sections)
             .drive(tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
 
@@ -90,7 +110,43 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
             .map { AccountPickerInteractor.Effects.select($0.account) }
             .asDriver(onErrorJustReturn: .none)
 
-        return modelSelected
+        let backButtonEffect = backButtonRelay
+            .map { AccountPickerInteractor.Effects.back }
+            .asDriverCatchError()
+
+        let closeButtonEffect = closeButtonRelay
+            .map { AccountPickerInteractor.Effects.closed }
+            .asDriverCatchError()
+
+        return .merge(modelSelected, backButtonEffect, closeButtonEffect)
+    }
+
+    override func navigationBarLeadingButtonPressed() {
+        guard shouldOverrideNavigationEffects else {
+            super.navigationBarLeadingButtonPressed()
+            return
+        }
+        switch leadingButtonStyle {
+        case .close:
+            closeButtonRelay.accept(())
+        case .back:
+            backButtonRelay.accept(())
+        default:
+            super.navigationBarLeadingButtonPressed()
+        }
+    }
+
+    override func navigationBarTrailingButtonPressed() {
+        guard shouldOverrideNavigationEffects else {
+            super.navigationBarTrailingButtonPressed()
+            return
+        }
+        switch trailingButtonStyle {
+        case .close:
+            closeButtonRelay.accept(())
+        default:
+            super.navigationBarLeadingButtonPressed()
+        }
     }
 
     // MARK: - Private Methods
@@ -111,11 +167,11 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
 extension AccountPickerViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard section == 0 else { return nil }
-        return headerBuilder.view(for: headerRelay.value, fittingWidth: view.bounds.width)
+        return headerRelay.value?.view(fittingWidth: view.bounds.width, customHeight: nil)
     }
-
+    
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         guard section == 0 else { return 0 }
-        return headerBuilder.defaultHeight(for: headerRelay.value)
+        return headerRelay.value?.defaultHeight ?? 0
     }
 }

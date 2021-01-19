@@ -11,6 +11,7 @@ public enum CompositeStatusViewType: Equatable {
     public struct Composite: Equatable {
         public enum BaseViewType: Equatable {
             case image(String)
+            case templateImage(name: String, templateColor: UIColor)
             case text(String)
         }
         

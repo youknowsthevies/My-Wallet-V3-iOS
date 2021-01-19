@@ -47,7 +47,7 @@ class SendPaxCoordinator {
     
     init(
         interface: SendPAXInterface,
-        priceService: PriceServiceAPI = PriceService(),
+        priceService: PriceServiceAPI = resolve(),
         exchangeAddressPresenter: SendExchangeAddressStatePresenter,
         bus: WalletActionEventBus = WalletActionEventBus.shared,
         analyticsRecorder: AnalyticsEventRecording = resolve(),

@@ -11,10 +11,16 @@ import RxCocoa
 import RxRelay
 import RxSwift
 
-public protocol DetailsScreenPresenterAPI: class {
+public protocol HeaderBuilder {
+    var defaultHeight: CGFloat { get }
+    func view(fittingWidth width: CGFloat, customHeight: CGFloat?) -> UIView?
+}
+
+public protocol DetailsScreenPresenterAPI: AnyObject {
 
     var buttons: [ButtonViewModel] { get }
     var cells: [DetailsScreen.CellType] { get }
+
     var titleView: Driver<Screen.Style.TitleView> { get }
     var titleViewRelay: BehaviorRelay<Screen.Style.TitleView> { get }
     var navigationBarAppearance: DetailsScreen.NavigationBarAppearance { get }
@@ -25,21 +31,23 @@ public protocol DetailsScreenPresenterAPI: class {
     var reload: Signal<Void> { get }
 
     func viewDidLoad()
-
+    func header(for section: Int) -> HeaderBuilder?
 }
 
 public extension DetailsScreenPresenterAPI {
-
+    
     var buttons: [ButtonViewModel] { [] }
-
-    func viewDidLoad() { /* NOOP */ }
-
-    var reload: Signal<Void> {
-        reloadRelay.asSignal()
-    }
 
     var titleView: Driver<Screen.Style.TitleView> {
         titleViewRelay.asDriver()
     }
+    
+    var reload: Signal<Void> {
+        reloadRelay.asSignal()
+    }
+
+    func viewDidLoad() { /* NOOP */ }
+    
+    func header(for section: Int) -> HeaderBuilder? { nil }
 }
 

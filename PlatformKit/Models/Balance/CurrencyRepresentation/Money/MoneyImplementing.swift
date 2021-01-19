@@ -34,6 +34,15 @@ extension MoneyImplementing {
         Self.init(amount: BigInt.zero, currency: currency)
     }
     
+    /// The `1` value of the currency (e.g. `1 USD`, or `1 BTC`)
+    /// - Parameter currency: the currency
+    public static func one(currency: MoneyCurrency) -> Self {
+        Self.init(
+            amount: BigInt.one.toMinor(maxDecimalPlaces: currency.maxDecimalPlaces),
+            currency: currency
+        )
+    }
+    
     // MARK: - Major value
 
     /// Creates a `Money` conforming type from a provided a `String` value in major units and currency code.
@@ -119,7 +128,7 @@ extension MoneyImplementing {
         return create(major: majorDecimal, currency: currency)
     }
     
-    private static func create(major value: Decimal, currency: MoneyCurrency) -> Self {
+    public static func create(major value: Decimal, currency: MoneyCurrency) -> Self {
         let minorDecimal = value * pow(10, currency.maxDecimalPlaces)
         return create(minor: minorDecimal, currency: currency)
     }

@@ -135,7 +135,7 @@ extension WithdrawAmountValidationService.State {
         case .empty:
             return .empty
         case .maxLimitExceeded(let value):
-            return .maxLimitExceeded(value)
+            return .overMaxLimit(value)
         case .valid:
             return .inBounds
         }

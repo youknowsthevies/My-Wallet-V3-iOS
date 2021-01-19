@@ -6,18 +6,28 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformUIKit
 import RIBs
+import ToolKit
 
 public protocol SwapRootViewControllable: ViewControllable {
     func replaceRoot(viewController: ViewControllable?)
     func present(viewController: ViewControllable?)
-    func push(viewController: ViewControllable?)
 }
 
 final class SwapRootViewController: UINavigationController, SwapRootViewControllable {
 
+    private let topMostViewControllerProvider: TopMostViewControllerProviding
     weak var listener: SwapRootListener?
+
+    init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve()) {
+        self.topMostViewControllerProvider = topMostViewControllerProvider
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder aDecoder: NSCoder) { unimplemented() }
 
     func replaceRoot(viewController: ViewControllable?) {
         guard let viewController = viewController else {
@@ -30,26 +40,8 @@ final class SwapRootViewController: UINavigationController, SwapRootViewControll
         guard let viewController = viewController else {
             return
         }
-        present(viewController.uiviewController, animated: true, completion: nil)
-    }
-
-    func push(viewController: ViewControllable?) {
-        guard let viewController = viewController else {
-            return
-        }
-        switch presentedViewController {
-        case nil:
-            let nav = UINavigationController(rootViewController: viewController.uiviewController)
-            present(nav, animated: true, completion: nil)
-        case .some(let presentedViewController):
-            if presentedViewController is UINavigationController {
-                (presentedViewController as? UINavigationController)?
-                    .pushViewController(viewController.uiviewController, animated: true)
-            } else {
-                presentedViewController.navigationController?
-                    .pushViewController(viewController.uiviewController, animated: true)
-            }
-        }
+        topMostViewControllerProvider.topMostViewController?
+            .present(viewController.uiviewController, animated: true)
     }
 
     override func viewDidAppear(_ animated: Bool) {

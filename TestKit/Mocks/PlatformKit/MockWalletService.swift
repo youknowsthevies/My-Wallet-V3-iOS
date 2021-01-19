@@ -1,6 +1,6 @@
 //
-//  MockWalletService.swift
-//  BlockchainTests
+//  WalletServiceMock.swift
+//  PlatformKitTests
 //
 //  Created by Chris Arriola on 6/13/18.
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
@@ -9,24 +9,21 @@
 import PlatformKit
 import RxSwift
 
-class MockWalletService: WalletOptionsAPI {
-    
-    let message: String?
-    
+class WalletServiceMock: WalletOptionsAPI {
+
+    var underlyingServerUnderMaintenanceMessage: String?
     var serverUnderMaintenanceMessage: Single<String?> {
-        Single.just(message)
+        .just(underlyingServerUnderMaintenanceMessage)
     }
 
-    var mockWalletOptions: WalletOptions?
-
+    var underlyingWalletOptions: WalletOptions = .empty
     var walletOptions: Single<WalletOptions> {
-        if let mockWalletOptions = mockWalletOptions {
-            return Single.just(mockWalletOptions)
-        }
-        return Single.just(WalletOptions(json: ["maintenance": false]))
+        .just(underlyingWalletOptions)
     }
-    
-    init(message: String? = nil) {
-        self.message = message
+}
+
+extension WalletOptions {
+    static var empty: WalletOptions {
+        WalletOptions(json: ["maintenance": false])
     }
 }

@@ -181,6 +181,8 @@ final class AnnouncementPresenter {
                     tiers: preliminaryData.tiers,
                     hasIncompleteBuyFlow: preliminaryData.hasIncompleteBuyFlow
                 )
+            case .newSwap:
+                announcement = newSwap(using: preliminaryData, reappearanceTimeInterval: metadata.interval)
             }
             // Return the first different announcement that should show
             if announcement.shouldShow {
@@ -333,7 +335,9 @@ extension AnnouncementPresenter {
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
             },
-            action: exchangeCoordinator.start
+            action: { [weak exchangeCoordinator] in
+                exchangeCoordinator?.start()
+            }
         )
     }
 
@@ -398,7 +402,9 @@ extension AnnouncementPresenter {
     private func interestAnnouncement(isKYCVerified: Bool) -> Announcement {
         InterestIdentityVerificationAnnouncement(
             isKYCVerified: isKYCVerified,
-            dismiss: hideAnnouncement,
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
+            },
             action: { [weak interestIdentityVerificationRouter] in
                 interestIdentityVerificationRouter?.showInterestDashboardAnnouncementScreen(isKYCVerfied: isKYCVerified)
             })
@@ -442,7 +448,24 @@ extension AnnouncementPresenter {
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
             },
-            action: appCoordinator.switchTabToSwap
+            action: { [weak appCoordinator] in
+                appCoordinator?.switchTabToSwap()
+            }
+        )
+    }
+
+    /// Computes Swap card announcement
+    private func newSwap(using data: AnnouncementPreliminaryData,
+                         reappearanceTimeInterval: TimeInterval) -> Announcement {
+        NewSwapAnnouncement(
+            isEligibleForSimpleBuy: data.isSimpleBuyEligible,
+            isTier1Or2Verified: data.tiers.isTier1Approved || data.tiers.isTier2Approved,
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
+            },
+            action: { [weak appCoordinator] in
+                appCoordinator?.switchTabToSwap()
+            }
         )
     }
 
@@ -455,7 +478,9 @@ extension AnnouncementPresenter {
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
             },
-            action: appCoordinator.startBackupFlow
+            action: { [weak appCoordinator] in
+                appCoordinator?.startBackupFlow()
+            }
         )
     }
 

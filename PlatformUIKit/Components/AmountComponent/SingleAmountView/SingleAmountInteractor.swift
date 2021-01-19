@@ -21,7 +21,8 @@ public final class SingleAmountInteractor {
     public enum State {
         case empty
         case inBounds
-        case maxLimitExceeded(MoneyValue)
+        case overMaxLimit(MoneyValue)
+        case underMinLimit(MoneyValue)
     }
 
     // MARK: - Properties
@@ -37,7 +38,7 @@ public final class SingleAmountInteractor {
     public let amount: Observable<MoneyValue>
 
     public let currencyInteractor: InputAmountLabelInteractor
-    public let currency: Currency
+    public let inputCurrency: Currency
 
     // MARK: - Private
     private let currencyService: CurrencyServiceAPI
@@ -45,18 +46,18 @@ public final class SingleAmountInteractor {
     private let disposeBag = DisposeBag()
 
     public init(currencyService: CurrencyServiceAPI,
-                currency: Currency) {
+                inputCurrency: Currency) {
         self.currencyService = currencyService
-        self.currency = currency
-        self.currencyInteractor = InputAmountLabelInteractor(currency: currency)
+        self.inputCurrency = inputCurrency
+        self.currencyInteractor = InputAmountLabelInteractor(currency: inputCurrency)
 
         self.amount = currencyInteractor
             .scanner
             .input
-            .compactMap { [currency] input -> MoneyValue? in
+            .compactMap { [inputCurrency] input -> MoneyValue? in
                 let amount = input.isEmpty || input.isPlaceholderZero ? "0" : input.amount
                 return MoneyValue.create(major: amount,
-                                         currency: currency.currency)
+                                         currency: inputCurrency.currency)
             }
             .share(replay: 1, scope: .whileConnected)
     }
@@ -106,7 +107,7 @@ extension SingleAmountInteractor.State {
         switch self {
         case .inBounds:
             return .valid
-        case .empty, .maxLimitExceeded:
+        case .empty, .overMaxLimit, .underMinLimit:
             return .invalid
         }
     }

@@ -292,6 +292,7 @@ targets:
     - target: ToolKit
     - target: NetworkKit
     - target: Localization
+    - target: TransactionKit
     - carthage: BigInt
     - carthage: DIKit
     - carthage: RxRelay
@@ -324,6 +325,7 @@ targets:
     - target: ToolKit
     - target: NetworkKit
     - target: Localization
+    - target: TransactionKit
     - carthage: BigInt
     - carthage: DIKit
     - carthage: RxRelay
@@ -658,6 +660,7 @@ targets:
     - target: PlatformKit
     - target: Localization
     - target: ToolKit
+    - target: TransactionKit
     - carthage: DIKit
     - carthage: RxCocoa
     - carthage: RxRelay
@@ -691,6 +694,7 @@ targets:
     - target: PlatformKit
     - target: Localization
     - target: ToolKit
+    - target: TransactionKit
     - carthage: keccak
     - carthage: PromiseKit
     - carthage: BigInt
@@ -982,6 +986,7 @@ targets:
     - target: PlatformKit
     - target: Localization
     - target: ToolKit
+    - target: TransactionKit
     - carthage: DIKit
     - carthage: RxRelay
     - carthage: RxSwift
@@ -1098,6 +1103,8 @@ targets:
     - target: PlatformKit
     - target: PlatformUIKit
     - target: ToolKit
+    - target: KYCKit
+    - target: KYCUIKit
     - carthage: BigInt
     - carthage: DIKit
     - carthage: RxCocoa

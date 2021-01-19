@@ -47,7 +47,7 @@ public final class LabeledButtonView<ViewModel: LabeledButtonViewModelAPI>: UIVi
     }
     @available(*, unavailable)
     required init?(coder: NSCoder) { nil }
-    
+
     private func setupButton() {
         addSubview(button)
         button.layoutToSuperview(axis: .horizontal)

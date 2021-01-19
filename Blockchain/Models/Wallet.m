@@ -2060,65 +2060,64 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 # pragma mark - Retail Core
 
-- (void)createOrderPaymentWithOrderTransaction:(OrderTransactionLegacy *_Nonnull)orderTransaction completion:(void (^ _Nonnull)(void))completion success:(void (^)(NSString *_Nonnull))success error:(void (^ _Nonnull)(NSString *_Nonnull))error
+- (void)createOrderPaymentWithOrderTransaction:(OrderTransactionLegacy * _Nonnull)orderTransaction
+                                    completion:(void (^ _Nonnull)(void))completion
+                                       success:(void (^ _Nonnull)(NSDictionary * _Nonnull))success
+                                         error:(void (^ _Nonnull)(NSDictionary * _Nonnull))error
 {
-    [self.context invokeOnceWithStringFunctionBlock:^(NSString * _Nonnull response) {
+    [self.context invokeOnceWithValueFunctionBlock:^(JSValue * _Nonnull responseValue) {
         completion();
-        success(response);
+        NSData *data = [[responseValue toString] dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        success(json);
     } forJsFunctionName:@"objc_on_create_order_payment_success"];
 
+    uint64_t amount = [NSNumberFormatter parseBitcoinValueFrom:orderTransaction.amount];
+    uint64_t fees = [NSNumberFormatter parseBitcoinValueFrom:orderTransaction.fees];
+    NSString *formattedAmount = [NSString stringWithFormat:@"%lld", amount];
+    NSString *formattedFee = [NSString stringWithFormat:@"%lld", fees];
     NSString *tradeExecutionType;
-    NSString *formattedAmount;
-    NSString *formattedFee;
     
     if (orderTransaction.legacyAssetType == LegacyAssetTypeBitcoin) {
         tradeExecutionType = @"bitcoin";
-        uint64_t amount = [NSNumberFormatter parseBitcoinValueFrom:orderTransaction.amount];
-        uint64_t fees = [NSNumberFormatter parseBitcoinValueFrom:orderTransaction.fees];
-        formattedAmount = [NSString stringWithFormat:@"%lld", amount];
-        formattedFee = [NSString stringWithFormat:@"%lld", fees];
         [self.context invokeOnceWithValueFunctionBlock:^(JSValue *_Nonnull errorValue) {
             completion();
             /// TODO: We used to provide a more user friendly message noting that the user may not have
             /// enough BTC to cover fees. However we use this closure to report various error messages and
             /// diagnose why trades may be expiring, so we need to display the actual error that is thrown
             /// by the JS layer.
-            NSString *errorMessage = [errorValue toString];
-            error(errorMessage);
+            NSData *data = [[errorValue toString] dataUsingEncoding:NSUTF8StringEncoding];
+            NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            error(json);
         } forJsFunctionName:@"objc_on_create_order_payment_error"];
     } else if (orderTransaction.legacyAssetType == LegacyAssetTypeBitcoinCash) {
         tradeExecutionType = @"bitcoinCash";
-        uint64_t amount = [NSNumberFormatter parseBitcoinValueFrom:orderTransaction.amount];
-        uint64_t fees = [NSNumberFormatter parseBitcoinValueFrom:orderTransaction.fees];
-        formattedAmount = [NSString stringWithFormat:@"%lld", amount];
-        formattedFee = [NSString stringWithFormat:@"%lld", fees];
-        [self.context invokeOnceWithValueFunctionBlock:^(JSValue * _Nonnull errorValue) {
-            NSString *errorMessage = [errorValue toString];
-            completion();
-            error(errorMessage);
-        } forJsFunctionName:@"objc_on_create_order_payment_error"];
-    } else if (orderTransaction.legacyAssetType == LegacyAssetTypeEther) {
-        tradeExecutionType = @"ether";
-        formattedAmount = orderTransaction.amount;
-        formattedFee = orderTransaction.fees;
         [self.context invokeOnceWithValueFunctionBlock:^(JSValue * _Nonnull errorValue) {
             completion();
-            NSString *errorMessage = [errorValue toString];
-            error(errorMessage);
+            NSData *data = [[errorValue toString] dataUsingEncoding:NSUTF8StringEncoding];
+            NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            error(json);
         } forJsFunctionName:@"objc_on_create_order_payment_error"];
     } else {
         DLog(@"Unsupported legacy asset type");
         return;
     }
-    NSString *script = [NSString stringWithFormat:@"MyWalletPhone.tradeExecution.%@.createPayment(%d, \"%@\", %@, %@, %@)", [tradeExecutionType escapedForJS], orderTransaction.from, [orderTransaction.to escapedForJS], [formattedAmount escapedForJS], [formattedFee escapedForJS], [orderTransaction.gasLimit escapedForJS]];
+    NSString *script = [NSString stringWithFormat:@"MyWalletPhone.tradeExecution.%@.createPayment(%d, \"%@\", %@, %@, %@)",
+                        [tradeExecutionType escapedForJS],
+                        orderTransaction.from,
+                        [orderTransaction.to escapedForJS],
+                        [formattedAmount escapedForJS],
+                        [formattedFee escapedForJS],
+                        [orderTransaction.gasLimit escapedForJS]];
     [self.context evaluateScript:script];
 }
 
-- (void)sendOrderTransaction:(LegacyAssetType)legacyAssetType secondPassword:(NSString* _Nullable)secondPassword completion:(void (^ _Nonnull)(void))completion success:(void (^ _Nonnull)(void))success error:(void (^ _Nonnull)(NSString *_Nonnull))error cancel:(void (^ _Nonnull)(void))cancel
+- (void)sendOrderTransaction:(LegacyAssetType)legacyAssetType secondPassword:(NSString* _Nullable)secondPassword completion:(void (^ _Nonnull)(void))completion success:(void (^ _Nonnull)(NSString *_Nonnull))success error:(void (^ _Nonnull)(NSString *_Nonnull))error cancel:(void (^ _Nonnull)(void))cancel
 {
-    [self.context invokeOnceWithFunctionBlock:^{
+    [self.context invokeOnceWithValueFunctionBlock:^(JSValue * _Nonnull txValue) {
+        NSString *txHash = [txValue toString];
         completion();
-        success();
+        success(txHash);
     } forJsFunctionName:@"objc_on_send_order_transaction_success"];
     
     [self.context invokeOnceWithValueFunctionBlock:^(JSValue * _Nonnull errorValue) {

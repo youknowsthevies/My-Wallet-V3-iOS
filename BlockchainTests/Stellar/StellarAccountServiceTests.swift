@@ -12,7 +12,7 @@ import RxSwift
 @testable import StellarKit
 import XCTest
 
-private class MockLedgerService: StellarLedgerAPI {
+private class MockLedgerService: StellarLedgerServiceAPI {
     
     var fallbackBaseReserve: Decimal = 0
     var fallbackBaseFee: Decimal = 0
@@ -25,10 +25,6 @@ private class MockLedgerService: StellarLedgerAPI {
         }
         return Observable.just(ledger)
     }
-}
-
-class StellarConfigurationServiceMock: StellarConfigurationAPI {
-    var configuration: Single<StellarConfiguration> = Single.just(StellarConfiguration.Stellar.test)
 }
 
 class StellarAccountServiceTests: XCTestCase {

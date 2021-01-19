@@ -26,6 +26,14 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
         kind.depositTxHash
     }
     
+    public var isCustodial: Bool {
+        !isNonCustodial
+    }
+    
+    public var isNonCustodial: Bool {
+        kind.direction == .onChain
+    }
+    
     public var token: String {
         identifier
     }

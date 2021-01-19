@@ -98,9 +98,9 @@ final class CardDetailsScreenViewController: BaseTableViewController {
             .bindAndCatch(weak: self) { (self, state) in
                 switch state.visibility {
                 case .visible:
-                    self.tableViewBottomConstraint.constant = state.payload.height - self.view.safeAreaInsets.bottom
+                    self.contentBottomConstraint.constant = state.payload.height - self.view.safeAreaInsets.bottom
                 case .hidden:
-                    self.tableViewBottomConstraint.constant = 0
+                    self.contentBottomConstraint.constant = 0
                 }
                 self.view.layoutIfNeeded()
             }

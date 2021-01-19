@@ -22,8 +22,11 @@ final class SingleAccountBadgeFactory {
 
     private func swapBadges(account: BlockchainAccount) -> Single<[BadgeAssetPresenting]> {
         if account is CryptoTradingAccount {
-            let lowFeeBadge = DefaultBadgeAssetPresenter.makeLowFeesBadge()
-            return .just([lowFeeBadge])
+            let badges = [
+                DefaultBadgeAssetPresenter.makeLowFeesBadge(),
+                DefaultBadgeAssetPresenter.makeFasterBadge()
+            ]
+            return .just(badges)
         } else {
             return .just([])
         }
@@ -35,6 +38,12 @@ fileprivate extension DefaultBadgeAssetPresenter {
 
     static func makeLowFeesBadge() -> DefaultBadgeAssetPresenter {
         let item = BadgeAsset.Value.Interaction.BadgeItem(type: .verified, description: LocalizedString.lowFees)
+        let interactor = DefaultBadgeAssetInteractor(initialState: .loaded(next: item))
+        return DefaultBadgeAssetPresenter(interactor: interactor)
+    }
+
+    static func makeFasterBadge() -> DefaultBadgeAssetPresenter {
+        let item = BadgeAsset.Value.Interaction.BadgeItem(type: .verified, description: LocalizedString.faster)
         let interactor = DefaultBadgeAssetInteractor(initialState: .loaded(next: item))
         return DefaultBadgeAssetPresenter(interactor: interactor)
     }

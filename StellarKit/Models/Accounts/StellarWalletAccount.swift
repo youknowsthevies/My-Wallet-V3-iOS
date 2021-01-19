@@ -33,8 +33,6 @@ public struct StellarWalletAccount: WalletAccount, Codable {
         publicKey = try values.decode(String.self, forKey: .publicKey)
         label = try values.decodeIfPresent(String.self, forKey: .label)
         archived = try values.decode(Bool.self, forKey: .archived)
-        
-        // TODO: Not sure that this is needed on `WalletAccount`.
         index = 0
     }
     

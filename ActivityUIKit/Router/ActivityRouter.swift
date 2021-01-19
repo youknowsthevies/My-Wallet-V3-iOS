@@ -36,13 +36,17 @@ final class ActivityRouter: ActivityRouterAPI {
     func showWalletSelectionScreen() {
         let builder = AccountPickerBuilder(
             singleAccountsOnly: false,
-            action: .viewActivity,
-            navigationModel: ScreenNavigationModel.AccountPicker.modal,
-            headerModel: .none
+            action: .viewActivity
         )
-        router = builder.build { [weak self] account in
+        let didSelect: AccountPickerDidSelect = { [weak self] account in
             self?.didSelect(account: account)
         }
+        router = builder.build(
+            listener: .simple(didSelect),
+            navigationModel: ScreenNavigationModel.AccountPicker.modal(),
+            headerModel: .none
+        )
+
         router.interactable.activate()
         router.load()
         navigationRouter.present(viewController: router.viewControllable.uiviewController)

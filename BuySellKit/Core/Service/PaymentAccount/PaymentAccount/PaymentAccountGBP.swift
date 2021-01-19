@@ -25,7 +25,7 @@ struct PaymentAccountGBP: PaymentAccount, Equatable {
     let sortCode: String
     let recipientName: String
 
-    init?(response: PaymentAccountResponse) {
+    init?(response: PlatformKit.PaymentAccount) {
         guard response.currency == Self.currency else {
             return nil
         }

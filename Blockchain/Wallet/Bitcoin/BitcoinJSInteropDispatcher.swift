@@ -14,6 +14,9 @@ import ToolKit
     func didGetDefaultWalletIndex(_ walletIndex: JSValue)
     func didFailToGetDefaultWalletIndex(errorMessage: JSValue)
     
+    func didGetWalletIndex(_ walletIndex: JSValue)
+    func didFailToGetWalletIndex(errorMessage: JSValue)
+    
     func didGetAccounts(_ accounts: JSValue)
     func didFailToGetAccounts(errorMessage: JSValue)
     
@@ -22,6 +25,8 @@ import ToolKit
 }
 
 protocol BitcoinJSInteropDispatcherAPI {
+    
+    var getWalletIndex: Dispatcher<Int32> { get }
     
     var getDefaultWalletIndex: Dispatcher<Int> { get }
     
@@ -36,12 +41,26 @@ public class BitcoinJSInteropDispatcher: BitcoinJSInteropDispatcherAPI {
     
     let getDefaultWalletIndex = Dispatcher<Int>()
     
+    let getWalletIndex = Dispatcher<Int32>()
+    
     let getAccounts = Dispatcher<String>()
     
     let getHDWallet = Dispatcher<String>()
 }
 
 extension BitcoinJSInteropDispatcher: BitcoinJSInteropDelegateAPI {
+    
+    public func didGetWalletIndex(_ walletIndex: JSValue) {
+        guard let walletIndexInt: Int32 = walletIndex.toNumber()?.int32Value else {
+            getWalletIndex.sendFailure(.unknown)
+            return
+        }
+        getWalletIndex.sendSuccess(with: walletIndexInt)
+    }
+    
+    public func didFailToGetWalletIndex(errorMessage: JSValue) {
+        sendFailure(dispatcher: getWalletIndex, errorMessage: errorMessage)
+    }
     
     public func didGetDefaultWalletIndex(_ walletIndex: JSValue) {
         guard let walletIndexInt: Int = walletIndex.toNumber()?.intValue else {

@@ -7,20 +7,29 @@
 //
 
 import Foundation
-
 @testable import Blockchain
 
 class LegacyWalletMock: LegacyWalletAPI {
-    
+
     var password: String?
-        
-    func createOrderPayment(withOrderTransaction orderTransaction: OrderTransactionLegacy, completion: @escaping () -> Void, success: ((String) -> Void)!, error: @escaping (String) -> Void) {
-        success("")
+
+    func createOrderPayment(withOrderTransaction orderTransaction: OrderTransactionLegacy,
+                            completion: @escaping () -> Void,
+                            success: @escaping ([AnyHashable : Any]) -> Void,
+                            error: @escaping ([AnyHashable : Any]) -> Void) {
+        success([:])
         completion()
     }
     
-    func sendOrderTransaction(_ legacyAssetType: LegacyAssetType, secondPassword: String?, completion: @escaping () -> Void, success: @escaping () -> Void, error: @escaping (String) -> Void, cancel: @escaping () -> Void) {
-        success()
+    func sendOrderTransaction(
+        _ legacyAssetType: LegacyAssetType,
+        secondPassword: String?,
+        completion: @escaping () -> Void,
+        success: @escaping (String) -> Void,
+        error: @escaping (String) -> Void,
+        cancel: @escaping () -> Void
+    ) {
+        success("")
         completion()
     }
     

@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 import RxRelay
 import RxSwift
 import ToolKit
@@ -106,7 +106,7 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
     
     public init(cryptoCurrency: CryptoCurrency,
                 exchangeAPI: PairExchangeServiceAPI,
-                priceService: PriceServiceAPI = PriceService(),
+                priceService: PriceServiceAPI = resolve(),
                 fiatCurrencyService: FiatCurrencyServiceAPI) {
         self.exchangeAPI = exchangeAPI
         self.cryptoCurrency = cryptoCurrency

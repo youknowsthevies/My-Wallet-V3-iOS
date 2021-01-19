@@ -20,11 +20,10 @@ public struct StellarAssetAccountDetails: AssetAccountDetails {
 
 public extension StellarAssetAccountDetails {
     static func unfunded(accountID: String) -> StellarAssetAccountDetails {
-        // TODO: LocalizationConstants.Stellar.defaultLabelName
         let account = StellarAssetAccount(
             accountAddress: accountID,
-            name: "My Stellar Wallet",
-            description: "My Stellar Wallet",
+            name: CryptoCurrency.stellar.defaultWalletName,
+            description: CryptoCurrency.stellar.defaultWalletName,
             sequence: 0,
             subentryCount: 0
         )
@@ -32,29 +31,6 @@ public extension StellarAssetAccountDetails {
         return StellarAssetAccountDetails(
             account: account,
             balance: CryptoValue.stellar(major: 0)
-        )
-    }
-}
-
-// MARK: StellarSDK Convenience
-
-public extension AccountResponse {
-    
-    func toAssetAccountDetails() -> StellarAssetAccountDetails {
-        let totalBalance = balances.reduce(Decimal(0)) { $0 + (Decimal(string: $1.balance) ?? 0) }
-        
-        // TODO: LocalizationConstants.Stellar.defaultLabelName
-        let account = StellarAssetAccount(
-            accountAddress: accountId,
-            name: "My Stellar Wallet",
-            description: "My Stellar Wallet",
-            sequence: Int(sequenceNumber),
-            subentryCount: Int(subentryCount)
-        )
-        
-        return StellarAssetAccountDetails(
-            account: account,
-            balance: CryptoValue.stellar(major: "\(totalBalance)") ?? .zero(currency: .stellar)
         )
     }
 }

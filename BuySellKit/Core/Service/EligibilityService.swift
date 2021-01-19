@@ -16,18 +16,11 @@ final class EligibilityService: EligibilityServiceAPI {
     
     // MARK: - Properties
     
-    public var isEligible: Observable<Bool> {
-        isEligibileRelay
-            .flatMap(weak: self) { (self, isEligibile) -> Observable<Bool> in
-                guard let isEligibile = isEligibile else {
-                    return self.fetch()
-                }
-                return .just(isEligibile)
-            }
-            .distinctUntilChanged()
+    public var isEligible: Single<Bool> {
+        isEligibileValue.valueSingle
     }
     
-    private let isEligibileRelay = BehaviorRelay<Bool?>(value: nil)
+    private let isEligibileValue: CachedValue<Bool>
     private let client: EligibilityClientAPI
     private let reactiveWallet: ReactiveWalletAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
@@ -43,39 +36,39 @@ final class EligibilityService: EligibilityServiceAPI {
         self.reactiveWallet = reactiveWallet
         self.fiatCurrencyService = fiatCurrencyService
         self.featureFetcher = featureFetcher
+        self.isEligibileValue = CachedValue(
+            configuration: CachedValueConfiguration(
+                refreshType: .periodic(seconds: TimeInterval(30)),
+                flushNotificationName: .logout,
+                fetchNotificationName: .login
+            )
+        )
         
-        NotificationCenter.when(.logout) { [weak isEligibileRelay] _ in
-            isEligibileRelay?.accept(nil)
+        isEligibileValue.setFetch(weak: self) { (self) in
+            self.reactiveWallet.waitUntilInitializedSingle
+                .flatMap(weak: self) { (self, _) -> Single<Bool> in
+                    self.featureFetcher.fetchBool(for: .simpleBuyEnabled)
+                }
+                .flatMap(weak: self) { (self, isFeatureEnabled) -> Single<Bool> in
+                    guard isFeatureEnabled else {
+                        return .just(false)
+                    }
+                    return self.fiatCurrencyService.fiatCurrency
+                        .flatMap { currency -> Single<EligibilityResponse> in
+                            self.client.isEligible(
+                                for: currency.code,
+                                methods: [
+                                    PaymentMethodPayloadType.bankTransfer.rawValue,
+                                    PaymentMethodPayloadType.card.rawValue
+                                ]
+                            )
+                        }
+                        .map(\.eligible)
+                }
         }
     }
-    
-    func fetch() -> Observable<Bool> {
-        featureFetcher
-            .fetchBool(for: .simpleBuyEnabled)
-            .asObservable()
-            .flatMap(weak: self) { (self, isFeatureEnabled) -> Observable<Bool> in
-                guard isFeatureEnabled else {
-                    return .just(false)
-                }
-                return self.fiatCurrencyService.fiatCurrencyObservable
-                    .flatMap { currency in
-                        self.reactiveWallet.waitUntilInitializedSingle
-                            .asObservable()
-                            .map { currency }
-                    }
-                    .flatMap { currency in
-                        self.client.isEligible(
-                            for: currency.code,
-                            methods: [
-                                PaymentMethodPayloadType.bankAccount.rawValue,
-                                PaymentMethodPayloadType.card.rawValue
-                            ]
-                        )
-                    }
-                    .map { $0.eligible }
-            }
-            .do(onNext: { [weak self] isEligible in
-                self?.isEligibileRelay.accept(isEligible)
-            })
+
+    func fetch() -> Single<Bool> {
+        isEligibileValue.fetchValue
     }
 }

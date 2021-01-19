@@ -52,6 +52,9 @@ final class SwapAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {
     }
     
     var shouldShow: Bool {
+        guard featureIsEnabled else {
+            return false
+        }
         guard !hasTrades else {
             return false
         }
@@ -67,10 +70,13 @@ final class SwapAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {
     let action: CardAnnouncementAction
     
     let appearanceRules: PeriodicAnnouncementAppearanceRules
-    
+
+    private var featureIsEnabled: Bool {
+        !featureConfiguring.configuration(for: .newSwapEnabled).isEnabled
+    }
     private let hasTrades: Bool
-    
     private let disposeBag = DisposeBag()
+    private let featureConfiguring: FeatureConfiguring
     // MARK: - Setup
     
     init(hasTrades: Bool,
@@ -78,9 +84,11 @@ final class SwapAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {
          reappearanceTimeInterval: TimeInterval,
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
+         featureConfiguring: FeatureConfiguring = resolve(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {
         self.hasTrades = hasTrades
+        self.featureConfiguring = featureConfiguring
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)
         self.analyticsRecorder = analyticsRecorder

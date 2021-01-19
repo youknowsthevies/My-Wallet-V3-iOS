@@ -12,8 +12,8 @@ import StellarKit
 
 protocol StellarDependenciesAPI {
     var accounts: StellarAccountAPI { get }
-    var feeService: StellarFeeServiceAPI { get }
-    var ledger: StellarLedgerAPI { get }
+    var feeService: AnyCryptoFeeService<StellarTransactionFee> { get }
+    var ledger: StellarLedgerServiceAPI { get }
     var limits: StellarTradeLimitsAPI { get }
     var operation: StellarOperationsAPI { get }
     var prices: PriceServiceAPI { get }

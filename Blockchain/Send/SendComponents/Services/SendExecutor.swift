@@ -66,7 +66,7 @@ final class SendExecutor: SendExecuting {
         }
         let address = EthereumAccountAddress(rawValue: address)!
         return self.ethereumService
-            .buildTransaction(with: value, to: address.ethereumAddress)
+            .buildTransaction(with: value, to: address.ethereumAddress, feeLevel: .regular)
             .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
             .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
             .flatMap(weak: self, { (self, candidate) -> Single<EthereumTransactionPublished> in

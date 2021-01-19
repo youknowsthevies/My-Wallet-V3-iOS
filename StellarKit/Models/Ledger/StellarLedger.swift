@@ -8,54 +8,29 @@
 
 import PlatformKit
 
-// The `baseFeeInStroops` the network charges per operation in a transaction.
-// This field is in stroops, which are 1/10,000,000th of a lumen.
-// The `baseReserveInStroops` is what the network uses when
-// calculating an account’s minimum balance.
-public struct StellarLedger {
-    public let identifier: String
-    public let token: String
-    public let sequence: Int
-    public let transactionCount: Int?
-    public let operationCount: Int
-    public let closedAt: Date
-    public let totalCoins: String
-    public let baseFeeInStroops: Int?
-    public let baseReserveInStroops: Int?
+public struct StellarLedger: Equatable {
+    let identifier: String
+    let token: String
+    let sequence: Int
+    let transactionCount: Int?
+    let operationCount: Int
+    let closedAt: Date
+    let totalCoins: String
+    /// Network fee per operation in a transaction, field in minor value (stroops).
+    let baseFeeInStroops: Int?
+    /// Base reserve is the absolute minimum balance an account may have, field in minor value (stroops).
+    let baseReserveInStroops: Int?
     
-    public init(identifier: String, token: String, sequence: Int, transactionCount: Int?, operationCount: Int, closedAt: Date, totalCoins: String, baseFeeInStroops: Int?, baseReserveInStroops: Int?) {
-        self.identifier = identifier
-        self.token = token
-        self.sequence = sequence
-        self.transactionCount = transactionCount
-        self.operationCount = operationCount
-        self.closedAt = closedAt
-        self.totalCoins = totalCoins
-        self.baseFeeInStroops = baseFeeInStroops
-        self.baseReserveInStroops = baseReserveInStroops
-    }
-}
-
-extension StellarLedger: Equatable {
-    public static func == (lhs: StellarLedger, rhs: StellarLedger) -> Bool {
-        lhs.baseFeeInStroops == rhs.baseFeeInStroops &&
-        lhs.baseReserveInStroops == rhs.baseReserveInStroops
-    }
-}
-
-public extension StellarLedger {
-    var baseFeeInXlm: CryptoValue? {
+    public var baseFeeInXlm: CryptoValue? {
         guard let baseFeeInStroops = baseFeeInStroops else { return nil }
         return CryptoValue.stellar(minor: baseFeeInStroops)
     }
     
-    var baseReserveInXlm: CryptoValue? {
+    public var baseReserveInXlm: CryptoValue? {
         guard let baseReserveInStroops = baseReserveInStroops else { return nil }
         return CryptoValue.stellar(minor: baseReserveInStroops)
     }
-}
-
-public extension StellarLedger {
+    
     func apply(baseFeeInStroops: Int) -> StellarLedger {
         StellarLedger(
             identifier: identifier,

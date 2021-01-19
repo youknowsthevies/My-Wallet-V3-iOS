@@ -206,7 +206,7 @@ public final class SellRouterInteractor: Interactor {
             .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
 
-        let eligibility: Single<Bool> = eligibilityService.fetch().take(1).asSingle()
+        let eligibility: Single<Bool> = eligibilityService.fetch()
 
         Single.zip(
                 kycTiersService.fetchTiers(),

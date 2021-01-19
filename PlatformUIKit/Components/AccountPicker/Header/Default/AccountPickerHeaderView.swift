@@ -17,10 +17,18 @@ final class AccountPickerHeaderView: UIView {
     
     var model: AccountPickerHeaderModel! {
         didSet {
-            assetImageView.image = model?.image
-            titleLabel.content = model?.titleLabel ?? .empty
-            subtitleLabel.content = model?.subtitleLabel ?? .empty
-            selectWalletLabel.content = model?.selectWalletLabel ?? .empty
+            guard let model = model else {
+                assetImageView.image = nil
+                titleLabel.content = .empty
+                subtitleLabel.content = .empty
+                selectWalletLabel.content = .empty
+                return
+            }
+            assetImageView.set(model.imageContent)
+            titleLabel.content = model.titleLabel
+            subtitleLabel.content = model.subtitleLabel
+            selectWalletLabel.content = model.tableTitleLabel ?? .empty
+            separator.isHidden = model.tableTitleLabel == nil
         }
     }
     
@@ -64,6 +72,7 @@ final class AccountPickerHeaderView: UIView {
 
         subtitleLabel.layout(edge: .top, to: .bottom, of: titleLabel, offset: 8)
         subtitleLabel.layoutToSuperview(axis: .horizontal, offset: 24)
+        subtitleLabel.numberOfLines = 0
 
         // MARK: Select a Wallet Label
 

@@ -9,18 +9,9 @@
 import Foundation
 
 public struct AccountPickerSimpleHeaderModel {
-    static let defaultHeight: CGFloat = 120
+    static let defaultHeight: CGFloat = 64
 
-    private let title: String
     private let subtitle: String
-
-    var titleLabel: LabelContent {
-        LabelContent(
-            text: title,
-            font: .main(.semibold, 20),
-            color: .titleText
-        )
-    }
 
     var subtitleLabel: LabelContent {
         LabelContent(
@@ -30,8 +21,7 @@ public struct AccountPickerSimpleHeaderModel {
         )
     }
 
-    public init(title: String, subtitle: String) {
-        self.title = title
+    public init(subtitle: String) {
         self.subtitle = subtitle
     }
 }

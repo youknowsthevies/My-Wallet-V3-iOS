@@ -1,20 +1,26 @@
 //
 //  StellarLedgerMock.swift
-//  BlockchainTests
+//  StellarKitTests
 //
-//  Created by Paulo on 04/06/2020.
+//  Created by Paulo on 03/12/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import StellarKit
+import Foundation
+@testable import StellarKit
 
-class StellarLedgerMock: StellarLedgerAPI {
-    var fallbackBaseReserve: Decimal = 0
-
-    var fallbackBaseFee: Decimal = 0
-
-    var current: Observable<StellarLedger> = Observable.empty()
-
-    var currentLedger: StellarLedger?
+extension StellarLedger {
+    static var mock: StellarLedger {
+        StellarLedger(
+            identifier: "",
+            token: "",
+            sequence: 0,
+            transactionCount: nil,
+            operationCount: 0,
+            closedAt: Date(),
+            totalCoins: "",
+            baseFeeInStroops: nil,
+            baseReserveInStroops: nil
+        )
+    }
 }

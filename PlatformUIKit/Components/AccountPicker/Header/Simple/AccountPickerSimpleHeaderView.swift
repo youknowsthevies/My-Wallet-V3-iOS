@@ -9,14 +9,12 @@
 import Foundation
 
 final class AccountPickerSimpleHeaderView: UIView {
-    static let defaultHeight: CGFloat = 120
-    private let titleLabel: UILabel = UILabel()
+    static let defaultHeight: CGFloat = 64
     private let subtitleLabel: UILabel = UILabel()
     private let separator: UIView = UIView()
 
     var model: AccountPickerSimpleHeaderModel! {
         didSet {
-            titleLabel.content = model?.titleLabel ?? .empty
             subtitleLabel.content = model?.subtitleLabel ?? .empty
         }
     }
@@ -32,18 +30,12 @@ final class AccountPickerSimpleHeaderView: UIView {
     }
     
     private func setup() {
-        addSubview(titleLabel)
         addSubview(subtitleLabel)
         addSubview(separator)
 
-        // MARK: Title Label
-
-        titleLabel.layoutToSuperview(.top, offset: 24)
-        titleLabel.layoutToSuperview(axis: .horizontal, offset: 24)
-
         // MARK: Subtitle Label
 
-        subtitleLabel.layoutToSuperview(.top, offset: 72)
+        subtitleLabel.layoutToSuperview(.centerY)
         subtitleLabel.layoutToSuperview(axis: .horizontal, offset: 24)
 
         // MARK: Separator

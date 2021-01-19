@@ -19,6 +19,20 @@ extension Wallet: MnemonicAccessAPI {
         mnemonic.ifEmpty(switchTo: mnemonicForcePrompt)
     }
     
+    public func mnemonic(with secondPassword: String?) -> Single<Mnemonic> {
+        var secondPassword = secondPassword
+        if secondPassword?.isEmpty == true {
+            secondPassword = nil
+        }
+        if needsSecondPassword(), secondPassword == nil {
+            return .error(MnemonicAccessError.generic)
+        }
+        guard let mnemonic = getMnemonic(secondPassword) else {
+            return .error(MnemonicAccessError.generic)
+        }
+        return .just(mnemonic)
+    }
+
     public var mnemonic: Maybe<Mnemonic> {
         guard !self.needsSecondPassword() else {
             return Maybe.empty()

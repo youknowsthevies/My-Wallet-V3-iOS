@@ -34,7 +34,7 @@ final class WithdrawAmountPageBuilder: WithdrawAmountPageBuildable {
         let displayBundle: DisplayBundle = .withdraw(currency: currency)
 
         let singleViewInteractor = SingleAmountInteractor(currencyService: fiatCurrencyService,
-                                                          currency: currency)
+                                                          inputCurrency: currency)
         let singleViewPresenter = SingleAmountPresenter(interactor: singleViewInteractor)
         let amountViewProvider = {
             SingleAmountView(presenter: singleViewPresenter)

@@ -133,6 +133,25 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
         bottomAuxiliaryItemSeparatorView.viewModel = presenter.bottomAuxiliaryItemSeparatorViewModel
         setupBottomAuxiliaryView()
         presenter.viewDidLoad()
+
+        let digitInput = digitPadView.viewModel
+            .valueObservable
+            .asDriverCatchError()
+
+        let deleteInput = digitPadView.viewModel
+            .backspaceButtonTapObservable
+            .asDriverCatchError()
+
+        let amountViewInputs = [
+            digitInput
+                .compactMap(\.first)
+                .map { AmountTranslationPresenter.Input.input($0) },
+            deleteInput.map { AmountTranslationPresenter.Input.delete }
+        ]
+
+        amountTranslationView.connect(input: Driver.merge(amountViewInputs))
+            .drive()
+            .disposed(by: disposeBag)
     }
     
     public override func viewWillAppear(_ animated: Bool) {

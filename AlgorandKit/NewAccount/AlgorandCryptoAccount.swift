@@ -28,9 +28,7 @@ class AlgorandCryptoAccount: CryptoNonCustodialAccount {
         unimplemented()
     }
 
-    var actions: AvailableActions {
-        []
-    }
+    var actions: Single<AvailableActions> { .just([]) }
 
     private let exchangeService: PairExchangeServiceAPI
     

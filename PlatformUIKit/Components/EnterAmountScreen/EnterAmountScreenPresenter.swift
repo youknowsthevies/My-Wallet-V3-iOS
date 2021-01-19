@@ -64,6 +64,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
     public let alert: AlertViewPresenterAPI
     public let analyticsRecorder: AnalyticsEventRecorderAPI
     public let displayBundle: DisplayBundle
+    public let inputTypeToggleVisiblity: Visibility
 
     private let interactor: EnterAmountScreenInteractor
     private let backwardsNavigation: () -> Void
@@ -77,6 +78,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
     public init(loader: LoadingViewPresenting = resolve(),
                 alert: AlertViewPresenterAPI = resolve(),
                 analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+                inputTypeToggleVisibility: Visibility,
                 backwardsNavigation: @escaping () -> Void,
                 displayBundle: DisplayBundle,
                 interactor: EnterAmountScreenInteractor) {
@@ -87,6 +89,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
         self.backwardsNavigation = backwardsNavigation
         self.title = displayBundle.strings.title
         self.displayBundle = displayBundle
+        self.inputTypeToggleVisiblity = inputTypeToggleVisibility
         bottomAuxiliaryItemSeparatorViewModel = TitledSeparatorViewModel(
             title: displayBundle.strings.bottomAuxiliaryItemSeparatorTitle,
             separatorColor: displayBundle.colors.bottomAuxiliaryItemSeparator,
@@ -96,7 +99,8 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
             interactor: interactor.amountTranslationInteractor,
             analyticsRecorder: analyticsRecorder,
             minTappedAnalyticsEvent: displayBundle.events.minTapped,
-            maxTappedAnalyticsEvent: displayBundle.events.maxTapped
+            maxTappedAnalyticsEvent: displayBundle.events.maxTapped,
+            inputTypeToggleVisiblity: inputTypeToggleVisibility
         )
         digitPadViewModel = EnterAmountScreenPresenter.digitPadViewModel()
         continueButtonViewModel = .primary(with: displayBundle.strings.ctaButton)
@@ -111,16 +115,6 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
         
         // Hide swap button
         amountTranslationPresenter.swapButtonVisibilityRelay.accept(.hidden)
-        
-        digitPadViewModel.valueObservable
-            .filter { !$0.isEmpty }
-            .map { Character($0) }
-            .bindAndCatch(to: interactor.amountTranslationInteractor.appendNewRelay)
-            .disposed(by: disposeBag)
-                
-        digitPadViewModel.backspaceButtonTapObservable
-            .bindAndCatch(to: interactor.amountTranslationInteractor.deleteLastRelay)
-            .disposed(by: disposeBag)
 
         interactor.hasValidState
             .bindAndCatch(to: continueButtonViewModel.isEnabledRelay)

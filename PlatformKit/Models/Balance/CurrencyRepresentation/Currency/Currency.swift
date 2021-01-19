@@ -17,8 +17,9 @@ public protocol Currency {
     static var maxDisplayableDecimalPlaces: Int { get }
     var name: String { get }
     var code: String { get }
-    var symbol: String { get }
     var displayCode: String { get }
+    var symbol: String { get }
+    var displaySymbol: String { get }
     var maxDecimalPlaces: Int { get }
     var maxDisplayableDecimalPlaces: Int { get }
     var isFiatCurrency: Bool { get }
@@ -86,6 +87,15 @@ extension CurrencyType: Currency {
             return cryptoCurrency.symbol
         case .fiat(let fiatCurrency):
             return fiatCurrency.symbol
+        }
+    }
+
+    public var displaySymbol: String {
+        switch self {
+        case .crypto(let cryptoCurrency):
+            return cryptoCurrency.displaySymbol
+        case .fiat(let fiatCurrency):
+            return fiatCurrency.displaySymbol
         }
     }
     

@@ -26,9 +26,5 @@ extension DependencyContainer {
         factory { BitcoinActivityItemEventDetailsFetcher() }
         
         factory { BitcoinTransactionalActivityItemEventsService() }
-
-        single { CryptoFeeService<BitcoinTransactionFee>() }
-
-        single { CryptoFeeService<BitcoinCashTransactionFee>() }
     }
 }

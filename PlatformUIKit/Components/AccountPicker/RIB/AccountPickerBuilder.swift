@@ -11,38 +11,59 @@ import RIBs
 
 public typealias AccountPickerDidSelect = (BlockchainAccount) -> Void
 
+public enum AccountPickerListenerBridge {
+    case simple(AccountPickerDidSelect)
+    case listener(AccountPickerListener)
+}
+
 public protocol AccountPickerBuildable: Buildable {
-    func build(withDidSelect didSelect: @escaping AccountPickerDidSelect) -> AccountPickerRouting
+    func build(listener: AccountPickerListenerBridge,
+               navigationModel: ScreenNavigationModel,
+               headerModel: AccountPickerHeaderType) -> AccountPickerRouting
+}
+
+public protocol AccountPickerListener: AnyObject {
+    func didSelect(blockchainAccount: BlockchainAccount)
+    func didTapBack()
+    func didTapClose()
 }
 
 public final class AccountPickerBuilder: AccountPickerBuildable {
 
     // MARK: - Private Properties
 
+    private let accountProvider: AccountPickerAccountProviding
     private let action: AssetAction
-    private let singleAccountsOnly: Bool
-    private let sourceAccount: CryptoAccount?
-    private let navigationModel: ScreenNavigationModel
-    private let headerModel: AccountPickerHeaderType
 
     // MARK: - Init
 
-    public init(singleAccountsOnly: Bool,
-                action: AssetAction,
-                sourceAccount: CryptoAccount? = nil,
-                navigationModel: ScreenNavigationModel,
-                headerModel: AccountPickerHeaderType) {
-        self.action = action
-        self.singleAccountsOnly = singleAccountsOnly
-        self.sourceAccount = sourceAccount
-        self.navigationModel = navigationModel
-        self.headerModel = headerModel
+    public convenience init(singleAccountsOnly: Bool,
+                            action: AssetAction) {
+        self.init(accountProvider: AccountPickerDefaultAccountProvider(singleAccountsOnly: singleAccountsOnly, action: action),
+                  action: action)
     }
 
+    public init(accountProvider: AccountPickerAccountProviding,
+                action: AssetAction) {
+        self.accountProvider = accountProvider
+        self.action = action
+    }
+    
     // MARK: - Public Methods
-
-    public func build(withDidSelect didSelect: @escaping AccountPickerDidSelect) -> AccountPickerRouting {
-        let viewController = AccountPickerViewController()
+    
+    public func build(listener: AccountPickerListenerBridge,
+                      navigationModel: ScreenNavigationModel,
+                      headerModel: AccountPickerHeaderType) -> AccountPickerRouting {
+        let shouldOverrideNavigationEffects: Bool
+        switch listener {
+        case .listener:
+            shouldOverrideNavigationEffects = true
+        case .simple:
+            shouldOverrideNavigationEffects = false
+        }
+        let viewController = AccountPickerViewController(
+            shouldOverrideNavigationEffects: shouldOverrideNavigationEffects
+        )
         let presenter = AccountPickerPresenter(
             viewController: viewController,
             action: action,
@@ -51,10 +72,8 @@ public final class AccountPickerBuilder: AccountPickerBuildable {
         )
         let interactor = AccountPickerInteractor(
             presenter: presenter,
-            singleAccountsOnly: singleAccountsOnly,
-            sourceAccount: sourceAccount,
-            action: action,
-            didSelect: didSelect
+            accountProvider: accountProvider,
+            listener: listener
         )
         return AccountPickerRouter(interactor: interactor, viewController: viewController)
     }

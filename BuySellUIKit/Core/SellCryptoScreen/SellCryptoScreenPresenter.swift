@@ -45,6 +45,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
         )
         super.init(
             analyticsRecorder: analyticsRecorder,
+            inputTypeToggleVisibility: .hidden,
             backwardsNavigation: backwardsNavigation,
             displayBundle: .sell(cryptoCurrency: interactor.data.source.currencyType.cryptoCurrency!),
             interactor: interactor

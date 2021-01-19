@@ -6,18 +6,24 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
+import KYCUIKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
+import RxSwift
+import ToolKit
 
 protocol SwapRootListener: ViewListener { }
 
-final class SwapRootInteractor: Interactor, SwapBootstrapListener, SwapRootListener, NewSwapListener, AmountInputListener {
+final class SwapRootInteractor: Interactor, SwapBootstrapListener, SwapRootListener, SwapLandingListener, TransactionFlowListener {
 
+    private let kycTiersPageModelFactory: KYCTiersPageModelFactoryAPI
     weak var router: SwapRootRouting?
 
-    func userIsIneligibleForSwap() {
-        router?.routeToComingSoon()
+    init(kycTiersPageModelFactory: KYCTiersPageModelFactoryAPI = resolve()) {
+        self.kycTiersPageModelFactory = kycTiersPageModelFactory
+        super.init()
     }
 
     func userMustKYCForSwap() {
@@ -25,15 +31,25 @@ final class SwapRootInteractor: Interactor, SwapBootstrapListener, SwapRootListe
     }
     
     func userReadyForSwap() {
-        router?.routeToNewSwap()
+        router?.routeToSwapLanding()
     }
 
-    func routeToSwap(with pair: (CurrencyType, CurrencyType)?) {
+    func userMustCompleteKYC(model: KYCTiersPageModel) {
+        router?.routeToSwapTiers(model: model, present: false)
+    }
+
+    func presentKYCTiersScreen() {
+        kycTiersPageModelFactory
+            .tiersPageModel(suppressCTA: true)
+            .observeOn(MainScheduler.asyncInstance)
+            .subscribe { [weak router] model in
+                router?.routeToSwapTiers(model: model, present: true)
+            }
+            .disposeOnDeactivate(interactor: self)
+    }
+
+    func routeToSwap(with pair: SwapTrendingPair?) {
         router?.routeToSwap(with: pair)
-    }
-
-    func userSelected(pair: (CurrencyType, CurrencyType), amount: Decimal) {
-        // router
     }
 
     private lazy var routeViewDidAppear: Void = {

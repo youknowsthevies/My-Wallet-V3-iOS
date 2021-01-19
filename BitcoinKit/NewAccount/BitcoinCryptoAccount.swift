@@ -24,6 +24,10 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     var pendingBalance: Single<MoneyValue> {
         Single.just(MoneyValue.zero(currency: .bitcoin))
     }
+    
+    var actionableBalance: Single<MoneyValue> {
+        balance
+    }
 
     var balance: Single<MoneyValue> {
         balanceService
@@ -31,14 +35,31 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
             .moneyValue
     }
 
-    var actions: AvailableActions {
-        [.viewActivity, .receive, .send, .swap]
+    var actions: Single<AvailableActions> {
+        isFunded
+            .map { isFunded -> AvailableActions in
+                var base: AvailableActions = [.viewActivity, .receive, .send]
+                if isFunded {
+                    base.insert(.swap)
+                }
+                return base
+            }
     }
 
     var receiveAddress: Single<ReceiveAddress> {
-        let label = self.label
-        return bridge.receiveAddress(forXPub: id)
-            .map { BitcoinReceiveAddress(address: $0, label: label) }
+        bridge.receiveAddress(forXPub: id)
+            .flatMap(weak: self) { (self, address) -> Single<(Int32, String)> in
+                Single.zip(self.bridge.walletIndex(for: address), Single.just(address))
+            }
+            .map(weak: self) { (self, values) -> ReceiveAddress in
+                let (index, address) = values
+                return BitcoinChainReceiveAddress<BitcoinToken>(
+                    address: address,
+                    label: self.label,
+                    onTxCompleted: self.onTxCompleted,
+                    index: index
+                )
+            }
     }
 
     private let exchangeService: PairExchangeServiceAPI

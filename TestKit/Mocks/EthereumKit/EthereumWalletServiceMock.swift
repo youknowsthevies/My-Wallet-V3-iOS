@@ -10,6 +10,7 @@ import EthereumKit
 import Foundation
 import PlatformKit
 import RxSwift
+import TransactionKit
 
 class EthereumWalletServiceMock: EthereumWalletServiceAPI {
 
@@ -23,7 +24,7 @@ class EthereumWalletServiceMock: EthereumWalletServiceAPI {
     }
 
     var buildTransactionValue: Single<EthereumTransactionCandidate> = Single.error(NSError())
-    func buildTransaction(with value: EthereumKit.EthereumValue, to: EthereumKit.EthereumAddress) -> Single<EthereumTransactionCandidate> {
+    func buildTransaction(with value: EthereumValue, to: EthereumAddress, feeLevel: FeeLevel) -> Single<EthereumTransactionCandidate> {
         buildTransactionValue
     }
 
@@ -31,6 +32,10 @@ class EthereumWalletServiceMock: EthereumWalletServiceAPI {
     func send(transaction: EthereumTransactionCandidate) -> Single<EthereumTransactionPublished> {
         sendTransactionValue
     }
+    func send(transaction: EthereumTransactionCandidate, secondPassword: String) -> Single<EthereumTransactionPublished> {
+        sendTransactionValue
+    }
+
     var transactionValidationResult: Single<TransactionValidationResult> = Single.error(NSError())
     func evaluate(amount: EthereumValue) -> Single<TransactionValidationResult> {
         transactionValidationResult

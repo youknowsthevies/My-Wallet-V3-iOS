@@ -41,7 +41,7 @@ open class EnterAmountScreenInteractor: Interactor, EnterAmountScreenInteractorA
     
     // MARK: - Injected
     
-    public let exchangeProvider: ExchangeProviding
+    public let priceService: PriceServiceAPI
     public let fiatCurrencyService: FiatCurrencyServiceAPI
     public let cryptoCurrencySelectionService: SelectionServiceAPI & CryptoCurrencyServiceAPI
 
@@ -50,18 +50,18 @@ open class EnterAmountScreenInteractor: Interactor, EnterAmountScreenInteractorA
     /// Amount translation interactor
     public let amountTranslationInteractor: AmountTranslationInteractor
     
-    public init(exchangeProvider: ExchangeProviding,
+    public init(priceService: PriceServiceAPI,
                 fiatCurrencyService: FiatCurrencyServiceAPI,
                 cryptoCurrencySelectionService: SelectionServiceAPI & CryptoCurrencyServiceAPI,
                 initialActiveInput: ActiveAmountInput) {
-        self.exchangeProvider = exchangeProvider
+        self.priceService = priceService
         self.fiatCurrencyService = fiatCurrencyService
         self.cryptoCurrencySelectionService = cryptoCurrencySelectionService
         
         amountTranslationInteractor = AmountTranslationInteractor(
             fiatCurrencyService: fiatCurrencyService,
             cryptoCurrencyService: cryptoCurrencySelectionService,
-            exchangeProvider: exchangeProvider,
+            defaultCryptoCurrency: .bitcoin,
             initialActiveInput: initialActiveInput
         )
     }

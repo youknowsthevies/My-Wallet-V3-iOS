@@ -14,7 +14,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-typealias FundsTransferDetailsInteractionState = ValueCalculationState<PaymentAccount>
+typealias FundsTransferDetailsInteractionState = ValueCalculationState<BuySellKit.PaymentAccount>
 
 protocol FundsTransferDetailsInteractorAPI: AnyObject {
     var state: Observable<FundsTransferDetailsInteractionState> { get }

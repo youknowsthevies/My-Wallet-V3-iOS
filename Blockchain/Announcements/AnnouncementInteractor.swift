@@ -48,12 +48,18 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                  Single.zip(
                      isSimpleBuyAvailable,
                      simpleBuyOrderDetails,
-                    beneficiariesService.hasLinkedBank.take(1).asSingle()
+                    beneficiariesService.hasLinkedBank.take(1).asSingle(),
+                    simpleBuyEligibilityService.isEligible
                  )
             )
             .observeOn(MainScheduler.instance)
             .map { (arg) -> AnnouncementPreliminaryData in
-                let (user, tiers, hasTrades, countries, authenticatorType, (isSimpleBuyAvailable, pendingOrderDetails, hasLinkedBanks)) = arg
+                let (user,
+                     tiers,
+                     hasTrades,
+                     countries,
+                     authenticatorType,
+                     (isSimpleBuyAvailable, pendingOrderDetails, hasLinkedBanks, isSimpleBuyEligible)) = arg
                 return AnnouncementPreliminaryData(
                     user: user,
                     tiers: tiers,
@@ -62,7 +68,8 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                     countries: countries,
                     authenticatorType: authenticatorType,
                     pendingOrderDetails: pendingOrderDetails,
-                    isSimpleBuyAvailable: isSimpleBuyAvailable
+                    isSimpleBuyAvailable: isSimpleBuyAvailable,
+                    isSimpleBuyEligible: isSimpleBuyEligible
                 )
             }
     }
@@ -81,6 +88,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
     private let beneficiariesService: BeneficiariesServiceAPI
     private let pendingOrderDetailsService: PendingOrderDetailsServiceAPI
+    private let simpleBuyEligibilityService: EligibilityServiceAPI
     
     // MARK: - Setup
     
@@ -93,7 +101,8 @@ final class AnnouncementInteractor: AnnouncementInteracting {
          paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = resolve(),
          supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
          beneficiariesService: BeneficiariesServiceAPI = resolve(),
-         pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve()) {
+         pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve(),
+         simpleBuyEligibilityService: EligibilityServiceAPI = resolve()) {
         self.repository = repository
         self.wallet = wallet
         self.dataRepository = dataRepository
@@ -103,5 +112,6 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         self.supportedPairsInteractor = supportedPairsInteractor
         self.beneficiariesService = beneficiariesService
         self.pendingOrderDetailsService = pendingOrderDetailsService
+        self.simpleBuyEligibilityService = simpleBuyEligibilityService
     }
 }

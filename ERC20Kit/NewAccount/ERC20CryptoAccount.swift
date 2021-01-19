@@ -20,6 +20,10 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
     let label: String
     let asset: CryptoCurrency = Token.assetType
     let isDefault: Bool = true
+    
+    var actionableBalance: Single<MoneyValue> {
+        balance
+    }
 
     var balance: Single<MoneyValue> {
         balanceFetching
@@ -31,17 +35,22 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
             .pendingBalanceMoney
     }
 
-    private(set) lazy var actions: AvailableActions = {
-        var base: AvailableActions = [.viewActivity, .receive]
-        if Token.nonCustodialSendSupport {
-            base.insert(.send)
-            base.insert(.swap)
-        }
-        return base
-    }()
+    var actions: Single<AvailableActions> {
+        isFunded
+            .map { isFunded -> AvailableActions in
+                var base: AvailableActions = [.viewActivity, .receive]
+                if Token.nonCustodialSendSupport {
+                    base.insert(.send)
+                    if isFunded {
+                        base.insert(.swap)
+                    }
+                }
+                return base
+            }
+    }
 
     var receiveAddress: Single<ReceiveAddress> {
-        .just(ERC20ReceiveAddress(asset: asset, address: id, label: label))
+        .just(ERC20ReceiveAddress(asset: asset, address: id, label: label, onTxCompleted: onTxCompleted))
     }
 
     private let balanceFetching: SingleAccountBalanceFetching

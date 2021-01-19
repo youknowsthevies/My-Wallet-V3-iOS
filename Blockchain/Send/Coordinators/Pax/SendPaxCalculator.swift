@@ -7,6 +7,7 @@
 //
 
 import BigInt
+import DIKit
 import ERC20Kit
 import EthereumKit
 import Foundation
@@ -66,7 +67,7 @@ class SendPaxCalculator {
     private let priceService: PriceServiceAPI
     private let erc20Service: ERC20Service<PaxToken>
     
-    init(serviceAPI: PriceServiceAPI = PriceService(),
+    init(serviceAPI: PriceServiceAPI = resolve(),
          erc20Service: ERC20Service<PaxToken>,
          input: Input = .empty) {
         self.priceService = serviceAPI

@@ -104,11 +104,23 @@ public final class SelectionButtonViewModel: IdentifiableType {
 
     /// Title Relay: title describing the selection
     public let titleRelay = BehaviorRelay<String>(value: "")
+    
+    /// Title Font Relay: Font of the leading title
+    public let titleFontRelay = BehaviorRelay<UIFont>(value: .main(.semibold, 16))
+    
+    /// Title Color Relay: Color of the title
+    public let titleFontColor = BehaviorRelay<UIColor>(value: .titleText)
 
     /// Subtitle Relay:  The subtitle describing the selection
     ///
     /// A  nil value represents the inexistence of a subtitle, in which case a view may react to this by changing its layout.
     public let subtitleRelay = BehaviorRelay<String?>(value: "")
+    
+    /// Subtitle Font Relay: Font of the leading subtitle
+    public let subtitleFontRelay = BehaviorRelay<UIFont>(value: .main(.medium, 14))
+    
+    /// Subtitle Color Relay: Color of the subtitle
+    public let subtitleFontColor = BehaviorRelay<UIColor>(value: .descriptionText)
 
     /// Image Name Relay:  A `String` for image asset name.
     public let leadingContentTypeRelay = BehaviorRelay<LeadingContentType?>(value: nil)
@@ -189,15 +201,17 @@ public final class SelectionButtonViewModel: IdentifiableType {
         Observable
             .combineLatest(
                 titleRelay.asObservable(),
-                titleAccessibilityRelay.asObservable()
+                titleAccessibilityRelay.asObservable(),
+                titleFontRelay.asObservable(),
+                titleFontColor.asObservable()
             )
             .map {
                 let title = $0.0
                 let accessibility = $0.1
                 return LabelContent(
                     text: title,
-                    font: .main(.semibold, 16),
-                    color: .titleText,
+                    font: $0.2,
+                    color: $0.3,
                     accessibility: accessibility
                 )
             }
@@ -209,7 +223,9 @@ public final class SelectionButtonViewModel: IdentifiableType {
         Observable
             .combineLatest(
                 subtitleRelay.asObservable(),
-                subtitleAccessibilityRelay.asObservable()
+                subtitleAccessibilityRelay.asObservable(),
+                subtitleFontRelay.asObservable(),
+                subtitleFontColor.asObservable()
             )
             .map {
                 guard let subtitle = $0.0
@@ -217,8 +233,8 @@ public final class SelectionButtonViewModel: IdentifiableType {
                 let accessibility = $0.1
                 return LabelContent(
                     text: subtitle,
-                    font: .main(.medium, 14),
-                    color: .descriptionText,
+                    font: $0.2,
+                    color: $0.3,
                     accessibility: accessibility
                 )
             }

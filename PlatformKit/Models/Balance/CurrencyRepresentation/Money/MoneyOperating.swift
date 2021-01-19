@@ -19,6 +19,11 @@ public protocol MoneyOperating: MoneyImplementing {
 public struct MoneyValueComparisonError: Error {
     let currencyType1: CurrencyType
     let currencyType2: CurrencyType
+    
+    public init(currencyType1: CurrencyType, currencyType2: CurrencyType) {
+        self.currencyType1 = currencyType1
+        self.currencyType2 = currencyType2
+    }
 }
 
 extension MoneyOperating {
@@ -111,6 +116,42 @@ extension MoneyOperating {
 
     public static func /= (lhs: inout Self, rhs: Self) throws {
         lhs = try lhs / rhs
+    }
+    
+    /// Rounds the current amount to the currency's `maxDisplayableDecimalPlaces` using the provided rounding mode.
+    ///
+    /// - Warning:
+    /// Rounding a MoneyValue means it **loses** precision of the underlying amount.
+    /// This method should only be used for displaying purposes.
+    ///
+    /// - Parameter roundingMode: The mode used for rounding (e.g. `.up` or `.down`)
+    /// - Returns: The rounded value
+    public func displayableRounding(roundingMode: Decimal.RoundingMode) -> Self {
+        displayableRounding(
+            decimalPlaces: currency.maxDisplayableDecimalPlaces,
+            roundingMode: roundingMode
+        )
+    }
+    
+    /// Rounds the current amount to the given precision (decimalPlaces) using the provided rounding mode.
+    ///
+    /// - Warning:
+    /// Rounding a `MoneyValue` means it **loses** precision of the underlying amount.
+    /// This method should only be used for displaying purposes.
+    ///
+    /// - Parameters:
+    ///   - decimalPlaces: The number of decimal places to render.
+    ///   - roundingMode: The mode used for rounding (e.g. `.up` or `.down`)
+    /// - Returns: The rounded value
+    public func displayableRounding(decimalPlaces: Int, roundingMode: Decimal.RoundingMode) -> Self {
+        Self.create(
+            major: amount.toDecimalMajor(
+                baseDecimalPlaces: currency.maxDecimalPlaces,
+                roundingDecimalPlaces: decimalPlaces,
+                roundingMode: roundingMode
+            ),
+            currency: currencyType
+        )
     }
     
     private static func ensureComparable(value: Self, other: Self) throws {

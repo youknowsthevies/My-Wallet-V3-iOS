@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxRelay
 import RxSwift
 
@@ -80,7 +81,7 @@ public final class PairExchangeService: PairExchangeServiceAPI {
     // MARK: - Setup
     
     public init(currency: Currency,
-                priceService: PriceServiceAPI = PriceService(),
+                priceService: PriceServiceAPI = resolve(),
                 fiatCurrencyService: FiatCurrencyServiceAPI) {
         self.currency = currency
         self.priceService = priceService

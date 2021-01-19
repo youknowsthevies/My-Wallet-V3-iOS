@@ -100,7 +100,7 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
             .disposed(by: disposeBag)
     }
     
-    private func setup(account: PaymentAccount) {
+    private func setup(account: BuySellKit.PaymentAccount) {
         let contentReducer = ContentReducer(
             account: account,
             isOriginDeposit: isOriginDeposit,
@@ -152,7 +152,7 @@ extension FundsTransferDetailScreenPresenter {
         let noticeViewModels: [NoticeViewModel]
         let termsTextViewModel: InteractableTextViewModel!
 
-        init(account: PaymentAccount,
+        init(account: BuySellKit.PaymentAccount,
              isOriginDeposit: Bool,
              analyticsRecorder: AnalyticsEventRecorderAPI) {
         

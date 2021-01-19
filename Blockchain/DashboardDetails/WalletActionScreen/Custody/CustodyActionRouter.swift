@@ -112,6 +112,8 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
             showActivityScreen()
         case .sell:
             showSell()
+        case .swap:
+            showSwap()
         case .buy:
             showBuy()
         case .deposit(isKYCApproved: let value):
@@ -186,6 +188,15 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
         guard case let .fiat(fiatCurrency) = currency else { return }
         dismissTopMost {
             AppCoordinator.shared.showFundTrasferDetails(fiatCurrency: fiatCurrency, isOriginDeposit: true)
+        }
+    }
+    
+    private func showSwap() {
+        dismissTopMost { [weak self] in
+            guard let self = self else { return }
+            self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: {
+                AppCoordinator.shared.switchTabToSwap()
+            })
         }
     }
     

@@ -29,18 +29,17 @@ struct PaymentAccountEUR: PaymentAccount, Equatable {
     let bankCode: String
     let recipientName: String
 
-    init?(response: PaymentAccountResponse) {
+    init?(response: PlatformKit.PaymentAccount) {
         guard response.currency == Self.currency else {
             return nil
         }
         guard
             let bankName: String = response.agent.name,
-            let iban: String = response.address,
             let bankCode: String = response.agent.code
             else { return nil }
         self.bankName = bankName
         self.bankCountry = response.agent.country ?? ""
-        self.iban = iban
+        self.iban = response.address
         self.bankCode = bankCode
         self.recipientName = response.agent.recipient ?? ""
         self.identifier = response.id

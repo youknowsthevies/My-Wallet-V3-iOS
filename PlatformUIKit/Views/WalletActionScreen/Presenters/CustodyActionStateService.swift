@@ -26,6 +26,10 @@ public protocol CustodyActionStateReceiverServiceAPI: class {
     var action: Observable<RoutingAction<CustodyActionState>> { get }
 }
 
+public protocol CustodySwapEmitterAPI: class {
+    var swapRelay: PublishRelay<Void> { get }
+}
+
 public protocol CustodyActivityEmitterAPI: class {
     var activityRelay: PublishRelay<Void> { get }
 }
@@ -53,7 +57,8 @@ public typealias CustodyActionStateServiceAPI = CustodyActionStateReceiverServic
                                          CustodySellEmitterAPI &
                                          CustodyDepositEmitterAPI &
                                          RoutingPreviousStateEmitterAPI &
-                                         CustodyWithdrawEmitterAPI
+                                         CustodyWithdrawEmitterAPI &
+                                         CustodySwapEmitterAPI
 
 public final class CustodyActionStateService: CustodyActionStateServiceAPI {
     public typealias State = CustodyActionState
@@ -125,6 +130,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
     public let sellRelay = PublishRelay<Void>()
     public let buyRelay = PublishRelay<Void>()
     public let withdrawRelay = PublishRelay<Void>()
+    public let swapRelay = PublishRelay<Void>()
     
     private let statesRelay = BehaviorRelay<States>(value: .start)
     private let actionRelay = PublishRelay<Action>()
@@ -156,6 +162,14 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
             .bindAndCatch(weak: self) { (self) in
                 let nextStates = self.statesRelay.value.states(byAppending: .activity)
                 self.apply(action: .next(.activity), states: nextStates)
+            }
+            .disposed(by: disposeBag)
+        
+        swapRelay
+            .observeOn(MainScheduler.instance)
+            .bindAndCatch(weak: self) { (self) in
+                let nextStates = self.statesRelay.value.states(byAppending: .swap)
+                self.apply(action: .next(.swap), states: nextStates)
             }
             .disposed(by: disposeBag)
         
@@ -230,6 +244,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
              .deposit,
              .withdrawalFiat,
              .withdrawalAfterBackup,
+             .swap,
              .end:
             state = .end
             action = .next(state)

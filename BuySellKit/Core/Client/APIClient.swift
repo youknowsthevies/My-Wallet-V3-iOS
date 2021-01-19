@@ -235,7 +235,7 @@ final class APIClient: SimpleBuyClientAPI {
     
     // MARK: - PaymentAccountClientAPI
     
-    func paymentAccount(for currency: FiatCurrency) -> Single<PaymentAccountResponse> {
+    func paymentAccount(for currency: FiatCurrency) -> Single<PlatformKit.PaymentAccount.Response> {
         struct Payload: Encodable {
             let currency: String
         }

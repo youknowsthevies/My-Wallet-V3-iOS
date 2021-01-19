@@ -13,7 +13,7 @@ public struct NabuNetworkError: Codable, Error {
     public let code: NabuNetworkErrorCode
     public let type: String
     public let description: String
-    
+
     public init(code: NabuNetworkErrorCode, type: String, description: String) {
         self.code = code
         self.type = type
@@ -86,11 +86,12 @@ public enum NabuNetworkErrorCode: Int, Codable {
     case weeklyLimitExceeded = 46
     case annualLimitExceeded = 47
     case notCryptoToCryptoCurrencyPair = 48
-    
+    case pendingOrdersLimitReached = 53
+
     /// Campaign Related Errors - These errors are specific
     /// to users opting into an air drop campaign. Currently they're
     /// used when a user deep links into the application from a campaign
-    /// related link. 
+    /// related link.
     case invalidCampaign = 54
     case invalidCampaignUser = 55
     case campaignUserAlreadyRegistered = 56

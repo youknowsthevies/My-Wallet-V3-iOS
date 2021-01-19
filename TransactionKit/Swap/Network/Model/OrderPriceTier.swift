@@ -10,4 +10,14 @@ public struct OrderPriceTier: Decodable {
     public let volume: String
     public let price: String
     public let marginPrice: String
+    
+    public init(volume: String, price: String, marginPrice: String) {
+        self.volume = volume
+        self.price = price
+        self.marginPrice = marginPrice
+    }
+}
+
+public extension OrderPriceTier {
+    static let zero = OrderPriceTier(volume: "0", price: "0", marginPrice: "0")
 }

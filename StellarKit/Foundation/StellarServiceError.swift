@@ -98,6 +98,8 @@ extension StellarNetworkError {
              (.forbidden, .forbidden),
              (.unknown, .unknown):
             return true
+        case let (.badRequest(lhs), .badRequest(rhs)):
+            return lhs == rhs
         default:
             return false
         }

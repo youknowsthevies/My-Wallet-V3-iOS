@@ -27,7 +27,7 @@ class TradingBalanceService: TradingBalanceServiceAPI {
     
     // MARK: - Private Properties
     
-    private let client: CustodialClientAPI
+    private let client: TradingBalanceClientAPI
     private let cachedValue: CachedValue<CustodialAccountBalanceStates>
     
     private let lock = NSLock()
@@ -48,7 +48,7 @@ class TradingBalanceService: TradingBalanceServiceAPI {
     
     // MARK: - Setup
 
-    init(client: CustodialClientAPI = resolve()) {
+    init(client: TradingBalanceClientAPI = resolve()) {
         self.client = client
         cachedValue = CachedValue(configuration: .onSubscription())        
     }

@@ -73,7 +73,7 @@ public struct MoneyValue: Money, Hashable, Equatable {
             return fiatValue.amount
         }
     }
-    
+
     public var fiatValue: FiatValue? {
         guard case Value.fiat(let value) = _value else {
             return nil
@@ -174,11 +174,41 @@ public struct MoneyValue: Money, Hashable, Equatable {
         MoneyValue(fiatValue: FiatValue.zero(currency: currency))
     }
     
+    public static func one(currency: CryptoCurrency) -> MoneyValue {
+        let one = BigInt.one.toMinor(maxDecimalPlaces: currency.maxDecimalPlaces)
+        return MoneyValue(cryptoValue: CryptoValue.create(minor: one, currency: currency))
+    }
+    
+    public static func one(currency: FiatCurrency) -> MoneyValue {
+        let one = BigInt.one.toMinor(maxDecimalPlaces: currency.maxDecimalPlaces)
+        return MoneyValue(fiatValue: FiatValue.create(minor: one, currency: currency))
+    }
+
+    /// Use this method when you want to convert a `MoneyValue` in `A` currency into `B` currency and your exchange rate is in `B` currency.
+    /// - Parameter exchangeRate:The `MoneyValue` representing one major unit of `Self.CurrencyType` in destination's `CurrencyType`.
+    /// - Returns: `MoneyValue` of this instance value converted into the given `exchangeRate.currencyType`.
     public func convert(using exchangeRate: MoneyValue) throws -> MoneyValue {
         let exchangeRateAmount = exchangeRate.displayMajorValue
         let majorDecimal = displayMajorValue * exchangeRateAmount
         let major = "\(majorDecimal)"
         return try MoneyValue(major: major, currencyCode: exchangeRate.currencyType.code)
+    }
+
+    /// Use this method when you want to convert a `MoneyValue` in `A` currency into `B` currency and your exchange rate is in `A` currency.
+    /// - Parameter exchangeRate: The `MoneyValue` representing one major unit of the destination `CurrencyType` in `Self.CurrencyType`.
+    /// - Parameter currencyType: The destination `CurrencyType`.
+    /// - Returns: `MoneyValue` of this instance value converted into the given `CurrencyType`, using the inverse of the given exchange rate.
+    public func convert(usingInverse exchangeRate: MoneyValue, currencyType: CurrencyType) throws -> MoneyValue {
+        guard !isZero else {
+            return MoneyValue.zero(currency: currencyType)
+        }
+        guard !exchangeRate.isZero else {
+            return MoneyValue.zero(currency: currencyType)
+        }
+        let exchangeRateAmount = exchangeRate.displayMajorValue
+        let majorDecimal = displayMajorValue / exchangeRateAmount
+        let major = "\(majorDecimal)"
+        return try MoneyValue(major: major, currencyCode: currencyType.code)
     }
 }
 

@@ -111,13 +111,9 @@ open class BaseScreenViewController: UIViewController {
         }
         return _baseNavigationController
     }
-    
-    private var currentViewController: UIViewController? {
-        baseNavigationController?.topViewController
-    }
-    
+
     private var currentNavigationItem: UINavigationItem? {
-        currentViewController?.navigationItem
+        navigationItem
     }
     
     override open var preferredStatusBarStyle: UIStatusBarStyle {
@@ -141,7 +137,6 @@ open class BaseScreenViewController: UIViewController {
     
     override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        set(titleViewStyle: titleViewStyle)
         setBackground(by: barStyle)
         if !barStyle.ignoresStatusBar {
             UIApplication.shared.statusBarStyle = determineStatusBarStyle()
@@ -213,10 +208,17 @@ open class BaseScreenViewController: UIViewController {
         }
         return (leading, trailing)
     }
-    
+
     public func setStandardDarkContentStyle() {
         let (leading, trailing) = standardNavigationBarButtonStyles
         set(barStyle: .darkContent(),
+            leadingButtonStyle: leading,
+            trailingButtonStyle: trailing)
+    }
+
+    public func setStandardLightContentStyle() {
+        let (leading, trailing) = standardNavigationBarButtonStyles
+        set(barStyle: .lightContent(),
             leadingButtonStyle: leading,
             trailingButtonStyle: trailing)
     }

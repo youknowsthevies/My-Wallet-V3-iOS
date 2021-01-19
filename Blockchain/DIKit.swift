@@ -6,11 +6,12 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import DebugUIKit
 import BitcoinCashKit
+import BitcoinChainKit
 import BitcoinKit
 import BuySellKit
 import DIKit
+import DebugUIKit
 import ERC20Kit
 import EthereumKit
 import KYCKit
@@ -226,6 +227,11 @@ extension DependencyContainer {
         // MARK: - Bitcoin Wallet
 
         factory { () -> BitcoinWalletBridgeAPI in
+            let walletManager: WalletManager = DIKit.resolve()
+            return walletManager.wallet.bitcoin
+        }
+        
+        factory { () -> BitcoinChainSendBridgeAPI in
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.wallet.bitcoin
         }

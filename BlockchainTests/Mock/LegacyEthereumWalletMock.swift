@@ -31,12 +31,15 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
     }
     
     // MARK: - LegacyWalletAPI
-    
-    func createOrderPayment(withOrderTransaction orderTransaction: OrderTransactionLegacy, completion: @escaping () -> Void, success: ((String) -> Void)!, error: @escaping (String) -> Void) {
-        error("Not implemented")
+
+    func createOrderPayment(withOrderTransaction orderTransaction: OrderTransactionLegacy,
+                            completion: @escaping () -> Void,
+                            success: @escaping ([AnyHashable : Any]) -> Void,
+                            error: @escaping ([AnyHashable : Any]) -> Void) {
+        error([:])
     }
-    
-    func sendOrderTransaction(_ legacyAssetType: LegacyAssetType, secondPassword: String?, completion: @escaping () -> Void, success: @escaping () -> Void, error: @escaping (String) -> Void, cancel: @escaping () -> Void) {
+
+    func sendOrderTransaction(_ legacyAssetType: LegacyAssetType, secondPassword: String?, completion: @escaping () -> Void, success: @escaping (String) -> Void, error: @escaping (String) -> Void, cancel: @escaping () -> Void) {
         error("Not implemented")
     }
         
@@ -235,5 +238,9 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
     var mnemonicPromptingIfNeededMaybe = Maybe.just("")
     var mnemonicPromptingIfNeeded: Maybe<String> {
         mnemonicPromptingIfNeededMaybe
+    }
+
+    func mnemonic(with secondPassword: String?) -> Single<Mnemonic> {
+        .never()
     }
 }

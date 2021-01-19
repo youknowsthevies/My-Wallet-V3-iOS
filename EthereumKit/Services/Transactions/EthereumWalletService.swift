@@ -10,6 +10,7 @@ import BigInt
 import DIKit
 import PlatformKit
 import RxSwift
+import TransactionKit
 
 public enum EthereumKitValidationError: TransactionValidationError {
     case waitingOnPendingTransaction
@@ -28,8 +29,9 @@ public protocol EthereumWalletServiceAPI {
     var fetchHistoryIfNeeded: Single<Void> { get }
     
     func evaluate(amount: EthereumValue) -> Single<TransactionValidationResult>
-    func buildTransaction(with value: EthereumValue, to: EthereumAddress) -> Single<EthereumTransactionCandidate>
+    func buildTransaction(with value: EthereumValue, to: EthereumAddress, feeLevel: FeeLevel) -> Single<EthereumTransactionCandidate>
     func send(transaction: EthereumTransactionCandidate) -> Single<EthereumTransactionPublished>
+    func send(transaction: EthereumTransactionCandidate, secondPassword: String) -> Single<EthereumTransactionPublished>
 }
 
 final class EthereumWalletService: EthereumWalletServiceAPI {
@@ -60,15 +62,11 @@ final class EthereumWalletService: EthereumWalletServiceAPI {
                 }
             }
     }
-    
-    private var loadKeyPair: Single<EthereumKeyPair> {
-        keyPairProvider.keyPair
-    }
-    
+
     private let bridge: EthereumWalletBridgeAPI
     private let client: APIClientAPI
     private let feeService: AnyCryptoFeeService<EthereumTransactionFee>
-    private let keyPairProvider: AnyKeyPairProviderNew<EthereumKeyPair>
+    private let keyPairProvider: AnyKeyPairProvider<EthereumKeyPair>
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
     private let transactionSendingService: EthereumTransactionSendingServiceAPI
     private let transactionValidationService: EthereumTransactionValidationService
@@ -76,7 +74,7 @@ final class EthereumWalletService: EthereumWalletServiceAPI {
     init(with bridge: EthereumWalletBridgeAPI = resolve(),
          client: APIClientAPI = resolve(),
          feeService: AnyCryptoFeeService<EthereumTransactionFee> = resolve(),
-         keyPairProvider: AnyKeyPairProviderNew<EthereumKeyPair> = resolve(),
+         keyPairProvider: AnyKeyPairProvider<EthereumKeyPair> = resolve(),
          transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
          transactionSendingService: EthereumTransactionSendingServiceAPI = resolve(),
          transactionValidationService: EthereumTransactionValidationService = resolve()) {
@@ -95,19 +93,21 @@ final class EthereumWalletService: EthereumWalletServiceAPI {
             return self.transactionValidationService.validateCryptoAmount(amount: amount)
         }
     }
-    
-    func buildTransaction(with value: EthereumValue, to: EthereumAddress) -> Single<EthereumTransactionCandidate> {
+
+    func buildTransaction(with value: EthereumValue,
+                          to: EthereumAddress,
+                          feeLevel: FeeLevel) -> Single<EthereumTransactionCandidate> {
         handlePendingTransactionResult.flatMap(weak: self) { (self, result) -> Single<EthereumTransactionCandidate> in
             // Throw error if received from earlier step
             if let error = result.error { throw error }
-            return self.transactionBuildingService.buildTransaction(with: value, to: to)
+            return self.transactionBuildingService.buildTransaction(with: value, to: to, feeLevel: feeLevel)
         }
     }
     
     func send(transaction: EthereumTransactionCandidate) -> Single<EthereumTransactionPublished> {
         handlePendingTransaction
             .flatMap(weak: self) { (self, _) -> Single<EthereumKeyPair> in
-                self.loadKeyPair
+                self.keyPairProvider.keyPair
             }
             .flatMap(weak: self) { (self, keyPair) -> Single<EthereumTransactionPublished> in
                 self.prepareAndPush(transaction: transaction, keyPair: keyPair)
@@ -116,7 +116,20 @@ final class EthereumWalletService: EthereumWalletServiceAPI {
                 self.updateAfterSending(transaction: transaction)
             }
     }
-    
+
+    func send(transaction: EthereumTransactionCandidate, secondPassword: String) -> Single<EthereumTransactionPublished> {
+        handlePendingTransaction
+            .flatMap(weak: self) { (self, _) -> Single<EthereumKeyPair> in
+                self.keyPairProvider.keyPair(with: secondPassword)
+            }
+            .flatMap(weak: self) { (self, keyPair) -> Single<EthereumTransactionPublished> in
+                self.prepareAndPush(transaction: transaction, keyPair: keyPair)
+            }
+            .flatMap(weak: self) { (self, transaction) -> Single<EthereumTransactionPublished> in
+                self.updateAfterSending(transaction: transaction)
+            }
+    }
+
     private func prepareAndPush(transaction: EthereumTransactionCandidate, keyPair: EthereumKeyPair) -> Single<EthereumTransactionPublished> {
         transactionSendingService.send(
             transaction: transaction,

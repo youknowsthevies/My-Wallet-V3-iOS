@@ -78,6 +78,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
         eligibilityService
             .fetch()
             .mapToResult()
+            .asObservable()
     }
 
     /// The (optional) data, in case the state's value is `inBounds`.
@@ -96,7 +97,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
 
     // MARK: - Interactors
     
-    let auxiliaryViewInteractor: SendAuxililaryViewInteractor
+    let auxiliaryViewInteractor: SendAuxililaryViewInteractorAPI
     
     // MARK: - Injected
     
@@ -128,7 +129,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
          pairsService: SupportedPairsInteractorServiceAPI = resolve(),
          eligibilityService: EligibilityServiceAPI = resolve(),
          data: SellCryptoInteractionData,
-         exchangeProvider: ExchangeProviding,
+         priceService: PriceServiceAPI = resolve(),
          balanceProvider: BalanceProviding,
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
          cryptoCurrencySelectionService: CryptoCurrencyServiceAPI & SelectionServiceAPI,
@@ -147,7 +148,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
         )
                 
         super.init(
-            exchangeProvider: exchangeProvider,
+            priceService: priceService,
             fiatCurrencyService: fiatCurrencyService,
             cryptoCurrencySelectionService: cryptoCurrencySelectionService,
             initialActiveInput: initialActiveInput
@@ -158,7 +159,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
         let sourceAccount = self.data.source
         let sourceAccountCurrency = sourceAccount.currencyType
         let destinationAccountCurrency = data.destination.currencyType
-        let exchangeProvider = self.exchangeProvider
+        let priceService = self.priceService
         let amountTranslationInteractor = self.amountTranslationInteractor
 
         let balance = balanceProvider[sourceAccountCurrency]
@@ -262,23 +263,18 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
                         switch state {
                         case .tooLow(min: let moneyValue),
                              .tooHigh(max: let moneyValue):
-                            return exchangeProvider[sourceAccountCurrency].fiatPrice
-                                .take(1)
-                                .asSingle()
-                                .map { exchangeRate -> MoneyValuePair in
-                                    MoneyValuePair(
-                                        fiat: moneyValue.fiatValue!,
-                                        priceInFiat: exchangeRate,
-                                        cryptoCurrency: sourceAccountCurrency.cryptoCurrency!,
-                                        usesFiatAsBase: activeInput == .fiat
-                                    )
-                                }
+                            return priceService
+                                .moneyValuePair(
+                                    base: moneyValue.fiatValue!,
+                                    cryptoCurrency: sourceAccountCurrency.cryptoCurrency!,
+                                    usesFiatAsBase: activeInput == .fiat
+                                )
                                 .map { pair -> AmountTranslationInteractor.State in
                                     switch state {
                                     case .tooLow:
-                                        return .minLimitExceeded(pair)
+                                        return .minLimitExceeded(pair.base)
                                     case .tooHigh:
-                                        return .maxLimitExceeded(pair)
+                                        return .maxLimitExceeded(pair.base)
                                     case .empty:
                                         return .empty
                                     case .inBounds:

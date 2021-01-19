@@ -16,7 +16,7 @@ public struct PendingStateViewModel {
         case region
         case circleError
         case success
-        case cutsom(String)
+        case custom(String)
         
         public var name: String {
             switch self {
@@ -30,7 +30,7 @@ public struct PendingStateViewModel {
                 return "clock-error-icon"
             case .success:
                 return "v-success-icon"
-            case .cutsom(let name):
+            case .custom(let name):
                 return name
             }
         }

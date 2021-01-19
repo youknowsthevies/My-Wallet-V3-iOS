@@ -398,7 +398,6 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
             accountSelectionService: accountSelectionService,
             routerInteractor: interactor,
             analyticsRecorder: resolve(),
-            exchangeProvider: DataProvider.default.exchange,
             balanceProvider: DataProvider.default.balance
         )
         sellRouter = BuySellUIKit.SellRouter(builder: builder)

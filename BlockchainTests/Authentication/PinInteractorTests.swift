@@ -22,7 +22,7 @@ class PinInteractorTests: XCTestCase {
     }
     
     var maintenanceService: MaintenanceServicing {
-        MockWalletService()
+        WalletServiceMock()
     }
     
     var wallet: WalletProtocol {
@@ -80,7 +80,8 @@ class PinInteractorTests: XCTestCase {
     // Maintenance error is returned in the relevant case
     private func testMaintenanceError(for opeation: Operation) throws {
         let expectedMessage = "server under maintenance"
-        let maintenanceService = MockWalletService(message: expectedMessage)
+        let maintenanceService = WalletServiceMock()
+        maintenanceService.underlyingServerUnderMaintenanceMessage = expectedMessage
         let interactor = PinInteractor(pinClient: MockPinClient(statusCode: .success),
                                        maintenanceService: maintenanceService,
                                        wallet: wallet,

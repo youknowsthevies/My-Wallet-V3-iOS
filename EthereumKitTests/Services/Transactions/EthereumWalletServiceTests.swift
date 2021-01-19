@@ -13,6 +13,7 @@ import RxSwift
 import RxTest
 import web3swift
 import XCTest
+import TransactionKit
 
 class EthereumWalletServiceTests: XCTestCase {
     
@@ -33,7 +34,7 @@ class EthereumWalletServiceTests: XCTestCase {
     
     var walletAccountRepository: EthereumWalletAccountRepositoryMock!
     
-    var keyPairProvider: AnyKeyPairProviderNew<EthereumKeyPair>!
+    var keyPairProvider: AnyKeyPairProvider<EthereumKeyPair>!
     
     var transactionBuildingService: EthereumTransactionBuildingService!
     
@@ -62,7 +63,7 @@ class EthereumWalletServiceTests: XCTestCase {
         
         walletAccountRepository = EthereumWalletAccountRepositoryMock()
         
-        keyPairProvider = AnyKeyPairProviderNew<EthereumKeyPair>(provider: walletAccountRepository)
+        keyPairProvider = AnyKeyPairProvider<EthereumKeyPair>(provider: walletAccountRepository)
         
         assetAccountDetailsService = EthereumAssetAccountDetailsService(
             with: bridge,
@@ -201,7 +202,7 @@ class EthereumWalletServiceTests: XCTestCase {
         client.balanceDetailsValue = .just(BalanceDetailsResponse(balance: "0.1", nonce: 1))
 
         let buildObservable: Observable<EthereumTransactionCandidate> = subject
-            .buildTransaction(with: ethereumValue, to: toAddress)
+            .buildTransaction(with: ethereumValue, to: toAddress, feeLevel: .regular)
             .asObservable()
 
         // Act
@@ -239,7 +240,7 @@ class EthereumWalletServiceTests: XCTestCase {
         client.balanceDetailsValue = .just(BalanceDetailsResponse(balance: "0.02", nonce: 1))
         
         let buildObservable: Observable<EthereumTransactionCandidate> = subject
-            .buildTransaction(with: ethereumValue, to: toAddress)
+            .buildTransaction(with: ethereumValue, to: toAddress, feeLevel: .regular)
             .asObservable()
 
         // Act
@@ -378,7 +379,7 @@ class EthereumWalletServiceTests: XCTestCase {
         client.balanceDetailsValue = Single.error(EthereumWalletBridgeMockError.mockError)
 
         let buildObservable: Observable<EthereumTransactionCandidate> = subject
-            .buildTransaction(with: ethereumValue, to: toAddress)
+            .buildTransaction(with: ethereumValue, to: toAddress, feeLevel: .regular)
             .asObservable()
 
         // Act
@@ -418,7 +419,7 @@ class EthereumTransactionBuildingServiceMock: EthereumTransactionBuildingService
     var lastAmount: EthereumValue?
     var lastTo: EthereumKit.EthereumAddress?
     var buildTransactionValue = Single.just(EthereumTransactionCandidateBuilder().build()!)
-    func buildTransaction(with amount: EthereumValue, to: EthereumKit.EthereumAddress) -> Single<EthereumTransactionCandidate> {
+    func buildTransaction(with amount: EthereumValue, to: EthereumKit.EthereumAddress, feeLevel: FeeLevel) -> Single<EthereumTransactionCandidate> {
         lastAmount = amount
         lastTo = to
         return buildTransactionValue

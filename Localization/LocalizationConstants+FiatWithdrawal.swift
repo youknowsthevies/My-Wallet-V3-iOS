@@ -6,11 +6,11 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+// swiftlint:disable all
+
 extension LocalizationConstants {
     public enum FiatWithdrawal { }
 }
-
-//swiftlint:disable all
 
 extension LocalizationConstants.FiatWithdrawal {
     public enum LinkedBanks {

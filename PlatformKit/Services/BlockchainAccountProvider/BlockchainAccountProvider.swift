@@ -11,6 +11,8 @@ import RxSwift
 
 public protocol BlockchainAccountProviding: AnyObject {
     func accounts(for currency: CurrencyType) -> Single<[BlockchainAccount]>
+    func accounts(for currency: CurrencyType, accountType: SingleAccountType) -> Single<[BlockchainAccount]>
+    func accounts(accountType: SingleAccountType) -> Single<[BlockchainAccount]>
     func account(for currency: CurrencyType, accountType: SingleAccountType) -> Single<BlockchainAccount>
 }
 
@@ -29,6 +31,19 @@ final class BlockchainAccountProvider: BlockchainAccountProviding {
         coincore
             .allAccounts
             .map { $0.accounts.filter { $0.currencyType == currency } }
+    }
+    
+    func accounts(accountType: SingleAccountType) -> Single<[BlockchainAccount]> {
+        coincore
+            .allAccounts
+            .map { $0.accounts.filter { $0.accountType == accountType } }
+    }
+    
+    func accounts(for currency: CurrencyType, accountType: SingleAccountType) -> Single<[BlockchainAccount]> {
+        coincore
+            .allAccounts
+            .map { $0.accounts.filter { $0.currencyType == currency } }
+            .map { $0.filter { $0.accountType == accountType } }
     }
     
     func account(for currency: CurrencyType, accountType: SingleAccountType) -> Single<BlockchainAccount> {

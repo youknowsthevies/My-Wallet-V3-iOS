@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import BitcoinKit
+import BitcoinChainKit
 import DIKit
 import EthereumKit
 import PlatformKit
@@ -17,12 +17,12 @@ public protocol FeeServiceAPI {
     /// This pulls from a Blockchain.info endpoint that serves up
     /// current BTC transaction fees. We use this in order to inject a `fee` value
     /// into the JS. Only `Swap` uses priority fees.
-    var bitcoin: Single<BitcoinTransactionFee> { get }
+    var bitcoin: Single<BitcoinChainTransactionFee<BitcoinToken>> { get }
     
     /// This pulls from a Blockchain.info endpoint that serves up
     /// current BTC transaction fees. We use this in order to inject a `fee` value
     /// into the JS. Only `Swap` uses priority fees.
-    var bitcoinCash: Single<BitcoinCashTransactionFee> { get }
+    var bitcoinCash: Single<BitcoinChainTransactionFee<BitcoinCashToken>> { get }
 
     /// This pulls from a Blockchain.info endpoint that serves up
     /// current ETH transaction fees. We use this in order to inject a `fee` value
@@ -40,11 +40,11 @@ public final class FeeService: FeeServiceAPI {
 
     // MARK: - FeeServiceAPI
 
-    public var bitcoin: Single<BitcoinTransactionFee> {
+    public var bitcoin: Single<BitcoinChainTransactionFee<BitcoinToken>> {
         bitcoinFeeService.fees
     }
     
-    public var bitcoinCash: Single<BitcoinCashTransactionFee> {
+    public var bitcoinCash: Single<BitcoinChainTransactionFee<BitcoinCashToken>> {
         bitcoinCashFeeService.fees
     }
 
@@ -58,15 +58,15 @@ public final class FeeService: FeeServiceAPI {
 
     // MARK: - Private properties
 
-    private let bitcoinFeeService: CryptoFeeService<BitcoinTransactionFee>
-    private let bitcoinCashFeeService: CryptoFeeService<BitcoinCashTransactionFee>
+    private let bitcoinFeeService: CryptoFeeService<BitcoinChainTransactionFee<BitcoinToken>>
+    private let bitcoinCashFeeService: CryptoFeeService<BitcoinChainTransactionFee<BitcoinCashToken>>
     private let ethereumFeeService: CryptoFeeService<EthereumTransactionFee>
-    private let stellarFeeService: CryptoFeeService<StellarTransactionFee>
+    private let stellarFeeService: AnyCryptoFeeService<StellarTransactionFee>
 
-    init(bitcoinFeeService: CryptoFeeService<BitcoinTransactionFee> = resolve(),
-         bitcoinCashFeeService: CryptoFeeService<BitcoinCashTransactionFee> = resolve(),
+    init(bitcoinFeeService: CryptoFeeService<BitcoinChainTransactionFee<BitcoinToken>> = resolve(),
+         bitcoinCashFeeService: CryptoFeeService<BitcoinChainTransactionFee<BitcoinCashToken>> = resolve(),
          ethereumFeeService: CryptoFeeService<EthereumTransactionFee> = resolve(),
-         stellarFeeService: CryptoFeeService<StellarTransactionFee> = resolve()) {
+         stellarFeeService: AnyCryptoFeeService<StellarTransactionFee> = resolve()) {
         self.bitcoinFeeService = bitcoinFeeService
         self.bitcoinCashFeeService = bitcoinCashFeeService
         self.ethereumFeeService = ethereumFeeService

@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import BitcoinKit
+import BitcoinChainKit
 import DIKit
 import ERC20Kit
 import EthereumKit
@@ -85,11 +85,11 @@ class TradeExecutionService: TradeExecutionAPI {
     private let ethereumWallet: EthereumWalletBridgeAPI
     private var ethereumTransactionCandidate: EthereumTransactionCandidate?
     
-    private var bitcoinTransactionFee: Single<BitcoinTransactionFee> {
+    private var bitcoinTransactionFee: Single<BitcoinChainTransactionFee<BitcoinToken>> {
         dependencies.feeService.bitcoin
     }
     
-    private var bitcoinCashTransactionFee: Single<BitcoinCashTransactionFee> {
+    private var bitcoinCashTransactionFee: Single<BitcoinChainTransactionFee<BitcoinCashToken>> {
         dependencies.feeService.bitcoinCash
     }
     
@@ -273,7 +273,8 @@ class TradeExecutionService: TradeExecutionAPI {
         }
 
         // TICKET: IOS-1550 Move this to a different service
-        if assetType == .stellar {
+        switch assetType {
+        case .stellar:
             let disposable = stellarTransactionFee.asObservable()
                 .catchErrorJustReturn(.default)
                 .subscribeOn(MainScheduler.asyncInstance)
@@ -291,7 +292,7 @@ class TradeExecutionService: TradeExecutionAPI {
                     }
                     
                     let fee = stellarFee.regular.displayMajorValue
-                                        
+
                     self.pendingXlmPaymentOperation = StellarPaymentOperation(
                         destinationAccountId: orderTransactionLegacy.to,
                         amountInXlm: amount,
@@ -302,7 +303,7 @@ class TradeExecutionService: TradeExecutionAPI {
                     createOrderPaymentSuccess("\(fee)")
                 })
             disposables.insertWithDiscardableResult(disposable)
-        } else if assetType == .pax {
+        case .pax:
             guard
                 let cryptoValue = CryptoValue.create(major: orderTransactionLegacy.amount, currency: .pax),
                 let tokenValue = try? ERC20TokenValue<PaxToken>.init(crypto: cryptoValue),
@@ -334,15 +335,15 @@ class TradeExecutionService: TradeExecutionAPI {
                     Logger.shared.error(erc20Error)
                 })
                 .disposed(by: bag)
-        } else if assetType == .ethereum {
+        case .ethereum:
             guard
                 let cryptoValue = CryptoValue.create(major: orderTransactionLegacy.amount, currency: .ethereum),
                 let ethereumValue = try? EthereumValue(crypto: cryptoValue),
                 let address = EthereumAccountAddress(rawValue: orderTransactionLegacy.to)?.ethereumAddress
-                else {
-                    return
+            else {
+                return
             }
-            dependencies.ethereumWalletService.buildTransaction(with: ethereumValue, to: address)
+            dependencies.ethereumWalletService.buildTransaction(with: ethereumValue, to: address, feeLevel: .priority)
                 .subscribeOn(MainScheduler.instance)
                 .observeOn(MainScheduler.asyncInstance)
                 .subscribe(onSuccess: { [weak self] candidate in
@@ -351,49 +352,60 @@ class TradeExecutionService: TradeExecutionAPI {
                     let feeAmount = candidate.gasLimit * candidate.gasPrice
                     let wei = CryptoValue.ether(minor: "\(feeAmount)")
                     createOrderPaymentSuccess(wei?.toDisplayString(includeSymbol: false) ?? "0")
-                    }, onError: { ethereumError in
-                        Logger.shared.error(ethereumError)
-                        error(LocalizationConstants.Errors.genericError, nil, nil)
+                }, onError: { ethereumError in
+                    Logger.shared.error(ethereumError)
+                    error(LocalizationConstants.Errors.genericError, nil, nil)
                 })
-            .disposed(by: bag)
-        } else {
+                .disposed(by: bag)
+        case .bitcoin, .bitcoinCash:
             let disposable = Observable.zip(
-                    bitcoinTransactionFee.asObservable(),
-                    bitcoinCashTransactionFee.asObservable(),
-                    ethereumTransactionFee.asObservable()
-                )
-                /// Should either transaction fee fetches fail, we fall back to
-                /// default fee models.
-                .catchErrorJustReturn((.default, .default, .default))
-                .subscribeOn(MainScheduler.asyncInstance)
-                .observeOn(MainScheduler.instance)
-                .subscribe(onNext: { [weak self] (bitcoinFee, bitcoinCashFee, ethereumFee) in
+                bitcoinTransactionFee.asObservable(),
+                bitcoinCashTransactionFee.asObservable()
+            )
+            /// Should either transaction fee fetches fail, we fall back to default fee models.
+            .catchErrorJustReturn((.default, .default))
+            .subscribeOn(MainScheduler.asyncInstance)
+            .observeOn(MainScheduler.instance)
+            .subscribe(
+                onNext: { [weak self] (bitcoinFee, bitcoinCashFee) in
                     guard let self = self else { return }
                     switch assetType {
                     case .bitcoin:
                         orderTransactionLegacy.fees = bitcoinFee.priority.toDisplayString(includeSymbol: false)
                     case .bitcoinCash:
                         orderTransactionLegacy.fees = bitcoinCashFee.priority.toDisplayString(includeSymbol: false)
-                    case .ethereum:
-                        orderTransactionLegacy.fees = ethereumFee.priorityGweiValue
-                        orderTransactionLegacy.gasLimit = String(ethereumFee.gasLimit)
-                    case .stellar, .pax, .algorand, .tether, .wDGLD:
+                    case .ethereum, .stellar, .pax, .algorand, .tether, .wDGLD:
                         break
                     }
-                    
+
                     self.wallet.createOrderPayment(
                         withOrderTransaction: orderTransactionLegacy,
                         completion: { [weak self] in
                             guard let self = self else { return }
                             self.isExecuting = false
-                        }, success: createOrderPaymentSuccess,
-                           error: { errorMessage in
+                        },
+                        success: { json in
+                            let paymentJSON: [AnyHashable: Any] = json["payment"] as? [AnyHashable: Any] ?? json
+                            let finalFeeAny: Any = paymentJSON["finalFee"] ?? ""
+                            createOrderPaymentSuccess("\(finalFeeAny)")
+                        },
+                        error: { json in
+                            let errorMessage = json["error"] as? String ?? ""
                             error(errorMessage, transactionID, nil)
-                    })
-                    }, onError: { networkError in
-                      error(networkError.localizedDescription, nil, nil)
-                })
+                        }
+                    )
+                },
+                onError: { networkError in
+                    error(networkError.localizedDescription, nil, nil)
+                }
+            )
             disposables.insertWithDiscardableResult(disposable)
+
+        case .algorand,
+             .wDGLD,
+             .tether:
+            // Old Swap does not support this Asset type.
+            unimplemented()
         }
     }
 
@@ -428,7 +440,7 @@ class TradeExecutionService: TradeExecutionAPI {
         transactionID: String?,
         secondPassword: String?,
         keyPair: StellarKeyPair?,
-        success: @escaping (() -> Void),
+        success: @escaping ((String) -> Void),
         error: @escaping ((ErrorMessage, TransactionID?, NabuNetworkError?) -> Void)
     ) {
         let executionDone = { [weak self] in
@@ -465,7 +477,7 @@ class TradeExecutionService: TradeExecutionAPI {
                     )
                 }, onCompleted: {
                     executionDone()
-                    success()
+                    success(transactionID ?? "")
                 })
             disposables.insertWithDiscardableResult(disposable)
         } else if assetType == .pax {
@@ -479,7 +491,7 @@ class TradeExecutionService: TradeExecutionAPI {
                 .observeOn(MainScheduler.asyncInstance)
                 .subscribe(onSuccess: { published in
                     executionDone()
-                    success()
+                    success(published.transactionHash)
                 }, onError: { ethereumError in
                     executionDone()
                     Logger.shared.error("Failed to send PAX. Error: \(ethereumError)")
@@ -501,7 +513,7 @@ class TradeExecutionService: TradeExecutionAPI {
                 .observeOn(MainScheduler.asyncInstance)
                 .subscribe(onSuccess: { published in
                     executionDone()
-                    success()
+                    success(published.transactionHash)
                 }, onError: { ethereumError in
                     executionDone()
                     Logger.shared.error("Failed to send Ethereum. Error: \(ethereumError)")
@@ -752,7 +764,7 @@ extension TradeExecutionService {
                         transactionID: orderTransaction.orderIdentifier,
                         secondPassword: secondPassword,
                         keyPair: pair,
-                        success: {
+                        success: { _ in
                             success(orderTransaction)
                         },
                         error: error
