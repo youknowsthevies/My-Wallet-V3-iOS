@@ -107,16 +107,17 @@ final class YodleeScreenContentReducer {
     }
 
     func linkingBankFailureContent(error: LinkedBankData.LinkageError) -> YodleePendingContent {
-        YodleePendingContent(
+        let failureTitles = linkingBankFailureTitles(from: error)
+        return YodleePendingContent(
             compositeViewType: .composite(
                 .init(baseViewType: .image("filled_blockchain_logo"),
                       sideViewAttributes: .init(type: .image("circular-error-icon"), position: .rightCorner))
             ),
-            mainTitleContent: .init(text: LocalizedStrings.FailurePendingContent.Generic.title,
+            mainTitleContent: .init(text: failureTitles.title,
                                     font: .main(.bold, 20),
                                     color: .darkTitleText,
                                     alignment: .center),
-            subtTitleContent: .init(text: LocalizedStrings.FailurePendingContent.Generic.subtitle,
+            subtTitleContent: .init(text: failureTitles.subtitle,
                                     font: .main(.regular, 14),
                                     color: .descriptionText,
                                     alignment: .center),
@@ -142,5 +143,27 @@ final class YodleeScreenContentReducer {
             tryAgainButtonViewModel: nil,
             cancelActionButtonViewModel: nil
         )
+    }
+
+    // MARK: Private
+
+    func linkingBankFailureTitles(from linkageError: LinkedBankData.LinkageError) -> (title: String, subtitle: String) {
+        switch linkageError {
+        case .alreadyLinked:
+            return (LocalizedStrings.FailurePendingContent.AlreadyLinked.title,
+                    LocalizedStrings.FailurePendingContent.AlreadyLinked.subtitle)
+        case .namesMismatched:
+            return (LocalizedStrings.FailurePendingContent.AccountNamesMismatched.title,
+                    LocalizedStrings.FailurePendingContent.AccountNamesMismatched.subtitle)
+        case .unsuportedAccount:
+            return (LocalizedStrings.FailurePendingContent.AccountUnsupported.title,
+                    LocalizedStrings.FailurePendingContent.AccountUnsupported.subtitle)
+        case .timeout:
+            return (LocalizedStrings.FailurePendingContent.Timeout.title,
+                    LocalizedStrings.FailurePendingContent.Timeout.subtitle)
+        case .unknown:
+            return (LocalizedStrings.FailurePendingContent.Generic.title,
+                    LocalizedStrings.FailurePendingContent.Generic.subtitle)
+        }
     }
 }

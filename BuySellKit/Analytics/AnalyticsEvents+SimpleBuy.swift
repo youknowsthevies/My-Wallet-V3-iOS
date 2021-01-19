@@ -32,6 +32,11 @@ extension AnalyticsEvents {
                 }
             }
         }
+
+        public enum LinkedBankPartner: String {
+            case ach = "ACH"
+            case ob = "OB"
+        }
         
         public enum CheckoutStatus: String {
             case success = "SUCCESS"
@@ -112,6 +117,16 @@ extension AnalyticsEvents {
         case sbLinkBankScreenShown(currencyCode: String)
         case sbLinkBankDetailsCopied
         case sbLinkBankEmailClicked
+        case sbBankLinkSplashSeen(partner: LinkedBankPartner)
+        case sbBankLinkSplashCTA(partner: LinkedBankPartner)
+        case sbAchSuccess
+        case sbAchClose
+        case sbAchError
+        case sbBankLinkSuccess(partner: LinkedBankPartner)
+        case sbIncorrectAccountError(partner: LinkedBankPartner)
+        case sbAlreadyLinkedError(partner: LinkedBankPartner)
+        case sbBankLinkGenericError(partner: LinkedBankPartner)
+        case sbAccountMismatchedError(partner: LinkedBankPartner)
             
         public var name: String {
             switch self {
@@ -313,6 +328,26 @@ extension AnalyticsEvents {
                 return "sb_card_info_set"
             case .sbCheckoutCompleted:
                 return "sb_checkout_completed"
+            case .sbBankLinkSplashSeen:
+                return "sb_bank_link_splash_seen"
+            case .sbBankLinkSplashCTA:
+                return "sb_bank_link_splash_cont"
+            case .sbAchSuccess:
+                return "sb_ach_success"
+            case .sbAchClose:
+                return "sb_ach_close"
+            case .sbAchError:
+                return "sb_ach_error"
+            case .sbBankLinkSuccess:
+                return "sb_bank_link_success"
+            case .sbAccountMismatchedError:
+                return "sb_acc_name_mis_error"
+            case .sbIncorrectAccountError:
+                return "sb_incorrect_acc_error"
+            case .sbAlreadyLinkedError:
+                return "sb_already_linkd_error"
+            case .sbBankLinkGenericError:
+                return "sb_bank_link_gen_error"
             }
         }
 
@@ -338,7 +373,7 @@ extension AnalyticsEvents {
             case .sbBuyFormConfirmClick(currencyCode: let currencyCode, amount: let amount, additionalParameters: let additionalParameters):
                 let parameters =  [
                     ParameterName.currency : currencyCode,
-                    ParameterName.amount : amount,
+                    ParameterName.amount : amount
                 ]
                 return parameters + additionalParameters 
             case .sbCheckoutShown(paymentMethod: let method):
@@ -349,6 +384,14 @@ extension AnalyticsEvents {
                 return [ ParameterName.paymentMethod : method.string ]
             case .sbBankDetailsCopied(bankName: let bankName):
                 return ["bank field name": bankName]
+            case .sbBankLinkSplashCTA(let partner),
+                 .sbBankLinkSplashSeen(let partner),
+                 .sbBankLinkSuccess(let partner),
+                 .sbAccountMismatchedError(let partner),
+                 .sbIncorrectAccountError(let partner),
+                 .sbAlreadyLinkedError(let partner),
+                 .sbBankLinkGenericError(let partner):
+                return ["partner": partner.rawValue]
             default:
                 return nil
             }

@@ -92,7 +92,7 @@ extension YodleeActivateService.State {
             )
         case .timeout:
             return .failure(
-                content: reducer.linkingBankFailureContent(error: .unknown)
+                content: reducer.linkingBankFailureContent(error: .timeout)
             )
         }
     }

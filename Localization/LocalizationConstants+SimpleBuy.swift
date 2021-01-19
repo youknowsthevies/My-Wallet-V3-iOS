@@ -910,6 +910,86 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "Yodlee Web Screen: likning bank error cancel button title"
                 )
             }
+
+            public enum Timeout {
+                public static let title = NSLocalizedString(
+                    "Oops! Something went wrong.",
+                    comment: "Yodlee Web Screen: likning bank error state title"
+                )
+
+                public static let subtitle = NSLocalizedString(
+                    "It’s taking too long to link your bank, please try again.",
+                    comment: "Yodlee Web Screen: likning bank error state subtitle"
+                )
+                public static let mainActionButtonTitle = NSLocalizedString(
+                    "Try Again",
+                    comment: "Yodlee Web Screen: likning bank error try again button title"
+                )
+                public static let cancelActionButtonTitle = NSLocalizedString(
+                    "Cancel",
+                    comment: "Yodlee Web Screen: likning bank error cancel button title"
+                )
+            }
+
+            public enum AlreadyLinked {
+                public static let title = NSLocalizedString(
+                    "Sorry, that bank account has been linked to the maximum number of Wallets.",
+                    comment: "Yodlee Web Screen: likning bank error state title"
+                )
+
+                public static let subtitle = NSLocalizedString(
+                    "To link this bank, please log into your other Wallets and remove it. If this doesnt look right to you, please contact us immediately.",
+                    comment: "Yodlee Web Screen: likning bank error state subtitle"
+                )
+                public static let mainActionButtonTitle = NSLocalizedString(
+                    "Try a Different Account",
+                    comment: "Yodlee Web Screen: likning bank error try again button title"
+                )
+                public static let cancelActionButtonTitle = NSLocalizedString(
+                    "Cancel",
+                    comment: "Yodlee Web Screen: likning bank error cancel button title"
+                )
+            }
+
+            public enum AccountUnsupported {
+                public static let title = NSLocalizedString(
+                    "Please link a Checking Account.",
+                    comment: "Yodlee Web Screen: likning bank error state title"
+                )
+
+                public static let subtitle = NSLocalizedString(
+                    "Your bank may charge you extra fees if you buy crypto without a checking account.",
+                    comment: "Yodlee Web Screen: likning bank error state subtitle"
+                )
+                public static let mainActionButtonTitle = NSLocalizedString(
+                    "Try a Different Bank",
+                    comment: "Yodlee Web Screen: likning bank error try again button title"
+                )
+                public static let cancelActionButtonTitle = NSLocalizedString(
+                    "Cancel",
+                    comment: "Yodlee Web Screen: likning bank error cancel button title"
+                )
+            }
+
+            public enum AccountNamesMismatched {
+                public static let title = NSLocalizedString(
+                    "Oops! Something went wrong.",
+                    comment: "Yodlee Web Screen: likning bank error state title"
+                )
+
+                public static let subtitle = NSLocalizedString(
+                    "We noticed the names don’t match. The bank you link must have a matching legal first & last name as your Blockchain.com Account.",
+                    comment: "Yodlee Web Screen: likning bank error state subtitle"
+                )
+                public static let mainActionButtonTitle = NSLocalizedString(
+                    "Try a Different Bank",
+                    comment: "Yodlee Web Screen: likning bank error try again button title"
+                )
+                public static let cancelActionButtonTitle = NSLocalizedString(
+                    "Cancel",
+                    comment: "Yodlee Web Screen: likning bank error cancel button title"
+                )
+            }
         }
     }
 }

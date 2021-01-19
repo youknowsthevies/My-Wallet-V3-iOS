@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import Localization
 import PlatformUIKit
 import RIBs
@@ -43,21 +44,25 @@ final class LinkBankSplashScreenInteractor: PresentableInteractor<LinkBankSplash
     private let bankLinkageData: BankLinkageData
     private let contentReducer: LinkBankSplashScreenContentReducer
     private let checkoutData: CheckoutData
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     init(presenter: LinkBankSplashScreenPresentable,
          stateService: StateServiceAPI,
          bankLinkageData: BankLinkageData,
          checkoutData: CheckoutData,
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          contentReducer: LinkBankSplashScreenContentReducer) {
         self.stateService = stateService
         self.bankLinkageData = bankLinkageData
         self.contentReducer = contentReducer
+        self.analyticsRecorder = analyticsRecorder
         self.checkoutData = checkoutData
         super.init(presenter: presenter)
     }
 
     override func didBecomeActive() {
         super.didBecomeActive()
+        analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbBankLinkSplashSeen(partner: partnerForAnalytics()))
 
         let state = Driver.of(
             contentReducer.reduce(for: bankLinkageData.partner)
@@ -73,10 +78,15 @@ final class LinkBankSplashScreenInteractor: PresentableInteractor<LinkBankSplash
         case .closeFlow:
             listener?.closeFlow()
         case .continueTapped:
+            analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbBankLinkSplashCTA(partner: partnerForAnalytics()))
             listener?.route(to: .yodlee(data: bankLinkageData))
         case .linkTapped(let link):
             router?.route(to: .link(url: link.url))
         }
+    }
+
+    private func partnerForAnalytics() -> AnalyticsEvents.SimpleBuy.LinkedBankPartner {
+        bankLinkageData.partner == .yodlee ? .ach : .ob
     }
 }
 

@@ -13,6 +13,7 @@ import PlatformUIKit
 import RIBs
 import RxCocoa
 import RxSwift
+import ToolKit
 
 enum YodleeScreen {
     enum Action: Equatable {
@@ -70,6 +71,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
     private let bankLinkageData: BankLinkageData
     private let checkoutData: CheckoutData
     private let stateService: StateServiceAPI
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let yodleeRequestProvider: YodleeRequestProvider
     private let yodleeMessageService: YodleeMessageService
     private let yodleeActivationService: YodleeActivateService
@@ -79,6 +81,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
          bankLinkageData: BankLinkageData,
          checkoutData: CheckoutData,
          stateService: StateServiceAPI,
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          yodleeRequestProvider: YodleeRequestProvider,
          yodleeMessageService: YodleeMessageService,
          yodleeActivationService: YodleeActivateService,
@@ -86,6 +89,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
         self.bankLinkageData = bankLinkageData
         self.checkoutData = checkoutData
         self.stateService = stateService
+        self.analyticsRecorder = analyticsRecorder
         self.yodleeRequestProvider = yodleeRequestProvider
         self.yodleeMessageService = yodleeMessageService
         self.yodleeActivationService = yodleeActivationService
@@ -134,6 +138,9 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
 
         let activationContentAction = activationResult
             .filter(\.isActive)
+            .do(onNext: { [weak self] state in
+                self?.recordAnalytics(for: state)
+            })
             .map { [weak self] state -> YodleeScreen.Action in
                 guard let self = self else { return .none }
                 return state.toScreenAction(reducer: self.contentReducer)
@@ -204,6 +211,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
         case .link(let url):
             router?.route(to: .link(url: url))
         case .closeFlow:
+            analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbAchClose)
             listener?.closeFlow()
         case .none:
             break
@@ -215,14 +223,46 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
         case .openExternal(let url):
             return .link(url: url)
         case .success:
+            analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbAchSuccess)
             return .none // will be handled as an action (successMessage)
         case .closed:
+            analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbAchClose)
             listener?.closeFlow()
         case .error:
+            analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbAchError)
             return .none // will be handled as an action (errorMessageAction)
         case .none:
             return .none
         }
         return .none
+    }
+
+    private func recordAnalytics(for state: YodleeActivateService.State) {
+        switch state {
+        case .active:
+            analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbBankLinkSuccess(partner: .ach))
+        case .inactive(let error):
+            guard let error = error else {
+                 return
+            }
+            recordAnalytics(for: error)
+        case .timeout:
+            analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbBankLinkGenericError(partner: .ach))
+        }
+    }
+
+    private func recordAnalytics(for error: LinkedBankData.LinkageError) {
+        switch error {
+        case .alreadyLinked:
+            analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbAlreadyLinkedError(partner: .ach))
+        case .unsuportedAccount:
+            analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbIncorrectAccountError(partner: .ach))
+        case .namesMismatched:
+            analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbAccountMismatchedError(partner: .ach))
+        case .timeout:
+            break
+        case .unknown:
+            analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbBankLinkGenericError(partner: .ach))
+        }
     }
 }

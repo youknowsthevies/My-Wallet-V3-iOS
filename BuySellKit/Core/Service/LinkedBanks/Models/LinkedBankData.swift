@@ -32,7 +32,8 @@ public struct LinkedBankData {
     public enum LinkageError {
         case alreadyLinked
         case unsuportedAccount
-        case namesMissmatched
+        case namesMismatched
+        case timeout
         case unknown
     }
     public let currency: FiatCurrency
@@ -78,7 +79,7 @@ extension LinkedBankData.LinkageError {
         case .alreadyLinked:
             self = .alreadyLinked
         case .namesMissmatched:
-            self = .namesMissmatched
+            self = .namesMismatched
         case .unsuportedAccount:
             self = .unsuportedAccount
         default:
