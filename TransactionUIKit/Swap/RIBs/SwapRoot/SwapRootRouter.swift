@@ -47,7 +47,7 @@ final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewContr
         let router = SwapLandingBuilder().build(withListener: interactor)
         let viewControllable = router.viewControllable
         attachChild(router)
-        viewController.replaceRoot(viewController: viewControllable)
+        viewController.replaceRoot(viewController: viewControllable, animated: false)
     }
 
     func routeToSwapTiers(model: KYCTiersPageModel, present: Bool) {
