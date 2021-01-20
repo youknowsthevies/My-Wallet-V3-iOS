@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import ToolKit
 import PlatformUIKit
 import RIBs
 import RxSwift
@@ -29,8 +30,9 @@ final class TransactionFlowViewController: UINavigationController, TransactionFl
         super.init(rootViewController: root)
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
-        fatalError()
+        unimplemented()
     }
 
     override func viewDidLoad() {
