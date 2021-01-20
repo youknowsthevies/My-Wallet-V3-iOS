@@ -136,26 +136,31 @@ extension EthereumJSInteropDispatcher: EthereumJSInteropDelegateAPI {
 
 public final class Dispatcher<Value> {
     public typealias ObserverType = (Result<Value, EthereumJSInteropDispatcherError>) -> Void
-    
+
+    private let lock = NSRecursiveLock()
     private var observers: [ObserverType] = []
     
     public func addObserver(block: @escaping ObserverType) {
+        lock.lock(); defer { lock.unlock() }
         observers.append(block)
     }
     
     func sendSuccess(with value: Value) {
+        lock.lock(); defer { lock.unlock() }
         guard let observer = observers.first else { return }
         observer(.success(value))
         removeFirstObserver()
     }
     
     func sendFailure(_ error: EthereumJSInteropDispatcherError) {
+        lock.lock(); defer { lock.unlock() }
         guard let observer = observers.first else { return }
         observer(.failure(error))
         removeFirstObserver()
     }
     
     private func removeFirstObserver() {
+        lock.lock(); defer { lock.unlock() }
         _ = observers.remove(at: 0)
     }
 }
