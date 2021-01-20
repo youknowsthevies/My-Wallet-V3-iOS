@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformUIKit
 import RIBs
 import RxSwift
 import UIKit
@@ -21,16 +22,27 @@ final class TransactionFlowViewController: UINavigationController, TransactionFl
 
     weak var listener: TransactionFlowPresentableListener?
 
+
+    init() {
+        let root = BaseScreenViewController()
+        root.barStyle = .darkContent()
+        super.init(rootViewController: root)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
     }
 
-    func replaceRoot(viewController: ViewControllable?) {
+    func replaceRoot(viewController: ViewControllable?, animated: Bool) {
         guard let viewController = viewController else {
             return
         }
-        setViewControllers([viewController.uiviewController], animated: true)
+        setViewControllers([viewController.uiviewController], animated: animated)
     }
 
     func push(viewController: ViewControllable?) {
