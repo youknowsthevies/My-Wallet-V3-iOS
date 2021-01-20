@@ -19,10 +19,10 @@ class CryptoFormatterTests: XCTestCase {
     override func setUp() {
         super.setUp()
         self.englishLocale = Locale(identifier: "en_US")
-        self.btcFormatter = CryptoFormatter(locale: englishLocale, cryptoCurrency: .bitcoin)
-        self.ethFormatter = CryptoFormatter(locale: englishLocale, cryptoCurrency: .ethereum)
-        self.bchFormatter = CryptoFormatter(locale: englishLocale, cryptoCurrency: .bitcoinCash)
-        self.xlmFormatter = CryptoFormatter(locale: englishLocale, cryptoCurrency: .stellar)
+        self.btcFormatter = CryptoFormatter(locale: englishLocale, cryptoCurrency: .bitcoin, minFractionDigits: 1)
+        self.ethFormatter = CryptoFormatter(locale: englishLocale, cryptoCurrency: .ethereum, minFractionDigits: 1)
+        self.bchFormatter = CryptoFormatter(locale: englishLocale, cryptoCurrency: .bitcoinCash, minFractionDigits: 1)
+        self.xlmFormatter = CryptoFormatter(locale: englishLocale, cryptoCurrency: .stellar, minFractionDigits: 1)
     }
 
     func testFormatWithoutSymbolBtc() {
@@ -299,7 +299,7 @@ class CryptoFormatterTests: XCTestCase {
 
     func testItalyLocaleFormattingBtc() {
         let italyLocale = Locale(identifier: "it_IT")
-        let formatter = CryptoFormatter(locale: italyLocale, cryptoCurrency: .bitcoin)
+        let formatter = CryptoFormatter(locale: italyLocale, cryptoCurrency: .bitcoin, minFractionDigits: 1)
         XCTAssertEqual(
             "0,00000001",
             formatter.format(value: CryptoValue.bitcoin(satoshis: 1))

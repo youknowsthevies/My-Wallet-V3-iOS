@@ -12,16 +12,40 @@ import PlatformKit
 final class TransactionFlowDescriptor {
 
     private typealias LocalizedString = LocalizationConstants.Transaction
-    
+
     enum EnterAmountScreen {
-        static func headerTitle(state: TransactionState) throws -> String {
-            "\(LocalizedString.Swap.swap): \(try state.moneyValueFromSource().displayString)"
+        private static let cryptoFormatterProvider = CryptoFormatterProvider()
+        private static func formatForHeader(moneyValue: MoneyValue) -> String {
+            if let cryptoValue = moneyValue.cryptoValue {
+                let formatter = cryptoFormatterProvider.formatter(
+                    locale: .current,
+                    cryptoCurrency: cryptoValue.currencyType,
+                    minFractionDigits: 2
+                )
+                return formatter.format(value: cryptoValue,
+                                        withPrecision: .short,
+                                        includeSymbol: true)
+            }
+            return moneyValue.displayString
         }
 
-        static func headerSubtitle(state: TransactionState) throws -> String {
-            "\(LocalizedString.receive): \(try state.moneyValueFromDestination().displayString)"
+        static func headerTitle(state: TransactionState) -> String {
+            let prefix = "\(LocalizedString.Swap.swap): "
+            guard let moneyValue = try? state.moneyValueFromSource() else {
+                return prefix
+            }
+            return prefix + formatForHeader(moneyValue: moneyValue)
+        }
+
+        static func headerSubtitle(state: TransactionState) -> String {
+            let prefix = "\(LocalizedString.receive): "
+            guard let moneyValue = try? state.moneyValueFromDestination() else {
+                return prefix
+            }
+            return prefix + formatForHeader(moneyValue: moneyValue)
         }
     }
+
     enum AccountPicker {
         static func sourceTitle(action: AssetAction) -> String {
             switch action {

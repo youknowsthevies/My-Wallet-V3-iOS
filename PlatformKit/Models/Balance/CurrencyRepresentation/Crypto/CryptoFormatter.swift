@@ -17,22 +17,28 @@ public enum CryptoPrecision {
     case long
 }
 
-final class CryptoFormatterProvider {
+public final class CryptoFormatterProvider {
 
     static let shared = CryptoFormatterProvider()
 
     private var formatterMap = [String: CryptoFormatter]()
-    private let queue = DispatchQueue(label: "CryptoFormatterProvider.queue")
+    private let queue = DispatchQueue(label: "CryptoFormatterProvider.queue.\(UUID().uuidString)")
+
+    public init() { }
 
     /// Returns `CryptoFormatter`. This method executes on a dedicated queue.
-    func formatter(locale: Locale, cryptoCurrency: CryptoCurrency) -> CryptoFormatter {
+    public func formatter(locale: Locale, cryptoCurrency: CryptoCurrency, minFractionDigits: Int = 1) -> CryptoFormatter {
         var formatter: CryptoFormatter!
         queue.sync { [unowned self] in
             let mapKey = key(locale: locale, cryptoCurrency: cryptoCurrency)
             if let matchingFormatter = formatterMap[mapKey] {
                 formatter = matchingFormatter
             } else {
-                formatter = CryptoFormatter(locale: locale, cryptoCurrency: cryptoCurrency)
+                formatter = CryptoFormatter(
+                    locale: locale,
+                    cryptoCurrency: cryptoCurrency,
+                    minFractionDigits: minFractionDigits
+                )
                 self.formatterMap[mapKey] = formatter
             }
         }
@@ -47,27 +53,27 @@ final class CryptoFormatterProvider {
     }
 }
 
-final class CryptoFormatter {
+public final class CryptoFormatter {
     
     private let shortFormatter: NumberFormatter
     private let longFormatter: NumberFormatter
     private let cryptoCurrency: CryptoCurrency
 
-    init(locale: Locale, cryptoCurrency: CryptoCurrency) {
+    public init(locale: Locale, cryptoCurrency: CryptoCurrency, minFractionDigits: Int) {
         self.shortFormatter = NumberFormatter.cryptoFormatter(
             locale: locale,
-            minFractionDigits: 1,
+            minFractionDigits: minFractionDigits,
             maxFractionDigits: cryptoCurrency.maxDisplayableDecimalPlaces
         )
         self.longFormatter = NumberFormatter.cryptoFormatter(
             locale: locale,
-            minFractionDigits: 1,
+            minFractionDigits: minFractionDigits,
             maxFractionDigits: cryptoCurrency.maxDecimalPlaces
         )
         self.cryptoCurrency = cryptoCurrency
     }
 
-    func format(value: CryptoValue, withPrecision precision: CryptoPrecision = CryptoPrecision.short, includeSymbol: Bool = false) -> String {
+    public func format(value: CryptoValue, withPrecision precision: CryptoPrecision = CryptoPrecision.short, includeSymbol: Bool = false) -> String {
         let formatter = (precision == .short) ? shortFormatter : longFormatter
         var formattedString = formatter.string(from: NSDecimalNumber(decimal: value.displayMajorValue)) ?? "\(value.displayMajorValue)"
         if includeSymbol {
