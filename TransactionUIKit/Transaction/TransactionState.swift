@@ -57,7 +57,10 @@ struct TransactionState: Equatable {
 
     /// The source account `CryptoCurrency`.
     var asset: CryptoCurrency {
-        source?.asset ?? .bitcoin // TODO: Better default required
+        guard let source = source else {
+            preconditionFailure("Source should have been set at this point.")
+        }
+        return source.asset
     }
 
     /// The amount the user is swapping from.
