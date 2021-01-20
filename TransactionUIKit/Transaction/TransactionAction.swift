@@ -98,6 +98,9 @@ enum TransactionAction: MviAction {
         case .sourceAccountSelected(let sourceAccount):
             var newState = oldState
             newState.source = sourceAccount
+            newState.sourceDestinationPair = nil
+            newState.sourceToFiatPair = nil
+            newState.destinationToFiatPair = nil
             return newState
         case .targetAccountSelected(let destinationAccount):
             var newState = oldState
@@ -105,6 +108,9 @@ enum TransactionAction: MviAction {
             newState.destination = destinationAccount
             newState.nextEnabled = false
             newState.step = .enterAmount
+            newState.sourceDestinationPair = nil
+            newState.sourceToFiatPair = nil
+            newState.destinationToFiatPair = nil
             return newState.withUpdatedBackstack(oldState: oldState)
         case .updateAmount:
             // Amount is updated after validation.
