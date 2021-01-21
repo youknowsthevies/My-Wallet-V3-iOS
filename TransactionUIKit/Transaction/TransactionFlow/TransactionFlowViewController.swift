@@ -23,7 +23,6 @@ final class TransactionFlowViewController: UINavigationController, TransactionFl
 
     weak var listener: TransactionFlowPresentableListener?
 
-
     init() {
         let root = BaseScreenViewController()
         root.barStyle = .darkContent()

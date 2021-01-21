@@ -83,10 +83,10 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     }
 
     public var actions: Single<AvailableActions> {
-        Single.zip(isFunded, eligibilityService.isEligible)
-            .map { (isFunded, isEligible) -> AvailableActions in
+        Single.zip(balance, eligibilityService.isEligible)
+            .map { (balance, isEligible) -> AvailableActions in
                 var base: AvailableActions = [.viewActivity]
-                if isFunded && isEligible {
+                if balance.isPositive && isEligible {
                     base.insert(.sell)
                     base.insert(.swap)
                 }
