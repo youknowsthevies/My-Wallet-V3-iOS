@@ -6,13 +6,14 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import ToolKit
 import UIKit
 
 /// A container for `AddressViewController`s and `PinScreenViewController` instances
-class LoginContainerViewController: UIViewController {
+final class LoginContainerViewController: UIViewController {
 
     // MARK: Types
-    
+
     enum Input {
         case view(UIView)
         case viewController(UIViewController)
@@ -34,6 +35,15 @@ class LoginContainerViewController: UIViewController {
                 return nil
             }
         }
+
+        var navigationItem: UINavigationItem? {
+            switch self {
+            case .viewController(let vc):
+                return vc.navigationItem
+            case .view:
+                return nil
+            }
+        }
     }
     
     /// The flow layout of the collection view
@@ -45,9 +55,10 @@ class LoginContainerViewController: UIViewController {
             minimumLineSpacing = 0
             scrollDirection = .horizontal
         }
-    
+
+        @available(*, unavailable)
         required init?(coder aDecoder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
+            unimplemented()
         }
     }
     
@@ -68,11 +79,22 @@ class LoginContainerViewController: UIViewController {
         self.inputs = inputs
         super.init(nibName: String(describing: LoginContainerViewController.self), bundle: nil)
     }
-    
+
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        unimplemented()
     }
-    
+
+    override var navigationItem: UINavigationItem {
+        let input = inputs.first(where: { input in
+            if case .viewController = input {
+                return true
+            }
+            return false
+        })
+        return input?.navigationItem ?? UINavigationItem()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.collectionViewLayout = collectionViewFlowLayout
