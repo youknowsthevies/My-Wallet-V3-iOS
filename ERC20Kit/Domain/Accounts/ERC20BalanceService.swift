@@ -24,13 +24,13 @@ public class ERC20BalanceService<Token: ERC20Token>: ERC20BalanceServiceAPI {
 
     init<APIClient: ERC20AccountAPIClientAPI>(
         with bridge: EthereumWalletBridgeAPI = resolve(),
-        accountClient: APIClient = resolve() ) where APIClient.Token == Token {
+        accountClient: APIClient = resolve()) where APIClient.Token == Token {
         self.bridge = bridge
         self.accountClient = AnyERC20AccountAPIClient(accountAPIClient: accountClient)
     }
 
     init(with bridge: EthereumWalletBridgeAPI = resolve(),
-         accountClient: AnyERC20AccountAPIClient<Token> = resolve() ) {
+         accountClient: AnyERC20AccountAPIClient<Token> = resolve()) {
         self.bridge = bridge
         self.accountClient = accountClient
     }

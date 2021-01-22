@@ -8,9 +8,9 @@
 
 import Foundation
 
-public struct ERC20TransfersResponse<Token: ERC20Token>: Decodable {
+struct ERC20TransfersResponse<Token: ERC20Token>: Decodable {
 
-    public let transactions: [ERC20HistoricalTransaction<Token>]
+    let transactions: [ERC20HistoricalTransaction<Token>]
 
     // MARK: Decodable
 

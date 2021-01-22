@@ -11,9 +11,10 @@ import NetworkKit
 import PlatformKit
 import RxSwift
 
-public protocol ERC20AccountAPIClientAPI {
+protocol ERC20AccountAPIClientAPI {
     associatedtype Token: ERC20Token
 
     func fetchTransactions(from address: String, page: String) -> Single<ERC20TransfersResponse<Token>>
     func fetchAccountSummary(from address: String) -> Single<ERC20AccountSummaryResponse<Token>>
+    func isContract(address: String) -> Single<ERC20IsContractResponse<Token>>
 }

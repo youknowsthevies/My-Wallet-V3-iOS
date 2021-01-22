@@ -18,6 +18,7 @@ public protocol ERC20WalletTranscationsBridgeAPI: class {
 }
 
 public class AnyERC20HistoricalTransactionService<Token: ERC20Token>: TokenizedHistoricalTransactionAPI {
+    
     public typealias Model = ERC20HistoricalTransaction<Token>
     public typealias Bridge = ERC20WalletTranscationsBridgeAPI
     public typealias PageModel = PageResult<Model>
@@ -30,7 +31,8 @@ public class AnyERC20HistoricalTransactionService<Token: ERC20Token>: TokenizedH
     private let accountClient: ERC20AccountAPIClient<Token>
     private let bridge: EthereumWalletBridgeAPI
     
-    public init(bridge: EthereumWalletBridgeAPI = resolve(), accountClient: ERC20AccountAPIClient<Token> = ERC20AccountAPIClient<Token>()) {
+    init(bridge: EthereumWalletBridgeAPI = resolve(),
+         accountClient: ERC20AccountAPIClient<Token> = ERC20AccountAPIClient<Token>()) {
         self.bridge = bridge
         self.accountClient = accountClient
     }

@@ -14,6 +14,6 @@ final class ERC20ExternalAssetAddressFactory<Token: ERC20Token>: CryptoReceiveAd
     func makeExternalAssetAddress(address: String,
                                   label: String,
                                   onTxCompleted: @escaping (TransactionResult) -> Completable) throws -> CryptoReceiveAddress {
-        ERC20ReceiveAddress(asset: Token.assetType, address: address, label: label, onTxCompleted: onTxCompleted)
+        ERC20ReceiveAddress<Token>(asset: Token.assetType, address: address, label: label, onTxCompleted: onTxCompleted)
     }
 }

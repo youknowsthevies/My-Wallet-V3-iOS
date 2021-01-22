@@ -15,14 +15,20 @@ final class AnyERC20AccountAPIClient<Token: ERC20Token>: ERC20AccountAPIClientAP
 
     private let fetchTransactions: (String, String) -> Single<ERC20TransfersResponse<Token>>
     private let fetchAccountSummary: (String) -> Single<ERC20AccountSummaryResponse<Token>>
+    private let isContract: (String) -> Single<ERC20IsContractResponse<Token>>
 
     init<APIClient: ERC20AccountAPIClientAPI>(accountAPIClient: APIClient) where APIClient.Token == Token {
         fetchTransactions = accountAPIClient.fetchTransactions
         fetchAccountSummary = accountAPIClient.fetchAccountSummary
+        isContract = accountAPIClient.isContract
     }
 
     func fetchTransactions(from address: String, page: String) -> Single<ERC20TransfersResponse<Token>> {
         fetchTransactions(address, page)
+    }
+    
+    func isContract(address: String) -> Single<ERC20IsContractResponse<Token>> {
+        isContract(address)
     }
 
     func fetchAccountSummary(from address: String) -> Single<ERC20AccountSummaryResponse<Token>> {

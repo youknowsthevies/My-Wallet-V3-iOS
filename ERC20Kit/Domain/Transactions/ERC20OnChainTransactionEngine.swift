@@ -47,8 +47,9 @@ final class AnyERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransact
     private let bridge: EthereumWalletBridgeAPI
     private let balanceFetching: CryptoAccountBalanceFetching
     private let erc20service: AnyERC20Service<Token>
-    private var target: ERC20ReceiveAddress {
-        transactionTarget as! ERC20ReceiveAddress
+    private let erc20AccountService: ERC20AccountService<Token>
+    private var target: ERC20ReceiveAddress<Token> {
+        transactionTarget as! ERC20ReceiveAddress<Token>
     }
     
     // MARK: - Init
@@ -60,7 +61,8 @@ final class AnyERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransact
          feeService: AnyCryptoFeeService<EthereumTransactionFee> = resolve(),
          ethereumWalletService: EthereumWalletServiceAPI = resolve(),
          ethereumWalletBridgeAPI: EthereumWalletBridgeAPI = resolve(),
-         erc20service: AnyERC20Service<Token> = resolve()) {
+         erc20service: AnyERC20Service<Token> = resolve(),
+         erc20AccountService: ERC20AccountService<Token> = resolve()) {
         self.balanceFetching = balanceFetching
         self.fiatCurrencyService = fiatCurrencyService
         self.feeService = feeService
@@ -69,6 +71,7 @@ final class AnyERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransact
         self.priceService = priceService
         self.bridge = ethereumWalletBridgeAPI
         self.erc20service = erc20service
+        self.erc20AccountService = erc20AccountService
     }
     
     // MARK: - OnChainTransactionEngine
@@ -272,12 +275,10 @@ final class AnyERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransact
     }
     
     private func validateAddresses() -> Completable {
-        Single.just(target)
-            .map(\.address.isContractAddress)
+        erc20AccountService.isContract(address: target.address)
             .map { isContractAddress -> Bool in
-                // TODO: Handle contract address
                 guard !isContractAddress else {
-                    unimplemented()
+                    throw TransactionValidationFailure(state: .invalidAddress)
                 }
                 return isContractAddress
             }

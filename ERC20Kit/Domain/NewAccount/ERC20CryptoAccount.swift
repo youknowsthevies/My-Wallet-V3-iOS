@@ -50,7 +50,7 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
     }
 
     var receiveAddress: Single<ReceiveAddress> {
-        .just(ERC20ReceiveAddress(asset: asset, address: id, label: label, onTxCompleted: onTxCompleted))
+        .just(ERC20ReceiveAddress<Token>(asset: asset, address: id, label: label, onTxCompleted: onTxCompleted))
     }
 
     private let balanceFetching: SingleAccountBalanceFetching
