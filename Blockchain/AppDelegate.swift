@@ -188,6 +188,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         appCoordinator.start()
         WalletActionSubscriber.shared.subscribe()
+        
+        // TODO: Remove this before Swap 2.0 launch
+        let featureFlags: InternalFeatureFlagServiceAPI = resolve()
+        featureFlags.enable(.newSwap)
 
         return true
     }

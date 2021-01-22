@@ -26,7 +26,7 @@ protocol TransactionFlowInteractable: Interactable,
 }
 
 public protocol TransactionFlowViewControllable: ViewControllable {
-    func replaceRoot(viewController: ViewControllable?)
+    func replaceRoot(viewController: ViewControllable?, animated: Bool)
     func push(viewController: ViewControllable?)
     func dismiss()
     func pop()
@@ -89,7 +89,7 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
         )
         let viewControllable = router.viewControllable
         attachChild(router)
-        viewController.push(viewController: viewControllable)
+        viewController.replaceRoot(viewController: viewControllable, animated: false)
     }
 
     func routeToDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction) {

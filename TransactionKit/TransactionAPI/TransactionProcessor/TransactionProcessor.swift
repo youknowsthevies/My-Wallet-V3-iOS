@@ -104,11 +104,12 @@ public final class TransactionProcessor {
             return engine
                 .update(amount: amount, pendingTransaction: try pendingTxSubject.value())
                 .flatMap(weak: self) { (self, transaction) -> Single<PendingTransaction> in
-                    self.engine
+                    let isFreshTx = transaction.validationState == .uninitialized
+                    return self.engine
                         .validateAmount(pendingTransaction: transaction)
                         .map { transaction -> PendingTransaction in
                             // Remove initial "insufficient funds' warning
-                            if transaction.amount.isZero {
+                            if transaction.amount.isZero && isFreshTx {
                                 var newTx = transaction
                                 newTx.validationState = .uninitialized
                                 return newTx

@@ -158,7 +158,8 @@ final class TransactionModel {
                                                  transactionTarget: TransactionTarget,
                                                  amount: MoneyValue,
                                                  action: AssetAction) -> Disposable {
-        interactor
+        hasInitializedTransaction = false
+        return interactor
             .initializeTransaction(sourceAccount: sourceAccount, transactionTarget: transactionTarget, action: action)
             .do(onNext: { [weak self] value in
                 guard let self = self else { return }

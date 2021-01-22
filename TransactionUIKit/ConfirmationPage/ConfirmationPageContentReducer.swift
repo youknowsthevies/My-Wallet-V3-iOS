@@ -42,7 +42,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         title = LocalizedString.Confirmation.confirm
         cancelButtonViewModel = .cancel(with: LocalizedString.Confirmation.cancel)
         continueButtonViewModel = .primary(with: Self.confirmCtaText(state: state))
-
+        continueButtonViewModel.isEnabledRelay.accept(state.nextEnabled)
+        
         guard let pendingTransaction = state.pendingTransaction else {
             cells = []
             return

@@ -77,13 +77,16 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     .asSingle()
                     .map { state in
                         if let fiat = amount.fiatValue, !state.allowFiatInput {
+                            // Fiat Input but state does not allow fiat
                             guard let sourceToFiatPair = state.sourceToFiatPair else {
-                                return MoneyValue.zero(currency: amount.currency)
+                                return MoneyValue.zero(currency: state.asset)
                             }
-                            return MoneyValuePair(fiat: fiat,
-                                                  priceInFiat: sourceToFiatPair.quote.fiatValue!,
-                                                  cryptoCurrency: state.source!.asset,
-                                                  usesFiatAsBase: true).quote
+                            return MoneyValuePair(
+                                fiat: fiat,
+                                priceInFiat: sourceToFiatPair.quote.fiatValue!,
+                                cryptoCurrency: state.source!.asset,
+                                usesFiatAsBase: true
+                            ).quote
                         }
                         return amount
                     }
@@ -94,12 +97,19 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             }
             .disposeOnDeactivate(interactor: self)
         
-        let spendable = transactionState
-            .map { state in
+        let spendable = Observable
+            .combineLatest(
+                transactionState,
+                amountInteractor.activeInput
+            )
+            .map { (state, input) in
                 (
                     min: state.minSpendable.displayableRounding(roundingMode: .up),
                     max: state.maxSpendable.displayableRounding(roundingMode: .down),
-                    errorState: state.errorState
+                    errorState: state.errorState,
+                    exchangeRate: state.sourceToFiatPair,
+                    activeInput: input,
+                    amount: state.amount
                 )
             }
             .share(scope: .whileConnected)
@@ -117,7 +127,14 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         
         spendable
             .map { [weak listener] spendable in
-                spendable.errorState.toAmountInteractorState(min: spendable.min, max: spendable.max, listener: listener)
+                spendable.errorState.toAmountInteractorState(
+                    min: spendable.min,
+                    max: spendable.max,
+                    exchangeRate: spendable.exchangeRate,
+                    activeInput: spendable.activeInput,
+                    stateAmount: spendable.amount,
+                    listener: listener
+                )
             }
             .bindAndCatch(to: amountInteractor.stateRelay)
             .disposeOnDeactivate(interactor: self)
@@ -266,7 +283,12 @@ extension EnterAmountPageInteractor.BottomAuxiliaryViewModelState: Equatable {
 
 extension TransactionErrorState {
     private typealias LocalizedString = LocalizationConstants.Transaction.Swap.KYC
-    func toAmountInteractorState(min: MoneyValue, max:  MoneyValue, listener: EnterAmountPageListener?) -> AmountTranslationInteractor.State {
+    func toAmountInteractorState(min: MoneyValue,
+                                 max:  MoneyValue,
+                                 exchangeRate: MoneyValuePair?,
+                                 activeInput: ActiveAmountInput,
+                                 stateAmount:  MoneyValue,
+                                 listener: EnterAmountPageListener?) -> AmountTranslationInteractor.State {
         switch self {
         case .none:
             return .inBounds
@@ -281,9 +303,14 @@ extension TransactionErrorState {
              .overMaximumLimit,
              .insufficientFundsForFees,
              .insufficientFunds:
-            return .maxLimitExceeded(max)
+            let result = convertToInputCurrency(max, exchangeRate: exchangeRate, input: activeInput)
+            return .maxLimitExceeded(result)
         case .belowMinimumLimit:
-            return .minLimitExceeded(min)
+            guard !stateAmount.isZero else {
+                return .inBounds
+            }
+            let result = convertToInputCurrency(min, exchangeRate: exchangeRate, input: activeInput)
+            return .minLimitExceeded(result)
         case .addressIsContract,
              .insufficientGas,
              .invalidAddress,
@@ -294,6 +321,28 @@ extension TransactionErrorState {
              .pendingOrdersLimitReached,
              .unknownError:
             return .empty
+        }
+    }
+
+    private func convertToInputCurrency(_ source: MoneyValue, exchangeRate: MoneyValuePair?, input: ActiveAmountInput) -> MoneyValue {
+        switch (source.currencyType, input) {
+        case (.crypto, .crypto),
+             (.fiat, .fiat):
+            return source
+        case (.crypto, .fiat):
+            // Convert crypto max amount into fiat amount.
+            guard let exchangeRate = exchangeRate else {
+                // No exchange rate yet, use original value for error message.
+                return source
+            }
+            // Convert crypto max amount into fiat amount.
+            guard let result = try? source.convert(using: exchangeRate.quote) else {
+                // Can't convert, use original value for error message.
+                return source
+            }
+            return result
+        case (.fiat, .crypto):
+            fatalError("Shouldn't happen for the implemented paths (Swap).")
         }
     }
 }
