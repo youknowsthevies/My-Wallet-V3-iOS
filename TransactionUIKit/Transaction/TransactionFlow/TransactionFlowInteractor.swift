@@ -186,7 +186,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
     private func showFlowStep(newState: TransactionState) {
         guard !newState.isGoingBack else {
-            router?.pop()
+            router?.didTapBack()
             return
         }
         switch newState.step {
