@@ -50,4 +50,11 @@ extension JSContext {
         }
         self.setObject(theBlock, forKeyedSubscript: functionName)
     }
+
+    /// A helper method to enforce the execution of JSContext to be on a single thread, specifically on the MainThread
+    @objc public func evaluateScriptCheckIsOnMainQueue(_ script: String!) -> JSValue! {
+        dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+        return self.evaluateScript(script)
+    }
+
 }

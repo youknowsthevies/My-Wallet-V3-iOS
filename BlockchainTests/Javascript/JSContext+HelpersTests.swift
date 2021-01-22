@@ -22,7 +22,7 @@ class JSContextHelpersTests: XCTestCase {
             functionExpectation.fulfill()
         }, forJsFunctionName: "foo" as NSString)
 
-        jsContext.evaluateScript("foo()")
+        jsContext.evaluateScriptCheckIsOnMainQueue("foo()")
 
         waitForExpectations(timeout: 0.1)
     }
