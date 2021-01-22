@@ -96,6 +96,7 @@ public final class ReactiveWallet: ReactiveWalletAPI {
             .filter { state -> Bool in
                 state == .initialized
             }
+            .subscribeOn(MainScheduler.asyncInstance)
             .mapToVoid()
     }
     
