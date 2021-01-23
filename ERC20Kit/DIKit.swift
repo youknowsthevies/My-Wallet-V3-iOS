@@ -128,7 +128,7 @@ extension DependencyContainer {
 
 extension DependencyContainer {
     
-    fileprivate struct Tags {
+    struct Tags {
         
         struct ERC20AccountService {
             

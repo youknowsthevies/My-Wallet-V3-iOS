@@ -24,7 +24,9 @@ final class ERC20AccountService<Token: ERC20Token>: ERC20AccountServiceAPI {
 
     init<APIClient: ERC20AccountAPIClientAPI>(
         accountClient: APIClient = resolve(),
-        addressLookupCache: Atomic<[String: Bool]> = resolve()
+        addressLookupCache: Atomic<[String: Bool]> = resolve(
+            tag: DependencyContainer.Tags.ERC20AccountService.addressCache
+        )
     ) where APIClient.Token == Token {
         self.accountClient = AnyERC20AccountAPIClient(
             accountAPIClient: accountClient
@@ -33,7 +35,10 @@ final class ERC20AccountService<Token: ERC20Token>: ERC20AccountServiceAPI {
     }
     
     init(accountClient: AnyERC20AccountAPIClient<Token> = resolve(),
-         addressLookupCache: Atomic<[String: Bool]> = resolve()) {
+         addressLookupCache: Atomic<[String: Bool]> = resolve(
+            tag: DependencyContainer.Tags.ERC20AccountService.addressCache
+         )
+    ) {
         self.accountClient = accountClient
         self.addresses = addressLookupCache
     }
