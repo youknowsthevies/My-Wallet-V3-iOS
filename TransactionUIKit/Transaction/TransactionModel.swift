@@ -39,7 +39,7 @@ final class TransactionModel {
         )
     }
     
-    // MARK: - Public
+    // MARK: - Internal methods
     
     func process(action: TransactionAction) {
         mviModel.process(action: action)
@@ -109,6 +109,12 @@ final class TransactionModel {
             return processAccountsListUpdate(fromAccount: sourceAccount, action: previousState.action)
         }
     }
+    
+    func destroy() {
+        mviModel.destroy()
+    }
+    
+    // MARK: - Private methods
 
     private func processSourceAccountsListUpdate(action: AssetAction) -> Disposable {
         interactor.getAvailableSourceAccounts(action: action)

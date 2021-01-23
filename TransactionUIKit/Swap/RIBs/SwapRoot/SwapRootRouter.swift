@@ -25,9 +25,18 @@ protocol SwapRootRouting: ViewableRouting {
     func routeToSwapTiers(model: KYCTiersPageModel, present: Bool)
     func routeToKYC()
     func routeToSwap(with pair: SwapTrendingPair?)
+    func dismissTransactionFlow()
 }
 
 final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewControllable>, SwapRootRouting {
+    
+    private var transactionFlowRouting: TransactionFlowRouting? {
+        children
+            .first(where: { $0 is TransactionFlowRouting })
+            .map { child -> TransactionFlowRouting in
+                child as! TransactionFlowRouting
+            }
+    }
 
     private weak var bootstrap: SwapBootstrapRouting?
 
@@ -67,6 +76,7 @@ final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewContr
     }
     
     func routeToSwap(with pair: SwapTrendingPair?) {
+        precondition(transactionFlowRouting == nil)
         let builder = TransactionFlowBuilder()
         let router = builder.build(
             withListener: interactor,
@@ -75,12 +85,13 @@ final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewContr
             target: pair?.destinationAccount
         )
         let viewControllable = router.viewControllable
-        children.forEach { child in
-            if child is TransactionFlowRouting {
-                detachChild(child)
-            }
-        }
         attachChild(router)
         viewController.present(viewController: viewControllable)
+    }
+    
+    func dismissTransactionFlow() {
+        if let transationFlowRouting = transactionFlowRouting {
+            detachChild(transationFlowRouting)
+        }
     }
 }

@@ -57,9 +57,10 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
         attachChild(router)
         viewController.push(viewController: viewControllable)
     }
-
+    
     func closeFlow() {
         viewController.dismiss()
+        interactor.listener?.dismissTransactionFlow()
     }
 
     func pop() {

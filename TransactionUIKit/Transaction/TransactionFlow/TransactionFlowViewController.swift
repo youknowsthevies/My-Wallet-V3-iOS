@@ -13,6 +13,7 @@ import RxSwift
 import UIKit
 
 protocol TransactionFlowPresentableListener: AnyObject {
+    func closeFlow()
 }
 
 protocol TransactionFlowPresentable: Presentable {
@@ -37,6 +38,8 @@ final class TransactionFlowViewController: UINavigationController, TransactionFl
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        // so that we'll be able to listen for system dismissal methods
+        presentationController?.delegate = self
     }
 
     func replaceRoot(viewController: ViewControllable?, animated: Bool) {
@@ -59,5 +62,12 @@ final class TransactionFlowViewController: UINavigationController, TransactionFl
 
     func dismiss() {
         dismiss(animated: true, completion: nil)
+    }
+}
+
+extension TransactionFlowViewController: UIAdaptivePresentationControllerDelegate {
+    /// Called when a pull-down dismissal happens
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        listener?.closeFlow()
     }
 }
