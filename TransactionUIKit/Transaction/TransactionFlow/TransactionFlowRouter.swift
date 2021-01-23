@@ -119,6 +119,10 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
         let router = builder.build(listener: interactor, sourceAccount: source, action: action)
         let viewControllable = router.viewControllable
         attachChild(router)
-        viewController.push(viewController: viewControllable)
+        if let childVC = viewController.uiviewController.children.first, childVC is TransactionFlowInitialViewController {
+            viewController.replaceRoot(viewController: viewControllable, animated: false)
+        } else {
+            viewController.push(viewController: viewControllable)
+        }
     }
 }

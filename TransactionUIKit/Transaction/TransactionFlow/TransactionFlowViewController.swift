@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
 import PlatformUIKit
 import RIBs
 import RxSwift
+import ToolKit
 import UIKit
 
 protocol TransactionFlowPresentableListener: AnyObject {
@@ -20,12 +20,14 @@ protocol TransactionFlowPresentable: Presentable {
     var listener: TransactionFlowPresentableListener? { get set }
 }
 
+final class TransactionFlowInitialViewController: BaseScreenViewController {}
+
 final class TransactionFlowViewController: UINavigationController, TransactionFlowPresentable, TransactionFlowViewControllable {
 
     weak var listener: TransactionFlowPresentableListener?
 
     init() {
-        let root = BaseScreenViewController()
+        let root = TransactionFlowInitialViewController()
         root.barStyle = .darkContent()
         super.init(rootViewController: root)
     }
