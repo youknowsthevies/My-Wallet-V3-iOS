@@ -225,9 +225,9 @@ public final class AmountTranslationInteractor {
             .flatMapLatest(weak: self) { (self, value) -> Observable<MoneyValuePair> in
                 self.pairFromCryptoInput(amount: value.amount).asObservable()
             }
-        
+
         // Merge the output of the scanner from edited amount to the other scanner input relay
-                
+
         pairFromFiatInput
             .map(\.quote)
             .map(\.displayMajorValue)
@@ -370,11 +370,34 @@ public final class AmountTranslationInteractor {
     }
 
     public func set(amount: MoneyValue) {
-        Single.zip(normalizeSet(amount: amount), currentInteractor)
-            .subscribe { (amount, interactor) in
+        invertInputIfNeeded(for: amount)
+            .andThen(currentInteractor)
+            .subscribe { interactor in
                 interactor.scanner.reset(to: amount)
             }
             .disposed(by: disposeBag)
+    }
+
+    private func invertInputIfNeeded(for amount: MoneyValue) -> Completable {
+        activeInput.take(1).asSingle()
+            .flatMapCompletable(weak: self, { (self, activeInput) -> Completable in
+                switch (activeInput, amount.isFiat) {
+                case (.fiat, true), (.crypto, false):
+                    return .empty()
+                case (.fiat, false), (.crypto, true):
+                    return self.invertInput(from: activeInput)
+                }
+            })
+    }
+
+    private func invertInput(from activeInput: ActiveAmountInput) -> Completable {
+        Single.just(activeInput)
+            .map(\.inverted)
+            .observeOn(MainScheduler.asyncInstance)
+            .do(onSuccess: { [weak self] input in
+                self?.activeInputRelay.accept(input)
+            })
+            .asCompletable()
     }
 
     private func pairFromFiatInput(amount: String) -> Single<MoneyValuePair> {
@@ -404,25 +427,6 @@ public final class AmountTranslationInteractor {
                         fiatCurrency: fiatCurrency,
                         amount: amount
                     )
-            }
-    }
-
-    // If amount: MoneyValue is not in the current active input currency, convert it.
-    private func normalizeSet(amount: MoneyValue) -> Single<MoneyValue> {
-        activeInput
-            .take(1)
-            .asSingle()
-            .flatMap(weak: self) { (self, activeInput) -> Single<MoneyValue> in
-                switch (activeInput, amount.isFiat) {
-                case (.fiat, false):
-                    return self.pairFromCryptoInput(amount: "\(amount.displayMajorValue)")
-                        .map(\.quote)
-                case (.crypto, true):
-                    return self.pairFromFiatInput(amount: "\(amount.displayMajorValue)")
-                        .map(\.quote)
-                default:
-                    return .just(amount)
-                }
             }
     }
 }
