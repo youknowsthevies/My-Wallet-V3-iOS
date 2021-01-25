@@ -379,7 +379,8 @@ public final class AmountTranslationInteractor {
     }
 
     private func invertInputIfNeeded(for amount: MoneyValue) -> Completable {
-        activeInput.take(1).asSingle()
+        activeInput.take(1)
+            .asSingle()
             .flatMapCompletable(weak: self) { (self, activeInput) -> Completable in
                 switch (activeInput, amount.isFiat) {
                 case (.fiat, true), (.crypto, false):
