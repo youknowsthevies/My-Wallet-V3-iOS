@@ -47,6 +47,10 @@ final class SwapRootInteractor: Interactor, SwapBootstrapListener, SwapRootListe
             }
             .disposeOnDeactivate(interactor: self)
     }
+    
+    func dismissTransactionFlow() {
+        router?.dismissTransactionFlow()
+    }
 
     func routeToSwap(with pair: SwapTrendingPair?) {
         router?.routeToSwap(with: pair)

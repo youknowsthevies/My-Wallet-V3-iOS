@@ -26,6 +26,7 @@ protocol TransactionFlowRouting: Routing {
 
 protocol TransactionFlowListener: AnyObject {
     func presentKYCTiersScreen()
+    func dismissTransactionFlow()
 }
 
 final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPresentable>,
@@ -51,6 +52,10 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         self.target = target
         super.init(presenter: presenter)
         presenter.listener = self
+    }
+    
+    deinit {
+        transactionModel.destroy()
     }
 
     override func didBecomeActive() {
@@ -207,7 +212,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .enterAddress:
             unimplemented()
         case .closed:
-            break // Close/Dismiss here?
+            transactionModel.destroy()
         }
     }
 }
