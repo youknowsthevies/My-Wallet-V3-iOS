@@ -155,12 +155,12 @@ public struct MoneyValue: Money, Hashable, Equatable {
         }
     }
     
-    public func value(before percentageChange: Double) throws -> MoneyValue {
+    public func value(before percentageChange: Double) -> MoneyValue {
         switch _value {
         case .fiat(let value):
             return MoneyValue(fiatValue: value.value(before: percentageChange))
         case .crypto(let value):
-            return MoneyValue(cryptoValue: try value.value(before: percentageChange))
+            return MoneyValue(cryptoValue: value.value(before: percentageChange))
         }
     }
     

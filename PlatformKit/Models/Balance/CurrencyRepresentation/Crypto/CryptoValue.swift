@@ -41,12 +41,16 @@ extension CryptoValue {
 extension CryptoValue {
 
     /// Calculates the value of `self` before a given percentage change
-    public func value(before percentageChange: Double) throws -> CryptoValue {
+    public func value(before percentageChange: Double) -> CryptoValue {
         let percentageChange = percentageChange + 1
-        guard percentageChange != 0 else {
+        guard !percentageChange.isNaN else {
             return .zero(currency: currencyType)
         }
-        let majorAmount = displayMajorValue / Decimal(percentageChange)
-        return CryptoValue.create(major: "\(majorAmount)", currency: currencyType)!
+        guard !percentageChange.isZero else {
+            return .zero(currency: currencyType)
+        }
+        let decimalChange = Decimal(percentageChange)
+        let majorAmount = displayMajorValue / decimalChange
+        return CryptoValue.create(major: majorAmount, currency: currencyType)
     }
 }

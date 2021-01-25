@@ -52,9 +52,9 @@ public final class AssetBalanceChangeProvider: AssetBalanceChangeProviding {
                 
                 let delta = historicalPriceValue.historicalPrices.delta
                 
-                let previousWalletBalance = try walletBalance.value(before: delta)
-                let previousTradingBalance = try tradingBalance.value(before: delta)
-                let previousSavingsBalance = try savingsBalance.value(before: delta)
+                let previousWalletBalance = walletBalance.value(before: delta)
+                let previousTradingBalance = tradingBalance.value(before: delta)
+                let previousSavingsBalance = savingsBalance.value(before: delta)
 
                 return .value(.init(
                         wallet: try walletBalance - previousWalletBalance,

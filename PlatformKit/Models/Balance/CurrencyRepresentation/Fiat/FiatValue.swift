@@ -80,11 +80,16 @@ extension FiatValue {
     /// the `percentageChange` expected value would be `0.1`.
     public func value(before percentageChange: Double) -> FiatValue {
         let percentageChange = percentageChange + 1
-        guard percentageChange != 0 else {
+        guard !percentageChange.isNaN else {
             return .zero(currency: currencyType)
         }
+        guard !percentageChange.isZero else {
+            return .zero(currency: currencyType)
+        }
+        let decimalChange = Decimal(percentageChange)
+        let majorAmount = displayMajorValue / decimalChange
         return .create(
-            major: displayMajorValue / Decimal(percentageChange),
+            major: majorAmount,
             currency: currencyType
         )
     }
