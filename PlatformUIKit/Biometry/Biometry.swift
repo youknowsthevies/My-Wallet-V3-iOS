@@ -12,14 +12,14 @@ import PlatformKit
 
 public struct Biometry {
     
-    public enum BiometryError: Error {
+    public enum BiometryError: LocalizedError {
         private typealias LocalizedString = LocalizationConstants.Biometry
         
         case authenticationFailed
         case passcodeNotSet
         case biometryLockout
         case biometryNotAvailable
-        case biometryNotEnrolled
+        case biometryNotEnrolled(type: BiometryType)
         
         case appCancel
         case systemCancel
@@ -28,7 +28,7 @@ public struct Biometry {
         case general
 
         /// A user message corresponding to the error
-        public var localizedDescription: String {
+        public var errorDescription: String? {
             switch self {
             case .authenticationFailed:
                 return LocalizedString.authenticationFailed
@@ -38,8 +38,15 @@ public struct Biometry {
                 return LocalizedString.biometricsLockout
             case .biometryNotAvailable:
                 return LocalizedString.biometricsNotSupported
-            case .biometryNotEnrolled:
-                return LocalizedString.touchIDEnableInstructions
+            case .biometryNotEnrolled(let type):
+                switch type {
+                case .faceID:
+                    return LocalizedString.faceIDEnableInstructions
+                case .touchID:
+                    return LocalizedString.touchIDEnableInstructions
+                case .none:
+                    return LocalizedString.genericError
+                }
             case .general:
                 return LocalizedString.genericError
             case .appCancel,
@@ -52,22 +59,22 @@ public struct Biometry {
         
         /// Initializes with error, expects the error to have `code`
         /// compatible code to `LAError.Code.rawValue`
-        public init(with error: Error) {
+        public init(with error: Error, type: BiometryType) {
             let code = (error as NSError).code
-            self.init(with: code)
+            self.init(with: code, type: type)
         }
         
         /// Initializes with expected `LAError.Code`'s `rawValue`
-        init(with rawCodeValue: Int) {
+        init(with rawCodeValue: Int, type: BiometryType) {
             if let localAuthenticationCode = LAError.Code(rawValue: rawCodeValue) {
-                self.init(with: localAuthenticationCode)
+                self.init(with: localAuthenticationCode, type: type)
             } else {
                 self = .general
             }
         }
         
         /// Initializes with `LAError.Code` value
-        init(with error: LAError.Code) {
+        init(with error: LAError.Code, type: BiometryType) {
             switch error {
             case .authenticationFailed:
                 self = .authenticationFailed
@@ -86,7 +93,7 @@ public struct Biometry {
             case .touchIDNotAvailable:
                 self = .biometryNotAvailable
             case .touchIDNotEnrolled:
-                self = .biometryNotEnrolled
+                self = .biometryNotEnrolled(type: type)
             case .invalidContext,
                  .notInteractive:
                 self = .general
@@ -167,7 +174,7 @@ public struct Biometry {
         /// The device does not support biometry.
         case none
 
-        init(with systemType: LABiometryType) {
+        public init(with systemType: LABiometryType) {
             switch systemType {
             case .faceID:
                 self = .faceID
@@ -197,13 +204,13 @@ public struct Biometry {
     }
     
     /// Represents `LAContext` result on calling `canEvaluatePolicy` for biometrics
-    public enum EvaluationError: Error {
+    public enum EvaluationError: LocalizedError {
         
         /// Wraps
         case system(BiometryError)
         case notAllowed
-        
-        public var localizedDescription: String {
+
+        public var errorDescription: String? {
             switch self {
             case .system(let error):
                 return error.localizedDescription
