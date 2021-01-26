@@ -32,17 +32,23 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     // MARK: - CheckoutScreenContentReducing
 
     let title: String
-    let cells: [DetailsScreen.CellType]
+    var cells: [DetailsScreen.CellType]
     let continueButtonViewModel: ButtonViewModel
     let cancelButtonViewModel: ButtonViewModel
 
     // MARK: - Private Properties
 
-    init(state: TransactionState) {
+    init() {
         title = LocalizedString.Confirmation.confirm
         cancelButtonViewModel = .cancel(with: LocalizedString.Confirmation.cancel)
-        continueButtonViewModel = .primary(with: Self.confirmCtaText(state: state))
-        continueButtonViewModel.isEnabledRelay.accept(state.nextEnabled)
+        continueButtonViewModel = .primary(with: "")
+
+        cells = []
+    }
+
+    func setup(for state: TransactionState) {
+        
+        continueButtonViewModel.textRelay.accept(Self.confirmCtaText(state: state))
         
         guard let pendingTransaction = state.pendingTransaction else {
             cells = []
