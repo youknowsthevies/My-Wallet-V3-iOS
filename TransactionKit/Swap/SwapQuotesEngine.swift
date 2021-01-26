@@ -67,11 +67,11 @@ final class SwapQuotesEngine {
     private func quote(direction: OrderDirection, pair: OrderPair) -> Observable<OrderQuoteResponse> {
         fetchQuote(direction: direction, pair: pair)
             .asObservable()
-            .flatMap { quote -> Observable<OrderQuoteResponse> in
+            .flatMap(weak: self) { (self, quote) -> Observable<OrderQuoteResponse> in
                 let delay = Int(quote.expiresAt.timeIntervalSince(quote.createdAt))
                 return Observable
                     .timer(.seconds(delay), period: .seconds(delay), scheduler: ConcurrentDispatchQueueScheduler(qos: .background))
-                    .flatMap { (_: Int) -> Observable<OrderQuoteResponse> in
+                    .flatMap(weak: self) { (self, _: Int) -> Observable<OrderQuoteResponse> in
                         self.fetchQuote(direction: direction, pair: pair).asObservable()
                     }
                     .startWith(quote)

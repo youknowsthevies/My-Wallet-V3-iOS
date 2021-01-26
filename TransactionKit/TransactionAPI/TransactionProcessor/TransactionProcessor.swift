@@ -12,26 +12,9 @@ import RxSwift
 import ToolKit
 
 public final class TransactionProcessor {
-
-    private let engine: TransactionEngine
-    private let pendingTxSubject: BehaviorSubject<PendingTransaction>
-    private let disposeBag = DisposeBag()
-
-    init(sourceAccount: CryptoAccount,
-         transactionTarget: TransactionTarget,
-         engine: TransactionEngine) {
-        self.engine = engine
-        pendingTxSubject = BehaviorSubject(value: .zero(currencyType: sourceAccount.currencyType))
-        self.engine.start(
-            sourceAccount: sourceAccount,
-            transactionTarget: transactionTarget,
-            askForRefreshConfirmation: { [unowned self] revalidate in
-                self.refreshConfirmations(revalidate: revalidate)
-            }
-        )
-        self.engine.assertInputsValid()
-    }
-
+    
+    // MARK: - Public properties
+    
     public var canTransactFiat: Bool {
         engine.canTransactFiat
     }
@@ -59,6 +42,31 @@ public final class TransactionProcessor {
                 self.pendingTxSubject
             }
     }
+    
+    // MARK: - Private properties
+
+    private let engine: TransactionEngine
+    private let pendingTxSubject: BehaviorSubject<PendingTransaction>
+    private let disposeBag = DisposeBag()
+    
+    // MARK: - Init
+
+    init(sourceAccount: CryptoAccount,
+         transactionTarget: TransactionTarget,
+         engine: TransactionEngine) {
+        self.engine = engine
+        pendingTxSubject = BehaviorSubject(value: .zero(currencyType: sourceAccount.currencyType))
+        self.engine.start(
+            sourceAccount: sourceAccount,
+            transactionTarget: transactionTarget,
+            askForRefreshConfirmation: { [unowned self] revalidate in
+                self.refreshConfirmations(revalidate: revalidate)
+            }
+        )
+        self.engine.assertInputsValid()
+    }
+    
+    // MARK: - Public methods
 
     public func reset() {
         do {
@@ -168,6 +176,8 @@ public final class TransactionProcessor {
             })
             .asCompletable()
     }
+    
+    // MARK: - Private methods
 
     // Called back by the engine if it has received an external signal and the existing confirmation set
     // requires a refresh
@@ -190,8 +200,6 @@ public final class TransactionProcessor {
             })
             .asCompletable()
     }
-
-    // MARK: Private Methods
 
     private func pendingTransaction() throws -> PendingTransaction {
         try pendingTxSubject.value()
