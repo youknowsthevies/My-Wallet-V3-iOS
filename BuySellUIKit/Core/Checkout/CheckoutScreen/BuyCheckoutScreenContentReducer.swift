@@ -322,7 +322,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
     }
 }
 
-extension BuySellKit.PaymentMethod.MethodType {
+extension PlatformKit.PaymentMethod.MethodType {
     fileprivate func checkoutNotice(currencyType: CurrencyType) -> String {
         typealias LocalizedString = LocalizationConstants.SimpleBuy.Checkout.Notice
         switch self {

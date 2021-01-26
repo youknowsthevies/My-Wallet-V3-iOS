@@ -6,7 +6,6 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import ToolKit
 
 public enum PaymentMethodPayloadType: String, CaseIterable, Encodable {
@@ -82,17 +81,6 @@ public struct PaymentMethod: Equatable {
             }
         }
         
-        public var analyticsParameter: AnalyticsEvents.SimpleBuy.PaymentMethod {
-            switch self {
-            case .card:
-                return .card
-            case .bankAccount, .bankTransfer:
-                return .bank
-            case .funds:
-                return .funds
-            }
-        }
-        
         public init?(type: PaymentMethodPayloadType,
                      subTypes: [String],
                      currency: FiatCurrency,
@@ -132,6 +120,24 @@ public struct PaymentMethod: Equatable {
         public static func == (lhs: Self, rhs: Self) -> Bool {
             lhs.rawType == rhs.rawType
         }
+
+        /// Helper method to determine if the passed MethodType is the same as self
+        /// - Parameter otherType: A `MethodType` for the comparison
+        /// - Returns: `True` if it is the same MethodType as the passed one otherwise false
+        public func isSame(as otherType: MethodType) -> Bool {
+            switch (self, otherType) {
+            case (.card(let lhs), .card(let rhs)):
+                return lhs == rhs
+            case (.bankAccount, .bankAccount):
+                return true
+            case (.bankTransfer, .bankTransfer):
+                return true
+            case (.funds(let currencyLhs), .funds(let currencyRhs)):
+                return currencyLhs == currencyRhs
+            default:
+                return false
+            }
+        }
     }
 
     /// The type of the payment method
@@ -143,73 +149,13 @@ public struct PaymentMethod: Equatable {
     /// The maximum value of payment using that method
     public let min: FiatValue
     
-    init?(currency: String, method: PaymentMethodsResponse.Method, supportedFiatCurrencies: [FiatCurrency]) {
-        // Preferrably use the payment method's currency
-        let rawCurrency = method.currency ?? currency
-        guard let currency = FiatCurrency(code: rawCurrency) else {
-            return nil
-        }
-        
-        // Make sure the take exists
-        guard let rawType = PaymentMethodPayloadType(rawValue: method.type) else {
-            return nil
-        }
-        
-        guard let methodType = MethodType(type: rawType,
-                                          subTypes: method.subTypes,
-                                          currency: currency,
-                                          supportedFiatCurrencies: supportedFiatCurrencies) else {
-            return nil
-        }
-        self.type = methodType
-        self.min = FiatValue.create(minor: method.limits.min, currency: currency)!
-        self.max = FiatValue.create(minor: method.limits.max, currency: currency)!
-    }
-    
     public static func == (lhs: PaymentMethod, rhs: PaymentMethod) -> Bool {
         lhs.type == rhs.type
     }
-}
 
-extension Array where Element == PaymentMethod {
-    init(response: PaymentMethodsResponse, supportedFiatCurrencies: [FiatCurrency]) {
-        self.init()
-        let methods = response.methods
-            .compactMap {
-                PaymentMethod(
-                    currency: response.currency,
-                    method: $0,
-                    supportedFiatCurrencies: supportedFiatCurrencies
-                )
-            }
-        append(contentsOf: methods)
-    }
-
-    init(methods: [PaymentMethodsResponse.Method], currency: FiatCurrency, supportedFiatCurrencies: [FiatCurrency]) {
-        self.init()
-        let methods = methods
-            .compactMap {
-                PaymentMethod(
-                    currency: currency.code,
-                    method: $0,
-                    supportedFiatCurrencies: supportedFiatCurrencies
-                )
-            }
-        append(contentsOf: methods)
-    }
-    
-    public var funds: [PaymentMethod] {
-        filter { $0.type.isFunds }
-    }
-    
-    public var fundsCurrencies: [CurrencyType] {
-        compactMap { method in
-            switch method.type {
-            case .funds(let currency):
-                return currency
-            default:
-                return nil
-            }
-        }
+    public init(type: MethodType, max: FiatValue, min: FiatValue) {
+        self.type = type
+        self.max = max
+        self.min = min
     }
 }

@@ -50,6 +50,7 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
     public init(using interactor: WalletActionScreenInteracting,
                 enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
                 stateService: CustodyActionStateServiceAPI,
+                eligiblePaymentService: PaymentMethodsServiceAPI = resolve(),
                 internalFeatureFlags: InternalFeatureFlagServiceAPI = resolve()) {
         self.interactor = interactor
         self.enabledCurrenciesService = enabledCurrenciesService
@@ -75,44 +76,52 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
                 fiatAccessiblitySuffix: "\(AccessibilityId.CustodialAction.fiatValue)"
             )
         )
-        
-        var actionCells: [WalletActionCellType] = [.balance(assetBalanceViewPresenter)]
-        
-        var actionPresenters: [DefaultWalletActionCellPresenter] = []
-        
-        switch currency {
-        case .crypto(let crypto):
-            actionPresenters.append(contentsOf: [
-                .init(currencyType: currency, action: .buy),
-                .init(currencyType: currency, action: .sell),
-                .init(currencyType: currency, action: .swap)
-            ])
-            let isTrading = interactor.accountType.isTrading
-            let isSavings = interactor.accountType.isSavings
-            if isTrading && crypto.hasNonCustodialWithdrawalSupport {
-                actionPresenters.append(
-                    .init(currencyType: currency, action: .transfer)
-                )
-            }
-            if !isSavings {
-                actionPresenters.append(
-                    .init(currencyType: currency, action: .activity)
-                )
-            }
-        case .fiat(let fiatCurrency):
-            guard enabledCurrenciesService.depositEnabledFiatCurrencies.contains(fiatCurrency) else {
-                break
-            }
-            actionPresenters.append(DefaultWalletActionCellPresenter(currencyType: currency, action: .deposit))
 
-            guard enabledCurrenciesService.withdrawEnabledFiatCurrencies.contains(fiatCurrency) else {
-                break
+        Single.zip(Single.just(currency), eligiblePaymentService.paymentMethodsSingle)
+            .map { (currency, methods) -> [WalletActionCellType] in
+                var presenters: [DefaultWalletActionCellPresenter] = []
+                switch currency {
+                case .crypto(let crypto):
+                    presenters.append(contentsOf: [
+                        .init(currencyType: currency, action: .buy),
+                        .init(currencyType: currency, action: .sell),
+                        .init(currencyType: currency, action: .swap)
+                    ])
+                    let isTrading = interactor.accountType.isTrading
+                    let isSavings = interactor.accountType.isSavings
+                    if isTrading && crypto.hasNonCustodialWithdrawalSupport {
+                        presenters.append(
+                            .init(currencyType: currency, action: .transfer)
+                        )
+                    }
+                    if !isSavings {
+                        presenters.append(
+                            .init(currencyType: currency, action: .activity)
+                        )
+                    }
+                case .fiat(let fiatCurrency):
+                    let hasEligibility = methods.first { $0.type.isSame(as: .funds(.fiat(fiatCurrency))) } != nil
+                    guard hasEligibility else {
+                        break
+                    }
+                    guard enabledCurrenciesService.depositEnabledFiatCurrencies.contains(fiatCurrency) else {
+                        break
+                    }
+                    presenters.append(DefaultWalletActionCellPresenter(currencyType: currency, action: .deposit))
+
+                    guard enabledCurrenciesService.withdrawEnabledFiatCurrencies.contains(fiatCurrency) else {
+                        break
+                    }
+                    presenters.append(DefaultWalletActionCellPresenter(currencyType: currency, action: .withdraw))
+                }
+                return [.balance(self.assetBalanceViewPresenter)] + presenters.map { .default($0) }
             }
-            actionPresenters.append(DefaultWalletActionCellPresenter(currencyType: currency, action: .withdraw))
-        }
-        
-        actionCells.append(contentsOf: actionPresenters.map { .default($0) })
-        sectionsRelay.accept([.init(items: actionCells)])
+            .map { cellTypes in
+                [WalletActionItemsSectionViewModel(items: cellTypes)]
+            }
+            .asObservable()
+            .bind(to: sectionsRelay)
+            .disposed(by: disposeBag)
         
         selectionRelay
             .bind { model in
