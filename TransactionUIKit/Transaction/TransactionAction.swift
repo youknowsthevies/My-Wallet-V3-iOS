@@ -48,39 +48,39 @@ enum TransactionAction: MviAction {
             // TODO: BitPay: step = target is InvoiceTarget -> TransactionStep.CONFIRM_DETAIL
             return TransactionState(
                 action: action,
-                step: step,
-                source: sourceAccount,
                 destination: target,
-                passwordRequired: passwordRequired,
+                errorState: .none,
                 nextEnabled: passwordRequired,
-                errorState: .none
+                passwordRequired: passwordRequired,
+                source: sourceAccount,
+                step: step
             ).withUpdatedBackstack(oldState: oldState)
         case let .initialiseWithSourceAndPreferredTarget(action, sourceAccount, target, passwordRequired):
             // TICKET: [IOS-3825]
             // TODO: Initial step should be .enterAddress when that screen is implemented.
             return TransactionState(
                 action: action,
-                step: .enterAmount,
-                source: sourceAccount,
                 destination: target,
-                passwordRequired: passwordRequired,
+                errorState: .none,
                 nextEnabled: true,
-                errorState: .none
+                passwordRequired: passwordRequired,
+                source: sourceAccount,
+                step: .enterAmount
             ).withUpdatedBackstack(oldState: oldState)
         case let .initialiseWithNoSourceOrTargetAccount(action, passwordRequired):
             return TransactionState(
                 action: action,
-                step: .selectSource,
+                errorState: .none,
                 passwordRequired: passwordRequired,
-                errorState: .none
+                step: .selectSource
             ).withUpdatedBackstack(oldState: oldState)
         case let .initialiseWithSourceAccount(action, sourceAccount, passwordRequired):
             return TransactionState(
                 action: action,
-                source: sourceAccount,
-                passwordRequired: passwordRequired,
+                errorState: .none,
                 nextEnabled: passwordRequired,
-                errorState: .none
+                passwordRequired: passwordRequired,
+                source: sourceAccount
             )
         case .fetchFiatRates:
             return oldState
