@@ -62,9 +62,10 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
             .catchError(weak: self) { (self, error) -> Single<String> in
                 self.decryptJS(pair: pair, pbkdf2Iterations: UInt32(pbkdf2Iterations))
                     .do(onSuccess: { _ in
-                        // Crash if JS decryption succeeds but native decryption fails
+                        // For now log the error only
                         self.recorder.error(error)
-                        fatalError(error.localizedDescription)
+                        // Later we should crash if JS decryption succeeds but native decryption fails
+                        // fatalError(error.localizedDescription)
                     })
             }
     }
