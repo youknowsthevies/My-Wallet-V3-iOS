@@ -95,11 +95,11 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             let destination = (state.destination as? CryptoAccount)?.asset.displayCode ?? ""
             return String(format: LocalizedString.Swap.swapAForB, source, destination)
         case .send:
-            return "Send \(amount)"
+            return String(format: LocalizedString.Swap.send, amount)
         case .sell:
-            return "Sell \(amount)"
+            return String(format: LocalizedString.Swap.sell, amount)
         case .deposit:
-            return "Confirm Transfer"
+            return String(format: LocalizedString.Swap.deposit, amount)
         default:
             fatalError("ConfirmationPageContentReducer: \(state.action) not supported.")
         }

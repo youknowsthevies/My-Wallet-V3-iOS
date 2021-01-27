@@ -123,6 +123,18 @@ public extension LocalizationConstants.Transaction.Swap {
         "Swap %@ for %@",
         comment: "Swap %@ for %@"
     )
+    static let send = NSLocalizedString(
+        "Send %@",
+        comment: "Send %@"
+    )
+    static let sell = NSLocalizedString(
+        "Sell %@",
+        comment: "Sell %@"
+    )
+    static let deposit = NSLocalizedString(
+        "Confirm Transfer",
+        comment: "Confirm Transfer"
+    )
 }
 
 public extension LocalizationConstants.Transaction.Swap.Completion.Pending {
