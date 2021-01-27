@@ -23,9 +23,7 @@ extension EnterAmountScreenPresenter.DisplayBundle {
             strings: Strings(
                 title: "\(LocalizedString.titlePrefix) \(cryptoCurrency.code)",
                 ctaButton: LocalizedString.ctaButton,
-                bottomAuxiliaryItemSeparatorTitle: "",
-                useMin: "",
-                useMax: LocalizedString.useMax
+                bottomAuxiliaryItemSeparatorTitle: ""
             ),
             colors: Colors(
                 digitPadTopSeparator: .lightBorder,
@@ -34,8 +32,6 @@ extension EnterAmountScreenPresenter.DisplayBundle {
             // TODO: Daniel - Events
             events: Events(
                 didAppear: AnalyticsEvent.sbBuyFormShown,
-                minTapped: AnalyticsEvent.sbBuyFormMinClicked,
-                maxTapped: AnalyticsEvent.sbBuyFormMaxClicked,
                 confirmSuccess: AnalyticsEvent.sbBuyFormConfirmSuccess,
                 confirmFailure: AnalyticsEvent.sbBuyFormConfirmFailure,
                 confirmTapped: { (currencyType, amount, additionalParameters) in
@@ -49,6 +45,17 @@ extension EnterAmountScreenPresenter.DisplayBundle {
             ),
             accessibilityIdentifiers: AccessibilityIdentifiers(
                 bottomAuxiliaryItemSeparatorTitle: ""
+            ),
+            amountDisplayBundle: .init(
+                events: .init(
+                    min: AnalyticsEvent.sbBuyFormMinClicked,
+                    max: AnalyticsEvent.sbBuyFormMaxClicked
+                ),
+                strings: .init(
+                    useMin: "",
+                    useMax: LocalizedString.useMax
+                ),
+                accessibilityIdentifiers: .init()
             )
         )
     }

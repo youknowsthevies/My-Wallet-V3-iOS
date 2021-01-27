@@ -98,8 +98,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
         amountTranslationPresenter = AmountTranslationPresenter(
             interactor: interactor.amountTranslationInteractor,
             analyticsRecorder: analyticsRecorder,
-            minTappedAnalyticsEvent: displayBundle.events.minTapped,
-            maxTappedAnalyticsEvent: displayBundle.events.maxTapped,
+            displayBundle: displayBundle.amountDisplayBundle,
             inputTypeToggleVisiblity: inputTypeToggleVisibility
         )
         digitPadViewModel = EnterAmountScreenPresenter.digitPadViewModel()

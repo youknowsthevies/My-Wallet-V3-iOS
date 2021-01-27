@@ -247,22 +247,43 @@ extension LocalizationConstants.SimpleBuy {
             comment: "Simple Buy: Buy Crypto Screen - payment method title label"
         )
         public enum LimitView {
-            public static let upperLimit = NSLocalizedString(
-                "Up to %@",
-                comment: "Simple Buy: Buy Crypto Screen - Amount upper limit"
-            )
-            public enum Min {
-                public static let useMin = NSLocalizedString(
-                    "Min",
-                    comment: "Simple Buy: Buy Crypto Screen - Amount too low suffix"
+            public enum Buy {
+                public static let upperLimit = NSLocalizedString(
+                    "Up to %@",
+                    comment: "Simple Buy: Buy Crypto Screen - Amount upper limit"
                 )
-            }
+                public enum Min {
+                    public static let useMin = NSLocalizedString(
+                        "%@ Min",
+                        comment: "Simple Buy: Buy Crypto Screen - Amount too low suffix"
+                    )
+                }
 
-            public enum Max {
-                public static let useMax = NSLocalizedString(
-                    "Max",
-                    comment: "Simple Buy: Buy Crypto Screen - Amount too high suffix"
+                public enum Max {
+                    public static let useMax = NSLocalizedString(
+                        "%@ Max",
+                        comment: "Simple Buy: Buy Crypto Screen - Amount too high suffix"
+                    )
+                }
+            }
+            public enum Withdraw {
+                public static let upperLimit = NSLocalizedString(
+                    "Up to %@",
+                    comment: "Simple Buy: Buy Crypto Screen - Amount upper limit"
                 )
+                public enum Min {
+                    public static let useMin = NSLocalizedString(
+                        "%@ Min",
+                        comment: "Simple Buy: Buy Crypto Screen - Amount too low suffix"
+                    )
+                }
+
+                public enum Max {
+                    public static let useMax = NSLocalizedString(
+                        "%@ Max",
+                        comment: "Simple Buy: Buy Crypto Screen - Amount too high suffix"
+                    )
+                }
             }
         }
     }

@@ -28,8 +28,6 @@ extension DisplayBundle {
         // TODO: Add correct Analytics Event
         let events = Events(
             didAppear: SwapAnalyticsEvent(),
-            minTapped: SwapAnalyticsEvent(),
-            maxTapped: SwapAnalyticsEvent(),
             confirmSuccess: SwapAnalyticsEvent(),
             confirmFailure: SwapAnalyticsEvent(),
             confirmTapped: { _, _, _ in SwapAnalyticsEvent() },
@@ -43,7 +41,18 @@ extension DisplayBundle {
         return DisplayBundle(
             colors: colors,
             events: events,
-            accessibilityIdentifiers: accessibilityIdentifiers
+            accessibilityIdentifiers: accessibilityIdentifiers,
+            amountDisplayBundle: .init(
+                events: .init(
+                    min: SwapAnalyticsEvent(),
+                    max: SwapAnalyticsEvent()
+                ),
+                strings: .init(
+                    useMin: LocalizedString.Swap.AmountPresenter.LimitView.useMin,
+                    useMax: LocalizedString.Swap.AmountPresenter.LimitView.useMax
+                ),
+                accessibilityIdentifiers: .init()
+            )
         )
     }
 }

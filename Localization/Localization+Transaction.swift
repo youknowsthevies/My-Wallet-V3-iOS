@@ -20,8 +20,22 @@ extension LocalizationConstants {
                 public enum Success { }
                 public enum Failure { }
             }
+            public enum AmountPresenter {
+                public enum LimitView { }
+            }
         }
     }
+}
+
+extension LocalizationConstants.Transaction.Swap.AmountPresenter.LimitView {
+    public static let useMin = NSLocalizedString(
+        "The minimum swap is %@",
+        comment: "The minimum swap is"
+    )
+    public static let useMax = NSLocalizedString(
+        "You can swap up to %@",
+        comment: "You can swap up to"
+    )
 }
 
 public extension LocalizationConstants.Transaction.Swap.KYC {

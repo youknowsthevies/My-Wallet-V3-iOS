@@ -26,23 +26,17 @@ struct DisplayBundle {
 
     struct Events {
         let didAppear: AnalyticsEvent
-        let minTapped: AnalyticsEvent
-        let maxTapped: AnalyticsEvent
         let confirmSuccess: AnalyticsEvent
         let confirmFailure: AnalyticsEvent
         let confirmTapped: (CurrencyType, MoneyValue, [String: String]) -> AnalyticsEvent
         let sourceAccountChanged: (String) -> AnalyticsEvent
 
         init(didAppear: AnalyticsEvent,
-             minTapped: AnalyticsEvent,
-             maxTapped: AnalyticsEvent,
              confirmSuccess: AnalyticsEvent,
              confirmFailure: AnalyticsEvent,
              confirmTapped: @escaping (CurrencyType, MoneyValue, [String: String]) -> AnalyticsEvent,
              sourceAccountChanged: @escaping (String) -> AnalyticsEvent) {
             self.didAppear = didAppear
-            self.minTapped = minTapped
-            self.maxTapped = maxTapped
             self.confirmSuccess = confirmSuccess
             self.confirmFailure = confirmFailure
             self.confirmTapped = confirmTapped
@@ -58,15 +52,18 @@ struct DisplayBundle {
         }
     }
 
+    let amountDisplayBundle: AmountTranslationPresenter.DisplayBundle
     let colors: Colors
     let events: Events
     let accessibilityIdentifiers: AccessibilityIdentifiers
 
     init(colors: Colors,
          events: Events,
-         accessibilityIdentifiers: AccessibilityIdentifiers) {
+         accessibilityIdentifiers: AccessibilityIdentifiers,
+         amountDisplayBundle: AmountTranslationPresenter.DisplayBundle) {
         self.colors = colors
         self.events = events
         self.accessibilityIdentifiers  = accessibilityIdentifiers
+        self.amountDisplayBundle = amountDisplayBundle
     }
 }

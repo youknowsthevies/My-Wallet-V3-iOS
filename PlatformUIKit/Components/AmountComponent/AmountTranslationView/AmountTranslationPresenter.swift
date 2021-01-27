@@ -25,6 +25,46 @@ public final class AmountTranslationPresenter {
     
     // MARK: - Types
     
+    public struct DisplayBundle {
+        public struct Events {
+            public let minTappedAnalyticsEvent: AnalyticsEvent
+            public let maxTappedAnalyticsEvent: AnalyticsEvent
+            
+            public init(min: AnalyticsEvent, max: AnalyticsEvent) {
+                self.minTappedAnalyticsEvent = min
+                self.maxTappedAnalyticsEvent = max
+            }
+        }
+        
+        public struct Strings {
+            public let useMin: String
+            public let useMax: String
+            
+            public init(useMin: String, useMax: String) {
+                self.useMin = useMin
+                self.useMax = useMax
+            }
+        }
+        
+        public struct AccessibilityIdentifiers {
+            public init() {
+                
+            }
+        }
+        
+        public let strings: Strings
+        public let events: Events
+        public let accessibilityIdentifiers: AccessibilityIdentifiers
+        
+        public init(events: Events,
+                    strings: Strings,
+                    accessibilityIdentifiers: AccessibilityIdentifiers) {
+            self.events = events
+            self.strings = strings
+            self.accessibilityIdentifiers = accessibilityIdentifiers
+        }
+    }
+    
     public enum Input {
         case input(Character)
         case delete
@@ -64,10 +104,9 @@ public final class AmountTranslationPresenter {
     let interactor: AmountTranslationInteractor
     let fiatPresenter: InputAmountLabelPresenter
     let cryptoPresenter: InputAmountLabelPresenter
+    let displayBundle: DisplayBundle
     
     private let analyticsRecorder: AnalyticsEventRecording
-    private let maxTappedAnalyticsEvent: AnalyticsEvent
-    private let minTappedAnalyticsEvent: AnalyticsEvent
     
     // MARK: - Accessors
             
@@ -78,16 +117,14 @@ public final class AmountTranslationPresenter {
     
     public init(interactor: AmountTranslationInteractor,
                 analyticsRecorder: AnalyticsEventRecording,
-                minTappedAnalyticsEvent: AnalyticsEvent,
-                maxTappedAnalyticsEvent: AnalyticsEvent,
+                displayBundle: DisplayBundle,
                 inputTypeToggleVisiblity: Visibility = .hidden) {
+        self.displayBundle = displayBundle
         self.swapButtonVisibilityRelay.accept(inputTypeToggleVisiblity)
         self.interactor = interactor
         self.fiatPresenter = .init(interactor: interactor.fiatInteractor, currencyCodeSide: .leading)
         self.cryptoPresenter = .init(interactor: interactor.cryptoInteractor, currencyCodeSide: .trailing)
         self.analyticsRecorder = analyticsRecorder
-        self.minTappedAnalyticsEvent = minTappedAnalyticsEvent
-        self.maxTappedAnalyticsEvent = maxTappedAnalyticsEvent
         
         swapButtonTapRelay
             .withLatestFrom(interactor.activeInput)
@@ -134,7 +171,14 @@ public final class AmountTranslationPresenter {
                 .disposed(by: disposeBag)
             return .warning(viewModel)
         case .maxLimitExceeded(let maxValue):
-            let message = maxValue.toDisplayString(includeSymbol: true) + " " + LocalizedString.Max.useMax
+            /// The min/max string value can include one parameter. If it does not
+            /// just show the localized string.
+            var message = ""
+            if displayBundle.strings.useMax.contains("%@") {
+                message = String(format: displayBundle.strings.useMax, maxValue.toDisplayString(includeSymbol: true))
+            } else {
+                message = displayBundle.strings.useMax
+            }
             let viewModel = ButtonViewModel.currencyOutOfBounds(
                 with: message,
                 accessibilityId: AccessibilityId.max
@@ -143,13 +187,20 @@ public final class AmountTranslationPresenter {
                 .throttle(.seconds(1))
                 .emit(onNext: { [maxValue, weak self] in
                     guard let self = self else { return }
-                    self.analyticsRecorder.record(event: self.maxTappedAnalyticsEvent)
+                    self.analyticsRecorder.record(event: self.displayBundle.events.maxTappedAnalyticsEvent)
                     self.interactor.set(amount: maxValue)
                 })
                 .disposed(by: disposeBag)
             return .warning(viewModel)
         case .minLimitExceeded(let minValue):
-            let message = minValue.toDisplayString(includeSymbol: true) + " " + LocalizedString.Min.useMin
+            /// The min/max string value can include one parameter. If it does not
+            /// just show the localized string.
+            var message = ""
+            if displayBundle.strings.useMin.contains("%@") {
+                message = String(format: displayBundle.strings.useMin, minValue.toDisplayString(includeSymbol: true))
+            } else {
+                message = displayBundle.strings.useMin
+            }
             let viewModel = ButtonViewModel.currencyOutOfBounds(
                 with: message,
                 accessibilityId: AccessibilityId.min
@@ -158,7 +209,7 @@ public final class AmountTranslationPresenter {
                 .throttle(.seconds(1))
                 .emit(onNext: { [minValue, weak self] in
                     guard let self = self else { return }
-                    self.analyticsRecorder.record(event: self.minTappedAnalyticsEvent)
+                    self.analyticsRecorder.record(event: self.displayBundle.events.minTappedAnalyticsEvent)
                     self.interactor.set(amount: minValue)
                 })
                 .disposed(by: disposeBag)

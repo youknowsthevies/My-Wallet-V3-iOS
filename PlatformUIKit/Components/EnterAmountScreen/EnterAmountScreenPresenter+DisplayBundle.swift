@@ -28,23 +28,17 @@ extension EnterAmountScreenPresenter {
         
         public struct Events {
             public let didAppear: AnalyticsEvent
-            public let minTapped: AnalyticsEvent
-            public let maxTapped: AnalyticsEvent
             public let confirmSuccess: AnalyticsEvent
             public let confirmFailure: AnalyticsEvent
             public let confirmTapped: (CurrencyType, MoneyValue, [String: String]) -> AnalyticsEvent
             public let sourceAccountChanged: (String) -> AnalyticsEvent
             
             public init(didAppear: AnalyticsEvent,
-                        minTapped: AnalyticsEvent,
-                        maxTapped: AnalyticsEvent,
                         confirmSuccess: AnalyticsEvent,
                         confirmFailure: AnalyticsEvent,
                         confirmTapped: @escaping (CurrencyType, MoneyValue, [String: String]) -> AnalyticsEvent,
                         sourceAccountChanged: @escaping (String) -> AnalyticsEvent) {
                 self.didAppear = didAppear
-                self.minTapped = minTapped
-                self.maxTapped = maxTapped
                 self.confirmSuccess = confirmSuccess
                 self.confirmFailure = confirmFailure
                 self.confirmTapped = confirmTapped
@@ -56,19 +50,13 @@ extension EnterAmountScreenPresenter {
             public let title: String
             public let ctaButton: String
             public let bottomAuxiliaryItemSeparatorTitle: String
-            public let useMin: String
-            public let useMax: String
             
             public init(title: String,
                         ctaButton: String,
-                        bottomAuxiliaryItemSeparatorTitle: String,
-                        useMin: String,
-                        useMax: String) {
+                        bottomAuxiliaryItemSeparatorTitle: String) {
                 self.title = title
                 self.ctaButton = ctaButton
                 self.bottomAuxiliaryItemSeparatorTitle = bottomAuxiliaryItemSeparatorTitle
-                self.useMin = useMin
-                self.useMax = useMax
             }
         }
         
@@ -80,6 +68,7 @@ extension EnterAmountScreenPresenter {
             }
         }
         
+        public let amountDisplayBundle: AmountTranslationPresenter.DisplayBundle
         public let strings: Strings
         public let colors: Colors
         public let events: Events
@@ -88,11 +77,13 @@ extension EnterAmountScreenPresenter {
         public init(strings: Strings,
                     colors: Colors,
                     events: Events,
-                    accessibilityIdentifiers: AccessibilityIdentifiers) {
+                    accessibilityIdentifiers: AccessibilityIdentifiers,
+                    amountDisplayBundle: AmountTranslationPresenter.DisplayBundle) {
             self.strings = strings
             self.colors = colors
             self.events = events
             self.accessibilityIdentifiers  = accessibilityIdentifiers
+            self.amountDisplayBundle = amountDisplayBundle
         }
     }
 }

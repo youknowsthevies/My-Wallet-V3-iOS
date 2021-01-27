@@ -60,8 +60,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
         let amountTranslationPresenter = AmountTranslationPresenter(
             interactor: amountTranslationInteractor,
             analyticsRecorder: analyticsEventRecorder,
-            minTappedAnalyticsEvent: displayBundle.events.minTapped,
-            maxTappedAnalyticsEvent: displayBundle.events.maxTapped,
+            displayBundle: displayBundle.amountDisplayBundle,
             inputTypeToggleVisiblity: .visible
         )
         

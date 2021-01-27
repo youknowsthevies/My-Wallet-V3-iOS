@@ -23,9 +23,7 @@ extension EnterAmountScreenPresenter.DisplayBundle {
             strings: Strings(
                 title: LocalizedString.title,
                 ctaButton: LocalizedString.ctaButton,
-                bottomAuxiliaryItemSeparatorTitle: LocalizedString.paymentMethodTitle,
-                useMin: LocalizedString.LimitView.Min.useMin,
-                useMax: LocalizedString.LimitView.Max.useMax
+                bottomAuxiliaryItemSeparatorTitle: LocalizedString.paymentMethodTitle
             ),
             colors: Colors(
                 digitPadTopSeparator: .lightBorder,
@@ -33,8 +31,6 @@ extension EnterAmountScreenPresenter.DisplayBundle {
             ),
             events: Events(
                 didAppear: AnalyticsEvent.sbBuyFormShown,
-                minTapped: AnalyticsEvent.sbBuyFormMinClicked,
-                maxTapped: AnalyticsEvent.sbBuyFormMaxClicked,
                 confirmSuccess: AnalyticsEvent.sbBuyFormConfirmSuccess,
                 confirmFailure: AnalyticsEvent.sbBuyFormConfirmFailure,
                 confirmTapped: { (currencyType, amount, additionalParameters) in
@@ -48,6 +44,17 @@ extension EnterAmountScreenPresenter.DisplayBundle {
             ),
             accessibilityIdentifiers: AccessibilityIdentifiers(
                 bottomAuxiliaryItemSeparatorTitle: AccessibilityId.paymentMethodTitle
+            ),
+            amountDisplayBundle: .init(
+                events: .init(
+                    min: AnalyticsEvent.sbBuyFormMinClicked,
+                    max: AnalyticsEvent.sbBuyFormMaxClicked
+                ),
+                strings: .init(
+                    useMin: LocalizedString.LimitView.Buy.Min.useMin,
+                    useMax: LocalizedString.LimitView.Buy.Max.useMax
+                ),
+                accessibilityIdentifiers: .init()
             )
         )
     }
