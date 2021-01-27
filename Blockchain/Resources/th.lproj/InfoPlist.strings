@@ -1,5 +1,0 @@
-"NSCameraUsageDescription" = "มันจำเป็นสำหรับแอปเพื่อสแกนรหัส QR";
-"NSMicrophoneUsageDescription" = "จำเป็นสำหรับการจับภาพวิดีโอ";
-"NSFaceIDUsageDescription" = "การเปิดใช้ Face ID ช่วยให้คุณเข้าถึงกระเป๋าสตางค์ได้อย่างปลอดภัย";
-"NSLocationWhenInUseUsageDescription" = "Blockchain ต้องการเข้าถึงตำแหน่งของคุณเพื่อแสดงให้คุณเห็นธุรกิจในบริเวณใกล้เคียงที่ยอมรับ Bitcoin";
-"NSPhotoLibraryUsageDescription" = "คุณจำเป็นต้องได้รับอนุญาตเพื่ออัปโหลดเอกสารจากห้องสมุดรูปภาพของคุณ";

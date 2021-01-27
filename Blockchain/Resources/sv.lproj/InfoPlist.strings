@@ -1,5 +1,0 @@
-"NSCameraUsageDescription" = "Detta krävs för att appen QR-koder.";
-"NSMicrophoneUsageDescription" = "Krävs för videoinspelning.";
-"NSFaceIDUsageDescription" = "Genom att aktivera ansikts-ID kan du säkert komma åt din plånbok.";
-"NSLocationWhenInUseUsageDescription" = "Blockchain behöver tillgång till din plats för att visa dig närliggande företag som accepterar Bitcoin.";
-"NSPhotoLibraryUsageDescription" = "Ditt tillstånd behövs för att ladda upp dokument från ditt fotobibliotek.";

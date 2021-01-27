@@ -1,5 +1,0 @@
-"NSCameraUsageDescription" = "Jest to wymagane przez aplikację, by skanować kody QR.";
-"NSMicrophoneUsageDescription" = "Wymagane do przechwytywania wideo.";
-"NSFaceIDUsageDescription" = "Włączenie identyfikacji twarzy umożliwia bezpieczny dostęp do portfela.";
-"NSLocationWhenInUseUsageDescription" = "Blockchain potrzebuje dostępu do Twojej lokalizacji, aby pokazać Ci pobliskie firmy akceptujące Bitcoin.";
-"NSPhotoLibraryUsageDescription" = "Twoja zgoda jest potrzebna, aby przesłać dokumenty z biblioteki zdjęć.";

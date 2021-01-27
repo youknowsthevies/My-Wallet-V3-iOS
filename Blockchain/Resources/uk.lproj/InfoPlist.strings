@@ -1,5 +1,0 @@
-"NSCameraUsageDescription" = "Це треба для програми, щоб відсканувати QR коди.";
-"NSMicrophoneUsageDescription" = "Обов'язково для захоплення відео.";
-"NSFaceIDUsageDescription" = "Увімкнувши ідентифікатор особи, ви можете безпечно отримувати доступ до свого кошика.";
-"NSLocationWhenInUseUsageDescription" = "Blockchain потребує доступу до вашого місцезнаходження, щоб показати близьким компаніям, які приймають Bitcoin.";
-"NSPhotoLibraryUsageDescription" = "Ваш дозвіл потрібен для завантаження документів із вашої бібліотеки фотографій.";

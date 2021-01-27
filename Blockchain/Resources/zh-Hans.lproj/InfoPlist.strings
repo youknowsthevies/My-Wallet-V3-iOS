@@ -1,5 +1,0 @@
-"NSCameraUsageDescription" = "需要应用扫描二维码。";
-"NSMicrophoneUsageDescription" = "视频捕获所必需的。";
-"NSFaceIDUsageDescription" = "启用面部识别功能可让您安全地访问您的钱包。";
-"NSLocationWhenInUseUsageDescription" = "区块链需要访问您的位置，以向您显示接受比特币的附近企业。";
-"NSPhotoLibraryUsageDescription" = "您需要获得许可才能从照片库上传文档。";
