@@ -115,8 +115,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions
                      launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
-        if ProcessInfo.processInfo.environmentBoolean(for: "automation_erase_data") == true {
+
+        if ProcessInfo.processInfo.environmentBoolean(for: .eraseWallet) == true {
             // If ProcessInfo environment contains "automation_erase_data": true, erase wallet and settings.
             // This behaviour happens even on non-debug builds, this is necessary because our UI tests
             //   run on real devices with 'release-staging' builds.

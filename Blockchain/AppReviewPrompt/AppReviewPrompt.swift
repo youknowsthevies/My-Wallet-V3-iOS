@@ -6,9 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import PlatformKit
-import StoreKit
+import PlatformUIKit
 import ToolKit
 
 /**
@@ -54,6 +53,6 @@ final class AppReviewPrompt: NSObject {
     }
 
     private func requestReview() {
-        SKStoreReviewController.requestReview()
+        StoreReviewController.requestReview()
     }
 }

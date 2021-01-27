@@ -12,7 +12,6 @@ import PlatformUIKit
 import RIBs
 import RxCocoa
 import RxSwift
-import StoreKit
 import TransactionKit
 
 protocol PendingTransactionPageRouting: Routing {
@@ -94,7 +93,7 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
     // MARK: - Private methods
     
     private func requestReview() {
-        SKStoreReviewController.requestReview()
+        StoreReviewController.requestReview()
     }
 
     private func handle(effects: Effects) {
