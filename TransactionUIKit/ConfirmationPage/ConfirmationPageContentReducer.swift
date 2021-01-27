@@ -109,7 +109,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             )
             disclaimer.append(.staticLabel(content))
         }
-        cells = confirmationLineItems + errorModels + disclaimer
+        cells = [.separator] + confirmationLineItems + errorModels + disclaimer
     }
 
     static func confirmCtaText(state: TransactionState) -> String {
