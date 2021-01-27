@@ -95,9 +95,9 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case false:
             let source = event.pair.inputCurrencyType.displayCode
             let destination = event.pair.outputCurrencyType.displayCode
-            toPresenter = TransactionalLineItem.from("\(destination) \(LocalizedString.wallet)")
+            toPresenter = TransactionalLineItem.to("\(destination) \(LocalizedString.wallet)")
                 .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
-            fromPresenter = TransactionalLineItem.to("\(source) \(LocalizedString.wallet)")
+            fromPresenter = TransactionalLineItem.from("\(source) \(LocalizedString.wallet)")
                 .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
         }
 
