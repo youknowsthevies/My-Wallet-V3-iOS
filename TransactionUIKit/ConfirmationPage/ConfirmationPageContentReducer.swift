@@ -13,6 +13,7 @@ import RxCocoa
 import RxRelay
 import RxSwift
 import ToolKit
+import TransactionKit
 
 protocol ConfirmationPageContentReducing {
     /// The title of the checkout screen
@@ -55,7 +56,10 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             return
         }
 
-        let interactors = pendingTransaction.confirmations
+        let interactors: [DefaultLineItemCellPresenter] = pendingTransaction.confirmations
+            .filter { confirmations -> Bool in
+                !confirmations.isErrorNotice
+            }
             .compactMap(\.formatted)
             .map { data -> (title: LabelContentInteracting, subtitle: LabelContentInteracting) in
                 (DefaultLabelContentInteractor(knownValue: data.0), DefaultLabelContentInteractor(knownValue: data.1))
@@ -67,10 +71,31 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 DefaultLineItemCellPresenter(interactor: interactor, accessibilityIdPrefix: "")
             }
 
-        let confirmationLineItems = interactors
+        let confirmationLineItems: [DetailsScreen.CellType] = interactors
             .reduce(into: [DetailsScreen.CellType]()) { (result, lineItem) in
                 result.append(.lineItem(lineItem))
                 result.append(.separator)
+            }
+
+        let errorModels: [DetailsScreen.CellType] = pendingTransaction.confirmations
+            .filter(\.isErrorNotice)
+            .compactMap(\.formatted)
+            .map { (_: String, subtitle: String) -> BadgeAsset.Value.Interaction.BadgeItem in
+                .init(type: .destructive, description: subtitle)
+            }
+            .map { badgeItem -> DefaultBadgeAssetInteractor in
+                DefaultBadgeAssetInteractor(initialState: .loaded(next: badgeItem))
+            }
+            .map { interactor -> DefaultBadgeAssetPresenter in
+                DefaultBadgeAssetPresenter(interactor: interactor)
+            }
+            .map { presenter -> MultiBadgeViewModel in
+                let model = MultiBadgeViewModel()
+                model.badgesRelay.accept([presenter])
+                return model
+            }
+            .map { noticeViewModel -> DetailsScreen.CellType in
+                .badges(noticeViewModel)
             }
 
         var disclaimer: [DetailsScreen.CellType] = []
@@ -84,7 +109,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             )
             disclaimer.append(.staticLabel(content))
         }
-        cells = confirmationLineItems + disclaimer
+        cells = confirmationLineItems + errorModels + disclaimer
     }
 
     static func confirmCtaText(state: TransactionState) -> String {
@@ -102,6 +127,17 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             return String(format: LocalizedString.Swap.deposit, amount)
         default:
             fatalError("ConfirmationPageContentReducer: \(state.action) not supported.")
+        }
+    }
+}
+
+extension TransactionConfirmation {
+    var isErrorNotice: Bool {
+        switch self {
+        case .errorNotice:
+            return true
+        default:
+            return false
         }
     }
 }
