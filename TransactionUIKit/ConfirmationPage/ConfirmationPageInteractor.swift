@@ -47,9 +47,9 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
         presenter.continueButtonTapped
             .asObservable()
             .withLatestFrom(transactionModel.state)
-            .subscribe(onNext: { state in
-                self.transactionModel.process(action: .executeTransaction)
-                self.analyticsHook.onClose()
+            .subscribe(onNext: { [weak self] state in
+                self?.transactionModel.process(action: .executeTransaction)
+                self?.analyticsHook.onClose()
             })
             .disposeOnDeactivate(interactor: self)
 

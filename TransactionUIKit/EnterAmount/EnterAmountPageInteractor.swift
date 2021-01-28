@@ -161,9 +161,9 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         presenter.continueButtonTapped
             .asObservable()
             .withLatestFrom(transactionModel.state)
-            .subscribe(onNext: { state in
-                self.transactionModel.process(action: .prepareTransaction)
-                self.analyticsHook.onEnterAmountContinue(with: state)
+            .subscribe(onNext: { [weak self] state in
+                self?.transactionModel.process(action: .prepareTransaction)
+                self?.analyticsHook.onEnterAmountContinue(with: state)
             })
             .disposeOnDeactivate(interactor: self)
 

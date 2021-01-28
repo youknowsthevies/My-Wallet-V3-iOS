@@ -80,14 +80,14 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
         executionStatus
             .asObservable()
             .withLatestFrom(transactionModel.state) { ($0, $1) }
-            .subscribe(onNext: { (executionStatus, transcationState) in
+            .subscribe(onNext: { [weak self] (executionStatus, transcationState) in
                 switch executionStatus {
                 case .inProgress, .notStarted:
                     break
                 case .error:
-                    self.analyticsHook.onTransactionFailure(with: transcationState)
+                    self?.analyticsHook.onTransactionFailure(with: transcationState)
                 case .completed:
-                    self.analyticsHook.onTransactionSuccess(with: transcationState)
+                    self?.analyticsHook.onTransactionSuccess(with: transcationState)
                 }
             })
             .disposeOnDeactivate(interactor: self)
