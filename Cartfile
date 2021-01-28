@@ -16,7 +16,7 @@ github "uber/RIBs" "ffc489f00db785c8c0051678393f7aba0d52f1a4"
 github "RxSwiftCommunity/RxDataSources" ~> 4.0
 github "thisisalexmcgregor/stellar-ios-mac-sdk" "blockchain"
 github "thisisalexmcgregor/web3swift" "blockchain" 
-github "jackpooleybc/swift-crypto" "jack/polyfill-carthage"
+github "jackpooleybc/swift-crypto" "3b5301cb0802184d6879e547c4f122a09f05960c"
 github "jackpooleybc/CryptoSwift" "jack/iso10126padding"
 github "jackpooleybc/DIKit" "safe-property-wrappers"
 github "SiftScience/sift-ios"
