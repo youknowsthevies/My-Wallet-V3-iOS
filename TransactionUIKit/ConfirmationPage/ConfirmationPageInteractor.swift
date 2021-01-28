@@ -24,10 +24,13 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
     weak var listener: ConfirmationPageListener?
 
     private let transactionModel: TransactionModel
+    private let analyticsHook: TransactionAnalyticsHook
 
     init(presenter: ConfirmationPagePresentable,
-         transactionModel: TransactionModel) {
+         transactionModel: TransactionModel,
+         analyticsHook: TransactionAnalyticsHook = resolve()) {
         self.transactionModel = transactionModel
+        self.analyticsHook = analyticsHook
         super.init(presenter: presenter)
     }
 
@@ -42,9 +45,12 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
             .asDriver(onErrorJustReturn: .empty)
 
         presenter.continueButtonTapped
-            .emit(weak: self) { (self, _) in
+            .asObservable()
+            .withLatestFrom(transactionModel.state)
+            .subscribe(onNext: { state in
                 self.transactionModel.process(action: .executeTransaction)
-            }
+                self.analyticsHook.onClose()
+            })
             .disposeOnDeactivate(interactor: self)
 
         presenter.connect(action: actionDriver)

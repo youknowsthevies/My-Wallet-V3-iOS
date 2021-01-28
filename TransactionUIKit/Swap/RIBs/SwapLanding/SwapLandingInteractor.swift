@@ -13,6 +13,7 @@ import PlatformUIKit
 import RIBs
 import RxCocoa
 import RxSwift
+import ToolKit
 
 protocol SwapLandingRouting: ViewableRouting {
 }
@@ -43,6 +44,7 @@ protocol SwapLandingListener: AnyObject {
 
 final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>, SwapLandingInteractable, SwapLandingPresentableListener {
 
+    typealias AnalyticsEvent = AnalyticsEvents.Swap
     typealias LocalizationId = LocalizationConstants.Swap.Trending
     
     weak var router: SwapLandingRouting?
@@ -50,12 +52,15 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
     
     private let accountProviding: BlockchainAccountProviding
     private let eligibilityService: EligibilityServiceAPI
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     
     init(presenter: SwapLandingPresentable,
          accountProviding: BlockchainAccountProviding = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          eligibilityService: EligibilityServiceAPI = resolve()) {
         self.accountProviding = accountProviding
         self.eligibilityService = eligibilityService
+        self.analyticsRecorder = analyticsRecorder
         super.init(presenter: presenter)
         presenter.listener = self
     }
@@ -98,8 +103,10 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
     func handleEffects(_ effect: SwapLandingSelectionEffects) {
         switch effect {
         case .swap(let pair):
+            analyticsRecorder.record(event: AnalyticsEvent.trendingPairClicked)
             listener?.routeToSwap(with: pair)
         case .newSwap:
+            analyticsRecorder.record(event: AnalyticsEvent.newSwapClicked)
             listener?.routeToSwap(with: nil)
         case .none:
             break

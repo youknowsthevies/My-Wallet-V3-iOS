@@ -18,15 +18,21 @@ protocol SwapRootListener: ViewListener { }
 
 final class SwapRootInteractor: Interactor, SwapBootstrapListener, SwapRootListener, SwapLandingListener, TransactionFlowListener {
 
+    typealias AnalyticsEvent = AnalyticsEvents.Swap
+
     private let kycTiersPageModelFactory: KYCTiersPageModelFactoryAPI
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     weak var router: SwapRootRouting?
 
-    init(kycTiersPageModelFactory: KYCTiersPageModelFactoryAPI = resolve()) {
+    init(kycTiersPageModelFactory: KYCTiersPageModelFactoryAPI = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.kycTiersPageModelFactory = kycTiersPageModelFactory
+        self.analyticsRecorder = analyticsRecorder
         super.init()
     }
 
     func userMustKYCForSwap() {
+        analyticsRecorder.record(event: AnalyticsEvent.verifyNowClicked)
         router?.routeToKYC()
     }
     
