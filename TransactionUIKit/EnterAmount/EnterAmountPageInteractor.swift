@@ -45,16 +45,19 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let alertViewPresenter: AlertViewPresenterAPI
     private let priceService: PriceServiceAPI
     private let transactionModel: TransactionModel
+    private let analyticsHook: TransactionAnalyticsHook
 
     init(transactionModel: TransactionModel,
          presenter: EnterAmountPagePresentable,
          amountInteractor: AmountTranslationInteractor,
+         analyticsHook: TransactionAnalyticsHook = resolve(),
          loadingViewPresenter: LoadingViewPresenting = resolve(),
          alertViewPresenter: AlertViewPresenterAPI = resolve(),
          priceService: PriceServiceAPI = resolve()) {
         self.transactionModel = transactionModel
         self.amountInteractor = amountInteractor
         self.priceService = priceService
+        self.analyticsHook = analyticsHook
         self.auxiliaryViewInteractor = SendAuxililaryViewInteractor()
         self.alertViewPresenter = alertViewPresenter
         self.loadingViewPresenter = loadingViewPresenter
@@ -149,16 +152,19 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     .update(\.canContinue, value: updater.nextEnabled)
                     .update(\.topSelection, value: topSelection)
                     .update(\.topSelection.title,
-                            value: try TransactionFlowDescriptor.EnterAmountScreen.headerTitle(state: updater))
+                            value: TransactionFlowDescriptor.EnterAmountScreen.headerTitle(state: updater))
                     .update(\.topSelection.subtitle,
-                            value: try TransactionFlowDescriptor.EnterAmountScreen.headerSubtitle(state: updater))
+                            value: TransactionFlowDescriptor.EnterAmountScreen.headerSubtitle(state: updater))
             }
             .asDriverCatchError()
 
         presenter.continueButtonTapped
-            .emit(weak: self) { (self, _) in
-                self.transactionModel.process(action: .prepareTransaction)
-            }
+            .asObservable()
+            .withLatestFrom(transactionModel.state)
+            .subscribe(onNext: { [weak self] state in
+                self?.transactionModel.process(action: .prepareTransaction)
+                self?.analyticsHook.onEnterAmountContinue(with: state)
+            })
             .disposeOnDeactivate(interactor: self)
 
         presenter.connect(state: interactorState)

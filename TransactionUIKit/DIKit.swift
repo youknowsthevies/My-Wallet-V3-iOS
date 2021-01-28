@@ -24,5 +24,9 @@ extension DependencyContainer {
         // MARK: - Send
 
         factory { SendRouter() as SendRouterAPI }
+
+        // MARK: - Hooks
+
+        factory { TransactionAnalyticsHook() }
     }
 }

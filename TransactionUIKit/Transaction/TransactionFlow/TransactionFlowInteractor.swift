@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -40,16 +41,19 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     private let action: AssetAction
     private let sourceAccount: CryptoAccount?
     private let target: TransactionTarget?
+    private let analyticsHook: TransactionAnalyticsHook
 
     init(transactionModel: TransactionModel,
          action: AssetAction,
          sourceAccount: CryptoAccount?,
          target: TransactionTarget?,
-         presenter: TransactionFlowPresentable) {
+         presenter: TransactionFlowPresentable,
+         analyticsHook: TransactionAnalyticsHook = resolve()) {
         self.transactionModel = transactionModel
         self.action = action
         self.sourceAccount = sourceAccount
         self.target = target
+        self.analyticsHook = analyticsHook
         super.init(presenter: presenter)
         presenter.listener = self
     }
@@ -122,15 +126,17 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
     func didSelect(blockchainAccount: BlockchainAccount) {
         transactionModel.state
-            .map(\.step)
             .take(1)
             .asSingle()
-            .subscribe(onSuccess: { [weak self] step in
-                switch step {
+            .subscribe(onSuccess: { [weak self] state in
+                switch state.step {
                 case .selectSource:
                     self?.didSelectSourceAccount(account: blockchainAccount as! CryptoAccount)
                 case .selectTarget:
-                    self?.didSelectDestinationAccount(target: blockchainAccount as! TransactionTarget)
+                    let selectedSource = state.source!
+                    let selectedTarget = blockchainAccount as! TransactionTarget
+                    self?.didSelectDestinationAccount(target: selectedTarget)
+                    self?.analyticsHook.onPairConfirmed(selectedSource.currencyType, target: selectedTarget)
                 default:
                     break
                 }
@@ -144,6 +150,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
     func didTapClose() {
         router?.closeFlow()
+        analyticsHook.onClose()
     }
 
     func enterAmountDidTapBack() {
@@ -152,6 +159,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
     func closeFlow() {
         router?.closeFlow()
+        analyticsHook.onClose()
     }
 
     func checkoutDidTapBack() {
@@ -159,6 +167,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
     
     func didSelectSourceAccount(account: CryptoAccount) {
+        analyticsHook.onAccountSelected(account.currencyType)
         transactionModel.process(action: .sourceAccountSelected(account))
     }
 
@@ -181,7 +190,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         } else {
             initialStep = false
             showFlowStep(newState: newState)
-            // analyticsHooks.onStepChanged(newState)
+            analyticsHook.onStepChanged(newState)
         }
     }
 
