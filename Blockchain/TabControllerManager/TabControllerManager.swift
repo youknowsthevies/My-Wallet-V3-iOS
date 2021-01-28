@@ -87,17 +87,16 @@ final class TabControllerManager: NSObject {
         func populateLegacySwap() {
             swapViewController = ExchangeContainerViewController.makeFromStoryboard()
         }
-        if internalFeatureFlag.isEnabled(.newSwap) {
-            populateNewSwap()
-        } else {
+        
+        if internalFeatureFlag.isEnabled(.oldSwap) {
             populateLegacySwap()
+        } else {
+            if featureConfigurator.configuration(for: .newSwapEnabled).isEnabled {
+                populateNewSwap()
+            } else {
+                populateLegacySwap()
+            }
         }
-        // TODO: When New Swap is ready, use Feature Flag to decide which one should be displayed:
-        // if featureConfigurator.configuration(for: .newSwapEnabled).isEnabled {
-        //     populateNewSwap()
-        // } else {
-        //     populateLegacySwap()
-        // }
     }
 
     func showSwap() {
