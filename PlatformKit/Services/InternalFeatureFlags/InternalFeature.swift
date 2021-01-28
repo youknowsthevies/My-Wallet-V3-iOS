@@ -10,7 +10,7 @@ import Foundation
 
 /// Defines an internal feature as part of a FeatureFlag
 public enum InternalFeature: String, CaseIterable {
-    case newSwap
+    case oldSwap
     case achFlow
 
     internal var defaultsKey: String {

@@ -19,7 +19,7 @@ final class MviModel<State, Action: MviAction> where Action.State == State, Stat
             .asObservable()
     }()
 
-    var actions: ReplaySubject<Action> = ReplaySubject.create(bufferSize: 1)
+    let actions: ReplaySubject<Action> = ReplaySubject.create(bufferSize: 1)
 
     private var disposeBag = DisposeBag()
     

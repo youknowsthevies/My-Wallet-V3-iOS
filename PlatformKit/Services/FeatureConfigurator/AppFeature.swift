@@ -63,7 +63,7 @@ extension AppFeature {
         case .interestAccountEnabled:
             return "interest_account_enabled"
         case .newSwapEnabled:
-            return "new_swap_enabled"
+            return "new_swap_enabled_ios"
         case .wDGLDenabled:
             return "wdgld_enabled"
         case .siftScienceEnabled:

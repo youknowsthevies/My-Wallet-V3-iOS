@@ -104,8 +104,10 @@ final class NewSwapAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
 
     private var featureIsEnabled: Bool {
         // TODO: Remove InternalFeatureFlag before Swap P1 release.
-        internalFeatureFlag.isEnabled(.newSwap)
-            && featureConfiguring.configuration(for: .newSwapEnabled).isEnabled
+        guard !internalFeatureFlag.isEnabled(.oldSwap) else {
+            return false
+        }
+        return featureConfiguring.configuration(for: .newSwapEnabled).isEnabled
     }
     private var style: Style {
         guard isTier1Or2Verified else {
