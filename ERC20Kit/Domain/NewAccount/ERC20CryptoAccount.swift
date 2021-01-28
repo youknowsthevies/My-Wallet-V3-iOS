@@ -39,11 +39,11 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
         isFunded
             .map { isFunded -> AvailableActions in
                 var base: AvailableActions = [.viewActivity, .receive]
-                if Token.nonCustodialSendSupport {
+                if Token.legacySendSupport {
                     base.insert(.send)
-                    if isFunded {
-                        base.insert(.swap)
-                    }
+                }
+                if Token.nonCustodialTransactionSupport.contains(.swap), isFunded {
+                    base.insert(.swap)
                 }
                 return base
             }
