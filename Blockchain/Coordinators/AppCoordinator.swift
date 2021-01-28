@@ -379,11 +379,11 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     }
 
     /// Starts Buy Crypto flow.
-    @objc func handleBuyCrypto() {
+    func handleBuyCrypto(currency: CryptoCurrency = .bitcoin) {
         let builder = BuySellUIKit.Builder(
             stateService: BuySellUIKit.StateService()
         )
-        buyRouter = BuySellUIKit.Router(builder: builder)
+        buyRouter = BuySellUIKit.Router(builder: builder, currency: currency)
         buyRouter.start()
     }
     

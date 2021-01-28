@@ -14,11 +14,12 @@ import PlatformUIKit
 
 extension BuySellUIKit.Router {
     
-    convenience init(builder: BuySellUIKit.Buildable) {
+    convenience init(builder: BuySellUIKit.Buildable, currency: CryptoCurrency = .bitcoin) {
         self.init(
             navigationRouter: NavigationRouter(),
             builder: builder,
-            kycRouter: resolve()
+            kycRouter: resolve(),
+            currency: currency
         )
     }
 }

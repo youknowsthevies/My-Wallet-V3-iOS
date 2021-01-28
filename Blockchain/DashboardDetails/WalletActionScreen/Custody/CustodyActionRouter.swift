@@ -204,7 +204,8 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
             self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: {
-                AppCoordinator.shared.handleBuyCrypto()
+                guard case let .crypto(currency) = self.currency else { return }
+                AppCoordinator.shared.handleBuyCrypto(currency: currency)
             })
         }
     }

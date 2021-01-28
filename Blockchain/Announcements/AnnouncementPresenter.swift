@@ -348,7 +348,7 @@ extension AnnouncementPresenter {
                 self?.hideAnnouncement()
             },
             action: { [weak appCoordinator] in
-                appCoordinator?.handleBuyCrypto()
+                appCoordinator?.handleBuyCrypto(currency: .algorand)
             }
         )
     }
@@ -360,7 +360,7 @@ extension AnnouncementPresenter {
                 self?.hideAnnouncement()
             },
             action: { [weak appCoordinator] in
-                appCoordinator?.handleBuyCrypto()
+                appCoordinator?.handleBuyCrypto(currency: .tether)
             }
         )
     }
@@ -434,7 +434,7 @@ extension AnnouncementPresenter {
                 self?.hideAnnouncement()
             },
             action: { [weak appCoordinator] in
-                appCoordinator?.handleBuyCrypto()
+                appCoordinator?.handleBuyCrypto(currency: .bitcoin)
             }
         )
     }

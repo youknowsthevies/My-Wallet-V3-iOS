@@ -64,7 +64,8 @@ public final class Router: RouterAPI {
                 supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
                 internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
                 builder: Buildable,
-                kycRouter: KYCRouterAPI) {
+                kycRouter: KYCRouterAPI,
+                currency: CryptoCurrency) {
         self.navigationRouter = navigationRouter
         self.supportedPairsInteractor = supportedPairsInteractor
         self.settingsService = settingsService
@@ -75,7 +76,7 @@ public final class Router: RouterAPI {
         
         let cryptoSelectionService = CryptoCurrencySelectionService(
             service: supportedPairsInteractor,
-            defaultSelectedData: CryptoCurrency.bitcoin
+            defaultSelectedData: currency
         )
         self.paymentMethodTypesService = paymentMethodTypesService
         self.cryptoSelectionService = cryptoSelectionService
