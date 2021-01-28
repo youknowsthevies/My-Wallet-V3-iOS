@@ -11,7 +11,8 @@ import EthereumKit
 import PlatformKit
 
 public struct WDGLDToken: ERC20Token {
-    public static let nonCustodialSendSupport: Bool = false
+    public static let nonCustodialTransactionSupport: AvailableActions = [.swap]
+    public static let legacySendSupport: Bool = false
     public static let assetType: CryptoCurrency = .wDGLD
     public static let contractAddress: EthereumContractAddress = "0x123151402076fc819b7564510989e475c9cd93ca"
 

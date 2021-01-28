@@ -36,14 +36,20 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
     }
 
     var actions: Single<AvailableActions> {
-        isFunded
-            .map { isFunded -> AvailableActions in
+        Single
+            .zip(
+                isFunded,
+                .just(featureFetcher.configuration(for: .newSwapEnabled).isEnabled)
+            )
+            .map { isFunded, newSwapEnabled -> AvailableActions in
                 var base: AvailableActions = [.viewActivity, .receive]
-                if Token.nonCustodialSendSupport {
+                if Token.legacySendSupport {
                     base.insert(.send)
-                    if isFunded {
-                        base.insert(.swap)
-                    }
+                }
+                if Token.nonCustodialTransactionSupport.contains(.swap),
+                   newSwapEnabled,
+                   isFunded {
+                    base.insert(.swap)
                 }
                 return base
             }
@@ -55,14 +61,17 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
 
     private let balanceFetching: SingleAccountBalanceFetching
     private let exchangeService: PairExchangeServiceAPI
+    private let featureFetcher: FeatureConfiguring
     
     init(id: String,
          balanceProviding: BalanceProviding = resolve(),
-         exchangeProviding: ExchangeProviding = resolve()) {
+         exchangeProviding: ExchangeProviding = resolve(),
+         featureFetcher: FeatureConfiguring = resolve()) {
         self.id = id
         self.label = Token.assetType.defaultWalletName
         self.exchangeService = exchangeProviding[Token.assetType]
         self.balanceFetching = balanceProviding[Token.assetType.currency].wallet
+        self.featureFetcher = featureFetcher
     }
 
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {

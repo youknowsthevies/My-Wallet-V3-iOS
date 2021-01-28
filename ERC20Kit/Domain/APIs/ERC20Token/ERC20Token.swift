@@ -19,7 +19,10 @@ public protocol ERC20Token {
     static var contractAddress: EthereumContractAddress { get }
     static var smallestSpendableValue: ERC20TokenValue<Self> { get }
     static var zeroValue: ERC20TokenValue<Self> { get }
-    static var nonCustodialSendSupport: Bool { get }
+    /// Indicates which non custodial transaction actions using this Token are supported.
+    static var nonCustodialTransactionSupport: AvailableActions { get }
+    /// Indicates if this Token is supported by legacy Send.
+    static var legacySendSupport: Bool { get }
     
     static func cryptoValueFrom(majorValue: String) -> ERC20TokenValue<Self>?
     

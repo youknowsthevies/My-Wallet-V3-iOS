@@ -92,6 +92,13 @@ extension DependencyContainer {
 
         factory { AnyERC20HistoricalTransactionService<TetherToken>() }
 
+        factory { ERC20Service<TetherToken>() }
+
+        factory { () -> AnyERC20Service<TetherToken> in
+            let service: ERC20Service<TetherToken> = DIKit.resolve()
+            return AnyERC20Service<TetherToken>(service)
+        }
+
         // MARK: - WDGLD
 
         factory(tag: CryptoCurrency.wDGLD) { ERC20Asset<WDGLDToken>() as CryptoAsset }
@@ -123,6 +130,13 @@ extension DependencyContainer {
         factory(tag: CryptoCurrency.wDGLD) { ERC20AssetBalanceFetcher<WDGLDToken>() as CryptoAccountBalanceFetching }
 
         factory { AnyERC20HistoricalTransactionService<WDGLDToken>() }
+
+        factory { ERC20Service<WDGLDToken>() }
+
+        factory { () -> AnyERC20Service<WDGLDToken> in
+            let service: ERC20Service<WDGLDToken> = DIKit.resolve()
+            return AnyERC20Service<WDGLDToken>(service)
+        }
     }
 }
 
