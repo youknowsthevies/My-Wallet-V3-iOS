@@ -134,6 +134,12 @@ public final class PendingStateViewController: BaseScreenViewController {
         } else {
             cancelButton.isHidden = true
         }
+
+        if model.displayCloseButton {
+            trailingButtonStyle = .close
+        } else {
+            trailingButtonStyle = .none
+        }
     }
 }
 

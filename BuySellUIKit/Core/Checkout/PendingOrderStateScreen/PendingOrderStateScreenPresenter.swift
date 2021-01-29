@@ -132,7 +132,8 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
             ),
             title: "\(amount) \(title)",
             subtitle: LocalizedString.Timeout.subtitle,
-            button: button
+            button: button,
+            displayCloseButton: true
         )
         viewModelRelay.accept(viewModel)
     }
