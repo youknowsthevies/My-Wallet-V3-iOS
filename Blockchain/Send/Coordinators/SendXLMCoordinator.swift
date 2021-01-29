@@ -23,6 +23,7 @@ class SendXLMCoordinator {
         serviceProvider.services
     }
     private let analyticsRecorder: AnalyticsEventRecording
+    private let fiatCurrencyService: FiatCurrencyServiceAPI
     
     /// Exchange address presenter
     private let exchangeAddressPresenter: SendExchangeAddressStatePresenter
@@ -37,13 +38,13 @@ class SendXLMCoordinator {
 
     private let bag = DisposeBag()
     
-    init(
-        serviceProvider: StellarServiceProvider,
-        interface: SendXLMInterface,
-        modelInterface: SendXLMModelInterface,
-        exchangeAddressPresenter: SendExchangeAddressStatePresenter,
-        analyticsRecorder: AnalyticsEventRecording = resolve()
-    ) {
+    init(serviceProvider: StellarServiceProvider,
+         interface: SendXLMInterface,
+         modelInterface: SendXLMModelInterface,
+         exchangeAddressPresenter: SendExchangeAddressStatePresenter,
+         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
+        self.fiatCurrencyService = fiatCurrencyService
         self.serviceProvider = serviceProvider
         self.interface = interface
         self.modelInterface = modelInterface
@@ -447,32 +448,35 @@ extension SendXLMCoordinator: SendXLMViewControllerDelegate {
     }
 
     func onMinimumBalanceInfoTapped() {
-        let fiatCurrency = BlockchainSettings.App.shared.fiatCurrency
-        let disposable = Single.zip(
-            services.prices.price(for: CryptoCurrency.stellar, in: fiatCurrency),
-            services.ledger.current.take(1).asSingle(),
-            services.accounts.currentStellarAccount(fromCache: true)
-                .ifEmpty(default: StellarAccount.empty())
-        ).subscribeOn(MainScheduler.asyncInstance)
-        .observeOn(MainScheduler.instance)
-        .subscribe(onSuccess: { [weak self] price, ledger, account in
-            guard let this = self else { return }
-            this.showMinimumBalanceView(
-                latestPrice: price.moneyValue.displayMajorValue,
-                fee: ledger.baseFeeInXlm?.displayMajorValue ?? this.services.ledger.fallbackBaseFee,
-                balance: account.assetAccount.balance.displayMajorValue,
-                baseReserve: ledger.baseReserveInXlm?.displayMajorValue ?? this.services.ledger.fallbackBaseReserve
-            )
-        }, onError: { [weak self] _ in
-            guard let this = self else { return }
-            this.showMinimumBalanceView(
-                latestPrice: 0,
-                fee: this.services.ledger.fallbackBaseFee,
-                balance: 0,
-                baseReserve: this.services.ledger.fallbackBaseReserve
-            )
-        })
-        disposables.insertWithDiscardableResult(disposable)
+        fiatCurrencyService
+            .fiatCurrency
+            .flatMap(weak: self) { (self, fiatCurrency) -> Single<(PriceQuoteAtTime, StellarLedger, StellarAccount)> in
+                Single.zip(self.services.prices.price(for: CryptoCurrency.stellar, in: fiatCurrency),
+                           self.services.ledger.current.take(1).asSingle(),
+                           self.services.accounts.currentStellarAccount(fromCache: true)
+                            .ifEmpty(default: StellarAccount.empty())
+                )
+            }
+            .observeOn(MainScheduler.instance)
+            .subscribeOn(MainScheduler.instance)
+            .subscribe(onSuccess: { [weak self] price, ledger, account in
+                guard let self = self else { return }
+                self.showMinimumBalanceView(
+                    latestPrice: price.moneyValue.displayMajorValue,
+                    fee: ledger.baseFeeInXlm?.displayMajorValue ?? self.services.ledger.fallbackBaseFee,
+                    balance: account.assetAccount.balance.displayMajorValue,
+                    baseReserve: ledger.baseReserveInXlm?.displayMajorValue ?? self.services.ledger.fallbackBaseReserve
+                )
+            }, onError: { [weak self] _ in
+                guard let self = self else { return }
+                self.showMinimumBalanceView(
+                    latestPrice: 0,
+                    fee: self.services.ledger.fallbackBaseFee,
+                    balance: 0,
+                    baseReserve: self.services.ledger.fallbackBaseReserve
+                )
+            })
+            .disposed(by: bag)
     }
 
     func onExchangeAddressButtonTapped() {
