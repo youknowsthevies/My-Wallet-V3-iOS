@@ -52,7 +52,7 @@ class ExchangeAssetAccountListPresenter {
             .map { allAccounts in
                 allAccounts
                     .filter { $0 != assetAccount }
-                    .filter { $0.address.cryptoCurrency.hasSwapSupport }
+                    .filter { $0.address.cryptoCurrency.hasLegacySwapSupport }
             }
             .subscribe(onSuccess: { [weak self] filteredAccounts in
                 guard let self = self else { return }
