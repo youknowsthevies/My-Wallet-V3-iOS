@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AlgorandKit
 import BitcoinCashKit
 import BitcoinKit
 import BuySellKit
@@ -115,11 +116,13 @@ extension DependencyContainer {
 extension CryptoEventService {
     fileprivate static func algorand(transactional: EmptyTransactionalActivityItemEventService = resolve(),
                                      orderService: BuySellKit.OrdersServiceAPI = resolve(),
-                                     swap: EmptySwapActivityItemEventService = resolve()) -> CryptoEventService {
+                                     swapActivity: SwapActivityServiceAPI = resolve()) -> CryptoEventService {
+        let fetcher = AlgorandSwapActivityItemEventsService(service: swapActivity)
+        let swapService = SwapActivityItemEventService(fetcher: fetcher)
         let buySell = BuySellActivityItemEventService(currency: .algorand, service: orderService)
         return CryptoEventService(transactional: transactional,
                                   buySell: buySell,
-                                  swap: swap)
+                                  swap: swapService)
     }
     
     fileprivate static func bitcoin(eventsService: BitcoinTransactionalActivityItemEventsService = resolve(),
