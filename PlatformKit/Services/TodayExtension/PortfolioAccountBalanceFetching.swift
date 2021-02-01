@@ -57,7 +57,7 @@ public final class PortfolioAccountBalanceFetching {
         fiatCurrencyProviding
             .fiatCurrencyObservable
             .map { $0.code }
-            .bind(to: currencyCodeRelay)
+            .bindAndCatch(to: currencyCodeRelay)
             .disposed(by: disposeBag)
         
         Observable
@@ -94,7 +94,7 @@ public final class PortfolioAccountBalanceFetching {
                     )
                 )
             )
-            .bind(to: calculationStateRelay)
+            .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
     }()
     

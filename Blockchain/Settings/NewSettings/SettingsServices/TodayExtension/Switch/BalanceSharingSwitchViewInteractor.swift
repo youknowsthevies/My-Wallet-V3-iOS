@@ -23,7 +23,7 @@ final class BalanceSharingSwitchViewInteractor: SwitchViewInteracting {
     private lazy var setup: Void = {
         service.isEnabled
             .map { .loaded(next: .init(isOn: $0, isEnabled: true)) }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
         
         switchTriggerRelay

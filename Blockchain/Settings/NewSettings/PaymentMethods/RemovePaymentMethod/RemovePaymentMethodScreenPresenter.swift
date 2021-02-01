@@ -84,7 +84,7 @@ final class RemovePaymentMethodScreenPresenter {
         interactor.state
             .filter { $0.isValue }
             .mapToVoid()
-            .bind(to: dismissalRelay)
+            .bindAndCatch(to: dismissalRelay)
             .disposed(by: disposeBag)
         
         removeButtonViewModel.tapRelay

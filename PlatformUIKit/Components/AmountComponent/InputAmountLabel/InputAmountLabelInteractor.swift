@@ -30,7 +30,7 @@ public final class InputAmountLabelInteractor {
         
         interactor.currency
             .map { .init(integral: integralPlacesLimit, fractional: $0.maxDisplayableDecimalPlaces) }
-            .bind(to: scanner.maxDigitsRelay)
+            .bindAndCatch(to: scanner.maxDigitsRelay)
             .disposed(by: disposeBag)
     }
 }

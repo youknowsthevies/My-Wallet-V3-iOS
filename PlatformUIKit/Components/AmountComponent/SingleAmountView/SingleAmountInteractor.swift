@@ -66,7 +66,7 @@ public final class SingleAmountInteractor {
         // Input Actions
         input.map(\.toInputScannerAction)
             .asObservable()
-            .bind(to: currencyInteractor.scanner.actionRelay)
+            .bindAndCatch(to: currencyInteractor.scanner.actionRelay)
             .disposed(by: disposeBag)
 
         state

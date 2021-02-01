@@ -175,11 +175,11 @@ public final class AmountTranslationInteractor {
             .share(replay: 1, scope: .whileConnected)
         
         fiatCurrency
-            .bind(to: fiatInteractor.interactor.currencyRelay)
+            .bindAndCatch(to: fiatInteractor.interactor.currencyRelay)
             .disposed(by: disposeBag)
 
         cryptoCurrency
-            .bind(to: cryptoInteractor.interactor.currencyRelay)
+            .bindAndCatch(to: cryptoInteractor.interactor.currencyRelay)
             .disposed(by: disposeBag)
 
         // We need to keep any currency selection changes up to date with the input values
@@ -191,7 +191,7 @@ public final class AmountTranslationInteractor {
         currenciesMerged
             .mapToVoid()
             .map { "" }
-            .bind(to: fiatInteractor.scanner.rawInputRelay, cryptoInteractor.scanner.rawInputRelay)
+            .bindAndCatch(to: fiatInteractor.scanner.rawInputRelay, cryptoInteractor.scanner.rawInputRelay)
             .disposed(by: disposeBag)
 
         // Bind of the edit values to the scanner depending on the currently edited currency type
@@ -233,14 +233,14 @@ public final class AmountTranslationInteractor {
             .map(\.quote)
             .map(\.displayMajorValue)
             .map { "\($0)" }
-            .bind(to: cryptoInteractor.scanner.rawInputRelay)
+            .bindAndCatch(to: cryptoInteractor.scanner.rawInputRelay)
             .disposed(by: disposeBag)
 
         pairFromCryptoInput
             .map(\.quote)
             .map(\.displayMajorValue)
             .map { "\($0)" }
-            .bind(to: fiatInteractor.scanner.rawInputRelay)
+            .bindAndCatch(to: fiatInteractor.scanner.rawInputRelay)
             .disposed(by: disposeBag)
         
         let anyPair = Observable
@@ -274,14 +274,14 @@ public final class AmountTranslationInteractor {
             .filter { $0 == .fiat }
             .mapToVoid()
             .map { MoneyValueInputScanner.Action.remove }
-            .bind(to: fiatInteractor.scanner.actionRelay)
+            .bindAndCatch(to: fiatInteractor.scanner.actionRelay)
             .disposed(by: disposeBag)
         
         deleteAction
             .filter { $0 == .crypto }
             .mapToVoid()
             .map { MoneyValueInputScanner.Action.remove }
-            .bind(to: cryptoInteractor.scanner.actionRelay)
+            .bindAndCatch(to: cryptoInteractor.scanner.actionRelay)
             .disposed(by: disposeBag)
         
         // Bind insertion events
@@ -298,13 +298,13 @@ public final class AmountTranslationInteractor {
         insertAction
             .filter { $0.0 == .fiat }
             .map { $0.1 }
-            .bind(to: fiatInteractor.scanner.actionRelay)
+            .bindAndCatch(to: fiatInteractor.scanner.actionRelay)
             .disposed(by: disposeBag)
         
         insertAction
             .filter { $0.0 == .crypto }
             .map { $0.1 }
-            .bind(to: cryptoInteractor.scanner.actionRelay)
+            .bindAndCatch(to: cryptoInteractor.scanner.actionRelay)
             .disposed(by: disposeBag)
         
         state
@@ -347,14 +347,14 @@ public final class AmountTranslationInteractor {
         input
             .compactMap(\.character)
             .asObservable()
-            .bind(to: self.appendNewRelay)
+            .bindAndCatch(to: self.appendNewRelay)
             .disposed(by: disposeBag)
         
         input
             .filter { $0.character == nil }
             .asObservable()
             .mapToVoid()
-            .bind(to: self.deleteLastRelay)
+            .bindAndCatch(to: self.deleteLastRelay)
             .disposed(by: disposeBag)
 
         return state

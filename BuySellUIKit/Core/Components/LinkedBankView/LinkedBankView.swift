@@ -30,13 +30,13 @@ final class LinkedBankView: UIView {
                 button.rx
                     .controlEvent(.touchDown)
                     .map { _ in UIColor.hightlightedBackground }
-                    .bind(to: self.rx.backgroundColor)
+                    .bindAndCatch(to: self.rx.backgroundColor)
                     .disposed(by: disposeBag)
 
                 button.rx
                     .controlEvent(.touchCancel)
                     .map { _ in UIColor.white }
-                    .bind(to: self.rx.backgroundColor)
+                    .bindAndCatch(to: self.rx.backgroundColor)
                     .disposed(by: disposeBag)
                     
             }

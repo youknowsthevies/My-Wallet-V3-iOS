@@ -40,7 +40,7 @@ public final class FiatCustodialBalanceView: UIView {
                 .disposed(by: disposeBag)
             
             button.rx.tap
-                .bind(to: presenter.tapRelay)
+                .bindAndCatch(to: presenter.tapRelay)
                 .disposed(by: disposeBag)
 
             button.isEnabled = presenter.respondsToTaps

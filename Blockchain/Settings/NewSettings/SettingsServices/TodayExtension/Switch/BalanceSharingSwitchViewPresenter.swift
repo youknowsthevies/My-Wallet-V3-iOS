@@ -29,19 +29,19 @@ final class BalanceSharingSwitchViewPresenter: SwitchViewPresenting {
         interactor = BalanceSharingSwitchViewInteractor(service: service)
         
         viewModel.isSwitchedOnRelay
-            .bind(to: interactor.switchTriggerRelay)
+            .bindAndCatch(to: interactor.switchTriggerRelay)
             .disposed(by: disposeBag)
         
         interactor.state
             .compactMap { $0.value }
             .map { $0.isEnabled }
-            .bind(to: viewModel.isEnabledRelay)
+            .bindAndCatch(to: viewModel.isEnabledRelay)
             .disposed(by: disposeBag)
         
         interactor.state
             .compactMap { $0.value }
             .map { $0.isOn }
-            .bind(to: viewModel.isOnRelay)
+            .bindAndCatch(to: viewModel.isOnRelay)
             .disposed(by: disposeBag)
     }
     

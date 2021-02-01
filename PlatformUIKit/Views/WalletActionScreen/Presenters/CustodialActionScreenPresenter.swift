@@ -120,7 +120,7 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
                 [WalletActionItemsSectionViewModel(items: cellTypes)]
             }
             .asObservable()
-            .bind(to: sectionsRelay)
+            .bindAndCatch(to: sectionsRelay)
             .disposed(by: disposeBag)
         
         selectionRelay

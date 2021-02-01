@@ -80,7 +80,7 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
         })
         
         presenter.sectionObservable
-            .bind(to: tableView.rx.items(dataSource: dataSource))
+            .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
     }
     

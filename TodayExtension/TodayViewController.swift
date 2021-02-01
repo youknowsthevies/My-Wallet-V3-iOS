@@ -90,7 +90,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         })
         
         presenter.sectionObservable
-            .bind(to: tableView.rx.items(dataSource: dataSource))
+            .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
     }
         

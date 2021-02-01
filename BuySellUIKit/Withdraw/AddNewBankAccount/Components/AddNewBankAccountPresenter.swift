@@ -137,7 +137,7 @@ final class AddNewBankAccountPagePresenter: DetailsScreenPresenterAPI, AddNewBan
 
         if let termsTextViewModel = contentReducer.termsTextViewModel {
             termsTextViewModel.tap
-                .bind(to: termsTapRelay)
+                .bindAndCatch(to: termsTapRelay)
                 .disposed(by: disposeBag)
             cells.append(.interactableTextCell(termsTextViewModel))
         }

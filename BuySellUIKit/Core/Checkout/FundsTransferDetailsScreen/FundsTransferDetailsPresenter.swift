@@ -132,7 +132,7 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
 
         if let termsTextViewModel = contentReducer.termsTextViewModel {
             termsTextViewModel.tap
-                .bind(to: webViewRouter.launchRelay)
+                .bindAndCatch(to: webViewRouter.launchRelay)
                 .disposed(by: disposeBag)
             cells.append(.interactableTextCell(termsTextViewModel))
         }
