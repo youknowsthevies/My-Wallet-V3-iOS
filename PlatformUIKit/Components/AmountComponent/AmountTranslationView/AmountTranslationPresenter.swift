@@ -18,6 +18,7 @@ extension Accessibility.Identifier {
         static let max = "Amount.useMaxButton"
         static let min = "Amount.useMinButton"
         static let warning = "Amount.warning"
+        static let error = "Amount.error"
     }
 }
 
@@ -158,6 +159,12 @@ public final class AmountTranslationPresenter {
         switch state {
         case .empty, .inBounds:
             return .showSecondaryAmountLabel
+        case let .error(message):
+            let viewModel = ButtonViewModel.currencyOutOfBounds(
+                with: message,
+                accessibilityId: AccessibilityId.error
+            )
+            return .warning(viewModel)
         case let .warning(message, action):
             let viewModel = ButtonViewModel.warning(
                 with: message,

@@ -183,7 +183,6 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             .flatMap(weak: self) { (self, actionableBalance) -> Single<PendingTransaction> in
                 self.validateAmounts(pendingTransaction: pendingTransaction)
                     .andThen(self.validateSufficientFunds(pendingTransaction: pendingTransaction, actionableBalance: actionableBalance))
-                    .andThen(self.validateSufficientGas(pendingTransaction: pendingTransaction, actionableBalance: actionableBalance))
                     .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
             }
     }
@@ -193,7 +192,6 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             .flatMap(weak: self) { (self, actionableBalance) -> Single<PendingTransaction> in
                 self.validateAmounts(pendingTransaction: pendingTransaction)
                     .andThen(self.validateSufficientFunds(pendingTransaction: pendingTransaction, actionableBalance: actionableBalance))
-                    .andThen(self.validateSufficientGas(pendingTransaction: pendingTransaction, actionableBalance: actionableBalance))
                     .andThen(self.validateNoPendingTransaction())
                     .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
             }
@@ -254,7 +252,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             }
         }
     }
-    
+
     private func validateSufficientFunds(pendingTransaction: PendingTransaction, actionableBalance: MoneyValue) -> Completable {
         absoluteFee(with: pendingTransaction.feeLevel)
             .map { fee -> Void in
@@ -264,18 +262,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             }
             .asCompletable()
     }
-    
-    private func validateSufficientGas(pendingTransaction: PendingTransaction, actionableBalance: MoneyValue) -> Completable {
-        gasLimit()
-            .map { gas -> Bool in
-                guard try actionableBalance > gas.moneyValue else {
-                    throw TransactionValidationFailure(state: .insufficientGas)
-                }
-                return true
-            }
-            .asCompletable()
-    }
-    
+
     private func makeFeeSelectionOption(pendingTransaction: PendingTransaction) -> Single<TransactionConfirmation.Model.FeeSelection> {
         fiatAmoutAndFees(from: pendingTransaction)
             .map(\.fees)
@@ -289,24 +276,21 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             }
     }
 
-    private func absoluteFee(with feeLevel: FeeLevel, isContract: Bool = false) -> Single<CryptoValue> {
-        feeCache.valueSingle
-            .map { (transactionFee: EthereumTransactionFee) -> CryptoValue in
+    private func absoluteFee(with feeLevel: FeeLevel) -> Single<CryptoValue> {
+        feeCache
+            .valueSingle
+            .map { (fees: EthereumTransactionFee) -> CryptoValue in
+                let level: EthereumTransactionFee.FeeLevel
                 switch feeLevel {
                 case .none:
                     fatalError("On chain ETH transactions should never have a 0 fee")
                 case .priority,
                      .custom:
-                    let price = BigUInt(transactionFee.priority.amount)
-                    let gasLimit = BigUInt(isContract ? transactionFee.gasLimitContract : transactionFee.gasLimit)
-                    let amount = price * gasLimit
-                    return CryptoValue.create(minor: "\(amount)", currency: .ethereum) ?? .etherZero
+                    level = .priority
                 case .regular:
-                    let price = BigUInt(transactionFee.regular.amount)
-                    let gasLimit = BigUInt(isContract ? transactionFee.gasLimitContract : transactionFee.gasLimit)
-                    let amount = price * gasLimit
-                    return CryptoValue.create(minor: "\(amount)", currency: .ethereum) ?? .etherZero
+                    level = .regular
                 }
+                return fees.absoluteFee(with: level, isContract: false)
             }
     }
     
@@ -324,21 +308,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         }
         .map { (amount: $0.0, fees: $0.1) }
     }
-    
-    private func gasLimit(isContract: Bool = false) -> Single<CryptoValue> {
-        feeCache.valueSingle
-            .map { fees -> Int in
-                isContract ? fees.gasLimitContract : fees.gasLimit
-            }
-            .map { BigUInt($0) }
-            .map { value -> CryptoValue in
-                guard let crypto = CryptoValue.ether(minor: "\(value)") else {
-                    impossible()
-                }
-                return crypto
-            }
-    }
-    
+
     private var sourceExchangeRatePair: Single<MoneyValuePair> {
         fiatCurrencyService
             .fiatCurrency

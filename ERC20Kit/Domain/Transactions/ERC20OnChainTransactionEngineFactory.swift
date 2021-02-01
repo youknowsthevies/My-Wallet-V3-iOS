@@ -10,6 +10,6 @@ import TransactionKit
 
 final class ERC20OnChainTransactionEngineFactory<Token: ERC20Token>: OnChainTransactionEngineFactory {
     func build(requiresSecondPassword: Bool) -> OnChainTransactionEngine {
-        AnyERC20OnChainTransactionEngine<Token>(requireSecondPassword: requiresSecondPassword)
+        ERC20OnChainTransactionEngine<Token>(requireSecondPassword: requiresSecondPassword)
     }
 }

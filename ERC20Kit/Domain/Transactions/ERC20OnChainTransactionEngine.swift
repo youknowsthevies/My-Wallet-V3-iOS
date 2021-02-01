@@ -14,7 +14,7 @@ import RxSwift
 import ToolKit
 import TransactionKit
 
-final class AnyERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransactionEngine {
+final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransactionEngine {
     
     typealias AskForRefreshConfirmations = (Bool) -> Completable
     
@@ -244,36 +244,35 @@ final class AnyERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransact
             }
         }
     }
-    
+
     private func validateSufficientFunds(pendingTransaction: PendingTransaction) -> Completable {
         guard sourceAccount != nil else {
             fatalError("sourceAccount should never be nil when this is called")
         }
         return sourceAccount
             .actionableBalance
-            .map { (balance) -> Bool in
-                if try pendingTransaction.amount > balance {
+            .map { actionableBalance -> Void in
+                guard try pendingTransaction.amount <= actionableBalance else {
                     throw TransactionValidationFailure(state: .insufficientFunds)
-                } else {
-                    return true
                 }
             }
             .asCompletable()
     }
-    
+
     private func validateSufficientGas(pendingTransaction: PendingTransaction) -> Completable {
-        Single.zip(ethereumAccountBalance,
-                   gasLimit(isContract: true))
-            .map { (balance: $0.0.moneyValue, gas: $0.1.moneyValue) }
-            .map { (balance: MoneyValue, gas: MoneyValue) -> Bool in
-                guard try balance > gas else {
+        Single
+            .zip(
+                ethereumAccountBalance,
+                absoluteFee(with: pendingTransaction.feeLevel)
+            )
+            .map { (balance, absoluteFee) -> Void in
+                guard try absoluteFee <= balance else {
                     throw TransactionValidationFailure(state: .insufficientGas)
                 }
-                return true
             }
             .asCompletable()
     }
-    
+
     private func validateAddresses() -> Completable {
         erc20AccountService.isContract(address: target.address)
             .map { isContractAddress -> Bool in
@@ -312,41 +311,25 @@ final class AnyERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransact
         }
         .map { (amount: $0.0, fees: $0.1) }
     }
-    
-    private func absoluteFee(with feeLevel: FeeLevel, isContract: Bool = false) -> Single<CryptoValue> {
-        Single.zip(
-            gasLimit(isContract: isContract),
-            feeService.fees
-        )
-        .map { (gas: $0.0, ethereumTransactionFee: $0.1) }
-        .map { (gas: CryptoValue, transactionFee: EthereumTransactionFee) -> CryptoValue in
-            switch feeLevel {
-            case .none:
-                return try .etherZero + gas
-            case .priority,
-                 .custom:
-                return try transactionFee.priority + gas
-            case .regular:
-                return try transactionFee.regular + gas
-            }
-        }
-    }
-    
-    private func gasLimit(isContract: Bool = false) -> Single<CryptoValue> {
+
+    private func absoluteFee(with feeLevel: FeeLevel) -> Single<CryptoValue> {
         feeService
             .fees
-            .map { fees -> Int in
-                isContract ? fees.gasLimitContract : fees.gasLimit
-            }
-            .map { BigUInt($0) }
-            .map { value -> CryptoValue in
-                guard let crypto = CryptoValue.ether(minor: "\(value)") else {
-                    impossible()
+            .map { (fees: EthereumTransactionFee) -> CryptoValue in
+                let level: EthereumTransactionFee.FeeLevel
+                switch feeLevel {
+                case .none:
+                    fatalError("On chain ERC20 transactions should never have a 0 fee")
+                case .priority,
+                     .custom:
+                    level = .priority
+                case .regular:
+                    level = .regular
                 }
-                return crypto
+                return fees.absoluteFee(with: level, isContract: true)
             }
     }
-    
+
     private var ethereumAccountBalance: Single<CryptoValue> {
         balanceFetching.balance
     }

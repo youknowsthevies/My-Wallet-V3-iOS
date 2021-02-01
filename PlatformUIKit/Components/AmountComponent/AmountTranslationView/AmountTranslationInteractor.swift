@@ -48,6 +48,7 @@ public final class AmountTranslationInteractor {
         case empty
         case inBounds
         case warning(message: String, action: () -> Void)
+        case error(message: String)
         case maxLimitExceeded(MoneyValue)
         case minLimitExceeded(MoneyValue)
     }
@@ -311,7 +312,7 @@ public final class AmountTranslationInteractor {
                 switch state {
                 case .empty, .inBounds:
                     return .valid
-                case .maxLimitExceeded, .minLimitExceeded, .warning:
+                case .maxLimitExceeded, .minLimitExceeded, .warning, .error:
                     return .invalid
                 }
             }
@@ -440,7 +441,8 @@ extension AmountTranslationInteractor.State {
         case .empty,
              .maxLimitExceeded,
              .minLimitExceeded,
-             .warning:
+             .warning,
+             .error:
             return .invalid
         }
     }

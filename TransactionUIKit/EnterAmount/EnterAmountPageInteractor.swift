@@ -288,7 +288,7 @@ extension EnterAmountPageInteractor.BottomAuxiliaryViewModelState: Equatable {
 }
 
 extension TransactionErrorState {
-    private typealias LocalizedString = LocalizationConstants.Transaction.Swap.KYC
+    private typealias LocalizedString = LocalizationConstants.Transaction
     func toAmountInteractorState(min: MoneyValue,
                                  max:  MoneyValue,
                                  exchangeRate: MoneyValuePair?,
@@ -298,9 +298,13 @@ extension TransactionErrorState {
         switch self {
         case .none:
             return .inBounds
+        case .insufficientGas:
+            return .error(
+                message: LocalizedString.Confirmation.Error.insufficientGas
+            )
         case .overSilverTierLimit:
             return .warning(
-                message: LocalizedString.overSilverLimitWarning,
+                message: LocalizedString.Swap.KYC.overSilverLimitWarning,
                 action: { [weak listener] in
                     listener?.continueToKYCTiersScreen()
                 }
@@ -318,7 +322,6 @@ extension TransactionErrorState {
             let result = convertToInputCurrency(min, exchangeRate: exchangeRate, input: activeInput)
             return .minLimitExceeded(result)
         case .addressIsContract,
-             .insufficientGas,
              .invalidAddress,
              .invalidAmount,
              .invalidPassword,
