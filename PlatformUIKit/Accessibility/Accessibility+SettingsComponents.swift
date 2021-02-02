@@ -132,9 +132,7 @@ extension Accessibility.Identifier {
 
         public enum WebLogin {
             private static let prefix = "WebLoginScreen."
-            public static let securityAlertLabel = "\(prefix)securityAlertLabel"
-            public static let securityAlertTopLabel = "\(prefix)securityAlertTopLabel"
-            public static let securityAlertBottomLabel = "\(prefix)securityAlertBottomLabel"
+            public static let notice = "\(prefix)notice"
             public static let showQRCodeButton = "\(prefix)securityAlertBottomLabel"
         }
 

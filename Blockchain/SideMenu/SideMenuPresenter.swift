@@ -144,12 +144,8 @@ class SideMenuPresenter {
             items.append(.lockbox)
         }
 
-        if wallet.isInitialized() {
-            if wallet.didUpgradeToHd() {
-                items.append(.backup)
-            } else {
-                items.append(.upgrade)
-            }
+        if wallet.isInitialized(), !wallet.didUpgradeToHd() {
+            items.append(.upgrade)
         }
 
         if showSimpleBuy {

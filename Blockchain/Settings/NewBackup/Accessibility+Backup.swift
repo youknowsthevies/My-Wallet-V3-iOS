@@ -13,9 +13,9 @@ extension Accessibility.Identifier {
     enum Backup {
         enum IntroScreen {
             private static let prefix = "BackupFundsIntroScreen."
-            static let titleLabel = "\(prefix)descriptionLabel"
-            static let descriptionLabel = "\(prefix)descriptionLabel"
-            static let secondaryDescriptionLabel = "\(prefix)secondaryDescriptionLabel"
+            static let body = "\(prefix)body"
+            static let bodyWarning = "\(prefix)body.warning"
+            static let notice = "\(prefix)notice"
             static let nextButton = "\(prefix)nextButton"
         }
         

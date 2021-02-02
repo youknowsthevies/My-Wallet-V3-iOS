@@ -591,7 +591,7 @@ public enum LocalizationConstants {
             comment: "Item displayed on the side menu of the app for when the user wants to view their crypto addresses."
         )
         public static let backupFunds = NSLocalizedString(
-            "Backup Funds",
+            "Secret Private Key Recovery Phrase",
             comment: "Item displayed on the side menu of the app for when the user wants to back up their funds by saving their 12 word mneumonic phrase."
         )
         public static let airdrops = NSLocalizedString(
@@ -719,82 +719,6 @@ public enum LocalizationConstants {
         public static let selectAWallet = NSLocalizedString("Select a Wallet", comment: "Select a Wallet")
     }
     
-    public struct BackupFundsScreen {
-        
-        public static let title = NSLocalizedString("Backup Funds", comment: "Backup Funds")
-        
-        public struct Settings {
-            public static let subtitle = NSLocalizedString("Backup Needed", comment: "Backup Needed")
-            public static let action = NSLocalizedString("Start backup", comment: "Start backup")
-            
-            public struct Description {
-                public static let partA = NSLocalizedString(
-                    "Your backup phrase will allow you to recover your crypto if you lose access to your wallet. Please write down these 12 words in order and keep them somewhere safe. Never share it with anyone. Your backup phrase is the key to recovering your crypto if you ever get locked out.",
-                    comment: "Your backup phrase will allow you to recover your crypto if you lose access to your wallet. Please write down these 12 words in order and keep them somewhere safe. Never share it with anyone. Your backup phrase is the key to recovering your crypto if you ever get locked out."
-                )
-                public static let partB = NSLocalizedString(
-                    "Before you get started, we created a printable template make it easier to store your phrase. Feel free to download and print it out.",
-                    comment: "Before you get started, we created a printable template make it easier to store your phrase. Feel free to download and print it out."
-                )
-            }
-        }
-        
-        public struct CustodySend {
-            public static let subtitle = NSLocalizedString(
-                "Backup Your Wallet",
-                comment: "Backup Needed"
-            )
-            public static let action = NSLocalizedString(
-                "Backup Now",
-                comment: "Backup Now"
-            )
-            public static let description = NSLocalizedString(
-                "Your backup phrase will allow you to recover your crypto if you lose access to your wallet. Please write down these 12 words in order and keep them somewhere safe. Never share it with anyone. Your backup phrase is the key to recovering your crypto if you ever get locked out.",
-                comment: "Your backup phrase will allow you to recover your crypto if you lose access to your wallet. Please write down these 12 words in order and keep them somewhere safe. Never share it with anyone. Your backup phrase is the key to recovering your crypto if you ever get locked out."
-            )
-        }
-    }
-    
-    public struct RecoveryPhraseScreen {
-        public static let title = NSLocalizedString("Recovery Phrase", comment: "Recovery Phrase")
-        public static let subtitle = NSLocalizedString("Write Down Recovery Phrase", comment: "Write Down Recovery Phrase")
-        public static let description = NSLocalizedString(
-            "For your security, Blockchain does not keep any passwords on file. The following 12 word Backup Phrase will give you access to your funds in case you lose your password. Be sure to write it on a piece of paper and to keep it somewhere safe and secure.",
-            comment: "For your security, Blockchain does not keep any passwords on file. The following 12 word Backup Phrase will give you access to your funds in case you lose your password. Be sure to write it on a piece of paper and to keep it somewhere safe and secure."
-        )
-        public static let copyToClipboard = NSLocalizedString("Copy to Clipboard", comment: "Copy to Clipboard")
-        public static let next = NSLocalizedString("Next", comment: "Next")
-    }
-    
-    public struct VerifyBackupScreen {
-        public static let title = NSLocalizedString("Verify Your Backup", comment: "Verify Your Backup")
-        public static let description = NSLocalizedString(
-            "Enter the following words from your Backup Phrase to complete the backup process.",
-            comment: "Enter the following words from your Backup Phrase to complete the backup process."
-        )
-        public static let action = NSLocalizedString("Verify", comment: "Verify")
-        public static let errorDescription = NSLocalizedString(
-            "The words in your Recovery Phrase didn’t match. You can go back to the previous step and double check you wrote it down correctly",
-            comment: "The words in your Recovery Phrase didn’t match. You can go back to the previous step and double check you wrote it down correctly"
-        )
-        
-        public struct Index {
-            
-            public static let first = NSLocalizedString("first word", comment: "first word")
-            public static let second = NSLocalizedString("second word", comment: "second word")
-            public static let third = NSLocalizedString("third word", comment: "third word")
-            public static let fourth = NSLocalizedString("fourth word", comment: "fourth word")
-            public static let fifth = NSLocalizedString("fifth word", comment: "fifth word")
-            public static let sixth = NSLocalizedString("sixth word", comment: "sixth word")
-            public static let seventh = NSLocalizedString("seventh word", comment: "seventh word")
-            public static let eighth = NSLocalizedString("eighth word", comment: "eighth word")
-            public static let ninth = NSLocalizedString("ninth word", comment: "ninth word")
-            public static let tenth = NSLocalizedString("tenth word", comment: "tenth word")
-            public static let eleventh = NSLocalizedString("eleventh", comment: "eleventh word")
-            public static let twelfth = NSLocalizedString("twelfth word", comment: "twelfth word")
-        }
-    }
-    
     public struct ErrorAlert {
         public static let title = NSLocalizedString(
             "Oops!",
@@ -865,77 +789,6 @@ public enum LocalizationConstants {
         public static let oneHourAgo = NSLocalizedString("1 hour ago", comment: "text shown when a transaction has completed one hour ago")
         public static let hoursAgo = NSLocalizedString("%lld hours ago", comment: "text shown when a transaction has completed hours ago")
         public static let yesterday = NSLocalizedString("Yesterday", comment: "text shown when a transaction has completed yesterday")
-    }
-
-    public struct Backup {
-        public static let wordNumberOfNumber = NSLocalizedString(
-            "Word %@ of %@",
-            comment: "text displayed when showing individual words of their recovery phrase"
-        )
-        public static let firstWord = NSLocalizedString(
-            "first word",
-            comment: "text displayed when prompting the user to verify that they have written down all words of their recovery phrase"
-        )
-        public static let secondWord = NSLocalizedString(
-            "second word",
-            comment: "text displayed when prompting the user to verify that they have written down all words of their recovery phrase"
-        )
-        public static let thirdWord = NSLocalizedString(
-            "third word",
-            comment: "text displayed when prompting the user to verify that they have written down all words of their recovery phrase"
-        )
-        public static let fourthWord = NSLocalizedString(
-            "fourth word",
-            comment: "text displayed when prompting the user to verify that they have written down all words of their recovery phrase"
-        )
-        public static let fifthWord = NSLocalizedString(
-            "fifth word",
-            comment: "text displayed when prompting the user to verify that they have written down all words of their recovery phrase"
-        )
-        public static let sixthWord = NSLocalizedString(
-            "sixth word",
-            comment: "text displayed when prompting the user to verify that they have written down all words of their recovery phrase"
-        )
-        public static let seventhWord = NSLocalizedString(
-            "seventh word",
-            comment: "text displayed when prompting the user to verify that they have written down all words of their recovery phrase"
-        )
-        public static let eighthWord = NSLocalizedString(
-            "eighth word",
-            comment: "text displayed when prompting the user to verify that they have written down all words of their recovery phrase"
-        )
-        public static let ninthWord = NSLocalizedString(
-            "ninth word",
-            comment: "text displayed when prompting the user to verify that they have written down all words of their recovery phrase"
-        )
-        public static let tenthWord = NSLocalizedString(
-            "tenth word",
-            comment: "text displayed when prompting the user to verify that they have written down all words of their recovery phrase"
-        )
-        public static let eleventhWord = NSLocalizedString(
-            "eleventh word",
-            comment: "text displayed when prompting the user to verify that they have written down all words of their recovery phrase"
-        )
-        public static let twelfthWord = NSLocalizedString(
-            "twelfth word",
-            comment: "text displayed when prompting the user to verify that they have written down all words of their recovery phrase"
-        )
-        public static let verifyBackup = NSLocalizedString(
-            "Verify Backup",
-            comment: "Title displayed in the app for prompting the user to verify that they have written down all words of their recovery phrase"
-        )
-        public static let backupFunds = NSLocalizedString(
-            "Backup Funds",
-            comment: "Title displayed in the app for when the user wants to back up their funds by saving their 12 word mneumonic phrase."
-        )
-        public static let reminderBackupMessageFirstBitcoin = NSLocalizedString(
-            "Congrats, you have bitcoin! Now let’s backup your wallet to ensure you can access your funds if you forget your password.",
-            comment: "Reminder message for when the user has just received funds prior to having completed the backup phrase."
-        )
-        public static let reminderBackupMessageHasFunds = NSLocalizedString(
-            "For your security, we do not keep any passwords on file. Backup your wallet to ensure your funds are safe in case you lose your password.",
-            comment: "Reminder message for when the user already has funds prior to having completed the backup phrase."
-        )
     }
 
     public struct LegacyUpgrade {

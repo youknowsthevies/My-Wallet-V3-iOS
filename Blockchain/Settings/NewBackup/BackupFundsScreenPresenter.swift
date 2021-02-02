@@ -8,19 +8,53 @@
 
 import DIKit
 import PlatformUIKit
+import RxRelay
 import RxSwift
 import ToolKit
 
-final class BackupFundsScreenPresenter {
-    
+final class BackupFundsScreenPresenter: DetailsScreenPresenterAPI {
+
     // MARK: - Types
-    
+
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias AccessibilityId = Accessibility.Identifier.Backup.IntroScreen
-    
-    // MARK: - Navigation Properties
-    
-    var trailingButton: Screen.Style.TrailingButton {
+    private typealias LocalizedString = LocalizationConstants.BackupFundsScreen
+
+    // MARK: - Properties
+
+    var buttons: [ButtonViewModel] {
+        contentReducer.buttons
+    }
+
+    var cells: [DetailsScreen.CellType] {
+        contentReducer.cells
+    }
+
+    let titleViewRelay: BehaviorRelay<Screen.Style.TitleView> = .init(
+        value: .text(value: LocalizationConstants.BackupFundsScreen.title)
+    )
+
+    var navigationBarAppearance: DetailsScreen.NavigationBarAppearance {
+        .custom(
+            leading: leadingButton,
+            trailing: trailingButton,
+            barStyle: .darkContent()
+        )
+    }
+
+    var navigationBarLeadingButtonAction: DetailsScreen.BarButtonAction {
+        .custom { [weak self] in
+            self?.stateService.previousRelay.accept(())
+        }
+    }
+
+    let navigationBarTrailingButtonAction: DetailsScreen.BarButtonAction = .default
+
+    let reloadRelay: PublishRelay<Void> = .init()
+
+    // MARK: - Private Properties
+
+    private var trailingButton: Screen.Style.TrailingButton {
         switch entry {
         case .settings:
             return .none
@@ -28,8 +62,8 @@ final class BackupFundsScreenPresenter {
             return .close
         }
     }
-    
-    var leadingButton: Screen.Style.LeadingButton {
+
+    private var leadingButton: Screen.Style.LeadingButton {
         switch entry {
         case .settings:
             return .back
@@ -37,103 +71,96 @@ final class BackupFundsScreenPresenter {
             return .none
         }
     }
-    
-    var titleView: Screen.Style.TitleView {
-        .text(value: LocalizationConstants.BackupFundsScreen.title)
-    }
-    
-    var barStyle: Screen.Style.Bar {
-        .lightContent()
-    }
-    
-    // MARK: - Public Properites
-    
-    let subtitle: LabelContent
-    let primaryDescription: LabelContent
-    let secondaryDescription: LabelContent
-    
-    let startBackupButton: ButtonViewModel
-    
-    // MARK: - Private Properties
-    
+
+    private let contentReducer: ContentReducer
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let disposeBag = DisposeBag()
     private let entry: BackupRouterEntry
     private unowned let stateService: BackupRouterStateServiceAPI
-    
-    // MARK: - Localization
-    
-    private typealias SettingsLocalizationIDs = LocalizationConstants.BackupFundsScreen.Settings
-    private typealias CustodyLocalizationIDs = LocalizationConstants.BackupFundsScreen.CustodySend
-    
+
     // MARK: - Init
-    
+
     init(stateService: BackupRouterStateServiceAPI,
          entry: BackupRouterEntry,
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService
         self.entry = entry
-        switch entry {
-        case .settings:
-            self.startBackupButton = .primary(with: SettingsLocalizationIDs.action, accessibilityId: AccessibilityId.nextButton)
-        case .custody:
-            self.startBackupButton = .primary(with: CustodyLocalizationIDs.action, accessibilityId: AccessibilityId.nextButton)
-        }
-        
-        switch entry {
-        case .settings:
-            subtitle = .init(
-                text: SettingsLocalizationIDs.subtitle,
-                    font: .main(.semibold, 20.0),
-                    color: .textFieldText,
-                    accessibility: .id(AccessibilityId.titleLabel)
-                )
-            primaryDescription = .init(
-                text: SettingsLocalizationIDs.Description.partA,
-                font: .main(.medium, 14.0),
-                color: .textFieldText,
-                accessibility: .id(AccessibilityId.descriptionLabel)
-            )
-            secondaryDescription = .init(
-                text: SettingsLocalizationIDs.Description.partB,
-                font: .main(.medium, 14.0),
-                color: .textFieldText,
-                accessibility: .id(AccessibilityId.secondaryDescriptionLabel)
-            )
-        case .custody:
-            subtitle = .init(
-                    text: CustodyLocalizationIDs.subtitle,
-                    font: .main(.semibold, 20.0),
-                    color: .textFieldText,
-                    accessibility: .id(AccessibilityId.titleLabel)
-                )
-            primaryDescription = .init(
-                text: CustodyLocalizationIDs.description,
-                font: .main(.medium, 14.0),
-                color: .textFieldText,
-                accessibility: .id(AccessibilityId.descriptionLabel)
-            )
-            secondaryDescription = .empty
-        }
-        
-        self.startBackupButton.tapRelay
+        contentReducer = ContentReducer()
+
+        contentReducer.startTapRelay
             .bindAndCatch(weak: self) { (self) in
                 if entry == .custody {
                     self.analyticsRecorder.record(event: AnalyticsEvent.sbBackupWalletCardClicked)
                 }
-                
+
                 self.stateService.nextRelay.accept(())
             }
             .disposed(by: self.disposeBag)
     }
-    
+
     func viewDidLoad() {
         guard entry == .custody else { return }
         analyticsRecorder.record(event: AnalyticsEvent.sbBackupWalletCardShown)
     }
-    
-    func navigationBarLeadingButtonTapped() {
-        stateService.previousRelay.accept(())
+
+}
+
+extension BackupFundsScreenPresenter {
+    final class ContentReducer {
+
+        // MARK: - Properties
+
+        var startTapRelay: PublishRelay<Void> {
+            startBackupButton.tapRelay
+        }
+        let cells: [DetailsScreen.CellType]
+        let buttons: [ButtonViewModel]
+
+        // MARK: - Private Properties
+
+        private let startBackupButton: ButtonViewModel
+
+        // MARK: - Init
+
+        init() {
+            startBackupButton = .primary(with: LocalizedString.action, accessibilityId: AccessibilityId.nextButton)
+            let bodyText = """
+            \(LocalizedString.Body.partA)
+
+            \(LocalizedString.Body.List.title)
+            \(LocalizedString.Body.List.item1)
+            \(LocalizedString.Body.List.item2)
+            \(LocalizedString.Body.List.item3)
+            """
+            let body = DefaultLabelContentPresenter(
+                knownValue: bodyText,
+                descriptors: .init(fontWeight: .medium, contentColor: .descriptionText, fontSize: 14, accessibilityId: AccessibilityId.body)
+            )
+            let bodyWarning = DefaultLabelContentPresenter(
+                knownValue: LocalizedString.Body.partB,
+                descriptors: .init(fontWeight: .semibold, contentColor: .textFieldText, fontSize: 14, accessibilityId: AccessibilityId.bodyWarning)
+            )
+
+            let noticeLabel = LabelContent(
+                text: LocalizedString.Body.notice,
+                font: .main(.semibold, 14),
+                color: .destructiveButton,
+                accessibility: .id(AccessibilityId.notice)
+            )
+            let notice = NoticeViewModel(
+                imageViewContent: .init(imageName: "icon-alert"),
+                imageViewSize: .edge(40),
+                labelContents: noticeLabel,
+                verticalAlignment: .center
+            )
+
+            cells = [
+                .label(body),
+                .label(bodyWarning),
+                .notice(notice)
+            ]
+            buttons = [ startBackupButton ]
+        }
     }
 }

@@ -8,20 +8,15 @@
 
 import PlatformKit
 import PlatformUIKit
-import RxCocoa
-import RxRelay
 import RxSwift
-import UIKit
 
 final class WebLoginScreenViewController: BaseScreenViewController {
 
     @IBOutlet private var tableView: InstructionTableView!
     @IBOutlet private var actionButon: ButtonView!
-    @IBOutlet private var securityAlert: UILabel!
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var qrCodeView: UIView!
-    @IBOutlet private var qrCodeSecurityAlertTop: UILabel!
-    @IBOutlet private var qrCodeSecurityAlertBottom: UILabel!
+    @IBOutlet private var noticeView: NoticeView!
 
     private let disposeBag = DisposeBag()
     private let presenter: WebLoginScreenPresenter
@@ -36,10 +31,7 @@ final class WebLoginScreenViewController: BaseScreenViewController {
         super.viewDidLoad()
         set(barStyle: presenter.barStyle, trailingButtonStyle: .close)
         titleViewStyle = presenter.titleView
-        
-        securityAlert.content = presenter.securityAlert
-        qrCodeSecurityAlertTop.content = presenter.qrCodeSecurityAlertTop
-        qrCodeSecurityAlertBottom.content = presenter.qrCodeSecurityAlertBottom
+        noticeView.viewModel = presenter.noticeViewModel
         actionButon.viewModel = presenter.actionButtonModel
         tableView.viewModels = presenter.instructionViewModels
         presenter
