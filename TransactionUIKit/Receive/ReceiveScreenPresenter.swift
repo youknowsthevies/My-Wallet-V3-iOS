@@ -115,6 +115,7 @@ final class ReceiveScreenPresenter {
             .map { $0.toDisplayString(includeSymbol: true) }
             .asObservable()
             .mapToLabelContentStateInteraction()
+            .catchErrorJustReturn(.loading)
             .bindAndCatch(to: balanceLabelContentPresenting.interactor.stateRelay)
             .disposed(by: disposeBag)
 
