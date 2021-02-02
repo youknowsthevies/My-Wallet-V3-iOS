@@ -136,13 +136,13 @@ settings:
     VALID_ARCHS[sdk=iphonesimulator*]: x86_64
   configs:
     Debug Dev:
-      OTHER_SWIFT_FLAGS: -DDEBUG_MENU
+      OTHER_SWIFT_FLAGS: -DDEBUG_MENU -DSHOW_COMMIT_HASH
     Debug Production:
-      OTHER_SWIFT_FLAGS: -DDEBUG_MENU
+      OTHER_SWIFT_FLAGS: -DDEBUG_MENU -DSHOW_COMMIT_HASH
     Debug Staging:
-      OTHER_SWIFT_FLAGS: -DDEBUG_MENU
+      OTHER_SWIFT_FLAGS: -DDEBUG_MENU -DSHOW_COMMIT_HASH
     Release Staging:
-      OTHER_SWIFT_FLAGS: -DDEBUG_MENU
+      OTHER_SWIFT_FLAGS: -DDEBUG_MENU -DSHOW_COMMIT_HASH
 targetTemplates:
   Framework:
     platform: iOS
@@ -480,6 +480,7 @@ targets:
     settings:
       base:
         GCC_PREFIX_HEADER: Blockchain/Blockchain-Prefix.pch
+        COMMIT_HASH: ${COMMIT_HASH}
         HEADER_SEARCH_PATHS:
         - $(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include
         - $(PROJECT_DIR)/Submodules/SocketRocket

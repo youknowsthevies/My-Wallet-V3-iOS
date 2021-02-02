@@ -9,6 +9,8 @@
 import PlatformKit
 
 struct Constants {
+    
+    static let commitHash = "COMMIT_HASH"
 
     struct Conversions {
         // SATOSHI = 1e8 (100,000,000)

@@ -31,13 +31,21 @@ final class PinScreenPresenter {
     // MARK: - Properties
     
     var trailingButton: Screen.Style.TrailingButton {
+        var hash = ""
+        if let info = Bundle.main.infoDictionary {
+            hash = (info[Constants.commitHash] as? String ?? "")
+        }
+        var title = "v\(Bundle.applicationVersion ?? "")"
+        #if SHOW_COMMIT_HASH
+        title = "\(title) (\(hash))"
+        #endif
         switch flow {
         case .create:
-            return .content(Screen.NavigationBarContent(title: "v\(Bundle.applicationVersion ?? "")"))
+            return .content(Screen.NavigationBarContent(title: title))
         case .authenticate(from: let origin, logoutRouting: _):
             switch origin {
             case .background:
-                return .content(Screen.NavigationBarContent(title: "v\(Bundle.applicationVersion ?? "")"))
+                return .content(Screen.NavigationBarContent(title: title))
             case .foreground:
                 return .none
             }
