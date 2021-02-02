@@ -11,7 +11,9 @@
 import Foundation
 
 public enum LocalizationConstants {
-    
+
+    public static let no = NSLocalizedString("No", comment: "No")
+    public static let yes = NSLocalizedString("Yes", comment: "Yes")
     public static let wallet = NSLocalizedString("Wallet", comment: "Wallet")
     public static let verified = NSLocalizedString("Verified", comment: "")
     public static let unverified = NSLocalizedString("Unverified", comment: "")

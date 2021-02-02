@@ -562,8 +562,8 @@ extension LocalizationConstants.SimpleBuy {
                 )
                 public static let buyOrder = NSLocalizedString("Buy order.", comment: "Buy order.")
             }
-            public static let no = NSLocalizedString("No", comment: "No")
-            public static let yes = NSLocalizedString("Yes", comment: "Yes")
+            public static let no = LocalizationConstants.no
+            public static let yes = LocalizationConstants.yes
         }
     }
 
