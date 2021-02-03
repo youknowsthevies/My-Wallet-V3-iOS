@@ -131,7 +131,7 @@ final class UpdateMobileScreenPresenter {
         
         setupInteractor.state
             .map { !$0.isLoading }
-            .bind(to:
+            .bindAndCatch(to:
                 continueButtonViewModel.isEnabledRelay,
                 updateButtonViewModel.isEnabledRelay
             )
@@ -150,7 +150,7 @@ final class UpdateMobileScreenPresenter {
     Observable.combineLatest(textField.state, setupInteractor.state)
             .compactMap { ($0.0, $0.1.value) }
             .map { $0.0.isValid && $0.1?.is2FAEnabled == false }
-            .bind(to:
+            .bindAndCatch(to:
                 continueButtonViewModel.isEnabledRelay,
                 updateButtonViewModel.isEnabledRelay
             )

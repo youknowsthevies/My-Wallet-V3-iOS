@@ -73,7 +73,7 @@ public final class ActivityScreenViewController: BaseScreenViewController {
                 guard let cell = self.tableView.cellForRow(at: indexPath) as? ActivityItemTableViewCell else { return nil }
                 return cell.presenter.viewModel
             }
-            .bind(to: presenter.longPressRelay)
+            .bindAndCatch(to: presenter.longPressRelay)
             .disposed(by: disposeBag)
         
         tableView.addGestureRecognizer(longPress)

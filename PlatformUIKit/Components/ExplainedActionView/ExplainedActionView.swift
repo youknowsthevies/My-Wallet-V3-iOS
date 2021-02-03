@@ -21,7 +21,7 @@ public final class ExplainedActionView: UIView {
             contentStackView.removeSubviews()
             
             button.rx.tap
-                .bind(to: viewModel.tapRelay)
+                .bindAndCatch(to: viewModel.tapRelay)
                 .disposed(by: disposeBag)
             
             let descriptionLabels: [UILabel] = viewModel.descriptionLabelContents

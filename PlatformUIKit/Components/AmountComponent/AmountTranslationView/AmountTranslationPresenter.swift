@@ -130,7 +130,7 @@ public final class AmountTranslationPresenter {
         swapButtonTapRelay
             .withLatestFrom(interactor.activeInput)
             .map { $0.inverted }
-            .bind(to: interactor.activeInputRelay)
+            .bindAndCatch(to: interactor.activeInputRelay)
             .disposed(by: disposeBag)
         
         Observable
@@ -141,7 +141,7 @@ public final class AmountTranslationPresenter {
             .map(weak: self) { (self, payload) in
                 self.setupButton(by: payload.0, activeInput: payload.1)
             }
-            .bind(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
     

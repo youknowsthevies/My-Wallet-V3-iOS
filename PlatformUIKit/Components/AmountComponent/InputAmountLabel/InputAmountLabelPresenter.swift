@@ -27,7 +27,7 @@ public final class InputAmountLabelPresenter {
         self.interactor = interactor
         
         interactor.scanner.input
-            .bind(to: presenter.inputRelay)
+            .bindAndCatch(to: presenter.inputRelay)
             .disposed(by: disposeBag)
     }
 }

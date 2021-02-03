@@ -56,7 +56,7 @@ class InternalFeatureFlagViewController: UIViewController {
 
         tableView.rx.modelSelected(InternalFeatureItem.self)
             .map(InternalFeatureAction.selected)
-            .bind(to: viewModel.action)
+            .bindAndCatch(to: viewModel.action)
             .disposed(by: disposeBag)
     }
 }

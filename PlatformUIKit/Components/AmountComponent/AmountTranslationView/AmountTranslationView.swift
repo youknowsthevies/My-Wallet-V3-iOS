@@ -179,7 +179,7 @@ public final class AmountTranslationView: UIView {
             .disposed(by: disposeBag)
         
         swapButton.rx.tap
-            .bind(to: presenter.swapButtonTapRelay)
+            .bindAndCatch(to: presenter.swapButtonTapRelay)
             .disposed(by: disposeBag)
 
         presenter.activeAmountInput
