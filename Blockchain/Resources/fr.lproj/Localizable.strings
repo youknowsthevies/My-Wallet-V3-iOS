@@ -1744,3 +1744,18 @@ Les notifications par e-mail sont actuellement activées. La modification de vot
 "You do not have enough ETH to process this transaction." = "Vous ne disposez pas de suffisamment d'ETH pour traiter cette transaction.";
 "You have insufficient funds in this account to process this transaction" = "Vous n'avez pas suffisamment de fonds sur ce compte pour traiter cette transaction";
 "Your %@ is now available in your Wallet." = "Votre %@ est désormais disponible dans votre portefeuille.";
+"1. Write down the 12 word phrase on the next screen in the exact order it appears." = "1. Notez la phrase de 12 mots sur l'écran suivant dans l'ordre exact où elle apparaît.";
+"2. Keep it safe, ideally on a securely stored piece of paper (in other words, not a digital copy)." = "2. Conservez-le en lieu sûr, idéalement sur un morceau de papier stocké en toute sécurité (en d'autres termes, pas une copie numérique).";
+"3. NEVER share your backup phrase with anyone." = "3. Ne partagez JAMAIS votre phrase de sauvegarde avec qui que ce soit.";
+"An invoice is only valid for 15 minutes. Return to the merchant if you would like to resubmit a payment" = "Une facture n'est valable que 15 minutes. Retournez voir le commerçant si vous souhaitez soumettre à nouveau un paiement";
+"Bitpay Invoice Expired" = "Facture Bitpay expirée";
+"Blockchain.com will never ask to view or receive your recovery phrase." = "Blockchain.com ne demandera jamais à voir ou à recevoir votre phrase de récupération.";
+"In crypto, when you hold the private keys, you're in control of the funds in your Private Key Wallet. The downside is that WHOEVER holds your private keys can control your Private Key Wallet." = "En crypto, lorsque vous détenez les clés privées, vous contrôlez les fonds de votre portefeuille de clés privées. L'inconvénient est que QUI détient vos clés privées peut contrôler votre portefeuille de clés privées.";
+"Never share your mobile pairing QR code with anyone. Anyone who can view this QR code can withdraw funds.\nBlockchain.com will never ask to view or receive your mobile pairing QR code." = "Ne partagez jamais votre code QR de couplage mobile avec qui que ce soit. Quiconque peut voir ce code QR peut retirer des fonds.\
+ Blockchain.com ne vous demandera jamais de voir ou de recevoir votre code QR de couplage mobile.";
+"Secret Private Key Recovery" = "Récupération de clé privée secrète";
+"Secret Private Key Recovery Phrase" = "Phrase de récupération de clé privée secrète";
+"So you must:" = "Vous devez donc:";
+"Time remaining %@" = "Temps restant %@";
+"View Recovery Phrase" = "Afficher la phrase de récupération";
+"Warning: If someone has your backup phrase they will have access to your Private Key Wallet and can withdraw funds." = "Avertissement: Si quelqu'un a votre phrase de sauvegarde, il aura accès à votre portefeuille de clés privées et pourra retirer des fonds.";
