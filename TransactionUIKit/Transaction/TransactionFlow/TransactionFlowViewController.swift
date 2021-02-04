@@ -29,7 +29,8 @@ final class TransactionFlowViewController: UINavigationController, TransactionFl
     init() {
         let root = TransactionFlowInitialViewController()
         root.barStyle = .darkContent()
-        super.init(rootViewController: root)
+        super.init(nibName: nil, bundle: nil)
+        viewControllers = [root]
     }
 
     @available(*, unavailable)
