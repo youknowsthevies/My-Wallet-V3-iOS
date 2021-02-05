@@ -24,6 +24,7 @@ import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import RIBs
 import ToolKit
 import TransactionUIKit
 import WalletPayloadKit
@@ -113,8 +114,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Lifecycle Methods
 
     func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions
-                     launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        if #available(iOS 13.0, *) {
+            // Do not disable LeakDetector  
+        } else {
+            LeakDetector.disableLeakDetectorOverride = true
+        }
 
         if ProcessInfo.processInfo.environmentBoolean(for: .eraseWallet) == true {
             // If ProcessInfo environment contains "automation_erase_data": true, erase wallet and settings.
