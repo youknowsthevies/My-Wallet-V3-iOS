@@ -1064,7 +1064,7 @@ targets:
           - release_signing_today_extension
         Release Internal:
           groups:
-          - debug_signing_today_extension
+          - release_signing_today_extension
     sources:
     - TodayExtension
     type: app-extension
