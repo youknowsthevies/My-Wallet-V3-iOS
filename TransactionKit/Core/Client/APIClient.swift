@@ -17,7 +17,8 @@ typealias TransactionKitClientAPI = CustodialQuoteAPI &
                                     AvailablePairsClientAPI &
                                     OrderTransactionLimitsClientAPI &
                                     OrderFetchingClientAPI &
-                                    OrderUpdateClientAPI
+                                    OrderUpdateClientAPI &
+                                    InternalTransferClientAPI
 
 /// TransactionKit network client
 final class APIClient: TransactionKitClientAPI {
@@ -37,6 +38,7 @@ final class APIClient: TransactionKitClientAPI {
         static let fetchOrder = createOrder
         static let updateOrder = createOrder
         static let limits = ["trades", "limits"]
+        static let transfer = [ "payments", "withdrawals" ]
     }
     
     // MARK: - Properties
@@ -103,6 +105,19 @@ final class APIClient: TransactionKitClientAPI {
             authenticated: true
         )!
         return communicator.perform(request: networkRequest)
+    }
+    
+    // MARK: - InternalTransferClientAPI
+    
+    func send(transferRequest: InternalTransferRequest) -> Single<CustodialWithdrawalResponse> {
+        let headers = [HttpHeaderField.blockchainOrigin: HttpHeaderValue.simpleBuy]
+        let request = requestBuilder.post(
+            path: Path.transfer,
+            body: try? transferRequest.encode(),
+            headers: headers,
+            authenticated: true
+        )!
+        return communicator.perform(request: request)
     }
     
     // MARK: - OrderTransactionLimitsClientAPI

@@ -85,7 +85,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     }
     
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        Single.zip(fiatAmoutAndFees(from: pendingTransaction),
+        Single.zip(fiatAmountAndFees(from: pendingTransaction),
                    makeFeeSelectionOption(pendingTransaction: pendingTransaction))
             .map(weak: self) { (self, input) -> [TransactionConfirmation] in
                 let (values, option) = input
@@ -249,7 +249,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     }
     
     private func makeFeeSelectionOption(pendingTransaction: PendingTransaction) -> Single<TransactionConfirmation.Model.FeeSelection> {
-        fiatAmoutAndFees(from: pendingTransaction)
+        fiatAmountAndFees(from: pendingTransaction)
             .map { ($0.fees) }
             .map(weak: self) { (self, fees) -> TransactionConfirmation.Model.FeeSelection in
                 .init(feeState: try self.getFeeState(pendingTransaction: pendingTransaction),
@@ -261,7 +261,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
             }
     }
     
-    private func fiatAmoutAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
+    private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
             Single.just(pendingTransaction.amount.cryptoValue ?? .zero(currency: Token.coin.cryptoCurrency)),

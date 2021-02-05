@@ -38,9 +38,6 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
     // MARK: - Private Properties
     
     private let sectionsRelay = BehaviorRelay<[WalletActionItemsSectionViewModel]>(value: [])
-    private let swapButtonVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
-    private let activityButtonVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
-    private let sendToWalletVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let interactor: WalletActionScreenInteracting
     private let disposeBag = DisposeBag()

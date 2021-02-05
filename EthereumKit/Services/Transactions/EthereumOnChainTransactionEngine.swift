@@ -111,7 +111,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     }
     
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        Single.zip(fiatAmoutAndFees(from: pendingTransaction),
+        Single.zip(fiatAmountAndFees(from: pendingTransaction),
                    makeFeeSelectionOption(pendingTransaction: pendingTransaction))
             .map(weak: self) { (self, input) -> [TransactionConfirmation] in
                 let (values, option) = input
@@ -264,7 +264,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     private func makeFeeSelectionOption(pendingTransaction: PendingTransaction) -> Single<TransactionConfirmation.Model.FeeSelection> {
-        fiatAmoutAndFees(from: pendingTransaction)
+        fiatAmountAndFees(from: pendingTransaction)
             .map(\.fees)
             .map(weak: self) { (self, fees) -> TransactionConfirmation.Model.FeeSelection in
                 .init(feeState: try self.getFeeState(pendingTransaction: pendingTransaction),
@@ -294,7 +294,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             }
     }
     
-    private func fiatAmoutAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
+    private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
             Single.just(pendingTransaction.amount.cryptoValue ?? .etherZero),

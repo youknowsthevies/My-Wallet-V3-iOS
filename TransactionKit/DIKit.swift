@@ -42,7 +42,14 @@ extension DependencyContainer {
             return client as OrderFetchingClientAPI
         }
         
+        factory { () -> InternalTransferClientAPI in
+            let client: TransactionKitClientAPI = DIKit.resolve()
+            return client as InternalTransferClientAPI
+        }
+        
         factory { APIClient() as TransactionKitClientAPI }
+        
+        factory { InternalTransferService() as InternalTransferServiceAPI }
         
         factory { OrderQuoteService() as OrderQuoteServiceAPI }
         
