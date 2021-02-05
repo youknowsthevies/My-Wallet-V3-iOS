@@ -65,6 +65,12 @@ final class TransactionFlowViewController: UINavigationController, TransactionFl
 
     func dismiss() {
         dismiss(animated: true, completion: nil)
+        if #available(iOS 13.0, *) {
+            // Do nothing
+        } else {
+            // NOTE: This is for handling a memory leak. 
+            viewControllers = []
+        }
     }
 }
 
