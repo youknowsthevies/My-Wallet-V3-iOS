@@ -29,7 +29,8 @@ final class TransactionFlowViewController: UINavigationController, TransactionFl
     init() {
         let root = TransactionFlowInitialViewController()
         root.barStyle = .darkContent()
-        super.init(rootViewController: root)
+        super.init(nibName: nil, bundle: nil)
+        viewControllers = [root]
     }
 
     @available(*, unavailable)
@@ -64,6 +65,12 @@ final class TransactionFlowViewController: UINavigationController, TransactionFl
 
     func dismiss() {
         dismiss(animated: true, completion: nil)
+        if #available(iOS 13.0, *) {
+            // Do nothing
+        } else {
+            // NOTE: This is for handling a memory leak. 
+            viewControllers = []
+        }
     }
 }
 
