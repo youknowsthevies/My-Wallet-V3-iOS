@@ -27,6 +27,6 @@ final class SendRouter: SendRouterAPI {
             return
         }
         let viewController = sendProvider.send(account.asset)
-        navigationRouter.present(viewController: viewController)
+        navigationRouter.present(viewController: viewController, using: .modalOverTopMost)
     }
 }

@@ -238,7 +238,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
         }
         router.startFlow(flowDismissed: flowDimissed)
         dismissTopMost { [weak navigationRouter] in
-            navigationRouter?.present(viewController: controller)
+            navigationRouter?.present(viewController: controller, using: .modalOverTopMost)
         }
     }
     
