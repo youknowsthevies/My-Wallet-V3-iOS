@@ -29,11 +29,14 @@ final class ERC20Asset<Token: ERC20Token>: CryptoAsset {
                 ERC20CryptoAccount<Token>(id: wallet.publicKey)
             }
     }
-
+    
     private let walletAccountBridge: EthereumWalletAccountBridgeAPI
-
-    init(walletAccountBridge: EthereumWalletAccountBridgeAPI = resolve()) {
+    private let errorRecorder: ErrorRecording
+    
+    init(walletAccountBridge: EthereumWalletAccountBridgeAPI = resolve(),
+         errorRecorder: ErrorRecording = resolve()) {
         self.walletAccountBridge = walletAccountBridge
+        self.errorRecorder = errorRecorder
     }
 
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {
@@ -75,5 +78,7 @@ final class ERC20Asset<Token: ERC20Token>: CryptoAsset {
             .map { accounts -> AccountGroup in
                 CryptoAccountNonCustodialGroup(asset: Token.assetType, accounts: accounts)
             }
+            .recordErrors(on: errorRecorder)
+            .catchErrorJustReturn(CryptoAccountNonCustodialGroup(asset: asset, accounts: []))
     }
 }

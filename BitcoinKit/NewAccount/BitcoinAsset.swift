@@ -21,10 +21,13 @@ final class BitcoinAsset: CryptoAsset {
     }
 
     private let repository: BitcoinWalletAccountRepository
+    private let errorRecorder: ErrorRecording
 
-    init(repository: BitcoinWalletAccountRepository = resolve()) {
-        self.repository = repository
-    }
+    init(repository: BitcoinWalletAccountRepository = resolve(),
+         errorRecorder: ErrorRecording = resolve()) {
+       self.repository = repository
+       self.errorRecorder = errorRecorder
+   }
 
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {
         switch filter {
@@ -79,5 +82,7 @@ final class BitcoinAsset: CryptoAsset {
             .map { accounts -> AccountGroup in
                 CryptoAccountNonCustodialGroup(asset: asset, accounts: accounts)
             }
+            .recordErrors(on: errorRecorder)
+            .catchErrorJustReturn(CryptoAccountNonCustodialGroup(asset: asset, accounts: []))
     }
 }
