@@ -15,17 +15,22 @@ struct TargetSelectionPageCellItem: IdentifiableType {
 
     enum Presenter {
         case singleAccount(AccountCurrentBalanceCellPresenter)
+        case emptyDestination(SelectionButtonViewModel)
     }
 
     enum Interactor {
         case singleAccount(SingleAccount, AssetBalanceViewInteracting)
+        case emptyDestination(SelectionButtonViewModel)
     }
 
     var identity: AnyHashable {
-        account.id
+        guard let id = account?.id else {
+            return UUID()
+        }
+        return id
     }
 
-    let account: BlockchainAccount
+    let account: BlockchainAccount?
     let presenter: Presenter
 
     init(interactor: Interactor, assetAction: AssetAction) {
@@ -36,9 +41,13 @@ struct TargetSelectionPageCellItem: IdentifiableType {
                 AccountCurrentBalanceCellPresenter(
                     account: account,
                     assetAction: assetAction,
-                    interactor: interactor
+                    interactor: interactor,
+                    separatorVisibility: .hidden
                 )
             )
+        case .emptyDestination(let viewModel):
+            self.account = nil
+            presenter = .emptyDestination(viewModel)
         }
     }
 }

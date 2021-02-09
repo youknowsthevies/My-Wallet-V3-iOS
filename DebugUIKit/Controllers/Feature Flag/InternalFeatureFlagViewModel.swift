@@ -21,6 +21,8 @@ struct InternalFeatureItem: Equatable {
             return "Legacy Swap"
         case .achFlow:
             return "ACH Payment Flow"
+        case .swapP2:
+            return "Swap P2"
         }
     }
 }

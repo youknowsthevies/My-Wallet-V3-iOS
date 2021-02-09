@@ -9,10 +9,10 @@
 import Foundation
 
 public struct ScreenNavigationModel {
-    let leadingButton: Screen.Style.LeadingButton
-    let trailingButton: Screen.Style.TrailingButton
-    let barStyle: Screen.Style.Bar
-    let titleViewStyle: Screen.Style.TitleView
+    public let leadingButton: Screen.Style.LeadingButton
+    public let trailingButton: Screen.Style.TrailingButton
+    public let barStyle: Screen.Style.Bar
+    public let titleViewStyle: Screen.Style.TitleView
     
     public init(leadingButton: Screen.Style.LeadingButton,
                 trailingButton: Screen.Style.TrailingButton,

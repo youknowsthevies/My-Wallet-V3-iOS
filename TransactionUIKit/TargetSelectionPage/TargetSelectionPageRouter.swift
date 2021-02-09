@@ -1,6 +1,6 @@
 //
-//  PairPageRouter.swift
-//  PlatformUIKit
+//  TargetSelectionPageRouter.swift
+//  TransactionUIKit
 //
 //  Created by Dimitrios Chatzieleftheriou on 01/02/2021.
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.

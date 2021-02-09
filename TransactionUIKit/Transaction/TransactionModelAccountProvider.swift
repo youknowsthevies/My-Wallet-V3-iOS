@@ -10,7 +10,13 @@ import PlatformKit
 import PlatformUIKit
 import RxSwift
 
-class TransactionModelAccountProvider: AccountPickerAccountProviding {
+/// Types adopting `SourceAndTargetAccountProviding` should provide access to the source and destination account
+public protocol SourceAndTargetAccountProviding: AccountPickerAccountProviding {
+    var sourceAccount: Single<CryptoAccount?> { get }
+    var destinationAccount: Observable<TransactionTarget?> { get }
+}
+
+class TransactionModelAccountProvider: SourceAndTargetAccountProviding {
 
     private let transactionModel: TransactionModel
 
@@ -19,6 +25,18 @@ class TransactionModelAccountProvider: AccountPickerAccountProviding {
             .map(\.availableTargets)
             .first()
             .map { $0 as? [BlockchainAccount] ?? [] }
+    }
+
+    var sourceAccount: Single<CryptoAccount?> {
+        transactionModel.state
+            .map(\.source)
+            .take(1)
+            .asSingle()
+    }
+
+    var destinationAccount: Observable<TransactionTarget?> {
+        transactionModel.state
+            .map(\.destination)
     }
 
     init(transactionModel: TransactionModel) {

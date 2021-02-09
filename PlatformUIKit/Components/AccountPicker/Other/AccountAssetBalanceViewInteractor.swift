@@ -11,13 +11,13 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteracting {
+public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteracting {
 
-    typealias InteractionState = AssetBalanceViewModel.State.Interaction
+    public typealias InteractionState = AssetBalanceViewModel.State.Interaction
 
     // MARK: - Exposed Properties
 
-    var state: Observable<InteractionState> {
+    public var state: Observable<InteractionState> {
         _ = setup
         return stateRelay.asObservable()
     }
@@ -54,8 +54,8 @@ final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteracting {
             .disposed(by: disposeBag)
     }()
 
-    init(account: SingleAccount,
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
+    public init(account: SingleAccount,
+                fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
         self.account = account
         self.fiatCurrencyService = fiatCurrencyService
     }

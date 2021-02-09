@@ -10,7 +10,7 @@ import PlatformUIKit
 import UIKit
 
 public struct TitledSectionHeaderModel {
-    static let defaultHeight: CGFloat = 64
+    static let defaultHeight: CGFloat = 90
 
     private let title: String
     private let sectionTitle: String

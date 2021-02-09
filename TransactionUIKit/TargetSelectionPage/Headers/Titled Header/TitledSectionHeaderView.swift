@@ -6,10 +6,10 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import PlatformUIKit
 import UIKit
 
 final class TitledSectionHeaderView: UIView {
-    static let defaultHeight: CGFloat = 64
     private let titleLabel: UILabel = UILabel()
     private let sectionTitleLabel: UILabel = UILabel()
     private let separator: UIView = UIView()
@@ -34,20 +34,22 @@ final class TitledSectionHeaderView: UIView {
     private func setup() {
         addSubview(titleLabel)
         addSubview(separator)
+        addSubview(sectionTitleLabel)
 
         // MARK: Labels
 
-        titleLabel.layoutToSuperview(.centerY)
-        titleLabel.layoutToSuperview(axis: .horizontal, offset: 24)
+        titleLabel.layoutToSuperview(.top, offset: Spacing.inner)
+        titleLabel.layoutToSuperview(axis: .horizontal, offset: Spacing.outer)
 
-        sectionTitleLabel.layoutToSuperview(.leading, offset: 24)
+        sectionTitleLabel.layout(edge: .top, to: .bottom, of: titleLabel, offset: Spacing.inner)
+        sectionTitleLabel.layoutToSuperview(.leading, offset: Spacing.outer)
         sectionTitleLabel.layoutToSuperview(.bottom, offset: -4)
 
         // MARK: Separator
 
         separator.backgroundColor = .lightBorder
         separator.layout(dimension: .height, to: 1)
-        separator.layout(edge: .leading, to: .trailing, of: sectionTitleLabel, offset: 8)
+        separator.layout(edge: .leading, to: .trailing, of: sectionTitleLabel, offset: Spacing.standard)
         separator.layoutToSuperview(.trailing)
         separator.layout(edge: .bottom, to: .lastBaseline, of: sectionTitleLabel)
 

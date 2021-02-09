@@ -8,6 +8,7 @@
 
 import Localization
 import PlatformKit
+import ToolKit
 
 final class TransactionFlowDescriptor {
 
@@ -100,6 +101,22 @@ final class TransactionFlowDescriptor {
                  .viewActivity,
                  .withdraw:
                 return ""
+            }
+        }
+    }
+
+    enum TargetSelection {
+        static func navigationTitle(action: AssetAction) -> String {
+            switch action {
+            case .swap:
+                return LocalizedString.newSwap
+            case .deposit,
+                 .receive,
+                 .sell,
+                 .send,
+                 .viewActivity,
+                 .withdraw:
+                unimplemented()
             }
         }
     }

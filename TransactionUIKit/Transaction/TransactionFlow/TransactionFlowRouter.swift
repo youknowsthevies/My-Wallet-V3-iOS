@@ -16,7 +16,8 @@ protocol TransactionFlowInteractable: Interactable,
                                       EnterAmountPageListener,
                                       ConfirmationPageListener,
                                       AccountPickerListener,
-                                      PendingTransactionPageListener {
+                                      PendingTransactionPageListener,
+                                      TargetSelectionPageListener {
     
     var router: TransactionFlowRouting? { get set }
     var listener: TransactionFlowListener? { get set }
@@ -107,6 +108,22 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
                 title: TransactionFlowDescriptor.AccountPicker.destinationTitle(action: action)
             ),
             headerModel: .simple(header)
+        )
+        let viewControllable = router.viewControllable
+        attachChild(router)
+        viewController.push(viewController: viewControllable)
+    }
+
+    func routeToTargetSelectionPicker(transactionModel: TransactionModel, action: AssetAction) {
+        let builder = TargetSelectionPageBuilder(
+            accountProvider: TransactionModelAccountProvider(transactionModel: transactionModel),
+            action: action
+        )
+        let router = builder.build(
+            listener: .listener(interactor),
+            navigationModel: ScreenNavigationModel.TargetSelection.navigation(
+                title: TransactionFlowDescriptor.TargetSelection.navigationTitle(action: action)
+            )
         )
         let viewControllable = router.viewControllable
         attachChild(router)

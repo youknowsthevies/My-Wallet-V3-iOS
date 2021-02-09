@@ -95,6 +95,10 @@ public extension LocalizationConstants.Transaction {
         "Available",
         comment: "Available"
     )
+    static let newSwap = NSLocalizedString(
+        "New Swap",
+        comment: "New Swap"
+    )
 }
 
 public extension LocalizationConstants.Transaction.Swap {
@@ -134,6 +138,10 @@ public extension LocalizationConstants.Transaction.Swap {
     static let deposit = NSLocalizedString(
         "Confirm Transfer",
         comment: "Confirm Transfer"
+    )
+    static let newSwapDisclaimer = NSLocalizedString(
+        "Confirm the wallet you want to Swap from and choose the wallet you want to Receive into.",
+        comment: "Confirm the wallet you want to Swap from and choose the wallet you want to Receive into."
     )
 }
 

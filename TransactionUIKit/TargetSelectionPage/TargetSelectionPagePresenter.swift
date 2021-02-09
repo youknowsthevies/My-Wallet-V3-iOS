@@ -1,19 +1,19 @@
 //
 //  TargetSelectionPagePresenter.swift
-//  PlatformUIKit
+//  TransactionUIKit
 //
 //  Created by Dimitrios Chatzieleftheriou on 02/02/2021.
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RIBs
 import RxCocoa
 
 protocol TargetSelectionPagePresentable: Presentable {
-    // TODO: Adds correct input/output state
-    func connect(state: Driver<Void>) -> Driver<Void>
+    func connect(state: Driver<TargetSelectionPageInteractor.State>) -> Driver<TargetSelectionPageInteractor.Effects>
 }
 
 final class TargetSelectionPagePresenter: Presenter<TargetSelectionPageViewControllable>, TargetSelectionPagePresentable {
@@ -21,31 +21,29 @@ final class TargetSelectionPagePresenter: Presenter<TargetSelectionPageViewContr
     // MARK: - Private Properties
 
     private let action: AssetAction
-    private let navigationModel: ScreenNavigationModel
-    private let headerModel: TargetSelectionHeaderType
+    private let selectionPageReducer: TargetSelectionPageReducerAPI
 
     // MARK: - Init
 
     init(viewController: TargetSelectionPageViewControllable,
          action: AssetAction,
-         navigationModel: ScreenNavigationModel,
-         headerModel: TargetSelectionHeaderType) {
+         selectionPageReducer: TargetSelectionPageReducerAPI) {
         self.action = action
-        self.navigationModel = navigationModel
-        self.headerModel = headerModel
+        self.selectionPageReducer = selectionPageReducer
         super.init(viewController: viewController)
     }
 
     // MARK: - Methods
 
-    func connect(state: Driver<Void>) -> Driver<Void> {
-        return .empty()
+    func connect(state: Driver<TargetSelectionPageInteractor.State>) -> Driver<TargetSelectionPageInteractor.Effects> {
+        let presentableState = selectionPageReducer.presentableState(for: state)
+        return viewController.connect(state: presentableState)
     }
 }
 
 extension TargetSelectionPagePresenter {
     struct State {
-        var headerModel: TargetSelectionHeaderType
+        var actionButtonModel: ButtonViewModel
         var navigationModel: ScreenNavigationModel
         var sections: [TargetSelectionPageSectionModel]
     }

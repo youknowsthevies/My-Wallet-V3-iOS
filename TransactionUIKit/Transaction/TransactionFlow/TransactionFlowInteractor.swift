@@ -19,6 +19,7 @@ protocol TransactionFlowRouting: Routing {
     func closeFlow()
     func didTapBack()
     func routeToConfirmation(transactionModel: TransactionModel)
+    func routeToTargetSelectionPicker(transactionModel: TransactionModel, action: AssetAction)
     func routeToDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction)
     func routeToInProgress(transactionModel: TransactionModel)
     func routeToPriceInput(source: BlockchainAccount, transactionModel: TransactionModel, action: AssetAction)
@@ -33,7 +34,8 @@ protocol TransactionFlowListener: AnyObject {
 final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPresentable>,
                                        TransactionFlowInteractable,
                                        AccountPickerListener,
-                                       TransactionFlowPresentableListener {
+                                       TransactionFlowPresentableListener,
+                                       TargetSelectionPageListener {
 
     weak var router: TransactionFlowRouting?
     weak var listener: TransactionFlowListener?
@@ -42,17 +44,20 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     private let sourceAccount: CryptoAccount?
     private let target: TransactionTarget?
     private let analyticsHook: TransactionAnalyticsHook
+    private let internalFeatureService: InternalFeatureFlagServiceAPI
 
     init(transactionModel: TransactionModel,
          action: AssetAction,
          sourceAccount: CryptoAccount?,
          target: TransactionTarget?,
          presenter: TransactionFlowPresentable,
+         internalFeatureService: InternalFeatureFlagServiceAPI = resolve(),
          analyticsHook: TransactionAnalyticsHook = resolve()) {
         self.transactionModel = transactionModel
         self.action = action
         self.sourceAccount = sourceAccount
         self.target = target
+        self.internalFeatureService = internalFeatureService
         self.analyticsHook = analyticsHook
         super.init(presenter: presenter)
         presenter.listener = self
@@ -211,6 +216,10 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .enterPassword:
             unimplemented()
         case .selectTarget:
+            guard !internalFeatureService.isEnabled(.swapP2) else {
+                router?.routeToTargetSelectionPicker(transactionModel: transactionModel, action: action)
+                return
+            }
             router?.routeToDestinationAccountPicker(transactionModel: transactionModel, action: action)
         case .confirmDetail:
             router?.routeToConfirmation(transactionModel: transactionModel)
@@ -219,7 +228,11 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .selectSource:
             router?.routeToSourceAccountPicker(action: action)
         case .enterAddress:
-            unimplemented()
+            if internalFeatureService.isEnabled(.swapP2) {
+                router?.routeToDestinationAccountPicker(transactionModel: transactionModel, action: action)
+            } else {
+                unimplemented()
+            }
         case .closed:
             transactionModel.destroy()
         }

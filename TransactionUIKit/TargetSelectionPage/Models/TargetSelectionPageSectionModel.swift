@@ -10,6 +10,7 @@ import RxDataSources
 
 enum TargetSelectionPageSectionModel {
     case source(header: TargetSelectionHeaderBuilder, items: [Item])
+    case destination(header: TargetSelectionHeaderBuilder, items: [Item])
 }
 
 extension TargetSelectionPageSectionModel: SectionModelType {
@@ -19,12 +20,16 @@ extension TargetSelectionPageSectionModel: SectionModelType {
         switch self {
         case .source(_, let items):
             return items
+        case .destination(_, let items):
+            return items
         }
     }
 
     var header: TargetSelectionHeaderBuilder {
         switch self {
         case .source(let header, _):
+            return header
+        case .destination(let header, _):
             return header
         }
     }
@@ -33,6 +38,8 @@ extension TargetSelectionPageSectionModel: SectionModelType {
         switch original {
         case .source(let header, _):
             self = .source(header: header, items: items)
+        case .destination(let header, _):
+            self = .destination(header: header, items: items)
         }
     }
 }
