@@ -76,7 +76,8 @@ final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewContr
     }
     
     func routeToSwap(with pair: SwapTrendingPair?) {
-        precondition(transactionFlowRouting == nil)
+        dismissTransactionFlow()
+        precondition(transactionFlowRouting == nil, "There should be no TransactionFlowRouting child here.")
         let builder = TransactionFlowBuilder()
         let router = builder.build(
             withListener: interactor,
