@@ -16,7 +16,7 @@ final class StellarAsset: CryptoAsset {
     let asset: CryptoCurrency = .stellar
 
     var defaultAccount: Single<SingleAccount> {
-        self.accountRepository
+        accountRepository
             .initializeMetadataMaybe()
             .asObservable()
             .first()
@@ -30,11 +30,14 @@ final class StellarAsset: CryptoAsset {
                 StellarCryptoAccount(id: account.publicKey, label: account.label)
             }
     }
-
+    
     private let accountRepository: StellarWalletAccountRepository
+    private let errorRecorder: ErrorRecording
 
-    init(accountRepository: StellarWalletAccountRepository = resolve()) {
+    init(accountRepository: StellarWalletAccountRepository = resolve(),
+         errorRecorder: ErrorRecording = resolve()) {
         self.accountRepository = accountRepository
+        self.errorRecorder = errorRecorder
     }
 
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {
@@ -76,5 +79,7 @@ final class StellarAsset: CryptoAsset {
             .map { account -> AccountGroup in
                 CryptoAccountNonCustodialGroup(asset: asset, accounts: [account])
             }
+            .recordErrors(on: errorRecorder)
+            .catchErrorJustReturn(CryptoAccountNonCustodialGroup(asset: asset, accounts: []))
     }
 }
