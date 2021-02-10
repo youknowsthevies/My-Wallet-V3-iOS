@@ -50,9 +50,61 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
     weak var router: SwapLandingRouting?
     weak var listener: SwapLandingListener?
     
+    // MARK: - Private properties
+    
+    private var initialState: Observable<State> {
+        let custodialAccounts = accountProviding
+            .accounts(accountType: .custodial(.trading))
+            .map { accounts in
+                accounts.filter { $0 is CryptoAccount }
+            }
+            .map { $0.map { $0 as! CryptoAccount } }
+            .catchErrorJustReturn([])
+        
+        let nonCustodialAccounts = accountProviding
+            .accounts(accountType: .nonCustodial)
+            .map { accounts in
+                accounts.filter { $0 is CryptoAccount }
+            }
+            .map { $0.map { $0 as! CryptoAccount } }
+            .catchErrorJustReturn([])
+        
+        return eligibilityService.isEligible
+            .flatMap { $0 ? custodialAccounts : nonCustodialAccounts }
+            .catchError { _ in nonCustodialAccounts }
+            .map { accounts -> [SwapTrendingPairViewModel] in
+                var pairs: [(CryptoCurrency, CryptoCurrency)] = [
+                    (.bitcoin, .ethereum),
+                    (.bitcoin, .pax),
+                    (.bitcoin, .stellar)
+                ]
+                switch DevicePresenter.type {
+                case .superCompact, .compact:
+                    break
+                case .regular:
+                    pairs.append((.bitcoin, .bitcoinCash))
+                case .max:
+                    pairs.append((.bitcoin, .bitcoinCash))
+                    pairs.append((.ethereum, .pax))
+                }
+                return pairs
+                    .compactMap { pair -> SwapTrendingPair? in
+                        accounts.trendingPair(source: pair.0, destination: pair.1)
+                    }
+                    .map { trendingPair -> SwapTrendingPairViewModel in
+                        SwapTrendingPairViewModel(trendingPair: trendingPair)
+                    }
+            }
+            .map { .init(pairViewModels: $0) }
+            .asObservable()
+            .share(replay: 1, scope: .whileConnected)
+    }
+    
     private let accountProviding: BlockchainAccountProviding
     private let eligibilityService: EligibilityServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
+    
+    // MARK: - Init
     
     init(presenter: SwapLandingPresentable,
          accountProviding: BlockchainAccountProviding = resolve(),
@@ -64,6 +116,8 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
         super.init(presenter: presenter)
         presenter.listener = self
     }
+    
+    // MARK: - Internal methods
     
     override func didBecomeActive() {
         super.didBecomeActive()
@@ -114,53 +168,6 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
         case .none:
             break
         }
-    }
-    
-    private var initialState: Observable<State> {
-        let custodialAccounts = accountProviding
-            .accounts(accountType: .custodial(.trading))
-            .map { accounts in
-                accounts.filter { $0 is CryptoAccount }
-            }
-            .map { $0.map { $0 as! CryptoAccount } }
-            .asObservable()
-        
-        let nonCustodialAccounts = accountProviding
-            .accounts(accountType: .nonCustodial)
-            .map { accounts in
-                accounts.filter { $0 is CryptoAccount }
-            }
-            .map { $0.map { $0 as! CryptoAccount } }
-            .asObservable()
-        
-        return eligibilityService
-            .fetch()
-            .asObservable()
-            .flatMap { $0 ? custodialAccounts : nonCustodialAccounts }
-            .map { accounts -> [SwapTrendingPairViewModel] in
-                var pairs: [(CryptoCurrency, CryptoCurrency)] = [
-                    (.bitcoin, .ethereum),
-                    (.bitcoin, .pax),
-                    (.bitcoin, .stellar)
-                ]
-                switch DevicePresenter.type {
-                case .superCompact, .compact:
-                    break
-                case .regular:
-                    pairs.append((.bitcoin, .bitcoinCash))
-                case .max:
-                    pairs.append((.bitcoin, .bitcoinCash))
-                    pairs.append((.ethereum, .pax))
-                }
-                return pairs
-                    .compactMap { pair -> SwapTrendingPair? in
-                        accounts.trendingPair(source: pair.0, destination: pair.1)
-                    }
-                    .map { trendingPair -> SwapTrendingPairViewModel in
-                        SwapTrendingPairViewModel(trendingPair: trendingPair)
-                    }
-            }
-            .map { .init(pairViewModels: $0) }
     }
 }
 
