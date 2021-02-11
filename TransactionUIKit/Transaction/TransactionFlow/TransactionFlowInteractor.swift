@@ -17,6 +17,7 @@ import ToolKit
 protocol TransactionFlowRouting: Routing {
     func pop()
     func closeFlow()
+    func showFailure()
     func didTapBack()
     func routeToConfirmation(transactionModel: TransactionModel)
     func routeToTargetSelectionPicker(transactionModel: TransactionModel, action: AssetAction)
@@ -186,6 +187,10 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
     func continueToKYCTiersScreen() {
         listener?.presentKYCTiersScreen()
+    }
+
+    func showGenericFailure() {
+        router?.showFailure()
     }
 
     private var initialStep: Bool = true

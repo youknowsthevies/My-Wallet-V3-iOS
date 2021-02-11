@@ -23,6 +23,7 @@ protocol EnterAmountPageListener: AnyObject {
     func enterAmountDidTapBack()
     func closeFlow()
     func continueToKYCTiersScreen()
+    func showGenericFailure()
 }
 
 protocol EnterAmountPagePresentable: Presentable {
@@ -70,6 +71,13 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         let transactionState: Observable<TransactionState> = transactionModel
             .state
             .share(replay: 1, scope: .whileConnected)
+        
+        amountInteractor
+            .effect
+            .subscribe(onNext: { [weak self] effect  in
+                self?.handleAmountTranslation(effect: effect)
+            })
+            .disposeOnDeactivate(interactor: self)
 
         amountInteractor
             .amount
@@ -180,6 +188,15 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             listener?.enterAmountDidTapBack()
         case .close:
             listener?.closeFlow()
+        case .none:
+            break
+        }
+    }
+
+    private func handleAmountTranslation(effect: AmountTranslationInteractor.Effect) {
+        switch effect {
+        case .failure:
+            listener?.showGenericFailure()
         case .none:
             break
         }

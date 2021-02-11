@@ -48,6 +48,17 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        interactor.effect
+            .subscribe(onNext: { [weak self] effect in
+                switch effect {
+                case .failure:
+                    self?.router.showFailureAlert()
+                case .none:
+                    break
+                }
+            })
+            .disposed(by: disposeBag)
+        
         topSelectionButtonViewModel.tap
             .emit(weak: self) { (self) in
                 self.router.showCryptoSelectionScreen()
