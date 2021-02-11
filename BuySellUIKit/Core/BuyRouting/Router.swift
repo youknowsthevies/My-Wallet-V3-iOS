@@ -21,6 +21,7 @@ public protocol RouterAPI: class {
     func next(to state: StateService.State)
     func previous(from state: StateService.State)
     func showCryptoSelectionScreen()
+    func showFailureAlert()
 }
 
 /// This object is used as a router for Simple-Buy flow
@@ -40,6 +41,7 @@ public final class Router: RouterAPI {
     private let cryptoSelectionService: CryptoCurrencySelectionServiceAPI
     private let navigationRouter: NavigationRouterAPI
     private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
+    private let alertViewPresenter: AlertViewPresenterAPI
     
     private var cardRouter: CardRouter!
     
@@ -63,12 +65,14 @@ public final class Router: RouterAPI {
                 settingsService: CompleteSettingsServiceAPI = resolve(),
                 supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
                 internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
+                alertViewPresenter: AlertViewPresenterAPI = resolve(),
                 builder: Buildable,
                 kycRouter: KYCRouterAPI,
                 currency: CryptoCurrency) {
         self.navigationRouter = navigationRouter
         self.supportedPairsInteractor = supportedPairsInteractor
         self.settingsService = settingsService
+        self.alertViewPresenter = alertViewPresenter
         self.stateService = builder.stateService
         self.kycRouter = kycRouter
         self.builder = builder
@@ -93,6 +97,12 @@ public final class Router: RouterAPI {
         let viewController = SelectionScreenViewController(presenter: presenter)
         let navigationController = UINavigationController(rootViewController: viewController)
         navigationRouter.navigationControllerAPI?.present(navigationController, animated: true, completion: nil)
+    }
+
+    public func showFailureAlert() {
+        alertViewPresenter.error(in: navigationRouter.topMostViewControllerProvider.topMostViewController) { [weak self] in
+            self?.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: nil)
+        }
     }
             
     /// Should be called once

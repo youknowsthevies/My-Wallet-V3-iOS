@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -34,11 +35,15 @@ public protocol TransactionFlowViewControllable: ViewControllable {
 }
 
 final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, TransactionFlowViewControllable>, TransactionFlowRouting {
+
+    private let alertViewPresenter: AlertViewPresenterAPI
     
-    override init(
+    init(
         interactor: TransactionFlowInteractable,
-        viewController: TransactionFlowViewControllable
+        viewController: TransactionFlowViewControllable,
+        alertViewPresenter: AlertViewPresenterAPI = resolve()
     ) {
+        self.alertViewPresenter = alertViewPresenter
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }
@@ -62,6 +67,12 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
     func closeFlow() {
         viewController.dismiss()
         interactor.listener?.dismissTransactionFlow()
+    }
+
+    func showFailure() {
+        alertViewPresenter.error(in: viewController.uiviewController) { [weak self] in
+            self?.closeFlow()
+        }
     }
 
     func pop() {

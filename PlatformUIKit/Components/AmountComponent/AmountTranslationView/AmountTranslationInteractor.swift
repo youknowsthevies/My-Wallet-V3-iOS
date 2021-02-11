@@ -52,6 +52,11 @@ public final class AmountTranslationInteractor {
         case maxLimitExceeded(MoneyValue)
         case minLimitExceeded(MoneyValue)
     }
+
+    public enum Effect {
+        case failure(error: Error)
+        case none
+    }
         
     // MARK: - Properties
     
@@ -79,6 +84,12 @@ public final class AmountTranslationInteractor {
     public let stateRelay = BehaviorRelay<State>(value: .empty)
     public var state: Observable<State> {
         stateRelay.asObservable()
+    }
+
+    public var effect: Observable<Effect> {
+        effectRelay
+            .asObservable()
+            .distinctUntilChanged()
     }
     
     /// The active input relay
@@ -130,6 +141,9 @@ public final class AmountTranslationInteractor {
     
     /// The amount as `CryptoValue`
     private let cryptoAmountRelay: BehaviorRelay<MoneyValue>
+
+    /// A relay that streams an effect, such as a failure
+    private let effectRelay = BehaviorRelay<Effect>(value: .none)
     
     // MARK: - Injected
     
@@ -165,13 +179,22 @@ public final class AmountTranslationInteractor {
         /// modify the fiat / crypto value
         
         // Fiat changes affect crypto
-
-        let fiatCurrency = fiatCurrencyService.fiatCurrencyObservable
+        let failibleFiatCurrency = fiatCurrencyService.fiatCurrencyObservable
             .map { $0 as Currency }
+            
+        let failibleCryptoCurrency = cryptoCurrencyService.cryptoCurrencyObservable
+            .map { $0 as Currency }
+        
+        let fiatCurrency = failibleFiatCurrency
+            .catchError { _ -> Observable<Currency> in
+                .empty()
+            }
             .share(replay: 1, scope: .whileConnected)
-
-        let cryptoCurrency = cryptoCurrencyService.cryptoCurrencyObservable
-            .map { $0 as Currency }
+            
+        let cryptoCurrency = failibleCryptoCurrency
+            .catchError { _ -> Observable<Currency> in
+                .empty()
+            }
             .share(replay: 1, scope: .whileConnected)
         
         fiatCurrency
@@ -184,7 +207,13 @@ public final class AmountTranslationInteractor {
 
         // We need to keep any currency selection changes up to date with the input values
         // and eventually update the `cryptoAmountRelay` and `fiatAmountRelay`
-        let currenciesMerged = Observable.merge(fiatCurrency, cryptoCurrency)
+        let currenciesMerged = Observable.merge(failibleFiatCurrency, failibleCryptoCurrency)
+            .do(onError: { [weak self] error in
+                self?.handleCurrency(error: error)
+            })
+            .catchError { _ in
+                Observable<Currency>.empty()
+            }
             .share(replay: 1, scope: .whileConnected)
 
         // Make fiat amount zero after any currency change
@@ -260,7 +289,6 @@ public final class AmountTranslationInteractor {
                     self.fiatAmountRelay.accept(value.base)
                     self.cryptoAmountRelay.accept(value.quote)
                 }
-
             }
             .disposed(by: disposeBag)
  
@@ -431,6 +459,13 @@ public final class AmountTranslationInteractor {
                     )
             }
     }
+
+    /// Provides a mechanism to handle an error as produced by an observable stream
+    ///
+    /// - Parameter error: An `Error` object describing the issue
+    private func handleCurrency(error: Error) {
+        effectRelay.accept(.failure(error: error))
+    }
 }
 
 extension AmountTranslationInteractor.State {
@@ -444,6 +479,19 @@ extension AmountTranslationInteractor.State {
              .warning,
              .error:
             return .invalid
+        }
+    }
+}
+
+extension AmountTranslationInteractor.Effect: Equatable {
+    public static func == (lhs: AmountTranslationInteractor.Effect, rhs: AmountTranslationInteractor.Effect) -> Bool {
+        switch (lhs, rhs) {
+        case (.failure, .failure):
+            return true
+        case (.none, .none):
+            return true
+        default:
+            return false
         }
     }
 }
