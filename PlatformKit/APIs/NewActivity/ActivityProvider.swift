@@ -88,16 +88,20 @@ public final class ActivityProvider: ActivityProviding {
             bitcoins,
             erc20
         )
-        .map {
-            ActivityItemEventsLoadingStates(
+        .map { values in
+            let ethereum = values.0
+            let stellar = values.1
+            let bitcoins = (btc: values.2.0, bch: values.2.0)
+            let erc20 = (wDGLD: values.3.0, pax: values.3.1, algo: values.3.2)
+            return ActivityItemEventsLoadingStates(
                 statePerCurrency: [
-                    .crypto(.ethereum): $0.0,
-                    .crypto(.pax): $0.3.1,
-                    .crypto(.stellar): $0.1,
-                    .crypto(.bitcoin): $0.3.0,
-                    .crypto(.bitcoinCash): $0.3.1,
-                    .crypto(.wDGLD): $0.3.0,
-                    .crypto(.algorand): $0.3.1
+                    .crypto(.ethereum): ethereum,
+                    .crypto(.stellar): stellar,
+                    .crypto(.bitcoin): bitcoins.btc,
+                    .crypto(.bitcoinCash): bitcoins.bch,
+                    .crypto(.wDGLD): erc20.wDGLD,
+                    .crypto(.pax): erc20.pax,
+                    .crypto(.algorand): erc20.algo
                 ]
             )
         }
