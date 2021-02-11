@@ -20,7 +20,11 @@ struct SwapTrendingPair {
 }
 
 protocol SwapRootRouting: ViewableRouting {
+    /// Bootstrap determines if the user
+    /// should see KYC or Swap.
     func routeToSwapBootstrap()
+    
+    /// Landing shows trending pairs
     func routeToSwapLanding()
     func routeToSwapTiers(model: KYCTiersPageModel, present: Bool)
     func routeToKYC()

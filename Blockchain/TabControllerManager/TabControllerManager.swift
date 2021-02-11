@@ -29,8 +29,10 @@ final class TabControllerManager: NSObject {
     private var sendNavigationViewController: UINavigationController!
     private var receiveNavigationViewController: UINavigationController!
     private var buySellViewController: UINavigationController!
+    private var sendViewController: UIViewController!
     private var swapViewController: UIViewController!
     private var swapRouter: ViewableRouting!
+    private var sendRouter: ViewableRouting!
 
     private var analyticsEventRecorder: AnalyticsEventRecording
     private let sendControllerManager: SendControllerManager
@@ -107,27 +109,63 @@ final class TabControllerManager: NSObject {
             index: Constants.Navigation.tabSwap
         )
     }
+    
+    private func loadSend() {
+        guard self.sendViewController == nil else { return }
+        guard sendRouter == nil else { return }
+        
+        func populateNewSend() {
+            let router = SendRootBuilder().build()
+            sendViewController = router.viewControllable.uiviewController
+            sendRouter = router
+            router.interactable.activate()
+            router.load()
+        }
+        func populateLegacySend() {
+            sendViewController = sendReceiveCoordinator.builder.send()
+        }
+        
+        if internalFeatureFlag.isEnabled(.sendP2) {
+            populateNewSend()
+        } else {
+            // TODO: Feature Flag Send P2 in Firebase
+            populateLegacySend()
+        }
+    }
 
     func showSend(cryptoCurrency: CryptoCurrency) {
-        UIView.animate(
-            withDuration: 0.3,
-            animations: { [weak self] in
-                self?.showSend()
-            },
-            completion: { [weak self] _ in
-                self?.sendControllerManager.showSend(cryptoCurrency)
-            }
-        )
+        // TODO: Handle deeplinking to a preselected source account.
+        loadSend()
+        if internalFeatureFlag.isEnabled(.sendP2) {
+            tabViewController.setActiveViewController(
+                sendViewController,
+                animated: true,
+                index: Constants.Navigation.tabSend
+            )
+        } else {
+            tabViewController.setActiveViewController(
+                UINavigationController(rootViewController: sendViewController),
+                animated: true,
+                index: Constants.Navigation.tabSend
+            )
+        }
     }
 
     func showSend() {
-        if sendNavigationViewController == nil {
-            let send = sendReceiveCoordinator.builder.send()
-            sendNavigationViewController = UINavigationController(rootViewController: send)
+        loadSend()
+        if internalFeatureFlag.isEnabled(.sendP2) {
+            tabViewController.setActiveViewController(
+                sendViewController,
+                animated: true,
+                index: Constants.Navigation.tabSend
+            )
+        } else {
+            tabViewController.setActiveViewController(
+                UINavigationController(rootViewController: sendViewController),
+                animated: true,
+                index: Constants.Navigation.tabSend
+            )
         }
-        tabViewController.setActiveViewController(sendNavigationViewController,
-                                                  animated: true,
-                                                  index: Constants.Navigation.tabSend)
     }
 
     func showReceive() {

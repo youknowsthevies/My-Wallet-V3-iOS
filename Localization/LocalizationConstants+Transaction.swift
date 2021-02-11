@@ -99,6 +99,10 @@ public extension LocalizationConstants.Transaction {
         "New Swap",
         comment: "New Swap"
     )
+    static let send = NSLocalizedString(
+        "Send",
+        comment: "Send"
+    )
 }
 
 public extension LocalizationConstants.Transaction.Swap {

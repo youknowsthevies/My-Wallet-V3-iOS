@@ -110,10 +110,11 @@ final class TransactionFlowDescriptor {
             switch action {
             case .swap:
                 return LocalizedString.newSwap
+            case .send:
+                return LocalizedString.send
             case .deposit,
                  .receive,
                  .sell,
-                 .send,
                  .viewActivity,
                  .withdraw:
                 unimplemented()
