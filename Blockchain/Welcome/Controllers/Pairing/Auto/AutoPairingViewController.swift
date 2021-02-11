@@ -16,6 +16,15 @@ final class AutoPairingViewController: BaseScreenViewController {
 
     // MARK: - Properties
     
+    private var viewFrame: CGRect {
+        guard let window = UIApplication.shared.keyWindow else {
+            fatalError("Trying to get key window before it was set!")
+        }
+        let width = window.bounds.size.width
+        let height = window.bounds.size.height - Constants.Measurements.DefaultHeaderHeight
+        return CGRect(x: 0, y: 0, width: width, height: height)
+    }
+    
     private let presenter: AutoPairingScreenPresenter
     private var viewFinderViewController: UIViewController!
     
@@ -59,7 +68,7 @@ final class AutoPairingViewController: BaseScreenViewController {
     
     fileprivate func start() {
         viewFinderViewController = presenter.scannerBuilder.build()!
-        viewFinderViewController.view.frame = UIScreen.main.bounds
+        viewFinderViewController.view.frame = viewFrame
         add(child: viewFinderViewController)
     }
 }

@@ -17,7 +17,7 @@ enum QRCodePresentationType {
     case child
 }
 
-final class QRCodeScannerViewController: UIViewController {
+final class QRCodeScannerViewController: UIViewController, UINavigationControllerDelegate {
     
     private var viewFrame: CGRect {
         guard let window = UIApplication.shared.keyWindow else {
@@ -66,6 +66,9 @@ final class QRCodeScannerViewController: UIViewController {
         self.viewModel.scanComplete = { [weak self] result in
             self?.handleScanComplete(with: result)
         }
+        self.viewModel.overlayViewModel.cameraButtonTapped = { [weak self] in
+            self?.showImagePicker()
+        }
     }
     
     @available(*, unavailable)
@@ -75,7 +78,7 @@ final class QRCodeScannerViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .primary
+        view.backgroundColor = UIColor.primary.withAlphaComponent(0.9)
         switch presentationType {
         case .modal:
             title = viewModel.headerText
@@ -97,7 +100,7 @@ final class QRCodeScannerViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        viewModel.startReadingQRCode()
+        viewModel.startReadingQRCode(from: scannerView)
         scannerView?.startReadingQRCode()
     }
     
@@ -154,5 +157,23 @@ final class QRCodeScannerViewController: UIViewController {
                 self.scannerView?.removePreviewLayer()
             }
         )
+    }
+    
+    private func showImagePicker() {
+        let pickerController = UIImagePickerController()
+        pickerController.delegate = self
+        pickerController.mediaTypes = ["public.image"]
+        pickerController.sourceType = .photoLibrary
+        present(pickerController, animated: true, completion: nil)
+    }
+}
+
+extension QRCodeScannerViewController: UIImagePickerControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController,
+                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+        guard let pickedImage = info[.originalImage] as? UIImage else { return }
+        picker.dismiss(animated: true) { [weak self] in
+            self?.viewModel.handleSelectedQRImage(pickedImage)
+        }
     }
 }

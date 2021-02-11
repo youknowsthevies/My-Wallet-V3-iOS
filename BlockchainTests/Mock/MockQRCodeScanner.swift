@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ToolKit
 
 @testable import Blockchain
 import PlatformKit
@@ -34,16 +35,27 @@ class MockParser: QRCodeScannerParsing {
     }
 }
 
+class MockQRScannableArea: QRCodeScannableArea {
+    var area: CGRect {
+        .zero
+    }
+}
+
 class MockScanner: QRCodeScannerProtocol {
+    
     var videoPreviewLayer: CALayer = CALayer()
     
     weak var delegate: QRCodeScannerDelegate?
     
     var startReadingQRCodeCalled: () -> Void = { }
     var startReadingQRCodeCallCount: Int = 0
-    func startReadingQRCode() {
+    func startReadingQRCode(from scannableArea: QRCodeScannableArea) {
         startReadingQRCodeCallCount += 1
         startReadingQRCodeCalled()
+    }
+    
+    func handleSelectedQRImage(_ image: UIImage) {
+        unimplemented()
     }
     
     var stopReadingQRCodeCalled: () -> Void = { }

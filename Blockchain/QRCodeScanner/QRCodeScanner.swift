@@ -30,8 +30,9 @@ protocol QRCodeScannerProtocol: class {
     var videoPreviewLayer: CALayer { get }
     var delegate: QRCodeScannerDelegate? { get set }
     
-    func startReadingQRCode()
+    func startReadingQRCode(from scannableArea: QRCodeScannableArea)
     func stopReadingQRCode(complete: (() -> Void)?)
+    func handleSelectedQRImage(_ image: UIImage)
 }
 
 protocol CaptureInputProtocol {
@@ -79,30 +80,29 @@ extension AVCaptureSession: CaptureSessionProtocol {
     }
 }
 
-protocol CaptureMetadataOutputProtocol: CaptureOutputProtocol {
-    var metadataObjectTypes: [AVMetadataObject.ObjectType]! { get set }
-    
-    func setMetadataObjectsDelegate(_ objectsDelegate: AVCaptureMetadataOutputObjectsDelegate?, queue objectsCallbackQueue: DispatchQueue?)
-}
-
-extension AVCaptureMetadataOutput: CaptureMetadataOutputProtocol {}
-
 @objc final class QRCodeScanner: NSObject, QRCodeScannerProtocol, AVCaptureMetadataOutputObjectsDelegate {
     
     weak var delegate: QRCodeScannerDelegate?
     
     let videoPreviewLayer: CALayer
     
+    var captureVideoPreviewLayer: AVCaptureVideoPreviewLayer {
+        videoPreviewLayer as! AVCaptureVideoPreviewLayer
+    }
+    
     private let captureSession: CaptureSessionProtocol
-    private let captureMetadataOutputBuilder: () -> CaptureMetadataOutputProtocol
+    private let captureMetadataOutput: AVCaptureMetadataOutput = .init()
     private let sessionQueue: DispatchQueue
     
-    required init?(deviceInput: CaptureInputProtocol? = QRCodeScanner.runDeviceInputChecks(alertViewPresenter: resolve()), captureSession: CaptureSessionProtocol = AVCaptureSession(), captureMetadataOutputBuilder: @escaping () -> CaptureMetadataOutputProtocol = { AVCaptureMetadataOutput() }, sessionQueue: DispatchQueue = DispatchQueue(label: "com.blockchain.Blockchain.qrCodeScanner.sessionQueue", qos: .background)) {
+    required init?(
+        deviceInput: CaptureInputProtocol? = QRCodeScanner.runDeviceInputChecks(alertViewPresenter: resolve()),
+        captureSession: CaptureSessionProtocol = AVCaptureSession(),
+        sessionQueue: DispatchQueue = DispatchQueue(label: "com.blockchain.Blockchain.qrCodeScanner.sessionQueue", qos: .background)
+    ) {
         guard let deviceInput = deviceInput else { return nil }
         
         captureSession.sessionPreset = .high
         self.captureSession = captureSession
-        self.captureMetadataOutputBuilder = captureMetadataOutputBuilder
         self.sessionQueue = sessionQueue
         
         let videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession.current!)
@@ -116,9 +116,12 @@ extension AVCaptureMetadataOutput: CaptureMetadataOutputProtocol {}
         }
     }
     
-    func startReadingQRCode() {
+    func startReadingQRCode(from scannableArea: QRCodeScannableArea) {
+        let frame = scannableArea.area
         sessionQueue.async { [weak self] in
+            self?.captureSession.current?.commitConfiguration()
             self?.captureSession.startRunning()
+            self?.captureMetadataOutput.rectOfInterest = self?.captureVideoPreviewLayer.metadataOutputRectConverted(fromLayerRect: frame) ?? .zero
 
             DispatchQueue.main.async {
                 self?.delegate?.didStartScanning()
@@ -135,6 +138,29 @@ extension AVCaptureMetadataOutput: CaptureMetadataOutputProtocol {}
                 complete?()
             }
         }
+    }
+    
+    func handleSelectedQRImage(_ image: UIImage) {
+        guard let cgImage = image.cgImage else {
+            handleQRImageSelectionError()
+            return
+        }
+        let ciImage = CIImage(cgImage: cgImage)
+        let detector = CIDetector(ofType: CIDetectorTypeQRCode, context: CIContext(), options: [CIDetectorAccuracy: CIDetectorAccuracyHigh])
+        let stringValue = detector?.features(in: ciImage).compactMap { feature in
+            (feature as? CIQRCodeFeature)?.messageString
+        }.first
+        guard let value = stringValue else {
+            handleQRImageSelectionError()
+            return
+        }
+        stopReadingQRCode { [weak self] in
+            self?.delegate?.scanComplete(with: .success(value))
+        }
+    }
+    
+    private func handleQRImageSelectionError() {
+        delegate?.scanComplete(with: .failure(.unknown))
     }
     
     // MARK: - AVCaptureMetadataOutputObjectsDelegate
@@ -192,8 +218,6 @@ extension AVCaptureMetadataOutput: CaptureMetadataOutputProtocol {}
     
     private func configure(with deviceInput: CaptureInputProtocol) {
         captureSession.add(input: deviceInput)
-        
-        let captureMetadataOutput = captureMetadataOutputBuilder()
         captureSession.add(output: captureMetadataOutput)
         
         let captureQueue = DispatchQueue(label: "com.blockchain.Blockchain.qrCodeScanner.captureQueue")

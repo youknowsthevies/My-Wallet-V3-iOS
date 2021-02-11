@@ -101,7 +101,6 @@ final class QRCodeScannerViewControllerBuilder<P: QRCodeScannerParsing> {
         switch presentationType {
         case .modal:
             let viewController = UINavigationController(rootViewController: scannerVC)
-            viewController.modalPresentationStyle = .fullScreen
             return viewController
         case .child:
             return scannerVC
