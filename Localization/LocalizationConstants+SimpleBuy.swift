@@ -866,6 +866,10 @@ extension LocalizationConstants.SimpleBuy {
     }
 
     public enum YodleeWebScreen {
+        public static let title = NSLocalizedString(
+            "Link a Bank",
+            comment: "Yodlee Web Screen: Link a Bank title"
+        )
         public enum WebViewPendingContent {
             public static let title = NSLocalizedString(
                 "Taking you to Yodlee...",

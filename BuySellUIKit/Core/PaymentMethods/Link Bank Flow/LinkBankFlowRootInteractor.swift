@@ -32,6 +32,7 @@ protocol LinkBankFlowRootRouting: Routing {
     func route(to screen: LinkBankFlow.Screen)
     func closeFailureScreen()
     func closeFlow()
+    func returnToSplashScreen()
 }
 
 final class LinkBankFlowRootInteractor: Interactor,
@@ -86,6 +87,10 @@ final class LinkBankFlowRootInteractor: Interactor,
 
     func closeFlow() {
         router?.closeFlow()
+    }
+
+    func returnToSplashScreen() {
+        router?.returnToSplashScreen()
     }
 
     // MARK: - Private

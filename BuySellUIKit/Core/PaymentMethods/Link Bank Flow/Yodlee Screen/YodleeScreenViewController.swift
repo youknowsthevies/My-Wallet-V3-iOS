@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Localization
 import PlatformUIKit
 import RIBs
 import RxCocoa
@@ -19,6 +20,7 @@ final class YodleeScreenViewController: BaseScreenViewController,
 
     private let disposeBag = DisposeBag()
     private let closeTriggerred = PublishSubject<Void>()
+    private let backTriggerred = PublishSubject<Void>()
 
     private let webview: WKWebView
     private let pendingView: YodleePendingView
@@ -42,6 +44,10 @@ final class YodleeScreenViewController: BaseScreenViewController,
 
     override func navigationBarTrailingButtonPressed() {
         closeTriggerred.onNext(())
+    }
+
+    override func navigationBarLeadingButtonPressed() {
+        backTriggerred.onNext(())
     }
 
     // MARK: - YodleeScreenPresentable
@@ -86,14 +92,19 @@ final class YodleeScreenViewController: BaseScreenViewController,
             .map { _ in YodleeScreen.Effect.closeFlow }
             .asDriverCatchError()
 
-        return .merge(closeTapped)
+        let backTapped = backTriggerred
+            .map { _ in YodleeScreen.Effect.back }
+            .asDriverCatchError()
+
+        return .merge(closeTapped, backTapped)
     }
 
     // MARK: - Private
 
     private func setupUI() {
+        titleViewStyle = .text(value: LocalizationConstants.SimpleBuy.YodleeWebScreen.title)
         set(barStyle: .darkContent(),
-            leadingButtonStyle: .none,
+            leadingButtonStyle: .back,
             trailingButtonStyle: .close)
 
         view.addSubview(webview)

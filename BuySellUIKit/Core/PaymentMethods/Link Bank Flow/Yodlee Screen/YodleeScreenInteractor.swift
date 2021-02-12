@@ -47,6 +47,7 @@ enum YodleeScreen {
     enum Effect: Equatable {
         case link(url: URL)
         case closeFlow
+        case back
         case none
     }
 }
@@ -61,6 +62,7 @@ protocol YodleeScreenPresentable: Presentable {
 
 protocol YodleeScreenListener: class {
     func closeFlow()
+    func returnToSplashScreen()
 }
 
 final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentable>, YodleeScreenInteractable {
@@ -213,6 +215,8 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
         case .closeFlow:
             analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbAchClose)
             listener?.closeFlow()
+        case .back:
+            listener?.returnToSplashScreen()
         case .none:
             break
         }

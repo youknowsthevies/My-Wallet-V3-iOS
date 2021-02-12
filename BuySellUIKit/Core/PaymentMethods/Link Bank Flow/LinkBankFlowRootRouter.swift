@@ -75,6 +75,10 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
         presentingController?.dismiss(animated: true, completion: nil)
     }
 
+    func returnToSplashScreen() {
+        detachCurrentChild()
+    }
+
     func closeFlow() {
         stateService.previousRelay.accept(())
         presentingController?.dismiss(animated: true, completion: { [weak self] in
