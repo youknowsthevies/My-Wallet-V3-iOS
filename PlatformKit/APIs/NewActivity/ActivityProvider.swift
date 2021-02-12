@@ -91,7 +91,7 @@ public final class ActivityProvider: ActivityProviding {
         .map { values in
             let ethereum = values.0
             let stellar = values.1
-            let bitcoins = (btc: values.2.0, bch: values.2.0)
+            let bitcoins = (btc: values.2.0, bch: values.2.1)
             let erc20 = (wDGLD: values.3.0, pax: values.3.1, algo: values.3.2)
             return ActivityItemEventsLoadingStates(
                 statePerCurrency: [
