@@ -1993,21 +1993,6 @@ MyWalletPhone.xlm = {
     }
 }
 
-MyWalletPhone.createEthAccountForExchange = function(secondPassword, helperText) {
-
-    var eth = MyWallet.wallet.eth;
-
-    if (MyWallet.wallet.isDoubleEncrypted) {
-        eth.createAccount(void 0, secondPassword).then(function() {
-            objc_on_create_eth_account_for_exchange_success();
-        });
-    } else {
-        eth.createAccount(void 0, secondPassword).then(function() {
-            objc_on_create_eth_account_for_exchange_success();
-        });
-    }
-}
-
 MyWalletPhone.isEthAddress = function(address) {
     return Helpers.isEtherAddress(address);
 }

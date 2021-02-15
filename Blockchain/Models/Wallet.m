@@ -629,10 +629,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 #pragma mark Ethereum
 
-    self.context[@"objc_on_create_eth_account_for_exchange_success"] = ^() {
-        [weakSelf on_create_eth_account_for_exchange_success];
-    };
-
     self.context[@"objc_on_fetch_eth_exchange_rate_success"] = ^(JSValue *rate, JSValue *code) {
         [weakSelf on_fetch_eth_exchange_rate_success:rate code:code];
     };
@@ -2147,14 +2143,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 # pragma mark - Ethereum
 
-- (void)createEthAccountForExchange:(NSString *)secondPassword
-{
-    if ([self isInitialized]) {
-        NSString *setupHelperText = [LocalizationConstantsObjcBridge etherSecondPasswordPrompt];
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.createEthAccountForExchange(\"%@\", \"%@\")", [secondPassword escapedForJS], [setupHelperText escapedForJS]]];
-    }
-}
-
 - (NSDecimalNumber *)getEthBalance
 {
     return _ethereum.legacyEthBalance;
@@ -3142,15 +3130,6 @@ NSString * const kLockboxInvitation = @"lockbox";
         [self.delegate didGetSwipeAddresses:swipeAddresses assetType:assetType];
     } else {
         DLog(@"Error: delegate of class %@ does not respond to selector didGetSwipeAddresses!", [delegate class]);
-    }
-}
-
-- (void)on_create_eth_account_for_exchange_success
-{
-    if ([self.delegate respondsToSelector:@selector(didCreateEthAccountForExchange)]) {
-        [self.delegate didCreateEthAccountForExchange];
-    } else {
-        DLog(@"Error: delegate of class %@ does not respond to selector didCreateEthAccountForExchange!", [delegate class]);
     }
 }
 

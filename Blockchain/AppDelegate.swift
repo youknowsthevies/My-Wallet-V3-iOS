@@ -224,8 +224,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             WalletManager.shared.close()
         }
 
-        SocketManager.shared.disconnectAll()
-
         // UI-related background actions
         ModalPresenter.shared.closeAllModals()
 

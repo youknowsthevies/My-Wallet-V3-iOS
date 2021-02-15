@@ -36,9 +36,6 @@ public enum AppFeature: Int, CaseIterable {
     /// Is interest account enabled
     case interestAccountEnabled
 
-    /// Is Swap 2.0 enabled
-    case newSwapEnabled
-    
     /// Is Send 2.0 enabled
     case newSendEnabled
 
@@ -65,8 +62,6 @@ extension AppFeature {
             return "simple_buy_method_funds_enabled"
         case .interestAccountEnabled:
             return "interest_account_enabled"
-        case .newSwapEnabled:
-            return "new_swap_enabled_ios"
         case .newSendEnabled:
             return "new_send_enabled_ios"
         case .wDGLDenabled:

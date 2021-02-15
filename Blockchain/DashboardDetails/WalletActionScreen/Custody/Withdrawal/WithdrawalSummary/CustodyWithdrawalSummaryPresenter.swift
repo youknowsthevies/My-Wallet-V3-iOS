@@ -150,8 +150,6 @@ final class CustodyWithdrawalSummaryPresenter {
 }
 
 fileprivate struct CustodyWithdrawalSummaryErrorViewModel {
-    private typealias LocalizationFailureIDs = LocalizationConstants.SimpleBuy.Withdrawal.SummaryFailure
-
     let title: LabelContent?
     let description: InteractableTextViewModel
     let image: UIImage

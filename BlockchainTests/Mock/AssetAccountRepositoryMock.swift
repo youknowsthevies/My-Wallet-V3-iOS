@@ -17,10 +17,6 @@ class AssetAccountRepositoryMock: Blockchain.AssetAccountRepositoryAPI {
         .just([])
     }
 
-    var fetchETHHistoryIfNeeded: Single<Void> {
-        .just(())
-    }
-
     func accounts(for assetType: CryptoCurrency) -> Single<[Blockchain.AssetAccount]> {
         .just([])
     }

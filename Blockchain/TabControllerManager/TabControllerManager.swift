@@ -86,19 +86,7 @@ final class TabControllerManager: NSObject {
             router.interactable.activate()
             router.load()
         }
-        func populateLegacySwap() {
-            swapViewController = ExchangeContainerViewController.makeFromStoryboard()
-        }
-        
-        if internalFeatureFlag.isEnabled(.oldSwap) {
-            populateLegacySwap()
-        } else {
-            if featureConfigurator.configuration(for: .newSwapEnabled).isEnabled {
-                populateNewSwap()
-            } else {
-                populateLegacySwap()
-            }
-        }
+        populateNewSwap()
     }
 
     func showSwap() {
@@ -309,21 +297,6 @@ extension TabControllerManager: WalletTransactionDelegate {
     }
 }
 
-// MARK: - WalletExchangeIntermediateDelegate
-
-extension TabControllerManager: WalletExchangeIntermediateDelegate {
-
-    /// This callback happens when an ETH account is created. This happens when a user goes to
-    /// swap for the first time. This is a delegate callback from the JS layer. This needs to be
-    /// refactored so that it is in a completion handler and only in `ExchangeContainerViewController`
-    func didCreateEthAccountForExchange() {
-        guard let exchangeContainer = swapViewController as? ExchangeContainerViewController else {
-            return
-        }
-        exchangeContainer.showExchange()
-    }
-}
-
 // MARK: - WalletSendEtherDelegate
 
 extension TabControllerManager: WalletSendEtherDelegate {
@@ -354,7 +327,6 @@ extension TabControllerManager: TabViewControllerDelegate {
         walletManager.settingsDelegate = self
         walletManager.sendBitcoinDelegate = self.sendControllerManager
         walletManager.sendEtherDelegate = self
-        walletManager.partnerExchangeIntermediateDelegate = self
         walletManager.transactionDelegate = self
     }
 

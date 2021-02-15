@@ -94,7 +94,7 @@ final class NewSwapAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
     }
 
     var shouldShow: Bool {
-        featureIsEnabled && !isDismissed
+        !isDismissed
     }
     let type: AnnouncementType = .newSwap
     let analyticsRecorder: AnalyticsEventRecording
@@ -102,13 +102,6 @@ final class NewSwapAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
     let recorder: AnnouncementRecorder
     let action: CardAnnouncementAction
 
-    private var featureIsEnabled: Bool {
-        // TODO: Remove InternalFeatureFlag before Swap P1 release.
-        guard !internalFeatureFlag.isEnabled(.oldSwap) else {
-            return false
-        }
-        return featureConfiguring.configuration(for: .newSwapEnabled).isEnabled
-    }
     private var style: Style {
         guard isTier1Or2Verified else {
             return .promo

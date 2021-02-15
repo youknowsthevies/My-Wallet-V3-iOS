@@ -10,11 +10,6 @@ import Foundation
 
 extension URL {
 
-    /// Attempts to launch this URL
-    func launch() {
-        UIApplication.shared.open(self, options: [:])
-    }
-
     @available(*, deprecated, message: "Use `RequestBuilder` instead")
     public static func endpoint(_ baseURL: URL, pathComponents: [String]? = nil, queryParameters: [String: String]? = nil) -> URL? {
         guard var mutableBaseURL: URL = (baseURL as NSURL).copy() as? URL else { return nil }

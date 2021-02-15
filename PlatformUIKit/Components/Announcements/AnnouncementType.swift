@@ -20,7 +20,6 @@ public enum AnnouncementType: String, Codable {
     case verifyIdentity = "kyc_incomplete"
     case resubmitDocuments = "kyc_resubmit"
     case newSwap = "swap_v2"
-    case swap = "swap"
     case algorand = "algorand"
     case cloudBackup = "cloud_backup"
     case tether = "tether"
@@ -55,8 +54,6 @@ public enum AnnouncementType: String, Codable {
             return .backupFunds
         case .verifyIdentity:
             return .identityVerification
-        case .swap:
-            return .swap
         case .algorand:
             return .algorand
         case .tether:

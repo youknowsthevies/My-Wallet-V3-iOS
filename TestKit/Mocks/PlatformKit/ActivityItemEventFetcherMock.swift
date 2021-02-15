@@ -90,12 +90,6 @@ class SwapActivityItemEventServiceMock: SwapActivityItemEventServiceAPI {
     let fetchTriggerRelay = PublishRelay<Void>()
 }
 
-class SwapActivityItemEventFetcherMock: SwapActivityItemEventFetcherAPI {
-    func fetchSwapActivityEvents(date: Date, fiatCurrency: String) -> Single<PageResult<SwapActivityItemEvent>> {
-        .just(.init(hasNextPage: false, items: []))
-    }
-}
-
 class TransactionalActivityItemEventFetcherMock: TransactionalActivityItemEventFetcherAPI {
     func fetchTransactionalActivityEvents(token: String?, limit: Int) -> Single<PageResult<TransactionalActivityItemEvent>> {
         .just(.init(hasNextPage: false, items: []))

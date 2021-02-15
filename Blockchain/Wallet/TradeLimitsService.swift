@@ -16,16 +16,13 @@ import ToolKit
 final class TradeLimitsService: TradeLimitsAPI {
 
     private let disposables = CompositeDisposable()
-    
-    private let socketManager: SocketManager
+
     private var cachedLimits = BehaviorRelay<TradeLimits?>(value: nil)
     private var cachedLimitsTimer: Timer?
     private let clearCachedLimitsInterval: TimeInterval = 60
     private let communicator: NetworkCommunicatorAPI
 
-    init(socketManager: SocketManager = SocketManager.shared,
-         communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail)) {
-        self.socketManager = socketManager
+    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail)) {
         self.communicator = communicator
         self.cachedLimitsTimer = Timer.scheduledTimer(withTimeInterval: clearCachedLimitsInterval, repeats: true) { [weak self] _ in
             self?.clearCachedLimits()

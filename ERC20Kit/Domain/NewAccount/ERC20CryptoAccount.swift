@@ -36,19 +36,13 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
     }
 
     var actions: Single<AvailableActions> {
-        Single
-            .zip(
-                isFunded,
-                .just(featureFetcher.configuration(for: .newSwapEnabled).isEnabled)
-            )
-            .map { isFunded, newSwapEnabled -> AvailableActions in
+        isFunded
+            .map { isFunded -> AvailableActions in
                 var base: AvailableActions = [.viewActivity, .receive]
                 if Token.legacySendSupport {
                     base.insert(.send)
                 }
-                if Token.nonCustodialTransactionSupport.contains(.swap),
-                   newSwapEnabled,
-                   isFunded {
+                if Token.nonCustodialTransactionSupport.contains(.swap), isFunded {
                     base.insert(.swap)
                 }
                 return base

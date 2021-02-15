@@ -287,9 +287,6 @@
 - (NSString *)bitcoinCashExchangeRate;
 - (NSString *_Nullable)getLabelForDefaultBchAccount;
 
-// Exchange
-- (void)createEthAccountForExchange:(NSString *)secondPassword;
-
 // Lockbox
 - (NSArray *_Nonnull)getLockboxDevices;
 
