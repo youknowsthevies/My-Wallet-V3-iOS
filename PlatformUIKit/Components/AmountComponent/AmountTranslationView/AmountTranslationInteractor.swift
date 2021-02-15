@@ -208,12 +208,7 @@ public final class AmountTranslationInteractor {
         // We need to keep any currency selection changes up to date with the input values
         // and eventually update the `cryptoAmountRelay` and `fiatAmountRelay`
         let currenciesMerged = Observable.merge(failibleFiatCurrency, failibleCryptoCurrency)
-            .do(onError: { [weak self] error in
-                self?.handleCurrency(error: error)
-            })
-            .catchError { _ in
-                Observable<Currency>.empty()
-            }
+            .consumeErrorToEffect(on: self)
             .share(replay: 1, scope: .whileConnected)
 
         // Make fiat amount zero after any currency change
@@ -240,6 +235,7 @@ public final class AmountTranslationInteractor {
             .flatMapLatest(weak: self) { (self, value) -> Observable<MoneyValuePair> in
                 self.pairFromFiatInput(amount: value.amount).asObservable()
             }
+            .consumeErrorToEffect(on: self)
         
         let pairFromCryptoInput = currenciesMerged
             .flatMap(weak: self) { (self, _) -> Observable<MoneyValueInputScanner.Input> in
@@ -255,6 +251,7 @@ public final class AmountTranslationInteractor {
             .flatMapLatest(weak: self) { (self, value) -> Observable<MoneyValuePair> in
                 self.pairFromCryptoInput(amount: value.amount).asObservable()
             }
+            .consumeErrorToEffect(on: self)
 
         // Merge the output of the scanner from edited amount to the other scanner input relay
 
@@ -463,8 +460,10 @@ public final class AmountTranslationInteractor {
     /// Provides a mechanism to handle an error as produced by an observable stream
     ///
     /// - Parameter error: An `Error` object describing the issue
-    private func handleCurrency(error: Error) {
-        effectRelay.accept(.failure(error: error))
+    fileprivate func handleCurrency(error: Error) {
+        if case .none = effectRelay.value {
+            effectRelay.accept(.failure(error: error))
+        }
     }
 }
 
@@ -492,6 +491,17 @@ extension AmountTranslationInteractor.Effect: Equatable {
             return true
         default:
             return false
+        }
+    }
+}
+
+extension Observable {
+    fileprivate func consumeErrorToEffect(on handler: AmountTranslationInteractor) -> Observable<Element> {
+        self.do(onError: { [weak handler] error in
+            handler?.handleCurrency(error: error)
+        })
+        .catchError { _ in
+            Observable<Element>.empty()
         }
     }
 }
