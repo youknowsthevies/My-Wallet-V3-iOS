@@ -130,7 +130,9 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
                 viewModel = ExplainedActionViewModel(
                     thumbImage: "icon-deposit-cash",
                     title: LocalizedString.DepositCash.title,
-                    descriptions: [LocalizedString.DepositCash.description],
+                    descriptions: [
+                        .init(title: LocalizedString.DepositCash.description, titleColor: .titleText, titleFontSize: 14)
+                    ],
                     badgeTitle: nil,
                     uniqueAccessibilityIdentifier: AccessibilityId.depositCash
                 )
@@ -139,8 +141,8 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
                     thumbImage: "Icon-Creditcard",
                     title: LocalizedString.Card.title,
                     descriptions: [
-                        "\(method.max.displayString) \(LocalizedString.Card.descriptionLimit)",
-                        LocalizedString.Card.descriptionInfo
+                        .init(title: LocalizedString.Card.descriptionLimit, titleColor: .titleText, titleFontSize: 14),
+                        .init(title: LocalizedString.Card.descriptionInfo, titleColor: .descriptionText, titleFontSize: 12)
                     ],
                     badgeTitle: LocalizedString.Card.badgeTitle,
                     uniqueAccessibilityIdentifier: AccessibilityId.addCard
@@ -150,8 +152,8 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
                     thumbImage: "icon-bank",
                     title: LocalizedString.LinkABank.title,
                     descriptions: [
-                        LocalizedString.LinkABank.descriptionLimit,
-                        LocalizedString.LinkABank.descriptionInfo
+                        .init(title: LocalizedString.LinkABank.descriptionLimit, titleColor: .titleText, titleFontSize: 14),
+                        .init(title: LocalizedString.LinkABank.descriptionInfo, titleColor: .descriptionText, titleFontSize: 12)
                     ],
                     badgeTitle: nil,
                     uniqueAccessibilityIdentifier: AccessibilityId.linkedBank

@@ -73,7 +73,7 @@ final class LinkedBankView: UIView {
         addSubview(button)
         
         badgeImageView.layoutToSuperview(.centerY)
-        badgeImageView.layout(size: CGSize(width: 32, height: 20))
+        badgeImageView.layout(size: CGSize(width: 32, height: 32))
         badgeImageView.layoutToSuperview(.leading, offset: Spacing.outer)
 
         accountLabel.layoutToSuperview(.centerY)

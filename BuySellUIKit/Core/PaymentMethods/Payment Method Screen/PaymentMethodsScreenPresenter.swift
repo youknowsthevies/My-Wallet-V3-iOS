@@ -100,7 +100,9 @@ final class PaymentMethodsScreenPresenter {
                 viewModel = ExplainedActionViewModel(
                     thumbImage: "icon-deposit-cash",
                     title: LocalizedString.DepositCash.title,
-                    descriptions: [LocalizedString.DepositCash.description],
+                    descriptions: [
+                        .init(title: LocalizedString.DepositCash.description, titleColor: .titleText, titleFontSize: 14)
+                    ],
                     badgeTitle: nil,
                     uniqueAccessibilityIdentifier: AccessibilityId.depositCash
                 )
@@ -109,8 +111,8 @@ final class PaymentMethodsScreenPresenter {
                     thumbImage: "Icon-Creditcard",
                     title: LocalizedString.Card.title,
                     descriptions: [
-                        "\(method.max.displayString) \(LocalizedString.Card.descriptionLimit)",
-                        LocalizedString.Card.descriptionInfo
+                        .init(title: LocalizedString.Card.descriptionLimit, titleColor: .titleText, titleFontSize: 14),
+                        .init(title: LocalizedString.Card.descriptionInfo, titleColor: .descriptionText, titleFontSize: 12)
                     ],
                     badgeTitle: LocalizedString.Card.badgeTitle,
                     uniqueAccessibilityIdentifier: AccessibilityId.addCard

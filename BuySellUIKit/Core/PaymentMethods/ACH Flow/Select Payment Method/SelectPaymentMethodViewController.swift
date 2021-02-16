@@ -89,6 +89,7 @@ final class SelectPaymentMethodViewController: BaseScreenViewController,
     }
 
     private func setupTableView() {
+        tableView.delegate = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.registerNibCell(LinkedCardTableViewCell.self)
         tableView.register(FiatCustodialBalanceTableViewCell.self)
@@ -133,5 +134,11 @@ final class SelectPaymentMethodViewController: BaseScreenViewController,
         let cell = tableView.dequeue(LinkedBankTableViewCell.self, for: indexPath)
         cell.viewModel = viewModel
         return cell
+    }
+}
+
+extension SelectPaymentMethodViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        UIView() // removes the last separator line in each section
     }
 }

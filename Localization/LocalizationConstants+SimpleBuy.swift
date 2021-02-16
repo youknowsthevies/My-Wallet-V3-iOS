@@ -164,11 +164,11 @@ extension LocalizationConstants.SimpleBuy {
         }
         public struct Card {
             public static let title = NSLocalizedString(
-                "Add Credit or Debit Card",
+                "Credit or Debit Card",
                 comment: "Simple Buy: Add Payment method selection screen: card title"
             )
             public static let descriptionLimit = NSLocalizedString(
-                "Limit",
+                "Instantly Available",
                 comment: "Simple Buy: Add Payment method selection screen: description of card payment max limit"
             )
             public static let descriptionInfo = NSLocalizedString(
@@ -1015,6 +1015,19 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "Yodlee Web Screen: likning bank error cancel button title"
                 )
             }
+        }
+    }
+
+    public enum LinkedBank {
+        public enum AccountType {
+            public static let savings = NSLocalizedString(
+                "Savings",
+                comment: "Savings account type"
+            )
+            public static let checking = NSLocalizedString(
+                "Checking",
+                comment: "Checking account type"
+            )
         }
     }
 }

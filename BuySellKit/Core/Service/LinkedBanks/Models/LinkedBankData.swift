@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Localization
 import PlatformKit
 
 public struct LinkedBankData {
@@ -62,6 +63,15 @@ public struct LinkedBankData {
 }
 
 extension LinkedBankData.Account.AccountType {
+    public var title: String {
+        switch self {
+        case .checking:
+            return LocalizationConstants.SimpleBuy.LinkedBank.AccountType.checking
+        case .savings:
+            return LocalizationConstants.SimpleBuy.LinkedBank.AccountType.savings
+        }
+    }
+
     init(from type: LinkedBankResponse.Details.AccountType) {
         switch type {
         case .savings:
