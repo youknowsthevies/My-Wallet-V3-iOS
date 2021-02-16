@@ -57,9 +57,10 @@ platform :ios do
       skip_waiting_for_build_processing: true
     )
   end
-
-  desc "Download dSYM file from iTunes and uploads it to Crashlytics"
-  lane :upload_dsyms do
+ 
+  desc "Upload dsyms zip file to Crashlytics. Optional isStaging parameter (defaults to false)."
+  lane :upload_dsyms do |options|
+    environment = (options[:isStaging] ? "Staging" : "Prod")
     # Assumes there is a 'blockchain-dsyms.zip' file in `./output` directory.
     # To create the zip file, execute the following commands:
     # cd $BITRISE_SOURCE_DIR/output/Blockchain.xcarchive/dSYMs/
@@ -67,7 +68,7 @@ platform :ios do
     upload_symbols_to_crashlytics(
       binary_path: "./scripts/crashlytics/upload-symbols",
       dsym_path: "./output/blockchain-dsyms.zip",
-      gsp_path: "./Blockchain/Firebase/Prod/GoogleService-Info.plist"
+      gsp_path: "./Blockchain/Firebase/#{environment}/GoogleService-Info.plist"
     )
   end
 
