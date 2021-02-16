@@ -132,6 +132,10 @@ extension LocalizationConstants.LineItem.Transactional {
         "Available to Trade",
         comment: "Available to Trade"
     )
+    public static let cryptoPrice = NSLocalizedString(
+        "%@ Price",
+        comment: "Crypto Price"
+    )
     public struct Funds {
         public static let prefix = NSLocalizedString(
             "My",

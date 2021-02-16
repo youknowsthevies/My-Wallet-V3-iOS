@@ -59,4 +59,5 @@ extension Accessibility.Identifier.LineItem.Transactional {
     public static let value = "\(prefix)value."
     public static let fee = "\(prefix)fee."
     public static let availableToTrade = "\(prefix)availableToTrade."
+    public static let cryptoPrice = "\(prefix)cryptoPrice."
 }

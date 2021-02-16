@@ -48,7 +48,13 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
     private let totalCostLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.totalCost().defaultPresenter(
         accessibilityIdPrefix: AccessibilityId.lineItemPrefix
     )
+    private let totalLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.total().defaultPresenter(
+        accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+    )
     private let buyingFeeLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.buyingFee().defaultPresenter(
+        accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+    )
+    private let feeLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.fee().defaultPresenter(
         accessibilityIdPrefix: AccessibilityId.lineItemPrefix
     )
     private let paymentMethodLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.paymentMethod().defaultPresenter(
@@ -60,7 +66,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
     private let statusLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.status(LocalizedLineItem.pending).defaultPresenter(
         accessibilityIdPrefix: AccessibilityId.lineItemPrefix
     )
-    
+
     private let availableToTradeInstantlyItemCellPresenter: DefaultLineItemCellPresenter =
         LineItem.availableToTrade(LocalizedLineItem.instantly).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
@@ -74,6 +80,8 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
         knownValue: " ",
         descriptors: .h1(accessibilityIdPrefix: AccessibilityId.fiatAmountPrefix)
     )
+
+    private let cryptoPriceItemCellPresenter: DefaultLineItemCellPresenter
 
     private let statusBadge: DefaultBadgeAssetPresenter = .init()
 
@@ -147,12 +155,18 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
         buyingFeeLineItemCellPresenter.interactor.description.stateRelay.accept(
             .loaded(next: .init(text: data.fee.displayString))
         )
+        feeLineItemCellPresenter.interactor.description.stateRelay.accept(
+            .loaded(next: .init(text: data.fee.displayString))
+        )
 
         cryptoAmountLabelPresenter.interactor.stateRelay.accept(
             .loaded(next: .init(text: data.amount.toDisplayString(includeSymbol: true)))
         )
 
         exchangeRateLineItemCellPresenter.interactor.description.stateRelay.accept(
+            .loaded(next: .init(text: data.exchangeRate?.toDisplayString(includeSymbol: true) ?? ""))
+        )
+        cryptoPriceItemCellPresenter.interactor.description.stateRelay.accept(
             .loaded(next: .init(text: data.exchangeRate?.toDisplayString(includeSymbol: true) ?? ""))
         )
         orderIdLineItemCellPresenter.interactor.description.stateRelay.accept(
@@ -169,7 +183,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
             localizedPaymentMethod = LocalizedLineItem.bankTransfer
         case .bankTransfer:
             if let bankTransferData = data.bankTransferData, let account = bankTransferData.account {
-                localizedPaymentMethod = "\(account.bankName) \(account.number)"
+                localizedPaymentMethod = "\(account.bankName) \(account.type.title) \(account.number)"
             } else {
                 localizedPaymentMethod = LocalizedLineItem.bankTransfer
             }
@@ -189,6 +203,10 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
             .loaded(next: .init(text: totalCost))
         )
 
+        totalLineItemCellPresenter.interactor.description.stateRelay.accept(
+            .loaded(next: .init(text: totalCost))
+        )
+
         fiatAmountLabelPresenter.interactor.stateRelay.accept(
             .loaded(next: .init(text: "\(totalCost) \(LocalizedSummary.of) \(data.outputCurrency.displayCode)"))
         )
@@ -197,6 +215,10 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
 
         statusBadge.interactor.stateRelay.accept(
             .loaded(next: .init(type: .default(accessibilitySuffix: description), description: description))
+        )
+
+        cryptoPriceItemCellPresenter = LineItem.cryptoPrice(data.cryptoValue?.currencyCode ?? LocalizedLineItem.price).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         // MARK: Title Setup
@@ -303,13 +325,12 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
         case (.bankTransfer, _, _):
             cells = [
                 .label(cryptoAmountLabelPresenter),
-                .badges(badgesModel),
                 .separator,
-                .lineItem(exchangeRateLineItemCellPresenter),
+                .lineItem(cryptoPriceItemCellPresenter),
                 .separator,
-                .lineItem(buyingFeeLineItemCellPresenter),
+                .lineItem(feeLineItemCellPresenter),
                 .separator,
-                .lineItem(totalCostLineItemCellPresenter),
+                .lineItem(totalLineItemCellPresenter),
                 .separator,
                 .lineItem(paymentMethodLineItemCellPresenter),
                 .separator,
@@ -318,7 +339,6 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
                 .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
             ]
         }
-
     }
 }
 
