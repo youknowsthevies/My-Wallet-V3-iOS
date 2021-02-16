@@ -71,7 +71,6 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
     weak var listener: YodleeScreenListener?
 
     private let bankLinkageData: BankLinkageData
-    private let checkoutData: CheckoutData
     private let stateService: StateServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let yodleeRequestProvider: YodleeRequestProvider
@@ -81,7 +80,6 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
 
     init(presenter: YodleeScreenPresentable,
          bankLinkageData: BankLinkageData,
-         checkoutData: CheckoutData,
          stateService: StateServiceAPI,
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          yodleeRequestProvider: YodleeRequestProvider,
@@ -89,7 +87,6 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
          yodleeActivationService: YodleeActivateService,
          contentReducer: YodleeScreenContentReducer) {
         self.bankLinkageData = bankLinkageData
-        self.checkoutData = checkoutData
         self.stateService = stateService
         self.analyticsRecorder = analyticsRecorder
         self.yodleeRequestProvider = yodleeRequestProvider
@@ -170,12 +167,9 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
             .asObservable()
             .withLatestFrom(activationResult)
             .filter(\.isActive)
-            .compactMap(\.data)
             .observeOn(MainScheduler.asyncInstance)
-            .subscribe(onNext: { data in
-                let updateData = self.checkoutData.checkoutData(byAppending: data)
+            .subscribe(onNext: { _ in
                 self.listener?.closeFlow()
-                self.stateService.nextFromBuyCrypto(with: updateData)
             })
             .disposeOnDeactivate(interactor: self)
 

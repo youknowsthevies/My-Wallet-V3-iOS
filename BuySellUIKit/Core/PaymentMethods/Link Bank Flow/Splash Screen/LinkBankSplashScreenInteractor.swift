@@ -43,20 +43,17 @@ final class LinkBankSplashScreenInteractor: PresentableInteractor<LinkBankSplash
     private let stateService: StateServiceAPI
     private let bankLinkageData: BankLinkageData
     private let contentReducer: LinkBankSplashScreenContentReducer
-    private let checkoutData: CheckoutData
     private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     init(presenter: LinkBankSplashScreenPresentable,
          stateService: StateServiceAPI,
          bankLinkageData: BankLinkageData,
-         checkoutData: CheckoutData,
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          contentReducer: LinkBankSplashScreenContentReducer) {
         self.stateService = stateService
         self.bankLinkageData = bankLinkageData
         self.contentReducer = contentReducer
         self.analyticsRecorder = analyticsRecorder
-        self.checkoutData = checkoutData
         super.init(presenter: presenter)
     }
 

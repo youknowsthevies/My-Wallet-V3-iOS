@@ -180,8 +180,8 @@ public final class Router: RouterAPI {
             /// Show pending KYC approval for `ineligible` state as well, since the expected poll result would be
             /// ineligible anyway
             showPendingKycApprovalScreen()
-        case .linkBank(let checkoutData):
-            showLinkBankFlow(with: checkoutData)
+        case .linkBank:
+            showLinkBankFlow()
         case .addCard(let data):
             startCardAdditionFlow(with: data)
         case .inactive:
@@ -386,8 +386,8 @@ public final class Router: RouterAPI {
         navigationRouter.navigationControllerAPI?.present(navigationController, animated: true, completion: nil)
     }
 
-    private func showLinkBankFlow(with checkoutData: CheckoutData) {
-        let builder = LinkBankFlowRootBuilder(stateService: stateService, checkoutData: checkoutData)
+    private func showLinkBankFlow() {
+        let builder = LinkBankFlowRootBuilder(stateService: stateService)
         // we need to pass the the navigation controller so we can present and dismiss from within the flow.
         let router = builder.build(presentingController: navigationRouter.navigationControllerAPI)
         self.linkBankFlowRouter = router

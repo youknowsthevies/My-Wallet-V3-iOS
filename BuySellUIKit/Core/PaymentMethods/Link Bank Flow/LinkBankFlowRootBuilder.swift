@@ -21,16 +21,14 @@ protocol LinkBankFlowRootBuildable {
 final class LinkBankFlowRootBuilder: LinkBankFlowRootBuildable {
 
     private let stateService: StateServiceAPI
-    private let checkoutData: CheckoutData
 
-    init(stateService: StateServiceAPI, checkoutData: CheckoutData) {
+    init(stateService: StateServiceAPI) {
         self.stateService = stateService
-        self.checkoutData = checkoutData
     }
 
     func build(presentingController: NavigationControllerAPI?) -> LinkBankFlowStarter {
-        let splashScreenBuilder = LinkBankSplashScreenBuilder(stateService: stateService, checkoutData: checkoutData)
-        let yodleeScreenBuilder = YodleeScreenBuilder(stateService: stateService, checkoutData: checkoutData)
+        let splashScreenBuilder = LinkBankSplashScreenBuilder(stateService: stateService)
+        let yodleeScreenBuilder = YodleeScreenBuilder(stateService: stateService)
         let failureScreenBuilder = LinkBankFailureScreenBuilder()
         let interactor = LinkBankFlowRootInteractor()
         return LinkBankFlowRootRouter(interactor: interactor,

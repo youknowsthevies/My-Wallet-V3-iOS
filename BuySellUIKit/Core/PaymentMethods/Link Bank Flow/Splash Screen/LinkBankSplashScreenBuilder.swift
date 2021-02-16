@@ -18,11 +18,9 @@ protocol LinkBankSplashScreenBuildable {
 final class LinkBankSplashScreenBuilder: LinkBankSplashScreenBuildable {
 
     private let stateService: StateServiceAPI
-    private let checkoutData: CheckoutData
 
-    init(stateService: StateServiceAPI, checkoutData: CheckoutData) {
+    init(stateService: StateServiceAPI) {
         self.stateService = stateService
-        self.checkoutData = checkoutData
     }
 
     func build(withListener listener: LinkBankSplashScreenListener, data: BankLinkageData) -> LinkBankSplashScreenRouting {
@@ -31,7 +29,6 @@ final class LinkBankSplashScreenBuilder: LinkBankSplashScreenBuildable {
         let interactor = LinkBankSplashScreenInteractor(presenter: viewController,
                                                         stateService: stateService,
                                                         bankLinkageData: data,
-                                                        checkoutData: checkoutData,
                                                         contentReducer: contentReducer)
         interactor.listener = listener
         return LinkBankSplashScreenRouter(interactor: interactor, viewController: viewController)

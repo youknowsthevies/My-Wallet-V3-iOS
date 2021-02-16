@@ -184,7 +184,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 paymentMethodsService.paymentMethodsSingle,
                 cardListService.cardsSingle,
                 balanceProvider.fiatFundsBalancesSingle,
-                linkedBankService.linkedBanks
+                linkedBankService.fetchLinkedBanks()
             )
             .map(weak: self) { (self, payload) in
                 self.merge(paymentMethods: payload.0, cards: payload.1, balances: payload.2, linkedBanks: payload.3)
