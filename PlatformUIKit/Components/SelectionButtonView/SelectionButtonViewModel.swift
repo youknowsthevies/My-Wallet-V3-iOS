@@ -76,17 +76,20 @@ public final class SelectionButtonViewModel: IdentifiableType {
             let cornerRadius: BadgeImageViewModel.CornerRadius
             let offset: CGFloat
             let size: CGSize
+            let renderingMode: ImageViewContent.RenderingMode
             
             public init(name: String,
                         background: Color,
                         offset: CGFloat = 4,
                         cornerRadius: BadgeImageViewModel.CornerRadius,
-                        size: CGSize) {
+                        size: CGSize,
+                        renderingMode: ImageViewContent.RenderingMode = .normal) {
                 self.name = name
                 self.background = background
                 self.offset = offset
                 self.cornerRadius = cornerRadius
                 self.size = size
+                self.renderingMode = renderingMode
             }
         }
         
@@ -268,6 +271,7 @@ public final class SelectionButtonViewModel: IdentifiableType {
                 case .image(let image):
                     let imageViewContent = ImageViewContent(
                         imageName: image.name,
+                        renderingMode: image.renderingMode,
                         bundle: .platformUIKit
                     )
                     let badgeViewModel = BadgeImageViewModel()

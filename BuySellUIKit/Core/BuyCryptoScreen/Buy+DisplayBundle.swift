@@ -23,7 +23,7 @@ extension EnterAmountScreenPresenter.DisplayBundle {
             strings: Strings(
                 title: LocalizedString.title,
                 ctaButton: LocalizedString.ctaButton,
-                bottomAuxiliaryItemSeparatorTitle: LocalizedString.paymentMethodTitle
+                bottomAuxiliaryItemSeparatorTitle: ""
             ),
             colors: Colors(
                 digitPadTopSeparator: .lightBorder,

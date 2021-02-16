@@ -238,7 +238,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
         let trailingImageViewContent: ImageViewContent
         if methodCount > 1 {
             trailingImageViewContent = ImageViewContent(
-                imageName: "icon-disclosure-down-small"
+                imageName: "icon-disclosure-small"
             )
             viewModel.isButtonEnabledRelay.accept(true)
         } else {
